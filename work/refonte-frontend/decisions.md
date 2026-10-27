@@ -1114,3 +1114,46 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 
   La carte de Suggérer lit désormais le même statut que le rang (`horsDuStyle`, pilote) : il n'y a plus de « Aucune voie houblon »
   au-dessus de rangées (CARTE-LISTE OK). L'IA de Suggérer est éteinte dans l'app (`VITE_IA_SUGGERER`) jusqu'au banc à l'aveugle (ia4).
+- D128 (pilote, 27.10) : l'hébergement seul est redéployé au commit 3195332e, avec a4, la carte cohérente et l'IA de Suggérer éteinte.
+  252 fichiers ; la page servie est `index-Bo4IBqOf.js`. La fonction IA n'est pas redéployée. La PR #192 est fusionnée (39236699).
+  Le contrôle `controle-radar-echelles` est adapté : il prend une voie à chaud et pose « plus floral », car depuis a4 la stout du contrôle ne
+  rend que des dry hop. Son témoin, 6906a3f4, échoue en 3 points.
+- D129 (pilote, 27.10, voie ia4) : l'IA de Suggérer **reste éteinte**. Sa règle de décision, écrite avant le banc, n'est pas tenue.
+  - **Le banc.** 30 cas qu'il n'a jamais nommés ; la référence indépendante (Hopsteiner et YCH) est figée avant tout appel. L'IA ne gagne
+    que +5 points en moyenne, pour +10 demandés, et son pire cas est à −25.
+  - **La cause.** Depuis a4, les 4 premières rangées du moteur sont déjà confirmées par la référence dans 18 cas sur 30 : l'IA n'y a presque
+    rien à corriger. Sur sa neipa v3, elle rend exactement l'ordre du moteur.
+  - **Le code gardé.** L'IA ne reclasse que les ex æquo (pool de 3 à 12, fixé par une règle de latence). Sa phrase s'appuie sur la fiche
+    (`suggerer-v2`, « Réputation : »). Ni `suggerer-v2` ni la fonction ne sont déployés.
+  - **Le coût réel.** ia3 et ia4 : 44 appels pour 0,137 CHF, sur les 0,5 CHF accordés en D100.
+  - **Pour la rallumer**, il faudra un banc sur une référence qui discrimine (floral, 10′, BarthHaas, Crosby), et seulement s'il le veut.
+- D130 (l'utilisateur, 27.10, mot pour mot) : « Même la meilleure des IA ? » ; « J'autorise un budget de 10ch pour testé les deux » (Gemini
+  3.8 Flash, réflexion basse et réflexion haute) ; « Et va jusqu'à 99% de quota pour ce cas ».
+  - Le même banc qu'ia4 : les mêmes 30 cas et la même référence figée (`reference.json`), la même règle (+10 points en moyenne, aucun cas
+    sous −25). Seuls le modèle et la réflexion changent (`ia4-banc.ts --modele= --reflexion=`).
+  - Chaque essai a son compteur et sa section du journal, avec une enveloppe de 4,5 CHF ; les deux ensemble restent sous les 10 CHF.
+  - Pour ce cas seulement, le seuil des agents passe de 98 % à 99 %.
+- D131 (pilote, 27.10, banc D130) : même avec Gemini 3.8 Flash, l'IA de Suggérer **reste éteinte**. Le banc garde les mêmes 30 cas, la même
+  référence figée et la même règle :
+
+  | modèle | moyenne | pire cas | latence médiane | coût des 30 cas |
+  |---|---|---|---|---|
+  | 3.5 Flash-Lite, réflexion basse (ia4) | +5 | −25 | 1,6 s | 0,071 CHF |
+  | 3.8 Flash, réflexion basse | +6,7 | −25 | 4,7 s | 0,265 CHF |
+  | 3.8 Flash, réflexion haute | +5,8 | −25 | 90 s | 3,468 CHF |
+
+  Les trois modèles gagnent et perdent sur presque les mêmes cas : en hausse 1A, 7B, 13C, 4A, 5B, 21A, 18B ; en baisse 16A, 20A, 15B, tous
+  en « plus floral ». La limite tient donc à la référence (« cité », pas « intense » ; le moteur est déjà confirmé dans 18 cas sur 30), pas
+  à la force du modèle. La réflexion haute ne fait pas mieux : elle met 90 s et coûte 13 fois plus. Dépense de D130 : 3,73 CHF sur 10.
+  Pour aller plus loin, il faut un autre arbitre, pas un autre modèle : une référence d'intensité, ou ses propres jugements à l'aveugle.
+- D132 (l'utilisateur, 27.10, mot pour mot) : « Mettre 3.8 Flash et je peux l'activer à la demande ».
+  - Lecture du pilote : le mode Suggérer passe à Gemini 3.8 Flash en réflexion basse, le meilleur au banc (D131).
+  - Plus d'appel à l'ouverture : la puce de m6 lance l'appel au toucher.
+  - C'est son accord pour la production de ce mode, sous les plafonds mensuel et quotidien existants.
+  - Voie ia5 ; puis, par le pilote, le déploiement de `functions:hopReclasserIA` et de l'hébergement.
+- D133 (pilote, 27.10) : l'IA de Suggérer est **en ligne, à la demande**, sur Gemini 3.8 Flash en réflexion basse (D132). Ordre suivi :
+  1. le rejeu de d661f266 (11 contrôles Chrome, CARTE-LISTE OK, 8 451 tests, B5 à 147,5 ko) et la critique (MONTRER) ;
+  2. la fonction `hopReclasserIA` en premier (« Successful update operation ») ;
+  3. puis l'hébergement : 252 fichiers ; la page servie est `index-5hGOimnf.js`, après le cache du CDN.
+  La construction des fonctions régénère `source4-portable-bundle-manifest-01.json` dans la copie propre : il est remis au commit avant le
+  build de l'app.

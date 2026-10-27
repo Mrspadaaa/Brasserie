@@ -1,0 +1,73 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-ia5", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-ia5-emu-1Q7s77\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8675
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-ia5/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=simule[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : neipa v3 {"style":"22A","ma_biere":"Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"}
+· connexion émulée (Auth) {"uid":"OLBHDJ…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.7069ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.8-flash","elapsedMs":539,"email":"brasseur@demo-ia5.test","candidats":12,"phrasesRetirees":0,"phrasesHorsFiche":0,"phrasesReputation":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 548.6547ms
+· chauffe de la fonction (appel froid, hors mesure) {"visee":"{\"tropical\":2.5}","msJusquALaPuce":2345}
+· repos : le moteur, la puce « classer par l’IA », aucun appel {"rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"puce":"classer par l’IA","boite":{"x":207.2,"y":302.2,"w":164,"h":28},"appelsPendantLeRepos":0}
+· capture 1-repos-liste-du-moteur.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+· attente : la puce garde sa place {"texte":"l’IA classe…","boite":{"x":207.2,"y":302.2,"w":164,"h":28},"positions":{"titre":279,"premiereRangee":354,"groupeBas":694,"levure":694,"hauteurGroupe":423,"page":844}}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.8317ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 2-attente.png {}
+[90m> [39m {"model":"gemini-3.8-flash","elapsedMs":2067,"email":"brasseur@demo-ia5.test","candidats":12,"phrasesRetirees":0,"phrasesHorsFiche":0,"phrasesReputation":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2069.3549ms
+· réponse de l’IA {"msJusquALaPuce":1661,"depuisLeToucherMs":2162,"rangees":["Huell Melon","◇lui seul : vanille, caramel","East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche"],"decalagePuceMax":0,"decalagePx":{"titre":0,"premiereRangee":0,"levure":0,"hauteurGroupe":0}}
+· capture 3-ordre-ia-applique.png {}
+· capture 4-phrase-au-toucher.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Simulé (essai local) : Huell Melon, fiche : melon, fraise, melon miel ; remonté en tête pour cette demande.","taillePxPhrase":14,"taillePxPuce":14}
+· capture 5-retour-ordre-du-moteur.png {}
+· puce touchée : l’ordre du moteur rendu {"identique":true,"puce":"prete","texte":"appliquer l’ordre IA"}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"13523","updatedAt":"1793113085902"}}]}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.9172ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"kind":"server","status":503,"elapsedMs":28,"severity":"WARNING","message":"Suggérer IA : Gemini en échec"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 30.451ms
+· échec : « IA indisponible » {"msJusquAuMessage":102,"texte":"IA indisponible","tailleePx":14,"occurrences":1,"boiteAvant":{"x":207.2,"y":302.2,"w":164,"h":28},"boiteApres":{"x":207.2,"y":302.2,"w":164,"h":28}}
+· capture 6-echec.png {}
+· capture 7-hors-ligne-ordre-du-moteur.png {}
+· hors ligne : aucun appel, aucune puce {"appelsAvant":3,"appelsApres":3,"puce":null,"placeInvisible":false,"messageVisible":false}
+· rangs de ses six dans le pool (moteur) et dans l’ordre IA {"parAppel":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","candidats":12,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":null,"ia":null},{"houblon":"Calypso","moteur":6,"ia":7},{"houblon":"Pacific Jade","moteur":null,"ia":null},{"houblon":"Idaho 7","moteur":null,"ia":null}]},{"cas":"neipa v3 · agrumes · dry hop actif","candidats":12,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":null,"ia":null},{"houblon":"Calypso","moteur":8,"ia":9},{"houblon":"Pacific Jade","moteur":null,"ia":null},{"houblon":"Idaho 7","moteur":null,"ia":null}]},{"cas":"neipa v3 · échec simulé (503)","candidats":12,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":null,"ia":null},{"houblon":"Calypso","moteur":null,"ia":null},{"houblon":"Pacific Jade","moteur":null,"ia":null},{"houblon":"Idaho 7","moteur":null,"ia":null}]}]}
+· requêtes reçues par le fournisseur {"n":3,"detail":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","modele":"gemini-3.8-flash","ms":307,"candidats":12,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":1464,"sortieTokens":436,"moteurTete":["Rakau","Fuggle","Super Galena","Galaxy","Huell Melon","Calypso"],"iaTete":["Harlequin","Rakau","Fuggle","Super Galena","Galaxy","Huell Melon"],"phrases":["Harlequin : Simulé (essai local) : Harlequin, fiche : fruit de la passion, pêche, ananas ; remonté en tête pour cette demande.","Rakau : Simulé (essai local) : Rakau, fiche : fruits à noyau, figue, fruité ; gardé dans l’ordre du moteur.","Fuggle : Simulé (essai local) : Fuggle, fiche : boisé, herbe coupée, menthe ; gardé dans l’ordre du moteur.","Super Galena : Simulé (essai local) : Super Galena, fiche : herbe coupée, épicé, poire ; gardé dans l’ordre du moteur."]},{"cas":"neipa v3 · agrumes · dry hop actif","modele":"gemini-3.8-flash","ms":2003,"candidats":12,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":1418,"sortieTokens":430,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Galaxy"],"iaTete":["Huell Melon","East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix"],"phrases":["Huell Melon : Simulé (essai local) : Huell Melon, fiche : melon, fraise, melon miel ; remonté en tête pour cette demande.","East Kent Goldings : Simulé (essai local) : East Kent Goldings, fiche : lavande, miel, citron ; gardé dans l’ordre du moteur.","Golding : Simulé (essai local) : Golding, fiche : floral, delicate, doux ; gardé dans l’ordre du moteur.","Spalter Select : Simulé (essai local) : Spalter Select, fiche : épicé, herbe coupée ; gardé dans l’ordre du moteur."]},{"cas":"neipa v3 · échec simulé (503)","modele":"gemini-3.8-flash","ms":0,"candidats":12,"valide":null,"retirees":null,"erreurs":["HTTP 503"],"entreeTokens":1402,"sortieTokens":null,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Huell Melon"],"iaTete":[],"phrases":[]}]}
+· hôtes bloqués par le banc {"n":4,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+· verdicts {"aucun appel à l’ouverture ni au repos (5 s)":true,"repos : « classer par l’IA »":true,"attente : « l’IA classe… » et la liste ne bouge pas":true,"un double toucher : un seul appel":true,"l’ordre arrive et s’applique : « classé par l’IA », l’ordre change":true,"la puce ne bouge pas (0 px) du repos à l’arrivée":true,"la phrase au toucher d’une rangée, 14 px au moins":true,"retour au moteur : l’ordre du moteur, « appliquer l’ordre IA »":true,"un autre toucher remet l’ordre IA sans nouvel appel":true,"échec : la puce dit « IA indisponible » (12 px au moins), une seule fois, la liste reste celle du moteur, la puce ne bouge pas":true,"hors ligne : aucun appel, aucune puce":true,"aucune réponse invalide du fournisseur simulé":true}
+requêtes reçues par le fournisseur : 3
+aucune erreur de page
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator

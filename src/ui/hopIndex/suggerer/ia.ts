@@ -1,16 +1,19 @@
-// L'IA dans Suggérer (voie ia3, sa base choisie : « M1 + M2 · avec l'IA semble le mieux », page m6 du 26.10 ; accord D80/D100 :
-// Flash-Lite, environ 0,003 CHF par appel). Même callable que Substituer (`hopReclasserIA`), mode « suggerer », invite `suggerer-v1`.
-// Le moteur range et montre tout de suite ; l'IA ne fait que reclasser les 30 premiers du moteur d'un moment (le pool) et dire une phrase
-// par houblon. Elle ne donne aucun score : les effets, les barres, les doses et le stock restent ceux du moteur.
+// L'IA dans Suggérer (voie ia3, sa base choisie : « M1 + M2 · avec l'IA semble le mieux », page m6 du 26.10). Même callable que Substituer
+// (`hopReclasserIA`), mode « suggerer », invite `suggerer-v2` (ia4, D126 et D192). Voie ia5 (D132, 27.10) : modèle Gemini 3.8 Flash en réflexion
+// basse (choisi par le serveur) et IA À LA DEMANDE : « Mettre 3.8 Flash et je peux l'activer à la demande ».
+// Le moteur range et montre tout de suite ; l'IA ne reclasse que les EX ÆQUO du moteur : le groupe « même effet » d'un moment (ses rangées et
+// leurs suivantes au même effet et à la même dose, jamais un houblon pris plus bas) et dit une phrase pour les premiers, d'après la fiche.
+// Elle ne donne aucun score : les effets, les barres, les doses et le stock restent ceux du moteur.
 //
-// Règles (celles de i2) :
-//  - l'appel part au repos, une fois l'écran peint, en ligne seulement, pour chaque moment dont le groupe a de quoi départager (le moteur
-//    ne sépare pas ses rangées : 4 ou plus au même effet) ; hors ligne, ou si l'appel échoue : l'ordre du moteur, rien au premier plan ;
-//  - réponse en moins de 3 s ET liste pas encore touchée : l'ordre de l'IA remplace les rangées, une seule fois ; la puce « classé par l'IA »
-//    apparaît, un toucher dessus rend l'ordre du moteur ;
-//  - réponse plus tardive, ou après un toucher : rien ne bouge ; la puce dit « appliquer l'ordre IA » ;
-//  - une réponse invalide (hors liste, doublon, incomplète) est ignorée : jamais un ordre inventé.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// Règles :
+//  - aucun appel à l'ouverture ni au repos : la puce « ✦ classer par l'IA » (groupe d'au moins 3 ex æquo, en ligne seulement) lance l'appel ;
+//  - pendant l'attente, la puce garde sa taille et sa place et dit « ✦ l'IA classe… » ; un second toucher ne fait pas un second appel ;
+//  - l'ordre arrive et s'applique ; la puce dit « classé par l'IA » ; un toucher rend l'ordre du moteur, un autre remet celui de l'IA sans
+//    nouvel appel ;
+//  - un échec (réseau, ok:false, ordre invalide : hors liste, doublon, incomplet) : la puce revient au repos et dit « IA indisponible » ; jamais
+//    un ordre inventé ; un toucher de plus réessaie ;
+//  - une réponse est gardée pour la séance, par demande : un retour à la même demande ne refacture pas.
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ficheDeCatalogue, type EntreeSuggerer, type MomentSuggerer } from '../../../../functions/src/hopReclassCore';
 import type { Voie } from '../../../domain/hopIndex/v4';
 import { hopRef } from '../parcours/v4';
@@ -18,33 +21,31 @@ import { houblon, style } from '../parcours/adaptateur';
 import { quandDe } from '../parcours/quand';
 import type { Quand, RecetteParcours } from '../parcours/types';
 import { COURT } from './commun';
-import type { Objectif } from './voies';
+import { exclue, type Objectif } from './voies';
 
-/** Au-delà, la liste a déjà été lue : l'ordre de l'IA attend un toucher sur la puce. */
-export const FENETRE_MS = 3000;
-/** Le pool : les 30 premiers du moteur au moment (voir functions/src/hopReclassCore.ts, `TAILLE_POOL_SUGGERER`). */
-export const TAILLE_POOL = 30;
-const MIN_POOL = 10;
+/** Le pool : les ex æquo du moteur au moment, 12 au plus (règle de coût et de latence : functions/src/hopReclassCore.ts, `TAILLE_POOL_SUGGERER`). */
+export const TAILLE_POOL = 12;
+const MIN_POOL = 3;
 /** Un groupe « même effet » n'appelle l'IA que s'il a au moins trois rangées au même effet : le moteur ne les départage pas (deux ex æquo ne
  * valent pas un appel). Au plus deux moments par écran (les deux premiers groupes), pour borner le coût d'une ouverture (≈ 0,003 CHF l'appel). */
 export const RANGEES_MINI = 3;
 export const MOMENTS_MAX = 2;
 
-export interface ReponseSuggerer { ok: boolean; ordre?: string[]; phrases?: Record<string, string>; model?: string; error?: string; promptVersion?: string }
+export interface ReponseSuggerer { ok: boolean; ordre?: string[]; phrases?: Record<string, string>; model?: string; error?: string; promptVersion?: string; phrasesRetirees?: number; phrasesHorsFiche?: number; phrasesReputation?: number }
 export type TransportSuggerer = (demande: EntreeSuggerer) => Promise<ReponseSuggerer>;
 
+/** Délai du client : celui du serveur (20 s, `DELAI_SUGGERER_MS`) plus 5 s ; la fonction a 30 s. Banc ia4 de 3.8 Flash : médiane 4,7 s, maximum 5,6 s. */
+export const DELAI_CLIENT_MS = 25000;
 /** L'appel réel : le callable, par la Cloud Function (jamais une clé dans le navigateur). Importé à la demande : hors ligne ou en test,
- * Firebase n'est même pas chargé. Le délai (10 s) est celui du serveur : 30 phrases à écrire. */
+ * Firebase n'est même pas chargé. */
 const transportFirebase: TransportSuggerer = async (demande) => {
   const [{ httpsCallable }, { functions }] = await Promise.all([import('firebase/functions'), import('../../../services/firebase')]);
-  const r = await httpsCallable<EntreeSuggerer, ReponseSuggerer>(functions, 'hopReclasserIA', { timeout: 10000 })(demande);
+  const r = await httpsCallable<EntreeSuggerer, ReponseSuggerer>(functions, 'hopReclasserIA', { timeout: DELAI_CLIENT_MS })(demande);
   return r.data;
 };
 /** Sous Vitest, aucun transport par défaut : un écran monté dans un test n'appelle jamais le callable (ni Firebase, ni Gemini).
- * D126 : l'IA de Suggérer reste éteinte dans l'app tant que le banc à l'aveugle (ia4) ne l'a pas validée ; `VITE_IA_SUGGERER=on` l'allume
- * pour le banc et l'émulateur. */
-const EN_SERVICE = import.meta.env.VITE_IA_SUGGERER === 'on';
-const PAR_DEFAUT: TransportSuggerer | null = import.meta.env.MODE === 'test' || !EN_SERVICE ? null : transportFirebase;
+ * D132 : l'IA est à la demande (un toucher sur la puce) ; la porte `VITE_IA_SUGGERER` (D126) est retirée. */
+const PAR_DEFAUT: TransportSuggerer | null = import.meta.env.MODE === 'test' ? null : transportFirebase;
 let transport: TransportSuggerer | null = PAR_DEFAUT;
 /** Pour les tests et le banc : un autre transport (null : celui par défaut). */
 export function installerTransportSuggerer(t: TransportSuggerer | null): void { transport = t ?? PAR_DEFAUT; resultats.clear(); }
@@ -53,6 +54,21 @@ export const iaPossible = (): boolean => transport !== null && !(typeof navigato
 
 // Une réponse par demande, gardée pour la séance : un double montage du mode strict, ou un retour à la même demande, ne refacture pas.
 const resultats = new Map<string, Promise<ReponseSuggerer | null>>();
+
+const effetCentral = (v: Voie, f: Objectif['f']): number | null => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null);
+const cleEffet = (v: Voie, objectifs: readonly Objectif[]): string => JSON.stringify([v.actions.reduce((s, a) => s + a.grams, 0), objectifs.map((o) => effetCentral(v, o.f))]);
+/** Le pool de l'IA : les EX ÆQUO du moteur. D'abord les rangées du groupe « même effet » (`rangees`, dans l'ordre du moteur), puis, dans le pool du
+ * moment (`pool`, l'ordre du moteur), les houblons au même effet sur les objectifs ET à la même dose totale : jamais un houblon d'un autre effet,
+ * jamais un houblon écarté par la visée (`bannis`). Au plus TAILLE_POOL. Vide : pas de rangée. */
+export function poolExAequo(rangees: readonly Voie[], pool: readonly Voie[], objectifs: readonly Objectif[], bannis: Parameters<typeof exclue>[1] = []): Voie[] {
+  if (!rangees.length) return [];
+  const cle = cleEffet(rangees[0], objectifs), vus = new Set<string>(), sortie: Voie[] = [];
+  for (const v of [...rangees, ...pool.filter((x) => cleEffet(x, objectifs) === cle && !exclue([houblon(x.actions[0].hopKey)], bannis))]) {
+    const k = v.actions[0].hopKey;
+    if (!vus.has(k)) { vus.add(k); sortie.push(v); }
+  }
+  return sortie.slice(0, TAILLE_POOL);
+}
 
 /** Le moment du moteur (MomentId) dit pour l'IA. null : un moment que l'IA ne sait pas dire (rien n'est inventé). */
 export function momentIA(moment: string): MomentSuggerer | null {
@@ -112,57 +128,61 @@ function demander(d: EntreeSuggerer): Promise<ReponseSuggerer | null> {
   return p;
 }
 
+/** La puce d'un moment : « repos » (rien demandé, ou un échec : `echec`), « attente » (l'appel est parti), « recu » (l'ordre est là ; `appliquee` dit s'il range les rangées). */
+export type StatutIA = 'repos' | 'attente' | 'recu';
 export interface EtatIA {
-  /** Les clés de houblon rangées par l'IA, dans son ordre. */
+  statut: StatutIA;
+  /** Le dernier appel a échoué : la puce dit « IA indisponible » (jusqu'au toucher suivant, qui réessaie). */
+  echec: boolean;
+  /** Les clés de houblon rangées par l'IA, dans son ordre (vide tant que rien n'est reçu). */
   ordre: readonly string[];
   phrases: Readonly<Record<string, string>>;
   /** L'ordre de l'IA est celui des rangées. */
   appliquee: boolean;
-  /** Un toucher sur la puce : applique l'ordre de l'IA, ou rend celui du moteur. */
-  basculer: () => void;
+  /** Un toucher sur la puce : au repos, lance l'appel ; en attente, rien ; reçu, applique l'ordre de l'IA ou rend celui du moteur (sans nouvel appel). */
+  toucher: () => void;
 }
 export interface DemandeMoment { moment: string; demande: EntreeSuggerer }
 export interface ClassementsIA {
-  /** Par moment du moteur : il y a un ordre de l'IA (la puce existe). */
+  /** Par moment du moteur : l'état de la puce (null : pas de demande pour ce moment, pas de puce). */
   de: (moment: string) => EtatIA | null;
-  /** Le brasseur a touché les listes : une réponse tardive ne les fera plus bouger. */
-  marquerTouche: () => void;
 }
+type Recu = ReponseSuggerer & { ordre: string[]; phrases: Record<string, string> };
 
-/** Un appel par moment demandé, au repos ; hors ligne, `demandes` est vide. Une autre demande (une autre visée, une autre recette) repart de zéro. */
+/** Aucun appel au montage : `demandes` ne fait que dire ce qu'on PEUT demander (une puce par moment). Un appel part au toucher de la puce, un seul
+ * par demande (un double toucher, ou un retour à la même demande, ne repart pas). Hors ligne, `demandes` est vide. Une autre demande (une autre
+ * visée, une autre recette) repart de zéro. */
 export function useClassementsIA(demandes: readonly DemandeMoment[]): ClassementsIA {
-  const cles = demandes.map((x) => cleDemande(x.demande));
-  const signature = cles.join('§');
-  const [recus, setRecus] = useState<Record<string, ReponseSuggerer & { ordre: string[]; phrases: Record<string, string> }>>({});
+  const signature = demandes.map((x) => cleDemande(x.demande)).join('§');
+  const [recus, setRecus] = useState<Record<string, Recu>>({});
+  const [attentes, setAttentes] = useState<Record<string, boolean>>({});
+  const [echecs, setEchecs] = useState<Record<string, boolean>>({});
   const [appliquees, setAppliquees] = useState<Record<string, boolean>>({});
-  const touche = useRef(new Set<string>());
-  const toutTouche = useRef(false);
-  useEffect(() => {
-    if (!demandes.length || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
-    let vivant = true;
-    for (const { demande } of demandes) {
-      const cle = cleDemande(demande), debut = Date.now();
-      void demander(demande).then((r) => {
-        if (!vivant || !r) return;
-        setRecus((x) => ({ ...x, [cle]: r as ReponseSuggerer & { ordre: string[]; phrases: Record<string, string> } }));
-        // Une seule fois, et seulement si la réponse est vite là et que la liste n'a pas été touchée.
-        if (Date.now() - debut < FENETRE_MS && !toutTouche.current && !touche.current.has(cle)) setAppliquees((x) => ({ ...x, [cle]: true }));
-      });
-    }
-    return () => { vivant = false; };
-  }, [signature]); // eslint-disable-line react-hooks/exhaustive-deps
+  const enCours = useRef(new Set<string>());
+  const lancer = useCallback((demande: EntreeSuggerer) => {
+    const cle = cleDemande(demande);
+    if (enCours.current.has(cle)) return;
+    enCours.current.add(cle);
+    setAttentes((x) => ({ ...x, [cle]: true })); setEchecs((x) => ({ ...x, [cle]: false }));
+    const hors = typeof navigator !== 'undefined' && navigator.onLine === false;
+    void (hors ? Promise.resolve(null) : demander(demande)).then((r) => {
+      enCours.current.delete(cle);
+      setAttentes((x) => ({ ...x, [cle]: false }));
+      if (!r) { setEchecs((x) => ({ ...x, [cle]: true })); return; }
+      setRecus((x) => ({ ...x, [cle]: r as Recu })); setAppliquees((x) => ({ ...x, [cle]: true }));
+    });
+  }, []);
   const basculer = useCallback((cle: string) => setAppliquees((x) => ({ ...x, [cle]: !x[cle] })), []);
-  const marquerTouche = useCallback(() => { toutTouche.current = true; }, []);
   return useMemo(() => ({
     de: (moment: string) => {
       const d = demandes.find((x) => x.moment === moment);
       if (!d) return null;
       const cle = cleDemande(d.demande), r = recus[cle];
-      if (!r) return null;
-      const appliquee = !!appliquees[cle];
-      return { ordre: r.ordre, phrases: appliquee ? r.phrases : {}, appliquee, basculer: () => basculer(cle) };
+      const appliquee = !!r && !!appliquees[cle];
+      const statut: StatutIA = r ? 'recu' : attentes[cle] ? 'attente' : 'repos';
+      const toucher = () => { if (r) basculer(cle); else if (!attentes[cle]) lancer(d.demande); };
+      return { statut, echec: !r && !!echecs[cle], ordre: r?.ordre ?? [], phrases: appliquee ? r.phrases : {}, appliquee, toucher };
     },
-    marquerTouche,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [signature, recus, appliquees, basculer, marquerTouche]);
+  }), [signature, recus, attentes, echecs, appliquees, basculer, lancer]);
 }

@@ -1,0 +1,239 @@
+{
+ "mode": "reel",
+ "etapes": [
+  {
+   "nom": "budget semé dans Firestore émulé",
+   "statut": 200,
+   "limite": "5 CHF (émulateur)"
+  },
+  {
+   "nom": "recette posée : neipa v3",
+   "style": "22A",
+   "ma_biere": "Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"
+  },
+  {
+   "nom": "connexion émulée (Auth)",
+   "uid": "DuMuzW…"
+  },
+  {
+   "nom": "repos : le moteur, la puce « classer par l’IA », aucun appel",
+   "rangees": [
+    "East Kent Goldings",
+    "◇lui seul : pain d'épices, aspérule",
+    "Golding",
+    "◇lui seul : cardamome, pois de senteur",
+    "Spalter Select",
+    "◇lui seul : concombre, livèche",
+    "Mount Hood",
+    "◇lui seul : estragon, genièvre"
+   ],
+   "puce": "classer par l’IA",
+   "boite": {
+    "x": 207.2,
+    "y": 302.2,
+    "w": 164,
+    "h": 28
+   },
+   "appelsPendantLeRepos": 0
+  },
+  {
+   "nom": "capture 1-repos-liste-du-moteur.png"
+  },
+  {
+   "nom": "attente : la puce garde sa place",
+   "texte": "l’IA classe…",
+   "boite": {
+    "x": 207.2,
+    "y": 302.2,
+    "w": 164,
+    "h": 28
+   },
+   "positions": {
+    "titre": 279,
+    "premiereRangee": 354,
+    "groupeBas": 694,
+    "levure": 694,
+    "hauteurGroupe": 423,
+    "page": 844
+   }
+  },
+  {
+   "nom": "capture 2-attente.png"
+  },
+  {
+   "nom": "réponse de l’IA",
+   "msJusquALaPuce": 6102,
+   "depuisLeToucherMs": 6565,
+   "rangees": [
+    "Galaxy",
+    "◇lui seul : groseille à maquereau, cassis",
+    "Calypso",
+    "Cashmere",
+    "◇lui seul : thym, bonbon",
+    "Columbus",
+    "◇lui seul : piquant, curry"
+   ],
+   "decalagePuceMax": 0,
+   "decalagePx": {
+    "titre": 0,
+    "premiereRangee": 0,
+    "levure": -16,
+    "hauteurGroupe": -16
+   }
+  },
+  {
+   "nom": "capture 3-ordre-ia-applique.png"
+  },
+  {
+   "nom": "capture 4-phrase-au-toucher.png"
+  },
+  {
+   "nom": "phrase de l’IA au toucher d’une rangée",
+   "phrase": "IA Ses mots citent agrumes, avec une huile abondante et un myrcène élevé pour le dry hop.",
+   "taillePxPhrase": 14,
+   "taillePxPuce": 14
+  },
+  {
+   "nom": "capture 5-retour-ordre-du-moteur.png"
+  },
+  {
+   "nom": "puce touchée : l’ordre du moteur rendu",
+   "identique": true,
+   "puce": "prete",
+   "texte": "appliquer l’ordre IA"
+  },
+  {
+   "nom": "budget mensuel après les appels (Firestore émulé)",
+   "documents": [
+    {
+     "nom": "2026-10",
+     "champs": {
+      "month": "2026-10",
+      "reservedMicroChf": "0",
+      "usedMicroChf": "8220",
+      "updatedAt": "1793113279192"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "capture 8-neipa-tropicaux.png"
+  },
+  {
+   "nom": "réel : neipa v3 tropicaux",
+   "msJusquALaPuce": 5256,
+   "puce": "appliquee",
+   "rangees": [
+    "Galaxy",
+    "◇lui seul : groseille à maquereau, cassis",
+    "IA Mots explicites de fruits tropicaux, fruit de la passion et ananas avec une huile totale très élevée.",
+    "Zappa",
+    "◇lui seul : cuir, cognac",
+    "Topaz",
+    "◇lui seul : tabac"
+   ]
+  },
+  {
+   "nom": "recette posée : 21C Hazy du jeudi",
+   "style": "21C",
+   "ma_biere": "Ébullition60′60′Nuggetébullition20 gα 9,5–16 %doubleherbe 6/"
+  }
+ ],
+ "erreurs": [
+  "banc: TypeError: Cannot read properties of null (reading 'click')\n    at evaluate (evaluate at toucherPuce (C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\scripts\\eval-hop\\ia3-emulateur.ts:397:44), <anonymous>:0:109)\n    at ExecutionContext.#evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:419:15)\n    at ExecutionContext.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:310:12)\n    at IsolatedWorld.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppe"
+ ],
+ "appels": [
+  {
+   "cas": "neipa v3 · agrumes · dry hop actif",
+   "modele": "gemini-3.8-flash",
+   "ms": 4442,
+   "reel": true,
+   "candidats": 12,
+   "moteur": [
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Galaxy",
+    "Topaz",
+    "Calypso",
+    "Huell Melon",
+    "Warrior",
+    "Cashmere",
+    "Columbus"
+   ],
+   "ia": [
+    "Galaxy",
+    "Calypso",
+    "Cashmere",
+    "Columbus",
+    "East Kent Goldings",
+    "Huell Melon",
+    "Topaz",
+    "Warrior",
+    "Phoenix",
+    "Mount Hood",
+    "Spalter Select",
+    "Golding"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Galaxy : Ses mots citent agrumes, avec une huile abondante et un myrcène élevé pour le dry hop.",
+    "Calypso : Ses mots mentionnent agrumes et citron vert, appuyés par des thiols en classe forte.",
+    "Cashmere : Ses mots apportent citron, citron vert et citronnelle, accompagnés d'un bon niveau de myrcène.",
+    "Columbus : Ses descripteurs mentionnent les agrumes avec un fort taux de myrcène en fermentation active."
+   ],
+   "entreeTokens": 2789,
+   "sortieTokens": 319
+  },
+  {
+   "cas": "neipa v3 · tropicaux · dry hop actif",
+   "modele": "gemini-3.8-flash",
+   "ms": 5128,
+   "reel": true,
+   "candidats": 12,
+   "moteur": [
+    "Rakau",
+    "Fuggle",
+    "Super Galena",
+    "Galaxy",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Zappa",
+    "Harlequin",
+    "Cashmere",
+    "Nugget",
+    "Columbus"
+   ],
+   "ia": [
+    "Galaxy",
+    "Zappa",
+    "Topaz",
+    "Harlequin",
+    "Nugget",
+    "Super Galena",
+    "Cashmere",
+    "Calypso",
+    "Rakau",
+    "Huell Melon",
+    "Columbus",
+    "Fuggle"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Galaxy : Mots explicites de fruits tropicaux, fruit de la passion et ananas avec une huile totale très élevée.",
+    "Zappa : Mots explicites de fruits tropicaux, mangue et fruit de la passion, portés par un myrcène très haut.",
+    "Topaz : Mots de fruits tropicaux, fruit de la passion et litchi parfaitement adaptés au dry hop actif.",
+    "Harlequin : Mots ciblés de fruit de la passion et ananas combinés à une forte teneur en myrcène."
+   ],
+   "entreeTokens": 2819,
+   "sortieTokens": 326
+  }
+ ]
+}

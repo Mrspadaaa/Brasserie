@@ -13,6 +13,11 @@
 .pq-sg-ia { display: inline-flex; align-items: center; justify-content: center; gap: 5px; box-sizing: border-box; width: 10.25rem; height: 1.75rem; padding: 0 8px; border-radius: 9999px; border: 1px dashed #8a8a8a; background: #fff; color: #444; font: 600 14px/1 system-ui, sans-serif; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
 .pq-sg-ia svg { width: 12px; height: 12px; color: #0072B2; flex: none; }
 .pq-sg-ia[data-ia="appliquee"] { border-style: solid; border-color: #d4d4d4; background: #efefef; color: #111; }
+.pq-sg-ia[data-ia="attente"] { cursor: progress; color: #666; }
+.pq-sg-ia[data-ia="attente"] svg { animation: pq-sg-ia-pouls 1.1s ease-in-out infinite; }
+.pq-sg-ia[data-ia="echec"] { border-color: #b45309; color: #92400e; }
+@keyframes pq-sg-ia-pouls { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .pq-sg-ia[data-ia="attente"] svg { animation: none; } }
 .pq-sg-ia:focus-visible { outline: 2px solid #56B4E9; outline-offset: 2px; }
 .pq-sg-ia-place { visibility: hidden; border-color: transparent; background: transparent; }
 .pq-sg-ia-phrase { display: block; margin: 3px 0 2px; font-size: 14px; line-height: 1.3; color: rgb(var(--cave-50)); font-weight: 400; }

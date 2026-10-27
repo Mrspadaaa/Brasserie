@@ -437,3 +437,13 @@ documentaires d'après.
   - une phrase fondée sur la fiche ;
   - un banc à l'aveugle sur des cas qu'il n'a jamais nommés.
   Quota hebdomadaire : 97 %.
+- 27.10, vers 15 h : **déployé** (3195332e ; hébergement seul, IA de Suggérer éteinte) et **PR #192 fusionnée** (39236699 ; D128). Reste : ia4 (l'IA sur les seuls ex æquo, une phrase fondée sur la fiche, un banc à l'aveugle), à lancer seulement sous 98 % du quota hebdomadaire.
+- 27.10, vers 15 h 15 : **ia4 en vol** (auteur). L'IA ne reclasse que les ex æquo ; phrase fondée sur la fiche (« Réputation : ») ; banc à l'aveugle sur 16 cas au moins qu'il n'a jamais nommés, avec une règle de décision écrite d'avance ; 0,4 CHF au plus. Quota hebdomadaire 97 % au lancement : **c'est la dernière voie avant 98 %**. Après elle : plus d'agent ; arrêt propre à 99 % (reprise, commit, push).
+- 27.10, vers 16 h : **ia4 commitée** (0dd14586 ; D129). Banc à l'aveugle : +5 points, règle non tenue, l'IA de Suggérer reste éteinte. Plus d'agent : le quota hebdomadaire est à 97–98 %. Ouvert, à la remise à zéro du quota (31.10) ou à sa demande :
+  - mettre le lot ia4 dans main (rejeu, puis PR ; rien de visible ne change) ;
+  - D172, D178, D182, D185, #182, #187 ;
+  - les accords D100 restants : l'écriture du catalogue Firestore, le test dans son Chrome ;
+  - la voie de profil D101 ;
+  - le bouton d'ajout direct à la recette (D188, mini maquettes) ;
+  - les 4 rangées de Suggérer.
+- 27.10, vers 17 h : **ia5 commitée** (d661f266 ; D132) : 3.8 Flash à la demande. En vol : le rejeu de d661f266 (Haiku, `%TEMP%/rejeu-d661/`) et la critique de la puce (Fable). Ensuite : déployer `functions:hopReclasserIA`, puis l'hébergement ; puis la PR. **Défaut vu par le pilote** sur les captures d'ia5 (`voies/ia5-ia-a-la-demande/img/reel-1-…`) : une neipa v3 qui a déjà 144 g de Lotus au dry hop, demande « plus d'agrumes ». Le moteur propose des nobles (East Kent Goldings, Golding, Spalter Select, Mount Hood) et la carte dit « Aucune voie houblon » au-dessus de ces rangées. Cause probable : la saturation, et des débordements non neutres. a4 en mesurait 4 sur 62 à HEAD. À diagnostiquer (voie suivante).

@@ -1,0 +1,516 @@
+{
+ "mode": "simule",
+ "etapes": [
+  {
+   "nom": "budget semé dans Firestore émulé",
+   "statut": 200,
+   "limite": "5 CHF (émulateur)"
+  },
+  {
+   "nom": "recette posée : neipa v3",
+   "style": "22A",
+   "ma_biere": "Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"
+  },
+  {
+   "nom": "connexion émulée (Auth)",
+   "uid": "OLBHDJ…"
+  },
+  {
+   "nom": "chauffe de la fonction (appel froid, hors mesure)",
+   "visee": "{\"tropical\":2.5}",
+   "msJusquALaPuce": 2345
+  },
+  {
+   "nom": "repos : le moteur, la puce « classer par l’IA », aucun appel",
+   "rangees": [
+    "East Kent Goldings",
+    "◇lui seul : pain d'épices, aspérule",
+    "Golding",
+    "◇lui seul : cardamome, pois de senteur",
+    "Spalter Select",
+    "◇lui seul : concombre, livèche",
+    "Mount Hood",
+    "◇lui seul : estragon, genièvre"
+   ],
+   "puce": "classer par l’IA",
+   "boite": {
+    "x": 207.2,
+    "y": 302.2,
+    "w": 164,
+    "h": 28
+   },
+   "appelsPendantLeRepos": 0
+  },
+  {
+   "nom": "capture 1-repos-liste-du-moteur.png"
+  },
+  {
+   "nom": "attente : la puce garde sa place",
+   "texte": "l’IA classe…",
+   "boite": {
+    "x": 207.2,
+    "y": 302.2,
+    "w": 164,
+    "h": 28
+   },
+   "positions": {
+    "titre": 279,
+    "premiereRangee": 354,
+    "groupeBas": 694,
+    "levure": 694,
+    "hauteurGroupe": 423,
+    "page": 844
+   }
+  },
+  {
+   "nom": "capture 2-attente.png"
+  },
+  {
+   "nom": "réponse de l’IA",
+   "msJusquALaPuce": 1661,
+   "depuisLeToucherMs": 2162,
+   "rangees": [
+    "Huell Melon",
+    "◇lui seul : vanille, caramel",
+    "East Kent Goldings",
+    "◇lui seul : pain d'épices, aspérule",
+    "Golding",
+    "◇lui seul : cardamome, pois de senteur",
+    "Spalter Select",
+    "◇lui seul : concombre, livèche"
+   ],
+   "decalagePuceMax": 0,
+   "decalagePx": {
+    "titre": 0,
+    "premiereRangee": 0,
+    "levure": 0,
+    "hauteurGroupe": 0
+   }
+  },
+  {
+   "nom": "capture 3-ordre-ia-applique.png"
+  },
+  {
+   "nom": "capture 4-phrase-au-toucher.png"
+  },
+  {
+   "nom": "phrase de l’IA au toucher d’une rangée",
+   "phrase": "IA Simulé (essai local) : Huell Melon, fiche : melon, fraise, melon miel ; remonté en tête pour cette demande.",
+   "taillePxPhrase": 14,
+   "taillePxPuce": 14
+  },
+  {
+   "nom": "capture 5-retour-ordre-du-moteur.png"
+  },
+  {
+   "nom": "puce touchée : l’ordre du moteur rendu",
+   "identique": true,
+   "puce": "prete",
+   "texte": "appliquer l’ordre IA"
+  },
+  {
+   "nom": "budget mensuel après les appels (Firestore émulé)",
+   "documents": [
+    {
+     "nom": "2026-10",
+     "champs": {
+      "month": "2026-10",
+      "reservedMicroChf": "0",
+      "usedMicroChf": "13523",
+      "updatedAt": "1793113085902"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "échec : « IA indisponible »",
+   "msJusquAuMessage": 102,
+   "texte": "IA indisponible",
+   "tailleePx": 14,
+   "occurrences": 1,
+   "boiteAvant": {
+    "x": 207.2,
+    "y": 302.2,
+    "w": 164,
+    "h": 28
+   },
+   "boiteApres": {
+    "x": 207.2,
+    "y": 302.2,
+    "w": 164,
+    "h": 28
+   }
+  },
+  {
+   "nom": "capture 6-echec.png"
+  },
+  {
+   "nom": "capture 7-hors-ligne-ordre-du-moteur.png"
+  },
+  {
+   "nom": "hors ligne : aucun appel, aucune puce",
+   "appelsAvant": 3,
+   "appelsApres": 3,
+   "puce": null,
+   "placeInvisible": false,
+   "messageVisible": false
+  },
+  {
+   "nom": "rangs de ses six dans le pool (moteur) et dans l’ordre IA",
+   "parAppel": [
+    {
+     "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+     "candidats": 12,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": 6,
+       "ia": 7
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": null,
+       "ia": null
+      }
+     ]
+    },
+    {
+     "cas": "neipa v3 · agrumes · dry hop actif",
+     "candidats": 12,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": 8,
+       "ia": 9
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": null,
+       "ia": null
+      }
+     ]
+    },
+    {
+     "cas": "neipa v3 · échec simulé (503)",
+     "candidats": 12,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": null,
+       "ia": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "requêtes reçues par le fournisseur",
+   "n": 3,
+   "detail": [
+    {
+     "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+     "modele": "gemini-3.8-flash",
+     "ms": 307,
+     "candidats": 12,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 1464,
+     "sortieTokens": 436,
+     "moteurTete": [
+      "Rakau",
+      "Fuggle",
+      "Super Galena",
+      "Galaxy",
+      "Huell Melon",
+      "Calypso"
+     ],
+     "iaTete": [
+      "Harlequin",
+      "Rakau",
+      "Fuggle",
+      "Super Galena",
+      "Galaxy",
+      "Huell Melon"
+     ],
+     "phrases": [
+      "Harlequin : Simulé (essai local) : Harlequin, fiche : fruit de la passion, pêche, ananas ; remonté en tête pour cette demande.",
+      "Rakau : Simulé (essai local) : Rakau, fiche : fruits à noyau, figue, fruité ; gardé dans l’ordre du moteur.",
+      "Fuggle : Simulé (essai local) : Fuggle, fiche : boisé, herbe coupée, menthe ; gardé dans l’ordre du moteur.",
+      "Super Galena : Simulé (essai local) : Super Galena, fiche : herbe coupée, épicé, poire ; gardé dans l’ordre du moteur."
+     ]
+    },
+    {
+     "cas": "neipa v3 · agrumes · dry hop actif",
+     "modele": "gemini-3.8-flash",
+     "ms": 2003,
+     "candidats": 12,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 1418,
+     "sortieTokens": 430,
+     "moteurTete": [
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix",
+      "Galaxy"
+     ],
+     "iaTete": [
+      "Huell Melon",
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix"
+     ],
+     "phrases": [
+      "Huell Melon : Simulé (essai local) : Huell Melon, fiche : melon, fraise, melon miel ; remonté en tête pour cette demande.",
+      "East Kent Goldings : Simulé (essai local) : East Kent Goldings, fiche : lavande, miel, citron ; gardé dans l’ordre du moteur.",
+      "Golding : Simulé (essai local) : Golding, fiche : floral, delicate, doux ; gardé dans l’ordre du moteur.",
+      "Spalter Select : Simulé (essai local) : Spalter Select, fiche : épicé, herbe coupée ; gardé dans l’ordre du moteur."
+     ]
+    },
+    {
+     "cas": "neipa v3 · échec simulé (503)",
+     "modele": "gemini-3.8-flash",
+     "ms": 0,
+     "candidats": 12,
+     "valide": null,
+     "retirees": null,
+     "erreurs": [
+      "HTTP 503"
+     ],
+     "entreeTokens": 1402,
+     "sortieTokens": null,
+     "moteurTete": [
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix",
+      "Huell Melon"
+     ],
+     "iaTete": [],
+     "phrases": []
+    }
+   ]
+  },
+  {
+   "nom": "hôtes bloqués par le banc",
+   "n": 4,
+   "exemples": [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"
+   ]
+  },
+  {
+   "nom": "verdicts",
+   "aucun appel à l’ouverture ni au repos (5 s)": true,
+   "repos : « classer par l’IA »": true,
+   "attente : « l’IA classe… » et la liste ne bouge pas": true,
+   "un double toucher : un seul appel": true,
+   "l’ordre arrive et s’applique : « classé par l’IA », l’ordre change": true,
+   "la puce ne bouge pas (0 px) du repos à l’arrivée": true,
+   "la phrase au toucher d’une rangée, 14 px au moins": true,
+   "retour au moteur : l’ordre du moteur, « appliquer l’ordre IA »": true,
+   "un autre toucher remet l’ordre IA sans nouvel appel": true,
+   "échec : la puce dit « IA indisponible » (12 px au moins), une seule fois, la liste reste celle du moteur, la puce ne bouge pas": true,
+   "hors ligne : aucun appel, aucune puce": true,
+   "aucune réponse invalide du fournisseur simulé": true
+  }
+ ],
+ "erreurs": [],
+ "appels": [
+  {
+   "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+   "modele": "gemini-3.8-flash",
+   "ms": 307,
+   "reel": false,
+   "candidats": 12,
+   "moteur": [
+    "Rakau",
+    "Fuggle",
+    "Super Galena",
+    "Galaxy",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Zappa",
+    "Harlequin",
+    "Cashmere",
+    "Nugget",
+    "Columbus"
+   ],
+   "ia": [
+    "Harlequin",
+    "Rakau",
+    "Fuggle",
+    "Super Galena",
+    "Galaxy",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Zappa",
+    "Cashmere",
+    "Nugget",
+    "Columbus"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Harlequin : Simulé (essai local) : Harlequin, fiche : fruit de la passion, pêche, ananas ; remonté en tête pour cette demande.",
+    "Rakau : Simulé (essai local) : Rakau, fiche : fruits à noyau, figue, fruité ; gardé dans l’ordre du moteur.",
+    "Fuggle : Simulé (essai local) : Fuggle, fiche : boisé, herbe coupée, menthe ; gardé dans l’ordre du moteur.",
+    "Super Galena : Simulé (essai local) : Super Galena, fiche : herbe coupée, épicé, poire ; gardé dans l’ordre du moteur."
+   ],
+   "entreeTokens": 1464,
+   "sortieTokens": 436
+  },
+  {
+   "cas": "neipa v3 · agrumes · dry hop actif",
+   "modele": "gemini-3.8-flash",
+   "ms": 2003,
+   "reel": false,
+   "candidats": 12,
+   "moteur": [
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Galaxy",
+    "Topaz",
+    "Calypso",
+    "Huell Melon",
+    "Warrior",
+    "Cashmere",
+    "Columbus"
+   ],
+   "ia": [
+    "Huell Melon",
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Galaxy",
+    "Topaz",
+    "Calypso",
+    "Warrior",
+    "Cashmere",
+    "Columbus"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Huell Melon : Simulé (essai local) : Huell Melon, fiche : melon, fraise, melon miel ; remonté en tête pour cette demande.",
+    "East Kent Goldings : Simulé (essai local) : East Kent Goldings, fiche : lavande, miel, citron ; gardé dans l’ordre du moteur.",
+    "Golding : Simulé (essai local) : Golding, fiche : floral, delicate, doux ; gardé dans l’ordre du moteur.",
+    "Spalter Select : Simulé (essai local) : Spalter Select, fiche : épicé, herbe coupée ; gardé dans l’ordre du moteur."
+   ],
+   "entreeTokens": 1418,
+   "sortieTokens": 430
+  },
+  {
+   "cas": "neipa v3 · échec simulé (503)",
+   "modele": "gemini-3.8-flash",
+   "ms": 0,
+   "reel": false,
+   "candidats": 12,
+   "moteur": [
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Huell Melon",
+    "Aurora",
+    "Boadicea",
+    "Lubelska",
+    "Nugget",
+    "Columbus",
+    "Lemondrop"
+   ],
+   "ia": [],
+   "valide": null,
+   "retirees": null,
+   "erreurs": [
+    "HTTP 503"
+   ],
+   "phrases": [],
+   "entreeTokens": 1402,
+   "sortieTokens": null
+  }
+ ]
+}

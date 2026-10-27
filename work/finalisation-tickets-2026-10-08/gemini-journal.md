@@ -561,3 +561,139 @@ des appels 4 et 5. Lancements : `IA-B/logs/live-reel-{coa,diagnostic,recherche,r
 | 11 | 27.10 12:25 | #ia3 | ia3-emulateur.ts · app → callable → fournisseur local → Gemini · suggerer-v1 · neipa v3 · chauffe de la fonction (visée à part) | gemini-3.5-flash-lite | 5471 / 848 | 0.0047 CHF | HTTP 200, 2837 ms, demandé gemini-3.5-flash-lite, réflexion low, fin STOP |
 | 12 | 27.10 12:25 | #ia3 | ia3-emulateur.ts · app → callable → fournisseur local → Gemini · suggerer-v1 · neipa v3 · agrumes · dry hop actif | gemini-3.5-flash-lite | 5521 / 856 | 0.0047 CHF | HTTP 200, 2596 ms, demandé gemini-3.5-flash-lite, réflexion low, fin STOP |
 | 13 | 27.10 12:25 | #ia3 | ia3-emulateur.ts · app → callable → fournisseur local → Gemini · suggerer-v1 · stout S1 · plus floral | gemini-3.5-flash-lite | 5625 / 859 | 0.0048 CHF | HTTP 200, 3261 ms, demandé gemini-3.5-flash-lite, réflexion low, fin STOP |
+
+## Essai à l’aveugle de l’IA de Suggérer sur les ex æquo du moteur (ia4) — enveloppe séparée
+
+- Accord de l'utilisateur (D100) : essai réel de la voie ia4 (Flash-Lite, invite `suggerer-v2`, 3 à 12 candidats par appel, les ex æquo du moteur). Enveloppe : **70 appels au plus, 0.4 CHF**. Arrêt au premier dépassement ou à la deuxième erreur de suite.
+- Chemin : `scripts/eval-hop/ia4-banc.ts` → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini (le module de l'invite est celui du callable). Données : fiches du catalogue et recettes de fixture, aucune donnée réelle. Clé jamais journalisée. Jamais dans `npm test`.
+
+**Compteur ia4 : 31 / 70 · 0.0710 CHF / 0.4**
+
+| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |
+|---|---|---|---|---|---|---|---|
+| 1 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 15B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2849 / 400 | 0.0023 CHF | HTTP 200, 1721 ms, fin STOP |
+| 2 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 15B · plus floral · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2788 / 396 | 0.0023 CHF | HTTP 200, 1649 ms, fin STOP |
+| 3 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 15C · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2772 / 366 | 0.0022 CHF | HTTP 200, 1662 ms, fin STOP |
+| 4 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 16A · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2767 / 368 | 0.0022 CHF | HTTP 200, 1536 ms, fin STOP |
+| 5 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 16B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2844 / 409 | 0.0023 CHF | HTTP 200, 1769 ms, fin STOP |
+| 6 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 16C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2865 / 391 | 0.0023 CHF | HTTP 200, 1919 ms, fin STOP |
+| 7 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 20B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2851 / 397 | 0.0023 CHF | HTTP 200, 1586 ms, fin STOP |
+| 8 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 20C · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2851 / 391 | 0.0023 CHF | HTTP 200, 1595 ms, fin STOP |
+| 9 | 27.10 13:54 | #ia4 | ia4-banc.ts · suggerer-v2 · 20C · plus floral · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2789 / 385 | 0.0022 CHF | HTTP 200, 1658 ms, fin STOP |
+| 10 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 20A · plus floral · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2768 / 358 | 0.0022 CHF | HTTP 200, 1466 ms, fin STOP |
+| 11 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 13C · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2753 / 356 | 0.0021 CHF | HTTP 200, 1401 ms, fin STOP |
+| 12 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 9C · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2754 / 393 | 0.0023 CHF | HTTP 200, 1625 ms, fin STOP |
+| 13 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 1A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2766 / 418 | 0.0023 CHF | HTTP 200, 1829 ms, fin STOP |
+| 14 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 3A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2767 / 422 | 0.0024 CHF | HTTP 200, 1614 ms, fin STOP |
+| 15 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 3B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2774 / 407 | 0.0023 CHF | HTTP 200, 1438 ms, fin STOP |
+| 16 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 4A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2804 / 411 | 0.0023 CHF | HTTP 200, 1428 ms, fin STOP |
+| 17 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 4A · plus floral · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2726 / 405 | 0.0023 CHF | HTTP 200, 1555 ms, fin STOP |
+| 18 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 5B · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2738 / 442 | 0.0024 CHF | HTTP 200, 1501 ms, fin STOP |
+| 19 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 5D · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2740 / 427 | 0.0024 CHF | HTTP 200, 1693 ms, fin STOP |
+| 20 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 7B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2790 / 406 | 0.0023 CHF | HTTP 200, 1565 ms, fin STOP |
+| 21 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 10A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2767 / 379 | 0.0022 CHF | HTTP 200, 1855 ms, fin STOP |
+| 22 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 24A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2817 / 418 | 0.0024 CHF | HTTP 200, 1560 ms, fin STOP |
+| 23 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 21A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2819 / 403 | 0.0023 CHF | HTTP 200, 1598 ms, fin STOP |
+| 24 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 21A · plus floral · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2820 / 385 | 0.0023 CHF | HTTP 200, 2117 ms, fin STOP |
+| 25 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 12C · plus floral · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2748 / 365 | 0.0022 CHF | HTTP 200, 1523 ms, fin STOP |
+| 26 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 18B · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2820 / 375 | 0.0022 CHF | HTTP 200, 1529 ms, fin STOP |
+| 27 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 11B · plus floral · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2754 / 430 | 0.0024 CHF | HTTP 200, 1617 ms, fin STOP |
+| 28 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 25B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2784 / 408 | 0.0023 CHF | HTTP 200, 1652 ms, fin STOP |
+| 29 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 26C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.5-flash-lite | 2784 / 395 | 0.0023 CHF | HTTP 200, 1754 ms, fin STOP |
+| 30 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · 25A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.5-flash-lite | 2793 / 432 | 0.0024 CHF | HTTP 200, 1487 ms, fin STOP |
+| 31 | 27.10 13:55 | #ia4 | ia4-banc.ts · suggerer-v2 · neipa v3 · plus d’agrumes · dry hop actif · 12 ex æquo (rapport final) | gemini-3.5-flash-lite | 2817 / 400 | 0.0023 CHF | HTTP 200, 1646 ms, fin STOP |
+
+## Essai à l’aveugle de l’IA de Suggérer sur les ex æquo du moteur (ia4 gemini-3.8-flash low) — enveloppe séparée
+
+- Accord de l'utilisateur (D130 (« J'autorise un budget de 10ch pour testé les deux ») : gemini-3.8-flash, réflexion low) : essai réel de la voie ia4 (invite `suggerer-v2`, 3 à 12 candidats par appel, les ex æquo du moteur). Enveloppe : **40 appels au plus, 4.5 CHF**. Arrêt au premier dépassement ou à la deuxième erreur de suite.
+- Chemin : `scripts/eval-hop/ia4-banc.ts` → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini (le module de l'invite est celui du callable). Données : fiches du catalogue et recettes de fixture, aucune donnée réelle. Clé jamais journalisée. Jamais dans `npm test`.
+
+**Compteur ia4 gemini-3.8-flash low : 31 / 40 · 0.2645 CHF / 4.5**
+
+| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |
+|---|---|---|---|---|---|---|---|
+| 1 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 15B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2849 / 422 | 0.0093 CHF | HTTP 200, 4755 ms, fin STOP |
+| 2 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 15B · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2788 / 295 | 0.0080 CHF | HTTP 200, 4110 ms, fin STOP |
+| 3 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 15C · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2772 / 316 | 0.0082 CHF | HTTP 200, 5212 ms, fin STOP |
+| 4 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 16A · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2767 / 398 | 0.0089 CHF | HTTP 200, 5091 ms, fin STOP |
+| 5 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 16B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2844 / 331 | 0.0084 CHF | HTTP 200, 3718 ms, fin STOP |
+| 6 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 16C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2865 / 340 | 0.0086 CHF | HTTP 200, 4752 ms, fin STOP |
+| 7 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 20B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2851 / 321 | 0.0084 CHF | HTTP 200, 4617 ms, fin STOP |
+| 8 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 20C · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2851 / 329 | 0.0084 CHF | HTTP 200, 4875 ms, fin STOP |
+| 9 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 20C · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2789 / 332 | 0.0083 CHF | HTTP 200, 4267 ms, fin STOP |
+| 10 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 20A · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2768 / 333 | 0.0083 CHF | HTTP 200, 4641 ms, fin STOP |
+| 11 | 27.10 14:56 | #ia4 | ia4-banc.ts · suggerer-v2 · 13C · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2753 / 336 | 0.0083 CHF | HTTP 200, 5119 ms, fin STOP |
+| 12 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 9C · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2754 / 307 | 0.0080 CHF | HTTP 200, 4001 ms, fin STOP |
+| 13 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 1A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2766 / 436 | 0.0093 CHF | HTTP 200, 4182 ms, fin STOP |
+| 14 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 3A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2767 / 358 | 0.0085 CHF | HTTP 200, 4262 ms, fin STOP |
+| 15 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 3B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2774 / 439 | 0.0093 CHF | HTTP 200, 4923 ms, fin STOP |
+| 16 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 4A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2804 / 425 | 0.0092 CHF | HTTP 200, 4726 ms, fin STOP |
+| 17 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 4A · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2726 / 324 | 0.0081 CHF | HTTP 200, 4659 ms, fin STOP |
+| 18 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 5B · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2738 / 331 | 0.0082 CHF | HTTP 200, 4560 ms, fin STOP |
+| 19 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 5D · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2740 / 321 | 0.0081 CHF | HTTP 200, 4094 ms, fin STOP |
+| 20 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 7B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2790 / 357 | 0.0086 CHF | HTTP 200, 4566 ms, fin STOP |
+| 21 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 10A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2767 / 339 | 0.0084 CHF | HTTP 200, 4848 ms, fin STOP |
+| 22 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 24A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2817 / 431 | 0.0093 CHF | HTTP 200, 5518 ms, fin STOP |
+| 23 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 21A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2819 / 350 | 0.0086 CHF | HTTP 200, 5175 ms, fin STOP |
+| 24 | 27.10 14:57 | #ia4 | ia4-banc.ts · suggerer-v2 · 21A · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2820 / 321 | 0.0083 CHF | HTTP 200, 4582 ms, fin STOP |
+| 25 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · 12C · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2748 / 327 | 0.0082 CHF | HTTP 200, 4595 ms, fin STOP |
+| 26 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · 18B · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2820 / 324 | 0.0083 CHF | HTTP 200, 3351 ms, fin STOP |
+| 27 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · 11B · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2754 / 324 | 0.0082 CHF | HTTP 200, 4883 ms, fin STOP |
+| 28 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · 25B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2784 / 341 | 0.0084 CHF | HTTP 200, 4155 ms, fin STOP |
+| 29 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · 26C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2784 / 435 | 0.0093 CHF | HTTP 200, 5174 ms, fin STOP |
+| 30 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · 25A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2793 / 361 | 0.0086 CHF | HTTP 200, 5597 ms, fin STOP |
+| 31 | 27.10 14:58 | #ia4 | ia4-banc.ts · suggerer-v2 · neipa v3 · plus d’agrumes · dry hop actif · 12 ex æquo (rapport final) | gemini-3.8-flash | 2817 / 344 | 0.0085 CHF | HTTP 200, 3611 ms, fin STOP |
+
+## Essai à l’aveugle de l’IA de Suggérer sur les ex æquo du moteur (ia4 gemini-3.8-flash high) — enveloppe séparée
+
+- Accord de l'utilisateur (D130 (« J'autorise un budget de 10ch pour testé les deux ») : gemini-3.8-flash, réflexion high) : essai réel de la voie ia4 (invite `suggerer-v2`, 3 à 12 candidats par appel, les ex æquo du moteur). Enveloppe : **40 appels au plus, 4.5 CHF**. Arrêt au premier dépassement ou à la deuxième erreur de suite.
+- Chemin : `scripts/eval-hop/ia4-banc.ts` → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini (le module de l'invite est celui du callable). Données : fiches du catalogue et recettes de fixture, aucune donnée réelle. Clé jamais journalisée. Jamais dans `npm test`.
+
+**Compteur ia4 gemini-3.8-flash high : 31 / 40 · 3.4674 CHF / 4.5**
+
+| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |
+|---|---|---|---|---|---|---|---|
+| 1 | 27.10 15:00 | #ia4 | ia4-banc.ts · suggerer-v2 · 15B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2849 / 11950 | 0.1174 CHF | HTTP 200, 91676 ms, fin STOP |
+| 2 | 27.10 15:01 | #ia4 | ia4-banc.ts · suggerer-v2 · 15B · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2788 / 11936 | 0.1171 CHF | HTTP 200, 90341 ms, fin STOP |
+| 3 | 27.10 15:03 | #ia4 | ia4-banc.ts · suggerer-v2 · 15C · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2772 / 11831 | 0.1161 CHF | HTTP 200, 96618 ms, fin STOP |
+| 4 | 27.10 15:05 | #ia4 | ia4-banc.ts · suggerer-v2 · 16A · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2767 / 11843 | 0.1162 CHF | HTTP 200, 95726 ms, fin STOP |
+| 5 | 27.10 15:06 | #ia4 | ia4-banc.ts · suggerer-v2 · 16B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2844 / 11876 | 0.1167 CHF | HTTP 200, 89945 ms, fin STOP |
+| 6 | 27.10 15:08 | #ia4 | ia4-banc.ts · suggerer-v2 · 16C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2865 / 11967 | 0.1176 CHF | HTTP 200, 73503 ms, fin STOP |
+| 7 | 27.10 15:09 | #ia4 | ia4-banc.ts · suggerer-v2 · 20B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2851 / 11944 | 0.1173 CHF | HTTP 200, 80633 ms, fin STOP |
+| 8 | 27.10 15:10 | #ia4 | ia4-banc.ts · suggerer-v2 · 20C · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2851 / 11851 | 0.1164 CHF | HTTP 200, 93645 ms, fin STOP |
+| 9 | 27.10 15:12 | #ia4 | ia4-banc.ts · suggerer-v2 · 20C · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2789 / 9867 | 0.0977 CHF | HTTP 200, 73979 ms, fin STOP |
+| 10 | 27.10 15:13 | #ia4 | ia4-banc.ts · suggerer-v2 · 20A · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2768 / 11940 | 0.1171 CHF | HTTP 200, 93642 ms, fin STOP |
+| 11 | 27.10 15:15 | #ia4 | ia4-banc.ts · suggerer-v2 · 13C · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2753 / 11956 | 0.1172 CHF | HTTP 200, 93260 ms, fin STOP |
+| 12 | 27.10 15:16 | #ia4 | ia4-banc.ts · suggerer-v2 · 9C · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2754 / 11946 | 0.1172 CHF | HTTP 200, 92379 ms, fin STOP |
+| 13 | 27.10 15:18 | #ia4 | ia4-banc.ts · suggerer-v2 · 1A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2766 / 11959 | 0.1173 CHF | HTTP 200, 87845 ms, fin STOP |
+| 14 | 27.10 15:19 | #ia4 | ia4-banc.ts · suggerer-v2 · 3A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2767 / 11805 | 0.1159 CHF | HTTP 200, 80075 ms, fin STOP |
+| 15 | 27.10 15:20 | #ia4 | ia4-banc.ts · suggerer-v2 · 3B · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2774 / 11857 | 0.1164 CHF | HTTP 200, 91671 ms, fin STOP |
+| 16 | 27.10 15:22 | #ia4 | ia4-banc.ts · suggerer-v2 · 4A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2804 / 11985 | 0.1176 CHF | HTTP 200, 93356 ms, fin MAX_TOKENS |
+| 17 | 27.10 15:24 | #ia4 | ia4-banc.ts · suggerer-v2 · 4A · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2726 / 11822 | 0.1159 CHF | HTTP 200, 92620 ms, fin STOP |
+| 18 | 27.10 15:25 | #ia4 | ia4-banc.ts · suggerer-v2 · 5B · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2738 / 11916 | 0.1168 CHF | HTTP 200, 91445 ms, fin STOP |
+| 19 | 27.10 15:27 | #ia4 | ia4-banc.ts · suggerer-v2 · 5D · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2740 / 11872 | 0.1164 CHF | HTTP 200, 94052 ms, fin STOP |
+| 20 | 27.10 15:28 | #ia4 | ia4-banc.ts · suggerer-v2 · 7B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2790 / 11979 | 0.1175 CHF | HTTP 200, 86711 ms, fin MAX_TOKENS |
+| 21 | 27.10 15:30 | #ia4 | ia4-banc.ts · suggerer-v2 · 10A · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2767 / 11974 | 0.1174 CHF | HTTP 200, 85906 ms, fin STOP |
+| 22 | 27.10 15:31 | #ia4 | ia4-banc.ts · suggerer-v2 · 24A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2817 / 11950 | 0.1173 CHF | HTTP 200, 92807 ms, fin STOP |
+| 23 | 27.10 15:33 | #ia4 | ia4-banc.ts · suggerer-v2 · 21A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2819 / 11974 | 0.1175 CHF | HTTP 200, 88301 ms, fin STOP |
+| 24 | 27.10 15:34 | #ia4 | ia4-banc.ts · suggerer-v2 · 21A · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2820 / 11843 | 0.1163 CHF | HTTP 200, 86721 ms, fin STOP |
+| 25 | 27.10 15:35 | #ia4 | ia4-banc.ts · suggerer-v2 · 12C · plus floral · 10′ · 12 ex æquo | gemini-3.8-flash | 2748 / 11837 | 0.1161 CHF | HTTP 200, 90277 ms, fin STOP |
+| 26 | 27.10 15:37 | #ia4 | ia4-banc.ts · suggerer-v2 · 18B · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2820 / 8456 | 0.0846 CHF | HTTP 200, 67407 ms, fin STOP |
+| 27 | 27.10 15:38 | #ia4 | ia4-banc.ts · suggerer-v2 · 11B · plus floral · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2754 / 11842 | 0.1162 CHF | HTTP 200, 87549 ms, fin STOP |
+| 28 | 27.10 15:40 | #ia4 | ia4-banc.ts · suggerer-v2 · 25B · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2784 / 7352 | 0.0741 CHF | HTTP 200, 53667 ms, fin STOP |
+| 29 | 27.10 15:40 | #ia4 | ia4-banc.ts · suggerer-v2 · 26C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2784 / 11421 | 0.1123 CHF | HTTP 200, 84725 ms, fin STOP |
+| 30 | 27.10 15:42 | #ia4 | ia4-banc.ts · suggerer-v2 · 25A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2793 / 5866 | 0.0602 CHF | HTTP 200, 46152 ms, fin STOP |
+| 31 | 27.10 15:43 | #ia4 | ia4-banc.ts · suggerer-v2 · neipa v3 · plus d’agrumes · dry hop actif · 12 ex æquo (rapport final) | gemini-3.8-flash | 2817 / 11966 | 0.1175 CHF | HTTP 200, 70367 ms, fin STOP |
+
+## Petit essai réel du callable hopReclasserIA, mode suggérer, Gemini 3.8 Flash à la demande, sur l'émulateur (ia5) — enveloppe D130
+
+- Accord de l'utilisateur (D130, il restait 6,27 CHF) : petit essai réel de la voie ia5, l'IA de Suggérer à la demande (gemini-3.8-flash, réflexion basse, invite `suggerer-v2`, 3 à 12 candidats par appel). Enveloppe : **3 appels au plus, 0.3 CHF estimés**. Arrêt au premier dépassement ou à la première erreur répétée.
+- Chemin : app (?dev-local) → toucher sur la puce → callable `hopReclasserIA` (émulateur des fonctions) → fournisseur local → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini. Données : fiches du catalogue et recettes d'essai, aucune donnée réelle du brasseur. Clé jamais journalisée. Jamais dans `npm test`.
+- Lanceur : `scripts/eval-hop/ia3-emulateur.ts` (mis à jour par ia5).
+
+**Compteur ia5 : 2 / 3 · 0.0165 CHF / 0.3**
+
+| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |
+|---|---|---|---|---|---|---|---|
+| 1 | 27.10 16:01 | #ia5 | ia3-emulateur.ts · ia5 · toucher → callable → fournisseur local → Gemini · suggerer-v2 · neipa v3 · agrumes · dry hop actif | gemini-3.8-flash | 2789 / 319 | 0.0082 CHF | HTTP 200, 4382 ms, demandé gemini-3.8-flash, réflexion low, fin STOP |
+| 2 | 27.10 16:01 | #ia5 | ia3-emulateur.ts · ia5 · toucher → callable → fournisseur local → Gemini · suggerer-v2 · neipa v3 · tropicaux · dry hop actif | gemini-3.8-flash | 2819 / 326 | 0.0083 CHF | HTTP 200, 5111 ms, demandé gemini-3.8-flash, réflexion low, fin STOP |

@@ -1,0 +1,78 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-ia5", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-ia5-emu-XJxmDw\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8737
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-ia5/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : neipa v3 {"style":"22A","ma_biere":"Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"}
+· connexion émulée (Auth) {"uid":"DuMuzW…"}
+· repos : le moteur, la puce « classer par l’IA », aucun appel {"rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"puce":"classer par l’IA","boite":{"x":207.2,"y":302.2,"w":164,"h":28},"appelsPendantLeRepos":0}
+· capture 1-repos-liste-du-moteur.png {}
+· attente : la puce garde sa place {"texte":"l’IA classe…","boite":{"x":207.2,"y":302.2,"w":164,"h":28},"positions":{"titre":279,"premiereRangee":354,"groupeBas":694,"levure":694,"hauteurGroupe":423,"page":844}}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+· capture 2-attente.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 4.547ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.8-flash","elapsedMs":4731,"email":"brasseur@demo-ia5.test","candidats":12,"phrasesRetirees":0,"phrasesHorsFiche":0,"phrasesReputation":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 4740.7086ms
+· réponse de l’IA {"msJusquALaPuce":6102,"depuisLeToucherMs":6565,"rangees":["Galaxy","◇lui seul : groseille à maquereau, cassis","Calypso","Cashmere","◇lui seul : thym, bonbon","Columbus","◇lui seul : piquant, curry"],"decalagePuceMax":0,"decalagePx":{"titre":0,"premiereRangee":0,"levure":-16,"hauteurGroupe":-16}}
+· capture 3-ordre-ia-applique.png {}
+· capture 4-phrase-au-toucher.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Ses mots citent agrumes, avec une huile abondante et un myrcène élevé pour le dry hop.","taillePxPhrase":14,"taillePxPuce":14}
+· capture 5-retour-ordre-du-moteur.png {}
+· puce touchée : l’ordre du moteur rendu {"identique":true,"puce":"prete","texte":"appliquer l’ordre IA"}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"8220","updatedAt":"1793113279192"}}]}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 5.7225ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.8-flash","elapsedMs":5192,"email":"brasseur@demo-ia5.test","candidats":12,"phrasesRetirees":0,"phrasesHorsFiche":0,"phrasesReputation":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 5195.8938ms
+· capture 8-neipa-tropicaux.png {}
+· réel : neipa v3 tropicaux {"msJusquALaPuce":5256,"puce":"appliquee","rangees":["Galaxy","◇lui seul : groseille à maquereau, cassis","IA Mots explicites de fruits tropicaux, fruit de la passion et ananas avec une huile totale très élevée.","Zappa","◇lui seul : cuir, cognac","Topaz","◇lui seul : tabac"]}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : 21C Hazy du jeudi {"style":"21C","ma_biere":"Ébullition60′60′Nuggetébullition20 gα 9,5–16 %doubleherbe 6/"}
+Error [TypeError]: Cannot read properties of null (reading 'click')
+    at evaluate (evaluate at toucherPuce (C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:397:44), <anonymous>:0:109)
+    at ExecutionContext.#evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:419:15)
+    at ExecutionContext.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:310:12)
+    at IsolatedWorld.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/IsolatedWorld.ts:206:12)
+    at CdpFrame.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/api/Frame.ts:512:12)
+    at CdpPage.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/api/Page.ts:2481:12)
+    at interne (C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:399:9)
+    at C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:428:36
+    at ViteNodeRunner.runModule (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/vite-node/dist/client.mjs:375:3)
+requêtes reçues par le fournisseur : 2
+erreurs de page : banc: TypeError: Cannot read properties of null (reading 'click')
+    at evaluate (evaluate at toucherPuce (C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:397:44), <anonymous>:0:109)
+    at ExecutionContext.#evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:419:15)
+    at ExecutionContext.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:310:12)
+    at IsolatedWorld.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppe
+[33m[1m! [22m[39m Script exited unsuccessfully (code 1)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+
+[1m[31mError:[39m[22m Script "[1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m" exited with code 1

@@ -336,7 +336,9 @@ export function leviersLevure(recette: RecetteParcours, direction: Record<string
 
 /** Voie ia3 : le POOL de l'IA dans Suggérer pour un moment : les `taille` premiers ajouts d'UN houblon du moteur (rang du moteur : stock,
  * puis ordre de qualité, départage g2a), SANS la coupe d'affichage (`limit`, `buyLimit`, `perHop` relevés) ; ni assemblage, ni remplacement.
- * C'est la liste que l'IA reclasse ; l'écran n'en montre que les premiers dans l'ordre de l'IA. Un calcul lourd (un moment seulement) :
+ * Voie ia4 : ce n'est plus la liste envoyée à l'IA mais le BALAYAGE où l'on cherche les ex æquo du groupe « même effet » (`poolExAequo`, suggerer/ia.ts) ;
+ * `taille` = 30 couvre plus de deux fois les 12 candidats que l'IA reçoit au plus ; un ex æquo plus bas que le 30e du moteur n'est pas vu (jamais l'inverse :
+ * un houblon d'un autre effet n'entre pas). Un calcul lourd (un moment seulement) :
  * appelé au repos, jamais au premier affichage. Mémoïsé par recette, visée et moment. Rend [] si le moteur ne propose rien. */
 const POOLS = new Map<string, Voie[]>();
 siDonneesChangent(() => POOLS.clear());
