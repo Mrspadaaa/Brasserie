@@ -1065,3 +1065,4 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - ETATS 138/138 ;
   - B5 à 147,3 ko ;
   - ouverture d'un outil, médiane à chaud 467 → 453 ms.
+- D123 (pilote, 27.10) : le correctif d'affichage de Suggérer est déployé (005b11f8) et la PR #191 est fusionnée (a0fd0245).

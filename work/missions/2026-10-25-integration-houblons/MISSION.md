@@ -422,3 +422,4 @@ documentaires d'après.
   - D172, D178, D182, D185, #182, #187 ;
   - la voie de profil D101 (B1 921 ko, B2 773 ko).
   Quota hebdomadaire : 96 %.
+- 27.10, 11 h : correctif d'affichage de Suggérer (« 48 g » coupé, pastille qui déborde ; mesurés avant et après à 390 px, ETATS 138/138), **déployé** (005b11f8, 251 fichiers, index-C39namzC.js) et **PR #191 fusionnée** (a0fd0245). Restent ouverts : le n° 1 affiché 4e avec A3 (option éteinte) et les 4 rangées de Suggérer.
