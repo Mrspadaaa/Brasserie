@@ -1026,3 +1026,6 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - **Reste ouvert** : les 6 budgets de fluidité déjà dépassés, et des tâches de 100 à 250 ms après la préchauffe (D101).
 - D117 (26.10) : la PR #189 est fusionnée dans main. Sa tête était verrouillée sur 0d943dfd, qui contient be15e480, déjà en ligne et
   rejoué.
+- D118 (pilote, 27.10, voie f8) : la clé k3 (radar Beer Maverick de la famille, avec k1 en repli) devient le départage par défaut de
+  Suggérer. Il prend lui-même ce radar comme référence (Idaho 7). Une forme produit reprend les mots, les familles et les fiches de sa
+  variété (D190). Contrôle D191 : ses 6 houblons de Double IPA.

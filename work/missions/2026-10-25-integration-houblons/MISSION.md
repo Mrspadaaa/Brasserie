@@ -374,3 +374,25 @@ PR #188 fusionnée (71dc41bb). Callable IA (D92).
   3. `controle-radar-base` ne trouve plus 9 pages, sans doute depuis p7.
 - Après e7 : un rejeu ciblé (monkey, `hopIndexV4`, build, `construire`, états, radar-base), puis le déploiement depuis la copie
   propre, le push et la PR.
+
+## Reprise (27.10, vers 7 h 10) : ÉTAT COURANT (remplace les précédentes)
+Quota hebdomadaire : 94 % (remis à zéro le 31.10 vers 3 h). Règle : plus d'agent dès 98 %, arrêt à 99 %. Contexte du pilote à 94 % :
+la compaction est imminente.
+
+**En ligne :** **be15e480** (D116). PR #189 fusionnée (97cbbf95). La branche est poussée jusqu'à f9dac656, plus les commits
+documentaires d'après.
+
+**En vol :** **f8** (D118) : k3 par défaut, formes qui reprennent leur variété, contrôle D191 sur ses 6 houblons de Double IPA.
+
+**Ses retours du 27.10, à traiter, dans l'ordre :**
+1. f8 (D190, D191), puis rejeu, déploiement et PR.
+2. **D187, radar de Comparer en Absolu** : montrer la plage type du style, normalisée aux extrêmes. Aujourd'hui illisible, tout est
+   au centre. Voie d'interface, puis critique.
+3. **D188, Suggérer** :
+   - l'IA, accordée en D100 (budget 0,5 CHF), est à faire : essai, puis production ;
+   - un bouton pour ajouter directement le houblon à la recette, à montrer en mini maquettes sur q2b.
+4. **D189, « le radargraph au style ne change pas de taille »** : je lui ai demandé ce qu'il veut dire.
+5. **Les choix qui attendent sa page** : les listes k1 et k3 (D91, peut-être réglé par D118), m7, P4 et P5 de « Ajouter », B2 et le
+   sélecteur de forme.
+6. **Les accords D100** : test à l'aveugle, IA de Suggérer, écriture Firestore, test dans son Chrome.
+7. D172, D178, D182, D185, #182, #187, et la voie de profil D101.
