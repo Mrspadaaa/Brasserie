@@ -92,8 +92,11 @@ export function objectifsDe(recette: RecetteParcours, biere: BiereLue, visee: Vi
       return [{ f, sens: k, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: avant == null ? null : Math.max(0, avant + k * cran), palier: null, bannie: false }];
     }
     const cible = enPoints(v), d = cible - (avant ?? 0);
-    if (Math.abs(d) < 0.05) return [];
-    const sens = (d > 0 ? 1 : -1) as 1 | -1;
+    // Bannir (visée 0) reste un objectif « faire baisser » même quand ma bière est déjà à 0 : sinon l'écart est nul, l'objectif
+    // disparaît et le bannissement ne change rien (27.10 : « SI je fais tropicale, puis ensuite je banis résine. Rien ne se passe »).
+    // Un cran vers le bas : le moteur range alors derrière les voies qui la font monter.
+    if (Math.abs(d) < 0.05 && v !== 0) return [];
+    const sens = (v === 0 || d < 0 ? -1 : 1) as 1 | -1;
     const k = sens * Math.max(1, Math.round(Math.abs(d) / cran));
     return [{ f, sens, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: cible, palier: v, bannie: v === 0 }];
   }).sort((a, b) => b.requis / b.cran - a.requis / a.cran);
@@ -236,6 +239,11 @@ export function verdict(o: Objectif, groupes: Groupe[]): { mot: 'Atteint' | 'App
   // Comme q2b (generateur-q2b.mjs, meilleure) : la meilleure voie établie qui ne sort pas du style.
   const ls = groupes.flatMap((g) => g.lignes).filter((l) => l.effets[o.f] != null && !l.hors.length);
   if (!ls.length) return { mot: 'Aucune', meilleure: null, effet: null };
+  // Bannie et déjà à 0 : rien ne la fait baisser ; l'objectif est tenu si la meilleure voie ne la fait pas monter (un quart de cran au plus).
+  if (o.bannie && (o.avant ?? 0) < 0.05) {
+    const b = ls.reduce((x, l) => (l.effets[o.f]! < x.effets[o.f]! ? l : x)), eb = b.effets[o.f]!, tenu = eb <= 0.25 * o.cran;
+    return { mot: tenu ? 'Atteint' : 'Aucune', meilleure: tenu ? b : null, effet: eb };
+  }
   const m = ls.reduce((b, l) => (o.sens * l.effets[o.f]! > o.sens * b.effets[o.f]! ? l : b));
   const e = m.effets[o.f]!, k = (o.sens * e) / Math.abs(o.requis);
   return { mot: k >= 1 ? 'Atteint' : k >= 0.5 ? 'Approche' : 'Aucune', meilleure: k > 0 ? m : null, effet: e };
