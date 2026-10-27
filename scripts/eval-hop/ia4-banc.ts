@@ -182,7 +182,7 @@ async function appeler(reel: ReturnType<typeof guardLiveFetch>, cleApi: string, 
   const corps = corpsRequeteSuggerer(message) as { generationConfig: { maxOutputTokens: number; thinkingConfig: { thinkingLevel: string } } };
   corps.generationConfig.thinkingConfig.thinkingLevel = REFLEXION;
   // La réflexion haute compte ses jetons dans la sortie : sans marge, la réponse s'arrête en MAX_TOKENS.
-  if (REFLEXION === 'high') corps.generationConfig.maxOutputTokens = 32_000;
+  if (REFLEXION === 'high') corps.generationConfig.maxOutputTokens = 12_000; // le plafond vérifiable du devis (geminiCosts.ts)
   const ids = cles.map((_, i) => identifiant(i)), body = JSON.stringify(corps);
   const t0 = Date.now();
   const r = await reel.fetch(liveEndpoint(MODELE), { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cleApi }, body, signal: AbortSignal.timeout(REFLEXION === 'high' ? 120_000 : 30_000) });
