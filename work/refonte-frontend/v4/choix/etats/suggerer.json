@@ -111,10 +111,10 @@
      "Appliquer à la recette",
      "Montrer sur le radar",
      "Plus tôt",
-     "Voir les 11 autres voies"
+     "Voir les 18 autres voies"
     ],
     "interdit": [],
-    "note": "le bouton Radar de q2b est statique : le mode Radar (« ‹ 10′ ›, Appliquer, case radar) se mesure sur la page suggestions-radar.html de la base v4.10, qu'il a validée (m4, h4)"
+    "note": "le bouton Radar de q2b est statique : le mode Radar (« ‹ 10′ ›, Appliquer, case radar) se mesure sur la page suggestions-radar.html de la base v4.10, qu'il a validée (m4, h4). D195 (27.10) : « 11 » devient « 18 » autres voies, un compte qui ne dépend que des données : la liste de S1 garde ses remplacements qui font baisser le résineux (14 → 21 voies de la liste, 17 → 21 dans le pack)"
    }
   },
   {

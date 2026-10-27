@@ -86,7 +86,7 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
     // Une voie du stock qui sort du style ne passe pas devant une voie à acheter qui y reste (à conflits égaux).
     for (let i = 0; i < wide.voies.length; i++) for (let j = i + 1; j < wide.voies.length; j++) {
       const [p, q] = [wide.voies[i], wide.voies[j]];
-      if (p.conflicts.length === q.conflicts.length && p.domain === 'stock' && q.domain === 'à acheter') expect(p.overflowTotal).toBeLessThanOrEqual(q.overflowTotal);
+      if (p.conflicts.length === q.conflicts.length && p.domain === 'stock' && q.domain === 'à acheter') expect(p.overflowRang ?? p.overflowTotal).toBeLessThanOrEqual(q.overflowRang ?? q.overflowTotal); // D195 (s3) : le rang ne compte ni la famille demandée (voulu) ni un excès minuscule
     }
   });
 

@@ -1,0 +1,42 @@
+Serveur 1/1 : npm run dev -- --port 5611 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-qG9hB2\serveur-1-5611.log)
+Attente du port 5611…
+Serveur prêt sur le port 5611
+
+Tous les serveurs sont prêts. Lancement : node C:/Users/mrspa/AppData/Local/Temp/claude/C--Users-mrspa--codex-worktrees-openai-clean-start-Brasserie/16fc09ec-4e69-48a9-9744-5912b6ef6552/scratchpad/saturation.mjs
+
+{
+ "cartes": [
+  "Plus agrumesAucunevoie houblon"
+ ],
+ "groupes": [
+  {
+   "titre": "même effet sur tes objectifs48 gdry hop en ferment",
+   "lignes": [
+    {
+     "nom": "East Kent Goldings",
+     "hors": true,
+     "texte": "amerEast Kent Goldings 5,3%◇lui seul : pain d'épices, aspérule◇"
+    },
+    {
+     "nom": "Golding",
+     "hors": true,
+     "texte": "arômeGolding 5%◇lui seul : cardamome, pois de senteur◇"
+    },
+    {
+     "nom": "Spalter Select",
+     "hors": true,
+     "texte": "arômeSpalter Select 4,8%◇lui seul : concombre, livèche◇"
+    },
+    {
+     "nom": "Mount Hood",
+     "hors": true,
+     "texte": "arômeMount Hood 6%◇lui seul : estragon, genièvre◇"
+    }
+   ]
+  }
+ ]
+}
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

@@ -82,7 +82,8 @@ describe('Suggérer et l’IA à la demande : ce que la liste fait', () => {
     expect(d.mode).toBe('suggerer'); expect(d.style.code).toBe('22A'); expect(d.candidats.length).toBeGreaterThanOrEqual(3); expect(d.candidats.length).toBeLessThanOrEqual(12);
     // le pool commence par les rangées montrées du groupe « même effet » (dans l'ordre du moteur) : les ex æquo, pas les 30 premiers du moteur
     expect(d.candidats.slice(0, montrees.length).map((x) => x.id)).toEqual(montrees);
-    expect(d.demande.moment).toEqual({ type: 'dryhop', phase: 'actif' });
+    // D195 (s3) : la bière saturée en agrumes (Lotus 78 g à 20′, 144 g au dry hop) n'est plus freinée par « plus d'agrumes » (la demande prime sur la bande) : le groupe de tête est le whirlpool, plus le dry hop.
+    expect(d.demande.moment).toEqual({ type: 'whirlpool' });
     expect(d.demande.objectifs).toEqual([{ famille: 'agrumes', sens: 1, crans: expect.any(Number) }]);
     expect(d.recette.houblons).toContainEqual({ nom: 'Lotus', grammes: 144, moment: expect.stringContaining('dry hop') });
     expect(d.recette.houblons).toContainEqual({ nom: 'Lotus', grammes: 78, moment: '20′' });
@@ -151,7 +152,7 @@ describe('Suggérer et l’IA à la demande : ce que la liste fait', () => {
     await attendre(() => etat.repondre(ordreIA(etat.demandes[0])));
     await waitFor(() => expect(etatPuce(c)).toBe('appliquee'));
     const titre = c.querySelector(`${GROUPE} h3`)!.textContent!;
-    expect(titre).toMatch(/dry hop en fermentation active/);
+    expect(titre).toMatch(/whirlpool/); // D195 (s3) : le groupe de tête de la bière saturée est le whirlpool
     expect(doseAvant).toMatch(/48 g/);
     // chaque rangée : sa dose (celle du moteur) soit dans l'en-tête (même effet), soit sur la ligne (« 48 g ») ; jamais un nombre venu de l'IA
     const lignes = [...c.querySelectorAll(`${GROUPE} [data-role="ligne-houblon"]`)];

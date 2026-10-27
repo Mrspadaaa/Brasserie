@@ -256,6 +256,7 @@ describe('Substitution dans le pack', () => {
     expect(ekg).toMatchObject({ contexte: 'défaut', reference: { scenario: null, moment: 'b60', grams: 1 } });
     expect(ekg.remplacants[0].name).toBe('Golding');
     // D85, 26.10 : plafond relevé à 560 ko ; descripteurs de 12 sources (d4) ; prototype seulement, l'app n'est pas concernée.
-    expect(fs.statSync(packFile).size).toBeLessThan(560 * 1024);
+    // D195, 27.10 : plafond relevé à 600 ko (voir pack.test.ts) ; prototype seulement.
+    expect(fs.statSync(packFile).size).toBeLessThan(600 * 1024);
   });
 });

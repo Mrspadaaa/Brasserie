@@ -74,7 +74,10 @@ export interface Objectif {
 
 const fam = <T>(fams: readonly FamilyId[], fn: (f: FamilyId) => T) => Object.fromEntries(fams.map((f) => [f, fn(f)])) as Record<FamilyId, T>;
 // a4 (D125) : une famille que le style ne cite pas (neutre) n'est pas « hors du style » ; la carte et le rang lisent le même statut.
-const horsDuStyle = (v: Voie): FamilyId[] => [...new Set(v.styleOverflow.filter((o) => o.status !== 'neutre').map((o) => o.family))];
+// s3 (D195) : ni une famille que le brasseur demande (il la monte, la baisse, la bannit : la demande prime sur la bande), ni un excès sous un quart de cran (un cran est le pas du style) ; `estHorsDuStyle` en décide.
+/** `StyleOverflow` du moteur (voies.ts), lu sans l'importer : l'écran principal ne charge pas le moteur (B5). */
+export const estHorsDuStyle = (o: { status: string; voulu?: true; minuscule?: true }): boolean => o.status !== 'neutre' && !o.voulu && !o.minuscule;
+const horsDuStyle = (v: Voie): FamilyId[] => [...new Set(v.styleOverflow.filter(estHorsDuStyle).map((o) => o.family))];
 
 export type { Visee } from '../parcours/visee';
 /** Objectifs de la visée commune (onglet Ma bière, D108), en crans du style, visées « plus » d'abord. Comme la base, la

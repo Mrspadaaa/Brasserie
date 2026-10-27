@@ -13,7 +13,8 @@ const CLE = (id: string) => `beermaverick-${id}`;
 const moteur0 = creerMoteur({ catalogue: CATALOGUE, stock: [] });
 // D125 (a4) : f8 a mesuré D191 quand le dépassement d'une famille neutre (la poire d'El Dorado en 22A) comptait dans le rang ; ses « avant » et « après » se rejouent avec `debordementNeutre: true`.
 // La règle neutre a ses propres tests (a4Biais.test.ts).
-const m = { ...moteur0, proposeVoies: (r: Recipe, d: Record<string, number>, o: object = {}) => moteur0.proposeVoies(r, d, { debordementNeutre: true, ...o }) };
+const m = { ...moteur0, proposeVoies: (r: Recipe, d: Record<string, number>, o: object = {}) => moteur0.proposeVoies(r, d, { debordementNeutre: true, saturation: false, ...o }) };
+// D195 (s3) : ce fichier éprouve des clés mesurées avant la règle « la demande prime sur la bande » ; il rejoue `saturation: false` (l'ordre d'avant). La règle a ses tests (saturationD195.test.ts).
 const R22A: Recipe = { name: '22A Double IPA', styleCode: '22A', volumeL: 24, og: 1.081, boilMin: 60, yeastId: 'lalbrew-verdant-ipa', ebc: 10, additions: [
   { id: 'a1', hopKey: CLE('columbus'), moment: 'b60', grams: 40 }, { id: 'a2', hopKey: CLE('columbus'), moment: 'b10', grams: 40 }, { id: 'a3', hopKey: CLE('lotus'), moment: 'dryActive', grams: 100 }] };
 /** Les groupes du vrai dry hop (g2b) de « plus <famille> », pool entier, rang d'un houblon dans le groupe actif (0 : absent). */

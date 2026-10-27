@@ -43,7 +43,8 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // `overflowRang` si le moment le veut) ; (2) la présélection du pool met la typicité du style avant la documentation ; (3) une typicité inconnue mais bornée par Beer Analytics (p16) prend la place 1,5 dans la clé,
 // entre courant et rare, et un houblon dont la borne est sous 1 % est « rare » connu. S1 (plus floral, moins résineux) : les 4 achats passent de East Kent Goldings, First Gold, Pekko, Barbe Rouge à East Kent Goldings,
 // First Gold, Strisselspalt, Liberty (Pekko et Barbe Rouge sont des rares connus en stout ; Strisselspalt et Liberty, bornés, passent devant). Les trois autres empreintes ne bougent pas.
-const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: 'd6e084ff0c95', remplacants: '5c602de7c804' };
+// D195 (s3, 27.10) : proposer d6e084ff0c95 → 89b74f788939. La demande prime sur la bande (chaque dépassement porte `voulu` et `minuscule`, le rang ne les compte plus) et les remplacements qui font baisser une famille à baisser gardent leur place (REMPLACEMENTS_RESERVES) : voir saturationD195.test.ts.
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '89b74f788939', remplacants: '5c602de7c804' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

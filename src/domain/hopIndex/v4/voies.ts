@@ -33,6 +33,12 @@ export const TYPICITE_DEFAUT = true;
 /** a4 (D125), biais 1 : une famille NEUTRE du style (il n'en dit rien : ni attendue, ni rejetée ; sa bande 0–30 est une hypothèse [H] sans citation, `from: []`) ne punit plus comme une famille hors du style.
  * Son dépassement reste dit (`styleOverflow`) et reste compté, plus loin dans le rang, par les effets de bord (`sideTotal`). `true` : l'ordre d'avant. */
 export const DEBORDEMENT_NEUTRE_DEFAUT = false;
+/** s3 (D195) : `true` : la demande prime sur la bande (famille de la direction : pas de débordement au rang) et un excès sous `SATURATION_MINUSCULE` cran n'en est pas un. `saturation: false` : l'ordre d'avant (ae7c7a8d). */
+export const SATURATION_DEFAUT = true;
+/** Un cran est le pas du style (la largeur d'un palier de sa bande) : sous un quart de cran ajouté, on ne dit pas « hors du style ». */
+export const SATURATION_MINUSCULE = 0.25;
+/** s3 (D195) : par domaine (stock, à acheter), les remplacements qui font baisser une famille à baisser, gardés en plus des places de `limit` et `buyLimit`. */
+export const REMPLACEMENTS_RESERVES = 4;
 /** a4 (D125), biais 2 : la présélection du pool « à acheter » (la borne de coût `POOL_BORNE`) met d'abord la typicité du style, le terme que le rang lit à distance égale (departage.ts : un houblon typé ou courant
  * avant un inconnu, avant un rare), puis seulement la documentation des fiches, qui écartait Calypso (courant en 22A, peu documenté) avant tout classement. Sans table de typicité, tous sont égaux
  * et l'ordre est celui d'avant. `'documentation'` : l'ordre d'avant, toujours. */
@@ -111,7 +117,13 @@ export interface Voie {
   /** g2b : points à relire (dry hop cumulé au-dessus du repère de revue) ; jamais une exclusion. */
   drapeaux?: string[];
 }
-export interface StyleOverflow { family: FamilyId; status: string; band: [number, number]; crans: number; why: string }
+export interface StyleOverflow {
+  family: FamilyId; status: string; band: [number, number]; crans: number; why: string;
+  /** s3 (D195) : la famille est dans la direction du brasseur (il la monte, la baisse ou la bannit) : sortir de la bande est sa demande, pas un défaut de la voie. Dit, mais ni compté au rang ni « hors du style » à l'écran. */
+  voulu?: true;
+  /** s3 (D195) : moins d'un quart de cran ajouté (`SATURATION_MINUSCULE`) : un cran est le pas du style, un quart de pas n'est pas « hors du style ». */
+  minuscule?: true;
+}
 export interface VoieResult {
   recipe: Recipe; style: StyleScale; yeast: YeastInfo; matrix: MatrixContext;
   before: RecipeProfile; ibu: number; direction: DirectedTarget[];
@@ -138,6 +150,8 @@ export interface VoieOptions {
   typicite?: boolean;
   /** a4 (D125) : le dépassement d'une famille neutre du style compte dans le rang comme celui d'une famille hors du style (`true`) ou seulement par les effets de bord (`false`). Défaut : `DEBORDEMENT_NEUTRE_DEFAUT`. */
   debordementNeutre?: boolean;
+  /** s3 (D195) : la demande prime sur la bande, et un excès minuscule n'est pas hors du style. Défaut : `SATURATION_DEFAUT`. */
+  saturation?: boolean;
   /** a4 (D125) : l'ordre de la présélection du pool (voir `SELECTION_DEFAUT`). */
   selection?: SelectionPool;
   /** Apport minoritaire (g2d, D99) : ABSENT (défaut) = 'c' sur les voies au dry hop actif ou après seulement (le débordement d'une famille non marquée ne compte plus dans leur rang ; aucune barre ne change),
@@ -253,7 +267,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const departageMode: Departage = (options.typicite ?? TYPICITE_DEFAUT) && departageBase === 'k3k1' ? 'k3k1t' : departageBase;
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
   const a3 = options.intensite ?? INTENSITE_DEFAUT, typ = options.typicite ?? TYPICITE_DEFAUT; // f9 : A3 et typicité
-  const neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
+  const saturation = options.saturation ?? SATURATION_DEFAUT, neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
@@ -379,9 +393,10 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const up = Math.max(0, excess(after) - excess(ref));
       const down = fs.status === 'attendue' ? Math.max(0, deficit(after) - deficit(ref)) : 0;
       const baseText = base === undefined ? 'aucune présence établie avant' : `repère ${round(base)} avant`;
-      if (up > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(up / fs.cran, 2),
+      const marques = (x: number): Pick<StyleOverflow, 'voulu' | 'minuscule'> => saturation ? { ...(directed.includes(f) ? { voulu: true as const } : {}), ...(x / fs.cran < SATURATION_MINUSCULE ? { minuscule: true as const } : {}) } : {};
+      if (up > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(up / fs.cran, 2), ...marques(up),
         why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (+${round(e.central)}), au-dessus de la bande ${lo}–${hi} (${fs.status}).` });
-      if (down > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(down / fs.cran, 2),
+      if (down > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(down / fs.cran, 2), ...marques(down),
         why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (${round(e.central)}), sous la bande attendue ${lo}–${hi}.` });
       if (fs.status !== 'attendue' && !directed.includes(f) && e.central > 0) sideEffects.push({ family: f, status: fs.status, crans: round(e.central / fs.cran, 2) });
     }
@@ -390,11 +405,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     // D99 : option absente = c sur les voies dont tous les ajouts sont au dry hop (actif ou après) ; 'c' explicite = tous les moments ; 'aucun', 'm', 'w' : jamais.
     const rangC = options.apportMinoritaire === 'c' || (options.apportMinoritaire === undefined && changes.length > 0 && changes.every((c) => MOMENTS_APPORT_C_DEFAUT.includes(c.addition.moment)));
     // a4 (D125, biais 1) : le rang ne compte pas non plus le dépassement d'une famille neutre du style (voir DEBORDEMENT_NEUTRE_DEFAUT) ; il reste dans `styleOverflow` et dans `sideTotal`.
-    const overflowRang = rangC || !neutreCompte
-      ? round(styleOverflow.filter((o) => (neutreCompte || o.status !== 'neutre') && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
+    const auRang = (o: StyleOverflow) => !o.voulu && !o.minuscule; // s3 (D195)
+    const overflowRang = rangC || !neutreCompte || saturation
+      ? round(styleOverflow.filter((o) => auRang(o) && (neutreCompte || o.status !== 'neutre') && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
       : null;
     // a4 (D125) : le même débordement sans les familles neutres, que lit aussi le choix de la dose d'un houblon (`compareVoies(…, false)`) : sinon la dose qui évite le dépassement d'une famille neutre l'emportait sur la distance.
-    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => o.status !== 'neutre').reduce((s, o) => s + o.crans, 0), 2);
+    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => auRang(o) && o.status !== 'neutre').reduce((s, o) => s + o.crans, 0), 2);
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
@@ -532,15 +548,23 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const withoutProgress = all.filter((v) => !progress(v)).length;
   if (withoutProgress) notes.push(`${withoutProgress} voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.`);
   for (const v of all) ORDRE_POOL.set(v, poolDe(v));
+  // s3 (D195) : la demande prime sur la bande, donc des ajouts qu'elle ne punit plus passent devant. Un remplacement qui fait baisser une famille à baisser (ou bannie) garde sa place à part (REMPLACEMENTS_RESERVES par domaine),
+  // sinon des ajouts que l'écran écarte ensuite (houblon qui cite la famille bannie, D194) occupent seuls les places et « Remplacer Columbus » disparaît.
+  const enleveFamille = (v: Voie) => minus.length > 0 && v.type.startsWith('remplacer') && minus.some((f) => v.effect[f].established && (v.effect[f].central ?? 0) < 0);
+  const reserves = { stock: 0, 'à acheter': 0 };
   for (const v of all.filter(progress).sort(compareVoies)) {
-    if (perDomain[v.domain] >= (v.domain === 'stock' ? limit : buyLimit)) continue;
+    let reserve = false;
+    if (perDomain[v.domain] >= (v.domain === 'stock' ? limit : buyLimit)) {
+      if (!(saturation && enleveFamille(v)) || reserves[v.domain] >= REMPLACEMENTS_RESERVES) continue;
+      reserve = true;
+    }
     const key = v.actions.map((a) => a.hopKey).sort().join('+');
     if ((perHopCount.get(key) ?? 0) >= perHop) continue;
     // Deux assemblages au plus : ils restent estimés et ne doivent pas masquer les voies simples.
     if (v.type === 'assemblage' && blends >= 2) continue;
     if (v.type === 'assemblage') blends++;
     perHopCount.set(key, (perHopCount.get(key) ?? 0) + 1);
-    perDomain[v.domain]++;
+    if (reserve) reserves[v.domain]++; else perDomain[v.domain]++;
     kept.push(v);
   }
   // Leviers levure, évalués par le moteur et montrés même sans progrès établi (classés avec les autres).
