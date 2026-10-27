@@ -437,3 +437,4 @@ documentaires d'après.
   - une phrase fondée sur la fiche ;
   - un banc à l'aveugle sur des cas qu'il n'a jamais nommés.
   Quota hebdomadaire : 97 %.
+- 27.10, vers 15 h : **déployé** (3195332e ; hébergement seul, IA de Suggérer éteinte) et **PR #192 fusionnée** (39236699 ; D128). Reste : ia4 (l'IA sur les seuls ex æquo, une phrase fondée sur la fiche, un banc à l'aveugle), à lancer seulement sous 98 % du quota hebdomadaire.

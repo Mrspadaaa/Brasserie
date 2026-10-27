@@ -1114,3 +1114,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 
   La carte de Suggérer lit désormais le même statut que le rang (`horsDuStyle`, pilote) : il n'y a plus de « Aucune voie houblon »
   au-dessus de rangées (CARTE-LISTE OK). L'IA de Suggérer est éteinte dans l'app (`VITE_IA_SUGGERER`) jusqu'au banc à l'aveugle (ia4).
+- D128 (pilote, 27.10) : l'hébergement seul est redéployé au commit 3195332e, avec a4, la carte cohérente et l'IA de Suggérer éteinte.
+  252 fichiers ; la page servie est `index-Bo4IBqOf.js`. La fonction IA n'est pas redéployée. La PR #192 est fusionnée (39236699).
+  Le contrôle `controle-radar-echelles` est adapté : il prend une voie à chaud et pose « plus floral », car depuis a4 la stout du contrôle ne
+  rend que des dry hop. Son témoin, 6906a3f4, échoue en 3 points.
