@@ -69,6 +69,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 | Récap du 26.10, 13 h | 26.10 v2 | https://claude.ai/artifact/EFGywfPa5yLiwTgDzQb16v | scratchpad de la session (`recap-2026-10-26-13h.html`) |
 | Suggérer à 60′ comme au dry hop (q2b, M1 à M3, IA) | 26.10 v1 | https://claude.ai/artifact/Npss86xUpf259xJaemSKjH | `voies/m6-suggerer-moment/page.html` |
 | Radar : voir le manque d'un houblon sur trois (D183) | 26.10 v1 | https://claude.ai/artifact/Gd66AfKhbqzdQ7xdt19Wiq | `voies/m8-radar-manque-partiel/page.html` |
+| Sa Double IPA : quelle liste dans Suggérer (D191, D120) | 27.10 v1 | https://claude.ai/artifact/B8v5Ak1uXkrPnWyZDqNxG7 | `voies/m9-dipa-listes/page.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais ; puis SendMessage au même agent (2 relances) ; puis le pilote
