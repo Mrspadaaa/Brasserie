@@ -50,7 +50,15 @@ export interface Ligne {
   /** Changer de levure (q2b) : la souche visée ; aucun houblon. */
   levure?: { id: string; nom: string };
 }
-export interface Groupe { id: string; geste: Geste; titre: string; dose: string | null; moment: string; estime: boolean; lignes: Ligne[] }
+export interface Groupe {
+  id: string; geste: Geste; titre: string; dose: string | null; moment: string; estime: boolean; lignes: Ligne[];
+  /** Voie ia3 : les rangées de ce groupe sont choisies et rangées par l'IA (un ordre appliqué) ; une phrase par houblon (clé du moteur). */
+  ia?: { moment: string; phrases: Record<string, string> };
+}
+/** Voie ia3 : un ordre de l'IA appliqué à un moment : le pool du moteur (voies d'un houblon), l'ordre rendu (clés de houblon) et ses phrases. */
+export interface OrdreIA { pool: Voie[]; ordre: readonly string[]; phrases: Readonly<Record<string, string>> }
+/** Rangées montrées au moins par un groupe rangé par l'IA : autant que le moteur en montrait (de 3 à 14), pour que le groupe garde sa hauteur. */
+export const RANGEES_IA = 3;
 export interface Objectif {
   f: FamilyId; sens: 1 | -1; nom: string; cran: number;
   /** L'écart demandé, en points (crans entiers × cran). */
@@ -114,7 +122,7 @@ function lireCalculs(recette: RecetteParcours, direction: Record<string, number>
 /** Les voies du moteur, rangées en groupes comme q2b. `familles` : l'ordre des familles du moteur. `lus` : les calculs
  * lourds déjà rendus par le client (écran : useCalcul) ; absents, ils sont lus par le client (préchauffage : la
  * Coquille), et sans réponse immédiate la liste est vide (rien d'inventé). */
-export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], bannis: FamilyId[] = [], dryhopMax = 4, lus?: CalculsVoies): Groupe[] {
+export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], bannis: FamilyId[] = [], dryhopMax = 4, lus?: CalculsVoies, ia?: Readonly<Record<string, OrdreIA>>): Groupe[] {
   const direction = directionDe(objectifs);
   const calc = lus ?? lireCalculs(recette, direction);
   if (!calc) return [];
@@ -154,6 +162,8 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
   const assembler = seuls.filter((x) => x.ligne.geste === 'assembler');
   const ajoutSeul = seuls.filter((x) => x.ligne.geste !== 'assembler');
   if (ajoutSeul.length) groupes.push({ id: 'ajouter', geste: 'meme', titre: 'Ajouter', dose: null, moment: ajoutSeul[0].moment, estime: false, lignes: ajoutSeul.map((x) => ({ ...x.ligne, dose: `${x.grams} g` })) });
+  // Voie ia3 : à un moment dont l'IA a rendu l'ordre (et que le brasseur lui laisse), le groupe de ce moment est choisi et rangé par l'IA.
+  if (ia) for (const [mom, o] of Object.entries(ia)) appliquerOrdreIA(groupes, mom, o, objectifs, familles);
   if (assembler.length) groupes.push({ id: 'assembler', geste: 'assembler', titre: 'Assembler 5 + 5 g', dose: null, moment: assembler[0].moment, estime: true, lignes: assembler.map((x) => x.ligne) });
   const remp = lignes.filter((x) => x.ligne.geste === 'remplacer');
   if (remp.length) {
@@ -177,6 +187,38 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
   let n = 0;
   for (const g of groupes) for (const l of g.lignes) l.n = ++n;
   return groupes;
+}
+
+/** Le moment (MomentId du moteur) d'un groupe d'ajouts d'un houblon, null pour les autres gestes. */
+export const momentDuGroupe = (g: Groupe): string | null => (g.geste === 'meme' ? g.lignes[0]?.voie.actions[0]?.moment ?? null : null);
+
+/** Voie ia3 : remplace les groupes d'ajouts d'UN houblon d'un moment par celui de l'IA : les rangées sont les premières de l'ordre de l'IA
+ * (autant que le moteur en montrait, de 4 à 14), avec leurs effets, leur dose et leur stock du moteur. Les rangées de même effet et de même dose
+ * gardent le cadre du moteur (une barre, « même effet 40 g ») ; sinon « Ajouter » : une barre et une dose par rangée (le titre ne ment pas). */
+function appliquerOrdreIA(groupes: Groupe[], mom: string, o: OrdreIA, objectifs: Objectif[], familles: readonly FamilyId[]): void {
+  const ici = groupes.map((g, i) => ({ g, i })).filter(({ g }) => momentDuGroupe(g) === mom);
+  if (!ici.length) return;
+  const n = Math.min(14, Math.max(RANGEES_IA, ici.reduce((s, { g }) => s + g.lignes.length, 0)));
+  const voies = o.ordre.flatMap((k) => { const v = o.pool.find((x) => x.actions[0].hopKey === k); return v ? [v] : []; }).slice(0, n);
+  if (voies.length < Math.min(n, RANGEES_IA)) return;
+  const ligne = (v: Voie, dose: string | null): Ligne => ({
+    n: 0, id: v.id, geste: 'meme', houblons: [houblon(v.actions[0].hopKey)], dose,
+    effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
+    hors: [...new Set(v.styleOverflow.map((x) => x.family))], stock: v.stock.status, estime: v.estimated, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after, bio: [],
+  });
+  const cle = (l: Ligne) => JSON.stringify([l.voie.actions.reduce((s, a) => s + a.grams, 0), objectifs.map((x) => l.effets[x.f])]);
+  const lignes = voies.map((v) => ligne(v, null));
+  const egaux = lignes.every((l) => cle(l) === cle(lignes[0]));
+  const premier = ici[0].g;
+  const groupe: Groupe = {
+    id: premier.id, geste: 'meme', moment: premier.moment, estime: false,
+    titre: egaux ? (premier.titre !== 'Ajouter' ? premier.titre : 'même effet') : 'Ajouter',
+    dose: egaux ? `${lignes[0].voie.actions[0].grams} g` : null,
+    lignes: egaux ? lignes : lignes.map((l) => ({ ...l, dose: `${l.voie.actions[0].grams} g` })),
+    ia: { moment: mom, phrases: { ...o.phrases } },
+  };
+  groupes[ici[0].i] = groupe;
+  for (const { i } of ici.slice(1).reverse()) groupes.splice(i, 1);
 }
 
 /** Le simulateur rend 0 exact partout alors que les fiches citent des familles : un inconnu, pas un zéro. */

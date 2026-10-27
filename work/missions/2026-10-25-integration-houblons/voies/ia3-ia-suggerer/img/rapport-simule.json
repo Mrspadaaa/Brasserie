@@ -1,0 +1,606 @@
+{
+ "mode": "simule",
+ "etapes": [
+  {
+   "nom": "budget semé dans Firestore émulé",
+   "statut": 200,
+   "limite": "5 CHF (émulateur)"
+  },
+  {
+   "nom": "recette posée : neipa v3",
+   "style": "22A",
+   "ma_biere": "Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"
+  },
+  {
+   "nom": "connexion émulée (Auth)",
+   "uid": "AB1NfV…"
+  },
+  {
+   "nom": "chauffe de la fonction (appel froid, hors mesure)",
+   "visee": "{\"tropical\":2.5}",
+   "msJusquALaPuce": 1
+  },
+  {
+   "nom": "capture 1-ouverture-liste-du-moteur.png"
+  },
+  {
+   "nom": "ouverture : le moteur, sans puce, place tenue",
+   "rangees": [
+    "East Kent Goldings",
+    "◇lui seul : pain d'épices, aspérule",
+    "Golding",
+    "◇lui seul : cardamome, pois de senteur",
+    "Spalter Select",
+    "◇lui seul : concombre, livèche",
+    "Mount Hood",
+    "◇lui seul : estragon, genièvre"
+   ],
+   "puce": null,
+   "placeInvisible": true,
+   "positions": {
+    "titre": 279,
+    "premiereRangee": 354,
+    "groupeBas": 694,
+    "levure": 694,
+    "hauteurGroupe": 423,
+    "page": 844
+   }
+  },
+  {
+   "nom": "réponse de l’IA",
+   "msJusquALaPuce": 1441,
+   "depuisOuvertureMs": 3019,
+   "etatALArrivee": "appliquee",
+   "rangees": [
+    "Huell Melon",
+    "◇lui seul : vanille, caramel",
+    "East Kent Goldings",
+    "◇lui seul : pain d'épices, aspérule",
+    "Golding",
+    "◇lui seul : cardamome, pois de senteur",
+    "Spalter Select",
+    "◇lui seul : concombre, livèche"
+   ],
+   "decalagePx": {
+    "titre": 0,
+    "premiereRangee": 0,
+    "levure": 0,
+    "hauteurGroupe": 0
+   }
+  },
+  {
+   "nom": "capture 2-puce-ia.png"
+  },
+  {
+   "nom": "capture 3-ordre-ia-applique.png"
+  },
+  {
+   "nom": "capture 4-phrase-au-toucher.png"
+  },
+  {
+   "nom": "phrase de l’IA au toucher d’une rangée",
+   "phrase": "IA Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+   "taillePxPhrase": 14,
+   "taillePxPuce": 14
+  },
+  {
+   "nom": "capture 5-puce-touchee-ordre-du-moteur.png"
+  },
+  {
+   "nom": "puce touchée : l’ordre du moteur rendu",
+   "identique": true,
+   "puce": "prete"
+  },
+  {
+   "nom": "budget mensuel après les appels (Firestore émulé)",
+   "documents": [
+    {
+     "nom": "2026-10",
+     "champs": {
+      "month": "2026-10",
+      "reservedMicroChf": "0",
+      "usedMicroChf": "7288",
+      "updatedAt": "1793100055495"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "réponse tardive : la liste ne bouge pas, la puce offre l’ordre",
+   "msAvantPuce": 2650,
+   "identique": true,
+   "puce": "prete"
+  },
+  {
+   "nom": "capture 6-reponse-tardive-ordre-ia-pret.png"
+  },
+  {
+   "nom": "capture 6b-tardive-ordre-applique.png"
+  },
+  {
+   "nom": "capture 7-hors-ligne-ordre-du-moteur.png"
+  },
+  {
+   "nom": "hors ligne : aucun appel, aucune puce",
+   "appelsAvant": 3,
+   "appelsApres": 3,
+   "puce": null,
+   "placeInvisible": false,
+   "messageVisible": false
+  },
+  {
+   "nom": "rangs de ses six dans le pool (moteur) et dans l’ordre IA",
+   "parAppel": [
+    {
+     "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+     "candidats": 29,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": 13,
+       "ia": 13
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": 6,
+       "ia": 7
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": 29,
+       "ia": 29
+      }
+     ]
+    },
+    {
+     "cas": "neipa v3 · agrumes · dry hop actif",
+     "candidats": 29,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": 15,
+       "ia": 15
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": 8,
+       "ia": 9
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": 21,
+       "ia": 21
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": null,
+       "ia": null
+      }
+     ]
+    },
+    {
+     "cas": "neipa v3 · tropicaux · réponse tardive",
+     "candidats": 29,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": 14,
+       "ia": 14
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": null,
+       "ia": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "requêtes reçues par le fournisseur",
+   "n": 3,
+   "detail": [
+    {
+     "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+     "ms": 304,
+     "candidats": 29,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 3285,
+     "sortieTokens": 776,
+     "moteurTete": [
+      "Rakau",
+      "Fuggle",
+      "Super Galena",
+      "Galaxy",
+      "Huell Melon",
+      "Calypso"
+     ],
+     "iaTete": [
+      "Harlequin",
+      "Rakau",
+      "Fuggle",
+      "Super Galena",
+      "Galaxy",
+      "Huell Melon"
+     ],
+     "phrases": [
+      "Harlequin : Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+      "Rakau : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+      "Fuggle : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+      "Super Galena : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement."
+     ]
+    },
+    {
+     "cas": "neipa v3 · agrumes · dry hop actif",
+     "ms": 2000,
+     "candidats": 29,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 3214,
+     "sortieTokens": 776,
+     "moteurTete": [
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix",
+      "Galaxy"
+     ],
+     "iaTete": [
+      "Huell Melon",
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix"
+     ],
+     "phrases": [
+      "Huell Melon : Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+      "East Kent Goldings : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+      "Golding : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+      "Spalter Select : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement."
+     ]
+    },
+    {
+     "cas": "neipa v3 · tropicaux · réponse tardive",
+     "ms": 3601,
+     "candidats": 29,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 3178,
+     "sortieTokens": 776,
+     "moteurTete": [
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix",
+      "Huell Melon"
+     ],
+     "iaTete": [
+      "Lubelska",
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix"
+     ],
+     "phrases": [
+      "Lubelska : Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+      "East Kent Goldings : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+      "Golding : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+      "Spalter Select : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement."
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "hôtes bloqués par le banc",
+   "n": 2,
+   "exemples": [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"
+   ]
+  },
+  {
+   "nom": "décalage à l’arrivée de l’ordre IA (px, 390 × 844)",
+   "titre": 0,
+   "premiereRangee": 0,
+   "levure": 0,
+   "hauteurGroupe": 0,
+   "total": 0
+  }
+ ],
+ "erreurs": [],
+ "appels": [
+  {
+   "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+   "modele": "gemini-3.5-flash-lite",
+   "ms": 304,
+   "reel": false,
+   "candidats": 29,
+   "moteur": [
+    "Rakau",
+    "Fuggle",
+    "Super Galena",
+    "Galaxy",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Zappa",
+    "Harlequin",
+    "Cashmere",
+    "Nugget",
+    "Columbus",
+    "Mandarina Bavaria",
+    "Waimea",
+    "Galena",
+    "Summit",
+    "Southern Cross",
+    "Hersbrucker",
+    "Kazbek",
+    "Delta",
+    "Triumph",
+    "Idaho Gem",
+    "BRU-1",
+    "Enigma",
+    "Southern Passion",
+    "Callista",
+    "Relax",
+    "Citra",
+    "Idaho 7"
+   ],
+   "ia": [
+    "Harlequin",
+    "Rakau",
+    "Fuggle",
+    "Super Galena",
+    "Galaxy",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Zappa",
+    "Cashmere",
+    "Nugget",
+    "Columbus",
+    "Mandarina Bavaria",
+    "Waimea",
+    "Galena",
+    "Summit",
+    "Southern Cross",
+    "Hersbrucker",
+    "Kazbek",
+    "Delta",
+    "Triumph",
+    "Idaho Gem",
+    "BRU-1",
+    "Enigma",
+    "Southern Passion",
+    "Callista",
+    "Relax",
+    "Citra",
+    "Idaho 7"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Harlequin : Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+    "Rakau : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+    "Fuggle : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+    "Super Galena : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement."
+   ],
+   "entreeTokens": 3285,
+   "sortieTokens": 776
+  },
+  {
+   "cas": "neipa v3 · agrumes · dry hop actif",
+   "modele": "gemini-3.5-flash-lite",
+   "ms": 2000,
+   "reel": false,
+   "candidats": 29,
+   "moteur": [
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Galaxy",
+    "Topaz",
+    "Calypso",
+    "Huell Melon",
+    "Warrior",
+    "Cashmere",
+    "Columbus",
+    "Nugget",
+    "Waimea",
+    "Mandarina Bavaria",
+    "Lemondrop",
+    "Apollo",
+    "Wai-iti",
+    "Galena",
+    "Summit",
+    "Pacific Jade",
+    "Jarrylo",
+    "Southern Cross",
+    "Hersbrucker",
+    "Tettnanger",
+    "Kazbek",
+    "Styrian Golding",
+    "Herkules",
+    "Target"
+   ],
+   "ia": [
+    "Huell Melon",
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Galaxy",
+    "Topaz",
+    "Calypso",
+    "Warrior",
+    "Cashmere",
+    "Columbus",
+    "Nugget",
+    "Waimea",
+    "Mandarina Bavaria",
+    "Lemondrop",
+    "Apollo",
+    "Wai-iti",
+    "Galena",
+    "Summit",
+    "Pacific Jade",
+    "Jarrylo",
+    "Southern Cross",
+    "Hersbrucker",
+    "Tettnanger",
+    "Kazbek",
+    "Styrian Golding",
+    "Herkules",
+    "Target"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Huell Melon : Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+    "East Kent Goldings : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+    "Golding : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+    "Spalter Select : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement."
+   ],
+   "entreeTokens": 3214,
+   "sortieTokens": 776
+  },
+  {
+   "cas": "neipa v3 · tropicaux · réponse tardive",
+   "modele": "gemini-3.5-flash-lite",
+   "ms": 3601,
+   "reel": false,
+   "candidats": 29,
+   "moteur": [
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Huell Melon",
+    "Aurora",
+    "Boadicea",
+    "Lubelska",
+    "Nugget",
+    "Columbus",
+    "Lemondrop",
+    "Wai-iti",
+    "Pacific Jade",
+    "Hersbrucker",
+    "Tettnanger",
+    "Target",
+    "Styrian Golding",
+    "First Gold",
+    "Magnat",
+    "Delta",
+    "Idaho Gem",
+    "Opal",
+    "Sussex",
+    "Millennium",
+    "Callista",
+    "Centennial",
+    "Citra",
+    "Cascade"
+   ],
+   "ia": [
+    "Lubelska",
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Huell Melon",
+    "Aurora",
+    "Boadicea",
+    "Nugget",
+    "Columbus",
+    "Lemondrop",
+    "Wai-iti",
+    "Pacific Jade",
+    "Hersbrucker",
+    "Tettnanger",
+    "Target",
+    "Styrian Golding",
+    "First Gold",
+    "Magnat",
+    "Delta",
+    "Idaho Gem",
+    "Opal",
+    "Sussex",
+    "Millennium",
+    "Callista",
+    "Centennial",
+    "Citra",
+    "Cascade"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Lubelska : Simulé (essai local) : remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande.",
+    "East Kent Goldings : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+    "Golding : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement.",
+    "Spalter Select : Simulé (essai local) : rangé dans l’ordre du moteur, sans jugement."
+   ],
+   "entreeTokens": 3178,
+   "sortieTokens": 776
+  }
+ ]
+}

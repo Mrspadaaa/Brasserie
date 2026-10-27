@@ -17,18 +17,19 @@ import { Heart } from 'lucide-react';
 import { COULEURS, COURT, Legende, nombre, Picto, ROUE, type Echelle } from './commun';
 import { CadreOutil, FicheHote as Fiche, useBiere, useCas, useComparaison, useGestes, useNavigation, useOuvrir, useRecette, useVisee, type RouteSuggerer } from './hote';
 import { nomLevure } from '../comparer/cas';
-import { style } from '../parcours/adaptateur';
-import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { poolSuggerer, style } from '../parcours/adaptateur';
+import type { FamilyId, Voie } from '../../../domain/hopIndex/v4';
 import { offModelLeads } from '../parcours/v4';
 import { useCalcul } from '../parcours/useCalcul';
-import { PLACE_REMPLACER_PX, useCalculApres } from './differe';
+import { PLACE_REMPLACER_PX, auReposDuNavigateur, useCalculApres } from './differe';
+import { MOMENTS_MAX, RANGEES_MINI, demandeSuggerer, iaPossible, useClassementsIA, type DemandeMoment, type EtatIA } from './ia';
 import { estChauffee } from './prechauffe';
 import { useGestesFiche } from '../fiche/gestes';
 import { Bandeau } from '../maBiere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
 import { BulleTraitsProvider, useCodeStyle } from './bulle';
 import { Divergent, Graphe, type NiveauBarre } from './divergent';
-import { bannisDe, directionDe, dryhopActif, levuresDe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
+import { bannisDe, directionDe, dryhopActif, levuresDe, momentDuGroupe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif, type OrdreIA } from './voies';
 import { horsDesFamilles, motsLevure } from './hors16d';
 import { VueRadar } from './vue-radar';
 import './suggerer.css';
@@ -91,7 +92,36 @@ export default function Suggerer() {
   const proposes = completTout ?? complet ?? rapide;
   const leviers = useCalcul('leviers', [recette, direction]);
   const lus = useMemo(() => (proposes && leviers ? { recette: proposes.args[0], calculs: { proposes: proposes.valeur, leviers: leviers.valeur } } : null), [proposes, leviers]);
-  const tous = useMemo(() => (lus ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs) : []), [lus, objectifs, bannis]);
+  const tousMoteur = useMemo(() => (lus ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs) : []), [lus, objectifs, bannis]);
+  // Voie ia3 (D188, D124) : l'IA range les rangées des groupes que le moteur ne sait pas départager (trois rangées ou plus au même effet), un moment à la fois.
+  // Le moteur montre tout de suite ; au repos, le pool de 30 de chaque moment part à l'IA ; son ordre (en moins de 3 s, liste non touchée) remplace les rangées,
+  // sinon la puce « appliquer l'ordre IA » l'offre. Hors ligne, en échec, ou sous test : l'ordre du moteur, sans rien au premier plan.
+  const momentsIA = useMemo(() => (iaPossible() ? [...new Set(tousMoteur.filter((g) => g.id.startsWith('meme-') && g.lignes.length >= RANGEES_MINI).map((g) => momentDuGroupe(g)!))].slice(0, MOMENTS_MAX) : []), [tousMoteur]);
+  const [pools, setPools] = useState<{ cle: string; voies: Record<string, Voie[]> }>({ cle: '', voies: {} });
+  const cleIA = lus ? JSON.stringify([lus.recette.styleCode, lus.recette.volumeL, lus.recette.og, lus.recette.additions, direction, momentsIA]) : '';
+  useEffect(() => {
+    if (!lus || !momentsIA.length) return;
+    // Un moment par tâche, au repos : le pool (un moment du moteur, 30 rangs) coûte plus qu'un affichage, il ne bloque jamais le premier.
+    let vivant = true; const annuler: (() => void)[] = []; const voies: Record<string, Voie[]> = {};
+    momentsIA.forEach((m, i) => annuler.push(auReposDuNavigateur(() => {
+      if (!vivant) return;
+      voies[m] = poolSuggerer(lus.recette, direction, m as Voie['actions'][number]['moment']);
+      if (i === momentsIA.length - 1) setPools({ cle: cleIA, voies: { ...voies } });
+    })));
+    return () => { vivant = false; annuler.forEach((f) => f()); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cleIA]);
+  const demandes = useMemo<DemandeMoment[]>(() => (!lus || pools.cle !== cleIA ? [] : momentsIA.flatMap((m) => {
+    const d = pools.voies[m] ? demandeSuggerer({ recette: lus.recette, ibu: biere.ibu.valeur ?? null, objectifs, moment: m, pool: pools.voies[m] }) : null;
+    return d ? [{ moment: m, demande: d }] : [];
+  })), [pools, cleIA, momentsIA, lus, objectifs, biere]);
+  const ia = useClassementsIA(demandes);
+  const ordresIA = useMemo(() => {
+    const o: Record<string, OrdreIA> = {};
+    for (const m of momentsIA) { const e = ia.de(m); if (e?.appliquee && pools.voies[m]) o[m] = { pool: pools.voies[m], ordre: e.ordre, phrases: e.phrases }; }
+    return o;
+  }, [ia, momentsIA, pools]);
+  const tous = useMemo(() => (lus && Object.keys(ordresIA).length ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs, ordresIA) : tousMoteur), [lus, objectifs, bannis, tousMoteur, ordresIA]);
   // « exclure » (♡) : les voies de ce houblon quittent la liste ; « Exclus » les rend.
   const exclus = [...gouts].filter(([, g]) => g === 'exclure').map(([c]) => c);
   const groupes = useMemo(() => tous.map((g) => ({ ...g, lignes: g.lignes.filter((l) => !l.houblons.some((h) => exclus.includes(h.cle))) })).filter((g) => g.lignes.length),
@@ -177,6 +207,15 @@ export default function Suggerer() {
   const place = dEmblee ? 0 : PLACE_REMPLACER_PX;
   const rangPlace = (() => { const d = groupes.findIndex((g) => g.geste === 'dryhop'); return d >= 0 ? d : groupes.length; })();
   const groupe2 =groupes.filter((g) => g.id.startsWith('meme-'))[1] ?? groupes.find((g) => g.id.startsWith('meme-'));
+  // Voie ia3 : la puce est sur le premier groupe de chaque moment que l'IA range (comme sa maquette m6 : à droite du moment, pointillée, étoile bleue).
+  // Sa place est gardée dès le premier affichage (`etat` null : invisible), pour que son arrivée ne bouge rien ; elle disparaît si le moment n'a pas de pool.
+  const [phraseOuverte, setPhraseOuverte] = useState<string | null>(null);
+  const puceDe = (g: Groupe): { etat: EtatIA | null } | null => {
+    const m = momentDuGroupe(g);
+    if (!m || !momentsIA.includes(m) || groupes.find((x) => momentDuGroupe(x) === m) !== g) return null;
+    if (pools.cle === cleIA && !demandes.some((d) => d.moment === m)) return null;
+    return { etat: ia.de(m) };
+  };
 
   return (
     <CadreOutil ecran="suggerer" question="Quel houblon ajouter à ma bière ?" questionVisible={false} elementTete="q2b-onglets" etat="etat-acquis-couleur-aromes etat-acquis-picto-epice">
@@ -215,7 +254,7 @@ export default function Suggerer() {
                 horsHoublon={horsHoublon} onHorsHoublon={montrerHorsHoublon} etatPiste={o.f === fPiste} />)}
             </section>
 
-            <div data-libre="houblon" aria-label="Voies du moteur" data-etat="etat-acquis-barres-l5b etat-acquis-q2b-suite-s5 etat-acquis-levure-bio-cumul etat-acquis-stock-icone"
+            <div data-libre="houblon" aria-label="Voies du moteur" onPointerDownCapture={ia.marquerTouche} data-etat="etat-acquis-barres-l5b etat-acquis-q2b-suite-s5 etat-acquis-levure-bio-cumul etat-acquis-stock-icone"
               data-direction={JSON.stringify(Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran])))}>
               {exclus.length > 0 && (
                 <p className="flex flex-wrap items-center gap-1.5 px-1 pb-1 text-sm text-cave-200">
@@ -233,7 +272,8 @@ export default function Suggerer() {
                   {i === rangPlace && !remplacer && place > 0 && <section data-groupe="remplacer-place" aria-hidden="true" style={{ minHeight: place }} />}
                   <BlocGroupe g={g} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} choisie={choisie} basculer={basculer} reserve={g.id === 'remplacer' ? place : 0}
                     gestesFiche={gestesFiche} etat={g === groupe2 ? 'etat-sugg-groupes-effet' : g.geste === 'assembler' ? 'etat-sugg-assembler' : g.geste === 'remplacer' ? 'etat-sugg-remplacer' : g.geste === 'dryhop' ? 'etat-sugg-dry-hop' : undefined}
-                    premiere={g === groupes[0]} lignePlus={lignePlus?.id ?? null} gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} hors16d={hors16d} />
+                    premiere={g === groupes[0]} lignePlus={lignePlus?.id ?? null} gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} hors16d={hors16d}
+                    puce={puceDe(g)} phraseOuverte={phraseOuverte} setPhraseOuverte={setPhraseOuverte} />
                   </Fragment>
                 ))}
                 {rangPlace >= groupes.length && !remplacer && place > 0 && <section data-groupe="remplacer-place" aria-hidden="true" style={{ minHeight: place }} />}
@@ -323,9 +363,26 @@ function Carte({ o, groupes, biere, teinte, famHors, pistesHors, horsHoublon, on
   );
 }
 
-function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter, hors16d, reserve = 0 }: {
+/** Voie ia3 : la puce de la maquette m6 (« ✦ ordre IA prêt » : pointillée, étoile bleue), au comportement de Substituer (i2). Une place invisible tient
+ * son emplacement tant que l'IA n'a pas répondu : son arrivée ne déplace rien. */
+function PuceIA({ etat }: { etat: EtatIA | null }) {
+  if (!etat) return <span className="pq-sg-ia pq-sg-ia-place pq-sg-sur-axe" aria-hidden="true" data-role="puce-ia-place" />;
+  return (
+    <button type="button" className="pq-sg-ia pq-sg-sur-axe" data-role="puce-ia" data-ia={etat.appliquee ? 'appliquee' : 'prete'} aria-pressed={etat.appliquee} onClick={etat.basculer}
+      onPointerDown={(e) => e.stopPropagation()}
+      aria-label={etat.appliquee ? 'Classé par l’IA. Toucher pour revenir à l’ordre du moteur.' : 'Appliquer l’ordre de l’IA.'}
+      title={etat.appliquee ? 'Les 30 premiers du moteur, rangés par l’IA ; les effets et les doses restent ceux du moteur. Toucher : ordre du moteur.' : 'L’IA a rangé les 30 premiers du moteur. Toucher : appliquer son ordre.'}>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.5 4.2 4.2 1.5-4.2 1.5L8 12.9 6.5 8.7 2.3 7.2l4.2-1.5z" fill="currentColor" /></svg>
+      {etat.appliquee ? 'classé par l’IA' : 'appliquer l’ordre IA'}
+    </button>
+  );
+}
+
+function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter, hors16d, puce, phraseOuverte, setPhraseOuverte, reserve = 0 }: {
   /** D108 : hauteur minimale du groupe (px), celle de la place réservée à « Remplacer … ». */
   reserve?: number;
+  /** Voie ia3 : la puce de ce groupe (null : pas d'IA ici), la rangée dont la phrase est ouverte. */
+  puce: { etat: EtatIA | null } | null; phraseOuverte: string | null; setPhraseOuverte: (c: string | null) => void;
   g: Groupe; objectifs: Objectif[]; echelle: Echelle; cran: (f: FamilyId) => number; bande: (f: FamilyId) => [number, number] | null;
   choisie: (l: Ligne) => boolean; basculer: (l: Ligne) => void; gestesFiche: ReturnType<typeof useGestesFiche>; etat?: string; premiere: boolean;
   lignePlus: string | null; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void;
@@ -336,7 +393,8 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
   const slots = ROUE.filter((f) => !cibles.includes(f) && g.lignes.some((l) => l.effets[f] != null && Math.abs(l.effets[f]!) >= 0.5));
   const meme = g.id.startsWith('meme');
   // Le cadre à bord noir de q2b : les voies au même effet (plusieurs lignes, une seule barre d'effet).
-  const cadre = meme && g.lignes.length > 1;
+  // (voie ia3 : « Ajouter » rangé par l'IA, de rangées d'effets différents, garde une barre par rangée.)
+  const cadre = meme && g.titre !== 'Ajouter' && g.lignes.length > 1;
   // gr5 c, les crans comptés : chaque case montre ses crans vides jusqu'au plus grand effet du groupe (sa liste), en places
   // de trait comme elles sont dessinées ; un effet inconnu ou calme ne compte pas (l'inconnu n'est pas 0).
   const plafond = Math.max(1, ...g.lignes.flatMap((l) => [...cibles, ...slots].map((f) => {
@@ -357,6 +415,7 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
         {g.dose && <span className="pq-sg-sur-axe font-semibold text-cave-200 whitespace-nowrap">{g.dose}</span>}
         {moment}
         {g.estime && <span className="pq-sg-sur-axe text-sm font-normal text-cave-400">estimé</span>}
+        {puce && <PuceIA etat={puce.etat} />}
       </h3>
       {cadre && (
         // L'effet du groupe, dessiné une fois (q2b : « +1 cran », « +2 crans »).
@@ -368,7 +427,8 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
         {g.lignes.map((l, i) => (
           <LigneVoie key={l.id} l={l} premiere={premiere && i === 0} cibles={cibles} slots={slots} cran={cran} choisie={choisie(l)} basculer={() => basculer(l)}
             gestesFiche={gestesFiche} barres={!cadre} objectifs={objectifs} echelle={echelle} bande={bande} plus={l.id === lignePlus}
-            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} plafond={plafond} hors={hors16d.get(l.id) ?? []} />
+            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} plafond={plafond} hors={hors16d.get(l.id) ?? []}
+            phrase={g.ia?.phrases[l.houblons[0].cle]} phraseOuverte={phraseOuverte === l.id} onPhrase={() => setPhraseOuverte(phraseOuverte === l.id ? null : l.id)} />
         ))}
       </ul>
     </section>
@@ -393,7 +453,9 @@ function Bio({ l }: { l: Ligne }) {
   );
 }
 
-function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre, plafond, hors }: {
+function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre, plafond, hors, phrase, phraseOuverte, onPhrase }: {
+  /** Voie ia3 : la phrase de l'IA sur ce houblon (rangée rangée par l'IA), ouverte au toucher de la rangée. */
+  phrase?: string; phraseOuverte: boolean; onPhrase: () => void;
   l: Ligne; premiere: boolean; cibles: FamilyId[]; slots: FamilyId[]; cran: (f: FamilyId) => number; choisie: boolean; basculer: () => void;
   gestesFiche: ReturnType<typeof useGestesFiche>; barres: boolean; objectifs: Objectif[]; echelle: Echelle; bande: (f: FamilyId) => [number, number] | null;
   plus: boolean; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void; cadre: boolean; plafond: number;
@@ -421,7 +483,8 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
   };
   return (
     <li data-voie={l.n} data-id={l.id} data-role="ligne-houblon" {...(premiere ? { 'data-element': 'q2b-ligne-voie' } : {})} {...(choisie ? { 'data-choisi': '' } : {})}
-      {...gestesFiche.appui(l.houblons[0].cle)}
+      {...gestesFiche.appui(l.houblons[0].cle, phrase ? onPhrase : undefined)}
+      {...(phrase ? { 'data-phrase-ia': phraseOuverte ? 'ouverte' : 'fermee' } : {})}
       className={`pq-suggerer-voie relative select-none ${cadre ? 'pl-2 pr-1' : ''} py-1 ${choisie ? 'pq-suggerer-voie-choisie' : ''}`}>
       <div className="grid grid-cols-[1fr_auto] gap-x-1">
         <div className="min-w-0 space-y-0.5">
@@ -477,6 +540,9 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
           </button>
         </div>
       </div>
+      {phrase && phraseOuverte && (
+        <p data-role="phrase-ia" data-houblon={l.houblons[0].cle} className="pq-sg-ia-phrase pq-sg-sur-axe"><i>IA</i> {phrase}</p>
+      )}
       {barres && (
         <div className="pt-1 pb-1.5" data-role="barres-voie">
           <Divergent objectifs={objectifs} effets={l.effets} hors={l.hors} niveau={niveauBarre(l)} echelle={echelle} cran={cran} bande={bande} />

@@ -1,0 +1,296 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-ia3", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-ia3-emu-91kVjE\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8120
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-ia3/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· connexion émulée (Auth) {"uid":"8b8Jh0…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.7497ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":4438,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 4447.114ms
+· chauffe de la fonction (appel froid, hors mesure) {"visee":"{\"tropical\":2.5}","msJusquALaPuce":2960}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 1-ouverture-liste-du-moteur.png {}
+· ouverture : le moteur, sans puce, place tenue {"rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"puce":null,"placeInvisible":true,"positions":{"titre":279,"premiereRangee":354,"groupeBas":694,"levure":694,"hauteurGroupe":423,"page":844}}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3969,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3973.5119999999997ms
+· réponse de l’IA {"msJusquALaPuce":3376,"depuisOuvertureMs":4959,"etatALArrivee":"prete","rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"decalagePx":{"titre":0,"premiereRangee":0,"levure":0,"hauteurGroupe":0}}
+· capture 2-puce-ia.png {}
+· capture 3-ordre-ia-applique.png {}
+· capture 4-phrase-au-toucher.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":null,"taillePxPhrase":null,"taillePxPuce":14}
+· capture 5-puce-touchee-ordre-du-moteur.png {}
+· puce touchée : l’ordre du moteur rendu {"identique":false,"puce":"appliquee"}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"11805","updatedAt":"1793099362208"}}]}
+· capture 8-neipa-tropicaux.png {}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.7413ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3526,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3529.5912ms
+· capture 9-stout-s1.png {}
+· réel : stout S1 {"msJusquALaPuce":2971,"puce":"prete","rangees":["Green Bullet","◇lui seul : fruits secs","Golding","◇lui seul : cardamome, pois de senteur","East Kent Goldings","◇lui seul : pain d'épices, aspérule","Fuggle","◇lui seul : tabac, curry"],"moteur":"aucune place (pas de groupe à ranger)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.2278ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":4720,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 4723.0025000000005ms
+· capture 10-21c-hazy-du-jeudi.png {}
+· réel : 21C Hazy du jeudi {"msJusquALaPuce":4111,"puce":"prete","rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"moteur":"aucune place (pas de groupe à ranger)"}
+· rangs de ses six dans le pool (moteur) et dans l’ordre IA {"parAppel":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","candidats":29,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":13,"ia":9},{"houblon":"Calypso","moteur":6,"ia":15},{"houblon":"Pacific Jade","moteur":null,"ia":null},{"houblon":"Idaho 7","moteur":29,"ia":4}]},{"cas":"neipa v3 · agrumes · dry hop actif","candidats":29,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":15,"ia":2},{"houblon":"Calypso","moteur":8,"ia":5},{"houblon":"Pacific Jade","moteur":21,"ia":17},{"houblon":"Idaho 7","moteur":null,"ia":null}]}]}
+· requêtes reçues par le fournisseur {"n":4,"detail":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","ms":4229,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5448,"sortieTokens":1232,"moteurTete":["Rakau","Fuggle","Super Galena","Galaxy","Huell Melon","Calypso"],"iaTete":["Galaxy","Zappa","Citra","Idaho 7","Harlequin","Southern Passion"],"phrases":["Galaxy : Apporte des fruits tropicaux intenses et du fruit de la passion pour booster la Double IPA.","Zappa : Renforce le profil tropical avec des notes de mangue et de fruit de la passion adaptées.","Citra : Intensifie les notes tropicales de fruit de la passion et de litchi dans le style.","Idaho 7 : Ajoute des fruits tropicaux et de la papaye pour dynamiser la palette aromatique de la bière."]},{"cas":"neipa v3 · agrumes · dry hop actif","ms":3916,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5498,"sortieTokens":1232,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Galaxy"],"iaTete":["Galaxy","Mandarina Bavaria","Waimea","Apollo","Calypso","Summit"],"phrases":["Galaxy : Apporte des fruits tropicaux puissants qui propulsent la double IPA vers des notes intenses.","Mandarina Bavaria : Offre une mandarine éclatante qui renforce directement le profil agrumes recherché pour le style.","Waimea : Procure des notes de mandarine et d'agrumes intenses idéales pour une double IPA moderne.","Apollo : Libère des vagues de pamplemousse et de citron vert qui dynamisent l'aromatique globale."]},{"cas":"stout S1 · plus floral","ms":3477,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5403,"sortieTokens":1150,"moteurTete":["Green Bullet","Golding","East Kent Goldings","Fuggle","Mount Hood","Spalter Select"],"iaTete":["Columbus","Boadicea","Magnat","Aurora","Phoenix","Northdown"],"phrases":["Columbus : Il apporte une complexité florale intense et résineuse idéale en dry hop pour cette double ipa.","Boadicea : Ses notes florales intenses s'accordent parfaitement avec le profil aromatique recherché en fermentation.","Magnat : Ses accents floraux de lila et de camomille renforcent la dimension aromatique florale attendue.","Aurora : Il offre un caractère floral et noble bien adapté au style de la bière."]},{"cas":"21C Hazy du jeudi · plus d’agrumes","ms":4680,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5498,"sortieTokens":1264,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Galaxy"],"iaTete":["Galaxy","Apollo","Mandarina Bavaria","Summit","Calypso","Waimea"],"phrases":["Galaxy : Apporte une explosion de fruits tropicaux et d'agrumes intenses parfaitement adaptée à cette double ipa.","Apollo : Diffuse des notes puissantes d'agrumes et de pamplemousse qui renforcent le profil houblonné de la bière.","Mandarina Bavaria : Libère des arômes vifs de mandarine et de citron pour enrichir nettement la dimension agrumes recherchée.","Summit : Offre des accents prononcés d'orange et de pamplemousse tout en complétant la structure aromatique."]}]}
+· hôtes bloqués par le banc {"n":6,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+· décalage à l’arrivée de l’ordre IA (px, 390 × 844) {"titre":0,"premiereRangee":0,"levure":0,"hauteurGroupe":0,"total":0}
+requêtes reçues par le fournisseur : 4
+aucune erreur de page
+[33m[1m! [22m[39m Script exited unsuccessfully (code 1)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+
+[1m[31mError:[39m[22m Script "[1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m" exited with code 1
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-ia3", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-ia3-emu-zp9vwk\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8093
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-ia3/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· connexion émulée (Auth) {"uid":"fIVDmp…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.7267ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":2975,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2983.7053ms
+· chauffe de la fonction (appel froid, hors mesure) {"visee":"{\"tropical\":2.5}","msJusquALaPuce":2203}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 1-ouverture-liste-du-moteur.png {}
+· ouverture : le moteur, sans puce, place tenue {"rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"puce":null,"placeInvisible":true,"positions":{"titre":279,"premiereRangee":354,"groupeBas":694,"levure":694,"hauteurGroupe":423,"page":844}}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":2712,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2714.4078ms
+· réponse de l’IA {"msJusquALaPuce":2083,"depuisOuvertureMs":3678,"etatALArrivee":"appliquee","rangees":["Mandarina Bavaria","◇lui seul : chewing gum, mandarine","Apollo","◇hors 22A : cannabis, dank","Galaxy","◇hors 22A : groseille à maquereau, cannabis","Calypso"],"decalagePx":{"titre":0,"premiereRangee":0,"levure":-16,"hauteurGroupe":-16}}
+· capture 2-puce-ia.png {}
+· capture 3-ordre-ia-applique.png {}
+· capture 4-phrase-au-toucher.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Apporte des notes intenses de mandarine et d'agrumes qui complètent parfaitement le profil de cette double IPA.","taillePxPhrase":14,"taillePxPuce":14}
+· capture 5-puce-touchee-ordre-du-moteur.png {}
+· puce touchée : l’ordre du moteur rendu {"identique":true,"puce":"prete"}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"9711","updatedAt":"1793099562914"}}]}
+· capture 8-neipa-tropicaux.png {}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.581ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":2750,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2753.9181ms
+· capture 9-stout-s1.png {}
+· réel : stout S1 {"msJusquALaPuce":2146,"puce":"appliquee","rangees":["Magnat","◇lui seul : camomille, lilas","Aurora","◇lui seul : anis, citronnelle","Boadicea","◇lui seul : fruit mûr, barrique","First Gold","◇lui seul : fruits rouges, marmelade"],"moteur":"aucune place (pas de groupe à ranger)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.8914ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":2706,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2709.1014999999998ms
+· capture 10-21c-hazy-du-jeudi.png {}
+· réel : 21C Hazy du jeudi {"msJusquALaPuce":2159,"puce":"appliquee","rangees":["Mandarina Bavaria","◇lui seul : chewing gum","Apollo","◇hors 22A : cannabis, dank","Galaxy","◇hors 22A : groseille à maquereau, cannabis","Cashmere","◇lui seul : thym, bonbon"],"moteur":"aucune place (pas de groupe à ranger)"}
+· rangs de ses six dans le pool (moteur) et dans l’ordre IA {"parAppel":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","candidats":29,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":13,"ia":10},{"houblon":"Calypso","moteur":6,"ia":16},{"houblon":"Pacific Jade","moteur":null,"ia":null},{"houblon":"Idaho 7","moteur":29,"ia":4}]},{"cas":"neipa v3 · agrumes · dry hop actif","candidats":29,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":15,"ia":1},{"houblon":"Calypso","moteur":8,"ia":4},{"houblon":"Pacific Jade","moteur":21,"ia":17},{"houblon":"Idaho 7","moteur":null,"ia":null}]}]}
+· requêtes reçues par le fournisseur {"n":4,"detail":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","ms":2702,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5471,"sortieTokens":878,"moteurTete":["Rakau","Fuggle","Super Galena","Galaxy","Huell Melon","Calypso"],"iaTete":["Galaxy","Citra","Zappa","Idaho 7","Harlequin","Enigma"],"phrases":["Galaxy : Apporte des notes intenses de fruit de la passion et d'ananas pour pousser le profil tropical de cette double ipa.","Citra : Renforce le profil tropical et agrumes avec du fruit de la passion et du litchi en fermentation active.","Zappa : Offre des arômes puissants de mangue et de fruit de la passion parfaitement adaptés au style.","Idaho 7 : Dévoile des nuances de papaye et de fruits tropicaux qui complètent harmonieusement la recette actuelle."]},{"cas":"neipa v3 · agrumes · dry hop actif","ms":2658,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5521,"sortieTokens":910,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Galaxy"],"iaTete":["Mandarina Bavaria","Apollo","Galaxy","Calypso","Cashmere","Summit"],"phrases":["Mandarina Bavaria : Apporte des notes intenses de mandarine et d'agrumes qui complètent parfaitement le profil de cette double IPA.","Apollo : Ses arômes puissants de pamplemousse et d'agrumes renforcent le profil fruité attendu en fermentation active.","Galaxy : Diffuse des vagues de fruits tropicaux et d'agrumes qui amplifient la complexité aromatique de la recette.","Calypso : Apporte une touche de citron vert et de fruits à noyau pour dynamiser les agrumes du brassin."]},{"cas":"stout S1 · plus floral","ms":2705,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5426,"sortieTokens":873,"moteurTete":["Green Bullet","Golding","East Kent Goldings","Fuggle","Mount Hood","Spalter Select"],"iaTete":["Magnat","Aurora","Boadicea","First Gold","Columbus","Hallertau (US)"],"phrases":["Magnat : Apporte des notes florales de lilas et de camomille pour renforcer le profil floral de cette bière.","Aurora : Ses notes florales et sa citronnelle conviennent bien pour accentuer la complexité aromatique recherchée ici.","Boadicea : Sa dominance florale complète harmonieusement la recette actuelle en soutenant la demande du brasseur.","First Gold : Une touche florale et herbacée qui s'accorde avec les ajouts déjà présents dans le brassin."]},{"cas":"21C Hazy du jeudi · plus d’agrumes","ms":2665,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5521,"sortieTokens":868,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Galaxy"],"iaTete":["Mandarina Bavaria","Apollo","Galaxy","Cashmere","Calypso","Waimea"],"phrases":["Mandarina Bavaria : Apporte des notes intenses de mandarine et d'agrumes qui complètent parfaitement le profil de la bière.","Apollo : Renforce le profil avec des notes marquées de pamplemousse et d'agrumes adaptées au style.","Galaxy : Ajoute des vagues de fruits tropicaux et d'agrumes pour accentuer la complexité aromatique.","Cashmere : Diffuse des accents de citron et de citron vert qui rehaussent la fraîcheur agrumée."]}]}
+· hôtes bloqués par le banc {"n":6,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+· décalage à l’arrivée de l’ordre IA (px, 390 × 844) {"titre":0,"premiereRangee":0,"levure":-16,"hauteurGroupe":-16,"total":32}
+requêtes reçues par le fournisseur : 4
+aucune erreur de page
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-ia3", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-ia3-emu-ZXSmmT\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8848
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-ia3/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : neipa v3 {"style":"22A","ma_biere":"Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"}
+· connexion émulée (Auth) {"uid":"edtNEq…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.9386ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":2889,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2897.5328ms
+· chauffe de la fonction (appel froid, hors mesure) {"visee":"{\"tropical\":2.5}","msJusquALaPuce":1308}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 1-ouverture-liste-du-moteur.png {}
+· ouverture : le moteur, sans puce, place tenue {"rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"puce":null,"placeInvisible":true,"positions":{"titre":279,"premiereRangee":354,"groupeBas":694,"levure":694,"hauteurGroupe":423,"page":844}}
+Error: Execution context was destroyed, most likely because of a navigation.
+    at rewriteError (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:562:11)
+    at ExecutionContext.#evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:408:56)
+    at ExecutionContext.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:310:12)
+    at IsolatedWorld.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/IsolatedWorld.ts:206:12)
+    at CdpFrame.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/api/Frame.ts:512:12)
+    at CdpPage.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/api/Page.ts:2481:12)
+    at attendrePuce (C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:256:129)
+    at interne (C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:311:37)
+    at C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts:393:36
+    at ViteNodeRunner.runModule (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/vite-node/dist/client.mjs:397:4)
+requêtes reçues par le fournisseur : 1
+erreurs de page : banc: Error: Execution context was destroyed, most likely because of a navigation.
+    at rewriteError (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:562:11)
+    at ExecutionContext.#evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:408:56)
+    at ExecutionContext.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/ExecutionContext.ts:310:12)
+    at IsolatedWorld.evaluate (file:///C:/Users/mrspa/Documents/Brasserie/node_modules/puppeteer-core/src/cdp/Is
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3282,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3284.3979ms
+[33m[1m! [22m[39m Script exited unsuccessfully (code 1)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+
+[1m[31mError:[39m[22m Script "[1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m" exited with code 1
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-ia3", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-ia3-emu-ISabl7\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8526
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-ia3/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\eval-hop\ia3-emulateur.ts" -- --mode=reel --confirm-paid-ai[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : neipa v3 {"style":"22A","ma_biere":"Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"}
+· connexion émulée (Auth) {"uid":"DXluem…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.9758ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3124,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3133.3199ms
+· chauffe de la fonction (appel froid, hors mesure) {"visee":"{\"tropical\":2.5}","msJusquALaPuce":1523}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 1-ouverture-liste-du-moteur.png {}
+· ouverture : le moteur, sans puce, place tenue {"rangees":["East Kent Goldings","◇lui seul : pain d'épices, aspérule","Golding","◇lui seul : cardamome, pois de senteur","Spalter Select","◇lui seul : concombre, livèche","Mount Hood","◇lui seul : estragon, genièvre"],"puce":null,"placeInvisible":true,"positions":{"titre":279,"premiereRangee":354,"groupeBas":694,"levure":694,"hauteurGroupe":423,"page":844}}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":2658,"email":"brasseur@demo-ia3.test","candidats":29,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2660.3989ms
+· réponse de l’IA {"msJusquALaPuce":2052,"depuisOuvertureMs":3603,"etatALArrivee":"appliquee","rangees":["Mandarina Bavaria","◇lui seul : chewing gum, groseille à maquereau","Cashmere","◇lui seul : thym, bonbon","Calypso","Apollo","◇lui seul : cannabis, dank"],"decalagePx":{"titre":0,"premiereRangee":0,"levure":0,"hauteurGroupe":0}}
+· capture 2-puce-ia.png {}
+· capture 3-ordre-ia-applique.png {}
+· capture 4-phrase-au-toucher.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Apporte des notes intenses de mandarine et d'agrumes frais qui renforcent parfaitement le profil.","taillePxPhrase":14,"taillePxPuce":14}
+· capture 5-puce-touchee-ordre-du-moteur.png {}
+· puce touchée : l’ordre du moteur rendu {"identique":true,"puce":"prete"}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"9448","updatedAt":"1793100313625"}}]}
+· capture 8-neipa-tropicaux.png {}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : stout S1 {"style":"16D","ma_biere":"Ébullition60′60′Nuggetébullition46 gα 9,5–16 %doubleherbe 6/"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.0631ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3318,"email":"brasseur@demo-ia3.test","candidats":30,"phrasesRetirees":0,"severity":"INFO","message":"Suggérer IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3320.6122ms
+· capture 9-stout-s1.png {}
+· réel : stout S1 {"bandeau":"IBU60OG1,066EBC70","msJusquALaPuce":2722,"puce":"prete","rangees":["Target","◇lui seul : marmelade","Willamette","◇lui seul : encens, curry","Nugget","◇lui seul : herbes fraîches écrasées","East Kent Goldings","◇lui seul : miel, pain d'épices"]}
+console.error: Failed to load resource: net::ERR_FAILED
+console.error: Failed to load resource: net::ERR_FAILED
+· recette posée : 21C Hazy du jeudi {"style":"21C","ma_biere":"Ébullition60′60′Nuggetébullition20 gα 9,5–16 %doubleherbe 6/"}
+· capture 10-21c-hazy-du-jeudi.png {}
+· réel : 21C Hazy du jeudi {"bandeau":"IBU28OG1,058EBC8","msJusquALaPuce":-1,"puce":null,"rangees":[]}
+· rangs de ses six dans le pool (moteur) et dans l’ordre IA {"parAppel":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","candidats":29,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":13,"ia":9},{"houblon":"Calypso","moteur":6,"ia":13},{"houblon":"Pacific Jade","moteur":null,"ia":null},{"houblon":"Idaho 7","moteur":29,"ia":3}]},{"cas":"neipa v3 · agrumes · dry hop actif","candidats":29,"six":[{"houblon":"El Dorado","moteur":null,"ia":null},{"houblon":"Mosaic","moteur":null,"ia":null},{"houblon":"Mandarina","moteur":15,"ia":1},{"houblon":"Calypso","moteur":8,"ia":3},{"houblon":"Pacific Jade","moteur":21,"ia":15},{"houblon":"Idaho 7","moteur":null,"ia":null}]}]}
+· requêtes reçues par le fournisseur {"n":3,"detail":[{"cas":"neipa v3 · chauffe de la fonction (visée à part)","ms":2885,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5471,"sortieTokens":848,"moteurTete":["Rakau","Fuggle","Super Galena","Galaxy","Huell Melon","Calypso"],"iaTete":["Galaxy","Citra","Idaho 7","Zappa","Harlequin","Southern Passion"],"phrases":["Galaxy : Apporte des notes intenses de fruit de la passion et d'ananas pour pousser le profil tropical.","Citra : Renforce le profil tropical et agrumes grâce à ses arômes de fruit de la passion et litchi.","Idaho 7 : Ajoute des nuances de papaye et fruits tropicaux pour complexifier le dry hop.","Zappa : Développe une mangue mûre et un fruit de la passion parfaits pour ce style."]},{"cas":"neipa v3 · agrumes · dry hop actif","ms":2603,"candidats":29,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5521,"sortieTokens":856,"moteurTete":["East Kent Goldings","Golding","Spalter Select","Mount Hood","Phoenix","Galaxy"],"iaTete":["Mandarina Bavaria","Cashmere","Calypso","Apollo","Galaxy","Summit"],"phrases":["Mandarina Bavaria : Apporte des notes intenses de mandarine et d'agrumes frais qui renforcent parfaitement le profil.","Cashmere : Sublime la bière avec des touches prononcées de citron et de fruits tropicaux.","Calypso : Enrichit la palette aromatique grâce à ses arômes vifs de citron vert et de fruits.","Apollo : Diffuse une explosion d'agrumes et de pamplemousse adaptée à la puissance du style."]},{"cas":"stout S1 · plus floral","ms":3268,"candidats":30,"valide":true,"retirees":0,"erreurs":[],"entreeTokens":5625,"sortieTokens":859,"moteurTete":["Target","Willamette","Nugget","East Kent Goldings","First Gold","Cluster"],"iaTete":["East Kent Goldings","Ahtanum","Golding","Crystal","Cascade","Amarillo"],"phrases":["East Kent Goldings : Apporte des notes florales de lavande idéales pour complexifier cette stout robuste au whirlpool.","Ahtanum : Sa composante florale marquée enrichit élégamment le profil aromatique sans alourdir le brassin.","Golding : Offre une delicate touche florale et douce parfaitement adaptée au style traditionnel.","Crystal : Ses accents floraux et boisés apportent de la profondeur aromatique au whirlpool."]}]}
+· hôtes bloqués par le banc {"n":6,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+· décalage à l’arrivée de l’ordre IA (px, 390 × 844) {"titre":0,"premiereRangee":0,"levure":0,"hauteurGroupe":0,"total":0}
+requêtes reçues par le fournisseur : 3
+aucune erreur de page
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator

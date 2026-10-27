@@ -162,3 +162,160 @@ export function lireEntree(data: unknown): EntreeReclassement {
   });
   return { moment: momentLu(d.moment), original: ficheLue(d.original), candidats };
 }
+
+// =====================================================================================================================
+// MODE « SUGGÉRER » (voie ia3, `suggerer-v1`). Une invite NEUVE : celle de Substituer (`v1`, figée par un test d'identité sur
+// 78 messages) ne bouge pas. Ici il n'y a pas d'original à remplacer : le brasseur veut AJOUTER un houblon pour une demande
+// (« plus d'agrumes », d'un cran), à un moment, dans un style, à une recette. Le moteur garde la liste, les scores et les barres ;
+// l'IA ne rend que l'ORDRE de tous les candidats donnés et une phrase courte par candidat.
+//
+// Taille du pool : 30. Elle doit couvrir les houblons du brasseur quand ils sont dans les 30 premiers du moteur (m9, neipa v3, dry
+// hop actif, agrumes : Mosaic 10e, Idaho 7 11e, Mandarina 18e, Pacific Jade 27e), donc 20 ne suffit pas. Coût : ~150 jetons par
+// fiche, soit ~5 k jetons d'entrée et ~1,3 k de sortie : de l'ordre de 0,001 à 0,002 CHF en Flash-Lite (mesuré dans l'essai réel).
+// La latence suit la sortie : phrases courtes (18 mots) pour tenir près de la fenêtre de 3 s de l'écran.
+// =====================================================================================================================
+export const PROMPT_VERSION_SUGGERER = 'suggerer-v1';
+export const TAILLE_POOL_SUGGERER = 30;
+export const MIN_POOL_SUGGERER = 10;
+/** Les phrases ne servent qu'aux rangées montrées (3 à 14 par groupe) : seuls les 10 premiers du classement en ont une. Mesuré (essai réel, 4 appels, 29 candidats) :
+ * une phrase par candidat = 1 150 à 1 260 jetons de sortie et 3,5 à 4,7 s, donc hors de la fenêtre de 3 s de l'écran (l'ordre n'est plus appliqué tout seul). */
+export const PHRASES_SUGGERER = 10;
+
+export const SYSTEME_SUGGERER = [
+  'Tu es un brasseur artisanal expert des houblons. Un brasseur veut AJOUTER un houblon à sa bière pour pousser un arôme, à un moment précis du brassin.',
+  `Tu reçois le style, la recette en bref, la demande du brasseur, puis des candidats présélectionnés par un moteur de calcul, listés dans l'ordre du moteur (c01 = le premier selon lui). Classe TOUS les candidats donnés, du meilleur au dernier. Écris une phrase pour chacun des ${PHRASES_SUGGERER} premiers seulement ; pour les suivants, la phrase est vide ("").`,
+  'Juge comme un brasseur, dans cet ordre :',
+  '1. La demande : l\'arôme visé, tel qu\'il sera perçu à ce moment. Lis les mots des fiches, y compris ceux qu\'aucune famille classique ne range (vin blanc, groseille à maquereau, sauvignon blanc, mojito, noix de coco…).',
+  '2. Le style : ce qui est typé pour ce style. Tu peux t\'appuyer sur ton savoir du style (par exemple ce qui fait une IPA, une stout ou une saison) ; un houblon hors de l\'esprit du style passe après.',
+  '3. Le moment : à 60 minutes, seule l\'amertume compte ; à 10 minutes et au whirlpool, l\'arôme et les huiles comptent, l\'amertume est secondaire ; en dry hop, l\'arôme et les huiles priment, et pendant la fermentation active la levure peut en transformer certains composés.',
+  '4. La recette : ce qu\'elle contient déjà. Complète-la plutôt que de la doubler.',
+  '5. Les huiles (myrcène, humulène, caryophyllène, farnésène, linalol) et la classe thiol, qui disent le caractère quand les mots sont rares ; l\'usage déclaré (aroma, dual, bittering).',
+  'Règles : l\'ordre du moteur est une indication, pas une vérité : il se trompe quand une fiche est creuse ou que les mots sont hors des familles ; corrige-le quand ton jugement de brasseur le demande, sans le suivre ni le contredire par principe. « inconnu » veut dire que la donnée manque, pas qu\'elle vaut zéro : ne pénalise pas et ne favorise pas sur cette base. Ne cite qu\'un identifiant (c01, c02…) donné dans la liste, une seule fois, et tous les identifiants donnés.',
+  'Chaque phrase : en français, 18 mots au plus, ce que ce houblon apporte à CETTE demande dans CE style. Elle ne contient AUCUN chiffre qui ne soit pas écrit dans le message : tu peux t\'appuyer sur ton savoir du style, mais tu n\'inventes jamais de valeur chiffrée. Elle ne cite jamais un identifiant cNN, et elle ne dit pas « excellent » ou « parfait » : elle dit pourquoi.',
+].join('\n');
+export const GENERATION_SUGGERER = { temperature: 0, maxOutputTokens: 6000, thinkingLevel: 'low' };
+
+/** Les moments de Suggérer. `dryhop.phase` : pendant la fermentation active, ou après. */
+export type MomentSuggerer = { type: 'ebullition'; minutes: number } | { type: 'premierMout' } | { type: 'whirlpool' } | { type: 'dryhop'; phase: 'actif' | 'apres' };
+export function libelleMomentSuggerer(m: MomentSuggerer): string {
+  if (m.type === 'dryhop') return m.phase === 'actif' ? 'dry hop pendant la fermentation active (l\'arôme et les huiles priment ; la levure peut transformer certains composés)' : 'dry hop après la fermentation (l\'arôme et les huiles priment ; pas de biotransformation)';
+  return libelleMoment(m);
+}
+export interface EntreeSuggerer {
+  mode: 'suggerer';
+  style: { code: string; nom: string };
+  recette: { og: number | null; ibu: number | null; volumeL: number | null; houblons: { nom: string; grammes: number; moment: string }[] };
+  /** « plus d'agrumes », d'un cran : `crans` est un entier de 1 à 3, `sens` +1 (plus) ou −1 (moins). */
+  demande: { objectifs: { famille: string; sens: 1 | -1; crans: number }[]; moment: MomentSuggerer };
+  candidats: { id: string; fiche: FicheCourte }[];
+}
+
+const nombreFr = (n: number | null | undefined, unite = '') => (n == null ? 'inconnu' : `${String(Math.round(n * 1000) / 1000).replace('.', ',')}${unite}`);
+/** Le message de l'utilisateur du mode « suggérer » : le style, la recette, la demande, les candidats dans l'ordre du moteur (c01, c02…). */
+export function construireInviteSuggerer(e: EntreeSuggerer): string {
+  const cran = (c: number) => (c === 1 ? 'd\'un cran' : `de ${c} crans`);
+  const de = (f: string) => (/^[aeiouyhéèêâî]/i.test(f) ? `d'${f}` : `de ${f}`);
+  const objectifs = e.demande.objectifs.map((o) => `${o.sens > 0 ? 'plus' : 'moins'} ${de(o.famille)} (${cran(o.crans)})`).join(' ; ');
+  const houblons = e.recette.houblons.length ? e.recette.houblons.map((h) => `${h.nom} ${nombreFr(h.grammes, ' g')} (${h.moment})`).join(' ; ') : 'aucun';
+  return [
+    `Style : ${e.style.nom} (${e.style.code}).`,
+    `Recette : OG ${nombreFr(e.recette.og)} · IBU ${nombreFr(e.recette.ibu)} · ${nombreFr(e.recette.volumeL, ' L')} · houblons déjà là : ${houblons}.`,
+    `Demande du brasseur : ${objectifs}. Moment visé : ${libelleMomentSuggerer(e.demande.moment)}.`,
+    '',
+    "Candidats (ordre du moteur ; huiles en % de l'huile totale ; « inconnu » : donnée absente) :",
+    ...e.candidats.map((c, i) => ficheTexte(c.fiche, identifiant(i))), '',
+    `Rends le classement des ${e.candidats.length} candidats (identifiants c01 à c${String(e.candidats.length).padStart(2, '0')}), tous, du meilleur au dernier, avec une phrase pour chacun des ${PHRASES_SUGGERER} premiers.`,
+  ].join('\n');
+}
+export function corpsRequeteSuggerer(user: string) {
+  return {
+    systemInstruction: { parts: [{ text: SYSTEME_SUGGERER }] }, contents: [{ role: 'user', parts: [{ text: user }] }],
+    generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA, temperature: GENERATION_SUGGERER.temperature, maxOutputTokens: GENERATION_SUGGERER.maxOutputTokens, thinkingConfig: { thinkingLevel: GENERATION_SUGGERER.thinkingLevel } },
+  };
+}
+
+const NOMBRES = /\d+(?:[.,]\d+)?/g;
+const normaliser = (s: string) => s.replace(/,/g, '.');
+/** Les nombres d'une phrase qui ne sont pas dans le message : une valeur inventée. Un identifiant cNN cité compte aussi. */
+export function chiffresInventes(phrase: string, message: string): string[] {
+  const permis = new Set((message.match(NOMBRES) ?? []).map(normaliser));
+  const sansId = phrase.replace(/\bc\d{1,2}\b/gi, ' ');
+  const inventes = (sansId.match(NOMBRES) ?? []).map(normaliser).filter((n) => !permis.has(n));
+  return /\bc\d{1,2}\b/i.test(phrase) ? [...inventes, 'identifiant'] : inventes;
+}
+/** Ce qu'une phrase a le droit de citer : le contexte (style, recette, demande) et la ligne de SON candidat, pas celles des autres :
+ * une valeur de la fiche d'un voisin, attribuée à ce candidat, est une valeur inventée pour lui. */
+export function contexteDe(message: string, id: string): string {
+  const fin = message.indexOf('Candidats (');
+  const ligne = message.split('\n').find((l) => l.startsWith(`${id} · `)) ?? '';
+  return `${fin < 0 ? '' : message.slice(0, fin)}\n${ligne}`;
+}
+export interface AnalyseSuggerer { valide: boolean; ordre: string[]; phrases: Record<string, string>; erreurs: string[]; retirees: string[] }
+/** Un classement valide range TOUS les candidats donnés, une fois chacun, tous dans la liste, chacun avec une phrase. Jamais corrigé : refusé
+ * sinon. Une phrase qui contient une valeur chiffrée absente du message (ou un identifiant) est RETIRÉE (l'ordre reste, la rangée n'a pas
+ * de phrase) : l'IA ne dit jamais un chiffre qu'on ne lui a pas donné. `ids` : c01… donnés ; `message` : l'invite envoyée. */
+export function analyserReponseSuggerer(texte: string | undefined, ids: readonly string[], message: string): AnalyseSuggerer {
+  const erreurs: string[] = [], retirees: string[] = [], permis = new Set(ids);
+  let json: any;
+  try { json = JSON.parse(String(texte ?? '').replace(/```json/g, '').replace(/```/g, '').trim()); } catch { return { valide: false, ordre: [], phrases: {}, erreurs: ['JSON illisible'], retirees }; }
+  const liste: any[] = Array.isArray(json?.classement) ? json.classement : [];
+  if (!liste.length) erreurs.push('classement absent');
+  const ordre: string[] = [], phrases: Record<string, string> = {};
+  for (const x of liste) {
+    const id = typeof x?.id === 'string' ? x.id.trim().toLowerCase() : '';
+    if (!permis.has(id)) { erreurs.push(`identifiant hors liste : ${String(x?.id).slice(0, 12)}`); continue; }
+    if (ordre.includes(id)) { erreurs.push(`identifiant en double : ${id}`); continue; }
+    ordre.push(id);
+    const phrase = typeof x.phrase === 'string' ? x.phrase.trim() : '';
+    // Les PHRASES_SUGGERER premiers ont une phrase ; après, une phrase vide est permise (elle n'est jamais montrée).
+    if (!phrase) { if (ordre.length <= PHRASES_SUGGERER) erreurs.push(`phrase vide : ${id}`); continue; }
+    if (chiffresInventes(phrase, contexteDe(message, id)).length) retirees.push(id); else phrases[id] = phrase;
+  }
+  if (ordre.length !== ids.length) erreurs.push(`${ordre.length} candidats rangés sur ${ids.length}`);
+  return { valide: erreurs.length === 0, ordre, phrases, erreurs, retirees };
+}
+
+const nombreLu = (v: unknown, min: number, max: number, nul = false): number | null => {
+  if (v == null && nul) return null;
+  if (typeof v !== 'number' || !Number.isFinite(v) || v < min || v > max) throw new Error('nombre invalide');
+  return v;
+};
+function momentSuggererLu(v: any): MomentSuggerer {
+  if (v?.type === 'whirlpool' || v?.type === 'premierMout') return { type: v.type };
+  if (v?.type === 'dryhop' && (v.phase === 'actif' || v.phase === 'apres')) return { type: 'dryhop', phase: v.phase };
+  if (v?.type === 'ebullition' && Number.isInteger(v.minutes) && v.minutes >= 0 && v.minutes <= 240) return { type: 'ebullition', minutes: v.minutes };
+  throw new Error('moment invalide');
+}
+/** Lève une Error au message lisible si l'entrée n'est pas celle qu'on attend : 10 à 30 candidats, des identifiants distincts, des textes et nombres bornés. */
+export function lireEntreeSuggerer(data: unknown): EntreeSuggerer {
+  const d = data as any;
+  if (!d || typeof d !== 'object' || !Array.isArray(d.candidats) || d.mode !== 'suggerer') throw new Error('entrée absente');
+  if (d.candidats.length < MIN_POOL_SUGGERER || d.candidats.length > TAILLE_POOL_SUGGERER) throw new Error(`il faut ${MIN_POOL_SUGGERER} à ${TAILLE_POOL_SUGGERER} candidats`);
+  const vus = new Set<string>();
+  const candidats = d.candidats.map((c: any) => {
+    const id = texteBorne(c?.id)!;
+    if (vus.has(id)) throw new Error('identifiant de candidat en double');
+    vus.add(id);
+    return { id, fiche: ficheLue(c?.fiche) };
+  });
+  if (!d.style || typeof d.style !== 'object' || !d.recette || typeof d.recette !== 'object' || !d.demande || typeof d.demande !== 'object') throw new Error('style, recette ou demande absents');
+  if (!Array.isArray(d.recette.houblons) || d.recette.houblons.length > 12) throw new Error('houblons de la recette invalides');
+  if (!Array.isArray(d.demande.objectifs) || d.demande.objectifs.length < 1 || d.demande.objectifs.length > 4) throw new Error('objectifs invalides');
+  return {
+    mode: 'suggerer',
+    style: { code: texteBorne(d.style.code)!, nom: texteBorne(d.style.nom)! },
+    recette: {
+      og: nombreLu(d.recette.og, 1, 1.3, true), ibu: nombreLu(d.recette.ibu, 0, 300, true), volumeL: nombreLu(d.recette.volumeL, 1, 10000, true),
+      houblons: d.recette.houblons.map((h: any) => ({ nom: texteBorne(h?.nom)!, grammes: nombreLu(h?.grammes, 0, 100000)!, moment: texteBorne(h?.moment)! })),
+    },
+    demande: {
+      objectifs: d.demande.objectifs.map((o: any) => {
+        if (o?.sens !== 1 && o?.sens !== -1) throw new Error('sens invalide');
+        if (!Number.isInteger(o?.crans) || o.crans < 1 || o.crans > 3) throw new Error('crans invalides');
+        return { famille: texteBorne(o.famille)!, sens: o.sens as 1 | -1, crans: o.crans as number };
+      }),
+      moment: momentSuggererLu(d.demande.moment),
+    },
+    candidats,
+  };
+}

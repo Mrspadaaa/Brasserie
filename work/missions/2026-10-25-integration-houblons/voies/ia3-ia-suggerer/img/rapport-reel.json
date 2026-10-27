@@ -1,0 +1,591 @@
+{
+ "mode": "reel",
+ "etapes": [
+  {
+   "nom": "budget semé dans Firestore émulé",
+   "statut": 200,
+   "limite": "5 CHF (émulateur)"
+  },
+  {
+   "nom": "recette posée : neipa v3",
+   "style": "22A",
+   "ma_biere": "Ébullition60′20′Lotusébullition78 gα 13–17 %doubleagrumes 3/"
+  },
+  {
+   "nom": "connexion émulée (Auth)",
+   "uid": "DXluem…"
+  },
+  {
+   "nom": "chauffe de la fonction (appel froid, hors mesure)",
+   "visee": "{\"tropical\":2.5}",
+   "msJusquALaPuce": 1523
+  },
+  {
+   "nom": "capture 1-ouverture-liste-du-moteur.png"
+  },
+  {
+   "nom": "ouverture : le moteur, sans puce, place tenue",
+   "rangees": [
+    "East Kent Goldings",
+    "◇lui seul : pain d'épices, aspérule",
+    "Golding",
+    "◇lui seul : cardamome, pois de senteur",
+    "Spalter Select",
+    "◇lui seul : concombre, livèche",
+    "Mount Hood",
+    "◇lui seul : estragon, genièvre"
+   ],
+   "puce": null,
+   "placeInvisible": true,
+   "positions": {
+    "titre": 279,
+    "premiereRangee": 354,
+    "groupeBas": 694,
+    "levure": 694,
+    "hauteurGroupe": 423,
+    "page": 844
+   }
+  },
+  {
+   "nom": "réponse de l’IA",
+   "msJusquALaPuce": 2052,
+   "depuisOuvertureMs": 3603,
+   "etatALArrivee": "appliquee",
+   "rangees": [
+    "Mandarina Bavaria",
+    "◇lui seul : chewing gum, groseille à maquereau",
+    "Cashmere",
+    "◇lui seul : thym, bonbon",
+    "Calypso",
+    "Apollo",
+    "◇lui seul : cannabis, dank"
+   ],
+   "decalagePx": {
+    "titre": 0,
+    "premiereRangee": 0,
+    "levure": 0,
+    "hauteurGroupe": 0
+   }
+  },
+  {
+   "nom": "capture 2-puce-ia.png"
+  },
+  {
+   "nom": "capture 3-ordre-ia-applique.png"
+  },
+  {
+   "nom": "capture 4-phrase-au-toucher.png"
+  },
+  {
+   "nom": "phrase de l’IA au toucher d’une rangée",
+   "phrase": "IA Apporte des notes intenses de mandarine et d'agrumes frais qui renforcent parfaitement le profil.",
+   "taillePxPhrase": 14,
+   "taillePxPuce": 14
+  },
+  {
+   "nom": "capture 5-puce-touchee-ordre-du-moteur.png"
+  },
+  {
+   "nom": "puce touchée : l’ordre du moteur rendu",
+   "identique": true,
+   "puce": "prete"
+  },
+  {
+   "nom": "budget mensuel après les appels (Firestore émulé)",
+   "documents": [
+    {
+     "nom": "2026-10",
+     "champs": {
+      "month": "2026-10",
+      "reservedMicroChf": "0",
+      "usedMicroChf": "9448",
+      "updatedAt": "1793100313625"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "capture 8-neipa-tropicaux.png"
+  },
+  {
+   "nom": "recette posée : stout S1",
+   "style": "16D",
+   "ma_biere": "Ébullition60′60′Nuggetébullition46 gα 9,5–16 %doubleherbe 6/"
+  },
+  {
+   "nom": "capture 9-stout-s1.png"
+  },
+  {
+   "nom": "réel : stout S1",
+   "bandeau": "IBU60OG1,066EBC70",
+   "msJusquALaPuce": 2722,
+   "puce": "prete",
+   "rangees": [
+    "Target",
+    "◇lui seul : marmelade",
+    "Willamette",
+    "◇lui seul : encens, curry",
+    "Nugget",
+    "◇lui seul : herbes fraîches écrasées",
+    "East Kent Goldings",
+    "◇lui seul : miel, pain d'épices"
+   ]
+  },
+  {
+   "nom": "recette posée : 21C Hazy du jeudi",
+   "style": "21C",
+   "ma_biere": "Ébullition60′60′Nuggetébullition20 gα 9,5–16 %doubleherbe 6/"
+  },
+  {
+   "nom": "capture 10-21c-hazy-du-jeudi.png"
+  },
+  {
+   "nom": "réel : 21C Hazy du jeudi",
+   "bandeau": "IBU28OG1,058EBC8",
+   "msJusquALaPuce": -1,
+   "puce": null,
+   "rangees": []
+  },
+  {
+   "nom": "rangs de ses six dans le pool (moteur) et dans l’ordre IA",
+   "parAppel": [
+    {
+     "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+     "candidats": 29,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": 13,
+       "ia": 9
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": 6,
+       "ia": 13
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": 29,
+       "ia": 3
+      }
+     ]
+    },
+    {
+     "cas": "neipa v3 · agrumes · dry hop actif",
+     "candidats": 29,
+     "six": [
+      {
+       "houblon": "El Dorado",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mosaic",
+       "moteur": null,
+       "ia": null
+      },
+      {
+       "houblon": "Mandarina",
+       "moteur": 15,
+       "ia": 1
+      },
+      {
+       "houblon": "Calypso",
+       "moteur": 8,
+       "ia": 3
+      },
+      {
+       "houblon": "Pacific Jade",
+       "moteur": 21,
+       "ia": 15
+      },
+      {
+       "houblon": "Idaho 7",
+       "moteur": null,
+       "ia": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "requêtes reçues par le fournisseur",
+   "n": 3,
+   "detail": [
+    {
+     "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+     "ms": 2885,
+     "candidats": 29,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 5471,
+     "sortieTokens": 848,
+     "moteurTete": [
+      "Rakau",
+      "Fuggle",
+      "Super Galena",
+      "Galaxy",
+      "Huell Melon",
+      "Calypso"
+     ],
+     "iaTete": [
+      "Galaxy",
+      "Citra",
+      "Idaho 7",
+      "Zappa",
+      "Harlequin",
+      "Southern Passion"
+     ],
+     "phrases": [
+      "Galaxy : Apporte des notes intenses de fruit de la passion et d'ananas pour pousser le profil tropical.",
+      "Citra : Renforce le profil tropical et agrumes grâce à ses arômes de fruit de la passion et litchi.",
+      "Idaho 7 : Ajoute des nuances de papaye et fruits tropicaux pour complexifier le dry hop.",
+      "Zappa : Développe une mangue mûre et un fruit de la passion parfaits pour ce style."
+     ]
+    },
+    {
+     "cas": "neipa v3 · agrumes · dry hop actif",
+     "ms": 2603,
+     "candidats": 29,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 5521,
+     "sortieTokens": 856,
+     "moteurTete": [
+      "East Kent Goldings",
+      "Golding",
+      "Spalter Select",
+      "Mount Hood",
+      "Phoenix",
+      "Galaxy"
+     ],
+     "iaTete": [
+      "Mandarina Bavaria",
+      "Cashmere",
+      "Calypso",
+      "Apollo",
+      "Galaxy",
+      "Summit"
+     ],
+     "phrases": [
+      "Mandarina Bavaria : Apporte des notes intenses de mandarine et d'agrumes frais qui renforcent parfaitement le profil.",
+      "Cashmere : Sublime la bière avec des touches prononcées de citron et de fruits tropicaux.",
+      "Calypso : Enrichit la palette aromatique grâce à ses arômes vifs de citron vert et de fruits.",
+      "Apollo : Diffuse une explosion d'agrumes et de pamplemousse adaptée à la puissance du style."
+     ]
+    },
+    {
+     "cas": "stout S1 · plus floral",
+     "ms": 3268,
+     "candidats": 30,
+     "valide": true,
+     "retirees": 0,
+     "erreurs": [],
+     "entreeTokens": 5625,
+     "sortieTokens": 859,
+     "moteurTete": [
+      "Target",
+      "Willamette",
+      "Nugget",
+      "East Kent Goldings",
+      "First Gold",
+      "Cluster"
+     ],
+     "iaTete": [
+      "East Kent Goldings",
+      "Ahtanum",
+      "Golding",
+      "Crystal",
+      "Cascade",
+      "Amarillo"
+     ],
+     "phrases": [
+      "East Kent Goldings : Apporte des notes florales de lavande idéales pour complexifier cette stout robuste au whirlpool.",
+      "Ahtanum : Sa composante florale marquée enrichit élégamment le profil aromatique sans alourdir le brassin.",
+      "Golding : Offre une delicate touche florale et douce parfaitement adaptée au style traditionnel.",
+      "Crystal : Ses accents floraux et boisés apportent de la profondeur aromatique au whirlpool."
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "hôtes bloqués par le banc",
+   "n": 6,
+   "exemples": [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"
+   ]
+  },
+  {
+   "nom": "décalage à l’arrivée de l’ordre IA (px, 390 × 844)",
+   "titre": 0,
+   "premiereRangee": 0,
+   "levure": 0,
+   "hauteurGroupe": 0,
+   "total": 0
+  }
+ ],
+ "erreurs": [],
+ "appels": [
+  {
+   "cas": "neipa v3 · chauffe de la fonction (visée à part)",
+   "modele": "gemini-3.5-flash-lite",
+   "ms": 2885,
+   "reel": true,
+   "candidats": 29,
+   "moteur": [
+    "Rakau",
+    "Fuggle",
+    "Super Galena",
+    "Galaxy",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Zappa",
+    "Harlequin",
+    "Cashmere",
+    "Nugget",
+    "Columbus",
+    "Mandarina Bavaria",
+    "Waimea",
+    "Galena",
+    "Summit",
+    "Southern Cross",
+    "Hersbrucker",
+    "Kazbek",
+    "Delta",
+    "Triumph",
+    "Idaho Gem",
+    "BRU-1",
+    "Enigma",
+    "Southern Passion",
+    "Callista",
+    "Relax",
+    "Citra",
+    "Idaho 7"
+   ],
+   "ia": [
+    "Galaxy",
+    "Citra",
+    "Idaho 7",
+    "Zappa",
+    "Harlequin",
+    "Southern Passion",
+    "Enigma",
+    "BRU-1",
+    "Mandarina Bavaria",
+    "Cashmere",
+    "Rakau",
+    "Huell Melon",
+    "Calypso",
+    "Topaz",
+    "Nugget",
+    "Waimea",
+    "Galena",
+    "Southern Cross",
+    "Delta",
+    "Triumph",
+    "Idaho Gem",
+    "Callista",
+    "Relax",
+    "Super Galena",
+    "Columbus",
+    "Summit",
+    "Hersbrucker",
+    "Kazbek",
+    "Fuggle"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Galaxy : Apporte des notes intenses de fruit de la passion et d'ananas pour pousser le profil tropical.",
+    "Citra : Renforce le profil tropical et agrumes grâce à ses arômes de fruit de la passion et litchi.",
+    "Idaho 7 : Ajoute des nuances de papaye et fruits tropicaux pour complexifier le dry hop.",
+    "Zappa : Développe une mangue mûre et un fruit de la passion parfaits pour ce style."
+   ],
+   "entreeTokens": 5471,
+   "sortieTokens": 848
+  },
+  {
+   "cas": "neipa v3 · agrumes · dry hop actif",
+   "modele": "gemini-3.5-flash-lite",
+   "ms": 2603,
+   "reel": true,
+   "candidats": 29,
+   "moteur": [
+    "East Kent Goldings",
+    "Golding",
+    "Spalter Select",
+    "Mount Hood",
+    "Phoenix",
+    "Galaxy",
+    "Topaz",
+    "Calypso",
+    "Huell Melon",
+    "Warrior",
+    "Cashmere",
+    "Columbus",
+    "Nugget",
+    "Waimea",
+    "Mandarina Bavaria",
+    "Lemondrop",
+    "Apollo",
+    "Wai-iti",
+    "Galena",
+    "Summit",
+    "Pacific Jade",
+    "Jarrylo",
+    "Southern Cross",
+    "Hersbrucker",
+    "Tettnanger",
+    "Kazbek",
+    "Styrian Golding",
+    "Herkules",
+    "Target"
+   ],
+   "ia": [
+    "Mandarina Bavaria",
+    "Cashmere",
+    "Calypso",
+    "Apollo",
+    "Galaxy",
+    "Summit",
+    "Jarrylo",
+    "Southern Cross",
+    "Waimea",
+    "Herkules",
+    "Lemondrop",
+    "Nugget",
+    "Galena",
+    "Topaz",
+    "Pacific Jade",
+    "Wai-iti",
+    "Target",
+    "Huell Melon",
+    "Columbus",
+    "Warrior",
+    "Phoenix",
+    "East Kent Goldings",
+    "Golding",
+    "Kazbek",
+    "Mount Hood",
+    "Spalter Select",
+    "Tettnanger",
+    "Styrian Golding",
+    "Hersbrucker"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "Mandarina Bavaria : Apporte des notes intenses de mandarine et d'agrumes frais qui renforcent parfaitement le profil.",
+    "Cashmere : Sublime la bière avec des touches prononcées de citron et de fruits tropicaux.",
+    "Calypso : Enrichit la palette aromatique grâce à ses arômes vifs de citron vert et de fruits.",
+    "Apollo : Diffuse une explosion d'agrumes et de pamplemousse adaptée à la puissance du style."
+   ],
+   "entreeTokens": 5521,
+   "sortieTokens": 856
+  },
+  {
+   "cas": "stout S1 · plus floral",
+   "modele": "gemini-3.5-flash-lite",
+   "ms": 3268,
+   "reel": true,
+   "candidats": 30,
+   "moteur": [
+    "Target",
+    "Willamette",
+    "Nugget",
+    "East Kent Goldings",
+    "First Gold",
+    "Cluster",
+    "Motueka",
+    "Northdown",
+    "Ahtanum",
+    "Strisselspalt",
+    "Mount Hood",
+    "Liberty",
+    "Saphir",
+    "Sterling",
+    "Centennial",
+    "Cascade",
+    "Styrian Golding",
+    "Spalter Select",
+    "Tettnanger",
+    "Huell Melon",
+    "Mosaic",
+    "Amarillo",
+    "Golding",
+    "Hersbrucker",
+    "Citra",
+    "Lemondrop",
+    "Wakatu",
+    "Fuggle",
+    "Crystal",
+    "Hallertau (US)"
+   ],
+   "ia": [
+    "East Kent Goldings",
+    "Ahtanum",
+    "Golding",
+    "Crystal",
+    "Cascade",
+    "Amarillo",
+    "Willamette",
+    "Tettnanger",
+    "Liberty",
+    "Cluster",
+    "First Gold",
+    "Motueka",
+    "Northdown",
+    "Strisselspalt",
+    "Sterling",
+    "Centennial",
+    "Mosaic",
+    "Citra",
+    "Lemondrop",
+    "Wakatu",
+    "Hallertau (US)",
+    "Nugget",
+    "Mount Hood",
+    "Saphir",
+    "Styrian Golding",
+    "Spalter Select",
+    "Huell Melon",
+    "Hersbrucker",
+    "Fuggle",
+    "Target"
+   ],
+   "valide": true,
+   "retirees": 0,
+   "erreurs": [],
+   "phrases": [
+    "East Kent Goldings : Apporte des notes florales de lavande idéales pour complexifier cette stout robuste au whirlpool.",
+    "Ahtanum : Sa composante florale marquée enrichit élégamment le profil aromatique sans alourdir le brassin.",
+    "Golding : Offre une delicate touche florale et douce parfaitement adaptée au style traditionnel.",
+    "Crystal : Ses accents floraux et boisés apportent de la profondeur aromatique au whirlpool."
+   ],
+   "entreeTokens": 5625,
+   "sortieTokens": 859
+  }
+ ]
+}
