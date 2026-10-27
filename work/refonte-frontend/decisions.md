@@ -1167,3 +1167,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     remplacements, même hors du style ailleurs.
   - L'objectif « faire baisser » de D193 reste.
   Le reste de D193 (le banni seulement rangé derrière) est remplacé.
+- D195 (pilote, 27.10, voie s3, sous « Corrige jusqu'à finir même si 100% ») : la saturation.
+  - **R1** : une famille de la direction (à monter, à baisser ou bannie) qui sort de sa bande, c'est sa demande. Elle ne compte ni au rang,
+    ni en « hors du style ». Les barres de la famille demandée ne sont donc plus orangées ; c'est l'option (a), réversible
+    (`saturation: false`).
+  - **R2** : un excès de moins d'un quart de cran n'est pas hors du style.
+  - **R3** : 4 remplacements sont réservés pour une famille à baisser, ce qui garde le « Remplacer » de D194.
+  - **Résultats** : carte et liste se contredisaient dans 4 listes sur 62, plus aucune après. Sur la neipa saturée, les nobles quittent la
+    tête. 1083 tests, ETATS 138/138.
+  - **Reste à faire, voie s3 suite (R4)** : Warrior et Nugget, deux amérisants, arrivent en tête de « plus d'agrumes » saturé. Au whirlpool
+    et au dry hop, un amérisant passera après les houblons d'arôme et les mixtes. C'est la règle symétrique de g2b et de D106.
