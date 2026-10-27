@@ -1,0 +1,148 @@
+{
+ "houblons": [
+  "beermaverick-citra:cryo",
+  "beermaverick-nectaron"
+ ],
+ "style": {
+  "10": {
+   "moment": "à 10′",
+   "echelle": "axe",
+   "maxAxe": {
+    "floral": "2,3",
+    "citrus": "3,7",
+    "tropical": "3,9",
+    "stoneFruit": "2,8",
+    "berries": "3,5",
+    "melon": "1,8",
+    "resin": "2,4",
+    "spice": "0,2",
+    "green": "0,9"
+   },
+   "retenue": [
+    {
+     "nom": "Citra",
+     "n": 9,
+     "somme": 21.43,
+     "aire": 37414
+    }
+   ]
+  },
+  "60": {
+   "moment": "à 60′",
+   "echelle": "axe",
+   "maxAxe": {
+    "floral": "0,6",
+    "citrus": "1",
+    "tropical": "1,1",
+    "stoneFruit": "0,6",
+    "berries": "0,9",
+    "melon": "0,3",
+    "resin": "0,6",
+    "spice": "0,1",
+    "green": "0,2"
+   },
+   "retenue": [
+    {
+     "nom": "Citra",
+     "n": 9,
+     "somme": 5.34,
+     "aire": 37414
+    }
+   ]
+  },
+  "whirlpool": {
+   "moment": "au whirlpool",
+   "echelle": "axe",
+   "maxAxe": {
+    "floral": "2,3",
+    "citrus": "3,7",
+    "tropical": "4",
+    "stoneFruit": "2,9",
+    "berries": "3,7",
+    "melon": "1,9",
+    "resin": "2,5",
+    "spice": "0,2",
+    "green": "0,9"
+   },
+   "retenue": [
+    {
+     "nom": "Citra",
+     "n": 9,
+     "somme": 22.03,
+     "aire": 37414
+    }
+   ]
+  },
+  "dryhop-actif": {
+   "moment": "au dry hop actif",
+   "echelle": "axe",
+   "maxAxe": {
+    "floral": "2,5",
+    "citrus": "3,9",
+    "tropical": "4,7",
+    "stoneFruit": "3,7",
+    "berries": "4,5",
+    "melon": "2,5",
+    "resin": "3,3",
+    "spice": "0,4",
+    "green": "1,7"
+   },
+   "retenue": [
+    {
+     "nom": "Citra",
+     "n": 9,
+     "somme": 27,
+     "aire": 37178
+    }
+   ]
+  },
+  "dryhop-apres": {
+   "moment": "au dry hop après",
+   "echelle": "axe",
+   "maxAxe": {
+    "floral": "2,5",
+    "citrus": "4",
+    "tropical": "4,8",
+    "stoneFruit": "3,9",
+    "berries": "4,5",
+    "melon": "2,7",
+    "resin": "3,9",
+    "spice": "0,8",
+    "green": "3"
+   },
+   "retenue": [
+    {
+     "nom": "Citra",
+     "n": 9,
+     "somme": 29.93,
+     "aire": 37104
+    }
+   ]
+  }
+ },
+ "pairesJugees": 8,
+ "absolu": {
+  "echelle": "0–12,5",
+  "bande": false,
+  "sommetsBande": 0,
+  "r0": 20.7,
+  "RR": 124,
+  "series": [
+   {
+    "nom": "Nectaron",
+    "n": 3,
+    "etendueMax": 0.32
+   },
+   {
+    "nom": "Citra",
+    "n": 9,
+    "etendueMax": 0.39
+   },
+   {
+    "nom": "ref : ta bière",
+    "n": 11,
+    "etendueMax": 0.02
+   }
+  ]
+ }
+}
