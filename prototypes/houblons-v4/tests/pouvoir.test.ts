@@ -317,9 +317,11 @@ describe('Aucune valeur inconnue n’est 0 ; chaque chiffre porte sa base, sa so
   it('cryo, lot, variété absente : inconnu avec la raison ; le lot remplace la plage', () => {
     const cryo = seul('beermaverick-citra:cryo');
     expect(cryo.chargeHuile.plage).toMatchObject({ min: 8, max: 24 }); // 2–6 mL/100 g × 4 g/L ÷ 10
-    expect(cryo.composes.linalol.charge.plage).toBeNull();
-    expect(cryo.composes.linalol.charge.inconnu).toMatch(/cryo/);
-    expect(cryo.drapeaux.some((d) => d.id === 'cryo')).toBe(true);
+    // D118 (f8, D190) : le fichier n'a pas relevé la composition de l'huile du cryo ; elle est celle de la VARIÉTÉ, marquée « de la variété » (avant : charge inconnue, 0 partout dans la simulation).
+    expect(cryo.composes.linalol.charge.plage).not.toBeNull();
+    expect(cryo.composes.linalol.teneur.hypotheses.join(' ')).toMatch(/de la variété/);
+    expect(cryo.deLaVariete).toContain('linalol');
+    expect(cryo.drapeaux.find((d) => d.id === 'cryo')!.statut).toBe('de la variété');
     const lot = seul(CASCADE, 'dryPost', 4, S1(), { lot: 'CAS-2400' });
     expect(lot.composes.linalol.teneur.plage).toMatchObject({ min: 0.03, max: 0.03 });
     expect(lot.drapeaux.find((d) => d.id === 'hsi')!.statut).toMatch(/≤ 0,31/);

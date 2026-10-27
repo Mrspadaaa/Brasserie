@@ -34,7 +34,8 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 //    départage avant les effets de bord : les 4 voies « à acheter » de S1 passent d'Aurum, East Kent Goldings, Boadicea, Celeia à East Kent Goldings, Hallertau Tradition, Huell Melon, Saphir. 14 rangées, 230 → 932 voies évaluées).
 //  - D106 (voie f4, 3) : remplacants e6b71ac8e04d → 5c602de7c804 (à 60′, un houblon d'usage « arôme » de Beer Maverick recule avec sa raison écrite, comme Suggérer le lit) et substitutes c6399d7b6596 → 289ca4efaed4 ; proposer et suggerer ne bougent pas.
 //  - remplacants 32e2ef725fec → e6b71ac8e04d et substitutes cac6de6d0c72 → c6399d7b6596 (C, J1 : à 60′ l'α passe de 0,4 à 0,15 dans l'amertume ; β 0,25, cohumulone 0,3, usage 0,3)).
-const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: 'af7f2ecc1069', proposer: '3b946ac8a4ff', remplacants: '5c602de7c804' };
+// D118 (voie f8, 27.10) : suggerer af7f2ecc1069 → 45120c1bc857 (D190 : Citra cryo reprend la composition d'huile de Citra, donc son effet simulé sur la famille visée n'est plus 0 ; il se classe parmi les houblons du stock). proposer 3b946ac8a4ff → 3c7fcd571305. Le départage par intensité (k3k1) est le défaut : chaque voie porte sa clé (champ departage) et, à distance égale, les ajouts d'arôme se rangent par le radar Beer Maverick de la famille visée (S1, plus floral : Loral, Pekko, Barbe Rouge, Pacifica devant East Kent Goldings). substitutes, suggerer et remplacants ne bougent pas.
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '3c7fcd571305', remplacants: '5c602de7c804' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

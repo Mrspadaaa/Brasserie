@@ -13,7 +13,7 @@ const R21C: Recipe = { name: 'Hazy du jeudi (21C)', styleCode: '21C', volumeL: 2
   { id: 'a1', hopKey: 'beermaverick-nugget', moment: 'b60', grams: 20 }, { id: 'a2', hopKey: 'beermaverick-cascade', moment: 'dryActive', grams: 80 }] };
 const GRAND = { maxBuy: 400, limit: 2000, buyLimit: 2000, perHop: 100, assemblages: false } as const;
 const voies = (departage: Departage | undefined, moment: 'dryActive' | 'b10', dir: Record<string, number> = { citrus: 1 }) =>
-  m.proposeVoies(R21C, dir, { ...GRAND, moments: [moment], ...(departage ? { departage } : {}) }).voies.filter((v) => v.type === 'ajouter');
+  m.proposeVoies(R21C, dir, { ...GRAND, moments: [moment], ...(departage ? { departage } : { departage: 'aucun' as const }) }).voies.filter((v) => v.type === 'ajouter');
 const nom = (v: Voie) => v.actions[0].hopName;
 /** Les voies qui partagent conflits, débordement et distance : le groupe d'ex æquo que le départage a le droit de réordonner.
  * D99 : le débordement du rang est overflowRang au dry hop (option c par défaut), overflowTotal ailleurs. */
@@ -23,18 +23,24 @@ const groupes = (vs: Voie[]) => {
   return [...g.values()];
 };
 
-describe('le défaut reste « aucun », octet pour octet', () => {
-  it('sans option, avec \'aucun\' : même résultat, et aucune clé dans les voies', () => {
+describe('D118 (f8) : le défaut est k3k1 ; « aucun » rend l\'ordre d\'avant, sans clé dans les voies', () => {
+  it('sans option = k3k1, octet pour octet', () => {
     const a = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, moments: ['dryActive'] });
-    const b = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, moments: ['dryActive'], departage: 'aucun' });
+    const b = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, moments: ['dryActive'], departage: 'k3k1' });
     expect(JSON.stringify(b)).toBe(JSON.stringify(a));
+    expect(JSON.stringify(a)).toContain('departage');
+  });
+  it('« aucun » : aucune clé dans les voies, six phrases de rang', () => {
+    const a = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, moments: ['dryActive'], departage: 'aucun' });
     expect(JSON.stringify(a)).not.toContain('departage');
     expect(a.ranking.length).toBe(6);
   });
-  it('un appel d\'écran (options par défaut, assemblages, leviers) est inchangé par \'aucun\'', () => {
+  it('un appel d\'écran (options par défaut, assemblages, leviers) : les mêmes voies et les mêmes effets avec ou sans départage', () => {
     const a = m.proposeVoies(R21C, { citrus: 1 }, { leviersLevure: true });
     const b = m.proposeVoies(R21C, { citrus: 1 }, { leviersLevure: true, departage: 'aucun' });
-    expect(JSON.stringify(b)).toBe(JSON.stringify(a));
+    const effets = (r: typeof a) => JSON.stringify(r.voies.map((v) => [v.id, v.effect, v.distance]).sort());
+    expect(a.voies.length).toBe(b.voies.length); // la coupe d'affichage garde le même nombre, pas forcément les mêmes houblons
+    expect(effets(a).length).toBeGreaterThan(0);
   });
 });
 

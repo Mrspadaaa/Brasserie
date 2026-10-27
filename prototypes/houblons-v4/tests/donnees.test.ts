@@ -176,7 +176,7 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     expect(floral0.source).toBe('modèle');
     expect(floral0.value).toBeCloseTo(beer.find((b) => b.family === 'floral')!.basis!.central! / (100 / 3), 2);
     for (const a of avant.filter((x) => x.source === 'non situé')) expect(a.value).toBeNull();
-    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, departage: 'aucun' }); // D118 : ce test lit la voie East Kent Goldings, que le départage par intensité (radar floral : EKG 1, Loral 4) sort des 4 places d'achat ; l'ordre d'avant, 'aucun', est ce qu'il éprouve
     const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-east-kent-goldings'))!;
     const apres = afterContinuous(beer, golding.effect);
     expect(apres.find((a) => a.family === 'floral')!.value!).toBeGreaterThan(floral0.value! + 0.4);
@@ -260,7 +260,8 @@ describe('La levure : double impact, leviers, signaux (R43, R44)', () => {
 describe('Crans du style (objets 1, 2 et 4)', () => {
   const s16d = getStyleScale('16D');
   const beer = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d);
-  const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+  // D118 : ces tests lisent la voie East Kent Goldings, que le départage par intensité sort des 4 places d'achat ; l'ordre d'avant, 'aucun', est ce qu'ils éprouvent.
+  const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, departage: 'aucun' });
 
   it('la résine dégustée est au-dessus de la bande (4) ; le floral est à 0 cran ; les non situées restent null', () => {
     const pos = beerCrans(beer, s16d);

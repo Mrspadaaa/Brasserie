@@ -64,6 +64,9 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
   });
 
   it('reste au style : en S1, une voie Goldings ou Celeia passe devant Citra cryo, et un débordement est exposé en crans', () => {
+    // D118 : cet acquis (D105) se lit sur l'ordre d'avant, 'aucun'. Avec le départage par intensité (défaut), les houblons au radar floral de 4 (Loral, Pekko, Barbe Rouge, Pacifica) prennent
+    // les 4 places d'achat devant East Kent Goldings (floral 1) et Celeia (floral 2) : voir f8-s1.ts et RESULTAT.md de f8.
+    const s1 = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { departage: 'aucun' });
     const best = (pred: (k: string) => boolean) => Math.min(...s1.voies.filter((v) => v.actions.some((a) => pred(a.hopKey))).map((v) => v.rank));
     const goldings = best((k) => /golding|celeia/.test(k));
     const citra = best((k) => k === 'beermaverick-citra:cryo');

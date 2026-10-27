@@ -13,7 +13,7 @@ import { valueVerdict } from './style/verdict';
 import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
 import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
-import { cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
+import { DEPARTAGE_DEFAUT, cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
   BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe,
@@ -210,7 +210,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const ibu0 = recipeIbu(recipe);
   const plus = FAMILIES.filter((f) => (direction[f] ?? 0) > 0), minus = FAMILIES.filter((f) => (direction[f] ?? 0) < 0);
   const directed = [...plus, ...minus];
-  const departageMode: Departage = options.departage ?? 'aucun';
+  const departageMode: Departage = options.departage ?? DEPARTAGE_DEFAUT; // D118 (f8) : k3k1 par défaut ; 'aucun' = le comportement d'avant, à l'octet près
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
@@ -343,9 +343,11 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
-    const departage = departageMode !== 'aucun' && plus.length
-      ? cleDeVoie(departageMode, reduction ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 })), plus)
-      : null;
+    // D118 : k3k1 range l'ARÔME (10′, whirlpool, dry hop) ; une voie dont un ajout qui monte est d'amertume (60′ et avant : l'arôme y est négligeable) a une clé INCONNUE (tout null : elle passe après les voies
+    // d'arôme, jamais devant par un 0). Toute voie porte une clé dès qu'une famille monte : sans cela le rang ne serait pas un ordre total (une voie sans clé « égale » deux voies que sa clé sépare).
+    const aAmertume = departageMode === 'k3k1' && changes.some((c) => c.sign > 0 && MOMENTS[c.addition.moment].kind === 'amertume');
+    const positifs = reduction || aAmertume ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 }));
+    const departage = departageMode !== 'aucun' && plus.length ? cleDeVoie(departageMode, positifs, plus) : null;
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -612,12 +614,18 @@ const ORDRE_POOL = new WeakMap<Voie, number>();
 /** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
 export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): number {
   const da = a.distance.total, db = b.distance.total;
+  // D118 (f8) : dans les groupes du VRAI DRY HOP (option `dryHop` de g2b : une liste d'ajouts d'arôme seulement, où tout le monde porte une clé), la clé k3k1 (l'intensité de la famille visée, radar Beer Maverick)
+  // passe AVANT le débordement de style : mesuré en 22A (D191), le débordement rangeait les nobles (une seule famille citée, aucun débordement) devant El Dorado, Mosaic, Mandarina Bavaria… (El Dorado 223e sur 235) :
+  // la pureté battait l'intensité. Dans la liste principale, qui mêle des voies neutres (remplacer, diminuer, retirer) aux ajouts d'arôme, la même place les chasserait de la liste montrée (mesuré en stout S1 :
+  // 12 des 14 voies deviennent « Remplacer Nugget ») et la rendrait incohérente : la clé y reste après la distance, comme k1, k2 et k3.
+  const intensiteD = a.departage?.mode === 'k3k1' && b.departage?.mode === 'k3k1' && !!a.dose && !!b.dose;
   return a.conflicts.length - b.conflicts.length
     || comparerUsagePalier(a.palier, b.palier) // g2b (D88 B) : à 60′ l'usage passe d'abord ; sans l'option `palier60`, aucune voie n'a de palier : égalité
+    || (intensiteD ? comparerCles(a.departage?.cle, b.departage?.cle) : 0)
     || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : a.overflowTotal - b.overflowTotal) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
-    || comparerCles(a.departage?.cle, b.departage?.cle)
+    || (intensiteD ? 0 : comparerCles(a.departage?.cle, b.departage?.cle))
     || (ORDRE_POOL.get(a) ?? 0) - (ORDRE_POOL.get(b) ?? 0) // D105 : le style départage avant les effets de bord (listes principales ; 0 ailleurs)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]

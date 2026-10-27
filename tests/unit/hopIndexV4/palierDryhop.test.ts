@@ -226,6 +226,8 @@ describe('le vrai dry hop : actif et après, chacun à la dose de la règle', ()
     expect(moins.notes.join(' ')).toContain('famille qui monte');
   });
   it('le départage (g2a) se lit dans chaque groupe : k1 et k3 rétrécissent le premier groupe d\'ex æquo, mêmes voies, mêmes doses', () => {
+    // D118 (f8) : le défaut est k3k1 ; l'ordre d'avant (alphabétique à distance égale) est 'aucun'.
+    const d = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, dryHop: true, departage: 'aucun' }).dryHop!;
     const tete = (vs: Voie[]) => vs.filter((v) => v.rank === 1).length;
     expect(tete(d.actif)).toBeGreaterThan(10); // aujourd'hui : un groupe d'ex æquo en ordre alphabétique
     expect(d.actif.every((v) => v.departage === undefined)).toBe(true);

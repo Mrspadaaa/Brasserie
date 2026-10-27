@@ -378,6 +378,7 @@ function confianceDe(bases: Base[], levure: string, interpoles: AjoutInterpole[]
     if (inter) { faible.push(`${b.nom} à ${inter.minutes}′ : interpolé entre 60′ et 10′ (linéaire en minutes), aucune mesure à ce moment [convention]`); continue; }
     if (b.sansDonnees) faible.push(`${b.nom} : aucune donnée de composés ; forme des fiches seules, force de Cascade [convention]`);
     else if (!b.conc['4MMP'] && !b.conc['3MH'] && estSec(m)) faible.push(`${b.nom} : thiols non chiffrés dans H (tropical par les fiches seules)`);
+    if (b.p.deLaVariete?.length) moyenne.push(`${b.nom} : composition de l’huile de la variété, non relevée pour le produit (D118) ; huile totale du produit`);
     if (m === 'b60') faible.push(`${b.nom} à 60′ : part retrouvée bornée en haut seulement ; centre [convention] au dixième`);
     if (m === 'b10' || m === 'wp') moyenne.push(`${b.nom} à ${MOMENTS[m].label} : centres des parts retrouvées en partie par convention (moitié de la borne haute)`);
     if (m === 'dryActive') moyenne.push(`${b.nom} en fermentation active : pertes par le CO₂ non chiffrées`);
