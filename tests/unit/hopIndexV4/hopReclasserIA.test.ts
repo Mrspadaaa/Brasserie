@@ -12,12 +12,13 @@ const environment = vi.hoisted(() => {
 });
 const gate = vi.hoisted(() => vi.fn());
 vi.mock('../../../functions/src/monthlyAiBudget', () => ({ runWithMonthlyAiBudget: gate }));
-import { hopReclasserIA } from '../../../functions/src/hopReclasserIA';
+import { DELAI_SUGGERER_MS, hopReclasserIA } from '../../../functions/src/hopReclasserIA';
 import { BrewerBudgetError } from '../../../functions/src/brewerLimits';
 import { GENERATION, PROMPT_VERSION, PROMPT_VERSION_SUGGERER, MIN_POOL_SUGGERER, PHRASES_SUGGERER, SCHEMA, SYSTEME, SYSTEME_SUGGERER, TAILLE_POOL, TAILLE_POOL_SUGGERER, analyserReponse, aromesHorsFiche, estReputation, motsDeLigne, chiffresInventes, construireInvite, contexteDe, construireInviteSuggerer, ficheDeCatalogue, lireEntree, lireEntreeSuggerer } from '../../../functions/src/hopReclassCore';
 import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 
 const LITE = 'gemini-3.5-flash-lite';
+const FLASH = 'gemini-3.8-flash';
 const fetchMock = vi.fn();
 const fiches = CATALOGUE.slice(0, 21).map(ficheDeCatalogue);
 const entree = (n = TAILLE_POOL, moment: unknown = { type: 'dryhop' }) => ({
@@ -207,15 +208,21 @@ describe('mode « suggérer » : l’invite, mot pour mot', () => {
 describe('mode « suggérer » : le callable', () => {
   const classementS = (xs: string[]) => classement(xs, PHRASE);
   beforeEach(() => { fetchMock.mockResolvedValue(reponse(classementS(tous))); });
-  it('une réponse valide : l’ordre de tous les candidats, sous les clés du client, une phrase chacun, budget réservé, Flash-Lite', async () => {
+  it('une réponse valide : l’ordre de tous les candidats, sous les clés du client, une phrase chacun, budget réservé, 3.8 Flash en réflexion basse (D132)', async () => {
     const r: any = await hopReclasserIA.run(requete(suggerer()) as any);
-    expect(r).toMatchObject({ ok: true, model: LITE, promptVersion: 'suggerer-v2', phrasesRetirees: 0, phrasesHorsFiche: 0, phrasesReputation: 0 });
+    expect(r).toMatchObject({ ok: true, model: FLASH, promptVersion: 'suggerer-v2', phrasesRetirees: 0, phrasesHorsFiche: 0, phrasesReputation: 0 });
     expect(r.ordre).toEqual(tous.map((_, i) => `cle-${i + 1}`)); expect(Object.keys(r.phrases)).toHaveLength(N);
-    expect(gate).toHaveBeenCalledOnce(); expect(gate.mock.calls[0][0]).toBe(LITE); expect(gate.mock.calls[0][3]).toEqual({ daily: true, inspect: expect.any(Function) });
+    expect(gate).toHaveBeenCalledOnce(); expect(gate.mock.calls[0][0]).toBe(FLASH); expect(gate.mock.calls[0][3]).toEqual({ daily: true, inspect: expect.any(Function) });
+    expect(String(fetchMock.mock.calls[0][0])).toBe(`https://generativelanguage.googleapis.com/v1beta/models/${FLASH}:generateContent`);
     const b = corps();
     expect(b.systemInstruction.parts[0].text).toBe(SYSTEME_SUGGERER);
     expect(b.generationConfig).toMatchObject({ responseMimeType: 'application/json', temperature: 0, maxOutputTokens: 6000, thinkingConfig: { thinkingLevel: 'low' } });
     expect(b.contents[0].parts[0].text).toContain('Rends le classement des 12 candidats');
+  });
+  it('le délai du fournisseur couvre trois fois le maximum mesuré au banc ia4 (5,6 s) et tient dans les 30 s de la fonction ; Substituer garde Flash-Lite', async () => {
+    expect(DELAI_SUGGERER_MS).toBeGreaterThanOrEqual(3 * 5602); expect(DELAI_SUGGERER_MS).toBeLessThan(30000);
+    await hopReclasserIA.run(requete(entree()) as any);
+    expect(gate.mock.calls.at(-1)![0]).toBe(LITE);
   });
   it('l’ordre rendu peut différer de celui du moteur : c07 d’abord', async () => {
     fetchMock.mockResolvedValue(reponse(classementS(['c07', ...tous.filter((c) => c !== 'c07')])));

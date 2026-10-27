@@ -1,0 +1,47 @@
+[2m15:56:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because vite config has changed
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m253[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+Error: The following dependencies are imported but could not be resolved:
+
+  [36m@app/ui/SegmentedControl[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/RecipeDisclosure[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/Pictos[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/familyTokens[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/levure[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/levure/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/dryhopper[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/dryhopper/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/substituer[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/substituer/index.tsx)[22m[39m
+  [36m@app/pages/PageShell[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/Cadres.tsx)[22m[39m
+  [36m@app/ui/hopIndex/maBiere[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/integration/hoteMaBiere.tsx)[22m[39m
+  [36m@app/ui/hopIndex/suggerer[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/suggerer/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/comparer[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/comparer/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/maBiere/hote[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/integration/hoteMaBiere.tsx)[22m[39m
+  [36m@app/ui/hopIndex/suggerer/hote[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/suggerer/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/comparer/hote[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/comparer/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/dryhopper/hote[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/dryhopper/hote-maquette.tsx)[22m[39m
+  [36m@app/ui/hopIndex/maBiere/Base[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/biere/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/maBiere/Lentille[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/biere/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/maBiere/RadarBiere[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/biere/Degustation.tsx)[22m[39m
+  [36m@app/ui/hopIndex/fiche[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/fiche/FicheHoublon.tsx)[22m[39m
+  [36m@app/ui/hopIndex/fiche/gestes[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/fiche/FicheHoublon.tsx)[22m[39m
+  [36m@app/ui/hopIndex/BarreStyle[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/maBiere/ma-biere.css[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/ecrans/biere/index.tsx)[22m[39m
+  [36m@app/ui/hopIndex/gestes[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/JetonHoublon[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/Legende[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/LigneContexte[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/Marques[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/nombres[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/index.ts)[22m[39m
+  [36m@app/ui/hopIndex/Pont[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/Cadres.tsx)[22m[39m
+  [36m@app/ui/hopIndex/commun/RadarBase[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/RadarBase.ts)[22m[39m
+  [36m@app/ui/Sheet[39m [37m[2m(imported by C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/prototypes/houblons-v4/parcours/src/commun/Cadres.tsx)[22m[39m
+
+Are they installed?
+    at file:///C:/Users/mrspa/Documents/Brasserie/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14849:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/mrspa/Documents/Brasserie/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:47144:28
+[2m15:57:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ new dependencies optimized: [33mfirebase/app, firebase/firestore, firebase/functions, firebase/auth, firebase/app-check, lucide-react, cmdk, vaul, fuse.js, @noble/hashes/sha2.js[32m[39m
+[2m15:57:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ optimized dependencies changed. reloading[39m
+[2m15:57:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ new dependencies optimized: [33mfflate[32m[39m
+[2m15:57:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ optimized dependencies changed. reloading[39m

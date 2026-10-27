@@ -1,7 +1,7 @@
 import { onCall, CallableRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { GEMINI_API_KEY, assertAuthorized } from './ai.js';
-import { GEMINI_LITE_MODEL, assertGeminiModel } from './models.js';
+import { GEMINI_LITE_MODEL, GEMINI_MODEL, assertGeminiModel } from './models.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
 import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
@@ -59,8 +59,10 @@ function adresse(): { base: string; simule: boolean } {
 const inutilisable = (response: any) => unusableGeminiOutput(response)
   ?? (response?.candidates?.[0]?.finishReason === 'STOP' ? undefined : new GeminiUnusableOutputError('truncated'));
 
-/** Délai du mode « suggérer » : 3 à 12 candidats et 6 phrases ; au-delà, la réponse ne servirait plus à rien. */
-export const DELAI_SUGGERER_MS = 10000;
+/** Délai du mode « suggérer » (voie ia5, D132) : Gemini 3.8 Flash en réflexion basse. Banc ia4 : médiane 4,7 s, maximum 5,6 s sur 30 cas.
+ * 20 s couvrent trois fois ce maximum ; la fonction a 30 s (`timeoutSeconds`) et le client attend 25 s : le serveur coupe avant. Le brasseur a
+ * touché la puce et attend : il ne subit pas une réponse perdue pour un pic de latence. */
+export const DELAI_SUGGERER_MS = 20000;
 
 /**
  * Mode « suggérer » (voie ia3) : même callable, mêmes gardes (compte, budget mensuel et quotidien réservé avant l'envoi, modèle choisi
@@ -76,7 +78,8 @@ async function suggerer(data: unknown, started: number, email: string): Promise<
   const { base, simule } = adresse();
   const apiKey = GEMINI_API_KEY.value() || (simule ? 'cle-simulee' : '');
   if (!apiKey) return { ok: false, reason: 'indisponible', error: INDISPONIBLE };
-  const model = GEMINI_LITE_MODEL;
+  // Voie ia5 (D132) : 3.8 Flash, réflexion basse (`GENERATION_SUGGERER`), seulement pour ce mode ; Substituer garde Flash-Lite.
+  const model = GEMINI_MODEL;
   assertGeminiModel(model);
   const ids = entree.candidats.map((_, i) => identifiant(i));
   const message = construireInviteSuggerer(entree);

@@ -93,9 +93,9 @@ export default function Suggerer() {
   const leviers = useCalcul('leviers', [recette, direction]);
   const lus = useMemo(() => (proposes && leviers ? { recette: proposes.args[0], calculs: { proposes: proposes.valeur, leviers: leviers.valeur } } : null), [proposes, leviers]);
   const tousMoteur = useMemo(() => (lus ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs) : []), [lus, objectifs, bannis]);
-  // Voie ia3 (D188, D124) : l'IA range les rangées des groupes que le moteur ne sait pas départager (trois rangées ou plus au même effet), un moment à la fois.
-  // Le moteur montre tout de suite ; au repos, le pool de chaque moment (les ex æquo du moteur, 12 au plus) part à l'IA ; son ordre (en moins de 3 s, liste non touchée) remplace les rangées,
-  // sinon la puce « appliquer l'ordre IA » l'offre. Hors ligne, en échec, ou sous test : l'ordre du moteur, sans rien au premier plan.
+  // Voie ia3 (D188, D124), à la demande depuis ia5 (D132) : l'IA range les rangées des groupes que le moteur ne sait pas départager (trois rangées ou plus au même effet), un moment à la fois.
+  // Le moteur montre tout de suite ; au repos, on ne prépare que le pool de chaque moment (les ex æquo du moteur, 12 au plus), sans aucun appel. La puce « classer par l'IA » lance
+  // l'appel ; l'ordre reçu remplace les rangées. Hors ligne ou sous test : l'ordre du moteur, sans puce.
   const momentsIA = useMemo(() => (iaPossible() ? [...new Set(tousMoteur.filter((g) => g.id.startsWith('meme-') && g.lignes.length >= RANGEES_MINI).map((g) => momentDuGroupe(g)!))].slice(0, MOMENTS_MAX) : []), [tousMoteur]);
   const [pools, setPools] = useState<{ cle: string; voies: Record<string, Voie[]> }>({ cle: '', voies: {} });
   const cleIA = lus ? JSON.stringify([lus.recette.styleCode, lus.recette.volumeL, lus.recette.og, lus.recette.additions, direction, momentsIA, bannis]) : '';
@@ -262,7 +262,7 @@ export default function Suggerer() {
                 horsHoublon={horsHoublon} onHorsHoublon={montrerHorsHoublon} etatPiste={o.f === fPiste} />)}
             </section>
 
-            <div data-libre="houblon" aria-label="Voies du moteur" onPointerDownCapture={ia.marquerTouche} data-etat="etat-acquis-barres-l5b etat-acquis-q2b-suite-s5 etat-acquis-levure-bio-cumul etat-acquis-stock-icone"
+            <div data-libre="houblon" aria-label="Voies du moteur" data-etat="etat-acquis-barres-l5b etat-acquis-q2b-suite-s5 etat-acquis-levure-bio-cumul etat-acquis-stock-icone"
               data-direction={JSON.stringify(Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran])))}>
               {exclus.length > 0 && (
                 <p className="flex flex-wrap items-center gap-1.5 px-1 pb-1 text-sm text-cave-200">
@@ -371,17 +371,21 @@ function Carte({ o, groupes, biere, teinte, famHors, pistesHors, horsHoublon, on
   );
 }
 
-/** Voie ia3 : la puce de la maquette m6 (« ✦ ordre IA prêt » : pointillée, étoile bleue), au comportement de Substituer (i2). Une place invisible tient
- * son emplacement tant que l'IA n'a pas répondu : son arrivée ne déplace rien. */
+/** Voie ia3 puis ia5 : la puce de la maquette m6 (pointillée, étoile bleue), à la demande. Cinq états, une seule taille (10,25 rem × 1,75 rem) : repos
+ * « classer par l'IA », attente « l'IA classe… », reçu appliqué « classé par l'IA », reçu rendu au moteur « appliquer l'ordre IA », échec « IA indisponible ».
+ * Une place invisible tient son emplacement le temps que le pool se prépare : son arrivée ne déplace rien. */
 function PuceIA({ etat }: { etat: EtatIA | null }) {
   if (!etat) return <span className="pq-sg-ia pq-sg-ia-place pq-sg-sur-axe" aria-hidden="true" data-role="puce-ia-place" />;
+  const attente = etat.statut === 'attente', recu = etat.statut === 'recu';
+  const nom = attente ? 'attente' : recu ? (etat.appliquee ? 'appliquee' : 'prete') : etat.echec ? 'echec' : 'repos';
+  const texte = { attente: 'l’IA classe…', appliquee: 'classé par l’IA', prete: 'appliquer l’ordre IA', echec: 'IA indisponible', repos: 'classer par l’IA' }[nom];
+  const aide = { attente: 'L’IA classe les ex æquo du moteur…', appliquee: 'Les ex æquo du moteur, rangés par l’IA ; les effets et les doses restent ceux du moteur. Toucher : ordre du moteur.',
+    prete: 'Ordre du moteur. Toucher : remettre l’ordre de l’IA.', echec: 'L’IA n’a pas répondu ; l’ordre du moteur est gardé. Toucher : réessayer.', repos: 'Classer les ex æquo du moteur par l’IA (les effets et les doses restent ceux du moteur).' }[nom];
   return (
-    <button type="button" className="pq-sg-ia pq-sg-sur-axe" data-role="puce-ia" data-ia={etat.appliquee ? 'appliquee' : 'prete'} aria-pressed={etat.appliquee} onClick={etat.basculer}
-      onPointerDown={(e) => e.stopPropagation()}
-      aria-label={etat.appliquee ? 'Classé par l’IA. Toucher pour revenir à l’ordre du moteur.' : 'Appliquer l’ordre de l’IA.'}
-      title={etat.appliquee ? 'Les 30 premiers du moteur, rangés par l’IA ; les effets et les doses restent ceux du moteur. Toucher : ordre du moteur.' : 'L’IA a rangé les 30 premiers du moteur. Toucher : appliquer son ordre.'}>
+    <button type="button" className="pq-sg-ia pq-sg-sur-axe" data-role="puce-ia" data-ia={nom} aria-pressed={recu ? etat.appliquee : undefined} aria-busy={attente || undefined} onClick={etat.toucher}
+      onPointerDown={(e) => e.stopPropagation()} aria-label={`${texte}. ${aide}`} title={aide}>
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.5 4.2 4.2 1.5-4.2 1.5L8 12.9 6.5 8.7 2.3 7.2l4.2-1.5z" fill="currentColor" /></svg>
-      {etat.appliquee ? 'classé par l’IA' : 'appliquer l’ordre IA'}
+      {texte}
     </button>
   );
 }

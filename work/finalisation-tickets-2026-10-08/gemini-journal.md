@@ -684,3 +684,16 @@ des appels 4 et 5. Lancements : `IA-B/logs/live-reel-{coa,diagnostic,recherche,r
 | 29 | 27.10 15:40 | #ia4 | ia4-banc.ts · suggerer-v2 · 26C · plus d’agrumes · 10′ · 12 ex æquo | gemini-3.8-flash | 2784 / 11421 | 0.1123 CHF | HTTP 200, 84725 ms, fin STOP |
 | 30 | 27.10 15:42 | #ia4 | ia4-banc.ts · suggerer-v2 · 25A · plus d’agrumes · dry hop actif · 12 ex æquo | gemini-3.8-flash | 2793 / 5866 | 0.0602 CHF | HTTP 200, 46152 ms, fin STOP |
 | 31 | 27.10 15:43 | #ia4 | ia4-banc.ts · suggerer-v2 · neipa v3 · plus d’agrumes · dry hop actif · 12 ex æquo (rapport final) | gemini-3.8-flash | 2817 / 11966 | 0.1175 CHF | HTTP 200, 70367 ms, fin STOP |
+
+## Petit essai réel du callable hopReclasserIA, mode suggérer, Gemini 3.8 Flash à la demande, sur l'émulateur (ia5) — enveloppe D130
+
+- Accord de l'utilisateur (D130, il restait 6,27 CHF) : petit essai réel de la voie ia5, l'IA de Suggérer à la demande (gemini-3.8-flash, réflexion basse, invite `suggerer-v2`, 3 à 12 candidats par appel). Enveloppe : **3 appels au plus, 0.3 CHF estimés**. Arrêt au premier dépassement ou à la première erreur répétée.
+- Chemin : app (?dev-local) → toucher sur la puce → callable `hopReclasserIA` (émulateur des fonctions) → fournisseur local → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini. Données : fiches du catalogue et recettes d'essai, aucune donnée réelle du brasseur. Clé jamais journalisée. Jamais dans `npm test`.
+- Lanceur : `scripts/eval-hop/ia3-emulateur.ts` (mis à jour par ia5).
+
+**Compteur ia5 : 2 / 3 · 0.0165 CHF / 0.3**
+
+| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |
+|---|---|---|---|---|---|---|---|
+| 1 | 27.10 16:01 | #ia5 | ia3-emulateur.ts · ia5 · toucher → callable → fournisseur local → Gemini · suggerer-v2 · neipa v3 · agrumes · dry hop actif | gemini-3.8-flash | 2789 / 319 | 0.0082 CHF | HTTP 200, 4382 ms, demandé gemini-3.8-flash, réflexion low, fin STOP |
+| 2 | 27.10 16:01 | #ia5 | ia3-emulateur.ts · ia5 · toucher → callable → fournisseur local → Gemini · suggerer-v2 · neipa v3 · tropicaux · dry hop actif | gemini-3.8-flash | 2819 / 326 | 0.0083 CHF | HTTP 200, 5111 ms, demandé gemini-3.8-flash, réflexion low, fin STOP |

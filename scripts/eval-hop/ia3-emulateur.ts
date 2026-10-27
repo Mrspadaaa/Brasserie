@@ -1,4 +1,6 @@
-// Voie ia3 : le callable `hopReclasserIA` (mode « suggerer ») dans l'émulateur des fonctions, appelé par l'app en `?dev-local` (Vite dev, Chrome 390 × 844).
+// Voie ia3, mise à jour par ia5 (D132) : l'IA de Suggérer À LA DEMANDE (un toucher sur la puce), invite `suggerer-v2`, modèle 3.8 Flash choisi par le serveur.
+// Le callable `hopReclasserIA` (mode « suggerer ») dans l'émulateur des fonctions, appelé par l'app en `?dev-local` (Vite dev, Chrome 390 × 844).
+// Simulé : le fournisseur cite la fiche (mots du houblon), répond une liste fixe, ou 503 (l'échec). Réel : 3 appels au plus (accord D130), section « ia5 » du journal.
 // Sur le modèle de work/missions/2026-10-25-integration-houblons/voies/i2-ia-substituer/emulateur/emulateur.ts.
 //
 //   npx vite-node scripts/eval-hop/ia3-emulateur.ts -- --mode=simule
@@ -21,14 +23,14 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { guardLiveFetch, liveEndpoint, liveJournalRow, withJournalLock, type LiveCall } from '../gemini38LiveCore';
 import { requirePaidAiTestOptIn } from '../paid-ai-test-guard.mjs';
-import { analyserReponseSuggerer, contexteDe, chiffresInventes } from '../../functions/src/hopReclassCore';
+import { analyserReponseSuggerer, contexteDe, chiffresInventes, motsDeLigne } from '../../functions/src/hopReclassCore';
 
 const ICI = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(ICI, '../..');
 const SELF = fileURLToPath(import.meta.url);
-const SORTIE = resolve(ROOT, 'work/missions/2026-10-25-integration-houblons/voies/ia3-ia-suggerer/img');
-const PROJECT = 'demo-ia3';
-const USER = { sub: 'brasseur-demo-ia3', email: 'brasseur@demo-ia3.test' };
+const SORTIE = resolve(ROOT, 'work/missions/2026-10-25-integration-houblons/voies/ia5-ia-a-la-demande/img');
+const PROJECT = 'demo-ia5';
+const USER = { sub: 'brasseur-demo-ia5', email: 'brasseur@demo-ia5.test' };
 const PORTS = { auth: 9099, firestore: 8080, functions: 5001, hub: 4400, logging: 4500 };
 const PORT_FOURNISSEUR = 5199, PORT_VITE = 5254;
 const JAVA_HOME = process.env.EMU_JAVA_HOME || 'C:\\Program Files\\Microsoft\\jdk-21.0.12.101-hotspot';
@@ -42,10 +44,10 @@ const portOpen = (port: number) => new Promise<boolean>((ok) => { const s = crea
 
 // ============================ Mode externe : dossier temporaire, fonctions compilées, emulators:exec ============================
 async function externe() {
-  if (MODE === 'reel') requirePaidAiTestOptIn({ label: 'Gemini réel · ia3 · callable hopReclasserIA, mode suggérer, sur émulateur', command: 'npx vite-node scripts/eval-hop/ia3-emulateur.ts -- --mode=reel --confirm-paid-ai' });
+  if (MODE === 'reel') requirePaidAiTestOptIn({ label: 'Gemini réel · ia5 · callable hopReclasserIA, mode suggérer, sur émulateur', command: 'npx vite-node scripts/eval-hop/ia3-emulateur.ts -- --mode=reel --confirm-paid-ai' });
   for (const p of [...Object.values(PORTS), PORT_FOURNISSEUR, PORT_VITE]) if (await portOpen(p)) throw new Error(`Port ${p} déjà occupé : rien n'est lancé.`);
   mkdirSync(SORTIE, { recursive: true });
-  const tmp = mkdtempSync(join(tmpdir(), 'affinee-ia3-emu-'));
+  const tmp = mkdtempSync(join(tmpdir(), 'affinee-ia5-emu-'));
   let code = 1;
   try {
     const cible = join(tmp, 'functions'), lib = join(cible, 'lib');
@@ -82,28 +84,28 @@ async function externe() {
     console.log(occupes.length ? `PORTS ENCORE OCCUPÉS : ${occupes.join(', ')}` : 'ports libérés');
     rmSync(tmp, { recursive: true, force: true });
   }
-  console.log(code === 0 ? (MODE === 'simule' ? 'IA3-EMULATEUR-OK' : 'IA3-REEL-OK') : `ÉCHEC (exit ${code})`);
+  console.log(code === 0 ? (MODE === 'simule' ? 'IA5-EMULATEUR-OK' : 'IA5-REEL-OK') : `ÉCHEC (exit ${code})`);
   process.exit(code);
 }
 
 // ============================ Le fournisseur local : simulé, ou transmis à Gemini par les garde-fous ============================
-const ENVELOPPE = { appels: 30, micro: 500_000 };
-const SECTION = '## Essai de bout en bout du callable hopReclasserIA, mode suggérer, sur l\'émulateur (ia3) — enveloppe séparée';
-const COMPTEUR = new RegExp(`\\*\\*Compteur ia3 : (\\d+) \\/ ${ENVELOPPE.appels} · (\\d+(?:\\.\\d+)?) CHF \\/ ${ENVELOPPE.micro / 1e6}\\*\\*`);
-const texteCompteur = (n: number | string, micro: number) => `**Compteur ia3 : ${n} / ${ENVELOPPE.appels} · ${(micro / 1e6).toFixed(4)} CHF / ${ENVELOPPE.micro / 1e6}**`;
-const EN_TETE = [SECTION, '', `- Accord de l'utilisateur (D100) : essai réel de la voie ia3, l'IA dans Suggérer (Flash-Lite, invite \`suggerer-v1\`, 30 candidats par appel). Enveloppe : **${ENVELOPPE.appels} appels au plus, ${ENVELOPPE.micro / 1e6} CHF estimés**. Arrêt au premier dépassement ou à la première erreur répétée.`,
-  '- Chemin : app (?dev-local) → callable `hopReclasserIA` (émulateur des fonctions) → fournisseur local → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini. Données : fiches du catalogue et recettes d\'essai, aucune donnée réelle du brasseur. Clé jamais journalisée. Jamais dans `npm test`.',
-  '- Lanceur : `scripts/eval-hop/ia3-emulateur.ts`.', '', texteCompteur(0, 0), '',
+const ENVELOPPE = { appels: 3, micro: 300_000 };
+const SECTION = '## Petit essai réel du callable hopReclasserIA, mode suggérer, Gemini 3.8 Flash à la demande, sur l\'émulateur (ia5) — enveloppe D130';
+const COMPTEUR = new RegExp(`\\*\\*Compteur ia5 : (\\d+) \\/ ${ENVELOPPE.appels} · (\\d+(?:\\.\\d+)?) CHF \\/ ${ENVELOPPE.micro / 1e6}\\*\\*`);
+const texteCompteur = (n: number | string, micro: number) => `**Compteur ia5 : ${n} / ${ENVELOPPE.appels} · ${(micro / 1e6).toFixed(4)} CHF / ${ENVELOPPE.micro / 1e6}**`;
+const EN_TETE = [SECTION, '', `- Accord de l'utilisateur (D130, il restait 6,27 CHF) : petit essai réel de la voie ia5, l'IA de Suggérer à la demande (gemini-3.8-flash, réflexion basse, invite \`suggerer-v2\`, 3 à 12 candidats par appel). Enveloppe : **${ENVELOPPE.appels} appels au plus, ${ENVELOPPE.micro / 1e6} CHF estimés**. Arrêt au premier dépassement ou à la première erreur répétée.`,
+  '- Chemin : app (?dev-local) → toucher sur la puce → callable `hopReclasserIA` (émulateur des fonctions) → fournisseur local → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini. Données : fiches du catalogue et recettes d\'essai, aucune donnée réelle du brasseur. Clé jamais journalisée. Jamais dans `npm test`.',
+  '- Lanceur : `scripts/eval-hop/ia3-emulateur.ts` (mis à jour par ia5).', '', texteCompteur(0, 0), '',
   '| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |', '|---|---|---|---|---|---|---|---|'].join('\n');
 function reserver(): number {
   return withJournalLock(VERROU, () => {
     let t = readFileSync(JOURNAL, 'utf8');
     if (!t.includes(SECTION)) t = `${t.replace(/\n*$/, '\n')}\n${EN_TETE}\n`;
     const c = COMPTEUR.exec(t);
-    if (!c) throw new Error('Compteur ia3 illisible : aucun appel.');
+    if (!c) throw new Error('Compteur ia5 illisible : aucun appel.');
     const n = Number(c[1]), micro = Math.round(Number(c[2]) * 1e6);
-    if (n + 1 > ENVELOPPE.appels) throw new Error(`Enveloppe ia3 atteinte (${n} / ${ENVELOPPE.appels}) : requête refusée avant l'envoi.`);
-    if (micro >= ENVELOPPE.micro) throw new Error(`Budget ia3 atteint (${(micro / 1e6).toFixed(4)} CHF) : requête refusée avant l'envoi.`);
+    if (n + 1 > ENVELOPPE.appels) throw new Error(`Enveloppe ia5 atteinte (${n} / ${ENVELOPPE.appels}) : requête refusée avant l'envoi.`);
+    if (micro >= ENVELOPPE.micro) throw new Error(`Budget ia5 atteint (${(micro / 1e6).toFixed(4)} CHF) : requête refusée avant l'envoi.`);
     writeFileSync(JOURNAL, t.replace(COMPTEUR, () => texteCompteur(n + 1, micro)));
     return n + 1;
   });
@@ -114,7 +116,7 @@ function ligne(call: LiveCall, test: string, resultat: string) {
     const c = COMPTEUR.exec(t)!;
     t = t.replace(COMPTEUR, () => texteCompteur(c[1], Math.round(Number(c[2]) * 1e6) + (call.costMicroChf ?? 0)));
     const debut = t.indexOf(SECTION), suite = t.indexOf('\n## ', debut + SECTION.length), fin = suite < 0 ? t.length : suite;
-    const bloc = t.slice(debut, fin).replace(/\n*$/, '\n') + liveJournalRow(call, '#ia3', test, resultat) + '\n';
+    const bloc = t.slice(debut, fin).replace(/\n*$/, '\n') + liveJournalRow(call, '#ia5', test, resultat) + '\n';
     writeFileSync(JOURNAL, t.slice(0, debut) + bloc + (suite < 0 ? '' : '\n' + t.slice(suite + 1)));
   });
 }
@@ -135,13 +137,13 @@ const SANS_ACCENT = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g
 
 /** Ce que le fournisseur retient de chaque appel, pour le rapport : les noms dans l'ordre du moteur, ceux de l'ordre de l'IA, la validité. */
 interface Appel { cas: string; modele: string; ms: number; reel: boolean; candidats: number; moteur: string[]; ia: string[]; valide: boolean | null; retirees: number | null; erreurs: string[]; phrases: string[]; entreeTokens: number; sortieTokens: number | null; message: string }
-interface Fournisseur { appels: Appel[]; delai: number; cas: string; erreurs: number; arret: boolean; fermer: () => void }
+interface Fournisseur { appels: Appel[]; delai: number; cas: string; erreurs: number; arret: boolean; /** Simulé seulement : le fournisseur répond 503 (l'échec de l'écran). */ panne: boolean; fermer: () => void }
 async function demarrerFournisseur(): Promise<Fournisseur> {
-  const etat: Fournisseur = { appels: [], delai: 1500, cas: '', erreurs: 0, arret: false, fermer: () => {} };
+  const etat: Fournisseur = { appels: [], delai: 1500, cas: '', erreurs: 0, arret: false, panne: false, fermer: () => {} };
   let reel: ReturnType<typeof guardLiveFetch> | null = null, cle: string | undefined;
   if (MODE === 'reel') {
     cle = cleLocaleOuArret();
-    reel = guardLiveFetch(fetch, { cap: ENVELOPPE.appels, reserve: reserver, onCall: (call) => ligne(call, `ia3-emulateur.ts · app → callable → fournisseur local → Gemini · suggerer-v1 · ${etat.cas}`, call.error ? `échec réseau (${call.error})` : `HTTP ${call.status}, ${call.latencyMs} ms, demandé ${call.model}, réflexion ${call.thinkingLevel ?? 'non fournie'}, fin ${call.finishReason ?? 'non fournie'}`) });
+    reel = guardLiveFetch(fetch, { cap: ENVELOPPE.appels, reserve: reserver, onCall: (call) => ligne(call, `ia3-emulateur.ts · ia5 · toucher → callable → fournisseur local → Gemini · suggerer-v2 · ${etat.cas}`, call.error ? `échec réseau (${call.error})` : `HTTP ${call.status}, ${call.latencyMs} ms, demandé ${call.model}, réflexion ${call.thinkingLevel ?? 'non fournie'}, fin ${call.finishReason ?? 'non fournie'}`) });
   }
   const serveur = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     const corps: Buffer[] = [];
@@ -152,7 +154,8 @@ async function demarrerFournisseur(): Promise<Fournisseur> {
     const lignes = [...texte.matchAll(/^(c\d{2}) · (.+) \([^()]*\) · usage/gm)].map((x) => ({ id: x[1], nom: x[2] }));
     const ids = lignes.map((l) => l.id), nomDe = (id: string) => lignes.find((l) => l.id === id)?.nom ?? id;
     let statut = 200, json: unknown;
-    if (etat.arret) { statut = 503; json = { error: { code: 503, status: 'UNAVAILABLE', message: 'ia3 : arrêt (budget ou erreur répétée)' } }; }
+    if (etat.arret) { statut = 503; json = { error: { code: 503, status: 'UNAVAILABLE', message: 'ia5 : arrêt (budget ou erreur répétée)' } }; }
+    else if (etat.panne && !reel) { statut = 503; json = { error: { code: 503, status: 'UNAVAILABLE', message: 'ia5 : panne simulée' } }; }
     else if (reel) {
       try {
         const r = await reel.fetch(liveEndpoint(modele), { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cle! }, body: brut, signal: AbortSignal.timeout(30_000) });
@@ -160,9 +163,10 @@ async function demarrerFournisseur(): Promise<Fournisseur> {
       } catch (e) { statut = 502; json = { error: { code: 502, status: 'UNAVAILABLE', message: (e as Error).message.slice(0, 120) } }; etat.arret = /Budget|Enveloppe/.test((e as Error).message); }
     } else {
       await sleep(etat.delai);
-      // L'ordre simulé : c09 d'abord, puis l'ordre du moteur. Chaque phrase dit qu'elle est simulée, sans chiffre (la garde des valeurs chiffrées les retirerait).
+      // L'ordre simulé : c09 d'abord, puis l'ordre du moteur. Chaque phrase dit qu'elle est simulée et CITE la fiche : les mots du houblon lus dans sa ligne du message
+      // (jamais un arôme hors fiche, ni un chiffre : les gardes du serveur les retireraient).
       const ordre = ['c09', ...ids.filter((i) => i !== 'c09')].filter((i) => ids.includes(i));
-      const sortie = JSON.stringify({ classement: ordre.map((id, i) => ({ id, phrase: `Simulé (essai local) : ${i === 0 ? 'remonté en tête, ses arômes d’agrumes sont les plus nets pour cette demande' : 'rangé dans l’ordre du moteur, sans jugement'}.` })) });
+      const sortie = JSON.stringify({ classement: ordre.map((id, i) => { const mots = motsDeLigne(texte, id).slice(0, 3); return { id, phrase: `Simulé (essai local) : ${nomDe(id)}${mots.length ? `, fiche : ${mots.join(', ')}` : ''}${i === 0 ? ' ; remonté en tête pour cette demande' : ' ; gardé dans l’ordre du moteur'}.` }; }) });
       json = { modelVersion: modele, candidates: [{ finishReason: 'STOP', content: { role: 'model', parts: [{ text: sortie }] } }],
         usageMetadata: { promptTokenCount: Math.ceil(texte.length / 3.5), candidatesTokenCount: Math.ceil(sortie.length / 3.5), totalTokenCount: Math.ceil(texte.length / 3.5) + Math.ceil(sortie.length / 3.5) } };
     }
@@ -208,7 +212,7 @@ async function interne() {
   const sem = await fetch(`${doc}/brewerAiControls/current`, { method: 'PATCH', headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: { paused: { booleanValue: false }, monthlyLimitMicroChf: { integerValue: '5000000' } } }) });
   etape('budget semé dans Firestore émulé', { statut: sem.status, limite: '5 CHF (émulateur)' });
 
-  const viteEnv = { ...process.env, VITE_USE_FIREBASE_EMULATORS: 'true', VITE_HOP_V4: 'on', VITE_IA_SUGGERER: 'on', VITE_FIREBASE_PROJECT_ID: PROJECT, VITE_FIREBASE_API_KEY: 'demo-ia3-key', VITE_FIREBASE_AUTH_DOMAIN: `${PROJECT}.firebaseapp.com`,
+  const viteEnv = { ...process.env, VITE_USE_FIREBASE_EMULATORS: 'true', VITE_HOP_V4: 'on', VITE_FIREBASE_PROJECT_ID: PROJECT, VITE_FIREBASE_API_KEY: 'demo-ia3-key', VITE_FIREBASE_AUTH_DOMAIN: `${PROJECT}.firebaseapp.com`,
     VITE_FIREBASE_STORAGE_BUCKET: `${PROJECT}.appspot.com`, VITE_FIREBASE_APP_ID: '1:000000000000:web:0000000000000000', VITE_FIREBASE_MESSAGING_SENDER_ID: '000000000000', VITE_FIREBASE_MEASUREMENT_ID: '',
     VITE_RECAPTCHA_SITE_KEY: '', VITE_APPCHECK_DEBUG_TOKEN: '', VITE_AUTHORIZED_ACCOUNTS: USER.email };
   delete (viteEnv as NodeJS.ProcessEnv).GEMINI_API_KEY;
@@ -269,7 +273,7 @@ async function interne() {
     const ouvrirCas = async (c: typeof CAS[number]) => {
       const e = JSON.parse(brouillonBase);
       for (const r of [e.draft.recipe, e.draft.details]) Object.assign(r, { name: c.nom, style: c.style, hops: c.hops, ogTarget: c.og, colorEbc: c.ebc });
-      e.draft.step = 'houblons'; e.draft.recipe.id = e.draft.details.id = 'REC-IA3';
+      e.draft.step = 'houblons'; e.draft.recipe.id = e.draft.details.id = 'REC-IA5';
       if (!premierCas) { const ancienne = page; page = await browser.newPage(); await configurer(page); await ancienne.close(); }
       premierCas = false;
       // Posé avant tout script de l'app : rien ne peut l'écraser.
@@ -289,94 +293,128 @@ async function interne() {
     const uid: string = await page.evaluate(`${CONNEXION}(${JSON.stringify(USER)})`);
     etape('connexion émulée (Auth)', { uid: uid.slice(0, 6) + '…' });
 
-    // ---------- Chauffe : le premier appel tombe sur une fonction froide (émulateur : démarrage du worker, plusieurs secondes). Une visée de plus,
-    // qui a un groupe à ranger, le chauffe ; la mesure de la réponse rapide (moins de 3 s) se fait ensuite, comme i2, sur la fonction chaude. ----------
-    fournisseur.cas = 'neipa v3 · chauffe de la fonction (visée à part)'; fournisseur.delai = 300;
-    await ouvrirSuggerer({ tropical: 2.5 });
-    let chauffe: Record<string, number | string> = { visee: 'aucune visée de chauffe n\'a de groupe à ranger' };
-    for (const v of [{ tropical: 2.5 }, { floral: 2.5 }, { resin: 2.5 }]) {
-      await poserVisee(v); await sleep(2000);
-      if ((await place()) || (await puceEtat())) { chauffe = { visee: JSON.stringify(v), msJusquALaPuce: await attendrePuce('*', 60_000) }; break; }
-    }
-    etape('chauffe de la fonction (appel froid, hors mesure)', chauffe);
-    // ---------- A. neipa v3, « plus d'agrumes » : l'ouverture, la puce, l'ordre appliqué, la phrase, la puce touchée ----------
+    // Voie ia5 : l'IA est À LA DEMANDE. Rien ne part à l'ouverture ; un toucher sur la puce fait l'appel. Mesures de la puce : sa boîte (x, y, largeur, hauteur) au repos,
+    // en attente, à l'arrivée ; elle ne doit pas bouger (0 px).
+    const boite = (): Promise<{ x: number; y: number; w: number; h: number } | null> => page.evaluate(`(() => { const e = document.querySelector('[data-role="puce-ia"]'); if (!e) return null; const r = e.getBoundingClientRect(); const a = (v) => Math.round(v * 10) / 10; return { x: a(r.left), y: a(r.top + window.scrollY), w: a(r.width), h: a(r.height) }; })()`);
+    const puceTexte = (): Promise<string | null> => page.evaluate(`document.querySelector('[data-role="puce-ia"]')?.textContent ?? null`);
+    const toucherPuce = (fois = 1) => page.evaluate(`(() => { const b = document.querySelector('[data-role="puce-ia"]'); for (let i = 0; i < ${fois}; i++) b.click(); })()`);
+    const ecart = (...bs: ({ x: number; y: number; w: number; h: number } | null)[]) => { const v = bs.filter((b) => b !== null) as { x: number; y: number; w: number; h: number }[]; return v.length < 2 ? -1 : Math.max(...(['x', 'y', 'w', 'h'] as const).map((k) => Math.max(...v.map((b) => b[k])) - Math.min(...v.map((b) => b[k])))); };
+    const verdicts: Record<string, boolean> = {};
+
+    // ---------- Chauffe (simulé seulement) : le premier appel tombe sur une fonction froide (émulateur : démarrage du worker, plusieurs secondes). Une visée à part, un toucher. ----------
+    if (MODE === 'simule') {
+      fournisseur.cas = 'neipa v3 · chauffe de la fonction (visée à part)'; fournisseur.delai = 300;
+      await ouvrirSuggerer({ tropical: 2.5 });
+      let chauffe: Record<string, number | string> = { visee: 'aucune visée de chauffe n\'a de groupe à ranger' };
+      for (const v of [{ tropical: 2.5 }, { floral: 2.5 }, { resin: 2.5 }]) {
+        await poserVisee(v); await sleep(2000);
+        if ((await puceEtat()) === 'repos') { await toucherPuce(); chauffe = { visee: JSON.stringify(v), msJusquALaPuce: await attendrePuce('appliquee', 60_000) }; break; }
+      }
+      etape('chauffe de la fonction (appel froid, hors mesure)', chauffe);
+    } else await ouvrirSuggerer({ citrus: 2.5 });
+    const appelsChauffe = fournisseur.appels.length;
+
+    // ---------- A. neipa v3, « plus d'agrumes » : le repos, l'attente, l'ordre appliqué, la phrase, le retour au moteur ----------
     fournisseur.cas = 'neipa v3 · agrumes · dry hop actif'; fournisseur.delai = 2000;
-    const tDemande = Date.now();
     await poserVisee({ citrus: 2.5 }); await sleep(250);
     await page.evaluate(`window.scrollTo(0, 0)`);
-    const rangeesMoteur = await rangees(); const nomsMoteur = await noms();
-    const placeOuverture = await place(), puceOuverture = await puceEtat();
-    const p0 = await positions(); await defiler(); await photo('1-ouverture-liste-du-moteur');
-    etape('ouverture : le moteur, sans puce, place tenue', { rangees: nomsMoteur, puce: puceOuverture, placeInvisible: placeOuverture, positions: p0 });
-    const t0 = tDemande; const ms = await attendrePuce('*', MODE === 'reel' ? 40_000 : 15_000);
-    const etatArrivee = await puceEtat(); await sleep(500);
-    const p1 = await positions(); let nomsIA = await noms(); let rangeesIA = await rangees();
-    // Réel : si Gemini a répondu après la fenêtre de 3 s, l'ordre attend ; un toucher sur la puce l'applique (c'est le comportement voulu).
-    if (MODE === 'reel' && etatArrivee === 'prete') { await page.evaluate(`document.querySelector('[data-role="puce-ia"]').click()`); await sleep(500); nomsIA = await noms(); rangeesIA = await rangees(); }
+    const msRepos = await attendrePuce('repos', 20_000); await sleep(5000);
+    verdicts['aucun appel à l’ouverture ni au repos (5 s)'] = msRepos >= 0 && fournisseur.appels.length === appelsChauffe;
+    const rangeesMoteur = await rangees(), nomsMoteur = await noms(), p0 = await positions(), b0 = await boite(), texte0 = await puceTexte();
+    verdicts['repos : « classer par l’IA »'] = texte0 === 'classer par l’IA';
+    etape('repos : le moteur, la puce « classer par l’IA », aucun appel', { rangees: nomsMoteur, puce: texte0, boite: b0, appelsPendantLeRepos: fournisseur.appels.length - appelsChauffe });
+    await defiler(); await photo('1-repos-liste-du-moteur');
+
+    const tToucher = Date.now();
+    await toucherPuce(2);                                                    // un double toucher : un seul appel
+    const msAttente = await attendrePuce('attente', 3000);
+    const bAtt = await boite(), texteAtt = await puceTexte(), pAtt = await positions();
+    verdicts['attente : « l’IA classe… » et la liste ne bouge pas'] = msAttente >= 0 && texteAtt === 'l’IA classe…' && JSON.stringify(await rangees()) === JSON.stringify(rangeesMoteur);
+    etape('attente : la puce garde sa place', { texte: texteAtt, boite: bAtt, positions: pAtt });
+    await defiler(); await photo('2-attente');
+    const ms = await attendrePuce('appliquee', MODE === 'reel' ? 90_000 : 20_000);
+    const dureeMs = Date.now() - tToucher; await sleep(500);
+    const b1 = await boite(), p1 = await positions(), nomsIA = await noms(), rangeesIA = await rangees(), texte1 = await puceTexte();
+    const decalPuce = ecart(b0, bAtt, b1);
     const decalage = p0 && p1 ? { titre: (p1.titre ?? 0) - (p0.titre ?? 0), premiereRangee: (p1.premiereRangee ?? 0) - (p0.premiereRangee ?? 0), levure: (p1.levure ?? 0) - (p0.levure ?? 0), hauteurGroupe: (p1.hauteurGroupe ?? 0) - (p0.hauteurGroupe ?? 0) } : null;
-    etape('réponse de l’IA', { msJusquALaPuce: ms, depuisOuvertureMs: Date.now() - t0, etatALArrivee: etatArrivee, rangees: nomsIA, decalagePx: decalage });
-    await defiler(); await photo('2-puce-ia');
-    await defiler(-200); await photo('3-ordre-ia-applique');
+    const decalTotal = decalage ? Math.abs(decalage.titre) + Math.abs(decalage.premiereRangee) + Math.abs(decalage.levure) + Math.abs(decalage.hauteurGroupe) : -1;
+    verdicts['un double toucher : un seul appel'] = fournisseur.appels.length - appelsChauffe === 1;
+    verdicts['l’ordre arrive et s’applique : « classé par l’IA », l’ordre change'] = ms >= 0 && texte1 === 'classé par l’IA' && JSON.stringify(rangeesIA) !== JSON.stringify(rangeesMoteur);
+    verdicts['la puce ne bouge pas (0 px) du repos à l’arrivée'] = decalPuce === 0 && (MODE === 'reel' || decalTotal === 0);   // réel : d'autres houblons prennent les rangées, la hauteur du groupe peut changer ; la puce, jamais
+    etape('réponse de l’IA', { msJusquALaPuce: ms, depuisLeToucherMs: dureeMs, rangees: nomsIA, decalagePuceMax: decalPuce, decalagePx: decalage });
+    await defiler(); await photo('3-ordre-ia-applique');
     const taillePuce = await taille('[data-role="puce-ia"]');
-    // un toucher sur une rangée : la phrase de l'IA
+    // un toucher sur une rangée : la phrase de l'IA (celle de m6)
     await page.evaluate(`(() => { const s = ${SECTION_JS}; s.querySelector('[data-role="ligne-houblon"]').click(); })()`); await sleep(400);
     const phrase: string | null = await page.evaluate(`document.querySelector('[data-role="phrase-ia"]')?.textContent ?? null`);
     const taillePhrase = await taille('[data-role="phrase-ia"]');
+    verdicts['la phrase au toucher d’une rangée, 14 px au moins'] = !!phrase && (taillePhrase ?? 0) >= 14 && (taillePuce ?? 0) >= 12;
     await defiler(-120); await photo('4-phrase-au-toucher');
     etape('phrase de l’IA au toucher d’une rangée', { phrase, taillePxPhrase: taillePhrase, taillePxPuce: taillePuce });
-    // un toucher sur la puce : l'ordre du moteur
-    await page.evaluate(`document.querySelector('[data-role="puce-ia"]').click()`); await sleep(500);
-    const apresToucher = await rangees(); const etatApres = await puceEtat();
-    await defiler(); await photo('5-puce-touchee-ordre-du-moteur');
-    etape('puce touchée : l’ordre du moteur rendu', { identique: JSON.stringify(apresToucher) === JSON.stringify(rangeesMoteur), puce: etatApres });
+    // un toucher sur la puce : l'ordre du moteur ; un autre : l'ordre de l'IA, sans nouvel appel
+    const appelsAvantBascule = fournisseur.appels.length;
+    await toucherPuce(); await sleep(500);
+    const apresToucher = await rangees(), etatApres = await puceEtat(), texteApres = await puceTexte();
+    await defiler(); await photo('5-retour-ordre-du-moteur');
+    verdicts['retour au moteur : l’ordre du moteur, « appliquer l’ordre IA »'] = JSON.stringify(apresToucher) === JSON.stringify(rangeesMoteur) && etatApres === 'prete';
+    etape('puce touchée : l’ordre du moteur rendu', { identique: JSON.stringify(apresToucher) === JSON.stringify(rangeesMoteur), puce: etatApres, texte: texteApres });
+    await toucherPuce(); await sleep(500);
+    verdicts['un autre toucher remet l’ordre IA sans nouvel appel'] = JSON.stringify(await rangees()) === JSON.stringify(rangeesIA) && (await puceEtat()) === 'appliquee' && fournisseur.appels.length === appelsAvantBascule;
     const budget1 = await (await fetch(`${doc}/brewerAiCosts`, { headers: { Authorization: 'Bearer owner' } })).json().catch(() => null);
     etape('budget mensuel après les appels (Firestore émulé)', { documents: (budget1?.documents ?? []).map((d: any) => ({ nom: String(d.name).split('/').pop(), champs: Object.fromEntries(Object.entries(d.fields ?? {}).map(([k, v]: [string, any]) => [k, v.integerValue ?? v.stringValue ?? v.doubleValue])) })) });
 
-    let tardiveOk = true, horsLigneOk = true;
     if (MODE === 'simule') {
-      // ---------- B. réponse tardive (3,6 s) : la liste ne bouge pas, « appliquer l'ordre IA » ----------
-      fournisseur.cas = 'neipa v3 · tropicaux · réponse tardive'; fournisseur.delai = 3600;
-      // une visée qui a un groupe à ranger et qu'on n'a pas encore demandée
-      for (const v of [{ citrus: 2.5, tropical: 2.5 }, { citrus: 2.5, floral: 2.5 }, { tropical: 2.5, floral: 2.5 }, { citrus: 2.5, resin: 2.5 }]) { await poserVisee(v); await sleep(900); if ((await place()) && !(await puceEtat())) break; }
+      // ---------- B. l'échec : le fournisseur répond 503 ; la puce revient au repos et dit « IA indisponible », une seule fois ----------
+      fournisseur.cas = 'neipa v3 · échec simulé (503)'; fournisseur.panne = true;
+      for (const v of [{ citrus: 2.5, tropical: 2.5 }, { citrus: 2.5, floral: 2.5 }, { tropical: 2.5, floral: 2.5 }, { citrus: 2.5, resin: 2.5 }]) { await poserVisee(v); await sleep(900); if ((await puceEtat()) === 'repos') break; }
       await page.evaluate(`window.scrollTo(0, 0)`); await sleep(300);
-      const avantT = await rangees(); const msT = await attendrePuce('prete', 15_000); await sleep(300);
-      const apresT = await rangees();
-      tardiveOk = msT >= 0 && JSON.stringify(avantT) === JSON.stringify(apresT);
-      etape('réponse tardive : la liste ne bouge pas, la puce offre l’ordre', { msAvantPuce: msT, identique: JSON.stringify(avantT) === JSON.stringify(apresT), puce: await puceEtat() });
-      await defiler(); await photo('6-reponse-tardive-ordre-ia-pret');
-      await page.evaluate(`document.querySelector('[data-role="puce-ia"]').click()`); await sleep(500); await defiler(); await photo('6b-tardive-ordre-applique');
+      const avantE = await rangees(), bE0 = await boite();
+      await toucherPuce();
+      const msE = await attendrePuce('echec', 20_000); await sleep(300);
+      const texteE = await puceTexte(), bE1 = await boite(), tailleE = await taille('[data-role="puce-ia"]');
+      const occurrences: number = await page.evaluate(`(document.body.innerText.match(/IA indisponible/g) ?? []).length`);
+      verdicts['échec : la puce dit « IA indisponible » (12 px au moins), une seule fois, la liste reste celle du moteur, la puce ne bouge pas'] = msE >= 0 && texteE === 'IA indisponible' && (tailleE ?? 0) >= 12 && occurrences === 1 && JSON.stringify(await rangees()) === JSON.stringify(avantE) && ecart(bE0, bE1) === 0;
+      etape('échec : « IA indisponible »', { msJusquAuMessage: msE, texte: texteE, tailleePx: tailleE, occurrences, boiteAvant: bE0, boiteApres: bE1 });
+      await defiler(); await photo('6-echec');
+      fournisseur.panne = false;
       // ---------- C. hors ligne : aucun appel, aucune puce, aucun message ----------
       const avantHL = fournisseur.appels.length;
       await page.evaluate(`Object.defineProperty(navigator, 'onLine', { get: () => false, configurable: true })`);
       await poserVisee({ citrus: 1.5 }); await sleep(2500);
       const puceHL = await puceEtat(), placeHL = await place();
-      horsLigneOk = fournisseur.appels.length === avantHL && puceHL === null && !placeHL;
+      verdicts['hors ligne : aucun appel, aucune puce'] = fournisseur.appels.length === avantHL && puceHL === null && !placeHL;
       await page.evaluate(`window.scrollTo(0, 0)`); await sleep(300);
       await page.evaluate(`(() => { const e = document.querySelector('[data-groupe]:not([data-groupe="levure"])'); if (e) window.scrollTo(0, Math.max(0, e.getBoundingClientRect().top + window.scrollY - 80)); })()`); await sleep(300);
       await photo('7-hors-ligne-ordre-du-moteur');
       etape('hors ligne : aucun appel, aucune puce', { appelsAvant: avantHL, appelsApres: fournisseur.appels.length, puce: puceHL, placeInvisible: placeHL, messageVisible: await page.evaluate(`/hors ligne|erreur|échec/i.test(document.body.innerText)`) });
     } else {
-      // ---------- Réel : le cas tropicaux de sa neipa v3, puis le stout S1 et la 21C ----------
-      fournisseur.cas = 'neipa v3 · tropicaux · dry hop actif'; await poserVisee({ tropical: 2.5 }); await attendrePuce('*', 40_000); await sleep(600); await defiler(); await photo('8-neipa-tropicaux');
-      for (const [i, c] of CAS.slice(1).entries()) {
-        if (fournisseur.arret) break;
-        fournisseur.cas = `${c.nom} · ${c.style === '16D' ? 'plus floral' : 'plus d’agrumes'}`;
-        await ouvrirCas(c); await ouvrirSuggerer(c.style === '16D' ? { floral: 2.5 } : { citrus: 2.5 });
-        const m = await attendrePuce('*', 40_000); await sleep(500); await defiler(); await photo(`${9 + i}-${c.nom.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`);
-        etape(`réel : ${c.nom}`, { bandeau: await page.evaluate(`document.querySelector('[data-element="q2b-bandeau-ibu"]')?.textContent ?? null`), msJusquALaPuce: m, puce: await puceEtat(), rangees: await noms() });
+      // ---------- Réel (3 appels au plus, accord D130) : 1 = agrumes (ci-dessus), 2 = tropicaux, 3 = la 21C ----------
+      fournisseur.cas = 'neipa v3 · tropicaux · dry hop actif'; await poserVisee({ tropical: 2.5 }); await attendrePuce('repos', 20_000); await sleep(800);
+      await toucherPuce(); const m2 = await attendrePuce('appliquee', 90_000); await sleep(600); await defiler(); await photo('8-neipa-tropicaux');
+      etape('réel : neipa v3 tropicaux', { msJusquALaPuce: m2, puce: await puceEtat(), rangees: await noms() });
+      if (!fournisseur.arret) {
+        const c = CAS[2];
+        fournisseur.cas = `${c.nom} · plus d’agrumes`;
+        await ouvrirCas(c); await ouvrirSuggerer({ citrus: 2.5 }); await attendrePuce('repos', 20_000); await sleep(800);
+        // Sur la 21C, la visée « agrumes » peut n'avoir aucun groupe de 3 ex æquo : pas de puce, donc pas d'appel (constaté au 27.10).
+        if ((await puceEtat()) !== 'repos') { etape(`réel : ${c.nom} : pas de puce (moins de 3 ex æquo), aucun appel`, { puce: await puceEtat() }); }
+        else { await toucherPuce(); }
+        const m3 = (await puceEtat()) === null ? -1 : await attendrePuce('appliquee', 90_000); await sleep(500); await defiler(); await photo('9-21c-agrumes');
+        etape(`réel : ${c.nom}`, { msJusquALaPuce: m3, puce: await puceEtat(), rangees: await noms() });
       }
     }
     // ---------- Le rapport : les rangs de ses six, l'ordre IA contre l'ordre du moteur ----------
     const neipa = fournisseur.appels.filter((a) => a.cas.startsWith('neipa v3'));
     etape('rangs de ses six dans le pool (moteur) et dans l’ordre IA', { parAppel: neipa.map((a) => ({ cas: a.cas, candidats: a.candidats, six: SIX.map((n) => ({ houblon: n, moteur: rangDe(a.moteur, n), ia: rangDe(a.ia, n) })) })) });
-    etape('requêtes reçues par le fournisseur', { n: fournisseur.appels.length, detail: fournisseur.appels.map((a) => ({ cas: a.cas, ms: a.ms, candidats: a.candidats, valide: a.valide, retirees: a.retirees, erreurs: a.erreurs, entreeTokens: a.entreeTokens, sortieTokens: a.sortieTokens, moteurTete: a.moteur.slice(0, 6), iaTete: a.ia.slice(0, 6), phrases: a.phrases })) });
+    etape('requêtes reçues par le fournisseur', { n: fournisseur.appels.length, detail: fournisseur.appels.map((a) => ({ cas: a.cas, modele: a.modele, ms: a.ms, candidats: a.candidats, valide: a.valide, retirees: a.retirees, erreurs: a.erreurs, entreeTokens: a.entreeTokens, sortieTokens: a.sortieTokens, moteurTete: a.moteur.slice(0, 6), iaTete: a.ia.slice(0, 6), phrases: a.phrases })) });
     etape('hôtes bloqués par le banc', { n: bloques.length, exemples: bloques.slice(0, 3) });
     rapport.appels = fournisseur.appels.map((a) => ({ ...a, message: undefined }));
     writeFileSync(sortie('message-exemple.txt'), fournisseur.appels[0]?.message ?? '');
-    const pas0 = decalage ? Math.abs(decalage.titre) + Math.abs(decalage.premiereRangee) + Math.abs(decalage.levure) + Math.abs(decalage.hauteurGroupe) : -1;
-    etape('décalage à l’arrivée de l’ordre IA (px, 390 × 844)', { ...(decalage ?? {}), total: pas0 });
-    if (MODE === 'simule' && (puceOuverture !== null || !placeOuverture || ms < 0 || etatArrivee !== 'appliquee' || !phrase || JSON.stringify(apresToucher) !== JSON.stringify(rangeesMoteur) || etatApres !== 'prete' || JSON.stringify(rangeesIA) === JSON.stringify(rangeesMoteur) || !tardiveOk || !horsLigneOk || (taillePhrase ?? 0) < 14 || (taillePuce ?? 0) < 12 || fournisseur.appels.some((a) => !a.valide))) echec = true;
-    if (MODE === 'reel' && (ms < 0 || !phrase)) echec = true;
+    if (MODE === 'reel') { verdicts['réel : au plus 3 appels'] = fournisseur.appels.length <= 3; verdicts['réel : ordre reçu et phrase'] = ms >= 0 && !!phrase; }
+    else verdicts['aucune réponse invalide du fournisseur simulé'] = !fournisseur.appels.some((a) => a.valide === false);
+    etape('verdicts', verdicts);
+    const rates = Object.entries(verdicts).filter(([, v]) => !v).map(([k]) => k);
+    if (rates.length) { echec = true; rapport.erreurs.push(`verdicts en échec : ${rates.join(' | ')}`); }
   } catch (e) {
     echec = true; rapport.erreurs.push(`banc: ${(e as Error).stack?.slice(0, 600)}`); console.error(e);
   } finally {
