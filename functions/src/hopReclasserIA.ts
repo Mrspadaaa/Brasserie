@@ -6,7 +6,7 @@ import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
 import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
 import { GeminiUnusableOutputError, geminiAnswerText, unusableGeminiOutput } from './geminiResponse.js';
-import { PROMPT_VERSION, analyserReponse, construireInvite, corpsRequete, identifiant, lireEntree } from './hopReclassCore.js';
+import { PROMPT_VERSION, PROMPT_VERSION_SUGGERER, analyserReponse, analyserReponseSuggerer, construireInvite, construireInviteSuggerer, corpsRequete, corpsRequeteSuggerer, identifiant, lireEntree, lireEntreeSuggerer } from './hopReclassCore.js';
 
 /**
  * Substituer : l'IA reclasse les 20 premiers du moteur (voie i2, accord D80 du 26.10 : Flash-Lite, environ 0,003 CHF par recherche).
@@ -37,6 +37,8 @@ export interface ResultatReclassement {
   model?: string;
   elapsedMs?: number;
   promptVersion?: string;
+  /** Mode « suggérer » : le nombre de phrases retirées parce qu'elles citaient une valeur chiffrée absente du message. */
+  phrasesRetirees?: number;
   error?: string;
   reason?: 'entree' | 'budget' | 'invalide' | 'indisponible';
 }
@@ -53,11 +55,62 @@ function adresse(): { base: string; simule: boolean } {
 const inutilisable = (response: any) => unusableGeminiOutput(response)
   ?? (response?.candidates?.[0]?.finishReason === 'STOP' ? undefined : new GeminiUnusableOutputError('truncated'));
 
+/** Délai du mode « suggérer » : 30 phrases à écrire, un peu plus que les 10 de Substituer ; au-delà, la réponse ne servirait plus à rien. */
+export const DELAI_SUGGERER_MS = 10000;
+
+/**
+ * Mode « suggérer » (voie ia3) : même callable, mêmes gardes (compte, budget mensuel et quotidien réservé avant l'envoi, modèle choisi
+ * ici, une tentative, jamais un ordre inventé), invite neuve `suggerer-v1`. Rend l'ordre de TOUS les candidats donnés (10 à 30) et une
+ * phrase par clé quand elle ne cite aucune valeur chiffrée absente du message (`phrasesRetirees` en dit le nombre).
+ */
+async function suggerer(data: unknown, started: number, email: string): Promise<ResultatReclassement> {
+  let entree;
+  try { entree = lireEntreeSuggerer(data); } catch (e: any) {
+    return { ok: false, reason: 'entree', error: `Demande de classement refusée : ${e?.message ?? 'entrée invalide'}.` };
+  }
+  const { base, simule } = adresse();
+  const apiKey = GEMINI_API_KEY.value() || (simule ? 'cle-simulee' : '');
+  if (!apiKey) return { ok: false, reason: 'indisponible', error: INDISPONIBLE };
+  const model = GEMINI_LITE_MODEL;
+  assertGeminiModel(model);
+  const ids = entree.candidats.map((_, i) => identifiant(i));
+  const message = construireInviteSuggerer(entree);
+  const body = corpsRequeteSuggerer(message);
+  try {
+    const json = await runWithMonthlyAiBudget(model, body, async (normalise) => {
+      const res = await fetch(`${base}/${model}:generateContent`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify(normalise), signal: AbortSignal.timeout(DELAI_SUGGERER_MS),
+      });
+      if (!res.ok) throw parseGeminiError(res.status, model, await res.json().catch(() => ({})));
+      return res.json();
+    }, { daily: true, inspect: inutilisable });
+    const analyse = analyserReponseSuggerer(geminiAnswerText(json), ids, message);
+    const elapsedMs = Date.now() - started;
+    if (!analyse.valide) {
+      logger.warn('Suggérer IA refusé', { erreurs: analyse.erreurs, elapsedMs });
+      return { ok: false, reason: 'invalide', error: INVALIDE, model, elapsedMs, promptVersion: PROMPT_VERSION_SUGGERER };
+    }
+    const cle = (c: string) => entree.candidats[ids.indexOf(c)].id;
+    const phrases: Record<string, string> = {};
+    for (const c of analyse.ordre) if (analyse.phrases[c]) phrases[cle(c)] = analyse.phrases[c];
+    logger.info('Suggérer IA rendu', { model, elapsedMs, email, candidats: ids.length, phrasesRetirees: analyse.retirees.length });
+    return { ok: true, ordre: analyse.ordre.map(cle), phrases, model, elapsedMs, promptVersion: PROMPT_VERSION_SUGGERER, phrasesRetirees: analyse.retirees.length };
+  } catch (err: any) {
+    const elapsedMs = Date.now() - started;
+    if (err instanceof BrewerBudgetError) return { ok: false, reason: 'budget', error: err.message, elapsedMs };
+    if (err instanceof GeminiUnusableOutputError) return { ok: false, reason: 'invalide', error: INVALIDE, elapsedMs };
+    if (err instanceof GeminiApiError) { logger.warn('Suggérer IA : Gemini en échec', { kind: err.kind, status: err.httpStatus, elapsedMs }); return { ok: false, reason: 'indisponible', error: err.publicError().message, elapsedMs }; }
+    logger.warn('Suggérer IA en échec', { name: err?.name, message: err?.message, elapsedMs });
+    return { ok: false, reason: 'indisponible', error: INDISPONIBLE, elapsedMs };
+  }
+}
+
 export const hopReclasserIA = onCall(
   { region: 'europe-west6', secrets: [GEMINI_API_KEY], memory: '256MiB', timeoutSeconds: 30, cors: true, maxInstances: 3 },
   async (request: CallableRequest<unknown>): Promise<ResultatReclassement> => {
     const email = assertAuthorized(request);
     const started = Date.now();
+    if ((request.data as { mode?: unknown } | null)?.mode === 'suggerer') return suggerer(request.data, started, email);
     let entree;
     try { entree = lireEntree(request.data); } catch (e: any) {
       return { ok: false, reason: 'entree', error: `Demande de classement refusée : ${e?.message ?? 'entrée invalide'}.` };

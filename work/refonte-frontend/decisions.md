@@ -1065,3 +1065,52 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - ETATS 138/138 ;
   - B5 à 147,3 ko ;
   - ouverture d'un outil, médiane à chaud 467 → 453 ms.
+- D123 (pilote, 27.10) : le correctif d'affichage de Suggérer est déployé (005b11f8) et la PR #191 est fusionnée (a0fd0245).
+- D124 (pilote, 27.10, sur « Regarde surtout pour l'algo et implemtation avec l'ai. Il faudra évidemment enlever le panel des six houblons
+  dans la vrai app ») : il ne choisit pas de lettre. La typicité (C) reste le défaut. « Tes six » ne vient pas dans l'app : c'était un repère
+  de la page. Deux voies partent :
+  - **a4**, l'algorithme. Trois biais mesurés par f9 et m9 :
+    - El Dorado est freiné par le débordement de sa poire en 22A ;
+    - Calypso sort de la borne de 80 du pool (« exclure trop tôt ») ;
+    - une typicité inconnue passe après une typicité rare, alors que l'inconnu n'est pas une rareté : c'est le cas de Mandarina, 5e puis 18e.
+  - **ia3**, l'IA dans Suggérer, sur sa base choisie : m6, « M1 + M2 · avec l'IA », la puce « ✦ ordre IA prêt » et sa phrase
+    (`ecrans.json`). Elle reprend le callable `hopReclasserIA` (D92), avec un mode Suggérer. L'essai réel est accordé en D100 (0,5 CHF au
+    plus), simulé d'abord, journalisé, jamais dans `npm test`. « implemtation avec l'ai » dans « la vrai app » vaut accord pour la
+    production de ce mode, sous les plafonds mensuel et quotidien existants.
+- D125 (pilote, 27.10, voie ia3) : les quatre décisions d'ia3.
+  1. L'IA n'agit qu'à partir de 3 rangées au même effet : a4 départage le reste.
+  2. Une phrase pour les 10 premiers seulement : 2,6 à 3,3 s, contre 3,5 à 4,7 s pour 29 phrases.
+  3. `suggerer-v1` exclut tout mot d'appréciation ; elle n'est pas encore déployée.
+  4. L'essai réel est rejoué après a4, car ses listes ont été prises pendant qu'a4 modifiait le moteur ; un banc Chrome perd sa page quand
+     une voie voisine édite les sources.
+  Dépense réelle d'ia3 : 13 appels, 0,0664 CHF, sur les 0,5 CHF accordés en D100.
+- D126 (pilote, 27.10, sur « Ça semble overfit mes paramètres et de loins... », D192) : l'IA de Suggérer (ia3) n'est **pas déployée**. On
+  a trouvé trois causes :
+  1. Mon contrat a taillé le pool de l'IA (30) pour couvrir ses six : c'est un réglage fait sur la moitié jugée (L20).
+  2. L'IA tire des houblons pris plus bas, hors du groupe au même effet, alors que sa maquette m6 posait la puce sur les ex æquo.
+  3. La phrase s'appuie sur la réputation du nom (« mandarine »), pas sur la fiche montrée (chewing gum, groseille, agrumes ●000).
+
+  La suite, voie ia4 :
+  - l'IA ne reclasse que les ex æquo du moteur ;
+  - la taille du pool vient d'une règle de coût, jamais de ses exemples ;
+  - une phrase qui sort de la fiche le dit, ou bien elle est retirée ;
+  - un banc à l'aveugle (accordé en D100) sur des cas qu'il n'a jamais nommés, avec des références indépendantes. L'IA ne se déploie que si
+    elle y bat le moteur.
+
+  a4 a été prévenue de ne rien régler sur ses six.
+- D127 (pilote, 27.10, voie a4) : a4 est acceptée, et ses trois règles deviennent le défaut ; elles restent réversibles.
+  1. Le débordement d'une famille neutre ne compte plus dans le rang.
+  2. La présélection passe par la typicité.
+  3. Un inconnu borné se place entre courant et rare.
+
+  Ses règles ont été écrites avant les mesures et jugées sur 124 cas qu'il n'a jamais nommés. Le meilleur phare est dans les 5 premiers
+  100 fois sur 124 (avant : 83), et la médiane des phares passe de 17,5 à 5. Sur ses six, lus une seule fois à la fin :
+  - El Dorado passe de 74 à 15 en agrumes, et de 71 à 7 en tropicaux ;
+  - Calypso entre dans le classement (41e, 28e) ;
+  - Mandarina recule (23e) : elle est « courante », pas inconnue.
+
+  Il y a aussi 11 reculs de plus de 20 places au dry hop, dans 8 styles. Pour « plus d'agrumes » en 25A ou en 9C, les nobles passent derrière
+  Citra, Centennial et Amarillo. C'est la même cause que pour El Dorado : c'est accepté, à lui montrer s'il le demande.
+
+  La carte de Suggérer lit désormais le même statut que le rang (`horsDuStyle`, pilote) : il n'y a plus de « Aucune voie houblon »
+  au-dessus de rangées (CARTE-LISTE OK). L'IA de Suggérer est éteinte dans l'app (`VITE_IA_SUGGERER`) jusqu'au banc à l'aveugle (ia4).

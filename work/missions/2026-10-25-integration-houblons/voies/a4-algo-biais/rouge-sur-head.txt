@@ -1,0 +1,15 @@
+   × biais 1 : le dépassement d'une famille neutre ne punit pas comme une faute de style > les défauts sont posés : le neutre ne compte plus, la présélection suit la typicité 4ms
+   × biais 1 : le dépassement d'une famille neutre ne punit pas comme une faute de style > El Dorado en 22A, dry hop actif : sa poire (famille neutre) reste dite, mais ne compte plus dans le rang ; 
+   × biais 1 : le dépassement d'une famille neutre ne punit pas comme une faute de style > le rang ne lit que le dépassement d'une famille attendue (sous sa bande) ou indésirable : jamais celui d'
+   ✓ biais 1 : le dépassement d'une famille neutre ne punit pas comme une faute de style > le neutre reste compté plus loin : les effets de bord le portent toujours (la voie qui pousse le plus une
+   × biais 1 : le dépassement d'une famille neutre ne punit pas comme une faute de style > la dose d'un houblon ne fuit plus le dépassement d'une famille neutre : même effet à la dose gardée, au
+   × biais 2 : la présélection du pool n'écarte pas un houblon dont le style établit la typicité > en 22A, tout houblon qui cite la famille et dont la typicité est établie (typé ou courant) e
+   × biais 2 : la présélection du pool n'écarte pas un houblon dont le style établit la typicité > Calypso (courant en 22A, un seul style publié, peu documenté) est classé en agrumes ET en tr
+   ✓ biais 2 : la présélection du pool n'écarte pas un houblon dont le style établit la typicité > sans table (typicité inconnue pour tous), l'ordre est celui d'avant, à l'octet près : la pr
+   × biais 3 : une typicité inconnue ne passe jamais derrière un rare connu > la borne tranche quand elle le peut : un style hors des 16 premiers dont la plus grande part possible est sous 1 % est 
+   ✓ biais 3 : une typicité inconnue ne passe jamais derrière un rare connu > quand la borne ne tranche pas (p16 = 3 %), la typicité reste inconnue, bornée, et ne devient ni 0 ni un palier inven
+   × biais 3 : une typicité inconnue ne passe jamais derrière un rare connu > dans la clé du rang, un inconnu passe devant un rare connu (publié ou par la borne), et derrière un courant et un ty
+   × biais 3 : une typicité inconnue ne passe jamais derrière un rare connu > le texte de la clé dit ce qu'elle sait : « inconnue … entre courant et rare », ou « rare : au plus 0,4 % … born
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed (1)
+      Tests  9 failed | 3 passed (12)

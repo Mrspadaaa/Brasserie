@@ -334,6 +334,26 @@ export function leviersLevure(recette: RecetteParcours, direction: Record<string
   return LEVIERS.get(cle)!;
 }
 
+/** Voie ia3 : le POOL de l'IA dans Suggérer pour un moment : les `taille` premiers ajouts d'UN houblon du moteur (rang du moteur : stock,
+ * puis ordre de qualité, départage g2a), SANS la coupe d'affichage (`limit`, `buyLimit`, `perHop` relevés) ; ni assemblage, ni remplacement.
+ * C'est la liste que l'IA reclasse ; l'écran n'en montre que les premiers dans l'ordre de l'IA. Un calcul lourd (un moment seulement) :
+ * appelé au repos, jamais au premier affichage. Mémoïsé par recette, visée et moment. Rend [] si le moteur ne propose rien. */
+const POOLS = new Map<string, Voie[]>();
+siDonneesChangent(() => POOLS.clear());
+export function poolSuggerer(recette: RecetteParcours, direction: Record<string, number>, moment: Voie['actions'][number]['moment'], taille = 30): Voie[] {
+  const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction, moment, taille]);
+  const connu = POOLS.get(cle);
+  if (connu) return connu;
+  const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, remplacements: false, moments: [moment], limit: taille, buyLimit: taille, perHop: 1 });
+  const vues = new Set<string>();
+  const pool = res.voies.filter((v) => v.type === 'ajouter' && v.actions.length === 1 && v.actions[0].moment === moment)
+    .filter((v) => catalogueDuMoteur() || proposable(v.actions[0].hopKey))
+    .filter((v) => (vues.has(v.actions[0].hopKey) ? false : (vues.add(v.actions[0].hopKey), true))).slice(0, taille);
+  POOLS.set(cle, pool);
+  if (POOLS.size > 40) POOLS.delete(POOLS.keys().next().value!);
+  return pool;
+}
+
 // ---------- Suggérer ----------
 export interface Candidat { cle: string; houblon: HoublonLu; ajout: AjoutParcours; lu: AjoutLu; visee: Ecart; besoin: number; stockSuffisant: boolean | null }
 /** Les houblons du stock (stock libre > 0) ajoutés aux conditions fixées (4 g/L, après fermentation, 3 j,

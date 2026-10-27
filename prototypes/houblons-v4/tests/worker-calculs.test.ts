@@ -25,7 +25,8 @@ const DIR = { floral: 1, resin: -1 } as const;
 // D118 (voie f8, 27.10) : suggerer af7f2ecc1069 → 45120c1bc857 (D190, cryo simulé) ; proposer 3b946ac8a4ff → 3c7fcd571305 (départage par intensité par défaut : champ departage dans chaque voie, ordre à distance égale par le radar ; voir client-async.test.ts).
 // D102 (voie f2-affinage-a-b1-c-d, 26.10) : proposer → 3b946ac8a4ff (B1, D105, pool non coupé), remplacants → e6b71ac8e04d et substitutes → c6399d7b6596 (C, J1 : α 0,15 à 60′) ; raisons dans client-async.test.ts.
 // D120 (t2, 27.10) : proposer 3c7fcd571305 → 3a04edf5a1af (la typicité du style est le défaut, table posée : raison dans client-async.test.ts).
-const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '3a04edf5a1af', remplacants: '5c602de7c804' };
+// D125 (a4, 27.10) : proposer 3a04edf5a1af → d6e084ff0c95 (trois biais du classement : raison dans client-async.test.ts).
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: 'd6e084ff0c95', remplacants: '5c602de7c804' };
 const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recette as never, style: adapter.style(recette.styleCode), stockFirst: true, limit: 8 });
 
 /** Le worker joué dans le même processus : messages clonés dans les deux sens, une tâche plus tard. */

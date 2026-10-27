@@ -1,0 +1,66 @@
+{
+ "pool80 | plus d’agrumes | dry hop actif": {
+  "el-dorado": 15,
+  "mosaic": 13,
+  "mandarina-bavaria": 23,
+  "calypso": 41,
+  "pacific-jade": 36,
+  "idaho-7": 14
+ },
+ "pool80 | plus d’agrumes | whirlpool": {
+  "el-dorado": 15,
+  "mosaic": 13,
+  "mandarina-bavaria": 23,
+  "calypso": 41,
+  "pacific-jade": 36,
+  "idaho-7": 14
+ },
+ "pool80 | plus de tropicaux | dry hop actif": {
+  "el-dorado": 7,
+  "mosaic": 11,
+  "mandarina-bavaria": 26,
+  "calypso": 28,
+  "pacific-jade": null,
+  "idaho-7": 4
+ },
+ "pool80 | plus de tropicaux | whirlpool": {
+  "el-dorado": 7,
+  "mosaic": 11,
+  "mandarina-bavaria": 26,
+  "calypso": 28,
+  "pacific-jade": null,
+  "idaho-7": 4
+ },
+ "entier | plus d’agrumes | dry hop actif": {
+  "el-dorado": 15,
+  "mosaic": 13,
+  "mandarina-bavaria": 23,
+  "calypso": 41,
+  "pacific-jade": 36,
+  "idaho-7": 14
+ },
+ "entier | plus d’agrumes | whirlpool": {
+  "el-dorado": 15,
+  "mosaic": 13,
+  "mandarina-bavaria": 23,
+  "calypso": 41,
+  "pacific-jade": 36,
+  "idaho-7": 14
+ },
+ "entier | plus de tropicaux | dry hop actif": {
+  "el-dorado": 7,
+  "mosaic": 11,
+  "mandarina-bavaria": 26,
+  "calypso": 28,
+  "pacific-jade": null,
+  "idaho-7": 4
+ },
+ "entier | plus de tropicaux | whirlpool": {
+  "el-dorado": 7,
+  "mosaic": 11,
+  "mandarina-bavaria": 26,
+  "calypso": 28,
+  "pacific-jade": null,
+  "idaho-7": 4
+ }
+}

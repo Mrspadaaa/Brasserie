@@ -9,7 +9,7 @@
 import { hopRef, type CatalogueHop } from './data';
 import { cites, describeFamilies } from './hops';
 import type { FamilyId } from './families';
-import { typiciteDe } from './typicite-acces';
+import { palierDansLaCle, typiciteDe } from './typicite-acces';
 
 /** `k3k1` (D118, f8) : DÉFAUT de Suggérer. Le radar Beer Maverick de la famille (k3) d'abord ; à radar égal, et pour une variété sans radar (l'inconnu passe après le connu), la cascade k1.
  * `aucun` : le comportement d'avant D118 (ordre alphabétique à distance égale), à l'octet près. */
@@ -58,8 +58,14 @@ export function radarDe(h: CatalogueHop, f: FamilyId): number | null {
 export function cleHoublon(mode: Exclude<Departage, 'aucun'>, varietyId: string, f: FamilyId, styleCode = ''): { cle: Cle; origine: (string | null)[] } {
   if (mode === 'k3k1t') {
     const base = cleHoublon('k3k1', varietyId, f), t = typiciteDe(varietyId, styleCode);
-    const lib = t.palier === null ? null : `${t.origine === 'voisin' ? 'voisin ' + t.code : 'style'}${t.part !== null ? ` ${Math.round(t.part * 1000) / 10} % des recettes` : ''}${t.concentration !== null ? `, ${Math.round(t.concentration * 100)} % de ses recettes dans la famille` : ''}`;
-    return { cle: [base.cle[0], t.palier, ...base.cle.slice(1)], origine: [base.origine[0], lib, ...base.origine.slice(1)] };
+    const pct = (x: number) => `${Math.round(x * 1000) / 10} %`;
+    // a4 (D125), biais 3 : une typicité inconnue mais BORNÉE prend la place `PALIER_INCONNU_DANS_LA_CLE` (entre courant et rare), jamais derrière un rare connu ; sans aucune donnée, la clé reste `null` (après le connu, rare compris).
+    // Le texte dit ce qui est connu : inconnue, la borne s'il y en a une, et où elle est placée.
+    const lib = t.palier === null
+      ? `typicité inconnue${t.auPlus !== null ? `, au plus ${pct(t.auPlus)} des recettes du style (borne de Beer Analytics) : placée entre courant et rare` : ` (${t.raison}) : placée après les rares connus`}`
+      : t.origine === 'borne' ? `rare : au plus ${pct(t.auPlus!)} des recettes du style (borne de Beer Analytics)`
+        : `${t.origine === 'voisin' ? 'voisin ' + t.code : 'style'}${t.part !== null ? ` ${pct(t.part)} des recettes` : ''}${t.concentration !== null ? `, ${Math.round(t.concentration * 100)} % de ses recettes dans la famille` : ''}`;
+    return { cle: [base.cle[0], palierDansLaCle(t), ...base.cle.slice(1)], origine: [base.origine[0], lib, ...base.origine.slice(1)] };
   }
   if (mode === 'k3k1') {
     // Première étape : la famille est citée par une fiche au moins (sans elle, le moteur ne lui prête aucun effet : une voie qui n'atteint pas la visée ne passe pas devant celles qui l'atteignent).

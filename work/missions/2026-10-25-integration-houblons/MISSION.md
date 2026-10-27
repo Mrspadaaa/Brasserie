@@ -422,3 +422,18 @@ documentaires d'après.
   - D172, D178, D182, D185, #182, #187 ;
   - la voie de profil D101 (B1 921 ko, B2 773 ko).
   Quota hebdomadaire : 96 %.
+- 27.10, 11 h : correctif d'affichage de Suggérer (« 48 g » coupé, pastille qui déborde ; mesurés avant et après à 390 px, ETATS 138/138), **déployé** (005b11f8, 251 fichiers, index-C39namzC.js) et **PR #191 fusionnée** (a0fd0245). Restent ouverts : le n° 1 affiché 4e avec A3 (option éteinte) et les 4 rangées de Suggérer.
+- 27.10, vers 11 h 30 : à la question « quelle liste ? », le brasseur répond : « Regarde surtout pour l'algo et implemtation avec l'ai. Il faudra évidemment enlever le panel des six houblons dans la vrai app » (D124). Il ne choisit aucune lettre ; C reste le défaut ; « Tes six » n'a jamais été dans l'app. **En vol** :
+  - a4, les trois biais du classement (débordement d'El Dorado, Calypso exclu trop tôt, typicité inconnue derrière une rare) ;
+  - ia3, l'IA dans Suggérer, sur sa base m6 : mode « suggérer » du callable, puce et phrase, essai simulé, essai réel de 0,5 CHF au plus (D100).
+  Ensuite :
+  - la critique des captures d'ia3 ;
+  - un rejeu complet ;
+  - le déploiement de l'hébergement et de `functions:hopReclasserIA` (accord : « implemtation avec l'ai » dans « la vrai app ») ;
+  - la PR.
+  Quota hebdomadaire : 96 % au lancement.
+- 27.10, vers 14 h : **a4 commitée** (b62af2b1 ; D127) ; la carte lit le même statut ; l'IA de Suggérer est éteinte (478355b6). Le brasseur, sur la capture d'ia3 : « Ça semble overfit mes paramètres et de loins... » (D192, D126 : pas de déploiement de l'IA). **Rejeu de 478355b6** lancé (Haiku, `%TEMP%/rejeu-4783/`). S'il est vert : déploiement de l'hébergement seul, puis PR et fusion. Ensuite, ia4 si le quota le permet (moins de 98 %) :
+  - l'IA ne reclasse que les ex æquo ;
+  - une phrase fondée sur la fiche ;
+  - un banc à l'aveugle sur des cas qu'il n'a jamais nommés.
+  Quota hebdomadaire : 97 %.
