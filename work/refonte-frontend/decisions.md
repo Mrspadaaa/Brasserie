@@ -1050,3 +1050,11 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   3. Les attendus « Hallertau Tradition » et « Huell Melon » de q2b-suite-s5 venaient de l'ordre alphabétique de l'ancien départage. Ils
      s'actualisent selon la convention e3.
   4. B5, à 164,9 ko depuis f8, n'est pas relevé. La voie c8 sort `composes-houblon.json` (811 ko bruts, lus en synchrone) du chunk.
+- D121 (pilote, 27.10, voies c8 et t2) :
+  1. c8 est accepté : `composes-houblon.json` est un morceau à part, chargé avec les outils. B5 passe de 164,9 à 147,3 ko. Le plafond n'a
+     pas été relevé.
+  2. Les deux écarts de t2 hors de son « Possède » sont validés : `parcours/donnees.ts` (le rejeu à l'arrivée de la table) et
+     `prototypes/houblons-v4/parcours/src/main.tsx` (la maquette charge la table).
+  3. Avec la typicité par défaut, Citra cryo passe premier dans 2 listes sur 16 (avant : 1). C'est en 21C : « plus floral » à 10′, et au
+     dry hop. C'est accepté et dit au brasseur, parce que le gain vient de la même cause : Nelson Sauvin 99 → 18 et Mosaic 41 → 12 en 21C,
+     East Kent Goldings premier du stout. La forme cryo hérite de la typicité de Citra : Beer Analytics n'a pas de fiche cryo à part.

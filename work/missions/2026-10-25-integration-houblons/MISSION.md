@@ -413,3 +413,4 @@ documentaires d'après.
   - avec A3, le n° 1 du moteur est affiché 4e, sous « Ajouter » (l'app groupe avant de garder le rang) ;
   - Suggérer ne montre que 4 rangées (`buyLimit = 4`).
   En vol : t2, c8.
+- 27.10 : **c8 et t2 commités** (37d9c32c, 4aa7cd33 ; D121). B5 à 147,3 ko ; typicité par défaut ; ETATS 138/138. **Rejeu complet de 4aa7cd33** lancé (Haiku, copie propre, `%TEMP%/rejeu-4aa7/`), avec les contrôles Chrome en composés à part et la mesure d'ouverture de c8. S'il est vert : déployer, PR, fusion. Quota hebdomadaire 96 %.
