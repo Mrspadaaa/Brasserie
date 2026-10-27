@@ -438,3 +438,4 @@ documentaires d'après.
   - un banc à l'aveugle sur des cas qu'il n'a jamais nommés.
   Quota hebdomadaire : 97 %.
 - 27.10, vers 15 h : **déployé** (3195332e ; hébergement seul, IA de Suggérer éteinte) et **PR #192 fusionnée** (39236699 ; D128). Reste : ia4 (l'IA sur les seuls ex æquo, une phrase fondée sur la fiche, un banc à l'aveugle), à lancer seulement sous 98 % du quota hebdomadaire.
+- 27.10, vers 15 h 15 : **ia4 en vol** (auteur). L'IA ne reclasse que les ex æquo ; phrase fondée sur la fiche (« Réputation : ») ; banc à l'aveugle sur 16 cas au moins qu'il n'a jamais nommés, avec une règle de décision écrite d'avance ; 0,4 CHF au plus. Quota hebdomadaire 97 % au lancement : **c'est la dernière voie avant 98 %**. Après elle : plus d'agent ; arrêt propre à 99 % (reprise, commit, push).
