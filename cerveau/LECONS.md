@@ -87,8 +87,8 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
-- Cause : 83 % de ses mots (vin blanc, groseille à maquereau, raisin) sont hors du lexique fermé des 12 familles, et sortent du dessin. Personne n'a confronté le rendu à la réputation du houblon (diagnostic du 22.10 : [[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (un linalol d'un autre houblon).
+- Cause : 83 % de ses mots (vin blanc, groseille) sont hors des 12 familles et sortent du dessin ; nul n'a confronté le rendu à sa réputation ([[descripteurs-hors-familles]]).
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (un linalol d'un autre houblon). Un critère de rang tiré de son attente se teste d'abord sur la donnée (27.10 : radar entier, f8 ; Calypso, 1 % des DIPA).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100)
 
@@ -125,7 +125,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
-- Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans chronométrer.
+- Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
 - Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77). Un banc ne juge ni un artefact de l'ordre ni les données de la clé (g1, g2a).
 - Rôles : pilote, conseil, auteur, exécutant

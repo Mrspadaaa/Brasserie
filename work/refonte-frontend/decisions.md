@@ -1036,3 +1036,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 
   La vraie piste est une intensité par variété dans l'effet lui-même (A3, écartée en g1 parce qu'elle change les barres). C'est une
   convention du moteur : à soumettre au conseil, ou à lui en mini maquettes, avant d'agir.
+- D120 (pilote, 27.10, voie f9) : D191 n'est pas tenu, avec 2 de ses 6 houblons au mieux, pour 4 demandés. Les données ne le permettent
+  pas : en Double IPA, Beer Analytics trouve Calypso dans 1 % des recettes, Idaho 7 dans 0,8 %, Mandarina et Pacific Jade dans moins de
+  2 %. Deux biais du moteur se voient aussi :
+  - El Dorado est puni par le débordement de style (poire en 22A) ;
+  - Calypso sort de la borne de 80 du pool (« exclure trop tôt », D98).
+  Décisions :
+  1. Les quatre combinaisons (actuel, A3, typicité, A3 + typicité) lui sont montrées en mini maquettes dans son écran Suggérer, sur
+     neipa v3. Il choisit (L24 ; « Les deux »).
+  2. La typicité seule devient le défaut, de façon réversible. Elle ramène East Kent Goldings en tête du stout : c'est l'acquis D105, que
+     f8 masquait par `departage: 'aucun'` dans ses tests. Elle fait mieux en tropicaux (2 sur 6 au lieu de 1) et ne pousse pas Citra cryo.
+     A3 reste une option : avec la typicité, il remonte Citra cryo (3 listes sur 10).
+  3. Les attendus « Hallertau Tradition » et « Huell Melon » de q2b-suite-s5 venaient de l'ordre alphabétique de l'ancien départage. Ils
+     s'actualisent selon la convention e3.
+  4. B5, à 164,9 ko depuis f8, n'est pas relevé. La voie c8 sort `composes-houblon.json` (811 ko bruts, lus en synchrone) du chunk.
