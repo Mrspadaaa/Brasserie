@@ -208,7 +208,7 @@ async function interne() {
   const sem = await fetch(`${doc}/brewerAiControls/current`, { method: 'PATCH', headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: { paused: { booleanValue: false }, monthlyLimitMicroChf: { integerValue: '5000000' } } }) });
   etape('budget semé dans Firestore émulé', { statut: sem.status, limite: '5 CHF (émulateur)' });
 
-  const viteEnv = { ...process.env, VITE_USE_FIREBASE_EMULATORS: 'true', VITE_HOP_V4: 'on', VITE_FIREBASE_PROJECT_ID: PROJECT, VITE_FIREBASE_API_KEY: 'demo-ia3-key', VITE_FIREBASE_AUTH_DOMAIN: `${PROJECT}.firebaseapp.com`,
+  const viteEnv = { ...process.env, VITE_USE_FIREBASE_EMULATORS: 'true', VITE_HOP_V4: 'on', VITE_IA_SUGGERER: 'on', VITE_FIREBASE_PROJECT_ID: PROJECT, VITE_FIREBASE_API_KEY: 'demo-ia3-key', VITE_FIREBASE_AUTH_DOMAIN: `${PROJECT}.firebaseapp.com`,
     VITE_FIREBASE_STORAGE_BUCKET: `${PROJECT}.appspot.com`, VITE_FIREBASE_APP_ID: '1:000000000000:web:0000000000000000', VITE_FIREBASE_MESSAGING_SENDER_ID: '000000000000', VITE_FIREBASE_MEASUREMENT_ID: '',
     VITE_RECAPTCHA_SITE_KEY: '', VITE_APPCHECK_DEBUG_TOKEN: '', VITE_AUTHORIZED_ACCOUNTS: USER.email };
   delete (viteEnv as NodeJS.ProcessEnv).GEMINI_API_KEY;

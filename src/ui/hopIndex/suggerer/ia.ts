@@ -40,8 +40,11 @@ const transportFirebase: TransportSuggerer = async (demande) => {
   const r = await httpsCallable<EntreeSuggerer, ReponseSuggerer>(functions, 'hopReclasserIA', { timeout: 10000 })(demande);
   return r.data;
 };
-/** Sous Vitest, aucun transport par défaut : un écran monté dans un test n'appelle jamais le callable (ni Firebase, ni Gemini). */
-const PAR_DEFAUT: TransportSuggerer | null = import.meta.env.MODE === 'test' ? null : transportFirebase;
+/** Sous Vitest, aucun transport par défaut : un écran monté dans un test n'appelle jamais le callable (ni Firebase, ni Gemini).
+ * D126 : l'IA de Suggérer reste éteinte dans l'app tant que le banc à l'aveugle (ia4) ne l'a pas validée ; `VITE_IA_SUGGERER=on` l'allume
+ * pour le banc et l'émulateur. */
+const EN_SERVICE = import.meta.env.VITE_IA_SUGGERER === 'on';
+const PAR_DEFAUT: TransportSuggerer | null = import.meta.env.MODE === 'test' || !EN_SERVICE ? null : transportFirebase;
 let transport: TransportSuggerer | null = PAR_DEFAUT;
 /** Pour les tests et le banc : un autre transport (null : celui par défaut). */
 export function installerTransportSuggerer(t: TransportSuggerer | null): void { transport = t ?? PAR_DEFAUT; resultats.clear(); }
