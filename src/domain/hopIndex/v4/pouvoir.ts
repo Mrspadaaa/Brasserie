@@ -6,7 +6,7 @@
 // (sous, autour, au-dessus ×N), et le signal d'une famille est le rapport au seuil de son marqueur
 // dominant. Aucun chiffre hors de H ou du dépôt (src/data/hopV4/composes-houblon.json) : une valeur absente est
 // null avec sa raison, jamais 0. Pas de courbe inventée (durée, alcool, dose : plages entre mesures).
-import dataFile from '../../../data/hopV4/composes-houblon.json';
+import { DONNEES_COMPOSES, ComposesAbsents } from './composes';
 import bandsFile from '../../../data/hopV4/style-bands.json';
 import { POLICY, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
@@ -151,7 +151,9 @@ interface Lot { id: string; sources: string[]; recolte: number | null; huile?: n
 interface Mesure { id: string; compose: ComposeId; plage: [number, number]; unite: string; doseGL: number; moment: MomentId; dureeJours?: number; texte: string; momentNote?: string; sources: string[] }
 interface Variete { nom: string; forme: string; origine: string; huile: Valeurs; composes: Record<ComposeId, Valeurs>; lots?: Lot[]; classeHopsteiner?: Info[]; precurseurs?: Info[]; mesuresEnBiere?: Mesure[]; hsi?: Info[]; autres?: Info[]; panel?: Info[] }
 interface Levure { nom: string; betaLyase: string; betaGlucosidase: string; pof: string; esters: string; diastaticus: string; attenuation: string; biotransformation: string; geraniolCitronellol: string | null; notes: string[]; sources: string[] }
-const D = dataFile as unknown as {
+// c8 : composes-houblon.json arrive à part (composes.ts) ; `D` est l'objet d'identité stable que le chargement remplit. Avant l'arrivée,
+// ses tables sont absentes : `source()` lève ComposesAbsents, jamais une valeur par défaut.
+const D = DONNEES_COMPOSES as unknown as {
   sources: Record<string, Omit<SourceRef, 'cle'>>;
   composes: Record<ComposeId, { nom: string; classe: string; type: 'terpene' | 'thiol' }>;
   varietes: Record<string, Variete>;
@@ -181,6 +183,7 @@ const plusFort = (ns: (Niveau | null | undefined)[]): Niveau | null => ns.reduce
 const uniq = <T>(xs: T[]) => [...new Set(xs)];
 const uniqSources = (xs: SourceRef[]) => [...new Map(xs.map((s) => [s.cle, s])).values()];
 export function source(cle: string): SourceRef {
+  if (!D.sources) throw new ComposesAbsents();
   const s = D.sources[cle];
   if (!s) throw Error(`Source inconnue dans composes-houblon.json : ${cle}`);
   return { cle, ...s, lecture: s.lecture ?? null };

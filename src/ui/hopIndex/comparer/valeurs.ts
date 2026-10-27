@@ -5,7 +5,7 @@
 //  - linalol mesuré en bière : mesuresEnBiere du même fichier, et l'étude E03 (McCabe 2023) ;
 //  - panel OSU : l'étude E04 (Lafontaine 2018, H22), Cascade seul.
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
-import composes from '../../../data/hopV4/composes-houblon.json';
+import { DONNEES_COMPOSES } from '../../../domain/hopIndex/v4/composes';
 import comparatifs from '../../../data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { complementsCharges, type ChampComplement } from '../../../domain/hopIndex/v4/complements';
@@ -25,14 +25,15 @@ export interface ValeurReelle {
   note?: string;
 }
 type Source = { titre?: string; annee?: number };
-const SOURCES = (composes as unknown as { sources: Record<string, Source> }).sources;
+// c8 : composes-houblon.json arrive à part (composes.ts) ; lu à chaque appel, jamais figé à l'import. Avant l'arrivée : aucune fiche (absent, jamais 0).
+const sourcesComposes = () => (DONNEES_COMPOSES as { sources?: Record<string, Source> }).sources ?? {};
 type Val = { plage: [number | null, number | null]; sources: string[]; portee?: string; aConfirmer?: boolean };
 type Variete = {
   huile?: { valeurs: Val[] | null };
   composes?: Record<string, { valeurs: Val[] | null; raison?: string }>;
   mesuresEnBiere?: { compose: string; plage: [number, number]; unite: string; doseGL: number; sources: string[]; texte: string }[];
 };
-const VARIETES = (composes as unknown as { varietes: Record<string, Variete> }).varietes;
+const varietesComposes = () => (DONNEES_COMPOSES as { varietes?: Record<string, Variete> }).varietes ?? {};
 
 // Formateur en cache (t2, optimisation 3 ; #164) : même texte que l'ancien appel par nombre.
 const fr = (x: number, d = 2) => nombreFr(x, { maximumFractionDigits: d });
@@ -43,7 +44,7 @@ export function titreRef(id: string): string {
   if (id === 'HS') return 'Hopsteiner';
   if (id === 'E03') return 'McCabe 2023';
   if (id === 'E04') return 'Lafontaine 2018';
-  const r = SOURCES[id];
+  const r = sourcesComposes()[id];
   if (!r?.titre) return titreComplement(id) ?? id;
   return r.titre.split(/[,:]/)[0].replace(/\s+et al\.?$/, '') + (r.annee ? ` ${r.annee}` : '');
 }
@@ -88,7 +89,7 @@ export function acides(cle: string, quoi: 'alpha' | 'beta'): ValeurReelle | null
  * Hopsteiner reliée (`hs.totalOil`, HS). L'enveloppe de toutes les sources ; « inconnu » seulement si aucune n'a la valeur. */
 export function huile(cle: string): ValeurReelle | null {
   const cat = hopRef(cle)?.catalogue;
-  const vals: Val[] = [...(VARIETES[cle]?.huile?.valeurs ?? [])];
+  const vals: Val[] = [...(varietesComposes()[cle]?.huile?.valeurs ?? [])];
   if (cat?.oil) vals.push({ plage: cat.oil, sources: ['BM'] });
   if (cat?.hs?.totalOil) vals.push({ plage: cat.hs.totalOil, sources: ['HS'] });
   vals.push(...desComplements(cle, 'huile'));
@@ -118,7 +119,7 @@ function duCatalogue(cle: string, c: string): Val[] {
  * l'enveloppe de toutes les sources ; « inconnu » seulement si aucune n'a la valeur (les houblons sans fiche de composés,
  * comme Mosaic, prennent alors Beer Maverick et Hopsteiner). */
 export const compose = (cle: string, c: string) => enveloppe([
-  ...(VARIETES[cle]?.composes?.[c]?.valeurs ?? []), ...duCatalogue(cle, c),
+  ...(varietesComposes()[cle]?.composes?.[c]?.valeurs ?? []), ...duCatalogue(cle, c),
   ...(c === '4MMP' ? [] : desComplements(cle, c as ChampComplement)),
 ]);
 
@@ -131,7 +132,7 @@ const nomEtude = (n: string) => n.toLowerCase().replace(/[^a-z0-9]+/g, '');
 /** Linalol mesuré en bière (µg/L) : la mesure de Kishimoto (H12) dans les données du houblon, sinon l'étude E03
  * filtrée sur la variété exacte (L14 : Azacca et Idaho 7 sont dans la même table). */
 export function linalolEnBiere(cle: string, nom: string): ValeurReelle | null {
-  const m = VARIETES[cle]?.mesuresEnBiere?.find((x) => x.compose === 'linalol');
+  const m = varietesComposes()[cle]?.mesuresEnBiere?.find((x) => x.compose === 'linalol');
   if (m) return { lo: m.plage[0], hi: m.plage[1], texte: fr(m.plage[0], 1), refs: m.sources, aConfirmer: false, note: `${fr(m.doseGL, 0)} g/L, moût` };
   const e03 = ETUDES.find((e) => e.id === 'E03');
   const x = e03?.mesures.find((y) => y.compose === 'linalol' && nomEtude(y.variete ?? '') === nomEtude(nom));
