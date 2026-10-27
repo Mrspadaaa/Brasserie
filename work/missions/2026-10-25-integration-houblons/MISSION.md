@@ -456,3 +456,4 @@ documentaires d'après.
   - le bouton d'ajout direct (D188).
   Quota hebdomadaire 97 %.
 - 27.10, vers 19 h : **D193 corrigé** : bannir une famille que la bière n'a pas ne faisait rien. Déployé (721b8909, index-BbqDDFp3.js) ; PR #194.
+- 27.10, vers 20 h : **D194** (bannir = objectif, exclusion et retrait) déployé (ae7c7a8d, index-DK9swfoN.js) ; PR #195. Reste ouvert : la carte « Plus … — Aucune voie houblon » quand la bière déborde déjà du style (cas B : Columbus 100 g ; `styleOverflow` compte le débordement d'avant la voie). C'est la même classe que la saturation.
