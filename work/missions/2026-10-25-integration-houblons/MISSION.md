@@ -455,3 +455,4 @@ documentaires d'après.
   - les accords D100 restants (catalogue Firestore, test dans son Chrome) ;
   - le bouton d'ajout direct (D188).
   Quota hebdomadaire 97 %.
+- 27.10, vers 19 h : **D193 corrigé** : bannir une famille que la bière n'a pas ne faisait rien. Déployé (721b8909, index-BbqDDFp3.js) ; PR #194.
