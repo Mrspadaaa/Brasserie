@@ -1127,3 +1127,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     (`suggerer-v2`, « Réputation : »). Ni `suggerer-v2` ni la fonction ne sont déployés.
   - **Le coût réel.** ia3 et ia4 : 44 appels pour 0,137 CHF, sur les 0,5 CHF accordés en D100.
   - **Pour la rallumer**, il faudra un banc sur une référence qui discrimine (floral, 10′, BarthHaas, Crosby), et seulement s'il le veut.
+- D130 (l'utilisateur, 27.10, mot pour mot) : « Même la meilleure des IA ? » ; « J'autorise un budget de 10ch pour testé les deux » (Gemini
+  3.8 Flash, réflexion basse et réflexion haute) ; « Et va jusqu'à 99% de quota pour ce cas ».
+  - Le même banc qu'ia4 : les mêmes 30 cas et la même référence figée (`reference.json`), la même règle (+10 points en moyenne, aucun cas
+    sous −25). Seuls le modèle et la réflexion changent (`ia4-banc.ts --modele= --reflexion=`).
+  - Chaque essai a son compteur et sa section du journal, avec une enveloppe de 4,5 CHF ; les deux ensemble restent sous les 10 CHF.
+  - Pour ce cas seulement, le seuil des agents passe de 98 % à 99 %.

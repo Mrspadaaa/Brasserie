@@ -47,8 +47,14 @@ const SOURCES = resolve(ROOT, 'src/data/hopSources');
 const JOURNAL = resolve(ROOT, 'work/finalisation-tickets-2026-10-08/gemini-journal.md');
 const VERROU = resolve(ROOT, 'work/finalisation-tickets-2026-10-08/locks/gemini-journal');
 const PHASE = process.argv.find((a) => a.startsWith('--phase='))?.split('=')[1] ?? '';
-const MODELE = 'gemini-3.5-flash-lite';
-const ENVELOPPE = { appels: 70, micro: 400_000 };
+// D130 (27.10, l'utilisateur : « J'autorise un budget de 10ch pour testé les deux ») : le même banc, les mêmes 30 cas et la même référence
+// figée, avec un autre modèle et un autre niveau de réflexion. `--modele=gemini-3.8-flash --reflexion=low|high` ; chaque essai a son
+// compteur, sa section du journal et ses fichiers de sortie. Sans option : l'essai d'ia4 (Flash-Lite, réflexion basse).
+const arg = (n: string) => process.argv.find((a) => a.startsWith(`--${n}=`))?.split('=')[1];
+const MODELE = arg('modele') ?? 'gemini-3.5-flash-lite';
+const REFLEXION = arg('reflexion') ?? 'low';
+const ESSAI = MODELE === 'gemini-3.5-flash-lite' && REFLEXION === 'low' ? '' : ` ${MODELE} ${REFLEXION}`;
+const ENVELOPPE = ESSAI ? { appels: 40, micro: 4_500_000 } : { appels: 70, micro: 400_000 };
 const MONTREES = 4, MAX_CAS = 30, MIN_GROUPE = 3, TAILLE_POOL = 12, BALAYAGE = 30;
 const EXCLUS = new Set(['22A', '16D', '21C']);
 
@@ -115,10 +121,12 @@ async function preparer(m: Moteur): Promise<Cas[]> {
 }
 
 // ---------- Le journal « ia4 » ----------
-const SECTION = '## Essai à l’aveugle de l’IA de Suggérer sur les ex æquo du moteur (ia4) — enveloppe séparée';
-const COMPTEUR = new RegExp(`\\*\\*Compteur ia4 : (\\d+) \\/ ${ENVELOPPE.appels} · (\\d+(?:\\.\\d+)?) CHF \\/ ${ENVELOPPE.micro / 1e6}\\*\\*`);
-const texteCompteur = (n: number | string, micro: number) => `**Compteur ia4 : ${n} / ${ENVELOPPE.appels} · ${(micro / 1e6).toFixed(4)} CHF / ${ENVELOPPE.micro / 1e6}**`;
-const EN_TETE = [SECTION, '', `- Accord de l'utilisateur (D100) : essai réel de la voie ia4 (Flash-Lite, invite \`suggerer-v2\`, 3 à 12 candidats par appel, les ex æquo du moteur). Enveloppe : **${ENVELOPPE.appels} appels au plus, ${ENVELOPPE.micro / 1e6} CHF**. Arrêt au premier dépassement ou à la deuxième erreur de suite.`,
+const SECTION = `## Essai à l’aveugle de l’IA de Suggérer sur les ex æquo du moteur (ia4${ESSAI}) — enveloppe séparée`;
+const ETIQUETTE = `ia4${ESSAI}`.replace(/\./g, '\\.');
+const COMPTEUR = new RegExp(`\\*\\*Compteur ${ETIQUETTE} : (\\d+) \\/ ${ENVELOPPE.appels} · (\\d+(?:\\.\\d+)?) CHF \\/ ${ENVELOPPE.micro / 1e6}\\*\\*`);
+const texteCompteur = (n: number | string, micro: number) => `**Compteur ia4${ESSAI} : ${n} / ${ENVELOPPE.appels} · ${(micro / 1e6).toFixed(4)} CHF / ${ENVELOPPE.micro / 1e6}**`;
+const ACCORD = ESSAI ? `D130 (« J'autorise un budget de 10ch pour testé les deux ») : ${MODELE}, réflexion ${REFLEXION}` : 'D100 : Flash-Lite';
+const EN_TETE = [SECTION, '', `- Accord de l'utilisateur (${ACCORD}) : essai réel de la voie ia4 (invite \`suggerer-v2\`, 3 à 12 candidats par appel, les ex æquo du moteur). Enveloppe : **${ENVELOPPE.appels} appels au plus, ${ENVELOPPE.micro / 1e6} CHF**. Arrêt au premier dépassement ou à la deuxième erreur de suite.`,
   '- Chemin : `scripts/eval-hop/ia4-banc.ts` → garde-fous de `scripts/gemini38LiveCore.ts` → Gemini (le module de l\'invite est celui du callable). Données : fiches du catalogue et recettes de fixture, aucune donnée réelle. Clé jamais journalisée. Jamais dans `npm test`.',
   '', texteCompteur(0, 0), '', '| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |', '|---|---|---|---|---|---|---|---|'].join('\n');
 function reserver(): number {
@@ -170,9 +178,14 @@ function entreeDe(style: string, nom: string, r: Recipe, d: (typeof DEMANDES)[nu
 const dit = (a: Recipe['additions'][number]) => (a.moment === 'dryActive' ? 'dry hop actif' : a.moment === 'dryPost' ? 'dry hop après fermentation' : a.moment === 'wp' ? 'whirlpool' : `${String(a.moment).replace(/^b/, '')}′`);
 
 async function appeler(reel: ReturnType<typeof guardLiveFetch>, cleApi: string, entree: EntreeSuggerer, cles: string[], test: string, etat: { dernier: LiveCall | null }): Promise<Sortie> {
-  const message = construireInviteSuggerer(entree), ids = cles.map((_, i) => identifiant(i)), body = JSON.stringify(corpsRequeteSuggerer(message));
+  const message = construireInviteSuggerer(entree);
+  const corps = corpsRequeteSuggerer(message) as { generationConfig: { maxOutputTokens: number; thinkingConfig: { thinkingLevel: string } } };
+  corps.generationConfig.thinkingConfig.thinkingLevel = REFLEXION;
+  // La réflexion haute compte ses jetons dans la sortie : sans marge, la réponse s'arrête en MAX_TOKENS.
+  if (REFLEXION === 'high') corps.generationConfig.maxOutputTokens = 32_000;
+  const ids = cles.map((_, i) => identifiant(i)), body = JSON.stringify(corps);
   const t0 = Date.now();
-  const r = await reel.fetch(liveEndpoint(MODELE), { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cleApi }, body, signal: AbortSignal.timeout(30_000) });
+  const r = await reel.fetch(liveEndpoint(MODELE), { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cleApi }, body, signal: AbortSignal.timeout(REFLEXION === 'high' ? 120_000 : 30_000) });
   const json: any = await r.json().catch(() => ({}));
   const ms = Date.now() - t0, call = etat.dernier;
   const vide = { ok: false, ordre: [], phrases: {}, retirees: [], horsFiche: [], reputations: [], ms, chfMicro: call?.costMicroChf ?? 0, tokens: call?.inputTokens != null ? ([call.inputTokens, call.outputTokens ?? 0] as [number, number]) : null };
@@ -254,10 +267,11 @@ async function main() {
     phrasesRetirees: rows.reduce((s, r) => s + r.retirees, 0), phrasesHorsFiche: rows.reduce((s, r) => s + r.horsFiche, 0), phrasesReputation: rows.reduce((s, r) => s + r.reputations, 0), phrasesGardees: rows.reduce((s, r) => s + Object.keys(r.phrases).length, 0),
     sousEnsemblePlusDe4: (() => { const x = mes.filter((r) => r.groupe > MONTREES).map((r) => r.ecart as number); return { n: x.length, moyennePoints: x.length ? Math.round((x.reduce((a, b) => a + b, 0) / x.length) * 1000) / 10 : null }; })(),
     msMediane: (() => { const x = rows.filter((r) => r.ms).map((r) => r.ms).sort((a, b) => a - b); return x.length ? x[x.length >> 1] : null; })(), totalChf: Math.round(total) / 1e6 };
-  writeFileSync(resolve(DOSSIER, 'resultats.json'), `${JSON.stringify({ decision, rows, six }, null, 1)}\n`);
+  const SUFFIXE = ESSAI ? `-${MODELE}-${REFLEXION}` : '';
+  writeFileSync(resolve(DOSSIER, `resultats${SUFFIXE}.json`), `${JSON.stringify({ modele: MODELE, reflexion: REFLEXION, decision, rows, six }, null, 1)}\n`);
   const tab = ['| Cas | Groupe | Moteur : confirmées / couvertes | IA : confirmées / couvertes | Écart | Phrases : gardées / retirées / Réputation | ms |', '|---|---|---|---|---|---|---|',
     ...rows.map((r) => `| ${r.style} · ${r.demande} · ${r.moment} | ${r.groupe} | ${r.moteur.confirmees}/${r.moteur.couvertes} (${pct(r.moteur.part)}) | ${r.ok ? `${r.ia.confirmees}/${r.ia.couvertes} (${pct(r.ia.part)})` : `invalide : ${r.erreur}`} | ${r.mesurable ? `${r.ecart >= 0 ? '+' : ''}${Math.round(r.ecart * 100)}` : 'non mesurable'} | ${Object.keys(r.phrases).length} / ${r.retirees} / ${r.reputations} | ${r.ms} |`)].join('\n');
-  writeFileSync(resolve(DOSSIER, 'tableau.md'), `${tab}\n\n${JSON.stringify(decision)}\n`);
+  writeFileSync(resolve(DOSSIER, `tableau${SUFFIXE}.md`), `${tab}\n\n${JSON.stringify(decision)}\n`);
   console.log(tab); console.log(JSON.stringify(decision, null, 1)); console.log(`Ses six / neipa v3 : ${JSON.stringify(six)}`);
   console.log(`Règle : moyenne ≥ +10 points ET pire cas ≥ −25 points → ${decision.allume ? 'L\'IA MÉRITE D\'ÊTRE ALLUMÉE' : 'L\'IA RESTE ÉTEINTE'} (le pilote décide)`);
   console.log(`Total : ${decision.totalChf.toFixed(4)} CHF`);
