@@ -1077,3 +1077,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     (`ecrans.json`). Elle reprend le callable `hopReclasserIA` (D92), avec un mode Suggérer. L'essai réel est accordé en D100 (0,5 CHF au
     plus), simulé d'abord, journalisé, jamais dans `npm test`. « implemtation avec l'ai » dans « la vrai app » vaut accord pour la
     production de ce mode, sous les plafonds mensuel et quotidien existants.
+- D125 (pilote, 27.10, voie ia3) : les quatre décisions d'ia3.
+  1. L'IA n'agit qu'à partir de 3 rangées au même effet : a4 départage le reste.
+  2. Une phrase pour les 10 premiers seulement : 2,6 à 3,3 s, contre 3,5 à 4,7 s pour 29 phrases.
+  3. `suggerer-v1` exclut tout mot d'appréciation ; elle n'est pas encore déployée.
+  4. L'essai réel est rejoué après a4, car ses listes ont été prises pendant qu'a4 modifiait le moteur ; un banc Chrome perd sa page quand
+     une voie voisine édite les sources.
+  Dépense réelle d'ia3 : 13 appels, 0,0664 CHF, sur les 0,5 CHF accordés en D100.
