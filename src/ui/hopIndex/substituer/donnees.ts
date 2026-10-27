@@ -250,7 +250,7 @@ export const LIGNES_HUILE: { id: LigneHuile; nom: string; unite: string }[] = [
 export function huilesDe(cle: string): Record<LigneHuile, Intervalle | null> {
   const ref = hopRef(cle);
   const c = ref?.catalogue;
-  const v = (DONNEES_POUVOIR.varietes as Record<string, { huile?: { valeurs: { plage: Intervalle }[] | null }; composes?: Record<string, { valeurs: { plage: Intervalle }[] | null }> }>)[cle];
+  const v = (DONNEES_POUVOIR.varietes as Record<string, { huile?: { valeurs: { plage: Intervalle }[] | null }; composes?: Record<string, { valeurs: { plage: Intervalle }[] | null }> }> | undefined)?.[cle]; // c8 : composés absents avant leur arrivée (aucune fiche, jamais 0)
   const env = (vs: { plage: Intervalle }[] | null | undefined): Intervalle | null => (vs?.length ? [Math.min(...vs.map((x) => x.plage[0])), Math.max(...vs.map((x) => x.plage[1]))] : null);
   const env2 = (...rs: (Intervalle | null | undefined)[]): Intervalle | null => { const l = rs.filter((r): r is Intervalle => !!r); return l.length ? [Math.min(...l.map((r) => r[0])), Math.max(...l.map((r) => r[1]))] : null; };
   const de = (k: string) => env(v?.composes?.[k]?.valeurs);

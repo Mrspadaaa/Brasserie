@@ -10,6 +10,7 @@
 import { CATALOGUE, STOCK, creerMoteur, type CatalogueHop, type Moteur, type StockHop, type Tasting } from '../../../domain/hopIndex/v4';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { cataloguePleinCharge, siCataloguePleinArrive } from '../../../domain/hopIndex/v4/data';
+import { chargerTypicite } from '../../../domain/hopIndex/v4/typicite-acces';
 import type { AjoutParcours, RecetteParcours } from './types';
 
 /** La demande de la maquette (fixture S1, sa dégustation du 18.10 : « trop résineuse, je la veux plus florale »), en crans du style.
@@ -75,6 +76,19 @@ export const catalogueDuMoteur = (): boolean => courantes.catalogue === CATALOGU
 /** Le dernier appel de `configurerDonnees` (null : jamais appelé) : rejoué à l'arrivée du catalogue plein. */
 let dernierPartiel: Partial<DonneesParcours> | null = null;
 siCataloguePleinArrive(() => { if (dernierPartiel) configurerDonnees(dernierPartiel); });
+
+/** D120 (t2) : la typicité du style est le défaut de Suggérer ; sa table (Beer Analytics, un morceau à part) arrive à l'ouverture de l'étape, avec la préchauffe. Même modèle que le catalogue plein :
+ * à son arrivée la configuration est rejouée (caches de l'adaptateur vidés, moteur refait, client des calculs vidé et worker renourri par `siDonneesChangent`), avant que Suggérer ne s'affiche :
+ * la liste ne saute pas. Un seul chargement, une seule relecture ; un échec (hors ligne sans le morceau) est silencieux : sans table la typicité est inconnue, le rang est celui de k3k1, et le prochain
+ * appel réessaie. Rend la promesse (tests). */
+let typiciteDemandee: Promise<void> | null = null;
+export function lancerTypicite(): Promise<void> {
+  typiciteDemandee ??= chargerTypicite()
+    // Jamais configurée (la maquette, sans l'étape) : les données restent les fixtures, seuls les caches sont vidés (rejouer `{}` adopterait le catalogue plein, que la maquette ne lit pas).
+    .then(() => { if (dernierPartiel) configurerDonnees(dernierPartiel); else for (const f of ecouteurs) f(); })
+    .catch(() => { typiciteDemandee = null; });
+  return typiciteDemandee;
+}
 
 /** Remplace tout ou partie des données (les autres gardent leur valeur par défaut) et vide les caches de l'adaptateur.
  * Sans argument : revient aux fixtures. À appeler avant le premier calcul, ou quand le stock ou la dégustation changent. */

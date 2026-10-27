@@ -13,9 +13,15 @@
 //     couleur et à son épaisseur.
 // Normalisation (D68, « SI choisi absolu, plus de normalisation, pour le radar et pour les barre et le reste !! ») :
 //   - mode « style » : chaque axe a son échelle, le plus fort des séries (et de la référence) sur cet axe, écrit près
-//     du picto ; anneaux en parts (¼, ½, ¾) ; la zone du style en vert pâle ; au-dessus d'elle, le point est orangé ;
-//   - mode « absolu » : une échelle fixe et commune (0 à 12,5 crans par défaut), anneaux chiffrés sur l'axe du haut,
-//     valeurs brutes ; pas de zone ;
+//     du picto ; anneaux en parts (¼, ½, ¾) ; la zone du style en vert pâle ; au-dessus d'elle, le point est orangé.
+//     D189 (27.10, « Quand je change le timing. Je vois les valeurs changé mais la taille du radar graph ») : l'échelle est
+//     celle du style, la MÊME à tous les moments ; ce qui bouge avec le moment, ce sont les valeurs. Un écran qui lit
+//     plusieurs moments donne `echellesAxe` (le plus fort de chaque axe sur tous ses moments) : le bord ne se refait plus à
+//     chaque moment, la forme grandit vers le dry hop et rétrécit à 60′ ;
+//   - mode « absolu » : une échelle fixe et commune, anneaux chiffrés sur l'axe du haut, valeurs brutes, pas de normalisation
+//     au style (0 à 12,5 crans par défaut ; un écran peut donner `echelleAbsolue` du minimum au maximum de ce qu'il montre).
+//     D187 (27.10, « le radargraph en absolue a aucun sens, il faudrait montrer la plage type du style ») : `bande` dessine la
+//     plage type du style (du bas au haut de la bande de chaque famille) en vert pâle, au lieu de la zone ;
 //   - une note sur une échelle de mots (Ma bière : pas senti, faible, moyen, marqué) ne se normalise jamais : au style,
 //     `echelleCommune` garde la zone du style et l'orangé, sur des anneaux communs nommés.
 // Inconnu en place (`enPlace`, Ma bière) : la zone du style y est connue, l'axe garde sa place ; son secteur est
@@ -58,6 +64,13 @@ export interface RadarBaseProps {
   echelleAbsolue?: { pas: number; nb: number; etiquettes?: string[] };
   /** Au style, une échelle commune au lieu du maximum de chaque axe (une note en mots ne se normalise pas). */
   echelleCommune?: { pas: number; nb: number; etiquettes?: string[] };
+  /** D189 : au style, le bord de chaque axe donné par l'écran (dans l'unité des valeurs), le même à tous les moments. Il ne
+   *  peut que grandir avec les séries montrées (une valeur au-delà du bord le repousse : jamais de point rogné). Absent pour
+   *  un axe : le plus fort des séries sur cet axe, comme avant. */
+  echellesAxe?: Partial<Record<FamilyId, number | null>>;
+  /** D187 : en Absolu, la plage type du style, du bas au haut de la bande de chaque famille (dans l'unité des valeurs),
+   *  dessinée en bande verte pâle sous la grille. Une famille sans bande n'en a pas (le bas et le haut tombent sur le 0). */
+  bande?: { bas: Valeurs; haut: Valeurs };
   /** L'inconnu de toutes les séries reste à sa place (hachuré, picto pâli et « ? ») au lieu d'être regroupé en bas. */
   enPlace?: boolean;
   /** Au-dessus de la zone de plus que ce seuil : hors du style (orangé). */
@@ -94,7 +107,7 @@ const rd = (x: number) => Math.round(x * 10) / 10;
 type P2 = [number, number];
 
 /** Le pas rond le plus fin qui contient la plus forte valeur, en 3 à 5 anneaux. */
-function echelle(max: number) {
+export function echelle(max: number) {
   for (const pas of [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5]) {
     const n = Math.ceil(max / pas - 1e-9);
     if (n <= 5) return { pas, nb: Math.max(3, n) };
@@ -103,7 +116,7 @@ function echelle(max: number) {
 }
 export const chiffreRadar = (x: number) => String(Math.round(x * 100) / 100).replace('.', ',');
 
-export function RadarBase({ familles, series, mode, moment, zone: zoneP, reference, echelleAbsolue, echelleCommune, enPlace, seuilHors = 1e-6, objet, label, className, marquees, fleches, cibles, bulle, trouDuZero, ecarterConfondus }: RadarBaseProps) {
+export function RadarBase({ familles, series, mode, moment, zone: zoneP, reference, echelleAbsolue, echelleCommune, echellesAxe, bande, enPlace, seuilHors = 1e-6, objet, label, className, marquees, fleches, cibles, bulle, trouDuZero, ecarterConfondus }: RadarBaseProps) {
   const absolu = mode === 'absolu';
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const brut = (s: { valeurs: Valeurs }, f: FamilyId): number | null => { const v = s.valeurs[f]; return v == null || !Number.isFinite(v) ? null : Math.max(0, v); };
@@ -136,7 +149,11 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   // Au style : le bord de chaque axe vaut le plus fort des séries (et de la référence) sur cet axe, écrit près du picto ;
   // anneaux en parts. En absolu : l'échelle commune, brute.
   const R0 = RR / 5, parAxe = !absolu && !echelleCommune;
-  const maxAxe = axes.map((f) => { let m = 0; for (const s of series) { const v = brut(s, f); if (v != null && v > m) m = v; } const r = ref(f); if (r != null && r > m) m = r; return m; });
+  const maxAxe = axes.map((f) => {
+    let m = 0; for (const s of series) { const v = brut(s, f); if (v != null && v > m) m = v; }
+    const r = ref(f); if (r != null && r > m) m = r;
+    const e = echellesAxe?.[f]; return e != null && Number.isFinite(e) && e > m ? e : m;
+  });
   const rvA = (i: number, v: number) => (parAxe ? (maxAxe[i] >= 0.05 ? R0 + (RR - R0) * Math.min(1, v / maxAxe[i]) : R0) : rvC(v));
   const cote = (i: number) => (Math.sin(i * PAS) < -0.2 ? -1 : 1);
   const pt = (i: number, r: number): P2 => [CX + Math.sin(i * PAS) * r, CY - Math.cos(i * PAS) * r];
@@ -247,6 +264,11 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
         </defs>
         {/* La zone du style, au style seulement : vert très pâle, sous l'inconnu. */}
         {!absolu && zoneP && <polygon data-role="zone" points={axes.map((f, i) => xy(pt(i, rvA(i, zone(f) ?? 0)))).join(' ')} fill="rgba(47,107,79,.11)" stroke="rgba(47,107,79,.35)" strokeWidth="1" />}
+        {/* D187 : la plage type du style, en Absolu seulement : une bande (le contour du haut, le trou du bas) sur l'échelle commune. */}
+        {absolu && bande && (() => {
+          const ring = (vals: Valeurs) => axes.map((f, i) => { const v = vals[f]; return xy(pt(i, rvC(v == null || !Number.isFinite(v) ? 0 : Math.max(0, v)))); }).join('L');
+          return <path data-role="bande-style" d={`M${ring(bande.haut)}Z M${ring(bande.bas)}Z`} fillRule="evenodd" fill="rgba(47,107,79,.11)" stroke="rgba(47,107,79,.35)" strokeWidth="1" />;
+        })()}
         {/* L'inconnu de tous, sous la grille : un seul secteur « sans donnée ». */}
         {groupe.length > 0 && <polygon data-inconnu={groupe.map((i) => axes[i]).join(' ')} data-role="secteur-sans-donnee" points={secteur(groupe[0], groupe[groupe.length - 1], RR)} fill={`url(#${id})`} />}
         {/* En place : un secteur hachuré par axe inconnu de tous, sous la grille. */}

@@ -23,7 +23,8 @@ const stockDe = (key: string, grams: number): StockHop => ({ key, varietyId: key
 describe('le défaut reste inchangé : aucune des options, aucune clé de plus', () => {
   const base = m.proposeVoies(R21C, { citrus: 1 }, { assemblages: true, leviersLevure: true });
   it('sans option, la réponse ne porte ni palier, ni dose, ni stock à part', () => {
-    const json = JSON.stringify(base);
+    // D120 (t2) : chaque voie porte sa typicité (défaut), objet qui a un champ `palier` à lui (3, 2, 1 ou null : celui du style, pas celui du dry hop) : on la met de côté pour chercher le palier du dry hop.
+    const json = JSON.stringify(base, (k, v) => (k === 'typicite' ? undefined : v));
     for (const cle of ['"palier":', '"palier60"', '"dryHop"', '"dose":', '"enStock"', '"drapeaux"']) expect(json).not.toContain(cle);
   });
   it('options absentes, undefined ou fausses : même résultat, à l\'octet près', () => {
@@ -226,6 +227,8 @@ describe('le vrai dry hop : actif et après, chacun à la dose de la règle', ()
     expect(moins.notes.join(' ')).toContain('famille qui monte');
   });
   it('le départage (g2a) se lit dans chaque groupe : k1 et k3 rétrécissent le premier groupe d\'ex æquo, mêmes voies, mêmes doses', () => {
+    // D118 (f8) : le défaut est k3k1 ; l'ordre d'avant (alphabétique à distance égale) est 'aucun'.
+    const d = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, dryHop: true, departage: 'aucun' }).dryHop!;
     const tete = (vs: Voie[]) => vs.filter((v) => v.rank === 1).length;
     expect(tete(d.actif)).toBeGreaterThan(10); // aujourd'hui : un groupe d'ex æquo en ordre alphabétique
     expect(d.actif.every((v) => v.departage === undefined)).toBe(true);

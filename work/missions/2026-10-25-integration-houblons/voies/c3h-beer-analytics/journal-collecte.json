@@ -1,10 +1,100 @@
 {
- "requetes": 169,
+ "requetes": 5042,
  "statuts": {
-  "200": 169
+  "200": 5020,
+  "erreur": 22
  },
  "absents": [],
  "arrets": [],
- "erreurs": [],
+ "erreurs": [
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/tettnanger/charts/amount-used-per-style.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/willamette/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/willamette/charts/popular-yeasts.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/bittering/sorachi-ace/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/bittering/warrior/charts/amount-used-per-style.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/bittering/warrior/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/cascade/charts/amount-used-per-style.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/cascade/charts/amount-used-per-use.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/cascade/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/centennial/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/challenger/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/chinook/charts/typical-styles-relative.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/columbus/charts/hop-pairings.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/columbus/charts/popular-yeasts.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/east-kent-golding/charts/trending-yeasts.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/saaz/charts/alpha-histogram.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/saaz/charts/popularity.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/saaz/charts/amount-used-per-use.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/saaz/charts/popular-yeasts.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/aroma/saaz/charts/trending-yeasts.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/northern-brewer/charts/amount-used-per-use.json",
+   "message": "The operation was aborted due to timeout"
+  },
+  {
+   "url": "https://www.beer-analytics.com/hops/dual-purpose/northern-brewer/charts/trending-yeasts.json",
+   "message": "The operation was aborted due to timeout"
+  }
+ ],
  "interdits": []
 }

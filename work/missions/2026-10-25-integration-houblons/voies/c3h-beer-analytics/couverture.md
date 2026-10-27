@@ -5,49 +5,50 @@ Fichier produit par `node scripts/collecte-hop/beeranalytics.mjs --offline --rap
 ## Hôtes tentés
 
 - `www.beer-analytics.com` : robots.txt lu (200) ; pour `*` seul `Disallow: /wa/` ; `GPTBot` est exclu (non concerné). Aucune page de défi, aucun 401/403/429.
-- Requêtes réseau faites par le script : 169, une à la fois, 2,1 s d'écart au moins. Statuts : {"200":169}. Absents (404) : 0. Arrêts : aucun. Erreurs réseau : 0.
+- Requêtes réseau faites par le script : 5042, une à la fois, 2,1 s d'écart au moins. Statuts : {"200":5020,"erreur":22}. Absents (404) : 0. Arrêts : aucun. Erreurs réseau : 22.
 - Licence lue au pied de page : CC BY-SA 4.0 (« Except where otherwise noted, content on this site is licensed under… »). À citer si ces données sortent un jour de l'outil.
 
 ## Pages lues
 
-- Pages de houblons du sitemap : 435. Lues depuis le cache : 22 ; absentes du cache : 413 ; 404 ou sans titre : 0.
-- Fiches dont les graphiques ont tous été lus : 21 (95 %).
+- Pages de houblons du sitemap : 435. Lues depuis le cache : 435 ; absentes du cache : 0 ; 404 ou sans titre : 0.
+- Fiches dont les graphiques ont tous été lus : 423 (97 %).
 - Autres pages du cache : robots.txt, sitemap.xml, et les fichiers `charts/*.json` de chaque houblon. Non lues : `/hops/flavors/*` (liste de houblons par arôme : redite des badges d'arôme de chaque page), `/styles/*` (statistiques par style, hors voie), `recipes/random.inc` (échantillon aléatoire de recettes), les pages de tendances.
 
 ## Variétés
 
-- Trouvées : 22. Rattachées au catalogue : 22 (22 variétés distinctes sur 318). Nouvelles (absentes du catalogue, gardées) : 0. Rattachement ambigu (varietyId null) : 0.
-- Nouvelles : aucune.
+- Trouvées : 435. Rattachées au catalogue : 256 (256 variétés distinctes sur 317). Nouvelles (absentes du catalogue, gardées) : 174. Rattachement ambigu (varietyId null) : 5.
+- Ambiguës : Brewer's Gold → beermaverick-brewers-gold / beermaverick-brewers-gold-us ; Magnum → beermaverick-magnum-gr / beermaverick-magnum-us ; Northern Brewer → beermaverick-northern-brewer-gr / beermaverick-northern-brewer-us ; Perle → beermaverick-perle-gr / beermaverick-perle-us ; Saaz → beermaverick-saaz-cz / beermaverick-saaz-us
+- Nouvelles : ADHA-484, ADHA-527, ADHA-529, Ahil, Alliance, Aloha, Alora, Alta, Amallia, Amira, Anchovy, Backa, Bate's Brewer, Bertwell, Blato, Blisk, Blue Northern Brewer, Bramling, Buket, Bullion 10A, Calicross, California Cluster, Canterbury Whitebine, Cerera, CF184, CF185, Cicero, Citiva, Cleopatra, Cluster Fugget, Cobb, Coigneau, Density, Dolcita, Dunav, Early Bird, Early Green, Early Prolific, Early Promise, East Kent Golding, Eastern Gold, Eastern Green, Eastwell Golding, Edelweiss, Elani, Elsaesser, Evergreen, Excelsior, EXP 2/20, Fantasia, First Choice, Flinders, Fortnight, Fuggle Tetraploid, Furano Ace, Fusion, Gargoyle, GN37, GP75, Greensburg, Groene Bel, Hallertau (NZ), Hallertauer Bitter, Hallertauer Blanc, Hallertauer Diamant, Hallertauer Gold, Hallertauer Mittelfrüh, Hallertauer Rotrebiger, Hallertauer Taurus, Hallertauer Tradition, HBC 342, HBC 353, HBC 431, HBC 432, HBC 522, HBC 638, Hersbrucker Pure, Hersbrucker Red-Stem, Hersbrucker Spät, Hokitika, HPA 035, HS10416, Hulla Norrgård, Hüller Bitter, Hybrid-2, Ibuki, Iunga, Ivanhoe, Izabella, J-Lime, Janus, Julius, Keyworth's Early, Keyworth's Midseason, Kirin II, Kitamidori, Klon 18, Korsta, Kracanup, Krush, Książęcy, Legacy, Lemonaughty, Lilly, Limonadier, Lomik, Lórien, Lubelska-Pulawy, Lucan, Luminosa, Lunga, Malling, Mapuche, Mathon, Most, Nadwislanska, National, Neo1, Neoplanta, NewZilla, Nobility, Nordgaard, NZL-32, Oktawia, Opus, Orbit, Otto Supreme, Outeniqua, Patagonia Red, Peacharine, Petham Golding, Pink Boots, Pink, Pocket Talisman, Precoce de Bourgogne, Pride of Kent, ProvOAK, Record, Red Earth, Rubin, SAB Blend, San Juan Ruby Red, Saxon, Sequoia, Serebrianka, Shinshuwase, Slavyanka, Spalter, Sunshine, Superdelic, Svalöf Mauritz, Symphony, Tangerine, The Bruce, Titan, Tolhurst, Tomyski, Traful, U3/132, Universal, Vera, Vermelho, Veterans Blend, Viking, Vinnie Special, Vojvodina, Whitbread Golding, Willow Creek, Wuerttemberger, Zamba, Zibi, Zlatan, Zoso, Zumo.
 
 ## Champs lus (nombre de fiches)
 
 | Champ de la page | Fiches |
 |---|---|
-| alphaClasse | 22 (100 %) |
-| alphaDesRecettes | 22 (100 %) |
-| betaDesRecettes | 16 (73 %) |
-| origine | 22 (100 %) |
-| partDuPoids | 22 (100 %) |
-| recettes | 22 (100 %) |
-| usage | 22 (100 %) |
-| usageCarte | 22 (100 %) |
+| alphaClasse | 401 (92 %) |
+| alphaDesRecettes | 401 (92 %) |
+| betaDesRecettes | 297 (68 %) |
+| origine | 432 (99 %) |
+| partDuPoids | 399 (92 %) |
+| recettes | 435 (100 %) |
+| usage | 435 (100 %) |
+| usageCarte | 401 (92 %) |
 
 Listes : substituts, accords (ordre de la page), arômes avec leur famille de couleur du site.
 
 | Graphique (JSON) | Fiches avec données | « no_data » ou 404 | Non lus |
 |---|---|---|---|
-| alpha-histogram | 22 (100 %) | 0 | 0 |
-| amount-percent-range | 22 (100 %) | 0 | 0 |
-| amount-used-per-style | 21 (95 %) | 0 | 1 |
-| amount-used-per-use | 21 (95 %) | 0 | 1 |
-| beta-histogram | 16 (73 %) | 0 | 0 |
-| hop-pairings | 21 (95 %) | 0 | 1 |
-| popular-yeasts | 15 (68 %) | 6 | 1 |
-| popularity | 20 (91 %) | 1 | 1 |
-| trending-yeasts | 2 (9 %) | 19 | 1 |
-| typical-styles-absolute | 21 (95 %) | 0 | 1 |
-| typical-styles-relative | 21 (95 %) | 0 | 1 |
-| usage-types | 22 (100 %) | 0 | 0 |
+| alpha-histogram | 398 (91 %) | 2 | 1 |
+| amount-percent-range | 399 (92 %) | 0 | 0 |
+| amount-used-per-style | 391 (90 %) | 7 | 3 |
+| amount-used-per-use | 398 (91 %) | 0 | 3 |
+| beta-histogram | 295 (68 %) | 2 | 0 |
+| hop-pairings | 393 (90 %) | 1 | 7 |
+| popular-yeasts | 289 (66 %) | 109 | 3 |
+| popularity | 369 (85 %) | 31 | 1 |
+| trending-yeasts | 20 (5 %) | 378 | 3 |
+| typical-styles-absolute | 394 (91 %) | 7 | 0 |
+| typical-styles-relative | 393 (90 %) | 7 | 1 |
+| usage-types | 401 (92 %) | 0 | 0 |
 
 ### Les cinq composés demandés
 

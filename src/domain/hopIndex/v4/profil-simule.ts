@@ -21,6 +21,7 @@ import {
   DONNEES_POUVOIR, MENTION_RAPPORT, pouvoirAjout, pouvoirRecette, source, verifications,
   type AjoutPouvoir, type ComposeId, type Drapeau, type Plage, type PouvoirAjout, type RecettePouvoir, type SourceRef,
 } from './pouvoir';
+import { ComposesAbsents } from './composes';
 import { MOMENTS } from './recipe';
 import type { Tasting } from './tasting';
 
@@ -156,11 +157,17 @@ export function partExtraite(jours: number): Tri {
   const { bas, centre, haut } = C.extraction.tauHeures;
   return tri(1 - Math.exp(-t / bas), 1 - Math.exp(-t / centre), 1 - Math.exp(-t / haut));
 }
-const SEUIL_CITRONELLOL = (() => {
-  const vs = (DONNEES_POUVOIR.seuils as unknown as Record<string, { valeurs: { plage: [number, number]; sources: string[] }[] }>).citronellol.valeurs;
-  const min = Math.min(...vs.map((v) => v.plage[0])), max = Math.max(...vs.map((v) => v.plage[1]));
-  return { plage: { min, max, central: (min + max) / 2 } as Plage, sources: [...new Set(vs.flatMap((v) => v.sources))] };
-})();
+// c8 : lu au premier besoin, plus à l'import : composes-houblon.json arrive à part (composes.ts), après le chargement de ce module.
+let seuilCitronellol: { plage: Plage; sources: string[] } | null = null;
+const SEUIL_CITRONELLOL = (): { plage: Plage; sources: string[] } => {
+  if (!seuilCitronellol) {
+    if (!DONNEES_POUVOIR.seuils) throw new ComposesAbsents();
+    const vs = (DONNEES_POUVOIR.seuils as unknown as Record<string, { valeurs: { plage: [number, number]; sources: string[] }[] }>).citronellol.valeurs;
+    const min = Math.min(...vs.map((v) => v.plage[0])), max = Math.max(...vs.map((v) => v.plage[1]));
+    seuilCitronellol = { plage: { min, max, central: (min + max) / 2 } as Plage, sources: [...new Set(vs.flatMap((v) => v.sources))] };
+  }
+  return seuilCitronellol;
+};
 
 // ---------- Courbe : activité → points ----------
 const ANCRE = C.courbes.ancre;
@@ -274,7 +281,7 @@ function activite(b: Base, contactJours: number | null): Activite {
   }
   const R: Activite['R'] = {};
   for (const [c, x] of Object.entries(conc) as [CompSim, Tri][]) {
-    const s = c === 'citronellol' ? SEUIL_CITRONELLOL.plage : b.seuils[c as ComposeId] ?? (c === '3MH' ? b.p.composes['3MH'].seuil.plage : null);
+    const s = c === 'citronellol' ? SEUIL_CITRONELLOL().plage : b.seuils[c as ComposeId] ?? (c === '3MH' ? b.p.composes['3MH'].seuil.plage : null);
     if (!s || s.min == null || s.max == null || s.central == null) continue;
     R[c] = tri(x.bas / s.max, x.centre / s.central, x.haut / s.min);
   }
@@ -378,6 +385,7 @@ function confianceDe(bases: Base[], levure: string, interpoles: AjoutInterpole[]
     if (inter) { faible.push(`${b.nom} à ${inter.minutes}′ : interpolé entre 60′ et 10′ (linéaire en minutes), aucune mesure à ce moment [convention]`); continue; }
     if (b.sansDonnees) faible.push(`${b.nom} : aucune donnée de composés ; forme des fiches seules, force de Cascade [convention]`);
     else if (!b.conc['4MMP'] && !b.conc['3MH'] && estSec(m)) faible.push(`${b.nom} : thiols non chiffrés dans H (tropical par les fiches seules)`);
+    if (b.p.deLaVariete?.length) moyenne.push(`${b.nom} : composition de l’huile de la variété, non relevée pour le produit (D118) ; huile totale du produit`);
     if (m === 'b60') faible.push(`${b.nom} à 60′ : part retrouvée bornée en haut seulement ; centre [convention] au dixième`);
     if (m === 'b10' || m === 'wp') moyenne.push(`${b.nom} à ${MOMENTS[m].label} : centres des parts retrouvées en partie par convention (moitié de la borne haute)`);
     if (m === 'dryActive') moyenne.push(`${b.nom} en fermentation active : pertes par le CO₂ non chiffrées`);

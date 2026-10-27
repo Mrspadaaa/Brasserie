@@ -7,20 +7,29 @@
 //  - k3 : la valeur de la famille sur le radar Beer Maverick (181 variétés), lue pour l'ordre seulement, jamais affichée comme une intensité.
 // Règles communes : l'inconnu passe après le connu, jamais à 0 ; une clé est un vecteur comparé dans l'ordre, du plus grand au plus petit.
 import { hopRef, type CatalogueHop } from './data';
-import { describeFamilies } from './hops';
+import { cites, describeFamilies } from './hops';
 import type { FamilyId } from './families';
+import { typiciteDe } from './typicite-acces';
 
-export type Departage = 'aucun' | 'k1' | 'k2' | 'k3';
+/** `k3k1` (D118, f8) : DÉFAUT de Suggérer. Le radar Beer Maverick de la famille (k3) d'abord ; à radar égal, et pour une variété sans radar (l'inconnu passe après le connu), la cascade k1.
+ * `aucun` : le comportement d'avant D118 (ordre alphabétique à distance égale), à l'octet près. */
+export type Departage = 'aucun' | 'k1' | 'k2' | 'k3' | 'k3k1' | 'k3k1t';
+/** Le départage quand l'option est absente (D118, le brasseur prend lui-même le radar Beer Maverick comme référence : Idaho 7, 27.10). */
+export const DEPARTAGE_DEFAUT: Departage = 'k3k1';
 /** Une valeur par étape ; null = inconnu (passe après le connu). */
 export type Cle = (number | null)[];
 /** Clé d'une voie, avec l'origine de chaque étape (la source de la valeur, null si inconnue). */
 export interface CleDepartage { mode: Exclude<Departage, 'aucun'>; cle: Cle; origine: (string | null)[] }
 
 /** Nom de chaque étape, par clé (même longueur que la clé). */
+const ETAPES_K1 = ['fiche marquée', 'premier descripteur', 'part des fiches', 'niveau du signal (signal d’huile > huile totale)', 'valeur du signal ou de l’huile totale'];
 export const ETAPES: Record<Exclude<Departage, 'aucun'>, string[]> = {
-  k1: ['fiche marquée', 'premier descripteur', 'part des fiches', 'niveau du signal (signal d’huile > huile totale)', 'valeur du signal ou de l’huile totale'],
+  k1: ETAPES_K1,
   k2: ['part des fiches', 'signal d’huile propre à la famille'],
   k3: ['radar Beer Maverick'],
+  k3k1: ['famille citée par une fiche', 'radar Beer Maverick', ...ETAPES_K1],
+  /** f9 (option `typicite`) : k3k1 avec la typicité du style (Beer Analytics) entre la famille citée et le radar. Jamais un filtre : une typicité inconnue passe après la connue. */
+  k3k1t: ['famille citée par une fiche', 'typicité du style (Beer Analytics)', 'radar Beer Maverick', ...ETAPES_K1],
 };
 
 const mid = (r: [number, number] | null | undefined) => (r ? (r[0] + r[1]) / 2 : null);
@@ -46,7 +55,18 @@ export function radarDe(h: CatalogueHop, f: FamilyId): number | null {
 }
 
 /** Clé d'une variété pour une famille. */
-export function cleHoublon(mode: Exclude<Departage, 'aucun'>, varietyId: string, f: FamilyId): { cle: Cle; origine: (string | null)[] } {
+export function cleHoublon(mode: Exclude<Departage, 'aucun'>, varietyId: string, f: FamilyId, styleCode = ''): { cle: Cle; origine: (string | null)[] } {
+  if (mode === 'k3k1t') {
+    const base = cleHoublon('k3k1', varietyId, f), t = typiciteDe(varietyId, styleCode);
+    const lib = t.palier === null ? null : `${t.origine === 'voisin' ? 'voisin ' + t.code : 'style'}${t.part !== null ? ` ${Math.round(t.part * 1000) / 10} % des recettes` : ''}${t.concentration !== null ? `, ${Math.round(t.concentration * 100)} % de ses recettes dans la famille` : ''}`;
+    return { cle: [base.cle[0], t.palier, ...base.cle.slice(1)], origine: [base.origine[0], lib, ...base.origine.slice(1)] };
+  }
+  if (mode === 'k3k1') {
+    // Première étape : la famille est citée par une fiche au moins (sans elle, le moteur ne lui prête aucun effet : une voie qui n'atteint pas la visée ne passe pas devant celles qui l'atteignent).
+    const citee = hopRef(varietyId) ? (cites(varietyId, f) ? 1 : 0) : null;
+    const a = cleHoublon('k3', varietyId, f), b = cleHoublon('k1', varietyId, f);
+    return { cle: [citee, ...a.cle, ...b.cle], origine: [citee === null ? null : citee ? 'citée par une fiche' : 'aucune fiche ne la cite', ...a.origine, ...b.origine] };
+  }
   const h = hopRef(varietyId)?.catalogue;
   if (!h) return { cle: ETAPES[mode].map(() => null), origine: ETAPES[mode].map(() => null) };
   if (mode === 'k3') { const v = radarDe(h, f); return { cle: [v], origine: [v === null ? null : 'radar Beer Maverick (échelle de la source, ordre seulement)'] }; }
@@ -70,9 +90,9 @@ export function cleHoublon(mode: Exclude<Departage, 'aucun'>, varietyId: string,
 /** Clé d'une voie : moyenne, sur les ajouts qui montent (poids = part de dose) et sur les familles visées à la hausse, de la clé
  * de chaque variété ; une étape inconnue pour l'un rend l'étape inconnue (jamais 0). Une voie sans ajout qui monte
  * (diminuer, retirer, levure) est neutre : tout est inconnu, elle passe après les voies connues à distance égale. */
-export function cleDeVoie(mode: Exclude<Departage, 'aucun'>, positifs: { varietyId: string; poids: number }[], plus: FamilyId[]): CleDepartage {
+export function cleDeVoie(mode: Exclude<Departage, 'aucun'>, positifs: { varietyId: string; poids: number }[], plus: FamilyId[], styleCode = ''): CleDepartage {
   const n = ETAPES[mode].length;
-  const lignes = positifs.flatMap((p) => plus.map((f) => ({ w: p.poids, ...cleHoublon(mode, p.varietyId, f) })));
+  const lignes = positifs.flatMap((p) => plus.map((f) => ({ w: p.poids, ...cleHoublon(mode, p.varietyId, f, styleCode) })));
   if (!lignes.length) return { mode, cle: Array.from({ length: n }, () => null), origine: Array.from({ length: n }, () => null) };
   const total = lignes.reduce((s, l) => s + l.w, 0);
   const cle: Cle = [], origine: (string | null)[] = [];

@@ -13,16 +13,23 @@ import { valueVerdict } from './style/verdict';
 import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
 import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
-import { cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
+import { DEPARTAGE_DEFAUT, cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
   BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
 } from './palier';
 import { produitDArome } from './substitution';
+import { facteurIntensite, type FacteurIntensite } from './intensite';
+import { typiciteDeVoie, type Typicite } from './typicite-acces';
 
 /** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
 export const POOL_BORNE = 80;
+/** f9 : les deux mécanismes sont des options. D120 (t2) : la typicité du style seule est le défaut (elle ramène East Kent Goldings en tête du stout S1, acquis D105, et ne pousse pas
+ * Citra cryo, D174) ; A3 (intensité) reste une option éteinte, car avec la typicité il remonte Citra cryo. Réversible : `typicite: false`. Tant que la table n'est pas chargée
+ * (`chargerTypicite`, typicite-acces.ts), la typicité de chaque houblon est inconnue et le rang est celui de k3k1. */
+export const INTENSITE_DEFAUT = false;
+export const TYPICITE_DEFAUT = true;
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -44,6 +51,8 @@ export interface FamilyEffect {
   /** g2d, option `apportMinoritaire: 'm'` : la famille est citée (une fiche au moins) mais par moins de la moitié des fiches : aucun effet établi, mais elle reste visible comme citée.
    * Absent sans l'option et quand la famille n'est pas dans ce cas. */
   minoritaire?: true;
+  /** f9, option `intensite` (A3) : le facteur de l'intensité de la variété sur cet axe (radar Beer Maverick) appliqué à l'apport ; `radar: null` : intensité inconnue, facteur 1 (neutre). Absent sans l'option ou sans apport établi. */
+  intensite?: FacteurIntensite;
 }
 export interface DirectedTarget {
   family: FamilyId; name: string; crans: number; status: string;
@@ -79,6 +88,10 @@ export interface Voie {
   rank: number; tieWith: string[];
   /** Clé de départage (g2a) : présente seulement si `options.departage` n'est pas 'aucun' et qu'une famille monte. Jamais un effet. */
   departage?: CleDepartage;
+  /** f9, option `typicite` : la typicité du houblon ajouté pour le style visé (Beer Analytics), un terme du rang. Absent sans l'option ; null : voie sans ajout qui monte (neutre). */
+  typicite?: Typicite | null;
+  /** f9, option `intensite` : la voie est classée avec l'intensité de la variété ; à distance égale, moins de grammes d'abord (une variété intense atteint la visée à une dose plus basse). */
+  a3?: true;
   /** g2b, option `palier60` : usage, α, bande d'IBU et drapeau d'un ajout d'amertume (60′ ajouté, ou « remplacer à IBU égal »). Rang D88 B : usage puis grammes. */
   palier?: InfoPalier;
   /** g2b, option `dryHop` : la dose du dry hop et ce qui la borne (null : elle s'approche au plus près de la visée). */
@@ -109,6 +122,10 @@ export interface VoieOptions {
   /** Départage à distance égale (g2a, D88) : 'aucun' (défaut, comportement d'avant) ou une des clés mesurées k1, k2, k3 (departage.ts).
    * La clé passe après la distance et ne change jamais l'effet calculé. */
   departage?: Departage;
+  /** f9 (A3, D120) : l'intensité de la variété sur l'axe pèse dans l'effet simulé (radar Beer Maverick, facteur 1 + 0,2 × (radar − 3)). Défaut : `INTENSITE_DEFAUT`. */
+  intensite?: boolean;
+  /** f9 (b de f8, D120) : la typicité du style (Beer Analytics) entre dans le rang, jamais comme un filtre. Défaut : `TYPICITE_DEFAUT`. */
+  typicite?: boolean;
   /** Apport minoritaire (g2d, D99) : ABSENT (défaut) = 'c' sur les voies au dry hop actif ou après seulement (le débordement d'une famille non marquée ne compte plus dans leur rang ; aucune barre ne change),
    * comportement d'avant ailleurs ; 'aucun' = le comportement d'avant partout, à l'octet près ; 'c' = ce rang à tous les moments ; 'm' (une famille citée par moins de
    * la moitié des fiches n'apporte pas d'effet établi) et 'w' (l'effet d'une famille est multiplié par la part des fiches qui la citent) : mesure seulement, jamais par défaut. Voir minoritaire.ts. */
@@ -144,6 +161,10 @@ export const RANKING = [
 
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
 const nameOf = (key: string) => hopRef(key)?.name ?? key;
+/** Écart d'un effet à la visée, en points. Sans A3 : la valeur absolue (comportement d'avant). Avec A3 (f9) : le MANQUE seulement. Une variété plus intense atteint la visée à une dose plus basse ;
+ * mesuré en 22A, la valeur absolue punissait le dépassement et rangeait en tête les variétés faibles, qui n'atteignent la visée qu'à trois fois la dose (Cashmere 144 g devant Citra 48 g). Le dépassement
+ * reste lu par le débordement de style ; la dose, par la clé « moins de grammes » (`Voie.a3`). */
+const ecartAVisee = (central: number, delta: number, a3: boolean) => (a3 ? (delta >= 0 ? Math.max(0, delta - central) : Math.max(0, central - delta)) : Math.abs(central - delta));
 
 // Familles citées par les fiches d’une variété (cites de hops.ts, une lecture de citations : un bit par famille, ordre de FAMILIES), lues une fois
 // par moteur (#178) : le tri des houblons à acheter et les conflits de chaque voie les relisaient à chaque fois.
@@ -181,7 +202,7 @@ function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | 
  * totale du moment et pondéré par cette part (convention de cumul V5.5 : dose cumulée par phase,
  * descripteurs pondérés par les doses), jamais en additionnant deux courbes saturées. */
 interface Change { addition: Addition; sign: 1 | -1; share?: number }
-function effectOf(changes: Change[], recipe: Recipe, apportMode: ApportMinoritaire = 'aucun'): Record<FamilyId, FamilyEffect> | null {
+function effectOf(changes: Change[], recipe: Recipe, apportMode: ApportMinoritaire = 'aucun', intensite = false): Record<FamilyId, FamilyEffect> | null {
   const rows = changes.map((c) => {
     const pooled = c.share === undefined ? c.addition : { ...c.addition, grams: round(c.addition.grams / c.share) };
     return { ...c, weight: c.share ?? 1, apport: apport(pooled, recipe), varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '' };
@@ -192,10 +213,13 @@ function effectOf(changes: Change[], recipe: Recipe, apportMode: ApportMinoritai
   return Object.fromEntries(FAMILIES.map((f) => {
     const est = rows.filter((r) => compte(r.varietyId, f) && r.apport![f] !== null);
     const poids = (r: (typeof rows)[number]) => (apportMode === 'w' ? partDesFiches(r.varietyId, f) : 1);
-    const central = est.length ? round(est.reduce((s, r) => s + r.sign * r.weight * poids(r) * r.apport![f]!, 0)) : null;
+    // f9 A3 : l'intensité de la variété sur l'axe (radar) multiplie son apport ; inconnue : facteur 1, dite par `radar: null`.
+    const fi = (r: (typeof rows)[number]) => (intensite ? facteurIntensite(r.varietyId, f) : null);
+    const central = est.length ? round(est.reduce((s, r) => s + r.sign * r.weight * poids(r) * (fi(r)?.facteur ?? 1) * r.apport![f]!, 0)) : null;
+    const intens = intensite && est.length ? ((): FacteurIntensite => { const x = est.map((r) => fi(r)!); return { radar: x.length === 1 ? x[0].radar : null, facteur: Math.round((x.reduce((s, y) => s + y.facteur, 0) / x.length) * 100) / 100 }; })() : null;
     // 'm' : citée par une fiche au moins, mais pas marquée : aucun effet établi, la famille reste visible comme citée.
     const minoritaire = apportMode === 'm' && est.length === 0 && rows.some((r) => cites(r.varietyId, f) && r.apport![f] !== null);
-    return [f, { family: f, central, established: est.length > 0, partial: est.length > 0 && est.length < rows.length, ...(minoritaire ? { minoritaire: true as const } : {}) }];
+    return [f, { family: f, central, established: est.length > 0, partial: est.length > 0 && est.length < rows.length, ...(minoritaire ? { minoritaire: true as const } : {}), ...(intens ? { intensite: intens } : {}) }];
   })) as Record<FamilyId, FamilyEffect>;
 }
 
@@ -210,8 +234,11 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const ibu0 = recipeIbu(recipe);
   const plus = FAMILIES.filter((f) => (direction[f] ?? 0) > 0), minus = FAMILIES.filter((f) => (direction[f] ?? 0) < 0);
   const directed = [...plus, ...minus];
-  const departageMode: Departage = options.departage ?? 'aucun';
+  // D118 (f8) : k3k1 par défaut ; 'aucun' = le comportement d'avant, à l'octet près. f9 : avec l'option `typicite`, k3k1 devient k3k1t (la typicité du style entre la famille citée et le radar).
+  const departageBase: Departage = options.departage ?? DEPARTAGE_DEFAUT;
+  const departageMode: Departage = (options.typicite ?? TYPICITE_DEFAUT) && departageBase === 'k3k1' ? 'k3k1t' : departageBase;
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
+  const a3 = options.intensite ?? INTENSITE_DEFAUT, typ = options.typicite ?? TYPICITE_DEFAUT; // f9 : A3 et typicité
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
@@ -278,11 +305,11 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   let n = 0;
   const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = [], effectOverride?: Record<FamilyId, FamilyEffect> | null, ibuEnDrapeau = false): Voie => {
     n++;
-    const effect = effectOverride !== undefined ? effectOverride : effectOf(changes, recipe, apportMode);
+    const effect = effectOverride !== undefined ? effectOverride : effectOf(changes, recipe, apportMode, a3);
     const byFamily: Voie['distance']['byFamily'] = {};
     let total: number | null = effect ? 0 : null;
     for (const t of targets) {
-      const d = effect ? Math.abs((effect[t.family].central ?? 0) - t.delta) / t.width : null;
+      const d = effect ? ecartAVisee(effect[t.family].central ?? 0, t.delta, a3) / t.width : null;
       byFamily[t.family] = d === null ? null : round(d, 3);
       if (total !== null && d !== null) total += d;
     }
@@ -343,9 +370,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
-    const departage = departageMode !== 'aucun' && plus.length
-      ? cleDeVoie(departageMode, reduction ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 })), plus)
-      : null;
+    // D118 : k3k1 range l'ARÔME (10′, whirlpool, dry hop) ; une voie dont un ajout qui monte est d'amertume (60′ et avant : l'arôme y est négligeable) a une clé INCONNUE (tout null : elle passe après les voies
+    // d'arôme, jamais devant par un 0). Toute voie porte une clé dès qu'une famille monte : sans cela le rang ne serait pas un ordre total (une voie sans clé « égale » deux voies que sa clé sépare).
+    const aAmertume = (departageMode === 'k3k1' || departageMode === 'k3k1t') && changes.some((c) => c.sign > 0 && MOMENTS[c.addition.moment].kind === 'amertume');
+    const positifs = reduction || aAmertume ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 }));
+    const departage = departageMode !== 'aucun' && plus.length ? cleDeVoie(departageMode, positifs, plus, recipe.styleCode) : null;
+    const typicite = typ && plus.length ? typiciteDeVoie(positifs, recipe.styleCode) : typ ? null : undefined; // f9 : la typicité du houblon qui monte, pour le style de la recette
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -357,6 +387,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       ...(overflowRang !== null ? { overflowRang } : {}),
       after: null, rank: 0, tieWith: [],
       ...(departage ? { departage } : {}),
+      ...(typicite !== undefined ? { typicite } : {}),
+      ...(a3 ? { a3: true as const } : {}),
     };
   };
   const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
@@ -558,9 +590,9 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const doseDe = (key: string, m: MomentId): DoseDryHop | null => {
       let best: { gl: number; d: number; ecart: number } | null = null;
       for (const gl of GRILLE_DRYHOP_GL) {
-        const effect = effectOf([{ addition: { id: 'dose', hopKey: key, moment: m, grams: round(gl * recipe.volumeL) }, sign: 1 }], recipe, apportMode);
+        const effect = effectOf([{ addition: { id: 'dose', hopKey: key, moment: m, grams: round(gl * recipe.volumeL) }, sign: 1 }], recipe, apportMode, a3);
         if (!effect) return null;
-        const d = targets.reduce((s, t) => s + Math.abs((effect[t.family].central ?? 0) - t.delta) / t.width, 0);
+        const d = targets.reduce((s, t) => s + ecartAVisee(effect[t.family].central ?? 0, t.delta, a3) / t.width, 0);
         // Écart signé sur les familles qui montent : > 0 la visée est dépassée, < 0 elle n'est pas atteinte.
         const ecart = targets.filter((t) => t.delta > 0).reduce((s, t) => s + ((effect[t.family].central ?? 0) - t.delta) / t.width, 0);
         if (!best || d < best.d - 1e-9) best = { gl, d, ecart };
@@ -610,14 +642,22 @@ const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
 /** D105 : rang du houblon d'une voie dans l'ordre de qualité du pool « à acheter » (voir `ordrePool` dans proposeVoies). Table faible : jamais dans la réponse, jamais clonée vers le worker ; absent = 0. */
 const ORDRE_POOL = new WeakMap<Voie, number>();
 /** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
+const grammesDe = (v: Voie) => v.actions.reduce((s, x) => s + (x.op === 'retirer' ? 0 : x.grams), 0);
 export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): number {
   const da = a.distance.total, db = b.distance.total;
+  // D118 (f8) : dans les groupes du VRAI DRY HOP (option `dryHop` de g2b : une liste d'ajouts d'arôme seulement, où tout le monde porte une clé), la clé k3k1 (l'intensité de la famille visée, radar Beer Maverick)
+  // passe AVANT le débordement de style : mesuré en 22A (D191), le débordement rangeait les nobles (une seule famille citée, aucun débordement) devant El Dorado, Mosaic, Mandarina Bavaria… (El Dorado 223e sur 235) :
+  // la pureté battait l'intensité. Dans la liste principale, qui mêle des voies neutres (remplacer, diminuer, retirer) aux ajouts d'arôme, la même place les chasserait de la liste montrée (mesuré en stout S1 :
+  // 12 des 14 voies deviennent « Remplacer Nugget ») et la rendrait incohérente : la clé y reste après la distance, comme k1, k2 et k3.
+  const intensiteD = (a.departage?.mode === 'k3k1' || a.departage?.mode === 'k3k1t') && a.departage.mode === b.departage?.mode && !!a.dose && !!b.dose;
   return a.conflicts.length - b.conflicts.length
     || comparerUsagePalier(a.palier, b.palier) // g2b (D88 B) : à 60′ l'usage passe d'abord ; sans l'option `palier60`, aucune voie n'a de palier : égalité
+    || (intensiteD ? comparerCles(a.departage?.cle, b.departage?.cle) : 0)
     || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : a.overflowTotal - b.overflowTotal) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
-    || comparerCles(a.departage?.cle, b.departage?.cle)
+    || (a.a3 && b.a3 ? grammesDe(a) - grammesDe(b) : 0) // f9 A3 : à distance égale, la variété qui atteint la visée à la dose la plus basse
+    || (intensiteD ? 0 : comparerCles(a.departage?.cle, b.departage?.cle))
     || (ORDRE_POOL.get(a) ?? 0) - (ORDRE_POOL.get(b) ?? 0) // D105 : le style départage avant les effets de bord (listes principales ; 0 ailleurs)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]

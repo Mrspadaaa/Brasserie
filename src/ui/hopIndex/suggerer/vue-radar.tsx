@@ -58,6 +58,15 @@ export function VueRadar({ biere, sc, echelle, objectifs, groupes, onHorsHoublon
   const luM = lm ? lus[lm.id] ?? lireVoie(recette, lm.voie, momentDe(lm)) : null;
   const series = lm && luM?.effets ? [{ cle: lm.id, nom: `${lm.houblons.map((h) => h.nom).join(" + ")} · ${nomQuand(momentDe(lm) ?? quandMoteur(lm))}`, effets: Object.fromEntries(Object.entries(luM.effets)) as Record<FamilyId, number | null> }] : [];
 
+  // D189 : ce que la voie montrée apporte à chacun de ses moments (celui du moteur, déjà lu sur la ligne, puis ceux du décalage « ‹ 10′ › »), pour que
+  // le radar au style garde le même bord d'axe quand on change de moment. Lu une fois par voie montrée et par recette : un pas de moment ne relance rien.
+  const effetsMoments = useMemo(() => {
+    if (!lm) return [];
+    const parMoment = momentsChauds(recette).map((q) => lireVoie(recette, lm.voie, q).effets);
+    return [lm.effets, ...parMoment].filter((e): e is Record<FamilyId, number | null> => e != null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recette, lm?.id]);
+
   const bouger = (l: Ligne, d: -1 | 1) => {
     const L = momentsChauds(recette), q = momentDe(l) ?? quandMoteur(l);
     const i = L.findIndex((x) => memeQuand(x, q));
@@ -114,7 +123,7 @@ export function VueRadar({ biere, sc, echelle, objectifs, groupes, onHorsHoublon
           );
         })}
       </section>
-      <Radar biere={biere} sc={sc} echelle={echelle} series={series} moment={lm ? nomQuand(momentDe(lm) ?? quandMoteur(lm)) : undefined} plein />
+      <Radar biere={biere} sc={sc} echelle={echelle} series={series} moment={lm ? nomQuand(momentDe(lm) ?? quandMoteur(lm)) : undefined} effetsMoments={effetsMoments} plein />
       {luM && !luM.effets && <p className="text-xs text-cave-400 px-1">À ce moment, {luM.raison} : la voie n’est pas dessinée.</p>}
       {applique && (
         <p className="flex items-center gap-2 px-1 text-sm text-cave-200">

@@ -1,0 +1,195 @@
+<title>Quelle liste pour ta Double IPA ? · 27.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* Page de choix (L24, D126), disposition qu'il aime (24.10) : sa référence d'abord, les variantes en vignettes côte à côte,
+   chacune s'ouvre en grand à côté de l'actuel. Quatre par rangée à l'ordinateur, deux au téléphone ; rien ne défile en
+   largeur. Page claire (D106). Les quatre vues sont des captures de la vraie app (fixtures). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 20px; }
+h1 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: -0.02em; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; max-width: 84ch; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-choix { background: #2a6fb0; }
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; align-items: start; }
+@media (min-width: 900px) { .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 16px; } }
+.vue { margin: 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 2080; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 4px; }
+.vue figcaption b { font-family: var(--titre); font-size: 1rem; line-height: 1.2; }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+<style>
+/* m9 : deux questions, A d'abord dans chacune ; sous chaque vignette, son nom et ce qu'elle change, en une phrase. */
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+h2 { font-family: var(--titre); font-size: 1.25rem; font-weight: 800; margin: 0; }
+.question { display: grid; gap: 10px; padding-top: 8px; border-top: 1px solid var(--trait); }
+.vue figcaption .dit { font-size: .9rem; line-height: 1.3; color: var(--discret); }
+.six { color: #b4480a; font-weight: 700; }
+</style>
+
+<div class="page">
+  <header id="a-choisir">
+    <p class="sur-titre">L'Affinée · Suggérer · neipa v3 (22A) · dry hop actif · 27.10</p>
+    <h1>Quelle liste pour ta Double IPA ?</h1>
+  </header>
+  <p class="encart">Ce que disent les données : Calypso n’est que dans 1 % des Double IPA (Beer Analytics), Pacific Jade ne cite pas le tropical, et Mandarina y est rare (moins de 1,7 % des recettes) : c’est pourquoi la typicité la fait reculer.</p>
+  <section class="question" data-choix="m9-agrumes" aria-label="Plus d’agrumes : A en référence, puis B, C et D" data-ref-imgs="img/agrumes-a.png" data-ref-etats="Plus d’agrumes · A · l'actuel">
+    <h2>Plus d’agrumes</h2>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1792" data-nom="Plus d’agrumes · A · l'actuel" data-imgs="img/agrumes-a.png" data-etats="Plus d’agrumes · A · l'actuel"><img src="img/agrumes-a.png" width="780" height="1792" alt="Plus d’agrumes · A · l'actuel : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>A · l'actuel</b><span class="dit">La liste en production.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1916" data-nom="Plus d’agrumes · B · intensité" data-imgs="img/agrumes-b.png" data-etats="Plus d’agrumes · B · intensité"><img src="img/agrumes-b.png" width="780" height="1916" alt="Plus d’agrumes · B · intensité : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>B · intensité</b><span class="dit">L’effet suit le radar de chaque houblon : les barres changent. Citra reste 1er pour le moteur ; l’app le range 4e, sous « Ajouter » (défaut d’affichage).</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1792" data-nom="Plus d’agrumes · C · typicité" data-imgs="img/agrumes-c.png" data-etats="Plus d’agrumes · C · typicité"><img src="img/agrumes-c.png" width="780" height="1792" alt="Plus d’agrumes · C · typicité : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>C · typicité</b><span class="dit">À effet égal, les houblons courants en Double IPA passent devant.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1916" data-nom="Plus d’agrumes · D · les deux" data-imgs="img/agrumes-d.png" data-etats="Plus d’agrumes · D · les deux"><img src="img/agrumes-d.png" width="780" height="1916" alt="Plus d’agrumes · D · les deux : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>D · les deux</b><span class="dit">B et C ensemble. Citra reste 1er pour le moteur ; l’app le range 4e, sous « Ajouter » (défaut d’affichage).</span></figcaption>
+      </figure>
+    </div>
+  </section>
+  <section class="question" data-choix="m9-tropicaux" aria-label="Plus de tropicaux : A en référence, puis B, C et D" data-ref-imgs="img/tropicaux-a.png" data-ref-etats="Plus de tropicaux · A · l'actuel">
+    <h2>Plus de tropicaux</h2>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1792" data-nom="Plus de tropicaux · A · l'actuel" data-imgs="img/tropicaux-a.png" data-etats="Plus de tropicaux · A · l'actuel"><img src="img/tropicaux-a.png" width="780" height="1792" alt="Plus de tropicaux · A · l'actuel : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>A · l'actuel</b><span class="dit">La liste en production.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1914" data-nom="Plus de tropicaux · B · intensité" data-imgs="img/tropicaux-b.png" data-etats="Plus de tropicaux · B · intensité"><img src="img/tropicaux-b.png" width="780" height="1914" alt="Plus de tropicaux · B · intensité : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>B · intensité</b><span class="dit">L’effet suit le radar de chaque houblon : les barres changent.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1792" data-nom="Plus de tropicaux · C · typicité" data-imgs="img/tropicaux-c.png" data-etats="Plus de tropicaux · C · typicité"><img src="img/tropicaux-c.png" width="780" height="1792" alt="Plus de tropicaux · C · typicité : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>C · typicité</b><span class="dit">À effet égal, les houblons courants en Double IPA passent devant.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 1916" data-nom="Plus de tropicaux · D · les deux" data-imgs="img/tropicaux-d.png" data-etats="Plus de tropicaux · D · les deux"><img src="img/tropicaux-d.png" width="780" height="1916" alt="Plus de tropicaux · D · les deux : l’écran Suggérer, ses six et leur rang"></button>
+        <figcaption><b>D · les deux</b><span class="dit">B et C ensemble. Strata reste 1er pour le moteur ; l’app le range 4e, sous « Ajouter » (défaut d’affichage).</span></figcaption>
+      </figure>
+    </div>
+  </section>
+  <p>Dans chaque écran, <span class="six">tes six</span> gardent leur place : leur rang dans la liste, la flèche dit ce qu’ils gagnent sur A. « Tes six » est un repère de cette page : il n’est pas dans l’app.</p>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : la variante à côté de l'actuel (A). Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: refEtats[i] || '', ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

@@ -571,11 +571,17 @@
     "selecteur_choisie": ".jg-l[data-jg=\"b\"] li [data-role=\"cible\"][data-famille=\"citrus\"]",
     "geste": "toucher",
     "attendu": [
-     "Agrumes · +1,6 cran du 16D · ton objectif · avec Motueka"
+     "Agrumes · +1,6 cran du 16D · ton objectif · avec East Kent Goldings"
     ],
     "interdit": [
      "1 trait = 1 cran du style"
-    ]
+    ],
+    "choisie": {
+     "attendu": [
+      "Agrumes · +1,6 cran du 16D · ton objectif · avec Motueka"
+     ]
+    },
+    "note": "D120 (t2, 27.10) : la typicité du style est le défaut de Suggérer ; East Kent Goldings (36 % des recettes de Irish Stout) passe devant Motueka du stock, et le premier picto d'agrumes du groupe b est le sien (+1,6 cran, même valeur). Le dessin est identique : seul le nom du houblon change, il vient des données. La maquette choisie (gr5) garde « avec Motueka »."
    }
   },
   {

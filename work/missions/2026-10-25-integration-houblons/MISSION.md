@@ -69,6 +69,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 | Récap du 26.10, 13 h | 26.10 v2 | https://claude.ai/artifact/EFGywfPa5yLiwTgDzQb16v | scratchpad de la session (`recap-2026-10-26-13h.html`) |
 | Suggérer à 60′ comme au dry hop (q2b, M1 à M3, IA) | 26.10 v1 | https://claude.ai/artifact/Npss86xUpf259xJaemSKjH | `voies/m6-suggerer-moment/page.html` |
 | Radar : voir le manque d'un houblon sur trois (D183) | 26.10 v1 | https://claude.ai/artifact/Gd66AfKhbqzdQ7xdt19Wiq | `voies/m8-radar-manque-partiel/page.html` |
+| Sa Double IPA : quelle liste dans Suggérer (D191, D120) | 27.10 v1 | https://claude.ai/artifact/B8v5Ak1uXkrPnWyZDqNxG7 | `voies/m9-dipa-listes/page.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais ; puis SendMessage au même agent (2 relances) ; puis le pilote
@@ -374,3 +375,42 @@ PR #188 fusionnée (71dc41bb). Callable IA (D92).
   3. `controle-radar-base` ne trouve plus 9 pages, sans doute depuis p7.
 - Après e7 : un rejeu ciblé (monkey, `hopIndexV4`, build, `construire`, états, radar-base), puis le déploiement depuis la copie
   propre, le push et la PR.
+
+## Reprise (27.10, vers 7 h 10) : ÉTAT COURANT (remplace les précédentes)
+Quota hebdomadaire : 94 % (remis à zéro le 31.10 vers 3 h). Règle : plus d'agent dès 98 %, arrêt à 99 %. Contexte du pilote à 94 % :
+la compaction est imminente.
+
+**En ligne :** **be15e480** (D116). PR #189 fusionnée (97cbbf95). La branche est poussée jusqu'à f9dac656, plus les commits
+documentaires d'après.
+
+**En vol :** **f8** (D118) : k3 par défaut, formes qui reprennent leur variété, contrôle D191 sur ses 6 houblons de Double IPA.
+
+**Ses retours du 27.10, à traiter, dans l'ordre :**
+1. f8 (D190, D191), puis rejeu, déploiement et PR.
+2. **D187, radar de Comparer en Absolu** : montrer la plage type du style, normalisée aux extrêmes. Aujourd'hui illisible, tout est
+   au centre. Voie d'interface, puis critique.
+3. **D188, Suggérer** :
+   - l'IA, accordée en D100 (budget 0,5 CHF), est à faire : essai, puis production ;
+   - un bouton pour ajouter directement le houblon à la recette, à montrer en mini maquettes sur q2b.
+4. **D189** précisé (« Quand je change le timing ») : voie **r3** en vol avec D187 (échelle au style fixe par style à tous les moments ; Absolu normalisé aux extrêmes avec la bande du style).
+5. **Les choix qui attendent sa page** : les listes k1 et k3 (D91, peut-être réglé par D118), m7, P4 et P5 de « Ajouter », B2 et le
+   sélecteur de forme.
+6. **Les accords D100** : test à l'aveugle, IA de Suggérer, écriture Firestore, test dans son Chrome.
+7. D172, D178, D182, D185, #182, #187, et la voie de profil D101.
+- 27.10 : **r3 commité** (radar de Comparer, D187 et D189). Suggérer a sans doute le même défaut D189 : voie courte **r4** lancée. Ensuite : f8, puis rejeu, déploiement et PR.
+- 27.10 : **f8 commité** (D190 fait ; D191 non tenu, voir D119). Prochaine étape pour D191 : une intensité par variété dans l'effet (A3). Elle change les barres : conseil ou mini maquettes d'abord. En vol : **r4** (radar de Suggérer). Ensuite : rejeu, déploiement et PR du lot r3, f8 et r4 ; puis l'IA de Suggérer (D100) et le bouton d'ajout à la recette (D188).
+- 27.10 : **r4 commité** (radar de Suggérer). Lot prêt pour le rejeu : r3, f8 et r4, après be15e480. Question posée au brasseur : l'intensité par variété dans l'effet (A3), en mini maquettes d'abord ou directement ?
+- 27.10 (vers 7 h )  : quota hebdomadaire 95 %. **Rejeu complet de 53306aae** lancé (Haiku, copie propre, journaux dans `%TEMP%/rejeu-5330/`). S'il est vert : déployer depuis la copie propre, puis PR et fusion (`--match-head-commit`). Les états de Substituer et de Suggérer peuvent dériver avec f8 (k3 par défaut, Citra cryo) : les classer selon la convention e3.
+- 27.10 : à « mini maquettes d'abord, ou directement ? » (D191), le brasseur répond « Les deux ». **Voie f9** lancée (auteur) : intensité par variété dans l'effet (A3) et typicité du style (Beer Analytics, collecte complète : 435 fiches), sur sa vraie recette neipa v3 (22A, 24 L, Lotus 84 g à 40′). Quatre combinaisons en options. Ensuite : page de mini maquettes (concepteur, puis critique) à partir de `voies/f9-intensite-typicite/listes.json`.
+- 27.10 : **rejeu de 53306aae** : 6 étapes vertes sur 9. Verts : types ; 8 361 tests (avec 2 « Timeout calling onTaskUpdate » de vitest sous charge, à rejouer) ; worker de production ; les 11 contrôles Chrome ; perf (les 6 mêmes dépassements qu'à la référence). Rouges, tous venus de f8 : B5 à 164,9 ko pour 164 ; 3 états (q2b-suite-s5 et picto-epice, deux acquis, sans East Kent Goldings dans le stout S1 ; gr5-cran sans Motueka). **Pas de déploiement** d'un lot qui n'est pas propre : ces deux points sont confiés à f9 (la typicité devrait ramener Goldings et Celeia). Après f9 : nouveau rejeu, puis déploiement, PR et fusion.
+- 27.10 : **f9 commité** (372b9be5). Intensité (A3) et typicité (Beer Analytics) sont des options ; D191 n'est pas tenu (2 sur 6 au mieux : les données ne placent pas Calypso, Pacific Jade ni Mandarina en tête d'une Double IPA). Décision D120 : la typicité devient le défaut (acquis D105 du stout) ; il choisit entre les 4 combinaisons sur une page de mini maquettes. Leçon ajoutée à L14. **En vol** :
+  - t2 (typicité par défaut, câblage dans le worker, états) ;
+  - c8 (composes-houblon.json hors du chunk, B5) ;
+  - m9 (page de sa Double IPA, rendue depuis la copie propre à 645c17f4 ; personne d'autre n'y écrit).
+  Ensuite : critique de m9, publication, rejeu complet après t2 et c8, déploiement, PR et fusion. Quota hebdomadaire : 95 % au lancement.
+- 27.10 : **m9 publiée** (B8v5Ak1uXkrPnWyZDqNxG7), après la critique (Fable : corriger d'abord deux lignes de texte, faites). Préférence du concepteur et du critique : C (typicité). Défauts de l'app relevés par m9 et la critique, encore ouverts :
+  - « 48 g » coupé en « 48 / g » à 390 px, et la pastille « dry hop en fermentation active » qui déborde sur le trait tireté (8 vignettes sur 8) ;
+  - avec A3, le n° 1 du moteur est affiché 4e, sous « Ajouter » (l'app groupe avant de garder le rang) ;
+  - Suggérer ne montre que 4 rangées (`buyLimit = 4`).
+  En vol : t2, c8.
+- 27.10 : **c8 et t2 commités** (37d9c32c, 4aa7cd33 ; D121). B5 à 147,3 ko ; typicité par défaut ; ETATS 138/138. **Rejeu complet de 4aa7cd33** lancé (Haiku, copie propre, `%TEMP%/rejeu-4aa7/`), avec les contrôles Chrome en composés à part et la mesure d'ouverture de c8. S'il est vert : déployer, PR, fusion. Quota hebdomadaire 96 %.

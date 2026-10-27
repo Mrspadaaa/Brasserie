@@ -11,7 +11,7 @@ import { creerClient, servirSurFilPrincipal, type ClientCalculs } from '../../..
 import { servirParWorker, type ServeurWorker, type WorkerOutils } from '../hopToolsTransport';
 import { CALCULS, type CalculsParcours } from './calculs';
 import { OPTIONS_CLIENT, clientEstPose, poserClient } from './calcul';
-import { siDonneesChangent } from './donnees';
+import { lancerTypicite, siDonneesChangent } from './donnees';
 import { preparerEnvoi } from './donneesWorker';
 import { enPrechauffage } from './mesure';
 
@@ -36,6 +36,9 @@ export interface OptionsWorkerApp {
 /** Pose le client du worker comme client des calculs de l'app, une fois par session. Rend le transport, ou null quand le fil principal reste le client (pas de worker possible, ou un
  * client déjà posé, p. ex. celui de la maquette). Une seconde demande rend le même transport. */
 export function activerWorker(o: OptionsWorkerApp = {}): ServeurWorker<CalculsParcours> | null {
+  // D120 (t2) : la table de typicité (défaut de Suggérer) part avec la préchauffe, au montage de l'étape, que le client soit le worker ou le fil principal (jsdom, file://, ?calcul=immediat, maquette).
+  // `lancerTypicite` ne rejette jamais ; à son arrivée la configuration est rejouée et le worker renourri (siDonneesChangent ci-dessous).
+  void lancerTypicite();
   if (transport) return transport;
   if (clientEstPose() || (!o.creer && !workerPossible())) return null;
   const filPrincipal = servirSurFilPrincipal(CALCULS, { differer: false, prechauffage: enPrechauffage });

@@ -6,7 +6,7 @@
 // (sous, autour, au-dessus ×N), et le signal d'une famille est le rapport au seuil de son marqueur
 // dominant. Aucun chiffre hors de H ou du dépôt (src/data/hopV4/composes-houblon.json) : une valeur absente est
 // null avec sa raison, jamais 0. Pas de courbe inventée (durée, alcool, dose : plages entre mesures).
-import dataFile from '../../../data/hopV4/composes-houblon.json';
+import { DONNEES_COMPOSES, ComposesAbsents } from './composes';
 import bandsFile from '../../../data/hopV4/style-bands.json';
 import { POLICY, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
@@ -96,6 +96,8 @@ export interface LecturePouvoir {
 }
 export interface PouvoirAjout {
   id: string; houblon: string; nom: string; donnees: string | null;
+  /** D118 (f8) : composés dont la composition est celle de la VARIÉTÉ (forme produit sans composition relevée) ; absent sinon. */
+  deLaVariete?: ComposeId[];
   moment: MomentId; momentLabel: string; doseGL: number;
   jour: number | null; dureeJours: number | null; temperatureC: number | null; forme: string; lot: string | null;
   huile: Grandeur; chargeHuile: Grandeur;
@@ -149,7 +151,9 @@ interface Lot { id: string; sources: string[]; recolte: number | null; huile?: n
 interface Mesure { id: string; compose: ComposeId; plage: [number, number]; unite: string; doseGL: number; moment: MomentId; dureeJours?: number; texte: string; momentNote?: string; sources: string[] }
 interface Variete { nom: string; forme: string; origine: string; huile: Valeurs; composes: Record<ComposeId, Valeurs>; lots?: Lot[]; classeHopsteiner?: Info[]; precurseurs?: Info[]; mesuresEnBiere?: Mesure[]; hsi?: Info[]; autres?: Info[]; panel?: Info[] }
 interface Levure { nom: string; betaLyase: string; betaGlucosidase: string; pof: string; esters: string; diastaticus: string; attenuation: string; biotransformation: string; geraniolCitronellol: string | null; notes: string[]; sources: string[] }
-const D = dataFile as unknown as {
+// c8 : composes-houblon.json arrive à part (composes.ts) ; `D` est l'objet d'identité stable que le chargement remplit. Avant l'arrivée,
+// ses tables sont absentes : `source()` lève ComposesAbsents, jamais une valeur par défaut.
+const D = DONNEES_COMPOSES as unknown as {
   sources: Record<string, Omit<SourceRef, 'cle'>>;
   composes: Record<ComposeId, { nom: string; classe: string; type: 'terpene' | 'thiol' }>;
   varietes: Record<string, Variete>;
@@ -179,6 +183,7 @@ const plusFort = (ns: (Niveau | null | undefined)[]): Niveau | null => ns.reduce
 const uniq = <T>(xs: T[]) => [...new Set(xs)];
 const uniqSources = (xs: SourceRef[]) => [...new Map(xs.map((s) => [s.cle, s])).values()];
 export function source(cle: string): SourceRef {
+  if (!D.sources) throw new ComposesAbsents();
   const s = D.sources[cle];
   if (!s) throw Error(`Source inconnue dans composes-houblon.json : ${cle}`);
   return { cle, ...s, lecture: s.lecture ?? null };
@@ -561,7 +566,7 @@ function lirePouvoir(code: string, composes: Partial<Record<ComposeId, { rapport
 // ---------- Drapeaux ----------
 const drapeau = (id: string, titre: string, statut: string, pourquoi: string, sources: string[], ajout?: string): Drapeau => ({ id, titre, statut, pourquoi, sources: refs(sources), ...(ajout ? { ajout } : {}) });
 const dit = (i: Info) => i.texte;
-function drapeauxAjout(a: AjoutPouvoir, r: RecettePouvoir, v: Variete | null, composes: Record<ComposeId, PouvoirCompose>, cat: Categorie, dose: number): Drapeau[] {
+function drapeauxAjout(a: AjoutPouvoir, r: RecettePouvoir, v: Variete | null, composes: Record<ComposeId, PouvoirCompose>, cat: Categorie, dose: number, deLaVariete: ComposeId[] = []): Drapeau[] {
   const out: Drapeau[] = [];
   const nomH = v?.nom ?? hopRef(a.hopKey)?.name ?? a.hopKey;
   const levure = D.levures[r.yeastId ?? ''] ?? null;
@@ -599,7 +604,8 @@ function drapeauxAjout(a: AjoutPouvoir, r: RecettePouvoir, v: Variete | null, co
     [prec.length ? `Précurseurs de ${nomH} : ${prec.map(dit).join(' ; ')}.` : `Précurseurs de ${nomH} : non publiés.`, D.biotransformation.thiolsPrecurseurs.texte, D.biotransformation.irc7.texte,
       levure ? `${levure.nom} : β-lyase ${levure.betaLyase}.${levure.notes.length ? ' ' + levure.notes.join(' ') : ''}` : 'Levure absente du fichier.'].join(' '),
     [...prec.flatMap((p) => p.sources), ...D.biotransformation.thiolsPrecurseurs.sources, ...D.biotransformation.irc7.sources, ...(levure?.sources ?? [])], a.id));
-  if (v?.forme === 'cryo') out.push(drapeau('cryo', 'Cryo : huile chiffrée, composés inconnus', 'inconnu', `${v.composes.linalol.raison}. ${(v.autres ?? []).map(dit).join(' ; ')}.`, ['H1', 'H74'], a.id));
+  if (v?.forme === 'cryo') out.push(drapeau('cryo', deLaVariete.length ? 'Cryo : huile du produit, composition de la variété' : 'Cryo : huile et composition du produit', deLaVariete.length ? 'de la variété' : 'du produit',
+    `${deLaVariete.length ? `${TEXTE_DE_LA_VARIETE} : ${deLaVariete.map(nom).join(', ')}. ` : ''}${(v.autres ?? []).map(dit).join(' ; ')}.`, ['H1', 'H74'], a.id));
   return out;
 }
 function drapeauxCommuns(a: AjoutPouvoir, v: Variete | null, composes: Record<ComposeId, PouvoirCompose>, lot: Lot | null): Drapeau[] {
@@ -617,18 +623,33 @@ function drapeauxCommuns(a: AjoutPouvoir, v: Variete | null, composes: Record<Co
 
 // ---------- Un ajout ----------
 const lotDe = (v: Variete | null, id?: string) => (id && v ? (v.lots ?? []).find((l) => l.id === id) ?? null : null);
-function varieteDe(a: AjoutPouvoir): { cles: string; v: Variete | null; hypotheses: string[] } {
+/** D118 (f8, D190) : une forme produit (Citra cryo) reprend sa variété. Son huile totale et son α restent les siens (H1 : « ≈ 2 fois l'huile du T-90 », une source) ; la COMPOSITION de l'huile
+ * (terpènes, thiols) que le fichier n'a pas relevée pour le produit est celle de la variété, marquée « de la variété » : le cryo ne rend plus 0 partout, et le dit. Une composition relevée
+ * pour le produit l'emporte toujours. */
+export const TEXTE_DE_LA_VARIETE = 'composition de la variété (le fichier n’a pas relevé celle du produit) ; huile totale du produit';
+function varieteDe(a: AjoutPouvoir): { cles: string; v: Variete | null; hypotheses: string[]; deLaVariete: ComposeId[] } {
   let k = a.hopKey;
   if (a.forme === 'cryo' && !k.endsWith(':cryo') && D.varietes[`${k}:cryo`]) k = `${k}:cryo`;
-  const v = D.varietes[k] ?? null;
+  let v = D.varietes[k] ?? null;
+  const deLaVariete: ComposeId[] = [];
+  const mere = v && v.forme === 'cryo' ? D.varietes[k.replace(/:cryo$/, '')] : undefined;
+  if (v && mere) {
+    const propre = v;
+    v = { ...propre, composes: Object.fromEntries(COMPOSES.map((c) => {
+      if (propre.composes[c]?.valeurs || !mere.composes[c]?.valeurs) return [c, propre.composes[c]];
+      deLaVariete.push(c);
+      return [c, mere.composes[c]];
+    })) as Record<ComposeId, Valeurs> };
+  }
   const hypotheses = v && v.forme === 'T-90' && (a.forme ?? 'inconnue') === 'inconnue' ? ['forme du lot non renseignée : valeurs des fiches T-90'] : [];
-  return { cles: k, v, hypotheses };
+  return { cles: k, v, hypotheses, deLaVariete };
 }
 /** Pouvoir aromatique d'un ajout dans une recette : par composé, charge, concentration et rapport au
  * seuil en plage ; signal par famille ; lecture ordinale face au style ; drapeaux. */
 export function pouvoirAjout(a: AjoutPouvoir, recette: RecettePouvoir): PouvoirAjout {
   const dose = a.grams / recette.volumeL;
-  const { cles, v, hypotheses } = varieteDe(a);
+  const { cles, v, hypotheses: hypVariete, deLaVariete } = varieteDe(a);
+  const hypotheses = deLaVariete.length ? [...hypVariete, `${TEXTE_DE_LA_VARIETE} (${deLaVariete.map(nom).join(', ')})`] : hypVariete;
   const lot = lotDe(v, a.lot);
   const { cat, hypotheses: hypCat } = categorie(a, recette);
   const abv = degre(recette).plage;
@@ -636,6 +657,7 @@ export function pouvoirAjout(a: AjoutPouvoir, recette: RecettePouvoir): PouvoirA
     : lot?.huile != null ? teneurLot(lot, lot.huile, 'mL/100 g', 'huile totale') : teneurDe(v.huile, 'mL/100 g', 'huile totale');
   if (hypotheses.length || hypCat.length) huile.hypotheses = uniq([...huile.hypotheses, ...hypotheses, ...hypCat]);
   const composes = Object.fromEntries(COMPOSES.map((c) => [c, calculCompose(c, v, lot, huile, dose, cat, abv)])) as Record<ComposeId, PouvoirCompose>;
+  for (const c of deLaVariete) composes[c].teneur.hypotheses = [...composes[c].teneur.hypotheses, `de la variété : ${TEXTE_DE_LA_VARIETE}`];
   const familles = signauxFamilles(composes);
   const ref = hopRef(a.hopKey);
   const amer = MOMENTS[a.moment].kind === 'amertume';
@@ -652,7 +674,8 @@ export function pouvoirAjout(a: AjoutPouvoir, recette: RecettePouvoir): PouvoirA
       ibu: ibu ? { valeur: ibu.value, min: ibu.min, max: ibu.max } : null,
       lecture: amer ? 'Surtout de l’amertume à ce moment : l’arôme du houblon y est peu chiffré (H §8.2).' : cat.id === 'dryHop' ? 'Dry hop : pas d’IBU calculé ; humulinones : brique existante (Maye 2016), non reprise ici.' : null },
     classeHopsteiner: (v?.classeHopsteiner ?? []).map((k) => ({ classe: k.classe!, texte: k.texte, sources: refs(k.sources) })),
-    drapeaux: [...drapeauxAjout(a, recette, v, composes, cat, dose), ...drapeauxCommuns(a, v, composes, lot)],
+    drapeaux: [...drapeauxAjout(a, recette, v, composes, cat, dose, deLaVariete), ...drapeauxCommuns(a, v, composes, lot)],
+    ...(deLaVariete.length ? { deLaVariete } : {}),
     hypotheses: uniq([...hypotheses, ...hypCat]), mention: MENTION_RAPPORT,
   };
 }

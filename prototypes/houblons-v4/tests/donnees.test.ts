@@ -1,4 +1,5 @@
 import './temoin'; // témoin négatif de check:engine (B3)
+import './typicite-posee'; // D120 : la table de typicité (défaut de Suggérer) est là, comme dans l'app
 import { describe, expect, it } from 'vitest';
 import facts from '../../../src/data/hopV4/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../../../src/domain/hopIndex/v4';
@@ -176,7 +177,7 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     expect(floral0.source).toBe('modèle');
     expect(floral0.value).toBeCloseTo(beer.find((b) => b.family === 'floral')!.basis!.central! / (100 / 3), 2);
     for (const a of avant.filter((x) => x.source === 'non situé')) expect(a.value).toBeNull();
-    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING }); // D120 : ce test lit la voie East Kent Goldings (D118 la masquait par `departage: 'aucun'`) ; la typicité du style, défaut, la ramène dans les 4 places d'achat
     const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-east-kent-goldings'))!;
     const apres = afterContinuous(beer, golding.effect);
     expect(apres.find((a) => a.family === 'floral')!.value!).toBeGreaterThan(floral0.value! + 0.4);
@@ -260,6 +261,7 @@ describe('La levure : double impact, leviers, signaux (R43, R44)', () => {
 describe('Crans du style (objets 1, 2 et 4)', () => {
   const s16d = getStyleScale('16D');
   const beer = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d);
+  // D120 : ces tests lisent la voie East Kent Goldings (D118 la masquait par `departage: 'aucun'`) ; la typicité du style, défaut, la ramène dans les 4 places d'achat.
   const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
 
   it('la résine dégustée est au-dessus de la bande (4) ; le floral est à 0 cran ; les non situées restent null', () => {

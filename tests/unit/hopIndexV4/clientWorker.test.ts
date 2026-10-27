@@ -5,7 +5,7 @@
 //  - la liste s'affiche toujours : une première lecture sans réponse gardée est calculée sur le fil principal (repli synchrone) ;
 //  - un changement des données vide les réponses gardées et renvoie les données (le catalogue seulement quand son tableau change) ;
 //  - le repli reste entier : worker qui ne démarre pas, client déjà posé (la maquette), pas de worker possible (Node, jsdom).
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { s1Recipe } from '../../../prototypes/houblons-v4/src/pack/buildPack';
 import { servir } from '../../../src/domain/hopIndex/v4/client';
 import { ecouter, type PorteeWorker } from '../../../src/ui/hopIndex/hopTools.worker';
@@ -13,7 +13,7 @@ import type { WorkerOutils } from '../../../src/ui/hopIndex/hopToolsTransport';
 import { CALCULS } from '../../../src/ui/hopIndex/parcours/calculs';
 import { calcul, clientEstPose, poserClient, reinitialiserClient } from '../../../src/ui/hopIndex/parcours/calcul';
 import { activerWorker, arreterWorker, workerPossible } from '../../../src/ui/hopIndex/parcours/clientWorker';
-import { configurerDonnees } from '../../../src/ui/hopIndex/parcours/donnees';
+import { configurerDonnees, lancerTypicite } from '../../../src/ui/hopIndex/parcours/donnees';
 import { preparerEnvoi, recevoirDonnees, type DonneesApp } from '../../../src/ui/hopIndex/parcours/donneesWorker';
 import { mesures, viderMesures } from '../../../src/ui/hopIndex/parcours/mesure';
 import type { RecetteParcours } from '../../../src/ui/hopIndex/parcours/types';
@@ -42,6 +42,9 @@ function fauxWorker() {
   return { w, recus, donneesRecues, estTermine: () => termine };
 }
 
+// D120 (t2) : `activerWorker` lance le chargement de la table de typicité (défaut de Suggérer) ; à son arrivée la configuration est rejouée et les caches vidés, ce qui ferait recalculer
+// un test en cours. La table est donc là avant chaque test (son arrivée en cours de session est éprouvée dans t2Typicite.test.ts).
+beforeAll(() => lancerTypicite());
 afterEach(() => { arreterWorker(); reinitialiserClient(); configurerDonnees(); viderMesures(); vi.restoreAllMocks(); });
 
 describe('client du worker de l\'app : la préchauffe part au worker', () => {
@@ -120,7 +123,7 @@ describe('données envoyées au worker : le catalogue une fois, puis « inchang�
   const C1 = [{ id: 'a' }] as never[], C2 = [{ id: 'b' }] as never[];
   it('premier envoi complet ; mêmes tableaux : « inchangé » sans catalogue ni fiches ; autre tableau : complet ; non clonable : null', () => {
     let cat = C1, clonable: object | null = { catalogue: C1, fiches: C1, stock: [] };
-    const envoi = preparerEnvoi(() => clonable as never, () => ({ catalogue: cat, fiches: cat }));
+    const envoi = preparerEnvoi(() => clonable as never, () => ({ catalogue: cat, fiches: cat }), () => null); // D120 : sans table de typicité (celle-ci : t2Typicite.test.ts)
     expect(envoi()).toEqual({ catalogue: C1, fiches: C1, stock: [] });
     expect(envoi()).toEqual({ stock: [], catalogueInchange: true });
     cat = C2; clonable = { catalogue: C2, fiches: C2, stock: [] };
@@ -130,7 +133,7 @@ describe('données envoyées au worker : le catalogue une fois, puis « inchang�
   });
 
   it('sans catalogue clonable (celui des fixtures), rien à marquer : le message est rendu tel quel', () => {
-    const envoi = preparerEnvoi(() => ({ stock: [] }), () => ({ catalogue: C1, fiches: C1 }));
+    const envoi = preparerEnvoi(() => ({ stock: [] }), () => ({ catalogue: C1, fiches: C1 }), () => null); // D120 : sans table de typicité
     expect(envoi()).toEqual({ stock: [] });
     expect(envoi()).toEqual({ stock: [] });
   });

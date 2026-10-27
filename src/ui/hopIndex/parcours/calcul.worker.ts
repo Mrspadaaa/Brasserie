@@ -3,10 +3,15 @@
 // maquette (prototypes/houblons-v4/parcours/src/moteur/calcul.worker.ts), éprouvé en f6.
 // Le worker a son propre moteur, ses caches et son journal (mesure.ts) : sur les fixtures par défaut tant que la page ne lui a rien envoyé ;
 // la page lui envoie les données du brasseur (stock, dégustation, catalogue complet de c7 : donneesWorker.ts) au démarrage et à chaque changement.
+import composesHoublon from '../../../data/hopV4/composes-houblon.json';
+import { installerComposes } from '../../../domain/hopIndex/v4/composes';
 import { ecouter, type PorteeWorker } from '../hopTools.worker';
 import { CALCULS } from './calculs';
 import { recevoirDonnees } from './donneesWorker';
 import { enPrechauffage } from './mesure';
+
+// c8 : les composés restent dans le bundle du worker (import statique, le plus simple) ; le build de l'app ne les installe plus tout seul.
+installerComposes(composesHoublon);
 
 ecouter(self as unknown as PorteeWorker, CALCULS, {
   alimenter: recevoirDonnees(),
