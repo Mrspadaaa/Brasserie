@@ -1,6 +1,6 @@
 // Voie f9 (D191, D120) : la typicité du style (Beer Analytics, table dérivée) et l'intensité de la variété dans l'effet (A3), deux OPTIONS de proposeVoies.
 // Défaut éteint : la sortie est celle d'avant, à l'octet près. La typicité est un terme du rang, jamais un filtre ; l'inconnu n'est jamais 0.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
@@ -23,10 +23,16 @@ beforeAll(() => poserTypicite(table));
 afterAll(() => poserTypicite(null));
 
 describe('la table de typicité (D120)', () => {
-  it('est la sortie du script rejouable, sa source et sa licence dans l\'en-tête', () => {
+  // Les sources brutes de Beer Analytics (collecte c3h, 11 Mo) ne sont pas suivies par git : la régénération ne se compare que là où elles
+  // sont ; ailleurs (copie propre, CI), l'en-tête et la licence de la table suivie restent contrôlés.
+  const SOURCES = existsSync(join(process.cwd(), 'src', 'data', 'hopSources', 'beeranalytics-A.json'));
+  it.runIf(SOURCES)('est la sortie du script rejouable', () => {
     expect(JSON.stringify(calculer()) + '\n').toBe(readFileSync(FICHIER, 'utf8'));
+  });
+  it('porte sa source et sa licence dans l\'en-tête', () => {
     expect(table.source.licence).toBe('CC BY-SA 4.0');
     expect(table.source.nom).toBe('Beer Analytics');
+    expect(table.source.releve).toBe('2026-10-26');
   });
   it('Citra et Mosaic sont typés en 22A ; un noble ou un houblon absent est inconnu, jamais 0', () => {
     expect(typiciteDe(CLE('citra'), '22A').palier).toBe(3);
