@@ -49,6 +49,9 @@ export function typiciteDe(varietyId: string, styleCode: string, t: TableTypicit
   const concentration = c !== undefined && (t.recettes?.[id] ?? 0) >= MIN_RECETTES ? c : null;
   if (!candidats.length && concentration === null) {
     const plafond = t.p16[id];
+    // a4 (D125), biais 3 : le style est hors des 16 premiers du houblon, donc sa part est AU PLUS `p16`. Si cette borne est sous le seuil du courant, la part est sous 1 % : « rare » est connu (par la borne),
+    // et le houblon n'est pas « inconnu ». Sinon la part peut être n'importe où entre 0 et `p16` : inconnue, bornée. Jamais 0, jamais devant un courant.
+    if (plafond !== undefined && palierDePart(plafond) === 1) return { palier: 1, part: null, origine: 'borne', code: null, concentration: null, auPlus: plafond, raison: null };
     return plafond === undefined ? INCONNUE('houblon absent de Beer Analytics') : INCONNUE(c !== undefined ? 'échantillon trop mince et style hors des 16 premiers du houblon' : 'style hors des 16 premiers du houblon', plafond);
   }
   const m = candidats.length ? candidats.reduce((x, y) => (y.part > x.part ? y : x)) : null;

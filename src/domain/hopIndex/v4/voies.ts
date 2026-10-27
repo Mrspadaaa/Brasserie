@@ -21,7 +21,7 @@ import {
 } from './palier';
 import { produitDArome } from './substitution';
 import { facteurIntensite, type FacteurIntensite } from './intensite';
-import { typiciteDeVoie, type Typicite } from './typicite-acces';
+import { palierDansLaCle, typiciteDe, typiciteDeVoie, type Typicite } from './typicite-acces';
 
 /** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
 export const POOL_BORNE = 80;
@@ -30,6 +30,14 @@ export const POOL_BORNE = 80;
  * (`chargerTypicite`, typicite-acces.ts), la typicité de chaque houblon est inconnue et le rang est celui de k3k1. */
 export const INTENSITE_DEFAUT = false;
 export const TYPICITE_DEFAUT = true;
+/** a4 (D125), biais 1 : une famille NEUTRE du style (il n'en dit rien : ni attendue, ni rejetée ; sa bande 0–30 est une hypothèse [H] sans citation, `from: []`) ne punit plus comme une famille hors du style.
+ * Son dépassement reste dit (`styleOverflow`) et reste compté, plus loin dans le rang, par les effets de bord (`sideTotal`). `true` : l'ordre d'avant. */
+export const DEBORDEMENT_NEUTRE_DEFAUT = false;
+/** a4 (D125), biais 2 : la présélection du pool « à acheter » (la borne de coût `POOL_BORNE`) met d'abord la typicité du style, le terme que le rang lit à distance égale (departage.ts : un houblon typé ou courant
+ * avant un inconnu, avant un rare), puis seulement la documentation des fiches, qui écartait Calypso (courant en 22A, peu documenté) avant tout classement. Sans table de typicité, tous sont égaux
+ * et l'ordre est celui d'avant. `'documentation'` : l'ordre d'avant, toujours. */
+export type SelectionPool = 'rang' | 'documentation';
+export const SELECTION_DEFAUT: SelectionPool = 'rang';
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -78,6 +86,8 @@ export interface Voie {
   /** g2d, option `apportMinoritaire: 'c'` : le débordement qui compte dans le RANG, seulement celui d'une famille marquée (la moitié des fiches au moins) chez un houblon changé.
    * `overflowTotal` et `styleOverflow` restent ceux d'avant. Absent sans l'option : le rang lit `overflowTotal`. */
   overflowRang?: number;
+  /** a4 (D125), biais 1 : le débordement sans les familles neutres du style (leur dépassement ne punit plus comme une faute de style). Présent sauf si `debordementNeutre: true`. Le choix de la dose d'un houblon le lit. */
+  overflowStyle?: number;
   /** Effets de bord dans la bande : familles neutres ou indésirables non visées poussées vers le
    * haut par un apport établi, en crans du style (même sans sortir de la bande). */
   sideEffects: { family: FamilyId; status: string; crans: number }[]; sideTotal: number;
@@ -126,6 +136,10 @@ export interface VoieOptions {
   intensite?: boolean;
   /** f9 (b de f8, D120) : la typicité du style (Beer Analytics) entre dans le rang, jamais comme un filtre. Défaut : `TYPICITE_DEFAUT`. */
   typicite?: boolean;
+  /** a4 (D125) : le dépassement d'une famille neutre du style compte dans le rang comme celui d'une famille hors du style (`true`) ou seulement par les effets de bord (`false`). Défaut : `DEBORDEMENT_NEUTRE_DEFAUT`. */
+  debordementNeutre?: boolean;
+  /** a4 (D125) : l'ordre de la présélection du pool (voir `SELECTION_DEFAUT`). */
+  selection?: SelectionPool;
   /** Apport minoritaire (g2d, D99) : ABSENT (défaut) = 'c' sur les voies au dry hop actif ou après seulement (le débordement d'une famille non marquée ne compte plus dans leur rang ; aucune barre ne change),
    * comportement d'avant ailleurs ; 'aucun' = le comportement d'avant partout, à l'octet près ; 'c' = ce rang à tous les moments ; 'm' (une famille citée par moins de
    * la moitié des fiches n'apporte pas d'effet établi) et 'w' (l'effet d'une famille est multiplié par la part des fiches qui la citent) : mesure seulement, jamais par défaut. Voir minoritaire.ts. */
@@ -239,6 +253,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const departageMode: Departage = (options.typicite ?? TYPICITE_DEFAUT) && departageBase === 'k3k1' ? 'k3k1t' : departageBase;
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
   const a3 = options.intensite ?? INTENSITE_DEFAUT, typ = options.typicite ?? TYPICITE_DEFAUT; // f9 : A3 et typicité
+  const neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
@@ -283,6 +298,14 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   /** D105 (B1, coût) : les voies des listes principales (ajouter, remplacer) classent les `POOL_BORNE` meilleurs du pool, dans cet ordre de qualité ; tout le reste du pool est coupé AVANT le rang,
    * pour tenir le coût de calcul (« Attention au délais ajouter, la Responsive, réactivité »). Les phares sont bien documentés : ils sont en tête de l'ordre (documentation avant le nom). */
   const buyPool = (requirePlus: boolean) => buyPoolComplet(requirePlus).slice(0, options.maxBuy ?? POOL_BORNE);
+  // La valeur de la typicité dans la clé du rang (celle de `cleHoublon`, étape 1), lue une fois par houblon et par appel (les deux pools la relisent) ; 0 si inconnue sans aucune borne ou si l'option est éteinte.
+  const typDansPool = new Map<string, number>();
+  const typPourPool = (id: string): number => {
+    if (!selectionRang || departageMode !== 'k3k1t' || !plus.length) return 0;
+    let v = typDansPool.get(id);
+    if (v === undefined) { v = palierDansLaCle(typiciteDe(id, recipe.styleCode)) ?? 0; typDansPool.set(id, v); }
+    return v;
+  };
   const buyPoolDe = (requirePlus: boolean) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
     .map((c) => ({ c, plus: plus.filter((f) => citeVisee(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
       // D105 : fiches lues (la documentation) : un houblon à une fiche ne passe pas devant un houblon à sept ; sert l'ordre du pool, jamais une exclusion.
@@ -291,9 +314,11 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       bad: minus.some((f) => marque(c.id, f)) || excludedFamilies.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && marque(c.id, f)),
       // Une fiche isolée n'exclut plus, mais le houblon passe après ceux dont aucune fiche ne cite une famille à éviter, à nombre égal de familles visées :
       // sans cela, les houblons re-admis passeraient à égalité devant ceux que le style n'exclut d'aucune fiche (mesuré en stout S1, du temps où `maxBuy` coupait le pool).
-      mineure: [...minus, ...FAMILIES.filter((f) => style.families[f].status === 'indésirable')].some((f) => cites(c.id, f)) }))
+      mineure: [...minus, ...FAMILIES.filter((f) => style.families[f].status === 'indésirable')].some((f) => cites(c.id, f)),
+      // a4 (D125, biais 2) : la typicité du style (le terme du rang à distance égale, entre la famille citée et le radar) passe AVANT la documentation. Sans table (inconnue pour tous) ou sans l'option : 0 pour tous, donc l'ordre d'avant.
+      typ: typPourPool(c.id) }))
     .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
-    .sort((a, b) => b.plus - a.plus || b.doc - a.doc || Number(a.mineure) - Number(b.mineure) || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || Number(!!a.c.peuDeDonnees) - Number(!!b.c.peuDeDonnees) || a.c.name.localeCompare(b.c.name, 'fr'))
+    .sort((a, b) => b.plus - a.plus || b.typ - a.typ || b.doc - a.doc || Number(a.mineure) - Number(b.mineure) || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || Number(!!a.c.peuDeDonnees) - Number(!!b.c.peuDeDonnees) || a.c.name.localeCompare(b.c.name, 'fr'))
     .map((r) => stockDuMoteur().find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
   // D102/D105 (B1) : le rang de chaque houblon dans cet ordre de qualité du pool (0 : hors pool, ex. le houblon de la recette). C'est une clé du RANG (`compareRankKeys`), juste avant les effets
   // de bord : le style (familles visées, familles attendues, suggéré pour le style, documenté) départage avant les effets de bord, qui récompensaient sinon les houblons à une fiche (1 famille
@@ -364,9 +389,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     // g2d 'c' : le rang ne lit que le débordement d'une famille marquée chez un houblon changé (ajouté ou retiré) ; une voie sans houblon changé (levure) garde tout son débordement.
     // D99 : option absente = c sur les voies dont tous les ajouts sont au dry hop (actif ou après) ; 'c' explicite = tous les moments ; 'aucun', 'm', 'w' : jamais.
     const rangC = options.apportMinoritaire === 'c' || (options.apportMinoritaire === undefined && changes.length > 0 && changes.every((c) => MOMENTS_APPORT_C_DEFAUT.includes(c.addition.moment)));
-    const overflowRang = rangC
-      ? round(styleOverflow.filter((o) => !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family))).reduce((s, o) => s + o.crans, 0), 2)
+    // a4 (D125, biais 1) : le rang ne compte pas non plus le dépassement d'une famille neutre du style (voir DEBORDEMENT_NEUTRE_DEFAUT) ; il reste dans `styleOverflow` et dans `sideTotal`.
+    const overflowRang = rangC || !neutreCompte
+      ? round(styleOverflow.filter((o) => (neutreCompte || o.status !== 'neutre') && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
       : null;
+    // a4 (D125) : le même débordement sans les familles neutres, que lit aussi le choix de la dose d'un houblon (`compareVoies(…, false)`) : sinon la dose qui évite le dépassement d'une famille neutre l'emportait sur la distance.
+    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => o.status !== 'neutre').reduce((s, o) => s + o.crans, 0), 2);
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
@@ -385,6 +413,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       stock: { status, missing }, ibu: { before: round(ibu0.value), after: round(ibu1.value), drift: round(ibu1.value - ibu0.value), unknown: ibu1.unknown.length > 0 },
       styleOverflow, overflowTotal, sideEffects, sideTotal,
       ...(overflowRang !== null ? { overflowRang } : {}),
+      ...(overflowStyle !== null ? { overflowStyle } : {}),
       after: null, rank: 0, tieWith: [],
       ...(departage ? { departage } : {}),
       ...(typicite !== undefined ? { typicite } : {}),
@@ -653,7 +682,7 @@ export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): n
   return a.conflicts.length - b.conflicts.length
     || comparerUsagePalier(a.palier, b.palier) // g2b (D88 B) : à 60′ l'usage passe d'abord ; sans l'option `palier60`, aucune voie n'a de palier : égalité
     || (intensiteD ? comparerCles(a.departage?.cle, b.departage?.cle) : 0)
-    || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : a.overflowTotal - b.overflowTotal) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
+    || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : (a.overflowStyle ?? a.overflowTotal) - (b.overflowStyle ?? b.overflowTotal)) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
     || (a.a3 && b.a3 ? grammesDe(a) - grammesDe(b) : 0) // f9 A3 : à distance égale, la variété qui atteint la visée à la dose la plus basse

@@ -73,6 +73,8 @@ export interface Objectif {
 }
 
 const fam = <T>(fams: readonly FamilyId[], fn: (f: FamilyId) => T) => Object.fromEntries(fams.map((f) => [f, fn(f)])) as Record<FamilyId, T>;
+// a4 (D125) : une famille que le style ne cite pas (neutre) n'est pas « hors du style » ; la carte et le rang lisent le même statut.
+const horsDuStyle = (v: Voie): FamilyId[] => [...new Set(v.styleOverflow.filter((o) => o.status !== 'neutre').map((o) => o.family))];
 
 export type { Visee } from '../parcours/visee';
 /** Objectifs de la visée commune (onglet Ma bière, D108), en crans du style, visées « plus » d'abord. Comme la base, la
@@ -137,7 +139,7 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
         n: 0, id: v.id, geste, houblons: cles.map((c) => houblon(c)),
         dose: v.type === 'assemblage' ? v.actions.map((a) => a.grams).join('+') + ' g' : geste === 'remplacer' ? `${v.actions[0].grams} g` : null,
         effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
-        hors: [...new Set(v.styleOverflow.map((o) => o.family))],
+        hors: horsDuStyle(v),
         stock: v.stock.status, estime: v.estimated, muet: null,
         voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after, bio: [],
       } as Ligne,
@@ -179,7 +181,7 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
       return {
         n: 0, id: v.id, geste: 'dryhop', houblons: [houblon(x.hopKey)], dose: `${x.grams} g`,
         effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
-        hors: [...new Set(v.styleOverflow.map((o) => o.family))],
+        hors: horsDuStyle(v),
         stock: v.stock.status, estime: true, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after,
         bio: sig.map((g) => ({ id: g.id, titre: g.titre, statut: g.statut, pourquoi: g.pourquoi })),
       };
@@ -204,7 +206,7 @@ function appliquerOrdreIA(groupes: Groupe[], mom: string, o: OrdreIA, objectifs:
   const ligne = (v: Voie, dose: string | null): Ligne => ({
     n: 0, id: v.id, geste: 'meme', houblons: [houblon(v.actions[0].hopKey)], dose,
     effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
-    hors: [...new Set(v.styleOverflow.map((x) => x.family))], stock: v.stock.status, estime: v.estimated, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after, bio: [],
+    hors: horsDuStyle(v), stock: v.stock.status, estime: v.estimated, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after, bio: [],
   });
   const cle = (l: Ligne) => JSON.stringify([l.voie.actions.reduce((s, a) => s + a.grams, 0), objectifs.map((x) => l.effets[x.f])]);
   const lignes = voies.map((v) => ligne(v, null));
@@ -255,7 +257,7 @@ export function levuresDe(recette: RecetteParcours, objectifs: Objectif[], famil
     lignes: vs.map((v, i): Ligne => ({
       n: depuis + i + 1, id: v.id, geste: 'levure', houblons: [], dose: null,
       effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
-      hors: [...new Set(v.styleOverflow.map((o) => o.family))],
+      hors: horsDuStyle(v),
       stock: 'suffisant', estime: true, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after, bio: [],
       levure: { id: v.yeastChange!.to, nom: v.yeastChange!.toName },
     })) };

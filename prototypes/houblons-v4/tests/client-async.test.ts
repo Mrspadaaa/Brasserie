@@ -39,7 +39,11 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // D120 (voie t2-typicite-defaut, 27.10) : proposer 3c7fcd571305 → 3a04edf5a1af. La typicité du style (Beer Analytics) est le défaut : chaque voie porte son champ `typicite`, la clé de départage est k3k1t
 // (typicité entre la famille citée et le radar), et les 4 achats de S1 (plus floral, moins résineux) passent de Loral, Pekko, Barbe Rouge, Pacifica à East Kent Goldings, First Gold, Pekko, Barbe Rouge
 // (acquis D105 : Goldings devant Citra cryo). Table posée (typicite-posee.ts), comme dans l'app. Sans la table, l'ordre est celui de k3k1 (f9Typicite.test.ts). Les trois autres empreintes ne bougent pas.
-const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '3a04edf5a1af', remplacants: '5c602de7c804' };
+// D125 (voie a4-algo-biais, 27.10) : proposer 3a04edf5a1af → d6e084ff0c95. Trois biais du classement : (1) le dépassement d'une famille neutre du style ne compte plus dans le rang (chaque voie porte `overflowStyle`, et
+// `overflowRang` si le moment le veut) ; (2) la présélection du pool met la typicité du style avant la documentation ; (3) une typicité inconnue mais bornée par Beer Analytics (p16) prend la place 1,5 dans la clé,
+// entre courant et rare, et un houblon dont la borne est sous 1 % est « rare » connu. S1 (plus floral, moins résineux) : les 4 achats passent de East Kent Goldings, First Gold, Pekko, Barbe Rouge à East Kent Goldings,
+// First Gold, Strisselspalt, Liberty (Pekko et Barbe Rouge sont des rares connus en stout ; Strisselspalt et Liberty, bornés, passent devant). Les trois autres empreintes ne bougent pas.
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: 'd6e084ff0c95', remplacants: '5c602de7c804' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

@@ -21,11 +21,11 @@ export interface Typicite {
   palier: 1 | 2 | 3 | null;
   /** Part retenue (style visé, ou voisin × poids), null si inconnue. */
   part: number | null;
-  /** D'où vient la part : le style visé ou un voisin (`code`). */
-  origine: 'style' | 'voisin' | null; code: string | null;
+  /** D'où vient la part : le style visé ou un voisin (`code`) ; `borne` : a4 (D125), le style n'est pas dans les 16 premiers du houblon et la plus petite part publiée (`auPlus`) est sous le seuil du rare : « rare » est connu par la borne. */
+  origine: 'style' | 'voisin' | 'borne' | null; code: string | null;
   /** Concentration : part des recettes du houblon qui sont de la famille du style (IPA…), null si inconnue ou si l'échantillon est mince. */
   concentration: number | null;
-  /** Inconnue mais bornée : le style n'est pas dans les 16 premiers du houblon, donc au plus cette part. */
+  /** Inconnue mais bornée : le style n'est pas dans les 16 premiers du houblon, donc au plus cette part. Renseignée aussi pour un « rare » connu par cette borne (`origine: 'borne'`). */
   auPlus: number | null;
   /** Pourquoi elle est inconnue ; null si connue. */
   raison: string | null;
@@ -36,6 +36,13 @@ export interface MoteurTypicite {
   /** La table posée (null : aucune). */
   table(): TableTypicite | null;
 }
+/** a4 (D125), biais 3 : la place, dans une clé de rang, d'une typicité INCONNUE MAIS BORNÉE (le style est hors des 16 premiers du houblon : sa part est au plus `p16`, qui n'est pas sous le seuil du rare), entre « courant » (2)
+ * et « rare » (1). Un inconnu n'est pas une rareté : celui dont une borne dit « pas plus de p16 » ne passe jamais derrière un rare connu ; il ne passe pas non plus devant un courant ou un typé, dont la part est établie.
+ * Un houblon SANS AUCUNE donnée (absent de Beer Analytics, ou table non chargée) garde la clé `null` : il passe après tout le connu, rare compris (aucune preuve, pas même une borne). Une valeur de clé, jamais une part
+ * ni un palier affiché (le palier reste `null`, dit). */
+export const PALIER_INCONNU_DANS_LA_CLE = 1.5;
+/** La valeur d'une typicité dans une clé de rang : son palier ; 1,5 si elle est inconnue mais bornée ; `null` si elle est inconnue sans aucune borne. */
+export const palierDansLaCle = (t: Typicite): number | null => t.palier ?? (t.auPlus !== null ? PALIER_INCONNU_DANS_LA_CLE : null);
 let impl: MoteurTypicite | null = null;
 /** Enregistre le code de la typicité (typicite.ts le fait à chaque `poserTypicite`, jamais à son évaluation : ainsi un module qui l'importe sans l'appeler ne l'embarque pas, D120). */
 export const enregistrerTypicite = (m: MoteurTypicite | null): void => { impl = m; };

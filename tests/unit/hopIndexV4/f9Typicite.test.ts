@@ -7,8 +7,7 @@ import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 import { cleDeVoie, cleHoublon, ETAPES } from '../../../src/domain/hopIndex/v4/departage';
 import { creerMoteur } from '../../../src/domain/hopIndex/v4/moteur';
 import type { Recipe } from '../../../src/domain/hopIndex/v4/recipe';
-import { INTENSITE_DEFAUT, TYPICITE_DEFAUT } from '../../../src/domain/hopIndex/v4/voies';
-import { PENTE_INTENSITE, RADAR_NEUTRE, facteurIntensite, poserTypicite, typiciteDe, typiciteDeVoie, type TableTypicite } from '../../../src/domain/hopIndex/v4/typicite';
+import { INTENSITE_DEFAUT, TYPICITE_DEFAUT } from '../../../src/domain/hopIndex/v4/voies';import { PENTE_INTENSITE, RADAR_NEUTRE, facteurIntensite, poserTypicite, typiciteDe, typiciteDeVoie, type TableTypicite } from '../../../src/domain/hopIndex/v4/typicite';
 // @ts-expect-error module .mjs sans types : le générateur de la table
 import { calculer } from '../../../scripts/collecte-hop/typicite-styles.mjs';
 
@@ -71,8 +70,9 @@ describe('la clé k3k1t (typicité entre la famille citée et le radar)', () => 
     expect(ETAPES.k3k1t[1]).toMatch(/typicité/);
     const a = cleHoublon('k3k1t', CLE('mosaic'), 'citrus', '22A'), b = cleHoublon('k3k1t', CLE('saaz-cz'), 'citrus', '22A');
     expect(a.cle[1]).toBe(3);
-    expect(b.cle[1]).toBeNull();
+    expect(b.cle[1]).toBeNull(); // sans aucune donnée (absent de la source) : après tout le connu, rare compris ; l'inconnu BORNÉ a sa place entre courant et rare (a4Biais.test.ts, D125)
     expect(a.origine[1]).toMatch(/recettes/);
+    expect(b.origine[1]).toMatch(/inconnue/);
     expect(cleDeVoie('k3k1t', [{ varietyId: CLE('mosaic'), poids: 1 }], ['citrus'], '22A').cle).toHaveLength(ETAPES.k3k1t.length);
   });
 });
@@ -98,7 +98,8 @@ describe('les options de proposeVoies (22A, sa recette)', () => {
     } finally { poserTypicite(table); }
   });
   it('la typicité n\'exclut rien : les mêmes houblons, dans un autre ordre, et chaque voie porte sa typicité (ou null, dite)', () => {
-    const sans = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: false }), avec = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: true });
+    // D125 (a4, biais 2) : avec la borne de coût (80), la typicité entre dans l'ordre de la présélection ; « les mêmes houblons » se vérifie sur le pool entier (400), où rien n'est présélectionné.
+    const sans = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, maxBuy: 400, typicite: false }), avec = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, maxBuy: 400, typicite: true });
     const ids = (r: typeof sans) => r.voies.filter((v) => v.type === 'ajouter').map((v) => v.id).sort();
     expect(ids(avec)).toEqual(ids(sans));
     const ajouts = avec.voies.filter((v) => v.type === 'ajouter');

@@ -1,0 +1,6 @@
+a4-head {"suggerer-defaut-froid":247,"suggerer-defaut-chaud":75.8,"suggerer-defaut-16D-floral-chaud":83.2,"suggerer-g2b-chaud":406.4,"substituer-60-chaud":25.3,"houblons":317}
+a4-mine {"suggerer-defaut-froid":254.1,"suggerer-defaut-chaud":77.4,"suggerer-defaut-16D-floral-chaud":85,"suggerer-g2b-chaud":414.5,"substituer-60-chaud":22,"houblons":317}
+a4-head {"suggerer-defaut-froid":249.8,"suggerer-defaut-chaud":78.4,"suggerer-defaut-16D-floral-chaud":86.7,"suggerer-g2b-chaud":451.5,"substituer-60-chaud":23.8,"houblons":317}
+a4-mine {"suggerer-defaut-froid":244.5,"suggerer-defaut-chaud":77.2,"suggerer-defaut-16D-floral-chaud":83.8,"suggerer-g2b-chaud":401.1,"substituer-60-chaud":26.1,"houblons":317}
+a4-head {"suggerer-defaut-froid":245.2,"suggerer-defaut-chaud":77,"suggerer-defaut-16D-floral-chaud":81.3,"suggerer-g2b-chaud":399.9,"substituer-60-chaud":22.2,"houblons":317}
+a4-mine {"suggerer-defaut-froid":242.8,"suggerer-defaut-chaud":76.4,"suggerer-defaut-16D-floral-chaud":84.8,"suggerer-g2b-chaud":396.9,"substituer-60-chaud":24.4,"houblons":317}

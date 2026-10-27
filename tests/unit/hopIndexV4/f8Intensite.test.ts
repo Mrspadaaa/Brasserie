@@ -7,11 +7,13 @@ import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 import { DEPARTAGE_DEFAUT, ETAPES, cleDeVoie, cleHoublon, comparerCles } from '../../../src/domain/hopIndex/v4/departage';
 import { creerMoteur } from '../../../src/domain/hopIndex/v4/moteur';
 import type { Recipe } from '../../../src/domain/hopIndex/v4/recipe';
-import { compareRankKeys, proposeVoies } from '../../../src/domain/hopIndex/v4/voies';
-import { s1Recipe } from '../../../prototypes/houblons-v4/src/pack/buildPack';
+import { compareRankKeys, proposeVoies } from '../../../src/domain/hopIndex/v4/voies';import { s1Recipe } from '../../../prototypes/houblons-v4/src/pack/buildPack';
 
 const CLE = (id: string) => `beermaverick-${id}`;
-const m = creerMoteur({ catalogue: CATALOGUE, stock: [] });
+const moteur0 = creerMoteur({ catalogue: CATALOGUE, stock: [] });
+// D125 (a4) : f8 a mesuré D191 quand le dépassement d'une famille neutre (la poire d'El Dorado en 22A) comptait dans le rang ; ses « avant » et « après » se rejouent avec `debordementNeutre: true`.
+// La règle neutre a ses propres tests (a4Biais.test.ts).
+const m = { ...moteur0, proposeVoies: (r: Recipe, d: Record<string, number>, o: object = {}) => moteur0.proposeVoies(r, d, { debordementNeutre: true, ...o }) };
 const R22A: Recipe = { name: '22A Double IPA', styleCode: '22A', volumeL: 24, og: 1.081, boilMin: 60, yeastId: 'lalbrew-verdant-ipa', ebc: 10, additions: [
   { id: 'a1', hopKey: CLE('columbus'), moment: 'b60', grams: 40 }, { id: 'a2', hopKey: CLE('columbus'), moment: 'b10', grams: 40 }, { id: 'a3', hopKey: CLE('lotus'), moment: 'dryActive', grams: 100 }] };
 /** Les groupes du vrai dry hop (g2b) de « plus <famille> », pool entier, rang d'un houblon dans le groupe actif (0 : absent). */
@@ -78,7 +80,7 @@ describe('D191 (22A, groupes du vrai dry hop, actif)', () => {
   }, 120_000);
   it('la clé est dans chaque voie, avec ses origines, et le rang est un ordre total', () => {
     const v = agrumes.vs[0];
-    // D120 (t2) : le défaut est k3k1t (la typicité du style entre la famille citée et le radar) ; la table n'est pas posée dans ce fichier, la typicité y est inconnue (null), le radar vient en 3e.
+    // D120 (t2) : le défaut est k3k1t (la typicité du style entre la famille citée et le radar) ; la table n'est pas posée dans ce fichier, la typicité y est inconnue, le radar vient en 3e.
     expect(v.departage?.mode).toBe('k3k1t');
     expect(v.departage!.cle).toHaveLength(ETAPES.k3k1t.length);
     expect(v.departage!.cle[1]).toBeNull();
