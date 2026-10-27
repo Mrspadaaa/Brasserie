@@ -391,7 +391,7 @@ documentaires d'après.
 3. **D188, Suggérer** :
    - l'IA, accordée en D100 (budget 0,5 CHF), est à faire : essai, puis production ;
    - un bouton pour ajouter directement le houblon à la recette, à montrer en mini maquettes sur q2b.
-4. **D189, « le radargraph au style ne change pas de taille »** : je lui ai demandé ce qu'il veut dire.
+4. **D189** précisé (« Quand je change le timing ») : voie **r3** en vol avec D187 (échelle au style fixe par style à tous les moments ; Absolu normalisé aux extrêmes avec la bande du style).
 5. **Les choix qui attendent sa page** : les listes k1 et k3 (D91, peut-être réglé par D118), m7, P4 et P5 de « Ajouter », B2 et le
    sélecteur de forme.
 6. **Les accords D100** : test à l'aveugle, IA de Suggérer, écriture Firestore, test dans son Chrome.
