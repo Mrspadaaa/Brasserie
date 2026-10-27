@@ -457,3 +457,7 @@ documentaires d'après.
   Quota hebdomadaire 97 %.
 - 27.10, vers 19 h : **D193 corrigé** : bannir une famille que la bière n'a pas ne faisait rien. Déployé (721b8909, index-BbqDDFp3.js) ; PR #194.
 - 27.10, vers 20 h : **D194** (bannir = objectif, exclusion et retrait) déployé (ae7c7a8d, index-DK9swfoN.js) ; PR #195. Reste ouvert : la carte « Plus … — Aucune voie houblon » quand la bière déborde déjà du style (cas B : Columbus 100 g ; `styleOverflow` compte le débordement d'avant la voie). C'est la même classe que la saturation.
+- 27.10, vers 20 h 30 : à « Corrige jusqu'à finir même si 100% », **voie s3** lancée (la saturation). Hypothèses du pilote, à vérifier :
+  1. la famille demandée qui dépasse la bande compte comme débordement, et c'est ce qui fait passer les nobles devant ;
+  2. un excès minuscule suffit à marquer une voie « hors du style ».
+  Reproductions : `scratchpad/saturation.mjs` et `bannir2.mjs B`. Ensuite : rejeu, déploiement, PR.
