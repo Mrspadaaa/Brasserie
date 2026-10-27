@@ -74,7 +74,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ».
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en recadrage plein format : un vert ne dit pas que c'est bien.
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien.
 - Rôles : relecteur, auteur, exécutant
 - Contrôle : aucun
 
@@ -95,9 +95,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21 et 22.10, des fichiers de travail à la racine. 25.10, T4 : un déménagement sans les importeurs hors dossier.
+- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Déménagement ou format changé : `grep` des lecteurs, leurs tests rejoués (D79). Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10 : 1 fichier, 404).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Déménagement, format, chargement changé : `grep` des lecteurs, même au niveau du module, tests rejoués (D79, c8). Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10 : 1 fichier, 404).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
