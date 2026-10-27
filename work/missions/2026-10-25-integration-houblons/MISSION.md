@@ -447,3 +447,11 @@ documentaires d'après.
   - le bouton d'ajout direct à la recette (D188, mini maquettes) ;
   - les 4 rangées de Suggérer.
 - 27.10, vers 17 h : **ia5 commitée** (d661f266 ; D132) : 3.8 Flash à la demande. En vol : le rejeu de d661f266 (Haiku, `%TEMP%/rejeu-d661/`) et la critique de la puce (Fable). Ensuite : déployer `functions:hopReclasserIA`, puis l'hébergement ; puis la PR. **Défaut vu par le pilote** sur les captures d'ia5 (`voies/ia5-ia-a-la-demande/img/reel-1-…`) : une neipa v3 qui a déjà 144 g de Lotus au dry hop, demande « plus d'agrumes ». Le moteur propose des nobles (East Kent Goldings, Golding, Spalter Select, Mount Hood) et la carte dit « Aucune voie houblon » au-dessus de ces rangées. Cause probable : la saturation, et des débordements non neutres. a4 en mesurait 4 sur 62 à HEAD. À diagnostiquer (voie suivante).
+- 27.10, vers 18 h : **IA de Suggérer en ligne, à la demande** (D133) : fonction et hébergement déployés, **PR #193 fusionnée** (f3873a15). Gemini, tout compris : D100 0,137 CHF ; D130 3,75 CHF sur 10. Ouvert :
+  - la saturation (neipa à 144 g de dry hop : des nobles pour « plus d'agrumes », et la carte « Aucune voie houblon » au-dessus des rangées) ;
+  - les retouches de la critique d'ia5 : un pouls sur l'étoile pendant l'attente ; la tournure « Ses mots » dans l'invite ;
+  - lever `MOMENTS_MAX` ;
+  - D172, D178, D182, D185, #182, #187, D101 ;
+  - les accords D100 restants (catalogue Firestore, test dans son Chrome) ;
+  - le bouton d'ajout direct (D188).
+  Quota hebdomadaire 97 %.
