@@ -1146,3 +1146,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   en « plus floral ». La limite tient donc à la référence (« cité », pas « intense » ; le moteur est déjà confirmé dans 18 cas sur 30), pas
   à la force du modèle. La réflexion haute ne fait pas mieux : elle met 90 s et coûte 13 fois plus. Dépense de D130 : 3,73 CHF sur 10.
   Pour aller plus loin, il faut un autre arbitre, pas un autre modèle : une référence d'intensité, ou ses propres jugements à l'aveugle.
+- D132 (l'utilisateur, 27.10, mot pour mot) : « Mettre 3.8 Flash et je peux l'activer à la demande ».
+  - Lecture du pilote : le mode Suggérer passe à Gemini 3.8 Flash en réflexion basse, le meilleur au banc (D131).
+  - Plus d'appel à l'ouverture : la puce de m6 lance l'appel au toucher.
+  - C'est son accord pour la production de ce mode, sous les plafonds mensuel et quotidien existants.
+  - Voie ia5 ; puis, par le pilote, le déploiement de `functions:hopReclasserIA` et de l'hébergement.
