@@ -408,3 +408,8 @@ documentaires d'après.
   - c8 (composes-houblon.json hors du chunk, B5) ;
   - m9 (page de sa Double IPA, rendue depuis la copie propre à 645c17f4 ; personne d'autre n'y écrit).
   Ensuite : critique de m9, publication, rejeu complet après t2 et c8, déploiement, PR et fusion. Quota hebdomadaire : 95 % au lancement.
+- 27.10 : **m9 publiée** (B8v5Ak1uXkrPnWyZDqNxG7), après la critique (Fable : corriger d'abord deux lignes de texte, faites). Préférence du concepteur et du critique : C (typicité). Défauts de l'app relevés par m9 et la critique, encore ouverts :
+  - « 48 g » coupé en « 48 / g » à 390 px, et la pastille « dry hop en fermentation active » qui déborde sur le trait tireté (8 vignettes sur 8) ;
+  - avec A3, le n° 1 du moteur est affiché 4e, sous « Ajouter » (l'app groupe avant de garder le rang) ;
+  - Suggérer ne montre que 4 rangées (`buyLimit = 4`).
+  En vol : t2, c8.
