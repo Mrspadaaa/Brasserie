@@ -1151,3 +1151,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - Plus d'appel à l'ouverture : la puce de m6 lance l'appel au toucher.
   - C'est son accord pour la production de ce mode, sous les plafonds mensuel et quotidien existants.
   - Voie ia5 ; puis, par le pilote, le déploiement de `functions:hopReclasserIA` et de l'hébergement.
+- D133 (pilote, 27.10) : l'IA de Suggérer est **en ligne, à la demande**, sur Gemini 3.8 Flash en réflexion basse (D132). Ordre suivi :
+  1. le rejeu de d661f266 (11 contrôles Chrome, CARTE-LISTE OK, 8 451 tests, B5 à 147,5 ko) et la critique (MONTRER) ;
+  2. la fonction `hopReclasserIA` en premier (« Successful update operation ») ;
+  3. puis l'hébergement : 252 fichiers ; la page servie est `index-5hGOimnf.js`, après le cache du CDN.
+  La construction des fonctions régénère `source4-portable-bundle-manifest-01.json` dans la copie propre : il est remis au commit avant le
+  build de l'app.
