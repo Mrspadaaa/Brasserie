@@ -66,3 +66,4 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
      Greffes) ;
   4. puis les passes 2 par `SendMessage` aux mêmes agents.
   La question de fond du lint : `button-danger` est à 4,09:1 (e5).
+- 31.10 : 3 séries rendues sur 8 : r, u, e. Décision du pilote : **DESIGN.md prime**. Ses rayons sont de 10 et 16 px, alors que le contrôle `controle-commun` S3 attend 2, 4 et 8 px, une règle venue du lot houblons. Le trait de 2 px du + commun vient de l'app. Pour les écrans hors houblons, il faut un profil « sans houblons » de `controle-commun`, qui lise DESIGN.md (à faire avant les passes 2). Les contrôles au-style, fiche, trait et légende ne s'appliquent pas ici.
