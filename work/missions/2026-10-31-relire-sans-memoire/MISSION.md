@@ -55,3 +55,4 @@ Reste ouvert :
 1. Mécaniser « plafond de voie ≤ maxTurns de l'agent » dans `systeme.mjs mission`. Ici, e1 était à 40 tours pour un relecteur qui en a 30.
 2. Sept noms de code cités par des notes du cerveau sont absents du dépôt (`waterManualSparge`, `capAlkaline`, `ionAlarms`, `cacheBase`…, voir `voies/o1/RESULTAT.md`) : ces notes sont à corriger.
 3. Le reste des écarts des finances (`invoice-v3` → `invoice-v4`, etc.) se corrige dans la mission dépense.
+4. `appels systeme.mjs --rejouer` (M15) : 6 critères d'anciennes voies échouent. o1 en a prouvé deux sur HEAD, avant son code : `mission` sur l'éventail de 56 variantes, et la source `profil-simule.ts`. Les autres : un RESULTAT.md absent (`t3-critique`) et le témoin `sans-famille-seuil-ko` ; deux n'ont pas été rejoués sur HEAD. `cablage` passe depuis `systeme.mjs defauts`. À trier : adapter ou déclarer caduc (L13).
