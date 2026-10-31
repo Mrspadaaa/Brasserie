@@ -107,3 +107,12 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   - un fermenteur de 60 L donne une règle de 0 à 70.
   Un trou a été vu : la cuve qui déborde (~67 L dans 45 L) ne le dit pas. Il est ajouté au portage.
   **Le portage p1 est en vol** (auteur ac33fb2cfc4d362b6, `voies/p1-port/`, registre `ecrans-app.json`, D206). Ensuite : l'exécutant fait les captures Chrome, puis le critique juge.
+- 31.10, soir : **accord de l'utilisateur**. Une fois r4-a portée, on la joue sur l'app déployée, et on peut écrire des recettes, sans données inutiles (SPEC, [[autonomie-decisions]]).
+  Suite :
+  1. p1 rend ;
+  2. l'exécutant fait les captures Chrome en local, puis le critique juge ;
+  3. rejeu complet dans `deploy-63130965` ;
+  4. déploiement de hosting ;
+  5. parcours sur l'app en ligne avec **une seule recette de test** (un brouillon), dans son Chrome ou le navigateur intégré : 390 et 1280 px ; saisie au clavier, 240 min, fermenteur 60 L, cuve qui déborde ;
+  6. captures regardées ;
+  7. le brouillon remis dans son état, ou abandonné par le geste de l'app.
