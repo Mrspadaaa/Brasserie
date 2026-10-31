@@ -495,3 +495,4 @@ Quota hebdomadaire : 4 % (remis à zéro le 31.10). La production est à **ae7c7
    fusion.
 
 Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
+- 31.10 : le brasseur choisit **B** (D201). **b1** est en vol : les étiquettes et « 1 source », sans changer un chiffre. B2, le panel des valeurs, viendra après c9 ; B3, l'usage continu, après h1 et k2. Le conseil n'est plus nécessaire sur le choix de l'option ; il reste peut-être utile pour les poids par type de source, qui seront de toute façon réglés sur une moitié des variétés et jugés sur l'autre.
