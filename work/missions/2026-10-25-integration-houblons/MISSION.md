@@ -470,3 +470,4 @@ documentaires d'après.
   - **t3**, R4 qui lit l'usage au frais de Beer Analytics (Warrior : Boil 29 885, Aroma 741) ;
   - la **recherche** sur les méthodes (`work/missions/2026-10-31-methodes/`).
   Ensuite : k2 (Suggérer à 60′, M1 + M2), puis la critique, le rejeu, le déploiement et la PR.
+- 31.10 : « trop herbal » (D197) : **h1** est écrite. Elle partira après t3, qui tient voies.ts ; l'ordre est t3 → h1 → k2. Le rôle d'un houblon est un continuum (note role-continu) : t3 et k2 lisent l'usage mesuré, jamais une étiquette. Le rapport sur les méthodes est fait (f84eb498).
