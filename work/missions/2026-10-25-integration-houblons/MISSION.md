@@ -501,3 +501,4 @@ Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
   - le libellé « usage arôme (Beer Maverick) » de `substitution.ts:350` est à corriger (b1 ou B3) ;
   - 66 houblons de Beer Analytics manquent (`voies/c9-ajouts-amertume/ba-manquants.md`), une voie dédiée en B2.
   Identité : la série r est rendue (6 concepts, PANEL OK). `controle-commun` échoue sur les rayons 10/16 de DESIGN.md et sur le trait de 2 px du + commun : il faut un profil « sans houblons » pour les écrans hors houblons.
+- 31.10 : **t3 commitée** (137d3d17 ; R4 lit la part au frais, Warrior à 7 % contre une médiane de 30 %) et **b1 commitée** (étiquettes honnêtes). Restent à mettre à jour, avec leur raison, les 5 empreintes `client-async` (×4) et `worker-calculs` (×1), à faire par h1. La marque « peu de données » est gardée jusqu'à B2. Prochaine voie : **h1** (VOIE prête), puis k2.
