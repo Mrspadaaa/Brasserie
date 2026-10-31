@@ -73,3 +73,9 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   - `controle-contraste` ne voit pas une bande de fond posée à côté du texte ;
   - le profil « sans houblons » de `controle-commun` (rayons de DESIGN.md : 10, 16 et 24 px).
   Défaut de données relevé par g et par l'inventaire : une recette neuve s'ouvre à 30 L dans un fermenteur de 30 L, donc « plein ».
+- 31.10, avant la compaction (**état courant**) : 7 séries v0 rendues sur 8 (r, u, e, z, w, g, v ; les dossiers sont dans v0/ et les RESULTAT dans v0/<série>-serie/ ou v0/<série>1/). **i est encore en vol** (agent a270f131ab87e2197). Prochaine action :
+  1. quand i rend, ouvrir quelques captures (L12) ;
+  2. publier le panel v0 sur un artefact neuf daté, inscrit dans « ## Pages » ;
+  3. corriger les outils (D202 : `controle-panel` par nom de fichier, `<details>` fermé, contraste, profil sans houblons) ;
+  4. lancer un critique Fable unique pour le tri (`critique/SYNTHESE.md`) ;
+  5. lancer les passes 2 chez les mêmes agents (`## Agents`).

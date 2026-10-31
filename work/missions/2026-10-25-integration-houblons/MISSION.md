@@ -502,3 +502,9 @@ Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
   - 66 houblons de Beer Analytics manquent (`voies/c9-ajouts-amertume/ba-manquants.md`), une voie dédiée en B2.
   Identité : la série r est rendue (6 concepts, PANEL OK). `controle-commun` échoue sur les rayons 10/16 de DESIGN.md et sur le trait de 2 px du + commun : il faut un profil « sans houblons » pour les écrans hors houblons.
 - 31.10 : **t3 commitée** (137d3d17 ; R4 lit la part au frais, Warrior à 7 % contre une médiane de 30 %) et **b1 commitée** (étiquettes honnêtes). Restent à mettre à jour, avec leur raison, les 5 empreintes `client-async` (×4) et `worker-calculs` (×1), à faire par h1. La marque « peu de données » est gardée jusqu'à B2. Prochaine voie : **h1** (VOIE prête), puis k2.
+- 31.10, avant la compaction (**état courant**) : commités : t3 (137d3d17), b1 (59415a5a), c9 (c41d8c8d), k1, s3. **h1 est en vol** (agent acda61415135e9f5b : herbacé, et les 5 empreintes à mettre à jour). Ensuite :
+  1. k2 (VOIE prête) ;
+  2. B2, le panel des valeurs, et les 66 houblons de Beer Analytics ;
+  3. le moteur qui lit `nature`, et le libellé de `substitution.ts:350` ;
+  4. le rejeu, le déploiement, la PR.
+  La production reste à ae7c7a8d.
