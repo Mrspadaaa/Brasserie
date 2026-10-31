@@ -37,7 +37,7 @@ input{font:inherit;color:inherit}
 .z2b-ret{min-height:24px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px}
 .z2b-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
 .z2b-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
-.z2b-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.z2b-annexe{margin:20px 10px 30px;padding-top:10px;border-top:1px dashed var(--bordm)}
 .z2b-annexe h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
 .z2b-annexe>summary{cursor:pointer;margin-bottom:8px;list-style:none;display:flex;align-items:center;gap:6px}
 .z2b-annexe>summary::before{content:"";width:0;height:0;border-left:5px solid var(--t2);border-top:4px solid transparent;border-bottom:4px solid transparent}
@@ -45,7 +45,7 @@ input{font:inherit;color:inherit}
 .z2b-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);align-self:center;background:#fff}
 .z2b-sw.z2b-inc{border-style:dashed;border-color:var(--trait)}
 /* corps */
-.z2b-c{padding:10px 10px 0;min-height:764px;display:flex;flex-direction:column;gap:8px}
+.z2b-c{padding:10px 10px 0;display:flex;flex-direction:column;gap:8px}
 /* ── Le verre complet (z2 + r3 + u3). La figure : graduation en kg, le verre, l'échelle des teintes, les lignes reliées à leur couche.
    Le vide au-dessus du moût porte l'ajout : « on remplit la cuve ». ── */
 .z2b-fig{position:relative;display:grid;grid-template-columns:20px 96px 28px minmax(0,1fr);column-gap:5px;padding:8px 8px 8px 4px;background:var(--panel);border-radius:16px}
@@ -343,7 +343,7 @@ function verreSeul(){ var tG=tg(); q('[data-role="grain"]').textContent=tG%1?fr(
 var nom=q('[data-role="nom"]'), creer=q('[data-role="creer"]'), FAMS=['grain','sucre','lactose','fruit','extrait'];
 q('[data-role="fam"]').addEventListener('click',function(){fam=FAMS[(FAMS.indexOf(fam)+1)%FAMS.length];q('[data-role="famt"]').textContent=fam.charAt(0).toUpperCase()+fam.slice(1);q('[data-role="fam"]').setAttribute('aria-label','Famille : '+fam+'. Toucher pour changer');aide();});
 function aide(){var t=nom.value.trim();creer.classList.toggle('z2b-on',t.length>=2);if(t.length>=2){var d=L.find(function(l){return l.nom.toLowerCase()===t.toLowerCase()});
-  creer.innerHTML=d?'déjà là : <b>'+d.nom+'</b>, la masse change<kbd>↵</kbd>':'Créer <b>« '+t+' »</b> · '+fam+' : '+(fam==='fruit'?'en fermentation':fam==='grain'?'à l’empâtage':'à l’ébullition')+'<kbd>↵</kbd>';} leaders();}
+  creer.innerHTML='<span style="flex:1;min-width:0">'+(d?'déjà là : <b>'+d.nom+'</b>, la masse change':'Créer <b>« '+t+' »</b> · '+fam+' : '+(fam==='fruit'?'en fermentation':fam==='grain'?'à l’empâtage':'à l’ébullition'))+'</span><kbd>↵</kbd>';} leaders();}
 nom.addEventListener('input',aide);
 // Nom, Entrée, puis la masse : la ligne naît à 0 kg (J5), le plateau s'ouvre dessus, le curseur est sur la masse.
 nom.addEventListener('keydown',function(e){ if(e.key!=='Enter')return; e.preventDefault(); var t=nom.value.trim(); if(t.length<2)return;

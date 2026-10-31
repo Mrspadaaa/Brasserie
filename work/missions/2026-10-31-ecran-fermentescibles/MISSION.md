@@ -28,6 +28,7 @@ de comparatif ect .. ». Entonnoir allégé (D204 : « il faudra pas autant de m
 | p2 | passe 2 des 3 candidates | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-fermentescibles/v1/** | t | controle-commun --profil=sans-houblons, controle-choix, controle-continuite | brasseur | passe 2 |
 | t2 | verdicts des passes 2 (r4b, z2b, u2b), agent neuf (D207) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/VERDICTS-v1.md | p2 | captures ouvertes | pilote | — |
 | p3 | relance des 3 passes (r4c, z2c, u2c), agents neufs sur RELANCE-v1.md (D207) ; z2c en Fable | conception | concepteur | opus | 40 | work/missions/2026-10-31-ecran-fermentescibles/v2/** | t2 | controle-commun --profil=sans-houblons, controle-choix, controle-continuite, controle-panel, controle-hauteur | brasseur | passe 3 |
+| t3 | verdicts des passes 3 (r4c, z2c, u2c), agent neuf (D207) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/VERDICTS-v2.md | p3 | captures ouvertes | pilote | — |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RECURRENTS.md avec son contrôle, et son choix va dans
@@ -37,6 +38,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Malts/sucres · panel v0 (12 concepts) | 31.10 v1 | https://claude.ai/artifact/Hn6WHBqAAEzV7UuJj9qCoh | `panel-v0.html` |
+| Malts/sucres · passe 3 (r4c, z2c, u2c) et ses axes | 31.10 v1 | https://claude.ai/artifact/2bBQ7dcRjwnyGfbUgf7vUG | `choix-v2/index.html` |
 
 ## Sources
 - `src/pages/BrewWizard.tsx` (étape `fermentescibles`, l. 437 ; `fermentables`, l. 660)
@@ -65,3 +67,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   - Écart accepté par le pilote : le remplissage vaut 0,47 pour 0,5 attendu, car sa recette n'a que 3 malts ; à 8 grains, la page fait 0,96 écran. Gonfler la page serait du remplissage, pas de l'information.
   - Couleurs : COMMUN échoue comme en v0, et c'est voulu (J7 : aucune couleur connue).
 - 31.10, soir : u2b est rendue (« pils 5 » gardé, COMMUN OK, remplissage 0,46 : même écart accepté que r4b, 3 malts). z2b est encore en vol. Le jugement des passes et la suite se feront dans une session neuve (D207), avec un critique neuf.
+- 31.10, nuit : **t3 rendu** (`critique/VERDICTS-v2.md`) : r4c, z2c et u2c PRÊTES À MONTRER ; proposition de classement z2c, r4c, u2c (indicative, L27).
+  Deux micro-correctifs du pilote, captures refaites et ouvertes : r4c dit « 90 % ferm. » pour le fruit (fermentabilité par famille, `KIND_DEF`) et
+  « Lactose : non fermentescible… » ; z2c dit « OG — · style 1,060–1,085 » (décision OG, PPG retirés). L'OG en piste ou en puce reste un axe montré.
+  **Page de choix publiée** (2bBQ7dcRjwnyGfbUgf7vUG, PAGE OK, captures ouvertes). Ensuite : son choix dans `choix/ecrans-app.json` (D206), puis le port.
