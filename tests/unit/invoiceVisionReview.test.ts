@@ -177,7 +177,7 @@ describe('Deux visions indépendantes et correction par majorité', () => {
   });
 
   it('accepte deux transcriptions intégralement identiques de lignes aux libellés dupliqués', () => {
-    const a = read({ amountHT: 20, amountTTC: 20, items: [item(), item({ quantity: 5 })] });
+    const a = read({ amountHT: 20, amountTTC: 20, items: [item(), item({ quantity: 2 })] });
     expect(reconcileInvoiceVision([a, structuredClone(a)]).review.status).toBe('checked');
   });
 

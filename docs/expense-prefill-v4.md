@@ -19,6 +19,6 @@ La confirmation reste explicite. Un avoir ne peut pas être enregistré comme no
 - Interface vérifiée dans un navigateur isolé à 360 × 800, 390 × 844 et 1 024 × 900 pixels : somme proposée lisible, libellé concis, maintien du jour et suivi du paiement au changement de mois, aucun débordement horizontal ni erreur console. Le résultat réel a été rejoué localement sans nouvel appel fournisseur.
 - Photo et résultats détaillés conservés uniquement dans le dossier local ignoré des pièces jointes ; ils ne font pas partie des fixtures ni du build public. Le test utilise le pipeline compilé avec Gemini et les registres de budget Firestore réels ; il ne valide pas le consentement Google du navigateur, actuellement bloqué par `origin_mismatch`.
 
-Le schéma de scan et la clé du cache passent à `invoice-v4`. Les métadonnées source ajoutées aux dépenses sont facultatives : les anciennes écritures restent lisibles sans migration.
+Le schéma de scan et la clé du cache passent à `invoice-v4` (puis `invoice-v5` le 31.10 : points de contrôle typés, TVA par taux, unités telles qu'imprimées ; une lecture `invoice-v4` en cache n'est plus servie). Les métadonnées source ajoutées aux dépenses sont facultatives : les anciennes écritures restent lisibles sans migration.
 
 La fonction `aiTask` a été publiée à Zurich, puis le frontend sur Firebase Hosting. Le chargement HTTP du bundle publié `/assets/index-8zPXy4bd.js` a été confirmé. La configuration OAuth Google demeure en attente d'une session interactive dans la console, comme décrit dans `drive-connexion.md`.

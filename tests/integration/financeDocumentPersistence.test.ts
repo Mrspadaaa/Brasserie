@@ -1,10 +1,10 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
-const state = vi.hoisted(() => ({ docs: new Map<string, any>(), drive: new Map<string, string>(), driveUpload: vi.fn(), driveLoad: vi.fn(), commits: vi.fn(), batches: [] as Array<Array<[string, any]>> }));
+const state = vi.hoisted(() => ({ docs: new Map<string, any>(), drive: new Map<string, string>(), driveUpload: vi.fn(), driveLoad: vi.fn(), driveDetails: vi.fn(), commits: vi.fn(), batches: [] as Array<Array<[string, any]>> }));
 vi.mock('../../src/services/firebase', () => ({ db: {} }));
 vi.mock('../../src/services/firestoreRepo', () => ({ FirestoreRepo: { find: () => undefined } }));
-vi.mock('../../src/services/driveFileStore', () => ({ uploadDriveOriginal: (...args: any[]) => state.driveUpload(...args), loadDriveOriginal: (...args: any[]) => state.driveLoad(...args) }));
+vi.mock('../../src/services/driveFileStore', () => ({ uploadDriveOriginal: (...args: any[]) => state.driveUpload(...args), loadDriveOriginal: (...args: any[]) => state.driveLoad(...args), getDriveProofDetails: (...args: any[]) => state.driveDetails(...args) }));
 vi.mock('firebase/firestore', () => ({
   doc: (_: unknown, collection: string, id: string) => `${collection}/${id}`,
   getDoc: async (path: string) => ({ exists: () => state.docs.has(path), data: () => state.docs.get(path) }),
@@ -21,17 +21,25 @@ vi.mock('firebase/firestore', () => ({
 }));
 import { loadFinanceDocument, prepareFinanceDocument, saveFinanceDocumentConfirmed } from '../../src/services/financeDocuments';
 const original = (id: string, size = 16) => prepareFinanceDocument(id, `data:application/pdf;base64,${'A'.repeat(size)}`, `${id}.pdf`, 'application/pdf');
+const driveNames = new Map<string, string>();
 beforeEach(() => {
-  state.docs.clear(); state.drive.clear(); state.batches = []; state.commits.mockReset().mockResolvedValue(undefined);
+  state.docs.clear(); state.drive.clear(); driveNames.clear(); state.batches = []; state.commits.mockReset().mockResolvedValue(undefined);
   state.driveUpload.mockReset().mockImplementation(async (input) => {
     const bytes = Buffer.from(input.dataUrl.split(',')[1], 'base64');
     const driveFileId = `drive-${input.documentId}`;
     state.drive.set(driveFileId, input.dataUrl);
+    // Drive garde le nom du premier envoi.
+    if (!driveNames.has(driveFileId)) driveNames.set(driveFileId, input.fileName);
     return { driveFileId, sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length, mimeType: input.mimeType, fileName: input.fileName };
   });
   state.driveLoad.mockReset().mockImplementation(async (ref) => {
     if (!state.drive.has(ref.driveFileId)) throw Object.assign(Error('Justificatif Drive indisponible.'), { code: 'drive/not-found' });
     return state.drive.get(ref.driveFileId);
+  });
+  // Métadonnées Drive (taille, empreinte, dossier) : absentes quand le fichier a disparu de Drive.
+  state.driveDetails.mockReset().mockImplementation(async (ref) => {
+    if (!state.drive.has(ref.driveFileId)) throw Object.assign(Error('Justificatif Drive indisponible.'), { code: 'drive/not-found' });
+    return { fileName: driveNames.get(ref.driveFileId), checksumVerified: true };
   });
 });
 describe('Persistance des originaux dans Drive avec références Firestore légères', () => {
@@ -59,7 +67,10 @@ describe('Persistance des originaux dans Drive avec références Firestore lég�
   it('refuse une collision ou un original Drive indisponible sans le remplacer', async () => {
     const file = original('original-protege');
     await saveFinanceDocumentConfirmed(file);
-    await expect(saveFinanceDocumentConfirmed({ ...file, fileName: 'autre.pdf' })).rejects.toThrow('autre original');
+    // DR5 : le nom est cosmétique, le contenu fait l'identité. Même contenu sous un autre nom : accepté, rien n'est remplacé ; autre contenu : refusé.
+    await expect(saveFinanceDocumentConfirmed({ ...file, fileName: 'autre.pdf' })).resolves.toMatchObject({ fileName: 'original-protege.pdf' });
+    await expect(saveFinanceDocumentConfirmed(prepareFinanceDocument('original-protege', `data:application/pdf;base64,${'B'.repeat(16)}`, 'original-protege.pdf', 'application/pdf'))).rejects.toThrow('autre original');
+    expect(state.batches).toHaveLength(1);
     state.drive.clear();
     await expect(saveFinanceDocumentConfirmed(file)).rejects.toThrow('indisponible');
     expect(state.batches).toHaveLength(1);

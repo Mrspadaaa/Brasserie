@@ -1,7 +1,7 @@
 import { StorageService } from './storage';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { FinanceService, validateFinancialPayment } from './financeService';
-import { prepareFinanceDocument, saveFinanceDocumentConfirmed } from './financeDocuments';
+import { prepareFinanceDocument, saveFinanceDocumentConfirmed, loadDriveProofReceipt, type DriveProofReceipt } from './financeDocuments';
 import { Units } from './units';
 import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
 import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
@@ -9,6 +9,7 @@ import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO } from '../domain/finance/ledger';
 import { normalize } from './search';
 import { canonicalStockCategory } from './stockLineMatching';
+import { isMillingSurcharge } from './purchasePrefill';
 
 export interface PurchaseLineDraft {
   id:string; description:string; kind:FinanceLineKind|'maintenance'; amount?:number;
@@ -16,11 +17,19 @@ export interface PurchaseLineDraft {
   stockAction:'none'|'new'|'existing'; stockRef?:string; stockCategory?:string;
   equipmentAction:'none'|'new'|'existing'; equipmentRef?:string; equipmentCategory?:string;
   evidence?:string; sourceReference?:string;
+  /** Prix unitaire lu sur le document, en CHF par `unit`. Gardé sur la dépense (`unitPriceCents`) seulement s'il est exact en centimes et cohérent avec le montant. */
+  unitPrice?:number;
+  /** Id de la ligne d'ingrédient dont cette ligne de mouture fait partie du prix : posé par le geste du brasseur (`confirmMillingSurcharge`), jamais par la lecture. */
+  surchargeOf?:string;
 }
 export interface PurchaseDraft {
   submissionId:string; date:string; vendor:string; invoiceNumber:string; description:string;
+  /** `typed` : saisie dans « Pour quoi ? » (jamais remplacée par une lecture) ; `scan` : proposée par le code. Absent : origine inconnue. */
+  descriptionSource?:'typed'|'scan';
   category:FinanceCategory; amount?:number; lines:PurchaseLineDraft[];
   paymentStatus:'unknown'|'unpaid'|'paid'; paymentMethod:FinancialPayment['method']; paymentDate:string; dueDate:string;
+  /** `document_date` : la date de paiement n'est pas imprimée, elle est supposée égale à la date du document ; `typed` : saisie. Absent : inconnue. */
+  paymentDateBasis?:'document_date'|'typed';
   proofDataUrl?:string; proofFileName?:string; proofType?:string; documentHash?:string;
   sourceCurrency?:string; sourceAmount?:number; sourceVatRate?:number; sourceVatAmount?:number; sourceNetAmount?:number;
   scanModel?:string; duplicateConfirmed?:boolean;
@@ -88,6 +97,91 @@ export function purchaseDuplicates(draft:PurchaseDraft,transactions:FinanceTrans
   return transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];})
     .sort((a,b)=>a.match.rank-b.match.rank||a.match.gap-b.match.gap).map(entry=>entry.tx);
 }
+/** Règle écrite sur le paiement quand sa date est supposée : la date de paiement n'est pas imprimée sur le document. */
+export const PAYMENT_DATE_ASSUMED_NOTE='Date de paiement supposée = date du document (non imprimée).';
+
+export interface SimilarOrder { tx:FinanceTransaction; reasons:string[]; days?:number }
+/**
+ * Une même commande facturée deux fois sous deux numéros (pro-forma puis facture finale) : signal, jamais un blocage.
+ * Même fournisseur, même total au centime, un autre n° de facture, et une corroboration : le même n° de commande (60 jours
+ * au plus : la facture finale n'a pas de délai naturel) ou des références d'articles en commun (7 jours : une facture finale
+ * suit la pro-forma de quelques jours, une commande répétée arrive des semaines plus tard). Sans corroboration, rien.
+ * Les cas que `purchaseDuplicates` signale déjà et la saisie courante sont écartés. Sans date, l'âge de la dépense borne le signal.
+ */
+export function purchaseSimilarOrders(draft:PurchaseDraft,transactions:FinanceTransaction[]):SimilarOrder[] {
+  if (draft.sourceDocumentType==='credit_note' || !isMoney(draft.amount) || draft.amount<=0) return [];
+  const key=purchaseVendorKey(draft.vendor), order=invoiceKey(draft.sourceOrderNumber);
+  if (!key) return [];
+  let day='';
+  const today=()=>day||(day=todayISO());
+  const mine=lineReferences(draft.lines);
+  return transactions.flatMap(tx=>{
+    const finance=tx.finance;
+    if (!finance || finance.kind!=='expense' || finance.voidedAt || tx.id===`TX-${draft.submissionId}`) return [];
+    if (cents(tx.amountTTC)!==cents(draft.amount!) || purchaseVendorKey(finance.vendor??'')!==key || !otherInvoice(draft,tx) || duplicateMatch(draft,tx,today)) return [];
+    const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
+    const since=(finance.recordedAt??'').slice(0,10)||to, gap=days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
+    const sameOrder=Boolean(order) && invoiceKey(finance.sourceOrderNumber)===order;
+    const theirs=lineReferences(finance.lines??[]), shared=[...mine].filter(ref=>theirs.has(ref)).length;
+    const sameItems=shared>0 && shared*2>=Math.min(mine.size,theirs.size);
+    if (gap>(sameOrder?60:sameItems?7:-1)) return [];
+    const reasons=[sameOrder?`Même commande n° ${draft.sourceOrderNumber!.trim()}`:`${shared} référence${shared>1?'s':''} d’article en commun`,'Même fournisseur et même total',
+      `Autre n° de facture : ${draft.invoiceNumber.trim()} (déjà ${(finance.invoiceNumber??'').trim()})`,days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`];
+    return [{tx,reasons,days,gap}];
+  }).sort((a,b)=>a.gap-b.gap).map(({tx,reasons,days})=>({tx,reasons,days}));
+}
+
+export { isMillingSurcharge };
+/** Index de la ligne d'ingrédient dont `lines[index]` est la mouture : la ligne juste au-dessus, même quantité positive et même unité. Sinon -1. */
+export function millingParentIndex(lines:PurchaseLineDraft[],index:number):number {
+  const line=lines[index], parent=lines[index-1], unit=(value:string)=>(value??'').trim().toLowerCase();
+  if (!line || !parent || !isMillingSurcharge(line) || parent.kind!=='ingredient' || isMillingSurcharge(parent)) return -1;
+  const quantity=line.quantity;
+  if (typeof quantity!=='number' || !Number.isFinite(quantity) || quantity<=0 || parent.quantity!==quantity) return -1;
+  return unit(line.unit) && unit(line.unit)===unit(parent.unit) ? index-1 : -1;
+}
+/** Propositions seulement : rien n'est lié, le prix du malt ne change pas. Le brasseur confirme par `confirmMillingSurcharge`. */
+export function proposeMillingSurcharges(lines:PurchaseLineDraft[]):Array<{lineId:string;parentId:string}> {
+  return lines.flatMap((line,index)=>{const parent=millingParentIndex(lines,index);return parent>=0&&line.surchargeOf!==lines[parent].id?[{lineId:line.id,parentId:lines[parent].id}]:[];});
+}
+/** Le geste du brasseur : « mouture comprise ». Sans proposition valable pour cette ligne, les lignes sont rendues telles quelles. */
+export function confirmMillingSurcharge(lines:PurchaseLineDraft[],lineId:string):PurchaseLineDraft[] {
+  const index=lines.findIndex(line=>line.id===lineId), parent=millingParentIndex(lines,index);
+  return parent<0 ? lines : lines.map((line,at)=>at===index?{...line,surchargeOf:lines[parent].id}:line);
+}
+
+const FILE_FORBIDDEN=/[\\/:*?"<>|\u0000-\u001f\u007f]/g;
+const cleanFilePart=(value:string|undefined)=>(value??'').replace(FILE_FORBIDDEN,'').replace(/\s+/g,' ').trim();
+const FILE_EXTENSIONS:Record<string,string>={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+/**
+ * Nom du justificatif dans Drive : `AAAA-MM-JJ Fournisseur Numéro.ext`, tel que lu (forme juridique comprise), sans les caractères
+ * interdits, 120 caractères au plus, coupé avant l'extension. L'extension vient du type du contenu. Le numéro ou le fournisseur
+ * absent est omis ; sans date lisible, le nom d'origine nettoyé est gardé (aucune date inventée).
+ */
+export function driveProofFileName(input:{date:string;vendor:string;invoiceNumber:string;mimeType:string;originalName?:string}):string {
+  const extension=FILE_EXTENSIONS[input.mimeType]?`.${FILE_EXTENSIONS[input.mimeType]}`:'';
+  const iso=purchaseIsoDate(input.date)||isoDate(input.date)||'';
+  if (!iso) return (cleanFilePart(input.originalName)||`Justificatif${extension}`).slice(0,120);
+  const vendor=cleanFilePart(input.vendor), invoice=cleanFilePart(input.invoiceNumber);
+  const base=[iso,vendor||invoice?vendor:'Justificatif',invoice].filter(Boolean).join(' ');
+  return `${base.slice(0,120-extension.length).trimEnd()}${extension}`;
+}
+const driveNames=new Map<string,string>();
+/**
+ * Le nom que Drive a rendu pour ce reçu, mémorisé par saisie une fois l'envoi réellement abouti (un reçu existe). Un échec avant tout
+ * envoi (hors ligne, jeton expiré) ne mémorise rien : la tentative suivante nomme avec la saisie corrigée. Le nom d'un fichier déjà
+ * rangé, lui, se lit sur Drive (`getDriveProofDetails`), jamais dans la saisie.
+ */
+const proofDriveName=(draft:PurchaseDraft)=>driveNames.get(draft.submissionId)??driveProofFileName({date:draft.date,vendor:draft.vendor,invoiceNumber:draft.invoiceNumber,mimeType:draft.proofType||'application/pdf',originalName:draft.proofFileName});
+const proofReceipts=new Map<string,DriveProofReceipt>();
+/** Prix unitaire gardé seulement s'il est exact en centimes entiers et cohérent avec le montant de la ligne (0,045 CHF/g ne l'est pas). */
+function exactUnitPriceCents(line:PurchaseLineDraft):number|undefined {
+  const price=line.unitPrice, quantity=line.quantity;
+  // D213 : un prix se lit pour l'unité imprimée de sa ligne, gardée avec lui ; sans unité lisible, il n'est rattaché à rien.
+  if (line.kind==='discount' || !(line.unit??'').trim() || !isMoney(price) || price<=0 || !isMoney(line.amount) || typeof quantity!=='number' || !Number.isFinite(quantity) || quantity<=0) return undefined;
+  return Math.round(quantity*cents(price))===cents(line.amount) ? cents(price) : undefined;
+}
+
 /** Checks every mutation first. No stock/equipment is created during matching. */
 export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof StorageService.getStocks>,transactions:FinanceTransaction[]=[]):string[] {
   const errors:string[]=[];
@@ -127,7 +221,7 @@ const submitted=new Set<string>();
 const replayable=new Set<string>();
 const confirmedProofs=new WeakMap<PurchaseDraft,{dataUrl:string;fileName?:string;mimeType?:string}>();
 function purchasePayment(draft:PurchaseDraft, at=new Date().toISOString()):FinancialPayment|undefined {
-  return draft.paymentStatus==='paid'?{id:`PAY-${draft.submissionId}`,transactionId:`TX-${draft.submissionId}`,date:purchaseIsoDate(draft.paymentDate),amountCents:cents(draft.amount!),direction:'out',method:draft.paymentMethod,recordedAt:at}:undefined;
+  return draft.paymentStatus==='paid'?{id:`PAY-${draft.submissionId}`,transactionId:`TX-${draft.submissionId}`,date:purchaseIsoDate(draft.paymentDate),amountCents:cents(draft.amount!),direction:'out',method:draft.paymentMethod,recordedAt:at,...(draft.paymentDateBasis==='document_date'?{note:PAYMENT_DATE_ASSUMED_NOTE}:{})}:undefined;
 }
 /** The same preflight runs before Drive and immediately before local mutations. */
 function validatePurchaseCommit(draft:PurchaseDraft) {
@@ -147,21 +241,43 @@ function validatePurchaseCommit(draft:PurchaseDraft) {
   return stocks;
 }
 /** The original is confirmed on Drive before the atomic purchase/stock/payment batch. */
-export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
+export interface PurchaseSaveResult { transactionId:string; proof?:DriveProofReceipt }
+/** Comme `savePurchaseWithProof`, et rend aussi la preuve Drive du justificatif (dossier, nom, octets, empreinte vérifiée, `webViewLink`). */
+export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<PurchaseSaveResult> {
   const txId=`TX-${draft.submissionId}`;
-  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return txId;
+  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId)};
   validatePurchaseCommit(draft);
   if(draft.proofDataUrl) {
-    const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf');
-    await confirmProof(proof,+purchaseIsoDate(draft.date).slice(0,4));
+    // Le nom lisible part à Drive ; le nom d'origine reste dans le brouillon et sur la dépense.
+    const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,proofDriveName(draft),draft.proofType||'application/pdf');
+    const receipt=await confirmProof(proof,+purchaseIsoDate(draft.date).slice(0,4));
+    if(receipt){
+      proofReceipts.set(draft.submissionId,{...receipt,originalFileName:draft.proofFileName});
+      if(receipt.fileName)driveNames.set(draft.submissionId,receipt.fileName);
+    }
     confirmedProofs.set(draft,{dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
   }
-  return savePurchase(draft);
+  return {transactionId:savePurchase(draft),proof:proofReceipts.get(draft.submissionId)};
 }
+export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
+  return (await savePurchaseWithProofReceipt(draft)).transactionId;
+}
+/** La preuve d'un justificatif déjà rangé : la mémoire de la session, sinon relue dans l'original et sur Drive. Sans jeton ou hors ligne : `undefined`. */
+export async function purchaseProofReceipt(submissionId:string):Promise<DriveProofReceipt|undefined> {
+  const known=proofReceipts.get(submissionId);
+  if(known)return known;
+  const receipt=await loadDriveProofReceipt(`proof-${submissionId}`);
+  if(!receipt)return undefined;
+  const original=StorageService.getTransactions().find(tx=>tx.id===`TX-${submissionId}`)?.finance?.proofOriginalFileName;
+  return original?{...receipt,originalFileName:original}:receipt;
+}
+const PROOF_IN_PROGRESS='Envoi du justificatif en cours sur ton Drive : il peut encore aboutir. Rien n’est enregistré pour l’instant. Touche de nouveau « Confirmer et enregistrer » dans un instant : le fichier ne sera pas envoyé deux fois, et si l’envoi a échoué tu verras l’erreur à ce moment-là.';
 /** Sans réseau, le SDK répond en anglais (« client is offline ») : le brasseur doit lire ce qui s'est passé et quoi faire. */
-async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number) {
-  try { await saveFinanceDocumentConfirmed(proof,year); }
+async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number):Promise<DriveProofReceipt|undefined> {
+  try { return await saveFinanceDocumentConfirmed(proof,year); }
   catch(error) {
+    // Au-delà de 15 s l'envoi continue : ce n'est pas une erreur, et le texte « achat » est posé ici (le message de `financeDocuments` est neutre).
+    if((error as {code?:string})?.code==='drive/in-progress') throw Object.assign(Error(PROOF_IN_PROGRESS),{code:'drive/in-progress'});
     // `financeDocuments` marque déjà ainsi l'échec réseau de Drive ; le SDK, lui, répond « unavailable ».
     if((error as {code?:string})?.code!=='unavailable') throw error;
     throw Object.assign(Error('Hors connexion : le justificatif n’a pas pu être envoyé sur ton Drive, donc rien n’est enregistré. Ta saisie reste ouverte : réessaie une fois en ligne.'),{code:'unavailable'});
@@ -177,16 +293,24 @@ export function purchaseProofAttachable(draft:PurchaseDraft,tx:FinanceTransactio
  * Le même achat est déjà enregistré sans original : le justificatif lu lui est joint. Aucune nouvelle dépense, aucun
  * stock, aucun paiement. L'original est confirmé sur Drive avant le lien, comme pour un nouvel achat.
  */
-export async function attachProofToPurchase(draft:PurchaseDraft,transactionId:string):Promise<void> {
+export async function attachProofToPurchase(draft:PurchaseDraft,transactionId:string):Promise<DriveProofReceipt|undefined> {
   const tx=StorageService.getTransactions().find(item=>item.id===transactionId);
   if(!tx || !purchaseProofAttachable(draft,tx)) throw Error('Ce justificatif ne peut pas rejoindre cette dépense (original déjà joint, autre total ou avoir). Rien n’a été rattaché.');
-  const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl!,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf');
-  await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4));
+  // Le nom suit la dépense qui reçoit le fichier (sa date, son fournisseur, son numéro), le brouillon en repli.
+  const driveName=driveNames.get(draft.submissionId)??driveProofFileName({date:tx.date||draft.date,vendor:tx.finance?.vendor||draft.vendor,invoiceNumber:tx.finance?.invoiceNumber||draft.invoiceNumber,mimeType:draft.proofType||'application/pdf',originalName:draft.proofFileName});
+  const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl!,driveName,draft.proofType||'application/pdf');
+  const receipt=await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4));
+  const proved=receipt?{...receipt,originalFileName:draft.proofFileName}:undefined;
+  if(proved){
+    proofReceipts.set(draft.submissionId,proved);
+    if(proved.fileName)driveNames.set(draft.submissionId,proved.fileName);
+  }
   // L'envoi prend du temps : la dépense relue est celle qu'on complète, jamais l'instantané d'avant l'envoi.
   const current=StorageService.getTransactions().find(item=>item.id===transactionId);
   if(!current?.finance || !purchaseProofAttachable(draft,current)) throw Error('Cette dépense a changé pendant l’envoi. Rien n’a été rattaché ; rouvre-la pour vérifier.');
-  StorageService.updateTransaction({...current,proofFileName:proof.fileName,proofType:proof.mimeType,finance:{...current.finance,proofDocumentId:proof.id,sourceDocumentHash:current.finance.sourceDocumentHash??draft.documentHash}});
+  StorageService.updateTransaction({...current,proofFileName:proved?.fileName??(draft.proofFileName||undefined),proofType:proof.mimeType,finance:{...current.finance,proofDocumentId:proof.id,proofOriginalFileName:draft.proofFileName||undefined,sourceDocumentHash:current.finance.sourceDocumentHash??draft.documentHash}});
   await FirestoreRepo.waitForDocument<FinanceTransaction>('transactions',current.id,15000,saved=>saved.finance?.proofDocumentId===proof.id);
+  return proved;
 }
 /** A timeout only resumes readback. Replay is released by a proven rejection + absent server document. */
 export async function confirmPurchase(draft:PurchaseDraft):Promise<void> {
@@ -229,12 +353,16 @@ export function savePurchase(draft:PurchaseDraft):string {
       equipmentRef=`EQ-${draft.submissionId}-${index}`;
       newEquipment.push({id:equipmentRef,ref:equipmentRef,name:line.description.trim(),category:line.equipmentCategory||'Brassage',state:'Neuf',purchaseDate:draft.date,purchasePrice:line.amount});
     }
-    return {id:line.id,description:line.description.trim(),kind:(line.kind==='maintenance'?'service':line.kind) as FinanceLineKind,amountCents:cents(line.amount),quantity:line.quantity,unit:line.unit||undefined,sourceReference:line.sourceReference?.slice(0,70)||undefined,stockItemRef:line.stockAction==='none'?undefined:stockRef,equipmentRef:line.equipmentAction==='none'?undefined:equipmentRef};
+    // Le lien « mouture comprise » n'est écrit que s'il a été confirmé et tient encore : parent juste au-dessus, même quantité, même unité.
+    const parent=millingParentIndex(draft.lines,index), surchargeOfLineId=line.surchargeOf&&parent>=0&&draft.lines[parent].id===line.surchargeOf?line.surchargeOf:undefined;
+    return {id:line.id,description:line.description.trim(),kind:(line.kind==='maintenance'?'service':line.kind) as FinanceLineKind,amountCents:cents(line.amount),quantity:line.quantity,unit:line.unit||undefined,unitPriceCents:exactUnitPriceCents(line),surchargeOfLineId,sourceReference:line.sourceReference?.slice(0,70)||undefined,stockItemRef:line.stockAction==='none'?undefined:stockRef,equipmentRef:line.equipmentAction==='none'?undefined:equipmentRef};
   });
+  // Nom lisible rangé dans Drive (reçu, sinon nom mémorisé à l'envoi) ; le nom d'origine reste à part.
+  const storedProofName=proof?(proofReceipts.get(draft.submissionId)?.fileName??driveNames.get(draft.submissionId)??draft.proofFileName):draft.proofFileName;
   const amount=draft.amount!,registered=StorageService.getConfig().fiscal.isTvaRegistered;
   const vat=registered && draft.sourceCurrency==='CHF' && Number.isFinite(draft.sourceVatAmount) ? draft.sourceVatAmount : 0;
-  const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:draft.proofFileName,proofType:draft.proofType,
-    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:proof?.id,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v4'}:undefined}}
+  const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:storedProofName,proofType:draft.proofType,
+    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:proof?.id,proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
   const payment=purchasePayment(draft,at);
   // All validation and material preparation above precede the first synchronous write.
   if (payment) FinanceService.stageNewTransactionPayment(tx,payment);

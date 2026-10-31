@@ -29,6 +29,16 @@ export interface DriveOriginalMetadata {
   trashed?: boolean;
   parents?: string[];
   appProperties?: Record<string, string>;
+  webViewLink?: string;
+}
+
+/** Ce que Drive dit d'un original déjà rangé : dossier lu (jamais déduit), lien, et si l'empreinte vient de Drive. */
+export interface DriveProofDetails {
+  /** Le nom du fichier tel que Drive le porte (lu dans ses métadonnées) ; absent si Drive ne le rend pas, jamais pris dans la saisie. */
+  fileName?: string;
+  folder?: string;
+  webViewLink?: string;
+  checksumVerified: boolean;
 }
 
 export class DriveFileError extends Error {
@@ -43,7 +53,7 @@ const API = 'https://www.googleapis.com/drive/v3/files';
 const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3/files';
 const FOLDER = 'application/vnd.google-apps.folder';
 const MIME_TYPES = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
-const FIELDS = 'id,name,mimeType,size,sha256Checksum,trashed,parents,appProperties';
+const FIELDS = 'id,name,mimeType,size,sha256Checksum,trashed,parents,appProperties,webViewLink';
 const STORAGE_PREFIX = 'laffinee.drive.original.v1.';
 const pending = new Map<string, Promise<DriveOriginalReference>>();
 const pendingIds = new Map<string, PendingId>();
@@ -389,6 +399,35 @@ export async function getDriveOriginalMetadata(reference: DriveOriginalReference
   const value = await metadata(session(signal), reference.driveFileId);
   validateMetadata(value, reference);
   return value;
+}
+
+/** Chemin que l'app crée pour les justificatifs d'une année (voir `yearFolder`). */
+export function driveOriginalFolderPath(year: number): string { return `L’Affinée / Justificatifs / ${year}`; }
+
+/**
+ * Lit sur Drive le nom réel du fichier, son dossier et son lien. Le dossier n'est rendu que si le parent est un dossier d'année de l'app
+ * (propriétés cachées, propriétaire, nom = année) : sinon il est absent, jamais déduit de la date. Le lien n'est gardé que
+ * s'il pointe vers drive.google.com. Taille, corbeille et empreinte Drive (si elle existe) sont recoupées comme pour toute lecture.
+ */
+export async function getDriveProofDetails(reference: DriveOriginalReference, signal?: AbortSignal): Promise<DriveProofDetails> {
+  validateReference(reference);
+  const context = session(signal);
+  const file = await metadata(context, reference.driveFileId);
+  validateMetadata(file, reference);
+  const details: DriveProofDetails = { checksumVerified: !!file.sha256Checksum && file.sha256Checksum.toLowerCase() === reference.sha256 };
+  // Le nom vient de Drive, jamais de la référence : un fichier retrouvé par son identifiant garde le nom de son premier envoi.
+  if (typeof file.name === 'string' && file.name.trim()) details.fileName = file.name;
+  if (typeof file.webViewLink === 'string' && /^https:\/\/drive\.google\.com\/[^\s]+$/.test(file.webViewLink)) details.webViewLink = file.webViewLink;
+  const parentId = file.parents?.[0];
+  if (validId(parentId)) {
+    try {
+      const parent = await metadata(context, parentId);
+      const year = /^originals-(\d{4})$/.exec(parent.appProperties?.laffineeFolder ?? '')?.[1];
+      if (year && parent.mimeType === FOLDER && parent.name === year && parent.appProperties?.laffineeOwner === await keyFor(context.uid))
+        details.folder = driveOriginalFolderPath(Number(year));
+    } catch { /* Dossier illisible : il reste absent, le reste de la preuve tient. */ }
+  }
+  return details;
 }
 
 export async function getDriveOriginalBytes(reference: DriveOriginalReference, signal?: AbortSignal): Promise<Uint8Array> {

@@ -1,11 +1,52 @@
 import type { ScannedInvoiceResult } from './geminiScanner';
 import type { PurchaseDraft } from './purchaseEntry';
+import { canonicalStockCategory } from './stockLineMatching';
+import { normalize } from './search';
 
-/** The editable label describes the purchase; the document type has its own heading. */
+const MILLING_WORDS = /\b(?:schrot\w*|mouture\w*|moulage|moulu\w*|crush\w*|milling|gemahlen)\b/;
+/** Une ligne de mouture : un service dont le libellé ou la référence porte un mot de mouture (liste fermée, sans accent ni casse). */
+export function isMillingSurcharge(line: { kind?: string; description?: string; sourceReference?: string }): boolean {
+  return line.kind === 'service' && MILLING_WORDS.test(normalize(`${line.description ?? ''} ${line.sourceReference ?? ''}`));
+}
+
+const PLURAL_FAMILIES: Record<string, string> = { Malt: 'malts', Houblon: 'houblons', Levure: 'levures', Sucre: 'sucres', Additif: 'additifs', Emballage: 'emballages', Consommable: 'consommables' };
+const KIND_FAMILIES: Record<string, string> = { stock: 'ingrédients', packaging: 'emballages', shipping: 'port', equipment: 'matériel', service: 'services' };
+const DESCRIPTION_MAX = 60;
+
+/**
+ * « Pour quoi ? » proposé par le code : `Fournisseur · N° · familles`, 60 caractères au plus, sans la prose du modèle.
+ * Les familles viennent de la catégorie de stock lue, sinon de la nature de la ligne, uniques, dans l'ordre de première apparition ;
+ * une ligne de mouture n'ajoute rien. Rien n'est inventé : fournisseur, numéro ou familles absents sont omis.
+ */
 export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
-  const description = scan.description || scan.vendor;
-  const purchase = /^(?:bordereau de livraison|facture|ticket de caisse|justificatif)\b.{0,120}?\bpour\s+(.+)$/i.exec(description)?.[1];
-  return purchase ? purchase.charAt(0).toUpperCase() + purchase.slice(1) : description;
+  const families: string[] = [];
+  for (const item of scan.items) {
+    if (isMillingSurcharge({ kind: item.kind, description: item.name, sourceReference: item.reference })) continue;
+    const category = canonicalStockCategory(item.stockCategory);
+    const family = category ? (PLURAL_FAMILIES[category] ?? category.toLowerCase()) : (KIND_FAMILIES[item.kind] ?? '');
+    if (family && !families.includes(family)) families.push(family);
+  }
+  const vendor = (scan.vendor ?? '').replace(/\s+/g, ' ').trim(), number = (scan.invoiceNumber ?? '').replace(/\s+/g, ' ').trim();
+  const join = (parts: string[]) => parts.filter(Boolean).join(' · ');
+  for (let kept = families.length; kept >= 0; kept--) {
+    const text = join([vendor, number, families.slice(0, kept).join(', ')]);
+    if (text.length <= DESCRIPTION_MAX) return text;
+  }
+  // Trop long même sans familles : le fournisseur est coupé à un mot pour que le numéro reste lisible.
+  const room = DESCRIPTION_MAX - (number ? number.length + 3 : 0);
+  let cut = vendor.slice(0, Math.max(room, 0));
+  if (vendor.length > cut.length) cut = cut.includes(' ') ? cut.slice(0, cut.lastIndexOf(' ')) : cut;
+  return join([cut.trim(), number]).slice(0, DESCRIPTION_MAX);
+}
+
+/**
+ * Ce que la lecture propose pour « Pour quoi ? ». Une description tapée, ou d'origine inconnue et non vide, n'est jamais remplacée ;
+ * vide ou venue d'une lecture, elle l'est. Rend un patch à passer à `patchPurchaseDraft`.
+ */
+export function applyScannedDescription(previous: PurchaseDraft, scan: ScannedInvoiceResult): Partial<PurchaseDraft> {
+  const current = (previous.description ?? '').trim();
+  if (current && previous.descriptionSource !== 'scan') return {};
+  return { description: invoicePurchaseDescription(scan), descriptionSource: 'scan' };
 }
 
 /** A proposed sum is distinct from a total actually printed on the original. */
@@ -52,16 +93,42 @@ export function invoiceFieldHints(scan: ScannedInvoiceResult): Record<string, st
 
 const iso = (value: string) => value.replace(/^(\d{2})\.(\d{2})\.(\d{4})$/, '$3-$2-$1');
 
-/** Follow the purchase date unless the user has chosen a different payment date. */
+/**
+ * Follow the purchase date unless the user has chosen a different payment date.
+ * La base de la date de paiement : une clé `paymentDateBasis` dans le patch (la lecture) prime ; sans elle, une date donnée seule
+ * est tapée, sauf quand le patch change aussi le statut (la date du jour substituée n'est jamais « typed » : base inconnue).
+ * Une description donnée sans `descriptionSource` est tapée.
+ */
 export function patchPurchaseDraft(previous: PurchaseDraft, value: Partial<PurchaseDraft>, today: string): PurchaseDraft {
   const next = { ...previous, ...value, duplicateConfirmed: false };
-  if (value.date !== undefined && value.paymentDate === undefined && (!previous.paymentDate || previous.paymentDate === previous.date))
+  if (value.paymentDate !== undefined && !('paymentDateBasis' in value))
+    next.paymentDateBasis = 'paymentStatus' in value ? undefined : 'typed';
+  if (value.description !== undefined && !('descriptionSource' in value)) next.descriptionSource = 'typed';
+  if (value.date !== undefined && value.paymentDate === undefined && previous.paymentDateBasis !== 'typed' && (!previous.paymentDate || previous.paymentDate === previous.date)) {
     next.paymentDate = value.date;
+    next.paymentDateBasis = value.date ? 'document_date' : undefined;
+  }
   // An ordinary purchase is paid by default, but a future payment is never recorded as completed.
   if (next.paymentStatus === 'paid' && next.paymentDate && iso(next.paymentDate) > iso(today)) next.paymentStatus = 'unpaid';
   return next;
 }
 
-export function scannedPayment(scan: ScannedInvoiceResult, today: string): Pick<PurchaseDraft, 'paymentStatus' | 'paymentDate'> {
-  return { paymentDate: scan.date, paymentStatus: scan.paymentEvidence === 'unpaid' || scan.documentType === 'quote' || scan.documentType === 'credit_note' || scan.date && iso(scan.date) > iso(today) ? 'unpaid' : 'paid' };
+/**
+ * Le statut vient de la preuve de paiement lue ; la date de paiement n'est jamais imprimée : elle reprend la date du document et
+ * est marquée `document_date` (supposée). Sans date lue, pas de base (la clé reste présente pour que le patch la prenne en compte).
+ */
+export function scannedPayment(scan: ScannedInvoiceResult, today: string): Pick<PurchaseDraft, 'paymentStatus' | 'paymentDate' | 'paymentDateBasis'> {
+  return { paymentDate: scan.date, paymentDateBasis: scan.date ? 'document_date' : undefined, paymentStatus: scan.paymentEvidence === 'unpaid' || scan.documentType === 'quote' || scan.documentType === 'credit_note' || scan.date && iso(scan.date) > iso(today) ? 'unpaid' : 'paid' };
+}
+
+/**
+ * Ce que la lecture propose pour le règlement. Comme pour la description, une valeur tapée n'est jamais écrasée : si le brasseur a
+ * tapé une date de paiement (base `typed`, date non vide), un second scan ne touche ni la date ni sa base ; seul le statut lu suit.
+ * Vide, supposée (`document_date`) ou d'origine inconnue (la date du jour par défaut), la date du scan la remplace.
+ * Rend un patch à passer à `patchPurchaseDraft`.
+ */
+export function applyScannedPayment(previous: PurchaseDraft, scan: ScannedInvoiceResult, today: string): Partial<PurchaseDraft> {
+  const proposed = scannedPayment(scan, today);
+  if (previous.paymentDateBasis === 'typed' && (previous.paymentDate ?? '').trim()) return { paymentStatus: proposed.paymentStatus };
+  return proposed;
 }

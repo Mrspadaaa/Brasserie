@@ -18,7 +18,7 @@ beforeEach(()=>{state.docs.clear();state.watchers.clear();state.transactions=0;s
 describe('Budget scan isolé, fournisseur simulé',()=>{
   it('réserve avant génération, partage le quota global, conserve les jobs du compagnon',async()=>{
     state.docs.set('brewerJobs/chat',{budget:{usage:{calls:7,tokens:321}}});
-    const provider=vi.fn(async body=>{expect(daily().calls).toBe(1);expect(daily().tokens).toBeGreaterThan(65000);expect(body.generationConfig.maxOutputTokens).toBe(4500);expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');return {usageMetadata:{totalTokenCount:100}};});
+    const provider=vi.fn(async body=>{expect(daily().calls).toBe(1);expect(daily().tokens).toBeGreaterThan(65000);expect(body.generationConfig.maxOutputTokens).toBe(5100);expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');return {usageMetadata:{totalTokenCount:100}};});
     await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {amount:42};},provider);
     expect(daily()).toEqual({calls:1,proCalls:0,tokens:100});expect(state.docs.get('brewerJobs/chat')).toEqual({budget:{usage:{calls:7,tokens:321}}});expect(state.monthlyModels).toEqual([SCAN_MODEL]);expect(SCAN_MODEL).toBe('gemini-3.8-flash');
   });

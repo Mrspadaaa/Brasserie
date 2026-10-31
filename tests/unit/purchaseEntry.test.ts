@@ -13,7 +13,7 @@ describe('Achat confirmé : une écriture et seulement les effets choisis',()=>{
     Object.assign(value,{sourceDocumentType:'delivery_note',sourceOrderNumber:'ORDER-TEST',sourceTotalBasis:'line_sum',sourceAmount:undefined,scanModel:'gemini-3.8-flash'});
     value.lines[0].sourceReference='MALT-TEST';
     savePurchase(value);
-    expect(state.transactions[0].finance).toMatchObject({sourceDocumentType:'delivery_note',sourceOrderNumber:'ORDER-TEST',sourceTotalBasis:'line_sum',sourceAmount:undefined,scanProvenance:{promptVersion:'invoice-v4'}});
+    expect(state.transactions[0].finance).toMatchObject({sourceDocumentType:'delivery_note',sourceOrderNumber:'ORDER-TEST',sourceTotalBasis:'line_sum',sourceAmount:undefined,scanProvenance:{promptVersion:'invoice-v5'}});
     expect(state.transactions[0].finance.lines[0].sourceReference).toBe('MALT-TEST');
   });
   it('valide paiement et projet avant tout envoi Drive',async()=>{

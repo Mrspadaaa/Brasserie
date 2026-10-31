@@ -183,6 +183,19 @@ export function annualBrewFixedCosts(plans: FinancialPlan[]): { amountCHF: numbe
   return { amountCHF: money(recurring.filter(plan => plan.costAllocation === 'fixed').reduce((sum, plan) => sum + plan.amountCents * (plan.recurrence!.frequency === 'monthly' ? 12 : plan.recurrence!.frequency === 'quarterly' ? 4 : 1) / 100, 0)), warnings: [] };
 }
 
+type PricedLine = NonNullable<FinanceTransaction['finance']>['lines'][number];
+/**
+ * Coût d'une ligne liée à un article : son montant, plus celui des lignes de service qui lui sont rattachées (la mouture),
+ * à condition que le lien tienne (service, montant positif, même quantité, même unité). Un lien qui ne tient pas est ignoré :
+ * aucun prix n'est inventé. Une ligne sans rattachement garde son montant seul (dépenses écrites avant cette règle comprises).
+ */
+function linkedLineCost(lines: PricedLine[], line: PricedLine): { cents: number; surcharges: number } {
+  const unit = (value?: string) => (value ?? '').trim().toLowerCase();
+  const attached = lines.filter(other => other.surchargeOfLineId === line.id && other.id !== line.id && other.kind === 'service'
+    && Number.isSafeInteger(other.amountCents) && other.amountCents > 0 && other.quantity === line.quantity && unit(other.unit) === unit(line.unit));
+  return { cents: line.amountCents + attached.reduce((sum, other) => sum + other.amountCents, 0), surcharges: attached.length };
+}
+
 /** Only explicit, priced invoice lines can establish a product price. A mixed legacy invoice cannot. */
 export function latestBrewPrices(transactions: FinanceTransaction[], beforeDate?: string): Record<string, BrewPrice> {
   const catalog: Record<string, BrewPrice> = {};
@@ -191,8 +204,9 @@ export function latestBrewPrices(transactions: FinanceTransaction[], beforeDate?
     .sort((a, b) => (brewBudgetDateKey(a.date) ?? '').localeCompare(brewBudgetDateKey(b.date) ?? '') || a.id.localeCompare(b.id));
   for (const tx of sorted) for (const line of tx.finance.lines) {
     if (!line.stockItemRef || !(line.quantity > 0) || !line.unit || !finite(line.amountCents) || !Number.isSafeInteger(line.amountCents)) continue;
-    catalog[line.stockItemRef] = { amount: line.amountCents / 100, quantity: line.quantity, unit: line.unit, basis: 'TTC', tvaRate: tx.tvaRate ?? 0,
-      source: 'invoice', date: tx.date, note: [tx.finance.vendor, tx.finance.invoiceNumber ?? tx.id].filter(Boolean).join(' · ') };
+    const cost = linkedLineCost(tx.finance.lines, line);
+    catalog[line.stockItemRef] = { amount: cost.cents / 100, quantity: line.quantity, unit: line.unit, basis: 'TTC', tvaRate: tx.tvaRate ?? 0,
+      source: 'invoice', date: tx.date, note: [tx.finance.vendor, tx.finance.invoiceNumber ?? tx.id, cost.surcharges ? 'mouture comprise' : ''].filter(Boolean).join(' · ') };
   }
   return catalog;
 }
@@ -209,8 +223,9 @@ export function weightedBrewPrices(transactions: FinanceTransaction[], stock: St
       const qty = Units.convert(line.quantity, line.unit, item.unit);
       if (qty === null || !(qty > 0)) continue;
       const prior = totals.get(item.ref) ?? { cost: 0, quantity: 0, unit: item.unit, count: 0, date, netCost: 0 };
-      prior.cost += line.amountCents / 100; prior.quantity += qty; prior.count++; prior.date = prior.date > date ? prior.date : date;
-      prior.netCost += line.amountCents / 100 / (1 + (tx.tvaRate ?? 0));
+      const cents = linkedLineCost(tx.finance.lines, line).cents;
+      prior.cost += cents / 100; prior.quantity += qty; prior.count++; prior.date = prior.date > date ? prior.date : date;
+      prior.netCost += cents / 100 / (1 + (tx.tvaRate ?? 0));
       totals.set(item.ref, prior);
     }
   }

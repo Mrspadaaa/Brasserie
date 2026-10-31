@@ -1,0 +1,454 @@
+{
+  "_lecture": "Transcrit à la main depuis work/missions/2026-10-31-ecran-depense/brasseur/facture-br-372765.jpg (capture d'un lecteur PDF, 1280 x 2772 px), zoomée par bandes pour lire chaque chiffre. Ni le nom ni l'adresse du client. 'null' = l'image ne le montre pas. Un nombre 'calculé' n'est jamais imprimé : il est marqué.",
+  "source": {
+    "fichier": "facture-br-372765.jpg",
+    "pagesVisibles": 1,
+    "page2": null,
+    "page2Note": "L'image coupe la page 2 : seul son en-tête (logo, fournisseur, date, 'Pro-Forma Rechnung 372765') apparaît. Ses lignes, ses totaux et son éventuelle suite sont inconnus. Les 23 lignes et le total 86.50 de la page 1 se recoupent (somme des lignes = 86.50), donc la page 2 est probablement une copie ou un second exemplaire ; ce n'est pas démontré."
+  },
+  "fournisseur": {
+    "nom": "Brau- und Rauchshop GmbH",
+    "ville": "Densbüren",
+    "numeroTva": "CHE-114.012.211 MWST",
+    "site": "www.brauundrauchshop.ch"
+  },
+  "numeroFacture": "372765",
+  "numeroCommande": "Onlinebestellung-686863",
+  "numerosAPiege": {
+    "numeroClient": "68523",
+    "numeroLieferadresse": "70486",
+    "suiviPoste": "996001854000236005",
+    "note": "Imprimés dans l'en-tête ou le pied : à ne jamais lire comme numéro de facture ni comme montant. Le numéro de facture (372765) est imprimé à droite du titre, sans étiquette 'Rechnungsnummer'."
+  },
+  "date": "27.04.2026",
+  "dateIso": "2026-04-27",
+  "devise": "CHF",
+  "type": {
+    "intituleImprime": "Pro-Forma Rechnung (Online Payment)",
+    "documentTypeAttendu": "invoice",
+    "proForma": true,
+    "note": "DOCUMENT_TYPES (functions/src/invoiceScanCore.ts:13) n'a pas de 'pro-forma'. Une pro-forma payée en ligne tient lieu de facture pour ce brasseur ; le code doit la traiter comme 'invoice' sans avertissement, et garder 'proForma' à part si on veut la montrer."
+  },
+  "paiement": {
+    "statut": "paid",
+    "preuveImprimee": "Betrag per E-Finance dankend erhalten",
+    "datePaiement": null,
+    "datePaiementNote": "Aucune date de paiement n'est imprimée. L'app reprend la date de la facture (purchasePrefill.scannedPayment : paymentDate = scan.date) : c'est un repli, pas une lecture."
+  },
+  "conditions": "Unsere Preise sind fair und knapp berechnet, herzlichen Dank für das Einhalten der Zahlungsfrist! 10 Tage netto. Dieses Braumalz wurde zollbegünstigt eingeführt und darf nur für Bierbrauzwecke eingeführt werden.",
+  "lignes": [
+    {
+      "n": 1,
+      "code": "MA0221",
+      "libelle": "Maris Otter, Kg",
+      "quantite": 6,
+      "unite": "Kg",
+      "prix": 2.3,
+      "montant": 13.8,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Maris Otter",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 2,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 6,
+      "unite": "Kg",
+      "prix": 0.1,
+      "montant": 0.6,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "service",
+        "nomPropre": "Mouture (Schrotung)",
+        "categorieStock": null,
+        "ligneParente": 1
+      }
+    },
+    {
+      "n": 3,
+      "code": "MA0027",
+      "libelle": "Gerstenflocken, 1 Kg",
+      "quantite": 1,
+      "unite": "Kg",
+      "prix": 2.4,
+      "montant": 2.4,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Gerstenflocken",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 4,
+      "code": "MA0055",
+      "libelle": "Röstgerste, Kg",
+      "quantite": 1,
+      "unite": "Kg",
+      "prix": 1.8,
+      "montant": 1.8,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Röstgerste",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 5,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 1,
+      "unite": "Kg",
+      "prix": 0.1,
+      "montant": 0.1,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "service",
+        "nomPropre": "Mouture (Schrotung)",
+        "categorieStock": null,
+        "ligneParente": 4
+      }
+    },
+    {
+      "n": 6,
+      "code": "MA0333",
+      "libelle": "CARAMÜNCH® Typ 2 Kg",
+      "quantite": 1,
+      "unite": "Kg",
+      "prix": 1.75,
+      "montant": 1.75,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Caramünch Typ 2",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 7,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 1,
+      "unite": "Kg",
+      "prix": 0.1,
+      "montant": 0.1,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "service",
+        "nomPropre": "Mouture (Schrotung)",
+        "categorieStock": null,
+        "ligneParente": 6
+      }
+    },
+    {
+      "n": 8,
+      "code": "HO0102",
+      "libelle": "Target 11.3%",
+      "quantite": 40,
+      "unite": "g",
+      "prix": 0.04,
+      "montant": 1.6,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Target",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 11.3
+      }
+    },
+    {
+      "n": 9,
+      "code": "HO0017",
+      "libelle": "Goldings East Kent 5.5%",
+      "quantite": 20,
+      "unite": "g",
+      "prix": 0.04,
+      "montant": 0.8,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Goldings East Kent",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 5.5
+      }
+    },
+    {
+      "n": 10,
+      "code": "HE0211",
+      "libelle": "LALLEMAND Windsor 11g",
+      "quantite": 2,
+      "unite": "Stk",
+      "prix": 4.5,
+      "montant": 9,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "LALLEMAND Windsor",
+        "categorieStock": "Levure",
+        "uniteStock": "sachet",
+        "conditionnementG": 11
+      }
+    },
+    {
+      "n": 11,
+      "code": "HE0203",
+      "libelle": "Safale BE-256 (Abbaye) 11.5 g",
+      "quantite": 1,
+      "unite": "Stk",
+      "prix": 4.4,
+      "montant": 4.4,
+      "codeTva": "N",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Safale BE-256 (Abbaye)",
+        "categorieStock": "Levure",
+        "uniteStock": "sachet",
+        "conditionnementG": 11.5
+      }
+    },
+    {
+      "n": 12,
+      "code": "HE0102",
+      "libelle": "Safale US-05 11,5g",
+      "quantite": 2,
+      "unite": "Stk",
+      "prix": 3.4,
+      "montant": 6.8,
+      "codeTva": "N",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Safale US-05",
+        "categorieStock": "Levure",
+        "uniteStock": "sachet",
+        "conditionnementG": 11.5
+      }
+    },
+    {
+      "n": 13,
+      "code": "MA0007",
+      "libelle": "Pilsner Malz, Kg",
+      "quantite": 5,
+      "unite": "Kg",
+      "prix": 1.5,
+      "montant": 7.5,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Pilsner Malz",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 14,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 5,
+      "unite": "Kg",
+      "prix": 0.1,
+      "montant": 0.5,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "service",
+        "nomPropre": "Mouture (Schrotung)",
+        "categorieStock": null,
+        "ligneParente": 13
+      }
+    },
+    {
+      "n": 15,
+      "code": "MA0010",
+      "libelle": "Weizenmalz hell, Kg",
+      "quantite": 2,
+      "unite": "Kg",
+      "prix": 1.55,
+      "montant": 3.1,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Weizenmalz hell",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 16,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 2,
+      "unite": "Kg",
+      "prix": 0.1,
+      "montant": 0.2,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "service",
+        "nomPropre": "Mouture (Schrotung)",
+        "categorieStock": null,
+        "ligneParente": 15
+      }
+    },
+    {
+      "n": 17,
+      "code": "MA0034",
+      "libelle": "Haferflocken, 1 Kg",
+      "quantite": 2,
+      "unite": "Kg",
+      "prix": 2.5,
+      "montant": 5,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Haferflocken",
+        "categorieStock": "Malt",
+        "uniteStock": "kg"
+      }
+    },
+    {
+      "n": 18,
+      "code": "HO0046",
+      "libelle": "Galaxy 17.2%",
+      "quantite": 60,
+      "unite": "g",
+      "prix": 0.08,
+      "montant": 4.8,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Galaxy",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 17.2
+      }
+    },
+    {
+      "n": 19,
+      "code": "HO1907",
+      "libelle": "Nelson Sauvin ™ 9.6%",
+      "quantite": 100,
+      "unite": "g",
+      "prix": 0.08,
+      "montant": 8,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Nelson Sauvin",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 9.6
+      }
+    },
+    {
+      "n": 20,
+      "code": "HO2026",
+      "libelle": "Sabro® 13.4%",
+      "quantite": 30,
+      "unite": "g",
+      "prix": 0.07,
+      "montant": 2.1,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Sabro",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 13.4
+      }
+    },
+    {
+      "n": 21,
+      "code": "HE2036",
+      "libelle": "LALLEMAND Verdant IPA 11g",
+      "quantite": 2,
+      "unite": "Stk",
+      "prix": 4.7,
+      "montant": 9.4,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "LALLEMAND Verdant IPA",
+        "categorieStock": "Levure",
+        "uniteStock": "sachet",
+        "conditionnementG": 11
+      }
+    },
+    {
+      "n": 22,
+      "code": "HO17041",
+      "libelle": "Hallertauer Blanc 9.5% CH",
+      "quantite": 30,
+      "unite": "g",
+      "prix": 0.045,
+      "montant": 1.35,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Hallertauer Blanc",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 9.5,
+        "origine": "CH"
+      }
+    },
+    {
+      "n": 23,
+      "code": "HO2022",
+      "libelle": "Motueka ™ 8.1%",
+      "quantite": 20,
+      "unite": "g",
+      "prix": 0.07,
+      "montant": 1.4,
+      "codeTva": "R",
+      "attendu": {
+        "kind": "stock",
+        "nomPropre": "Motueka",
+        "categorieStock": "Houblon",
+        "uniteStock": "g",
+        "alphaPct": 8.1
+      }
+    }
+  ],
+  "tva": {
+    "tauxParCode": {
+      "N": 0.081,
+      "R": 0.026
+    },
+    "sommeDesLignesParCode": {
+      "N": 11.2,
+      "R": 75.3,
+      "note": "Calculé depuis les codes N/R de la colonne 'Code' : N = lignes 11 et 12 (4.40 + 6.80) ; R = les 21 autres."
+    },
+    "blocImprime": {
+      "N 8.1%": {
+        "belegbetrag": 26.2,
+        "mwst": 1.95
+      },
+      "R 2.6%": {
+        "belegbetrag": 84.2,
+        "mwst": 2.2
+      },
+      "mehrwertsteuer": 2.8,
+      "note": "Chiffres lus tels quels. Ils ne se recoupent pas : 26.20 + 84.20 = 110.40 (le total est 86.50), 1.95 + 2.20 = 4.15 (la colonne 'Mehrwertsteuer' dit 2.80), et les bases ne valent pas les sommes par code des lignes (11.20 et 75.30). La TVA 'comprise' dans 86.50 serait environ 2.75 si les lignes sont TTC (calcul : 11.20 x 0.081 / 1.081 + 75.30 x 0.026 / 1.026). On ne tranche pas : c'est le document qui est incohérent, le code doit le dire plutôt que choisir."
+    },
+    "tvaTotaleImprimee": 2.8,
+    "tvaTotaleImprimeeNote": "Valeur sous l'en-tête 'Mehrwertsteuer'. Le brasseur n'est pas assujetti (StorageService.getConfig().fiscal.isTvaRegistered = false par défaut) : la TVA lue est conservée avec la source, elle n'entre pas dans la dépense."
+  },
+  "totaux": {
+    "ttc": 86.5,
+    "ttcImprime": true,
+    "ht": null,
+    "htNote": "Aucun total hors taxes n'est imprimé. 83.70 (86.50 - 2.80) serait un calcul sur un chiffre de TVA douteux : ne pas le présenter comme lu.",
+    "sommeDesLignes": 86.5,
+    "nombreDeLignes": 23
+  }
+}

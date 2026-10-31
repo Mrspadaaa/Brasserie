@@ -11,6 +11,8 @@ export interface FinanceLine {
   quantity?: number;
   unit?: string;
   unitPriceCents?: number;
+  /** Id de la ligne d'ingrédient dont cette ligne de service (mouture) fait partie du prix. Écrit seulement après le geste du brasseur. */
+  surchargeOfLineId?: string;
   sourceReference?: string;
   stockItemRef?: string;
   equipmentRef?: string;
@@ -52,6 +54,10 @@ export interface TransactionFinance {
   sourceVatAmount?: number;
   sourceNetAmount?: number;
   proofDocumentId?: string;
+  /** Nom du fichier tel que reçu du téléphone ; `Transaction.proofFileName` porte le nom lisible rangé dans Drive. */
+  proofOriginalFileName?: string;
+  /** Une date de paiement n'est pas imprimée sur le document : `document_date` = supposée égale à la date du document, `typed` = saisie. Absent = inconnu. */
+  paymentDateBasis?: 'document_date' | 'typed';
 }
 export type FinanceTransaction = Transaction & { finance?: TransactionFinance };
 /** Filing policy only: original documents and financial calculations remain intact. */

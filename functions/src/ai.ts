@@ -4,7 +4,7 @@ import { logger } from 'firebase-functions';
 import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
-import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
+import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
 import { reconcileInvoiceVision, type InvoiceScanResult } from './invoiceVisionReview.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
@@ -97,8 +97,8 @@ interface AiTaskResult {
 /** A separate, fixed-cost path: no model chain, no client tier/context/instruction. */
 export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
   const started = Date.now();
-  const maxOutputTokens=evaluationOptions?.maxOutputTokens??4500;
-  if(!Number.isSafeInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>4500)throw new Error('Plafond de sortie invalide.');
+  const maxOutputTokens=evaluationOptions?.maxOutputTokens??SCAN_MAX_OUTPUT;
+  if(!Number.isSafeInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>SCAN_MAX_OUTPUT)throw new Error('Plafond de sortie invalide.');
   const file: InvoiceFile = validateInvoiceFile(suppliedFile), model = SCAN_MODEL;
   assertGeminiModel(model);
   const provider = async (body: Record<string, unknown>, signal: AbortSignal) => {

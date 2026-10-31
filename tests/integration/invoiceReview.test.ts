@@ -58,7 +58,7 @@ function arrangeReadings(readings: unknown[], options: { finishReasons?: string[
     expect(monthly().reservedMicroChf).toBeGreaterThan(0);
     const request = JSON.parse(init.body);
     expect(request.contents[0].parts[1].inlineData).toEqual(file);
-    expect(request.generationConfig).toMatchObject({ maxOutputTokens: 4500, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'LOW' } });
+    expect(request.generationConfig).toMatchObject({ maxOutputTokens: 5100, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'LOW' } });
     if (count > readings.length || count > 3) throw new Error('Unexpected additional vision call.');
     if (count === 2) releaseFirst();
     if (count === 1 && options.holdFirstUntilSecond) await secondStarted;

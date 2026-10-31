@@ -15,9 +15,9 @@ const scan = (patch: Partial<ScannedInvoiceResult> = {}): ScannedInvoiceResult =
 const draft = { date: '31.08.2026', paymentDate: '31.08.2026', paymentStatus: 'paid' } as PurchaseDraft;
 
 describe('Propositions de saisie, sans inventer les valeurs imprimées', () => {
-  it('garde le libellé centré sur les achats et conserve les descriptions déjà précises', () => {
-    expect(invoicePurchaseDescription(scan({ description: 'Facture Fournisseur fictif pour malt et houblon' }))).toBe('Malt et houblon');
-    expect(invoicePurchaseDescription(scan({ description: 'Pompe pour le circuit de nettoyage' }))).toBe('Pompe pour le circuit de nettoyage');
+  it('propose le libellé par le code (fournisseur, n°, familles) et ne reprend plus la prose du modèle (A12, voie s2)', () => {
+    expect(invoicePurchaseDescription(scan({ description: 'Facture Fournisseur fictif pour malt et houblon' }))).toBe('Fournisseur fictif');
+    expect(invoicePurchaseDescription(scan({ description: 'Pompe pour le circuit de nettoyage', invoiceNumber: 'F-12' }))).toBe('Fournisseur fictif · F-12');
   });
   it('propose la somme au centime et distingue cette proposition du total source absent', () => {
     const result = scan();
@@ -49,7 +49,8 @@ describe('Propositions de saisie, sans inventer les valeurs imprimées', () => {
 
 describe('Date de l’achat et paiement quotidien', () => {
   it('propose payé à la date du document, sauf indication contraire ou achat futur', () => {
-    expect(scannedPayment(scan(), '09.09.2026')).toEqual({ paymentStatus: 'paid', paymentDate: '31.08.2026' });
+    // A7 (voie s2) : la date de paiement n'est pas imprimée ; elle est proposée et marquée « supposée = date du document ».
+    expect(scannedPayment(scan(), '09.09.2026')).toEqual({ paymentStatus: 'paid', paymentDate: '31.08.2026', paymentDateBasis: 'document_date' });
     expect(scannedPayment(scan({ paymentEvidence: 'unpaid' }), '09.09.2026').paymentStatus).toBe('unpaid');
     expect(scannedPayment(scan({ date: '10.09.2026' }), '09.09.2026').paymentStatus).toBe('unpaid');
     expect(scannedPayment(scan({ documentType: 'quote' }), '09.09.2026').paymentStatus).toBe('unpaid');

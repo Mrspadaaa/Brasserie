@@ -26,7 +26,7 @@ describe('Vision des justificatifs : fournisseur entièrement simulé', () => {
       const body = JSON.parse(options.body);
       expect(body.tools).toBeUndefined();
       expect(body.contents[0].parts[1].inlineData).toEqual(file);
-      expect(body.generationConfig).toMatchObject({ mediaResolution:'MEDIA_RESOLUTION_HIGH', thinkingConfig:{ thinkingLevel:'LOW' }, maxOutputTokens:4500 });
+      expect(body.generationConfig).toMatchObject({ mediaResolution:'MEDIA_RESOLUTION_HIGH', thinkingConfig:{ thinkingLevel:'LOW' }, maxOutputTokens:5100 });
     }
   });
   it('corrige le préclassement matériel après une majorité indépendante de deux sur trois', async () => {
