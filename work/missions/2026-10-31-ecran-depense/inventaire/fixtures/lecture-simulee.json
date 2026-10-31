@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "model": "fixture-simulee",
+  "tier": "fast",
+  "elapsedMs": 12,
+  "cached": false,
+  "documentHash": "fixture-inventaire-i1",
+  "data": {
+    "documentType": "invoice",
+    "paymentEvidence": "paid",
+    "vendor": "Fournisseur Fixture SA",
+    "date": "2026-10-20",
+    "currency": "CHF",
+    "invoiceNumber": "FX-0001",
+    "amountHT": 100,
+    "tvaRate": 0.081,
+    "tvaAmount": 8.1,
+    "amountTTC": 108.1,
+    "category": "brassage",
+    "subcategory": "malt",
+    "description": "Achat fixture (lecture simulée)",
+    "orderNumber": "",
+    "items": [
+      { "name": "Malt pils", "variant": "", "kind": "stock", "reference": "M-1", "quantity": 25, "unit": "kg", "amountTTC": 60, "stockCategory": "malt", "evidence": "ligne 1", "ambiguity": "Quantité à confirmer" },
+      { "name": "Houblon Citra", "variant": "", "kind": "stock", "reference": "H-2", "quantity": 1, "unit": "sachet", "amountTTC": 48.1, "stockCategory": "houblon", "evidence": "ligne 2" }
+    ],
+    "issues": ["Date de livraison absente"],
+    "review": { "status": "disputed", "findings": ["Total TTC à vérifier sur l’original"], "readers": 2, "correctedFields": [] }
+  }
+}

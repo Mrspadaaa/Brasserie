@@ -1,0 +1,35 @@
+{
+ "file": "work/missions/2026-10-31-ecran-depense/brasseur/facture-br-372765.jpg",
+ "bytes": 735721,
+ "base64Bytes": 980964,
+ "nodeEncodeMs": 0.3,
+ "dataUrlLength": 980987,
+ "readDataUrlMs": [
+  2.199999999254942,
+  1.1000000014901161,
+  1
+ ],
+ "sha256Ms": 1.199999999254942,
+ "width": 1280,
+ "height": 2772,
+ "variants": {
+  "1600px q0.85": {
+   "ms": 66,
+   "bytes": 185082,
+   "base64Bytes": 246776,
+   "w": 739
+  },
+  "2048px q0.85": {
+   "ms": 74,
+   "bytes": 250856,
+   "base64Bytes": 334476,
+   "w": 946
+  },
+  "2048px q0.92": {
+   "ms": 13,
+   "bytes": 303743,
+   "base64Bytes": 404992,
+   "w": 946
+  }
+ }
+}
