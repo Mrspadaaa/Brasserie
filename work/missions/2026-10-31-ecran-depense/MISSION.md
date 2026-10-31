@@ -91,5 +91,7 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
   Règle refusée : elle était du pilote. Lecture étroite : la ligne reste proposée, l'unité vide, « unité à préciser », rien en stock tant
   qu'elle manque (garde : voie r1). s1, encore en vol, a reçu la correction ; COMMUN.md, decisions, SPEC, DEFAUTS, REMPLACES à jour.
   Les jus0Journey rouges (2) attendent s1, qui possède le fichier.
+- 31.10, nuit : **s1 rendu**, rejoué (`TESTS STOCK OK`, 12 fichiers ; REVUE OK, NOTE OK ; périmètre tenu) ; D214 appliquée (unité vide, « unité à préciser » ; `purchaseEntry.ts:201` refuse déjà une ligne liée sans unité : le stock ne bouge pas). Décision : les levures en « Stk » proposées mais refusées à l'enregistrement (`purchaseEntry.ts:205`) → la voie r1 accepte l'équivalence Stk ↔ sachet par `pieceUnitsEquivalent` (`ingredientIdentity.ts`), visible sur la ligne. Relecteurs neufs : s2 0 bloquant, 3 majeurs → voie **s2b** (auteur neuf) ; l1 0 bloquant, 4 majeurs (PDF quadratique, 3e lecture payante déclenchée par `lignes-annoncees`, deux faux écarts de TVA) → voie **l1b** ; s1 en relecture.
+- 31.10, nuit : **D215**, sa demande : même produit, autres données (α, origine, récolte, EBC…) → un article « bis » lié à la fiche la plus proche, ses valeurs vraies, une fiche dédiée cherchée, sinon la fiche approchée montrée. Va à la voie **S6** (fiche d'un produit), avec un champ facultatif article → fiche (plan relu à deux regards). COMMUN.md, SPEC, decisions, DEFAUTS à jour.
 
 ## Signature
