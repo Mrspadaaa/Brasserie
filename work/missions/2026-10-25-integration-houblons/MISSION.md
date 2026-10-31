@@ -471,3 +471,4 @@ documentaires d'après.
   - la **recherche** sur les méthodes (`work/missions/2026-10-31-methodes/`).
   Ensuite : k2 (Suggérer à 60′, M1 + M2), puis la critique, le rejeu, le déploiement et la PR.
 - 31.10 : « trop herbal » (D197) : **h1** est écrite. Elle partira après t3, qui tient voies.ts ; l'ordre est t3 → h1 → k2. Le rôle d'un houblon est un continuum (note role-continu) : t3 et k2 lisent l'usage mesuré, jamais une étiquette. Le rapport sur les méthodes est fait (f84eb498).
+- 31.10 : **k1 commitée** (b04b9f3b). Les 7 tests rouges qu'elle a vus viennent de t3, en cours (empreinte `proposer`, `saturationD195`) : ils sont à rejouer après t3. Chrome sur Substituer, au rejeu final. Suite : t3 → h1 → k2.
