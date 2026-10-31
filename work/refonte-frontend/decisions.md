@@ -1192,3 +1192,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - **K2** (son écran choisi M1 + M2, repris tel quel ; règle n° 1) : le groupe « Amérisant · 60′ » et la carte « Plus d'amertume ». Les
     rangées disent ce que chacune apporte (D165), puis le critique juge.
   - **K3**, la phrase « rien d'aromatique à 60′ », est un texte qu'il choisira : elle lui sera montrée en mini maquettes, plus tard.
+- D198 (l'utilisateur, 31.10) : pas de question bloquante. Les questions des méthodes externes passent à un jury (skill `jury`, voie e4). Le
+  reste du top 5 est accordé, ainsi que l'installation de `@google/design.md` 0.4.0, épinglé, dans `tools/design-lint` seulement.
+  Mission 2026-10-31-systeme-ecrans : e1 (baselines), e2 (inventaire, hors d'`ecrans.json`, règle n° 1), e3 (glossaire), e4 (jury) et e5
+  (lint). Les serveurs de la mission tournent dans une copie à part, au commit de production (`%TEMP%/atelier-ecrans`).
