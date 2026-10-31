@@ -98,3 +98,8 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   la part « 19 % » reste, la barre perd 20 px ; d'abord essayé à la place du ×, il couvrait le « kg » sur la capture, écarté). a3 et b1 dits sur la page.
   Captures refaites et ouvertes, `systeme.mjs voies` → VOIES OK 3/3 (approbations rejouées). Page de la passe 5 publiée (PAGE OK, trois captures
   ouvertes), table « Pages ». **Attend son verdict** : a, b ou un mélange. Ensuite : Malts dans `ecrans-app.json`, puis le port (alias « Munich »).
+- 31.10, nuit : sa question sur la page de la passe 5, « Mais on peut pas modifier la quantité de chaque malt sucre de n'importe quel ingrédients en une
+  action ??? » (SPEC). C'est déjà fait depuis r4d : un toucher sur la masse de la ligne, le chiffre, Entrée. Sonde du pilote dans un vrai Chrome tactile,
+  a et b : Pilsner, Haferflocken, Dextrose (#sucre), Purée de mangue (#fruit), 8 sur 8, le plateau suit. La page ne le montrait pas (seuls les changements
+  y étaient) : rangée « Changer une masse » ajoutée (captures Dextrose pendant et après), même version, même adresse (v2). Pas un défaut du produit.
+  LEÇON PROPOSÉE : une page de choix montre chaque besoin de sa plainte, même ceux qui ne changent pas, sinon il les croit perdus.
