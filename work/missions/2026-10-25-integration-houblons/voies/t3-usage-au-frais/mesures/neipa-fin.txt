@@ -1,0 +1,12 @@
+--- sans R4 (usageAuFrais: false) : 4 voies (catalogue plein, stock vide), citrus au dryActive
+  1 ajouter                Centennial@dryActive:48                        frais=41 %       cle=0
+  2 ajouter                Amarillo@dryActive:48                          frais=52 %       cle=0
+  3 ajouter                Cascade@dryActive:48                           frais=38 %       cle=0
+  4 ajouter                Warrior@dryActive:48                           frais=7 %        cle=0
+  4 premiers : part au frais moyenne 34 % (41, 52, 38, 7)
+--- avec R4 (part au frais continue) : 4 voies (catalogue plein, stock vide), citrus au dryActive
+  1 ajouter                Centennial@dryActive:48                        frais=41 %       cle=-0.1112
+  2 ajouter                Amarillo@dryActive:48                          frais=52 %       cle=-0.2119
+  3 ajouter                Cascade@dryActive:48                           frais=38 %       cle=-0.0744
+  4 ajouter                Warrior@dryActive:48                           frais=7 %        cle=0.2331
+  4 premiers : part au frais moyenne 34 % (41, 52, 38, 7)

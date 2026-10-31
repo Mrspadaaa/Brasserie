@@ -87,36 +87,24 @@ describe('D195 R3 : un remplacement qui fait baisser la famille à baisser garde
   });
 });
 
-describe('D195 R4 : au whirlpool et au dry hop, un amérisant passe après les houblons d’arôme ou de double usage', () => {
-  const usage = (v: Voie) => CATALOGUE.find((c) => c.id === v.actions[0].hopKey)?.purpose;
+// R4 (D195, relue par t3, 31.10) : au whirlpool et au dry hop, le houblon le plus employé au frais passe devant (part Beer Analytics, continue, sans étiquette ni seuil). Le détail est dans fraisT3.test.ts.
+describe('D195 R4 : au whirlpool et au dry hop, l’emploi au frais range à rang égal', () => {
   const tri = (o: object = {}) => ajouts(m.proposeVoies(SATUREE, { citrus: 1 }, { ...GRAND, ...o }).voies);
   it('le défaut est posé', () => { expect(USAGE_AU_FRAIS_DEFAUT).toBe(true); });
-  it('à rang, distance et typicité égaux, aucun amérisant ne passe devant un houblon d’arôme ou de double usage ; il porte sa raison', () => {
-    const vs = tri({ typicite: false }); // sans typicité du style, la clé de départage ne sépare pas : c'est là que R4 décide
-    const amer = vs.filter((v) => usage(v) === 'bittering');
-    expect(amer.length).toBeGreaterThan(0); // jamais une exclusion
-    expect(amer.every((v) => !!v.reculeUsage && /amérisant/.test(v.reculeUsage))).toBe(true);
-    expect(vs.filter((v) => usage(v) !== 'bittering').every((v) => v.reculeUsage === undefined)).toBe(true);
-    // « égaux » : conflits, distance, rang de débordement et clé de départage (typicité du style) : la règle ne passe jamais devant la typicité (EKG, Target, Saaz sont des phares).
-    const egal = (b: Voie, n: Voie) => n.conflicts.length === b.conflicts.length && n.distance.total === b.distance.total && n.overflowRang === b.overflowRang && JSON.stringify(n.departage?.cle) === JSON.stringify(b.departage?.cle);
-    let inverses = 0, paires = 0;
-    vs.forEach((b, i) => { if (usage(b) === 'bittering') vs.forEach((n, j) => { if (usage(n) !== 'bittering' && egal(b, n)) { paires++; if (j < i === false) inverses++; } }); });
-    expect(paires).toBeGreaterThan(0);
-    expect(inverses).toBe(0);
+  it('un houblon peu employé au frais porte sa raison écrite (sa part, la médiane, la source) et reste proposé : jamais une exclusion', () => {
+    const vs = tri(), sans = tri({ usageAuFrais: false });
+    expect(vs.map((v) => v.id).sort()).toEqual(sans.map((v) => v.id).sort());
+    const recule = vs.filter((v) => v.reculeUsage !== undefined);
+    expect(recule.length).toBeGreaterThan(0);
+    expect(recule.every((v) => (v.cleFrais ?? 0) > 0 && /Beer Analytics/.test(v.reculeUsage!) && /jamais écarté/.test(v.reculeUsage!))).toBe(true);
   });
-  it('avec la typicité du style, R4 ne fait reculer aucun phare : elle passe après la typicité (EKG, Target restent là où le style les met)', () => {
-    const sans = tri({ usageAuFrais: false }).map((v) => v.id), avec = tri().map((v) => v.id);
-    expect(avec.length).toBe(sans.length);
-    const e = (ids: string[], id: string) => ids.indexOf(id);
-    for (const id of avec.slice(0, 20)) expect(e(avec, id) - e(sans, id)).toBeLessThanOrEqual(3);
-  });
-  it('sans l’option, l’ordre d’avant ne reculent pas', () => {
+  it('sans l’option, aucune clé ni raison', () => {
     const vs = tri({ usageAuFrais: false });
-    expect(vs.some((v) => v.reculeUsage !== undefined)).toBe(false);
+    expect(vs.some((v) => v.reculeUsage !== undefined || v.cleFrais !== undefined)).toBe(false);
   });
-  it('un usage inconnu ne recule pas, et un amérisant au 10′ ne recule pas (la règle est celle du whirlpool et du dry hop)', () => {
-    const inconnu = creerMoteur({ catalogue: CATALOGUE.map((c) => (c.purpose === 'bittering' ? { ...c, purpose: null } : c)), stock: [] });
-    expect(ajouts(inconnu.proposeVoies(SATUREE, { citrus: 1 }, GRAND).voies).some((v) => v.reculeUsage !== undefined)).toBe(false);
+  it('un houblon sans usage connu ne recule pas, et un ajout au 10′ non plus (R4 ne lit que le whirlpool et le dry hop)', () => {
+    const inconnu = creerMoteur({ catalogue: CATALOGUE.map((c) => ({ ...c, purpose: null })), stock: [] });
+    expect(ajouts(inconnu.proposeVoies(SATUREE, { citrus: 1 }, GRAND).voies).some((v) => v.reculeUsage !== undefined)).toBe(true); // l'étiquette Beer Maverick ne compte pas : la part Beer Analytics suffit
     const dix = ajouts(m.proposeVoies(SATUREE, { citrus: 1 }, { ...GRAND, moments: ['b10'] }).voies);
     expect(dix.length).toBeGreaterThan(0);
     expect(dix.some((v) => v.reculeUsage !== undefined)).toBe(false);

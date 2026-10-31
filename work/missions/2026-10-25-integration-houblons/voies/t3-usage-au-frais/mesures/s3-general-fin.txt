@@ -1,0 +1,33 @@
+# position fin ; table : AVEC part au frais (t3) ; banc scripts/eval-hop/s3-general.ts
+{
+ "contradictions": {
+  "avant": 4,
+  "r3": 0,
+  "apres": 0,
+  "sur": 62
+ },
+ "meilleurPhare": {
+  "avant": 2,
+  "r3": 1,
+  "apres": 1
+ },
+ "phareMedian": {
+  "avant": 5,
+  "r3": 5,
+  "apres": 5
+ },
+ "reculsDePlusDe20PlacesDepuisR3": [],
+ "reculsDePlusDe20PlacesDepuisAvant": [
+  "16A · plus floral · dry hop actif : médiane 32 → 76 (nugget, columbus, target, mount-hood → willamette, nugget, columbus, target)"
+ ],
+ "cartesEnContradiction": {
+  "avant": [
+   "23A · plus d’agrumes",
+   "23A · plus floral",
+   "23G · plus d’agrumes",
+   "23G · plus floral"
+  ],
+  "r3": [],
+  "apres": []
+ }
+}

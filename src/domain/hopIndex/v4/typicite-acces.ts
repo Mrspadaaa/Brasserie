@@ -15,7 +15,11 @@ export interface TableTypicite {
   familles: Record<string, { nom: string; codes: string[] }>;
   concentration: Record<string, Record<string, number>>;
   recettes: Record<string, number>;
+  /** t3 (R4) : la part au frais de chaque houblon lu (recettes Aroma + Dry Hop ÷ recettes des cinq moments, Beer Analytics), valeur continue sans seuil ni étiquette ; `mediane` : le point neutre (un houblon sans part vaut la médiane). Absent d'une table plus ancienne : tout est inconnu, rien ne bouge. */
+  auFrais?: { minRecettes: number; mediane: number; parts: Record<string, number> };
 }
+/** t3 : l'emploi au frais d'un houblon, `part` de 0 à 1 ; `mediane` : celle du catalogue lu (point neutre). */
+export interface UsageAuFrais { part: number; mediane: number }
 export interface Typicite {
   /** 3 typé, 2 courant, 1 rare ; null : inconnue (la table ne dit rien de ce houblon pour ce style). */
   palier: 1 | 2 | 3 | null;
@@ -35,6 +39,7 @@ export interface MoteurTypicite {
   typiciteDeVoie(positifs: { varietyId: string; poids: number }[], styleCode: string): Typicite | null;
   /** La table posée (null : aucune). */
   table(): TableTypicite | null;
+  auFrais(varietyId: string): UsageAuFrais | null;
 }
 /** a4 (D125), biais 3 : la place, dans une clé de rang, d'une typicité INCONNUE MAIS BORNÉE (le style est hors des 16 premiers du houblon : sa part est au plus `p16`, qui n'est pas sous le seuil du rare), entre « courant » (2)
  * et « rare » (1). Un inconnu n'est pas une rareté : celui dont une borne dit « pas plus de p16 » ne passe jamais derrière un rare connu ; il ne passe pas non plus devant un courant ou un typé, dont la part est établie.
@@ -48,6 +53,10 @@ let impl: MoteurTypicite | null = null;
 export const enregistrerTypicite = (m: MoteurTypicite | null): void => { impl = m; };
 /** La table de typicité si elle est posée, sinon null (D120, t2) : la page l'envoie au worker, qui ne la charge pas lui-même (ordre des messages : la table arrive avant les requêtes qui la lisent). */
 export const tableTypicitePosee = (): TableTypicite | null => (impl ? impl.table() : null);
+/** t3 : l'emploi au frais du houblon, ou null si inconnu (table non chargée, houblon absent de Beer Analytics ou sous `minRecettes` recettes) : l'inconnu est neutre, il ne recule pas. */
+export const usageAuFraisDe = (varietyId: string): UsageAuFrais | null => (impl ? impl.auFrais(varietyId) : null);
+/** t3 : la médiane des parts au frais (point neutre), ou null sans table. */
+export const medianeAuFrais = (): number | null => (impl ? impl.table()?.auFrais?.mediane ?? null : null);
 const NON_CHARGEE: Typicite = { palier: null, part: null, origine: null, code: null, concentration: null, auPlus: null, raison: 'table de typicité non chargée' };
 export const typiciteDe = (varietyId: string, styleCode: string): Typicite => (impl ? impl.typiciteDe(varietyId, styleCode) : NON_CHARGEE);
 export const typiciteDeVoie = (positifs: { varietyId: string; poids: number }[], styleCode: string): Typicite | null => (positifs.length ? (impl ? impl.typiciteDeVoie(positifs, styleCode) : NON_CHARGEE) : null);

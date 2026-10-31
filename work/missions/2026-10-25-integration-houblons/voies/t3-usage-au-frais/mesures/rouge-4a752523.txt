@@ -1,0 +1,14 @@
+   × t3 : la table porte la part au frais, continue et sans seuil > auFrais : des parts entre 0 et 1, une médiane, aucun seuil ni étiquette 3ms
+   × t3 : la table porte la part au frais, continue et sans seuil > la source et la licence sont dans l’en-tête de la table 1ms
+   × t3 : la table porte la part au frais, continue et sans seuil > usageAuFrais : connu (part, médiane) ; inconnu = null, jamais 0 ; sans table, rien 0ms
+   × t3 : R4 range par l’emploi au frais, en continu > la clé d’un ajout au dry hop = médiane − part au frais ; absente (neutre) sans donnée ; absente hors whirlpool et dry hop 1095ms
+   × t3 : R4 range par l’emploi au frais, en continu > plus d’ajouts différents : la clé prend de nombreuses valeurs (continue), pas deux 852ms
+   × t3 : R4 range par l’emploi au frais, en continu > un assemblage : la clé est la moyenne pondérée par la dose 2149ms
+   × t3 : R4 range par l’emploi au frais, en continu > à rang égal (famille citée et typicité), le plus employé au frais passe devant ; R4 ne réordonne jamais deux ajouts de rang de départag
+   × t3 : R4 range par l’emploi au frais, en continu > Warrior (7 % au frais) passe après Cascade, Centennial (38 et 41 %) à rang égal : c’est la part, pas une étiquette 3122ms
+   × t3 : R4 range par l’emploi au frais, en continu > jamais une exclusion : mêmes voies avec et sans R4 ; la raison écrite de celles qui reculent 3069ms
+   ✓ t3 : R4 range par l’emploi au frais, en continu > aucune étiquette : l’usage Beer Maverick (aroma, dual, bittering) ne change pas l’ordre  3371ms
+   × t3 : R4 range par l’emploi au frais, en continu > sans la part au frais dans la table (ancienne table, ou houblon hors Beer Analytics) : rien ne bouge 1586ms
+   ✓ t3 : R4 range par l’emploi au frais, en continu > au 60′ et pour diminuer ou augmenter : pas de clé (R4 ne lit que les ajouts au whirlpool et au dry hop)  1332ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  10 failed | 2 passed (12)

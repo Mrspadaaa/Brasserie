@@ -1,0 +1,28 @@
+--- sans R4 (usageAuFrais: false) : 14 voies (stock), citrus au dryActive
+  1 ajouter                Centennial@dryActive:48                        frais=41 %       cle=0
+  2 ajouter                Amarillo@dryActive:48                          frais=52 %       cle=0
+  3 ajouter                Cascade@dryActive:48                           frais=38 %       cle=0
+  4 ajouter                Warrior@dryActive:48                           frais=7 %        cle=0
+  5 ajouter                Cashmere@dryActive:48                          frais=60 %       cle=0
+  6 assemblage             Cascade@dryActive:24 + Target@dryActive:24     frais=38 %/10 %  cle=0
+  7 assemblage             Target@dryActive:24 + Sabro@dryActive:24       frais=10 %/71 %  cle=0
+  8 ajouter                Target@dryActive:48                            frais=10 %       cle=0
+  9 ajouter                Sabro@dryActive:30                             frais=71 %       cle=0
+ 10 ajouter                Hallertau Blanc@dryActive:30                   frais=?          cle=0
+ 11 ajouter                Idaho 7@dryActive:20                           frais=72 %       cle=0
+ 12 ajouter                Motueka@dryActive:20                           frais=53 %       cle=0
+  4 premiers : part au frais moyenne 34 % (41, 52, 38, 7)
+--- avec R4 (part au frais continue) : 14 voies (stock), citrus au dryActive
+  1 ajouter                Centennial@dryActive:48                        frais=41 %       cle=-0.1112
+  2 ajouter                Amarillo@dryActive:48                          frais=52 %       cle=-0.2119
+  3 ajouter                Cascade@dryActive:48                           frais=38 %       cle=-0.0744
+  4 ajouter                Warrior@dryActive:48                           frais=7 %        cle=0.2331
+  5 ajouter                Cashmere@dryActive:48                          frais=60 %       cle=-0.299
+  6 assemblage             Cascade@dryActive:24 + Target@dryActive:24     frais=38 %/10 %  cle=0.0645
+  7 assemblage             Target@dryActive:24 + Sabro@dryActive:24       frais=10 %/71 %  cle=-0.1034
+  8 ajouter                Target@dryActive:48                            frais=10 %       cle=0.2035
+  9 ajouter                Sabro@dryActive:30                             frais=71 %       cle=-0.4103
+ 10 ajouter                Hallertau Blanc@dryActive:30                   frais=?          cle=0
+ 11 ajouter                Idaho 7@dryActive:20                           frais=72 %       cle=-0.4149
+ 12 ajouter                Motueka@dryActive:20                           frais=53 %       cle=-0.2252
+  4 premiers : part au frais moyenne 34 % (41, 52, 38, 7)

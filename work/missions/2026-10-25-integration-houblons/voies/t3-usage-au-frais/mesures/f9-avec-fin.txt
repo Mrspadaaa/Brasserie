@@ -1,0 +1,91 @@
+# position fin ; table : AVEC part au frais (t3) ; banc scripts/eval-hop/f9-nonreg.ts
+== 1. phares : premier de la liste, puis rang des phares (liste principale, fixtures)
+21C agrumes · 10′
+   actuel         tango | citra 2 nelso 67 galax 4 mosai 44 motue 35 idaho 88
+   A3             tango | citra 2 nelso 56 galax 5 mosai 41 motue 34 idaho 88
+   typicité       citra | citra 1 nelso 39 galax 4 mosai 34 motue 42 idaho 88
+   A3 + typicité  citra:cryo | citra 1 nelso 57 galax 6 mosai 37 motue 41 idaho 88
+21C agrumes · dry hop actif
+   actuel         sabro | citra 5 nelso 73 galax 14 mosai 30 motue 3 idaho 88
+   A3             sabro | citra 3 nelso 85 galax 12 mosai 28 motue 76 idaho 88
+   typicité       sabro | citra 4 nelso 20 galax 11 mosai 14 motue 3 idaho 88
+   A3 + typicité  sabro | citra 2 nelso 84 galax 9 mosai 12 motue 78 idaho 88
+21C tropicaux · 10′
+   actuel         solero | citra 8 nelso 61 galax 15 mosai 53 motue 62 idaho 87
+   A3             solero | citra 8 nelso 61 galax 15 mosai 53 motue 62 idaho 87
+   typicité       citra | citra 1 nelso 53 galax 4 mosai 49 motue 61 idaho 87
+   A3 + typicité  solero | citra 4 nelso 60 galax 7 mosai 53 motue 62 idaho 87
+21C tropicaux · dry hop actif
+   actuel         sabro | citra 11 nelso 48 galax 26 mosai 29 motue 86 idaho 87
+   A3             solero | citra 9 nelso 69 galax 24 mosai 27 motue 77 idaho 87
+   typicité       sabro | citra 3 nelso 16 galax 10 mosai 12 motue 86 idaho 87
+   A3 + typicité  citra:cryo | citra 1 nelso 68 galax 8 mosai 10 motue 77 idaho 87
+16D floral · 10′
+   actuel         loral | citra 54 nelso – galax – mosai 43 motue 71 idaho 62
+   A3             loral | citra 62 nelso – galax – mosai 40 motue 81 idaho 66
+   typicité       target | citra 26 nelso – galax – mosai 22 motue 8 idaho 67
+   A3 + typicité  ahtanum | citra 59 nelso – galax – mosai 21 motue 77 idaho 66
+16D floral · dry hop actif
+   actuel         idaho-7 | citra 57 nelso – galax – mosai 46 motue 2 idaho 1
+   A3             loral | citra 54 nelso – galax – mosai 43 motue 79 idaho 62
+   typicité       motueka | citra 28 nelso – galax – mosai 24 motue 1 idaho 2
+   A3 + typicité  target | citra 24 nelso – galax – mosai 20 motue 73 idaho 62
+22A agrumes · 10′
+   actuel         citra | citra 1 nelso 82 galax 10 mosai 26 motue 11 idaho 29
+   A3             citra | citra 1 nelso 87 galax 10 mosai 27 motue 12 idaho 30
+   typicité       citra | citra 1 nelso 47 galax 8 mosai 13 motue 24 idaho 14
+   A3 + typicité  citra | citra 1 nelso 87 galax 8 mosai 16 motue 21 idaho 17
+22A agrumes · dry hop actif
+   actuel         citra:cryo | citra 1 nelso 83 galax 11 mosai 27 motue 12 idaho 30
+   A3             citra:cryo | citra 1 nelso 87 galax 11 mosai 27 motue 12 idaho 30
+   typicité       citra:cryo | citra 1 nelso 48 galax 9 mosai 14 motue 25 idaho 15
+   A3 + typicité  citra:cryo | citra 1 nelso 87 galax 9 mosai 14 motue 21 idaho 15
+22A tropicaux · 10′
+   actuel         solero | citra 5 nelso 45 galax 21 mosai 24 motue 47 idaho 8
+   A3             solero | citra 5 nelso 61 galax 21 mosai 24 motue 63 idaho 8
+   typicité       strata | citra 2 nelso 32 galax 9 mosai 11 motue 33 idaho 4
+   A3 + typicité  strata | citra 4 nelso 64 galax 24 mosai 26 motue 65 idaho 6
+22A tropicaux · dry hop actif
+   actuel         galaxy | citra 3 nelso 47 galax 1 mosai 26 motue 49 idaho 11
+   A3             solero | citra 5 nelso 61 galax 21 mosai 25 motue 63 idaho 9
+   typicité       galaxy | citra 3 nelso 33 galax 1 mosai 13 motue 34 idaho 7
+   A3 + typicité  strata | citra 2 nelso 64 galax 24 mosai 27 motue 65 idaho 5
+16D tropicaux · 10′
+   actuel         solero | citra 5 nelso 44 galax 21 mosai 24 motue 46 idaho 9
+   A3             solero | citra 5 nelso 44 galax 21 mosai 24 motue 46 idaho 9
+   typicité       nugget | citra 7 nelso 17 galax 13 mosai 15 motue 3 idaho 31
+   A3 + typicité  motueka | citra 2 nelso 12 galax 8 mosai 10 motue 1 idaho 20
+16D tropicaux · dry hop actif
+   actuel         idaho-7 | citra 9 nelso 47 galax 24 mosai 27 motue 2 idaho 1
+   A3             idaho-7 | citra 9 nelso 47 galax 24 mosai 27 motue 2 idaho 1
+   typicité       motueka | citra 9 nelso 19 galax 15 mosai 17 motue 1 idaho 2
+   A3 + typicité  motueka | citra 9 nelso 19 galax 15 mosai 17 motue 1 idaho 2
+21C floral · 10′
+   actuel         x13459 | citra 18 nelso – galax – mosai 51 motue 60 idaho 85
+   A3             x13459 | citra 44 nelso – galax – mosai 22 motue 53 idaho 85
+   typicité       citra:cryo | citra 1 nelso – galax – mosai 44 motue 48 idaho 85
+   A3 + typicité  centennial | citra 42 nelso – galax – mosai 2 motue 54 idaho 85
+21C floral · dry hop actif
+   actuel         motueka | citra 49 nelso – galax – mosai 36 motue 1 idaho 85
+   A3             motueka | citra 49 nelso – galax – mosai 36 motue 1 idaho 85
+   typicité       motueka | citra 7 nelso – galax – mosai 5 motue 1 idaho 85
+   A3 + typicité  motueka | citra 7 nelso – galax – mosai 5 motue 1 idaho 85
+22A résineux · 10′
+   actuel         chinook | citra 35 nelso – galax – mosai 6 motue – idaho 28
+   A3             chinook | citra 45 nelso – galax – mosai 6 motue – idaho 38
+   typicité       mosaic | citra 9 nelso – galax – mosai 1 motue – idaho 8
+   A3 + typicité  mosaic | citra 37 nelso – galax – mosai 1 motue – idaho 36
+22A résineux · dry hop actif
+   actuel         sabro | citra 36 nelso – galax – mosai 7 motue – idaho 29
+   A3             chinook | citra 29 nelso – galax – mosai 6 motue – idaho 39
+   typicité       sabro | citra 10 nelso – galax – mosai 2 motue – idaho 9
+   A3 + typicité  mosaic | citra 32 nelso – galax – mosai 1 motue – idaho 37
+== 2. Citra cryo premier (sur 16 listes) : actuel 1 ; A3 1 ; typicité 2 ; A3 + typicité 3 ; Citra premier : actuel 1 ; A3 1 ; typicité 3 ; A3 + typicité 1
+== 3. stout S1 (plus floral, moins résineux), 4 achats à 10′, departage aucun puis défaut
+   actuel         aucun : east-kent-goldings, hallertau-tradition, huell-melon, saphir | défaut : loral, pekko, barbe-rouge, pacifica
+   A3             aucun : loral, pekko, barbe-rouge | défaut : loral, pekko, barbe-rouge
+   typicité       aucun : east-kent-goldings, hallertau-tradition, huell-melon, saphir | défaut : east-kent-goldings, first-gold, strisselspalt, liberty
+   A3 + typicité  aucun : loral, pekko, barbe-rouge | défaut : southern-aroma, loral, pekko, barbe-rouge
+   liste complète « actuel » = liste sans options : DIFFÉRENTE
+== 4. palier 60′ (+20 IBU), 22A : avec et sans typicité
+   13 voies ; même ordre : oui

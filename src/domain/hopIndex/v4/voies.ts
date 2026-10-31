@@ -16,12 +16,12 @@ import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 import { DEPARTAGE_DEFAUT, cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
-  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe, MOMENTS_AMERISANT_RECULE, raisonAmerisant,
+  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe, MOMENTS_AMERISANT_RECULE,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
 } from './palier';
 import { produitDArome } from './substitution';
 import { facteurIntensite, type FacteurIntensite } from './intensite';
-import { palierDansLaCle, typiciteDe, typiciteDeVoie, type Typicite } from './typicite-acces';
+import { medianeAuFrais, palierDansLaCle, typiciteDe, typiciteDeVoie, usageAuFraisDe, type Typicite } from './typicite-acces';
 
 /** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
 export const POOL_BORNE = 80;
@@ -118,7 +118,10 @@ export interface Voie {
   enStock?: number | null;
   /** g2b : points à relire (dry hop cumulé au-dessus du repère de revue) ; jamais une exclusion. */
   drapeaux?: string[];
-  /** s3, R4 (D195) : la raison pour laquelle la voie passe après les houblons d'arôme ou de double usage (un amérisant ajouté au whirlpool ou au dry hop). Absent : aucun recul. */
+  /** s3, R4 (D195) ; t3 : la clé de l'emploi au frais d'un ajout au whirlpool ou au dry hop = médiane du catalogue − part au frais du houblon (Beer Analytics ; moyenne pondérée par la dose si l'ajout compte plusieurs houblons).
+   * Positive : moins employé au frais que la médiane, la voie passe après ; négative : davantage, elle passe devant ; absente : 0, neutre (donnée manquante ou autre moment). Continue : ni seuil, ni étiquette. */
+  cleFrais?: number;
+  /** t3 : la raison, quand la voie passe après (clé positive), avec la part du houblon. Absent : aucun recul. */
   reculeUsage?: string;
 }
 export interface StyleOverflow {
@@ -156,7 +159,7 @@ export interface VoieOptions {
   debordementNeutre?: boolean;
   /** s3 (D195) : la demande prime sur la bande, et un excès minuscule n'est pas hors du style. Défaut : `SATURATION_DEFAUT`. */
   saturation?: boolean;
-  /** s3, R4 (D195) : un amérisant au whirlpool ou au dry hop passe après les houblons d'arôme ou de double usage (jamais écarté). Défaut : `USAGE_AU_FRAIS_DEFAUT`. */
+  /** s3, R4 (D195) ; t3 : au whirlpool et au dry hop, plus un houblon est employé au frais (Beer Analytics), plus il passe devant à rang égal (jamais écarté). Défaut : `USAGE_AU_FRAIS_DEFAUT`. */
   usageAuFrais?: boolean;
   /** a4 (D125) : l'ordre de la présélection du pool (voir `SELECTION_DEFAUT`). */
   selection?: SelectionPool;
@@ -426,10 +429,16 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const positifs = reduction || aAmertume ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 }));
     const departage = departageMode !== 'aucun' && plus.length ? cleDeVoie(departageMode, positifs, plus, recipe.styleCode) : null;
     const typicite = typ && plus.length ? typiciteDeVoie(positifs, recipe.styleCode) : typ ? null : undefined; // f9 : la typicité du houblon qui monte, pour le style de la recette
-    // s3, R4 (D195) : un houblon d'usage « amérisant » ajouté au whirlpool ou au dry hop recule (une clé du rang, jamais une exclusion) ; un usage inconnu ne recule pas.
-    const amerisant = usageAuFrais && (type === 'ajouter' || type === 'assemblage' || type.startsWith('remplacer'))
-      ? changes.filter((c) => c.sign > 0 && MOMENTS_AMERISANT_RECULE.includes(c.addition.moment) && hopRef(c.addition.hopKey)?.catalogue.purpose === 'bittering') : [];
-    const reculeUsage = amerisant.length ? [...new Set(amerisant.map((c) => raisonAmerisant(nameOf(c.addition.hopKey), MOMENTS[c.addition.moment].label)))].join(' ') : undefined;
+    // s3, R4 (D195) ; t3 : au whirlpool et au dry hop, plus un houblon est employé au frais, plus il passe devant (une clé du rang, continue, jamais une exclusion). La mesure : sa part au frais chez Beer Analytics
+    // (recettes Aroma + Dry Hop sur les cinq moments), comparée à la médiane du catalogue lu. Aucune étiquette (usage Beer Maverick, catégorie du site), aucun seuil. Une part manquante (table non chargée, houblon
+    // hors Beer Analytics, sous 1 000 recettes) vaut la médiane : neutre, elle ne recule pas.
+    const mediane = usageAuFrais ? medianeAuFrais() : null;
+    const frais = mediane !== null && (type === 'ajouter' || type === 'assemblage' || type.startsWith('remplacer'))
+      ? changes.filter((c) => c.sign > 0 && MOMENTS_AMERISANT_RECULE.includes(c.addition.moment)).map((c) => ({ c, f: usageAuFraisDe(hopRef(c.addition.hopKey)?.varietyId ?? ''), w: c.share ?? 1 })) : [];
+    const poidsFrais = frais.reduce((s, x) => s + x.w, 0);
+    const cleFrais = frais.length && poidsFrais > 0 ? round(frais.reduce((s, x) => s + x.w * (x.f ? mediane! - x.f.part : 0), 0) / poidsFrais, 4) : 0;
+    const pct = (x: number) => `${Math.round(x * 100)} %`;
+    const reculeUsage = cleFrais > 0 ? frais.filter((x) => x.f && x.f.part < x.f.mediane).map((x) => `${nameOf(x.c.addition.hopKey)} : ${pct(x.f!.part)} de ses recettes l'emploient à l'arôme ou au dry hop (médiane du catalogue ${pct(x.f!.mediane)} ; Beer Analytics, CC BY-SA 4.0) ; ajouté ${MOMENTS[x.c.addition.moment].label}, il passe après les houblons plus employés au frais à effet égal (jamais écarté).`).join(' ') : undefined;
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -444,6 +453,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       ...(departage ? { departage } : {}),
       ...(typicite !== undefined ? { typicite } : {}),
       ...(a3 ? { a3: true as const } : {}),
+      ...(cleFrais !== 0 ? { cleFrais } : {}),
       ...(reculeUsage ? { reculeUsage } : {}),
     };
   };
@@ -707,6 +717,15 @@ const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
 const ORDRE_POOL = new WeakMap<Voie, number>();
 /** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
 const grammesDe = (v: Voie) => v.actions.reduce((s, x) => s + (x.op === 'retirer' ? 0 : x.grams), 0);
+/** s3, R4 (D195) ; t3 : où la clé de l'emploi au frais entre dans la clé de départage (mesuré, voir t3-usage-au-frais/RESULTAT.md). Index de l'étape « radar Beer Maverick » : la famille citée (et la typicité du style en k3k1t) d'abord,
+ * puis le houblon le plus employé au frais, puis le radar et la cascade des fiches. Un mode absent d'ici : la clé de l'emploi au frais passe après toute la clé de départage (la plus basse des positions, quasi inerte).
+ * Plus haut (juste après la distance) : refusé, les phares de styles traditionnels reculent jusqu'à 72 places ; `{}` : tout à la fin. */
+export const COUPURE_FRAIS: Partial<Record<Departage, number>> = { k3k1: 1, k3k1t: 2 };
+function comparerClesFrais(a: Voie, b: Voie): number {
+  const frais = (a.cleFrais ?? 0) - (b.cleFrais ?? 0), n = a.departage && b.departage && a.departage.mode === b.departage.mode ? COUPURE_FRAIS[a.departage.mode] : undefined;
+  if (n === undefined || !a.departage || !b.departage) return comparerCles(a.departage?.cle, b.departage?.cle) || frais;
+  return comparerCles(a.departage.cle.slice(0, n), b.departage.cle.slice(0, n)) || frais || comparerCles(a.departage.cle.slice(n), b.departage.cle.slice(n));
+}
 export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): number {
   const da = a.distance.total, db = b.distance.total;
   // D118 (f8) : dans les groupes du VRAI DRY HOP (option `dryHop` de g2b : une liste d'ajouts d'arôme seulement, où tout le monde porte une clé), la clé k3k1 (l'intensité de la famille visée, radar Beer Maverick)
@@ -716,13 +735,12 @@ export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): n
   const intensiteD = (a.departage?.mode === 'k3k1' || a.departage?.mode === 'k3k1t') && a.departage.mode === b.departage?.mode && !!a.dose && !!b.dose;
   return a.conflicts.length - b.conflicts.length
     || comparerUsagePalier(a.palier, b.palier) // g2b (D88 B) : à 60′ l'usage passe d'abord ; sans l'option `palier60`, aucune voie n'a de palier : égalité
-    || (intensiteD ? comparerCles(a.departage?.cle, b.departage?.cle) : 0)
+    || (intensiteD ? comparerClesFrais(a, b) : 0)
     || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : (a.overflowStyle ?? a.overflowTotal) - (b.overflowStyle ?? b.overflowTotal)) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
     || (a.a3 && b.a3 ? grammesDe(a) - grammesDe(b) : 0) // f9 A3 : à distance égale, la variété qui atteint la visée à la dose la plus basse
-    || (intensiteD ? 0 : comparerCles(a.departage?.cle, b.departage?.cle))
-    || Number(!!a.reculeUsage) - Number(!!b.reculeUsage) // s3, R4 (D195) : à distance, rang et typicité égaux, un amérisant au whirlpool ou au dry hop après les houblons d'arôme ou de double usage (jamais devant la typicité du style : EKG, Target, Saaz sont des phares)
+    || (intensiteD ? 0 : comparerClesFrais(a, b))
     || (ORDRE_POOL.get(a) ?? 0) - (ORDRE_POOL.get(b) ?? 0) // D105 : le style départage avant les effets de bord (listes principales ; 0 ailleurs)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]
