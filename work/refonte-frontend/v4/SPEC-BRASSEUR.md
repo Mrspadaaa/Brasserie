@@ -825,3 +825,4 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **La source de vérité** (31.10), mot pour mot : « Beer Maverick ne doit pas être la source de vérité. La source de vérité est un penel croisé de plusieurs source et donnée » (note [[verite-croisee]] ; voies c9 et v2).
 - **Une seule source** (31.10), mot pour mot : « SI on a que une seul source pour ce houblons, tempis il faut pas se limité à si une seul source on montre pas, non » (la confiance, jamais l'exclusion ; [[verite-croisee]]).
 - **Rust ou autre langage** (31.10), mot pour mot : « Question, pas pour tout de suite. Mais vaudrait il la peine de réécrire certaines partie en Rust ou autre langue rapide et plus fiable ? Regarde ce que on pourrait gagner, perdre. Et fait une issue du c'est intéressant » (issue #196 : profiler d'abord, noyau WASM seulement si le profil le montre).
+- **Le panel croisé, son choix** (31.10) : « B » (D201).

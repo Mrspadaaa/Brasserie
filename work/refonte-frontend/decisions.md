@@ -1196,3 +1196,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   reste du top 5 est accordé, ainsi que l'installation de `@google/design.md` 0.4.0, épinglé, dans `tools/design-lint` seulement.
   Mission 2026-10-31-systeme-ecrans : e1 (baselines), e2 (inventaire, hors d'`ecrans.json`, règle n° 1), e3 (glossaire), e4 (jury) et e5
   (lint). Les serveurs de la mission tournent dans une copie à part, au commit de production (`%TEMP%/atelier-ecrans`).
+- D201 (l'utilisateur, 31.10) : « B ». Un panel croisé précalculé pour toutes les variétés, avec les ids conservés, en trois étapes :
+  1. **B1** : des étiquettes honnêtes et « 1 source » à un seul endroit, la ligne de sources de la fiche (D168), sans changer un chiffre ;
+  2. **B2** : le panel des valeurs (α, β, cohumulone, huiles, linalol), avec un banc de non-régression, après c9 ;
+  3. **B3** : l'usage continu (60′, D106), la typicité par le rattachement, et un radar de repli, après h1 et k2.
+  Les poids par type de source sont des hypothèses : ils se règlent sur une moitié des variétés et se jugent sur l'autre (L20).
