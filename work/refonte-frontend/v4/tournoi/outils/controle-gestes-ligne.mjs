@@ -13,7 +13,7 @@
 //   MASSE   : un toucher sur la masse de la 2e ligne, « 2,5 », Entrée → la ligne dit 2,5 ; aucune sous-vue de plus ; champ jamais
 //             type="number" (saisie-mobile) ;
 //   RETRAIT : un toucher sur « retirer » de la 2e ligne → une ligne de moins, sans dialogue ; « Annuler » → la ligne revient à sa place ;
-//   AJOUT   : « Cara 0,3 », Entrée → une ligne Cara à 0,3 ; « Munich », Entrée → le curseur est dans la masse de la ligne Munich ;
+//   AJOUT   : « Cara 0,3 », Entrée → une ligne Cara à 0,3 ; « Munich », Entrée → le curseur est dans la masse de la ligne ajoutée (Munich, ou Münchner Malz par l'alias, D220) ;
 //             aucune sous-vue de plus ;
 //   DETAIL  : un toucher sur le nom de la 2e ligne → une sous-vue visible nomme cet ingrédient.
 // Usage : node controle-gestes-ligne.mjs <etat.html> [--etats=,replie]   (état vide = la page sans ancre)
@@ -122,7 +122,8 @@ for (const L of LARGEURS) for (const etat of etats) {
     const h2 = await p.$('[data-role="ajout"]'); await toucher(h2);
     await p.keyboard.type('Munich'); await p.keyboard.press('Enter'); await pause();
     apres = await st();
-    const j = apres.noms.findIndex((n) => /^Munich/.test(n));
+    // D220 : « Munich » peut ajouter Münchner Malz par l'alias du nom courant ; la ligne ajoutée compte, quel que soit son nom.
+    const j = apres.noms.findIndex((n) => /^(Munich|Münchner)/.test(n));
     const okCurseur = j >= 0 && apres.actif.editable && apres.actif.ligne === j && apres.sousVues.length <= avant.sousVues.length;
     noter(okMasse && okCurseur, `AJOUT ${nomEtat} : ${okMasse ? '« Cara 0,3 » ajouté' : `« Cara 0,3 » : ligne ${i}, masse « ${(apres.masses[i] ?? '').trim()} »`} ; ${okCurseur ? 'Munich : curseur dans sa masse, sur la ligne' : `Munich : curseur ${apres.actif.tag} ${apres.actif.role} ligne ${apres.actif.ligne} (ligne Munich ${j}), sous-vues ${avant.sousVues.length} → ${apres.sousVues.length}`}`);
   }

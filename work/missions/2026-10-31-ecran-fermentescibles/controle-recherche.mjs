@@ -5,7 +5,9 @@
 //  R3 « pils » : le résultat Pilsner Malz dit qu'il est déjà là, avec sa masse (« 5,0 ») ; Entrée n'ajoute aucune ligne ;
 //  R4 « Abbey Malt » (inconnu) : « Créer » visible ; Entrée ajoute la ligne « Abbey Malt » ;
 //  R5 « cara 0,3 » : Entrée ajoute Carapils à 0,3 kg ;
-//  R6 chaque résultat et « Créer » font 24 px au moins.
+//  R6 chaque résultat et « Créer » font 24 px au moins ;
+//  R0 (D221 : « l'ouverture de la recherche avec les stocks. Celles de la vrai app était pas trop mal ») : le champ touché, rien tapé,
+//     trois résultats au moins s'ouvrent, et chacun dit son stock comme l'app (« … en stock » ou « stock épuisé ») ; « mu » aussi.
 // Un résultat : [data-role~="resultat"][data-nom] ou une puce [data-pu] ; déjà là : [data-deja] ; créer : [data-role~="creer"] ou [data-cree].
 // Usage : node controle-recherche.mjs <etat.html>... ; imprime RECHERCHE OK ou RECHERCHE ECHEC n.
 import path from 'node:path';
@@ -37,9 +39,16 @@ async function taper(url, texte) {
 for (const f of pages) {
   const nom = path.basename(path.dirname(path.resolve(f))) + '/' + path.basename(f);
   const url = 'file:///' + path.resolve(f).split(path.sep).join('/');
-  if (!(await taper(url, 'mu'))) { ko(`${nom} : pas de champ d'ajout [data-role="ajout"]`); continue; }
+  if (!(await taper(url, ''))) { ko(`${nom} : pas de champ d'ajout [data-role="ajout"]`); continue; }
+  const STOCK = /en stock|stock épuisé|épuisé/i;
+  const ouverts = (await resultats()).filter((r) => !r.creer && !r.deja);
+  if (ouverts.length < 3) ko(`${nom} R0 : le champ touché ouvre ${ouverts.length} résultat(s) (3 au moins attendus)`);
+  const sansStock = ouverts.filter((r) => !STOCK.test(r.texte));
+  if (sansStock.length) ko(`${nom} R0 : à l'ouverture, sans stock : ${sansStock.map((r) => '« ' + r.texte + ' »').join(', ')}`);
+  await taper(url, 'mu');
   const avant = (await lignes()).length;
   let rs = await resultats(), mun = rs.find((r) => /münchner/i.test(r.nom) && !r.creer);
+  if (mun && !STOCK.test(mun.texte)) ko(`${nom} R0 : « ${mun.texte} » ne dit pas son stock`);
   if (!mun) ko(`${nom} R1 : « mu » ne montre pas Münchner Malz (${rs.map((r) => r.texte).join(' | ') || 'rien'})`);
   else {
     if (mun.haut < 0 || mun.bas > H - CLAVIER) ko(`${nom} R1 : Münchner Malz hors de la vue au-dessus du clavier (${Math.round(mun.haut)}–${Math.round(mun.bas)} px)`);

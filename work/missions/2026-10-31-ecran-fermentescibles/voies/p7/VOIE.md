@@ -14,6 +14,20 @@ Dans la liste ? » (D220). Aujourd'hui, taper dans « Nom (et kg), Entrée » fi
 recette dit « déjà 5,0 kg » ; rien trouvé → « Créer « … » ». Jamais dans la liste. Et « Munich », le nom courant du malt, ne trouve pas
 Münchner Malz : Entrée crée une ligne « Munich » (le doublon que le port devait éviter). Captures : `choix-v6/img/recherche-{pils,mu,munich}.png`.
 
+## Sa consigne, arrivée pendant la voie (D221)
+« Concentre toi sur la recherche et l'ouverture de la recherche avec les stocks. Celles de la vrai app était pas trop mal ». La recherche de
+la vraie app (`src/ui/IngredientPicker.tsx`, `src/ui/Combobox.tsx`, étape Fermentescibles de `src/pages/BrewWizard.tsx:2440`) est le plancher :
+- **l'ouverture** : toucher le champ (ou « Ouvrir la liste ») ouvre, sans rien taper, le stock de la famille (rayon : Grain = Malt et Céréale,
+  Sucre, Fruit = Fruit et Additif) ; les épinglés en tête ;
+- **chaque rangée dit le stock** : le nom, puis « 12,5 kg en stock » ou « stock épuisé », puis l'EBC et le fournisseur, s'ils sont connus ;
+  ici, son mot prime sur L04 (le stock en icône valait pour la carte d'un houblon dans la recette) : la quantité en stock s'écrit ;
+- en tapant : la recherche ignore les accents et tolère une faute, la pertinence prime ; la liste remonte au-dessus du clavier quand il
+  occupe le bas ; « Créer « … » (stock à zéro) » en dernier ; un nom déjà dans la recette renvoie à sa ligne (acquis de p6-b2).
+Tes trois formes restent (s1 sous le champ, s2 dans la liste, s3 menu ancré), toutes avec cette ouverture et ce stock ; s3 reprend la liste de
+l'app telle quelle, puis l'enrichit. Le stock de la maquette devient une fixture, dite dans NOTE.md : par article, quantité, unité, EBC,
+fournisseur, épinglé ; au moins un article épuisé (Münchner Malz, par exemple) et un épinglé. `controle-recherche.mjs` a reçu R0 (l'ouverture
+montre trois articles au moins, chacun avec « en stock » ou « stock épuisé » ; « mu » aussi) : relis-le.
+
 ## Objectif
 Trois variantes copiées de `v6/p6-b2/etat.html`, qui gardent tout et ne changent que l'affichage de la recherche :
 - **`v7/s1/etat.html` — sous le champ** : les puces d'aujourd'hui, mieux faites pour choisir (ce qui distingue deux malts proches, par
