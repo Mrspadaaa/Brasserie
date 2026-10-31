@@ -12,6 +12,8 @@ de comparatif ect .. ». Entonnoir allégé (D204 : « il faudra pas autant de m
 |---|---|
 | Jury rapide (Brasserie en Fable, Contradicteur en Opus) : D204 demande l'économie, et les réponses communes d'Identité (scène, en-tête, pied, fil) sont acquises | pilote |
 | La baseline est l'écran d'aujourd'hui (production ae7c7a8d), et l'en-tête, le fil et le bandeau d'Identité r4-a, communs aux 7 étapes | pilote |
+| Passe 3 : le remplissage ≥ 0,80 de RELANCE-v1 était mal étalonné (r4-a, sa référence, fait 0,54 sur `controle-panel`). Seuil retenu : celui de r4-a (≥ 0,50) et le vide sous le pied jugé sur capture ; r4c 0,55, u2c 0,51 | pilote |
+| L'OG suit l'app : « — » tant qu'un potentiel manque (`brewCompanion.ts:505`, « Aucun rendement inventé ») ; l'OG estimée « ~1,061 » de r4c (PPG tapés dans la maquette) est retirée par le pilote, captures refaites | pilote |
 | Le choix de la variante | brasseur |
 
 ## Voies

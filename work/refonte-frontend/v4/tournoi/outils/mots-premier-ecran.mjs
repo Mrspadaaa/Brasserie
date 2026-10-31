@@ -38,6 +38,12 @@ const ids = fs.readdirSync(dir)
   .filter((d) => fs.existsSync(path.join(dir, d, pageFile)))
   .filter((d) => (only.length ? only.includes(d) : /^p\d+|^consolide$|^version-/.test(d)))
   .sort();
+// Rien à compter n'est pas un succès (31.10 : sans --page=etat.html, MOTS OK sans avoir rien lu).
+const manquants = only.filter((d) => !ids.includes(d));
+if (!ids.length || manquants.length) {
+  console.log('MOTS ECHEC : ' + (manquants.length ? manquants.join(', ') : 'aucun dossier') + ' sans ' + pageFile);
+  process.exit(1);
+}
 
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 let over = 0;
