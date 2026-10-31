@@ -51,6 +51,8 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 |---|---|---|---|
 
 ## Agents
+- v0 (31.10) : g af688d7c3b4c1d8dc ; w a95dbcb30c165788b ; v a3f468d6fd75b44d7 ; r af505646da84f8574 ; e ae29161fae3410bb7 ; i a270f131ab87e2197 ; z (Fable) a9544f6c979771512 ; u a63ad22afca40541e. La passe 2 repart chez le même agent.
 
 ## Reprise
 - 31.10 : la mission est ouverte. Le cadrage est en vol (jury e4, inventaire e2).
+- 31.10 : cadrage fait par le jury (`cadrage-jury.md` : 13 points tranchés, 6 axes A1 à A6). Brief commun écrit (`BRIEF-AUTEUR.md`). **Les 8 séries v0 sont lancées** (6 concepts chacune, 48 visés), avec boosters-ux. Ensuite : publier le panel dès qu'il est rendu, puis le tri par le critique (Fable), les passes et la page de choix.
