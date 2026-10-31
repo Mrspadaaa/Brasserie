@@ -39,7 +39,7 @@ Lire et suivre `work/missions/2026-10-31-ecran-depense/voies/COMMUN.md`.
 - **D213, les unités** (« oui attention au unités ») : `tests/unit/depense/stock/unites.test.ts`, écrit d'abord et rouge sur HEAD : « Crystal »
   kg face au seul « Houblon Crystal » g → rien ; une proposition dont l'unité diffère de celle de l'article montre la quantité convertie dans
   `lineStatus` (« 25 kg → 25 000 g ») ; l'unité imprimée revient quand la proposition est écartée (REVUE-PLAN Conception n° 12) ; une ligne
-  sans unité lisible → rien. La marque de conversion s'ajoute aux lignes de `lineStatus` déjà permises ;
+  à l'unité illisible reste proposée, unité vide, marque « unité à préciser » (D214, qui remplace « sans unité lisible → rien »). La marque de conversion s'ajoute aux lignes de `lineStatus` déjà permises ;
 - **S2 (B-V3-4)** : « CARAMÜNCH® Typ 2 Kg » apparie « Caramünch Typ 2 », jamais « Typ 1 » ni « Typ 3 » ; un nombre d'identité n'est plus
   effacé comme conditionnement ;
 - **B-V3-5** : deux articles homonymes de catégories différentes ne donnent aucune proposition (ou celle de la bonne catégorie si la
