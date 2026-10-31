@@ -62,7 +62,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [attempted,setAttempted]=useState(false);
   const keyboardInset=useKeyboardInset();
   const titleId=useId(),validationId=useId();
-  const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
+  const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
   const manuallyClassified=useRef(new Set<string>());
   /* Lignes dont l'article de stock vient de la lecture : une proposition, montrée comme telle jusqu'au choix du brasseur. */
   const proposedStock=useRef(new Set<string>());
@@ -148,6 +148,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   };
   const attach=async(file:File)=>{
     if(scanLocked.current||saveLocked.current)return;
+    /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
+       il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
+    if(pendingRef.current){setError('L’enregistrement attend sa confirmation : le fichier ne peut plus être changé. Touche « Vérifier la synchronisation ».');return;}
+    if(proofAttached.current){setError('Le justificatif est déjà rattaché à cette dépense : le fichier ne peut plus être changé.');return;}
+    if(proofSent.current){setError('Ce fichier est déjà parti pour cette saisie. Pour en joindre un autre, ferme et rouvre : rien n’a été enregistré.');return;}
     if(file.size>4*1024*1024 || !['image/jpeg','image/png','image/webp','application/pdf'].includes(GeminiScannerService.normalizeMimeType(file))){setError('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');return;}
     if(attachment&&scan?.ok)patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
     scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);
@@ -189,17 +194,18 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     saveLocked.current=true;setSaving(true);setError('');setProofSending('');
     try {
       let proof=receipt;
-      if(!pendingId){const saved=await savePurchaseWithProofReceipt(draft);setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;}
+      /* `proofSent` ne se pose qu'à un signal sûr : le retour du service (original confirmé dans Drive) ou `drive/in-progress` (plus bas). Jamais avant l'appel. */
+      if(!pendingId){const saved=await savePurchaseWithProofReceipt(draft);if(draft.proofDataUrl)proofSent.current=true;pendingRef.current=true;setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;}
       await confirmPurchase(draft);
       if(mounted.current){onSaved(proof);onClose();}
-    }catch(e:any){if(mounted.current){if(isConfirmedWriteRejection(e)){setPendingId(null);setReceipt(undefined);}if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress')setProofSending(e.message);else setError(e.message||'L’enregistrement reste à confirmer.');}}
+    }catch(e:any){if(mounted.current){if(isConfirmedWriteRejection(e)){pendingRef.current=false;setPendingId(null);setReceipt(undefined);}if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress'){proofSent.current=true;setProofSending(e.message);}else setError(e.message||'L’enregistrement reste à confirmer.');}}
     finally{saveLocked.current=false;if(mounted.current)setSaving(false);}
   };
   const attachToExisting=async(id:string)=>{
     if(saveLocked.current||scanLocked.current)return;
     saveLocked.current=true;setSaving(true);setError('');setProofSending('');
-    try{const proof=await attachProofToPurchase(draft,id);if(mounted.current){setReceipt(proof);setAttachedTo(id);}}
-    catch(e:any){if(mounted.current){if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress')setProofSending(e.message);else setError(e.message||'Le justificatif n’a pas été rattaché.');}}
+    try{const proof=await attachProofToPurchase(draft,id);proofAttached.current=true;if(mounted.current){setReceipt(proof);setAttachedTo(id);}}
+    catch(e:any){if(mounted.current){if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress'){proofSent.current=true;setProofSending(e.message);}else setError(e.message||'Le justificatif n’a pas été rattaché.');}}
     finally{saveLocked.current=false;if(mounted.current)setSaving(false);}
   };
   const setTotal=(amount:number|undefined)=>{if(amount!==draft.amount)reviewed('amountTTC');setDraft(previous=>({...previous,amount,lines:previous.lines.length===1?[{...previous.lines[0],amount}]:previous.lines,duplicateConfirmed:false}));};
