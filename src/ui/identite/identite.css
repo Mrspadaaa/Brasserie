@@ -1,0 +1,178 @@
+/*
+ * Étape Identité — r4-a (choisie le 31.10, work/missions/2026-10-31-ecran-identite/v1/r4-a/etat.html).
+ * Les valeurs de la maquette sont reprises ; ses couleurs lisent les jetons de l'app (themes.css) pour suivre le thème.
+ * Rayons : 10 et 16 px (DESIGN.md). Aucun texte sous 12 px.
+ */
+.idn-c { display: flex; flex-direction: column; gap: 10px; }
+.idn-m { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* Nom + pastille du style */
+.idn-id { display: flex; align-items: center; gap: 8px; }
+.recipe-wizard input.idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']) {
+  flex: 1; min-width: 0; height: 34px; min-height: 34px; padding: 0; border: 0; border-radius: 0;
+  border-bottom: 1.5px dotted rgb(var(--cave-600)); background: none; box-shadow: none;
+  font-size: 20px; line-height: 1.2; font-weight: 600; color: rgb(var(--cave-texte-50));
+}
+.recipe-wizard input.idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']):focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); }
+.idn-pas {
+  position: relative; display: inline-flex; align-items: center; flex-shrink: 0; width: 11.5rem; max-width: 52%;
+  height: 30px; border-radius: 10px; border: 1px solid rgb(var(--idn-teinte, var(--cave-600)) / 0.5);
+  background: rgb(var(--idn-teinte, var(--cave-600)) / 0.2);
+  color: color-mix(in srgb, rgb(var(--idn-teinte, var(--cave-600))) 30%, rgb(var(--cave-texte-50)));
+}
+.idn-pas > i { flex-shrink: 0; width: 20px; height: 20px; margin-left: 4px; border-radius: 50%; background: rgb(var(--idn-teinte, var(--cave-600))); }
+.idn-pas > small { flex-shrink: 0; margin-right: 6px; font-size: 12px; }
+.idn-pas .idn-combo { flex: 1; min-width: 0; }
+.recipe-wizard .idn-pas input:not([type='range']):not([type='radio']):not([type='checkbox']) {
+  height: 28px; min-height: 28px; padding: 0 2px 0 6px; border: 0; background: transparent; box-shadow: none;
+  font-size: 14px; font-weight: 600; color: inherit;
+}
+.recipe-wizard .idn-pas input:not([type='range']):not([type='radio']):not([type='checkbox'])::placeholder { color: inherit; opacity: 0.7; font-weight: 400; }
+.recipe-wizard .idn-pas button { min-height: 28px; }
+
+/* Plages du style */
+.idn-plages { display: flex; align-items: center; gap: 6px; margin-top: -4px; flex-wrap: wrap; }
+.idn-pl {
+  display: inline-flex; align-items: baseline; gap: 4px; height: 24px; padding: 0 8px; border-radius: 10px;
+  background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); font-size: 12px; line-height: 22px; color: rgb(var(--cave-texte-400));
+}
+.idn-pl b { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.idn-pl.idn-hs { color: rgb(var(--attention-texte)); background: rgb(var(--attention) / 0.14); border-color: rgb(var(--attention) / 0.4); }
+.idn-pl.idn-hs b { color: rgb(var(--attention-texte)); }
+.recipe-wizard .idn-rep {
+  display: inline-flex; align-items: center; gap: 2px; height: 24px; min-height: 24px; margin-left: auto; padding: 0 2px;
+  font-size: 12px; color: rgb(var(--water-texte));
+}
+.idn-rep[aria-expanded='true'] svg { transform: rotate(180deg); }
+.idn-reps { display: flex; flex-direction: column; gap: 8px; margin-top: -4px; }
+.idn-reps[hidden] { display: none; }
+.idn-reps-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.idn-src { font-size: 12px; color: rgb(var(--water-texte)); }
+
+/* Cartes à curseur */
+.idn-inst { background: rgb(var(--cave-900)); border-radius: 16px; padding: 8px 12px 10px; }
+.idn-ih { display: flex; align-items: center; gap: 8px; }
+.idn-k { font-size: 12px; color: rgb(var(--cave-texte-400)); display: flex; align-items: center; gap: 6px; }
+.idn-k svg { color: rgb(var(--cave-texte-200)); flex-shrink: 0; }
+.recipe-wizard .idn-cap {
+  display: inline-flex; align-items: baseline; gap: 2px; height: 24px; min-height: 24px; padding: 0 6px; border-radius: 10px;
+  border: 1px dashed rgb(var(--cave-700)); font-size: 12px; color: rgb(var(--cave-texte-200)); background: rgb(var(--cave-950));
+}
+.idn-cap b { font-family: theme('fontFamily.mono'); font-size: 13px; color: rgb(var(--cave-texte-50)); }
+.idn-cap.idn-modif { border-style: solid; border-color: rgb(var(--cave-50)); }
+.idn-num { display: flex; align-items: baseline; margin-left: auto; }
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']) {
+  min-height: 0; height: auto; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; text-align: right;
+  font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; caret-color: rgb(var(--cave-50)); color: rgb(var(--cave-texte-50));
+}
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand {
+  min-width: 2.2ch; border-bottom: 1.5px dotted rgb(var(--cave-600)); font-size: 48px; font-weight: 600; line-height: 50px;
+}
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:hover { border-bottom-color: rgb(var(--cave-400)); }
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); background: rgb(var(--cave-950)); }
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand::placeholder { color: rgb(var(--cave-600)); }
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox'])[aria-invalid='true'] { border-bottom-color: rgb(var(--alert)); }
+.idn-u { font-family: theme('fontFamily.mono'); font-size: 14px; font-weight: 500; color: rgb(var(--cave-texte-400)); margin-left: 2px; }
+.idn-etat { font-size: 14px; font-weight: 600; color: rgb(var(--hop-texte)); }
+.idn-etat.idn-plein { color: rgb(var(--cave-texte-200)); }
+.idn-etat.idn-trop { color: rgb(var(--alert-texte)); }
+.idn-etat.idn-inconnu { color: rgb(var(--cave-texte-400)); font-weight: 400; }
+
+/* Piste, règle, curseur */
+.idn-piste { position: relative; margin-top: 22px; height: 40px; }
+.idn-zone { position: absolute; left: 0; right: 0; top: 6px; height: 28px; border-radius: 10px; overflow: hidden; background: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-700)); }
+.idn-zone i { position: absolute; top: 0; bottom: 0; }
+.idn-zfill { background: linear-gradient(180deg, #F0C25C, #E0A02E); }
+.idn-zlibre { background: repeating-linear-gradient(135deg, rgb(var(--cave-800)) 0 2px, rgb(var(--cave-950)) 2px 7px); }
+.idn-ztrop { background: repeating-linear-gradient(135deg, rgb(var(--alert) / 0.45) 0 3px, rgb(var(--alert) / 0.15) 3px 7px); }
+.idn-zdep { background: repeating-linear-gradient(135deg, rgb(var(--alert)) 0 3px, rgb(var(--alert) / 0.45) 3px 7px); }
+.idn-tick { position: absolute; top: 2px; height: 36px; border-left: 2px dashed rgb(var(--cave-50)); }
+.idn-tick.idn-tcap { border-left-style: solid; border-color: rgb(var(--alert)); }
+.idn-tlab { position: absolute; top: -20px; transform: translateX(-50%); font-size: 12px; color: rgb(var(--cave-texte-50)); white-space: nowrap; }
+.idn-tlab b { font-family: theme('fontFamily.mono'); }
+.recipe-wizard input.idn-range {
+  position: absolute; left: -12px; right: -12px; top: 6px; width: calc(100% + 24px); height: 28px; min-height: 28px; margin: 0; padding: 0;
+  background: none; border: 0; -webkit-appearance: none; appearance: none; touch-action: none; cursor: pointer;
+}
+.idn-range::-webkit-slider-runnable-track { height: 28px; background: none; }
+.idn-range::-moz-range-track { height: 28px; background: none; }
+.idn-range::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 38px; height: 38px; margin-top: -5px; border-radius: 50%;
+  background: rgb(var(--cave-50)); border: 3px solid rgb(var(--cave-950)); box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+}
+.idn-range::-moz-range-thumb { width: 32px; height: 32px; border-radius: 50%; background: rgb(var(--cave-50)); border: 3px solid rgb(var(--cave-950)); box-shadow: 0 1px 4px rgb(0 0 0 / 0.35); }
+.idn-range:active::-webkit-slider-thumb { transform: scale(1.15); }
+.idn-range:focus-visible { outline: none; }
+.idn-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgb(var(--cave-950)), 0 0 0 5px rgb(var(--water)); }
+.idn-range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgb(var(--cave-950)), 0 0 0 5px rgb(var(--water)); }
+.idn-range[data-vide='true']::-webkit-slider-thumb { opacity: 0; }
+.idn-range[data-vide='true']::-moz-range-thumb { opacity: 0; }
+.idn-regle { position: relative; height: 9px; margin: 4px 0 2px; background-repeat: repeat-x; border-left: 1px solid rgb(var(--cave-600)); }
+.idn-regle::after { content: ''; position: absolute; right: -7px; top: -1px; border-left: 7px solid rgb(var(--cave-400)); border-top: 5.5px solid transparent; border-bottom: 5.5px solid transparent; }
+.idn-ech { position: relative; height: 16px; font-family: theme('fontFamily.mono'); font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.idn-ech span { position: absolute; transform: translateX(-50%); }
+.idn-ech span:first-child { transform: none; }
+.idn-ech span.idn-fin { transform: translateX(-100%); }
+.idn-ech span.idn-dern::after { content: '›'; font-family: theme('fontFamily.sans'); font-weight: 700; font-size: 14px; color: rgb(var(--cave-texte-50)); margin-left: 2px; }
+
+/* Barre de la cuve, sur la même règle */
+.idn-cbar { position: relative; height: 16px; margin-top: 6px; }
+.idn-ctrack { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 10px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); overflow: hidden; }
+.idn-ctrack.idn-deb { border-color: rgb(var(--alert)); }
+.idn-ctrack i { position: absolute; top: 0; bottom: 0; }
+.idn-cmout { background: rgb(224 160 46 / 0.45); }
+.idn-cevap { background: rgb(var(--water) / 0.5); }
+.idn-cdep { background: repeating-linear-gradient(135deg, rgb(var(--alert)) 0 3px, rgb(var(--alert) / 0.45) 3px 7px); }
+.idn-ccuve { border-left: 2px solid rgb(var(--cave-50)); }
+.idn-cv { font-size: 12px; color: rgb(var(--cave-texte-400)); white-space: nowrap; }
+.idn-cv b { font-family: theme('fontFamily.mono'); font-size: 13px; color: rgb(var(--cave-texte-50)); }
+.idn-cv .idn-trop { color: rgb(var(--alert-texte)); font-weight: 600; }
+.idn-cv .idn-trop b { color: rgb(var(--alert-texte)); }
+
+/* Bulle d'évaporation et piste de l'ébullition */
+.idn-bulle {
+  position: absolute; top: -22px; transform: translateX(-50%); font-size: 12px; line-height: 18px; white-space: nowrap;
+  color: rgb(var(--cave-texte-200)); background: rgb(var(--cave-950)); border: 1px dashed rgb(var(--cave-700)); border-radius: 10px; padding: 0 6px;
+}
+.idn-bulle b { font-family: theme('fontFamily.mono'); }
+.idn-bpiste { position: absolute; left: 0; right: 0; top: 6px; height: 28px; border-radius: 10px; background: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-700)); overflow: hidden; }
+.idn-bpiste i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(180deg, #5c5c5c, #111); }
+.idn-note { font-size: 12px; color: rgb(var(--cave-texte-400)); margin-top: 2px; }
+
+/* NOLO et tuiles */
+.recipe-wizard .idn-nolo {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 0 12px; border-radius: 16px;
+  background: rgb(var(--cave-900)); text-align: left;
+}
+.idn-nolo b { font-size: 16px; color: rgb(var(--cave-texte-50)); }
+.idn-tg { position: relative; flex-shrink: 0; width: 48px; height: 28px; margin-left: auto; border-radius: 14px; background: rgb(var(--cave-700)); transition: background 0.15s; }
+.idn-tg::after { content: ''; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: rgb(var(--cave-950)); box-shadow: 0 1px 2px rgb(0 0 0 / 0.25); transition: transform 0.15s; }
+.idn-nolo[aria-checked='true'] .idn-tg { background: rgb(var(--cave-50)); }
+.idn-nolo[aria-checked='true'] .idn-tg::after { transform: translateX(20px); }
+.idn-plis { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; align-items: start; }
+.recipe-wizard .idn-pli {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; min-height: 48px;
+  padding: 8px 28px 8px 10px; border: 1px solid rgb(var(--cave-800)); border-radius: 16px; text-align: left;
+}
+.idn-pli b { font-family: theme('fontFamily.mono'); font-size: 14px; color: rgb(var(--cave-texte-50)); }
+.idn-pli span { font-size: 14px; color: rgb(var(--cave-texte-200)); }
+.idn-pli .idn-chev { position: absolute; right: 8px; top: 14px; color: rgb(var(--cave-texte-400)); }
+.idn-pli[aria-expanded='true'] .idn-chev { transform: rotate(180deg); }
+.idn-pli .idn-tagr { font-family: theme('fontFamily.sans'); font-size: 12px; font-weight: 400; color: rgb(var(--attention-texte)); border: 1px dashed rgb(var(--attention)); border-radius: 10px; padding: 0 6px; line-height: 16px; margin-left: 4px; }
+.idn-tuile { border: 1px solid rgb(var(--cave-800)); border-radius: 16px; min-width: 0; }
+.recipe-wizard .idn-tuile > .idn-pli { border: 0; }
+.idn-tuile-corps { display: none; padding: 2px 10px 10px; gap: 8px; flex-direction: column; }
+.idn-tuile.idn-ouvert .idn-tuile-corps { display: flex; }
+.idn-tuile.idn-ouvert { grid-column: 1 / -1; }
+.idn-lig { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 14px; color: rgb(var(--cave-texte-200)); }
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin {
+  width: 4.5ch; height: 32px; min-height: 32px; padding: 0 6px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px;
+  background: rgb(var(--cave-950)); font-size: 16px; font-weight: 600;
+}
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin:focus { outline: 2px solid rgb(var(--water)); outline-offset: 1px; }
+.recipe-wizard .idn-raz { align-self: flex-start; height: 28px; padding: 0 8px; border-radius: 10px; border: 1px solid rgb(var(--cave-800)); font-size: 12px; color: rgb(var(--cave-texte-200)); }
+.idn-raz[hidden] { display: none; }
+.recipe-wizard .idn-coller {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 10px;
+  border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); font-size: 14px; color: rgb(var(--cave-texte-200));
+}

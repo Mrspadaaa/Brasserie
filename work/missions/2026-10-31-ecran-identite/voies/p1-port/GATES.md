@@ -15,7 +15,7 @@ Scope: l'étape Identité de l'app reprend r4-a telle quelle, avec ses adaptatio
   EVIDENCE: pending
 
 - [ ] G3: le registre des choix de l'app est valide
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs --registre=work/refonte-frontend/v4/choix/ecrans-app.json
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs --registre --registre=work/refonte-frontend/v4/choix/ecrans-app.json
   EXPECT: REGISTRE OK
   EVIDENCE: pending
 

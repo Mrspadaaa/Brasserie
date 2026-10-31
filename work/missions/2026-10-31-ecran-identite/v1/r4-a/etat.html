@@ -136,59 +136,59 @@ input{font:inherit;color:inherit}
 </style></head>
 <body data-concept="r4a">
 <header class="r4a-hd">
-  <div class="r4a-tb">
+  <div class="r4a-tb" data-element="r4a-entete">
     <button class="r4a-ic" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
     <p class="r4a-tt"><span class="r4a-tn">Identité</span><span class="r4a-tp">1/7</span></p>
     <button class="r4a-ab" aria-label="Abandonner le brouillon">Abandonner</button>
     <button class="r4a-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
     <button class="r4a-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
   </div>
-  <nav class="r4a-rail" aria-label="Étapes"><button aria-current="step"><span>Identité</span><i></i></button><button><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+  <nav class="r4a-rail" aria-label="Étapes" data-element="r4a-fil"><button aria-current="step"><span>Identité</span><i></i></button><button><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
 </header>
-<div class="r4a-bd" data-commun="bandeau">
+<div class="r4a-bd" data-commun="bandeau" data-element="r4a-bandeau">
   <div><span class="r4a-l">Grain</span><span class="r4a-v">8,6 kg</span></div>
   <div><span class="r4a-l">OG</span><span class="r4a-v">1,080</span></div>
   <div><span class="r4a-l">IBU</span><span class="r4a-v">~93</span><span class="r4a-pst" role="img" aria-label="style 60–100 IBU"><b style="left:42.9%;width:calc(71.4% - 42.9%)"></b><em style="left:66.4%"></em></span></div>
   <div><span class="r4a-l">EBC</span><span class="r4a-sw"></span><span class="r4a-v">9,5</span></div>
 </div>
 <main class="r4a-c">
-  <div class="r4a-id"><input class="r4a-nom" value="neipa v3" aria-label="Nom de la bière"><button class="r4a-pas" aria-haspopup="listbox"><i></i>Double IPA <small>22A</small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
-  <div class="r4a-plages" data-booster="plages-style" aria-label="Plages du style"><span class="r4a-pl">OG <b>1,065–1,085</b></span><span class="r4a-pl">IBU <b>60–100</b></span><button class="r4a-rep" aria-expanded="false" data-role="repbtn" aria-controls="r4a-reperes">Repères <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
-  <div class="r4a-reps" id="r4a-reperes" data-role="reps" hidden><span class="r4a-pl">FG <b>1,008–1,018</b></span><span class="r4a-pl">Alcool <b>7,5–10 %</b></span><span class="r4a-pl r4a-hs">EBC <b>12–28</b> sous ↓</span><span class="r4a-src">22A · BJCP 2021</span></div>
+  <div class="r4a-id"><input class="r4a-nom" data-element="r4a-nom" value="neipa v3" aria-label="Nom de la bière"><button class="r4a-pas" data-element="r4a-style" aria-haspopup="listbox"><i></i>Double IPA <small>22A</small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <div class="r4a-plages" data-element="r4a-plages" data-booster="plages-style" aria-label="Plages du style"><span class="r4a-pl">OG <b>1,065–1,085</b></span><span class="r4a-pl">IBU <b>60–100</b></span><button class="r4a-rep" aria-expanded="false" data-role="repbtn" aria-controls="r4a-reperes">Repères <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <div class="r4a-reps" id="r4a-reperes" data-element="r4a-reperes" data-role="reps" hidden><span class="r4a-pl">FG <b>1,008–1,018</b></span><span class="r4a-pl">Alcool <b>7,5–10 %</b></span><span class="r4a-pl r4a-hs">EBC <b>12–28</b> sous ↓</span><span class="r4a-src">22A · BJCP 2021</span></div>
 
   <section class="r4a-inst" aria-label="Volume en fermenteur">
-    <div class="r4a-ih"><span class="r4a-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M6 11h12M10 2h4"/></svg>Volume ·</span><button class="r4a-cap" data-role="capbtn" aria-label="Changer de fermenteur">fermenteur <b data-role="cap">30</b> L</button>
-      <label class="r4a-num"><input class="r4a-in" data-role="vin" data-booster="saisie-volume" inputmode="decimal" enterkeyhint="done" value="24" aria-label="Volume en fermenteur, en litres" autocomplete="off"><span class="r4a-u">L</span></label></div>
-    <div class="r4a-ih" style="justify-content:flex-end"><span class="r4a-etat" data-role="etat" aria-live="polite"><span class="r4a-m">6 L</span> libres</span></div>
-    <div class="r4a-piste">
+    <div class="r4a-ih"><span class="r4a-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M6 11h12M10 2h4"/></svg>Volume ·</span><button class="r4a-cap" data-element="r4a-puce-fermenteur" data-role="capbtn" aria-label="Changer de fermenteur">fermenteur <b data-role="cap">30</b> L</button>
+      <label class="r4a-num"><input class="r4a-in" data-element="r4a-volume-champ" data-role="vin" data-booster="saisie-volume" inputmode="decimal" enterkeyhint="done" value="24" aria-label="Volume en fermenteur, en litres" autocomplete="off"><span class="r4a-u">L</span></label></div>
+    <div class="r4a-ih" style="justify-content:flex-end"><span class="r4a-etat" data-element="r4a-libres" data-role="etat" aria-live="polite"><span class="r4a-m">6 L</span> libres</span></div>
+    <div class="r4a-piste" data-element="r4a-piste-volume">
       <div class="r4a-zone"><i class="r4a-zfill" data-role="zfill"></i><i class="r4a-zlibre" data-role="zlibre"></i><i class="r4a-ztrop" data-role="ztrop"></i><i class="r4a-zdep" data-role="zdep"></i></div>
-      <span class="r4a-tick" data-role="tcons"></span><span class="r4a-tlab" data-role="lcons">conseil <b>~24</b></span>
+      <span class="r4a-tick" data-role="tcons"></span><span class="r4a-tlab" data-element="r4a-conseil" data-role="lcons">conseil <b>~24</b></span>
       <span class="r4a-tick" data-role="tcap" style="border-left-style:solid;border-color:var(--alerte)"></span>
       <input class="r4a-range" type="range" min="1" max="45" step="1" value="24" aria-label="Volume en fermenteur" data-booster="curseur-volume" data-role="rv">
     </div>
-    <div class="r4a-regle" data-role="rgv"></div>
+    <div class="r4a-regle" data-element="r4a-regle-volume" data-role="rgv"></div>
     <div class="r4a-ech" data-role="echv"></div>
-    <div class="r4a-cbar" data-booster="cuve-meme-regle" style="margin-top:6px"><div class="r4a-cbox" data-role="cbox"><i class="r4a-cmout" data-role="cmout"></i><i class="r4a-cevap" data-role="cevap"></i></div></div>
+    <div class="r4a-cbar" data-element="r4a-cuve" data-booster="cuve-meme-regle" style="margin-top:6px"><div class="r4a-cbox" data-role="cbox"><i class="r4a-cmout" data-role="cmout"></i><i class="r4a-cevap" data-role="cevap"></i></div></div>
     <div class="r4a-ih" style="justify-content:space-between;margin-top:3px"><span class="r4a-k">cuve <b class="r4a-m" style="color:var(--t0)">45</b> L</span><span class="r4a-cv"><b data-role="preb">~27 L</b> avant ébullition</span></div>
   </section>
 
   <section class="r4a-inst" aria-label="Durée d'ébullition">
     <div class="r4a-ih"><span class="r4a-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.3 1.6 1.2 2.5 2 2.5-.6-3 0-5.5 1-8Z"/></svg>Ébullition · par 5′</span>
-      <label class="r4a-num"><input class="r4a-in" data-role="bin" data-booster="saisie-ebullition" inputmode="numeric" enterkeyhint="done" value="60" aria-label="Durée d'ébullition, en minutes" autocomplete="off"><span class="r4a-u">min</span></label></div>
-    <div class="r4a-piste" style="margin-top:30px">
+      <label class="r4a-num"><input class="r4a-in" data-element="r4a-ebullition-champ" data-role="bin" data-booster="saisie-ebullition" inputmode="numeric" enterkeyhint="done" value="60" aria-label="Durée d'ébullition, en minutes" autocomplete="off"><span class="r4a-u">min</span></label></div>
+    <div class="r4a-piste" style="margin-top:30px" data-element="r4a-curseur-ebullition">
       <div class="r4a-bpiste"><i data-role="bfill"></i></div>
-      <span class="r4a-bulle" data-role="bulle"><b data-role="evap">~3 L</b> évaporés</span>
+      <span class="r4a-bulle" data-element="r4a-evaporation" data-role="bulle"><b data-role="evap">~3 L</b> évaporés</span>
       <input class="r4a-range" type="range" min="0" max="120" step="5" value="60" aria-label="Durée d'ébullition" data-booster="curseur-ebullition" data-role="rb">
     </div>
-    <div class="r4a-regle" data-role="rgb"></div>
+    <div class="r4a-regle" data-element="r4a-regle-ebullition" data-role="rgb"></div>
     <div class="r4a-ech" data-role="echb"></div>
   </section>
 
-  <button class="r4a-nolo" role="switch" aria-checked="false" data-booster="nolo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-1.6 17.2a1 1 0 0 1-1 .8H8.6a1 1 0 0 1-1-.8Z"/><path d="M6.6 9h10.8"/><circle cx="12" cy="15" r="2.4"/></svg><b>NOLO</b><span class="r4a-k">≤ <span class="r4a-m">0,5 %</span></span><span class="r4a-tg"></span></button>
+  <button class="r4a-nolo" data-element="r4a-nolo" role="switch" aria-checked="false" data-booster="nolo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-1.6 17.2a1 1 0 0 1-1 .8H8.6a1 1 0 0 1-1-.8Z"/><path d="M6.6 9h10.8"/><circle cx="12" cy="15" r="2.4"/></svg><b>NOLO</b><span class="r4a-k">≤ <span class="r4a-m">0,5 %</span></span><span class="r4a-tg"></span></button>
 
   <div class="r4a-plis">
-    <button class="r4a-pli" aria-expanded="false"><span class="r4a-k" style="display:flex;align-items:center;gap:6px"><i style="display:block;width:22px;height:16px;border-radius:10px;border:1px solid #BFBFBF;background:repeating-linear-gradient(135deg,#BFBFBF 0 2px,#fff 2px 6px)"></i>Espace libre</span><b>~20 %<span class="r4a-tagr">repère</span></b><span class="r4a-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
-    <div class="r4a-mat" data-role="mat" data-booster="materiel-fermenteur">
+    <button class="r4a-pli" data-element="r4a-espace-libre" aria-expanded="false"><span class="r4a-k" style="display:flex;align-items:center;gap:6px"><i style="display:block;width:22px;height:16px;border-radius:10px;border:1px solid #BFBFBF;background:repeating-linear-gradient(135deg,#BFBFBF 0 2px,#fff 2px 6px)"></i>Espace libre</span><b>~20 %<span class="r4a-tagr">repère</span></b><span class="r4a-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+    <div class="r4a-mat" data-element="r4a-materiel" data-role="mat" data-booster="materiel-fermenteur">
       <button class="r4a-pli" aria-expanded="false" data-role="matbtn"><span class="r4a-k" style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M6 11h12M10 2h4"/></svg>Matériel</span><span>Royal Catering</span><span class="r4a-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
       <div class="r4a-matc">
         <label class="r4a-lig">Fermenteur <input class="r4a-fin" data-role="fin" inputmode="decimal" enterkeyhint="done" value="30" aria-label="Capacité du fermenteur pour ce brassin, en litres" autocomplete="off"> L</label>
@@ -196,9 +196,9 @@ input{font:inherit;color:inherit}
       </div>
     </div>
   </div>
-  <nav class="r4a-pied" data-commun="pied"><button class="r4a-ret" disabled>Retour</button><button class="r4a-suiv">Suivant — Fermentescibles</button></nav>
+  <nav class="r4a-pied" data-commun="pied" data-element="r4a-pied"><button class="r4a-ret" disabled>Retour</button><button class="r4a-suiv">Suivant — Fermentescibles</button></nav>
 </main>
-<section class="r4a-annexe" aria-label="États de la maquette">
+<section class="r4a-annexe" aria-label="États de la maquette" data-element="r4a-etats">
   <h2>États (annexe de la maquette)</h2>
   <section class="r4a-inst"><div class="r4a-ih"><span class="r4a-k">Recette vide : l'import dans le corps, seulement ici</span></div><div style="margin-top:6px"><button class="r4a-coller"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg> Coller une recette</button></div></section>
   <section class="r4a-inst"><div class="r4a-ih"><span class="r4a-k">Volume effacé</span><span class="r4a-num"><span class="r4a-in" style="width:auto">—</span><span class="r4a-u">L</span></span></div><p class="r4a-k" style="margin-top:4px">Volume à renseigner · le curseur reste sans pouce.</p></section>

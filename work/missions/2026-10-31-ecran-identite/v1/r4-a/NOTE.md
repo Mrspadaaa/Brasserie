@@ -98,3 +98,30 @@ pertes et contraction (≈ 29 à 30 L ici) : au port, prendre le nombre du moteu
 CONNAISSANCE : un curseur dont la règle s'étend ne doit pas recalculer sa borne pendant le glisser. Au premier essai, la borne suivait
 la valeur sous le pouce, et le geste « 120 » finissait à 180.
 LEÇON PROPOSÉE : aucune.
+
+## Reprise
+Ajouté par la voie p1-port (31.10) : l'inventaire `inventaire-r4a.json` (les 24 éléments ci-dessus) et ses marqueurs `data-element`.
+- r4a-entete : repris — en-tête commun, inchangé
+- r4a-fil : repris — fil des sept étapes, inchangé
+- r4a-bandeau : repris — bandeau commun Grain OG IBU EBC
+- r4a-nom : repris — nom pointillé en haut
+- r4a-style : repris — pastille du style teintée
+- r4a-plages : repris — pastilles OG et IBU sous le style
+- r4a-puce-fermenteur : repris — puce tiretée dans l'en-tête du volume
+- r4a-volume-champ : repris — grande lecture du volume, champ sur place
+- r4a-libres : repris — ligne libres, plein ou trop
+- r4a-piste-volume : repris — piste dorée et zone rouge
+- r4a-conseil : repris — repère conseil sur la piste
+- r4a-regle-volume : repris — règle par 1 L avec son chevron
+- r4a-plein-retire : écarté — la phrase « Fermenteur plein » cède sa place à « +1 L de trop » et à la zone rouge (greffe g2, retouche du critique)
+- r4a-cuve : repris — barre de la cuve sous la règle
+- r4a-ebullition-champ : repris — grande lecture de l'ébullition
+- r4a-curseur-ebullition : repris — curseur et piste de l'ébullition
+- r4a-evaporation : repris — bulle des litres évaporés
+- r4a-regle-ebullition : repris — règle par 5′ avec son chevron
+- r4a-nolo : repris — interrupteur NOLO
+- r4a-espace-libre : repris — demi-tuile espace libre
+- r4a-reperes : repris — repères dépliés à un toucher sous Repères
+- r4a-materiel : repris — demi-tuile matériel
+- r4a-pied : repris — pied commun et lanceur
+- r4a-etats : repris — annexe des états en bas de la page

@@ -1,0 +1,16 @@
+{
+ "maj": "2026-10-31",
+ "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran de l'app repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105, D206).",
+ "usage": "Le registre des écrans de l'APP (ecrans.json ne couvre que la maquette houblons : y inscrire Identité casserait son contrôle, qui veut une page par écran dans le dossier construit). controle-choix.mjs --registre=work/refonte-frontend/v4/choix/ecrans-app.json : le registre seul ; controle-choix.mjs work/missions/2026-10-31-ecran-identite/v1 --registre=… lit v1/r4-a/etat.html (la maquette) et son NOTE.md. À mettre à jour à chacun de ses choix, avec ses mots.",
+ "ecrans": [
+  {
+   "ecran": "identite",
+   "route": "r4-a",
+   "statut": "choisi",
+   "choix": "r4-a",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "inventaire": "work/missions/2026-10-31-ecran-identite/v1/r4-a/inventaire-r4a.json"
+  }
+ ]
+}
