@@ -76,7 +76,8 @@ const fam = <T>(fams: readonly FamilyId[], fn: (f: FamilyId) => T) => Object.fro
 // a4 (D125) : une famille que le style ne cite pas (neutre) n'est pas « hors du style » ; la carte et le rang lisent le même statut.
 // s3 (D195) : ni une famille que le brasseur demande (il la monte, la baisse, la bannit : la demande prime sur la bande), ni un excès sous un quart de cran (un cran est le pas du style) ; `estHorsDuStyle` en décide.
 /** `StyleOverflow` du moteur (voies.ts), lu sans l'importer : l'écran principal ne charge pas le moteur (B5). */
-export const estHorsDuStyle = (o: { status: string; voulu?: true; minuscule?: true }): boolean => o.status !== 'neutre' && !o.voulu && !o.minuscule;
+// h1 (D197) : l'herbacé et le végétal d'un style qui n'en dit rien, au-dessus de la bande, sont un défaut (`defaut` du moteur) : hors du style malgré a4.
+export const estHorsDuStyle = (o: { status: string; voulu?: true; minuscule?: true; defaut?: true }): boolean => (o.status !== 'neutre' || !!o.defaut) && !o.voulu && !o.minuscule;
 const horsDuStyle = (v: Voie): FamilyId[] => [...new Set(v.styleOverflow.filter(estHorsDuStyle).map((o) => o.family))];
 
 export type { Visee } from '../parcours/visee';

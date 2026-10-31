@@ -512,3 +512,10 @@ Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
   - Son RESULTAT est un brouillon : la règle de principe est écrite (l'herbacé et le végétal `neutre` comptent au rang et en hors du style), mais rien n'est mesuré.
   - `src/domain/hopIndex/v4/voies.ts` est modifié et non commité. À relire avant de relancer.
   Un agent neuf ne part que sur sa demande.
+- 31.10 : h1 est relancé sur sa demande, avec un auteur neuf (a22f813b3666e0456). Il repart du brouillon et du diff de `voies.ts`.
+- 31.10 : **h1 est intégré** (D197). L'herbacé et le végétal neutres comptent au rang, et `estHorsDuStyle` (écran) lit `defaut`. Les 5 empreintes client-async et worker-calculs sont mises à jour (t3 R4, 137d3d17, qui les avait laissées rouges). Vitest : 1146 sur 1146 ; tsc sans sortie.
+  Restent ouverts :
+  - la marque « herbacé non établi » sur une rangée (h1, décision 2), en mini maquettes ;
+  - le K des agrumes (E04), à ne pas toucher sans seconde source ;
+  - le houblon frais, que le moteur ne connaît pas ;
+  - la DEMANDE EXECUTANT de h1 (Chrome), au rejeu final.

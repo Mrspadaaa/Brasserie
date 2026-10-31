@@ -33,6 +33,12 @@ export const TYPICITE_DEFAUT = true;
 /** a4 (D125), biais 1 : une famille NEUTRE du style (il n'en dit rien : ni attendue, ni rejetée ; sa bande 0–30 est une hypothèse [H] sans citation, `from: []`) ne punit plus comme une famille hors du style.
  * Son dépassement reste dit (`styleOverflow`) et reste compté, plus loin dans le rang, par les effets de bord (`sideTotal`). `true` : l'ordre d'avant. */
 export const DEBORDEMENT_NEUTRE_DEFAUT = false;
+/** h1 (D197), « trop herbal » : un excès d'herbacé (`herbal`) ou de végétal (`green`) au-dessus de la bande est un DÉFAUT, même quand le style n'en dit rien (famille neutre) : le BJCP range l'herbe coupée et le végétal parmi les défauts,
+ * et c'est ce qui arrive avec une grosse dose de dry hop ou du houblon frais (panel OSU, E04 : les agrumes plafonnent dès 8 g/L, l'herbacé monte encore). Ces deux familles comptent donc au rang et en « hors du style » (`StyleOverflow.defaut`),
+ * malgré a4 (`DEBORDEMENT_NEUTRE_DEFAUT`, qui ne vaut que pour les AUTRES familles neutres : la poire d'El Dorado). Exceptions, celles de s3 : la demande du brasseur prime (`voulu`, un excès minuscule n'en est pas un), et un style qui
+ * attend la famille (`attendue`) garde sa bande, la règle ne la touche pas. `false` : l'ordre d'avant (3eb61530). */
+export const DEFAUT_VEGETAL_DEFAUT = true;
+export const FAMILLES_VEGETALES: readonly FamilyId[] = ['herbal', 'green'];
 /** s3 (D195) : `true` : la demande prime sur la bande (famille de la direction : pas de débordement au rang) et un excès sous `SATURATION_MINUSCULE` cran n'en est pas un. `saturation: false` : l'ordre d'avant (ae7c7a8d). */
 export const SATURATION_DEFAUT = true;
 /** Un cran est le pas du style (la largeur d'un palier de sa bande) : sous un quart de cran ajouté, on ne dit pas « hors du style ». */
@@ -130,6 +136,8 @@ export interface StyleOverflow {
   voulu?: true;
   /** s3 (D195) : moins d'un quart de cran ajouté (`SATURATION_MINUSCULE`) : un cran est le pas du style, un quart de pas n'est pas « hors du style ». */
   minuscule?: true;
+  /** h1 (D197) : l'herbacé ou le végétal d'un style qui n'en dit rien (famille neutre) au-dessus de sa bande : un défaut (BJCP : herbe coupée), compté au rang et « hors du style » comme une famille hors du style. Absent : ni neutre, ni herbacé/végétal, ou règle éteinte. */
+  defaut?: true;
 }
 export interface VoieResult {
   recipe: Recipe; style: StyleScale; yeast: YeastInfo; matrix: MatrixContext;
@@ -159,6 +167,8 @@ export interface VoieOptions {
   debordementNeutre?: boolean;
   /** s3 (D195) : la demande prime sur la bande, et un excès minuscule n'est pas hors du style. Défaut : `SATURATION_DEFAUT`. */
   saturation?: boolean;
+  /** h1 (D197) : l'excès d'herbacé ou de végétal d'un style qui n'en dit rien compte au rang et « hors du style » (défaut du BJCP). Défaut : `DEFAUT_VEGETAL_DEFAUT`. `false` : l'ordre d'avant. */
+  defautVegetal?: boolean;
   /** s3, R4 (D195) ; t3 : au whirlpool et au dry hop, plus un houblon est employé au frais (Beer Analytics), plus il passe devant à rang égal (jamais écarté). Défaut : `USAGE_AU_FRAIS_DEFAUT`. */
   usageAuFrais?: boolean;
   /** a4 (D125) : l'ordre de la présélection du pool (voir `SELECTION_DEFAUT`). */
@@ -276,7 +286,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const departageMode: Departage = (options.typicite ?? TYPICITE_DEFAUT) && departageBase === 'k3k1' ? 'k3k1t' : departageBase;
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
   const a3 = options.intensite ?? INTENSITE_DEFAUT, typ = options.typicite ?? TYPICITE_DEFAUT; // f9 : A3 et typicité
-  const usageAuFrais = options.usageAuFrais ?? USAGE_AU_FRAIS_DEFAUT, saturation = options.saturation ?? SATURATION_DEFAUT, neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
+  const usageAuFrais = options.usageAuFrais ?? USAGE_AU_FRAIS_DEFAUT, saturation = options.saturation ?? SATURATION_DEFAUT, neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, defautVegetal = options.defautVegetal ?? DEFAUT_VEGETAL_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
@@ -402,7 +412,9 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const up = Math.max(0, excess(after) - excess(ref));
       const down = fs.status === 'attendue' ? Math.max(0, deficit(after) - deficit(ref)) : 0;
       const baseText = base === undefined ? 'aucune présence établie avant' : `repère ${round(base)} avant`;
-      const marques = (x: number): Pick<StyleOverflow, 'voulu' | 'minuscule'> => saturation ? { ...(directed.includes(f) ? { voulu: true as const } : {}), ...(x / fs.cran < SATURATION_MINUSCULE ? { minuscule: true as const } : {}) } : {};
+      // h1 (D197) : l'herbacé et le végétal d'une famille neutre sont un défaut, marqué ici ; la demande (`voulu`) et l'excès minuscule les excluent ensuite du rang, comme toute famille.
+      const defaut: Pick<StyleOverflow, 'defaut'> = defautVegetal && fs.status === 'neutre' && FAMILLES_VEGETALES.includes(f) ? { defaut: true } : {};
+      const marques = (x: number): Pick<StyleOverflow, 'voulu' | 'minuscule' | 'defaut'> => ({ ...defaut, ...(saturation ? { ...(directed.includes(f) ? { voulu: true as const } : {}), ...(x / fs.cran < SATURATION_MINUSCULE ? { minuscule: true as const } : {}) } : {}) });
       if (up > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(up / fs.cran, 2), ...marques(up),
         why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (+${round(e.central)}), au-dessus de la bande ${lo}–${hi} (${fs.status}).` });
       if (down > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(down / fs.cran, 2), ...marques(down),
@@ -415,11 +427,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const rangC = options.apportMinoritaire === 'c' || (options.apportMinoritaire === undefined && changes.length > 0 && changes.every((c) => MOMENTS_APPORT_C_DEFAUT.includes(c.addition.moment)));
     // a4 (D125, biais 1) : le rang ne compte pas non plus le dépassement d'une famille neutre du style (voir DEBORDEMENT_NEUTRE_DEFAUT) ; il reste dans `styleOverflow` et dans `sideTotal`.
     const auRang = (o: StyleOverflow) => !o.voulu && !o.minuscule; // s3 (D195)
+    const horsNeutre = (o: StyleOverflow) => neutreCompte || o.status !== 'neutre' || !!o.defaut; // a4 (D125) ; h1 (D197) : l'herbacé et le végétal neutres sont un défaut, ils restent au rang
     const overflowRang = rangC || !neutreCompte || saturation
-      ? round(styleOverflow.filter((o) => auRang(o) && (neutreCompte || o.status !== 'neutre') && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
+      ? round(styleOverflow.filter((o) => auRang(o) && horsNeutre(o) && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
       : null;
     // a4 (D125) : le même débordement sans les familles neutres, que lit aussi le choix de la dose d'un houblon (`compareVoies(…, false)`) : sinon la dose qui évite le dépassement d'une famille neutre l'emportait sur la distance.
-    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => auRang(o) && o.status !== 'neutre').reduce((s, o) => s + o.crans, 0), 2);
+    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => auRang(o) && horsNeutre(o)).reduce((s, o) => s + o.crans, 0), 2);
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
