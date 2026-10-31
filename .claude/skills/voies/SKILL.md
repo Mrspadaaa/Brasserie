@@ -83,6 +83,17 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
   ne mange pas le budget des autres. Budget de mission : noter dans MISSION.md l'usage avant et après
   (`get_usage`) ; s'arrêter vers 95 % de la fenêtre de 5 h.
 - Pendant l'essaim, le pilote ne lit pas les sorties brutes : il attend les notifications.
+- **Économie (D207, 31.10 : « On est un peu trop gourmand en quota »)**. Mesuré ce soir-là :
+  - le contexte du pilote (Opus, 530 k) est relu à chaque tour, et chaque notification d'agent en réveille un ;
+  - un concepteur coûte 250 à 300 k en v0 ;
+  - un agent repris par `SendMessage` recharge tout son contexte (300 k, puis 340 k).
+  D'où les règles :
+  1. **une session par écran**, avec seulement son état de reprise ;
+  2. une passe ou une relance part chez un **agent neuf**, sur un brief serré (son etat.html, la section de SYNTHESE ou les défauts) : on ne
+     reprend pas l'agent au long contexte (L18) ;
+  3. un **dossier de conception** de 3 000 mots au plus, que les concepteurs lisent à la place des sources ; skills et règles sont lus une
+     fois par le pilote et résumés dans ce dossier ;
+  4. en v0, on capture le repos et un seul état ; les autres états viennent en passe 2.
 
 ## 4. Vérifier (pilote)
 À chaque retour, une ligne arrive. Puis :

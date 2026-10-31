@@ -1211,3 +1211,16 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D204 (l'utilisateur, 31.10) : « Pour les prochaines écran il faudra pas autant de mini maquettes et série, c'est trop demandant en quotas ». L'entonnoir des écrans suivants : 12 à 16 v0 en 3 ou 4 séries (une en Fable, une libre au brief minimal, trois chaleurs), un tri par le critique, une passe 2 sur 3 candidates. `systeme.mjs mission` refuse moins et plus ; ses mots (« Dérogation M13 ») lèvent les bornes. Remplace le « 48 au moins en 6 séries » (REMPLACES.md).
 - D205 (le brasseur, 31.10) : Identité, **r4 choisie**, avec des adaptations (« Quelques adaptations mais si non c'est bien ! »). Pas de passe 2 sur les cinq candidates : r4 seule est reprise telle quelle, avec ses adaptations (bornes ouvertes : plus d'ébullition, un autre fermenteur) et les greffes du critique pour r4. Étalonnage : le critique l'avait classée 7e, « très bien » et candidate.
 - D206 (pilote, 31.10) : les choix du brasseur sur les écrans de l'app hors maquette houblons vont dans un registre jumeau, `work/refonte-frontend/v4/choix/ecrans-app.json` (même format, même contrôle : `controle-choix.mjs <dossier> --registre=…`). Inscrire Identité dans `ecrans.json` aurait cassé son contrôle sur la maquette houblons, qui exige une page par écran du dossier construit. La règle n° 1 vaut pour les deux registres.
+- D207 (l'utilisateur et le pilote, 31.10) : « On est un peu trop gourmand en quota, comment garder la qualité tout en restreignant la quantité de token chère type Fable ou opus ».
+  **Mesure.** Le premier poste est le contexte du pilote : 528 k jetons Opus, relus à chaque tour, et chaque notification d'agent réveille un tour. Ensuite viennent les reprises d'agents au long contexte et les concepteurs en v0 :
+  - concepteurs Opus : 250 à 300 k ;
+  - reprises par `SendMessage` : 330 à 400 k ;
+  - critique Fable : 100 à 120 k ;
+  - Brasseur du jury : 43 k.
+  Fable est à 8 % de la semaine ; ce n'est pas le poste principal.
+  **Règles** (skill `voies`, § Lancer) :
+  1. une session par écran ;
+  2. une passe ou une relance part chez un agent neuf, sur un brief serré ;
+  3. un dossier de conception digéré (3 000 mots au plus) ;
+  4. en v0, le repos et un état seulement.
+  Le critique Fable et les concepteurs Opus restent (L25) ; leur nombre et leur contexte baissent.

@@ -1,0 +1,11 @@
+recette   pied bas 618 px (0.73 écran) ; débord 0 ; EBC —
+couleurs  pied bas 618 px (0.73 écran) ; débord 0 ; EBC 7,3
+sucre     pied bas 694 px (0.82 écran) ; débord 0 ; EBC 7,3
+lactose   pied bas 776 px (0.92 écran) ; débord 0 ; EBC 7,3
+huit      pied bas 828 px (0.98 écran) ; débord 0 ; EBC —
+vide      pied bas 348 px (0.41 écran) ; débord 0 ; EBC —
+pils 5 + Entrée : grain 5 kg, focus « Ajouter : le nom, puis Entrée ; ou le no »
+weizen 1,5 et hafer 1,5 : grain 8 kg
+pale + Entrée : focus « Masse de Pale Ale Malz, en kg »
+couleurs 3,5 · 4 · 2 : EBC 7,3
+erreurs de script : 0

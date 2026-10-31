@@ -57,3 +57,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   - Classement : r4, z2, u3, r3, r2, u2, u4, z3, z4, r1, u1, z1. Aucun rejet, aucun « très mauvais ».
   - Candidates : **r4** (le réglage, dans sa langue r4-a), **z2** (la composition ; absorbe r3 et u3) et **u2** (l'ajout au clavier).
   **La passe 2 est lancée** chez les mêmes agents, dans `v1/r4b`, `v1/z2b` et `v1/u2b`, avec les captures à 8 grains (D5). Ensuite : le critique juge chaque variante, puis une page neuve.
+- 31.10, soir : **r4b** est rendue avec le plateau noir réduit d'un tiers, mon choix contre le plateau clair (0,42).
+  - Écart accepté par le pilote : le remplissage vaut 0,47 pour 0,5 attendu, car sa recette n'a que 3 malts ; à 8 grains, la page fait 0,96 écran. Gonfler la page serait du remplissage, pas de l'information.
+  - Couleurs : COMMUN échoue comme en v0, et c'est voulu (J7 : aucune couleur connue).
+- 31.10, soir : u2b est rendue (« pils 5 » gardé, COMMUN OK, remplissage 0,46 : même écart accepté que r4b, 3 malts). z2b est encore en vol. Le jugement des passes et la suite se feront dans une session neuve (D207), avec un critique neuf.
