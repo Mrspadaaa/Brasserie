@@ -67,3 +67,9 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   4. puis les passes 2 par `SendMessage` aux mêmes agents.
   La question de fond du lint : `button-danger` est à 4,09:1 (e5).
 - 31.10 : 3 séries rendues sur 8 : r, u, e. Décision du pilote : **DESIGN.md prime**. Ses rayons sont de 10 et 16 px, alors que le contrôle `controle-commun` S3 attend 2, 4 et 8 px, une règle venue du lot houblons. Le trait de 2 px du + commun vient de l'app. Pour les écrans hors houblons, il faut un profil « sans houblons » de `controle-commun`, qui lise DESIGN.md (à faire avant les passes 2). Les contrôles au-style, fiche, trait et légende ne s'appliquent pas ici.
+- 31.10 : 6 séries rendues sur 8 (r, u, e, z, w, g). À corriger avant les passes 2 (voie outils) :
+  - `controle-panel` identifie une capture par son nom de fichier : six `capture-haut.png` donnent un faux échec de diversité ;
+  - `mots-premier-ecran` compte le texte d'un `<details>` fermé ;
+  - `controle-contraste` ne voit pas une bande de fond posée à côté du texte ;
+  - le profil « sans houblons » de `controle-commun` (rayons de DESIGN.md : 10, 16 et 24 px).
+  Défaut de données relevé par g et par l'inventaire : une recette neuve s'ouvre à 30 L dans un fermenteur de 30 L, donc « plein ».
