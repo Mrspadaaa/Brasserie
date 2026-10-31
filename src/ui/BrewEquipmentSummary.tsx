@@ -62,7 +62,7 @@ export function BrewEquipmentSummary({ recipe, profile, state, stepId, onAcceptS
         {recipe.preBoilHotL != null && boilStage && <div><dt>Avant ébullition · à chaud</dt><dd>{litres(recipe.preBoilHotL)} / {litres(e.kettleWorkingL)} L</dd></div>}
         {finalStage && <>
           <div><dt>Fermenteur · {finalReading ? 'mesuré' : 'prévu'}</dt><dd>{litres(filling)} / {litres(e.fermenterCapacityL)} L</dd></div>
-          <div className="equipment-plan-secondary"><dt>Espace libre</dt><dd>{litres(check.headspaceL)} L · {litres(Math.max(0, check.headspaceL) / e.fermenterCapacityL * 100)} %</dd></div>
+          <div className="equipment-plan-secondary"><dt>Espace libre</dt><dd>{check.headspaceL < 0 ? `+${litres(-check.headspaceL)} L de trop` : `${litres(check.headspaceL)} L · ${litres(check.headspaceL / e.fermenterCapacityL * 100)} %`}</dd></div>
         </>}
       </dl>
       {waterStage && hasMash && check.mashTooFull && <p className="equipment-plan-warning" role="alert">Empâtage trop volumineux. Réduis le brassin ou redistribue l’eau avant brassage, puis recalcule son traitement.</p>}

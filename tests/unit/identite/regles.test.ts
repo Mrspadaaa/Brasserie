@@ -1,17 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { practicalBrewingPreferences, practicalEquipment } from '../../../src/domain/brewEquipment';
-import { BrewingMath } from '../../../src/services/brewingMath';
-import type { BrewhouseProfile } from '../../../src/types';
 import {
-  barreCuve, conseilVolume, etatVolume, etendreEbullition, etendreVolume, evaporation, graduations, lireNombre, lireSaisie,
-  pasClavier, traitsRegle, volumeAvantEbullition, zonesPiste
+  avantEbullitionDuPlan, barreCuve, conseilVolume, etatVolume, etendreEbullition, etendreVolume, evaporation, graduations, lireNombre, lireSaisie,
+  pasClavier, traitsRegle, zonesPiste
 } from '../../../src/ui/identite/regles';
-
-// Fixture : l'installation de démonstration (30 L, cuve 45 L, évaporation 3 L/h). Aucune donnée réelle.
-const profil: BrewhouseProfile = {
-  id: 'fixture', name: 'Royal Catering', volumeL: 30, efficiencyPct: 75, boilOffRatePct: 10, deadSpaceL: 2, mashRatioLPerKg: 4,
-  equipment: { ...practicalEquipment }, preferences: { ...practicalBrewingPreferences }
-};
 
 describe('la règle d’ébullition s’étend d’une demi-heure au-delà de la valeur', () => {
   it('reste à 0–120 au repos et tant que la valeur tient dans la règle', () => {
@@ -154,31 +145,17 @@ describe('l’évaporation', () => {
   });
 });
 
-describe('le moût avant ébullition vient du moteur', () => {
-  it('égale le plan d’eau du moteur, sans addition refaite ici', () => {
-    const moteur = BrewingMath.waterVolumes(8, 24, profil, 'batch', 60, 0);
-    const r = volumeAvantEbullition({ volumeL: 24, minutes: 60, brewhouse: profil, grainKg: 8, houblonsCuveG: 0 });
-    expect(r?.litres).toBe(moteur.preBoilHotL);
-    expect(r!.litres).toBeGreaterThan(24 + 3); // pertes de fond et contraction comprises : plus que volume + évaporation
+describe('le moût avant ébullition : une seule source, le plan d’eau de la recette', () => {
+  it('reprend preBoilHotL tel quel, sans addition ni second calcul', () => {
+    expect(avantEbullitionDuPlan(36.6, 3)).toEqual({ litres: 36.6, evapL: 3 });
   });
-  it('55 L en 240 min : l’évaporation (12 L) et les pertes poussent bien au-delà de 67 L', () => {
-    const r = volumeAvantEbullition({ volumeL: 55, minutes: 240, brewhouse: profil, grainKg: 12, houblonsCuveG: 300 })!;
-    expect(r.evapL).toBe(12);
-    expect(r.litres).toBeGreaterThan(67);
+  it('sans plan d’eau (0 ou absent : pas de malts) : inconnu, jamais un 0 ni un autre nombre', () => {
+    expect(avantEbullitionDuPlan(0, 3)).toBeNull();
+    expect(avantEbullitionDuPlan(undefined, 3)).toBeNull();
+    expect(avantEbullitionDuPlan(Number.NaN, 3)).toBeNull();
   });
-  it('ne dépend pas du poids de grain : sans malts, le même nombre', () => {
-    const avec = volumeAvantEbullition({ volumeL: 24, minutes: 60, brewhouse: profil, grainKg: 8, houblonsCuveG: 0 });
-    const sans = volumeAvantEbullition({ volumeL: 24, minutes: 60, brewhouse: profil, grainKg: 0, houblonsCuveG: 0 });
-    expect(sans?.litres).toBe(avec?.litres);
-  });
-  it('sans équipement chiffré : le calcul historique du moteur', () => {
-    const nu: BrewhouseProfile = { ...profil, equipment: undefined, preferences: undefined };
-    const r = volumeAvantEbullition({ volumeL: 24, minutes: 60, brewhouse: nu, grainKg: 8, houblonsCuveG: 0 });
-    expect(r?.litres).toBe(BrewingMath.waterVolumes(8, 24, nu, 'batch', 60, 0).preBoilVolumeL);
-  });
-  it('volume ou durée inconnus : null', () => {
-    expect(volumeAvantEbullition({ volumeL: Number.NaN, minutes: 60, brewhouse: profil, grainKg: 8, houblonsCuveG: 0 })).toBeNull();
-    expect(volumeAvantEbullition({ volumeL: 24, minutes: Number.NaN, brewhouse: profil, grainKg: 8, houblonsCuveG: 0 })).toBeNull();
+  it('une évaporation inconnue reste inconnue', () => {
+    expect(avantEbullitionDuPlan(36.6, undefined)).toEqual({ litres: 36.6, evapL: null });
   });
 });
 

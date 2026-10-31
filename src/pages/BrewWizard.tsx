@@ -43,7 +43,7 @@ import { CarteEbullition } from '../ui/identite/CarteEbullition';
 import { PlagesStyle } from '../ui/identite/PlagesStyle';
 import { TuilesMateriel } from '../ui/identite/TuilesMateriel';
 import { InterrupteurNolo } from '../ui/identite/InterrupteurNolo';
-import { evaporation, volumeAvantEbullition, conseilVolume } from '../ui/identite/regles';
+import { evaporation, avantEbullitionDuPlan } from '../ui/identite/regles';
 import { teinteDuStyle } from '../ui/identite/teinteStyle';
 import { fermenterRecommendation } from '../domain/fermenterPlanning';
 import { computeBeerColor } from '../domain/beerColor';
@@ -1802,10 +1802,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     () => evaporation({ boilOffLPerHour: brewhouse?.equipment?.boilOffLPerHour, boilOffRatePct: brewhouse?.boilOffRatePct, volumeL, minutes: boilMin }),
     [volumeL, boilMin, brewhouse]
   );
-  const avantEbullitionIdentite = useMemo(
-    () => volumeAvantEbullition({ volumeL, minutes: boilMin, brewhouse, grainKg: totalGrist, houblonsCuveG: kettleHopG, spargeType }),
-    [volumeL, boilMin, brewhouse, totalGrist, kettleHopG, spargeType]
-  );
   /** La capacité du fermenteur pour CE brassin se range dans l'installation figée de la recette (`details.brewhouse`). */
   const setCapaciteFermenteur = (capaciteL: number) => {
     const source = brewhouse;
@@ -2372,12 +2368,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         const noloActif = !!details.nolo?.enabled;
         const problemesInstallation = recipeInstallationIssues(recette, configuredBrewhouse);
         const volumeAdapte = defaultBrewVolume(cible);
-        // Le moût d'avant ébullition : le nombre du bloc « Volumes et matériel » (preBoilHotL de la recette, tiré du
-        // plan d'eau du moteur). Sans plan d'eau (pas de grain), le même moteur le calcule sans refaire d'addition.
-        const preHotApp = recette.preBoilHotL;
-        const avantMoteur = typeof preHotApp === 'number' && Number.isFinite(preHotApp) && preHotApp > 0
-          ? { litres: preHotApp, evapL: evaporationIdentite?.litres ?? null }
-          : avantEbullitionIdentite;
+        // Le moût d'avant ébullition : UNE source, le preBoilHotL de la recette (plan d'eau du moteur), le même nombre que
+        // « Avant ébullition · à chaud » du bloc « Volumes et matériel ». Sans plan d'eau (pas de malts) : inconnu, la barre dit « — ».
+        const avantMoteur = avantEbullitionDuPlan(recette.preBoilHotL, evaporationIdentite?.litres);
         const alertesInstallation = (equipement || installationNeedsAdoption && configuredBrewhouse?.equipment)
           ? problemesInstallation.map(issue=><p key={issue} role="status" className="text-xs text-ebc-amber" data-role="alerte-installation">{installationNeedsAdoption && configuredBrewhouse?.equipment
               ? 'Adopte ton installation avec « Adapter à mon matériel actuel » avant de lancer ce brassin.'
@@ -2466,7 +2459,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               <TuilesMateriel
                 espaceLibrePct={reco?.headspacePct ?? equipement?.fermenterHeadspacePct}
                 baseEspaceLibre={reco?.basis}
-                alerte={problemesInstallation.length > 0}
                 contenuEspace={<RecipeInstallationChoice recipe={recette} profile={brewhouse} onChange={next=>setDetails(d=>({...d,installation:next.installation}))}/>}
                 materielNom={cible?.name}
                 capaciteL={equipement?.fermenterCapacityL}

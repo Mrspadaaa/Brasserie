@@ -179,9 +179,10 @@ describe('CarteVolume', () => {
     expect(document.querySelector('.idn-cdep')).toBeNull();
   });
 
-  it('moût d’avant ébullition inconnu : dit « à calculer », pas 0 L', () => {
+  it('moût d’avant ébullition inconnu (sans malts) : dit « — », jamais 0 L ni un autre nombre', () => {
     render(<Vol avant={null} />);
-    expect(screen.getByText(/à calculer/)).toBeTruthy();
+    expect(screen.getByText(/sans malts/).textContent).toContain('—');
+    expect(document.querySelector('[data-role="preb"]')!.textContent).toBe('—');
     expect(screen.queryByText(/~0 L/)).toBeNull();
   });
 

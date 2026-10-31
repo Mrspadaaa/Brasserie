@@ -1,4 +1,4 @@
-OK — Identité de l'app reprend r4-a (nombres tapés, règles qui s'étendent, cuve) ; rendu Chrome à jouer par l'exécutant
+OK — Relance 1 corrigée (tuiles, pastille, cuve à une source, thème cave) ; rendu à rejouer par l'exécutant
 
 Code, tests, build et registre : verts. **Le rendu n'est pas encore vu** (aucune capture prise par moi : le serveur et Chrome passent par l'exécutant, voir
 « DEMANDE EXECUTANT »). Tant que ces captures ne sont pas ouvertes et jugées, l'écran n'est pas validé (L12).
@@ -8,7 +8,8 @@ Code, tests, build et registre : verts. **Le rendu n'est pas encore vu** (aucune
   ébullition, capacité du fermenteur, tuile Matériel ouverte). Imports ajoutés. `evaporationHint` (texte de l'ancienne phrase) est remplacé.
 - `src/ui/identite/` (nouveau) : `regles.ts` (fonctions pures), `plages.ts`, `teinteStyle.ts`, `ChampNombre.tsx`, `Regle.tsx`, `CarteVolume.tsx`,
   `CarteEbullition.tsx`, `PlagesStyle.tsx`, `TuilesMateriel.tsx`, `InterrupteurNolo.tsx`, `identite.css` (couleurs lues sur les jetons de thème : clair et « cave »).
-- `tests/unit/identite/` : `regles.test.ts`, `plages.test.ts`, `cartes.test.tsx` (60 tests).
+- `tests/unit/identite/` : `regles.test.ts`, `plages.test.ts`, `cartes.test.tsx`, `resumeMateriel.test.tsx` (60 tests).
+- **Hors « Possède » (relance 1, point 8)** : `src/ui/BrewEquipmentSummary.tsx`, une ligne (la valeur négative d'« Espace libre »). À valider et commiter par chemin.
 - `work/refonte-frontend/v4/choix/ecrans-app.json` (D206, écran `identite`, route `r4-a`).
 - `work/missions/2026-10-31-ecran-identite/v1/r4-a/` : `inventaire-r4a.json` (24 éléments), 23 marqueurs `data-element` dans `etat.html`, section
   « ## Reprise » ajoutée à `NOTE.md` (sans elle, `controle-choix.mjs <dossier>` ne lit pas la page).
@@ -36,11 +37,33 @@ Code, tests, build et registre : verts. **Le rendu n'est pas encore vu** (aucune
 
 Ajouts de r4-a : puce « fermenteur N L » (ouvre le matériel), conseil, zones libre/trop, barre de la cuve, règles qui s'ouvrent, pointillés, « › ».
 
+## Relance 1 (voir `RESULTAT-chrome.md`, captures ouvertes) — corrigé, rendu à rejouer
+1. **Plages du style** : le code les affiche pour tout style résolu (OG, IBU, « Repères ⌄ »). Elles manquaient parce que la série tournait sur une recette
+   **sans style** (`recette=vide`) : sans style, rien ne s'affiche et rien n'est inventé (aussi vrai pour un style libre qui n'est dans aucun guide, ou ambigu tant que
+   « Préciser le référentiel » n'est pas choisi). La série joue maintenant la recette de démonstration (style 16D, malts), qui a des plages ; la recette vide est
+   vérifiée à part (`app-vide` : bouton d'import dans le corps, aucune pastille, « — avant ébullition »).
+2. **« Remplissage conseillé »** : 10,4 px → 12 px (`.idn-tuile-corps small`).
+3. **Tuiles** : Espace libre et Matériel côte à côte, fermées au repos ; l'ouverture automatique sur alerte est supprimée (l'alerte est déjà au premier plan,
+   sous la barre de la cuve). Seul le matériel « à adopter » ou une notice d'adaptation ouvre Matériel.
+4. **Hauteur** : avec 3, ce qui tenait en trop disparaît ; la série mesure maintenant le bas du bouton Suivant à 390 (`ECHEC` s'il passe sous le pli).
+   Non mesuré par moi.
+5. **Le +** : au repos, hors du contenu quand la page tient en un écran ; la série mesure l'intersection du + avec tout texte du bloc.
+6. **Pastille du style** : l'app rend un `<textarea>` (pointeur tactile, `Input`) que mes sélecteurs `input` n'atteignaient pas : c'est ce qui laissait le Combobox
+   en champ blanc bordé, chevron sur le texte. Sélecteurs `input, textarea`, champ à 26 px de marge droite pour le chevron, pastille teintée quand la famille du
+   style est reconnue (sinon neutre : un style libre n'a pas de teinte inventée). Même cause pour le nom (pointillé qui manquait à 390).
+7. **Un seul nombre avant ébullition** : `recipe.preBoilHotL` seul (`avantEbullitionDuPlan`) ; le second calcul (`volumeAvantEbullition`) est supprimé, avec ses tests.
+   La série compare la barre et le bloc.
+8. **« Espace libre −25 L · 0 % »** : ligne du bloc `BrewEquipmentSummary` (un composant que ma voie ne possède pas) : une seule ligne changée dans
+   `src/ui/BrewEquipmentSummary.tsx` → « +25 L de trop » quand le volume dépasse le fermenteur ; inchangé sinon (« 6 L · 20 % »). Test : `tests/unit/identite/resumeMateriel.test.tsx`.
+   **Hors de « Possède » : à valider par le pilote et à commiter par chemin** (usage dans le jour de brassage inclus, même ligne).
+9. **Thème cave** : la série prend `app-repos-cave-390` et `-1280` (attribut `data-theme="cave"` posé sur `<html>`, le même que pose le bouton de l'en-tête).
+10. **En-tête « Nouvelle recette » + « Abandonner » à 1280 px** : en-tête bureau de l'assistant, commun aux sept étapes, hors périmètre : **non touché**, noté.
+
 ## Message du pilote (cuve) — pris en compte
 La barre de la cuve se mesure contre la **limite utile** (`equipment.kettleWorkingL`, 36 L dans le cas vu en ligne), pas contre la capacité totale 45 L,
 et son étiquette dit « cuve utile 36 L ». Le moût d'avant ébullition est `recipe.preBoilHotL` (le nombre de « Volumes et matériel », tiré du plan d'eau du
-moteur) ; sans plan d'eau (aucun grain), le même moteur (`BrewingMath.waterVolumes`, avec 1 kg de grain : ce volume n'en dépend pas) le calcule,
-sans addition refaite. L'alerte « La collecte avant ébullition dépasse la limite utile de la cuve » vient de `recipeInstallationIssues` (même calcul que
+moteur), **seule source** (relance 1 : plus aucun second calcul). Sans plan d'eau (pas de malts, le bloc dit alors « 0 / 35 L »), la barre dit
+« — avant ébullition · sans malts » : jamais un autre nombre. L'alerte « La collecte avant ébullition dépasse la limite utile de la cuve » vient de `recipeInstallationIssues` (même calcul que
 le bloc) et reste au premier plan ; le détail du bloc et les deux boutons d'adaptation sont à un toucher derrière la tuile Matériel.
 Exemple D205 : 55 L, fermenteur 60 L, 240 min → moût ~67 L et plus ; contre une cuve de 45 L, **« +22 L de trop »** en rouge avec zone rouge (testé :
 `barreCuve(67, 12, 45)`) ; contre la limite utile de 36 L du cas vu en ligne, le dépassement est plus grand ; l'écran affiche l'écart calculé, pas ce chiffre.
@@ -54,7 +77,8 @@ comportement de l'app. Aucun champ nouveau.
 
 ## Critères (sorties)
 - G1 `npm run build` : `✓ built in 22.65s`.
-- G2 `npx vitest run tests/unit/identite --maxWorkers=2` : `Test Files 3 passed (3) · Tests 60 passed (60)`.
+- G2 `npx vitest run tests/unit/identite --maxWorkers=2` : `Test Files 4 passed (4)` (relance 1 ; 60 tests, dont ceux de `resumeMateriel`). `npm run build` rejoué : `✓ built in 21.25s` ; `npx tsc --noEmit` : aucune sortie.
+  Intégration rejouée après la relance (brewEquipment, waterVolumeExplanation, recipeWizardSafety, brewWizardInstallation, brewLegacyInstallation×2, unit brewEquipment) : 111 passés avec les tests identite.
 - `npx tsc --noEmit` : aucune sortie (code 0).
 - G3 : `node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs --registre --registre=work/refonte-frontend/v4/choix/ecrans-app.json` →
   `REGISTRE OK (1 écrans)`. **La commande écrite dans GATES.md (`--registre=…` seul) n'imprime que l'usage** : l'outil veut le drapeau nu `--registre`
@@ -82,13 +106,15 @@ But : jouer l'étape Identité sur l'app servie en local avec les fixtures, ouvr
    Sortie attendue : `IDENTITE OK` (sinon `IDENTITE ECHEC n` et la liste ; rapporter chaque ligne `ECHEC` telle quelle, sans corriger le code). La série joue, à 390 puis 1280 px :
    le repos ; l'ébullition tapée à 240 (règle 0–270) ; la puce du fermenteur, 60 L tapés, « ↺ profil » ; 55 L dans 60 L (la cuve dit son dépassement) ;
    le parcours au clavier (Tab depuis le nom, ↑ ↓, Échap, Entrée, 180 tapé) ; la maquette r4-a au même format ; le côte à côte.
-2. Captures à produire (dans `voies/p1-port/captures/`, suffixe `-390` et `-1280`) : `app-repos`, `app-ebullition-240`, `app-fermenteur-ouvert`, `app-fermenteur-60`,
-   `app-cuve-deborde`, `app-profil-rendu`, `app-clavier-saisie-en-cours`, `app-clavier-apres`, `maquette-repos`, `cote-a-cote` ; et `identite-journal.txt` (la ligne
-   `INFO … : Tab depuis le nom → …` donne l'ordre réel des Tab).
-3. À OUVRIR en image, une par une, et décrire en deux phrases chacune : les 8 `cote-a-cote-*`/`app-*` ci-dessus à 390 d'abord, puis 1280. Regarder en particulier :
-   le pointillé sous 24 et 60, le « › » au bout des deux règles, la pastille du style (lisible ? le champ du style ne déborde pas), les pastilles OG/IBU, la barre de la
-   cuve (bleu/or, trait de la cuve utile, zone rouge et « +N L de trop »), les deux demi-tuiles du bas, la hauteur totale (tient-il en un écran à 390 avec le pied ?),
-   le thème « cave » (bouton thème de l'en-tête) sur `app-repos`.
+   (Relance 1 : la série joue la recette de démonstration, puis la recette vide ; elle mesure aussi les tuiles fermées et côte à côte, le pied sous le pli, le + sur le
+   texte, la pastille teintée, le chevron, un seul nombre avant ébullition, « +25 L de trop » du bloc, « Repères ⌄ » ouvert, et le thème cave.)
+2. Captures à produire (dans `voies/p1-port/captures/`, suffixe `-390` et `-1280`) : `app-repos`, **`app-repos-cave`**, `app-vide`, `app-reperes-ouverts`, `app-ebullition-240`,
+   `app-fermenteur-ouvert`, `app-fermenteur-60`, `app-cuve-deborde`, `app-profil-rendu`, `app-clavier-saisie-en-cours`, `app-clavier-apres`, `maquette-repos`, `cote-a-cote` ;
+   et `identite-journal.txt` (les lignes `INFO` : tuiles, pied, pastille, avant ébullition, ordre des Tab). Repartir d'un dossier `captures/` vidé (les anciennes ne doivent pas se mêler aux neuves).
+3. À OUVRIR en image, une par une, et décrire en deux phrases chacune : toutes les captures ci-dessus, à 390 d'abord, puis 1280. Regarder en particulier :
+   le pointillé sous le nom et sous les deux nombres, le « › » au bout des deux règles, la pastille du style (teintée, texte non recouvert par le chevron), les pastilles OG/IBU
+   et « Repères ⌄ », la barre de la cuve (or/bleu, trait de la cuve utile, zone rouge et « +N L de trop »), les deux demi-tuiles du bas (fermées, côte à côte),
+   la hauteur (Retour/Suivant sans défiler à 390 ; le + à côté de Suivant), `app-repos-cave` (contrastes, hachures, pastille, pointillés lisibles), et `cote-a-cote` contre la maquette.
 4. Les autres étapes de l'assistant ne doivent pas changer :
    ```
    node scripts/with_server.mjs --server "npm run dev -- --port 5611 --strictPort" --port 5611 -- node scripts/agents/baseline-visuelle.mjs --comparer

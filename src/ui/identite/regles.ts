@@ -2,11 +2,9 @@
  * Étape Identité (r4-a, choisie le 31.10) : le calcul pur derrière « chaque nombre est un curseur, et se tape ».
  *
  * Rien ici ne touche au DOM : les règles qui s'étendent, la saisie hors règle, l'état du fermenteur et de la cuve
- * se testent en entrée / sortie (tests/unit/identite). Les nombres du moteur (volume avant ébullition) viennent
- * de BrewingMath.waterVolumes ; ce fichier ne refait pas ce calcul.
+ * se testent en entrée / sortie (tests/unit/identite). Le volume avant ébullition vient du plan d’eau de la recette (preBoilHotL, moteur) :
+ * ce fichier ne le refait pas.
  */
-import type { BrewhouseProfile } from '../../types';
-import { BrewingMath } from '../../services/brewingMath';
 
 /** Plancher de la règle d'ébullition (min) et sa marge : toujours une demi-heure au-delà de la valeur. */
 export const EBULLITION_REGLE_MIN = 120;
@@ -155,23 +153,13 @@ export function evaporation(o: { boilOffLPerHour?: number; boilOffRatePct?: numb
 export interface AvantEbullition { litres: number; evapL: number | null }
 
 /**
- * Le moût dans la cuve avant l'ébullition, tel que le moteur le compte (pertes de fond, houblons restés dans la cuve,
- * contraction au refroidissement, évaporation). On ne l'additionne pas ici.
- *
- * Ce volume ne dépend pas du poids de grain : le moteur refuse un grain nul, on lui donne donc au moins 1 kg quand la
- * recette n'a pas encore de malts, sans que le résultat change. Volume ou durée inconnus : null (jamais 0).
+ * Le moût dans la cuve avant l'ébullition : UNE seule source, le `preBoilHotL` de la recette (le plan d'eau du moteur), le même
+ * nombre que « Avant ébullition · à chaud » du bloc « Volumes et matériel ». Aucune addition ni second calcul ici.
+ * Sans plan d'eau (pas de malts), ce nombre vaut 0 ou manque : on ne le sait pas, la barre le dit (null), jamais un 0 ni un autre nombre.
  */
-export function volumeAvantEbullition(o: {
-  volumeL: number; minutes: number; brewhouse?: Partial<BrewhouseProfile>; grainKg: number; houblonsCuveG: number;
-  spargeType?: 'fly' | 'batch' | 'none';
-}): AvantEbullition | null {
-  if (!fini(o.volumeL) || o.volumeL <= 0 || !fini(o.minutes) || o.minutes < 0) return null;
-  const plan = BrewingMath.waterVolumes(fini(o.grainKg) && o.grainKg > 0 ? o.grainKg : 1, o.volumeL, o.brewhouse, o.spargeType ?? 'batch', o.minutes, o.houblonsCuveG);
-  if (plan.planningStatus === 'invalid') return null;
-  const litres = plan.preBoilHotL ?? plan.preBoilVolumeL;
-  if (!fini(litres) || litres <= 0) return null;
-  const evap = evaporation({ boilOffLPerHour: o.brewhouse?.equipment?.boilOffLPerHour, boilOffRatePct: o.brewhouse?.boilOffRatePct, volumeL: o.volumeL, minutes: o.minutes });
-  return { litres, evapL: evap ? evap.litres : null };
+export function avantEbullitionDuPlan(preBoilHotL: number | null | undefined, evapL: number | null | undefined): AvantEbullition | null {
+  if (!fini(preBoilHotL) || preBoilHotL <= 0) return null;
+  return { litres: preBoilHotL, evapL: fini(evapL) ? evapL : null };
 }
 
 export interface BarreCuve {

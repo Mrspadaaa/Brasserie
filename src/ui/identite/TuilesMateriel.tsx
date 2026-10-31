@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from 'react';
+import React, { useId, useState } from 'react';
 import { ChampNombre } from './ChampNombre';
 import { fr } from './regles';
 
@@ -24,8 +24,6 @@ export interface TuilesMaterielProps {
   onCapacite: (v: number) => void;
   /** « ↺ profil » : rend la capacité du profil d'équipement. */
   onRaz: () => void;
-  /** Une alerte d'installation est en cours : la tuile « Espace libre » (choix pour ce brassin) s'ouvre. */
-  alerte?: boolean;
   ouvertMateriel: boolean;
   onOuvertMateriel: (o: boolean) => void;
   /** Adapter la recette, résumé des volumes : ce que l'écran offrait déjà sous le plan. */
@@ -36,9 +34,7 @@ export interface TuilesMaterielProps {
 export function TuilesMateriel(p: TuilesMaterielProps) {
   const [ouvertEspace, setOuvertEspace] = useState(false);
   const idEspace = useId();
-  const idMateriel = useId();
-  useEffect(() => { if (p.alerte) setOuvertEspace(true); }, [p.alerte]);
-  const sansProfil = !Number.isFinite(p.capaciteL) || !Number.isFinite(p.profilL);
+  const idMateriel = useId();  const sansProfil = !Number.isFinite(p.capaciteL) || !Number.isFinite(p.profilL);
   const ecart = !sansProfil && p.capaciteL !== p.profilL;
   const base = p.baseEspaceLibre ?? 'provisional';
   if (p.espaceLibrePct === undefined && p.materielNom === undefined) return null;

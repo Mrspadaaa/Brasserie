@@ -8,12 +8,12 @@
 
 /* Nom + pastille du style */
 .idn-id { display: flex; align-items: center; gap: 8px; }
-.recipe-wizard input.idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']) {
+.recipe-wizard :is(input, textarea).idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']) {
   flex: 1; min-width: 0; height: 34px; min-height: 34px; padding: 0; border: 0; border-radius: 0;
   border-bottom: 1.5px dotted rgb(var(--cave-600)); background: none; box-shadow: none;
-  font-size: 20px; line-height: 1.2; font-weight: 600; color: rgb(var(--cave-texte-50));
+  font-size: 20px; line-height: 32px; font-weight: 600; color: rgb(var(--cave-texte-50));
 }
-.recipe-wizard input.idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']):focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); }
+.recipe-wizard :is(input, textarea).idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']):focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); }
 .idn-pas {
   position: relative; display: inline-flex; align-items: center; flex-shrink: 0; width: 11.5rem; max-width: 52%;
   height: 30px; border-radius: 10px; border: 1px solid rgb(var(--idn-teinte, var(--cave-600)) / 0.5);
@@ -23,11 +23,11 @@
 .idn-pas > i { flex-shrink: 0; width: 20px; height: 20px; margin-left: 4px; border-radius: 50%; background: rgb(var(--idn-teinte, var(--cave-600))); }
 .idn-pas > small { flex-shrink: 0; margin-right: 6px; font-size: 12px; }
 .idn-pas .idn-combo { flex: 1; min-width: 0; }
-.recipe-wizard .idn-pas input:not([type='range']):not([type='radio']):not([type='checkbox']) {
-  height: 28px; min-height: 28px; padding: 0 2px 0 6px; border: 0; background: transparent; box-shadow: none;
+.recipe-wizard .idn-pas :is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  height: 28px; min-height: 28px; padding: 0 26px 0 6px; border: 0; border-radius: 0; background: transparent; box-shadow: none; line-height: 28px; text-overflow: ellipsis;
   font-size: 14px; font-weight: 600; color: inherit;
 }
-.recipe-wizard .idn-pas input:not([type='range']):not([type='radio']):not([type='checkbox'])::placeholder { color: inherit; opacity: 0.7; font-weight: 400; }
+.recipe-wizard .idn-pas :is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox'])::placeholder { color: inherit; opacity: 0.7; font-weight: 400; }
 .recipe-wizard .idn-pas button { min-height: 28px; }
 
 /* Plages du style */
@@ -176,3 +176,10 @@
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 10px;
   border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); font-size: 14px; color: rgb(var(--cave-texte-200));
 }
+
+/* Le chevron du Combobox du style : 26 px à droite dans la pastille, il ne recouvre plus le texte (padding droit du champ). */
+.recipe-wizard .idn-pas button[aria-label$='la liste'] { position: absolute; right: 0; top: 0; bottom: 0; width: 26px; min-height: 0; padding: 0; color: inherit; }
+.idn-pas button[aria-label$='la liste'] svg { width: 16px; height: 16px; }
+.idn-pas > small { position: relative; z-index: 1; }
+/* Le choix pour ce brassin (composant existant) dans la tuile : aucun texte sous 12 px. */
+.recipe-wizard .idn-tuile-corps small { font-size: 12px; line-height: 1.3; }
