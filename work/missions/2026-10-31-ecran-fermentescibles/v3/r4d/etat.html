@@ -97,8 +97,9 @@ body:not(.r4b-ample) .r4b-tag,body:not(.r4b-ample) .r4b-mo{line-height:16px}
 .r4d-ret:hover{color:var(--t0);background:var(--haut)}
 .r4d-ret:active{transform:scale(.88)}
 /* Le retrait laisse sa place 6 s : le nom barré, « Annuler » sous le doigt, là où était le ×. */
-.r4d-ote{position:relative;display:flex;align-items:center;gap:8px;min-height:34px;margin-top:2px;padding:0 3px 0 12px;border:1px dashed var(--bordm);border-radius:10px;font-size:14px;color:var(--t2);overflow:hidden;list-style:none}
+.r4d-ote{position:relative;display:flex;align-items:center;gap:8px;min-height:50px;margin-top:2px;padding:0 3px 0 12px;border:1px dashed var(--bordm);border-radius:10px;font-size:14px;color:var(--t2);overflow:hidden;list-style:none}
 .r4d-ote s{color:var(--t1);text-decoration-thickness:1.5px;white-space:nowrap;flex-shrink:0}
+body:not(.r4b-ample) .r4d-ote{min-height:40px}
 .r4d-ann{margin-left:auto;height:28px;padding:0 10px;border-radius:10px;background:var(--t0);color:#fff!important;font-size:14px;font-weight:600;flex-shrink:0}
 .r4d-ann:active{transform:scale(.96)}
 .r4d-file{position:absolute;left:0;bottom:0;width:100%;height:2px;background:var(--t2);transform-origin:left;animation:r4d-file 6s linear forwards}

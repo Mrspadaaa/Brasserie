@@ -43,6 +43,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 |---|---|---|---|
 | Malts/sucres · panel v0 (12 concepts) | 31.10 v1 | https://claude.ai/artifact/Hn6WHBqAAEzV7UuJj9qCoh | `work/missions/2026-10-31-ecran-fermentescibles/panel-v0.html` |
 | Malts/sucres · passe 3 (r4c, z2c, u2c) et ses axes | 31.10 v1 | https://claude.ai/artifact/2bBQ7dcRjwnyGfbUgf7vUG | `work/missions/2026-10-31-ecran-fermentescibles/choix-v2/index.html` |
+| Malts/sucres · passe 4 (r4c et r4d, gestes sur la ligne, plateau visible ou replié) | 31.10 v1 | https://claude.ai/artifact/9TYpaMsGrfuBYYMPUf8XeU | `work/missions/2026-10-31-ecran-fermentescibles/choix-v3/index.html` |
 
 ## Sources
 - `src/pages/BrewWizard.tsx` (étape `fermentescibles`, l. 437 ; `fermentables`, l. 660)
@@ -82,3 +83,9 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   i1 à t3 ont tourné sans dossier `voies/` (D204, économie), seule p4 en a un ; écart connu, pas un défaut de p4.
   **Le critique t4 est en vol** (`critique/VERDICT-v3.md`). Ensuite : la page de la passe 4 (r4c et r4d côte à côte, gestes repos /
   pendant / après, les deux états du plateau), un artefact neuf.
+- 31.10, nuit : t4 rend **PRÊT À MONTRER** (0 bloquant, 5 détails, `critique/VERDICT-v3.md`). Le n° 2 est corrigé par le pilote : la
+  ligne retirée garde la hauteur d'une ligne (50 px, 40 en dense) ; mesuré, Haferflocken 242 → 240 px au retrait (avant : un saut de
+  liste). Les n° 3 (vide sous le pied, replié à 3 lignes) et n° 4 (détail en bas) sont écrits en coût sous l'option repliée de la page ;
+  n° 1, n° 5 et Q4 : rien à faire avant ses mots. Page de la passe 4 publiée (PAGE OK, captures ouvertes), table « Pages ».
+  **Attend son verdict** : r4d lui va-t-elle, et quel plateau (visible ou replié). Ensuite : Malts dans `ecrans-app.json`, puis le port
+  (avec l'alias « Munich » → « Münchner Malz », vu sur r4d : le champ crée une ligne au lieu de proposer la fiche existante).

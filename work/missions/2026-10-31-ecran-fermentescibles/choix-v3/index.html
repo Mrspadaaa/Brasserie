@@ -1,0 +1,143 @@
+<title>Malts/sucres · passe 4 · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La passe 4 de Malts/sucres : r4d, sa balance r4c avec les gestes sur la ligne. Une rangée par question, le nom à gauche ; la référence d'abord,
+   puis les vignettes serrées ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). Polices système seules. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --reserve: #8a6a10;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --reserve: #e3c26a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --reserve: #e3c26a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 4px; align-content: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+figcaption i { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-ref { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--reserve); }
+.large { grid-column: span 2; }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Malts/sucres 2/7</p>
+    <h1>Malts/sucres · passe 4 · 31.10</h1>
+    <div id="a-choisir">
+      <p>Ta balance r4c, avec tes gestes sur la ligne : la masse se tape sur la ligne, la croix retire, le champ ajoute, le nom ouvre le détail.</p>
+      <p>Dis si ça te va. Puis choisis le plateau : toujours visible, ou replié jusqu'au toucher d'un nom.</p>
+      <p>Le reste de r4c ne change pas : plateau clair, sucre en ligne du ticket, teinte en dégradé, OG en piste. Touche une capture pour la voir en grand.</p>
+    </div>
+    <p class="sur-titre">Version d'avant : <a href="https://claude.ai/artifact/2bBQ7dcRjwnyGfbUgf7vUG">la passe 3 (r4c, z2c, u2c)</a></p>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-plateau">
+    <div class="tete"><h2 id="t-plateau">Le plateau</h2><p>Ce que tu choisis. Ta r4c d'abord, puis les deux façons de r4d.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4c-repos.png" data-titre="Référence · r4c, ton choix, au repos"><img src="img/r4c-repos.png" alt="r4c au repos"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>La balance</b> · r4c</span><i>Changer passe par le plateau.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-repos.png" data-titre="r4d · plateau visible, au repos"><img src="img/r4d-repos.png" alt="r4d, plateau visible"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plateau visible</b> · r4d</span><i>Sous la liste, sur l'ingrédient choisi.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-replie.png" data-titre="r4d · plateau replié, au repos"><img src="img/r4d-replie.png" alt="r4d, plateau replié"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plateau replié</b> · r4d</span><i>Rien sous la liste au repos.</i><i>Coût : à 3 lignes, du vide sous le pied.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-detail.png" data-titre="r4d · plateau replié, nom touché : le détail s'ouvre"><img src="img/r4d-detail.png" alt="r4d, détail ouvert"></button><figcaption><span><b>Replié, nom touché</b></span><i>Le détail s'ouvre, × le referme.</i><i>Coût : il s'ouvre en bas, loin de la ligne.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-masse">
+    <div class="tete"><h2 id="t-masse">Modifier une masse</h2><p>Un toucher sur le chiffre, tu tapes, Entrée. Échap rend la valeur d'avant.</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-repos.png" data-titre="Masse · avant : Weizenmalz hell à 1,5 kg"><img src="img/r4d-repos.png" alt="Avant"></button><figcaption><span><b>Avant</b></span><i>Weizenmalz hell, 1,5 kg.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-masse-pendant.png" data-titre="Masse · pendant : « 2,5 » tapé sur la ligne"><img src="img/r4d-masse-pendant.png" alt="Pendant"></button><figcaption><span><b>Pendant</b></span><i>Le total et les parts suivent.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-masse-apres.png" data-titre="Masse · après Entrée : 2,5 kg"><img src="img/r4d-masse-apres.png" alt="Après"></button><figcaption><span><b>Après</b></span><i>2,5 kg, grain 9,0 kg.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-retrait">
+    <div class="tete"><h2 id="t-retrait">Retirer, ajouter</h2><p>La croix retire sans question ; « Annuler » reste 6 secondes.</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-retrait-apres.png" data-titre="Retrait · Weizenmalz hell retiré, Annuler à sa place"><img src="img/r4d-retrait-apres.png" alt="Retrait"></button><figcaption><span><b>Retiré</b></span><i>« Annuler » le rend à sa place.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-ajout-apres.png" data-titre="Ajout · « Cara 0,3 » puis « Munich » : le curseur dans sa masse"><img src="img/r4d-ajout-apres.png" alt="Ajout"></button><figcaption><span><b>Ajouté</b></span><i>« Cara 0,3 », puis « Munich » : curseur dans sa masse.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-ordi">
+    <div class="tete"><h2 id="t-ordi">Ordinateur</h2><p>1280 px. Tab passe d'une masse à la suivante.</p></div>
+    <div class="planche">
+      <figure class="vue ref large" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4c-1280.png" data-titre="Référence · r4c à 1280 px"><img src="img/r4c-1280.png" alt="r4c à 1280 px"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>La balance</b> · r4c</span></figcaption></figure>
+      <figure class="vue large" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-1280.png" data-titre="r4d à 1280 px"><img src="img/r4d-1280.png" alt="r4d à 1280 px"></button><figcaption><span><b>Gestes sur la ligne</b> · r4d</span></figcaption></figure>
+    </div>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
