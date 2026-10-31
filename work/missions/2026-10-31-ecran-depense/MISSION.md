@@ -24,8 +24,12 @@ Fini veut dire :
 | Ordre : fiabilité d'abord (lecture, stock, Drive, lenteur), interface ensuite | — | pilote | tranchée : c'est de la facturation (« ça doit être très fiable ») |
 | Les contrôles de cohérence (somme des lignes, TVA par taux, total) | par l'IA ; par le code | pilote | tranchée : par le code, déterministes ; l'IA lit, le code vérifie |
 | Tests sur l'app en ligne : lectures Gemini facturées, dépense de test écrite puis supprimée, fichier de test dans son Drive | A, B, rien | utilisateur | **accordée, A et B** (31.10 : « A : des lectures Gemini réelles, facturées » ; « Et b »). Bornes D210 : 40 lectures et 2 CHF au plus, journal `journal-gemini.md` ; une dépense « TEST pilote » à la fois, fichier Drive compris, supprimés dans la séance ; aucun article ni mouvement de stock réel ; sur le code corrigé et déployé |
-| Fiche d'un produit nouveau : le rapprochement d'abord (alias, α et récolte hors du nom, S3), puis une recherche en arrière-plan qui ne comble que les trous ([[export-et-ia]]) ; jamais d'écrasement d'une valeur saisie | où vit la fiche (article de stock, catalogue partagé) ; par qui (Gemini, panel croisé des sources) | pilote, avec revue du plan à deux regards (données, schéma) ; Gemini en production : coût par produit montré avant activation | ouverte : voie du plan |
+| Fiche d'un produit nouveau : le rapprochement d'abord (alias, α et récolte hors du nom, S3), puis une recherche en arrière-plan qui ne comble que les trous ([[export-et-ia]]) ; jamais d'écrasement d'une valeur saisie | où vit la fiche (article de stock, catalogue partagé) ; par qui (Gemini, panel croisé des sources) | pilote | ouverte : voie du plan, revue à deux regards (données, schéma) ; Gemini en production : coût par produit montré avant activation (accord de l'utilisateur) |
 | Le choix de la variante d'écran | — | brasseur | ouverte |
+| Découpe des corrections (31.10, nuit) : quatre voies de code à périmètres disjoints, chacune en deux temps (PLAN relu par deux relecteurs neufs, puis code) ; ensuite l2 (rapprochement des lectures, statut, journaux : A1, A2, LE1, LE4, U1, sur le contrat du point typé de l1), la fiche d'un produit nouveau (sur l'identité de s1), puis l'écran en entonnoir | — | pilote | tranchée ; exigences communes dans `voies/COMMUN.md` |
+| Propositions d'article (décision 117 du 17.10 : coupées, 18 fausses sur 27) : rallumées seulement à 0 fausse proposition sur la chasse rejouée ; une manquée est permise, une fausse non | — | pilote | tranchée (prudente : sans preuve, la garde reste) |
+| Règles des vues (TA3 : une pièce future compte dans « à payer » à son échéance, dans les deux vues ; TA4 : sans échéance, ligne « échéance à préciser », aucune date inventée ; TA6 : tendance sur les charges récurrentes seulement) | — | pilote | tranchée, réversible ; TA1 et TA5 en variantes |
+| Lectures en parallèle dès le départ (LE2, +50 % de jetons par facture) | — | utilisateur | non proposée : coût Gemini en production ; C1 (troisième lecture sur une vraie divergence) d'abord |
 
 ## Voies
 | Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |
@@ -33,6 +37,10 @@ Fini veut dire :
 | d1 | diagnostic : lecture de la facture, champs, lignes, liens au stock, incertitude ; vérité de sa facture en fixture | jugement | auteur | sonnet | 100 | work/missions/2026-10-31-ecran-depense/diagnostic/d1/** | — | DIAGNOSTIC.md, fixture, tests rejoués | pilote | — |
 | d2 | diagnostic : Drive, lenteur, onglets Entrées, Prévision et Tout | jugement | auteur | sonnet | 100 | work/missions/2026-10-31-ecran-depense/diagnostic/d2/** | — | DIAGNOSTIC.md, mesures | pilote | — |
 | i1 | inventaire et captures de l'écran actuel (fixtures) | mécanique | executant | haiku | 60 | work/missions/2026-10-31-ecran-depense/inventaire/** | — | inventaire-depense.md, captures ouvertes | pilote | — |
+| l1-lecture | la lecture contrôlée par le code (C1 à C3, A10, A6, A9, P1, P2, A3), un point typé par contrôle | jugement | auteur | sonnet | 110 | functions/src/invoiceScanCore.ts, functions/src/prompts.ts, tests/unit/invoiceScanCore.test.ts, tests/unit/depense/lecture/**, voies/l1-lecture/** | d1 | GATES.md, PLAN relu | pilote | — |
+| s1-stock | chaque ligne reliée au bon article ou à aucun (S1 à S4, A8, A9, B-V3-5), chasse du 17.10 à 0 fausse | jugement | auteur | sonnet | 110 | src/services/stockLineMatching.ts, src/services/ingredientIdentity.ts, src/ui/finance/ExpenseSheet.tsx (l. 140-160), tests/unit/stockLineMatching.test.ts, tests/unit/depense/stock/**, voies/s1-stock/** | d1 | GATES.md, PLAN relu | pilote | — |
+| s2-enregistrement | la dépense écrite juste et sa preuve Drive (A7, A11, A12, S5, S7, S8, DR1, DR4, DR5) | jugement | auteur | sonnet | 110 | src/services/purchaseEntry.ts, purchasePrefill.ts, financeDocuments.ts, driveFileStore.ts, src/domain/finance/brewBudget.ts, leurs tests, tests/unit/depense/enregistrement/**, voies/s2-enregistrement/** | d1, d2 | GATES.md, PLAN relu | pilote | — |
+| t1-onglets | les nombres des vues Finances cohérents (TA2, TA3, TA4, TA6) | jugement | auteur | sonnet | 90 | src/domain/finance/ledger.ts, forecast.ts, src/ui/finance/TransactionJournal.tsx (compteur), leurs tests, tests/unit/depense/onglets/**, voies/t1-onglets/** | d2 | GATES.md, PLAN relu | pilote | — |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md. Chaque défaut du diagnostic devient un test qui échoue sur le code d'aujourd'hui avant sa
@@ -49,5 +57,11 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+
+## Reprise
+- 31.10, nuit : d1, d2 et i1 rendus. Quatre voies écrites (l1-lecture, s1-stock, s2-enregistrement, t1-onglets ; exigences communes
+  `voies/COMMUN.md` ; LINT OK, MISSION OK). Tests de compréhension (Haiku) en vol. Ensuite, par voie : l'auteur écrit PLAN.md et
+  s'arrête ; deux relecteurs neufs (Conception, Prêt à coder) écrivent REVUE-PLAN.md ; le pilote trie (`systeme.mjs revue`) ; l'auteur
+  code (même agent, `SendMessage`) ; rejeu `systeme.mjs voies … --approuver`. Puis l2 sur le contrat du point typé de l1.
 
 ## Signature
