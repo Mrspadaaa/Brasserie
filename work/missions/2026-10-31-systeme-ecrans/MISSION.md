@@ -35,3 +35,4 @@ Ensuite, après e4 : e6, le test de nos skills à la manière de `skill-creator`
 ## Reprise
 - 31.10 : la mission est ouverte. Cinq voies.
 - 31.10 : **e5 commitée** (4dcfe0d9 : `npm run lint:design`, 0 erreur). Question de fond pour le lot Identité : `button-danger` est à 4,09:1 sur cave-900 dans le YAML, alors que la prose prévoit `#DC5F58` pour tenir 4,5:1. **e7** est lancée (skill boosters-ux : « Oublie pas de bien mettre en avant les UX UI booster ! »). En vol : e1, e2, e3, e4, e7.
+- 31.10, vers 15 h (**état courant**) : faits et commités : e2 (596a7fba), e3 (1aeecd5f), e4 (9a1f615f, jury dans voies : 7320dfea), e5 (4dcfe0d9), e7 (ab8b260b). En vol : **e1**, les baselines (agent a9500d92c43de554b, copie `%TEMP%/atelier-ecrans`). Ensuite : e6, le test de nos skills à la manière de skill-creator.

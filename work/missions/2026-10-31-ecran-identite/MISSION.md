@@ -56,3 +56,13 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 ## Reprise
 - 31.10 : la mission est ouverte. Le cadrage est en vol (jury e4, inventaire e2).
 - 31.10 : cadrage fait par le jury (`cadrage-jury.md` : 13 points tranchés, 6 axes A1 à A6). Brief commun écrit (`BRIEF-AUTEUR.md`). **Les 8 séries v0 sont lancées** (6 concepts chacune, 48 visés), avec boosters-ux. Ensuite : publier le panel dès qu'il est rendu, puis le tri par le critique (Fable), les passes et la page de choix.
+- 31.10, vers 15 h (**état courant**) :
+  - l'inventaire fin est fait (`inventaire-identite.md`) ;
+  - les 8 séries v0 sont en vol (agents dans « ## Agents »).
+  À chaque série rendue :
+  1. regarder ses captures (L12) ;
+  2. la publier sur la page du panel v0, un artefact neuf daté inscrit dans « ## Pages », section `data-voies` ;
+  3. puis lancer le tri par un critique Fable unique (`critique/<série>.md`, puis `critique/SYNTHESE.md` : Classement, Candidates,
+     Greffes) ;
+  4. puis les passes 2 par `SendMessage` aux mêmes agents.
+  La question de fond du lint : `button-danger` est à 4,09:1 (e5).

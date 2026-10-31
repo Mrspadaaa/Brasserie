@@ -472,3 +472,26 @@ documentaires d'après.
   Ensuite : k2 (Suggérer à 60′, M1 + M2), puis la critique, le rejeu, le déploiement et la PR.
 - 31.10 : « trop herbal » (D197) : **h1** est écrite. Elle partira après t3, qui tient voies.ts ; l'ordre est t3 → h1 → k2. Le rôle d'un houblon est un continuum (note role-continu) : t3 et k2 lisent l'usage mesuré, jamais une étiquette. Le rapport sur les méthodes est fait (f84eb498).
 - 31.10 : **k1 commitée** (b04b9f3b). Les 7 tests rouges qu'elle a vus viennent de t3, en cours (empreinte `proposer`, `saturationD195`) : ils sont à rejouer après t3. Chrome sur Substituer, au rejeu final. Suite : t3 → h1 → k2.
+
+## Reprise (31.10, vers 15 h) : ÉTAT COURANT (remplace les précédentes)
+Quota hebdomadaire : 4 % (remis à zéro le 31.10). La production est à **ae7c7a8d** (D194). Ce qui est commité depuis, et pas encore déployé :
+- s3, R1 à R4 (D195 : 8e17aa00, 4a752523) ;
+- k1, Substituer à 60′ (b04b9f3b) ;
+- ia4 et ia5 sont déjà en ligne (d661f266 et les suivants).
+
+**En vol, à intégrer à leur retour** (le pilote commite par chemins, L17) :
+- t3, agent ac9c68a25dab7cabd. La part d'usage au frais, continue, lue sur Beer Analytics (`usage-types`) ; une typicité par moment si c'est
+  simple. Possède voies.ts (R4), `typicite*` et `typicite-styles.json`.
+- c9, agent a0c935f11fbb116cb. Les 76 ajouts sans α. Il croise les sources ; une seule source se montre, marquée « 1 source » ; il ne
+  change pas les ids. Possède `catalogue-ajouts.json` et `alias-noms.json`.
+
+**Ensuite, dans cet ordre :**
+1. **h1**, « trop herbacé » (D197, VOIE écrite) : l'excès d'herbacé ou de végétal compte au rang même quand le style le dit neutre ; la
+   courbe est confrontée à E04/OSU. À lancer après t3.
+2. **k2**, Suggérer à 60′ (VOIE écrite) : M1 + M2 choisis, rangées D165, K4, K5 lus sur l'usage continu ; puis la critique (Fable).
+3. **Le conseil sur la vérité croisée** (v2 commitée, f3e10c33). Options A, B (recommandée) et C ; cinq décisions dans son RESULTAT.md.
+   L'option A est faisable tout de suite : l'étiquette fausse « Beer Maverick » sur les 188 ajouts et la marque « 1 source ».
+4. **Le rejeu complet**, dans `deploy-63130965`, puis le déploiement (hébergement ; la fonction seulement si elle a changé), la PR et la
+   fusion.
+
+Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
