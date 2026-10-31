@@ -838,3 +838,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **L'unité illisible** (31.10, nuit, dépense), sur la règle n° 4 de D213 rédigée par le pilote (« une ligne sans unité lisible n'est
   proposée à aucun article »), mot pour mot : « Unité illisible : la ligne n'est reliée à aucun article.???? » (D214).
 - **Même produit, autres données** (31.10, nuit, dépense), mot pour mot : « Pour les AA du houblons, et source,  faire un matching avec sa carte et stock, si dans le stock, un houblon est le même mais différé sur ces données, créé un "bis". Et au par exemple on ajoute un houblon CH aa8% et que on a que ce houblons US AA 6, LIÉE sa fiche mais donné ses vrai valeur là où on les a. Aussi faire un check de procédure si on peut trouvé un e fiche dédier. SI non laisse sa fiche US, et montré que c'est pas exactement la bonne » ; puis « Pareil pour les ebc ou autre info malt ou autre info stock » (D215).
+- **Le nom de l'article bis** (31.10, nuit, dépense), à la question du pilote « « Cascade bis » vous suffit-il, ou voulez-vous l'origine
+  dans le nom (« Cascade CH ») ? », mot pour mot : « voulez-vous l'origine oui » (D216).
+- **Gemini pour les tests** (31.10, nuit, dépense), après « Gemini en production attendra votre accord, avec le coût par produit
+  montré avant. », mot pour mot : « Je l'accord pour les test 10ch de budget » (D217).

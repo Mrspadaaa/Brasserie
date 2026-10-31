@@ -95,3 +95,14 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 - 31.10, nuit : **D215**, sa demande : même produit, autres données (α, origine, récolte, EBC…) → un article « bis » lié à la fiche la plus proche, ses valeurs vraies, une fiche dédiée cherchée, sinon la fiche approchée montrée. Va à la voie **S6** (fiche d'un produit), avec un champ facultatif article → fiche (plan relu à deux regards). COMMUN.md, SPEC, decisions, DEFAUTS à jour.
 
 ## Signature
+- 31.10, nuit : **intégration de l1 par le pilote** : `invoice-v5` partout (`purchaseEntry.ts`, son test, `eval-expense-vision.mjs`, docs), plafond de sortie
+  du scan à 5 100 jetons par `SCAN_MAX_OUTPUT` (`ai.ts` le lit, plus de 4500 en dur ; tests de transport, de budget et de relecture à 5100). Fonctions typées,
+  34 fichiers de tests verts, build vert, manifeste intact (21dd75b3). **Commit 2c54ac66** : s2+s2b et l1+l1b.
+- 31.10, nuit : **D216** (sa réponse « voulez-vous l'origine oui ») : l'article d'origine différente porte son origine dans le nom (« Cascade CH ») ; sans origine
+  connue ou pour un autre écart, « bis » reste (lecture étroite). **D217** (« Je l'accord pour les test 10ch de budget ») : 10 CHF au plus en tout pour les appels
+  Gemini réels des tests de la mission (recherche de fiche S6, lectures de D210), journalisés dans `journal-gemini.md` ; Gemini en production attend toujours.
+- 31.10, nuit : **s1 relu** : 0 bloquant, 2 majeurs (mot du fournisseur retiré même s'il décrit le produit : « Bio Pilsner », « Cascade Cryo » ; Stk ↔ sachet
+  bloqué à l'enregistrement, déjà confié à r1), 7 détails → **s1b** (auteur neuf) : S1B OK, 7 corrigés, 79 tests rouges puis verts, une assertion changée
+  (« Munich » chez Rauch AG → rien, déclarée). Rejoué par le pilote : 10 fichiers verts. Relecture neuve de s1b en vol. À r1 aussi : « Kilo », « Litres »
+  reliés par l'appariement mais refusés par `validatePurchase` (même table d'unités que s1, sans élargir `Units`).
+- Il demande : « Il faudra bien testé sur la vrai app! » : les tests D210 sur l'app en ligne restent dans le plan, après r1 et le déploiement.

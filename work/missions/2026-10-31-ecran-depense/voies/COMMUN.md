@@ -8,7 +8,7 @@
   jamais à un prix d'une autre unité ; une ligne à l'unité illisible reste reliée à son article, l'unité vide et marquée « unité à préciser », sans unité devinée, et rien
   n'entre en stock tant qu'elle manque (D214, « Unité illisible : la ligne n'est reliée à aucun article.???? »). Chaque voie teste les unités qu'elle touche.
 - **Même produit, autres données** (D215) : une ligne d'un produit connu dont une donnée lue (α, origine, récolte, EBC, potentiel,
-  poids…) diffère de l'article n'est jamais fusionnée ni recopiée dans l'article existant ; elle donne un article « bis », lié à la fiche du
+  poids…) diffère de l'article n'est jamais fusionnée ni recopiée dans l'article existant ; elle donne un article « bis » (« Cascade CH » quand l'origine diffère, D216), lié à la fiche du
   produit, avec ses valeurs vraies là où on les a ; une fiche approchée se voit comme telle. Une seule fiche par produit.
 - **Aucun chiffre inventé** : une valeur non imprimée reste vide, ou elle est marquée « déduite » avec sa règle ; jamais présentée comme
   lue. Les montants sont des centimes entiers. Une valeur qu'il a tapée n'est jamais écrasée.
