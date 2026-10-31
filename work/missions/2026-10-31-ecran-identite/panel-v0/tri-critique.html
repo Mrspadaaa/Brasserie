@@ -1,0 +1,291 @@
+<title>Identité · tri du critique · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Le tri à l'aveugle du critique (D203) : les extrêmes d'abord, pour qu'il compare avec son avis. Mêmes vignettes que le panel v0,
+   une capture s'ouvre en grand au toucher. Polices système seules. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --bien: #2f6b1f;
+  --bien-fond: #e6f0dc;
+  --mauvais: #a3261c;
+  --mauvais-fond: #f7e3e0;
+  --moyen: #6b6f66;
+  --candidate: #8a5a00;
+  --candidate-fond: #fbefd6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --bien: #8cc062; --bien-fond: #24331b; --mauvais: #f08a7e; --mauvais-fond: #3a1f1b; --moyen: #a7ae9f;
+    --candidate: #f0bf5a; --candidate-fond: #3a2e14; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --bien: #8cc062; --bien-fond: #24331b; --mauvais: #f08a7e; --mauvais-fond: #3a1f1b; --moyen: #a7ae9f;
+  --candidate: #f0bf5a; --candidate-fond: #3a2e14; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.25rem; font-weight: 800; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+h3 { font-size: 1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.legende { font-size: 0.875rem; color: var(--discret); }
+.epreuve { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+.epreuve p:first-child { font-size: 1.05rem; font-weight: 700; }
+.compte { display: flex; gap: 8px; flex-wrap: wrap; }
+.pastille { display: inline-block; padding: 0 9px; border-radius: 999px; font-size: 0.875rem; font-weight: 700; line-height: 1.6; white-space: nowrap; }
+.p-bien { background: var(--bien-fond); color: var(--bien); }
+.p-mauvais { background: var(--mauvais-fond); color: var(--mauvais); }
+.p-moyen { background: var(--trait); color: var(--encre); }
+.p-candidate { background: var(--candidate-fond); color: var(--candidate); }
+section { display: grid; gap: 14px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; align-items: start; }
+.planche.serree { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; }
+.vue { margin: 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.bien .ecran { border: 3px solid var(--bien); }
+.mauvais .ecran { border: 3px solid var(--mauvais); }
+.ecran img { display: block; width: 100%; height: auto; }
+.vue figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 3px; }
+.vue figcaption b { font-weight: 800; }
+.rang { font-family: ui-monospace, Consolas, monospace; color: var(--discret); }
+.raison { color: var(--discret); }
+.reference { display: grid; gap: 8px; } .reference .ecran { max-width: 360px; }
+.candidates { display: grid; gap: 12px; }
+.candidate { background: var(--carte); border: 1px solid var(--trait); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; min-width: 0; }
+.candidate ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 0.9375rem; }
+@media (min-width: 700px) {
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .planche.serree { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .candidates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1200px) {
+  .planche { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .planche.serree { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+  .candidates { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 960px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 80vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Identité 1/7</p>
+    <h1>Identité · tri du critique · 31.10</h1>
+    <div class="epreuve" id="a-choisir">
+      <p>Épreuve à l'aveugle : le critique n'a rien su de ton avis.</p>
+      <p>Tu as dit qu'il y en a des très bien et des très mauvais. Regarde s'il retrouve les tiens, en haut et en bas. Ses 5 candidates partent en passe 2.</p>
+      <div class="compte"><span class="pastille p-bien">8 très bien</span><span class="pastille p-mauvais">6 très mauvais</span><span class="pastille p-moyen">34 moyen</span><span class="pastille p-candidate">5 candidates</span></div>
+    </div>
+    <p class="legende">Une vignette s'ouvre en grand au toucher. Le numéro est le rang du critique, de 1 à 48. La référence, l'écran d'aujourd'hui, est en bas.</p>
+  </header>
+
+  <section class="bien" aria-labelledby="t-bien">
+    <h2 id="t-bien">Très bien <span class="pastille p-bien">8</span></h2>
+    <div class="planche">
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/e1.png" data-titre="1 · e1 · Le champ est le contenant"><img src="img/e1.png" alt="Capture e1"></button>
+        <figcaption><span><span class="rang">1</span> · <b>e1</b> · Le champ est le contenant</span><span class="pastille p-candidate">candidate</span><span class="raison">Le champ du volume est la jauge du fermenteur, la cuve à côté, les pistes du style dessous : tout d'un coup, honnête.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/z3.png" data-titre="2 · z3 · Bento"><img src="img/z3.png" alt="Capture z3"></button>
+        <figcaption><span><span class="rang">2</span> · <b>z3</b> · Bento</span><span class="pastille p-candidate">candidate</span><span class="raison">Une couleur par décision, un grand chiffre et une représentation par tuile, les pistes du style dans la tuile style.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/z1.png" data-titre="3 · z1 · La langue de Houblons"><img src="img/z1.png" alt="Capture z1"></button>
+        <figcaption><span><span class="rang">3</span> · <b>z1</b> · La langue de Houblons</span><span class="raison">Cinq pistes au style, jauge avec conseil, piste d'ébullition ; FG et alcool doivent montrer l'inconnu.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/w3.png" data-titre="4 · w3 · La bière en carte"><img src="img/w3.png" alt="Capture w3"></button>
+        <figcaption><span><span class="rang">4</span> · <b>w3</b> · La bière en carte</span><span class="pastille p-candidate">candidate</span><span class="raison">La carte « comme houblons » : pastille de style, pictos chiffrés, rond NOLO ; le 24 est écrit trois fois.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/v1.png" data-titre="5 · v1 · Les repères du style ouverts"><img src="img/v1.png" alt="Capture v1"></button>
+        <figcaption><span><span class="rang">5</span> · <b>v1</b> · Les repères du style ouverts</span><span class="raison">Les intervalles, les vraies valeurs, la relation au style : cinq pistes ; le volume relégué en bas.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/g2.png" data-titre="6 · g2 · L'œil en haut, le pouce en bas"><img src="img/g2.png" alt="Capture g2"></button>
+        <figcaption><span><span class="rang">6</span> · <b>g2</b> · L'œil en haut, le pouce en bas</span><span class="raison">Deux jauges, fermenteur et cuve ; à 31 L, le rouge « +1 L de trop » : la cause et l'effet d'un coup.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/r4.png" data-titre="7 · r4 · Chaque nombre est un curseur"><img src="img/r4.png" alt="Capture r4"></button>
+        <figcaption><span><span class="rang">7</span> · <b>r4</b> · Chaque nombre est un curseur</span><span class="pastille p-candidate">candidate</span><span class="raison">Enfin des curseurs, règle par 1 L et par 5′, hachure rouge au-delà de 30 ; la phrase d'explication est de trop.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/w6.png" data-titre="8 · w6 · Trois réponses géantes"><img src="img/w6.png" alt="Capture w6"></button>
+        <figcaption><span><span class="rang">8</span> · <b>w6</b> · Trois réponses géantes</span><span class="pastille p-candidate">candidate</span><span class="raison">Quoi, combien, comment ; le tube à l'échelle avec le conseil en tireté. Chiffres énormes pour ce qui change rarement.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="mauvais" aria-labelledby="t-mauvais">
+    <h2 id="t-mauvais">Très mauvais <span class="pastille p-mauvais">6</span></h2>
+    <div class="planche">
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/v2.png" data-titre="43 · v2 · Chiffre contre chiffre"><img src="img/v2.png" alt="Capture v2"></button>
+        <figcaption><span><span class="rang">43</span> · <b>v2</b> · Chiffre contre chiffre</span><span class="raison">Une table min, 22A, max : « Inutile » face aux barres, tu l'as déjà dit.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/g6.png" data-titre="44 · g6 · L'anneau du pouce"><img src="img/g6.png" alt="Capture g6"></button>
+        <figcaption><span><span class="rang">44</span> · <b>g6</b> · L'anneau du pouce</span><span class="raison">Deux anneaux, deux poignées, l'arc gris sans graduation : pas compris en trois secondes.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/w5.png" data-titre="45 · w5 · L'étiquette de la bière"><img src="img/w5.png" alt="Capture w5"></button>
+        <figcaption><span><span class="rang">45</span> · <b>w5</b> · L'étiquette de la bière</span><span class="raison">Une étiquette sur fond orange plein écran : « c'est quoi ces gros blocs », et la moitié basse vide.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/v6.png" data-titre="46 · v6 · Les instruments du brasseur"><img src="img/v6.png" alt="Capture v6"></button>
+        <figcaption><span><span class="rang">46</span> · <b>v6</b> · Les instruments du brasseur</span><span class="raison">Densimètre, cadran à aiguille, anneau : le cockpit au pied de la lettre.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/u6.png" data-titre="47 · u6 · Les molettes"><img src="img/u6.png" alt="Capture u6"></button>
+        <figcaption><span><span class="rang">47</span> · <b>u6</b> · Les molettes</span><span class="raison">Trois molettes alignées : « Hazy IPA 23 55 » se lit comme une recette qui n'existe pas ; bloc noir.</span></figcaption>
+      </figure>
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="img/i6.png" data-titre="48 · i6 · Le texte collé devient l'écran"><img src="img/i6.png" alt="Capture i6"></button>
+        <figcaption><span><span class="rang">48</span> · <b>i6</b> · Le texte collé devient l'écran</span><span class="raison">Un ticket de puces colorées en monospace, « Marge de mousse (%) », 3 L/h sans « ~ » : un fichier de réglages.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-moyen">
+    <h2 id="t-moyen">Moyen <span class="pastille p-moyen">34</span></h2>
+    <p class="legende">Dans l'ordre du critique, du rang 9 au rang 42.</p>
+    <div class="planche serree">
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/e4.png" data-titre="9 · e4 · Le fermenteur debout à droite"><img src="img/e4.png" alt="Capture e4"></button><figcaption><span><span class="rang">9</span> · <b>e4</b></span><span class="raison">Fermenteur debout gradué ; conseil non marqué, bas vide.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/u2.png" data-titre="10 · u2 · Les trois questions"><img src="img/u2.png" alt="Capture u2"></button><figcaption><span><span class="rang">10</span> · <b>u2</b></span><span class="raison">Trois questions, plages du style en pastilles ; monochrome, 24 L géant.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/g3.png" data-titre="11 · g3 · Trois questions, trois rails"><img src="img/g3.png" alt="Capture g3"></button><figcaption><span><span class="rang">11</span> · <b>g3</b></span><span class="raison">Rails de puces ; les styles voisins sortent de nulle part.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/r1.png" data-titre="12 · r1 · La jauge à la place de la phrase"><img src="img/r1.png" alt="Capture r1"></button><figcaption><span><span class="rang">12</span> · <b>r1</b></span><span class="raison">La baseline enrichie ; repères en liste, import en double.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/e2.png" data-titre="13 · e2 · Une seule règle en litres"><img src="img/e2.png" alt="Capture e2"></button><figcaption><span><span class="rang">13</span> · <b>e2</b></span><span class="raison">Cuve et fermenteur sur la même règle ; repères en liste.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/w2.png" data-titre="14 · w2 · Le récap, éditable ligne par ligne"><img src="img/w2.png" alt="Capture w2"></button><figcaption><span><span class="rang">14</span> · <b>w2</b></span><span class="raison">Liste de réglages moderne ; une liste, pas une bière.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/z4.png" data-titre="15 · z4 · Le verre"><img src="img/z4.png" alt="Capture z4"></button><figcaption><span><span class="rang">15</span> · <b>z4</b></span><span class="raison">Le verre à la couleur EBC redit le bandeau sur un tiers d'écran.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/i3.png" data-titre="16 · i3 · Coller d'abord, sinon un style"><img src="img/i3.png" alt="Capture i3"></button><figcaption><span><span class="rang">16</span> · <b>i3</b></span><span class="raison">Nuancier de styles coloré ; le volume part en bas.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/u4.png" data-titre="17 · u4 · Lire en haut, régler en bas"><img src="img/u4.png" alt="Capture u4"></button><figcaption><span><span class="rang">17</span> · <b>u4</b></span><span class="raison">Règle avec zone rouge au-delà de 30 ; pupitre noir, cockpit.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/g5.png" data-titre="18 · g5 · Une réglette pour tout"><img src="img/g5.png" alt="Capture g5"></button><figcaption><span><span class="rang">18</span> · <b>g5</b></span><span class="raison">Réglette hachurée « plein » ; il faut commuter pour l'ébullition.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/r2.png" data-titre="19 · r2 · Des puces, sans clavier"><img src="img/r2.png" alt="Capture r2"></button><figcaption><span><span class="rang">19</span> · <b>r2</b></span><span class="raison">Puces 24 conseil, 30 plein ; 150 px vides.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/z6.png" data-titre="20 · z6 · La ligne"><img src="img/z6.png" alt="Capture z6"></button><figcaption><span><span class="rang">20</span> · <b>z6</b></span><span class="raison">Stations sur un fil : dense ; le fil vert est un décor.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/v4.png" data-titre="21 · v4 · Le style se choisit sur tes chiffres"><img src="img/v4.png" alt="Capture v4"></button><figcaption><span><span class="rang">21</span> · <b>v4</b></span><span class="raison">Six styles voisins : bon pour choisir un style, pas pour Identité.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/u1.png" data-titre="22 · u1 · Une ligne par réglage"><img src="img/u1.png" alt="Capture u1"></button><figcaption><span><span class="rang">22</span> · <b>u1</b></span><span class="raison">Fiche resserrée, tout « estimé » ; sans repères du style.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/i1.png" data-titre="23 · i1 · Deux départs, puis plus rien"><img src="img/i1.png" alt="Capture i1"></button><figcaption><span><span class="rang">23</span> · <b>i1</b></span><span class="raison">Deux départs sur recette vide (à garder) ; la baseline copiée dessous.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/w1.png" data-titre="24 · w1 · Chaque champ montre sa conséquence"><img src="img/w1.png" alt="Capture w1"></button><figcaption><span><span class="rang">24</span> · <b>w1</b></span><span class="raison">Tuile fermenteur bonne ; un trou de 200 px à droite.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/z5.png" data-titre="25 · z5 · Le dialogue"><img src="img/z5.png" alt="Capture z5"></button><figcaption><span><span class="rang">25</span> · <b>z5</b></span><span class="raison">Questions en bulles, se lit vite ; tout en texte, aucune jauge.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/e6.png" data-titre="26 · e6 · Le fermenteur est la carte"><img src="img/e6.png" alt="Capture e6"></button><figcaption><span><span class="rang">26</span> · <b>e6</b></span><span class="raison">L'écran est le fermenteur : original ; la carte posée sur le moût.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/w4.png" data-titre="27 · w4 · La phrase-bière"><img src="img/w4.png" alt="Capture w4"></button><figcaption><span><span class="rang">27</span> · <b>w4</b></span><span class="raison">Phrase éditable : original ; pas de repères du style.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/u3.png" data-titre="28 · u3 · Six tuiles"><img src="img/u3.png" alt="Capture u3"></button><figcaption><span><span class="rang">28</span> · <b>u3</b></span><span class="raison">Grands chiffres, gros boutons : tableau de bord.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/g4.png" data-titre="29 · g4 · Les molettes"><img src="img/g4.png" alt="Capture g4"></button><figcaption><span><span class="rang">29</span> · <b>g4</b></span><span class="raison">Fermenteur dans la molette ; beige non nommé, 420 px de molettes.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/r6.png" data-titre="30 · r6 · Un centre de contrôle"><img src="img/r6.png" alt="Capture r6"></button><figcaption><span><span class="rang">30</span> · <b>r6</b></span><span class="raison">Tuiles qui se remplissent ; « centre de contrôle » : cockpit nommé.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/i4.png" data-titre="31 · i4 · Reprendre v3 vers v4"><img src="img/i4.png" alt="Capture i4"></button><figcaption><span><span class="rang">31</span> · <b>i4</b></span><span class="raison">Le 60 barré avec retour, utile pour une reprise ; un tableau.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/v5.png" data-titre="32 · v5 · La carte des styles"><img src="img/v5.png" alt="Capture v5"></button><figcaption><span><span class="rang">32</span> · <b>v5</b></span><span class="raison">Carte OG × IBU honnête ; pas lisible en trois secondes.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/e5.png" data-titre="33 · e5 · Ébullition en cadran"><img src="img/e5.png" alt="Capture e5"></button><figcaption><span><span class="rang">33</span> · <b>e5</b></span><span class="raison">Minuteur joli ; tout l'écran pour une durée rarement touchée.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/i2.png" data-titre="34 · i2 · Posé ou proposé"><img src="img/i2.png" alt="Capture i2"></button><figcaption><span><span class="rang">34</span> · <b>i2</b></span><span class="raison">Posé ou proposé : honnête ; un code à apprendre.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/g1.png" data-titre="35 · g1 · Rangées au pouce"><img src="img/g1.png" alt="Capture g1"></button><figcaption><span><span class="rang">35</span> · <b>g1</b></span><span class="raison">La baseline mieux rangée, barres minuscules : timide.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/e3.png" data-titre="36 · e3 · Deux cuves à la même échelle"><img src="img/e3.png" alt="Capture e3"></button><figcaption><span><span class="rang">36</span> · <b>e3</b></span><span class="raison">Le trajet cuve → fermenteur : sympa ; 230 px vides.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/r3.png" data-titre="37 · r3 · Le fermenteur qu'on remplit au pouce"><img src="img/r3.png" alt="Capture r3"></button><figcaption><span><span class="rang">37</span> · <b>r3</b></span><span class="raison">Fermenteur debout bien vu ; la gauche s'arrête à mi-hauteur.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/v3.png" data-titre="38 · v3 · Le profil au style"><img src="img/v3.png" alt="Capture v3"></button><figcaption><span><span class="rang">38</span> · <b>v3</b></span><span class="raison">Bascule au style ou absolu à garder ; figure de 420 px qui dit peu.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/z2.png" data-titre="39 · z2 · Je décide, ça donne"><img src="img/z2.png" alt="Capture z2"></button><figcaption><span><span class="rang">39</span> · <b>z2</b></span><span class="raison">Décide à gauche, résultat à droite ; gros bloc bleu.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/i5.png" data-titre="40 · i5 · La roue des styles"><img src="img/i5.png" alt="Capture i5"></button><figcaption><span><span class="rang">40</span> · <b>i5</b></span><span class="raison">Roue colorée jolie ; tout l'écran pour un style connu.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/u5.png" data-titre="41 · u5 · L'affiche"><img src="img/u5.png" alt="Capture u5"></button><figcaption><span><span class="rang">41</span> · <b>u5</b></span><span class="raison">Le style en 72 px mange les décisions ; le tampon NOLO à garder.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="img/r5.png" data-titre="42 · r5 · Deux anneaux qu'on tourne"><img src="img/r5.png" alt="Capture r5"></button><figcaption><span><span class="rang">42</span> · <b>r5</b></span><span class="raison">Joli, mais l'anneau de l'ébullition n'a pas d'échelle.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-candidates">
+    <h2 id="t-candidates">Ses 5 candidates en passe 2 <span class="pastille p-candidate">5</span></h2>
+    <p class="legende">Une par approche, dans les trois chaleurs. Chacune repart chez son concepteur avec ces greffes ; g2, z1 et v1 entrent par greffe.</p>
+    <div class="candidates">
+      <div class="candidate">
+        <h3>e1 · la jauge-champ</h3>
+        <ol>
+          <li>Les mini-barres OG, IBU et EBC deviennent les cinq pistes du style de v1 et z1, avec la valeur au bout.</li>
+          <li>Au-delà de 30 L, la jauge vire au rouge « +1 L de trop » (g2) ; le conseil ~24 L en tireté.</li>
+          <li>« Coller une recette » seulement sur une recette vide, en deux départs (i1).</li>
+        </ol>
+      </div>
+      <div class="candidate">
+        <h3>z3 · le bento</h3>
+        <ol>
+          <li>Les 30 cases du volume : le conseil en case tiretée, « plein » hachuré, le dépassement en rouge.</li>
+          <li>La tuile NOLO se réduit à un rond, pour rendre la place au volume et à l'ébullition.</li>
+          <li>Royal Catering et l'espace libre en ligne repliable.</li>
+        </ol>
+      </div>
+      <div class="candidate">
+        <h3>w3 · la carte bière</h3>
+        <ol>
+          <li>Le 24 écrit une seule fois : la ligne du fermenteur devient la jauge-champ de e1.</li>
+          <li>Sous la pastille de style, les plages en pistes (v1) ; la pastille prend la couleur réelle du style.</li>
+          <li>L'ébullition en « 60 · 90 + libre » (w2).</li>
+        </ol>
+      </div>
+      <div class="candidate">
+        <h3>r4 · les curseurs</h3>
+        <ol>
+          <li>La phrase « Fermenteur plein » devient le rouge « +1 L de trop » de g2 et la zone rouge de la règle.</li>
+          <li>Sous le volume, la cuve sur la même règle 0–45 L (e2), et ~27 L avant ébullition.</li>
+          <li>Les plages du style en pastilles sous le style (u2).</li>
+        </ol>
+      </div>
+      <div class="candidate">
+        <h3>w6 · quoi, combien, comment</h3>
+        <ol>
+          <li>Les chiffres de 92 px descendent vers 64 px : trois tailles de texte au plus.</li>
+          <li>Le tube prend la hachure « plein » et les 6 L libres ; l'ébullition en segments de 10 min.</li>
+          <li>Sous « quoi », les plages du style en pastilles et la couleur réelle du style.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+  <section aria-labelledby="t-ref">
+    <h2 id="t-ref">La référence</h2>
+    <div class="reference">
+      <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Capture de référence, Identité 1/7 aujourd'hui"></button>
+      <p class="legende">L'écran d'aujourd'hui, en production.</p>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

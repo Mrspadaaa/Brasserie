@@ -51,6 +51,7 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `panel-v0/page.html` |
+| Identité · tri du critique à l'aveugle (D203) | 31.10 v1 | https://claude.ai/artifact/JkXn7UbyGCLfXLn3FTW9eN | `panel-v0/tri-critique.html` |
 
 ## Agents
 - v0 (31.10) : g af688d7c3b4c1d8dc ; w a95dbcb30c165788b ; v a3f468d6fd75b44d7 ; r af505646da84f8574 ; e ae29161fae3410bb7 ; i a270f131ab87e2197 ; z (Fable) a9544f6c979771512 ; u a63ad22afca40541e. La passe 2 repart chez le même agent.
@@ -95,3 +96,5 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
      Un critique neuf reprend au même format, sans rien savoir de son avis.
   2. **o1** (a0b178aca728e039d) : ses changements dans les 5 outils de `tournoi/outils/` ne sont pas commités, et il n'y a pas de RESULTAT. Il faut les relire, puis finir ou annuler.
   Ensuite : la passe 2 sur les 5 candidates seulement, puis une page neuve (le classement du critique et la passe 2), pour qu'il compare.
+- 31.10, relance sur sa demande (« Reprend, c'est une demande explicite ») : un critique neuf fait le tri à l'aveugle (ab55281b7c63f8839 ; e, i, z, u et SYNTHESE) ; un auteur neuf finit o1 (adc66a3d9e7549c50). Ensuite, la passe 2 sur les 5 candidates, puis une page neuve.
+- 31.10 : **le tri est fait** (`critique/SYNTHESE.md`) : 8 très bien, 34 moyen, 6 très mauvais. Candidates : e1, z3, w3, r4 et w6. La page du tri est publiée (JkXn7UbyGCLfXLn3FTW9eN), pour qu'il compare. Ensuite : quand o1 rend, la passe 2 des 5 candidates, avec les greffes de SYNTHESE (agents e, z, w ×2, r).
