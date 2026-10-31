@@ -20,6 +20,6 @@ Scope: S1 à S4, A8, A9, B-V3-5 ; la chasse du 17.10 sans fausse proposition ; G
   EVIDENCE: pending
 
 - [ ] G4: le résultat dit le témoin, la chasse et ce qui ne se perd pas
-  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-31-ecran-depense/voies/s1-stock/RESULTAT.md --contient "TEMOIN AVANT,0 fausse proposition,Rien ne se perd,372765"
+  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-31-ecran-depense/voies/s1-stock/RESULTAT.md --contient "TEMOIN AVANT,0 fausse proposition,Rien ne se perd,372765,unités"
   EXPECT: NOTE OK
   EVIDENCE: pending
