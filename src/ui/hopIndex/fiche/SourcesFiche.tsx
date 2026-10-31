@@ -14,7 +14,7 @@ import { quandDe } from '../parcours/quand';
 import type { RecetteParcours } from '../parcours/types';
 import { ibuByMoment } from '../parcours/v4';
 import { motsFiche } from './donnees-matrice';
-import { liensAvecComplements, nomSource, type Accord, type ChampComp, type ComplementsFiche, type PlageSource, type SourcesFiche } from './sources';
+import { confianceSources, groupesConfiance, liensAvecComplements, nomSource, texteSources, type Accord, type ChampComp, type ComplementsFiche, type PlageSource, type SourcesFiche } from './sources';
 import type { ChampComplement } from '../../../domain/hopIndex/v4/complements';
 import { nomCourt, texteBornes } from './complements-ui';
 
@@ -112,6 +112,7 @@ export function ContenuSources({ h, cle, s, recette, comp }: { h: HoublonLu; cle
   const mots = motsFiche(cle);
   const liens = liensAvecComplements(s.liens, comp ?? null);
   const bm = liens.find((l) => l.auteur === 'Beer Maverick');
+  const confiance = confianceSources(s, comp ?? null);
   const a = (c: ChampComplement) => !!comp?.parChamp[c];
   const dejaListes = new Set<ChampComplement>([...T_ACIDES, ...T_HUILE, ...T_AROMES]);
   const autresMesures = (comp?.champs ?? []).filter((k) => !dejaListes.has(k.champ));
@@ -128,6 +129,14 @@ export function ContenuSources({ h, cle, s, recette, comp }: { h: HoublonLu; cle
           </li>
         ))}
       </ul>
+      {/* b1 (D201) : le seul endroit où le nombre de sources se dit, sous la liste des sources : « 1 source : β, myrcène · 3 sources : α ». */}
+      {confiance.length > 0 && (
+        <p data-role="sources-confiance" aria-label="Nombre de sources par valeur" className="pb-2 text-xs text-cave-400">
+          {groupesConfiance(confiance).map((g, i) => (
+            <span key={g.n} data-n={g.n}>{i > 0 ? ' · ' : ''}<b className="font-semibold text-cave-200">{texteSources(g.n)}</b> : {g.libelles.join(', ')}</span>
+          ))}
+        </p>
+      )}
 
       <Theme id="identite" titre="Houblon">
         <Rangee nom="nom" valeur={s.nom} />

@@ -9,7 +9,7 @@
 // moteur (mêmes caches) ; les écrans qui importent encore le moteur v4 directement lisent le moteur par défaut (fixtures).
 import { CATALOGUE, STOCK, creerMoteur, type CatalogueHop, type Moteur, type StockHop, type Tasting } from '../../../domain/hopIndex/v4';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
-import { cataloguePleinCharge, siCataloguePleinArrive } from '../../../domain/hopIndex/v4/data';
+import { cataloguePleinCharge, etiquettePlageVarietale, siCataloguePleinArrive } from '../../../domain/hopIndex/v4/data';
 import { chargerTypicite } from '../../../domain/hopIndex/v4/typicite-acces';
 import type { AjoutParcours, RecetteParcours } from './types';
 
@@ -124,7 +124,7 @@ export function alphaDeCle(cle: string): { value: number; min: number; max: numb
   if (s?.alpha != null) return { value: s.alpha, min: s.alpha, max: s.alpha, from: s.alphaFrom ?? 'stock' };
   const ref = moteurCourant.hopRef(cle);
   const c = ref ? index.catalogue.get(ref.varietyId) ?? ref.catalogue : null;
-  return c?.alpha ? { value: (c.alpha[0] + c.alpha[1]) / 2, min: c.alpha[0], max: c.alpha[1], from: 'plage variétale (Beer Maverick)' } : null;
+  return c?.alpha ? { value: (c.alpha[0] + c.alpha[1]) / 2, min: c.alpha[0], max: c.alpha[1], from: etiquettePlageVarietale(c) } : null;
 }
 
 /** α d'un ajout : l'α de son lot dans la recette s'il est donné (un nombre, ou null = inconnu), sinon celui de sa clé. */
