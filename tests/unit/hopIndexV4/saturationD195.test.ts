@@ -12,7 +12,7 @@ import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 import { creerMoteur } from '../../../src/domain/hopIndex/v4/moteur';
 import type { Recipe } from '../../../src/domain/hopIndex/v4/recipe';
 import { poserTypicite, type TableTypicite } from '../../../src/domain/hopIndex/v4/typicite';
-import { SATURATION_DEFAUT, SATURATION_MINUSCULE, type Voie } from '../../../src/domain/hopIndex/v4/voies';
+import { SATURATION_DEFAUT, SATURATION_MINUSCULE, USAGE_AU_FRAIS_DEFAUT, type Voie } from '../../../src/domain/hopIndex/v4/voies';
 import { estHorsDuStyle } from '../../../src/ui/hopIndex/suggerer/voies';
 
 const CLE = (id: string) => `beermaverick-${id}`;
@@ -84,5 +84,41 @@ describe('D195 R3 : un remplacement qui fait baisser la famille à baisser garde
     expect(enleve(apres).length).toBeGreaterThanOrEqual(4);
     expect(apres.filter((v) => v.type !== 'levure').length).toBeGreaterThan(avant.filter((v) => v.type !== 'levure').length);
     expect(enleve(avant).length).toBeLessThanOrEqual(enleve(apres).length);
+  });
+});
+
+describe('D195 R4 : au whirlpool et au dry hop, un amérisant passe après les houblons d’arôme ou de double usage', () => {
+  const usage = (v: Voie) => CATALOGUE.find((c) => c.id === v.actions[0].hopKey)?.purpose;
+  const tri = (o: object = {}) => ajouts(m.proposeVoies(SATUREE, { citrus: 1 }, { ...GRAND, ...o }).voies);
+  it('le défaut est posé', () => { expect(USAGE_AU_FRAIS_DEFAUT).toBe(true); });
+  it('à rang, distance et typicité égaux, aucun amérisant ne passe devant un houblon d’arôme ou de double usage ; il porte sa raison', () => {
+    const vs = tri({ typicite: false }); // sans typicité du style, la clé de départage ne sépare pas : c'est là que R4 décide
+    const amer = vs.filter((v) => usage(v) === 'bittering');
+    expect(amer.length).toBeGreaterThan(0); // jamais une exclusion
+    expect(amer.every((v) => !!v.reculeUsage && /amérisant/.test(v.reculeUsage))).toBe(true);
+    expect(vs.filter((v) => usage(v) !== 'bittering').every((v) => v.reculeUsage === undefined)).toBe(true);
+    // « égaux » : conflits, distance, rang de débordement et clé de départage (typicité du style) : la règle ne passe jamais devant la typicité (EKG, Target, Saaz sont des phares).
+    const egal = (b: Voie, n: Voie) => n.conflicts.length === b.conflicts.length && n.distance.total === b.distance.total && n.overflowRang === b.overflowRang && JSON.stringify(n.departage?.cle) === JSON.stringify(b.departage?.cle);
+    let inverses = 0, paires = 0;
+    vs.forEach((b, i) => { if (usage(b) === 'bittering') vs.forEach((n, j) => { if (usage(n) !== 'bittering' && egal(b, n)) { paires++; if (j < i === false) inverses++; } }); });
+    expect(paires).toBeGreaterThan(0);
+    expect(inverses).toBe(0);
+  });
+  it('avec la typicité du style, R4 ne fait reculer aucun phare : elle passe après la typicité (EKG, Target restent là où le style les met)', () => {
+    const sans = tri({ usageAuFrais: false }).map((v) => v.id), avec = tri().map((v) => v.id);
+    expect(avec.length).toBe(sans.length);
+    const e = (ids: string[], id: string) => ids.indexOf(id);
+    for (const id of avec.slice(0, 20)) expect(e(avec, id) - e(sans, id)).toBeLessThanOrEqual(3);
+  });
+  it('sans l’option, l’ordre d’avant ne reculent pas', () => {
+    const vs = tri({ usageAuFrais: false });
+    expect(vs.some((v) => v.reculeUsage !== undefined)).toBe(false);
+  });
+  it('un usage inconnu ne recule pas, et un amérisant au 10′ ne recule pas (la règle est celle du whirlpool et du dry hop)', () => {
+    const inconnu = creerMoteur({ catalogue: CATALOGUE.map((c) => (c.purpose === 'bittering' ? { ...c, purpose: null } : c)), stock: [] });
+    expect(ajouts(inconnu.proposeVoies(SATUREE, { citrus: 1 }, GRAND).voies).some((v) => v.reculeUsage !== undefined)).toBe(false);
+    const dix = ajouts(m.proposeVoies(SATUREE, { citrus: 1 }, { ...GRAND, moments: ['b10'] }).voies);
+    expect(dix.length).toBeGreaterThan(0);
+    expect(dix.some((v) => v.reculeUsage !== undefined)).toBe(false);
   });
 });

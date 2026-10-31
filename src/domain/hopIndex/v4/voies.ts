@@ -16,7 +16,7 @@ import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 import { DEPARTAGE_DEFAUT, cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
-  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe,
+  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe, MOMENTS_AMERISANT_RECULE, raisonAmerisant,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
 } from './palier';
 import { produitDArome } from './substitution';
@@ -39,6 +39,8 @@ export const SATURATION_DEFAUT = true;
 export const SATURATION_MINUSCULE = 0.25;
 /** s3 (D195) : par domaine (stock, à acheter), les remplacements qui font baisser une famille à baisser, gardés en plus des places de `limit` et `buyLimit`. */
 export const REMPLACEMENTS_RESERVES = 4;
+/** s3, R4 (D195) : au whirlpool et au dry hop, un amérisant (usage Beer Maverick) passe après les houblons d'arôme ou de double usage de même rang ; `usageAuFrais: false` : l'ordre d'avant (8e17aa00). */
+export const USAGE_AU_FRAIS_DEFAUT = true;
 /** a4 (D125), biais 2 : la présélection du pool « à acheter » (la borne de coût `POOL_BORNE`) met d'abord la typicité du style, le terme que le rang lit à distance égale (departage.ts : un houblon typé ou courant
  * avant un inconnu, avant un rare), puis seulement la documentation des fiches, qui écartait Calypso (courant en 22A, peu documenté) avant tout classement. Sans table de typicité, tous sont égaux
  * et l'ordre est celui d'avant. `'documentation'` : l'ordre d'avant, toujours. */
@@ -116,6 +118,8 @@ export interface Voie {
   enStock?: number | null;
   /** g2b : points à relire (dry hop cumulé au-dessus du repère de revue) ; jamais une exclusion. */
   drapeaux?: string[];
+  /** s3, R4 (D195) : la raison pour laquelle la voie passe après les houblons d'arôme ou de double usage (un amérisant ajouté au whirlpool ou au dry hop). Absent : aucun recul. */
+  reculeUsage?: string;
 }
 export interface StyleOverflow {
   family: FamilyId; status: string; band: [number, number]; crans: number; why: string;
@@ -152,6 +156,8 @@ export interface VoieOptions {
   debordementNeutre?: boolean;
   /** s3 (D195) : la demande prime sur la bande, et un excès minuscule n'est pas hors du style. Défaut : `SATURATION_DEFAUT`. */
   saturation?: boolean;
+  /** s3, R4 (D195) : un amérisant au whirlpool ou au dry hop passe après les houblons d'arôme ou de double usage (jamais écarté). Défaut : `USAGE_AU_FRAIS_DEFAUT`. */
+  usageAuFrais?: boolean;
   /** a4 (D125) : l'ordre de la présélection du pool (voir `SELECTION_DEFAUT`). */
   selection?: SelectionPool;
   /** Apport minoritaire (g2d, D99) : ABSENT (défaut) = 'c' sur les voies au dry hop actif ou après seulement (le débordement d'une famille non marquée ne compte plus dans leur rang ; aucune barre ne change),
@@ -267,7 +273,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const departageMode: Departage = (options.typicite ?? TYPICITE_DEFAUT) && departageBase === 'k3k1' ? 'k3k1t' : departageBase;
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
   const a3 = options.intensite ?? INTENSITE_DEFAUT, typ = options.typicite ?? TYPICITE_DEFAUT; // f9 : A3 et typicité
-  const saturation = options.saturation ?? SATURATION_DEFAUT, neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
+  const usageAuFrais = options.usageAuFrais ?? USAGE_AU_FRAIS_DEFAUT, saturation = options.saturation ?? SATURATION_DEFAUT, neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
@@ -420,6 +426,10 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const positifs = reduction || aAmertume ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 }));
     const departage = departageMode !== 'aucun' && plus.length ? cleDeVoie(departageMode, positifs, plus, recipe.styleCode) : null;
     const typicite = typ && plus.length ? typiciteDeVoie(positifs, recipe.styleCode) : typ ? null : undefined; // f9 : la typicité du houblon qui monte, pour le style de la recette
+    // s3, R4 (D195) : un houblon d'usage « amérisant » ajouté au whirlpool ou au dry hop recule (une clé du rang, jamais une exclusion) ; un usage inconnu ne recule pas.
+    const amerisant = usageAuFrais && (type === 'ajouter' || type === 'assemblage' || type.startsWith('remplacer'))
+      ? changes.filter((c) => c.sign > 0 && MOMENTS_AMERISANT_RECULE.includes(c.addition.moment) && hopRef(c.addition.hopKey)?.catalogue.purpose === 'bittering') : [];
+    const reculeUsage = amerisant.length ? [...new Set(amerisant.map((c) => raisonAmerisant(nameOf(c.addition.hopKey), MOMENTS[c.addition.moment].label)))].join(' ') : undefined;
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -434,6 +444,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       ...(departage ? { departage } : {}),
       ...(typicite !== undefined ? { typicite } : {}),
       ...(a3 ? { a3: true as const } : {}),
+      ...(reculeUsage ? { reculeUsage } : {}),
     };
   };
   const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
@@ -711,6 +722,7 @@ export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): n
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
     || (a.a3 && b.a3 ? grammesDe(a) - grammesDe(b) : 0) // f9 A3 : à distance égale, la variété qui atteint la visée à la dose la plus basse
     || (intensiteD ? 0 : comparerCles(a.departage?.cle, b.departage?.cle))
+    || Number(!!a.reculeUsage) - Number(!!b.reculeUsage) // s3, R4 (D195) : à distance, rang et typicité égaux, un amérisant au whirlpool ou au dry hop après les houblons d'arôme ou de double usage (jamais devant la typicité du style : EKG, Target, Saaz sont des phares)
     || (ORDRE_POOL.get(a) ?? 0) - (ORDRE_POOL.get(b) ?? 0) // D105 : le style départage avant les effets de bord (listes principales ; 0 ailleurs)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]

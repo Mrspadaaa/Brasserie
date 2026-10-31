@@ -1,0 +1,1 @@
+{"cartes":["Plus agrumesAtteint"],"groupes":[{"titre":"même effet sur tes objectifs48 gdry hop en ferment","lignes":[{"nom":"Warrior","hors":"◇lui seul : chèvrefeuille, chocolat"},{"nom":"Cashmere","hors":"◇lui seul : thym, bonbon"},{"nom":"Columbus","hors":"◇lui seul : piquant, curry"},{"nom":"Nugget","hors":"◇lui seul : herbes fraîches écrasées"}]}]}

@@ -1,9 +1,10 @@
-OK — la demande prime sur la bande (D195) : plus de noble en tête, plus de « Aucune » au-dessus de rangées ; build et perf à rejouer
+OK — R4 écrite, testée, sans régression ; mais Warrior, Columbus, Nugget sont « mixte » chez Beer Maverick : la tête de la neipa saturée ne bouge pas ; build et perf à rejouer
 
 ## Les règles (écrites avant les mesures de non-régression)
 - **R1, la demande prime sur la bande.** Une famille de la direction (il la monte, la baisse ou la bannit) qui sort de sa bande : c'est sa demande. Le dépassement reste dit dans `styleOverflow`, marqué `voulu: true`. Il ne compte ni au rang (`overflowRang`, `overflowStyle`), ni « hors du style » à l'écran. Hypothèse 1 du pilote : **confirmée** par la mesure (neipa saturée, « plus d'agrumes » : agrumes 0,5 cran au-dessus de la bande sur toute voie ; East Kent Goldings 3e et Golding 4e avant, hors des 8 premiers après).
 - **R2, un excès minuscule n'est pas hors du style.** Sous `SATURATION_MINUSCULE` = 0,25 cran ajouté, l'entrée porte `minuscule: true` : ni rang, ni écran. Raison écrite : un cran est le pas du style (largeur d'un palier de sa bande), un quart de pas est dans la marge. Hypothèse 2 : **confirmée** (voies à 0,01 cran de rang devant 0 : Idaho 7, Motueka).
 - **R3, nouvelle (la mesure contredit « R1 et R2 suffisent »).** Après R1, des ajouts jusque-là freinés (Strata, BRU-1, Nectaron, El Dorado, Galaxy…) prennent les 10 + 4 places de `limit` et `buyLimit`. L'écran écarte ensuite ceux qui citent une famille bannie (D194) : plus aucun « Remplacer Columbus » ne restait, `bannir2.mjs B` passait à ECHEC. Une direction qui baisse une famille garde donc, par domaine, jusqu'à `REMPLACEMENTS_RESERVES` = 4 remplacements qui la font baisser, en plus des places normales.
+- **R4, usage au whirlpool et au dry hop (demande du pilote, 27.10, écrite avant ses mesures).** Symétrique de la règle d'usage à 60′ (g2b) : au whirlpool, au dry hop actif et après, un ajout dont l'usage Beer Maverick est « amérisant » (`purpose: 'bittering'`) passe après les houblons d'arôme ou de double usage **à rang et à distance égaux** (clé du rang placée **après la clé de départage, donc après la typicité du style** : voir « R4, mesure et position »). Jamais une exclusion : la voie reste, elle porte `reculeUsage` avec sa raison écrite (« … houblon d'usage amérisant (Beer Maverick) ajouté … : il passe après les houblons d'arôme ou de double usage à effet égal (jamais écarté) »). Un usage inconnu ne recule pas. Option `usageAuFrais: false` : l'ordre de 8e17aa00 ; défaut `USAGE_AU_FRAIS_DEFAUT = true`. Concerne les types ajouter, assemblage et remplacer ; pas augmenter ni diminuer.
 - `saturation: false` rend l'ordre d'ae7c7a8d (option réversible, défaut `SATURATION_DEFAUT = true`).
 
 ## Fichiers écrits
@@ -64,3 +65,32 @@ Essais utilisés : bannir B (1 correction, R3) ; pack et fingerprints (adaptés 
 
 CONNAISSANCE : `directionDe` code une famille bannie et une famille à baisser par le même nombre (−1 cran) ; le moteur ne distingue pas bannir de baisser, d'où la réserve R3 plutôt qu'une exclusion côté moteur. Un banc qui passe par `proposer` doit lire `moments: ['dryActive']` (l'enveloppe de `ecran-bannir.mjs`) pour reproduire l'écran.
 LEÇON PROPOSÉE : une coupe d'affichage faite avant un filtre d'écran (`limit`, `buyLimit` avant `exclue`) rend un acquis dépendant de l'ordre : tout changement de rang peut le perdre (D194 perdu par D195 jusqu'à R3) ; rejouer `bannir2.mjs A` et `B` après tout changement de rang.
+
+## R4, mesure et position (31.10)
+**Rien d'amérisant n'était en tête** : sur la neipa saturée, l'écran lit « mixte » pour Warrior, Columbus et Nugget et « arôme » pour Cashmere (usage Beer Maverick : `dual`, `dual`, `dual`, `aroma` ; Citra, Cascade et Centennial sont aussi `dual`). La règle (« amérisant » = `bittering`) est vraie sur la tête, mais elle ne touche pas ces quatre : la tête est identique avant et après (`mesures/r4/saturation-apres.txt`, `img/r4-saturation-apres.png`, ouverte). Les 46 houblons `bittering` du catalogue sont notamment Target, East Kent Goldings, Millennium.
+
+**Première position, refusée par la mesure** : la clé de R4 juste après la distance (comme le demande « de même rang ») fait reculer jusqu'à 70 places des phares de styles traditionnels au dry hop (Target, East Kent Goldings, Saaz et leurs voisins en 15B, 15C, 16A à 16D, 3A, 13C, 20C) : phare médian 5 → 15, meilleur 1 → 2, 33 lignes qui reculent de plus de 20 places. Ce sont les phares du brasseur (L14) : écarté.
+
+**Position gardée** : après la clé de départage (typicité du style et intensité), avant le pool. R4 ne départage alors que les voies à distance, rang de débordement et typicité égaux (typicité éteinte ou inconnue). Elle reste « jamais une exclusion » et « un usage inconnu ne recule pas ».
+
+| mesure | ae7c7a8d | 8e17aa00 (R1 à R3) | R4 (après la typicité) |
+|---|---|---|---|
+| `saturation.mjs` : tête, carte | Aucune ; EKG, Golding, Spalter, Mount Hood | Atteint ; Warrior, Cashmere, Columbus, Nugget | **identique** ; aucun `bittering` en tête |
+| `bannir2.mjs A` / `B` | OK / OK | OK / OK | OK / OK |
+| contradictions carte / liste (62 listes) | 4 | 0 | 0 |
+| meilleur phare (médiane, 124 lignes) | 2 | 1 | 1 |
+| phare médian (médiane, 124 lignes) | 5 | 5 | 5 |
+| reculs > 20 places depuis 8e17aa00 | | | aucun |
+| `f5-phares` | 18/31 dans les 10, 12/31 dans les 5, médiane des médianes 37,5 | identique | identique (tête 21A, Mosaic n° 4, Citra simple n° 6) |
+| Citra cryo premier (16 listes, typicité) | 2 | 2 | 2 |
+| East Kent Goldings premier du stout S1 (typicité) | oui | oui | oui (EKG, First Gold, Strisselspalt, Liberty) ; `f9-nonreg` identique ligne pour ligne à 8e17aa00 |
+| tests `hopIndexV4` + `prototypes/houblons-v4/tests` | | 1083 verts | **1088 verts** (pack et empreintes inchangés) |
+| `controle-etats.mjs` | | 138/138 | **ETATS OK (138/138)** |
+| Test rouge | | | `USAGE_AU_FRAIS_DEFAUT` posé à false : 2 des 5 tests R4 échouent (défaut posé ; paires amérisant / arôme à rang égal) ; verts avec R4 : 12/12 du fichier |
+
+Effet réel de R4 : rien dans les 124 listes de généralisation ni dans la tête de la neipa ; elle agit sur des égalités de typicité (cas sans table, ou houblon sans typicité) et sur les assemblages qui contiennent un amérisant (Target + Cascade au dry hop : `reculeUsage` écrit). Le 60′ n'est pas touché (R4 ne lit que whirlpool, dry hop actif, dry hop après).
+
+Le critique a raison sur Warrior : ce n'est pas un défaut d'usage que la donnée sache dire. D'où la décision ci-dessous.
+
+DÉCISION À PRENDRE : « Warrior pour plus d'agrumes ?? » : que faire, puisque Beer Maverick classe Warrior, Columbus et Nugget « mixte » ? Options : (a) laisser R4 telle quelle (inerte ici, correcte, sans risque) ; (b) reculer aussi les `dual` dont l'α milieu dépasse un seuil : refusé, Citra (α 10–15) et Centennial seraient pris et le seuil serait inventé (L20) ; (c) chercher pourquoi ces quatre sont en tête (cause probable : la typicité 22A compte leurs usages à l'ébullition, pas leur usage au dry hop ; à vérifier sur Beer Analytics avant tout rang), puis ne lire la typicité du dry hop que pour le dry hop ; ce serait une voie à part. Recommandation : (a) maintenant, (c) en voie dédiée avec mesure d'abord.
+Les captures `img/r4-saturation-apres.png` est ouverte et dit « mixte » sur Warrior, Columbus, Nugget.

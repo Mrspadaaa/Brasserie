@@ -1,3 +1,4 @@
+// Trois états : `avant` (ae7c7a8d), `r3` (8e17aa00 : R1 à R3, sans R4) et `apres` (R4 : un amérisant au whirlpool et au dry hop passe après les houblons d'arôme ou de double usage).
 // Voie s3 (D195) : la généralisation de a4-general (31 styles de `pharesParStyle`, « plus d'agrumes » et « plus floral », dry hop actif et 10′) AVANT (`saturation: false`, l'ordre d'ae7c7a8d) et APRÈS (défaut),
 // avec la règle de l'écran de chaque côté : avant `status !== 'neutre'`, après `estHorsDuStyle` (voulu et minuscule ne sont plus hors du style).
 //   npx vite-node scripts/eval-hop/s3-general.ts -- [--sortie=fichier.json]
@@ -25,15 +26,16 @@ async function main() {
   chargerTable();
   const m = creerMoteur({ catalogue: await chargerCataloguePlein(), stock: [] });
   const res: Record<string, { bilan: { listes: number; contradictions: number }; lignes: Ligne[]; cartes: string[] }> = {};
-  for (const [mode, saturation] of [['avant', false], ['apres', true]] as const) {
+  const MODES = [['avant', { saturation: false, usageAuFrais: false }], ['r3', { saturation: true, usageAuFrais: false }], ['apres', {}]] as const;
+  for (const [mode, opts] of MODES) {
     const lignes: Ligne[] = [], cartes: string[] = [];
     const bilan = { listes: 0, contradictions: 0 };
     const hors = (v: Voie) => (mode === 'avant' ? v.styleOverflow.some((o) => o.status !== 'neutre') : v.styleOverflow.some(estHorsDuStyle));
     for (const style of Object.keys(PHARES_PAR_STYLE)) {
       const phares = PHARES_PAR_STYLE[style].map(idCourt);
       for (const [dn, f] of DEMANDES) {
-        const grand = m.proposeVoies(recette(style), { [f]: 1 }, { limit: 2000, buyLimit: 2000, perHop: 100, assemblages: false, moments: ['b10', 'dryActive'], saturation });
-        const montre = m.proposeVoies(recette(style), { [f]: 1 }, { assemblages: true, saturation });
+        const grand = m.proposeVoies(recette(style), { [f]: 1 }, { limit: 2000, buyLimit: 2000, perHop: 100, assemblages: false, moments: ['b10', 'dryActive'], ...opts });
+        const montre = m.proposeVoies(recette(style), { [f]: 1 }, { assemblages: true, ...opts });
         for (const [mn, mo] of MOMENTS) {
           const vus: string[] = [];
           for (const v of grand.voies.filter((x) => x.type === 'ajouter' && x.actions.length === 1 && x.actions[0].moment === mo).sort(compareVoies)) { const id = idCourt(v.actions[0].hopKey); if (!vus.includes(id)) vus.push(id); }
@@ -48,18 +50,19 @@ async function main() {
     }
     res[mode] = { bilan, lignes, cartes };
   }
-  const reculs = res.avant.lignes.flatMap((a, i) => {
+  const reculsDe = (de: 'avant' | 'r3') => res[de].lignes.flatMap((a, i) => {
     const b = res.apres.lignes[i];
     const d = [['meilleur', a.meilleur, b.meilleur], ['médiane', a.mediane, b.mediane]] as const;
     return d.filter(([, x, y]) => x !== null && y !== null && y - x > 20).map(([k, x, y]) => `${a.cle} : ${k} ${x} → ${y} (${a.tete.join(', ')} → ${b.tete.join(', ')})`);
   });
-  const med = (mode: 'avant' | 'apres', k: 'meilleur' | 'mediane') => mediane(res[mode].lignes.map((l) => l[k]).filter((x): x is number => x !== null));
+  const med = (mode: 'avant' | 'r3' | 'apres', k: 'meilleur' | 'mediane') => mediane(res[mode].lignes.map((l) => l[k]).filter((x): x is number => x !== null));
   const synthese = {
-    contradictions: { avant: res.avant.bilan.contradictions, apres: res.apres.bilan.contradictions, sur: res.avant.bilan.listes },
-    meilleurPhare: { avant: med('avant', 'meilleur'), apres: med('apres', 'meilleur') },
-    phareMedian: { avant: med('avant', 'mediane'), apres: med('apres', 'mediane') },
-    reculsDePlusDe20Places: reculs,
-    cartesEnContradiction: { avant: res.avant.cartes, apres: res.apres.cartes },
+    contradictions: { avant: res.avant.bilan.contradictions, r3: res.r3.bilan.contradictions, apres: res.apres.bilan.contradictions, sur: res.avant.bilan.listes },
+    meilleurPhare: { avant: med('avant', 'meilleur'), r3: med('r3', 'meilleur'), apres: med('apres', 'meilleur') },
+    phareMedian: { avant: med('avant', 'mediane'), r3: med('r3', 'mediane'), apres: med('apres', 'mediane') },
+    reculsDePlusDe20PlacesDepuisR3: reculsDe('r3'),
+    reculsDePlusDe20PlacesDepuisAvant: reculsDe('avant'),
+    cartesEnContradiction: { avant: res.avant.cartes, r3: res.r3.cartes, apres: res.apres.cartes },
   };
   if (sortie) writeFileSync(sortie, `${JSON.stringify({ synthese, res }, null, 1)}\n`);
   console.log(JSON.stringify(synthese, null, 1));
