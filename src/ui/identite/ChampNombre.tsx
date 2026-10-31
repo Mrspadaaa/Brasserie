@@ -1,10 +1,14 @@
 import React, { useRef, useState } from 'react';
+import { Input } from '../Input';
 import { fr, lireSaisie, pasClavier } from './regles';
 
 /**
  * Un nombre qui se tape sur place (r4-a : « pouvoir modifier aussi les chiffres directement »).
  *
- * Jamais `type="number"` (saisie-mobile) : un champ texte avec `inputmode`. Au clavier : ↑ ↓ ajoutent un pas, Entrée
+ * Jamais `type="number"` (saisie-mobile) : un champ texte avec `inputmode`, rendu par le composant protégé `Input`
+ * (un `input` à la souris ; au toucher, un `textarea` d'une ligne, car Chrome Android ignore autocomplete="off" sur un
+ * `input`). `Input` plutôt que `NumberInput` : celui-ci garde son propre brouillon et reformate à la sortie, alors que
+ * ce champ tient déjà son texte, ses bornes, Entrée, Échap et ↑ ↓. Au clavier : ↑ ↓ ajoutent un pas, Entrée
  * valide, Échap rend la valeur d'avant. Une valeur tapée hors de la règle est acceptée (la règle s'étend) ; seuls `min`
  * et le garde-fou `max` la refusent. Le nombre suit la frappe ; à la sortie, le texte est ramené à la valeur retenue.
  */
@@ -59,17 +63,12 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({
   };
 
   return (
-    <input
+    <Input
       {...marques}
       id={id}
       type="text"
       inputMode={decimal ? 'decimal' : 'numeric'}
       enterKeyHint="done"
-      autoComplete="off"
-      autoCorrect="off"
-      spellCheck={false}
-      data-lpignore="true"
-      data-1p-ignore="true"
       aria-label={libelle}
       aria-invalid={invalide || undefined}
       aria-describedby={decrit}

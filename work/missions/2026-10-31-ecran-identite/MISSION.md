@@ -121,3 +121,13 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   11 écarts dont 1 bloquant et 4 majeurs) : au repos c'est r4-a ; au toucher, l'ancien bloc revient (alertes redites, tableau de
   Matériel, deux boutons de repères), et le bandeau se casse en deux à 1280. Voie **p2-correctifs** écrite (auteur Sonnet, agent neuf,
   contrôles qui échouent d'abord) ; test de compréhension en vol. Le déploiement attend ses critères et un second regard du critique.
+- 31.10, nuit : **p2, retouches R1 et R2 du second critique** faites (contrôle rouge puis vert pour chacune). Rejoué par le pilote : G3 en échec au premier
+  passage (« tuiles absentes » à 390, démarrage à froid du serveur), `IDENTITE OK` (176 contrôles) au second ; captures `app-cuve-deborde-390` et
+  `app-reperes-ouverts-390` ouvertes : plus de violet au-delà de la cuve, « Lire la source » à 24 px. **Commit 7f742475**.
+- 31.10, nuit : `npm test` entier échoue avant vitest, depuis le port 859409d6 : `audit_inputs.mjs` refuse le `<input>` brut de `ChampNombre.tsx`
+  (la saisie passe par `Input`, textarea d'une ligne au toucher, contre la barre d'Android). Aucune GATE de p1 ni de p2 ne lançait `npm test` entier.
+  → voie **p3-champ** (auteur neuf) : `ChampNombre` par `Input`, rendu inchangé mesuré à 390 souris, 390 tactile (jamais capturé jusqu'ici) et 1280.
+  Le déploiement attend p3 et `npm test` vert.
+  LEÇON PROPOSÉE : avant le commit d'un port, `npm test` entier (gardes du dépôt comprises), et une passe tactile dans la série Chrome.
+- 31.10, nuit : **p3 rendue** : `ChampNombre` par `Input` (textarea d'une ligne au toucher), écart 0 px sur 21 champs aux trois passes, 33/39 captures identiques au pixel (les 6 autres : curseur, transitions, sélection du textarea). Rejoué par le pilote : audit des champs PASSED (648), 106 tests identite verts ; capture `app-fermenteur-ouvert-390-tactile` ouverte. Les 4 rouges de `depense/raccord` vus par p3 étaient la voie r1 en cours : 63/63 verts après son commit.
+- 31.10, nuit : la suite entière ne se termine toujours pas, même sur HEAD : `tests/integration/monkey.test.tsx` lancé seul monte à 4 080 Mo et meurt à la graine 42 de l'atelier de l'eau (graines 1 et 7 vertes) ; les hopV55 aussi selon p3. → voie **p4-suite** (auteur Sonnet, agent neuf) : trouver le geste, corriger à la cause sans réduire le singe, puis `npm test` entier.

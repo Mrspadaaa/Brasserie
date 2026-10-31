@@ -70,18 +70,19 @@
 .idn-cap b { font-family: theme('fontFamily.mono'); font-size: 13px; color: rgb(var(--cave-texte-50)); }
 .idn-cap.idn-modif { border-style: solid; border-color: rgb(var(--cave-50)); }
 .idn-num { display: flex; align-items: baseline; margin-left: auto; }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']) {
+/* Le nombre tapable est rendu par `Input` : un `input` à la souris, un `textarea` d'une ligne au toucher (p3-champ). Mêmes règles pour les deux. */
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']) {
   min-height: 0; height: auto; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; text-align: right;
   font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; caret-color: rgb(var(--cave-50)); color: rgb(var(--cave-texte-50));
 }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand {
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand {
   min-width: 2.2ch; border-bottom: 1.5px dotted rgb(var(--cave-600)); font-size: 48px; font-weight: 600; line-height: 50px;
 }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:hover { border-bottom-color: rgb(var(--cave-400)); }
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:hover { border-bottom-color: rgb(var(--cave-400)); }
 /* Retouche B de r4-a (verdict n° 5) : au focus, ni boîte ni fond blanc ; le nombre reste sur la tuile, avec un trait plein de 2 px dessous et le caret seul. */
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:focus { outline: none; box-shadow: none; border-bottom: 2px solid rgb(var(--cave-50)); background: transparent; }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand::placeholder { color: rgb(var(--cave-600)); }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox'])[aria-invalid='true'] { border-bottom-color: rgb(var(--alert)); }
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:focus { outline: none; box-shadow: none; border-bottom: 2px solid rgb(var(--cave-50)); background: transparent; }
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand::placeholder { color: rgb(var(--cave-600)); }
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox'])[aria-invalid='true'] { border-bottom-color: rgb(var(--alert)); }
 .idn-u { font-family: theme('fontFamily.mono'); font-size: 14px; font-weight: 500; color: rgb(var(--cave-texte-400)); margin-left: 2px; }
 .idn-etat { font-size: 14px; font-weight: 600; color: rgb(var(--hop-texte)); }
 .idn-etat.idn-plein { color: rgb(var(--cave-texte-200)); }
@@ -175,11 +176,13 @@
 .idn-tuile.idn-ouvert .idn-tuile-corps { display: flex; }
 .idn-tuile.idn-ouvert { grid-column: 1 / -1; }
 .idn-lig { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 14px; color: rgb(var(--cave-texte-200)); }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin {
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin {
   width: 4.5ch; height: 32px; min-height: 32px; padding: 0 6px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px;
   background: rgb(var(--cave-950)); font-size: 16px; font-weight: 600;
 }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin:focus { outline: 2px solid rgb(var(--water)); outline-offset: 1px; }
+/* Un input centre son texte dans sa hauteur fixe ; un textarea le colle en haut : 3 px = (32 − 2 de bordure − 24 de ligne) / 2. */
+.recipe-wizard textarea:where([data-single-line]).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin { padding-block: 3px 0; }
+.recipe-wizard :is(input, textarea:where([data-single-line])).idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-fin:focus { outline: 2px solid rgb(var(--water)); outline-offset: 1px; }
 .recipe-wizard .idn-raz { align-self: flex-start; height: 28px; padding: 0 8px; border-radius: 10px; border: 1px solid rgb(var(--cave-800)); font-size: 12px; color: rgb(var(--cave-texte-200)); }
 .idn-raz[hidden] { display: none; }
 .recipe-wizard .idn-coller {
