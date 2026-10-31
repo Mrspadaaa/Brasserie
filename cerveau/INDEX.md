@@ -35,7 +35,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[fil-de-fer-d-abord]] — exploration en fils de fer en planche ; fidélité pour la retenue
 - [[exploration-v0-libre]] — l'entonnoir : panel v0, classement, greffes, passes (M13)
 - [[methode-ui-v3]] — tous les écrans, un ticket par sujet (#133)
-- [[micro-correctifs]] — aller-retour rapide, capture si l'apparence est ambiguë
+- [[micro-correctifs]] — aller-retour rapide, capture si ambiguë ; [[glossaire]] : ses mots
 
 ### metier/ — houblons, levures, eau, chimie, moteur
 - [[descripteurs-hors-familles]] — pourquoi Nelson Sauvin paraît ordinaire et Motueka ultra fruité

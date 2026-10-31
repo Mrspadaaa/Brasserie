@@ -134,7 +134,15 @@ lisait environ 29 000 jetons avant de juger. Des copies restées en arrière con
 | Irréversible ou externe | push, PR, merge, déploiement, données réelles, Gemini facturé, suppression, comptes, réglages | l'**utilisateur**, groupé, sans bloquer le reste | registre, « en attente » |
 
 Sans réponse, on applique la lecture étroite et réversible (L01) et on continue. On ne pose aucune
-question bloquante.
+question bloquante. Une question de cadrage va au jury (skill `jury`, D198), jamais au brasseur.
+
+**Filtre des lignes D-n** (31.10, adapté des ADR de mattpocock). Une décision technique reçoit sa ligne dans `decisions.md` seulement si
+elle remplit au moins un de ces critères :
+- elle est dure à inverser ;
+- elle surprendrait un lecteur sans contexte ;
+- c'est un vrai arbitrage, une option écartée qui avait ses raisons.
+Sinon, une ligne de reprise dans MISSION.md suffit. Les paroles du brasseur, les accords de l'utilisateur et les choix de goût gardent
+toujours leur trace.
 
 ### Quand le conseil intervient
 Il n'est jamais réuni par habitude. Le pilote décide seul tout le reste. Le niveau (avis croisé,
