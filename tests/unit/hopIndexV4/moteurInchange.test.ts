@@ -31,7 +31,10 @@ const ATTENDU = {
   // D90, g2c (26.10) : ea61f2e1… → 3a8bf578… Seule la phrase de la règle de classement change (« le remplaçant marque une famille indésirable… la moitié au moins
   // de ses fiches la citent », substitution.ts, RANKING) : sans le champ `regle`, l'empreinte reste 97779b94… avant et après (même scores, mêmes rangs, mêmes doses).
   // Aucun style n'est donné ici : le conflit de style, seul changé par D90, n'entre pas dans ces 12 classements ; il est testé dans exclusionStyle.test.ts.
-  substituts: '9e1a3a6d4560d06fd08c2a93bfa321934eabc620c86308b2fbd13b0024040ce1',
+  // D196 (k1-substituer-60, 31.10) : 9e1a3a6d… → 5f7703d6… Seule la phrase de la règle de classement change (RANKING : « à un moment d’amertume, amertume inconnue derrière »,
+  // champ `regle`). Sans `regle`, l'empreinte reste cda1c421… avant et après (contexte par défaut, hors moment d'amertume : mêmes scores, rangs, doses, raisons).
+  // Mesurée avec scripts/eval-hop/k1-mesure.ts (moteurInchange.sansRegle).
+  substituts: '5f7703d6de6086ba8ca3522437a0db546e73bcfbac2b279dc9ae529cc66a15e4',
   // D99 (26.10, voie d99-apport-c-defaut) : l'option c de g2d devient le défaut au dry hop (voies.ts : overflowRang). Ces cinq empreintes lisent les données et
   // substitutes(), jamais proposeVoies : AUCUNE ne bouge (rejouées, vertes). Le classement de Suggérer a son contrôle dans apportCDefaut.test.ts.
 };

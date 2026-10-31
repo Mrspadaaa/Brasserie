@@ -49,7 +49,7 @@ export const RANKING = [
   'Trois jeux de poids (groupes amertume · huile · arôme, fixés sur la moitié d’apprentissage des substituts Beer Maverick, jugés sur l’autre). Moment d’amertume (premier moût, 60′, 30′, 15′) : 0,7 · 0,2 · 0,1. Arôme chaud (10′ et après, whirlpool) : 0,3 · 0,2 · 0,5, mots 0,75 de l’arôme hors radar. À froid (dry hop) : 0,2 · 0,3 · 0,5, mots 0,75. À l’intérieur d’un groupe, les poids sont fixés à la main selon le moment (cohumulone, humulène et caryophyllène comptent à l’amertume ; linalol, huile totale et mots pèsent plus à froid). Le radar compte pour 0,1 de l’arôme, aux moments d’arôme seulement.',
   'Contexte amertume, en brasseur : l’arôme de l’original part à l’ébullition, l’arôme ne compte que par la part étrangère du remplaçant (1 − part de son vecteur sur des familles que l’original ne cite pas) ; un α plus haut vaut 1 (moins de matière pour le même IBU) ; amérisant et double tiennent le même rôle ; ni les mots ni le radar n’y comptent.',
   'Composantes affichées : un score par groupe (amertume, huile, arôme), moyenne pondérée des variables connues du groupe ; « inconnue » seulement quand aucune variable du groupe n’est connue des deux houblons. Couverture : bonne (arôme et au moins deux variables d’huile), partielle (moins de deux variables d’huile), faible (ni familles ni mots) ; un score faible n’est jamais présenté comme une ressemblance d’arôme.',
-  'Classement lexicographique : 1) avec un style, conflit derrière (le remplaçant marque une famille indésirable du style que l’original ne cite pas : la moitié au moins de ses fiches la citent, D90) ; 2) couverture faible derrière ; 3) à un moment d’amertume, produit d’arôme ou houblon aromatique derrière (règle suivante) ; 4) si « en stock d’abord » : palier du score (très proche ≥ 80, proche ≥ 65, partiel ≥ 50, éloigné), puis en stock suffisant, en stock insuffisant, à acheter (épuisé compris) : le stock ne passe jamais devant un palier meilleur ; 5) score décroissant (entier) ; 6) nom. Égalité de toutes les clés : même rang.',
+  'Classement lexicographique : 1) avec un style, conflit derrière (le remplaçant marque une famille indésirable du style que l’original ne cite pas : la moitié au moins de ses fiches la citent, D90) ; 2) à un moment d’amertume, amertume inconnue derrière (D196 : aucun α, β, cohumulone ni rôle connu des deux houblons ; l’inconnu passe après le connu, son score, fondé sur le seul poids de l’arôme, est gardé mais son palier ne dépasse jamais « partiel ») ; 3) couverture faible derrière ; 4) à un moment d’amertume, produit d’arôme ou houblon aromatique derrière (règle suivante) ; 5) si « en stock d’abord » : palier du score (très proche ≥ 80, proche ≥ 65, partiel ≥ 50, éloigné), puis en stock suffisant, en stock insuffisant, à acheter (épuisé compris) : le stock ne passe jamais devant un palier meilleur ; 6) score décroissant (entier) ; 7) nom. Égalité de toutes les clés : même rang.',
   'Amertume en brasseur (premier moût, 60′, 30′, 15′) : un brasseur n’amérise pas avec un produit d’arôme ni avec un houblon aromatique (usage et coût). Les produits cryo, lupuline ou poudre (lus dans le nom, les alias ou la forme de la fiche ou de l’article du stock) et les houblons de rôle aromatique (rôle du moteur : fournisseur, sinon règle rôle-α v1) passent après les amérisants et doubles usages, même à score égal ou supérieur ; raison écrite « produit d’arôme, cher pour amériser » ou « houblon aromatique, cher pour amériser ». Ne s’applique pas si l’original est lui-même aromatique ou un produit d’arôme (choix délibéré du brasseur). Le score ne change pas : seul l’ordre change.',
   'Dose : même IBU au même moment (BrewingMath.hopIbu, linéaire en α) : g du remplaçant = IBU de l’original ÷ IBU par gramme du remplaçant ; plage par l’α du remplaçant (lot, sinon plage variétale). À froid, ou sans IBU au moment choisi : à masse égale.',
   'Gains et pertes : familles dont le niveau de fiche (0 non décrit, 1 cité, 2 marqué) monte ou descend. C’est une citation dans les fiches, pas une intensité dans la bière.',
@@ -304,6 +304,9 @@ export interface SubstitutionResult {
 const ZERO: SubstitutionWeights = { arome: 0, huiles: 0, amertume: 0 };
 const palierOf = (score: number): Palier => PALIERS.find((p) => score >= p.min)!.label;
 const PALIER_RANK = Object.fromEntries(PALIERS.map((p, i) => [p.label, i])) as Record<Palier, number>;
+/** D196 : le palier le plus haut d'un candidat sans variable d'amertume connue, à un moment d'amertume (« partiel » : une information partielle, jamais « proche » ni « très proche »). */
+export const PALIER_SANS_AMERTUME: Palier = 'partiel';
+const plafondPalier = (p: Palier): Palier => (PALIER_RANK[p] < PALIER_RANK[PALIER_SANS_AMERTUME] ? PALIER_SANS_AMERTUME : p);
 const stockRank = (s: Substitute['stock']) => (s.etat === 'en stock' ? (s.suffisant === false ? 1 : 0) : 2);
 const defaultRecipe = (): Recipe => ({ name: 'référence', styleCode: '', volumeL: REFERENCE.volumeL, og: REFERENCE.og, boilMin: REFERENCE.boilMin, yeastId: REFERENCE.yeastId, additions: [] });
 const gramsRound = (g: number) => round(g, g < 10 ? 2 : 1);
@@ -348,7 +351,7 @@ function demotionDe(sub: HopRef): string | null {
 }
 
 const names = (fs: FamilyId[]) => fs.map((f) => FAMILY_NAMES[f].toLowerCase()).join(', ');
-function reasonOf(s: Omit<Substitute, 'rank' | 'raison'>, orig: Features, sub: Features): string {
+function reasonOf(s: Omit<Substitute, 'rank' | 'raison'>, orig: Features, sub: Features, amertumeInconnue = false): string {
   if (s.memeVariete) return `Même variété, autre forme (${s.name}) : même profil des fiches ; dose à ${s.dose.regle === 'même IBU' ? 'IBU égal' : 'masse égale'}${s.amertumeDeconseillee ? ` ; ${s.amertumeDeconseillee}` : ''}.`;
   const parts: string[] = [];
   if (!s.couverture.arome) parts.push(`Arôme inconnu (${!sub.aroma ? s.name : orig.ref.name} : aucune famille citée) ; score sur l’huile et l’amertume seulement`);
@@ -363,6 +366,7 @@ function reasonOf(s: Omit<Substitute, 'rank' | 'raison'>, orig: Features, sub: F
   const alphaDose = (r: HopRef) => r.alpha && `${fr(r.alpha.value)} %${r.alpha.min === r.alpha.max ? ' (lot)' : ''}`;
   if (orig.pl[V_ALPHA] && sub.pl[V_ALPHA] && orig.ref.alpha && sub.ref.alpha) parts.push(`α ${alphaDose(sub.ref)} contre ${alphaDose(orig.ref)}`);
   if (s.conflitsStyle.length) parts.push(`indésirable au style : ${names(s.conflitsStyle)}`);
+  if (amertumeInconnue) parts.push('amertume inconnue (ni α, ni β, ni cohumulone, ni rôle connus des deux fiches) : score fondé sur l’arôme seul, après les amérisants connus');
   if (s.amertumeDeconseillee) parts.push(s.amertumeDeconseillee);
   const text = parts.join(' ; ');
   return text.charAt(0).toUpperCase() + text.slice(1) + '.';
@@ -395,6 +399,8 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
   interface Ligne {
     k: string; sub: Features; name: string; score: number; palier: Palier;
     fiabilite: Substitute['couverture']['fiabilite'];
+    /** D196 : à un moment d'amertume, aucune variable d'amertume connue des deux houblons. */
+    amertumeInconnue: boolean;
     stock: Substitute['stock']; dose: SubstituteDose | null; conflitsStyle: FamilyId[]; amertumeDeconseillee: string | null; cles: number[];
     /** Les clés en un nombre (ordre lexicographique : chaque clé est bornée), quand le score est un entier de 0 à 100. */
     rang: number;
@@ -422,11 +428,17 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
     // D90 (g2c) : un conflit de style seulement si la famille indésirable est marquée chez le candidat (plus pour une fiche isolée).
     const conflitsStyle = indesirables.length ? indesirables.filter((f) => sub.marquees[f]) : indesirables;
     const amertumeDeconseillee = exclue ? null : sub.demotion !== undefined ? sub.demotion : (sub.demotion = demotionDe(sub.ref));
-    const palier = palierOf(score);
-    const c0 = conflitsStyle.length ? 1 : 0, c1 = fiabilite === 'faible' ? 1 : 0, c2 = amertumeDeconseillee ? 1 : 0;
-    const cles = stockFirst ? [c0, c1, c2, PALIER_RANK[palier], stockRank(stock), -score] : [c0, c1, c2, -score];
-    const rang = ((((c0 * 2 + c1) * 2 + c2) * 4 + (stockFirst ? PALIER_RANK[palier] : 0)) * 3 + (stockFirst ? stockRank(stock) : 0)) * 101 + (100 - score);
-    lignes.push({ k, sub, name: sub.ref.name, score, palier, fiabilite, stock, dose, conflitsStyle, amertumeDeconseillee, cles, rang });
+    // D196 (K1) : inconnu ≠ 0, et l'inconnu passe après le connu. À un moment d'amertume, un candidat dont ni l'α, ni la β, ni la cohumulone, ni le rôle ne sont connus des deux
+    // houblons n'est noté que par la part étrangère de ses familles (poids 0,1 sur 1) : son score ne dit rien de l'amertume. Il passe derrière tout candidat qui en a (même clé que
+    // la couverture faible) et son palier ne dépasse jamais PALIER_SANS_AMERTUME. Son score reste celui qui est calculé : rien n'est inventé, rien n'est mis à 0.
+    const amertumeInconnue = amertume && s[V_ALPHA] !== s[V_ALPHA] && s[V_BETA] !== s[V_BETA] && s[V_COHU] !== s[V_COHU] && s[V_USAGE] !== s[V_USAGE];
+    const palier = amertumeInconnue ? plafondPalier(palierOf(score)) : palierOf(score);
+    // Clés : conflit de style, amertume inconnue (D196, nulle hors d'un moment d'amertume), couverture faible, amertume déconseillée. L'amertume inconnue passe avant la couverture faible :
+    // à ce moment l'amertume pèse 0,7 ; un candidat d'amertume connue mais d'arôme inconnu en dit plus qu'un candidat dont on ne sait rien de l'amertume.
+    const c0 = conflitsStyle.length ? 1 : 0, cA = amertumeInconnue ? 1 : 0, c1 = fiabilite === 'faible' ? 1 : 0, c2 = amertumeDeconseillee ? 1 : 0;
+    const cles = stockFirst ? [c0, cA, c1, c2, PALIER_RANK[palier], stockRank(stock), -score] : [c0, cA, c1, c2, -score];
+    const rang = (((((c0 * 2 + cA) * 2 + c1) * 2 + c2) * 4 + (stockFirst ? PALIER_RANK[palier] : 0)) * 3 + (stockFirst ? stockRank(stock) : 0)) * 101 + (100 - score);
+    lignes.push({ k, sub, name: sub.ref.name, score, palier, fiabilite, amertumeInconnue, stock, dose, conflitsStyle, amertumeDeconseillee, cles, rang });
   }
   // Classement : clés, puis nom. Le rang numérique vaut les clés quand chaque score est un entier de 0 à 100 (toujours, sauf
   // poids imposés hors de [0, 1]) ; sinon, comparaison clé par clé. Avec une limite, seuls les candidats dont le rang ne
@@ -468,7 +480,7 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
       dose, stock: l.stock,
       conflitsStyle: [...l.conflitsStyle], memeVariete: sub.ref.varietyId === orig.ref.varietyId, amertumeDeconseillee: l.amertumeDeconseillee,
     };
-    const r = { ...row, raison: reasonOf(row, orig, sub) } as Substitute;
+    const r = { ...row, raison: reasonOf(row, orig, sub, l.amertumeInconnue) } as Substitute;
     r.rank = i > 0 && cmp(rendus[i - 1], l) === 0 ? remplacants[i - 1].rank : i + 1;
     remplacants.push(r);
   });
