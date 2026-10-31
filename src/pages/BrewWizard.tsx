@@ -28,7 +28,7 @@ import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCan
   tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
   recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
-import { defaultBrewVolume } from '../domain/brewEquipment';
+import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
@@ -43,7 +43,9 @@ import { CarteEbullition } from '../ui/identite/CarteEbullition';
 import { PlagesStyle } from '../ui/identite/PlagesStyle';
 import { TuilesMateriel } from '../ui/identite/TuilesMateriel';
 import { InterrupteurNolo } from '../ui/identite/InterrupteurNolo';
-import { evaporation, avantEbullitionDuPlan } from '../ui/identite/regles';
+import { VolumesReplies } from '../ui/identite/VolumesReplies';
+import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume } from '../ui/identite/regles';
+import { aAdopter, alertesDeMateriel, lignePremierPlan, resumeVolumes } from '../ui/identite/alertes';
 import { teinteDuStyle } from '../ui/identite/teinteStyle';
 import { fermenterRecommendation } from '../domain/fermenterPlanning';
 import { computeBeerColor } from '../domain/beerColor';
@@ -2309,23 +2311,23 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       {hasMetrics && (
         <div
           className={`recipe-metrics panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
-                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' ? 'hidden' : 'flex'}`}
+                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-baseline ${step === 'eau' ? 'hidden' : 'flex'}`}
         >
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">Grain</span>
             <span className="reading text-sm sm:text-base">{Units.format(totalGrist, 'kg')}</span>
           </div>
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">OG</span>
             <span className="reading text-sm sm:text-base text-ebc-straw">
               {(step === 'levure' ? og : ogPredicted) ? (step === 'levure' ? og : ogPredicted)!.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
             </span>
           </div>
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">{!(hopV4Actif && mesuresV4) && hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
             {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>}
           </div>
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">EBC</span>
             <span className="flex items-center gap-1">
               {color && (
@@ -2373,11 +2375,25 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         // Le moût d'avant ébullition : UNE source, le preBoilHotL de la recette (plan d'eau du moteur), le même nombre que
         // « Avant ébullition · à chaud » du bloc « Volumes et matériel ». Sans plan d'eau (pas de malts) : inconnu, la barre dit « — ».
         const avantMoteur = avantEbullitionDuPlan(recette.preBoilHotL, evaporationIdentite?.litres);
-        const alertesInstallation = (equipement || installationNeedsAdoption && configuredBrewhouse?.equipment)
-          ? problemesInstallation.map(issue=><p key={issue} role="status" className="text-xs text-ebc-amber" data-role="alerte-installation">{installationNeedsAdoption && configuredBrewhouse?.equipment
-              ? <>Adopte ton installation avant de lancer ce brassin. <button type="button" className="idn-lien" onClick={()=>setMaterielOuvert(true)}>Ouvrir Matériel</button></>
-              : issue}</p>)
+        // Les alertes d'installation (verdict n° 1) : le dessin dit déjà le fermenteur plein (« +N L de trop » sous le volume) et la
+        // cuve qui déborde (« +N L de trop » sur la barre). Au premier plan, une seule ligne, la seule que rien ne dessine
+        // (le rinçage) ; le reste est dit par le dessin ou dans la tuile Matériel. « À adopter » est le sous-titre de Matériel (n° 7).
+        const phrasesInstallation = (equipement || installationNeedsAdoption && configuredBrewhouse?.equipment) ? problemesInstallation : [];
+        const etatFermenteur = etatVolume(volumeL, equipement?.fermenterCapacityL).genre;
+        const grainEmpatage = (recette.fermentables ?? []).filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage').reduce((s, f) => s + f.weightKg, 0);
+        const controleEquipement = equipement && recette.waterPlan ? equipmentCheck(equipement, {
+          volumeL: recette.volumeL, grainKg: grainEmpatage, mashL: recette.waterPlan.mashWaterL, spargeL: recette.waterPlan.spargeWaterL,
+          preBoilHotL: recette.preBoilHotL, preferences: (recette.brewhouse ?? brewhouse)?.preferences, fermenterHeadspacePct: reco?.headspacePct
+        }) : undefined;
+        const lignePremier = lignePremierPlan(phrasesInstallation,
+          { fermenteur: etatFermenteur === 'plein' || etatFermenteur === 'trop', cuve: !!barreCuve(avantMoteur?.litres, avantMoteur?.evapL, equipement?.kettleWorkingL)?.deborde },
+          { chaudL: controleEquipement?.spargeHotL, maxL: controleEquipement?.spargeMaximumHotL ?? undefined });
+        const alertesInstallation = lignePremier.texte
+          ? <p role="status" className="text-xs text-ebc-amber" data-role="alerte-installation">{lignePremier.texte}{lignePremier.autres > 0 && <> · +{lignePremier.autres} dans Matériel</>}</p>
           : null;
+        const installationAAdopter = installationNeedsAdoption || aAdopter(phrasesInstallation);
+        const resumeVol = resumeVolumes({ avantL: avantMoteur?.litres, cuveL: equipement?.kettleWorkingL, volumeL, capaciteL: equipement?.fermenterCapacityL });
+        const alertesMat = alertesDeMateriel(phrasesInstallation);
         return (
         <>
           {/* Le chemin le plus rapide vers une recette complète est de la coller ; dans le corps, seulement quand la recette est vide
@@ -2404,7 +2420,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 aria-invalid={!!fieldError('wz-title')}
                 aria-describedby={fieldError('wz-title') ? 'wz-validation' : undefined}
               />
-              <div className="idn-pas" data-element="r4a-style" style={teinte ? ({ '--idn-teinte': teinte } as React.CSSProperties) : undefined}>
+              <div className={`idn-pas${styleRepere ? ' idn-avec-code' : ''}`} data-element="r4a-style" style={teinte ? ({ '--idn-teinte': teinte } as React.CSSProperties) : undefined}>
                 <i aria-hidden />
                 <div className="idn-combo">
                   <Combobox
@@ -2463,6 +2479,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 baseEspaceLibre={reco?.basis}
                 contenuEspace={<RecipeInstallationChoice recipe={recette} profile={brewhouse} onChange={next=>setDetails(d=>({...d,installation:next.installation}))}/>}
                 materielNom={cible?.name}
+                aAdopter={installationAAdopter}
                 capaciteL={equipement?.fermenterCapacityL}
                 profilL={configuredBrewhouse?.equipment?.fermenterCapacityL}
                 onCapacite={setCapaciteFermenteur}
@@ -2470,10 +2487,18 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 ouvertMateriel={materielOuvert}
                 onOuvertMateriel={setMaterielOuvert}
                 contenuMateriel={<>
-                  <p className="text-sm text-cave-200">{installationNeedsAdoption ? 'Installation à adopter' : 'Matériel du plan'} : {cible?.name}</p>
-                  {volumeL!==volumeAdapte&&<button type="button" className="equipment-button" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {volumeAdapte} L</button>}
-                  {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="equipment-button" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
-                  <BrewEquipmentSummary recipe={recette} profile={brewhouse}/>
+                  {/* r4-a à son dépli : « Fermenteur [N] L » et « ↺ profil ». Le nom du matériel est déjà le sous-titre de la tuile.
+                      Les deux adaptations tiennent sur une ligne de liens ; le résumé des volumes, avec ses alertes, est replié sur une ligne. */}
+                  {((volumeL!==volumeAdapte) || ((equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption)) && (
+                    <div className="idn-liens" data-role="adapter">
+                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {volumeAdapte} L</button>}
+                      {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
+                    </div>
+                  )}
+                  <VolumesReplies resume={resumeVol}>
+                    <BrewEquipmentSummary recipe={recette} profile={brewhouse}/>
+                    {alertesMat.length > 0 && <ul className="idn-alertes-mat" data-role="alertes-materiel">{alertesMat.map(a => <li key={a}>{a}</li>)}</ul>}
+                  </VolumesReplies>
                 </>}
               />
             )}

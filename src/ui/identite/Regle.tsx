@@ -16,7 +16,7 @@ export function Regle({ max, pas, etiquette, nom }: { max: number; pas: number; 
           backgroundSize: `calc(100% / ${Math.max(1, traits)}) 100%`
         }}
       />
-      <div className="idn-ech" data-role={`echelle-${nom}`} aria-hidden="true">
+      <div className="idn-ech" data-role={`echelle-${nom}`} data-max={max} aria-hidden="true">
         {chiffres.map((g) => (
           <span
             key={g.valeur}

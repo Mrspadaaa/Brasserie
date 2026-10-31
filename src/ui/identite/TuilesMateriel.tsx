@@ -17,8 +17,10 @@ export interface TuilesMaterielProps {
   baseEspaceLibre?: BaseEspaceLibre;
   /** Le choix pour ce brassin (réserve, rinçage) : le composant existant. */
   contenuEspace?: React.ReactNode;
-  /** Nom du matériel du plan ; undefined = aucun profil. */
+  /** Nom du matériel du plan, tel qu'il a été saisi ; undefined = aucun profil. */
   materielNom?: string;
+  /** Le matériel de la recette n'est pas figé : « Système 30L · à adopter » en sous-titre, plus une phrase au premier plan (n° 7). */
+  aAdopter?: boolean;
   capaciteL?: number;
   profilL?: number;
   onCapacite: (v: number) => void;
@@ -60,7 +62,7 @@ export function TuilesMateriel(p: TuilesMaterielProps) {
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="3" /><path d="M6 11h12M10 2h4" /></svg>
               Matériel
             </span>
-            <span>{p.materielNom}</span>
+            <span>{p.materielNom}{p.aAdopter && <em className="idn-adopter"> · à adopter</em>}</span>
             {CHEVRON}
           </button>
           <div id={idMateriel} className="idn-tuile-corps">

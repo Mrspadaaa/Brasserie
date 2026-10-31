@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  avantEbullitionDuPlan, barreCuve, conseilVolume, etatVolume, etendreEbullition, etendreVolume, evaporation, graduations, lireNombre, lireSaisie,
-  pasClavier, traitsRegle, zonesPiste
+  avantEbullitionDuPlan, barreCuve, conseilVolume, echelleBarre, partEvapDansCuve, etatVolume, etendreEbullition, etendreVolume, etiquetteEbullition, evaporation, graduations,
+  lireNombre, lireSaisie, pasClavier, traitsRegle, zonesPiste
 } from '../../../src/ui/identite/regles';
 
 describe('la règle d’ébullition s’étend d’une demi-heure au-delà de la valeur', () => {
@@ -23,13 +23,18 @@ describe('la règle d’ébullition s’étend d’une demi-heure au-delà de la
   });
 });
 
-describe('la règle du volume suit le fermenteur, la cuve, la valeur et le moût avant ébullition', () => {
+describe('la règle du volume = fermenteur + 5 L (verdict n° 10) ; la cuve et la valeur la tiennent ouverte', () => {
   it('cuve utile 36 L, fermenteur 30 L, 24 L : 0–40', () => {
     expect(etendreVolume({ cuveL: 36, capaciteL: 30, volumeL: 24 })).toBe(40);
   });
-  it('cuve 45 L, fermenteur 60 L : 0–65 ; avec 55 L et ~67 L avant ébullition : 0–70', () => {
+  it('cuve 45 L, fermenteur 60 L : 0–65, dernier chiffre « 60 »', () => {
     expect(etendreVolume({ cuveL: 45, capaciteL: 60, volumeL: 24 })).toBe(65);
-    expect(etendreVolume({ cuveL: 45, capaciteL: 60, volumeL: 55, avantEbullitionL: 67 })).toBe(70);
+    const g = graduations(65, 10);
+    expect(g.filter((x) => x.derniere).map((x) => x.valeur)).toEqual([60]);
+  });
+  it('le moût avant ébullition n\'étire plus la règle : 55 L, ~67 L avant ébullition, fermenteur 60 L : toujours 0–65', () => {
+    expect(etendreVolume({ cuveL: 45, capaciteL: 60, volumeL: 55 })).toBe(65);
+    expect(etendreVolume({ cuveL: 35, capaciteL: 60, volumeL: 55, avantEbullitionL: 71.2 })).toBe(65);
   });
   it('un volume tapé loin au-delà ouvre la règle (par 5 L)', () => {
     expect(etendreVolume({ cuveL: 45, capaciteL: 30, volumeL: 88 })).toBe(95);
@@ -37,6 +42,24 @@ describe('la règle du volume suit le fermenteur, la cuve, la valeur et le moût
   it('sans rien de connu : une règle de repos, jamais 0', () => {
     expect(etendreVolume({})).toBe(20);
     expect(etendreVolume({ volumeL: Number.NaN, capaciteL: undefined })).toBe(20);
+  });
+});
+
+describe('les chiffres de la règle d’ébullition : un tous les 30′, puis un tous les 60′ au-delà de 180 min (n° 10)', () => {
+  it('jusqu\'à 180 min de règle : tous les 30′', () => {
+    expect(etiquetteEbullition(120)).toBe(30);
+    expect(etiquetteEbullition(150)).toBe(30);
+    expect(etiquetteEbullition(180)).toBe(30);
+  });
+  it('au-delà : tous les 60′, le « › » sur le dernier chiffre', () => {
+    expect(etiquetteEbullition(210)).toBe(60);
+    expect(etiquetteEbullition(270)).toBe(60);
+    const g = graduations(270, etiquetteEbullition(270));
+    expect(g.map((x) => x.valeur)).toEqual([0, 60, 120, 180, 240]);
+    expect(g.filter((x) => x.derniere).map((x) => x.valeur)).toEqual([240]);
+  });
+  it('une règle inconnue garde le pas de repos', () => {
+    expect(etiquetteEbullition(Number.NaN)).toBe(30);
   });
 });
 
@@ -156,6 +179,35 @@ describe('le moût avant ébullition : une seule source, le plan d’eau de la r
   });
   it('une évaporation inconnue reste inconnue', () => {
     expect(avantEbullitionDuPlan(36.6, undefined)).toEqual({ litres: 36.6, evapL: null });
+  });
+});
+
+describe('la barre de la cuve se lit sur la règle, sans la déformer (n° 10)', () => {
+  it('une barre plus courte que la règle garde son échelle propre', () => {
+    expect(echelleBarre(45, 65)).toBe(45);
+  });
+  it('une barre plus longue que la règle est coupée au bout de la règle : l\'échelle est celle de la règle', () => {
+    // 71,2 L de moût contre une règle de 65 : le rouge court jusqu'au bout, le « +36,2 L de trop » dit le reste.
+    expect(echelleBarre(71.2, 65)).toBe(65);
+  });
+  it('règle inconnue : la barre garde son total', () => {
+    expect(echelleBarre(45, Number.NaN)).toBe(45);
+  });
+});
+
+describe('la part évaporée ne dépasse pas la cuve (second critique, R1 : pas de bout violet)', () => {
+  it('dans la cuve : la part évaporée suit le moût', () => {
+    expect(partEvapDansCuve(barreCuve(27, 3, 45)!, 45)).toEqual([24, 27]);
+  });
+  it('qui déborde en partie : elle est coupée à la cuve, le reste est du rouge', () => {
+    expect(partEvapDansCuve(barreCuve(40, 8, 36)!, 36)).toEqual([32, 36]);
+  });
+  it('si le moût seul dépasse déjà la cuve : aucune part bleue', () => {
+    expect(partEvapDansCuve(barreCuve(71.2, 12, 35)!, 35)).toBeNull();
+    expect(partEvapDansCuve(barreCuve(67, 12, 45)!, 45)).toBeNull();
+  });
+  it('sans évaporation connue : rien à peindre', () => {
+    expect(partEvapDansCuve(barreCuve(27, null, 45)!, 45)).toBeNull();
   });
 });
 

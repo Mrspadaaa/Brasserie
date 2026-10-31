@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChampNombre } from './ChampNombre';
 import { Regle, useRegleFigee } from './Regle';
-import { EBULLITION_PAS, EBULLITION_SAISIE_MAX, etendreEbullition, fr, pourcent, type Evaporation } from './regles';
+import { EBULLITION_PAS, EBULLITION_SAISIE_MAX, etendreEbullition, etiquetteEbullition, fr, pourcent, type Evaporation } from './regles';
 
 const ICONE_FLAMME = (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -74,7 +74,7 @@ export function CarteEbullition({ minutes, onMinutes, evaporation, invalide, dec
           onChange={(e) => onMinutes(Number(e.target.value))}
         />
       </div>
-      <div data-element="r4a-regle-ebullition"><Regle max={regle} pas={EBULLITION_PAS} etiquette={30} nom="ebullition" /></div>
+      <div data-element="r4a-regle-ebullition"><Regle max={regle} pas={EBULLITION_PAS} etiquette={etiquetteEbullition(regle)} nom="ebullition" /></div>
       {evaporation && evaporation.source !== 'profil' && (
         <p className="idn-note" data-role="evap-source">
           {evaporation.source === 'taux' ? 'évaporation du taux %/h de la brasserie, estimée' : 'repli 10 %/h, estimé'}

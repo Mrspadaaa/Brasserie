@@ -53,7 +53,9 @@ describe('ChampNombre : jamais type="number", inputmode, clavier', () => {
     await user.click(boilField());
     await user.keyboard('240{Enter}');
     expect(boilField().value).toBe('240');
-    expect(derniereGraduation('ebullition')).toBe('270');
+    // La règle va jusqu'à 270 ; au-delà de 180 min, un chiffre tous les 60′ : le dernier est « 240 » (verdict n° 10).
+    expect(document.querySelector('[data-role="echelle-ebullition"]')!.getAttribute('data-max')).toBe('270');
+    expect(derniereGraduation('ebullition')).toBe('240');
     expect(screen.getByText('~12 L')).toBeTruthy();
     expect((screen.getByRole('slider', { name: 'Durée d’ébullition, curseur' }) as HTMLInputElement).max).toBe('270');
   });

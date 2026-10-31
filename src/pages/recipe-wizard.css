@@ -109,6 +109,11 @@
   min-height: 36px;
   padding-block: 2px;
 }
+/* « Abandonner » sur la ligne du titre (verdict n° 11). La barre de titre de la coquille est une grille à trois colonnes
+   (Fermer, titre, thème) ; avec « Abandonner » elle avait un quatrième enfant, qui tombait sur une rangée à part et faisait
+   descendre toute la page d'une cinquantaine de pixels dès que la recette était modifiée. En flex, le quatrième tient à droite. */
+.page-shell.recipe-wizard [data-page-titlebar] { display: flex; }
+.page-shell.recipe-wizard [data-page-titlebar] > .min-w-0 { flex: 1 1 0%; }
 .recipe-wizard [data-page-titlebar] > .min-w-0 {
   display: flex;
   align-items: baseline;

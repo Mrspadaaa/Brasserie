@@ -2,8 +2,6 @@ import React, { useId, useState } from 'react';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import type { ListedStyle } from '../../domain/brewingStyles';
 import { mashProgramForStyle, fermentProgramForStyle } from '../../domain/brewPrograms';
-import { HopSourceLink } from '../hopIndex/HopTechnicalPanel';
-import { Button } from '../../components/ui/Button';
 import { plageEbc, positionDansPlage, texteSuisse, type PositionPlage } from './plages';
 
 export interface ValeursRecette { og?: number | null; ibu?: number | null; fg?: number | null; abv?: number | null; ebc?: number | null }
@@ -57,17 +55,27 @@ export function PlagesStyle({ recipe, style, styles, onChange, valeurs }: {
           {s.fg && <Pastille nom="FG" texte={texteSuisse(s.fg, 3)} position={positionDansPlage(valeurs.fg, s.fg)} />}
           {s.abv && <Pastille nom="Alcool" texte={`${texteSuisse(s.abv)} %`} position={positionDansPlage(valeurs.abv, s.abv)} />}
           {ebc && <Pastille nom="EBC" texte={texteSuisse(ebc)} position={positionDansPlage(valeurs.ebc, ebc)} />}
-          <span className="idn-src">{style.code} · {style.edition}</span>
         </div>
-        <HopSourceLink source={style.source} />
+        {/* Une seule ligne de source : « 16D · BJCP 2021 · Lire la source » (n° 2). L'auteur et l'année sont déjà dans l'édition. */}
+        <p className="idn-src">
+          {style.code} · {style.edition}
+          {/^https?:\/\//i.test(style.source?.reference ?? '') && <> · <a href={style.source.reference} target="_blank" rel="noreferrer">Lire la source</a></>}
+        </p>
         {recipe.nolo?.enabled && <p className="text-xs text-cave-400">Ces plages décrivent le style de référence. Ton objectif d’alcool reste celui du mode NOLO.</p>}
-        {onChange && !recipe.nolo?.enabled && (
-          <div className="flex flex-col gap-2">
-            {mash && <Button onClick={() => onChange({ ...recipe, mash: { ...recipe.mash, steps: structuredClone(mash.steps) } })}>Proposer l’empâtage « {mash.name} »</Button>}
-            {conduite && <Button onClick={() => onChange({ ...recipe, fermentation: structuredClone(conduite.steps), yeastGuide: undefined })}>Proposer la conduite « {conduite.name} »</Button>}
-            <p className="text-xs text-cave-400">{sug?.fermentation ? 'Points de départ de L’Affinée : les adapter à la souche choisie.' : 'Ce style appelle une conduite spécifique à définir avec la souche et le procédé.'}</p>
+        {onChange && !recipe.nolo?.enabled && (mash || conduite) && (
+          // Deux liens discrets sur une ligne : la phrase « points de départ… » est l'info-bulle, pas une ligne de plus (n° 2).
+          <div className="idn-liens" title="Points de départ de L’Affinée : les adapter à la souche choisie.">
+            {mash && (
+              <button type="button" className="idn-lien-ligne" aria-label={`Proposer l’empâtage « ${mash.name} »`}
+                onClick={() => onChange({ ...recipe, mash: { ...recipe.mash, steps: structuredClone(mash.steps) } })}>Empâtage « {mash.name} »</button>
+            )}
+            {conduite && (
+              <button type="button" className="idn-lien-ligne" aria-label={`Proposer la conduite « ${conduite.name} »`}
+                onClick={() => onChange({ ...recipe, fermentation: structuredClone(conduite.steps), yeastGuide: undefined })}>Conduite « {conduite.name} »</button>
+            )}
           </div>
         )}
+        {onChange && !recipe.nolo?.enabled && !sug?.fermentation && <p className="text-xs text-cave-400">Ce style appelle une conduite spécifique à définir avec la souche et le procédé.</p>}
       </div>
     </>
   );

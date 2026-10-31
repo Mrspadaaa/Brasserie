@@ -7,12 +7,12 @@ Scope: l'étape Identité de l'app reprend r4-a telle quelle, avec ses adaptatio
 - [x] G1: l'app se construit
   CHECK: npm run build
   EXPECT: built in
-  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=0d45a14fe3babf4f73227f48f6d3952c0f8d73c3cea312a2f15ed0b13e57e3da; output-bytes=47234; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=aa286b038f06c3149c37d2edc7417beabc62eb5b1ba02455ee9f822d02c5b617; output-bytes=47234; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G2: les tests de l'étape Identité passent
   CHECK: npx vitest run tests/unit/identite --maxWorkers=2 && echo TESTS IDENTITE OK
   EXPECT: TESTS IDENTITE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=fc99be0d6e73595b63f5315b93ef31e23a4d1c60e2ae415cea9490edf30f9ac5; exit=0; EXPECT=matched; output-sha256=33ac2d3e7df0790eab7a9edb67130762ce331be2b5bb4d5c12f6b090c08b38ba; output-bytes=1141; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=fc99be0d6e73595b63f5315b93ef31e23a4d1c60e2ae415cea9490edf30f9ac5; exit=0; EXPECT=matched; output-sha256=02340ef8bff8ad8c007192dddb35dbfd4fd57d35b62fcc31ad0305eb4992414a; output-bytes=1370; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: le registre des choix de l'app est valide
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs --registre --registre=work/refonte-frontend/v4/choix/ecrans-app.json

@@ -21,10 +21,11 @@
   color: color-mix(in srgb, rgb(var(--idn-teinte, var(--cave-600))) 30%, rgb(var(--cave-texte-50)));
 }
 .idn-pas > i { flex-shrink: 0; width: 20px; height: 20px; margin-left: 4px; border-radius: 50%; background: rgb(var(--idn-teinte, var(--cave-600))); }
-.idn-pas > small { flex-shrink: 0; margin-right: 6px; font-size: 12px; }
+/* Le code du style avant le chevron (n° 8) : « Foreign Extra Stout 16D ⌄ ». Il se pose à gauche des 26 px du chevron, sur le champ. */
+.idn-pas > small { position: absolute; right: 28px; top: 0; bottom: 0; display: flex; align-items: center; z-index: 1; pointer-events: none; font-size: 12px; }
 .idn-pas .idn-combo { flex: 1; min-width: 0; }
 .recipe-wizard .idn-pas :is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
-  height: 28px; min-height: 28px; padding: 0 30px 0 6px; border: 0; border-radius: 0; background: transparent; box-shadow: none; line-height: 28px; text-overflow: ellipsis;
+  height: 28px; min-height: 28px; padding: 0 var(--idn-pad-droit, 30px) 0 6px; border: 0; border-radius: 0; background: transparent; box-shadow: none; line-height: 28px; text-overflow: ellipsis;
   font-size: 14px; font-weight: 600; color: inherit;
 }
 .recipe-wizard .idn-pas :is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox'])::placeholder { color: inherit; opacity: 0.7; font-weight: 400; }
@@ -47,7 +48,15 @@
 .idn-reps { display: flex; flex-direction: column; gap: 8px; margin-top: -4px; }
 .idn-reps[hidden] { display: none; }
 .idn-reps-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.idn-src { font-size: 12px; color: rgb(var(--water-texte)); }
+.idn-src { margin: 0; font-size: 12px; color: rgb(var(--cave-texte-400)); }
+/* « Lire la source » : cible de 24 px au moins (WCAG 2.2, 2.5.8) ; la ligne garde sa hauteur de texte. */
+.idn-src a { display: inline-flex; align-items: center; min-height: 24px; margin-block: -4px; color: rgb(var(--water-texte)); text-decoration: underline; }
+/* Deux propositions du style en liens discrets sur une ligne (n° 2) ; les adaptations de Matériel de même (n° 3). */
+.idn-liens { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.recipe-wizard .idn-lien-ligne {
+  display: inline-flex; align-items: center; min-height: 28px; padding: 0 2px; border: 0; background: none;
+  font-size: 13px; text-decoration: underline; text-underline-offset: 2px; color: rgb(var(--water-texte)); text-align: left;
+}
 
 /* Cartes à curseur */
 .idn-inst { background: rgb(var(--cave-900)); border-radius: 16px; padding: 8px 12px 10px; }
@@ -69,7 +78,8 @@
   min-width: 2.2ch; border-bottom: 1.5px dotted rgb(var(--cave-600)); font-size: 48px; font-weight: 600; line-height: 50px;
 }
 .recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:hover { border-bottom-color: rgb(var(--cave-400)); }
-.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); background: rgb(var(--cave-950)); }
+/* Retouche B de r4-a (verdict n° 5) : au focus, ni boîte ni fond blanc ; le nombre reste sur la tuile, avec un trait plein de 2 px dessous et le caret seul. */
+.recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand:focus { outline: none; box-shadow: none; border-bottom: 2px solid rgb(var(--cave-50)); background: transparent; }
 .recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox']).idn-grand::placeholder { color: rgb(var(--cave-600)); }
 .recipe-wizard input.idn-champ:not([type='range']):not([type='radio']):not([type='checkbox'])[aria-invalid='true'] { border-bottom-color: rgb(var(--alert)); }
 .idn-u { font-family: theme('fontFamily.mono'); font-size: 14px; font-weight: 500; color: rgb(var(--cave-texte-400)); margin-left: 2px; }
@@ -180,7 +190,18 @@
 /* Le chevron du Combobox du style : 26 px à droite dans la pastille, il ne recouvre plus le texte (padding droit du champ). */
 .recipe-wizard .idn-pas button[aria-label$='la liste'] { position: absolute; right: 0; top: 0; bottom: 0; width: 26px; min-height: 0; padding: 0; color: inherit; }
 .idn-pas button[aria-label$='la liste'] svg { width: 16px; height: 16px; }
-.idn-pas > small { position: relative; z-index: 1; }
+.idn-pas.idn-avec-code { --idn-pad-droit: 62px; }
+.idn-adopter { font-style: normal; font-size: 12px; color: rgb(var(--attention-texte)); }
+/* « Volumes · 34,7 / 35 L avant ébullition ⌄ » : le résumé replié de la tuile Matériel (n° 3). */
+.idn-vol { display: flex; flex-direction: column; gap: 6px; }
+.recipe-wizard .idn-volpli {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; min-height: 28px; padding: 0 2px;
+  border: 0; background: none; font-size: 13px; color: rgb(var(--cave-texte-200)); text-align: left;
+}
+.idn-volpli[aria-expanded='true'] svg { transform: rotate(180deg); }
+.idn-volcorps { display: flex; flex-direction: column; gap: 6px; }
+.idn-volcorps[hidden] { display: none; }
+.idn-alertes-mat { margin: 0; padding-left: 16px; font-size: 12px; color: rgb(var(--attention-texte)); }
 /* Le lien « Ouvrir Matériel » de la ligne d'alerte d'installation (rien ne s'ouvre seul). */
 .recipe-wizard .idn-lien { display: inline; min-height: 0; padding: 0; font-size: 12px; text-decoration: underline; color: rgb(var(--water-texte)); }
 /* Le choix pour ce brassin (composant existant) dans la tuile : aucun texte sous 12 px. */

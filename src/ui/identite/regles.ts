@@ -30,17 +30,31 @@ export function etendreEbullition(minutes: number | undefined): number {
 }
 
 /**
- * Jusqu'où va la règle commune du volume et de la cuve : le plus grand de la cuve, du fermenteur + 5 L, du volume + 3 L
- * et du moût avant ébullition + 3 L, arrondi au multiple de 5 L au-dessus. Aucune de ces entrées n'est requise.
+ * Jusqu'où va la règle commune du volume et de la cuve : le plus grand de la cuve, du fermenteur + 5 L et du volume + 3 L,
+ * arrondi au multiple de 5 L au-dessus (0–65 pour un fermenteur de 60 L, dernier chiffre « 60 › » : verdict n° 10, r4-a).
+ * Le moût d'avant ébullition n'étire plus la règle : la barre de la cuve s'arrête au bout de la règle (`echelleBarre`) et
+ * son « +N L de trop » dit le reste. Aucune de ces entrées n'est requise.
  */
-export function etendreVolume(e: { cuveL?: number; capaciteL?: number; volumeL?: number; avantEbullitionL?: number | null }): number {
+export function etendreVolume(e: { cuveL?: number; capaciteL?: number; volumeL?: number }): number {
   const vals: number[] = [];
   if (fini(e.cuveL) && e.cuveL > 0) vals.push(e.cuveL);
   if (fini(e.capaciteL) && e.capaciteL > 0) vals.push(e.capaciteL + VOLUME_ETAPE_REGLE);
   if (fini(e.volumeL) && e.volumeL > 0) vals.push(e.volumeL + VOLUME_MARGE_REGLE);
-  if (fini(e.avantEbullitionL) && e.avantEbullitionL > 0) vals.push(e.avantEbullitionL + VOLUME_MARGE_REGLE);
   const plus = vals.length ? Math.max(...vals) : 20;
   return Math.ceil(plus / VOLUME_ETAPE_REGLE) * VOLUME_ETAPE_REGLE;
+}
+
+/** Les chiffres de la règle d'ébullition : un tous les 30′, puis un tous les 60′ dès que la règle passe 180 min (verdict n° 10). */
+export function etiquetteEbullition(regle: number): number {
+  return fini(regle) && regle > 180 ? 60 : EBULLITION_ETAPE_REGLE;
+}
+
+/**
+ * L'échelle de la barre de la cuve, en litres : son total tant qu'il tient dans la règle, sinon la règle elle-même. La barre
+ * ne dépasse pas le bout de la règle ; ses zones se lisent alors sur la même échelle que la règle, jamais comprimées.
+ */
+export function echelleBarre(totalL: number, regle: number): number {
+  return fini(regle) && regle > 0 && totalL > regle ? regle : totalL;
 }
 
 export interface Graduation { valeur: number; /** 0 à 100 */ position: number; /** le dernier chiffre porte « › » */ derniere: boolean }
@@ -180,6 +194,16 @@ export function barreCuve(avantL: number | null | undefined, evapL: number | nul
   const evap = fini(evapL) ? Math.min(Math.max(0, evapL), avantL) : 0;
   const depasse = r1(Math.max(0, avantL - cuveL));
   return { total: Math.max(cuveL, avantL), moutL: r1(avantL - evap), evapL: evap, depasseL: depasse, deborde: depasse > 0 };
+}
+
+/**
+ * La part évaporée (bleue) de la barre de la cuve, coupée à la cuve : au-delà, seules les hachures rouges du dépassement se voient
+ * (sinon bleu et rouge se mêlent en un bout violet). null = rien à peindre (évaporation inconnue, ou moût déjà plus grand que la cuve).
+ */
+export function partEvapDansCuve(b: BarreCuve, cuveL: number): [number, number] | null {
+  const debut = b.moutL;
+  const fin = Math.min(b.moutL + b.evapL, cuveL);
+  return fin > debut ? [debut, fin] : null;
 }
 
 /** « 24 », « 24,5 » : une décimale au plus, virgule suisse. */
