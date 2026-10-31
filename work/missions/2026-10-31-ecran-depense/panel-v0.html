@@ -1,0 +1,157 @@
+<title>Nouvelle dépense · panel v0 · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Le panel v0 de l'écran « Nouvelle dépense » (12 concepts, classés par le critique ; une proposition, rien n'est écarté).
+   Une rangée par ordre du classement ; la référence en tête ; chaque capture s'ouvre en grand au toucher. Polices système seules. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --froide: #2d5f8a;
+  --tiede: #8a6a10;
+  --chaude: #a3401c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --froide: #8ab8e0; --tiede: #e3c26a; --chaude: #f0937a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --froide: #8ab8e0; --tiede: #e3c26a; --chaude: #f0937a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 26px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.2rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.legende { font-size: 0.875rem; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+section { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; align-items: start; }
+.vue { margin: 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.reference .ecran { max-width: 360px; border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 3px; }
+figcaption b { font-weight: 800; }
+.vue > p { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 3px; }
+.idee { color: var(--discret); }
+.candidates { display: grid; gap: 18px; }
+.candidates article { display: grid; gap: 6px; }
+.candidates ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; font-size: 0.95rem; line-height: 1.4; }
+@media (min-width: 700px) { .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 960px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de dépense · 31.10</p>
+    <h1>Nouvelle dépense · panel v0 (12 concepts)</h1>
+    <div id="a-choisir">
+      <p>Les 12 concepts de l'écran Nouvelle dépense, sur ta facture 372765 (23 lignes, total 86,50).</p>
+      <p>Chaque capture est le premier écran à 390 px. Touche-la pour la voir en grand.</p>
+      <p>Le classement est celui du critique, une proposition ; rien n'est écarté. Tu vois les 12.</p>
+    </div>
+    <div class="reference">
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="inventaire/captures/depense-lu-390.png" data-titre="Référence · l'écran actuel à 390 px"><img src="inventaire/captures/depense-lu-390.png" alt="L'écran Nouvelle dépense aujourd'hui, à 390 px"></button>
+        <figcaption><b>La référence</b><span class="idee">L'écran actuel, à 390 px.</span></figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <section aria-labelledby="t-v0" data-voies="e-r,e-z,e-u">
+    <h2 id="t-v0">Les 12 concepts, dans l'ordre du classement</h2>
+    <div class="planche">
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r2/r2-repos.png" data-titre="rang 1 · r2 · ticket"><img src="v0/r2/r2-repos.png" alt="Capture r2"></button><figcaption><span><b>rang 1 · r2</b> · série r</span><span>Nom d'approche : ticket</span></figcaption><p class="idee">sa langue (Malts s1) : les 23 lignes dans l'ordre du papier avec leur montant, le doute sur la ligne même, la mouture pendue à son malt, le plateau « 6 Kg × 2,30 = 13,80 ✓ ».</p><p class="idee">Il dirait : « ça c'est ma facture, très bien, mais les 3 du bas je les vois pas ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u4/u4-haut.png" data-titre="rang 2 · u4 · pont"><img src="v0/u4/u4-haut.png" alt="Capture u4"></button><figcaption><span><b>rang 2 · u4</b> · série u</span><span>Nom d'approche : pont</span></figcaption><p class="idee">répond mot pour mot à « attention au mapping » : Target α 11,8 existant et Target bis α 11,3 côte à côte, « ? » sur Sabro, 0,70 de remplissage, superbe à 1280.</p><p class="idee">« Ça c'est ce que je voulais pour le stock » ; mais « où sont les prix ? ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z4/z4-haut.png" data-titre="rang 3 · z4 · pont compact"><img src="v0/z4/z4-haut.png" alt="Capture z4"></button><figcaption><span><b>rang 3 · z4</b> · série z</span><span>Nom d'approche : pont compact</span></figcaption><p class="idee">la même question, par rangées alignées : « +6 kg / nouveau · Malt / Target bis · lot 11,8 », TVA en première ligne.</p><p class="idee">Plus d'information par rangée que u4, moins de spectacle. À fondre dans u4.</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z2/z2-haut.png" data-titre="rang 4 · z2 · papier annoté"><img src="v0/z2/z2-haut.png" alt="Capture z2"></button><figcaption><span><b>rang 4 · z2</b> · série z</span><span>Nom d'approche : papier annoté</span></figcaption><p class="idee">« là je vois ce qu'elle a lu » : le bloc MWST imprimé tel quel, cerclé, le tampon 86,50 · 23 lignes ✓.</p><p class="idee">Mais les lignes sont repliées et le bas est vide : « pas mal, mais ouvre-moi les lignes ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u3/u3-haut.png" data-titre="rang 5 · u3 · ruban"><img src="v0/u3/u3-haut.png" alt="Capture u3"></button><figcaption><span><b>rang 5 · u3</b> · série u</span><span>Nom d'approche : ruban</span></figcaption><p class="idee">une idée neuve : la TVA incohérente est un dessin (+23,90 qui déborde) ; levures 34 % de l'achat. Épingles « 3 5 4 6 » muettes, parts trop fines : « original, mais je vois pas mes lignes ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r3/r3-repos.png" data-titre="rang 6 · r3 · nuit et cartes"><img src="v0/r3/r3-repos.png" alt="Capture r3"></button><figcaption><span><b>rang 6 · r3</b> · série r</span><span>Nom d'approche : nuit et cartes</span></figcaption><p class="idee">le plus frappant ; une carte à la fois sous le pouce, « Recoupé » en trois rangées.</p><p class="idee">Ordre par famille, pied gris, les autres points cachés : « visuellement très bien mais trop fermé ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r1/r1-repos.png" data-titre="rang 7 · r1 · feuille"><img src="v0/r1/r1-repos.png" alt="Capture r1"></button><figcaption><span><b>rang 7 · r1</b> · série r</span><span>Nom d'approche : feuille</span></figcaption><p class="idee">6 doutes actionnables : la meilleure des froides ; chaque doute porte son bouton (Target bis, Créer CH, g kg Stk). « C'est la mienne en mieux » ; copie, donc pas d'enthousiasme.</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r4/r4-repos.png" data-titre="rang 8 · r4 · étagère"><img src="v0/r4/r4-repos.png" alt="Capture r4"></button><figcaption><span><b>rang 8 · r4</b> · série r</span><span>Nom d'approche : étagère</span></figcaption><p class="idee">le stock d'un coup (relié, nouveau, bis, mouture) ; mais l'argent est caché dans les tuiles et les noms sont coupés : « pour le stock oui, pour la facture non ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u1/u1-haut.png" data-titre="rang 9 · u1 · feuille, compteur"><img src="v0/u1/u1-haut.png" alt="Capture u1"></button><figcaption><span><b>rang 9 · u1</b> · série u</span><span>Nom d'approche : feuille, compteur</span></figcaption><p class="idee">propre, la preuve ouverte (page 2 coupée) est la meilleure du lot ; la TVA finit en phrase en bas : « pas trop mal ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z1/z1-haut.png" data-titre="rang 10 · z1 · feuille, chips"><img src="v0/z1/z1-haut.png" alt="Capture z1"></button><figcaption><span><b>rang 10 · z1</b> · série z</span><span>Nom d'approche : feuille, chips</span></figcaption><p class="idee">honnête et dense en champs, 3 chips qui sautent ; « c'est la même chose en mieux rangé ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u2/u2-haut.png" data-titre="rang 11 · u2 · fil par risque"><img src="v0/u2/u2-haut.png" alt="Capture u2"></button><figcaption><span><b>rang 11 · u2</b> · série u</span><span>Nom d'approche : fil par risque</span></figcaption><p class="idee">on sait quoi faire et dans quel ordre, le tableau des moutures est excellent.</p><p class="idee">Mais le doute a quitté la ligne et les 23 lignes sont à deux touchers : « je ne vois plus mes lignes ».</p></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z3/z3-haut.png" data-titre="rang 12 · z3 · pile et frise"><img src="v0/z3/z3-haut.png" alt="Capture z3"></button><figcaption><span><b>rang 12 · z3</b> · série z</span><span>Nom d'approche : pile et frise</span></figcaption><p class="idee">un geste gros sous le pouce, mais une seule carte visible, 23 tuiles sans un mot, moitié d'écran vide : « on voit pas tout ».</p></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-c">
+    <h2 id="t-c">Candidates de la passe 2</h2>
+    <p class="legende">Une par série, la meilleure de son approche. z4 n'est pas candidate : elle entre dans u4 par greffe.</p>
+    <div class="candidates">
+      <article>
+        <h2 id="t-c-r2" style="font-size:1rem">r2 · le ticket</h2>
+        <ol>
+          <li>Les 4 doutes de stock remontent au premier écran, en chips numérotées sous les tuiles Payé / TVA, barrées une fois réglées.</li>
+          <li>Sabro et Hallertauer reçoivent le même geste inline que Target, et la mouture gagne « Rattacher les 5 » en plus du un par un.</li>
+          <li>« ✓ 23 lignes » ouvre la preuve (somme = total, 23/23, 2 lectures), et à 1280 la colonne gauche porte les chips, la preuve et la référence.</li>
+        </ol>
+      </article>
+      <article>
+        <h2 id="t-c-z2" style="font-size:1rem">z2 · la facture annotée au stylo</h2>
+        <ol>
+          <li>Les 23 lignes sont imprimées sur le papier (Menge / Bezeichnung / Betrag), avec le lien et la mouture à l'encre dans la marge.</li>
+          <li>Six pastilles au stylo, une par point de stock, chacune renvoie vers sa ligne sur le papier.</li>
+          <li>L'en-tête du papier s'édite sur place (fournisseur, date), et le tiroir « détails » remonte ses chips sous le tampon.</li>
+        </ol>
+      </article>
+      <article>
+        <h2 id="t-c-u4" style="font-size:1rem">u4 · le pont (fusion avec z4)</h2>
+        <ol>
+          <li>La facture à gauche (quantité, unité, nom, montant) et l'effet au stock à droite, en rangées alignées ; les câbles ne restent que pour les lignes qui changent de rangée.</li>
+          <li>Le bandeau noir redevient l'en-tête de la feuille, avec « 86,50 » et « ✓ 23 lignes recoupées » qui ouvre la preuve.</li>
+          <li>Honnêteté finie : « 0,040 » tel qu'imprimé, « Pour quoi ? » marqué « proposé », et dans l'inspecteur la ligne de r2.</li>
+        </ol>
+      </article>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

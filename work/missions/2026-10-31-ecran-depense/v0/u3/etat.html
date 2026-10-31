@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u3 — Nouvelle dépense · le ruban des 86,50, la facture à l'échelle (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--sto:#4C6B2A;--stof:#EEF4E6;--fin:#1F64A3;--finf:#E8F0F9;--att:#7F5B10;--atta:#9C7020;--attf:#FBF3E1;--alerte:#A8291F;--alertef:#FBE9E7;
+--malt:#E0A02E;--mout:#D9C59A;--houb:#5E8F45;--lev:#6A4FB0;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+::selection{background:#F2C14E66}
+:focus-visible{outline:2px solid var(--fin);outline-offset:1px}
+[hidden]{display:none!important}
+.u3-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.u3-ic{display:inline-flex;width:16px;height:16px;flex-shrink:0}
+.u3-wrap{max-width:960px;margin:0 auto;padding-bottom:64px;min-height:844px}
+.u3-hd{display:flex;align-items:center;height:36px;padding:0 6px 0 10px}
+.u3-hd h1{font-size:14px;font-weight:700;color:var(--t0)}
+.u3-x{margin-left:auto;width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.u3-top{display:flex;align-items:flex-end;gap:10px;padding:2px 10px 0}
+.u3-tot{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--t0);line-height:1;border-bottom:1.5px dotted var(--trait)}
+.u3-tot small{font-size:12px;color:var(--t2);font-weight:500}
+.u3-who{margin-left:auto;text-align:right;font-size:12px;color:var(--t1);display:grid;gap:0}
+.u3-who b{font-weight:600}
+.u3-doc{width:28px;height:36px;border-radius:10px;border:1px solid var(--bordm);overflow:hidden;background:#fff;flex-shrink:0;padding:0}
+.u3-doc img{display:block;width:100%;height:100%}
+/* le ruban */
+.u3-rb{position:relative;margin:8px 10px 0;height:166px}
+.u3-pins{position:absolute;left:0;right:0;top:0;height:30px}
+.u3-pin{position:absolute;top:0;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--attf);border:1.5px dashed var(--atta);color:var(--att);font-family:var(--mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;z-index:2}
+.u3-pin.u3-sel{background:var(--t0);border:1.5px solid var(--t0);color:#fff}
+.u3-pin.u3-ok{background:var(--stof);border:1.5px solid var(--sto);color:var(--sto)}
+.u3-lead{position:absolute;top:24px;width:1px;background:var(--atta);height:8px}
+.u3-band{position:absolute;left:0;top:32px;height:64px;display:flex;border-radius:10px;overflow:hidden;background:var(--panel)}
+.u3-seg{height:100%;display:flex;border-right:2px solid #fff}
+.u3-seg:last-child{border-right:0}
+.u3-seg>i{display:block;height:100%;border-right:1px solid rgba(255,255,255,.55)}
+.u3-seg>i:last-child{border-right:0}
+.u3-seg[data-f="mout"]>i{background:repeating-linear-gradient(135deg,var(--mout) 0 3px,#fff 3px 5px)}
+.u3-seg.u3-on{outline:2px solid var(--t0);outline-offset:-2px;border-radius:10px}
+.u3-flab{position:absolute;top:44px;font-size:12px;font-weight:600;color:#fff;white-space:nowrap;pointer-events:none;padding-left:6px}
+.u3-frame{position:absolute;top:28px;height:72px;border:1.5px solid var(--t0);border-radius:10px;left:-3px;pointer-events:none}
+.u3-end{position:absolute;top:102px;font-size:12px;color:var(--t1);white-space:nowrap;text-align:right;transform:translateX(-100%)}
+.u3-end b{font-family:var(--mono);color:var(--t0)}
+.u3-zero{position:absolute;left:0;top:102px;font-size:12px;color:var(--t2)}
+.u3-tva{position:absolute;left:0;right:0;top:122px;height:20px;border-radius:999px;overflow:hidden;background:var(--panel)}
+.u3-tva b{position:absolute;top:0;bottom:0;background:#B9C7D6}
+.u3-tva s{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,#C8382F 0 3px,#F6D3CF 3px 6px)}
+.u3-tvl{position:absolute;top:120px;left:0;right:0;font-size:12px;color:var(--t1);display:flex;justify-content:space-between}
+.u3-tvl .u3-ko{color:var(--alerte);font-weight:600}
+.u3-tick{position:absolute;top:28px;bottom:22px;width:0;border-left:1.5px dashed var(--t0);pointer-events:none}
+/* le panneau du point choisi */
+.u3-panel{margin:6px 10px 0;border-radius:16px;background:#F6E6BF;padding:8px 10px;display:grid;gap:6px}
+.u3-panel.u3-calme{background:var(--panel)}
+.u3-ph{display:flex;align-items:center;gap:6px}
+.u3-ph .u3-n{width:20px;height:20px;border-radius:50%;background:var(--t0);color:#fff;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.u3-ph b{font-size:14px;color:var(--t0)}
+.u3-ph .u3-nx{margin-left:auto;font-size:12px;color:var(--t2);min-height:24px;display:flex;align-items:center;gap:2px}
+.u3-calc{font-size:12px;color:var(--t1)}
+.u3-calc .u3-ko{color:var(--alerte);font-weight:600}
+.u3-ch{display:flex;flex-wrap:wrap;gap:6px}
+.u3-c{min-height:32px;padding:2px 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t0)}
+.u3-c.u3-k{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.u3-c small{font-size:12px;color:var(--t2)}
+.u3-c.u3-k small{color:#ddd}
+.u3-in{font-family:var(--mono);font-size:16px;height:28px;width:7em;border:1px solid var(--bordm);border-radius:10px;padding:0 6px;background:#fff}
+/* familles */
+.u3-fams{margin:8px 10px 0;border-radius:16px;border:1px solid var(--bord);overflow:hidden}
+.u3-fam{display:grid;grid-template-columns:12px minmax(0,1fr) auto 58px 16px;gap:8px;align-items:center;min-height:32px;padding:2px 10px;width:100%;text-align:left;border-top:1px solid var(--bord);background:#fff}
+.u3-fam:first-child{border-top:0}
+.u3-fam i{width:12px;height:12px;border-radius:50%}
+.u3-fam .u3-st{display:flex;gap:6px;font-size:12px}
+.u3-fam .u3-st span{display:inline-flex;align-items:center;gap:1px}
+.u3-fam .u3-sum{font-family:var(--mono);text-align:right;color:var(--t0)}
+.u3-ln{display:grid;grid-template-columns:22px minmax(0,1fr) auto 50px 16px;gap:6px;align-items:center;min-height:28px;padding:2px 10px 2px 30px;border-top:1px dashed var(--bord);background:#FCFCFC;font-size:12px;width:100%;text-align:left}
+.u3-ln .u3-nm{font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u3-ln .u3-r{text-align:right;font-family:var(--mono);color:var(--t0);font-size:14px}
+.u3-ln .u3-q{font-family:var(--mono);color:var(--t2)}
+.u3-ed{border-bottom:1.5px dotted var(--trait)}
+.u3-s-relie{color:var(--sto)}.u3-s-nouveau{color:var(--fin)}.u3-s-bis{color:var(--lev)}.u3-s-mout,.u3-s-unite{color:var(--att)}
+.u3-lnx{padding:6px 10px 8px 30px;background:#FCFCFC;font-size:12px;color:var(--t1);display:grid;gap:4px;border-top:1px dashed var(--bord)}
+.u3-lnx select,.u3-lnx input{height:28px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 6px;font-size:16px}
+/* fiche */
+.u3-fi{margin:8px 10px 0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.u3-cell{border-radius:10px;background:#E8E8E8;padding:4px 8px;min-height:40px;display:grid;align-content:center;text-align:left;width:100%}
+.u3-cell span{font-size:12px;color:var(--t2)}
+.u3-cell b{font-size:14px;font-weight:400;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u3-cell.u3-full{grid-column:1/-1}
+.u3-sup{display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:999px;border:1.5px dashed var(--atta);color:var(--att);font-weight:600;font-size:12px;background:var(--attf)}
+.u3-sup.u3-ok{border:1.5px solid var(--sto);color:var(--sto);background:var(--stof)}
+.u3-seg2{display:flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;width:max-content}
+.u3-seg2 button{min-height:28px;padding:0 10px}
+.u3-seg2 [aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+/* pied */
+.u3-pied{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--bord)}
+.u3-pin2{max-width:960px;margin:0 auto;height:48px;display:flex;align-items:center;gap:8px;padding:0 10px;position:relative}
+.u3-drv{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sto)}
+.u3-conf{margin-left:auto;min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:flex;align-items:center;gap:6px}
+.u3-prog{position:absolute;left:0;top:-3px;height:3px;width:0;background:var(--fin);transition:width .8s ease-out}
+.u3-recu{margin:8px 10px;padding:8px 10px;border-radius:16px;border:1.5px solid var(--sto);background:var(--stof);display:grid;gap:4px}
+.u3-recu b{color:var(--sto)}.u3-recu a{color:var(--fin);font-weight:600}
+/* annexe */
+.u3-ax{max-width:960px;margin:24px auto 0;padding:10px 10px 80px;border-top:6px solid var(--panel)}
+.u3-ax h2{font-size:14px;color:var(--t0);margin-bottom:8px}
+.u3-sx{border:1px solid var(--bord);border-radius:16px;padding:8px 10px;margin-bottom:8px;display:grid;gap:6px}
+.u3-sx>p{font-size:12px;color:var(--t2)}.u3-sx>p b{color:var(--t0)}
+.u3-mb{position:relative;height:28px;border-radius:10px;overflow:hidden;background:var(--panel);display:flex}
+.u3-mb i{display:block;height:100%}
+.u3-mbl{display:flex;justify-content:space-between;font-size:12px;color:var(--t1)}
+@media (min-width:900px){
+  .u3-low{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;align-items:start}
+  .u3-rb{height:170px}
+  #u3-fiche{display:grid!important}
+}
+.u3-tvl{top:144px}
+.u3-tva{right:30px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<div class="u3-wrap" role="dialog" aria-label="Nouvelle dépense">
+  <header class="u3-hd"><h1>Nouvelle dépense</h1><button class="u3-x" aria-label="Fermer" data-u3-ic="x"></button></header>
+  <div class="u3-top">
+    <button class="u3-doc" aria-label="Voir le justificatif" data-booster="justificatif"><img alt="Justificatif 372765" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 36'%3E%3Crect width='28' height='36' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='3' fill='%23333'/%3E%3Cg fill='%23bbb'%3E%3Crect x='3' y='10' width='22' height='1.5'/%3E%3Crect x='3' y='13' width='19' height='1.5'/%3E%3Crect x='3' y='16' width='22' height='1.5'/%3E%3Crect x='3' y='19' width='18' height='1.5'/%3E%3Crect x='3' y='22' width='22' height='1.5'/%3E%3C/g%3E%3Crect x='15' y='28' width='10' height='3' fill='%23333'/%3E%3C/svg%3E"></button>
+    <button class="u3-tot" data-u3-num="tot" aria-label="Total TTC, toucher pour corriger"><span id="u3-tot">86,50</span> <small>CHF</small></button>
+    <div class="u3-who"><b>Brau- und Rauchshop</b><span class="u3-m">27.04.2026</span></div>
+  </div>
+
+  <section class="u3-rb" id="u3-rb" data-booster="ruban-a-l-echelle" aria-label="Les 23 lignes à l'échelle du total">
+    <div class="u3-pins" id="u3-pins"></div>
+    <div class="u3-band" id="u3-band"></div>
+    <div class="u3-frame" id="u3-frame"></div>
+    <span class="u3-zero u3-m">0</span>
+    <span class="u3-end" id="u3-end"></span>
+    <div class="u3-tva" id="u3-tva" data-booster="tva-a-l-echelle"></div>
+    <div class="u3-tvl" id="u3-tvl"></div>
+  </section>
+
+  <div class="u3-low">
+  <div>
+    <section class="u3-panel" id="u3-panel" aria-live="polite"></section>
+    <div class="u3-fams" id="u3-fams" data-booster="familles"></div>
+  </div>
+  <div>
+    <div class="u3-fi">
+      <button class="u3-cell" id="u3-paycell" data-u3-pin="paye"><span id="u3-payl">Déjà payé, le</span><b><span class="u3-sup" id="u3-paytag"><span class="u3-m">27.04.2026</span> supposée</span></b></button>
+      <div class="u3-cell" id="u3-echcell" hidden><span>À payer, échéance</span><b><span class="u3-sup"><span class="u3-m">07.05.2026</span> déduite</span></b></div>
+      <button class="u3-cell" id="u3-fib" aria-expanded="false" data-booster="fiche-repliee"><span>Fiche</span><b style="display:flex;align-items:center;gap:4px">complète <span data-u3-ic="chev"></span></b></button>
+    </div>
+    <div class="u3-fi" id="u3-fiche" aria-label="La fiche" hidden>
+      <div class="u3-cell u3-full"><span>Pour quoi ?</span><input aria-label="Pour quoi ?" style="border:0;background:transparent;font-size:16px;height:24px;padding:0" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div>
+      <div class="u3-cell"><span>Achat du</span><input aria-label="Date de l'achat" inputmode="numeric" class="u3-m" style="border:0;background:transparent;font-size:16px;height:24px;padding:0;width:100%" value="27.04.2026"></div>
+      <div class="u3-cell"><span>Règlement</span><div class="u3-seg2" role="group" aria-label="Règlement"><button aria-pressed="true" data-u3-pay="1">Déjà payé</button><button aria-pressed="false" data-u3-pay="0">À payer</button></div></div>
+      <div class="u3-cell"><span>Moyen</span><select aria-label="Moyen de paiement" style="border:0;background:transparent;font-size:16px;height:24px"><option>Virement · E-Finance, déduit</option><option>Carte</option><option>TWINT</option></select></div>
+      <div class="u3-cell"><span>Fournisseur</span><input aria-label="Fournisseur" style="border:0;background:transparent;font-size:16px;height:24px;padding:0;width:100%" value="Brau- und Rauchshop GmbH"></div>
+      <div class="u3-cell"><span>Catégorie</span><select aria-label="Catégorie" style="border:0;background:transparent;font-size:16px;height:24px"><option>Brassage</option><option>Matériel</option><option>Autres frais</option></select></div>
+      <div class="u3-cell u3-full"><span>Lier à une dépense prévue</span><select aria-label="Lier à une dépense prévue" style="border:0;background:transparent;font-size:16px;height:24px"><option>aucune</option><option>Ingrédients de novembre · 90,00</option></select></div>
+      <div class="u3-cell"><span>N° facture</span><b class="u3-m">372765</b></div>
+      <div class="u3-cell"><span>N° commande</span><b class="u3-m">686863</b></div>
+      <div class="u3-cell"><span>Document</span><b>Pro-forma, payée</b></div>
+      <div class="u3-cell"><span>Taux lus</span><b class="u3-m">N 8,1 · R 2,6 %</b></div>
+      <div class="u3-cell"><span>Total HT</span><b style="color:var(--t2)">non imprimé</b></div>
+      <div class="u3-cell"><span>TVA retenue</span><b id="u3-tvar" style="color:var(--t2)">à régler (1)</b></div>
+      <div class="u3-cell u3-full" style="grid-template-columns:auto auto 1fr;display:grid;gap:6px;align-items:center"><button class="u3-c" id="u3-add">+ Ajouter une ligne</button><button class="u3-c">Regrouper en une dépense</button><span id="u3-det" style="text-align:right;font-size:12px;color:var(--sto)"></span></div>
+    </div>
+  </div>
+  </div>
+  <div class="u3-recu" id="u3-recu" hidden></div>
+</div>
+<div class="u3-pied"><div class="u3-pin2"><span class="u3-prog" id="u3-prog"></span>
+  <span class="u3-drv" id="u3-drv" data-booster="drive-pret"><span data-u3-ic="cloud"></span>Drive prêt</span>
+  <button class="u3-conf" id="u3-conf"><span data-u3-ic="check"></span>Confirmer et enregistrer</button>
+</div></div>
+
+<section class="u3-ax" id="annexe" aria-label="Annexe des états">
+  <h2>Annexe · les états de u3, dans le ruban</h2>
+  <div class="u3-sx"><p><b>1 · Lecture en cours</b> — le cadre attend son total ; les trois étapes remplissent le ruban.</p>
+    <div class="u3-mb"><i style="width:33%;background:var(--sto)"></i><i style="width:20%;background:repeating-linear-gradient(135deg,#9BB8D8 0 3px,#fff 3px 6px)"></i></div>
+    <div class="u3-mbl"><span>Envoi <span class="u3-m">1,2 s</span></span><span style="color:var(--fin);font-weight:600">Lecture…</span><span style="color:var(--t2)">Vérification</span></div></div>
+  <div class="u3-sx"><p><b>2 · Lue, sans point</b> — illustration : le ruban plein, aucune épingle.</p>
+    <div class="u3-mb"><i style="width:40.9%;background:var(--malt)"></i><i style="width:1.7%;background:var(--mout)"></i><i style="width:23.2%;background:var(--houb)"></i><i style="width:34.2%;background:var(--lev)"></i></div>
+    <div class="u3-mbl"><span class="u3-m">0</span><span style="color:var(--sto);font-weight:600">23 lignes = 86,50 imprimé · 0 à régler</span></div></div>
+  <div class="u3-sx"><p><b>3 · Lue avec ses points</b> — le premier écran ci-dessus : 4 épingles sur le ruban, 1 sur la TVA, 1 sur la date.</p></div>
+  <div class="u3-sx"><p><b>4 · Un point réglé, puis tous</b> — l'épingle passe au vert ; la dernière réglée, le ruban se calme.</p>
+    <div style="display:flex;gap:6px"><span class="u3-pin u3-ok" style="position:static;margin:0">1</span><span class="u3-pin" style="position:static;margin:0">2</span><span class="u3-pin" style="position:static;margin:0">3</span><span style="font-size:12px;align-self:center">→</span><span class="u3-pin u3-ok" style="position:static;margin:0">6</span><span style="font-size:12px;align-self:center;color:var(--sto)">tout réglé</span></div></div>
+  <div class="u3-sx"><p><b>5 · Erreur de lecture</b></p>
+    <div class="u3-mb" style="border:1.5px dashed var(--alerte);background:#fff;align-items:center;justify-content:center;font-size:12px;color:var(--alerte);font-weight:600">Lecture impossible · fichier gardé</div>
+    <div class="u3-ch"><button class="u3-c u3-k">Saisir à la main</button><button class="u3-c">Relire</button></div></div>
+  <div class="u3-sx"><p><b>6 · Drive pas connecté</b></p>
+    <div class="u3-pin2" style="border:1px solid var(--bord);border-radius:10px"><span class="u3-drv" style="color:var(--att)"><span data-u3-ic="cloud"></span>Drive à connecter</span><button class="u3-c">Connecter</button><button class="u3-conf">Confirmer et enregistrer</button></div></div>
+  <div class="u3-sx"><p><b>7 · Enregistrement, puis le reçu</b></p>
+    <div class="u3-pin2" style="border:1px solid var(--bord);border-radius:10px"><span class="u3-prog" style="width:60%;top:0"></span><span class="u3-drv" style="color:var(--fin)"><span data-u3-ic="cloud"></span>Envoi au Drive en cours… la fiche reste ouverte</span></div>
+    <div class="u3-recu" style="margin:0"><b>Enregistré · rangé dans Drive</b><span class="u3-m" style="font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#drive">Ouvrir dans Drive</a></div></div>
+  <div class="u3-sx"><p><b>8 · Achat peut-être déjà enregistré</b> — deux rubans identiques, l'un sous l'autre.</p>
+    <div class="u3-mbl"><span>ce document <span class="u3-m">372765</span>, 27.04</span><span class="u3-m">86,50</span></div>
+    <div class="u3-mb"><i style="width:40.9%;background:var(--malt)"></i><i style="width:1.7%;background:var(--mout)"></i><i style="width:23.2%;background:var(--houb)"></i><i style="width:34.2%;background:var(--lev)"></i></div>
+    <div class="u3-mbl"><span>déjà enregistré <span class="u3-m">380001</span>, 30.04, commande <span class="u3-m">686863</span></span><span class="u3-m">86,50</span></div>
+    <div class="u3-mb"><i style="width:40.9%;background:var(--malt)"></i><i style="width:1.7%;background:var(--mout)"></i><i style="width:23.2%;background:var(--houb)"></i><i style="width:34.2%;background:var(--lev)"></i></div>
+    <div class="u3-ch"><button class="u3-c u3-k">Même achat</button><button class="u3-c">Autre achat</button></div></div>
+  <div class="u3-sx"><p><b>9 · Hors ligne</b></p>
+    <div class="u3-mb" style="border:1.5px dashed var(--bordm);background:#fff;align-items:center;justify-content:center;font-size:12px;color:var(--t1)">Hors ligne · brouillon gardé · lecture au retour du réseau</div></div>
+</section>
+
+<script>
+(() => {
+  const IC = { x: '<path d="M4 4l8 8M12 4l-8 8"/>', chev: '<path d="M4 6l4 4 4-4"/>', check: '<path d="M3 8.5l3 3 7-7"/>', next: '<path d="M6 4l4 4-4 4"/>',
+    cloud: '<path d="M4.5 12.5h7a2.8 2.8 0 00.2-5.6A4 4 0 004.3 6 3.3 3.3 0 004.5 12.5z"/>',
+    relie: '<path d="M8 2l5.5 3v6L8 14 2.5 11V5z M2.5 5L8 8l5.5-3 M8 8v6"/>', nouveau: '<path d="M6.5 4L11 6.5v5L6.5 14 2 11.5v-5z M2 6.5L6.5 9 11 6.5 M6.5 9v5 M13 1v4 M11 3h4"/>',
+    bis: '<path d="M5.5 5L9 7v4l-3.5 2L2 11V7z M10.5 3L14 5v4l-3.5 2 M9 3.8L10.5 3"/>', mout: '<path d="M6.5 9.5l3-3 M7.2 4.6l1-1a2.6 2.6 0 013.7 3.7l-1 1 M8.8 11.4l-1 1a2.6 2.6 0 01-3.7-3.7l1-1"/>',
+    unite: '<path d="M8 1.8a6.2 6.2 0 110 12.4A6.2 6.2 0 018 1.8z M6.2 6.3a1.8 1.8 0 113.4.8c-.5.6-1.6.9-1.6 2 M8 11v.5"/>' };
+  const ic = (n) => '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[n] + '</svg>';
+  const f2 = (x) => (Math.round(x * 100) / 100).toFixed(2).replace('.', ',');
+  const fp = (x) => { const d = Math.max(2, (String(x).split('.')[1] || '').length); return x.toFixed(d).replace('.', ','); };
+  const pz = (s) => parseFloat(String(s).replace(',', '.'));
+  const L = [[1,'Maris Otter',6,'Kg',2.30,13.80,'malt','relie'],[2,'Mouture',6,'Kg',0.10,0.60,'mout','mout'],[3,'Gerstenflocken',1,'Kg',2.40,2.40,'malt','relie'],[4,'Röstgerste',1,'Kg',1.80,1.80,'malt','relie'],[5,'Mouture',1,'Kg',0.10,0.10,'mout','mout'],[6,'Caramünch Typ 2',1,'Kg',1.75,1.75,'malt','relie'],[7,'Mouture',1,'Kg',0.10,0.10,'mout','mout'],[8,'Target',40,'g',0.040,1.60,'houb','bis'],[9,'Goldings East Kent',20,'g',0.040,0.80,'houb','nouveau'],[10,'Windsor',2,'Stk',4.50,9.00,'lev','relie'],[11,'Safale BE-256',1,'Stk',4.40,4.40,'lev','nouveau'],[12,'Safale US-05',2,'Stk',3.40,6.80,'lev','relie'],[13,'Pilsner Malz',5,'Kg',1.50,7.50,'malt','relie'],[14,'Mouture',5,'Kg',0.10,0.50,'mout','mout'],[15,'Weizenmalz hell',2,'Kg',1.55,3.10,'malt','relie'],[16,'Mouture',2,'Kg',0.10,0.20,'mout','mout'],[17,'Haferflocken',2,'Kg',2.50,5.00,'malt','relie'],[18,'Galaxy',60,'g',0.080,4.80,'houb','relie'],[19,'Nelson Sauvin',100,'g',0.080,8.00,'houb','relie'],[20,'Sabro',30,'',0.070,2.10,'houb','unite'],[21,'Verdant IPA',2,'Stk',4.70,9.40,'lev','relie'],[22,'Hallertauer Blanc',30,'g',0.045,1.35,'houb','bis'],[23,'Motueka',20,'g',0.070,1.40,'houb','relie']]
+    .map(([n, nom, q, u, p, m, fam, lien]) => ({ n, nom, q, u, p, m, fam, lien }));
+  const FAMS = [['malt', 'Malts', 'var(--malt)'], ['mout', 'Moutures', 'var(--mout)'], ['houb', 'Houblons', 'var(--houb)'], ['lev', 'Levures', 'var(--lev)']];
+  // les points, numérotés par risque : argent, puis stock
+  const P = [
+    { id: 'tva', n: 1, t: 'TVA imprimée incohérente', corps: () => '<div class="u3-calc">bases <span class="u3-m">26,20 + 84,20 = 110,40</span> <span class="u3-ko u3-m">&gt; 86,50</span> · TVA <span class="u3-m">1,95 + 2,20 = 4,15</span> <span class="u3-ko u3-m">≠ 2,80</span></div><div class="u3-ch"><button class="u3-c u3-k" data-u3-act="tva-vide">Laisser vide</button><button class="u3-c" data-u3-act="tva-2,80"><span class="u3-m">2,80</span></button><button class="u3-c" data-u3-act="tva-4,15"><span class="u3-m">4,15</span></button></div>' },
+    { id: 'paye', n: 2, t: 'Payé le 27.04.2026, supposée', corps: () => '<div class="u3-calc">Pas de date de paiement imprimée ; « Betrag erhalten ».</div><div class="u3-ch"><button class="u3-c u3-k" data-u3-act="paye-garder">Garder <span class="u3-m">27.04.2026</span></button><input class="u3-in" inputmode="numeric" placeholder="jj.mm.aaaa" aria-label="Autre date" id="u3-pd"><button class="u3-c" data-u3-act="paye-autre">Prendre</button></div>' },
+    { id: 'mout', n: 3, at: 'mout', t: '5 moutures, au malt du dessus', corps: () => '<div class="u3-calc">Même quantité que la ligne au-dessus : Maris Otter <span class="u3-m">2,30 → 2,40</span>/kg, Pilsner <span class="u3-m">1,50 → 1,60</span>, Weizen <span class="u3-m">1,55 → 1,65</span>, Röstgerste <span class="u3-m">1,80 → 1,90</span>, Caramünch <span class="u3-m">1,75 → 1,85</span></div><div class="u3-ch"><button class="u3-c u3-k" data-u3-act="mout-oui">Rattacher les 5</button><button class="u3-c" data-u3-act="mout-non">Laisser en service</button></div>' },
+    { id: 'sabro', n: 4, at: 20, t: 'Sabro, unité illisible', corps: () => '<div class="u3-calc">Relié à Sabro ; rien en stock tant que l\'unité manque · <span class="u3-m">30 × 0,070 = 2,10</span></div><div class="u3-ch">' + ['g', 'kg', 'Stk'].map((u) => '<button class="u3-c" data-u3-act="sabro-' + u + '"><span class="u3-m">30 ' + u + '</span></button>').join('') + '</div>' },
+    { id: 'target', n: 5, at: 8, t: 'Target α 11,3, au stock α 11,8', corps: () => '<div class="u3-calc">« Target 11.3% » : nom Target, α à part ; l\'autre lot n\'est pas touché.</div><div class="u3-ch"><button class="u3-c u3-k" data-u3-act="target-bis">Créer Target bis <small class="u3-m">α 11,3</small></button><button class="u3-c" data-u3-act="autre">Autre article…</button></div>' },
+    { id: 'hall', n: 6, at: 22, t: 'Hallertauer Blanc CH, au stock DE', corps: () => '<div class="u3-calc">« Hallertauer Blanc 9.5% CH » : autre origine, jamais fusionné.</div><div class="u3-ch"><button class="u3-c u3-k" data-u3-act="hall-bis">Créer Hallertauer Blanc CH</button><button class="u3-c" data-u3-act="autre">Autre article…</button></div>' }
+  ];
+  const fait = {}; let sel = 'tva'; let famOuv = null; let ligneOuv = null;
+  const rb = document.getElementById('u3-rb');
+  function render() {
+    const W = rb.clientWidth, imp = pz(document.getElementById('u3-tot').textContent);
+    const k = (W * 0.70) / Math.max(imp, 1);
+    const ordre = FAMS.flatMap(([f]) => L.filter((l) => l.fam === f));
+    const som = ordre.reduce((t, l) => t + l.m, 0);
+    let x = 0; const pos = {};
+    const band = document.getElementById('u3-band');
+    band.style.width = (som * k) + 'px';
+    band.innerHTML = FAMS.map(([f, nom, c]) => { const ls = L.filter((l) => l.fam === f); const s = ls.reduce((t, l) => t + l.m, 0);
+      const html = '<button class="u3-seg' + (famOuv === f ? ' u3-on' : '') + '" data-f="' + f + '" data-u3-fam="' + f + '" style="width:' + (s * k) + 'px" aria-label="' + nom + ', ' + f2(s) + ' CHF">' + ls.map((l) => { pos[l.n] = x + (l.m * k) / 2; x += l.m * k; return '<i style="width:' + (l.m * k) + 'px;background:' + c + '"></i>'; }).join('') + '</button>';
+      return html; }).join('');
+    // étiquettes de famille sur le ruban, quand la place suffit
+    let fx = 0; const labs = FAMS.map(([f, nom]) => { const s = L.filter((l) => l.fam === f).reduce((t, l) => t + l.m, 0); const w = s * k; const h = w > 74 ? '<span class="u3-flab" style="left:' + (fx + 4) + 'px;top:54px;height:20px;line-height:20px;padding:0 6px;border-radius:10px;background:' + (f === 'malt' ? '#E0A02E' : f === 'lev' ? '#6A4FB0' : '#3F6B2E') + ';color:' + (f === 'malt' ? '#111' : '#fff') + '">' + nom + '</span>' : ''; fx += w; return h; }).join('');
+    band.insertAdjacentHTML('beforeend', '');
+    rb.querySelectorAll('.u3-flab').forEach((e) => e.remove()); rb.insertAdjacentHTML('beforeend', labs);
+    document.getElementById('u3-frame').style.width = (imp * k + 6) + 'px';
+    const eq = Math.abs(som - imp) < 0.005;
+    const end = document.getElementById('u3-end'); end.style.left = (imp * k + 3) + 'px';
+    end.innerHTML = eq ? '<span style="color:var(--sto);display:inline-flex;align-items:center;gap:2px">' + ic('check') + '23 lignes</span> = <b>86,50</b> imprimé' : '<span style="color:var(--alerte)">lignes ' + f2(som) + ' ≠</span> <b>' + f2(imp) + '</b>';
+    // le ruban de la TVA : les bases imprimées, à la même échelle
+    const tva = document.getElementById('u3-tva');
+    tva.innerHTML = '<b style="left:0;width:' + Math.min(imp, 110.40) * k + 'px"></b><s style="left:' + imp * k + 'px;width:' + (110.40 - imp) * k + 'px"></s>';
+    document.getElementById('u3-tvl').innerHTML = '<span>bases TVA <span class="u3-m">110,40</span></span><span class="u3-ko u3-m" style="padding-right:30px">+23,90</span>';
+    // les épingles
+    const mx = L.filter((l) => l.fam === 'mout'); const moutX = (pos[mx[0].n] + pos[mx[mx.length - 1].n]) / 2;
+    let pins = P.filter((p) => p.at).map((p) => ({ p, x: p.at === 'mout' ? moutX : pos[p.at] }));
+    pins.push({ p: P[0], x: Math.min(W - 14, imp * k + (110.40 - imp) * k / 2), tva: true });
+    pins.sort((a, b) => a.x - b.x); for (let i = 1; i < pins.length; i++) if (pins[i].x - pins[i - 1].x < 26) pins[i].lx = pins[i - 1].lx = undefined, pins[i].x = pins[i - 1].x + 26;
+    const pz2 = document.getElementById('u3-pins');
+    pz2.innerHTML = pins.map(({ p, x: px, tva: tv }) => '<button class="u3-pin' + (fait[p.id] ? ' u3-ok' : sel === p.id ? ' u3-sel' : '') + '" style="left:' + px + 'px' + (tv ? ';top:120px;left:auto;right:0;margin-left:0' : '') + '" data-u3-pin="' + p.id + '" aria-label="Point ' + p.n + ' : ' + p.t + '">' + (fait[p.id] ? '✓' : p.n) + '</button>').join('') +
+      pins.filter((q) => !q.tva).map(({ p, x: px }) => { const ax = p.at === 'mout' ? moutX : pos[p.at]; return '<span class="u3-lead" style="left:' + ax + 'px"></span>'; }).join('');
+    // le panneau
+    const panel = document.getElementById('u3-panel'); const p = P.find((q) => q.id === sel);
+    const n = P.filter((q) => !fait[q.id]).length;
+    if (!p || fait[p.id]) { panel.className = 'u3-panel u3-calme'; panel.innerHTML = '<div class="u3-ph"><span class="u3-n" style="background:var(--sto)">✓</span><b>' + (n ? n + ' à régler' : 'Tout réglé') + '</b></div>'; }
+    else { panel.className = 'u3-panel'; panel.innerHTML = '<div class="u3-ph"><span class="u3-n">' + p.n + '</span><b>' + p.t + '</b><button class="u3-nx" data-u3-next="1">' + n + ' à régler ' + ic('next') + '</button></div>' + p.corps(); }
+    // familles
+    document.getElementById('u3-fams').innerHTML = FAMS.map(([f, nom, c]) => { const ls = L.filter((l) => l.fam === f); const s = ls.reduce((t, l) => t + l.m, 0);
+      const cnt = {}; ls.forEach((l) => { const st = l.lien === 'unite' && fait.sabro ? 'relie' : l.lien; cnt[st] = (cnt[st] || 0) + 1; });
+      return '<button class="u3-fam" style="background:' + ({ malt: '#F8E9C6', mout: '#EFE6D2', houb: '#E3EDD8', lev: '#E8E2F5' })[f] + '" data-u3-fam="' + f + '" aria-expanded="' + (famOuv === f) + '"><i style="background:' + c + '"></i><span>' + nom + ' <span class="u3-m" style="color:var(--t2)">' + ls.length + '</span></span><span class="u3-st">' + Object.entries(cnt).map(([st, v]) => '<span class="u3-s-' + st + '" role="img" aria-label="' + v + ' ' + st + '">' + ic(st) + '<span class="u3-m">' + v + '</span></span>').join('') + '</span><span class="u3-sum">' + f2(s) + '</span><span style="display:flex;color:var(--t2)">' + ic('chev') + '</span></button>' +
+        (famOuv === f ? ls.map((l) => { const st = l.lien === 'unite' && fait.sabro ? 'relie' : l.lien; const calc = l.q * l.p; const ok = Math.abs(calc - l.m) < 0.005;
+          return '<button class="u3-ln" data-u3-line="' + l.n + '"><span class="u3-m" style="color:var(--t2)">' + l.n + '</span><span class="u3-nm">' + l.nom + '</span><span class="u3-q"><span class="u3-ed" data-u3-q="' + l.n + '">' + String(l.q).replace('.', ',') + '</span> ' + (l.u || '?') + '</span><span class="u3-r u3-ed" data-u3-mt="' + l.n + '">' + f2(l.m) + '</span><span class="u3-s-' + st + '" role="img" aria-label="lien au stock">' + ic(st) + '</span></button>' +
+            (ligneOuv === l.n ? '<div class="u3-lnx"><span><span class="u3-m">' + String(l.q).replace('.', ',') + ' ' + (l.u || '?') + ' × ' + fp(l.p) + ' = ' + f2(calc) + '</span> ' + (ok ? '<span style="color:var(--sto)">✓ au centime</span>' : '<span style="color:var(--alerte);font-weight:600">≠ ' + f2(l.m) + ', écart ' + f2(Math.abs(calc - l.m)) + '</span>') + (l.u === 'Stk' ? ' · <span class="u3-m">' + l.q + ' Stk = ' + l.q + ' sachets</span>' : '') + '</span>' +
+              '<span style="display:flex;gap:6px;flex-wrap:wrap"><select aria-label="Type d\'achat"><option>' + (f === 'mout' ? 'Service' : 'Ingrédients') + '</option><option>Matériel</option><option>Entretien</option></select><select aria-label="Réception en stock"><option>' + (st === 'relie' ? 'Stock : ' + l.nom : st === 'nouveau' ? 'Nouvel article : ' + l.nom : st === 'bis' ? 'Article bis : ' + l.nom : st === 'mout' ? 'Aucun mouvement (service)' : 'Unité à préciser') + '</option><option>Choisir un article…</option><option>Aucun mouvement de stock</option></select><button class="u3-c" aria-label="Retirer la ligne ' + l.n + '">Retirer</button></span></div>' : '');
+        }).join('') : '');
+    }).join('');
+    document.getElementById('u3-det').innerHTML = 'Détail <span class="u3-m">' + f2(som) + ' / ' + f2(imp) + '</span>';
+  }
+  function regler(id) { fait[id] = 1; const nx = P.find((q) => !fait[q.id]); sel = nx ? nx.id : null; render(); }
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button'); if (!t) return;
+    const a = t.dataset.u3Act;
+    if (a) {
+      if (a.startsWith('tva-')) { const v = a.slice(4); document.getElementById('u3-tvar').textContent = v === 'vide' ? 'vide (hors dépense)' : v; regler('tva'); }
+      if (a === 'paye-garder' || a === 'paye-autre') { const v = a === 'paye-autre' ? document.getElementById('u3-pd').value.trim() : '27.04.2026'; if (!v) return;
+        const g = document.getElementById('u3-paytag'); g.className = 'u3-sup u3-ok'; g.innerHTML = '<span class="u3-m">' + v + '</span> ' + (a === 'paye-autre' ? 'tapée' : 'gardée'); regler('paye'); }
+      if (a === 'mout-oui' || a === 'mout-non') regler('mout');
+      if (a.startsWith('sabro-')) { L[19].u = a.slice(6); regler('sabro'); }
+      if (a === 'target-bis') regler('target');
+      if (a === 'hall-bis') regler('hall');
+      if (a === 'autre') t.textContent = 'Liste du stock…';
+      return;
+    }
+    if (t.dataset.u3Pin) { sel = t.dataset.u3Pin; if (fait[sel]) delete fait[sel]; render(); return; }
+    if (t.dataset.u3Next) { const nx = P.find((q) => !fait[q.id] && q.id !== sel) || P.find((q) => !fait[q.id]); if (nx) sel = nx.id; render(); return; }
+    if (t.dataset.u3Fam) { famOuv = famOuv === t.dataset.u3Fam ? null : t.dataset.u3Fam; ligneOuv = null; render(); return; }
+    if (t.dataset.u3Line) { const n = +t.dataset.u3Line; ligneOuv = ligneOuv === n ? null : n; render(); return; }
+    if (t.dataset.u3Pay) { document.querySelectorAll('[data-u3-pay]').forEach((b) => b.setAttribute('aria-pressed', String(b === t))); const p = t.dataset.u3Pay === '1';
+      document.getElementById('u3-paycell').hidden = !p; document.getElementById('u3-echcell').hidden = p; if (!p) regler('paye'); return; }
+    if (t.id === 'u3-fib') { const f = document.getElementById('u3-fiche'); f.hidden = !f.hidden; t.setAttribute('aria-expanded', String(!f.hidden)); return; }
+    if (t.id === 'u3-add') { L.push({ n: L.length + 1, nom: 'Nouvelle ligne', q: 1, u: 'Kg', p: 0, m: 0, fam: 'malt', lien: 'nouveau' }); famOuv = 'malt'; render(); return; }
+    if (t.id === 'u3-conf') return enregistrer();
+  });
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-u3-num],[data-u3-q],[data-u3-mt]'); if (!t || t.querySelector('input')) return;
+    e.stopPropagation(); e.preventDefault(); const sp = t.dataset.u3Num ? document.getElementById('u3-tot') : t; const av = sp.textContent;
+    const i = document.createElement('input'); i.className = 'u3-in'; i.setAttribute('inputmode', 'decimal'); i.value = av; sp.textContent = ''; sp.appendChild(i); i.focus(); i.select();
+    const fin = (ok) => { const v = pz(i.value); i.remove(); if (!ok || isNaN(v)) { sp.textContent = av; return; }
+      if (t.dataset.u3Q) L[+t.dataset.u3Q - 1].q = v; else if (t.dataset.u3Mt) L[+t.dataset.u3Mt - 1].m = v; else sp.textContent = f2(v); render(); };
+    i.addEventListener('keydown', (kk) => { if (kk.key === 'Enter') fin(true); if (kk.key === 'Escape') fin(false); });
+    i.addEventListener('blur', () => fin(true), { once: true });
+  }, true);
+  function enregistrer() {
+    const d = document.getElementById('u3-drv'); d.style.color = 'var(--fin)'; d.innerHTML = ic('cloud') + 'Envoi au Drive en cours…';
+    document.getElementById('u3-conf').hidden = true; document.getElementById('u3-prog').style.width = '70%';
+    setTimeout(() => { document.getElementById('u3-prog').style.width = '100%'; d.style.color = 'var(--sto)'; d.innerHTML = ic('check') + 'Enregistré';
+      const r = document.getElementById('u3-recu'); r.hidden = false; r.innerHTML = '<b>Enregistré · rangé dans Drive</b><span class="u3-m" style="font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#drive">Ouvrir dans Drive</a>'; r.scrollIntoView({ block: 'center' }); }, 1200);
+  }
+  document.querySelectorAll('[data-u3-ic]').forEach((e) => { e.classList.add('u3-ic'); e.innerHTML = ic(e.dataset.u3Ic); });
+  render(); addEventListener('resize', render);
+})();
+</script>
+</body></html>

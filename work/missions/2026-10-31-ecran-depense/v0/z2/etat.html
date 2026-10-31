@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z2 — Nouvelle dépense · la facture annotée au stylo (v0 tiède, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--encre:#1F64A3;--encref:#DCE8F3;--att:#9C7020;--attt:#7F5B10;--attf:#F6EBD3;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--malt:#E0A02E;--lev:#6A4FB0;--rouge:#A8291F;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+::selection{background:#F2DDA6}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg{display:block}
+.z2-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.z2-app{max-width:480px;margin:0 auto;min-height:100vh;background:#E9E9E9;position:relative;overflow-x:hidden;display:flex;flex-direction:column}
+.z2-app main{min-height:100vh}
+.z2-annexe{margin-top:auto}
+@media (min-width:900px){.z2-app{max-width:760px}}
+
+/* L'en-tête de la feuille et le stylo : le point courant, un pas à la fois. */
+.z2-hd{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.z2-tb{display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 10px}
+.z2-tb h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.z2-x{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.z2-x:hover{background:var(--haut)}
+.z2-stylo{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:4px 10px 8px}
+.z2-pts{display:flex;align-items:center;gap:4px}
+.z2-pt{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--att);background:var(--attf);color:var(--attt);font-family:var(--mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.z2-pt[aria-current="true"]{background:var(--attt);color:#fff;border-color:var(--attt)}
+.z2-pt.z2-fait{background:var(--hopf);border-color:var(--hopt);color:var(--hopt)}
+.z2-cur{min-width:0;font-size:14px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z2-cur b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.z2-cur i{font-style:normal;color:var(--attt);font-weight:600}
+.z2-aller{height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;white-space:nowrap}
+.z2-aller.z2-pret{background:var(--hopt)}
+
+/* La feuille : le papier, les colonnes de l'imprimé. */
+.z2-papier{margin:10px 10px 0;background:#fff;border-radius:10px;box-shadow:0 4px 18px -10px rgba(0,0,0,.45);padding:10px 10px 12px;position:relative}
+.z2-ent{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--bord)}
+.z2-four{font-size:16px;font-weight:600;color:var(--t0);line-height:1.15}
+.z2-four small{display:block;font-size:12px;font-weight:400;color:var(--t2)}
+.z2-ref{text-align:right;font-family:var(--mono);font-size:12px;color:var(--t2);line-height:1.4}
+.z2-ref b{display:block;font-size:14px;font-weight:600;color:var(--t0)}
+.z2-tamp{display:flex;justify-content:flex-end;margin:6px 4px -2px 0}
+.z2-tampon{transform:rotate(-4deg);border:2px solid var(--hopt);border-radius:10px;padding:2px 8px;color:var(--hopt);font-weight:700;font-size:14px;line-height:1.1;text-align:center;background:rgba(255,255,255,.85)}
+.z2-tampon b{font-family:var(--mono);font-size:18px;display:block}
+.z2-cols{display:grid;grid-template-columns:22px 40px 1fr 54px;column-gap:6px;font-size:12px;color:var(--t2);padding:6px 0 2px;font-family:var(--mono)}
+.z2-cols span:nth-child(4){text-align:right}
+.z2-l{display:grid;grid-template-columns:22px 40px 1fr 54px;column-gap:6px;align-items:center;min-height:26px;font-size:14px;border-radius:10px;position:relative}
+.z2-l>*{min-width:0}
+.z2-l:hover{background:var(--panel)}
+.z2-q{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--t0);white-space:nowrap}
+.z2-q small{font-size:12px;color:var(--t2)}
+.z2-d{color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z2-d input{width:100%;border:0;background:none;font-size:14px;color:var(--t1);border-bottom:1px dotted transparent;padding:0}
+.z2-d input:focus{outline:none;border-bottom-color:var(--t0);background:#fff}
+.z2-a{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--t0);white-space:nowrap}
+.z2-a input{width:54px;border:0;background:none;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--t0);border-bottom:1px dotted transparent;padding:0}
+.z2-a input:focus{outline:none;border-bottom-color:var(--t0);background:#fff}
+.z2-code{font-family:var(--mono);font-size:12px;color:var(--t2);text-align:center}
+/* La marge gauche : l'encre de l'app, le lien au stock en icône. */
+.z2-lk{width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.z2-lk svg{width:18px;height:18px}
+/* Le service de mouture, accolé au malt du dessus par une accolade à l'encre. */
+.z2-l.z2-mout{color:var(--t2)}
+.z2-l.z2-mout .z2-d{padding-left:10px;position:relative}
+.z2-l.z2-mout .z2-d::before{content:"";position:absolute;left:0;top:-10px;bottom:6px;width:8px;border:1.5px solid var(--encre);border-right:0;border-top:0}
+.z2-l.z2-mout.z2-doute .z2-d::before{border-color:var(--att);border-style:dashed}
+.z2-ratt{display:inline-flex;align-items:center;margin-left:6px;height:24px;padding:0 6px;border-radius:10px;border:1.5px dashed var(--att);background:#fff;color:var(--attt);font-size:12px;white-space:nowrap;vertical-align:middle}
+.z2-l.z2-cercle .z2-d{white-space:normal;line-height:1.2;padding:2px 0}
+.z2-ratt:active{transform:scale(.96)}
+.z2-l.z2-fait .z2-d::before{border-color:var(--hopt);border-style:solid}
+.z2-note{font-family:var(--mono);font-size:12px;color:var(--encre);white-space:nowrap}
+.z2-cercle{box-shadow:0 0 0 1.5px var(--att);background:var(--attf)}
+.z2-cercle.z2-fait{box-shadow:0 0 0 1.5px var(--hopt);background:var(--hopf)}
+.z2-tvabloc{margin-top:8px;padding-top:6px;border-top:1px solid var(--bord);display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.z2-tvabloc b{color:var(--t0);font-weight:500;text-align:right}
+.z2-tvabloc .z2-cercle{grid-column:1/3;display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:10px}
+.z2-deux{display:inline-flex;gap:4px;margin-left:auto}
+.z2-deux button{height:26px;min-width:44px;padding:0 6px;border-radius:10px;border:1.5px solid var(--att);background:#fff;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.z2-deux button.z2-vide{font-family:var(--sans);font-weight:400;border-style:dashed;border-color:var(--bordm);color:var(--t1)}
+.z2-deux button[aria-pressed="true"]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.z2-calc{font-family:var(--mono);font-size:12px;color:var(--attt);grid-column:1/3}
+.z2-total{display:flex;align-items:baseline;justify-content:space-between;margin-top:6px;padding-top:6px;border-top:2px solid var(--t0)}
+.z2-total span{font-size:14px;color:var(--t2)}
+.z2-total b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;color:var(--t0)}
+.z2-total b small{font-size:12px;color:var(--t2);font-weight:400;margin-left:3px}
+.z2-paye{font-size:12px;color:var(--encre);font-style:italic}
+.z2-sec{display:flex;align-items:center;gap:6px;margin-top:8px;padding:2px 0;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.z2-sec i{width:10px;height:10px;border-radius:50%}
+.z2-sec b{font-family:var(--mono);color:var(--t0);font-weight:600;text-transform:none;letter-spacing:0}
+.z2-sec small{margin-left:auto;font-family:var(--mono);font-weight:500;color:var(--t0);text-transform:none;letter-spacing:0}
+.z2-pli{display:none}
+.z2-sec[aria-expanded="false"]+.z2-pli{display:none}
+.z2-sec[aria-expanded="true"]+.z2-pli{display:block}
+.z2-sec button{margin-left:6px;width:24px;height:24px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.z2-sec[aria-expanded="true"] button svg{transform:rotate(180deg)}
+.z2-alpha{font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:4px}
+
+/* Le tiroir « Dépense » : les champs de la baseline, chips puis détail à un toucher. */
+.z2-tir{margin:8px 10px 0;background:#fff;border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.z2-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.z2-ch{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t1);white-space:nowrap}
+.z2-ch b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.z2-ch input{width:auto;border:0;background:none;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--t0);border-bottom:1px dotted var(--trait);padding:0}
+.z2-ch input:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z2-ch.z2-sup{border:1px dashed var(--att);color:var(--attt)}
+.z2-ch.z2-on{background:var(--t0);color:#fff;border-color:var(--t0)}
+.z2-ch.z2-on b{color:#fff}
+.z2-drv{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--hopt);margin-left:auto}
+.z2-drv i{width:8px;height:8px;border-radius:50%;background:var(--hop)}
+.z2-drv.z2-off{color:var(--attt)}.z2-drv.z2-off i{background:var(--att)}
+.z2-plus{display:none;flex-direction:column;gap:4px;padding-top:4px;border-top:1px solid var(--bord)}
+.z2-tir[aria-expanded="true"] .z2-plus{display:flex}
+.z2-plus>div{display:flex;align-items:center;gap:6px;min-height:28px;font-size:14px}
+.z2-plus>div>span:first-child{flex:1;color:var(--t2)}
+.z2-sel{height:28px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;background:#fff;font-size:14px;color:var(--t0)}
+.z2-in{height:26px;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0 2px;font-size:14px;color:var(--t0);border-radius:0}
+.z2-in:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z2-tag{font-size:12px;color:var(--t1);background:var(--haut);border-radius:10px;padding:0 6px;line-height:18px}
+.z2-just{display:flex;align-items:center;gap:6px;font-size:14px}
+.z2-just b{font-family:var(--mono);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.z2-lnk{color:var(--encre);text-decoration:underline;text-underline-offset:2px;height:24px;padding:0 4px}
+
+.z2-pied{position:sticky;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(233,233,233,.96);margin-top:8px}
+.z2-go{margin-left:auto;height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.z2-go:active{transform:scale(.97)}
+.z2-flash{animation:z2-fl .8s ease-out}
+@keyframes z2-fl{from{box-shadow:0 0 0 3px var(--att)}}
+
+.z2-annexe{margin:28px 10px 40px;padding-top:10px;border-top:1px dashed var(--bordm);margin-top:auto;padding-top:28px}
+.z2-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.z2-etats{display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:900px){.z2-etats{grid-template-columns:1fr 1fr}}
+.z2-et{background:#fff;border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.z2-et h3{font-size:12px;font-weight:600;color:var(--t2)}
+.z2-et p{font-size:14px;color:var(--t1)}
+.z2-steps{display:flex;gap:6px}
+.z2-steps span{flex:1;height:8px;border-radius:9px;background:var(--bord);position:relative;overflow:hidden}
+.z2-steps span.z2-f{background:var(--t0)}
+.z2-steps span.z2-en::after{content:"";position:absolute;inset:0;width:50%;background:var(--t0);animation:z2-run 1.2s linear infinite}
+@keyframes z2-run{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+.z2-sl{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.z2-recu{display:flex;align-items:center;gap:8px;background:var(--hopf);border-radius:10px;padding:6px 8px}
+.z2-recu b{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--t0)}
+.z2-err{background:#F9E1DF;border-radius:10px;padding:6px 8px;color:var(--rouge)}
+.z2-dbl{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 8px;font-size:14px}
+.z2-dbl span{color:var(--t2);font-size:12px}
+.z2-dbl b{font-family:var(--mono);font-weight:500}
+.z2-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;align-self:flex-start}
+.z2-seg button{padding:0 10px;font-size:14px}
+.z2-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.z2-gris{opacity:.45;filter:grayscale(1)}
+</style></head>
+<body>
+<div class="z2-app">
+<header class="z2-hd">
+  <div class="z2-tb"><h1>Nouvelle dépense</h1><button class="z2-x" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+  <div class="z2-stylo" data-booster="stylo-point-courant">
+    <div class="z2-pts" id="z2-pts"><button class="z2-pt" data-n="1" data-cible="z2-tva" aria-current="true">1</button><button class="z2-pt" data-n="2" data-cible="z2-m1">2</button><button class="z2-pt" data-n="3" data-cible="z2-target">3</button></div>
+    <div class="z2-cur" id="z2-cur"><i>TVA imprimée</i> · <b>2,80 · 4,15</b> · HT vide</div>
+    <button class="z2-aller" id="z2-aller">y aller</button>
+  </div>
+</header>
+
+<main>
+<article class="z2-papier" aria-label="La facture, annotée">
+  <div class="z2-ent">
+    <div class="z2-four">Brau- und Rauchshop GmbH<small>Densbüren · Pro-Forma Rechnung</small></div>
+    <div class="z2-ref"><b>372765</b>27.04.2026<br>cde 686863</div>
+  </div>
+  <div class="z2-tamp"><div class="z2-tampon" data-booster="tampon-recoupe"><b>86,50</b>23 lignes ✓</div></div>
+
+  <div class="z2-sec" aria-expanded="false" data-sec><i style="background:var(--malt)"></i>Malts <b>7</b><small>35,35</small><button aria-label="replier"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg></button></div>
+  <div class="z2-pli">
+  <div class="z2-cols"><span></span><span>Menge</span><span>Bezeichnung</span><span>Betrag</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z2-q">6<small> Kg</small></span><span class="z2-d"><input value="Maris Otter" aria-label="Ligne 1"></span><span class="z2-a"><input inputmode="decimal" value="13,80" aria-label="Montant ligne 1"></span></div>
+  <div class="z2-l z2-mout z2-doute" id="z2-m1" data-mout><span class="z2-lk"></span><span class="z2-q">6<small> Kg</small></span><span class="z2-d">Zuschlag Schrotung<button class="z2-ratt" data-ratt>↑ mouture</button></span><span class="z2-a">0,60</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">1<small> Kg</small></span><span class="z2-d"><input value="Gerstenflocken" aria-label="Ligne 3"></span><span class="z2-a"><input inputmode="decimal" value="2,40" aria-label="Montant ligne 3"></span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">1<small> Kg</small></span><span class="z2-d"><input value="Röstgerste" aria-label="Ligne 4"></span><span class="z2-a"><input inputmode="decimal" value="1,80" aria-label="Montant ligne 4"></span></div>
+  <div class="z2-l z2-mout z2-doute" data-mout><span class="z2-lk"></span><span class="z2-q">1<small> Kg</small></span><span class="z2-d">Zuschlag Schrotung<button class="z2-ratt" data-ratt>↑ mouture</button></span><span class="z2-a">0,10</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">1<small> Kg</small></span><span class="z2-d"><input value="Caramünch Typ 2" aria-label="Ligne 6"></span><span class="z2-a"><input inputmode="decimal" value="1,75" aria-label="Montant ligne 6"></span></div>
+  <div class="z2-l z2-mout z2-doute" data-mout><span class="z2-lk"></span><span class="z2-q">1<small> Kg</small></span><span class="z2-d">Zuschlag Schrotung<button class="z2-ratt" data-ratt>↑ mouture</button></span><span class="z2-a">0,10</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z2-q">5<small> Kg</small></span><span class="z2-d"><input value="Pilsner Malz" aria-label="Ligne 13"></span><span class="z2-a"><input inputmode="decimal" value="7,50" aria-label="Montant ligne 13"></span></div>
+  <div class="z2-l z2-mout z2-doute" data-mout><span class="z2-lk"></span><span class="z2-q">5<small> Kg</small></span><span class="z2-d">Zuschlag Schrotung<button class="z2-ratt" data-ratt>↑ mouture</button></span><span class="z2-a">0,50</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z2-q">2<small> Kg</small></span><span class="z2-d"><input value="Weizenmalz hell" aria-label="Ligne 15"></span><span class="z2-a"><input inputmode="decimal" value="3,10" aria-label="Montant ligne 15"></span></div>
+  <div class="z2-l z2-mout z2-doute" data-mout><span class="z2-lk"></span><span class="z2-q">2<small> Kg</small></span><span class="z2-d">Zuschlag Schrotung<button class="z2-ratt" data-ratt>↑ mouture</button></span><span class="z2-a">0,20</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z2-q">2<small> Kg</small></span><span class="z2-d"><input value="Haferflocken" aria-label="Ligne 17"></span><span class="z2-a"><input inputmode="decimal" value="5,00" aria-label="Montant ligne 17"></span></div>
+  </div>
+
+  <div class="z2-sec" aria-expanded="false" data-sec><i style="background:var(--hop)"></i>Houblons <b>7</b><small>20,05</small><button aria-label="déplier"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg></button></div>
+  <div class="z2-pli">
+  <div class="z2-l z2-cercle" id="z2-target"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="7" y="7" width="8" height="8" rx="2" fill="#fff"/></svg></span><span class="z2-q">40<small> g</small></span><span class="z2-d">Target<span class="z2-alpha">α 11,3 · stock 11,8</span><button class="z2-ratt" data-target>article bis</button></span><span class="z2-a">1,60</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">20<small> g</small></span><span class="z2-d">Goldings East Kent<span class="z2-alpha">5,5 %</span></span><span class="z2-a">0,80</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">60<small> g</small></span><span class="z2-d">Galaxy<span class="z2-alpha">17,2 %</span></span><span class="z2-a">4,80</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z2-q">100<small> g</small></span><span class="z2-d">Nelson Sauvin<span class="z2-alpha">9,6 %</span></span><span class="z2-a">8,00</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">30<small> g</small></span><span class="z2-d">Sabro<span class="z2-alpha">13,4 %</span></span><span class="z2-a">2,10</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="7" y="7" width="8" height="8" rx="2" fill="#fff"/></svg></span><span class="z2-q">30<small> g</small></span><span class="z2-d">Hallertauer Blanc CH<span class="z2-alpha">9,5 %</span></span><span class="z2-a">1,35</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">20<small> g</small></span><span class="z2-d">Motueka<span class="z2-alpha">8,1 %</span></span><span class="z2-a">1,40</span></div>
+  </div>
+
+  <div class="z2-sec" aria-expanded="false" data-sec><i style="background:var(--lev)"></i>Levures <b>4</b><small>29,60</small><button aria-label="déplier"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg></button></div>
+  <div class="z2-pli">
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">2<small> Stk</small></span><span class="z2-d">Lallemand Windsor<span class="z2-alpha">= 2 sachets</span></span><span class="z2-a">9,00</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">1<small> Stk</small></span><span class="z2-d">Safale BE-256<span class="z2-alpha">= 1 sachet</span></span><span class="z2-a">4,40</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z2-q">2<small> Stk</small></span><span class="z2-d">Safale US-05<span class="z2-alpha">= 2 sachets</span></span><span class="z2-a">6,80</span></div>
+  <div class="z2-l"><span class="z2-lk"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z2-q">2<small> Stk</small></span><span class="z2-d">Lallemand Verdant IPA<span class="z2-alpha">= 2 sachets</span></span><span class="z2-a">9,40</span></div>
+  </div>
+
+  <!-- Le bloc TVA imprimé, cerclé : les chiffres lus tels quels, le calcul qui ne tombe pas. -->
+  <div class="z2-tvabloc" id="z2-tva">
+    <span>N 8,1 % · Belegbetrag</span><b>26,20</b><span>MWST</span><b>1,95</b>
+    <span>R 2,6 % · Belegbetrag</span><b>84,20</b><span>MWST</span><b>2,20</b>
+    <div class="z2-cercle" data-booster="deux-valeurs"><span>Mehrwertsteuer</span><span class="z2-deux"><button data-tva="2,80">2,80</button><button data-tva="4,15">4,15</button><button class="z2-vide" data-tva="">vide</button></span></div>
+    <span class="z2-calc" id="z2-calc">bases 110,40 ≠ 86,50 · MWST 4,15 ≠ 2,80</span>
+  </div>
+  <div class="z2-total"><span>Total · <span class="z2-paye">Betrag per E-Finance erhalten</span></span><b><input class="z2-m" inputmode="decimal" value="86,50" aria-label="Total TTC" style="width:70px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-size:22px;font-weight:600;color:var(--t0)"><small>CHF</small></b></div>
+</article>
+
+<section class="z2-tir" aria-expanded="false" id="z2-tir" aria-label="La dépense">
+  <div class="z2-chips" data-booster="chips-depense">
+    <span class="z2-ch"><input inputmode="numeric" value="27.04.2026" aria-label="Date de l'achat" style="width:92px"></span>
+    <button class="z2-ch z2-on" id="z2-pay" data-booster="bascule-reglement">Déjà payé</button>
+    <span class="z2-ch z2-sup" id="z2-payle">payé le <input inputmode="numeric" value="27.04.2026" aria-label="Payé le" style="width:92px;color:var(--attt);border-color:var(--att)"> supposée</span>
+    <span class="z2-ch">Brassage</span>
+    <span class="z2-drv" id="z2-drv"><i></i>Drive prêt</span>
+    <button class="z2-ch" id="z2-ouv">détails ⌄</button>
+  </div>
+  <div class="z2-plus">
+    <div><span>Pour quoi ?</span><input class="z2-in" value="Brau- und Rauchshop · 372765 · malts, houblons, levures" aria-label="Pour quoi" style="width:65%"><span class="z2-tag">proposé</span></div>
+    <div><span>Moyen</span><button class="z2-sel">E-Finance ⌄</button></div>
+    <div id="z2-ech" hidden><span>Échéance</span><input class="z2-in" inputmode="numeric" value="07.05.2026" aria-label="Échéance"></div>
+    <div><span>Fournisseur</span><input class="z2-in" value="Brau- und Rauchshop GmbH" aria-label="Fournisseur" style="width:55%"></div>
+    <div><span>Catégorie</span><button class="z2-sel">Brassage ⌄</button></div>
+    <div><span>Lier à une dépense prévue</span><button class="z2-sel">aucune ⌄</button></div>
+    <div><span>HT</span><span class="z2-tag">non imprimé</span><input class="z2-in z2-m" inputmode="decimal" value="" placeholder="—" aria-label="HT" style="width:56px;text-align:right"></div>
+    <div><span>Lignes</span><button class="z2-sel">+ ligne</button><button class="z2-sel">regrouper</button><span class="z2-m" style="color:var(--t0)">86,50 / 86,50</span></div>
+    <div class="z2-just"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg><b>2026-04-27 Brau- und Rauchshop 372765.jpg</b><button class="z2-lnk">Voir</button><button class="z2-lnk">Changer</button></div>
+  </div>
+</section>
+
+<footer class="z2-pied"><span class="z2-drv" id="z2-drv2" style="margin-left:0"><i></i>L'Affinée / Justificatifs / 2026</span><button class="z2-go" id="z2-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer et enregistrer</button></footer>
+</main>
+
+<section class="z2-annexe" aria-label="États">
+  <h2>États</h2>
+  <div class="z2-etats">
+    <div class="z2-et"><h3>1 · Lecture en cours</h3><div class="z2-steps"><span class="z2-f"></span><span class="z2-en"></span><span></span></div><div class="z2-sl"><span>envoyé 0,7 Mo</span><span>lecture ×2</span><span>vérification</span></div><p>Le papier apparaît gris, sans annotation ; l'en-tête lu s'imprime dès la première lecture ; le × reste actif.</p><div class="z2-gris"><div class="z2-ent"><div class="z2-four">Brau- und Rauchshop GmbH</div><div class="z2-ref"><b>372765</b>27.04.2026</div></div></div></div>
+    <div class="z2-et"><h3>2 · Lue, sans point</h3><div class="z2-stylo" style="padding:0"><div class="z2-pts"><span class="z2-pt z2-fait">✓</span></div><div class="z2-cur">rien à régler</div><span class="z2-aller z2-pret">prête</span></div><div class="z2-tampon" style="position:static;transform:none;align-self:flex-start"><b>86,50</b>23 lignes ✓</div></div>
+    <div class="z2-et"><h3>3 · Lue avec ses points</h3><p>L'écran ci-dessus : le stylo tient le point courant (TVA), « y aller » descend au bloc cerclé sur le papier.</p></div>
+    <div class="z2-et"><h3>4 · Un point réglé, puis tous</h3><div class="z2-stylo" style="padding:0"><div class="z2-pts"><span class="z2-pt z2-fait">✓</span><span class="z2-pt" aria-current="true">2</span><span class="z2-pt">3</span></div><div class="z2-cur"><i>mouture</i> · <b>×5</b> ↑ malt</div><span class="z2-aller">y aller</span></div><div class="z2-stylo" style="padding:0"><div class="z2-pts"><span class="z2-pt z2-fait">✓</span><span class="z2-pt z2-fait">✓</span><span class="z2-pt z2-fait">✓</span></div><div class="z2-cur">tout est réglé</div><span class="z2-aller z2-pret">prête</span></div></div>
+    <div class="z2-et"><h3>5 · Erreur de lecture</h3><div class="z2-err">Lecture impossible · le fichier est gardé</div><p>Un papier vide, à remplir ligne par ligne ; le justificatif reste attaché.</p></div>
+    <div class="z2-et"><h3>6 · Drive pas connecté</h3><span class="z2-drv z2-off" style="margin:0"><i></i>Drive à connecter</span><button class="z2-sel" style="align-self:flex-start">Connecter Drive</button><p>Confirmer reste visible ; rien ne s'écrit sans Drive.</p></div>
+    <div class="z2-et"><h3>7 · Enregistrement, puis reçu</h3><div class="z2-steps"><span class="z2-f"></span><span class="z2-en"></span></div><div class="z2-sl"><span>envoi au Drive</span><span>sans bloquer</span></div><div class="z2-recu"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg><div><b>2026-04-27 Brau- und Rauchshop 372765.jpg</b><br><a href="#" style="color:var(--encre);font-size:12px">Ouvrir dans Drive · L'Affinée / Justificatifs / 2026</a></div></div></div>
+    <div class="z2-et"><h3>8 · Achat peut-être déjà enregistré</h3><div class="z2-dbl"><span></span><span>ce papier</span><span>déjà enregistré</span><span>n°</span><b>372765</b><b>380001</b><span>commande</span><b>686863</b><b>686863</b><span>total</span><b>86,50</b><b>86,50</b></div><div class="z2-seg"><button aria-pressed="true">Même achat</button><button aria-pressed="false">Autre achat</button></div></div>
+    <div class="z2-et"><h3>9 · Hors ligne</h3><span class="z2-drv z2-off" style="margin:0"><i></i>hors ligne · brouillon gardé</span><p>On annote ; l'enregistrement attend le réseau sans rien perdre.</p></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  var etat={1:false,2:false,3:false}, cur=1;
+  var libs={1:'<i>TVA imprimée</i> · <b>2,80 · 4,15</b> · HT vide',2:'<i>mouture</i> · <b>×5</b> ↑ rattacher au malt',3:'<i>Target</i> · α <b>11,3</b> ≠ stock <b>11,8</b>'};
+  var cibles={1:'z2-tva',2:'z2-m1',3:'z2-target'};
+  function maj(){
+    document.querySelectorAll('.z2-pt[data-n]').forEach(function(p){var n=p.dataset.n;p.classList.toggle('z2-fait',etat[n]);p.textContent=etat[n]?'✓':n;p.setAttribute('aria-current',String(n)===String(cur))});
+    var rest=[1,2,3].filter(function(n){return !etat[n]});
+    var c=document.getElementById('z2-cur'), a=document.getElementById('z2-aller');
+    if(!rest.length){c.textContent='tout est réglé';a.textContent='prête';a.classList.add('z2-pret');}
+    else{ if(etat[cur]) cur=rest[0]; c.innerHTML=libs[cur]; a.textContent='y aller'; a.classList.remove('z2-pret'); }
+  }
+  function aller(id){var t=document.getElementById(id);if(!t)return;var sec=t.closest('.z2-pli');if(sec){sec.previousElementSibling.setAttribute('aria-expanded','true')}t.scrollIntoView({behavior:'smooth',block:'center'});t.classList.remove('z2-flash');void t.offsetWidth;t.classList.add('z2-flash')}
+  document.querySelectorAll('.z2-pt[data-n]').forEach(function(p){p.addEventListener('click',function(){cur=Number(p.dataset.n);maj();aller(cibles[cur])})});
+  document.getElementById('z2-aller').addEventListener('click',function(){aller(cibles[cur])});
+  document.querySelectorAll('[data-sec]').forEach(function(s){s.addEventListener('click',function(){s.setAttribute('aria-expanded',s.getAttribute('aria-expanded')==='true'?'false':'true')})});
+  document.querySelectorAll('[data-tva]').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('[data-tva]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');
+    etat[1]=true;var c=document.getElementById('z2-calc');c.textContent=b.dataset.tva?'retenu '+b.dataset.tva+' · lu, non recoupé':'TVA laissée vide · HT vide';c.style.color='var(--hopt)';
+    b.closest('.z2-cercle').classList.add('z2-fait');maj();
+  })});
+  var mouts=document.querySelectorAll('[data-mout]');
+  document.querySelectorAll('[data-ratt]').forEach(function(b){b.addEventListener('click',function(){var li=b.closest('[data-mout]');li.classList.remove('z2-doute');li.classList.add('z2-fait');b.remove();
+    var n=document.createElement('span');n.className='z2-note';n.textContent='2,40/kg';li.querySelector('.z2-d').appendChild(n);
+    if(![].some.call(mouts,function(m){return m.classList.contains('z2-doute')})){etat[2]=true;maj();}
+  })});
+  document.querySelector('[data-target]').addEventListener('click',function(){var li=document.getElementById('z2-target');li.classList.add('z2-fait');this.remove();var n=document.createElement('span');n.className='z2-note';n.textContent=' → Target bis';li.querySelector('.z2-d').appendChild(n);etat[3]=true;maj();});
+  document.getElementById('z2-ouv').addEventListener('click',function(){var t=document.getElementById('z2-tir');var o=t.getAttribute('aria-expanded')==='true';t.setAttribute('aria-expanded',o?'false':'true');this.textContent=o?'détails ⌄':'détails ⌃'});
+  document.getElementById('z2-pay').addEventListener('click',function(){var on=this.classList.toggle('z2-on');this.textContent=on?'Déjà payé':'À payer';document.getElementById('z2-payle').hidden=!on;document.getElementById('z2-ech').hidden=on});
+  document.getElementById('z2-go').addEventListener('click',function(){var d=document.getElementById('z2-drv2');d.innerHTML='<i></i>envoi au Drive en cours…';setTimeout(function(){d.innerHTML='<i></i>rangé · 2026-04-27 Brau- und Rauchshop 372765.jpg'},1500)});
+})();
+</script>
+</body></html>

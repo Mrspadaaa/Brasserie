@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z4 — Nouvelle dépense · le pont facture ↔ stock (v0 chaude, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--att:#9C7020;--attt:#7F5B10;--attf:#F6EBD3;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--malt:#E0A02E;--lev:#6A4FB0;--stock:#4C6B2A;--stockf:#EEF3E6;--eau:#4F7E9B;--eaut:#2F5F7D;--rouge:#A8291F;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+::selection{background:#F2DDA6}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg{display:block}
+.z4-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.z4-app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden;display:flex;flex-direction:column;padding-bottom:64px}
+@media (min-width:900px){body{background:#E9E9E9}.z4-app{max-width:760px;margin:24px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px -20px rgba(0,0,0,.4);min-height:0;overflow:hidden;padding-bottom:0}}
+
+/* L'en-tête porte la somme ; dessous, le compte et les trois points en chips. */
+.z4-hd{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.z4-tb{display:flex;align-items:center;gap:8px;height:40px;padding:0 10px}
+.z4-tb h1{font-size:16px;font-weight:600;color:var(--t0)}
+.z4-tot{margin-left:auto;display:flex;align-items:baseline}
+.z4-tot input{width:5ch;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;color:var(--t0);border-radius:0}
+.z4-tot input:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z4-tot small{font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:3px}
+.z4-x{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.z4-x:hover{background:var(--haut)}
+.z4-ver{display:flex;align-items:center;gap:6px;padding:0 10px 8px;overflow-x:auto;scrollbar-width:none}
+.z4-ok{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--hopt);white-space:nowrap;flex-shrink:0}
+.z4-ok b{font-family:var(--mono);font-weight:600}
+.z4-cnt{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;white-space:nowrap}
+.z4-cnt b{font-family:var(--mono)}
+.z4-cnt.z4-zero{background:var(--hopt)}
+.z4-chip{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:10px;border:1.5px solid var(--att);background:var(--attf);color:var(--attt);font-size:14px;white-space:nowrap}
+.z4-chip.z4-fait{border-color:var(--bord);background:#fff;color:var(--t2);text-decoration:line-through}
+.z4-chip:active{transform:scale(.97)}
+
+/* Le pont : la facture à gauche, le stock à droite, le lien au milieu. */
+.z4-ecran{min-height:100vh;display:flex;flex-direction:column}
+.z4-pont{margin:6px 10px 0;padding:6px 4px 6px;display:flex;flex-direction:column;gap:2px;background:var(--panel);border-radius:16px}
+.z4-r:hover{background:#fff}
+.z4-reste:hover{background:#fff}
+.z4-cols{display:grid;grid-template-columns:1fr 32px 1fr;align-items:center;column-gap:4px;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;padding:0 4px 4px}
+.z4-cols span:last-child{display:flex;align-items:center;gap:4px;color:var(--stock)}
+.z4-cols b{font-family:var(--mono);font-weight:500;color:var(--t1);text-transform:none;letter-spacing:0;margin-left:4px}
+.z4-fam{display:flex;align-items:center;gap:6px;min-height:22px;margin-top:4px;padding:0 4px;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.z4-fam i{width:8px;height:8px;border-radius:50%}
+.z4-fam b{font-family:var(--mono);font-weight:500;color:var(--t0);text-transform:none;letter-spacing:0;margin-left:auto}
+.z4-r{display:grid;grid-template-columns:1fr 32px 1fr;align-items:center;column-gap:4px;min-height:30px;border-radius:10px;padding:1px 4px}
+.z4-r>*{min-width:0}
+.z4-r:hover{background:var(--panel)}
+.z4-r.z4-pt{background:var(--attf)}
+.z4-r.z4-fait{background:var(--hopf)}
+.z4-g{display:flex;align-items:center;gap:6px}
+.z4-q{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--t0);white-space:nowrap}
+.z4-q small{font-size:12px;color:var(--t2)}
+.z4-n{font-size:14px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z4-n input{width:100%;border:0;background:none;font-size:14px;color:var(--t1);padding:0;border-bottom:1px dotted transparent}
+.z4-n input:focus{outline:none;border-bottom-color:var(--t0)}
+.z4-n em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:4px}
+.z4-l{width:32px;height:32px;display:flex;align-items:center;justify-content:center;position:relative}
+.z4-l svg{width:20px;height:20px}
+.z4-l::before,.z4-l::after{content:"";position:absolute;top:50%;height:1.5px;width:6px;background:var(--bordm)}
+.z4-l::before{left:0}.z4-l::after{right:0}
+.z4-l.z4-on::before,.z4-l.z4-on::after{background:var(--hopt)}
+.z4-l.z4-none::before,.z4-l.z4-none::after{display:none}
+.z4-l button{width:28px;height:28px;border-radius:50%;border:1.5px dashed var(--att);background:#fff;color:var(--attt);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;position:relative;z-index:1}
+.z4-l button:active{transform:scale(.94)}
+/* La tuile du stock : l'article, et ce que la ligne y ajoute. */
+.z4-s{display:flex;align-items:center;gap:6px;min-height:30px;padding:0 8px;border-radius:10px;background:var(--stockf);border:1px solid #D4E0C4;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z4-s b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--stock);margin-left:auto;flex-shrink:0}
+.z4-s.z4-new{background:#fff;border:1.5px dashed var(--bordm);color:var(--t1)}
+.z4-s.z4-new b{color:var(--t2);font-weight:500}
+.z4-s.z4-bis{background:var(--attf);border-color:var(--att);color:var(--attt)}
+.z4-s.z4-bis b{color:var(--attt)}
+.z4-s.z4-vide{background:none;border:0;color:var(--t2);font-size:12px;justify-content:center}
+.z4-s svg{width:14px;height:14px;flex-shrink:0}
+.z4-choix{display:flex;gap:4px;align-items:center;justify-content:flex-end}
+.z4-choix button{height:26px;padding:0 6px;border-radius:10px;border:1.5px solid var(--att);background:#fff;font-size:12px;color:var(--attt);white-space:nowrap}
+.z4-choix button.z4-prop{border-style:dashed;border-color:var(--hopt);color:var(--hopt);background:var(--hopf)}
+.z4-choix button:active{transform:scale(.96)}
+.z4-mout{min-height:28px}
+.z4-mout .z4-g{padding-left:14px;position:relative;color:var(--t2)}
+.z4-mout .z4-g::before{content:"";position:absolute;left:4px;top:-6px;bottom:10px;width:7px;border:1.5px dashed var(--att);border-right:0;border-top:0}
+.z4-mout.z4-fait .z4-g::before{border-style:solid;border-color:var(--hopt)}
+.z4-mout .z4-q{font-size:12px;color:var(--t1)}
+.z4-mout .z4-n{font-size:12px}
+.z4-reste{display:grid;grid-template-columns:1fr 32px 1fr;align-items:center;column-gap:4px;min-height:30px;padding:0 4px;border-radius:10px;cursor:pointer}
+.z4-reste:hover{background:var(--panel)}
+.z4-reste .z4-n{color:var(--t2)}
+.z4-reste .z4-icos{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.z4-reste .z4-icos span{display:inline-flex;align-items:center;gap:2px}
+.z4-reste .z4-icos svg{width:16px;height:16px}
+.z4-reste .z4-icos svg *{stroke-width:2.25px}
+.z4-reste .z4-icos span{gap:0}
+.z4-reste .z4-icos span b{display:none}
+.z4-reste[aria-expanded="true"]{display:none}
+.z4-plie{display:none;flex-direction:column;gap:2px}
+.z4-plie.z4-ouv{display:flex}
+/* La TVA, hors stock : une ligne du pont, ses deux valeurs lues à droite. */
+.z4-r.z4-tva .z4-s{background:none;border:0;padding:0;overflow:visible}
+.z4-deux{display:inline-flex;gap:4px;margin-left:auto}
+.z4-deux button{height:26px;min-width:40px;padding:0 6px;border-radius:10px;border:1.5px solid var(--att);background:#fff;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.z4-deux button.z4-vide{font-family:var(--sans);font-weight:400;border-style:dashed;border-color:var(--bordm);color:var(--t1)}
+.z4-deux button[aria-pressed="true"]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.z4-calc{font-family:var(--mono);font-size:12px;color:var(--attt)}
+.z4-calc.z4-done{color:var(--hopt)}
+.z4-lgf{display:flex;gap:6px;align-items:center;padding:6px 4px 0}
+.z4-lgf button{height:26px;padding:0 8px;border-radius:10px;border:1px dashed var(--bordm);font-size:12px;color:var(--t1)}
+.z4-lgf span{margin-left:auto;font-size:12px;color:var(--t2)}
+.z4-lgf span b{font-family:var(--mono);color:var(--t0);font-weight:500}
+
+/* La dépense : à un toucher, sous le pont. */
+.z4-dep{margin:8px 10px 0;background:var(--panel);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
+.z4-deph{display:flex;align-items:center;gap:8px;min-height:28px;cursor:pointer;font-size:14px}
+.z4-deph b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.z4-deph .z4-sup{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:16px}
+.z4-drv{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--hopt);margin-left:auto;white-space:nowrap}
+.z4-drv i{width:8px;height:8px;border-radius:50%;background:var(--hop)}
+.z4-drv.z4-off{color:var(--attt)}.z4-drv.z4-off i{background:var(--att)}
+.z4-chev{color:var(--t2);transition:transform .15s}
+.z4-dep[aria-expanded="true"] .z4-chev{transform:rotate(180deg)}
+.z4-plus{display:none;flex-direction:column;gap:4px;padding-top:4px;border-top:1px solid var(--bord)}
+.z4-dep[aria-expanded="true"] .z4-plus{display:flex}
+.z4-plus>div{display:flex;align-items:center;gap:6px;min-height:28px;font-size:14px}
+.z4-plus>div>span:first-child{flex:1;color:var(--t2)}
+.z4-sel{height:28px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;background:#fff;font-size:14px;color:var(--t0)}
+.z4-in{height:26px;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0 2px;font-size:14px;color:var(--t0);border-radius:0}
+.z4-in:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z4-tag{font-size:12px;color:var(--t1);background:var(--haut);border-radius:10px;padding:0 6px;line-height:18px}
+.z4-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px}
+.z4-seg button{padding:0 10px;font-size:14px;white-space:nowrap}
+.z4-deph{flex-wrap:wrap}
+.z4-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.z4-lnk{color:var(--eaut);text-decoration:underline;text-underline-offset:2px;height:24px;padding:0 4px}
+
+.z4-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.96);border-top:1px solid var(--bord)}
+@media (min-width:900px){.z4-pied{position:sticky}}
+.z4-go{margin-left:auto;height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.z4-go:active{transform:scale(.97)}
+.z4-flash{animation:z4-fl .8s ease-out}
+@keyframes z4-fl{from{box-shadow:inset 0 0 0 2px var(--att)}}
+
+.z4-annexe{margin:28px 10px 90px;padding-top:28px;border-top:1px dashed var(--bordm);margin-top:auto}
+.z4-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.z4-etats{display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:900px){.z4-etats{grid-template-columns:1fr 1fr}}
+.z4-et{border:1px solid var(--bord);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;background:#fff}
+.z4-et h3{font-size:12px;font-weight:600;color:var(--t2)}
+.z4-et p{font-size:14px;color:var(--t1)}
+.z4-steps{display:flex;gap:6px}
+.z4-steps span{flex:1;height:8px;border-radius:9px;background:var(--bord);position:relative;overflow:hidden}
+.z4-steps span.z4-f{background:var(--t0)}
+.z4-steps span.z4-en::after{content:"";position:absolute;inset:0;width:50%;background:var(--t0);animation:z4-run 1.2s linear infinite}
+@keyframes z4-run{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+.z4-sl{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.z4-recu{display:flex;align-items:center;gap:8px;background:var(--hopf);border-radius:10px;padding:6px 8px}
+.z4-recu b{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--t0)}
+.z4-err{background:#F9E1DF;border-radius:10px;padding:6px 8px;color:var(--rouge)}
+.z4-dbl{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 8px;font-size:14px}
+.z4-dbl span{color:var(--t2);font-size:12px}
+.z4-dbl b{font-family:var(--mono);font-weight:500}
+</style></head>
+<body>
+<div class="z4-app">
+<div class="z4-ecran">
+<header class="z4-hd">
+  <div class="z4-tb"><button class="z4-x" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13"/></svg></button><h1>Nouvelle dépense</h1><div class="z4-tot"><input inputmode="decimal" value="86,50" aria-label="Total TTC en CHF" data-booster="edition-sur-place"><small>CHF</small></div></div>
+  <div class="z4-ver" data-booster="compteur-points">
+    <span class="z4-ok"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg><b>23</b> lignes</span>
+    <span class="z4-cnt" id="z4-cnt"><b>3</b> points</span>
+    <button class="z4-chip" data-pt="tva" data-cible="z4-tva">TVA</button><button class="z4-chip" data-pt="mout" data-cible="z4-m1">mouture ×5</button><button class="z4-chip" data-pt="target" data-cible="z4-target">Target α</button>
+  </div>
+</header>
+
+<section class="z4-pont" aria-label="Le pont entre la facture et le stock" data-booster="pont-facture-stock">
+  <div class="z4-cols"><span>Facture</span><span></span><span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 5l6-3 6 3v7l-6 3-6-3z"/><path d="M2 5l6 3 6-3M8 8v7"/></svg>Stock</span></div>
+
+  <div class="z4-r z4-tva z4-pt" id="z4-tva">
+    <div class="z4-g"><span class="z4-n">TVA imprimée</span></div>
+    <div class="z4-l z4-none"><svg viewBox="0 0 20 20" fill="none" stroke="var(--attt)" stroke-width="1.8"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v5M10 13.5v.5"/></svg></div>
+    <div class="z4-s"><span class="z4-deux" data-booster="deux-valeurs"><button data-tva="2,80">2,80</button><button data-tva="4,15">4,15</button><button class="z4-vide" data-tva="">vide</button></span></div>
+  </div>
+  <div class="z4-r" style="min-height:20px"><span class="z4-calc" id="z4-calc" style="grid-column:1/4">110,40 ≠ 86,50 · 4,15 ≠ 2,80</span></div>
+
+  <div class="z4-fam"><i style="background:var(--malt)"></i>Malts<b>36,85</b></div>
+  <div class="z4-r"><div class="z4-g"><span class="z4-q">6<small> kg</small></span><span class="z4-n"><input value="Maris Otter" aria-label="Ligne 1"></span></div><div class="z4-l z4-on"><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></div><div class="z4-s"><b id="z4-s1">+6 kg</b></div></div>
+  <div class="z4-r"><div class="z4-g"><span class="z4-q">1<small> kg</small></span><span class="z4-n"><input value="Röstgerste" aria-label="Ligne 4"></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b id="z4-s4">Malt</b></div></div>
+  <div class="z4-r"><div class="z4-g"><span class="z4-q">1<small> kg</small></span><span class="z4-n"><input value="Caramünch Typ 2" aria-label="Ligne 6"></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b id="z4-s6">Malt</b></div></div>
+  <div class="z4-r"><div class="z4-g"><span class="z4-q">5<small> kg</small></span><span class="z4-n"><input value="Pilsner Malz" aria-label="Ligne 13"></span></div><div class="z4-l z4-on"><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></div><div class="z4-s"><b id="z4-s13">+5 kg</b></div></div>
+  <div class="z4-r"><div class="z4-g"><span class="z4-q">2<small> kg</small></span><span class="z4-n"><input value="Weizenmalz hell" aria-label="Ligne 15"></span></div><div class="z4-l z4-on"><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></div><div class="z4-s"><b id="z4-s15">+2 kg</b></div></div>
+  <div class="z4-r z4-mout z4-pt" id="z4-m1" data-mout="z4-s1 z4-s4 z4-s6 z4-s13 z4-s15"><div class="z4-g"><span class="z4-q">5<small> ×</small></span><span class="z4-n">mouture <em>1,50</em></span></div><div class="z4-l z4-none"><button data-ratt aria-label="rattacher aux malts du dessus">↑</button></div><div class="z4-s z4-vide">—</div></div>
+  <div class="z4-reste" data-reste="z4-pm" aria-expanded="false"><span class="z4-n">2 autres</span><span></span><span class="z4-icos"><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="2.25"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="2.25"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></span></span></div>
+  <div class="z4-plie" id="z4-pm">
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">1<small> kg</small></span><span class="z4-n"><input value="Gerstenflocken" aria-label="Ligne 3"></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>Malt</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">2<small> kg</small></span><span class="z4-n"><input value="Haferflocken" aria-label="Ligne 17"></span></div><div class="z4-l z4-on"><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></div><div class="z4-s">Haferflocken<b>+2 kg</b></div></div>
+  </div>
+
+  <div class="z4-fam"><i style="background:var(--hop)"></i>Houblons<b>20,05</b></div>
+  <div class="z4-r z4-pt" id="z4-target"><div class="z4-g"><span class="z4-q">40<small> g</small></span><span class="z4-n">Target<em>α 11,3</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="9" height="9" rx="2"/><rect x="8" y="8" width="9" height="9" rx="2" fill="#fff"/></svg></div><div class="z4-s z4-bis" id="z4-starget"><span class="z4-choix"><button class="z4-prop" data-target="bis">Target bis</button><button data-target="meme">lot 11,8</button></span></div></div>
+  <div class="z4-reste" data-reste="z4-ph" aria-expanded="false"><span class="z4-n">6 autres</span><span></span><span class="z4-icos"><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="2.25"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="2.25"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></span><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--attt)" stroke-width="2.25"><rect x="3" y="3" width="9" height="9" rx="2"/><rect x="8" y="8" width="9" height="9" rx="2" fill="#fff"/></svg></span></span></div>
+  <div class="z4-plie" id="z4-ph">
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">20<small> g</small></span><span class="z4-n">Goldings East Kent<em>α 5,5</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>Houblon</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">60<small> g</small></span><span class="z4-n">Galaxy<em>α 17,2</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>Houblon</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">100<small> g</small></span><span class="z4-n">Nelson Sauvin<em>α 9,6</em></span></div><div class="z4-l z4-on"><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></div><div class="z4-s">Nelson Sauvin<b>+100 g</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">30<small> g</small></span><span class="z4-n">Sabro<em>α 13,4</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>Houblon</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">30<small> g</small></span><span class="z4-n">Hallertauer Blanc<em>α 9,5 · CH</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="9" height="9" rx="2"/><rect x="8" y="8" width="9" height="9" rx="2" fill="#fff"/></svg></div><div class="z4-s z4-bis">Hallertauer Blanc CH<b>bis</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">20<small> g</small></span><span class="z4-n">Motueka<em>α 8,1</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>Houblon</b></div></div>
+  </div>
+
+  <div class="z4-fam"><i style="background:var(--lev)"></i>Levures<b>29,60</b></div>
+  <div class="z4-reste" data-reste="z4-pl" aria-expanded="false"><span class="z4-n">4 · Stk = sachets</span><span></span><span class="z4-icos"><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="2.25"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="2.25"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></span></span></div>
+  <div class="z4-plie" id="z4-pl">
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">2<small> Stk</small></span><span class="z4-n">Lallemand Windsor<em>11 g</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>2 sachets</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">1<small> Stk</small></span><span class="z4-n">Safale BE-256<em>11,5 g</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>1 sachet</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">2<small> Stk</small></span><span class="z4-n">Safale US-05<em>11,5 g</em></span></div><div class="z4-l z4-on"><svg viewBox="0 0 20 20" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M8 12a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M12 8a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></div><div class="z4-s">Safale US-05<b>+2 sachets</b></div></div>
+    <div class="z4-r"><div class="z4-g"><span class="z4-q">2<small> Stk</small></span><span class="z4-n">Lallemand Verdant IPA<em>11 g</em></span></div><div class="z4-l"><svg viewBox="0 0 20 20" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="10" cy="10" r="7" stroke-dasharray="2 2"/><path d="M10 7v6M7 10h6"/></svg></div><div class="z4-s z4-new">nouveau<b>2 sachets</b></div></div>
+  </div>
+  <div class="z4-lgf"><button>+ ligne</button><button>regrouper</button><span><b>86,50 / 86,50</b></span></div>
+</section>
+
+<section class="z4-dep" id="z4-dep" aria-expanded="false" aria-label="La dépense">
+  <div class="z4-deph" id="z4-deph">
+    <b>27.04.2026</b><span class="z4-seg" data-booster="bascule-reglement"><button aria-pressed="true" data-seg="paye">Déjà payé</button><button aria-pressed="false" data-seg="apayer">À payer</button></span><span class="z4-sup" id="z4-supp">supposée</span>
+    <span class="z4-drv" id="z4-drv"><i></i>Drive prêt</span>
+    <svg class="z4-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg>
+  </div>
+  <div class="z4-plus">
+    <div><span>Date de l'achat</span><input class="z4-in z4-m" inputmode="numeric" value="27.04.2026" aria-label="Date de l'achat" style="width:92px"></div>
+    <div id="z4-pl-paye"><span>Payé le</span><input class="z4-in z4-m" inputmode="numeric" value="27.04.2026" aria-label="Payé le" style="width:92px"><span class="z4-tag">= date de facture, non imprimée</span></div>
+    <div><span>Moyen</span><button class="z4-sel">E-Finance ⌄</button></div>
+    <div id="z4-ech" hidden><span>Échéance</span><input class="z4-in z4-m" inputmode="numeric" value="07.05.2026" aria-label="Échéance"></div>
+    <div><span>Pour quoi ?</span><input class="z4-in" value="Brau- und Rauchshop · 372765 · malts, houblons, levures" aria-label="Pour quoi" style="width:60%"><span class="z4-tag">proposé</span></div>
+    <div><span>Fournisseur</span><input class="z4-in" value="Brau- und Rauchshop GmbH" aria-label="Fournisseur" style="width:55%"></div>
+    <div><span>Catégorie</span><button class="z4-sel">Brassage ⌄</button></div>
+    <div><span>Lier à une dépense prévue</span><button class="z4-sel">aucune ⌄</button></div>
+    <div><span>Facture · commande</span><b class="z4-m">372765 · 686863</b><span class="z4-tag">pro-forma, payée</span></div>
+    <div><span>HT</span><span class="z4-tag">non imprimé</span><input class="z4-in z4-m" inputmode="decimal" value="" placeholder="—" aria-label="HT" style="width:56px;text-align:right"></div>
+    <div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg><span class="z4-m" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">2026-04-27 Brau- und Rauchshop 372765.jpg</span><button class="z4-lnk">Voir</button><button class="z4-lnk">Changer</button></div>
+  </div>
+</section>
+
+<footer class="z4-pied"><span class="z4-drv" id="z4-drv2" style="margin:0"><i></i>L'Affinée / Justificatifs / 2026</span><button class="z4-go" id="z4-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer et enregistrer</button></footer>
+</div>
+
+<section class="z4-annexe" aria-label="États">
+  <h2>États</h2>
+  <div class="z4-etats">
+    <div class="z4-et"><h3>1 · Lecture en cours</h3><div class="z4-steps"><span class="z4-f"></span><span class="z4-en"></span><span></span></div><div class="z4-sl"><span>envoyé 0,7 Mo</span><span>lecture ×2</span><span>vérification</span></div><p>Le pont se remplit à gauche dès la première lecture ; la colonne stock arrive à la vérification ; le × reste actif.</p></div>
+    <div class="z4-et"><h3>2 · Lue, sans point</h3><div class="z4-ver" style="padding:0"><span class="z4-ok"><b>23</b> lignes</span><span class="z4-cnt z4-zero"><b>0</b> point · prête</span></div><p>Chaque ligne a son lien à droite ; rien d'ambre.</p></div>
+    <div class="z4-et"><h3>3 · Lue avec ses points</h3><p>L'écran ci-dessus : la TVA en première ligne du pont, les cinq moutures à rattacher d'un ↑, Target à droite en bis.</p></div>
+    <div class="z4-et"><h3>4 · Un point réglé, puis tous</h3><div class="z4-ver" style="padding:0"><span class="z4-cnt"><b>2</b> points</span><span class="z4-chip z4-fait">TVA</span><span class="z4-chip">mouture ×5</span></div><div class="z4-ver" style="padding:0"><span class="z4-cnt z4-zero"><b>0</b> point · prête</span></div></div>
+    <div class="z4-et"><h3>5 · Erreur de lecture</h3><div class="z4-err">Lecture impossible · le fichier est gardé</div><p>Le pont est vide à gauche, à remplir ; le stock se propose à chaque ligne tapée.</p></div>
+    <div class="z4-et"><h3>6 · Drive pas connecté</h3><span class="z4-drv z4-off" style="margin:0"><i></i>Drive à connecter</span><button class="z4-sel" style="align-self:flex-start">Connecter Drive</button><p>Confirmer reste là ; rien ne s'écrit sans Drive.</p></div>
+    <div class="z4-et"><h3>7 · Enregistrement, puis reçu</h3><div class="z4-steps"><span class="z4-f"></span><span class="z4-en"></span></div><div class="z4-sl"><span>envoi au Drive</span><span>sans bloquer</span></div><div class="z4-recu"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg><div><b>2026-04-27 Brau- und Rauchshop 372765.jpg</b><br><a href="#" style="color:var(--eaut);font-size:12px">Ouvrir dans Drive · L'Affinée / Justificatifs / 2026</a></div></div></div>
+    <div class="z4-et"><h3>8 · Achat peut-être déjà enregistré</h3><div class="z4-dbl"><span></span><span>document lu</span><span>déjà enregistré</span><span>n°</span><b>372765</b><b>380001</b><span>commande</span><b>686863</b><b>686863</b><span>total</span><b>86,50</b><b>86,50</b></div><div class="z4-seg" style="align-self:flex-start"><button aria-pressed="true">Même achat</button><button aria-pressed="false">Autre achat</button></div></div>
+    <div class="z4-et"><h3>9 · Hors ligne</h3><span class="z4-drv z4-off" style="margin:0"><i></i>hors ligne · brouillon gardé</span><p>Le pont se règle ; l'enregistrement attend le réseau sans rien perdre.</p></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  var pts={tva:false,mout:false,target:false};
+  function maj(){
+    var n=Object.keys(pts).filter(function(k){return !pts[k]}).length;var c=document.getElementById('z4-cnt');
+    c.innerHTML='<b>'+n+'</b> '+(n===0?'point · prête':n===1?'point':'points');c.classList.toggle('z4-zero',n===0);
+    document.querySelectorAll('.z4-chip[data-pt]').forEach(function(x){x.classList.toggle('z4-fait',pts[x.dataset.pt])});
+  }
+  document.querySelectorAll('.z4-chip[data-pt]').forEach(function(c){c.addEventListener('click',function(){var t=document.getElementById(c.dataset.cible);if(!t)return;t.scrollIntoView({behavior:'smooth',block:'center'});t.classList.remove('z4-flash');void t.offsetWidth;t.classList.add('z4-flash')})});
+  document.querySelectorAll('[data-tva]').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('[data-tva]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');
+    var r=document.getElementById('z4-tva');r.classList.remove('z4-pt');r.classList.add('z4-fait');
+    var c=document.getElementById('z4-calc');c.textContent=b.dataset.tva?'retenu '+b.dataset.tva+' · lu, non recoupé · HT vide':'TVA laissée vide · HT vide';c.classList.add('z4-done');pts.tva=true;maj();
+  })});
+  var mouts=document.querySelectorAll('[data-mout]');
+  document.querySelectorAll('[data-ratt]').forEach(function(b){b.addEventListener('click',function(){
+    var r=b.closest('[data-mout]');r.classList.remove('z4-pt');r.classList.add('z4-fait');
+    r.dataset.mout.split(' ').forEach(function(id){var s=document.getElementById(id);if(s){s.textContent=s.textContent+' · mouture';}});
+    r.querySelector(".z4-s").textContent="dans les malts · 2,40/kg";b.replaceWith(Object.assign(document.createElement('span'),{textContent:'✓',style:'color:var(--hopt);font-weight:600'}));
+    if(![].some.call(mouts,function(m){return m.classList.contains('z4-pt')})){pts.mout=true;maj();}
+  })});
+  document.querySelectorAll('[data-target]').forEach(function(b){b.addEventListener('click',function(){
+    var r=document.getElementById('z4-target');r.classList.remove('z4-pt');r.classList.add('z4-fait');
+    var s=document.getElementById('z4-starget');s.innerHTML=b.dataset.target==='bis'?'Target bis<b>+40 g</b>':'Target<b>+40 g · α 11,3</b>';if(b.dataset.target!=='bis'){s.classList.remove('z4-bis')}
+    pts.target=true;maj();
+  })});
+  document.querySelectorAll('[data-reste]').forEach(function(r){r.addEventListener('click',function(){r.setAttribute('aria-expanded','true');document.getElementById(r.dataset.reste).classList.add('z4-ouv')})});
+  document.getElementById('z4-deph').addEventListener('click',function(e){if(e.target.closest('button'))return;var d=document.getElementById('z4-dep');d.setAttribute('aria-expanded',d.getAttribute('aria-expanded')==='true'?'false':'true')});
+  document.querySelectorAll('[data-seg]').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('[data-seg]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');var ap=b.dataset.seg==='apayer';document.getElementById('z4-ech').hidden=!ap;document.getElementById('z4-pl-paye').hidden=ap;document.getElementById('z4-supp').textContent=ap?'échéance 07.05':'supposée'})});
+  document.getElementById('z4-go').addEventListener('click',function(){var d=document.getElementById('z4-drv2');d.innerHTML='<i></i>envoi au Drive en cours…';setTimeout(function(){d.innerHTML='<i></i>rangé · 2026-04-27 Brau- und Rauchshop 372765.jpg'},1500)});
+})();
+</script>
+</body></html>

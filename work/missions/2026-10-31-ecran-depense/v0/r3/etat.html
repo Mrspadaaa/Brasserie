@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r3 — Nouvelle dépense · 86,50 en une barre, les points en cartes (v0, chaude, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#7F5B10;--attc:#F0C66B;--attf:#FBF4E4;--ok:#2F6B45;--okc:#8FD3A4;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+--malt:#D9A441;--mout:#EBD9AE;--houb:#6FAE5F;--lev:#6E8FD1}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg path,svg circle,svg rect{vector-effect:non-scaling-stroke;stroke-width:1.5}
+[hidden]{display:none!important}
+.r3-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.r3-app{max-width:560px;margin:0 auto;padding-bottom:60px}
+/* Le verdict, en nuit : le total et sa preuve, la barre des 23 lignes. */
+.r3-nuit{background:var(--t0);color:#fff;border-radius:0 0 24px 24px;padding:0 12px 12px}
+.r3-hd{display:flex;align-items:center;height:40px;gap:6px}
+.r3-hd h1{flex:1;font-size:14px;font-weight:600;color:#D6D6D6}
+.r3-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff}
+.r3-ib:active{background:#333}
+.r3-big{display:flex;align-items:baseline;gap:8px}
+.r3-big b{font-family:var(--mono);font-size:40px;font-weight:600;line-height:1;letter-spacing:-1px}
+.r3-big span{font-size:14px;color:#D6D6D6}
+.r3-qui{display:flex;justify-content:space-between;align-items:baseline;margin:4px 0 10px;font-size:16px;color:#fff;font-weight:600}
+.r3-qui span{font-family:var(--mono);font-size:14px;font-weight:400;color:#D6D6D6}
+.r3-bar{display:flex;height:28px;border-radius:10px;overflow:hidden;gap:2px}
+.r3-bar i{display:block;height:100%;cursor:pointer;position:relative;transition:filter .15s}
+.r3-bar i.f-malt{background:var(--malt)}.r3-bar i.f-mout{background:var(--mout)}.r3-bar i.f-houb{background:var(--houb)}.r3-bar i.f-lev{background:var(--lev)}
+.r3-bar i.r3-dt{background-image:repeating-linear-gradient(135deg,rgba(17,17,17,.75) 0 2px,transparent 2px 5px)}
+.r3-bar i.r3-sel{outline:2px solid #fff;outline-offset:-2px}
+.r3-fam{display:flex;gap:10px;margin-top:6px;font-size:12px;color:#D6D6D6;flex-wrap:wrap}
+.r3-fam span{display:inline-flex;align-items:center;gap:4px}
+.r3-fam i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.r3-fam b{font-family:var(--mono);font-weight:500;color:#fff}
+.r3-tip{margin-top:8px;min-height:28px;display:flex;align-items:center;gap:8px;font-size:14px;color:#fff;border-top:1px solid #333;padding-top:6px}
+.r3-tip .r3-m{color:#fff}
+.r3-tip em{font-style:normal;color:var(--okc)}
+.r3-tip em.r3-q{color:var(--attc)}
+.r3-proof{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--okc)}
+.r3-proof b{font-family:var(--mono);font-weight:500;color:#fff}
+/* Le paquet de cartes : un point à la fois, réglé d'un geste. */
+.r3-pts{padding:12px 10px 0}
+.r3-ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.r3-ph h2{font-size:16px;font-weight:600;color:var(--t0)}
+.r3-dots{display:flex;gap:4px;align-items:center}
+.r3-dots button{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.r3-dots button i{width:12px;height:12px;border-radius:50%;border:1.5px dashed var(--attt);display:block}
+.r3-dots button.r3-fait i{background:var(--t0);border:1.5px solid var(--t0)}
+.r3-dots button[aria-current="true"] i{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--t0)}
+.r3-deck{display:flex;align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;scrollbar-width:none;margin:0 -10px;padding:0 10px 4px}
+.r3-deck::-webkit-scrollbar{display:none}
+.r3-card{flex:0 0 calc(100% - 28px);scroll-snap-align:start;border:1.5px dashed var(--attt);background:var(--attf);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.r3-card.r3-ok{border:1px solid var(--bord);background:var(--panel)}
+.r3-ctop{display:flex;align-items:center;gap:6px}
+.r3-tag{font-size:12px;font-weight:600;border-radius:10px;padding:0 6px;line-height:20px;background:#fff;color:var(--attt);border:1px solid var(--attt)}
+.r3-tag.r3-stock{color:#2E4C80;border-color:#2E4C80}
+.r3-ctop b{font-size:16px;color:var(--t0);font-weight:600}
+.r3-vs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.r3-vs div{background:#fff;border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--bord)}
+.r3-vs small{font-size:12px;color:var(--t2)}
+.r3-vs b{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--t0);line-height:1.1}
+.r3-vs b.r3-dash{color:var(--attt)}
+.r3-calc{font-size:12px;color:var(--t1)}
+.r3-calc b{font-family:var(--mono);font-weight:600}
+.r3-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.r3-act button{min-height:32px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r3-act button.r3-pri{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600}
+.r3-act button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--t0);font-weight:600}
+.r3-mlist{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.r3-mlist button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;min-height:28px;padding:0 6px;border-radius:10px;background:#fff;border:1px dashed var(--attt);text-align:left;font-size:14px}
+.r3-mlist button.r3-on{border:1px solid var(--t1)}
+.r3-mlist .r3-m{font-size:14px}
+.r3-mlist em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.r3-fin{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.r3-fin b{font-size:16px;color:var(--t0)}
+/* Ce qui est recoupé : la confiance, ligne par ligne. */
+.r3-rec{padding:10px 10px 0;display:flex;flex-direction:column}
+.r3-rec h2{font-size:12px;color:var(--t2);font-weight:600;margin-bottom:2px}
+.r3-rr{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--bord)}
+.r3-rr svg{color:var(--ok)}
+.r3-rr span{font-size:14px;color:var(--t1)}
+.r3-rr b{font-family:var(--mono);font-size:14px;color:var(--t0);font-weight:500}
+/* Le second plan : les lignes par famille, puis les champs. */
+.r3-more{padding:12px 10px 0;display:flex;flex-direction:column}
+.r3-more details{border-bottom:1px solid var(--bord)}
+.r3-more summary{list-style:none;display:grid;grid-template-columns:14px 1fr auto 16px;align-items:center;gap:8px;min-height:36px;cursor:pointer}
+.r3-more summary::-webkit-details-marker{display:none}
+.r3-more summary i{width:12px;height:12px;border-radius:50%}
+.r3-more summary span{font-size:14px;color:var(--t0)}
+.r3-more summary b{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t0)}
+.r3-more summary em{font-style:normal;font-size:12px;color:var(--t2)}
+.r3-fl{display:flex;flex-direction:column;gap:2px;padding:0 0 8px 22px;font-size:14px}
+.r3-lb{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;min-height:28px;border-radius:10px;padding:0 4px;text-align:left}
+.r3-lb:active{background:var(--panel)}
+.r3-ed{display:flex;flex-wrap:wrap;gap:4px;padding:4px 0 6px 4px}
+.r3-fl .r3-m{text-align:right}
+.r3-fl .r3-s{font-size:12px;color:var(--t2);font-family:var(--mono)}
+.r3-fl .r3-q{color:var(--attt)}
+.r3-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 8px 22px}
+.r3-lab{font-size:12px;color:var(--t2);min-width:70px}
+.r3-in{height:32px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;font-size:16px;background:#fff}
+.r3-chip{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r3-chip[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--t0);font-weight:600}
+.r3-pied{position:fixed;left:0;right:0;bottom:0;background:var(--page);border-top:1px solid var(--bord);z-index:6}
+.r3-pi{max-width:560px;margin:0 auto;height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px}
+.r3-drv{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1);min-height:28px}
+.r3-drv .r3-ok{color:var(--ok)}
+.r3-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px}
+.r3-go[aria-disabled="true"]{background:var(--haut);color:var(--t1)}
+.r3-prog{height:3px;background:var(--haut)}.r3-prog i{display:block;height:100%;width:0;background:var(--t0);transition:width .2s}
+.r3-recu{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px}
+.r3-recu span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r3-recu a{color:var(--t0);font-weight:600;font-size:14px;white-space:nowrap}
+.r3-recu svg{flex-shrink:0}
+@media (prefers-reduced-motion:reduce){.r3-deck{scroll-behavior:auto}.r3-bar i{transition:none}}
+/* Annexe */
+.r3-ann{max-width:1240px;margin:0 auto;padding:24px 10px 80px}
+.r3-ann>h2{font-size:16px;color:var(--t0);margin-bottom:8px}
+.r3-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.r3-grid>*{min-width:0}
+.r3-et{border:1px solid var(--bord);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.r3-et h3{font-size:12px;color:var(--t2);font-weight:600;padding:6px 8px}
+.r3-et .r3-nuit{border-radius:0;padding:8px 10px 10px}
+.r3-et .r3-in2{padding:8px;display:flex;flex-direction:column;gap:6px}
+.r3-steps{display:flex;flex-direction:column;gap:4px}
+.r3-steps span{display:grid;grid-template-columns:16px 1fr auto;gap:6px;align-items:center;font-size:14px;color:#D6D6D6}
+.r3-steps span.r3-cours{color:#fff;font-weight:600}
+.r3-sk{height:28px;border-radius:10px;background:repeating-linear-gradient(90deg,#333 0 30px,#2A2A2A 30px 60px)}
+@media (min-width:900px){
+  .r3-app{max-width:1100px;display:grid;grid-template-columns:440px minmax(0,1fr);column-gap:20px;padding:0 20px 60px}.r3-app>*{min-width:0}
+  .r3-nuit{grid-column:1;border-radius:0 0 24px 24px;align-self:start}
+  .r3-nuit{grid-row:1}.r3-rec{grid-column:1;grid-row:2;align-self:start}.r3-pts{grid-column:2;grid-row:1}.r3-more{grid-column:2;grid-row:2/4}
+  .r3-card{flex-basis:360px}
+  .r3-pi{max-width:1100px}
+  .r3-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style></head>
+<body>
+<div class="r3-app">
+  <section class="r3-nuit" aria-label="Verdict">
+    <header class="r3-hd"><h1>Nouvelle dépense</h1>
+      <button class="r3-ib" aria-label="Voir le justificatif" id="r3-jb" data-booster="justificatif"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg></button>
+      <button class="r3-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.667"><path d="M5 5l10 10M15 5 5 15"/></svg></button></header>
+    <div class="r3-tip" id="r3-pj" hidden><span class="r3-m" style="font-size:12px">capture-facture.jpg · 1 page vue</span><button class="r3-chip">Voir l'original</button><button class="r3-chip">Changer</button></div>
+    <div class="r3-big"><b data-booster="total">86,50</b><span>CHF</span></div>
+    <div class="r3-qui">Brau- und Rauchshop<span>27.04.2026</span></div>
+    <div class="r3-bar" id="r3-bar" data-booster="barre" role="group" aria-label="Les 23 lignes à la largeur de leur montant"></div>
+    <div class="r3-tip r3-fam" id="r3-tip"><span><i style="background:var(--malt)"></i>malts <b>35,35</b></span><span><i style="background:var(--mout)"></i>mouture <b>1,50</b></span><span><i style="background:var(--houb)"></i>houblons <b>20,05</b></span><span><i style="background:var(--lev)"></i>levures <b>29,60</b></span></div>
+  </section>
+  <section class="r3-pts" aria-label="Points à régler">
+    <div class="r3-ph"><h2 id="r3-ph"><span class="r3-m">6</span> à régler</h2><div class="r3-dots" id="r3-dots" data-booster="points"></div></div>
+    <div class="r3-deck" id="r3-deck" data-booster="cartes"></div>
+  </section>
+  <section class="r3-rec" aria-label="Ce qui est recoupé">
+    <h2>Recoupé</h2>
+    <div class="r3-rr"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>Somme des lignes</span><b>86,50</b></div>
+    <div class="r3-rr"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>Quantité × prix</span><b>23/23</b></div>
+    <div class="r3-rr"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>Lectures d'accord</span><b>2/2</b></div>
+  </section>
+  <section class="r3-more" aria-label="Le détail">
+    <details><summary><i style="background:var(--malt)"></i><span>Malts <em>7 lignes</em></span><b>35,35</b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-fl" id="r3-f-malt"></div></details>
+    <details><summary><i style="background:var(--mout)"></i><span>Mouture <em>5 lignes</em></span><b>1,50</b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-fl" id="r3-f-mout"></div></details>
+    <details><summary><i style="background:var(--houb)"></i><span>Houblons <em>7 lignes</em></span><b>20,05</b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-fl" id="r3-f-houb"></div></details>
+    <details><summary><i style="background:var(--lev)"></i><span>Levures <em>4 lignes · Stk = sachet</em></span><b>29,60</b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-fl" id="r3-f-lev"></div></details>
+    <details><summary><i></i><span>Paiement <em>Déjà payé · E-Finance</em></span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary>
+      <div class="r3-row"><button class="r3-chip" aria-pressed="true" data-reg="1">Déjà payé</button><button class="r3-chip" aria-pressed="false" data-reg="2">À payer</button></div>
+      <div class="r3-row" id="r3-rp"><span class="r3-lab">Payé le</span><input class="r3-in r3-m" inputmode="numeric" value="27.04.2026" style="width:140px"><span class="r3-lab">Moyen</span><span>E-Finance (lu)</span></div>
+      <div class="r3-row" id="r3-re" hidden><span class="r3-lab">Échéance</span><input class="r3-in r3-m" inputmode="numeric" value="07.05.2026" style="width:140px"><span class="r3-calc">déduite · 10 Tage netto</span></div></details>
+    <details><summary><i></i><span>Achat du <em class="r3-m">27.04.2026</em></span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-row"><input class="r3-in r3-m" inputmode="numeric" value="27.04.2026" style="width:140px"></div></details>
+    <details><summary><i></i><span>Pour quoi ? <em>malts, houblons, levures</em></span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-row"><input class="r3-in" style="width:100%" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div></details>
+    <details><summary><i></i><span>Fournisseur et catégorie <em>Brassage</em></span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-row"><input class="r3-in" value="Brau- und Rauchshop GmbH"><button class="r3-chip" aria-pressed="true">Brassage</button><button class="r3-chip">Matériel</button><button class="r3-chip">Autre</button></div></details>
+    <details><summary><i></i><span>Lier à une dépense prévue</span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary><div class="r3-row"><button class="r3-chip">Brassin NEIPA · malts · 90,00</button><button class="r3-chip">Aucune</button></div></details>
+    <details><summary><i></i><span>Référence et TVA <em>372765 · pro-forma</em></span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary>
+      <div class="r3-row"><span class="r3-lab">N° facture</span><span class="r3-m">372765</span></div>
+      <div class="r3-row"><span class="r3-lab">Commande</span><span class="r3-m" style="font-size:12px">Onlinebestellung-686863</span></div>
+      <div class="r3-row"><span class="r3-lab">TVA</span><span class="r3-m" id="r3-tvr">2,80 · 4,15 à régler</span><span class="r3-lab">Taux</span><span class="r3-m">N 8,1 % · R 2,6 %</span></div>
+      <div class="r3-row"><span class="r3-lab">HT</span><span class="r3-m">—</span><span class="r3-calc">non imprimé</span></div></details>
+    <details><summary><i></i><span>Lignes <em>ajouter, retirer, regrouper</em></span><b></b><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary>
+      <div class="r3-row"><button class="r3-chip">+ Ajouter une ligne</button><button class="r3-chip">Regrouper en une dépense</button><span class="r3-calc">Détail <b class="r3-m">86,50 / 86,50</b></span></div></details>
+  </section>
+</div>
+<div class="r3-pied"><div class="r3-prog"><i id="r3-pg"></i></div><div class="r3-pi" id="r3-pi">
+  <span class="r3-drv" data-booster="drive"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M6 15.5h8.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 5.3 8 3.8 3.8 0 0 0 6 15.5z"/></svg>Drive <svg class="r3-ok" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg></span>
+  <button class="r3-go" id="r3-go" aria-disabled="true" data-booster="confirmer">Confirmer et enregistrer</button>
+</div></div>
+
+<section class="r3-ann" id="r3-annexe" aria-label="Annexe : les états">
+  <h2>Annexe · les neuf états (r3, la barre et les cartes)</h2>
+  <div class="r3-grid">
+    <div class="r3-et"><h3>1 · Lecture en cours</h3><div class="r3-nuit">
+      <div class="r3-steps"><span>✓<b>Envoi</b><em class="r3-m">1 s</em></span><span class="r3-cours">◌<b>Lecture</b><em class="r3-m">7 s</em></span><span>○<b>Vérification</b><em></em></span></div>
+      <div class="r3-sk" style="margin-top:8px"></div></div>
+      <div class="r3-in2"><span class="r3-calc">Déjà touchables : Paiement, Pour quoi ?, Fournisseur. Le justificatif part vers le Drive.</span></div></div>
+    <div class="r3-et"><h3>2 · Lue, sans point</h3><div class="r3-nuit"><div class="r3-big"><b style="font-size:28px">86,50</b><span>CHF</span></div>
+      <div class="r3-bar" style="height:16px"><i class="f-malt" style="flex:35"></i><i class="f-mout" style="flex:1.5"></i><i class="f-houb" style="flex:20"></i><i class="f-lev" style="flex:29.6"></i></div></div>
+      <div class="r3-in2"><div class="r3-card r3-ok" style="min-height:0"><div class="r3-fin"><b>✓ Rien à régler</b></div></div></div></div>
+    <div class="r3-et"><h3>3 · Lue avec ses points</h3><div class="r3-in2"><span class="r3-calc">L'écran du haut : 6 cartes, argent d'abord (TVA, date de paiement), puis stock ; la barre hachure les lignes en doute.</span></div></div>
+    <div class="r3-et"><h3>4 · Un point réglé, puis tous</h3><div class="r3-in2">
+      <div class="r3-ph"><h2><span class="r3-m">5</span> à régler</h2><div class="r3-dots"><button class="r3-fait"><i></i></button><button aria-current="true"><i></i></button><button><i></i></button><button><i></i></button><button><i></i></button><button><i></i></button></div></div>
+      <div class="r3-card r3-ok" style="min-height:0"><div class="r3-fin"><b>✓ Tout est réglé</b><span class="r3-calc">23 lignes · 18 au stock · 5 moutures rattachées</span></div></div></div></div>
+    <div class="r3-et"><h3>5 · Erreur de lecture</h3><div class="r3-nuit"><div class="r3-big"><b style="font-size:28px">—</b><span>CHF</span></div><div class="r3-qui">Lecture impossible<span>service IA</span></div></div>
+      <div class="r3-in2"><span class="r3-calc">capture-facture.jpg gardé.</span><div class="r3-act"><button class="r3-pri">Relire</button><button>Saisir à la main</button></div></div></div>
+    <div class="r3-et"><h3>6 · Drive pas connecté</h3><div class="r3-in2"><div class="r3-pi" style="padding:0;height:auto"><span class="r3-drv" style="color:var(--attt)">Drive à connecter</span><button class="r3-chip">Connecter</button></div>
+      <span class="r3-calc">« Confirmer » ouvre la connexion d'abord ; rien n'est perdu.</span></div></div>
+    <div class="r3-et"><h3>7 · Enregistrement, puis le reçu</h3><div class="r3-in2"><div class="r3-prog"><i style="width:60%"></i></div>
+      <div class="r3-pi" style="padding:0;height:auto"><span class="r3-drv">Envoi au Drive · <span class="r3-m">0,4 / 0,7 Mo</span></span><button class="r3-chip">Fermer</button></div>
+      <div class="r3-recu"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r3-annexe">Ouvrir dans Drive</a></div></div></div>
+    <div class="r3-et"><h3>8 · Peut-être déjà enregistré</h3><div class="r3-in2"><div class="r3-card" style="min-height:0">
+      <div class="r3-ctop"><span class="r3-tag">argent</span><b>Même commande, autre numéro</b></div>
+      <div class="r3-vs"><div><small>Ce document · 27.04</small><b style="font-size:16px">372765</b></div><div><small>Registre · 30.04</small><b style="font-size:16px">380001</b></div></div>
+      <span class="r3-calc">Commande <b>686863</b> et total <b>86,50</b> identiques</span>
+      <div class="r3-act"><button class="r3-pri">Même achat</button><button>Autre achat</button></div></div></div></div>
+    <div class="r3-et"><h3>9 · Hors ligne</h3><div class="r3-in2"><div class="r3-pi" style="padding:0;height:auto"><span class="r3-drv" style="color:var(--attt)">Hors ligne · brouillon gardé</span><span class="r3-go" style="background:var(--haut);color:var(--t1)">Au retour du réseau</span></div></div></div>
+  </div>
+</section>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  // Sa facture 372765. [n, nom, quantité, unité imprimée, prix, montant en centimes, famille, point]
+  var L=[[1,'Maris Otter',6,'Kg','2,30',1380,'malt'],[2,'Mouture',6,'Kg','0,10',60,'mout','p3'],[3,'Gerstenflocken',1,'Kg','2,40',240,'malt'],[4,'Röstgerste',1,'Kg','1,80',180,'malt'],[5,'Mouture',1,'Kg','0,10',10,'mout','p3'],[6,'Caramünch Typ 2',1,'Kg','1,75',175,'malt'],[7,'Mouture',1,'Kg','0,10',10,'mout','p3'],[8,'Target · α 11,3',40,'g','0,040',160,'houb','p4'],[9,'Goldings East Kent · α 5,5',20,'g','0,040',80,'houb'],[10,'LALLEMAND Windsor',2,'Stk','4,50',900,'lev'],[11,'Safale BE-256',1,'Stk','4,40',440,'lev'],[12,'Safale US-05',2,'Stk','3,40',680,'lev'],[13,'Pilsner Malz',5,'Kg','1,50',750,'malt'],[14,'Mouture',5,'Kg','0,10',50,'mout','p3'],[15,'Weizenmalz hell',2,'Kg','1,55',310,'malt'],[16,'Mouture',2,'Kg','0,10',20,'mout','p3'],[17,'Haferflocken',2,'Kg','2,50',500,'malt'],[18,'Galaxy · α 17,2',60,'g','0,080',480,'houb'],[19,'Nelson Sauvin · α 9,6',100,'g','0,080',800,'houb'],[20,'Sabro · α 13,4',30,null,'0,070',210,'houb','p6'],[21,'LALLEMAND Verdant IPA',2,'Stk','4,70',940,'lev'],[22,'Hallertauer Blanc CH · α 9,5',30,'g','0,045',135,'houb','p5'],[23,'Motueka · α 8,1',20,'g','0,070',140,'houb']];
+  var MAL={2:1,5:4,7:6,14:13,16:15};
+  var P={p1:0,p2:0,p3:0,p4:0,p5:0,p6:0},ORD=['p1','p2','p3','p4','p5','p6'],att={},cur=0,unite=null,tva=null,sel=null;
+  var chf=function(c){return (c/100).toFixed(2).replace('.',',')};
+  function ln(n){return L.find(function(l){return l[0]===n})}
+  function ouvert(l){return l[7]&&(l[7]==='p3'?!att[l[0]]:!P[l[7]])}
+  function cartes(){
+    var c={};
+    c.p1='<div class="r3-ctop"><span class="r3-tag">argent</span><b>TVA imprimée</b></div>'
+      +'<div class="r3-vs"><div><small>colonne MWST</small><b class="r3-dash">2,80</b></div><div><small>N + R</small><b class="r3-dash">4,15</b></div></div>'
+      +'<span class="r3-calc"><b>1,95 + 2,20 = 4,15</b> ≠ <b>2,80</b> · HT vide</span>'
+      +'<div class="r3-act"><button data-tva="2,80">2,80</button><button data-tva="4,15">4,15</button><button data-tva="vide" class="r3-pri">Laisser vide</button></div>';
+    c.p2='<div class="r3-ctop"><span class="r3-tag">argent</span><b>Payé le</b></div>'
+      +'<div class="r3-vs"><div><small>supposée</small><b class="r3-dash">27.04</b></div><div><small>facture</small><b>27.04</b></div></div>'
+      +'<span class="r3-calc">Date de paiement non imprimée · « Betrag erhalten »</span>'
+      +'<div class="r3-act"><button class="r3-pri" data-p="p2">C\'est la date</button><button data-autre="1">Autre date</button></div>';
+    var ml='';Object.keys(MAL).forEach(function(k){var m=ln(+k),p=ln(MAL[k]);ml+='<button class="'+(att[k]?'r3-on':'')+'" data-att="'+k+'"><span>'+p[1]+'</span>'+(att[k]?'<em>'+chf((p[5]+m[5])/p[2])+'/kg</em>':'<span class="r3-m">+'+chf(m[5])+'</span>')+'</button>'});
+    c.p3='<div class="r3-ctop"><span class="r3-tag r3-stock">stock</span><b>Mouture au malt du dessus</b></div><div class="r3-mlist">'+ml+'</div>'
+      +'<div class="r3-act"><button class="r3-pri" data-tout="1">Rattacher les 5</button></div>';
+    c.p4='<div class="r3-ctop"><span class="r3-tag r3-stock">stock</span><b>Target</b></div>'
+      +'<div class="r3-vs"><div><small>facture · α</small><b class="r3-dash">11,3</b></div><div><small>en stock · α</small><b>11,8</b></div></div>'
+      +'<div class="r3-act"><button class="r3-pri" data-p="p4">Créer Target bis</button><button>Autre article ⇄</button></div>';
+    c.p5='<div class="r3-ctop"><span class="r3-tag r3-stock">stock</span><b>Hallertauer Blanc</b></div>'
+      +'<div class="r3-vs"><div><small>facture · origine</small><b class="r3-dash">CH</b></div><div><small>en stock</small><b>DE</b></div></div>'
+      +'<div class="r3-act"><button class="r3-pri" data-p="p5">Créer Hallertauer Blanc CH</button><button>Autre ⇄</button></div>';
+    c.p6='<div class="r3-ctop"><span class="r3-tag r3-stock">stock</span><b>Sabro · unité illisible</b></div>'
+      +'<div class="r3-vs"><div><small>quantité</small><b>30</b></div><div><small>unité</small><b class="r3-dash">'+(unite||'?')+'</b></div></div>'
+      +'<span class="r3-calc">Reliée à Sabro ; rien en stock tant qu\'elle manque</span>'
+      +'<div class="r3-act"><button data-u="g">g</button><button data-u="kg">kg</button><button data-u="Stk">Stk</button></div>';
+    return c;
+  }
+  function render(){
+    P.p3=Object.keys(MAL).every(function(k){return att[k]});
+    var b='';L.forEach(function(l){b+='<i class="f-'+l[6]+(ouvert(l)?' r3-dt':'')+'" style="flex-grow:'+l[5]+'" data-n="'+l[0]+'" aria-label="'+l[1]+' '+chf(l[5])+'"></i>'});
+    $('#r3-bar').innerHTML=b;
+    var c=cartes(),h='';ORD.forEach(function(k,i){h+='<article class="r3-card'+(P[k]?' r3-ok':'')+'" data-k="'+k+'" id="r3-c'+i+'">'+(P[k]?'<div class="r3-fin"><b>✓ Réglé</b>'+(k==='p1'?'<span class="r3-calc">TVA '+(tva&&tva!=='vide'?tva+' gardée':'laissée vide, HT vide')+'</span>':'')+'</div>'+c[k].replace(/<div class="r3-act">[\s\S]*?<\/div>$/,''):c[k])+'</article>'});
+    $('#r3-deck').innerHTML=h;
+    var nb=ORD.filter(function(k){return !P[k]}).length;
+    $('#r3-ph').innerHTML=nb?'<span class="r3-m">'+nb+'</span> à régler':'✓ Tout est réglé';
+    $('#r3-dots').innerHTML=ORD.map(function(k,i){return '<button aria-label="Point '+(i+1)+'" class="'+(P[k]?'r3-fait':'')+'" aria-current="'+(i===cur)+'" data-go="'+i+'"><i></i></button>'}).join('')+'<button id="r3-next" aria-label="Point suivant" data-go="+">›</button>';
+    $('#r3-go').setAttribute('aria-disabled',nb?'true':'false');
+    ['malt','mout','houb','lev'].forEach(function(f){$('#r3-f-'+f).innerHTML=L.filter(function(l){return l[6]===f}).map(function(l){var u=l[3]||(l[0]===20?unite:null);var ed=sel===l[0]?'<div class="r3-ed"><button class="r3-chip" aria-pressed="'+(f!=='mout')+'">Ingrédient</button><button class="r3-chip" aria-pressed="'+(f==='mout')+'">Service</button><button class="r3-chip">Matériel</button><button class="r3-chip">'+(f==='mout'?'Mouture de '+ln(MAL[l[0]])[1]:'Article : '+l[1].split(' · ')[0])+' ⇄</button><button class="r3-chip">Aucun mouvement de stock</button><button class="r3-chip" data-ret="'+l[0]+'">Retirer la ligne</button></div>':'';
+      return '<button class="r3-lb" data-li="'+l[0]+'"><span'+(ouvert(l)?' class="r3-q"':'')+'>'+l[1]+'</span><span class="r3-s">'+l[2]+' '+(u||'?')+(f==='lev'?' = '+l[2]+' sachet'+(l[2]>1?'s':''):'')+' × '+l[4]+'</span><span class="r3-m" data-edit="1">'+chf(l[5])+'</span></button>'+ed}).join('')});
+  }
+  function aller(i){cur=Math.max(0,Math.min(ORD.length-1,i));var el=$('#r3-c'+cur);$('#r3-deck').scrollTo({left:el.offsetLeft-10,behavior:'smooth'});$$('#r3-dots [data-go]').forEach(function(d,j){d.setAttribute('aria-current',j===cur)})}
+  function suivant(){render();var i=ORD.findIndex(function(k){return !P[k]});if(i>=0)setTimeout(function(){aller(i)},180)}
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button,i[data-n]');if(!t)return;
+    if(t.dataset.n){$$('#r3-bar i').forEach(function(x){x.classList.toggle('r3-sel',x===t)});var l=ln(+t.dataset.n),u=l[3]||unite;
+      $('#r3-tip').innerHTML='<b>'+l[1]+'</b><span class="r3-m">'+l[2]+' '+(u||'?')+' × '+l[4]+' = '+chf(l[5])+'</span>'+(ouvert(l)?'<em class="r3-q">à régler</em>':'<em>✓</em>');return}
+    if(t.dataset.li){sel=sel===+t.dataset.li?null:+t.dataset.li;render();return}
+    if(t.dataset.ret){L=L.filter(function(l){return l[0]!==+t.dataset.ret});sel=null;render();return}
+    if(t.id==='r3-jb'){var pj=document.getElementById('r3-pj');pj.hidden=!pj.hidden;return}
+    if(t.dataset.go){aller(t.dataset.go==='+'?cur+1:+t.dataset.go);return}
+    if(t.dataset.tva){tva=t.dataset.tva;P.p1=1;$('#r3-tvr').textContent=tva==='vide'?'— (laissée vide)':tva+' (gardée)';suivant();return}
+    if(t.dataset.p){P[t.dataset.p]=1;suivant();return}
+    if(t.dataset.att){att[t.dataset.att]=!att[t.dataset.att];render();aller(2);if(P.p3)suivant();return}
+    if(t.dataset.tout){Object.keys(MAL).forEach(function(k){att[k]=1});suivant();return}
+    if(t.dataset.u){unite=t.dataset.u;P.p6=1;suivant();return}
+    if(t.dataset.reg){$$('[data-reg]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});$('#r3-rp').hidden=t.dataset.reg==='2';$('#r3-re').hidden=t.dataset.reg==='1';return}
+    if(t.id==='r3-go'){if(t.getAttribute('aria-disabled')==='true'){aller(ORD.findIndex(function(k){return !P[k]}));return}enregistrer();return}
+  });
+  $('#r3-deck').addEventListener('scroll',function(){var d=this,i=Math.round(d.scrollLeft/(d.firstChild.offsetWidth+8));if(i!==cur){cur=i;$$('#r3-dots [data-go]').forEach(function(x,j){x.setAttribute('aria-current',j===cur)})}},{passive:true});
+  function enregistrer(){var pi=$('#r3-pi'),g=$('#r3-pg'),x=0;
+    pi.innerHTML='<span class="r3-drv">Envoi au Drive · <span class="r3-m" id="r3-mo">0,0 / 0,7 Mo</span></span><button class="r3-chip">Fermer</button>';
+    var tm=setInterval(function(){x+=0.1;if(x>=0.7){clearInterval(tm);g.style.width='100%';pi.innerHTML='<span class="r3-recu"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r3-annexe">Ouvrir dans Drive</a></span>';return}
+      g.style.width=(x/0.7*100)+'%';$('#r3-mo').textContent=x.toFixed(1).replace('.',',')+' / 0,7 Mo'},180)}
+  window.r3Regler=function(){tva='vide';ORD.forEach(function(k){P[k]=1});Object.keys(MAL).forEach(function(k){att[k]=1});unite='g';render()};
+  render();
+})();
+</script>
+</body></html>

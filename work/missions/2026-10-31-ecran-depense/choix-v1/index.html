@@ -1,0 +1,199 @@
+<title>Nouvelle dépense · passe 2 · 01.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La passe 2 de « Nouvelle dépense » : trois écrans de saisie sur la facture 372765 (r2b, z2b, u4b), une rangée par variante.
+   La référence (écran actuel) ouvre chaque rangée ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+h3 { font-size: 1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+li { padding-left: 2px; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.tete p.phrase { font-size: 1rem; color: var(--encre); }
+.tete .id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.tete .etiquette { font-size: 0.875rem; color: var(--discret); text-transform: uppercase; letter-spacing: 0.04em; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-ref, .p-pilote { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.tag { display: inline-block; font-size: 0.875rem; font-weight: 800; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; }
+.tag.ok { color: #ffffff; background: var(--houblon); }
+.tag.ko { color: #ffffff; background: var(--alerte); }
+.verdicts { display: grid; gap: 12px; }
+.verdicts p { font-size: 0.95rem; }
+.verdicts b { font-weight: 800; }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche.sept { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Nouvelle dépense · passe 2</p>
+    <h1>Nouvelle dépense · passe 2 · 01.11</h1>
+    <p class="sur-titre">Données : ta facture 372765. Le stock est d'essai, simulé et dit dans chaque écran.</p>
+    <div id="a-choisir">
+      <p>Trois écrans de saisie sur ta facture 372765. Le pilote a choisi r2b, le ticket, et le porte dans l'app cette nuit (tu as dit de ne pas attendre ton retour) ; si tu préfères z2b ou u4b, dis-le et il la porte.</p>
+    </div>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-r2b">
+    <div class="tete">
+      <h2 id="t-r2b">Le ticket <span class="id">r2b</span></h2>
+      <span class="pastille p-pilote">choisi par le pilote</span>
+      <p class="etiquette">Sa phrase prédite</p>
+      <p class="phrase"><i>Ça c'est ma facture, très bien. Les 6 points je les vois direct et je règle sur la ligne, Target bis à côté du mien c'est bon. Par contre les petits cubes je vois pas ce que c'est, et pour Sabro faut descendre.</i></p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="../inventaire/captures/depense-lu-390.png" data-titre="Référence · écran actuel, 390 px"><img src="../inventaire/captures/depense-lu-390.png" alt="Écran actuel, référence"></button><figcaption><b>Référence</b> · écran actuel</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/r2b/r2b-repos.png" data-titre="r2b · repos à 390 px"><img src="../v1/r2b/r2b-repos.png" alt="r2b, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/r2b/r2b-1280.png" data-titre="r2b · repos à 1280 px"><img src="../v1/r2b/r2b-1280.png" alt="r2b, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/r2b/r2b-moutures-rattachees.png" data-titre="r2b · point réglé sur sa ligne, moutures rattachées"><img src="../v1/r2b/r2b-moutures-rattachees.png" alt="r2b, point réglé sur sa ligne"></button><figcaption><b>Point réglé sur sa ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/r2b/r2b-preuve.png" data-titre="r2b · la preuve, un toucher"><img src="../v1/r2b/r2b-preuve.png" alt="r2b, la preuve"></button><figcaption><b>Preuve</b>, un toucher</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/r2b/r2b-tva-ouverte.png" data-titre="r2b · TVA ouverte"><img src="../v1/r2b/r2b-tva-ouverte.png" alt="r2b, TVA ouverte"></button><figcaption><b>TVA ouverte</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/r2b/r2b-etat7-390.png" data-titre="r2b · enregistré, avec les points à revoir"><img src="../v1/r2b/r2b-etat7-390.png" alt="r2b, enregistré"></button><figcaption><b>Enregistré</b>, « à revoir » gardé</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-z2b">
+    <div class="tete">
+      <h2 id="t-z2b">La facture annotée <span class="id">z2b</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">Sa phrase prédite</p>
+      <p class="phrase"><i>Là je vois exactement ce qu'elle a lu, vachement bien, c'est ma facture. Mais faut descendre tout en bas pour la TVA, et en erreur elle m'affiche des trucs qu'elle a pas lus ???</i></p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="../inventaire/captures/depense-lu-390.png" data-titre="Référence · écran actuel, 390 px"><img src="../inventaire/captures/depense-lu-390.png" alt="Écran actuel, référence"></button><figcaption><b>Référence</b> · écran actuel</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/z2b/z2b-haut-390.png" data-titre="z2b · repos à 390 px"><img src="../v1/z2b/z2b-haut-390.png" alt="z2b, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/z2b/z2b-haut-1280.png" data-titre="z2b · repos à 1280 px"><img src="../v1/z2b/z2b-haut-1280.png" alt="z2b, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/z2b/z2b-etat4a-390.png" data-titre="z2b · point réglé sur sa ligne, une coche"><img src="../v1/z2b/z2b-etat4a-390.png" alt="z2b, point réglé sur sa ligne"></button><figcaption><b>Point réglé sur sa ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/z2b/z2b-preuve-390.png" data-titre="z2b · la preuve, un toucher"><img src="../v1/z2b/z2b-preuve-390.png" alt="z2b, la preuve"></button><figcaption><b>Preuve</b>, un toucher</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/z2b/z2b-haut-1280.png" data-titre="z2b · TVA lue, à 1280 px (pas de panneau TVA ouvert dans z2b)"><img src="../v1/z2b/z2b-haut-1280.png" alt="z2b, TVA lue à 1280 px"></button><figcaption><b>TVA lue</b>, à 1280 : pas de panneau à ouvrir</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/z2b/z2b-etat7b-390.png" data-titre="z2b · enregistré, le reçu"><img src="../v1/z2b/z2b-etat7b-390.png" alt="z2b, enregistré"></button><figcaption><b>Enregistré</b>, le reçu</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-u4b">
+    <div class="tete">
+      <h2 id="t-u4b">Le pont en rangées <span class="id">u4b</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">Sa phrase prédite</p>
+      <p class="phrase"><i>Ça c'est ce que je voulais pour le stock, Target bis à côté du mien, +18 kg, très très bien. Mais où sont mes lignes ??? "7 malts 35,35" ça me dit rien, et la moitié de l'écran est vide.</i></p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="../inventaire/captures/depense-lu-390.png" data-titre="Référence · écran actuel, 390 px"><img src="../inventaire/captures/depense-lu-390.png" alt="Écran actuel, référence"></button><figcaption><b>Référence</b> · écran actuel</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/u4b/u4b-e3-390.png" data-titre="u4b · repos à 390 px"><img src="../v1/u4b/u4b-e3-390.png" alt="u4b, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/u4b/u4b-e3-1280.png" data-titre="u4b · repos à 1280 px"><img src="../v1/u4b/u4b-e3-1280.png" alt="u4b, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/u4b/u4b-g-mouture-reglee.png" data-titre="u4b · point réglé sur sa ligne, mouture"><img src="../v1/u4b/u4b-g-mouture-reglee.png" alt="u4b, point réglé sur sa ligne"></button><figcaption><b>Point réglé sur sa ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/u4b/u4b-g-preuve.png" data-titre="u4b · la preuve, un toucher"><img src="../v1/u4b/u4b-g-preuve.png" alt="u4b, la preuve"></button><figcaption><b>Preuve</b>, un toucher</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/u4b/u4b-g-tva-ouverte.png" data-titre="u4b · TVA ouverte"><img src="../v1/u4b/u4b-g-tva-ouverte.png" alt="u4b, TVA ouverte"></button><figcaption><b>TVA ouverte</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="../v1/u4b/u4b-g-enregistre.png" data-titre="u4b · enregistré avec six points ouverts"><img src="../v1/u4b/u4b-g-enregistre.png" alt="u4b, enregistré"></button><figcaption><b>Enregistré</b>, six points ouverts</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-critique">
+    <div class="tete"><h2 id="t-critique">Ce que le critique en dit</h2><p>Critique calibrée sur ton portrait v2, toutes les captures ouvertes.</p></div>
+    <div class="verdicts">
+      <p><span class="tag ok">ACCEPTÉ</span> <b>r2b, le ticket.</b> Ça c'est ma facture : les six points sont au premier écran, chacun se règle sur sa ligne. Ses défauts sont des « mais » : icônes sans mot, Sabro sous le pli, phrase sur l'assujettissement.</p>
+      <p><span class="tag ko">À CORRIGER</span> <b>z2b, la facture annotée.</b> Le papier se lit bien, mais la lecture en erreur affiche des chiffres jamais lus, et l'écran compte 149 mots au lieu de 100 : le contrôle échoue.</p>
+      <p><span class="tag ko">À CORRIGER</span> <b>u4b, le pont.</b> Le meilleur sur le stock et à 1280, mais à 390 vingt lignes sur vingt-trois sont repliées, et la moitié basse de l'écran est vide après un réglage.</p>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-greffes">
+    <div class="tete"><h2 id="t-greffes">Greffes prises au port</h2><p>Le pilote porte r2b avec ces greffes.</p></div>
+    <ul>
+      <li>De u4b : une pastille mot à droite du picto de ligne (« +6 kg », « nouveau », « Target bis », « unité ? »), contre les icônes muettes de r2b.</li>
+      <li>De u4b : la tuile « — HT non imprimé » dans le panneau TVA ; « Même achat · ne pas doubler » et « Voir 380001 » à l'état doublon.</li>
+      <li>De u4b : « 735 721 octets · taille vérifiée » dans le reçu ; « p. 2 coupée : seul son en-tête est visible » dans la preuve.</li>
+      <li>De u4b, à 1280 si le temps le permet : la rive stock en colonne de droite.</li>
+      <li>De z2b : la bande collante « 1 2 3 4 5 6 · point courant · y aller » dès que le bandeau sort de l'écran.</li>
+      <li>De z2b : « mouture → Maris Otter » écrit sous la ligne une fois rattachée ; « Drive à connecter » en pastille orange dans le bandeau.</li>
+      <li>De z2b : l'en-tête éditable sur place (fournisseur, n° de facture, date en champs pointillés).</li>
+    </ul>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-panel">
+    <div class="tete"><h2 id="t-panel">Panel v0</h2></div>
+    <p>Les variantes de départ : <a href="https://claude.ai/artifact/PNStV1RNHi7bYSogYMJhXy">ouvrir la page du panel v0</a>.</p>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r2 — Nouvelle dépense · le ticket de la facture (v0, tiède, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#7F5B10;--attf:#FBF4E4;--ok:#2F6B45;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+--hach:repeating-linear-gradient(135deg,#C9B48A 0 2px,#fff 2px 5px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg path,svg circle{vector-effect:non-scaling-stroke;stroke-width:1.5}
+.r2-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.r2-sheet{max-width:560px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:56px}
+.r2-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.r2-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.r2-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.r2-ib:active{background:var(--haut)}
+.r2-c{padding:8px 10px 0;display:flex;flex-direction:column;gap:8px}
+/* Le bandeau du verdict : la langue du « Grain 8,0 kg · OG · IBU · EBC » de Malts. */
+.r2-bd{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
+.r2-bd1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.r2-four{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r2-bd2{display:flex;align-items:center;gap:8px}
+.r2-tot{font-family:var(--mono);font-size:32px;line-height:1.1;font-weight:600;color:var(--t0)}
+.r2-tot small{font-size:12px;font-weight:500;color:var(--t2)}
+.r2-chip{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;font-size:14px;white-space:nowrap}
+.r2-pr{border:1px solid var(--bord);background:#fff;color:var(--t1)}
+.r2-pr svg{color:var(--ok)}
+.r2-cpt{margin-left:auto;border:1.5px dashed var(--attt);color:var(--attt);background:#fff;font-weight:600}
+.r2-cpt.r2-fini{border:1px solid var(--ok);color:var(--ok)}
+.r2-preuve{display:none;font-size:12px;color:var(--t1);padding:2px 0 2px;line-height:1.45}
+.r2-preuve.r2-on{display:block}
+.r2-preuve b{font-family:var(--mono);font-weight:600}
+/* La barre qui porte la valeur : 86,50 en 23 segments, un par ligne. */
+.r2-comp{display:flex;height:10px;border-radius:9px;overflow:hidden;background:#fff;border:1px solid var(--bord)}
+.r2-comp i{height:100%;border-right:1.5px solid #fff;cursor:pointer}
+.r2-comp i:last-child{border-right:0}
+.r2-comp .f-malt{background:#C9A15A}.r2-comp .f-mout{background:#E3CFA3}.r2-comp .f-houb{background:#5E9A52}.r2-comp .f-lev{background:#5C7FB8}
+.r2-comp i.r2-dt{background:var(--hach)}
+/* Les deux tuiles d'argent, comme les tuiles « Espace libre / Matériel » d'Identité. */
+.r2-tu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r2-tile{border:1px solid var(--bord);border-radius:16px;padding:6px 8px;text-align:left;display:flex;flex-direction:column;gap:2px;min-height:52px;background:#fff}
+.r2-tile .r2-k{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:4px}
+.r2-tile .r2-v{font-size:14px;color:var(--t0);display:flex;align-items:baseline;gap:4px;flex-wrap:wrap}
+.r2-tile.r2-dt{border:1.5px dashed var(--attt);background:var(--attf)}
+.r2-sup{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 5px;line-height:18px;background:#fff}
+.r2-val2{display:inline-flex;gap:4px}
+.r2-val2 b{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 5px;background:#fff}
+.r2-pan{border:2px solid var(--t0);border-radius:16px;padding:8px;display:none;flex-direction:column;gap:6px;background:#fff}
+.r2-pan.r2-on{display:flex}
+.r2-calc{font-size:12px;color:var(--t1)}
+.r2-calc b{font-family:var(--mono);font-weight:600}
+.r2-ch{display:flex;gap:6px;flex-wrap:wrap}
+.r2-ch button{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);font-size:14px;background:#fff}
+.r2-ch button[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--t0);border-color:var(--t0);color:var(--t0);font-weight:600}
+.r2-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.r2-seg button{min-height:28px;padding:0 10px;font-size:14px}
+.r2-seg button[aria-pressed="true"]{background:var(--t0);color:#fff}
+.r2-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.r2-lab{font-size:12px;color:var(--t2);min-width:64px}
+.r2-in{height:32px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;font-size:16px;font-family:var(--mono);width:120px;background:#fff}
+.r2-in.r2-txt{font-family:var(--sans);width:100%}
+/* Le ticket : la ligne de Malts s1, appliquée à la facture. */
+.r2-arr::before{content:"↳";color:var(--t2);font-size:14px;margin-left:4px}
+.r2-dot{font-style:normal}.r2-dot::before{content:"·";margin:0 4px}
+.r2-recu svg{flex-shrink:0}
+.r2-th{display:flex;align-items:baseline;justify-content:space-between;padding:2px 2px 0}
+.r2-th h2{font-size:14px;font-weight:600;color:var(--t0)}
+.r2-lk{font-size:12px;color:var(--t1);text-decoration:underline;text-underline-offset:2px;min-height:24px;padding:0 2px}
+.r2-ti{list-style:none;display:flex;flex-direction:column;gap:2px}
+.r2-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;column-gap:8px;min-height:46px;padding:4px 6px;border-radius:10px;cursor:pointer;position:relative}
+.r2-li:active{background:var(--panel)}
+.r2-li[aria-selected="true"]{box-shadow:inset 0 0 0 2px var(--t0);background:var(--panel)}
+.r2-li.r2-dt{background:var(--attf)}
+.r2-ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.r2-ico.r2-q{color:var(--attt)}
+.r2-nm{min-width:0;display:flex;flex-direction:column;gap:1px}
+.r2-nm b{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r2-sub{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r2-sub .r2-m{color:var(--t1)}
+.r2-cv{color:var(--t1);background:var(--haut);border-radius:10px;padding:0 5px}.r2-cv::before{content:"= "}
+.r2-amt{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t0);text-align:right}
+.r2-amt small{display:block;font-size:12px;color:var(--t2);font-weight:400}
+.r2-fix{grid-column:2/4;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:2px 0 3px}
+.r2-fix .r2-q2{font-size:12px;color:var(--attt)}
+.r2-fix button{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r2-fix button.r2-pri{border:1.5px dashed var(--attt);color:var(--attt);font-weight:600}
+/* La mouture : une sous-ligne pendue au malt du dessus, en pointillé tant qu'il ne l'a pas rattachée. */
+.r2-mo{display:grid;grid-template-columns:24px 1fr auto;align-items:center;column-gap:8px;min-height:28px;padding:0 6px 0 6px;margin-left:16px;border-left:1.5px dashed var(--attt);border-radius:0 10px 10px 0}
+.r2-mo.r2-ok{border-left:1.5px solid var(--t1)}
+.r2-mo .r2-sub{color:var(--t1)}
+.r2-mo button{min-height:24px;padding:0 8px;border-radius:10px;border:1.5px dashed var(--attt);color:var(--attt);font-size:12px;font-weight:600;background:#fff}
+.r2-mo.r2-ok button{border:1px solid var(--bord);color:var(--t2);font-weight:400}
+.r2-plat{margin:2px 0 4px 32px}
+.r2-ev{font-size:12px;color:var(--t2)}
+.r2-big{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.r2-big .r2-n{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--t0);border-bottom:1px dotted var(--trait);min-width:24px;cursor:text}
+.r2-big .r2-u{font-size:14px;color:var(--t2)}
+.r2-bad{color:#A3322A;font-weight:600}
+.r2-stk{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r2-more{display:flex;flex-direction:column;border-top:1px solid var(--bord);margin-top:4px}
+.r2-more details{border-bottom:1px solid var(--bord)}
+.r2-more summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:0 4px;cursor:pointer}
+.r2-more summary::-webkit-details-marker{display:none}
+.r2-more summary span{font-size:14px;color:var(--t0)}
+.r2-more summary em{font-style:normal;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r2-more .r2-in2{padding:4px 4px 8px;display:flex;flex-direction:column;gap:6px}
+.r2-add{min-height:32px;border:1.5px dashed var(--bordm);border-radius:10px;color:var(--t1);font-size:14px;margin:8px 0 4px}
+.r2-det{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);padding:2px 4px}
+.r2-det b{font-family:var(--mono);color:var(--t0);font-weight:600}
+.r2-det.r2-ec b{color:#A3322A}
+.r2-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--page);border-top:1px solid var(--bord)}
+.r2-pi{max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;height:48px;padding:0 10px}
+.r2-drv{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);font-size:14px;color:var(--t1)}
+.r2-drv svg.r2-v{color:var(--ok)}
+.r2-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.r2-prog{height:3px;background:var(--haut)}.r2-prog i{display:block;height:100%;width:0;background:var(--t0);transition:width .25s ease-out}
+.r2-recu{display:flex;align-items:center;gap:8px;font-size:14px;min-width:0}
+.r2-recu span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:12px;color:var(--t1)}
+.r2-recu a{color:var(--t0);font-weight:600;white-space:nowrap}
+.r2-flash{animation:r2-fl .7s ease-out}
+@keyframes r2-fl{from{background:#F2DDA6}}
+@media (prefers-reduced-motion:reduce){.r2-flash{animation:none}.r2-prog i{transition:none}}
+/* Annexe : les états */
+.r2-ann{max-width:1240px;margin:0 auto;padding:24px 10px 80px;border-top:6px solid var(--haut)}
+.r2-ann>h2{font-size:16px;color:var(--t0);margin-bottom:8px}
+.r2-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.r2-grid>*{min-width:0}
+.r2-et{border:1px solid var(--bord);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.r2-et>h3{font-size:12px;color:var(--t2);font-weight:600}
+.r2-steps{display:flex;gap:6px}
+.r2-steps span{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--t2)}
+.r2-steps span i{height:6px;border-radius:9px;background:var(--haut)}
+.r2-steps .r2-fait i{background:var(--t1)}.r2-steps .r2-fait{color:var(--t1)}
+.r2-steps .r2-cours i{background:repeating-linear-gradient(90deg,var(--t1) 0 6px,var(--haut) 6px 12px);background-size:24px 6px;animation:r2-run 1s linear infinite}
+.r2-steps .r2-cours{color:var(--t0);font-weight:600}
+@keyframes r2-run{to{background-position:24px 0}}
+@media (prefers-reduced-motion:reduce){.r2-steps .r2-cours i{animation:none}}
+.r2-sk{height:12px;border-radius:9px;background:var(--haut)}
+.r2-cmp{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 8px;font-size:12px}
+.r2-cmp b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.r2-cmp .r2-same{color:var(--attt)}
+@media (min-width:900px){
+  .r2-sheet{max-width:none;display:grid;grid-template-columns:420px 1fr;column-gap:16px;padding:0 24px 56px}
+  .r2-hd{grid-column:1/3}
+  .r2-c{padding-top:12px}
+  .r2-c2{grid-column:2;grid-row:2;padding-top:12px}
+  .r2-pi{max-width:none;padding:0 24px}
+  .r2-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:899px){.r2-c2{padding:0 10px}}
+</style></head>
+<body>
+<div class="r2-sheet" id="r2-sheet">
+  <header class="r2-hd">
+    <h1>Nouvelle dépense</h1>
+    <button class="r2-ib" aria-label="Voir le justificatif" id="r2-jbtn" data-booster="justificatif"><svg width="18" height="18" viewBox="0 0 20 20" stroke-width="1.667" fill="none" stroke="currentColor"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 10h5M7.5 13h5"/></svg></button>
+    <button class="r2-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 20 20" stroke-width="1.667" stroke="currentColor"><path d="M5 5l10 10M15 5 5 15"/></svg></button>
+  </header>
+  <div class="r2-c">
+    <div class="r2-pan" id="r2-just">
+      <div class="r2-row"><span class="r2-lab">Justificatif</span><span class="r2-m" style="font-size:12px">capture-facture.jpg · 1 page vue</span></div>
+      <div class="r2-row"><button class="r2-stk">Voir l'original</button><button class="r2-stk">Changer</button></div>
+    </div>
+    <section class="r2-bd" aria-label="Verdict de la lecture">
+      <div class="r2-bd1"><span class="r2-four">Brau- und Rauchshop</span><span class="r2-m" style="font-size:14px;color:var(--t1)">27.04.2026</span></div>
+      <div class="r2-bd2">
+        <span class="r2-tot"><span data-edit="total">86,50</span> <small>CHF</small></span>
+        <button class="r2-chip r2-pr" id="r2-pbtn" data-booster="preuve" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 20 20" stroke-width="2.14" fill="none" stroke="currentColor"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="r2-m">23</span> lignes</button>
+        <button class="r2-chip r2-cpt" id="r2-cpt" data-booster="compteur"><span class="r2-m" id="r2-nb">6</span>&nbsp;à régler</button>
+      </div>
+      <div class="r2-preuve" id="r2-preuve">Somme des 23 lignes <b>86,50</b> = total imprimé <b>86,50</b> · quantité × prix juste au centime sur les 23 · deux lectures d'accord · page 2 coupée : rien ne manque dans la page vue.</div>
+      <div class="r2-comp" id="r2-comp" data-booster="barre" aria-label="Les 23 lignes, à la largeur de leur montant"></div>
+    </section>
+    <div class="r2-tu">
+      <button class="r2-tile r2-dt" id="r2-tpay" data-booster="paye" data-pt="p2" aria-expanded="false">
+        <span class="r2-k">Payé</span>
+        <span class="r2-v"><span class="r2-m">27.04</span> <span class="r2-sup" id="r2-supp">supposée</span></span>
+      </button>
+      <button class="r2-tile r2-dt" id="r2-ttva" data-booster="tva" data-pt="p1" aria-expanded="false">
+        <span class="r2-k">TVA</span>
+        <span class="r2-v"><span class="r2-val2" id="r2-tvav"><b>2,80</b><b>4,15</b></span></span>
+      </button>
+    </div>
+    <div class="r2-pan" id="r2-ppay">
+      <div class="r2-row"><span class="r2-seg" data-booster="reglement"><button aria-pressed="true" data-reg="paye">Déjà payé</button><button aria-pressed="false" data-reg="apayer">À payer</button></span></div>
+      <div class="r2-row" id="r2-rpaye"><span class="r2-lab">Payé le</span><input class="r2-in" inputmode="numeric" value="27.04.2026" id="r2-dpay"><span class="r2-calc">non imprimée : date de la facture</span></div>
+      <div class="r2-row" id="r2-rmoy"><span class="r2-lab">Moyen</span><span class="r2-stk">E-Finance <span class="r2-sub">lu</span></span></div>
+      <div class="r2-row" id="r2-rech" hidden><span class="r2-lab">Échéance</span><input class="r2-in" inputmode="numeric" value="07.05.2026"><span class="r2-sup">déduite · 10 Tage netto</span></div>
+      <div class="r2-ch"><button id="r2-okpay">C'est la bonne date</button></div>
+    </div>
+    <div class="r2-pan" id="r2-ptva">
+      <div class="r2-calc">Imprimé <b>2,80</b> · par taux <b>1,95 + 2,20 = 4,15</b> · bases <b>26,20 + 84,20 = 110,40</b> ≠ <b>86,50</b></div>
+      <div class="r2-calc">HT non imprimé : laissé vide. Tu n'es pas assujetti : la TVA reste en source.</div>
+      <div class="r2-ch" data-booster="tva-choix"><button data-tva="2,80">Garder 2,80</button><button data-tva="4,15">Garder 4,15</button><button data-tva="vide">Laisser vide</button></div>
+    </div>
+  </div>
+  <div class="r2-c2">
+    
+    <ul class="r2-ti" id="r2-ti" role="listbox" aria-label="Lignes de la facture"></ul>
+    <div class="r2-row"><button class="r2-add" style="flex:1" id="r2-addl">+ Ajouter une ligne</button><button class="r2-add" style="padding:0 10px" id="r2-regr">Regrouper en une dépense</button></div>
+    <div class="r2-det" id="r2-det"><span>Détail</span><span><b id="r2-detv">86,50</b> / <b>86,50</b></span></div>
+    <div class="r2-more">
+      <details><summary><span>Pour quoi ?</span><em>Brau- und Rauchshop · 372765 · malts…</em></summary>
+        <div class="r2-in2"><input class="r2-in r2-txt" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div></details>
+      <details><summary><span>Achat du</span><em class="r2-m">27.04.2026</em></summary><div class="r2-in2"><div class="r2-row"><input class="r2-in" inputmode="numeric" value="27.04.2026" style="width:140px"><span class="r2-ch"><button>Hier</button><button>Aujourd'hui</button></span></div></div></details>
+      <details><summary><span>Fournisseur et catégorie</span><em>Brau- und Rauchshop GmbH · Brassage</em></summary>
+        <div class="r2-in2"><div class="r2-row"><span class="r2-lab">Fournisseur</span><input class="r2-in r2-txt" style="width:auto;flex:1" value="Brau- und Rauchshop GmbH"></div>
+        <div class="r2-row"><span class="r2-lab">Catégorie</span><span class="r2-ch"><button aria-pressed="true">Brassage</button><button>Emballage</button><button>Matériel</button><button>Autre</button></span></div></div></details>
+      <details><summary><span>Lier à une dépense prévue</span><em>facultatif</em></summary>
+        <div class="r2-in2"><div class="r2-ch"><button>Brassin NEIPA · malts · 90,00</button><button>Aucune</button></div></div></details>
+      <details><summary><span>Référence et TVA</span><em>372765 · pro-forma payée</em></summary>
+        <div class="r2-in2">
+          <div class="r2-row"><span class="r2-lab">N° facture</span><span class="r2-m">372765</span><span class="r2-sup" style="border-style:solid;color:var(--t2);border-color:var(--bord)">pro-forma</span></div>
+          <div class="r2-row"><span class="r2-lab">Commande</span><span class="r2-m" style="font-size:12px">Onlinebestellung-686863</span></div>
+          <div class="r2-row"><span class="r2-lab">TVA</span><span class="r2-m" id="r2-tvaref">2,80 · 4,15 à régler</span></div>
+          <div class="r2-row"><span class="r2-lab">Taux</span><span class="r2-m">N 8,1 % · R 2,6 %</span></div>
+          <div class="r2-row"><span class="r2-lab">HT</span><span class="r2-m">—</span></div>
+        </div></details>
+    </div>
+  </div>
+</div>
+<div class="r2-pied" id="r2-pied">
+  <div class="r2-prog"><i id="r2-progi"></i></div>
+  <div class="r2-pi" id="r2-pi">
+    <span class="r2-drv" data-booster="drive"><svg width="16" height="16" viewBox="0 0 20 20" stroke-width="1.875" fill="none" stroke="currentColor"><path d="M6 15.5h8.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 5.3 8 3.8 3.8 0 0 0 6 15.5z"/></svg>Drive<svg class="r2-v" width="14" height="14" viewBox="0 0 20 20" stroke-width="2.14" fill="none" stroke="currentColor"><path d="M4 10.5 8 14.5 16 6"/></svg></span>
+    <button class="r2-go" id="r2-go" data-booster="confirmer"><svg width="14" height="14" viewBox="0 0 20 20" stroke-width="2.14" fill="none" stroke="currentColor"><path d="M4 10.5 8 14.5 16 6"/></svg>Confirmer et enregistrer</button>
+  </div>
+</div>
+
+<section class="r2-ann" id="r2-annexe" aria-label="Annexe : les états">
+  <h2>Annexe · les neuf états (r2, le ticket)</h2>
+  <div class="r2-grid">
+    <div class="r2-et" id="e1"><h3>1 · Lecture en cours</h3>
+      <div class="r2-steps"><span class="r2-fait"><i></i>Envoi ✓</span><span class="r2-cours"><i></i>Lecture · <b class="r2-m">7 s</b></span><span><i></i>Vérification</span></div>
+      <div class="r2-bd"><div class="r2-bd1"><span class="r2-four">capture-facture.jpg</span><span class="r2-m" style="font-size:12px">1 page</span></div><div class="r2-sk" style="width:60%"></div><div class="r2-sk" style="width:40%"></div></div>
+      <div class="r2-tu"><div class="r2-tile"><span class="r2-k">Payé</span><span class="r2-v">touchable</span></div><div class="r2-tile"><span class="r2-k">Pour quoi ?</span><span class="r2-v">à taper</span></div></div>
+      <div class="r2-row"><button class="r2-stk">Fermer, lire en fond</button></div>
+    </div>
+    <div class="r2-et" id="e2"><h3>2 · Lue, sans point</h3>
+      <div class="r2-bd"><div class="r2-bd1"><span class="r2-four">Brau- und Rauchshop</span><span class="r2-m">27.04.2026</span></div><div class="r2-bd2"><span class="r2-tot">86,50 <small>CHF</small></span><span class="r2-chip r2-pr"><svg width="14" height="14" viewBox="0 0 20 20" stroke-width="2.14" fill="none" stroke="#2F6B45"><path d="M4 10.5 8 14.5 16 6"/></svg>23 lignes</span><span class="r2-chip r2-cpt r2-fini">✓ rien à régler</span></div></div>
+      <div class="r2-row" style="justify-content:flex-end"><span class="r2-go">Confirmer et enregistrer</span></div>
+    </div>
+    <div class="r2-et" id="e3"><h3>3 · Lue avec ses points</h3><p class="r2-calc">C'est l'écran du haut : 6 points, argent d'abord (TVA, date de paiement), puis stock (5 moutures, Target bis, Hallertauer Blanc CH, unité de Sabro).</p></div>
+    <div class="r2-et" id="e4"><h3>4 · Un point réglé, puis tous</h3>
+      <div class="r2-bd2"><span class="r2-tot">86,50 <small>CHF</small></span><span class="r2-chip r2-cpt"><span class="r2-m">5</span>&nbsp;à régler</span></div>
+      <div class="r2-mo r2-ok"><span></span><span class="r2-sub">↳ Mouture <span class="r2-m">6 Kg × 0,10</span> · Maris Otter <span class="r2-m">2,40/kg</span></span><span class="r2-amt">0,60</span></div>
+      <div class="r2-bd2"><span class="r2-tot">86,50 <small>CHF</small></span><span class="r2-chip r2-cpt r2-fini">✓ tout réglé</span><span class="r2-go" style="margin-left:auto">Confirmer et enregistrer</span></div>
+    </div>
+    <div class="r2-et" id="e5"><h3>5 · Erreur de lecture</h3>
+      <div class="r2-bd" style="border:1.5px dashed var(--attt)"><div class="r2-bd1"><span class="r2-four">Lecture impossible</span><span class="r2-m" style="font-size:12px">service IA</span></div><div class="r2-sub">capture-facture.jpg gardé · rien n'est perdu</div></div>
+      <div class="r2-row"><button class="r2-stk">Relire</button><button class="r2-stk">Saisir à la main</button></div>
+      <div class="r2-tu"><div class="r2-tile"><span class="r2-k">Total TTC</span><span class="r2-v r2-m">—</span></div><div class="r2-tile"><span class="r2-k">Achat du</span><span class="r2-v r2-m">—</span></div></div>
+    </div>
+    <div class="r2-et" id="e6"><h3>6 · Drive pas connecté</h3>
+      <div class="r2-pi" style="height:auto;padding:0"><span class="r2-drv" style="border:1.5px dashed var(--attt);color:var(--attt)">Drive à connecter</span><button class="r2-stk">Connecter</button></div>
+      <div class="r2-row" style="justify-content:flex-end"><span class="r2-go">Confirmer et enregistrer</span></div>
+      <p class="r2-calc">Confirmer ouvre d'abord la connexion ; le brouillon reste.</p>
+    </div>
+    <div class="r2-et" id="e7"><h3>7 · Enregistrement, puis le reçu</h3>
+      <div class="r2-prog"><i style="width:58%"></i></div>
+      <div class="r2-row"><span class="r2-drv">Envoi au Drive · <span class="r2-m">0,4 / 0,7 Mo</span></span><span class="r2-sub">tu peux fermer</span></div>
+      <div class="r2-recu" style="border:1px solid var(--bord);border-radius:10px;padding:6px 8px"><svg width="16" height="16" viewBox="0 0 20 20" stroke-width="1.875" fill="none" stroke="#2F6B45"><path d="M4 10.5 8 14.5 16 6"/></svg><span>L'Affinée / Justificatifs / 2026 / 2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r2-annexe">Ouvrir</a></div>
+    </div>
+    <div class="r2-et" id="e8"><h3>8 · Peut-être déjà enregistré</h3>
+      <div class="r2-cmp"><span></span><span>Ce document</span><span>Déjà au registre</span>
+        <span>N°</span><b>372765</b><b>380001</b>
+        <span>Date</span><b>27.04.2026</b><b>30.04.2026</b>
+        <span class="r2-same">Commande</span><b class="r2-same">686863</b><b class="r2-same">686863</b>
+        <span class="r2-same">Total</span><b class="r2-same">86,50</b><b class="r2-same">86,50</b></div>
+      <div class="r2-ch"><button>Même achat : rattacher le justificatif</button><button>Autre achat</button></div>
+    </div>
+    <div class="r2-et" id="e9"><h3>9 · Hors ligne</h3>
+      <div class="r2-row"><span class="r2-drv" style="border:1.5px dashed var(--attt);color:var(--attt)">Hors ligne</span><span class="r2-sub">brouillon gardé sur le téléphone</span></div>
+      <div class="r2-row" style="justify-content:flex-end"><span class="r2-go" style="background:var(--haut);color:var(--t1)">Enregistrer au retour du réseau</span></div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)}, $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  // Sa facture 372765 (vérité transcrite, sans son nom ni son adresse). Montants en centimes.
+  // [n, code, libellé imprimé, nom, quantité, unité imprimée, prix imprimé, montant, famille, stock]
+  var L=[
+   [1,'MA0221','Maris Otter, Kg','Maris Otter',6,'Kg','2,30',1380,'malt',{s:'relie',a:'Maris Otter'}],
+   [2,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',6,'Kg','0,10',60,'mout',{p:1}],
+   [3,'MA0027','Gerstenflocken, 1 Kg','Gerstenflocken',1,'Kg','2,40',240,'malt',{s:'relie',a:'Gerstenflocken'}],
+   [4,'MA0055','Röstgerste, Kg','Röstgerste',1,'Kg','1,80',180,'malt',{s:'relie',a:'Röstgerste'}],
+   [5,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',1,'Kg','0,10',10,'mout',{p:4}],
+   [6,'MA0333','CARAMÜNCH® Typ 2 Kg','Caramünch Typ 2',1,'Kg','1,75',175,'malt',{s:'relie',a:'Caramünch Typ 2'}],
+   [7,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',1,'Kg','0,10',10,'mout',{p:6}],
+   [8,'HO0102','Target 11.3%','Target',40,'g','0,040',160,'houb',{s:'bis',a:'Target bis',de:'Target',alpha:'11,3',alphaStock:'11,8',pt:'p4'}],
+   [9,'HO0017','Goldings East Kent 5.5%','Goldings East Kent',20,'g','0,040',80,'houb',{s:'neuf',a:'Goldings East Kent',alpha:'5,5'}],
+   [10,'HE0211','LALLEMAND Windsor 11g','LALLEMAND Windsor',2,'Stk','4,50',900,'lev',{s:'relie',a:'LALLEMAND Windsor',conv:'2 sachets'}],
+   [11,'HE0203','Safale BE-256 (Abbaye) 11.5 g','Safale BE-256',1,'Stk','4,40',440,'lev',{s:'relie',a:'Safale BE-256 (Abbaye)',conv:'1 sachet'}],
+   [12,'HE0102','Safale US-05 11,5g','Safale US-05',2,'Stk','3,40',680,'lev',{s:'relie',a:'Safale US-05',conv:'2 sachets'}],
+   [13,'MA0007','Pilsner Malz, Kg','Pilsner Malz',5,'Kg','1,50',750,'malt',{s:'relie',a:'Pilsner Malz'}],
+   [14,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',5,'Kg','0,10',50,'mout',{p:13}],
+   [15,'MA0010','Weizenmalz hell, Kg','Weizenmalz hell',2,'Kg','1,55',310,'malt',{s:'relie',a:'Weizenmalz hell'}],
+   [16,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',2,'Kg','0,10',20,'mout',{p:15}],
+   [17,'MA0034','Haferflocken, 1 Kg','Haferflocken',2,'Kg','2,50',500,'malt',{s:'relie',a:'Haferflocken'}],
+   [18,'HO0046','Galaxy 17.2%','Galaxy',60,'g','0,080',480,'houb',{s:'relie',a:'Galaxy',alpha:'17,2'}],
+   [19,'HO1907','Nelson Sauvin ™ 9.6%','Nelson Sauvin',100,'g','0,080',800,'houb',{s:'relie',a:'Nelson Sauvin',alpha:'9,6'}],
+   [20,'HO2026','Sabro® 13.4%','Sabro',30,null,'0,070',210,'houb',{s:'precis',a:'Sabro',alpha:'13,4',pt:'p6'}],
+   [21,'HE2036','LALLEMAND Verdant IPA 11g','Verdant IPA',2,'Stk','4,70',940,'lev',{s:'neuf',a:'LALLEMAND Verdant IPA',conv:'2 sachets'}],
+   [22,'HO17041','Hallertauer Blanc 9.5% CH','Hallertauer Blanc',30,'g','0,045',135,'houb',{s:'bis',a:'Hallertauer Blanc CH',de:'Hallertauer Blanc',origine:'CH',origineStock:'DE',alpha:'9,5',pt:'p5'}],
+   [23,'HO2022','Motueka ™ 8.1%','Motueka',20,'g','0,070',140,'houb',{s:'relie',a:'Motueka',alpha:'8,1'}]
+  ];
+  var PTS={p1:false,p2:false,p3:false,p4:false,p5:false,p6:false};
+  var attache={}; var choisi={}; var unite={}; var sel=null;
+  var chf=function(c){var s=(Math.abs(c)/100).toFixed(2).replace('.',',');return (c<0?'−':'')+s};
+  var cube='<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+  function ico(st){
+    var b='';
+    if(st==='relie') b='<circle cx="15" cy="15" r="4.6" fill="#333" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>';
+    if(st==='neuf') b='<circle cx="15" cy="15" r="4.6" fill="#fff" stroke="currentColor"/><path d="M15 12.6v4.8M12.6 15h4.8"/>';
+    if(st==='bis') b='<circle cx="15" cy="15" r="4.6" fill="#7F5B10" stroke="none"/><path d="M13.4 13.9a1.7 1.7 0 1 1 2.9 1.2L13.4 17.3h3.3" stroke="#fff"/>';
+    if(st==='precis') b='<circle cx="15" cy="15" r="4.6" fill="#fff" stroke="#7F5B10" stroke-dasharray="2 1.4"/><path d="M13.6 13.9a1.5 1.5 0 1 1 2.2 1.3c-.6.3-.8.6-.8 1.1M15 17.5v.2" stroke="#7F5B10"/>';
+    var dash=(st==='precis'||st==='neuf')?' stroke-dasharray="2.4 1.6"':'';
+    return '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><g'+dash+'>'+cube+'</g>'+b+'</svg>';
+  }
+  function ouvert(pt){return !PTS[pt]}
+  function moutOuvertes(){return L.filter(function(l){return l[8]==='mout'&&!attache[l[0]]}).length}
+  function render(){
+    var h='';
+    L.forEach(function(l){
+      var n=l[0],st=l[9];
+      if(l[8]==='mout'){
+        var ok=!!attache[n];var par=L[st.p-1];
+        var kg=(par[7]+l[7])/par[4];
+        h+='<li class="r2-mo'+(ok?' r2-ok':'')+'" data-n="'+n+'"><span class="r2-arr"></span><span class="r2-sub"><button data-att="'+n+'" data-booster="mouture" aria-label="'+(ok?'Détacher la mouture de ':'Rattacher la mouture à ')+par[3]+'">'+(ok?'✓ mouture':'mouture')+'</button>'+'</span><span class="r2-amt">'+chf(l[7])+'</span></li>';
+        return;
+      }
+      var pt=st.pt, dt=pt&&ouvert(pt);
+      var stS=st.s; if(pt&&!ouvert(pt)&&stS==='precis') stS='relie';
+      var nom=(pt==='p4'||pt==='p5')&&choisi[n]?choisi[n]:l[3];
+      var u=l[5]||unite[n];
+      var sub='<span class="r2-m">'+l[4]+'</span>&nbsp;'+(u?'<span class="r2-m">'+u+'</span>':'<span class="r2-sup">unité ?</span>');
+      if(st.alpha) sub+='<i class="r2-dot"></i>α&nbsp;<span class="r2-m">'+st.alpha+'</span>';
+      if(st.conv) sub+='<i class="r2-dot"></i><span class="r2-cv">'+st.conv+'</span>';
+      var malt=attache[n+1]?'<small>'+chf((l[7]+L[n][7])/l[4])+'/kg</small>':'';
+      h+='<li class="r2-li'+(dt?' r2-dt':'')+'" role="option" aria-selected="'+(sel===n)+'" data-n="'+n+'" data-booster="ligne"><span class="r2-ico'+(dt?' r2-q':'')+'">'+ico(stS)+'</span><span class="r2-nm"><b>'+nom+'</b><span class="r2-sub">'+sub+'</span></span><span class="r2-amt" data-edit="m'+n+'">'+chf(l[7])+malt+'</span>';
+      if(dt){
+        if(pt==='p4') h+='<span class="r2-fix"><span class="r2-q2">stock α <span class="r2-m">11,8</span></span><button class="r2-pri" data-bis="'+n+'" data-booster="bis">Target bis</button><button data-autre="'+n+'" aria-label="Choisir un autre article">⇄</button></span>';
+        if(pt==='p5') h+='<span class="r2-fix"><span class="r2-q2">stock DE</span><button class="r2-pri" data-bis="'+n+'" data-booster="bis">Hallertauer Blanc CH</button><button data-autre="'+n+'" aria-label="Choisir un autre article">⇄</button></span>';
+        if(pt==='p6') h+='<span class="r2-fix" data-booster="unite"><span class="r2-q2">unité illisible</span><button data-u="g">g</button><button data-u="kg">kg</button><button data-u="Stk">Stk</button></span>';
+      }
+      h+='</li>';
+      if(sel===n) h+=plateau(l);
+    });
+    $('#r2-ti').innerHTML=h;
+    // barre
+    var tot=L.reduce(function(a,l){return a+l[7]},0), b='';
+    L.forEach(function(l){var st=l[9];var d=(l[8]==='mout'&&!attache[l[0]])||(st.pt&&ouvert(st.pt));b+='<i class="f-'+l[8]+(d?' r2-dt':'')+'" style="flex-grow:'+l[7]+'" data-n="'+l[0]+'"></i>'});
+    $('#r2-comp').innerHTML=b;
+    PTS.p3=moutOuvertes()===0;
+    var nb=Object.keys(PTS).filter(function(k){return !PTS[k]}).length;
+    $('#r2-nb').textContent=nb;
+    var c=$('#r2-cpt'); if(nb===0){c.classList.add('r2-fini');c.innerHTML='✓ tout réglé'}else{c.classList.remove('r2-fini');c.innerHTML='<span class="r2-m" id="r2-nb">'+nb+'</span>&nbsp;à régler'}
+    $('#r2-tpay').classList.toggle('r2-dt',!PTS.p2); $('#r2-ttva').classList.toggle('r2-dt',!PTS.p1);
+    $('#r2-detv').textContent=chf(tot);
+    var d=$('#r2-det'); d.classList.toggle('r2-ec',tot!==8650);
+    d.firstChild.textContent=tot!==8650?'Détail · écart '+chf(tot-8650):'Détail';
+  }
+  function plateau(l){
+    var n=l[0],st=l[9],u=l[5]||unite[n]||'?';
+    var q=l[4],calc=Math.round(q*parseFloat(l[6].replace(',','.'))*100);
+    var ok=calc===l[7];
+    return '<li class="r2-plat"><div class="r2-pan r2-on">'
+     +'<span class="r2-ev">imprimé « '+l[2]+' » · '+l[1]+(st.alpha?' · α tirée du nom':'')+'</span>'
+     +'<div class="r2-big"><span class="r2-n" data-edit="q'+n+'" tabindex="0">'+q+'</span><span class="r2-u">'+u+'</span><span class="r2-u">×</span><span class="r2-n" data-edit="p'+n+'" tabindex="0" style="font-size:16px">'+l[6]+'</span><span class="r2-u">=</span><span class="r2-n" data-edit="m'+n+'" tabindex="0">'+chf(l[7])+'</span></div>'
+     +'<span class="r2-calc">'+(ok?'<b>'+q+' × '+l[6]+' = '+chf(calc)+'</b> ✓':'<span class="r2-bad">'+q+' × '+l[6]+' = '+chf(calc)+' · écart '+chf(l[7]-calc)+'</span>')+'</span>'
+     +'<div class="r2-row"><span class="r2-seg"><button aria-pressed="true">Ingrédient</button><button aria-pressed="false">Service</button><button aria-pressed="false">Matériel</button></span></div>'
+     +'<div class="r2-row"><span class="r2-lab">Stock</span><button class="r2-stk" data-booster="stock">'+ico(st.s)+(choisi[n]||st.a)+' ⇄</button>'+(st.conv?'<span class="r2-cv" style="font-size:12px">'+l[4]+' Stk = '+st.conv+'</span>':'')+'</div>'
+     +'<div class="r2-row" style="justify-content:space-between"><button class="r2-lk">Aucun mouvement de stock</button><button class="r2-lk" data-ret="'+n+'">Retirer la ligne</button></div>'
+     +'</div></li>';
+  }
+  function flash(el){if(!el)return;el.classList.remove('r2-flash');void el.offsetWidth;el.classList.add('r2-flash');el.scrollIntoView({block:'center',behavior:'smooth'})}
+  function prochain(){
+    if(!PTS.p1) return flash($('#r2-ttva'));
+    if(!PTS.p2) return flash($('#r2-tpay'));
+    if(!PTS.p3){var m=L.find(function(l){return l[8]==='mout'&&!attache[l[0]]});return flash($('.r2-mo[data-n="'+m[0]+'"]'))}
+    var o=L.find(function(l){return l[9].pt&&!PTS[l[9].pt]}); if(o) flash($('.r2-li[data-n="'+o[0]+'"]'));
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button,i,li,[data-edit]'); if(!t) return;
+    if(t.id==='r2-cpt'){prochain();return}
+    if(t.id==='r2-pbtn'){var p=$('#r2-preuve');p.classList.toggle('r2-on');t.setAttribute('aria-expanded',p.classList.contains('r2-on'));return}
+    if(t.id==='r2-jbtn'){$('#r2-just').classList.toggle('r2-on');return}
+    if(t.id==='r2-tpay'){$('#r2-ppay').classList.toggle('r2-on');$('#r2-ptva').classList.remove('r2-on');return}
+    if(t.id==='r2-ttva'){$('#r2-ptva').classList.toggle('r2-on');$('#r2-ppay').classList.remove('r2-on');return}
+    if(t.id==='r2-okpay'){PTS.p2=true;$('#r2-supp').textContent='confirmée';$('#r2-supp').style.borderStyle='solid';$('#r2-ppay').classList.remove('r2-on');render();return}
+    if(t.dataset.reg){$$('[data-reg]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});var ap=t.dataset.reg==='apayer';$('#r2-rpaye').hidden=ap;$('#r2-rmoy').hidden=ap;$('#r2-rech').hidden=!ap;$('#r2-tpay .r2-k').textContent=ap?'À payer':'Payé';return}
+    if(t.dataset.tva){PTS.p1=true;$$('[data-tva]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});var v=t.dataset.tva;$('#r2-tvav').innerHTML=v==='vide'?'<span class="r2-m">—</span> <span class="r2-sup" style="border-style:solid">vide</span>':'<span class="r2-m">'+v+'</span>';$('#r2-tvaref').textContent=v==='vide'?'— (laissée vide)':v+' (gardée)';$('#r2-ptva').classList.remove('r2-on');render();return}
+    if(t.dataset.att){var n=+t.dataset.att;attache[n]=!attache[n];render();return}
+    if(t.dataset.bis){var n2=+t.dataset.bis;choisi[n2]=L[n2-1][9].a;PTS[L[n2-1][9].pt]=true;render();return}
+    if(t.dataset.autre){sel=+t.dataset.autre;render();return}
+    if(t.dataset.u){var li=t.closest('li');var n3=+li.dataset.n;unite[n3]=t.dataset.u;PTS.p6=true;render();return}
+    if(t.dataset.ret){var i=L.findIndex(function(l){return l[0]===+t.dataset.ret});if(i>=0){L.splice(i,1);sel=null;render()}return}
+    if(t.id==='r2-addl'){L.push([L.length+1,'','Nouvelle ligne','Nouvelle ligne',1,'Kg','0,00',0,'malt',{s:'neuf',a:'—'}]);sel=L[L.length-1][0];render();return}
+    if(t.tagName==='I'&&t.dataset.n){var n4=+t.dataset.n;flash($('[data-n="'+n4+'"]'));return}
+    if(t.dataset.edit&&t.closest('.r2-plat,.r2-bd')){editer(t);return}
+    if(t.tagName==='LI'&&t.classList.contains('r2-li')){var n5=+t.dataset.n;sel=sel===n5?null:n5;render();return}
+    if(t.id==='r2-go'){enregistrer();return}
+  });
+  function editer(el){
+    var k=el.dataset.edit, v=el.textContent.replace(/[^0-9,]/g,'');
+    var inp=document.createElement('input');inp.className='r2-in';inp.setAttribute('inputmode','decimal');inp.value=v;inp.style.width='96px';
+    el.replaceWith(inp);inp.focus();inp.select();
+    inp.addEventListener('blur',function(){
+      var x=parseFloat(inp.value.replace(',','.'));
+      if(!isNaN(x)&&k[0]!=='t'){var n=+k.slice(1);var l=L.find(function(r){return r[0]===n});
+        if(k[0]==='q') l[4]=x; if(k[0]==='p') l[6]=inp.value; if(k[0]==='m') l[7]=Math.round(x*100);}
+      render();
+    });
+  }
+  function enregistrer(){
+    var nb=Object.keys(PTS).filter(function(k){return !PTS[k]}).length;
+    if(nb){prochain();return}
+    var pi=$('#r2-pi'),g=$('#r2-progi');
+    pi.innerHTML='<span class="r2-drv">Envoi au Drive · <span class="r2-m" id="r2-mo">0,0 / 0,7 Mo</span></span><span class="r2-sub">tu peux fermer</span>';
+    var x=0,tm=setInterval(function(){x+=0.1;if(x>=0.7){clearInterval(tm);g.style.width='100%';
+      pi.innerHTML='<span class="r2-recu"><svg width="16" height="16" viewBox="0 0 20 20" stroke-width="1.875" fill="none" stroke="#2F6B45"><path d="M4 10.5 8 14.5 16 6"/></svg><span>2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r2-annexe">Ouvrir dans Drive</a></span>';return}
+      g.style.width=(x/0.7*100)+'%';$('#r2-mo').textContent=x.toFixed(1).replace('.',',')+' / 0,7 Mo'},180);
+  }
+  window.r2Regler=function(){PTS.p1=PTS.p2=PTS.p4=PTS.p5=PTS.p6=true;$('#r2-supp').textContent='confirmée';$('#r2-supp').style.borderStyle='solid';$('#r2-tvav').innerHTML='<span class="r2-m">—</span> <span class="r2-sup" style="border-style:solid">vide</span>';L.forEach(function(l){if(l[8]==='mout')attache[l[0]]=true});choisi[8]='Target bis';choisi[22]='Hallertauer Blanc CH';unite[20]='g';render()};
+  window.r2Ouvrir=function(n){sel=n;render()};
+  render();
+})();
+</script>
+</body></html>

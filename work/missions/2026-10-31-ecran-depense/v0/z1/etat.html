@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z1 — Nouvelle dépense · le compteur à la place du bandeau (v0 froide, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--att:#9C7020;--attt:#7F5B10;--attf:#F6EBD3;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--malt:#E0A02E;--maltt:#7A5A12;--maltf:#F8EBCB;--lev:#6A4FB0;--levf:#E8E2F6;--eau:#4F7E9B;--eaut:#2F5F7D;--eauf:#DCE8EF;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+::selection{background:#F2DDA6}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg{display:block}
+.z1-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.z1-sheet{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden;display:flex;flex-direction:column}
+.z1-annexe{margin-top:auto}
+.z1-li>*{min-width:0}
+@media (min-width:900px){body{background:#E9E9E9}.z1-sheet{margin:24px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px -20px rgba(0,0,0,.4);min-height:0;overflow:hidden}}
+.z1-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 10px;border-bottom:1px solid var(--bord)}
+.z1-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.z1-x{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.z1-x:hover{background:var(--haut)}
+.z1-c{padding:8px 10px 72px;display:flex;flex-direction:column;gap:8px;min-height:calc(100vh - 40px)}
+.z1-rows{background:var(--panel);border-radius:16px;padding:2px 10px}
+.z1-art{background:var(--panel);border-radius:16px;padding:4px 6px}
+
+/* Le verdict : le bandeau ambre devient un compteur chiffré. */
+.z1-ver{background:var(--panel);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.z1-vl{display:flex;align-items:baseline;gap:10px}
+.z1-tot{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;color:var(--t0);line-height:32px}
+.z1-tot small{font-size:14px;font-weight:500;color:var(--t2);margin-left:4px}
+.z1-ok{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--hopt);white-space:nowrap}
+.z1-ok b{font-family:var(--mono);font-weight:600}
+.z1-pts{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px}
+.z1-cnt{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;white-space:nowrap}
+.z1-cnt b{font-family:var(--mono);font-size:16px}
+.z1-cnt.z1-zero{background:var(--hopt)}
+.z1-chip{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border-radius:10px;border:1.5px solid var(--att);background:var(--attf);color:var(--attt);font-size:14px;white-space:nowrap}
+.z1-chip b{font-family:var(--mono);font-weight:600}
+.z1-chip i{width:16px;height:16px;border-radius:50%;background:var(--attt);color:#fff;font-style:normal;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.z1-chip.z1-fait{border-color:var(--bord);background:#fff;color:var(--t2);text-decoration:line-through}
+.z1-chip.z1-fait i{background:var(--hopt);text-decoration:none}
+.z1-chip:active{transform:scale(.97)}
+
+/* Le justificatif et le Drive, une ligne. */
+.z1-just{display:flex;align-items:center;gap:8px;min-height:36px}
+.z1-th{width:28px;height:36px;border-radius:10px;border:1px solid var(--bordm);background:repeating-linear-gradient(0deg,#fff 0 3px,#DDD 3px 4px);flex-shrink:0}
+.z1-fn{flex:1;min-width:0;font-size:14px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z1-fn b{font-family:var(--mono);font-weight:500}
+.z1-lk{height:28px;padding:0 6px;border-radius:10px;color:var(--eaut);font-size:14px;text-decoration:underline;text-underline-offset:2px}
+.z1-drv{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--hopt);white-space:nowrap}
+.z1-drv i{width:8px;height:8px;border-radius:50%;background:var(--hop)}
+.z1-drv.z1-off{color:var(--attt)}.z1-drv.z1-off i{background:var(--att)}
+
+/* Les lignes du ticket de la dépense : libellé à gauche, valeur à droite, éditable sur place. */
+.z1-rows{display:flex;flex-direction:column}
+.z1-r{display:grid;grid-template-columns:1fr auto;align-items:center;min-height:32px;padding:2px 0;border-bottom:1px solid var(--bord);column-gap:8px}
+.z1-r:last-child{border-bottom:0}
+.z1-k{font-size:14px;color:var(--t2);display:flex;align-items:center;gap:6px}
+.z1-v{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
+.z1-in{height:28px;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0 2px;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0);border-radius:0;caret-color:var(--t0)}
+.z1-in:focus{outline:none;border-bottom:2px solid var(--t0);background:#fff}
+.z1-in.z1-txt{font-family:var(--sans);font-weight:400;font-size:14px;text-align:left;width:100%}
+.z1-u{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.z1-tag{font-size:12px;color:var(--t1);background:var(--haut);border-radius:10px;padding:0 6px;line-height:18px;white-space:nowrap}
+.z1-sup{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:16px;white-space:nowrap}
+.z1-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px}
+.z1-seg button{padding:0 10px;font-size:14px;color:var(--t1)}
+.z1-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.z1-chev{color:var(--t2)}
+.z1-rr{grid-column:1/3;display:flex;flex-direction:column;gap:4px}
+.z1-rr>div{display:flex;align-items:center;gap:6px;min-height:28px}
+.z1-rr>div span:first-child{flex:1;font-size:14px;color:var(--t2)}
+.z1-sel{height:28px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;background:#fff;font-size:14px;color:var(--t0)}
+.z1-opt{display:none;grid-column:1/3;padding:4px 0 2px}
+.z1-r[aria-expanded="true"] .z1-opt{display:block}
+.z1-r[aria-expanded="true"] .z1-chev{transform:rotate(180deg)}
+.z1-pli{grid-column:1/3;display:grid;grid-template-columns:1fr auto;align-items:center;min-height:30px;cursor:pointer}
+
+/* Les articles : familles, puis lignes à un toucher. */
+.z1-art{display:flex;flex-direction:column;gap:2px}
+.z1-fam{display:grid;grid-template-columns:24px 1fr auto auto 20px;align-items:center;column-gap:8px;min-height:32px;padding:1px 4px 1px 6px;border-radius:10px;cursor:pointer;border-left:0}
+.z1-fam:hover{background:#fff}
+.z1-fam[aria-expanded="true"]{background:#fff}
+.z1-li:hover{background:#fff}
+.z1-fam[aria-expanded="true"] .z1-chev{transform:rotate(180deg)}
+.z1-sw{width:14px;height:14px;border-radius:50%;justify-self:center}
+.z1-fam b{font-size:16px;font-weight:600;color:var(--t0)}
+.z1-fam b small{font-family:var(--mono);font-size:14px;color:var(--t2);font-weight:400;margin-left:6px}
+.z1-icos{display:flex;gap:2px;align-items:center}
+.z1-amt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0);text-align:right}
+.z1-lines{display:none;flex-direction:column;padding:0 0 4px 10px}
+.z1-fam[aria-expanded="true"]+.z1-lines{display:flex}
+.z1-li{display:grid;grid-template-columns:20px auto 1fr auto 56px;align-items:center;column-gap:6px;min-height:32px;padding:0 4px;border-radius:10px}
+.z1-li:hover{background:var(--panel)}
+.z1-li.z1-pt{background:var(--attf)}
+.z1-li.z1-done{background:var(--hopf)}
+.z1-q{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--t0);white-space:nowrap}
+.z1-q small{font-size:12px;color:var(--t2)}
+.z1-n{font-size:14px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z1-n em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:4px}
+.z1-li .z1-amt{font-weight:500;font-size:14px}
+.z1-mout{grid-template-columns:20px auto 1fr auto 56px;margin-left:12px;border-left:1.5px dashed var(--bordm);border-radius:0 10px 10px 0}
+.z1-act{height:24px;padding:0 6px;border-radius:10px;border:1px solid var(--att);background:#fff;color:var(--attt);font-size:12px;white-space:nowrap}
+.z1-act:active{transform:scale(.96)}
+.z1-ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center}
+.z1-ico svg{width:18px;height:18px}
+.z1-plus{height:28px;padding:0 8px;border-radius:10px;border:1px dashed var(--bordm);color:var(--t1);font-size:14px;align-self:flex-start}
+
+/* Les deux valeurs d'un doute, côte à côte, chacune se choisit. */
+.z1-deux{display:inline-flex;gap:4px;align-items:center}
+.z1-deux button{height:28px;min-width:48px;padding:0 8px;border-radius:10px;border:1.5px solid var(--att);background:#fff;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0)}
+.z1-deux button.z1-vide{font-family:var(--sans);font-weight:400;font-size:14px;color:var(--t1);border-style:dashed;border-color:var(--bordm)}
+.z1-deux button[aria-pressed="true"]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.z1-calc{font-family:var(--mono);font-size:12px;color:var(--attt);white-space:nowrap}
+.z1-calc.z1-done{color:var(--hopt)}
+
+/* Le pied : une action, le Drive à côté. */
+.z1-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.96);border-top:1px solid var(--bord)}
+@media (min-width:900px){.z1-pied{position:sticky}}
+.z1-go{margin-left:auto;height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.z1-go:active{transform:scale(.97)}
+.z1-flash{animation:z1-fl .8s ease-out}
+@keyframes z1-fl{from{box-shadow:inset 0 0 0 2px var(--att)}}
+
+/* L'annexe : les états, petites cartes. */
+.z1-annexe{margin:28px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.z1-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.z1-etats{display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:900px){.z1-etats{grid-template-columns:1fr 1fr}}
+.z1-et{border:1px solid var(--bord);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;background:#fff}
+.z1-et h3{font-size:12px;font-weight:600;color:var(--t2)}
+.z1-et p{font-size:14px;color:var(--t1)}
+.z1-steps{display:flex;gap:6px;align-items:center}
+.z1-steps span{flex:1;height:8px;border-radius:9px;background:var(--bord);position:relative;overflow:hidden}
+.z1-steps span.z1-f{background:var(--t0)}
+.z1-steps span.z1-en::after{content:"";position:absolute;inset:0;width:50%;background:var(--t0);animation:z1-run 1.2s linear infinite}
+@keyframes z1-run{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+.z1-sl{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.z1-recu{display:flex;align-items:center;gap:8px;background:var(--hopf);border-radius:10px;padding:6px 8px}
+.z1-recu b{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--t0)}
+.z1-err{display:flex;align-items:center;gap:8px;background:#F9E1DF;border-radius:10px;padding:6px 8px;color:#A8291F}
+.z1-dbl{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 8px;font-size:14px}
+.z1-dbl span{color:var(--t2);font-size:12px}
+.z1-dbl b{font-family:var(--mono);font-weight:500}
+</style></head>
+<body>
+<div class="z1-sheet">
+<header class="z1-hd"><h1>Nouvelle dépense</h1><button class="z1-x" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13"/></svg></button></header>
+
+<main class="z1-c">
+  <!-- Le verdict, à la place du bandeau « Lecture à confirmer ». -->
+  <section class="z1-ver" aria-label="Verdict de lecture">
+    <div class="z1-vl">
+      <div class="z1-tot" id="z1-total">86,50<small>CHF</small></div>
+      <div class="z1-ok"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg><b>23</b> lignes recoupées</div>
+    </div>
+    <div class="z1-pts" data-booster="compteur-points">
+      <span class="z1-cnt" id="z1-cnt"><b>3</b> points</span>
+      <button class="z1-chip" data-pt="tva" data-cible="z1-row-tva"><i>1</i>TVA <b>2,80 · 4,15</b></button>
+      <button class="z1-chip" data-pt="mout" data-cible="z1-fam-malt"><i>2</i>mouture <b>×5</b> ↑ malt</button>
+      <button class="z1-chip" data-pt="target" data-cible="z1-fam-hop"><i>3</i>Target α <b>11,3 ≠ 11,8</b></button>
+    </div>
+  </section>
+
+  <div class="z1-just">
+    <div class="z1-th" aria-hidden="true"></div>
+    <div class="z1-fn"><b>2026-04-27 Brau- und Rauchshop 372765.jpg</b></div>
+    <button class="z1-lk">Voir</button><button class="z1-lk">Changer</button>
+    <span class="z1-drv" id="z1-drv" data-booster="drive-pret"><i></i>Drive</span>
+  </div>
+
+  <div class="z1-rows">
+    <div class="z1-r"><div class="z1-k">Total TTC</div><div class="z1-v"><input class="z1-in" inputmode="decimal" value="86,50" aria-label="Total TTC en CHF" data-booster="edition-sur-place"><span class="z1-u">CHF</span></div></div>
+    <div class="z1-r"><div class="z1-k">Pour quoi ?</div><div class="z1-v"><span class="z1-sup">proposé</span></div><div class="z1-opt" style="display:block"><input class="z1-in z1-txt" value="Brau- und Rauchshop · 372765 · malts, houblons, levures" aria-label="Pour quoi"></div></div>
+    <div class="z1-r" aria-expanded="false"><div class="z1-pli" data-pli><div class="z1-k">Achat du</div><div class="z1-v"><input class="z1-in" inputmode="numeric" value="27.04.2026" aria-label="Date de l'achat"><svg class="z1-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg></div></div>
+      <div class="z1-opt"><div class="z1-rr"><div><span>Mois</span><button class="z1-sel">← avril 2026 →</button></div><div><span>Raccourcis</span><button class="z1-sel">Hier</button><button class="z1-sel">Aujourd'hui</button></div></div></div></div>
+    <div class="z1-r"><div class="z1-k">Règlement</div><div class="z1-v"><span class="z1-seg" data-booster="bascule-reglement"><button aria-pressed="true" data-seg="paye">Déjà payé</button><button aria-pressed="false" data-seg="apayer">À payer</button></span></div></div>
+    <div class="z1-r" aria-expanded="false"><div class="z1-pli" data-pli><div class="z1-k" id="z1-payek">Payé le</div><div class="z1-v"><input class="z1-in" inputmode="numeric" value="27.04.2026" aria-label="Payé le" id="z1-payele"><span class="z1-sup" id="z1-supp">supposée</span><svg class="z1-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg></div></div>
+      <div class="z1-opt"><div class="z1-rr"><div><span>Moyen</span><button class="z1-sel">E-Finance ⌄</button></div><div id="z1-ech" hidden><span>Échéance</span><input class="z1-in" inputmode="numeric" value="07.05.2026" aria-label="Échéance"></div><div><span>= date de la facture, non imprimée</span></div></div></div></div>
+    <div class="z1-r" aria-expanded="false"><div class="z1-pli" data-pli><div class="z1-k">Fournisseur · catégorie</div><div class="z1-v"><span>Brau- und Rauchshop GmbH</span><span class="z1-tag">Brassage</span><svg class="z1-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg></div></div>
+      <div class="z1-opt"><div class="z1-rr"><div><span>Fournisseur</span><input class="z1-in z1-txt" value="Brau- und Rauchshop GmbH" aria-label="Fournisseur" style="width:60%"></div><div><span>Catégorie</span><button class="z1-sel">Brassage ⌄</button></div><div><span>Lier à une dépense prévue</span><button class="z1-sel">aucune ⌄</button></div></div></div></div>
+  </div>
+
+  <!-- Les articles, par famille ; les lignes à un toucher ; le doute sur la ligne. -->
+  <section class="z1-art" aria-label="Articles, stock et matériel" data-booster="familles-repliables">
+    <div class="z1-fam" id="z1-fam-malt" aria-expanded="false" data-fam>
+      <span class="z1-sw" style="background:var(--malt)"></span>
+      <b>Malts<small>7 + 5</small></b>
+      <span class="z1-icos" aria-label="4 reliés, 3 nouveaux"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span>
+      <span class="z1-amt">36,85</span>
+      <svg class="z1-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg>
+    </div>
+    <div class="z1-lines">
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z1-q">6<small> kg</small></span><span class="z1-n">Maris Otter</span><span></span><span class="z1-amt">13,80</span></div>
+      <div class="z1-li z1-mout z1-pt" data-mout><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M3 9h12"/></svg></span><span class="z1-q">6<small> kg</small></span><span class="z1-n">Zuschlag Schrotung</span><button class="z1-act" data-ratt>rattacher ↑</button><span class="z1-amt">0,60</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">1<small> kg</small></span><span class="z1-n">Gerstenflocken</span><span></span><span class="z1-amt">2,40</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">1<small> kg</small></span><span class="z1-n">Röstgerste</span><span></span><span class="z1-amt">1,80</span></div>
+      <div class="z1-li z1-mout z1-pt" data-mout><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M3 9h12"/></svg></span><span class="z1-q">1<small> kg</small></span><span class="z1-n">Zuschlag Schrotung</span><button class="z1-act" data-ratt>rattacher ↑</button><span class="z1-amt">0,10</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">1<small> kg</small></span><span class="z1-n">Caramünch Typ 2</span><span></span><span class="z1-amt">1,75</span></div>
+      <div class="z1-li z1-mout z1-pt" data-mout><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M3 9h12"/></svg></span><span class="z1-q">1<small> kg</small></span><span class="z1-n">Zuschlag Schrotung</span><button class="z1-act" data-ratt>rattacher ↑</button><span class="z1-amt">0,10</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z1-q">5<small> kg</small></span><span class="z1-n">Pilsner Malz</span><span></span><span class="z1-amt">7,50</span></div>
+      <div class="z1-li z1-mout z1-pt" data-mout><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M3 9h12"/></svg></span><span class="z1-q">5<small> kg</small></span><span class="z1-n">Zuschlag Schrotung</span><button class="z1-act" data-ratt>rattacher ↑</button><span class="z1-amt">0,50</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z1-q">2<small> kg</small></span><span class="z1-n">Weizenmalz hell</span><span></span><span class="z1-amt">3,10</span></div>
+      <div class="z1-li z1-mout z1-pt" data-mout><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M3 9h12"/></svg></span><span class="z1-q">2<small> kg</small></span><span class="z1-n">Zuschlag Schrotung</span><button class="z1-act" data-ratt>rattacher ↑</button><span class="z1-amt">0,20</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z1-q">2<small> kg</small></span><span class="z1-n">Haferflocken</span><span></span><span class="z1-amt">5,00</span></div>
+    </div>
+
+    <div class="z1-fam" id="z1-fam-hop" aria-expanded="false" data-fam>
+      <span class="z1-sw" style="background:var(--hop)"></span>
+      <b>Houblons<small>7</small></b>
+      <span class="z1-icos"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="7" y="7" width="8" height="8" rx="2" fill="#fff"/></svg><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span>
+      <span class="z1-amt">20,05</span>
+      <svg class="z1-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg>
+    </div>
+    <div class="z1-lines">
+      <div class="z1-li z1-pt" id="z1-li-target"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="7" y="7" width="8" height="8" rx="2" fill="#fff"/></svg></span><span class="z1-q">40<small> g</small></span><span class="z1-n">Target<em>α 11,3 · stock 11,8</em></span><span class="z1-deux"><button class="z1-act" data-target="bis">article bis</button><button class="z1-act" data-target="meme">même lot</button></span><span class="z1-amt">1,60</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">20<small> g</small></span><span class="z1-n">Goldings East Kent<em>α 5,5</em></span><span></span><span class="z1-amt">0,80</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">60<small> g</small></span><span class="z1-n">Galaxy<em>α 17,2</em></span><span></span><span class="z1-amt">4,80</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z1-q">100<small> g</small></span><span class="z1-n">Nelson Sauvin<em>α 9,6</em></span><span></span><span class="z1-amt">8,00</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">30<small> g</small></span><span class="z1-n">Sabro<em>α 13,4</em></span><span></span><span class="z1-amt">2,10</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="7" y="7" width="8" height="8" rx="2" fill="#fff"/></svg></span><span class="z1-q">30<small> g</small></span><span class="z1-n">Hallertauer Blanc CH<em>α 9,5</em></span><span></span><span class="z1-amt">1,35</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">20<small> g</small></span><span class="z1-n">Motueka<em>α 8,1</em></span><span></span><span class="z1-amt">1,40</span></div>
+    </div>
+
+    <div class="z1-fam" id="z1-fam-lev" aria-expanded="false" data-fam>
+      <span class="z1-sw" style="background:var(--lev)"></span>
+      <b>Levures<small>4</small></b>
+      <span class="z1-icos"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span>
+      <span class="z1-amt">29,60</span>
+      <svg class="z1-chev" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l4 4 4-4"/></svg>
+    </div>
+    <div class="z1-lines">
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">2<small> Stk</small></span><span class="z1-n">Lallemand Windsor<em>= 2 sachets · 11 g</em></span><span></span><span class="z1-amt">9,00</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">1<small> Stk</small></span><span class="z1-n">Safale BE-256<em>= 1 sachet · 11,5 g</em></span><span></span><span class="z1-amt">4,40</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg></span><span class="z1-q">2<small> Stk</small></span><span class="z1-n">Safale US-05<em>= 2 sachets · 11,5 g</em></span><span></span><span class="z1-amt">6,80</span></div>
+      <div class="z1-li"><span class="z1-ico"><svg viewBox="0 0 18 18" fill="none" stroke="var(--t2)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg></span><span class="z1-q">2<small> Stk</small></span><span class="z1-n">Lallemand Verdant IPA<em>= 2 sachets · 11 g</em></span><span></span><span class="z1-amt">9,40</span></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;padding:4px 0 0 6px"><button class="z1-plus">+ ligne</button><button class="z1-plus">regrouper</button><span class="z1-k" style="margin-left:auto"><b class="z1-m" style="color:var(--t0)">86,50 / 86,50</b></span></div>
+  </section>
+
+  <div class="z1-rows">
+    <div class="z1-r" id="z1-row-tva"><div class="z1-k">Facture <b class="z1-m" style="color:var(--t0)">372765</b> · cde <b class="z1-m" style="color:var(--t0)">686863</b></div><div class="z1-v"><span class="z1-tag">pro-forma, payée</span></div></div>
+    <div class="z1-r"><div class="z1-k">TVA imprimée</div><div class="z1-v z1-deux" data-booster="deux-valeurs"><button data-tva="2,80">2,80</button><button data-tva="4,15">4,15</button><button class="z1-vide" data-tva="">vide</button></div>
+      <div class="z1-opt" style="display:block"><span class="z1-calc" id="z1-calc">bases 110,40 ≠ 86,50 · MWST 4,15 ≠ 2,80</span></div></div>
+    <div class="z1-r"><div class="z1-k">HT</div><div class="z1-v"><span class="z1-u">non imprimé</span><input class="z1-in" inputmode="decimal" value="" placeholder="—" aria-label="Total HT" style="width:56px"></div></div>
+  </div>
+</main>
+
+<footer class="z1-pied">
+  <span class="z1-drv" id="z1-drv2"><i></i>Drive prêt</span>
+  <button class="z1-go" id="z1-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer et enregistrer</button>
+</footer>
+
+<section class="z1-annexe" aria-label="États">
+  <h2>États</h2>
+  <div class="z1-etats">
+    <div class="z1-et"><h3>1 · Lecture en cours</h3><div class="z1-steps"><span class="z1-f"></span><span class="z1-en"></span><span></span></div><div class="z1-sl"><span>envoyé 0,7 Mo</span><span>lecture ×2</span><span>vérification</span></div><p>Le justificatif, la date et le fournisseur se voient déjà ; le × reste actif.</p></div>
+    <div class="z1-et"><h3>2 · Lue, sans point</h3><div class="z1-vl"><div class="z1-tot">86,50<small>CHF</small></div><div class="z1-ok"><b>23</b> lignes recoupées</div></div><span class="z1-cnt z1-zero" style="align-self:flex-start"><b>0</b> point · prêt</span></div>
+    <div class="z1-et"><h3>3 · Lue avec ses points</h3><p>Le premier écran ci-dessus : <b class="z1-m">3</b> points, chacun à sa place, le premier (TVA) sous le doigt.</p></div>
+    <div class="z1-et"><h3>4 · Un point réglé, puis tous</h3><div class="z1-pts"><span class="z1-cnt"><b>2</b> points</span><span class="z1-chip z1-fait"><i>✓</i>TVA vide</span><span class="z1-chip"><i>2</i>mouture ×5</span></div><div class="z1-pts"><span class="z1-cnt z1-zero"><b>0</b> point · prêt</span></div></div>
+    <div class="z1-et"><h3>5 · Erreur de lecture</h3><div class="z1-err">Lecture impossible · le fichier est gardé</div><p>La feuille s'ouvre vide, à la main ; le justificatif reste attaché.</p></div>
+    <div class="z1-et"><h3>6 · Drive pas connecté</h3><span class="z1-drv z1-off"><i></i>Drive à connecter</span><button class="z1-sel">Connecter Drive</button><p>Le bouton Confirmer reste là ; rien ne s'écrit sans Drive.</p></div>
+    <div class="z1-et"><h3>7 · Enregistrement, puis reçu</h3><div class="z1-steps"><span class="z1-f"></span><span class="z1-en"></span></div><div class="z1-sl"><span>envoi au Drive</span><span>sans bloquer</span></div><div class="z1-recu"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg><div><b>2026-04-27 Brau- und Rauchshop 372765.jpg</b><br><a href="#" style="color:var(--eaut);font-size:12px">Ouvrir dans Drive · L'Affinée / Justificatifs / 2026</a></div></div></div>
+    <div class="z1-et"><h3>8 · Achat peut-être déjà enregistré</h3><div class="z1-dbl"><span></span><span>document lu</span><span>déjà enregistré</span><span>n°</span><b>372765</b><b>380001</b><span>commande</span><b>686863</b><b>686863</b><span>total</span><b>86,50</b><b>86,50</b></div><div class="z1-seg"><button aria-pressed="true">Même achat</button><button aria-pressed="false">Autre achat</button></div></div>
+    <div class="z1-et"><h3>9 · Hors ligne</h3><span class="z1-drv z1-off"><i></i>hors ligne · brouillon gardé</span><p>Les points se règlent ; l'enregistrement attend le réseau, sans rien perdre.</p></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  var pts={tva:false,mout:false,target:false};
+  var cnt=document.getElementById('z1-cnt');
+  function maj(){
+    var n=Object.keys(pts).filter(function(k){return !pts[k]}).length;
+    cnt.innerHTML='<b>'+n+'</b> '+(n===0?'point · prêt':n===1?'point':'points');
+    cnt.classList.toggle('z1-zero',n===0);
+    document.querySelectorAll('.z1-chip[data-pt]').forEach(function(c){c.classList.toggle('z1-fait',pts[c.dataset.pt])});
+  }
+  document.querySelectorAll('.z1-chip[data-pt]').forEach(function(c){c.addEventListener('click',function(){
+    var t=document.getElementById(c.dataset.cible); if(!t) return;
+    if(t.hasAttribute('data-fam')) t.setAttribute('aria-expanded','true');
+    t.scrollIntoView({behavior:'smooth',block:'center'}); t.classList.remove('z1-flash'); void t.offsetWidth; t.classList.add('z1-flash');
+  })});
+  document.querySelectorAll('[data-fam]').forEach(function(f){f.addEventListener('click',function(){f.setAttribute('aria-expanded',f.getAttribute('aria-expanded')==='true'?'false':'true')})});
+  document.querySelectorAll('[data-pli]').forEach(function(p){p.addEventListener('click',function(e){if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;var r=p.parentElement;r.setAttribute('aria-expanded',r.getAttribute('aria-expanded')==='true'?'false':'true')})});
+  document.querySelectorAll('[data-tva]').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('[data-tva]').forEach(function(x){x.setAttribute('aria-pressed','false')}); b.setAttribute('aria-pressed','true');
+    pts.tva=true; var c=document.getElementById('z1-calc'); c.textContent=b.dataset.tva?'retenu '+b.dataset.tva+' · lu, non recoupé':'TVA laissée vide · HT vide'; c.classList.add('z1-done'); maj();
+  })});
+  var mouts=document.querySelectorAll('[data-mout]');
+  document.querySelectorAll('[data-ratt]').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    var li=b.closest('[data-mout]'); li.classList.remove('z1-pt'); li.classList.add('z1-done'); b.replaceWith(Object.assign(document.createElement('span'),{className:'z1-tag',textContent:'dans le malt'}));
+    if(![].some.call(mouts,function(m){return m.classList.contains('z1-pt')})){pts.mout=true;maj();}
+  })});
+  document.querySelectorAll('[data-target]').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    var li=document.getElementById('z1-li-target'); li.classList.remove('z1-pt'); li.classList.add('z1-done');
+    li.querySelector('.z1-deux').replaceWith(Object.assign(document.createElement('span'),{className:'z1-tag',textContent:b.dataset.target==='bis'?'Target bis · α 11,3':'lot Target · α 11,3'}));
+    pts.target=true; maj();
+  })});
+  document.querySelectorAll('[data-seg]').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    document.querySelectorAll('[data-seg]').forEach(function(x){x.setAttribute('aria-pressed','false')}); b.setAttribute('aria-pressed','true');
+    var ap=b.dataset.seg==='apayer'; document.getElementById('z1-ech').hidden=!ap; document.getElementById('z1-payele').style.visibility=ap?'hidden':''; document.getElementById('z1-supp').style.visibility=ap?'hidden':''; document.getElementById('z1-payek').textContent=ap?'À payer · échéance':'Payé le';
+  })});
+  document.getElementById('z1-payele').addEventListener('input',function(){document.getElementById('z1-supp').textContent='saisie'});
+  document.getElementById('z1-go').addEventListener('click',function(){var d=document.getElementById('z1-drv2');d.innerHTML='<i></i>envoi au Drive en cours…';setTimeout(function(){d.innerHTML='<i></i>rangé dans Drive · 2026'},1500)});
+})();
+</script>
+</body></html>

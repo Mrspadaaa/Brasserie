@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u1 — Nouvelle dépense · la feuille, chaque doute à sa place (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--hop:#4C6B2A;--hopf:#EEF4E6;--fin:#1F64A3;--finf:#E8F0F9;--att:#7F5B10;--atta:#9C7020;--attf:#FBF3E1;--alerte:#A8291F;--lev:#6A4FB0;--malt:#E0A02E;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+::selection{background:#F2C14E66}
+:focus-visible{outline:2px solid var(--fin);outline-offset:1px}
+.u1-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.u1-ic{display:inline-flex;width:16px;height:16px;flex-shrink:0}
+.u1-ic svg{width:16px;height:16px}
+/* la feuille */
+.u1-sheet{position:relative;max-width:640px;margin:0 auto;background:var(--panel);border-radius:24px 24px 0 0;padding-bottom:64px;min-height:844px}
+.u1-hd{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 6px 0 12px;background:var(--panel);border-bottom:1px solid var(--bord);border-radius:24px 24px 0 0}
+.u1-hd h1{font-size:14px;font-weight:700;color:var(--t0)}
+.u1-x{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:var(--t1)}
+/* verdict */
+.u1-vd{display:flex;gap:10px;align-items:center;padding:8px 10px 4px}
+.u1-doc{position:relative;width:44px;height:56px;flex-shrink:0;border-radius:10px;border:1px solid var(--bordm);background:#fff;overflow:hidden;padding:0}
+.u1-doc img{display:block;width:100%;height:100%}
+.u1-doc .u1-dv{position:absolute;right:-1px;bottom:-1px;width:20px;height:20px;border-radius:50%;background:var(--hop);color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--panel)}
+.u1-doc .u1-dv svg{width:16px;height:16px}
+.u1-tot{flex:1;min-width:0}
+.u1-big{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);line-height:1.1;border-bottom:1.5px dotted var(--trait);display:inline-flex;align-items:baseline;gap:4px;padding:0 1px}
+.u1-big small{font-size:12px;font-weight:500;color:var(--t2)}
+.u1-who{font-size:12px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u1-who b{font-weight:600;color:var(--t1)}
+.u1-sep::before{content:"·";margin:0 4px}
+.u1-sl::before{content:"/";margin:0 3px;color:var(--t2)}
+.u1-cpt{flex-shrink:0;display:flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;background:var(--attf);border:1.5px dashed var(--atta);color:var(--att);font-weight:600;font-size:14px}
+.u1-cpt.u1-fini{background:var(--hopf);border:1.5px solid var(--hop);color:var(--hop)}
+.u1-pv{margin:0 10px 6px;display:flex;align-items:center;gap:6px;min-height:28px;color:var(--hop);font-size:12px;width:calc(100% - 20px);text-align:left}
+.u1-pv span{color:var(--t2)}
+.u1-pv .u1-ch{margin-left:auto;color:var(--t2)}
+.u1-pvd{margin:0 10px 8px;padding:8px;border-radius:10px;background:#fff;border:1px solid var(--bord);font-size:12px;color:var(--t1);display:grid;gap:4px}
+.u1-pvd div{display:flex;gap:6px;align-items:center}
+.u1-pvd .u1-ok{color:var(--hop)}
+/* rangées du formulaire */
+.u1-f{background:#fff;margin:0 10px;border-radius:16px;border:1px solid var(--bord)}
+.u1-r{display:flex;align-items:center;gap:8px;min-height:32px;padding:4px 10px;border-top:1px solid var(--bord)}
+.u1-r:first-child{border-top:0}
+.u1-l{width:74px;flex-shrink:0;font-size:12px;color:var(--t2)}
+.u1-v{flex:1;min-width:0;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u1-btnrow{display:contents}
+.u1-chv{color:var(--t2);display:flex}
+.u1-seg{display:flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.u1-seg button{min-height:28px;padding:0 10px;font-size:14px;color:var(--t1)}
+.u1-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.u1-sup{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:999px;border:1.5px dashed var(--atta);background:var(--attf);color:var(--att);font-size:12px;font-weight:600}
+.u1-pt{outline:0;transition:box-shadow .2s}
+.u1-pt.u1-flash{box-shadow:0 0 0 3px #F2C14E}
+.u1-pt.u1-open .u1-sup{border-style:solid}
+.u1-done .u1-sup{border:1.5px solid var(--hop);background:var(--hopf);color:var(--hop)}
+.u1-act{display:flex;flex-wrap:wrap;gap:6px;padding:0 10px 8px 92px}
+.u1-act button,.u1-chip{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t0)}
+.u1-act .u1-go{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600}
+.u1-calc{font-size:12px;color:var(--t1);padding:0 10px 6px 92px}
+.u1-calc b{color:var(--alerte);font-weight:600}
+.u1-sub{font-size:12px;color:var(--t2)}
+.u1-ed{border:0;background:transparent;border-bottom:1.5px dotted var(--trait);padding:0 1px;font-size:14px;color:var(--t0);cursor:text}
+.u1-in{font-family:var(--mono);font-size:16px;width:6.5em;height:28px;border:1px solid var(--t0);border-radius:10px;padding:0 6px;background:#fff}
+/* articles */
+.u1-art{margin:8px 10px 0;background:#fff;border-radius:16px;border:1px solid var(--bord)}
+.u1-ah{display:flex;align-items:center;gap:8px;min-height:32px;padding:4px 10px}
+.u1-ah b{font-size:14px;font-weight:600;color:var(--t0)}
+.u1-sum{display:flex;gap:8px;margin-left:auto;font-size:12px;color:var(--t1)}
+.u1-sum span{display:inline-flex;align-items:center;gap:2px}
+.u1-ln{display:grid;grid-template-columns:20px minmax(0,1fr) auto 54px 22px;align-items:center;gap:6px;min-height:30px;padding:2px 10px;border-top:1px solid var(--bord);width:100%;text-align:left}
+.u1-ln .u1-n{font-size:12px;color:var(--t2);font-family:var(--mono)}
+.u1-ln .u1-nm{font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u1-ln .u1-q{font-size:12px;color:var(--t2);font-family:var(--mono);white-space:nowrap}
+.u1-ln .u1-mt{font-size:14px;color:var(--t0);font-family:var(--mono);text-align:right}
+.u1-a{font-size:12px;font-weight:500;color:var(--t2);margin-left:4px}
+.u1-aq{font-size:12px;font-weight:700;color:var(--att)}
+.u1-mout .u1-nm{color:var(--t2);padding-left:12px}
+.u1-mout.u1-att .u1-nm{color:var(--hop)}
+.u1-ln.u1-doute{background:#F6E6BF}
+.u1-pt:not(.u1-done)>.u1-r{background:#F6E6BF}
+.u1-ah{background:#E6E6E6;border-radius:16px 16px 0 0}
+.u1-s-relie{color:var(--hop)}.u1-s-nouveau{color:var(--fin)}.u1-s-bis{color:var(--lev)}.u1-s-mout{color:var(--att)}.u1-s-unite{color:var(--att)}.u1-s-mout.u1-ok{color:var(--hop)}
+.u1-det{padding:6px 10px 10px 36px;border-top:1px dashed var(--bord);display:grid;gap:6px;background:#FCFCFC}
+.u1-det .u1-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.u1-det label{font-size:12px;color:var(--t2)}
+.u1-det select{height:28px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 6px;font-size:14px}
+.u1-det .u1-tin{height:28px;border:1px solid var(--bordm);border-radius:10px;padding:0 6px;font-size:16px;background:#fff;width:100%}
+.u1-ev{font-size:12px;color:var(--t2)}
+.u1-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 10px 8px;border-top:1px solid var(--bord)}
+.u1-dash{border:1px dashed var(--bordm);border-radius:10px;min-height:28px;padding:0 10px;font-size:14px;display:inline-flex;align-items:center;gap:4px;color:var(--t1)}
+.u1-dt{margin-left:auto;font-size:12px;color:var(--hop);display:inline-flex;align-items:center;gap:4px}
+.u1-dt.u1-ko{color:var(--alerte)}
+/* pied */
+.u1-pied{position:fixed;left:0;right:0;bottom:0;z-index:5;pointer-events:none}
+.u1-pin{pointer-events:auto;max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px;height:48px;padding:0 10px;background:var(--panel);border-top:1px solid var(--bord)}
+.u1-drv{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--hop);min-height:28px}
+.u1-drv.u1-wait{color:var(--fin)}
+.u1-conf{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px}
+.u1-bar{position:absolute;left:0;top:-3px;height:3px;background:var(--fin);width:0;transition:width .6s ease-out}
+.u1-recu{margin:8px 10px;padding:8px 10px;border-radius:16px;border:1.5px solid var(--hop);background:var(--hopf);display:grid;gap:4px}
+.u1-recu b{color:var(--hop);font-size:14px}
+.u1-recu a{color:var(--fin);font-size:14px;font-weight:600}
+[hidden]{display:none!important}
+/* annexe */
+.u1-ax{max-width:640px;margin:24px auto 0;padding:12px 10px 40px;background:#fff}
+.u1-ax h2{font-size:14px;color:var(--t0);margin:4px 0 8px}
+.u1-st{border:1px solid var(--bord);border-radius:16px;background:var(--panel);margin-bottom:10px;overflow:hidden}
+.u1-st>p{font-size:12px;color:var(--t2);padding:6px 10px;border-bottom:1px solid var(--bord);background:#fff}
+.u1-st>p b{color:var(--t0)}
+.u1-stp{display:flex;gap:6px;padding:8px 10px}
+.u1-stp span{flex:1;display:grid;gap:4px;font-size:12px;color:var(--t2)}
+.u1-stp i{display:block;height:6px;border-radius:999px;background:var(--bord)}
+.u1-stp .u1-y i{background:var(--hop)}.u1-stp .u1-y{color:var(--hop)}
+.u1-stp .u1-c i{background:linear-gradient(90deg,var(--fin) 55%,var(--bord) 55%)}.u1-stp .u1-c{color:var(--fin);font-weight:600}
+.u1-msg{display:flex;gap:6px;align-items:center;padding:8px 10px;font-size:14px;color:var(--t0)}
+.u1-msg.u1-red{color:var(--alerte)}
+.u1-tbl{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 10px;padding:4px 10px 8px;font-size:12px}
+.u1-tbl span{color:var(--t2)}
+@media (min-width:900px){
+  body{padding-top:32px}
+  .u1-sheet{border-radius:24px;min-height:0;padding-bottom:12px;box-shadow:0 24px 60px -30px rgba(0,0,0,.35)}
+  .u1-pied{position:sticky;bottom:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<div class="u1-sheet" role="dialog" aria-label="Nouvelle dépense">
+  <header class="u1-hd"><h1>Nouvelle dépense</h1><button class="u1-x" aria-label="Fermer" data-u1-ic="x"></button></header>
+
+  <section class="u1-vd" id="u1-verdict">
+    <button class="u1-doc" data-booster="justificatif" aria-label="Voir le justificatif" id="u1-docb"><img alt="Justificatif, facture 372765" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 56'%3E%3Crect width='44' height='56' fill='%23fff'/%3E%3Crect x='5' y='5' width='16' height='5' fill='%23333'/%3E%3Cg fill='%23bbb'%3E%3Crect x='5' y='15' width='34' height='2'/%3E%3Crect x='5' y='20' width='30' height='2'/%3E%3Crect x='5' y='24' width='34' height='2'/%3E%3Crect x='5' y='28' width='28' height='2'/%3E%3Crect x='5' y='32' width='34' height='2'/%3E%3Crect x='5' y='36' width='31' height='2'/%3E%3Crect x='5' y='40' width='34' height='2'/%3E%3C/g%3E%3Crect x='24' y='46' width='15' height='4' fill='%23333'/%3E%3C/svg%3E"><span class="u1-dv" data-u1-ic="cloud"></span></button>
+    <div class="u1-tot">
+      <button class="u1-big" data-u1-num="total" data-booster="total-sur-place" aria-label="Total TTC, 86,50 CHF, toucher pour corriger"><span id="u1-totv">86,50</span><small>CHF</small></button>
+      <div class="u1-who"><b>Brau- und Rauchshop</b><span class="u1-sep"></span><span class="u1-m">27.04.2026</span></div>
+    </div>
+    <button class="u1-cpt" id="u1-cpt" data-booster="compteur-saut" aria-label="Aller au prochain point à régler"><span id="u1-cptn" class="u1-m">6</span>&nbsp;à régler <span data-u1-ic="down"></span></button>
+  </section>
+  <button class="u1-pv" id="u1-pvb" aria-expanded="false" data-booster="preuve-recoupe"><span data-u1-ic="check"></span>23 lignes recoupées<span class="u1-ch" data-u1-ic="chev"></span></button>
+  <div class="u1-pvd" id="u1-pvd" hidden>
+    <div class="u1-ok"><span data-u1-ic="check"></span><span>23 × (quantité × prix) = montant, au centime</span></div>
+    <div class="u1-ok"><span data-u1-ic="check"></span><span>somme des lignes <span class="u1-m">86,50</span> = total imprimé <span class="u1-m">86,50</span></span></div>
+    <div class="u1-ok"><span data-u1-ic="check"></span><span>deux lectures d'accord sur le reste</span></div>
+    <div><span data-u1-ic="doc"></span><span>1 page vue ; page 2 coupée : ses lignes sont inconnues, l'argent vu est complet</span></div>
+  </div>
+
+  <div class="u1-f">
+    <div class="u1-r"><span class="u1-l">Pour quoi ?</span><input class="u1-v" style="border:0;background:transparent;font-size:16px;height:28px" aria-label="Pour quoi ?" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div>
+    <button class="u1-r" style="width:100%;text-align:left" data-u1-tog="u1-date"><span class="u1-l">Achat du</span><span class="u1-v u1-m">27.04.2026</span><span class="u1-chv" data-u1-ic="chev"></span></button>
+    <div class="u1-r" id="u1-date" hidden><span class="u1-l">Date</span><input class="u1-in" inputmode="numeric" value="27.04.2026" aria-label="Date de l'achat"><button class="u1-chip">Hier</button><button class="u1-chip">Aujourd'hui</button></div>
+    <div class="u1-r"><div class="u1-seg" role="group" aria-label="Règlement" data-booster="reglement"><button aria-pressed="true" data-u1-pay="paye">Déjà payé</button><button aria-pressed="false" data-u1-pay="apayer">À payer</button></div><span class="u1-sub">« Betrag erhalten »</span></div>
+    <div class="u1-pt" data-u1-pt="paye" tabindex="-1">
+      <button class="u1-r" style="width:100%;text-align:left" data-u1-open="paye" data-booster="doute-sur-place"><span class="u1-l" id="u1-payl">Payé le</span><span class="u1-v"><span class="u1-sup"><span class="u1-m" id="u1-payv">27.04.2026</span> supposée</span></span><span class="u1-chv" data-u1-ic="chev"></span></button>
+      <div data-u1-body="paye" hidden>
+        <div class="u1-calc">Aucune date de paiement imprimée ; repli : date de la facture.</div>
+        <div class="u1-act"><button class="u1-go" data-u1-ok="paye">Garder 27.04.2026</button><input class="u1-in" inputmode="numeric" placeholder="jj.mm.aaaa" aria-label="Autre date de paiement" data-u1-paydate><select class="u1-chip" aria-label="Moyen de paiement"><option>Virement · E-Finance, déduit</option><option>Carte</option><option>TWINT</option><option>Espèces</option></select></div>
+      </div>
+    </div>
+    <div class="u1-r" id="u1-ech" hidden><span class="u1-l">Échéance</span><span class="u1-v"><span class="u1-sup"><span class="u1-m">07.05.2026</span> déduite · 10 jours net</span></span></div>
+    <button class="u1-r" style="width:100%;text-align:left" data-u1-tog="u1-four"><span class="u1-l">Catégorie</span><span class="u1-v">Brassage</span><span class="u1-chv" data-u1-ic="chev"></span></button>
+    <div id="u1-four" hidden class="u1-r"><span class="u1-l">Catégorie</span><select class="u1-chip" aria-label="Catégorie"><option>Brassage</option><option>Matériel</option><option>Nettoyage</option><option>Autres frais</option></select><input class="u1-in" style="width:auto;flex:1;font-family:var(--sans)" value="Brau- und Rauchshop GmbH" aria-label="Fournisseur"></div>
+    <button class="u1-r" style="width:100%;text-align:left" data-u1-tog="u1-prev"><span class="u1-l">Prévue</span><span class="u1-v" style="color:var(--t2)">aucune liée</span><span class="u1-chv" data-u1-ic="chev"></span></button>
+    <div id="u1-prev" hidden class="u1-r"><span class="u1-l">Lier à</span><button class="u1-chip">Ingrédients de novembre · <span class="u1-m">90,00</span></button><button class="u1-chip">Aucune</button></div>
+  </div>
+
+  <section class="u1-art" aria-label="Articles, stock et matériel">
+    <div class="u1-ah"><b>Articles · 23</b>
+      <div class="u1-sum" aria-label="Liens au stock">
+        <span class="u1-s-relie"><span data-u1-ic="relie"></span><span class="u1-m">14</span></span>
+        <span class="u1-s-bis"><span data-u1-ic="bis"></span><span class="u1-m">2</span></span>
+        <span class="u1-s-nouveau"><span data-u1-ic="nouveau"></span><span class="u1-m">2</span></span>
+        <span class="u1-s-mout"><span data-u1-ic="mout"></span><span class="u1-m">5</span></span>
+        <span class="u1-s-unite"><span data-u1-ic="unite"></span><span class="u1-m">1</span></span>
+      </div>
+    </div>
+    <div id="u1-lines"></div>
+    <div class="u1-foot">
+      <button class="u1-dash" id="u1-add" aria-label="Ajouter une ligne"><span data-u1-ic="plus"></span>Ligne</button>
+      <button class="u1-dash" aria-label="Regrouper en une dépense">Regrouper</button>
+      <span class="u1-dt" id="u1-dt"><span data-u1-ic="check"></span>Détail <span class="u1-m" id="u1-dtv">86,50 / 86,50</span></span>
+    </div>
+  </section>
+
+  <div class="u1-f" style="margin-top:8px">
+    <div class="u1-pt" data-u1-pt="tva" tabindex="-1">
+      <button class="u1-r" style="width:100%;text-align:left" data-u1-open="tva"><span class="u1-l">Réf. et TVA</span><span class="u1-v"><span class="u1-sup">TVA imprimée incohérente</span></span><span class="u1-chv" data-u1-ic="chev"></span></button>
+      <div data-u1-body="tva" hidden>
+        <div class="u1-calc">TVA lue <b class="u1-m">2,80 · 4,15</b> &nbsp;(<span class="u1-m">1,95 + 2,20 = 4,15</span>)<br>bases <span class="u1-m">26,20 + 84,20 = 110,40</span> <b>≠ 86,50</b> · écart <b class="u1-m">23,90</b></div>
+        <div class="u1-act"><button class="u1-go" data-u1-ok="tva" data-u1-tva="vide">Laisser vide</button><button data-u1-ok="tva" data-u1-tva="2,80">Garder <span class="u1-m">2,80</span></button><button data-u1-ok="tva" data-u1-tva="4,15">Garder <span class="u1-m">4,15</span></button></div>
+      </div>
+    </div>
+    <button class="u1-r" style="width:100%;text-align:left" data-u1-tog="u1-ref"><span class="u1-l">Référence</span><span class="u1-v u1-m">372765</span><span class="u1-chv" data-u1-ic="chev"></span></button>
+    <div id="u1-ref" hidden>
+    <div class="u1-r"><span class="u1-l">Document</span><span class="u1-v">Pro-forma, payée</span></div>
+    <div class="u1-r"><span class="u1-l">N° facture</span><span class="u1-v u1-m">372765</span></div>
+    <div class="u1-r"><span class="u1-l">N° commande</span><span class="u1-v u1-m">Onlinebestellung-686863</span></div>
+    <div class="u1-r"><span class="u1-l">Taux lus</span><span class="u1-v u1-m">N 8,1 % · R 2,6 %</span></div>
+    <div class="u1-r"><span class="u1-l">Total HT</span><span class="u1-v" style="color:var(--t2)">— non imprimé</span></div>
+    <div class="u1-r"><span class="u1-l">TVA retenue</span><span class="u1-v" id="u1-tvav" style="color:var(--t2)">— vide</span></div>
+    </div>
+  </div>
+  <div id="u1-recu" class="u1-recu" hidden></div>
+</div>
+
+<div class="u1-pied"><div class="u1-pin" style="position:relative"><span class="u1-bar" id="u1-bar"></span>
+  <span class="u1-drv" id="u1-drv" data-booster="drive-pret"><span data-u1-ic="cloud"></span>Drive prêt</span>
+  <button class="u1-conf" id="u1-conf"><span data-u1-ic="check"></span>Confirmer et enregistrer</button>
+</div></div>
+
+<section class="u1-ax" id="annexe" aria-label="Annexe des états">
+  <h2>Annexe · les états de u1</h2>
+  <div class="u1-st"><p><b>1 · Lecture en cours</b> — la feuille est déjà là : Pour quoi ?, date et règlement se tapent pendant la lecture.</p>
+    <div class="u1-stp"><span class="u1-y"><i></i>Envoi <span class="u1-m">1,2 s</span></span><span class="u1-c"><i></i>Lecture…</span><span><i></i>Vérification</span></div>
+    <div class="u1-r" style="background:#fff"><span class="u1-l">Total TTC</span><span class="u1-v" style="color:var(--t2)">— en lecture</span><button class="u1-chip">Saisir à la main</button></div></div>
+  <div class="u1-st"><p><b>2 · Lue, sans point</b> — illustration : la même feuille si la lecture n'avait rien trouvé.</p>
+    <div class="u1-vd"><div class="u1-tot"><span class="u1-big">86,50<small>CHF</small></span><div class="u1-who"><b>Brau- und Rauchshop</b> · 27.04.2026</div></div><span class="u1-cpt u1-fini"><span data-u1-ic="check"></span>0 à régler</span></div></div>
+  <div class="u1-st"><p><b>3 · Lue avec ses points</b> — le premier écran ci-dessus : 6 points, chacun sur son champ.</p></div>
+  <div class="u1-st"><p><b>4 · Un point réglé, puis tous</b></p>
+    <div class="u1-r" style="background:#fff"><span class="u1-l">Payé le</span><span class="u1-v"><span class="u1-sup" style="border:1.5px solid var(--hop);background:var(--hopf);color:var(--hop)">27.04.2026 gardée</span></span><span class="u1-cpt"><span class="u1-m">5</span>&nbsp;à régler</span></div>
+    <div class="u1-r" style="background:#fff"><span class="u1-l">Ensuite</span><span class="u1-v">tout réglé</span><span class="u1-cpt u1-fini"><span data-u1-ic="check"></span>0 à régler</span></div></div>
+  <div class="u1-st"><p><b>5 · Erreur de lecture</b></p>
+    <div class="u1-msg u1-red"><span data-u1-ic="unite"></span>Lecture impossible · le fichier est gardé</div>
+    <div class="u1-r" style="background:#fff"><span class="u1-l">Total TTC</span><input class="u1-in" inputmode="decimal" placeholder="0,00" aria-label="Total TTC à la main"><button class="u1-chip">Relire</button></div></div>
+  <div class="u1-st"><p><b>6 · Drive pas connecté</b> — vu avant de confirmer ; rien n'est perdu, le brouillon reste.</p>
+    <div class="u1-pin" style="border-radius:0 0 16px 16px"><span class="u1-drv" style="color:var(--att)"><span data-u1-ic="cloud"></span>Drive à connecter</span><button class="u1-chip">Connecter</button><button class="u1-conf">Confirmer et enregistrer</button></div></div>
+  <div class="u1-st"><p><b>7 · Enregistrement, puis le reçu</b></p>
+    <div class="u1-pin" style="position:relative"><span class="u1-bar" style="width:60%"></span><span class="u1-drv u1-wait"><span data-u1-ic="cloud"></span>Envoi au Drive en cours…</span><span class="u1-sub" style="margin-left:auto">la feuille reste ouverte</span></div>
+    <div class="u1-recu"><b>Enregistré · rangé dans Drive</b><span class="u1-m" style="font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#drive">Ouvrir dans Drive</a></div></div>
+  <div class="u1-st"><p><b>8 · Achat peut-être déjà enregistré</b></p>
+    <div class="u1-tbl"><span></span><b>Ce document</b><b>Déjà enregistré</b><span>N°</span><span class="u1-m">372765</span><span class="u1-m">380001</span><span>Commande</span><span class="u1-m">686863</span><span class="u1-m">686863</span><span>Total</span><span class="u1-m">86,50</span><span class="u1-m">86,50</span><span>Date</span><span class="u1-m">27.04</span><span class="u1-m">30.04</span></div>
+    <div class="u1-act" style="padding-left:10px"><button class="u1-go">Même achat : joindre le justificatif</button><button>Autre achat</button></div></div>
+  <div class="u1-st"><p><b>9 · Hors ligne</b></p>
+    <div class="u1-msg"><span data-u1-ic="off"></span>Hors ligne · brouillon gardé sur le téléphone</div>
+    <div class="u1-pin" style="border-radius:0 0 16px 16px"><span class="u1-drv" style="color:var(--t2)"><span data-u1-ic="cloud"></span>Drive attend le réseau</span><button class="u1-conf" style="background:var(--haut);color:var(--t1)" aria-disabled="true">Enregistrer au retour du réseau</button></div></div>
+</section>
+
+<script>
+(() => {
+  const IC = {
+    x: '<path d="M4 4l8 8M12 4l-8 8"/>', chev: '<path d="M4 6l4 4 4-4"/>', down: '<path d="M8 3v10M4.5 9.5L8 13l3.5-3.5"/>',
+    check: '<path d="M3 8.5l3 3 7-7"/>', doc: '<path d="M4 1.5h5l3 3v10H4z M9 1.5v3h3"/>', plus: '<path d="M8 3v10M3 8h10"/>',
+    cloud: '<path d="M4.5 12.5h7a2.8 2.8 0 00.2-5.6A4 4 0 004.3 6 3.3 3.3 0 004.5 12.5z"/>',
+    off: '<path d="M2 2l12 12M5.2 9.2a4 4 0 015.6 0M2.8 6.6a7.5 7.5 0 0110.4 0M8 12.5v.5"/>',
+    relie: '<path d="M8 2l5.5 3v6L8 14 2.5 11V5z M2.5 5L8 8l5.5-3 M8 8v6"/>',
+    nouveau: '<path d="M6.5 4L11 6.5v5L6.5 14 2 11.5v-5z M2 6.5L6.5 9 11 6.5 M6.5 9v5 M13 1v4 M11 3h4"/>',
+    bis: '<path d="M5.5 5L9 7v4l-3.5 2L2 11V7z M10.5 3L14 5v4l-3.5 2 M9 3.8L10.5 3"/>',
+    mout: '<path d="M6.5 9.5l3-3 M7.2 4.6l1-1a2.6 2.6 0 013.7 3.7l-1 1 M8.8 11.4l-1 1a2.6 2.6 0 01-3.7-3.7l1-1"/>',
+    unite: '<path d="M8 1.8a6.2 6.2 0 110 12.4A6.2 6.2 0 018 1.8z M6.2 6.3a1.8 1.8 0 113.4.8c-.5.6-1.6.9-1.6 2 M8 11v.5"/>',
+    trash: '<path d="M3 4.5h10 M6.5 4.5V3h3v1.5 M4.5 4.5l.7 9h5.6l.7-9"/>'
+  };
+  const ic = (n) => '<svg class="u1-svg" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[n] + '</svg>';
+  const fill = (root) => root.querySelectorAll('[data-u1-ic]').forEach((e) => { e.classList.add('u1-ic'); e.innerHTML = ic(e.dataset.u1Ic); });
+  const f2 = (x) => (Math.round(x * 100) / 100).toFixed(2).replace('.', ',');
+  const fp = (x) => { const s = String(x); const d = Math.max(2, (s.split('.')[1] || '').length); return x.toFixed(d).replace('.', ','); };
+  const pz = (s) => parseFloat(String(s).replace(/\s/g, '').replace(',', '.'));
+  // ses 23 lignes (verite-facture-372765.json) ; liens au stock : stock d'essai, pas son vrai stock
+  const L = [
+    [1,'Maris Otter',6,'Kg',2.30,13.80,'relie','Maris Otter'],[2,'Mouture',6,'Kg',0.10,0.60,'mout',1],
+    [3,'Gerstenflocken',1,'Kg',2.40,2.40,'relie','Gerstenflocken'],[4,'Röstgerste',1,'Kg',1.80,1.80,'relie','Röstgerste'],
+    [5,'Mouture',1,'Kg',0.10,0.10,'mout',4],[6,'Caramünch Typ 2',1,'Kg',1.75,1.75,'relie','Caramünch Typ 2'],[7,'Mouture',1,'Kg',0.10,0.10,'mout',6],
+    [8,'Target',40,'g',0.040,1.60,'bis','Target bis',11.3],[9,'Goldings East Kent',20,'g',0.040,0.80,'nouveau','Goldings East Kent',5.5],
+    [10,'Windsor',2,'Stk',4.50,9.00,'relie','LALLEMAND Windsor'],[11,'Safale BE-256',1,'Stk',4.40,4.40,'nouveau','Safale BE-256 (Abbaye)'],
+    [12,'Safale US-05',2,'Stk',3.40,6.80,'relie','Safale US-05'],[13,'Pilsner Malz',5,'Kg',1.50,7.50,'relie','Pilsner Malz'],[14,'Mouture',5,'Kg',0.10,0.50,'mout',13],
+    [15,'Weizenmalz hell',2,'Kg',1.55,3.10,'relie','Weizenmalz hell'],[16,'Mouture',2,'Kg',0.10,0.20,'mout',15],[17,'Haferflocken',2,'Kg',2.50,5.00,'relie','Haferflocken'],
+    [18,'Galaxy',60,'g',0.080,4.80,'relie','Galaxy',17.2],[19,'Nelson Sauvin',100,'g',0.080,8.00,'relie','Nelson Sauvin',9.6],
+    [20,'Sabro',30,'',0.070,2.10,'unite','Sabro',13.4],[21,'Verdant IPA',2,'Stk',4.70,9.40,'relie','LALLEMAND Verdant IPA'],
+    [22,'Hallertauer Blanc',30,'g',0.045,1.35,'bis','Hallertauer Blanc CH',9.5],[23,'Motueka',20,'g',0.070,1.40,'relie','Motueka',8.1]
+  ].map(([n, nom, q, u, p, m, lien, art, a]) => ({ n, nom, q, u, p, m, lien, art, a }));
+  const LIB = { 1: 'Maris Otter, Kg', 2: 'Zuschlag Schrotung', 3: 'Gerstenflocken, 1 Kg', 4: 'Röstgerste, Kg', 5: 'Zuschlag Schrotung', 6: 'CARAMÜNCH® Typ 2 Kg', 7: 'Zuschlag Schrotung', 8: 'Target 11.3%', 9: 'Goldings East Kent 5.5%', 10: 'LALLEMAND Windsor 11g', 11: 'Safale BE-256 (Abbaye) 11.5 g', 12: 'Safale US-05 11,5g', 13: 'Pilsner Malz, Kg', 14: 'Zuschlag Schrotung', 15: 'Weizenmalz hell, Kg', 16: 'Zuschlag Schrotung', 17: 'Haferflocken, 1 Kg', 18: 'Galaxy 17.2%', 19: 'Nelson Sauvin ™ 9.6%', 20: 'Sabro® 13.4%', 21: 'LALLEMAND Verdant IPA 11g', 22: 'Hallertauer Blanc 9.5% CH', 23: 'Motueka ™ 8.1%' };
+  const ptOf = { 2: 'mout', 5: 'mout', 7: 'mout', 14: 'mout', 16: 'mout', 8: 'target', 20: 'sabro', 22: 'hall' };
+  const ORDRE = ['paye', 'mout', 'target', 'sabro', 'hall', 'tva'];
+  const fait = new Set();
+  let ouvert = null;
+  const box = document.getElementById('u1-lines');
+  const malt = (n) => L.find((l) => l.n === n);
+  function detail(l) {
+    const calc = l.q * l.p, ok = Math.abs(calc - l.m) < 0.005;
+    const ecart = ok ? '' : ' <b>≠ ' + f2(l.m) + ' · écart ' + f2(Math.abs(calc - l.m)) + '</b>';
+    let lien = '';
+    if (l.lien === 'mout') { const pm = malt(l.art); const lie = fait.has('mout');
+      lien = '<div class="u1-row"><span class="u1-sub">Mouture du ' + pm.nom + ' (même quantité, ligne ' + pm.n + ')</span></div>' +
+        (lie ? '<div class="u1-row"><span class="u1-sub" style="color:var(--hop)">Rattachée : ' + pm.nom + ' <span class="u1-m">' + f2((pm.m + l.m) / pm.q) + '</span> CHF/kg, mouture comprise</span><button class="u1-chip" data-u1-undo="mout">Détacher</button></div>'
+          : '<div class="u1-row"><button class="u1-chip" style="background:var(--t0);color:#fff" data-u1-ok="mout">Rattacher les 5 moutures</button><button class="u1-chip" data-u1-ok="mout" data-u1-part="1">Laisser à part</button></div>');
+    } else if (l.lien === 'unite') {
+      lien = '<div class="u1-row"><span class="u1-sub">Relié à <b>Sabro</b> · unité illisible : rien n\'entre en stock tant qu\'elle manque</span></div><div class="u1-row">' +
+        ['g', 'kg', 'Stk'].map((u) => '<button class="u1-chip" data-u1-ok="sabro" data-u1-unit="' + u + '"><span class="u1-m">30 ' + u + '</span></button>').join('') + '</div>';
+    } else if (l.lien === 'bis') {
+      const autre = l.n === 8 ? 'Target <span class="u1-m">α 11,8 %</span> (lot d\'avant)' : 'Hallertauer Blanc, origine DE';
+      const pt = ptOf[l.n];
+      lien = '<div class="u1-row"><span class="u1-sub">Au stock : ' + autre + ' · autre donnée, jamais fusionnée</span></div><div class="u1-row">' +
+        '<button class="u1-chip" style="background:var(--t0);color:#fff" data-u1-ok="' + pt + '">Créer « ' + l.art + ' »' + (l.a ? ' <span class="u1-m">α ' + fp(l.a).replace(/0$/, '') + ' %</span>' : '') + '</button><button class="u1-chip" data-u1-ok="' + pt + '">Autre article…</button></div>';
+    } else if (l.lien === 'nouveau') {
+      lien = '<div class="u1-row"><span class="u1-sub">Absent du stock : nouvel article <b>' + l.art + '</b>' + (l.a ? ', α <span class="u1-m">' + fp(l.a).replace(/0$/, '') + ' %</span>' : '') + '</span><button class="u1-chip">Choisir un article</button></div>';
+    } else {
+      lien = '<div class="u1-row"><span class="u1-sub">Reçu en stock : <b>' + l.art + '</b> + <span class="u1-m">' + l.q + ' ' + (l.u === 'Stk' ? 'sachets (' + l.q + ' Stk = ' + l.q + ' sachets)' : l.u.toLowerCase()) + '</span></span><button class="u1-chip">Changer</button></div>';
+    }
+    return '<div class="u1-det" data-u1-det="' + l.n + '">' +
+      '<div class="u1-row"><label style="flex:1">Libellé<input class="u1-tin" value="' + l.nom + '" aria-label="Libellé ligne ' + l.n + '"></label><button class="u1-x" aria-label="Retirer la ligne ' + l.n + '">' + ic('trash') + '</button></div>' +
+      '<div class="u1-row"><select aria-label="Type d\'achat"><option' + (l.lien === 'mout' ? '' : ' selected') + '>Ingrédients</option><option' + (l.lien === 'mout' ? ' selected' : '') + '>Service</option><option>Matériel</option><option>Entretien</option></select>' +
+      '<span class="u1-calc" style="padding:0"><button class="u1-ed u1-m" data-u1-lq="' + l.n + '">' + String(l.q).replace('.', ',') + '</button> ' + (l.u || '<span class="u1-sup">unité à préciser</span>') + ' × <button class="u1-ed u1-m" data-u1-lp="' + l.n + '">' + fp(l.p) + '</button> = <span class="u1-m">' + f2(calc) + '</span>' + (ok ? ' <span style="color:var(--hop)">✓</span>' : ecart) + '</span></div>' +
+      lien + '<div class="u1-ev">Imprimé, ligne ' + l.n + ' : « ' + (LIB[l.n] || l.nom) + ' » <span class="u1-m">' + String(l.q).replace('.', ',') + ' ' + (l.n === 20 ? '?' : l.u) + ' · ' + f2(l.m) + '</span></div></div>';
+  }
+  let tout = false;
+  function render() {
+    const vus = tout ? L : L.filter((l) => (ptOf[l.n] && l.lien !== 'mout') || l.n === 2 || l.n > 23);
+    box.innerHTML = vus.map((l) => {
+      if (!tout && l.n === 2) {
+        const lie = fait.has('mout');
+        return '<button class="u1-ln u1-mout' + (lie ? ' u1-att' : ' u1-doute') + '" data-u1-line="2" data-u1-pt="mout" aria-expanded="' + (ouvert === 2) + '"><span class="u1-n">2…</span><span class="u1-nm">' + (lie ? '↳ 5 moutures comprises' : '↳ 5 moutures') + '</span><span class="u1-q">16 Kg</span><span class="u1-mt">1,50</span><span class="u1-s-mout' + (lie ? ' u1-ok' : '') + '" role="img" aria-label="moutures à rattacher">' + ic('mout') + '</span></button>' + (ouvert === 2 ? detail(l) : '');
+      }
+      const pt = ptOf[l.n]; const doute = pt && !fait.has(pt);
+      let cls = 'u1-ln' + (l.lien === 'mout' ? ' u1-mout' : '') + (doute ? ' u1-doute' : '') + (l.lien === 'mout' && fait.has('mout') ? ' u1-att' : '');
+      let s = l.lien; if (l.lien === 'unite' && fait.has('sabro')) s = 'relie'; if (l.lien === 'bis' && fait.has(pt)) s = 'bis';
+      const sc = 'u1-s-' + s + (l.lien === 'mout' && fait.has('mout') ? ' u1-ok' : '');
+      const nm = l.lien === 'mout' ? (fait.has('mout') ? '↳ mouture comprise' : '↳ Mouture') : l.nom;
+      const a = l.a ? '<span class="u1-a u1-m">α ' + fp(l.a).replace(/0$/, '') + '</span>' : '';
+      const u = l.u || '<span class="u1-aq">?</span>';
+      return '<button class="' + cls + '" data-u1-line="' + l.n + '" aria-expanded="' + (ouvert === l.n) + '"' + (pt ? ' data-u1-pt="' + pt + '"' : '') + '><span class="u1-n">' + l.n + '</span><span class="u1-nm">' + nm + a + '</span><span class="u1-q">' + String(l.q).replace('.', ',') + ' ' + u + '</span><span class="u1-mt">' + f2(l.m) + '</span><span class="' + sc + '" role="img" aria-label="' + ({ relie: 'relié au stock', bis: 'article bis', nouveau: 'nouvel article', mout: 'mouture à rattacher', unite: 'unité à préciser' })[s] + '">' + ic(s) + '</span></button>' + (ouvert === l.n ? detail(l) : '');
+    }).join('') + '<button class="u1-ln" id="u1-tout" aria-expanded="' + tout + '" style="grid-template-columns:20px 1fr 22px"><span class="u1-n"></span><span class="u1-nm" style="color:var(--t2)">' + (tout ? 'Seulement les lignes à régler' : 'Les 23 lignes') + '</span><span class="u1-chv">' + ic('chev') + '</span></button>';
+    const tot = L.reduce((t, l) => t + l.m, 0), imp = pz(document.getElementById('u1-totv').textContent);
+    const dt = document.getElementById('u1-dt'); const ok = Math.abs(tot - imp) < 0.005;
+    dt.classList.toggle('u1-ko', !ok);
+    dt.innerHTML = ic(ok ? 'check' : 'unite') + 'Détail <span class="u1-m">' + f2(tot) + '</span><span class="u1-sl"></span><span class="u1-m">' + f2(imp) + '</span>' + (ok ? '' : ' · écart <span class="u1-m">' + f2(Math.abs(tot - imp)) + '</span>');
+    const n = ORDRE.filter((p) => !fait.has(p)).length;
+    const c = document.getElementById('u1-cpt');
+    c.classList.toggle('u1-fini', n === 0);
+    c.innerHTML = n ? '<span class="u1-m">' + n + '</span>&nbsp;à régler ' + ic('down') : ic('check') + '&nbsp;tout réglé';
+    document.querySelectorAll('.u1-pt[data-u1-pt]').forEach((e) => e.classList.toggle('u1-done', fait.has(e.dataset.u1Pt)));
+  }
+  function regler(pt) { fait.add(pt); ouvert = null; document.querySelectorAll('[data-u1-body="' + pt + '"]').forEach((b) => (b.hidden = true)); render(); }
+  function prochain() {
+    const pt = ORDRE.find((p) => !fait.has(p)); if (!pt) return;
+    const head = document.querySelector('.u1-pt[data-u1-pt="' + pt + '"]');
+    if (head) { const b = head.querySelector('[data-u1-body]'); if (b) b.hidden = false; head.scrollIntoView({ block: 'center', behavior: 'smooth' }); head.classList.add('u1-flash'); setTimeout(() => head.classList.remove('u1-flash'), 700); return; }
+    const l = L.find((x) => ptOf[x.n] === pt); ouvert = l.n; render();
+    const el = box.querySelector('[data-u1-line="' + l.n + '"]'); el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.id === 'u1-cpt') return prochain();
+    if (t.id === 'u1-tout') { tout = !tout; ouvert = null; render(); return; }
+    if (t.id === 'u1-pvb') { const d = document.getElementById('u1-pvd'); d.hidden = !d.hidden; t.setAttribute('aria-expanded', String(!d.hidden)); return; }
+    if (t.dataset.u1Tog) { const d = document.getElementById(t.dataset.u1Tog); d.hidden = !d.hidden; return; }
+    if (t.dataset.u1Open) { const b = document.querySelector('[data-u1-body="' + t.dataset.u1Open + '"]'); b.hidden = !b.hidden; t.parentElement.classList.toggle('u1-open', !b.hidden); return; }
+    if (t.dataset.u1Line) { const n = +t.dataset.u1Line; ouvert = ouvert === n ? null : n; render(); return; }
+    if (t.dataset.u1Pay) {
+      document.querySelectorAll('[data-u1-pay]').forEach((b) => b.setAttribute('aria-pressed', String(b === t)));
+      const apayer = t.dataset.u1Pay === 'apayer';
+      document.querySelector('.u1-pt[data-u1-pt="paye"]').hidden = apayer; document.getElementById('u1-ech').hidden = !apayer;
+      if (apayer) fait.add('paye'); render(); return;
+    }
+    if (t.dataset.u1Ok) {
+      const pt = t.dataset.u1Ok;
+      if (pt === 'tva') { const v = t.dataset.u1Tva; const o = document.getElementById('u1-tvav'); o.textContent = v === 'vide' ? '— vide (TVA hors dépense)' : v + ' · choisie'; o.style.color = v === 'vide' ? 'var(--t2)' : 'var(--t0)'; document.querySelector('[data-u1-open="tva"] .u1-sup').textContent = v === 'vide' ? 'TVA laissée vide' : 'TVA ' + v + ' gardée'; }
+      if (pt === 'paye') { const i = document.querySelector('[data-u1-paydate]'); const d = i && i.value.trim(); document.getElementById('u1-payv').textContent = d || '27.04.2026'; document.querySelector('[data-u1-open="paye"] .u1-sup').lastChild.textContent = d ? ' tapée' : ' gardée'; }
+      if (pt === 'sabro' && t.dataset.u1Unit) { malt(20).u = t.dataset.u1Unit; }
+      if (pt === 'mout' && t.dataset.u1Part) { L.filter((l) => l.lien === 'mout').forEach((l) => (l.lien = 'mout')); }
+      regler(pt); return;
+    }
+    if (t.dataset.u1Undo) { fait.delete(t.dataset.u1Undo); render(); return; }
+    if (t.id === 'u1-add') { const n = L.length + 1; L.push({ n, nom: 'Nouvelle ligne', q: 1, u: 'Kg', p: 0, m: 0, lien: 'nouveau', art: 'à choisir' }); ouvert = n; render(); return; }
+    if (t.id === 'u1-conf') return enregistrer();
+  });
+  // chaque nombre se tape : total, quantité et prix d'une ligne
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-u1-num],[data-u1-lq],[data-u1-lp]'); if (!t || t.querySelector('input')) return;
+    e.stopPropagation();
+    const span = t.dataset.u1Num ? document.getElementById('u1-totv') : t;
+    const avant = span.textContent; const i = document.createElement('input');
+    i.className = 'u1-in'; i.setAttribute('inputmode', 'decimal'); i.value = avant; span.textContent = ''; span.appendChild(i); i.focus(); i.select();
+    const fin = (garder) => { const v = pz(i.value); i.remove();
+      if (!garder || isNaN(v)) { span.textContent = avant; return; }
+      if (t.dataset.u1Lq) malt(+t.dataset.u1Lq).q = v; else if (t.dataset.u1Lp) malt(+t.dataset.u1Lp).p = v; else span.textContent = f2(v);
+      if (!t.dataset.u1Num) span.textContent = v; render(); };
+    i.addEventListener('keydown', (k) => { if (k.key === 'Enter') fin(true); if (k.key === 'Escape') fin(false); });
+    i.addEventListener('blur', () => fin(true), { once: true });
+  }, true);
+  function enregistrer() {
+    const bar = document.getElementById('u1-bar'), drv = document.getElementById('u1-drv'), conf = document.getElementById('u1-conf');
+    drv.className = 'u1-drv u1-wait'; drv.innerHTML = ic('cloud') + 'Envoi au Drive en cours…'; conf.hidden = true; bar.style.width = '65%';
+    setTimeout(() => { bar.style.width = '100%'; drv.className = 'u1-drv'; drv.innerHTML = ic('check') + 'Enregistré';
+      const r = document.getElementById('u1-recu'); r.hidden = false;
+      r.innerHTML = '<b>Enregistré · rangé dans Drive</b><span class="u1-m" style="font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#drive">Ouvrir dans Drive</a>';
+      r.scrollIntoView({ block: 'center' }); }, 1200);
+  }
+  fill(document); render();
+})();
+</script>
+</body></html>
