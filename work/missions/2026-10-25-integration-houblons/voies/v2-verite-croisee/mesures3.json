@@ -1,0 +1,26 @@
+{
+ "total": 435,
+ "avecIdOrigine": 256,
+ "sansIdOrigine": 179,
+ "sansIdVersBase": 10,
+ "sansIdVersNouvelle": 159,
+ "sansIdNonRattachee": 10,
+ "avecStyles": 393,
+ "avecStylesSansId": 140,
+ "versBaseAvecStylesGE1000": [
+  "East Kent Golding→beermaverick-east-kent-goldings (96945)",
+  "Hallertauer Blanc→beermaverick-hallertau-blanc (6752)",
+  "Hallertauer Mittelfrüh→beermaverick-hallertau-mittelfruh (81290)",
+  "Hallertauer Tradition→beermaverick-hallertau-tradition (12788)",
+  "Spalter→beermaverick-spalt (5074)",
+  "Whitbread Golding→beermaverick-whitbread-golding-variety-wgv (1027)"
+ ],
+ "nonRattacheeGE1000": [
+  "Brewer's Gold [aconfirmer] (8459)",
+  "Magnum [aconfirmer] (108017)",
+  "Northern Brewer [aconfirmer] (53843)",
+  "Perle [aconfirmer] (41731)",
+  "Saaz [aconfirmer] (105979)"
+ ],
+ "nouvelleGE1000": []
+}
