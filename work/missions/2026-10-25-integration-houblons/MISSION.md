@@ -465,3 +465,8 @@ documentaires d'après.
   - **d60**, un diagnostic dans la copie propre au commit de production ae7c7a8d, sans rien dans src/ ;
   - **s3**, qui finit R4 dans l'arbre principal.
   Ensuite : la correction de d60, un rejeu, le déploiement, la PR.
+- 31.10 : **s3 R4 commitée** (4a752523). Elle est sans effet sur la neipa saturée : Beer Maverick classe Warrior, Columbus et Nugget en « mixte ». **En vol** :
+  - **k1**, Substituer à 60′ ;
+  - **t3**, R4 qui lit l'usage au frais de Beer Analytics (Warrior : Boil 29 885, Aroma 741) ;
+  - la **recherche** sur les méthodes (`work/missions/2026-10-31-methodes/`).
+  Ensuite : k2 (Suggérer à 60′, M1 + M2), puis la critique, le rejeu, le déploiement et la PR.
