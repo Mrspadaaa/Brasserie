@@ -461,3 +461,7 @@ documentaires d'après.
   1. la famille demandée qui dépasse la bande compte comme débordement, et c'est ce qui fait passer les nobles devant ;
   2. un excès minuscule suffit à marquer une voie « hors du style ».
   Reproductions : `scratchpad/saturation.mjs` et `bannir2.mjs B`. Ensuite : rejeu, déploiement, PR.
+- 31.10 : le quota hebdomadaire est remis à zéro. Le brasseur : « tout fonctionne plutôt bien sauf pour les algo, surtout sur la partie 60', il y a souvent pas de propostion du tout » (D196). En vol :
+  - **d60**, un diagnostic dans la copie propre au commit de production ae7c7a8d, sans rien dans src/ ;
+  - **s3**, qui finit R4 dans l'arbre principal.
+  Ensuite : la correction de d60, un rejeu, le déploiement, la PR.
