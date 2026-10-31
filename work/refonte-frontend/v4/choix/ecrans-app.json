@@ -11,6 +11,20 @@
    "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
    "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
    "inventaire": "work/missions/2026-10-31-ecran-identite/v1/r4-a/inventaire-r4a.json"
+  },
+  {
+   "ecran": "fermentescibles",
+   "route": "p6-b2",
+   "statut": "choisi",
+   "choix": "p6-b2",
+   "mots": "Oui ça c'est bien, et maintenant la recherche, comment elle s'affiche ? Dans la liste ?",
+   "capture": "work/missions/2026-10-31-ecran-fermentescibles/v6/p6-b2/p6-b2-barre-pendant.png",
+   "controles": [
+    "work/missions/2026-10-31-ecran-fermentescibles/controle-masse-ligne.mjs {dossier}/p6-b2/etat.html",
+    "work/missions/2026-10-31-ecran-fermentescibles/controle-moment-ligne.mjs {dossier}/p6-b2/etat.html",
+    "work/refonte-frontend/v4/tournoi/outils/controle-volee.mjs {dossier}/p6-b2/etat.html",
+    "work/refonte-frontend/v4/tournoi/outils/controle-gestes-ligne.mjs {dossier}/p6-b2/etat.html"
+   ]
   }
  ]
 }
