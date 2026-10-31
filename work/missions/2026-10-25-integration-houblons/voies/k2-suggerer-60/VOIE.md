@@ -30,9 +30,15 @@ RESULTAT.md tôt.
 2. **K4.** Chaque houblon de la recette qu'on remplace garde sa place : au moins 2 rangées par « Remplacer X », au lieu d'une coupe
    globale `limit`/`buyLimit` qui les absorbe. L'exclusion D194 (`exclue`) passe AVANT la coupe, et une place retirée est rendue.
    - Cas de preuve : la 21C, avec résineux banni et sans stock, où d60 trouvait 0 « Remplacer Nugget · 60′ ».
-3. **K5.** La règle d'usage de g2b s'applique aussi à « remplacer à IBU égal » : un amérisant ou un double usage passe devant un houblon
-   d'arôme.
+3. **K5.** À 60′, que ce soit un ajout du palier ou un « remplacer à IBU égal », un houblon employé pour amériser passe devant un houblon
+   surtout employé au frais.
+   - **Pas d'étiquette** (31.10, le brasseur : « mixte veut aussi dire amerisant en fait le rôle d'un houblon n'est jamais vraiment
+     totalement défini »). Ni l'usage de Beer Maverick ni la catégorie de Beer Analytics ne servent de critère. Lis la part réelle
+     d'ébullition, `usage-types` de Beer Analytics (Boil ÷ toutes les recettes), comme une valeur continue qui départage. La voie t3 ajoute
+     la part au frais à `typicite-styles.json` : réemploie-la, ou ajoute la part d'ébullition au même endroit.
+   - Sans donnée, le houblon reste neutre.
    - Cas de preuve : le stout, avec résineux banni, ne doit plus avoir Cashmere en tête pour remplacer Nugget à 60′.
+   - La règle g2b actuelle lit l'étiquette : remplace-la par cette lecture, et écris-le.
 4. Garder le bannissement D194 tel quel : « aucune suggestion sur ce chemin ».
 
 ## Critères

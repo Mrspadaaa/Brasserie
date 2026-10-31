@@ -44,7 +44,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[cout-calcul-moteur]] — simulerCas : 1,4 ms léger, 4 à 6 ms complet ; en direct, sans serveur
 - [[dryhop-moment]] — Idaho 7 : le dry hop actif d'abord
 - [[moteur-parcours-limites]] — moments simulés, levure, visée en palier
-- [[substitution-moteur]] — le score de substitutes() selon le moment
+- [[substitution-moteur]] — le score selon le moment ; [[role-continu]] : l'usage mesuré, jamais une étiquette
 
 ### produit/ — outils, écrans, état fini ou inachevé
 - [[outils-houblons]] — une question = un outil : la carte à poser avant tout lot
@@ -55,7 +55,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[import-recette]] — le procédé vit dans le déroulé ; fiche de brassage éditable
 - [[export-et-ia]] — fiches IA sur le stock, export texte avec l'eau, relecture consultative
 - [[design-system-historique]] — historique et pièges UI ; règles actuelles dans DESIGN.md
-- [[pictos-familles]] — pictos, lecture à 12 px ; « épicé » : cannelle et clou croisés (23.10)
+- [[pictos-familles]] — pictos à 12 px ; « épicé » : cannelle et clou croisés
 - [[socle-v01]] — socle Dexie et Firestore de la v0.1 (historique)
 
 ### agents/ — façon de travailler, outils, environnement
@@ -75,5 +75,5 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran
-- [[2026-10-24-lot-d125-vues]] — u4 choisi ; Dryhopper passe 4 ; liste de la fiche en entonnoir
+- [[2026-10-24-lot-d125-vues]] — u4 choisi ; Dryhopper passe 4
 - [[2026-10-25-integration-architecture]] — pile dans App, porte unique, calcul async ; T1, T14
