@@ -35,17 +35,27 @@ describe('catégorie de stock canonique', () => {
 
 describe('proposition d’un article existant pour une ligne lue', () => {
   const stock = [item('banc-fume', 'Malt fumé du Banc'), item('banc-froment', 'Froment du Banc'), item('banc-h', 'Houblon Cascade du Banc', 'Houblon', 'g'), item('banc-l', 'Levure sèche du Banc', 'Levure', 'sachet')];
+  // s1c n° 2 : les mêmes articles, avec le fournisseur du justificatif comme fournisseur de l'article.
+  const withSupplier = (stock: StockItem[]) => stock.map(i => ({ ...i, supplier: 'Malterie du Banc SA' }));
   it('reconnaît un libellé en capitales sans accents', () => {
     expect(proposeStockItem(line('MALT FUME DU BANC'), stock)?.ref).toBe('banc-fume');
   });
   it('convertit l’unité lue : des grammes de houblon vont sur l’article en g, pas des kilos sur un sachet', () => {
-    expect(proposeStockItem(line('Cascade pellets', 'g', 100), stock)?.ref).toBe('banc-h');
+    // s1c n° 2 (ASSERTION CHANGÉE, déclarée) : « banc-h » → rien. Le mot « Banc » ne se retire du nom d'un article que si le fournisseur de
+    // l'article le porte ; ici l'article n'a pas de fournisseur. Jumeau positif avec fournisseur ci-dessous.
+    expect(proposeStockItem(line('Cascade pellets', 'g', 100), stock)).toBeUndefined();
+    expect(proposeStockItem(line('Cascade pellets', 'g', 100), withSupplier(stock))?.ref).toBe('banc-h');
     expect(proposeStockItem(line('Levure sèche', 'kg', 1), stock)).toBeUndefined();
   });
   it('ne propose rien sur un mot générique seul, sans quantité ou sans unité', () => {
     expect(proposeStockItem(line('Malt'), stock)).toBeUndefined();
     expect(proposeStockItem(line('Malt pâle', 'Kg', undefined), stock)).toBeUndefined();
+    // D214 (31.10, « Unité illisible : la ligne n'est reliée à aucun article.???? ») : sans unité lisible la ligne reste proposée, aux
+    // mêmes conditions (voir tests/unit/depense/stock/unites.test.ts) ; sans quantité, toujours rien.
+    // s1c n° 2 (ASSERTION CHANGÉE, déclarée) : « banc-fume » → rien sans fournisseur sur l'article ; le jumeau avec fournisseur reste proposé.
     expect(proposeStockItem(line('Malt fumé', ''), stock)).toBeUndefined();
+    expect(proposeStockItem(line('Malt fumé', ''), withSupplier(stock))?.ref).toBe('banc-fume');
+    expect(proposeStockItem(line('Malt', ''), stock)).toBeUndefined();
     expect(proposeStockItem(line('Seigle maltés du Moulin'), stock)).toBeUndefined();
   });
   it('ne propose pas un article dont une précision contredit la ligne, ni sur la seule catégorie ou un mot court inclus', () => {
@@ -54,15 +64,24 @@ describe('proposition d’un article existant pour une ligne lue', () => {
     expect(proposeStockItem(line('Acide citrique', 'L', 1), shelf)).toBeUndefined();
     expect(proposeStockItem(line('Emballage carton', 'pièce', 2), shelf)).toBeUndefined();
     expect(proposeStockItem(line('Ale anglaise'), shelf)).toBeUndefined();
-    expect(proposeStockItem(line('Sucre roux 25kg', 'kg', 25), shelf)?.ref).toBe('sucre-roux');
+    // s1-stock (REVUE-PLAN Conception n° 3) : un conditionnement collé au nom (« 25kg ») est de l'identité incertaine → rien (perte
+    // permise) ; séparé par une virgule ou un point médian et diviseur de la quantité, il est effacé comme avant.
+    expect(proposeStockItem(line('Sucre roux 25kg', 'kg', 25), shelf)).toBeUndefined();
+    // s1c n° 2 (ASSERTION CHANGÉE, déclarée) : « sucre-roux » → rien sans fournisseur sur l'article ; le jumeau avec fournisseur reste proposé.
+    expect(proposeStockItem(line('Sucre roux, 25kg', 'kg', 25), shelf)).toBeUndefined();
+    expect(proposeStockItem(line('Sucre roux, 25kg', 'kg', 25), withSupplier(shelf))?.ref).toBe('sucre-roux');
   });
   it('préfère l’article le mieux couvert et s’abstient sur une égalité', () => {
     const twins = [item('a', 'Froment Banc'), item('b', 'Froment Banc clair')];
-    expect(proposeStockItem(line('Froment Banc 5 kg'), twins)?.ref).toBe('a');
+    // s1-stock : « Froment Banc 5 kg » (collé, quantité 1) devient une proposition perdue ; « Froment Banc, 5 kg » × 5 reste proposée.
+    expect(proposeStockItem(line('Froment Banc 5 kg'), twins)).toBeUndefined();
+    expect(proposeStockItem(line('Froment Banc, 5 kg', 'Kg', 5), twins)?.ref).toBe('a');
     // Correction V3 : sans fournisseur, « Banc » et « Moulin » sont des précisions que la ligne n'a pas ; avec le
     // justificatif de la Malterie du Banc, son froment est proposé ; deux articles identiques restent une égalité.
     expect(proposeStockItem(line('Froment', 'Kg', 1, ''), [item('a', 'Froment Banc'), item('b', 'Froment Moulin')])).toBeUndefined();
-    expect(proposeStockItem(line('Froment'), [item('a', 'Froment Banc'), item('b', 'Froment Moulin')])?.ref).toBe('a');
+    // s1c n° 2 (ASSERTION CHANGÉE, déclarée) : « a » → rien sans fournisseur sur l'article ; le jumeau (fournisseur de a = la Malterie du Banc) reste proposé.
+    expect(proposeStockItem(line('Froment'), [item('a', 'Froment Banc'), item('b', 'Froment Moulin')])).toBeUndefined();
+    expect(proposeStockItem(line('Froment'), [{ ...item('a', 'Froment Banc'), supplier: 'Malterie du Banc SA' }, item('b', 'Froment Moulin')])?.ref).toBe('a');
     expect(proposeStockItem(line('Froment'), [item('a', 'Froment'), item('b', 'Froment')])).toBeUndefined();
   });
 });
@@ -77,8 +96,11 @@ describe('Correction V3 n° 1 : mots composés, références chiffrées, article
   });
   it('témoins justes : vrai Munich au stock, Caramunich lu, reste générique ou mots séparés', () => {
     const shelf = [item('cara-m', 'Malt Caramunich'), item('munich', 'Malt Munich')];
-    expect(proposeStockItem(line('Munich Malt 25 kg', 'kg', 25), shelf)?.ref).toBe('munich');
-    expect(proposeStockItem(line('CARAMUNICH 25 kg', 'kg', 25), shelf)?.ref).toBe('cara-m');
+    // s1-stock : sac collé au nom → perte permise ; avec virgule, les propositions d'avant restent.
+    expect(proposeStockItem(line('Munich Malt 25 kg', 'kg', 25), shelf)).toBeUndefined();
+    expect(proposeStockItem(line('CARAMUNICH 25 kg', 'kg', 25), shelf)).toBeUndefined();
+    expect(proposeStockItem(line('Munich Malt, 25 kg', 'kg', 25), shelf)?.ref).toBe('munich');
+    expect(proposeStockItem(line('CARAMUNICH, 25 kg', 'kg', 25), shelf)?.ref).toBe('cara-m');
     expect(proposeStockItem(line('Cara Munich', 'kg', 5), shelf)?.ref).toBe('cara-m');
     expect(proposeStockItem(line('Roggenmalz', 'kg', 25), [item('rog', 'Malt Roggen')])?.ref).toBe('rog');
     expect(proposeStockItem(line('Roggen Malz', 'kg', 25), [item('rog', 'Roggenmalz')])?.ref).toBe('rog');
@@ -176,9 +198,13 @@ describe('Correction V3 n° 2 : correspondance sûre', () => {
     c('I-inverse-marque', 'Blond Weyermann', [item('P', 'Weyermann Blond')], 'P'),
     c('I-us05-code', 'US-05', [yeast('S', 'Levure US-05', 'sachet')], 'S', 'sachet'),
     // Dans la famille d'unité de la ligne, « 25 kg » ou « 20 L » est la quantité reçue, pas l'identité.
-    c('I-sac-25', 'Malt Blond 25 kg', [item('P', 'Malt Blond')], 'P', 'kg', 25),
-    c('I-sac-25-item', 'Blond', [item('P', 'Malt Blond 25 kg')], 'P', 'kg', 25),
-    c('I-acide-20v5', 'Acide phosphorique 20 L', [item('A', 'Acide phosphorique 5 L', 'CIP acide', 'L')], 'A', 'L', 20),
+    // s1-stock (REVUE-PLAN Conception n° 3) : collé au nom, « 25 kg » est de l'identité incertaine → perte permise ; avec virgule ou point médian → proposé.
+    none('I-sac-25', 'Malt Blond 25 kg', [item('P', 'Malt Blond')], 'kg', 25),
+    c('I-sac-25-virgule', 'Malt Blond, 25 kg', [item('P', 'Malt Blond')], 'P', 'kg', 25),
+    none('I-sac-25-item', 'Blond', [item('P', 'Malt Blond 25 kg')], 'kg', 25),
+    c('I-sac-25-item-virgule', 'Blond', [item('P', 'Malt Blond, 25 kg')], 'P', 'kg', 25),
+    none('I-acide-20v5', 'Acide phosphorique 20 L', [item('A', 'Acide phosphorique 5 L', 'CIP acide', 'L')], 'L', 20),
+    c('I-acide-20v5-virgule', 'Acide phosphorique, 20 L', [item('A', 'Acide phosphorique, 5 L', 'CIP acide', 'L')], 'A', 'L', 20),
     c('I-vendor-line', 'Cascade du Banc', [hop('H', 'Houblon Cascade')], 'H', 'g', 100, BANC),
     c('I-doc5-kg', 'Orge Oberland, kg', [item('MO', 'Orge Oberland')], 'MO', 'kg', 6),
     c('I-doc5-accent', 'Örge Obérland', [item('MO', 'Orge Oberland')], 'MO', 'kg', 6),
@@ -187,13 +213,18 @@ describe('Correction V3 n° 2 : correspondance sûre', () => {
   ]));
 
   describe('témoins du relecteur', () => check([
-    c('W-R1c', 'Blond Malt 25 kg', [item('P', 'Malt Blond')], 'P', 'kg', 25),
+    none('W-R1c', 'Blond Malt 25 kg', [item('P', 'Malt Blond')], 'kg', 25), // s1-stock : sac collé → perte permise
+    c('W-R1c-virgule', 'Blond Malt, 25 kg', [item('P', 'Malt Blond')], 'P', 'kg', 25),
     c('W-R2', 'Cascade T90 Pellets', [hop('H', 'Houblon Cascade')], 'H', 'g'),
     c('W-R2b', 'Cascade T-90', [hop('H', 'Houblon Cascade')], 'H', 'g'),
     c('W-munich', 'Munich Malt', caraShelf, 'munich'),
     c('W-caramunich', 'Caramunich', caraShelf, 'cara-m'),
-    c('W-s04', 'Levure S-04', [yeast('L1', 'Levure du Banc S-05', 'sachet'), yeast('L2', 'Levure du Banc S-04', 'sachet')], 'L2', 'sachet', 1, BANC),
-    c('W-suisse', 'Cascade', [hop('H1', 'Houblon Cascade Suisse')], 'H1', 'g', 1, 'Houblons Suisse SA')
+    // s1c n° 2 (ASSERTIONS CHANGÉES, déclarées) : « L2 » et « H1 » → rien quand l'article n'a pas de fournisseur ; les jumeaux « -fournisseur » (fournisseur
+    // de l'article = celui du justificatif) restent proposés.
+    c('W-s04', 'Levure S-04', [yeast('L1', 'Levure du Banc S-05', 'sachet'), yeast('L2', 'Levure du Banc S-04', 'sachet')], undefined, 'sachet', 1, BANC),
+    c('W-s04-fournisseur', 'Levure S-04', [{ ...yeast('L1', 'Levure du Banc S-05', 'sachet'), supplier: BANC }, { ...yeast('L2', 'Levure du Banc S-04', 'sachet'), supplier: BANC }], 'L2', 'sachet', 1, BANC),
+    c('W-suisse', 'Cascade', [hop('H1', 'Houblon Cascade Suisse')], undefined, 'g', 1, 'Houblons Suisse SA'),
+    c('W-suisse-fournisseur', 'Cascade', [{ ...hop('H1', 'Houblon Cascade Suisse'), supplier: 'Houblons Suisse SA' }], 'H1', 'g', 1, 'Houblons Suisse SA')
   ]));
 
   // Pertes de rappel assumées (ARB-M4, mineur) : une marque ou une spécification de la ligne que l'article n'a pas est
@@ -203,7 +234,10 @@ describe('Correction V3 n° 2 : correspondance sûre', () => {
     none('W-R1-perte', 'Weyermann Blond 3-4 EBC', [item('P', 'Malt Blond')]),
     c('W-R1b', 'Weyermann Blond 3-4 EBC', [item('P', 'Weyermann Blond 3-4 EBC')], 'P'),
     none('W-tettnang-perte', 'Tettnang', [hop('H2', 'Tettnanger Mittelfrüh')], 'g'),
-    none('I-us05-marque-perte', 'Fermentis US-05', [yeast('S', 'Levure US-05', 'sachet')], 'sachet')
+    // s1-stock (REVUE-PLAN Conception n° 11, décision n° 2 du pilote) : le fabricant d'une levure est ignoré quand le reste du nom porte
+    // un code de souche (US-05) : cette perte devient une proposition. « Fermentis Windsor » (souche nommée) de même ; « Fermentis Abbaye » reste refusé.
+    c('I-us05-marque', 'Fermentis US-05', [yeast('S', 'Levure US-05', 'sachet')], 'S', 'sachet'),
+    none('I-abbaye-marque-perte', 'Fermentis Abbaye', [yeast('S', 'Abbaye', 'sachet')], 'sachet')
   ]));
 
   // Décision 114 : le fournisseur de l'article ne s'efface que de son nom (F1) ; à la pièce, l'unité seule d'un nom

@@ -261,3 +261,67 @@ sont l'affaire de l1-lecture ; `readProductLabel` s'y branchera sans changement.
 - L'α d'un article est `StockItem.alphaPct` quand il existe, sinon lu dans son nom ; si l'article porte l'α dans le nom et dans le champ
   avec des valeurs différentes, je prends le champ.
 - Gemini n'est jamais appelé : la lecture simulée de d1 fait foi (`lecture-simulee-372765.reconciliee.json`).
+
+---
+
+# 10. Version corrigée selon REVUE-PLAN.md (31.10) — **prime sur les § 2 à 9 ci-dessus partout où elle les contredit**
+
+Règle du pilote qui gouverne tout : **une proposition perdue est permise, une fausse ne l'est pas ; dans le doute, rien.** Chaque ligne
+ci-dessous nomme le numéro de la revue (Co = Conception, Pr = Prêt à coder).
+
+**Mesure préalable faite (Pilote : « rejoue tout `tests/integration` sur HEAD avec la garde levée »).** Garde passée à `true`, rien
+d'autre changé : `npx vitest run tests/integration --maxWorkers=2`, journal complet et liste des fichiers rouges dans RESULTAT.md
+(« REJEU INTEGRATION »). Le sort de chaque `it` qui change est dit là, après rejeu réel (Co 9, Pr 2).
+
+| Réf. revue | Ce qui change dans le plan |
+|---|---|
+| Co 4, Pr 4 | **`description` reste TOUJOURS le libellé brut.** Le § 3 « nom propre dans `description` » et la décision n° 3 sont supprimés. `readProductLabel().name` sert à l'appariement et à la future fiche produit ; il est livré et testé (T7), pas branché sur l'écran. `evidence` garde `Réf.` puis l'extrait, puis, **seulement si l'identité a déduit quelque chose**, `Libellé : <brut>` puis les faits déduits avec leur source (« α 11,3 % (libellé) », « récolte 2024 (libellé) », « poids du sachet 11,5 g (libellé) », « unité lue : Stk ») : ordre `Réf. · extrait · Libellé : brut · déduit` (Pr 7). Rien n'est perdu : le brut n'est jamais remplacé. L'α ne va pas à l'article créé (`purchaseEntry.ts:222`, écriture de `alphaPct`) : voie fiche produit / S6 |
+| Pr 1 | **Casse** : `name` garde la casse imprimée, sans ®™ (« CARAMÜNCH Typ 2 », « LALLEMAND Windsor »). Toute comparaison (appariement, T5, T7) est sans casse ni accents (`normalize`). Aucune règle de casse inventée |
+| Co 3 | **R2 remplacée** : un nombre suivi d'une unité de la famille de la ligne n'est un conditionnement que s'il est **séparé du nom par une virgule ou un point médian (·) ET s'il divise la quantité** de la ligne (côté article, qui n'a pas de quantité : séparateur seul). **Sans séparateur : identité**, et « 25 kg » reste du texte incertain dans le nom propre (Co 13). Le garde-fou « frère numéroté » reste. **Propositions perdues par cette règle** (liste exacte et comptée dans RESULTAT.md, §« pertes assumées ») : tout libellé à sac collé, du type « Malt Blond 25 kg », « Munich Malt 25 kg », « CARAMUNICH 25 kg », « Sucre roux 25kg », « Blond Malt 25 kg », « Acide phosphorique 20 L » ↔ « … 5 L », « Froment Banc 5 kg », et l'article « Malt Blond 25 kg » pour la ligne « Blond ». Leurs `it` dans `stockLineMatching.test.ts` passent de « proposé » à « rien » (perte permise), avec la variante à virgule (« Malt Blond, 25 kg ») ajoutée en positif. Aucun n'est supprimé |
+| Co 1, Co 2 | **R3 complétée**. (a) *Nature inconnue* : l'article est refusé si l'identité de son nom (jetons, mots génériques exclus) est **aussi un nom connu d'une autre catégorie** : noms de houblons du catalogue du dépôt (`src/data/hopDatabaseBootstrap.json`, 219 noms extraits par `voies/s1-stock/extraire-noms-houblons.mjs`, embarqués dans `ingredientIdentity.ts` : le JSON de 1,1 Mo est chargé à la demande par l'app, jamais dans le paquet principal), liste fermée de malts et de levures écrite dans le même fichier, et autres articles du stock de catégorie différente et même identité. Test : « Crystal » kg face à « Houblon Crystal » g → rien ; « Crystal » face à « Malt Crystal » → rien. Limite écrite : un homonyme absent de ces listes passe encore (nature inconnue, un seul candidat). (b) **`kind` ↔ catégorie** : `ingredient` refuse Emballage, CIP alcalin, CIP acide, Désinfectant, Détergent, Sols, EPI ; `cleaning` refuse Malt, Houblon, Levure, Sucre ; `packaging` refuse Malt, Houblon, Levure, Sucre ; catégorie inconnue, « Divers », Consommable, Additif : jamais un refus. Tests « Acide lactique » (CIP acide), « Sel » (Détergent) |
+| Co 5 | **R4 corrigée** : α ou récolte **connues des deux côtés et différentes → aucune proposition** (plus de présélection avec marque). α d'un côté seulement, ou égale : proposé. La marque « α différente » et `alphaDiffers` disparaissent. Tests : « Target 11.8% » ↔ « Target 11.3% » → rien ; « Cascade 2024 » ↔ « Cascade 2023 » → rien ; « Cascade 2024 » ↔ « Houblon Cascade » (sans récolte) → proposé, récolte 2024 dans `evidence`. L'identité (`readProductLabel`) donne bien le même `name` « Target » pour 11.3 et 11.8, avec leurs α séparées |
+| Co 6 | **R5 corrigée** : le poids du sachet est lu aussi côté article (dans son nom ; `yeastLot` ne porte aucun poids de sachet, vérifié). Ligne avec poids, article avec poids différent → rien ; **ligne sans poids et article avec poids → rien** ; ligne avec poids et article sans poids → **proposé avec la marque « poids du sachet non confirmé »**, rendue par `lineStatus` (`ExpenseSheet.tsx`, ligne repliée) : drapeau porté par l'ensemble `proposedStock` (clé `<id>#poids`, vidée avec lui à chaque lecture), aucun nouvel état. Hors pièces (article en g/kg) : le poids n'est qu'une indication, jamais une différence |
+| Co 7 | **R9 limitée à la nature Levure** (contexte levure, voir Pr 3) ; un jeton de `GENERIC` (`t90`, `type`) ne compte jamais comme code. Tests : « Cascade T90 (Cryo) » ↔ « Houblon Cascade » → rien ; « Pilsner (bio) » ↔ « Malt Pilsner » → rien |
+| Co 8 | **R8** : liste de céréales complétée (FR/DE/EN) : avoine hafer oat oats ; froment blé ble wheat weizen ; orge gerste barley ; seigle roggen rye ; épeautre dinkel spelt ; sarrasin buchweizen buckwheat ; millet hirse ; sorgho sorghum ; triticale ; maïs mais corn ; riz reis rice ; kamut. Un test par céréale, deux sens. Limite écrite : un grain hors liste reste une fausse proposition possible (jamais rencontré) |
+| Co 10 | **Contestée par le pilote** : la passe 2 du fournisseur est gardée (« Munich » chez Rauch AG ↔ « Malt Munich Rauch » reste proposé, c'est le produit de ce fournisseur). Test miroir verrouillé avec commentaire, sans marque |
+| Co 11 | **R10** : un fabricant (fermentis, lallemand, lalbrew, danstar) n'est ignoré que si le reste du nom porte un code de souche (lettres + chiffres, hors `GENERIC`) ou une souche de la liste fermée (windsor, nottingham, verdant ipa, voss, belle saison, kveik, ...). « Lallemand Abbaye » ↔ « Abbaye » reste refusé |
+| Co 12 | `StockLineMatch.originalUnit` est rendu. **Limite assumée** : le rétablir quand le brasseur écarte la proposition demande une écriture dans `updateLine` (l. 84 d'`ExpenseSheet.tsx`), hors de mon Possède. Je ne la fais pas ; l'unité lue reste lisible dans `evidence` (« unité lue : Stk ») et je demande la ligne 84 au pilote (DÉCISION n° 7) |
+| Co 13 | `readProductLabel` distingue : *identité certaine* (marqueur typ/type/nr, α, poids, année, conditionnement séparé qui divise) et *incertain* (« 25 kg » collé) ; le nom propre garde le texte incertain : « Pilsner 25 kg » ↔ nom « Pilsner 25 kg » |
+| Pr 3 | **Contexte houblon** : nature Houblon (mot du libellé ou catégorie lue), ou catégorie de l'article candidat Houblon, ou un mot du libellé (au pluriel près) parmi les noms de houblons du catalogue (premier mot compris : « Hallertauer », « Goldings »). **Contexte levure** : nature Levure, ou catégorie candidate Levure, ou un jeton de la liste fermée de souches/codes. Le contexte sert à l'identité (α, récolte, poids, parenthèse, fabricant), **jamais seul à proposer** |
+| Pr 5 | T5 : `Stock ligne n` n'existe que pour les lignes de stock ; `queryByLabelText('Stock ligne n')` vaut `null` pour une ligne `service` (mouture) |
+| Pr 6 | **Lignes d'`ExpenseSheet.tsx` écrites** : l'import (l. 12), `attach` (l. 148 à 155), `lineStatus` (vers l. 196, la marque du poids). `s2` n'écrit rien dans ce fichier ; la voie r1 branchera ce qui vient de s2 après s1. Rien d'autre |
+| Pr 8 | **Table des unités de pièce** (aucune autre équivalence) : groupe PIÈCE = {`stk`, `stuck` (Stück), `pce`, `pces`, `pcs`, `pc`, `piece`, `pieces`, `unite`, `unites`} ; groupe SACHET = {`sachet`, `sachets`}. Deux unités d'un même groupe sont la même unité. PIÈCE ↔ SACHET : équivalentes **seulement si la catégorie de l'article est Levure** (les deux sens). Autre catégorie : « Stk » face à une bouteille en `pièce` → compatible (même groupe), « Stk » face à un article en `sachet` non levure → refusé. `Units`/`units.ts` : inchangés |
+| Pr 9 | T1 : **un `it` par cas** (27), comme `v3d.hunt.test.ts`, pour voir 18 rouges et non un seul |
+| Pr 10 | Fixtures **copiées** dans `tests/unit/depense/stock/fixtures/` : stock simulé de d1 (16 articles, marqué SIMULÉ), `lignes-372765.json` (réduit : pas de nom ni d'adresse), lecture réconciliée de d1 pour T5. `mesures.ts` n'est jamais importé |
+| Pr 11 | T8 : borne à 1 s pour 500 articles × 35 lignes (aucune assertion de ms plus fine) |
+| Pr 12 | Risque assumé écrit : le préfixe de code `MA`/`HO`/`HE` (R3 c) est la convention de ce fournisseur ; il ne fait que **refuser** — au pire une proposition perdue, permise |
+| Pr 13 | `functions/src/prompts.ts` (chemin complet) |
+
+**Décisions du § 8 après tri du pilote** : 1 jus0Journey (a) avec C3 (`:55-69`) → les deux `it` deviennent « proposé, aucune écriture » ;
+2 R10 acceptée avec Co 11 ; 3 refusée ; 4 `:61` : le cas « Froment Banc 5 kg » passe en « rien » sous la règle du séparateur (l'entrée
+quantité reste telle quelle, plus de besoin) ; 5 acceptée seulement sans récolte connue différente ; 6 gardée. **Nouvelle DÉCISION n° 7** :
+rétablir l'unité lue (ligne 84, `updateLine`).
+
+---
+
+# 11. Les unités (D213, D214) — ajoutées avant le code ; **remplacent la gestion d'unité des § 2 R5 et § 10 Co 12**
+
+Ses mots : « oui attention au unités » (D213) ; « Unité illisible : la ligne n'est reliée à aucun article.???? » (D214, qui refuse la
+règle D213 n° 4 « une ligne sans unité lisible n'est reliée à rien »).
+
+- **L'unité imprimée n'est jamais réécrite.** Le plan du § 2 R5 (poser `unit` = l'unité de l'article quand l'alias a servi) et Co 12
+  (`originalUnit` à rendre) tombent : `ExpenseSheet` ne touche plus `unit`. Rien à « faire revenir » quand le brasseur écarte la proposition :
+  l'unité n'a pas bougé (test `unites.test.ts`).
+- **La conversion se voit** : `formatUnitLink(quantité, unité lue, unité de l'article, catégorie)` rend « 25 kg → 25 000 g » (convertible) ou
+  « 2 Stk = 2 sachet » (même pièce, levure), sinon rien ; `lineStatus` l'ajoute à la ligne repliée d'une ligne reliée (proposée ou choisie).
+  La conversion elle-même reste celle de `savePurchase` (`Units.convert`) : aucune quantité n'est réécrite ici.
+- **« Crystal » kg face au seul « Houblon Crystal » g → rien** : nature inconnue + identité aussi connue du catalogue des malts (R3 a),
+  testé dans `unites.test.ts`, `chasse-etendue.test.ts` (E5, E6) et `chasse-17-10.test.ts` (B1-B3).
+- **D214, lecture étroite** : une ligne dont l'unité est illisible (`''`, espaces, `-`, `?`, un nombre seul, `…`) reste proposée, aux mêmes
+  conditions (nom, nature, catégorie, α, récolte, poids de levure, homonyme, quantité > 0) ; l'unité absente n'assouplit rien ; aucune unité
+  n'est devinée ni recopiée depuis l'article (champ « Unité ligne n » vide) ; `lineStatus` porte « unité à préciser » ; une unité lisible mais
+  incompatible (Stk face à un malt en kg) reste « rien ». Tests écrits d'abord, rouges sur la règle refusée (`temoin-avant.txt`), puis verts.
+- **À l'enregistrement** (lu, pas modifié : `purchaseEntry.ts` est à s2) : `validatePurchase` refuse toute ligne liée sans unité
+  (`purchaseEntry.ts:201`, « indique la quantité reçue et son unité »), et `:205` refuse une unité non convertible (« Stk ne se convertit pas
+  en sachet »). Donc rien n'entre en stock tant que l'unité manque ou ne se convertit pas ; `:343` (`Units.convert(...)!`) n'est jamais atteint
+  avec une unité vide. Le garde explicite « rien n'entre en stock tant que l'unité manque » est donc déjà là ; la voie r1 le rendra lisible.

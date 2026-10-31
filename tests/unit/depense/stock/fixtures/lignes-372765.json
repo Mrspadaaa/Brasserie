@@ -1,0 +1,259 @@
+{
+  "_source": "extrait de diagnostic/d1/verite-facture-372765.json (voie s1-stock)",
+  "fournisseur": "Brau- und Rauchshop GmbH",
+  "lignes": [
+    {
+      "n": 1,
+      "code": "MA0221",
+      "libelle": "Maris Otter, Kg",
+      "quantite": 6,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Maris Otter",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 2,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 6,
+      "unite": "Kg",
+      "kind": "service",
+      "nomPropre": "Mouture (Schrotung)",
+      "categorieStock": null,
+      "alphaPct": null
+    },
+    {
+      "n": 3,
+      "code": "MA0027",
+      "libelle": "Gerstenflocken, 1 Kg",
+      "quantite": 1,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Gerstenflocken",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 4,
+      "code": "MA0055",
+      "libelle": "Röstgerste, Kg",
+      "quantite": 1,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Röstgerste",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 5,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 1,
+      "unite": "Kg",
+      "kind": "service",
+      "nomPropre": "Mouture (Schrotung)",
+      "categorieStock": null,
+      "alphaPct": null
+    },
+    {
+      "n": 6,
+      "code": "MA0333",
+      "libelle": "CARAMÜNCH® Typ 2 Kg",
+      "quantite": 1,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Caramünch Typ 2",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 7,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 1,
+      "unite": "Kg",
+      "kind": "service",
+      "nomPropre": "Mouture (Schrotung)",
+      "categorieStock": null,
+      "alphaPct": null
+    },
+    {
+      "n": 8,
+      "code": "HO0102",
+      "libelle": "Target 11.3%",
+      "quantite": 40,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Target",
+      "categorieStock": "Houblon",
+      "alphaPct": 11.3
+    },
+    {
+      "n": 9,
+      "code": "HO0017",
+      "libelle": "Goldings East Kent 5.5%",
+      "quantite": 20,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Goldings East Kent",
+      "categorieStock": "Houblon",
+      "alphaPct": 5.5
+    },
+    {
+      "n": 10,
+      "code": "HE0211",
+      "libelle": "LALLEMAND Windsor 11g",
+      "quantite": 2,
+      "unite": "Stk",
+      "kind": "stock",
+      "nomPropre": "LALLEMAND Windsor",
+      "categorieStock": "Levure",
+      "alphaPct": null
+    },
+    {
+      "n": 11,
+      "code": "HE0203",
+      "libelle": "Safale BE-256 (Abbaye) 11.5 g",
+      "quantite": 1,
+      "unite": "Stk",
+      "kind": "stock",
+      "nomPropre": "Safale BE-256 (Abbaye)",
+      "categorieStock": "Levure",
+      "alphaPct": null
+    },
+    {
+      "n": 12,
+      "code": "HE0102",
+      "libelle": "Safale US-05 11,5g",
+      "quantite": 2,
+      "unite": "Stk",
+      "kind": "stock",
+      "nomPropre": "Safale US-05",
+      "categorieStock": "Levure",
+      "alphaPct": null
+    },
+    {
+      "n": 13,
+      "code": "MA0007",
+      "libelle": "Pilsner Malz, Kg",
+      "quantite": 5,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Pilsner Malz",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 14,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 5,
+      "unite": "Kg",
+      "kind": "service",
+      "nomPropre": "Mouture (Schrotung)",
+      "categorieStock": null,
+      "alphaPct": null
+    },
+    {
+      "n": 15,
+      "code": "MA0010",
+      "libelle": "Weizenmalz hell, Kg",
+      "quantite": 2,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Weizenmalz hell",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 16,
+      "code": "ISHOP-SCHROT",
+      "libelle": "Zuschlag Schrotung",
+      "quantite": 2,
+      "unite": "Kg",
+      "kind": "service",
+      "nomPropre": "Mouture (Schrotung)",
+      "categorieStock": null,
+      "alphaPct": null
+    },
+    {
+      "n": 17,
+      "code": "MA0034",
+      "libelle": "Haferflocken, 1 Kg",
+      "quantite": 2,
+      "unite": "Kg",
+      "kind": "stock",
+      "nomPropre": "Haferflocken",
+      "categorieStock": "Malt",
+      "alphaPct": null
+    },
+    {
+      "n": 18,
+      "code": "HO0046",
+      "libelle": "Galaxy 17.2%",
+      "quantite": 60,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Galaxy",
+      "categorieStock": "Houblon",
+      "alphaPct": 17.2
+    },
+    {
+      "n": 19,
+      "code": "HO1907",
+      "libelle": "Nelson Sauvin ™ 9.6%",
+      "quantite": 100,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Nelson Sauvin",
+      "categorieStock": "Houblon",
+      "alphaPct": 9.6
+    },
+    {
+      "n": 20,
+      "code": "HO2026",
+      "libelle": "Sabro® 13.4%",
+      "quantite": 30,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Sabro",
+      "categorieStock": "Houblon",
+      "alphaPct": 13.4
+    },
+    {
+      "n": 21,
+      "code": "HE2036",
+      "libelle": "LALLEMAND Verdant IPA 11g",
+      "quantite": 2,
+      "unite": "Stk",
+      "kind": "stock",
+      "nomPropre": "LALLEMAND Verdant IPA",
+      "categorieStock": "Levure",
+      "alphaPct": null
+    },
+    {
+      "n": 22,
+      "code": "HO17041",
+      "libelle": "Hallertauer Blanc 9.5% CH",
+      "quantite": 30,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Hallertauer Blanc",
+      "categorieStock": "Houblon",
+      "alphaPct": 9.5
+    },
+    {
+      "n": 23,
+      "code": "HO2022",
+      "libelle": "Motueka ™ 8.1%",
+      "quantite": 20,
+      "unite": "g",
+      "kind": "stock",
+      "nomPropre": "Motueka",
+      "categorieStock": "Houblon",
+      "alphaPct": 8.1
+    }
+  ]
+}

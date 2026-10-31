@@ -9,7 +9,7 @@ import { Combobox } from '../Combobox';
 import { StorageService } from '../../services/storage';
 import { GeminiScannerService,type ScanOutcome,type ScannedLineKind } from '../../services/geminiScanner';
 import { savePurchaseWithProof,confirmPurchase,validatePurchase,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
-import { STOCK_LINE_PROPOSALS_ENABLED, proposeStockItem } from '../../services/stockLineMatching';
+import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit } from '../../services/stockLineMatching';
 import { isConfirmedWriteRejection } from '../../services/firestoreRepo';
 import type { FinanceCategory } from '../../types';
 import { FinanceService } from '../../services/financeService';
@@ -148,10 +148,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       const stockItems=[...StorageService.getStocks().rawMaterials,...StorageService.getStocks().cleaning];
       proposedStock.current.clear();lineStartsOpen.current.clear();setReadCount(count=>count+1);
       const lines=result.items.map(item=>({id:item.id,description:[item.name,item.variant].filter(Boolean).join(' · '),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',item.evidence].filter(Boolean).join(' · ')})).map(line=>{
-        const match=STOCK_LINE_PROPOSALS_ENABLED&&['ingredient','packaging','cleaning'].includes(line.kind)?proposeStockItem({...line,vendor:result.vendor??undefined},stockItems):undefined;
+        /* S1 : une proposition, jamais une écriture. Le libellé brut reste la description et l'unité imprimée reste celle de la ligne
+           (jamais réécrite, D213) ; ce que l'identité a lu (α, récolte, poids du sachet) va dans l'extrait, avec sa source. */
+        const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit:line.unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind},stockItems):undefined;
         if(!match)return line;
         proposedStock.current.add(line.id);
-        return {...line,stockAction:'existing' as const,stockRef:match.ref};
+        if(match.weightUnconfirmed)proposedStock.current.add(line.id+PROPOSAL_WEIGHT_MARK);
+        return {...line,stockAction:'existing' as const,stockRef:match.item.ref,evidence:[line.evidence,...(match.deduced.length?[`Libellé : ${line.description}`,...match.deduced]:[])].filter(Boolean).join(' · ')};
       });
       manuallyClassified.current.clear();
       patch({vendor:result.vendor,date:result.date,...scannedPayment(result,swissToday()),invoiceNumber:result.invoiceNumber,description,category:result.category,amount:total.amount,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:total.amount}],sourceCurrency:result.currency,sourceAmount:result.amountTTC??undefined,sourceDocumentType:result.documentType,sourceOrderNumber:result.orderNumber,sourceTotalBasis:total.calculated?'line_sum':result.amountTTC!==null?'printed':undefined,sourceNetAmount:result.amountHT??undefined,sourceVatRate:result.tvaRate??undefined,sourceVatAmount:result.tvaAmount??undefined,scanModel:outcome.model,documentHash});
@@ -193,7 +196,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const lineStatus=(line:PurchaseLineDraft)=>{
     const stock=line.stockAction==='existing'?stockOptions.find(option=>option.value===line.stockRef)?.label??'article à choisir':line.stockAction==='new'?'nouvel article':'';
     const equipment=line.equipmentAction==='existing'?equipmentOptions.find(option=>option.value===line.equipmentRef)?.label??'matériel à choisir':line.equipmentAction==='new'?'fiche matériel à créer':'';
-    return {meta:[kinds.find(kind=>kind.value===line.kind)?.label,line.quantity!==undefined?`${String(line.quantity).replace('.',',')} ${line.unit}`.trim():''].filter(Boolean).join(' · '),linked:stock||equipment,proposed:line.stockAction==='existing'&&proposedStock.current.has(line.id)};
+    const proposed=line.stockAction==='existing'&&proposedStock.current.has(line.id);
+    const target=line.stockAction==='existing'?[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef):undefined;
+    /* D213/D214 : la conversion se voit (« 25 kg → 25 000 g »), une unité illisible se dit (« unité à préciser »), le poids d'un sachet non confirmé aussi. */
+    const notes=target?[line.quantity!==undefined&&isReadableUnit(line.unit)?formatUnitLink(line.quantity,line.unit,target.unit,target.category):'',isReadableUnit(line.unit)?'':'unité à préciser',proposed&&proposedStock.current.has(line.id+PROPOSAL_WEIGHT_MARK)?'poids du sachet non confirmé':''].filter(Boolean):[];
+    return {meta:[kinds.find(kind=>kind.value===line.kind)?.label,line.quantity!==undefined?`${String(line.quantity).replace('.',',')} ${line.unit}`.trim():''].filter(Boolean).join(' · '),linked:[stock||equipment,...notes].filter(Boolean).join(' · '),proposed};
   };
   const stockOptions=[...stocks.rawMaterials,...stocks.cleaning].map(item=>({value:item.ref,label:item.name,detail:`${item.currentStock} ${item.unit} · ${item.category}`}));
   const equipmentOptions=stocks.equipment.map(item=>({value:item.ref,label:item.name,detail:item.category}));
