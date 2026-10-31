@@ -166,6 +166,9 @@ lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas 
 2. **Contrats** : `voies/<id>/VOIE.md` (objectif, entrées vérifiées, « Possède », exigences
    transversales recopiées) et `voies/<id>/GATES.md` (critères au format unlazy : CHECK, EXPECT).
    La voie ne modifie jamais ses critères.
+   **Relire sans mémoire** (`.claude/skills/voies/references/sans-memoire.md`) : un test de compréhension avant de lancer une voie
+   sensible, une revue du plan avant le code de l'argent, du stock, de Firestore, du Drive ou du moteur, un rapport d'écart entre
+   la doc et le code au début et à la fin d'une mission sur un domaine. Chacun par un agent neuf.
 3. **Essaim** : toutes les voies prêtes partent dans un seul message, en arrière-plan. Le prompt pointe
    VOIE.md sans le recopier.
 4. **Plafonds** : `maxTurns` par agent, comme plafond dur. Budget de mission noté dans MISSION.md.
@@ -240,6 +243,9 @@ de revenir.
 | `node scripts/agents/systeme.mjs appels <script> [--rejouer]` | avant de commiter un contrôle partagé : les critères des GATES qui l'appellent, rejoués (le hook cerveau le rappelle ; M15) |
 | `node scripts/agents/verifier-page.mjs <page.html> [--page-lot] --captures <préfixe>` | une maquette (`etat.html`, GATES des voies) : rendu Chrome à 390 px, sans erreur de script ni défilement, images chargées. Avec `--page-lot` (ou une source sous `outils/pages/`), une page de version avant publication (un artefact neuf, 23.10) : en plus, lisible à 390 et 1280 px (date au titre, `#a-choisir` au premier écran, captures ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots) |
 | `node scripts/agents/systeme.mjs echoue "<JETON> ECHEC" -- node <contrôle> <args…>` | témoin négatif dans un GATES : tient si le contrôle échoue (code non nul) en imprimant son jeton ; un plantage ne compte pas |
+| `node scripts/agents/systeme.mjs comprendre <voie>` | test de compréhension : COMPRIS.md a ses cinq parties, et ses chemins sont sous le « Possède » de VOIE.md (`references/sans-memoire.md` § 1) |
+| `node scripts/agents/systeme.mjs revue <REVUE-PLAN.md>` | revue du plan : deux sections, un sort par ligne, aucun bloquant accepté (§ 2) |
+| `node scripts/agents/systeme.mjs ecarts <doc…>` | rapport d'écart : chaque chemin, `fichier:ligne` et identifiant cité existe (§ 3) ; le sens est jugé par un relecteur neuf |
 
 Les contrôles d'interface vivent dans `work/refonte-frontend/v4/tournoi/outils/` (les `.mjs` y sont
 versionnés), leurs pages témoins dans `tournoi/outils/temoins/` (versionnées par exception dans

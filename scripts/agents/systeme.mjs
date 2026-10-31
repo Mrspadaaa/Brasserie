@@ -22,6 +22,9 @@
 //   etalonnage [dossier] [--moitie A|B] [--reponses f.json]        note les réponses contre cle.json (80 % / 70 %)
 //   appels <script> [--rejouer]                                    critères des GATES qui appellent un contrôle, rejoués
 //   verdict -- <commande> <args…>                                  un contrôle rend OK ou ECHEC sans planter (écrans d'autrui)
+//   comprendre <dossier de voie>                                   COMPRIS.md complet, chemins sous le « Possède » (sans-memoire.md § 1)
+//   revue <REVUE-PLAN.md>                                          deux regards, un sort par constat, aucun bloquant accepté (§ 2)
+//   ecarts <doc…>                                                  ce qu'un document cite entre accents graves existe (§ 3)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -832,6 +835,261 @@ export function verdictDe(commande, args, { cwd = RACINE } = {}) {
   return { rendu, sortie, verdict: /\bECHEC\b/.test(fin) ? 'ECHEC' : 'OK', fin: fin.trim(), code: r.status };
 }
 
+// Relire sans mémoire (31.10, .claude/skills/voies/references/sans-memoire.md) : trois contrôles mécaniques.
+// Ils comptent et recoupent ; le sens reste à l'agent neuf qui relit, jamais au script.
+
+// Le corps d'une partie « ## Titre » ou « ### Titre » (casse et accents ignorés, début de titre suffisant), jusqu'au
+// titre suivant de même niveau ou plus haut ; null si la partie manque.
+function partieDe(texte, titre) {
+  const lignes = texte.split('\n');
+  const cible = sansAccents(titre);
+  const debut = lignes.findIndex((l) => /^#{2,3}\s/.test(l) && sansAccents(l.replace(/^#+\s*/, '')).startsWith(cible));
+  if (debut < 0) return null;
+  const niveau = lignes[debut].match(/^#+/)[0].length;
+  let fin = lignes.length;
+  for (let i = debut + 1; i < lignes.length; i++) {
+    const m = lignes[i].match(/^(#+)\s/);
+    if (m && m[1].length <= niveau) { fin = i; break; }
+  }
+  return { debut: debut + 1, corps: lignes.slice(debut + 1, fin).join('\n') };
+}
+
+const EXTENSIONS_FICHIER = /\.(md|mjs|cjs|js|ts|tsx|jsx|json|html|css|scss|yml|yaml|png|jpe?g|svg|webp|gif|txt|sh|ps1|rules|toml|csv|pdf|lock)$/i;
+// Un chemin de fichier : un nom suivi d'une extension connue, ou un chemin à barres. « .md » seul n'en est pas un.
+const ressembleFichier = (p) => !/\s/.test(p) && (p.includes('/') || /^[^\s.][^\s]*\.[A-Za-z0-9]+$/.test(p) && EXTENSIONS_FICHIER.test(p));
+const sansJoker = (p) => p.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\*.*$/, '');
+
+const PARTIES_COMPRIS = ['Objectif', 'Écrit dans', 'Fini quand', 'Ne fait pas', 'Doutes'];
+const videOuGabarit = (corps) => corps.replace(/[\s\-*•_.…>]+/g, '') === '' || /^(todo|à remplir|a remplir)$/i.test(corps.trim());
+
+// § 1 : COMPRIS.md a ses cinq parties, et ne prévoit d'écrire que sous le « Possède » de VOIE.md. Les doutes sont comptés.
+export function verifierCompris(dossier) {
+  const erreurs = [];
+  const fVoie = path.join(dossier, 'VOIE.md');
+  const fCompris = path.join(dossier, 'COMPRIS.md');
+  if (!existe(fVoie)) erreurs.push(`${rel(fVoie)} absent`);
+  if (!existe(fCompris)) erreurs.push(`${rel(fCompris)} absent`);
+  if (erreurs.length) return { erreurs, doutes: 0 };
+  const compris = lire(fCompris);
+  const parties = {};
+  for (const titre of PARTIES_COMPRIS) {
+    const p = partieDe(compris, titre);
+    if (!p) erreurs.push(`partie « ## ${titre} » absente de COMPRIS.md`);
+    else if (videOuGabarit(p.corps)) erreurs.push(`partie « ## ${titre} » vide dans COMPRIS.md`);
+    else parties[titre] = p.corps;
+  }
+  // Le périmètre : seulement les puces dont le premier passage entre accents graves est un chemin.
+  const possede = partieDe(lire(fVoie), 'Possède');
+  const permis = [];
+  for (const l of possede?.corps.split('\n') ?? []) {
+    const m = l.match(/^\s*[-*]\s*`([^`]+)`/);
+    const base = m ? sansJoker(m[1].trim()) : '';
+    if (base) permis.push({ base, joker: /\*/.test(m[1]) });
+  }
+  if (!permis.length) erreurs.push('VOIE.md sans chemin dans « ## Possède » : rien ne dit où la voie peut écrire');
+  if (parties['Écrit dans']) {
+    const chemins = [...parties['Écrit dans'].matchAll(/`([^`\n]+)`/g)].map((m) => m[1].trim()).filter(ressembleFichier);
+    if (!chemins.length) erreurs.push('« ## Écrit dans » sans chemin entre accents graves');
+    const voie = path.basename(dossier);
+    for (const brut of chemins) {
+      const p = sansJoker(brut);
+      if (!p) { erreurs.push(`« ${brut} » : joker sans dossier, hors du « Possède »`); continue; }
+      const toujours = ['RESULTAT.md', 'COMPRIS.md'].some((n) => p === n || p === `${rel(dossier)}/${n}` || p.endsWith(`/voies/${voie}/${n}`));
+      const sous = permis.some((a) => (a.joker ? p.startsWith(a.base) : p === a.base || p.startsWith(a.base.endsWith('/') ? a.base : `${a.base}/`)));
+      if (!toujours && !sous) erreurs.push(`« ${brut} » : hors du « Possède » de VOIE.md`);
+    }
+  }
+  let doutes = 0;
+  if (parties.Doutes) {
+    const lignes = parties.Doutes.split('\n').map((l) => l.trim()).filter(Boolean);
+    const puces = lignes.filter((l) => /^([-*•]|\d+[.)])\s+\S/.test(l)).map((l) => l.replace(/^([-*•]|\d+[.)])\s+/, ''));
+    const reels = (puces.length ? puces : [lignes.join(' ')]).filter((l) => !/^\W*aucun(e)?\b/.test(sansAccents(l)));
+    doutes = reels.length;
+  }
+  return { erreurs, doutes };
+}
+
+const GRAVITES = ['bloquant', 'majeur', 'detail'];
+const SORTS = ['corrigee', 'contestee', 'acceptee'];
+const COLONNES_REVUE = ['n', 'gravite', 'constat', 'correction', 'sort', 'raison'];
+const SANS_RAISON = /^\W*$/;
+
+// Les cellules d'une ligne de tableau Markdown ; « \| » est une barre dans la cellule.
+const cellules = (l) => l.trim().replace(/\\\|/g, '§BARRE§').replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.replace(/§BARRE§/g, '|').trim());
+
+// § 2 : REVUE-PLAN.md a ses deux regards, un sort par constat, une raison quand il est contesté ou accepté, et aucun
+// bloquant accepté. Une section vide se prouve (« Aucun constat : … ») : on n'approuve jamais par défaut.
+export function verifierRevue(fichier) {
+  const erreurs = [];
+  const comptes = { bloquant: 0, majeur: 0, détail: 0 };
+  if (!existe(fichier)) return { erreurs: [`${rel(fichier)} absent`], comptes };
+  const texte = lire(fichier);
+  for (const titre of ['Conception', 'Prêt à coder']) {
+    const p = partieDe(texte, titre);
+    if (!p) { erreurs.push(`section « ## ${titre} » absente`); continue; }
+    const lignes = p.corps.split('\n').filter((l) => l.trim().startsWith('|'));
+    const tete = lignes.length ? cellules(lignes[0]).map((c) => sansAccents(c.replace(/\*/g, ''))) : [];
+    const rangs = lignes.slice(1).map(cellules).filter((c) => !c.every((x) => /^:?-{2,}:?$/.test(x) || x === ''));
+    const aucun = p.corps.split('\n').map((l) => l.match(/^\s*(?:[-*>]\s*)?\**aucun constat\s*:\**\s*(.*)$/i)).find(Boolean);
+    if (lignes.length && !COLONNES_REVUE.every((c, i) => (tete[i] ?? '').startsWith(c))) erreurs.push(`« ${titre} » : en-tête du tableau ≠ | n | Gravité | Constat (preuve) | Correction attendue | Sort | Raison |`);
+    if (!rangs.length) {
+      if (!aucun) erreurs.push(`« ${titre} » : aucune ligne ni « Aucun constat : » avec sa preuve (on n'approuve pas par défaut)`);
+      else if (aucun[1].trim().split(/\s+/).filter(Boolean).length < 3) erreurs.push(`« ${titre} » : « Aucun constat : » sans preuve (trois mots au moins : ce qui a été lu, ce qui a été cherché)`);
+      continue;
+    }
+    if (aucun) erreurs.push(`« ${titre} » : « Aucun constat : » à côté de ${rangs.length} ligne(s) de constat`);
+    for (const c of rangs) {
+      const nom = `« ${titre} » n° ${c[0] || '?'}`;
+      if (c.length < 6) { erreurs.push(`${nom} : ${c.length} colonnes au lieu de 6`); continue; }
+      const gravite = sansAccents(c[1].replace(/\*/g, ''));
+      const sort = sansAccents(c[4].replace(/\*/g, ''));
+      if (!c[0]) erreurs.push(`${nom} : numéro vide`);
+      if (!c[2]) erreurs.push(`${nom} : constat vide (sans preuve)`);
+      if (!GRAVITES.includes(gravite)) erreurs.push(`${nom} : gravité « ${c[1]} » inconnue (bloquant, majeur ou détail)`);
+      else comptes[gravite === 'detail' ? 'détail' : gravite] += 1;
+      if (!sort) erreurs.push(`${nom} : ${gravite === 'bloquant' ? 'bloquant ' : ''}sans sort (corrigée, contestée ou acceptée)`);
+      else if (!SORTS.includes(sort)) erreurs.push(`${nom} : sort « ${c[4]} » inconnu (corrigée, contestée ou acceptée)`);
+      else if (sort !== 'corrigee' && SANS_RAISON.test(c[5])) erreurs.push(`${nom} : sort « ${c[4]} » sans raison`);
+      if (gravite === 'bloquant' && sort === 'acceptee') erreurs.push(`${nom} : un bloquant n'est jamais accepté (le corriger, le contester avec preuve, ou l'avis croisé)`);
+    }
+  }
+  return { erreurs, comptes };
+}
+
+const DOSSIERS_CODE = ['src', 'functions/src', 'scripts', 'tests'];
+// Mots en casse mixte qui ne sont pas du code de la maison, et noms de produits en « .js » : jamais un écart.
+const MOTS_CONNUS = new Set(['GitHub', 'JavaScript', 'TypeScript', 'NotebookLM', 'IndexedDB', 'OpenAI', 'YouTube', 'PowerShell', 'iPhone', 'iOS', 'macOS', 'WebP']);
+const PRODUITS_JS = /^(node|next|vue|react|d3|three|chart|nuxt|alpine|express|fuse)\.js$/i;
+// Un nom seul de cette sorte, introuvable, est une sortie d'exécution (capture, rapport, verrou), pas une promesse de la doc.
+const SORTIES_D_EXECUTION = /\.(png|jpe?g|gif|webp|svg|lock|csv|pdf|txt|json|ya?ml|ps1)$/i;
+// Un mot à tirets est un identifiant s'il porte une version ou un indice collé à des lettres (`invoice-v4`, `europe-west6`) ;
+// `cases-00-320`, `yeast-scenario-2` ou `py-0.2` sont des noms de capture, de scénario ou de classe.
+const motAVersion = (p) => /^[A-Za-z][A-Za-z0-9]*(-[A-Za-z0-9]+)+$/.test(p) && p.split('-').slice(1).some((s) => /^[A-Za-z]+\d+[A-Za-z0-9]*$/.test(s));
+const NORMES = /^(utf|iso|sha|aes|rsa|md|crc|ipv|http|wcag|rfc|ecma)-?\d/i;
+const camelOuPascal = (t) => /^[a-z][a-z0-9]*[A-Z][A-Za-z0-9]*$/.test(t) || /^[A-Z][a-z0-9]+[A-Z][A-Za-z0-9]*$/.test(t);
+const majusculesSoulignees = (t) => /^[A-Z][A-Z0-9]*(_[A-Z0-9]+)+$/.test(t);
+const estIdentifiant = (t) => t.length <= 60 && !MOTS_CONNUS.has(t) && (camelOuPascal(t) || majusculesSoulignees(t));
+
+// § 3 : ce que chaque document cite entre accents graves existe. Un chemin existe, une ligne ne dépasse pas la fin du
+// fichier, un identifiant de code se trouve dans src/, functions/src/, scripts/ ou tests/. Le reste (commandes, adresses,
+// nombres, phrases, mots français) est ignoré. Aucun appel réseau ; le sens d'une phrase reste à un relecteur neuf.
+export function verifierEcarts(docs, { racine = RACINE } = {}) {
+  const git = (args) => spawnSync('git', args, { cwd: racine, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+  const nomsRacine = new Set(existe(racine) ? fs.readdirSync(racine) : []);
+  let suivis = null;
+  const fichiersSuivis = () => (suivis ??= git(['ls-files', '--cached', '--others', '--exclude-standard']).stdout.split('\n').filter(Boolean));
+  const dirs = DOSSIERS_CODE.filter((d) => existe(path.join(racine, d)));
+  // Les réglages de la racine comptent aussi (essai du 31.10 : une option de DESIGN.md vit dans tailwind.config.js).
+  const portee = dirs.length ? [...dirs, ':(glob)*.config.*', 'package.json', 'firebase.json'] : [];
+  const memo = new Map();
+  const dansLeCode = (id) => {
+    if (!portee.length) return false;
+    if (!memo.has(id)) {
+      const r = git(['grep', '-F', '-q', '--untracked', '-e', id, '--', ...portee]);
+      if (r.status !== 0 && r.status !== 1) throw new Error(`git grep a échoué (code ${r.status}) : ${r.stderr}`);
+      memo.set(id, r.status === 0);
+    }
+    return memo.get(id);
+  };
+  // Une API de bibliothèque nommée par la doc (`AnimatePresence`, `ViewTransition`) n'est pas du code à retrouver : on la
+  // cherche, seulement quand le code ne la porte pas, dans les dépendances directes installées (essai du 31.10 : 4 faux
+  // écarts sur 5 dans une doc d'idées). Sans node_modules, ou sans package.json, la règle ne s'applique pas.
+  let dependances = null;
+  const dansLesDependances = (id) => {
+    if (dependances === null) {
+      try {
+        const pkg = JSON.parse(lire(path.join(racine, 'package.json')));
+        dependances = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }).map((d) => `node_modules/${d}`).filter((d) => existe(path.join(racine, d)));
+      } catch { dependances = []; }
+    }
+    if (!dependances.length || /^[-.]/.test(id)) return false;
+    const r = git(['grep', '--no-index', '--no-exclude-standard', '-F', '-q', '-e', id, '--', ...dependances]);
+    return r.status === 0;
+  };
+  const estChemin = (p) => {
+    // Ni produit en « .js », ni chemin absolu, d'environnement ou de gabarit (`/assets/…`, `%TEMP%/…`, `<id>.json`) : hors dépôt.
+    if (PRODUITS_JS.test(p) || /^[/%~<]/.test(p)) return false;
+    const extension = EXTENSIONS_FICHIER.test(p) && !/^\.[A-Za-z0-9]+$/.test(p);
+    return extension || (p.includes('/') && nomsRacine.has(p.split('/')[0]));
+  };
+  // Les fichiers que désigne un chemin ou un nom seul : depuis la racine ; sinon, par git ls-files, le nom seul ou un chemin
+  // partiel (`domain/water/ions.ts` pour `src/domain/water/ions.ts`).
+  const candidats = (p) => {
+    const q = p.replace(/^\.\//, '');
+    if (existe(path.join(racine, q))) return [path.join(racine, q)];
+    const bon = q.includes('/') ? (f) => f.endsWith(`/${q}`) : (f) => f.split('/').pop() === q;
+    return fichiersSuivis().filter(bon).map((f) => path.join(racine, f));
+  };
+  const nbLignes = (f) => { const t = lire(f); return t.split('\n').length - (t.endsWith('\n') ? 1 : 0); };
+  // null : ignoré ; [] : vérifié et juste ; sinon la liste des raisons.
+  const verifier = (brut) => {
+    let p = brut.trim();
+    // Un passage tronqué (`cerveau/decisions/…`, `MoohEoyj…`) est une élision, pas un nom.
+    if (!p || /\s/.test(p) || /…|\.\.\./.test(p) || /^[a-z][a-z0-9+.-]*:\/\//i.test(p) || /^(www\.|mailto:)/i.test(p) || /\\/.test(p)) return null;
+    p = p.replace(/\(\)$/, '').replace(/[.,;:]+$/, '').replace(/=.*$/, '');
+    if (!p || /^[-?#@$]/.test(p)) return null;
+    const lg = p.match(/^([^:\s]+):(\d+)(?:[-–](\d+))?$/);
+    if (lg && ressembleFichier(lg[1]) && estChemin(lg[1])) {
+      const trouves = candidats(lg[1]);
+      if (!trouves.length) return [`fichier absent (${lg[1]})`];
+      const l1 = Number(lg[2]);
+      const l2 = Number(lg[3] ?? lg[2]);
+      if (l1 < 1 || l2 < l1) return [`plage de lignes invalide (${lg[2]}${lg[3] ? `-${lg[3]}` : ''})`];
+      const longueurs = trouves.map(nbLignes);
+      return longueurs.some((n) => l2 <= n) ? [] : [`ligne ${l2} au-delà de la fin de ${lg[1]} (${Math.max(...longueurs)} lignes)`];
+    }
+    if (estChemin(p)) {
+      const joker = /[*<{[$?]/.exec(p);
+      if (joker) {
+        const dossier = p.slice(0, joker.index).replace(/[^/]*$/, '');
+        // Un gabarit dont le dossier n'est pas à la racine (`active/<id>.json`) décrit des données d'exécution.
+        if (!dossier || !nomsRacine.has(dossier.split('/')[0])) return null;
+        return existe(path.join(racine, dossier)) ? [] : [`dossier absent (${dossier})`];
+      }
+      if (candidats(p).length) return [];
+      // Essais réels du 31.10 (docs des finances, puis 50 docs et PRODUCT/DESIGN : 9 faux écarts sur 10 tirés) : un fichier
+      // ignoré par git est absent d'un clone ; un chemin ou un nom que le code écrit est une sortie, pas une promesse ; un
+      // nom seul de capture, de rapport ou de verrou n'est vérifiable nulle part.
+      if (git(['check-ignore', '-q', p.replace(/^\.\//, '')]).status === 0) return [];
+      if (dansLeCode(p.replace(/^\.\//, ''))) return [];
+      if (!p.includes('/') && SORTIES_D_EXECUTION.test(p)) return null;
+      // Un chemin dont le premier dossier n'est pas à la racine et qu'aucun suffixe ne résout vit hors du dépôt (tâches du
+      // poste, réglages de gh) : rien à y comparer. Une faute dans `src/…` reste attrapée, `src` étant à la racine.
+      if (p.includes('/') && !nomsRacine.has(p.replace(/^\.\//, '').split('/')[0])) return null;
+      return [p.includes('/') ? 'chemin absent' : 'fichier introuvable (ni à la racine, ni par git ls-files)'];
+    }
+    // L'API de la plateforme (`document.` et ses semblables) n'est pas du code de la maison.
+    if (/^(document|window|navigator|CSS|Intl|Math|Object|Array|Promise|console|globalThis|process)\./.test(p)) return null;
+    let ids;
+    if (motAVersion(p)) ids = NORMES.test(p) ? [] : [p];
+    else ids = p.split(/[^A-Za-z0-9_]+/).filter(estIdentifiant);
+    if (!ids.length) return null;
+    const version = motAVersion(p); // un identifiant de version est de la maison : jamais dans les dépendances
+    return ids.filter((id) => !dansLeCode(id) && (version || !dansLesDependances(id))).map((id) => `identifiant « ${id} » introuvable dans ${DOSSIERS_CODE.join(', ')}`);
+  };
+  const ecarts = [];
+  const parDoc = [];
+  for (const doc of docs) {
+    const relatif = path.relative(racine, path.resolve(doc)).split(path.sep).join('/');
+    const nom = relatif.startsWith('..') ? doc : relatif;
+    const avant = ecarts.length;
+    let verifies = 0;
+    let dansBloc = false;
+    lire(doc).split('\n').forEach((ligne, i) => {
+      if (/^\s*(```|~~~)/.test(ligne)) { dansBloc = !dansBloc; return; }
+      if (dansBloc) return;
+      for (const m of ligne.matchAll(/`([^`\n]+)`/g)) {
+        const raisons = verifier(m[1]);
+        if (raisons === null) continue;
+        verifies += 1;
+        for (const raison of raisons) ecarts.push(`${nom}:${i + 1} — ${m[1].trim()} : ${raison}`);
+      }
+    });
+    parDoc.push({ doc: nom, verifies, ecarts: ecarts.length - avant });
+  }
+  return { ecarts, parDoc, verifies: parDoc.reduce((s, d) => s + d.verifies, 0) };
+}
+
 // Témoins : petits dossiers jetables, un défaut à la fois.
 function construireCerveau(dir, d = {}) {
   const c = path.join(dir, 'cerveau');
@@ -934,8 +1192,34 @@ function construireEntonnoir(dir, { series = 3, parSerie = 4,sansTri = false, sa
   return f;
 }
 
+// Relire sans mémoire (31.10) : une voie témoin, une revue et une racine de dépôt jetables.
+function construireCompris(dir, { sans = null, vide = null, chemins = ['scripts/agents/systeme.mjs', 'RESULTAT.md'], sansPossede = false, doutes = '- un doute\n- un autre doute' } = {}) {
+  const possede = sansPossede ? '' : '## Possède (seuls chemins où écrire, avec RESULTAT.md)\n- `scripts/agents/systeme.mjs` : une sous-commande.\n- `work/m/voies/t/temoins/` : les témoins.\n\n';
+  fs.writeFileSync(path.join(dir, 'VOIE.md'), `# Voie t\n\n## Objectif\no\n\n${possede}## Critères\nc\n`);
+  const parties = { Objectif: 'Une sous-commande.', 'Écrit dans': chemins.map((c) => `- \`${c}\``).join('\n'), 'Fini quand': '- les témoins passent', 'Ne fait pas': "- rien d'autre", Doutes: doutes };
+  fs.writeFileSync(path.join(dir, 'COMPRIS.md'), `# Compris\n\n${Object.entries(parties).filter(([k]) => k !== sans).map(([k, v]) => `## ${k}\n${k === vide ? '' : v}\n`).join('\n')}`);
+  return dir;
+}
+const ENTETE_REVUE = '| n | Gravité | Constat (preuve) | Correction attendue | Sort | Raison |\n|---|---|---|---|---|---|';
+const AUCUN_CONSTAT = 'Aucun constat : lu PLAN.md et le code cité, chaque fonction existe et rien ne manque.';
+const tableauRevue = (...lignes) => `${ENTETE_REVUE}\n${lignes.join('\n')}`;
+function construireRevue(dir, conception, pret) {
+  const f = path.join(dir, 'REVUE-PLAN.md');
+  fs.writeFileSync(f, `# Revue\n\n## Conception\n\n${conception}\n\n${pret === null ? '' : `## Prêt à coder\n\n${pret}\n`}`);
+  return f;
+}
+function construireRacineEcarts(dir) {
+  fs.mkdirSync(path.join(dir, 'src'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'docs'));
+  fs.writeFileSync(path.join(dir, 'src', 'montants.ts'), "export const calculerTotalTtc = 1;\nexport const TAUX_TVA_PLEIN = 8.1;\nexport const VERSION = 'facture-v9';\n");
+  fs.writeFileSync(path.join(dir, 'package.json'), '{}\n');
+  spawnSync('git', ['init', '-q'], { cwd: dir });
+  return dir;
+}
+const docEcarts = (racine, nom, corps) => { const f = path.join(racine, 'docs', nom); fs.writeFileSync(f, corps); return f; };
+
 function temoins() {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'systeme-temoins-'));
+  const tmp =fs.mkdtempSync(path.join(os.tmpdir(), 'systeme-temoins-'));
   const cas = [];
   const attendu = (nom, ok, voulu) => cas.push({ nom, ok: ok === voulu, voulu });
   const sous = (n) => { const d = path.join(tmp, n); fs.mkdirSync(d); return d; };
@@ -1068,6 +1352,45 @@ function temoins() {
   attendu('appel dont l\'EXPECT est une expression /…/', rejouerAppels([{ gates: 'g', commande: 'node -e "console.log(\'a · b VERDICT ECHEC\')"', attendu: '/a · [\\s\\S]*VERDICT (OK|ECHEC)/' }], { racine: ra })[0].ok, true);
   attendu('contrôle qui rend ECHEC sur un écran d\'autrui (verdict rendu)', verdictDe('node', ['-e', 'console.log("RAIL ECHEC 1/2"); process.exit(1)']).rendu, true);
   attendu('contrôle qui plante (verdict absent)', verdictDe('node', ['-e', 'throw new Error("x")']).rendu, false);
+  // Relire sans mémoire (31.10) : chaque contrôle accepte son cas juste et refuse ce que sa règle exclut.
+  const cp = (n, o) => verifierCompris(construireCompris(sous(`cp${n}`), o)).erreurs.length === 0;
+  attendu('compréhension complète, dans le Possède', cp(1, {}), true);
+  attendu('deux doutes comptés', verifierCompris(construireCompris(sous('cp2'))).doutes === 2, true);
+  attendu('« aucun » compte zéro doute', verifierCompris(construireCompris(sous('cp3'), { doutes: 'aucun' })).doutes === 0 && cp(4, { doutes: 'aucun' }), true);
+  attendu('compréhension sans la partie Doutes', cp(5, { sans: 'Doutes' }), false);
+  attendu('compréhension dont « Fini quand » est vide', cp(6, { vide: 'Fini quand' }), false);
+  attendu('compréhension qui écrit hors du Possède', cp(7, { chemins: ['scripts/agents/systeme.mjs', 'src/App.tsx'] }), false);
+  attendu('chemin voisin du Possède (même préfixe, autre fichier)', cp(8, { chemins: ['scripts/agents/systeme.mjs.bak'] }), false);
+  attendu('« Écrit dans » sans chemin', cp(9, { chemins: [] }), false);
+  attendu('joker sans dossier', cp(10, { chemins: ['*.md'] }), false);
+  attendu('VOIE.md sans Possède', cp(11, { sansPossede: true }), false);
+  const rv = (n, c, p) => verifierRevue(construireRevue(sous(`rv${n}`), c, p)).erreurs.length === 0;
+  const corrigee = '| 1 | bloquant | PLAN.md arrondit deux fois (src/montants.ts:1) | arrondir une fois | corrigée | — |';
+  attendu('revue complète', rv(1, tableauRevue(corrigee, '| 2 | majeur | cas hors ligne absent | un test | contestée | couvert par tests/unit/x.test.ts |', '| 3 | détail | nom flou | renommer | acceptée | douze fichiers pour rien |'), AUCUN_CONSTAT), true);
+  attendu('revue : compte par gravité', verifierRevue(construireRevue(sous('rv2'), tableauRevue(corrigee), AUCUN_CONSTAT)).comptes.bloquant === 1, true);
+  attendu('bloquant accepté', rv(3, tableauRevue('| 1 | bloquant | double clic | transaction | acceptée | rare |'), AUCUN_CONSTAT), false);
+  attendu('bloquant sans sort', rv(4, tableauRevue('| 1 | bloquant | double clic | transaction |  |  |'), AUCUN_CONSTAT), false);
+  attendu('constat contesté sans raison', rv(5, tableauRevue('| 1 | majeur | un trou | le combler | contestée |  |'), AUCUN_CONSTAT), false);
+  attendu('revue sans le regard « Prêt à coder »', rv(6, tableauRevue(corrigee), null), false);
+  attendu('« Aucun constat : » sans preuve', rv(7, tableauRevue(corrigee), 'Aucun constat :'), false);
+  attendu('section sans ligne ni « Aucun constat »', rv(8, tableauRevue(corrigee), ENTETE_REVUE), false);
+  attendu('gravité inconnue', rv(9, tableauRevue('| 1 | critique | un trou | le combler | corrigée | — |'), AUCUN_CONSTAT), false);
+  attendu('sort inconnu', rv(10, tableauRevue('| 1 | majeur | un trou | le combler | reporté | plus tard |'), AUCUN_CONSTAT), false);
+  attendu('tableau à l\'en-tête changé', rv(11, `| n | Gravité | Constat |\n|---|---|---|\n| 1 | majeur | un trou |`, AUCUN_CONSTAT), false);
+  const re = sous('racine-ecarts');
+  construireRacineEcarts(re);
+  const ec = (nom, corps) => verifierEcarts([docEcarts(re, nom, corps)], { racine: re });
+  const juste = ec('juste.md', 'Fichiers `src/montants.ts` et `montants.ts`, lignes `src/montants.ts:3` et `src/montants.ts:1-3`.\nCode : `calculerTotalTtc`, `TAUX_TVA_PLEIN`, `facture-v9`, `calculerTotalTtc()`.\nIgnorés : `npm test`, `Europe/Zurich`, `https://x.ch/a`, `--image`, `3,5 CHF`, `frame-src`.\n```\n`src/absent.ts` dans un bloc de code\n```\n');
+  attendu('document juste, 8 passages vérifiés, aucun écart', juste.ecarts.length === 0 && juste.verifies === 8, true);
+  attendu('chemin absent', ec('e1.md', 'Voir `src/absent.ts`.').ecarts.length === 0, false);
+  attendu('nom de fichier seul absent', ec('e2.md', 'Voir `absent.ts`.').ecarts.length === 0, false);
+  attendu('ligne au-delà de la fin', ec('e3.md', 'Voir `src/montants.ts:4`.').ecarts.length === 0, false);
+  attendu('plage de lignes qui dépasse', ec('e4.md', 'Voir `src/montants.ts:2-9`.').ecarts.length === 0, false);
+  attendu('plage de lignes inversée', ec('e5.md', 'Voir `src/montants.ts:3-1`.').ecarts.length === 0, false);
+  attendu('identifiant camelCase inconnu', ec('e6.md', 'Voir `calculerTotalHt`.').ecarts.length === 0, false);
+  attendu('identifiant en majuscules soulignées inconnu', ec('e7.md', 'Voir `TAUX_TVA_REDUIT`.').ecarts.length === 0, false);
+  attendu('mot à tirets versionné inconnu', ec('e8.md', 'Voir `facture-v8`.').ecarts.length === 0, false);
+  attendu('document sans aucun passage vérifiable', ec('e9.md', 'Rien entre accents graves, seulement des mots.').verifies > 0, false);
   fs.rmSync(tmp, { recursive: true, force: true });
   for (const c of cas) console.log(`${c.ok ? 'tenu ' : 'RATÉ '} ${c.nom} (attendu : ${c.voulu ? 'OK' : 'ECHEC'})`);
   return cas.every((c) => c.ok);
@@ -1203,6 +1526,27 @@ function main(argv) {
       const v = verdictDe(args[1], args.slice(2));
       process.stdout.write(v.sortie.endsWith('\n') ? v.sortie : `${v.sortie}\n`);
       return finir(v.rendu, `VERDICT ${v.verdict} (${v.fin})`, 'VERDICT ABSENT', v.rendu ? [] : [`code ${v.code}, sans ligne finale OK ni ECHEC : le contrôle a planté`]);
+    }
+    case 'comprendre': {
+      if (!args[0]) return finir(false, '', 'COMPRIS ECHEC', ['usage : comprendre <dossier de voie> (VOIE.md et COMPRIS.md)']);
+      const r = verifierCompris(path.resolve(args[0]));
+      return finir(!r.erreurs.length, `COMPRIS OK (${r.doutes ? `${r.doutes} doute${r.doutes > 1 ? 's' : ''}` : 'aucun doute'})`, 'COMPRIS ECHEC', r.erreurs);
+    }
+    case 'revue': {
+      if (!args[0]) return finir(false, '', 'REVUE ECHEC', ['usage : revue <REVUE-PLAN.md>']);
+      const r = verifierRevue(path.resolve(args[0]));
+      return finir(!r.erreurs.length, `REVUE OK (bloquant ${r.comptes.bloquant}, majeur ${r.comptes.majeur}, détail ${r.comptes.détail})`, 'REVUE ECHEC', r.erreurs);
+    }
+    case 'ecarts': {
+      const docs = args.filter((a) => !a.startsWith('--')).map((a) => path.resolve(a));
+      if (!docs.length) return finir(false, '', 'ECARTS ECHEC', ['usage : ecarts <doc…>']);
+      const absents = docs.filter((d) => !existe(d)).map((d) => `${rel(d)} : document absent`);
+      if (absents.length) return finir(false, '', 'ECARTS ECHEC', absents);
+      const r = verifierEcarts(docs);
+      for (const d of r.parDoc) console.log(`  · ${d.doc} : ${d.verifies} passages vérifiés, ${d.ecarts} écart(s)`);
+      // Rien à compter n'est pas un succès (31.10) : des documents sans un seul passage vérifiable ne prouvent rien.
+      if (!r.verifies) return finir(false, '', 'ECARTS ECHEC', ['aucun passage vérifiable entre accents graves dans ces documents']);
+      return finir(!r.ecarts.length, `ECARTS OK (${r.verifies} passages vérifiés dans ${docs.length} document(s))`, `ECARTS ECHEC ${r.ecarts.length}`, r.ecarts);
     }
     case 'echoue': {
       const sep = args.indexOf('--');

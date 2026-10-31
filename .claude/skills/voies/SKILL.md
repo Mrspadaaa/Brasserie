@@ -71,6 +71,13 @@ Contrôler le format : `node .claude/skills/unlazy/scripts/gate-lint.mjs voies/<
 L'approbation des commandes (écrites par le pilote lui-même) se fait au premier
 `systeme.mjs voies … --approuver`.
 
+**Relire sans mémoire** (`references/sans-memoire.md`, 31.10) : un agent neuf ne lit que le document.
+- Le **test de compréhension** passe avant de lancer une voie dont le brasseur verra le livrable, une relance après une consigne mal
+  lue, ou une voie qui touche l'argent, le stock, les données réelles ou le moteur (`systeme.mjs comprendre`).
+- La **revue du plan** passe avant le code des finances, du stock, de Firestore, du Drive ou du moteur (`systeme.mjs revue`).
+- Le **rapport d'écart** entre la doc et le code se fait au début d'une mission sur un domaine, et avant de la signer
+  (`systeme.mjs ecarts`, puis un relecteur neuf).
+
 ## 3. Lancer l'essaim
 - Toutes les voies prêtes partent dans **un seul message**, en arrière-plan :
   `Agent(subagent_type: "executant" | "auteur" | "relecteur", run_in_background: true,
