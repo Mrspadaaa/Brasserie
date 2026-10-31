@@ -29,8 +29,9 @@ Lire et suivre `work/missions/2026-10-31-ecran-depense/voies/COMMUN.md`.
 ## Possède (seuls chemins où écrire, un par ligne)
 - `src/services/stockLineMatching.ts`
 - `src/services/ingredientIdentity.ts` (nouveau : identité d'un produit tirée d'un libellé)
-- `src/ui/finance/ExpenseSheet.tsx` (l'appel de la proposition à la lecture, l. 140 à 160 seulement ; rien d'autre de l'écran)
+- `src/ui/finance/ExpenseSheet.tsx` (l'import l. 12, `attach` l. 148 à 155 et `lineStatus` vers l. 196 pour la marque « poids du sachet non confirmé » seulement ; rien d'autre de l'écran ; REVUE-PLAN Prêt n° 6)
 - `tests/unit/stockLineMatching.test.ts`
+- `tests/integration/jus0Journey.test.tsx` (les `it` qui affirment « aucune proposition », REVUE-PLAN Conception n° 9)
 - `tests/unit/depense/stock/`
 - `work/missions/2026-10-31-ecran-depense/voies/s1-stock/`
 

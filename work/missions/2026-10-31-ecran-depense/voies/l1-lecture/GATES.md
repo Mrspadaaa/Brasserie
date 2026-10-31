@@ -1,6 +1,6 @@
 # Gates: voie l1-lecture — la lecture d'une facture contrôlée par le code
 
-OWNS: functions/src/invoiceScanCore.ts, functions/src/prompts.ts, tests/unit/invoiceScanCore.test.ts, tests/unit/depense/lecture/, work/missions/2026-10-31-ecran-depense/voies/l1-lecture/
+OWNS: functions/src/invoiceScanCore.ts, functions/src/prompts.ts, functions/src/ai.ts, tests/unit/invoiceScanCore.test.ts, tests/unit/invoiceVisionReview.test.ts, tests/unit/depense/lecture/, work/missions/2026-10-31-ecran-depense/voies/l1-lecture/
 
 Scope: C1 à C3, A10, A6, A9, P1, P2, A3 du diagnostic d1 ; un point typé par contrôle qui échoue ; Gemini simulé.
 
@@ -10,7 +10,7 @@ Scope: C1 à C3, A10, A6, A9, P1, P2, A3 du diagnostic d1 ; un point typé par c
   EVIDENCE: pending
 
 - [ ] G2: les tests de la lecture passent, la vérité de sa facture comprise
-  CHECK: npx vitest run tests/unit/invoiceScanCore.test.ts tests/unit/depense/lecture tests/unit/invoiceVisionReview.test.ts tests/unit/purchasePrefill.test.ts --maxWorkers=2 && echo TESTS LECTURE OK
+  CHECK: npx vitest run tests/unit/invoiceScanCore.test.ts tests/unit/depense/lecture tests/unit/invoiceVisionReview.test.ts tests/unit/purchasePrefill.test.ts tests/integration/invoiceReview.test.ts tests/unit/invoiceScanTransport.test.ts --maxWorkers=2 && node scripts/check-prompts.mjs && echo TESTS LECTURE OK
   EXPECT: TESTS LECTURE OK
   EVIDENCE: pending
 

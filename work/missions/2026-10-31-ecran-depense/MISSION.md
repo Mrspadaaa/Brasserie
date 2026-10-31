@@ -37,10 +37,10 @@ Fini veut dire :
 | d1 | diagnostic : lecture de la facture, champs, lignes, liens au stock, incertitude ; vérité de sa facture en fixture | jugement | auteur | sonnet | 100 | work/missions/2026-10-31-ecran-depense/diagnostic/d1/** | — | DIAGNOSTIC.md, fixture, tests rejoués | pilote | — |
 | d2 | diagnostic : Drive, lenteur, onglets Entrées, Prévision et Tout | jugement | auteur | sonnet | 100 | work/missions/2026-10-31-ecran-depense/diagnostic/d2/** | — | DIAGNOSTIC.md, mesures | pilote | — |
 | i1 | inventaire et captures de l'écran actuel (fixtures) | mécanique | executant | haiku | 60 | work/missions/2026-10-31-ecran-depense/inventaire/** | — | inventaire-depense.md, captures ouvertes | pilote | — |
-| l1-lecture | la lecture contrôlée par le code (C1 à C3, A10, A6, A9, P1, P2, A3), un point typé par contrôle | jugement | auteur | sonnet | 110 | functions/src/invoiceScanCore.ts, functions/src/prompts.ts, tests/unit/invoiceScanCore.test.ts, tests/unit/depense/lecture/**, voies/l1-lecture/** | d1 | GATES.md, PLAN relu | pilote | — |
-| s1-stock | chaque ligne reliée au bon article ou à aucun (S1 à S4, A8, A9, B-V3-5), chasse du 17.10 à 0 fausse | jugement | auteur | sonnet | 110 | src/services/stockLineMatching.ts, src/services/ingredientIdentity.ts, src/ui/finance/ExpenseSheet.tsx (l. 140-160), tests/unit/stockLineMatching.test.ts, tests/unit/depense/stock/**, voies/s1-stock/** | d1 | GATES.md, PLAN relu | pilote | — |
-| s2-enregistrement | la dépense écrite juste et sa preuve Drive (A7, A11, A12, S5, S7, S8, DR1, DR4, DR5) | jugement | auteur | sonnet | 110 | src/services/purchaseEntry.ts, purchasePrefill.ts, financeDocuments.ts, driveFileStore.ts, src/domain/finance/brewBudget.ts, leurs tests, tests/unit/depense/enregistrement/**, voies/s2-enregistrement/** | d1, d2 | GATES.md, PLAN relu | pilote | — |
-| t1-onglets | les nombres des vues Finances cohérents (TA2, TA3, TA4, TA6) | jugement | auteur | sonnet | 90 | src/domain/finance/ledger.ts, forecast.ts, src/ui/finance/TransactionJournal.tsx (compteur), leurs tests, tests/unit/depense/onglets/**, voies/t1-onglets/** | d2 | GATES.md, PLAN relu | pilote | — |
+| l1-lecture | la lecture contrôlée par le code (C1 à C3, A10, A6, A9, P1, P2, A3), un point typé par contrôle | jugement | auteur | sonnet | 110 | functions/src/invoiceScanCore.ts, functions/src/prompts.ts, functions/src/ai.ts (SCAN_MAX_OUTPUT), tests/unit/invoiceScanCore.test.ts, tests/unit/invoiceVisionReview.test.ts (fixture l. 179-182), tests/unit/depense/lecture/**, voies/l1-lecture/** | d1 | GATES.md, PLAN relu | pilote | — |
+| s1-stock | chaque ligne reliée au bon article ou à aucun (S1 à S4, A8, A9, B-V3-5), chasse du 17.10 à 0 fausse | jugement | auteur | sonnet | 110 | src/services/stockLineMatching.ts, src/services/ingredientIdentity.ts, src/ui/finance/ExpenseSheet.tsx (l. 12, 148-155, lineStatus), tests/unit/stockLineMatching.test.ts, tests/integration/jus0Journey.test.tsx, tests/unit/depense/stock/**, voies/s1-stock/** | d1 | GATES.md, PLAN relu | pilote | — |
+| s2-enregistrement | la dépense écrite juste et sa preuve Drive (A7, A11, A12, S5, S7, S8, DR1, DR4, DR5) | jugement | auteur | sonnet | 110 | src/services/purchaseEntry.ts, purchasePrefill.ts, financeDocuments.ts, driveFileStore.ts, src/domain/finance/brewBudget.ts, src/domain/finance/types.ts (3 champs), leurs tests, tests/integration/financeDocumentPersistence.test.ts, tests/unit/depense/enregistrement/**, voies/s2-enregistrement/** | d1, d2 | GATES.md, PLAN relu | pilote | — |
+| t1-onglets | les nombres des vues Finances cohérents (TA2, TA3, TA4, TA6) | jugement | auteur | sonnet | 90 | src/domain/finance/ledger.ts, forecast.ts, src/ui/finance/TransactionJournal.tsx (compteur), src/components/tabs/FinancesTab.tsx (l. 76), src/ui/finance/FinanceForecastSummary.tsx (une ligne), leurs tests, les 7 tests qui rendent FinancesTab, tests/unit/depense/onglets/**, voies/t1-onglets/** | d2 | GATES.md, PLAN relu | pilote | — |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md. Chaque défaut du diagnostic devient un test qui échoue sur le code d'aujourd'hui avant sa
@@ -63,5 +63,20 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
   `voies/COMMUN.md` ; LINT OK, MISSION OK). Tests de compréhension (Haiku) en vol. Ensuite, par voie : l'auteur écrit PLAN.md et
   s'arrête ; deux relecteurs neufs (Conception, Prêt à coder) écrivent REVUE-PLAN.md ; le pilote trie (`systeme.mjs revue`) ; l'auteur
   code (même agent, `SendMessage`) ; rejeu `systeme.mjs voies … --approuver`. Puis l2 sur le contrat du point typé de l1.
+- 31.10, nuit (suite) : COMPRIS OK pour les quatre (8, 5, 8 et 7 doutes) ; objectifs conformes. Les doutes portaient sur ce que le plan
+  tranche et sur trois points de méthode (qui lance les relecteurs, dossiers de tests, tests hors « Possède ») : précisés dans
+  `COMMUN.md`, sans second test (aucun écart d'objectif). Les quatre auteurs écrivent leur PLAN.md.
+- 31.10, nuit (revues) : les huit revues rendues. Aucun plan prêt tel quel : 4 bloquants (tests hors Possède dans les quatre plans ; s1 :
+  « Crystal » en kg relié à un houblon en g). Tri du pilote dans chaque `REVUE-PLAN.md` (REVUE OK) ; Possède, OWNS et G2 étendus ; les
+  quatre auteurs corrigent leur plan puis codent. Décisions qui touchent la suite : (1) voie **r1** (Sonnet), après s1 et s2, branche
+  dans `ExpenseSheet.tsx` `unitPrice`, `applyScannedDescription`, les propositions de mouture et `savePurchaseWithProofReceipt` ;
+  (2) voie **l2** reçoit les relais de l1 (vote de `vat`, `proForma`, `printedLineCount`, `alphaPct` ; `linesLost` des lignes retenues ;
+  `geminiScanner.ts` et `ScannedInvoiceResult` ; `documentTypeRetenu` lu par `scannedPayment` ; recalcul client ; troisième lecture
+  sur `points`, pas sur un écart multiple de 5 centimes) ; (3) à l'intégration, le pilote passe `purchaseEntry.ts:237`, son test et
+  `eval-expense-vision.mjs:142` à `invoice-v5` dans le même commit que l1, et met à jour `docs/expense-prefill-v4.md`,
+  `docs/gemini-budget.md` ; (4) la mouture n'est que proposée, liée au malt au seul geste du brasseur (voie écran) ; (5) la fiche
+  produit (S6) nommera l'article créé par le nom propre de s1 et écrira son α. Leçon des quatre plans versée à `sans-memoire.md` § 2.
+  À verser au cerveau à la signature : les variations de chasse d'appariement (nature absente, `kind`, poids, parenthèse après un
+  code générique ; LEÇON PROPOSÉE de la revue s1).
 
 ## Signature

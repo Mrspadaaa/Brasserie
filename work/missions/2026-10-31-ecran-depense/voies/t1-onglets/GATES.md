@@ -1,6 +1,6 @@
 # Gates: voie t1-onglets — Opérations, Synthèse et Prévisions disent les mêmes nombres
 
-OWNS: src/domain/finance/ledger.ts, src/domain/finance/forecast.ts, src/ui/finance/TransactionJournal.tsx, tests/unit/finance.test.ts, tests/unit/financeForecast.test.ts, tests/unit/forecastHorizon.test.ts, tests/unit/depense/onglets/, work/missions/2026-10-31-ecran-depense/voies/t1-onglets/
+OWNS: src/domain/finance/ledger.ts, src/domain/finance/forecast.ts, src/ui/finance/TransactionJournal.tsx, src/components/tabs/FinancesTab.tsx, src/ui/finance/FinanceForecastSummary.tsx, tests/integration/dashboardNavigation.test.tsx, tests/integration/equipmentProjects.test.tsx, tests/integration/financeArchives.test.tsx, tests/integration/financeWorkspace.test.tsx, tests/integration/fix114.test.tsx, tests/integration/mobileDailyViews.test.tsx, tests/ux-mobile/financePeriodDrilldown.test.tsx, tests/unit/finance.test.ts, tests/unit/financeForecast.test.ts, tests/unit/forecastHorizon.test.ts, tests/unit/depense/onglets/, work/missions/2026-10-31-ecran-depense/voies/t1-onglets/
 
 Scope: TA2, TA3, TA4, TA6 du diagnostic d2, dans le calcul ; la forme des vues ne change pas.
 
@@ -10,7 +10,7 @@ Scope: TA2, TA3, TA4, TA6 du diagnostic d2, dans le calcul ; la forme des vues n
   EVIDENCE: pending
 
 - [ ] G2: les tests des finances passent, les sondes du diagnostic comprises
-  CHECK: npx vitest run tests/unit/finance.test.ts tests/unit/financeForecast.test.ts tests/unit/forecastHorizon.test.ts tests/unit/brewerBudgetLedger.test.ts tests/integration/financeJournalUx.test.tsx tests/unit/depense/onglets --maxWorkers=2 && echo TESTS ONGLETS OK
+  CHECK: npx vitest run tests/unit/finance.test.ts tests/unit/financeForecast.test.ts tests/unit/forecastHorizon.test.ts tests/unit/brewerBudgetLedger.test.ts tests/integration/financeJournalUx.test.tsx tests/unit/fribourgTax.test.ts tests/unit/financeArchiveContinuity.test.ts tests/unit/financeRefunds.test.ts tests/integration/dashboardNavigation.test.tsx tests/integration/equipmentProjects.test.tsx tests/integration/financeArchives.test.tsx tests/integration/financeWorkspace.test.tsx tests/integration/fix114.test.tsx tests/integration/mobileDailyViews.test.tsx tests/ux-mobile/financePeriodDrilldown.test.tsx tests/unit/depense/onglets --maxWorkers=2 && echo TESTS ONGLETS OK
   EXPECT: TESTS ONGLETS OK
   EVIDENCE: pending
 

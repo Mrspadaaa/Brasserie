@@ -26,6 +26,15 @@ Lire et suivre `work/missions/2026-10-31-ecran-depense/voies/COMMUN.md`.
 - `src/domain/finance/ledger.ts`
 - `src/domain/finance/forecast.ts`
 - `src/ui/finance/TransactionJournal.tsx` (le compteur des opérations seulement, TA2)
+- `src/components/tabs/FinancesTab.tsx` (l'option `includeScheduled` de la ligne 76 seulement)
+- `src/ui/finance/FinanceForecastSummary.tsx` (la ligne « Échéance à préciser » seulement, REVUE-PLAN Conception n° 2)
+- `tests/integration/dashboardNavigation.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
+- `tests/integration/equipmentProjects.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
+- `tests/integration/financeArchives.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
+- `tests/integration/financeWorkspace.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
+- `tests/integration/fix114.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
+- `tests/integration/mobileDailyViews.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
+- `tests/ux-mobile/financePeriodDrilldown.test.tsx` (fixtures et attendus touchés par TA4, REVUE-PLAN Prêt n° 1 et 2)
 - `tests/unit/finance.test.ts`
 - `tests/unit/financeForecast.test.ts`
 - `tests/unit/forecastHorizon.test.ts`

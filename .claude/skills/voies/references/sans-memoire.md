@@ -35,6 +35,9 @@ d'installation du plugin, un coût plafonné.
   - les défauts visés (ids du diagnostic) ;
   - les changements, avec fichier et fonction ;
   - les tests qui échouent d'abord (données, attendu) ;
+  - les tests et scripts hors Possède qui appellent une fonction ou rendent un écran changé (`grep` sur `tests/` et `scripts/`
+    entiers, fixtures relues contre les nouvelles règles), rejoués sur HEAD, et ceux qui changeraient (31.10 : oublié par les quatre
+    plans de Dépense) ;
   - les risques : données existantes, hors ligne, double clic, arrondis ;
   - le hors périmètre.
 - **Deux `relecteur` (Sonnet) neufs, en parallèle**. Chacun lit PLAN.md, le diagnostic qu'il cite et le code. Les deux regards :

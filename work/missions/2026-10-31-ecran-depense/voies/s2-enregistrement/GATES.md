@@ -1,6 +1,6 @@
 # Gates: voie s2-enregistrement — la dépense enregistrée juste, et son justificatif prouvé
 
-OWNS: src/services/purchaseEntry.ts, src/services/purchasePrefill.ts, src/services/financeDocuments.ts, src/services/driveFileStore.ts, src/domain/finance/brewBudget.ts, tests/unit/purchaseEntry.test.ts, tests/unit/purchasePrefill.test.ts, tests/unit/financeDocuments.test.ts, tests/integration/driveFileStore.test.ts, tests/unit/depense/enregistrement/, work/missions/2026-10-31-ecran-depense/voies/s2-enregistrement/
+OWNS: src/services/purchaseEntry.ts, src/services/purchasePrefill.ts, src/services/financeDocuments.ts, src/services/driveFileStore.ts, src/domain/finance/brewBudget.ts, src/domain/finance/types.ts, tests/unit/purchaseEntry.test.ts, tests/unit/purchasePrefill.test.ts, tests/unit/financeDocuments.test.ts, tests/integration/driveFileStore.test.ts, tests/integration/financeDocumentPersistence.test.ts, tests/unit/depense/enregistrement/, work/missions/2026-10-31-ecran-depense/voies/s2-enregistrement/
 
 Scope: A7, A11, A12, S5, S7, S8, DR1, DR4 (message), DR5 ; Drive factice, Gemini simulé.
 
@@ -10,7 +10,7 @@ Scope: A7, A11, A12, S5, S7, S8, DR1, DR4 (message), DR5 ; Drive factice, Gemini
   EVIDENCE: pending
 
 - [ ] G2: les tests de l'enregistrement et du Drive factice passent
-  CHECK: npx vitest run tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/unit/financeDocuments.test.ts tests/integration/driveFileStore.test.ts tests/unit/depense/enregistrement --maxWorkers=2 && echo TESTS ENREGISTREMENT OK
+  CHECK: npx vitest run tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/unit/financeDocuments.test.ts tests/integration/driveFileStore.test.ts tests/integration/financeDocumentPersistence.test.ts tests/integration/expenseSheet.test.tsx tests/unit/brewBudget.test.ts tests/unit/financeArchiveContinuity.test.ts tests/unit/depense/enregistrement --maxWorkers=2 && echo TESTS ENREGISTREMENT OK
   EXPECT: TESTS ENREGISTREMENT OK
   EVIDENCE: pending
 

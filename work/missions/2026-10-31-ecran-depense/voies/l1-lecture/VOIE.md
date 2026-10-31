@@ -27,7 +27,9 @@ deux temps : PLAN puis code).
 ## Possède (seuls chemins où écrire, un par ligne)
 - `functions/src/invoiceScanCore.ts`
 - `functions/src/prompts.ts` (le prompt et le schéma des factures seulement ; les autres prompts ne bougent pas)
+- `functions/src/ai.ts` (la constante `SCAN_MAX_OUTPUT` seulement, si le test de taille l'exige ; REVUE-PLAN Conception n° 13)
 - `tests/unit/invoiceScanCore.test.ts`
+- `tests/unit/invoiceVisionReview.test.ts` (la fixture des lignes 179-182 seulement ; REVUE-PLAN Prêt n° 1)
 - `tests/unit/depense/lecture/`
 - `work/missions/2026-10-31-ecran-depense/voies/l1-lecture/`
 

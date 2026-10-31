@@ -28,10 +28,12 @@ Lire et suivre `work/missions/2026-10-31-ecran-depense/voies/COMMUN.md`.
 - `src/services/financeDocuments.ts`
 - `src/services/driveFileStore.ts`
 - `src/domain/finance/brewBudget.ts` (`latestBrewPrices` et ce qui calcule le prix d'un article seulement)
+- `src/domain/finance/types.ts` (trois champs facultatifs seulement : `paymentDateBasis`, `proofOriginalFileName`, `surchargeOfLineId` ; REVUE-PLAN Prêt n° 7)
 - `tests/unit/purchaseEntry.test.ts`
 - `tests/unit/purchasePrefill.test.ts`
 - `tests/unit/financeDocuments.test.ts`
 - `tests/integration/driveFileStore.test.ts`
+- `tests/integration/financeDocumentPersistence.test.ts` (mock complété, l. 62 ; REVUE-PLAN Prêt n° 1)
 - `tests/unit/depense/enregistrement/`
 - `work/missions/2026-10-31-ecran-depense/voies/s2-enregistrement/`
 

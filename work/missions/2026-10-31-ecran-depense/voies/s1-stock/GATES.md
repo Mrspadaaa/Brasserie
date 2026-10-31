@@ -1,6 +1,6 @@
 # Gates: voie s1-stock — chaque ligne de facture reliée au bon article, ou à aucun
 
-OWNS: src/services/stockLineMatching.ts, src/services/ingredientIdentity.ts, src/ui/finance/ExpenseSheet.tsx, tests/unit/stockLineMatching.test.ts, tests/unit/depense/stock/, work/missions/2026-10-31-ecran-depense/voies/s1-stock/
+OWNS: src/services/stockLineMatching.ts, src/services/ingredientIdentity.ts, src/ui/finance/ExpenseSheet.tsx, tests/unit/stockLineMatching.test.ts, tests/integration/jus0Journey.test.tsx, tests/unit/depense/stock/, work/missions/2026-10-31-ecran-depense/voies/s1-stock/
 
 Scope: S1 à S4, A8, A9, B-V3-5 ; la chasse du 17.10 sans fausse proposition ; Gemini simulé.
 
@@ -10,7 +10,7 @@ Scope: S1 à S4, A8, A9, B-V3-5 ; la chasse du 17.10 sans fausse proposition ; G
   EVIDENCE: pending
 
 - [ ] G2: les tests de l'appariement passent, la chasse et sa facture comprises
-  CHECK: npx vitest run tests/unit/stockLineMatching.test.ts tests/unit/depense/stock tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts --maxWorkers=2 && echo TESTS STOCK OK
+  CHECK: npx vitest run tests/unit/stockLineMatching.test.ts tests/unit/depense/stock tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/integration/jus0Journey.test.tsx tests/integration/expenseSheet.test.tsx --maxWorkers=2 && echo TESTS STOCK OK
   EXPECT: TESTS STOCK OK
   EVIDENCE: pending
 

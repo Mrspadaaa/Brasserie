@@ -14,7 +14,12 @@
   champ n'est retiré d'un document Firestore (ajouts seulement, facultatifs).
 - **Deux temps** : (1) `PLAN.md` dans ta voie, au format de `.claude/skills/voies/references/sans-memoire.md` § 2 (défauts visés, changements
   avec fichier et fonction, tests qui échouent d'abord, risques : données existantes, hors ligne, double clic, arrondis ; hors périmètre),
-  puis tu t'arrêtes et rends `PLAN PRÊT — <n> défauts`. Deux relecteurs neufs le relisent. (2) Le pilote t'envoie la revue triée : tu codes.
+  puis tu t'arrêtes et rends `PLAN PRÊT — <n> défauts`. Le plan tranche ce que la consigne lui laisse (un seuil, une forme, un nom) et
+  dit pourquoi. Le temps du plan tient en 40 tours au plus. (2) Le pilote lance lui-même deux relecteurs neufs et trie leur
+  `REVUE-PLAN.md` (tu ne l'écris pas) ; il t'envoie la revue triée : tu codes.
+- **Tests** : un dossier `tests/unit/depense/<sujet>/` de ta voie se crée s'il n'existe pas. Un test cité par tes critères hors de ton
+  « Possède » reste vert sans être modifié ; si ton changement le casserait, le plan le dit et le pilote tranche avant le code.
+- **Les diagnostics** : `work/missions/2026-10-31-ecran-depense/diagnostic/d1/DIAGNOSTIC.md` et `diagnostic/d2/DIAGNOSTIC.md`.
 - **Interdits partout** : `functions/.env` (ne pas le lire), `.codex/`, `source4-portable-bundle-manifest-01.json`, `work/refonte-frontend/v4/choix/`,
   `work/missions/2026-10-31-ecran-depense/brasseur/` (sa facture porte son nom et son adresse : rien n'en est copié ; aucune fixture ne
   contient son nom ni son adresse). Pas de serveur dans `C:/Users/mrspa/Documents/Brasserie`, pas de `git stash`, aucun commit, aucun code
