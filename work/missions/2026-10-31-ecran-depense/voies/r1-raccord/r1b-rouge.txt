@@ -1,0 +1,129 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/unit/depense/raccord/ecran-lecture.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 818[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/raccord/ecran-recu.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 856[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/raccord/rattachement-en-cours.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/raccord/unites-enregistrement.test.ts [2m([22m[2m32 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 18[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mla facture 372765 : ses 4 lignes « Stk » (Windsor, BE-256, US-05, Verdant) s’enregistrent en sachets, jamais en grammes[32m 4[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mStk face à un malt en kg, un houblon en g ou un malt en sachets : refus[32m 0[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22m« Sachets » face à « sachet », et « Stk » face à « pce »[32m 0[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mune levure en grammes face à un article en sachets : refus comme aujourd’hui, jamais convertie[32m 0[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mun article sans catégorie : Stk face à un sachet refusé[32m 0[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mpoids du libellé : « Safale US-05 500 g » 2 Stk refusé, « 11,5 g » accepté, un poids différent de celui de l’article refusé[32m 1[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMaris Otter (Malt, article en g) : Kilo × 6 → 6000[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mCascade (Houblon, article en kg) : Kg. × 2 → 2[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mGerstenflocken (Malt, article en g) : Kilogramm × 1 → 1000[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mSirop (Sucre, article en ml) : Liter × 3 → 3000[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mAcide (Additif, article en L) : litres × 2 → 2[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mAcide (Additif, article en L) : Litre × 2 → 2[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en g) : Kilo × 1.15 → 1150[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en g) : Kilo × 0.001 → 1[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en kg) : g × 1 → 0.001[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mune autre famille reste refusée : litre face à un grain en g, Stk face à un houblon en g, kg face à un sachet[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mun nouvel article « 6 Kilo » prend l’unité kg ; la ligne de la dépense garde « Kilo » (D213)[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mun nouvel article garde une unité lisible telle quelle (« Kg », « L », « Stk », « sachet »)[32m 0[2mms[22m[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mparité : l’écran dit (formatUnitLink) la quantité que l’enregistrement écrit (stockQuantityFor)[32m 0[2mms[22m[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité «  » : « unité à préciser », le nom de la ligne, aucune écriture[32m 2[2mms[22m[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité « - » : « unité à préciser », le nom de la ligne, aucune écriture[32m 0[2mms[22m[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité « n/a » : « unité à préciser », le nom de la ligne, aucune écriture[32m 0[2mms[22m[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mun nouvel article à l’unité illisible est refusé aussi (son unité serait « - »)[32m 0[2mms[22m[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune quantité absente garde son message d’aujourd’hui[32m 0[2mms[22m[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mle prix unitaire n’est rattaché à aucune unité illisible ; un prix à l’unité lisible est écrit en centimes[32m 0[2mms[22m[39m
+   [32m✓[39m stockQuantityFor : la règle commune[2m > [22mmême unité : aucune conversion ; conversion exacte ; pièce 1 pour 1 ; illisible ; incompatible[32m 0[2mms[22m[39m
+   [32m✓[39m stockQuantityFor : la règle commune[2m > [22mune quantité positive ne tombe jamais à zéro (1 mg → 0,000001 kg, 1 g → 0,001 kg)[32m 0[2mms[22m[39m
+[31m   [31m×[31m R5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mn° 1 : une mesure en kg dans le libellé (« 0,5 kg », « 1 kg ») n’est pas un poids de sachet : refus[39m[32m 3[2mms[22m[39m
+[31m     → Safale US-05 0,5 kg: expected '' to contain 'ne se convertit pas'[39m
+[31m   [31m×[31m R5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mn° 2 : un conditionnement multiple (« 10 x 11,5 g », « 11,5 g x10 ») n’est pas 1 pour 1 : refus[39m[32m 0[2mms[22m[39m
+[31m     → Safale US-05 10 x 11,5 g: expected '' to contain 'ne se convertit pas'[39m
+   [32m✓[39m R5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mtémoins : « 11,5 g », « 11g » et un libellé sans mesure restent acceptés[32m 0[2mms[22m[39m
+[31m   [31m×[31m R5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mn° 3 : une ligne sans poids face à un article au poids connu : refus (même règle que l’appariement, stockLineMatching.ts:193-201)[39m[32m 0[2mms[22m[39m
+[31m     → Safale US-05: expected '' to contain 'ne se convertit pas'[39m
+[31m   [31m×[31m R5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mle refus empêche toute écriture[39m[32m 1[2mms[22m[39m
+[31m     → expected [Function] to throw an error[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mn° 1 : une mesure en kg dans le libellé (« 0,5 kg », « 1 kg ») n’est pas un poids de sachet : refus
+[31m[1mAssertionError[22m: Safale US-05 0,5 kg: expected '' to contain 'ne se convertit pas'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- ne se convertit pas[39m
+
+[36m [2m❯[22m refused tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m174:142[22m[39m
+    [90m172| [39m    return entry.validatePurchase(draft([line('a',{description,unit:'S…
+    [90m173| [39m  }[33m;[39m
+    [90m174| [39m  const refused=(description:string,itemName='Safale US-05',quantity=2…
+    [90m   | [39m                                                                                                                                             [31m^[39m
+    [90m175| [39m  it('n° 1 : une mesure en kg dans le libellé (« 0,5 kg », « 1 kg ») n…
+    [90m176| [39m    refused('Safale US-05 0,5 kg');refused('Safale US-05 1 kg');refuse…
+[90m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m176:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mn° 2 : un conditionnement multiple (« 10 x 11,5 g », « 11,5 g x10 ») n’est pas 1 pour 1 : refus
+[31m[1mAssertionError[22m: Safale US-05 10 x 11,5 g: expected '' to contain 'ne se convertit pas'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- ne se convertit pas[39m
+
+[36m [2m❯[22m refused tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m174:142[22m[39m
+    [90m172| [39m    return entry.validatePurchase(draft([line('a',{description,unit:'S…
+    [90m173| [39m  }[33m;[39m
+    [90m174| [39m  const refused=(description:string,itemName='Safale US-05',quantity=2…
+    [90m   | [39m                                                                                                                                             [31m^[39m
+    [90m175| [39m  it('n° 1 : une mesure en kg dans le libellé (« 0,5 kg », « 1 kg ») n…
+    [90m176| [39m    refused('Safale US-05 0,5 kg');refused('Safale US-05 1 kg');refuse…
+[90m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m179:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mn° 3 : une ligne sans poids face à un article au poids connu : refus (même règle que l’appariement, stockLineMatching.ts:193-201)
+[31m[1mAssertionError[22m: Safale US-05: expected '' to contain 'ne se convertit pas'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- ne se convertit pas[39m
+
+[36m [2m❯[22m refused tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m174:142[22m[39m
+    [90m172| [39m    return entry.validatePurchase(draft([line('a',{description,unit:'S…
+    [90m173| [39m  }[33m;[39m
+    [90m174| [39m  const refused=(description:string,itemName='Safale US-05',quantity=2…
+    [90m   | [39m                                                                                                                                             [31m^[39m
+    [90m175| [39m  it('n° 1 : une mesure en kg dans le libellé (« 0,5 kg », « 1 kg ») n…
+    [90m176| [39m    refused('Safale US-05 0,5 kg');refused('Safale US-05 1 kg');refuse…
+[90m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m188:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5, relecture n° 1 à 3 : dans le doute, Stk face à un sachet est refusé[2m > [22mle refus empêche toute écriture
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m194:127[22m[39m
+    [90m192| [39m  [34mit[39m([32m'le refus empêche toute écriture'[39m[33m,[39m()[33m=>[39m{
+    [90m193| [39m    [34mwithStock[39m([34mitem[39m([32m'Y'[39m[33m,[39m[32m'Safale US-05'[39m[33m,[39m[32m'Levure'[39m[33m,[39m[32m'sachet'[39m))[33m;[39m
+    [90m194| [39m    expect(()=>entry.savePurchase(draft([line('a',{description:'Safale…
+    [90m   | [39m                                                                                                                              [31m^[39m
+    [90m195| [39m    [34mexpect[39m(state[33m.[39mwrites)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m196| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m59 passed[39m[22m[90m (63)[39m
+[2m   Start at [22m 21:35:38
+[2m   Duration [22m 2.57s[2m (transform 358ms, setup 401ms, collect 1.16s, tests 1.70s, environment 1.17s, prepare 217ms)[22m
+

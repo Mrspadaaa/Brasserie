@@ -8,7 +8,8 @@ import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../d
 import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO } from '../domain/finance/ledger';
 import { normalize } from './search';
-import { canonicalStockCategory } from './stockLineMatching';
+import { canonicalStockCategory, linkUnit, SACHET_MAX_G } from './stockLineMatching';
+import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
 import { isMillingSurcharge } from './purchasePrefill';
 
 export interface PurchaseLineDraft {
@@ -178,8 +179,60 @@ const proofReceipts=new Map<string,DriveProofReceipt>();
 function exactUnitPriceCents(line:PurchaseLineDraft):number|undefined {
   const price=line.unitPrice, quantity=line.quantity;
   // D213 : un prix se lit pour l'unité imprimée de sa ligne, gardée avec lui ; sans unité lisible, il n'est rattaché à rien.
-  if (line.kind==='discount' || !(line.unit??'').trim() || !isMoney(price) || price<=0 || !isMoney(line.amount) || typeof quantity!=='number' || !Number.isFinite(quantity) || quantity<=0) return undefined;
+  if (line.kind==='discount' || !isReadableUnit(line.unit) || !isMoney(price) || price<=0 || !isMoney(line.amount) || typeof quantity!=='number' || !Number.isFinite(quantity) || quantity<=0) return undefined;
   return Math.round(quantity*cents(price))===cents(line.amount) ? cents(price) : undefined;
+}
+
+/** Un nombre suivi d'une unité de mesure dans un libellé : « 11,5 g », « 0,5 kg », « 1l ». */
+const MEASURE=/\d+(?:[.,]\d+)?\s*(?:kg|mg|gr?|ml|cl|dl|l)(?![a-z])/gi;
+/** Un nombre collé à un « x » ou « × » de multiplication : « 10 x … », « … x10 ». */
+const MULTIPLIER=/\d\s*[x×](?![a-z])|(?<![a-z])[x×]\s*\d/i;
+/** Ce que l'enregistrement écrit en stock pour une ligne : la quantité dans l'unité de l'article, ou le motif du refus. */
+export type StockQuantity = { ok:true; quantity:number; via:'same'|'conversion'|'piece' } | { ok:false; reason:'unreadable'|'incompatible' };
+/**
+ * La règle commune de la validation et de l'écriture d'un mouvement de stock (r1, R5 à R7). Même table d'unités que l'appariement
+ * (`linkUnit` : « Kilo », « Kg. », « Liter », « litres ») sans élargir `Units` ; même pièce (Stk ↔ sachet pour une levure) quantité 1 pour 1,
+ * jamais en grammes. Au doute, refus : unité illisible (D214, jamais devinée), autre famille, poids de sachet au-delà de `SACHET_MAX_G`
+ * (une levure en vrac), ou différent de celui de l'article.
+ */
+export function stockQuantityFor(line:{description:string;quantity:number;unit:string},target:{name:string;unit:string;category?:string}):StockQuantity {
+  if (!isReadableUnit(line.unit)) return {ok:false,reason:'unreadable'};
+  if (!isReadableUnit(target.unit) || !Number.isFinite(line.quantity) || line.quantity<=0) return {ok:false,reason:'incompatible'};
+  const from=linkUnit(line.unit), to=linkUnit(target.unit);
+  if (from===to) return {ok:true,quantity:line.quantity,via:'same'};
+  if (Units.areCompatible(from,to)) {
+    const converted=Units.convert(line.quantity,from,to);
+    // Purge du bruit flottant (1,15 kg × 1000), sans arrondir une vraie quantité ; une quantité positive ne tombe jamais à zéro.
+    const exact=converted===null?NaN:Number(converted.toPrecision(12));
+    return Number.isFinite(exact) && exact>0 ? {ok:true,quantity:exact,via:'conversion'} : {ok:false,reason:'incompatible'};
+  }
+  const category=canonicalStockCategory(target.category);
+  if (pieceUnitsEquivalent(line.unit,target.unit,category)) {
+    if (category==='Levure') {
+      const lineWeight=readProductLabel(line.description,{unit:from,quantity:line.quantity,yeast:true,side:'line'}).pieceWeight;
+      const itemWeight=readProductLabel(target.name,{unit:to,yeast:true,side:'item'}).pieceWeight;
+      const label=line.description.normalize('NFC');
+      // Dans le doute, rien : une mesure du libellé (kg, g, mg, ml, l…) qui n'est pas lue comme LE poids du sachet, ou un multiplicateur
+      // (« 10 x 11,5 g », « 11,5 g x10 »), ne dit pas qu'une pièce vaut un sachet.
+      const measures=(label.match(MEASURE)??[]).length;
+      if (MULTIPLIER.test(label) || measures>(lineWeight?1:0)) return {ok:false,reason:'incompatible'};
+      // Mêmes règles que l'appariement (`stockLineMatching.ts:193-201`) : poids des deux côtés identiques ; ligne sans poids face à un article
+      // au poids connu : rien ; ligne avec poids face à un article sans poids : seulement un vrai sachet (≤ SACHET_MAX_G).
+      if (lineWeight && itemWeight) { if (weightKey(lineWeight)!==weightKey(itemWeight)) return {ok:false,reason:'incompatible'}; }
+      else if (!lineWeight && itemWeight) return {ok:false,reason:'incompatible'};
+      else if (lineWeight) {
+        const grams=lineWeight.unit==='mg'?lineWeight.value/1000:lineWeight.value;
+        if (grams>SACHET_MAX_G) return {ok:false,reason:'incompatible'};
+      }
+    }
+    return {ok:true,quantity:line.quantity,via:'piece'};
+  }
+  return {ok:false,reason:'incompatible'};
+}
+/** Unité d'un article NEUF : l'écriture de la table de l'appariement (« Kilo » → kg, « Liter » → l, « Kg. » → kg), sinon l'unité lisible telle quelle. */
+function newArticleUnit(unit:string):string {
+  const raw=unit.trim(), key=linkUnit(raw);
+  return key!==raw.toLowerCase() && Units.familyOf(key)!=='piece' ? key : raw;
 }
 
 /** Checks every mutation first. No stock/equipment is created during matching. */
@@ -202,11 +255,14 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   for (const line of draft.lines) {
     if (line.stockAction!=='none') {
       if (!['ingredient','cleaning','packaging'].includes(line.kind)) errors.push(`${line.description} : cette nature ne peut pas entrer en stock.`);
-      if (!Number.isFinite(line.quantity) || line.quantity<=0 || !line.unit.trim()) errors.push(`${line.description} : indique la quantité reçue et son unité.`);
+      const quantityOk=Number.isFinite(line.quantity) && (line.quantity as number)>0, unitOk=isReadableUnit(line.unit);
+      if (!quantityOk) errors.push(`${line.description} : indique la quantité reçue et son unité.`);
+      // D214 : une unité illisible ('', '-', 'n/a') n'entre jamais en stock, article existant ou nouveau ; jamais devinée.
+      if (!unitOk) errors.push(`${line.description} : unité à préciser (illisible ou absente). Rien n’entre en stock tant qu’elle manque.`);
       if (line.stockAction==='existing') {
         const target=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef);
         if (!target) errors.push(`${line.description} : sélectionne l’article de stock.`);
-        else if (!Units.areCompatible(line.unit,target.unit)) errors.push(`${line.description} : ${line.unit||'unité absente'} ne se convertit pas en ${target.unit}.`);
+        else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit:line.unit},target).ok) errors.push(`${line.description} : ${line.unit} ne se convertit pas en ${target.unit}.`);
       }
     }
     if (line.equipmentAction!=='none' && line.kind!=='equipment' && line.kind!=='maintenance') errors.push(`${line.description} : sélectionne matériel ou entretien pour lier un équipement.`);
@@ -272,12 +328,14 @@ export async function purchaseProofReceipt(submissionId:string):Promise<DrivePro
   return original?{...receipt,originalFileName:original}:receipt;
 }
 const PROOF_IN_PROGRESS='Envoi du justificatif en cours sur ton Drive : il peut encore aboutir. Rien n’est enregistré pour l’instant. Touche de nouveau « Confirmer et enregistrer » dans un instant : le fichier ne sera pas envoyé deux fois, et si l’envoi a échoué tu verras l’erreur à ce moment-là.';
+/** Le même état au rattachement : le bouton à retoucher est « Rattacher le justificatif », et rien n'est rattaché tant que l'envoi n'a pas abouti. */
+const PROOF_IN_PROGRESS_ATTACH='Envoi du justificatif en cours sur ton Drive : il peut encore aboutir. Rien n’a encore été rattaché. Touche de nouveau « Rattacher le justificatif » dans un instant : le fichier ne sera pas envoyé deux fois, et si l’envoi a échoué tu verras l’erreur à ce moment-là.';
 /** Sans réseau, le SDK répond en anglais (« client is offline ») : le brasseur doit lire ce qui s'est passé et quoi faire. */
-async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number):Promise<DriveProofReceipt|undefined> {
+async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number,inProgress=PROOF_IN_PROGRESS):Promise<DriveProofReceipt|undefined> {
   try { return await saveFinanceDocumentConfirmed(proof,year); }
   catch(error) {
     // Au-delà de 15 s l'envoi continue : ce n'est pas une erreur, et le texte « achat » est posé ici (le message de `financeDocuments` est neutre).
-    if((error as {code?:string})?.code==='drive/in-progress') throw Object.assign(Error(PROOF_IN_PROGRESS),{code:'drive/in-progress'});
+    if((error as {code?:string})?.code==='drive/in-progress') throw Object.assign(Error(inProgress),{code:'drive/in-progress'});
     // `financeDocuments` marque déjà ainsi l'échec réseau de Drive ; le SDK, lui, répond « unavailable ».
     if((error as {code?:string})?.code!=='unavailable') throw error;
     throw Object.assign(Error('Hors connexion : le justificatif n’a pas pu être envoyé sur ton Drive, donc rien n’est enregistré. Ta saisie reste ouverte : réessaie une fois en ligne.'),{code:'unavailable'});
@@ -299,7 +357,7 @@ export async function attachProofToPurchase(draft:PurchaseDraft,transactionId:st
   // Le nom suit la dépense qui reçoit le fichier (sa date, son fournisseur, son numéro), le brouillon en repli.
   const driveName=driveNames.get(draft.submissionId)??driveProofFileName({date:tx.date||draft.date,vendor:tx.finance?.vendor||draft.vendor,invoiceNumber:tx.finance?.invoiceNumber||draft.invoiceNumber,mimeType:draft.proofType||'application/pdf',originalName:draft.proofFileName});
   const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl!,driveName,draft.proofType||'application/pdf');
-  const receipt=await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4));
+  const receipt=await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4),PROOF_IN_PROGRESS_ATTACH);
   const proved=receipt?{...receipt,originalFileName:draft.proofFileName}:undefined;
   if(proved){
     proofReceipts.set(draft.submissionId,proved);
@@ -343,11 +401,16 @@ export function savePurchase(draft:PurchaseDraft):string {
     if (line.stockAction==='new') {
       stockRef=`MP-${draft.submissionId}-${index}`;
       const type=line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const;
-      newStocks.push({ type,item:{id:stockRef,ref:stockRef,name:line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:line.unit.trim(),currentStock:line.quantity,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined} });
-      receipts.push({ref:stockRef,qty:line.quantity,unit:line.unit,lineId:line.id,type});
+      // L'article neuf prend l'unité de la table de l'appariement (« Kilo » → kg) ; la ligne de la dépense garde l'unité imprimée (D213).
+      const articleUnit=newArticleUnit(line.unit);
+      newStocks.push({ type,item:{id:stockRef,ref:stockRef,name:line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:articleUnit,currentStock:line.quantity,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined} });
+      receipts.push({ref:stockRef,qty:line.quantity,unit:articleUnit,lineId:line.id,type});
     } else if (line.stockAction==='existing') {
       const item=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef)!;
-      receipts.push({ref:item.ref,qty:Units.convert(line.quantity,line.unit,item.unit)!,unit:item.unit,lineId:line.id,type:stocks.cleaning.some(s=>s.ref===item.ref)?'cleaning':'rawMaterials'});
+      // Même fonction que la validation : la quantité écrite est celle qui a été acceptée (inatteignable en erreur après `validatePurchaseCommit`).
+      const converted=stockQuantityFor({description:line.description,quantity:line.quantity!,unit:line.unit},item);
+      if (!converted.ok) throw Error(`${line.description} : ${line.unit||'unité absente'} ne se convertit pas en ${item.unit}.`);
+      receipts.push({ref:item.ref,qty:converted.quantity,unit:item.unit,lineId:line.id,type:stocks.cleaning.some(s=>s.ref===item.ref)?'cleaning':'rawMaterials'});
     }
     if (line.equipmentAction==='new') {
       equipmentRef=`EQ-${draft.submissionId}-${index}`;

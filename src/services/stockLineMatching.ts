@@ -60,11 +60,11 @@ const KIND_REFUSES: Record<string, string[]> = {
 };
 
 /** Au-delà de ce poids imprimé, une ligne de levure n'est plus un sachet : face à un article en sachets sans poids, rien (s1b n° 4). */
-const SACHET_MAX_G = 50;
+export const SACHET_MAX_G = 50;
 /** Écritures d'une unité que `Units` ne reconnaît pas, ramenées au kg ou au L pour l'appariement seulement (`Units` ne change pas). */
 const UNIT_SPELLINGS: Record<string, string> = { kilo: 'kg', kilos: 'kg', kilogramm: 'kg', kilogramme: 'kg', kilogrammes: 'kg', liter: 'l', liters: 'l', litre: 'l', litres: 'l' };
 /** Unité telle que l'appariement la compare : minuscules, sans point final (« Kg. » → « kg »), « Kilo » → « kg », « litres » → « l ». */
-const linkUnit = (unit: string) => {
+export const linkUnit = (unit: string) => {
   const key = (unit ?? '').trim().toLowerCase().replace(/[.\s]+$/, '');
   return UNIT_SPELLINGS[key] ?? key;
 };

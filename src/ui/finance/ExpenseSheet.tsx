@@ -8,19 +8,20 @@ import { DateField,swissToday,toIsoDate } from '../DateField';
 import { Combobox } from '../Combobox';
 import { StorageService } from '../../services/storage';
 import { GeminiScannerService,type ScanOutcome,type ScannedLineKind } from '../../services/geminiScanner';
-import { savePurchaseWithProof,confirmPurchase,validatePurchase,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
+import { savePurchaseWithProofReceipt,confirmPurchase,validatePurchase,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
 import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit } from '../../services/stockLineMatching';
 import { isConfirmedWriteRejection } from '../../services/firestoreRepo';
+import type { DriveProofReceipt } from '../../services/financeDocuments';
 import type { FinanceCategory } from '../../types';
 import { FinanceService } from '../../services/financeService';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { DriveConnection } from './DriveConnection';
 import { InvoiceScanReview } from './InvoiceScanReview';
-import { invoiceTotalProposal,invoiceFieldHints,invoicePurchaseDescription,patchPurchaseDraft,scannedPayment } from '../../services/purchasePrefill';
+import { invoiceTotalProposal,invoiceFieldHints,invoicePurchaseDescription,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
 
-export interface ExpenseSheetProps { onClose:()=>void;onSaved:()=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string }
+export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string }
 const kinds:Array<{value:PurchaseLineDraft['kind'];label:string}>=[{value:'ingredient',label:'Ingrédients'},{value:'packaging',label:'Emballages'},{value:'cleaning',label:'Nettoyage'},{value:'equipment',label:'Matériel durable'},{value:'maintenance',label:'Entretien / réparation'},{value:'service',label:'Service'},{value:'shipping',label:'Livraison'},{value:'discount',label:'Remise'},{value:'other',label:'Autre'}];
 type PurchaseCategory=Exclude<FinanceCategory,'apports'|'recettes'>;
 const categories:Array<{value:PurchaseCategory;label:string}>=[{value:'brassage',label:'Brassage'},{value:'materiel',label:'Matériel'},{value:'nettoyage',label:'Nettoyage'},{value:'chargesFixes',label:'Charges fixes'},{value:'renovation',label:'Local'},{value:'divers',label:'Autre'}];
@@ -30,6 +31,20 @@ const scanKind=(kind:ScannedLineKind):PurchaseLineDraft['kind']=>kind==='stock'?
 const button='min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors';
 const dayShortcuts=[{label:'Hier',offsetDays:-1},{label:"Aujourd’hui",offsetDays:0},{label:'Demain',offsetDays:1}];
 const uncertainClass='rounded-control border border-attention/50 bg-attention/5 p-2';
+/**
+ * Ce que le reçu de Drive permet de dire du justificatif rangé. Chaque morceau n'est dit que s'il est dans le reçu : le dossier s'il est rendu,
+ * le nom s'il est rendu, « empreinte vérifiée » si et seulement si `verified === true`. Le lien n'est gardé que s'il est en https sur drive.google.com.
+ */
+export function receiptSentence(receipt:DriveProofReceipt):{text:string;link?:string} {
+  const text=`Justificatif rangé ${receipt.folder?`dans « ${receipt.folder} »`:'sur ton Drive'}${receipt.fileName?` sous « ${receipt.fileName} »`:''}${receipt.verified===true?', empreinte vérifiée':''}.`;
+  let link:string|undefined;
+  try{const url=new URL(receipt.webViewLink??'');if(url.protocol==='https:'&&url.hostname==='drive.google.com')link=url.href;}catch{/* adresse illisible : aucun lien */}
+  return link?{text,link}:{text};
+}
+function ReceiptLine({receipt}:{receipt:DriveProofReceipt}) {
+  const {text,link}=receiptSentence(receipt);
+  return <>{text}{link?<> <a href={link} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-ebc-straw">Ouvrir dans Drive</a></>:null}</>;
+}
 function ScanHint({field,message}:{field:string;message?:string}) {
   return message?<p id={`scan-hint-${field}`} className="text-xs text-attention leading-relaxed flex gap-1.5 mt-1.5"><AlertCircle size={14} className="shrink-0 mt-0.5"/><span><strong className="font-medium">À confirmer · </strong>{message}</span></p>:null;
 }
@@ -54,6 +69,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Une ligne s'ouvre d'elle-même seulement à sa création si elle est à compléter ; ensuite le brasseur décide. */
   const lineStartsOpen=useRef(new Map<string,boolean>());
   const [attachedTo,setAttachedTo]=useState<string|null>(null);
+  /* Le reçu que Drive a rendu pour le justificatif rangé (dossier, nom, empreinte, lien) : seul ce qu'il dit est affiché. */
+  const [receipt,setReceipt]=useState<DriveProofReceipt|undefined>();
+  /* Un envoi de plus de 15 s continue : un état à dire (son texte), pas une erreur. */
+  const [proofSending,setProofSending]=useState('');
   /* « Même achat » choisi pour cette dépense et ce document : le choix n'agit pas seul, l'action du pied dit ce qui va se
      passer ; un autre justificatif demande un nouveau choix. */
   const [sameAs,setSameAs]=useState<string|null>(null);
@@ -81,7 +100,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const plans=FinanceService.getPlans().filter(plan=>(plan.status==='active'||plan.source==='equipment'&&plan.status==='draft')&&plan.direction==='out'),selectedPlan=plans.find(plan=>plan.id===draft.planId);
   const occurrences=selectedPlan?.recurrence?planOccurrences(selectedPlan,`${new Date().getFullYear()-1}-01-01`,`${new Date().getFullYear()+2}-12-31`):[];
   const patch=(value:Partial<PurchaseDraft>)=>{setDraft(previous=>patchPurchaseDraft(previous,value,swissToday()));};
-  const updateLine=(id:string,value:Partial<PurchaseLineDraft>)=>{setDraft(previous=>({...previous,lines:previous.lines.map(line=>line.id===id?{...line,...value}:line)}));};
+  /* Le prix unitaire lu vaut pour l'unité imprimée : une autre unité tapée le retire (la même, non). */
+  const updateLine=(id:string,value:Partial<PurchaseLineDraft>)=>{setDraft(previous=>({...previous,lines:previous.lines.map(line=>line.id===id?{...line,...value,...(value.unit!==undefined&&value.unit!==line.unit?{unitPrice:undefined}:{})}:line)}));};
   const simplePurchase=draft.lines.length===1&&!scan?.ok&&draft.lines[0].description===draft.description&&draft.lines[0].amount===draft.amount;
   const selectCategory=(category:PurchaseCategory)=>{
     const line=draft.lines[0];
@@ -113,7 +133,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(message.includes('quantité'))return line.querySelector<HTMLElement>('[aria-label^="Quantité ligne"]');
       if(message.includes('article de stock'))return line.querySelector<HTMLElement>('[role="combobox"]');
       if(message.includes('matériel existant'))return line.querySelector<HTMLElement>('[role="combobox"]');
-      if(message.includes('convertit'))return line.querySelector<HTMLElement>('[aria-label^="Unité ligne"]');
+      if(message.includes('convertit')||message.includes('unité à préciser'))return line.querySelector<HTMLElement>('[aria-label^="Unité ligne"]');
       return line.querySelector<HTMLElement>('select');
     }
     return root.querySelector<HTMLElement>('[data-purchase-lines] summary');
@@ -129,8 +149,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const attach=async(file:File)=>{
     if(scanLocked.current||saveLocked.current)return;
     if(file.size>4*1024*1024 || !['image/jpeg','image/png','image/webp','application/pdf'].includes(GeminiScannerService.normalizeMimeType(file))){setError('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');return;}
-    if(attachment&&scan?.ok)patch({amount:undefined,vendor:'',invoiceNumber:'',description:'',date:swissToday(),lines:[newLine(initialIntent)],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
-    scanLocked.current=true;setBusy(true);setError('');setAttempted(false);setScan(null);setReviewedFields([]);
+    if(attachment&&scan?.ok)patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
+    scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);
     try {
       const proofDataUrl=await GeminiScannerService.fileToDataUrl(file);
       const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
@@ -144,10 +164,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(!outcome.ok || !outcome.result){setError(outcome.error||'Le scan n’a pas abouti. Les champs restent modifiables.');return;}
       const result=outcome.result;
       const total=invoiceTotalProposal(result);
-      const description=invoicePurchaseDescription(result);
       const stockItems=[...StorageService.getStocks().rawMaterials,...StorageService.getStocks().cleaning];
       proposedStock.current.clear();lineStartsOpen.current.clear();setReadCount(count=>count+1);
-      const lines=result.items.map(item=>({id:item.id,description:[item.name,item.variant].filter(Boolean).join(' · '),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',item.evidence].filter(Boolean).join(' · ')})).map(line=>{
+      const lines=result.items.map(item=>({id:item.id,description:[item.name,item.variant].filter(Boolean).join(' · '),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',item.evidence].filter(Boolean).join(' · ')})).map(line=>{
         /* S1 : une proposition, jamais une écriture. Le libellé brut reste la description et l'unité imprimée reste celle de la ligne
            (jamais réécrite, D213) ; ce que l'identité a lu (α, récolte, poids du sachet) va dans l'extrait, avec sa source. */
         const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit:line.unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind},stockItems):undefined;
@@ -157,7 +176,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         return {...line,stockAction:'existing' as const,stockRef:match.item.ref,evidence:[line.evidence,...(match.deduced.length?[`Libellé : ${line.description}`,...match.deduced]:[])].filter(Boolean).join(' · ')};
       });
       manuallyClassified.current.clear();
-      patch({vendor:result.vendor,date:result.date,...scannedPayment(result,swissToday()),invoiceNumber:result.invoiceNumber,description,category:result.category,amount:total.amount,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:total.amount}],sourceCurrency:result.currency,sourceAmount:result.amountTTC??undefined,sourceDocumentType:result.documentType,sourceOrderNumber:result.orderNumber,sourceTotalBasis:total.calculated?'line_sum':result.amountTTC!==null?'printed':undefined,sourceNetAmount:result.amountHT??undefined,sourceVatRate:result.tvaRate??undefined,sourceVatAmount:result.tvaAmount??undefined,scanModel:outcome.model,documentHash});
+      /* Le scan se pose sur l'état courant (pas sur celui d'avant l'attente) : une description ou une date de paiement tapée n'est jamais écrasée. */
+      setDraft(previous=>{const proposed=applyScannedDescription(previous,result),description=proposed.description??previous.description;return patchPurchaseDraft(previous,{vendor:result.vendor,date:result.date,...applyScannedPayment(previous,result,swissToday()),invoiceNumber:result.invoiceNumber,...proposed,category:result.category,amount:total.amount,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:total.amount}],sourceCurrency:result.currency,sourceAmount:result.amountTTC??undefined,sourceDocumentType:result.documentType,sourceOrderNumber:result.orderNumber,sourceTotalBasis:total.calculated?'line_sum':result.amountTTC!==null?'printed':undefined,sourceNetAmount:result.amountHT??undefined,sourceVatRate:result.tvaRate??undefined,sourceVatAmount:result.tvaAmount??undefined,scanModel:outcome.model,documentHash},swissToday());});
     }catch(e:any){if(mounted.current)setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');}
     finally{scanLocked.current=false;if(mounted.current){setBusy(false);setShowForm(true);}}
   };
@@ -166,19 +186,20 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(scan?.ok&&scan.result?.documentType==='credit_note'){setError('Ce document est un avoir. Enregistre-le comme remboursement dans Finances, ou joins la facture de l’achat.');return;}
     // Devant un achat peut-être déjà enregistré, le choix passe avant les champs : « même achat » n'en demande aucun.
     if(errors.length){setAttempted(true);setError('');focusIssue(shownErrors.find(message=>message.includes('doublon'))??shownErrors[0]);return;}
-    saveLocked.current=true;setSaving(true);setError('');
+    saveLocked.current=true;setSaving(true);setError('');setProofSending('');
     try {
-      const id=pendingId||await savePurchaseWithProof(draft);setPendingId(id);
+      let proof=receipt;
+      if(!pendingId){const saved=await savePurchaseWithProofReceipt(draft);setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;}
       await confirmPurchase(draft);
-      if(mounted.current){onSaved();onClose();}
-    }catch(e:any){if(mounted.current){if(isConfirmedWriteRejection(e))setPendingId(null);if(e?.code==='drive/auth-required')setDriveAuthError(true);setError(e.message||'L’enregistrement reste à confirmer.');}}
+      if(mounted.current){onSaved(proof);onClose();}
+    }catch(e:any){if(mounted.current){if(isConfirmedWriteRejection(e)){setPendingId(null);setReceipt(undefined);}if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress')setProofSending(e.message);else setError(e.message||'L’enregistrement reste à confirmer.');}}
     finally{saveLocked.current=false;if(mounted.current)setSaving(false);}
   };
   const attachToExisting=async(id:string)=>{
     if(saveLocked.current||scanLocked.current)return;
-    saveLocked.current=true;setSaving(true);setError('');
-    try{await attachProofToPurchase(draft,id);if(mounted.current)setAttachedTo(id);}
-    catch(e:any){if(mounted.current){if(e?.code==='drive/auth-required')setDriveAuthError(true);setError(e.message||'Le justificatif n’a pas été rattaché.');}}
+    saveLocked.current=true;setSaving(true);setError('');setProofSending('');
+    try{const proof=await attachProofToPurchase(draft,id);if(mounted.current){setReceipt(proof);setAttachedTo(id);}}
+    catch(e:any){if(mounted.current){if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress')setProofSending(e.message);else setError(e.message||'Le justificatif n’a pas été rattaché.');}}
     finally{saveLocked.current=false;if(mounted.current)setSaving(false);}
   };
   const setTotal=(amount:number|undefined)=>{if(amount!==draft.amount)reviewed('amountTTC');setDraft(previous=>({...previous,amount,lines:previous.lines.length===1?[{...previous.lines[0],amount}]:previous.lines,duplicateConfirmed:false}));};
@@ -211,8 +232,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </header>
     <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7">
     {attempted&&shownErrors.length>0?<div id={validationId} role="alert" className="border border-alert-strong/40 rounded-control bg-alert-strong/5 p-2 text-sm text-alert-strong"><p className="font-medium">À corriger</p><ul>{shownErrors.map(message=><li key={message}><button type="button" onClick={()=>focusIssue(message)} className="min-h-7 text-left underline underline-offset-2">{message}</button></li>)}</ul></div>:null}
+    {proofSending?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Loader2 size={16} className="shrink-0 mt-0.5 animate-spin text-hop"/><span>{proofSending}</span></div>:null}
     {error?<div ref={errorBox} tabIndex={-1} role="alert" className="rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line">{error}</div>:null}
-    {attached?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Check size={16} className="shrink-0 mt-0.5 text-hop"/><span>Justificatif rattaché à « {attached.description} » du {attached.date}. Aucune nouvelle dépense ni entrée en stock.</span></div>:null}
+    {attached?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Check size={16} className="shrink-0 mt-0.5 text-hop"/><span>Justificatif rattaché à « {attached.description} » du {attached.date}. Aucune nouvelle dépense ni entrée en stock.{receipt?<> <ReceiptLine receipt={receipt}/></>:null}</span></div>:null}
     {draft.proofDataUrl&&!busy&&!attached?<DriveConnection always={driveAuthError} onConnected={()=>{setDriveAuthError(false);setError('');}}/>:null}
     <div className="space-y-2 pb-1" ref={form}>
       <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
@@ -283,7 +305,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {draft.lines.length>1?<p className={`text-sm text-right ${Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005?'text-attention':'text-cave-400'}`}>Détail : {money(draft.lines.reduce((sum,line)=>sum+(line.amount||0),0))} / {money(draft.amount||0)}</p>:null}
       </div></details>
       <details className="border-t border-cave-800 py-1"><summary className="min-h-7 flex items-center text-sm text-cave-400 cursor-pointer">Référence et TVA du document{hints.invoiceNumber||hints.tvaAmount||hints.tvaRate?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</summary><div className="space-y-2 pt-2">{draft.sourceOrderNumber?<p className="text-sm text-cave-200">Commande n° {draft.sourceOrderNumber}</p>:null}<Field label="N° de facture" htmlFor="purchase-invoice-number"><TextInput id="purchase-invoice-number" value={draft.invoiceNumber} onChange={invoiceNumber=>{reviewed('invoiceNumber');patch({invoiceNumber});}}/></Field><ScanHint field="invoiceNumber" message={hints.invoiceNumber}/><div className="grid grid-cols-2 gap-2"><Field label="TVA source (CHF)" htmlFor="purchase-vat"><NumberInput id="purchase-vat" value={draft.sourceVatAmount} onValue={sourceVatAmount=>{reviewed('tvaAmount');patch({sourceVatAmount});}} emptyValue={undefined} className={inputClass}/></Field><Field label="Taux source (%)" htmlFor="purchase-vat-rate"><NumberInput id="purchase-vat-rate" value={draft.sourceVatRate===undefined?undefined:draft.sourceVatRate*100} onValue={value=>patch({sourceVatRate:value===undefined?undefined:value/100})} emptyValue={undefined} className={inputClass}/></Field></div><ScanHint field="tvaAmount" message={hints.tvaAmount}/><ScanHint field="tvaRate" message={hints.tvaRate}/><p className="text-xs text-cave-400">Sans assujettissement TVA, le montant TTC est la dépense. La TVA lue reste conservée avec la source.</p></div></details>
-      {draft.proofDataUrl?<p className="text-xs text-cave-400">Le justificatif sera rangé dans ton Drive privé à l’enregistrement.</p>:null}
+      {draft.proofDataUrl?<p className="text-xs text-cave-400">{receipt?<ReceiptLine receipt={receipt}/>:'Le justificatif sera rangé dans ton Drive privé à l’enregistrement.'}</p>:null}
       </fieldset>:null}
     </div>
     </div>
