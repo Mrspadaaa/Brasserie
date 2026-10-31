@@ -44,7 +44,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[cout-calcul-moteur]] — simulerCas : 1,4 ms léger, 4 à 6 ms complet ; en direct, sans serveur
 - [[dryhop-moment]] — Idaho 7 : le dry hop actif d'abord
 - [[moteur-parcours-limites]] — moments simulés, levure, visée en palier
-- [[substitution-moteur]] — le score selon le moment ; [[role-continu]] : l'usage mesuré, jamais une étiquette
+- [[substitution-moteur]] — score selon le moment ; [[role-continu]] ; [[verite-croisee]] : aucune source seule
 
 ### produit/ — outils, écrans, état fini ou inachevé
 - [[outils-houblons]] — une question = un outil : la carte à poser avant tout lot
