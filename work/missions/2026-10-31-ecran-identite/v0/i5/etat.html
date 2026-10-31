@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>i5 · Identité · la roue des styles, au pouce (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--i5-page:#fff;--i5-pan:#F5F5F5;--i5-sur:#EBEBEB;--i5-bd:#DDDDDD;--i5-bdm:#BFBFBF;--i5-t0:#111;--i5-t2:#333;--i5-t4:#666;
+    --i5-hopt:#3F6B2E;--i5-eau:#4F7E9B;--i5-eaut:#2F5F7D;--i5-att:#9C7020;--i5-attt:#7F5B10}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--i5-page);color:var(--i5-t2);font:400 14px/18px "Source Sans 3",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#111;color:#fff}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #111;outline-offset:2px}
+  .i5-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--i5-t0)}
+  .i5-sep::before{content:"·";margin:0 4px}
+  .i5-tir::before{content:"—";margin:0 4px}
+  .i5-ecran{width:390px;overflow:hidden}
+  .i5-hd{padding:0 8px;border-bottom:1px solid var(--i5-bd)}
+  .i5-tb{display:flex;align-items:center;gap:6px;height:36px}
+  .i5-ic{width:28px;height:28px;border:0;background:none;color:var(--i5-t4);display:grid;place-items:center;border-radius:8px;padding:0}
+  .i5-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i5-t{margin:0;flex:1;font:600 18px/22px "Source Sans 3",system-ui,sans-serif;color:var(--i5-t0)}
+  .i5-t span{font-weight:400;color:var(--i5-t4)}
+  .i5-rail{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+  .i5-st{flex:1 0 auto;border:0;background:none;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:16px;color:var(--i5-t4);min-height:24px}
+  .i5-st i{display:block;height:4px;border-radius:2px;background:var(--i5-bd)}
+  .i5-st.i5-on{color:var(--i5-t0);font-weight:600}
+  .i5-st.i5-on i{background:#111}
+  /* La bière qui prend forme : le verre à la couleur du style, son nom, ses chiffres */
+  .i5-biere{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:10px 8px 6px;align-items:center}
+  .i5-verre{width:76px;height:112px;display:block}
+  .i5-nomstyle{font:600 28px/32px "Source Sans 3",system-ui,sans-serif;letter-spacing:-.02em;color:var(--i5-t0);margin:0}
+  .i5-ref{display:flex;align-items:center;gap:0;font-size:13px;color:var(--i5-t4);margin-top:2px}
+  .i5-pt{width:8px;height:8px;border-radius:4px;background:#14B8A6;margin-right:6px}
+  .i5-ref .i5-m{font-size:13px;font-weight:600;color:var(--i5-t2)}
+  .i5-chiffres{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:2px 12px;margin-top:6px;font-size:13px;color:var(--i5-t4)}
+  .i5-chiffres .i5-m{font-size:14px;display:block}
+  .i5-nom{display:flex;align-items:center;gap:6px;margin-top:8px}
+  .i5-nom input{flex:1;min-width:0;height:32px;border:0;border-bottom:1px solid var(--i5-bdm);background:none;padding:0 2px;font:400 16px/30px "Source Sans 3",system-ui,sans-serif;color:var(--i5-t0)}
+  .i5-nom input::placeholder{color:var(--i5-t4)}
+  /* Combien, comment : une rangée */
+  .i5-brassin{margin:8px 8px 0;display:grid;grid-template-columns:auto auto auto 1fr;gap:6px;align-items:stretch}
+  .i5-pil{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:4px 8px;border-radius:8px;background:var(--i5-pan);min-height:48px}
+  .i5-pil .i5-lb{font-size:13px;color:var(--i5-t4)}
+  .i5-pil .i5-v{display:flex;align-items:baseline;gap:3px}
+  .i5-pil input{width:34px;border:0;border-bottom:1px solid var(--i5-bdm);background:none;padding:0;font:600 16px/20px "IBM Plex Mono",monospace;color:var(--i5-t0);font-variant-numeric:tabular-nums}
+  .i5-u{font-size:13px;color:var(--i5-t4)}
+  .i5-sw{position:relative;width:36px;height:20px;border-radius:10px;background:var(--i5-bdm);border:0;padding:0}
+  .i5-sw::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:8px;background:#fff;transition:transform .15s}
+  .i5-sw[aria-checked="true"]{background:#111}
+  .i5-sw[aria-checked="true"]::after{transform:translateX(16px)}
+  .i5-fv{display:flex;align-items:baseline;gap:4px}
+  .i5-fv .i5-m{font-size:14px}
+  .i5-libre{font-size:13px;color:var(--i5-hopt)}
+  .i5-bar{position:relative;height:8px;border-radius:4px;background:var(--i5-sur);border:1px solid var(--i5-bdm);overflow:hidden;margin-top:2px}
+  .i5-bar b{position:absolute;inset:0 20% 0 0;background:#8FB07F}
+  .i5-bar i{position:absolute;top:0;bottom:0;left:80%;border-left:2px dashed var(--i5-att)}
+  /* La roue : les styles rangés du plus pâle au plus sombre, à la couleur réelle de leur plage */
+  .i5-roue-zone{position:relative;height:386px;margin-top:8px;touch-action:none;overflow:hidden;border-bottom:1px solid var(--i5-bd)}
+  .i5-roue{position:absolute;left:50%;top:20px;width:700px;height:700px;margin-left:-350px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  @media (prefers-reduced-motion:reduce){.i5-roue{transition:none}}
+  .i5-roue text{font:600 13px "Source Sans 3",system-ui,sans-serif;fill:#111}
+  .i5-roue .i5-tc{font:500 13px "IBM Plex Mono",monospace;fill:#333}
+  .i5-sect{cursor:pointer}
+  .i5-poin{position:absolute;left:50%;top:6px;width:20px;height:16px;margin-left:-10px}
+  .i5-fleches{position:absolute;left:50%;bottom:14px;width:236px;margin-left:-118px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .i5-fleche{pointer-events:auto;width:32px;height:32px;border-radius:16px;border:1px solid var(--i5-bdm);background:var(--i5-page);display:grid;place-items:center;padding:0}
+  .i5-fleche svg{width:16px;height:16px;fill:none;stroke:#111;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i5-q{position:absolute;left:50%;bottom:70px;margin-left:-12px;width:24px;height:24px;border-radius:12px;border:1px solid var(--i5-bdm);background:var(--i5-page);font-size:13px;font-weight:600;color:var(--i5-t2);padding:0}
+  .i5-leg{position:relative;margin:0 8px;padding:8px;border-radius:8px;border:1px solid var(--i5-bd);font-size:13px;color:var(--i5-t2);background:var(--i5-page)}
+  .i5-leg[hidden]{display:none}
+  .i5-pied{display:flex;justify-content:space-between;gap:8px;padding:8px}
+  .i5-btn{height:32px;border-radius:8px;padding:0 12px;font-size:14px;border:1px solid var(--i5-bdm);background:var(--i5-page);color:var(--i5-t4)}
+  .i5-btn-p{background:#111;color:#fff;border-color:#111;font-weight:600}
+  .i5-cherche{height:32px;border-radius:16px;border:1px solid var(--i5-bdm);background:var(--i5-page);display:inline-flex;align-items:center;gap:6px;padding:0 12px;font-size:13px;color:var(--i5-t0)}
+  .i5-cherche svg{width:16px;height:16px;fill:none;stroke:#111;stroke-width:1.75;stroke-linecap:round}
+  .i5-roue .i5-tc{font:600 14px "IBM Plex Mono",monospace;fill:#111}
+  .i5-nomsect{position:absolute;left:0;right:0;top:66px;text-align:center;font-size:13px;color:var(--i5-t4);pointer-events:none}
+</style>
+</head>
+<body>
+<!-- ÉTAT : recette neuve, partie d'un style. Pas de bandeau ni d'« Abandonner » (comme dans l'app). -->
+<div class="i5-ecran" data-etat="recette-neuve-style">
+  <header class="i5-hd">
+    <div class="i5-tb">
+      <button class="i5-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i5-t">Identité <span>1/7</span></h1>
+      <button class="i5-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i5-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i5-rail" aria-label="Étapes">
+      <button class="i5-st i5-on" aria-current="step">Identité<i></i></button>
+      <button class="i5-st">Malts/sucres<i></i></button>
+      <button class="i5-st">Houblons<i></i></button>
+      <button class="i5-st">Levure<i></i></button>
+      <button class="i5-st">Paliers<i></i></button>
+      <button class="i5-st">Eau<i></i></button>
+      <button class="i5-st">Récap.<i></i></button>
+    </nav>
+  </header>
+
+  <section class="i5-biere" aria-live="polite" aria-label="Le style choisi">
+    <svg class="i5-verre" viewBox="0 0 76 112" aria-hidden="true">
+      <defs><linearGradient id="i5-g" x1="0" y1="0" x2="0" y2="1"><stop id="i5-g1" offset="0" stop-color="#F8A600"/><stop id="i5-g2" offset="1" stop-color="#C35900"/></linearGradient></defs>
+      <path d="M8 18h60l-6 86a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4Z" fill="url(#i5-g)"/>
+      <path d="M8 18c4-10 14-12 20-8 4-6 16-6 20 0 6-4 18-2 20 8Z" fill="#FFF8E6" stroke="#BFBFBF" stroke-width="1"/>
+      <path d="M8 18h60l-6 86a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4Z" fill="none" stroke="#9E9E9E" stroke-width="1.2"/>
+    </svg>
+    <div>
+      <p class="i5-nomstyle" id="i5-nom">Double IPA</p>
+      <div class="i5-ref"><span class="i5-pt" id="i5-pt"></span><span class="i5-m" id="i5-code">22A</span><span class="i5-sep" aria-hidden="true"></span>BJCP 2021</div>
+      <div class="i5-chiffres" data-booster="chiffres-style">
+        <span>OG<span class="i5-m" id="i5-og">1,065–085</span></span>
+        <span>IBU<span class="i5-m" id="i5-ibu">60–100</span></span>
+        <span>Alcool<span class="i5-m" id="i5-abv">7,5–10 %</span></span>
+      </div>
+      <label class="i5-nom"><input placeholder="Nom de la bière" aria-label="Nom de la bière" autocomplete="off"></label>
+    </div>
+  </section>
+
+  <!-- L'idée : partir d'un style en tournant une roue au pouce ; ses secteurs sont la couleur réelle des styles, du plus pâle au plus sombre. -->
+  <div class="i5-roue-zone" data-booster="roue-styles">
+    <svg class="i5-poin" viewBox="0 0 20 16" aria-hidden="true"><path d="M2 2h16L10 14Z" fill="#111"/></svg>
+    <svg class="i5-roue" id="i5-roue" viewBox="-350 -350 700 700" role="listbox" aria-label="Styles, du plus pâle au plus sombre"></svg>
+    <div class="i5-fleches">
+      <button class="i5-fleche" id="i5-prec" aria-label="Style plus pâle"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="i5-cherche" data-booster="chercher-style"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Chercher, créer</button>
+      <button class="i5-fleche" id="i5-suiv" aria-label="Style plus sombre"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <button class="i5-q" data-role="legende-bouton" aria-expanded="false" aria-controls="i5-leg" aria-label="Légende">?</button>
+  </div>
+  <p class="i5-leg" id="i5-leg" data-role="legende" hidden>Chaque secteur est un style BJCP 2021, peint du SRM minimum au maximum de sa plage ; la roue va du plus pâle au plus sombre. Le secteur hachuré crée un style hors liste. Volume et fermenteur viennent de ton profil Royal Catering ; le tireté est le remplissage conseillé (repère provisoire de 20 %).</p>
+  <section class="i5-brassin" aria-label="Le brassin">
+    <label class="i5-pil"><span class="i5-lb">Volume</span><span class="i5-v"><input inputmode="decimal" value="24" aria-label="Volume en fermenteur"><span class="i5-u">L</span></span></label>
+    <label class="i5-pil"><span class="i5-lb">Ébullition</span><span class="i5-v"><input inputmode="numeric" value="60" aria-label="Durée d'ébullition"><span class="i5-u">min</span></span></label>
+    <div class="i5-pil"><span class="i5-lb">NOLO</span><button class="i5-sw" role="switch" aria-checked="false" aria-label="NOLO, 0,5 % au plus" data-booster="nolo"></button></div>
+    <div class="i5-pil" data-booster="jauge-fermenteur"><span class="i5-fv"><span class="i5-lb">Fermenteur</span><span class="i5-m">24/30</span></span><span class="i5-libre">6 L libres</span><span class="i5-bar" role="meter" aria-valuemin="0" aria-valuemax="30" aria-valuenow="24" aria-label="Remplissage du fermenteur"><b></b><i></i></span></div>
+  </section>
+
+  <div class="i5-pied"><button class="i5-btn" disabled>Retour</button><button class="i5-btn i5-btn-p">Suivant<span class="i5-tir" aria-hidden="true"></span>Malts/sucres</button></div>
+</div>
+<script>
+(function(){
+  // BJCP 2021 (src/data/brewingStylesBootstrap.json) : SRM min et max ; couleurs SRM de référence.
+  var SRM=['#FFE699','#FFD878','#FFCA5A','#FFBF42','#FBB123','#F8A600','#F39C00','#EA8F00','#E58500','#DE7C00','#D77200','#CF6900','#CB6200','#C35900','#BB5100','#B54C00','#B04500','#A63E00','#A13700','#9B3200','#952D00','#8E2900','#882300','#821E00','#7B1A00','#771900','#701400','#6A0E00','#660D00','#5E0B00','#5A0A02','#600903','#520907','#4C0505','#470606','#440607','#3F0708','#3B0607','#3A070B','#36080A'];
+  var c=function(s){return SRM[Math.max(0,Math.min(39,Math.round(s)-1))];};
+  var S=[
+    {n:'Witbier',k:'24A',s:[2,4],og:'1,044–052',ibu:'8–20',abv:'4,5–5,5 %',f:'#06B6D4'},
+    {n:'German Pils',k:'5D',s:[2,4],og:'1,044–050',ibu:'22–40',abv:'4,4–5,2 %',f:'#EAB308'},
+    {n:'Hazy IPA',k:'21C',s:[3,7],og:'1,060–085',ibu:'25–60',abv:'6–9 %',f:'#84CC16'},
+    {n:'Belgian Tripel',k:'26C',s:[4.5,7],og:'1,075–085',ibu:'20–40',abv:'7,5–9,5 %',f:'#3B82F6'},
+    {n:'American Pale Ale',k:'18B',s:[5,10],og:'1,045–060',ibu:'30–50',abv:'4,5–6,2 %',f:'#22C55E'},
+    {n:'Saison',k:'25B',s:[5,14],og:'1,048–065',ibu:'20–35',abv:'3,5–5 %',f:'#F97316'},
+    {n:'American IPA',k:'21A',s:[6,14],og:'1,056–070',ibu:'40–70',abv:'5,5–7,5 %',f:'#14B8A6'},
+    {n:'Double IPA',k:'22A',s:[6,14],og:'1,065–085',ibu:'60–100',abv:'7,5–10 %',f:'#14B8A6'},
+    {n:'Oatmeal Stout',k:'16B',s:[22,40],og:'1,045–065',ibu:'25–40',abv:'4,2–5,9 %',f:'#8B5CF6'},
+    {n:'Sweet Stout',k:'16A',s:[30,40],og:'1,044–060',ibu:'20–40',abv:'4–6 %',f:'#8B5CF6'},
+    {n:'Imperial Stout',k:'20C',s:[30,40],og:'1,075–115',ibu:'50–90',abv:'8–12 %',f:'#8B5CF6'},
+    {n:'Créer',k:'',s:null}
+  ];
+var C={Witbier:'Witbier','German Pils':'Pils','Hazy IPA':'Hazy IPA','Belgian Tripel':'Tripel','American Pale Ale':'Pale Ale',Saison:'Saison','American IPA':'Am. IPA','Double IPA':'Double IPA','Oatmeal Stout':'Oatmeal','Sweet Stout':'Sweet','Imperial Stout':'Imperial','Créer':'Créer'};
+  var N=S.length,A=360/N,R1=240,R2=348,RT=220,ns='http://www.w3.org/2000/svg';
+  var roue=document.getElementById('i5-roue');
+  var defs=document.createElementNS(ns,'defs');roue.appendChild(defs);
+  var hach=document.createElementNS(ns,'pattern');hach.setAttribute('id','i5-h');hach.setAttribute('width','6');hach.setAttribute('height','6');hach.setAttribute('patternUnits','userSpaceOnUse');hach.setAttribute('patternTransform','rotate(45)');
+  hach.innerHTML='<rect width="6" height="6" fill="#F5F5F5"/><rect width="2" height="6" fill="#BFBFBF"/>';defs.appendChild(hach);
+  function pt(r,a){var t=(a-90)*Math.PI/180;return [r*Math.cos(t),r*Math.sin(t)];}
+  S.forEach(function(st,i){
+    var a0=i*A-A/2+0.6,a1=i*A+A/2-0.6,g=document.createElementNS(ns,'g');g.setAttribute('class','i5-sect');g.setAttribute('role','option');g.setAttribute('aria-label',st.s?st.n+' '+st.k:'Créer un style');
+    if(st.s){var lg=document.createElementNS(ns,'linearGradient');lg.setAttribute('id','i5-l'+i);var p0=pt(R2,a0),p1=pt(R2,a1);lg.setAttribute('gradientUnits','userSpaceOnUse');lg.setAttribute('x1',p0[0]);lg.setAttribute('y1',p0[1]);lg.setAttribute('x2',p1[0]);lg.setAttribute('y2',p1[1]);lg.innerHTML='<stop offset="0" stop-color="'+c(st.s[0])+'"/><stop offset="1" stop-color="'+c(st.s[1])+'"/>';defs.appendChild(lg);}
+    var A0=pt(R2,a0),A1=pt(R2,a1),B1=pt(R1,a1),B0=pt(R1,a0);
+    var p=document.createElementNS(ns,'path');p.setAttribute('d','M'+A0+'A'+R2+' '+R2+' 0 0 1 '+A1+'L'+B1+'A'+R1+' '+R1+' 0 0 0 '+B0+'Z');
+    p.setAttribute('fill',st.s?'url(#i5-l'+i+')':'url(#i5-h)');p.setAttribute('stroke','#fff');p.setAttribute('stroke-width','2');g.appendChild(p);
+    var tp=pt(RT,i*A),tx=document.createElementNS(ns,'text');tx.setAttribute('x',tp[0]);tx.setAttribute('y',tp[1]-2);tx.setAttribute('text-anchor','middle');tx.setAttribute('transform','rotate('+(i*A)+' '+tp[0]+' '+tp[1]+')');
+    tx.textContent=st.s?st.k:'+';if(!st.s)tx.setAttribute('class','i5-tc');tx.setAttribute('class','i5-tc');g.appendChild(tx);
+    var tp2=pt(RT-20,i*A),t2=document.createElementNS(ns,'text');t2.setAttribute('x',tp2[0]);t2.setAttribute('y',tp2[1]-2);t2.setAttribute('text-anchor','middle');t2.setAttribute('transform','rotate('+(i*A)+' '+tp2[0]+' '+tp2[1]+')');t2.textContent=C[st.n];g.appendChild(t2);
+    g.addEventListener('click',function(){choisir(i);});roue.appendChild(g);
+  });
+  var hub=document.createElementNS(ns,'circle');hub.setAttribute("r","190");hub.setAttribute('fill','#F5F5F5');hub.setAttribute('stroke','#DDDDDD');roue.appendChild(hub);
+  var cur=7;
+  function choisir(i){cur=(i+N)%N;roue.style.transform='rotate('+(-cur*A)+'deg)';var st=S[cur];if(!st.s){document.getElementById('i5-nom').textContent='Nouveau style';return;}
+    document.getElementById('i5-nom').textContent=st.n;document.getElementById('i5-code').textContent=st.k;document.getElementById('i5-og').textContent=st.og;document.getElementById('i5-ibu').textContent=st.ibu;document.getElementById('i5-abv').textContent=st.abv;document.getElementById('i5-pt').style.background=st.f;
+    document.getElementById('i5-g1').setAttribute('stop-color',c(st.s[0]));document.getElementById('i5-g2').setAttribute('stop-color',c(st.s[1]));}
+  roue.style.transition='none';choisir(7);requestAnimationFrame(function(){roue.style.transition='';});
+  document.getElementById('i5-prec').addEventListener('click',function(){choisir(cur-1);});
+  document.getElementById('i5-suiv').addEventListener('click',function(){choisir(cur+1);});
+  var x0=null;var z=document.querySelector('.i5-roue-zone');
+  z.addEventListener('pointerdown',function(e){x0=e.clientX;});
+  z.addEventListener('pointerup',function(e){if(x0===null)return;var dx=e.clientX-x0;x0=null;if(Math.abs(dx)>24)choisir(cur+(dx<0?1:-1)*Math.max(1,Math.round(Math.abs(dx)/60)));});
+  var b=document.querySelector('[data-role="legende-bouton"]'),l=document.getElementById('i5-leg');
+  function ouvrir(o){l.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');}
+  b.addEventListener('click',function(){ouvrir(l.hidden);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')ouvrir(false);});
+  var sw=document.querySelector('.i5-sw');sw.addEventListener('click',function(){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');});
+})();
+</script>
+</body>
+</html>

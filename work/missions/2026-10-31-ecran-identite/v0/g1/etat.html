@@ -1,0 +1,150 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>g1 — Rangées au pouce (froide)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--faible:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;--hop:#3F6B2E;--hopf:#567F45;--alert:#A8291F;--alertf:#C8382F;--att:#7F5B10;--attf:#9C7020;--eau:#2F5F7D;--ebc:#E0A02E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--page);color:var(--t0);font-family:'Source Sans 3',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{width:390px;min-height:844px;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.g1-m{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.g1-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.g1-barre{display:flex;align-items:center;height:40px;padding:0 6px 0 2px;gap:2px}
+.g1-ret,.g1-ico{width:32px;height:32px;border:0;background:none;display:grid;place-items:center;color:var(--t1);border-radius:10px;padding:0}
+.g1-titre{font-size:18px;font-weight:600;margin:0 0 0 2px;flex:1;line-height:22px;white-space:nowrap}
+.g1-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+.g1-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:6px 6px}
+.g1-fil{display:flex;gap:6px;padding:0 10px 5px;overflow-x:auto;scrollbar-width:none}
+.g1-fil button{flex:auto;min-width:0;border:0;background:none;padding:3px 0 0;display:flex;flex-direction:column;gap:4px;align-items:stretch;min-height:28px}
+.g1-fil b{font-weight:400;font-size:13px;color:var(--t2);white-space:nowrap;text-align:left}
+.g1-fil .g1-on b{color:var(--t0);font-weight:600}
+.g1-fil i{height:5px;border-radius:3px;background:var(--bord)}
+.g1-fil .g1-on i{background:var(--t0)}
+.g1-bandeau{margin:8px 10px 0;height:36px;border:1px solid var(--bord);border-radius:18px;background:var(--pan);display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.g1-bandeau>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.g1-bandeau em{font-style:normal;font-size:13px;color:var(--t2)}
+.g1-bandeau b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}
+.g1-bpiste{position:relative;width:36px;height:8px;border-radius:4px;background:var(--sur)}
+.g1-bpiste::before{content:"";position:absolute;left:40%;right:20%;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.g1-bpiste::after{content:"";position:absolute;left:62%;top:-3px;width:2px;height:14px;background:var(--t0);border-radius:1px}
+.g1-bpt{width:10px;height:10px;border-radius:50%;background:var(--ebc)}
+.g1-pied{display:flex;gap:8px;align-items:center;padding:16px 74px 20px 10px}
+.g1-pied button{height:32px;border-radius:10px;padding:0 12px;font-size:13px;border:1px solid var(--bord);background:var(--page)}
+.g1-pied button:disabled{color:var(--t2);border-color:var(--bord)}
+.g1-pied .g1-prim{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600;margin-left:auto}
+.g1-fab{position:fixed;right:12px;bottom:16px;width:52px;height:52px;border-radius:50%;border:0;background:var(--t0);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.g1-etats{margin:24px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.g1-etats>h2{font-size:13px;font-weight:600;color:var(--t2);margin:0 0 8px;text-transform:none}
+.g1-etat{margin:0 0 12px}
+.g1-etat>h3{font-size:12px;font-weight:600;color:var(--t2);margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.g1-grp{margin:10px 10px 0;background:var(--pan);border-radius:16px;padding:0 10px}
+.g1-grp>h2{margin:0;padding:8px 0 0;font-size:13px;font-weight:600;color:var(--t2)}
+.g1-r{display:flex;align-items:center;gap:8px;min-height:54px;border-top:1px solid var(--bord);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;padding:0;text-align:left}
+.g1-grp>h2+.g1-r{border-top:0}
+.g1-l{font-size:13px;color:var(--t2);width:78px;flex:none}
+.g1-in{flex:1;min-width:0;height:32px;border:1px solid var(--bord);border-radius:10px;background:var(--page);padding:0 10px;font-size:16px}
+.g1-v{font-size:16px;flex:1}
+.g1-past{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:14px;font-size:16px;font-weight:600;background:rgba(45,212,191,.30);color:#0F5F57;border:1px solid rgba(20,184,166,.45)}
+.g1-code{font-size:13px;color:var(--t2)}
+.g1-chev{color:var(--t2);flex:none}
+.g1-pas{margin-left:auto;display:flex;align-items:center;gap:2px;background:var(--page);border:1px solid var(--bord);border-radius:10px;height:40px;padding:0 3px}
+.g1-pas button{width:36px;height:32px;border:0;border-radius:8px;background:var(--sur);display:grid;place-items:center;padding:0}
+.g1-pas button:active{background:var(--t0);color:#fff}
+.g1-pas output{font-size:16px;font-weight:600;min-width:34px;text-align:right}
+.g1-pas span{font-size:13px;color:var(--t2);width:26px}
+.g1-sous{display:flex;align-items:center;gap:8px;min-height:28px;padding:0 0 8px;margin-top:-6px}
+.g1-sous>span:first-child{font-size:13px;color:var(--t2);width:78px;flex:none}
+.g1-barre-f{position:relative;flex:1;height:10px;border-radius:5px;background:var(--page);border:1px solid var(--bordm)}
+.g1-barre-f>i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--t0);transition:width .18s}
+.g1-barre-f>u{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--t2)}
+.g1-libre{font-size:13px;color:var(--t1);white-space:nowrap;min-width:96px;text-align:right}
+.g1-libre b{font-weight:600}
+.g1-libre.g1-att{color:var(--att)}.g1-libre.g1-al{color:var(--alert);font-weight:600}
+.g1-barre-f.g1-al{border-color:var(--alertf)}.g1-barre-f.g1-al>i{background:var(--alertf)}
+.g1-evap{font-size:13px;color:var(--t2)}
+.g1-sw{margin-left:auto;width:44px;height:26px;border-radius:13px;background:var(--bordm);border:0;position:relative;padding:0;transition:background .18s}
+.g1-sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .18s}
+.g1-sw[aria-checked=true]{background:var(--t0)}.g1-sw[aria-checked=true]::after{left:21px}
+.g1-rep{border-top:1px solid var(--bord)}
+.g1-sum{width:100%;background:none;border:0;padding:0;text-align:left;}.g1-rep .g1-sum,.g1-mat .g1-sum{list-style:none;display:flex;align-items:center;gap:8px;min-height:40px;cursor:pointer;font-size:13px;color:var(--eau)}
+
+.g1-rep .g1-sum span{flex:1}
+.g1-plages{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:0 0 10px;font-size:13px;margin:0}
+.g1-plages dt{color:var(--t2)}.g1-plages dd{margin:0}
+.g1-mat{margin:10px 10px 0;background:var(--pan);border-radius:16px;padding:0 10px}
+.g1-mat .g1-sum{color:var(--t1);min-height:44px}
+.g1-mat .g1-sum .g1-v{font-size:13px}
+.g1-matd{font-size:13px;padding:0 0 10px;display:grid;gap:6px}
+.g1-matd div{display:flex;justify-content:space-between}
+.g1-matd span{color:var(--t2)}
+.g1-colle{height:32px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:13px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;margin-top:6px}
+.g1-ecran{min-height:768px}
+</style></head><body>
+<header class="g1-tete" data-commun="en-tete">
+  <div class="g1-barre">
+    <button class="g1-ret" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1 class="g1-titre">Identité<span>1/7</span></h1>
+    <a class="g1-aband" href="#">Abandonner</a>
+    <button class="g1-ico" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></button>
+    <button class="g1-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="g1-fil" aria-label="Étapes" data-commun="fil">
+    <button class="g1-on" aria-current="step"><b>Identité</b><i></i></button><button><b>Malts/sucres</b><i></i></button><button><b>Houblons</b><i></i></button><button><b>Levure</b><i></i></button><button><b>Paliers</b><i></i></button><button><b>Eau</b><i></i></button><button><b>Récap.</b><i></i></button>
+  </nav>
+</header>
+
+<main>
+<div class="g1-ecran">
+<div class="g1-bandeau" data-commun="bandeau"><span><em>Grain</em><b>8,6 kg</b></span><span><em>OG</em><b>1,080</b></span><span><em>IBU</em><b>~93</b><i class="g1-bpiste" title="Plage du style 60–120"></i></span><span><em>EBC</em><i class="g1-bpt"></i><b>9,5</b></span></div>
+
+<section class="g1-grp" aria-label="La bière">
+  <h2>La bière</h2>
+  <label class="g1-r"><span class="g1-l">Nom</span><input class="g1-in" type="text" value="neipa v3" autocomplete="off"></label>
+  <button class="g1-r" data-booster="style-liste" aria-haspopup="listbox"><span class="g1-l">Style</span><span class="g1-v"><span class="g1-past">Double IPA</span></span><span class="g1-code g1-m">22A</span><svg class="g1-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="g1-rep"><button class="g1-sum" data-booster="reperes-repli" aria-expanded="false" data-ouvre="g1-pl"><span>Repères du style · BJCP 2021</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    <dl class="g1-plages" id="g1-pl" hidden><dt>OG</dt><dd class="g1-m">1,065–1,085</dd><dt>FG</dt><dd class="g1-m">1,008–1,018</dd><dt>Alcool</dt><dd class="g1-m">7,5–10 %</dd><dt>IBU</dt><dd class="g1-m">60–100</dd><dt>SRM</dt><dd class="g1-m">6–14</dd></dl></div>
+</section>
+<section class="g1-grp" aria-label="Le brassin">
+  <h2>Le brassin</h2>
+  <div class="g1-r"><span class="g1-l">Volume</span><div class="g1-pas" data-booster="volume-pas"><button aria-label="Moins 1 L" data-pas="v" data-d="-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/></svg></button><output class="g1-m" id="g1-v">24</output><span>L</span><button aria-label="Plus 1 L" data-pas="v" data-d="1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button></div></div>
+  <div class="g1-sous" data-booster="fermenteur-barre" aria-label="Fermenteur 30 L"><span>fermenteur</span><div class="g1-barre-f" id="g1-bf"><i style="width:80%"></i><u style="left:80%" title="Repère ~20 % libre"></u></div><span class="g1-libre" id="g1-lib"><b class="g1-m">6 L</b> libres</span></div>
+  <div class="g1-r"><span class="g1-l">Ébullition</span><span class="g1-evap" id="g1-ev">~3 L évaporés</span><div class="g1-pas" data-booster="ebullition-pas"><button aria-label="Moins 5 min" data-pas="b" data-d="-5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/></svg></button><output class="g1-m" id="g1-b">60</output><span>min</span><button aria-label="Plus 5 min" data-pas="b" data-d="5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button></div></div>
+  <div class="g1-sous" data-booster="cuve-barre" aria-label="Cuve 45 L"><span>cuve</span><div class="g1-barre-f"><i id="g1-cb" style="width:60%;background:var(--t2)"></i><u style="left:77.8%" title="Limite utile provisoire 35 L"></u></div><span class="g1-libre"><b class="g1-m" id="g1-cv">~27 L</b> à chauffer</span></div>
+  <div class="g1-r"><span class="g1-l">NOLO</span><span class="g1-v g1-m" style="font-size:13px;color:var(--t2)">≤ 0,5 %</span><button class="g1-sw" role="switch" aria-checked="false" aria-label="NOLO" data-booster="nolo-bascule"></button></div>
+</section>
+<div class="g1-mat"><button class="g1-sum" data-booster="materiel-repli" aria-expanded="false" data-ouvre="g1-md"><span class="g1-l">Matériel</span><span class="g1-v">Royal Catering · cuve 45 L</span><svg class="g1-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="g1-matd" id="g1-md" hidden><div><span>Fermenteur</span><b class="g1-m">30 L</b></div><div><span>Espace libre · repère à ajuster</span><b class="g1-m">~20 %</b></div><div><span>Limite utile de la cuve, à vérifier</span><b class="g1-m">35 L</b></div></div></div>
+<div class="g1-pied" data-commun="pied"><button disabled>Retour</button><button class="g1-prim">Suivant — Malts/sucres</button></div>
+<button class="g1-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+
+</div>
+<section class="g1-etats" aria-label="Autres états">
+  <h2>Autres états</h2>
+  <div class="g1-etat"><h3>Volume au plein du fermenteur</h3><div class="g1-grp" style="margin:0"><div class="g1-r" style="border:0"><span class="g1-l">Volume</span><div class="g1-pas"><button aria-label="Moins">−</button><output class="g1-m">30</output><span>L</span><button aria-label="Plus">+</button></div></div><div class="g1-sous" role="alert"><span>fermenteur</span><div class="g1-barre-f g1-al"><i style="width:100%"></i><u style="left:80%"></u></div><span class="g1-libre g1-al">plein · <b class="g1-m">0 L</b></span></div></div></div>
+  <div class="g1-etat"><h3>Recette neuve : pas de bandeau, l'entrée « coller » revient</h3><div class="g1-grp" style="margin:0"><label class="g1-r" style="border:0"><span class="g1-l">Nom</span><input class="g1-in" type="text" placeholder="Milk Stout #2, NEIPA Tropicale…"></label><div class="g1-r"><span class="g1-l">Style</span><span class="g1-v" style="color:var(--t2)">NEIPA, Stout, Saison…</span></div></div><button class="g1-colle">Coller une recette trouvée</button></div>
+  <div class="g1-etat"><h3>NOLO coché</h3><div class="g1-grp" style="margin:0"><div class="g1-r" style="border:0"><span class="g1-l">NOLO</span><span class="g1-v g1-m" style="font-size:13px">≤ 0,5 %</span><button class="g1-sw" role="switch" aria-checked="true" aria-label="NOLO"></button></div><div class="g1-r"><span class="g1-l">Atelier</span><span class="g1-v" style="font-size:13px">procédé, matériel, sucres du moût</span><svg class="g1-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></div></div></div>
+  <div class="g1-etat"><h3>Volume effacé : inconnu, pas zéro</h3><div class="g1-grp" style="margin:0"><div class="g1-r" style="border:0"><span class="g1-l">Volume</span><span class="g1-v" style="font-size:13px;color:var(--alert)">à renseigner</span></div><div class="g1-sous"><span>fermenteur</span><div class="g1-barre-f" style="border-style:dashed"></div><span class="g1-libre">libre : —</span></div></div></div>
+  <div class="g1-etat"><h3>Cuve sans taux d'évaporation mesuré</h3><div class="g1-grp" style="margin:0"><div class="g1-r" style="border:0"><span class="g1-l">Ébullition</span><span class="g1-evap">~3 L évaporés · 10 %/h par défaut</span></div></div></div>
+</section>
+</main>
+<script>(function(){
+  var CAP=30, CONSEIL=24, v=24, b=60;
+  var $=function(id){return document.getElementById(id)};
+  function maj(){
+    $('g1-v').textContent=v; $('g1-b').textContent=b;
+    var bf=$('g1-bf'), lib=$('g1-lib'), libre=CAP-v;
+    bf.firstElementChild.style.width=Math.min(100,v/CAP*100)+'%';
+    bf.classList.toggle('g1-al',v>=CAP);
+    lib.className='g1-libre'+(v>=CAP?' g1-al':v>CONSEIL?' g1-att':'');
+    lib.innerHTML=v>=CAP?'plein · <b class="g1-m">0 L</b>':'<b class="g1-m">'+libre+' L</b> libres';
+    var ev=b?Math.round(v/(1-0.1*b/60)-v):0;
+    $('g1-ev').textContent=b?'~'+ev+' L évaporés':'rien d’évaporé';
+    $('g1-cv').textContent='~'+(v+ev)+' L'; $('g1-cb').style.width=Math.min(100,(v+ev)/45*100)+'%';
+  }
+  document.querySelectorAll('[data-pas]').forEach(function(x){x.addEventListener('click',function(){
+    var d=+x.dataset.d; if(x.dataset.pas==='v'){v=Math.max(1,Math.min(40,v+d));}else{b=Math.max(0,Math.min(180,b+d));} maj();});});
+  document.querySelectorAll('[data-ouvre]').forEach(function(x){x.addEventListener('click',function(){var o=x.getAttribute('aria-expanded')!=='true';x.setAttribute('aria-expanded',o);document.getElementById(x.dataset.ouvre).hidden=!o;});});
+  document.querySelector('[data-booster=nolo-bascule]').addEventListener('click',function(){this.setAttribute('aria-checked',this.getAttribute('aria-checked')!=='true');});
+})();</script>
+</body></html>

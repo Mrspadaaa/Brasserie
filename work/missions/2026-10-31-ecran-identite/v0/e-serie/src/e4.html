@@ -1,0 +1,33 @@
+<section class="PX-g" id="PX-g" aria-label="Identité et fermenteur">
+ <div class="PX-col">
+  <div class="PX-it"><label class="PX-k" for="PX-nom">Bière</label><input id="PX-nom" class="PX-f" value="neipa v3" placeholder="Nom, plus tard" autocomplete="off"></div>
+  <div class="PX-it"><label class="PX-k" for="PX-style">Style <span class="PX-ref PX-m" id="PX-ref">22A</span></label><div class="PX-combo"><input id="PX-style" class="PX-f" value="Double IPA" placeholder="NEIPA, Stout…" autocomplete="off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></div></div>
+  <div class="PX-it PX-vol" id="PX-volrow"><span class="PX-k">En fermenteur</span>
+   <div class="PX-vr"><button class="PX-pm" data-booster="volume-moins" aria-label="Moins 0,5 L">−</button><span class="PX-big"><b class="PX-m" id="PX-v">24</b><span class="PX-m">L</span></span><button class="PX-pm" data-booster="volume-plus" aria-label="Plus 0,5 L">+</button></div>
+   <span class="PX-lib" id="PX-lib"></span>
+  </div>
+  <div class="PX-it"><span class="PX-k">Ébullition</span>
+   <div class="PX-vr"><button class="PX-pm" data-booster="ebullition-moins" aria-label="Moins 5 min">−</button><span class="PX-big"><b class="PX-m" id="PX-b">60</b><span class="PX-m">min</span></span><button class="PX-pm" data-booster="ebullition-plus" aria-label="Plus 5 min">+</button></div>
+   <span class="PX-ev" id="PX-ev"></span>
+  </div>
+  <div class="PX-it PX-cu"><span class="PX-k">Cuve Royal Catering</span><div class="PX-cb"><i id="PX-cf"></i><i class="PX-cl"></i></div><span class="PX-cv"><span class="PX-m" id="PX-pre">~27 L</span> sur <span class="PX-m">45 L</span></span></div>
+  <label class="PX-nolo" data-booster="nolo"><span>NOLO <span class="PX-m">≤ 0,5 %</span></span><input type="checkbox" role="switch" id="PX-nl"><i class="PX-sw"></i></label>
+ </div>
+ <div class="PX-tube" id="PX-tube" data-booster="volume-colonne" role="slider" aria-label="Volume en fermenteur, glisser le niveau" aria-valuemin="1" aria-valuemax="30" aria-valuenow="24" tabindex="0">
+  <div class="PX-cap"><span class="PX-m">30 L</span></div>
+  <div class="PX-in" id="PX-in">
+   <i class="PX-mousse"></i>
+   <i class="PX-liq" id="PX-liq"><span class="PX-bulle" style="left:22%;bottom:18%"></span><span class="PX-bulle" style="left:62%;bottom:40%"></span><span class="PX-bulle" style="left:38%;bottom:66%"></span></i>
+   <i class="PX-tk" id="PX-tk"></i>
+   <i class="PX-surf" id="PX-surf"></i>
+   <div class="PX-grad" aria-hidden="true"><span style="bottom:16.67%">5</span><span style="bottom:33.33%">10</span><span style="bottom:50%">15</span><span style="bottom:66.67%">20</span><span style="bottom:83.33%">25</span></div>
+  </div>
+ </div>
+ <svg class="PX-lead" id="PX-lead" aria-hidden="true"></svg>
+ <button class="PX-q PX-qp" data-role="legende-bouton" aria-expanded="false" aria-label="légende">?</button>
+</section>
+<p class="PX-alerte" id="PX-al" role="alert" hidden></p>
+<p class="PX-nolop" id="PX-np" hidden>Atelier NOLO ouvert ⌄</p>
+<button class="PX-more" data-booster="materiel" aria-expanded="false">Espace libre et repères du style<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="PX-matd" data-role="materiel" hidden><span>Espace libre visé</span><b class="PX-m">20 %</b><span>Style 22A, OG</span><b class="PX-m">1,065–1,085</b></div>
+<div class="PX-leg" data-role="legende" hidden style="top:250px"><p>La colonne est le fermenteur de 30 L, gradué tous les 5 L. On glisse le niveau du moût.</p><p>Bulles au-dessus : l'espace libre pour la mousse. Pointillé vert : le conseil de 20 %, provisoire. <b>~</b> estimé : évaporation au taux de repli de 10 % par heure, pas mesurée ; limite utile de la cuve, 35 L, à vérifier.</p></div>

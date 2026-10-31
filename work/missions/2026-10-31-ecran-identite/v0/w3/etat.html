@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>w3 · Identité · la carte bière, dans la langue de la carte houblon (tiède)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Jetons du thème clair (DESIGN.md, « Colors ») ; classes préfixées par l'id du concept (L26). */
+.w3 {
+  --page: #FFFFFF; --panel: #F5F5F5; --surf: #EBEBEB; --bord: #DDDDDD; --bord2: #BFBFBF; --trait: #9E9E9E;
+  --t2: #666666; --t1: #333333; --t0: #111111; --action: #111111;
+  --hop: #567F45; --hop-t: #3F6B2E; --eau: #4F7E9B; --eau-t: #2F5F7D; --alerte: #C8382F; --alerte-t: #A8291F;
+  --att: #9C7020; --att-t: #7F5B10; --ebc-gold: #E0A02E; --ebc-straw: #F2C14E; --ebc-or-t: #7A5A12;
+  --teal-f: rgba(45, 212, 191, .26); --teal-b: rgba(20, 150, 135, .45); --teal-t: #0E5B53;
+  --sans: 'Source Sans 3', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  font-family: var(--sans); color: var(--t1); background: var(--page); min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+html, body { margin: 0; background: #fff; }
+.w3 *, .w3 *::before, .w3 *::after { box-sizing: border-box; }
+.w3 ::selection { background: rgba(242, 193, 78, .45); color: #111; }
+:where(.w3) button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:where(.w3) input { font: inherit; color: inherit; }
+.w3 :focus-visible { outline: 2px solid var(--t0); outline-offset: 2px; border-radius: 4px; }
+.w3 .w3-m { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+.w3 svg.w3-i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.w3 svg.w3-i * { vector-effect: non-scaling-stroke; }
+.w3 [hidden] { display: none !important; }
+
+/* En-tête commun de l'assistant (baseline, J5, J12 : montré tel quel) */
+.w3-hd { background: var(--page); border-bottom: 1px solid var(--bord); }
+.w3-hd-l { display: flex; align-items: center; gap: 4px; height: 40px; padding: 0 6px 0 4px; }
+.w3-hd-l .w3-ib { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--t1); }
+.w3-ti { margin: 0 0 0 4px; font-size: 18px; font-weight: 600; color: var(--t0); flex: 1; letter-spacing: -.01em; }
+.w3-ti span { font-weight: 400; color: var(--t2); font-size: 15px; margin-left: 2px; }
+.w3-ab { font-size: 14px; color: var(--t1); text-decoration: underline; text-underline-offset: 3px; padding: 4px 6px; margin-right: 6px; }
+.w3[data-neuve="1"] .w3-ab { display: none; }
+.w3-rail { display: flex; gap: 12px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
+.w3-rail button { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 6px; font-size: 14px; color: var(--t2); white-space: nowrap; }
+.w3-rail button::after { content: ''; display: block; height: 4px; border-radius: 2px; background: var(--bord); }
+.w3-rail button[aria-current="step"] { color: var(--t0); font-weight: 600; }
+.w3-rail button[aria-current="step"]::after { background: var(--t0); }
+
+/* Bandeau commun Grain · OG · IBU · EBC (baseline, hors périmètre) ; absent sur une recette neuve (hasMetrics) */
+.w3-bd { margin: 8px 8px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 5px 12px;
+  border: 1px solid var(--bord); border-radius: 999px; background: var(--panel); }
+.w3[data-neuve="1"] .w3-bd { display: none; }
+.w3-bd > span { display: flex; align-items: baseline; gap: 4px; white-space: nowrap; }
+.w3-bd .w3-bl { font-size: 13px; color: var(--t2); }
+.w3-bd .w3-m { font-size: 15px; color: var(--t0); }
+.w3-bd-piste { position: relative; width: 40px; height: 8px; border-radius: 999px; background: var(--bord); align-self: center; margin-left: 2px; }
+.w3-bd-piste i { position: absolute; top: 0; bottom: 0; left: 50%; width: 33%; background: var(--bord2); border-radius: 999px; }
+.w3-bd-piste b { position: absolute; top: -3px; bottom: -3px; left: 77%; width: 2px; background: var(--t0); border-radius: 1px; }
+.w3-bd-pt { width: 10px; height: 10px; border-radius: 50%; background: var(--ebc-gold); border: 1px solid var(--bord2); align-self: center; }
+
+/* Pied commun Retour · Suivant ; il laisse son coin au lanceur + (inventaire w3 17) */
+.w3-pied { display: flex; gap: 8px; padding: 12px 68px 16px 8px; }
+.w3-pied button { height: 32px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+.w3-pied .w3-sec { background: var(--surf); color: var(--t2); }
+.w3-pied .w3-sec[disabled] { cursor: default; opacity: .75; }
+.w3-pied .w3-pri { background: var(--action); color: #fff; }
+.w3-fab { position: fixed; right: 12px; bottom: 12px; width: 48px; height: 48px; border-radius: 50%; background: var(--action); color: #fff;
+  display: grid; place-items: center; box-shadow: 0 8px 24px -12px rgba(0,0,0,.5); }
+.w3-fab svg.w3-i { width: 24px; height: 24px; }
+
+/* Légende commune derrière un « ? » discret (D89) */
+.w3-q { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--bord2); font-size: 13px; font-weight: 600; color: var(--t2);
+  display: inline-grid; place-items: center; flex: none; }
+.w3-q[aria-expanded="true"] { background: var(--t0); color: #fff; border-color: var(--t0); }
+.w3-leg { font-size: 13px; line-height: 18px; color: var(--t1); background: var(--panel); border-radius: 8px; padding: 8px 10px; margin: 6px 0 0; }
+.w3-leg b { color: var(--t0); }
+
+/* Repliables communs (chevron ⌄ unique, DESIGN.md « Shapes ») */
+.w3 details > summary { list-style: none; cursor: pointer; }
+.w3 details > summary::-webkit-details-marker { display: none; }
+.w3-chev { transition: transform 180ms ease-out; }
+.w3 details[open] > summary .w3-chev, .w3 [aria-expanded="true"] > .w3-chev { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .w3 * { transition: none !important; animation: none !important; } }
+
+/* Interrupteur commun */
+.w3-sw { position: relative; width: 40px; height: 24px; border-radius: 999px; background: var(--bord2); flex: none; transition: background 160ms ease-out; }
+.w3-sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform 160ms ease-out; }
+[aria-checked="true"] > .w3-sw, .w3-sw[aria-checked="true"] { background: var(--hop); }
+[aria-checked="true"] > .w3-sw::after, .w3-sw[aria-checked="true"]::after { transform: translateX(16px); }
+:where(.w3) button:active { transform: scale(.97); }
+
+.w3-main { padding: 10px 8px 0; display: flex; flex-direction: column; gap: 10px; }
+.w3-carte { border: 1px solid var(--bord); border-radius: 8px; background: var(--page); padding: 14px 10px 18px 12px; box-shadow: 0 8px 24px -16px rgba(0,0,0,.35); }
+.w3-h1 { display: grid; grid-template-columns: 64px 1fr auto; gap: 6px 10px; align-items: center; }
+.w3-h1 > .w3-l1 { grid-column: 2; grid-row: 1; }
+.w3-h1 > .w3-nom { grid-column: 1 / 4; grid-row: 3; }
+.w3-h1 > .w3-rond { grid-column: 3; grid-row: 1; }
+.w3-verre { grid-column: 1; grid-row: 1; width: 64px; height: 72px; position: relative; }
+
+.w3-nc { grid-column: 2; grid-row: 1; }
+.w3-past { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; background: var(--teal-f); border: 1px solid var(--teal-b); color: var(--teal-t); font-size: 14px; font-weight: 600; }
+.w3-past.w3-vide { background: none; border-style: dashed; border-color: var(--bord2); color: var(--t2); font-weight: 400; }
+.w3-l1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.w3-code { font-size: 14px; color: var(--t2); }
+.w3-nom { border: 0; outline: 0; background: none; padding: 0; width: 100%; font-size: 34px; line-height: 44px; font-weight: 700; color: var(--t0); letter-spacing: -.02em;
+  text-decoration: underline dotted var(--trait); text-underline-offset: 6px; text-decoration-thickness: 2px; }
+.w3-nom::placeholder { color: var(--t2); font-weight: 400; }
+/* Le rond à droite, comme le + de la carte houblon : ici NOLO, actif ou non */
+.w3-rond { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--t0); display: grid; place-items: center; text-align: center; font-size: 13px; font-weight: 700; color: var(--t0); line-height: 14px; }
+.w3-rond .w3-m { display: block; font-size: 12px; font-weight: 600; }
+.w3-rond[aria-checked="true"] { background: var(--t0); color: #fff; }
+.w3-rep { display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 13px; color: var(--eau-t); }
+.w3-rep svg.w3-i { width: 16px; height: 16px; }
+.w3-pnl { background: var(--panel); border-radius: 8px; padding: 8px 10px; font-size: 13px; color: var(--t1); display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin-top: 6px; }
+.w3-pnl .w3-m { font-size: 13px; }
+.w3-pnl input { width: 52px; height: 32px; border: 1px solid var(--bord); border-radius: 8px; padding: 0 8px; font-family: var(--mono); font-size: 16px; font-weight: 600; text-align: right; }
+/* Rangée de pictos et de valeurs, comme la rangée d'arômes */
+.w3-pics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 16px 0 14px; }
+.w3-pic { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 2px 12px; background: var(--panel); border-radius: 8px; }
+.w3-pic[aria-expanded="true"] { background: var(--panel); outline: 1.5px solid var(--t0); }
+.w3-pic svg.w3-i { width: 40px; height: 40px; }
+.w3-pic .w3-m { font-size: 24px; color: var(--t0); white-space: nowrap; }
+.w3-pic .w3-m small { font-size: 14px; color: #474747; font-weight: 600; }
+.w3-pic .w3-w { font-size: 12px; color: #474747; }
+.w3-p-or { color: #A8700F; } .w3-p-bl { color: var(--eau-t); } .w3-p-ev { color: #4F7E9B; } .w3-p-cu { color: #9A4F1E; }
+.w3-pic.w3-f-or { background: rgba(224, 160, 46, .3); } .w3-pic.w3-f-bl { background: rgba(79, 126, 155, .26); } .w3-pic.w3-f-ev { background: rgba(79, 126, 155, .16); } .w3-pic.w3-f-gr { background: #DCDCDC; }
+/* La piste du fermenteur, comme la piste « +1 cran » */
+.w3-piste { position: relative; height: 46px; margin: 0 4px; }
+.w3-piste > * { margin-top: 14px; }
+.w3-piste .w3-tr { position: absolute; left: 0; right: 0; top: 14px; height: 3px; background: var(--ebc-straw); border-radius: 2px; opacity: .55; }
+.w3-piste .w3-fi { position: absolute; left: 0; top: 8px; height: 16px; width: var(--p); border-radius: 999px; background: #D8A71A; transition: width 200ms ease-out; }
+.w3[data-ferme="conseil"] .w3-piste .w3-fi { background: var(--att); }
+.w3[data-ferme="plein"] .w3-piste .w3-fi { background: var(--alerte); }
+.w3-piste .w3-bout { position: absolute; right: -1px; top: 6px; height: 19px; width: 3px; background: #B88A12; border-radius: 1px; }
+.w3-piste .w3-cs { position: absolute; left: var(--p); top: 0; bottom: 0; border-left: 1.5px dashed var(--t0); }
+.w3-piste .w3-lb { position: absolute; top: -14px; right: 0; margin: 0; font-size: 14px; font-weight: 700; color: var(--hop-t); white-space: nowrap; }
+.w3[data-ferme="conseil"] .w3-piste .w3-lb { color: var(--att-t); }
+.w3[data-ferme="plein"] .w3-piste .w3-lb { display: none; }
+.w3-al { display: none; font-size: 14px; font-weight: 700; color: var(--alerte-t); margin: 2px 4px 0; }
+.w3[data-ferme="plein"] .w3-al { display: block; }
+/* Éditeur de la valeur touchée, sous la carte (jamais par-dessus, D164) */
+.w3-ed { display: flex; align-items: center; gap: 8px; padding: 12px 10px; border: 1.5px solid var(--t0); border-radius: 8px; background: var(--panel); }
+.w3-ed .w3-k { font-size: 14px; color: var(--t2); }
+.w3-ed input { width: calc(var(--n, 2) * 0.62em + 10px); height: 32px; border: 1px solid var(--bord); border-radius: 8px; padding: 0 4px; text-align: center; background: var(--page);
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 600; color: var(--t0); }
+.w3-ed .w3-st { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--t0); display: grid; place-items: center; }
+.w3-ed .w3-st svg.w3-i { width: 16px; height: 16px; }
+.w3-pre { display: flex; gap: 6px; margin-left: auto; }
+.w3-pre button { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px dashed var(--bord2); font-family: var(--mono); font-size: 14px; font-weight: 600; }
+.w3-pre button[aria-pressed="true"] { border: 1px solid var(--t0); background: var(--t0); color: #fff; }
+/* La carte du matériel, même langue */
+.w3-mat { min-height: 110px; background: rgba(154, 79, 30, .1); border-color: rgba(154, 79, 30, .35); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; border: 1px solid var(--bord); border-radius: 8px; padding: 10px 12px; }
+.w3-mat-n { font-size: 18px; font-weight: 600; color: var(--t0); text-decoration: underline dotted var(--trait); text-underline-offset: 4px; }
+.w3-mat-p { display: flex; gap: 16px; grid-column: 1 / 3; }
+.w3-mat-p > span { white-space: nowrap; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
+.w3-mat-p svg.w3-i { width: 28px; height: 28px; }
+.w3-mat-p .w3-m { font-size: 16px; color: var(--t0); }
+.w3-chg { font-size: 13px; color: var(--t1); display: flex; align-items: center; gap: 2px; height: 28px; }
+.w3-chg svg.w3-i { width: 16px; height: 16px; }
+.w3[data-neuve="1"] .w3-biere { display: none; }
+.w3[data-neuve="1"] .w3-vb { stroke-dasharray: 4 4; stroke: var(--trait); }
+.w3-coll { display: none; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 8px; border: 1px dashed var(--bord2); font-size: 14px; color: var(--t0); font-weight: 600; }
+.w3[data-neuve="1"] .w3-coll { display: flex; }
+.w3[data-neuve="1"] .w3-repd { display: none; }
+.w3-l1 .w3-q { margin-left: 2px; }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="w3-s-gauche" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="w3-s-droite" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="w3-s-bas" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="w3-s-coller" viewBox="0 0 24 24"><path d="M15 4h2a2 2 0 0 1 2 2v3"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><rect x="8" y="2" width="7" height="4" rx="1"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></symbol>
+  <symbol id="w3-s-lune" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="w3-s-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="w3-s-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="w3-s-ferm" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v3L6 9v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9l-4-4V2"/><path d="M6 14h12"/></symbol>
+  <symbol id="w3-s-flamme" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-3-2-5.5-3.5-7-.5 2-1.5 3-3 3.5C13 8 12 5 9.5 2.5 9.5 6 5 9 5 15a7 7 0 0 0 7 7Z"/></symbol>
+  <symbol id="w3-s-vapeur" viewBox="0 0 24 24"><path d="M7 21c-2-2 2-4 0-6s2-4 0-6"/><path d="M12 21c-2-2 2-4 0-6s2-4 0-6 2-4 0-6"/><path d="M17 21c-2-2 2-4 0-6s2-4 0-6"/></symbol>
+  <symbol id="w3-s-cuve" viewBox="0 0 24 24"><path d="M4 7h16v11a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z"/><path d="M2 7h20"/><path d="M8 3v4M16 3v4"/></symbol>
+  <symbol id="w3-s-verre" viewBox="0 0 24 24"><path d="M6 3h12l-1.5 17a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2Z"/><path d="M6.5 9h11"/></symbol>
+  <symbol id="w3-s-etiq" viewBox="0 0 24 24"><path d="M12 2H4a2 2 0 0 0-2 2v8l10 10 10-10Z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+  <symbol id="w3-s-crayon" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+</svg>
+<div class="w3" id="w3-app" data-page-shell data-neuve="0" data-ferme="ok" data-nolo="off">
+<header class="w3-hd">
+  <div class="w3-hd-l">
+    <button class="w3-ib" aria-label="Fermer l'assistant"><svg class="w3-i"><use href="#w3-s-gauche"/></svg></button>
+    <h1 class="w3-ti">Identité <span>1/7</span></h1>
+    <button class="w3-ab">Abandonner</button>
+    <button class="w3-ib" aria-label="Coller une recette trouvée"><svg class="w3-i"><use href="#w3-s-coller"/></svg></button>
+    <button class="w3-ib" aria-label="Thème clair ou cave"><svg class="w3-i"><use href="#w3-s-lune"/></svg></button>
+  </div>
+  <nav class="w3-rail" aria-label="Étapes de la recette">
+    <button aria-current="step">Identité</button><button>Malts/sucres</button><button>Houblons</button><button>Levure</button><button>Paliers</button><button>Eau</button><button>Récap.</button>
+  </nav>
+</header>
+<div class="w3-bd" aria-label="Mesures de la recette">
+  <span><span class="w3-bl">Grain</span><span class="w3-m">8,6 kg</span></span>
+  <span><span class="w3-bl">OG</span><span class="w3-m">1,080</span></span>
+  <span><span class="w3-bl">IBU</span><span class="w3-m">~93</span><span class="w3-bd-piste" aria-hidden="true"><i></i><b></b></span></span>
+  <span><span class="w3-bl">EBC</span><span class="w3-bd-pt" aria-hidden="true"></span><span class="w3-m">9,5</span></span>
+</div>
+<main class="w3-main">
+
+<button class="w3-coll" data-booster="coller-neuve"><svg class="w3-i"><use href="#w3-s-coller"/></svg>Coller une recette trouvée</button>
+<article class="w3-carte" aria-label="La bière">
+  <div class="w3-h1">
+    <svg class="w3-verre" viewBox="0 0 64 64" aria-hidden="true" data-booster="verre-couleur"><defs><clipPath id="w3-cv"><path d="M16 6h32l-4 50a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4Z"/></clipPath></defs><rect class="w3-biere" x="0" y="20" width="64" height="44" fill="#E7B13A" clip-path="url(#w3-cv)"/><rect x="0" y="14" width="64" height="7" fill="#FFF8E6" clip-path="url(#w3-cv)" class="w3-biere"/><path d="M16 6h32l-4 50a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4Z" fill="none" stroke="#333" stroke-width="1.75" vector-effect="non-scaling-stroke" class="w3-vb"/></svg>
+    <div class="w3-l1"><button class="w3-past" data-v="style" data-vide="style à choisir" data-booster="style-pastille" aria-label="Choisir le style"></button><span class="w3-code w3-repd"><span class="w3-m" style="font-size:14px" data-v="code"></span></span><button class="w3-rep w3-repd" data-ouvre="w3-rep" aria-expanded="false" aria-controls="w3-rep">repères<svg class="w3-i w3-chev"><use href="#w3-s-bas"/></svg></button><button class="w3-q" data-role="legende-bouton" aria-expanded="false" aria-controls="w3-leg" aria-label="Légende">?</button></div>
+    <button class="w3-rond" role="switch" data-bascule="nolo" aria-checked="false" aria-label="NOLO, alcool ≤ 0,5 %" data-booster="rond-nolo">NOLO<span class="w3-m">≤0,5</span></button>
+    <input class="w3-nom" data-champ="nom" data-texte placeholder="Nom de la bière" aria-label="Nom de la bière" data-booster="nom-sur-place">
+  </div>
+  <div class="w3-pnl" id="w3-rep" hidden><span>OG</span><span class="w3-m">1,065–1,085</span><span>IBU</span><span class="w3-m">60–100</span><span>Alcool</span><span class="w3-m">7,5–10 %</span><span>SRM</span><span class="w3-m">6–14</span><span>Référentiel</span><span>BJCP 2021</span></div>
+  <div class="w3-pics" data-booster="pictos-valeurs">
+    <button class="w3-pic w3-f-or" data-ouvre="w3-ed-vol" data-groupe="ed" aria-expanded="true" aria-controls="w3-ed-vol"><svg class="w3-i w3-p-or"><use href="#w3-s-ferm"/></svg><span class="w3-m"><span data-v="vol"></span><small> L</small></span><span class="w3-w">fermenteur</span></button>
+    <button class="w3-pic w3-f-bl" data-ouvre="w3-ed-ebu" data-groupe="ed" aria-expanded="false" aria-controls="w3-ed-ebu" data-toucher="[data-ouvre='w3-ed-ebu']"><svg class="w3-i w3-p-bl"><use href="#w3-s-flamme"/></svg><span class="w3-m"><span data-v="ebu"></span><small> min</small></span><span class="w3-w">ébullition</span></button>
+    <div class="w3-pic w3-f-ev"><svg class="w3-i w3-p-ev"><use href="#w3-s-vapeur"/></svg><span class="w3-m">~<span data-v="evap"></span><small> L</small></span><span class="w3-w">évaporés</span></div>
+    <button class="w3-pic w3-f-gr" data-ouvre="w3-ed-lib" data-groupe="ed" aria-expanded="false" aria-controls="w3-ed-lib"><svg class="w3-i" style="color:var(--t1)"><use href="#w3-s-ferm"/></svg><span class="w3-m">~<span data-v="conseil"></span><small> L</small></span><span class="w3-w">conseil</span></button>
+  </div>
+  <div class="w3-piste" data-p="vol" data-booster="piste-fermenteur" aria-label="Remplissage du fermenteur"><span class="w3-tr"></span><span class="w3-fi"></span><span class="w3-bout"></span><span class="w3-cs" data-p="conseil"></span><span class="w3-lb">+<span data-v="libres"></span> L libres</span></div>
+  <div class="w3-al" role="alert" data-v="alerte"></div>
+</article>
+<div class="w3-ed" id="w3-ed-vol" data-booster="editeur-volume"><span class="w3-k">En fermenteur</span><button class="w3-st" data-pas="vol:-1" aria-label="Un litre de moins"><svg class="w3-i"><use href="#w3-s-moins"/></svg></button><input data-champ="vol" inputmode="decimal" aria-label="Volume en fermenteur, litres"><button class="w3-st" data-pas="vol:1" aria-label="Un litre de plus"><svg class="w3-i"><use href="#w3-s-plus"/></svg></button><span class="w3-pre"><button data-preset="vol:24">24</button><button data-preset="vol:30">30</button></span></div>
+<div class="w3-ed" id="w3-ed-ebu" hidden><span class="w3-k">Ébullition</span><button class="w3-st" data-pas="ebu:-5" aria-label="5 minutes de moins"><svg class="w3-i"><use href="#w3-s-moins"/></svg></button><input data-champ="ebu" inputmode="numeric" aria-label="Durée d'ébullition, minutes"><button class="w3-st" data-pas="ebu:5" aria-label="5 minutes de plus"><svg class="w3-i"><use href="#w3-s-plus"/></svg></button><span class="w3-pre"><button data-preset="ebu:60">60</button><button data-preset="ebu:90">90</button></span></div>
+<div class="w3-ed" id="w3-ed-lib" hidden><span class="w3-k">Espace libre</span><input data-champ="libre" inputmode="decimal" aria-label="Espace libre, pour cent"><span class="w3-k">%, repère provisoire</span></div>
+<p class="w3-pnl" id="w3-leg" data-role="legende" hidden style="display:block;margin:0"><b>~ estimé.</b> L'évaporation suit le taux de ton profil de cuverie ; sans taux, 10 % par heure. Le conseil garde 20 % d'espace libre, en attendant la levure. Le tireté de la piste marque ce conseil.</p>
+<section class="w3-mat" aria-label="Matériel">
+  <span class="w3-mat-n" data-v="mat"></span><button class="w3-chg">changer<svg class="w3-i"><use href="#w3-s-droite"/></svg></button>
+  <div class="w3-mat-p"><span><svg class="w3-i w3-p-cu"><use href="#w3-s-cuve"/></svg>cuve <b class="w3-m"><span data-v="cuve"></span> L</b></span><span><svg class="w3-i w3-p-or"><use href="#w3-s-ferm"/></svg>fermenteur <b class="w3-m"><span data-v="ferm"></span> L</b></span></div>
+</section>
+
+</main>
+<div class="w3-pied">
+  <button class="w3-sec" disabled>Retour</button>
+  <button class="w3-pri">Suivant — Malts/sucres</button>
+</div>
+<button class="w3-fab" aria-label="Actions rapides"><svg class="w3-i"><use href="#w3-s-plus"/></svg></button>
+</div>
+<script>
+(function () {
+  // État de démonstration : la recette du brasseur, « neipa v3 » (fixture, rien d'écrit). États : #etat=neuve|plein|conseil|nolo|clavier.
+  const BASE = { nom: 'neipa v3', style: 'Double IPA', code: '22A', ref: 'BJCP 2021', vol: 24, ebu: 60, nolo: false,
+    ferm: 30, cuve: 45, mat: 'Royal Catering', libre: 20 };
+  const ETATS = { neuve: { nom: '', style: '', code: '', ref: '', vol: 30, neuve: true }, plein: { vol: 32 }, conseil: { vol: 27 }, nolo: { nolo: true } };
+  const etat = ((location.search + location.hash).match(/etat=(\w+)/) || [, 'repos'])[1];
+  const S = Object.assign({}, BASE, ETATS[etat] || {});
+  const app = document.getElementById('w3-app');
+  const fr = (n, d) => (n == null || Number.isNaN(n) ? '—' : n.toLocaleString('fr-FR', { maximumFractionDigits: d ?? 1 }));
+  const lire = (t) => { const n = parseFloat(String(t).replace(/\s/g, '').replace(',', '.')); return Number.isFinite(n) ? n : NaN; };
+  function deriver() {
+    S.conseil = Math.round(S.ferm * (1 - S.libre / 100) * 10) / 10;            // conseil : fermenteur × (1 − espace libre)
+    S.libres = Math.round((S.ferm - S.vol) * 10) / 10;
+    S.trop = Math.round((S.vol - S.ferm) * 10) / 10;
+    S.evap = Number.isFinite(S.vol) && Number.isFinite(S.ebu) ? Math.round(3 * (S.vol / 24) * (S.ebu / 60)) : NaN; // maquette : ~3 L à 24 L, 60 min (valeur de l'app)
+    S.alerte = S.vol > S.ferm ? fr(S.trop, 1) + ' L de trop' : 'fermenteur plein, aucun espace libre';
+    S.ferme = !Number.isFinite(S.vol) ? 'vide' : S.vol >= S.ferm ? 'plein' : S.vol > S.conseil ? 'conseil' : 'ok';
+  }
+  function rendre() {
+    deriver();
+    app.dataset.neuve = S.neuve ? '1' : '0';
+    app.dataset.ferme = S.ferme;
+    app.dataset.nolo = S.nolo ? 'on' : 'off';
+    document.querySelectorAll('[data-v]').forEach((el) => {
+      const k = el.dataset.v, v = S[k];
+      const vide = v === '' || v == null || (typeof v === 'number' && Number.isNaN(v));
+      el.classList.toggle('w3-vide', vide);
+      el.textContent = vide ? (el.dataset.vide || '—') : typeof v === 'number' ? fr(v, k === 'ebu' ? 0 : 1) : v;
+    });
+    document.querySelectorAll('[data-p]').forEach((el) => {
+      const k = el.dataset.p, base = Number(el.dataset.sur || S.ferm);
+      const v = Math.max(0, Math.min(1, (S[k] || 0) / base));
+      el.style.setProperty('--p', (v * 100).toFixed(2) + '%');
+    });
+    document.querySelectorAll('[data-champ]').forEach((el) => { if (document.activeElement !== el) { const v = S[el.dataset.champ]; el.value = typeof v === 'number' ? (Number.isNaN(v) ? '' : fr(v, 1)) : v; } });
+    document.querySelectorAll('[data-bascule]').forEach((el) => el.setAttribute('aria-checked', S[el.dataset.bascule] ? 'true' : 'false'));
+    document.querySelectorAll('[data-preset]').forEach((el) => { const [k, v] = el.dataset.preset.split(':'); el.setAttribute('aria-pressed', String(S[k]) === v ? 'true' : 'false'); });
+    if (window.w3_rendre) window.w3_rendre(S, fr);
+  }
+  app.addEventListener('click', (ev) => {
+    const pas = ev.target.closest('[data-pas]');
+    if (pas) { const [k, d] = pas.dataset.pas.split(':'); S[k] = Math.max(k === 'ebu' ? 0 : 1, (Number.isFinite(S[k]) ? S[k] : 0) + Number(d)); rendre(); return; }
+    const pre = ev.target.closest('[data-preset]');
+    if (pre) { const [k, v] = pre.dataset.preset.split(':'); S[k] = isNaN(Number(v)) ? v : Number(v); rendre(); return; }
+    const bas = ev.target.closest('[data-bascule]');
+    if (bas) { S[bas.dataset.bascule] = !S[bas.dataset.bascule]; rendre(); return; }
+    const ouv = ev.target.closest('[data-ouvre]');
+    if (ouv) { const cible = document.getElementById(ouv.dataset.ouvre); const ouvert = cible.hidden; document.querySelectorAll('[data-ouvre]').forEach((o) => { if (o !== ouv && o.dataset.groupe && o.dataset.groupe === ouv.dataset.groupe) { o.setAttribute('aria-expanded', 'false'); document.getElementById(o.dataset.ouvre).hidden = true; } }); cible.hidden = !ouvert; ouv.setAttribute('aria-expanded', String(ouvert)); if (ouvert) { const f = cible.querySelector('input'); if (f && ouv.dataset.focus) f.focus(); } return; }
+    const q = ev.target.closest('[data-role="legende-bouton"]');
+    if (q) { const l = document.getElementById(q.getAttribute('aria-controls')); const o = q.getAttribute('aria-expanded') !== 'true'; q.setAttribute('aria-expanded', String(o)); l.hidden = !o; }
+  });
+  app.addEventListener('input', (ev) => {
+    const c = ev.target.closest('[data-champ]'); if (!c) return;
+    const k = c.dataset.champ; S[k] = c.dataset.texte !== undefined ? c.value : lire(c.value); rendre();
+  });
+  app.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && ev.target.matches('input')) ev.target.blur(); });
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape') return;
+    document.querySelectorAll('[data-role="legende-bouton"][aria-expanded="true"]').forEach((q) => { q.setAttribute('aria-expanded', 'false'); document.getElementById(q.getAttribute('aria-controls')).hidden = true; });
+  });
+  window.w3_S = S; window.w3_rendreTout = rendre;
+  
+  window.w3_rendre = () => { document.querySelectorAll('.w3-ed input').forEach((i) => i.style.setProperty('--n', Math.max(2, i.value.length))); };
+
+  rendre();
+  if (etat === 'clavier') { const f = document.querySelector('[data-champ="nom"]'); if (f) f.focus(); }
+})();
+</script>
+</body>
+</html>

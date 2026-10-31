@@ -1,0 +1,181 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>g6 — L'anneau du pouce (chaude)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--faible:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;--hop:#3F6B2E;--hopf:#567F45;--alert:#A8291F;--alertf:#C8382F;--att:#7F5B10;--attf:#9C7020;--eau:#2F5F7D;--ebc:#E0A02E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--page);color:var(--t0);font-family:'Source Sans 3',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{width:390px;min-height:844px;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.g6-m{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.g6-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.g6-barre{display:flex;align-items:center;height:40px;padding:0 6px 0 2px;gap:2px}
+.g6-ret,.g6-ico{width:32px;height:32px;border:0;background:none;display:grid;place-items:center;color:var(--t1);border-radius:10px;padding:0}
+.g6-titre{font-size:18px;font-weight:600;margin:0 0 0 2px;flex:1;line-height:22px;white-space:nowrap}
+.g6-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+.g6-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:6px 6px}
+.g6-fil{display:flex;gap:6px;padding:0 10px 5px;overflow-x:auto;scrollbar-width:none}
+.g6-fil button{flex:auto;min-width:0;border:0;background:none;padding:3px 0 0;display:flex;flex-direction:column;gap:4px;align-items:stretch;min-height:28px}
+.g6-fil b{font-weight:400;font-size:13px;color:var(--t2);white-space:nowrap;text-align:left}
+.g6-fil .g6-on b{color:var(--t0);font-weight:600}
+.g6-fil i{height:5px;border-radius:3px;background:var(--bord)}
+.g6-fil .g6-on i{background:var(--t0)}
+.g6-bandeau{margin:8px 10px 0;height:36px;border:1px solid var(--bord);border-radius:18px;background:var(--pan);display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.g6-bandeau>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.g6-bandeau em{font-style:normal;font-size:13px;color:var(--t2)}
+.g6-bandeau b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}
+.g6-bpiste{position:relative;width:36px;height:8px;border-radius:4px;background:var(--sur)}
+.g6-bpiste::before{content:"";position:absolute;left:40%;right:20%;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.g6-bpiste::after{content:"";position:absolute;left:62%;top:-3px;width:2px;height:14px;background:var(--t0);border-radius:1px}
+.g6-bpt{width:10px;height:10px;border-radius:50%;background:var(--ebc)}
+.g6-pied{display:flex;gap:8px;align-items:center;padding:16px 74px 20px 10px}
+.g6-pied button{height:32px;border-radius:10px;padding:0 12px;font-size:13px;border:1px solid var(--bord);background:var(--page)}
+.g6-pied button:disabled{color:var(--t2);border-color:var(--bord)}
+.g6-pied .g6-prim{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600;margin-left:auto}
+.g6-fab{position:fixed;right:12px;bottom:16px;width:52px;height:52px;border-radius:50%;border:0;background:var(--t0);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.g6-etats{margin:24px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.g6-etats>h2{font-size:13px;font-weight:600;color:var(--t2);margin:0 0 8px;text-transform:none}
+.g6-etat{margin:0 0 12px}
+.g6-etat>h3{font-size:12px;font-weight:600;color:var(--t2);margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.g6-ecran{min-height:768px;display:flex;flex-direction:column}
+.g6-id{margin:12px 12px 0;display:flex;align-items:center;gap:8px}
+.g6-id input{flex:1;min-width:0;border:0;border-bottom:1px dashed var(--bordm);font-size:16px;font-weight:600;height:32px;padding:0;background:none}
+.g6-sty{height:32px;border-radius:16px;border:0;background:var(--t0);color:#fff;padding:0 8px 0 12px;font-size:16px;display:inline-flex;align-items:center;gap:6px;flex:none}
+.g6-sty small{font-size:13px;color:#ddd}
+.g6-rep{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--eau);background:none;border:0;padding:0 12px;height:28px}
+.g6-cadran{position:relative;margin:10px 0 0;height:320px;touch-action:none;user-select:none}
+.g6-cadran svg{position:absolute;inset:0;width:390px;height:320px;overflow:visible}
+.g6-centre{position:absolute;left:0;right:0;top:116px;text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px}
+.g6-centre output{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;line-height:32px}
+.g6-centre output small,.g6-centre .g6-b small{font-family:'Source Sans 3',system-ui,sans-serif;font-size:16px;font-weight:400;color:var(--t2);margin-left:3px}
+.g6-centre .g6-lib{font-size:13px;color:var(--t1)}
+.g6-centre .g6-lib b{font-family:'IBM Plex Mono',monospace;font-weight:600}
+.g6-centre .g6-lib.g6-att{color:var(--att)}.g6-centre .g6-lib.g6-al{color:var(--alert);font-weight:600}
+.g6-centre hr{width:72px;border:0;border-top:1px solid var(--bord);margin:8px 0 6px}
+.g6-centre .g6-b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:16px;font-weight:600}
+.g6-centre .g6-ev{font-size:13px;color:var(--t2)}
+.g6-centre .g6-ev b{font-family:'IBM Plex Mono',monospace;color:var(--t1)}
+.g6-graduation{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;fill:var(--t2)}
+.g6-plein-t{font-family:'Source Sans 3',system-ui,sans-serif;font-size:12px;font-weight:600;fill:var(--alert)}
+.g6-cuve{display:flex;align-items:center;gap:8px;margin:0 12px;min-height:36px;font-size:13px;color:var(--t2)}
+.g6-cuve b{font-family:'IBM Plex Mono',monospace;color:var(--t1);font-weight:600}
+.g6-cuve .g6-mb{flex:1;height:8px;border-radius:4px;background:var(--sur);position:relative}
+.g6-cuve .g6-mb i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--t2)}
+.g6-cuve .g6-mb u{position:absolute;top:-3px;bottom:-3px;border-left:2px dashed var(--t2)}
+.g6-row{display:flex;align-items:center;gap:8px;min-height:48px;margin:0 12px;border-top:1px solid var(--bord);font-size:16px}
+.g6-row>span{flex:1}
+.g6-row small{font-size:13px;color:var(--t2)}
+.g6-sw{width:48px;height:28px;border-radius:14px;background:var(--bordm);border:0;position:relative;padding:0;transition:background .18s}
+.g6-sw::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .18s}
+.g6-sw[aria-checked=true]{background:var(--t0)}.g6-sw[aria-checked=true]::after{left:23px}
+.g6-row button.g6-chv{background:none;border:0;height:32px;display:flex;align-items:center;color:var(--t2);padding:0 2px}
+.g6-bas{margin-top:auto}
+</style></head><body>
+<header class="g6-tete" data-commun="en-tete">
+  <div class="g6-barre">
+    <button class="g6-ret" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1 class="g6-titre">Identité<span>1/7</span></h1>
+    <a class="g6-aband" href="#">Abandonner</a>
+    <button class="g6-ico" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></button>
+    <button class="g6-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="g6-fil" aria-label="Étapes" data-commun="fil">
+    <button class="g6-on" aria-current="step"><b>Identité</b><i></i></button><button><b>Malts/sucres</b><i></i></button><button><b>Houblons</b><i></i></button><button><b>Levure</b><i></i></button><button><b>Paliers</b><i></i></button><button><b>Eau</b><i></i></button><button><b>Récap.</b><i></i></button>
+  </nav>
+</header>
+
+<main>
+<div class="g6-ecran">
+<div class="g6-bandeau" data-commun="bandeau"><span><em>Grain</em><b>8,6 kg</b></span><span><em>OG</em><b>1,080</b></span><span><em>IBU</em><b>~93</b><i class="g6-bpiste" title="Plage du style 60–120"></i></span><span><em>EBC</em><i class="g6-bpt"></i><b>9,5</b></span></div>
+
+<section class="g6-id" aria-label="La bière">
+  <input type="text" value="neipa v3" aria-label="Nom de la bière" autocomplete="off">
+  <button class="g6-sty" data-booster="style-liste" aria-haspopup="listbox">Double IPA <small class="g6-m">22A</small><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+</section>
+<button class="g6-rep" data-booster="reperes-repli">Repères du style · BJCP 2021<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+<div class="g6-cadran" id="g6-cad" data-booster="anneaux">
+  <svg viewBox="0 0 390 320" aria-hidden="true">
+    <defs><pattern id="g6-hach" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#F5D9D6"/><path d="M0 0v6" stroke="#C8382F" stroke-width="2"/></pattern></defs>
+    <path id="g6-pv" fill="none" stroke="#EBEBEB" stroke-width="26" stroke-linecap="round"/>
+    <path id="g6-pz" fill="none" stroke="url(#g6-hach)" stroke-width="26"/>
+    <path id="g6-fv" fill="none" stroke="#111111" stroke-width="26" stroke-linecap="round"/>
+    <path id="g6-pb" fill="none" stroke="#EBEBEB" stroke-width="14" stroke-linecap="round"/>
+    <path id="g6-fb" fill="none" stroke="#666666" stroke-width="14" stroke-linecap="round"/>
+    <g id="g6-marques"></g>
+    <circle id="g6-kv" r="17" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
+    <circle id="g6-kb" r="12" fill="#FFFFFF" stroke="#666666" stroke-width="3"/>
+  </svg>
+  <div class="g6-centre">
+    <output id="g6-v">24<small>L</small></output>
+    <span class="g6-lib" id="g6-lib"><b>6 L</b> libres sur <b>30</b></span>
+    <hr>
+    <span class="g6-b" id="g6-b">60<small>min</small></span>
+    <span class="g6-ev" id="g6-ev"><b>~3 L</b> évaporés</span>
+  </div>
+  <div role="slider" aria-label="Volume en fermenteur" aria-valuemin="0" aria-valuemax="36" aria-valuenow="24" tabindex="0" id="g6-sv" style="position:absolute;width:1px;height:1px;overflow:hidden"></div>
+  <div role="slider" aria-label="Durée d'ébullition" aria-valuemin="0" aria-valuemax="120" aria-valuenow="60" tabindex="0" id="g6-sb" style="position:absolute;width:1px;height:1px;overflow:hidden"></div>
+</div>
+<div class="g6-cuve" data-booster="cuve-barre"><span>cuve</span><div class="g6-mb"><i id="g6-cb" style="width:60%"></i><u style="left:77.8%"></u></div><span id="g6-cv"><b>~27 L</b> à chauffer sur <b>45</b></span></div>
+<div class="g6-bas">
+<div class="g6-row"><span>Espace libre <small class="g6-m">~20 %</small> <small>repère</small></span><button class="g6-chv" aria-label="Régler l'espace libre" data-booster="espace-repli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<div class="g6-row"><span>NOLO <small class="g6-m">≤ 0,5 %</small></span><button class="g6-sw" role="switch" aria-checked="false" aria-label="NOLO" data-booster="nolo-bascule"></button></div>
+<div class="g6-row"><span><small>Matériel</small> Royal Catering · cuve 45 L</span><button class="g6-chv" aria-label="Détail du matériel" data-booster="materiel-repli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<div class="g6-pied" data-commun="pied"><button disabled>Retour</button><button class="g6-prim">Suivant — Malts/sucres</button></div>
+<button class="g6-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+
+</div>
+</div>
+<section class="g6-etats" aria-label="Autres états">
+  <h2>Autres états</h2>
+  <div class="g6-etat"><h3>Anneau poussé dans la zone hachurée (au-delà de 30 L) : « dépasse de 2 L » en rouge au centre (rôle alert)</h3></div>
+  <div class="g6-etat"><h3>Volume inconnu : anneau vide, pas de bouton posé, « — » au centre ; jamais 0</h3></div>
+  <div class="g6-etat"><h3>Tireté sur l'anneau extérieur : conseil ~24 L (repère de 20 % d'espace libre, estimation)</h3></div>
+  <div class="g6-etat"><h3>Toucher le centre : saisie exacte ; flèches du clavier : pas de 1 L et de 5 min</h3></div>
+  <div class="g6-etat"><h3>NOLO coché : l'atelier se déplie sous la rangée</h3></div>
+</section>
+</main>
+<script>(function(){
+  var CAP=30, VMAX=36, BMAX=120, CONSEIL=24, v=24, b=60;
+  var CX=195, CY=190, RV=152, RB=110, A0=150, SW=240;
+  var $=function(id){return document.getElementById(id)};
+  var q=new URLSearchParams(location.search);if(q.get('v'))v=+q.get('v');if(q.get('b'))b=+q.get('b');if(q.has('neuf')){var bd=document.querySelector('[data-commun=bandeau]');if(bd)bd.hidden=true;var ab=document.querySelector('.g6-aband');if(ab)ab.hidden=true;var n=document.querySelector('input[type=text]');if(n){n.value='';n.placeholder='Milk Stout #2, NEIPA Tropicale…';}var s=document.querySelector('[data-booster=style-liste]');if(s)s.innerHTML='Choisir un style';var rp=document.querySelector('[data-booster=reperes-repli]');if(rp)rp.hidden=true;}if(q.has('nolo')){var w=document.querySelector('[data-booster=nolo-bascule]');if(w)w.setAttribute('aria-checked','true');}
+  function pt(r,a){var t=a*Math.PI/180;return [CX+r*Math.cos(t),CY+r*Math.sin(t)];}
+  function arc(r,a0,a1){if(a1-a0<0.01)return '';var p=pt(r,a0),q=pt(r,a1);return 'M'+p[0].toFixed(1)+' '+p[1].toFixed(1)+' A'+r+' '+r+' 0 '+(a1-a0>180?1:0)+' 1 '+q[0].toFixed(1)+' '+q[1].toFixed(1);}
+  function ang(f){return A0+SW*f;}
+  $('g6-pv').setAttribute('d',arc(RV,ang(0),ang(CAP/VMAX)));
+  $('g6-pz').setAttribute('d',arc(RV,ang(CAP/VMAX),ang(1)));
+  $('g6-pb').setAttribute('d',arc(RB,ang(0),ang(1)));
+  var m='';
+  [0,10,20,30].forEach(function(x){var p=pt(RV+22,ang(x/VMAX));m+='<text class="g6-graduation" x="'+p[0].toFixed(1)+'" y="'+(p[1]+4).toFixed(1)+'" text-anchor="middle">'+x+'</text>';});
+  var pp=pt(RV,ang(1)); m+='<text class="g6-plein-t" x="'+pp[0].toFixed(1)+'" y="'+(pp[1]+30).toFixed(1)+'" text-anchor="middle">au-delà : plein</text>';
+  var c0=pt(RV-17,ang(CONSEIL/VMAX)),c1=pt(RV+17,ang(CONSEIL/VMAX)); m+='<line x1="'+c0[0].toFixed(1)+'" y1="'+c0[1].toFixed(1)+'" x2="'+c1[0].toFixed(1)+'" y2="'+c1[1].toFixed(1)+'" stroke="#666" stroke-width="2" stroke-dasharray="3 3"/>';
+  [60,90].forEach(function(x){var a=pt(RB-9,ang(x/BMAX)),z=pt(RB+9,ang(x/BMAX));m+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+z[0].toFixed(1)+'" y2="'+z[1].toFixed(1)+'" stroke="#FFFFFF" stroke-width="2"/>';});
+  $('g6-marques').innerHTML=m;
+  function maj(){
+    $('g6-fv').setAttribute('d',arc(RV,ang(0),ang(Math.min(v,CAP)/VMAX)));
+    $('g6-fv').setAttribute('stroke',v>=CAP?'#C8382F':'#111111');
+    var k=pt(RV,ang(v/VMAX)); $('g6-kv').setAttribute('cx',k[0]); $('g6-kv').setAttribute('cy',k[1]); $('g6-kv').setAttribute('stroke',v>=CAP?'#C8382F':'#111111');
+    $('g6-fb').setAttribute('d',arc(RB,ang(0),ang(b/BMAX)));
+    var j=pt(RB,ang(b/BMAX)); $('g6-kb').setAttribute('cx',j[0]); $('g6-kb').setAttribute('cy',j[1]);
+    $('g6-v').firstChild.nodeValue=v; $('g6-b').firstChild.nodeValue=b;
+    var l=$('g6-lib'); l.className='g6-lib'+(v>=CAP?' g6-al':v>CONSEIL?' g6-att':''); if(v>=CAP)l.setAttribute('role','alert');else l.removeAttribute('role');
+    l.innerHTML=v>CAP?'dépasse de <b>'+(v-CAP)+' L</b>':v===CAP?'fermenteur plein':'<b>'+(CAP-v)+' L</b> libres sur <b>30</b>';
+    var ev=b?Math.round(v/(1-0.1*b/60)-v):0;
+    $('g6-ev').innerHTML=b?'<b>~'+ev+' L</b> évaporés':'rien d’évaporé';
+    $('g6-cv').innerHTML='<b>~'+(v+ev)+' L</b> à chauffer sur <b>45</b>'; $('g6-cb').style.width=Math.min(100,(v+ev)/45*100)+'%';
+    $('g6-sv').setAttribute('aria-valuenow',v); $('g6-sb').setAttribute('aria-valuenow',b);
+  }
+  var cad=$('g6-cad'), anneau=null;
+  function lirePointeur(e){var r=cad.getBoundingClientRect(),x=e.clientX-r.left-CX,y=e.clientY-r.top-CY;return {d:Math.hypot(x,y),a:(Math.atan2(y,x)*180/Math.PI+360)%360};}
+  function fraction(a){var d=(a-A0+360)%360; if(d>SW)d=d>SW+60?0:SW; return d/SW;}
+  cad.addEventListener('pointerdown',function(e){var p=lirePointeur(e); if(p.d>RV-26&&p.d<RV+30)anneau='v'; else if(p.d>RB-20&&p.d<RB+20)anneau='b'; else return; cad.setPointerCapture(e.pointerId); bouger(e);});
+  function bouger(e){if(!anneau)return;var f=fraction(lirePointeur(e).a); if(anneau==='v')v=Math.round(f*VMAX); else b=Math.round(f*BMAX/5)*5; maj();}
+  cad.addEventListener('pointermove',bouger);
+  cad.addEventListener('pointerup',function(){anneau=null;});
+  $('g6-sv').addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowUp'){v=Math.min(VMAX,v+1);maj();}if(e.key==='ArrowLeft'||e.key==='ArrowDown'){v=Math.max(0,v-1);maj();}});
+  $('g6-sb').addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowUp'){b=Math.min(BMAX,b+5);maj();}if(e.key==='ArrowLeft'||e.key==='ArrowDown'){b=Math.max(0,b-5);maj();}});
+  maj();
+  document.querySelector('[data-booster=nolo-bascule]').addEventListener('click',function(){this.setAttribute('aria-checked',this.getAttribute('aria-checked')!=='true');});
+})();</script>
+</body></html>

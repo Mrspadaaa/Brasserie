@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>i4 · Identité · reprendre une recette, v3 vers v4 (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--i4-page:#fff;--i4-pan:#F5F5F5;--i4-sur:#EBEBEB;--i4-bd:#DDDDDD;--i4-bdm:#BFBFBF;--i4-t0:#111;--i4-t2:#333;--i4-t4:#666;
+    --i4-hop:#567F45;--i4-hopt:#3F6B2E;--i4-eau:#4F7E9B;--i4-eaut:#2F5F7D;--i4-att:#9C7020;--i4-attt:#7F5B10}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--i4-page);color:var(--i4-t2);font:400 14px/18px "Source Sans 3",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#111;color:#fff}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #111;outline-offset:2px}
+  .i4-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--i4-t0)}
+  .i4-sep::before{content:"·";margin:0 4px}
+  .i4-tir::before{content:"—";margin:0 4px}
+  .i4-ecran{width:390px;min-height:844px}
+  .i4-hd{padding:0 8px;border-bottom:1px solid var(--i4-bd)}
+  .i4-tb{display:flex;align-items:center;gap:6px;height:36px}
+  .i4-ic{width:28px;height:28px;border:0;background:none;color:var(--i4-t4);display:grid;place-items:center;border-radius:8px;padding:0}
+  .i4-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i4-t{margin:0;flex:1;font:600 18px/22px "Source Sans 3",system-ui,sans-serif;color:var(--i4-t0)}
+  .i4-t span{font-weight:400;color:var(--i4-t4)}
+  .i4-ab{border:0;background:none;color:var(--i4-t2);text-decoration:underline;text-underline-offset:2px;font-size:13px;height:28px;padding:0 6px;border-radius:8px}
+  .i4-rail{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+  .i4-st{flex:1 0 auto;border:0;background:none;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:16px;color:var(--i4-t4);min-height:24px}
+  .i4-st i{display:block;height:4px;border-radius:2px;background:var(--i4-bd)}
+  .i4-st.i4-on{color:var(--i4-t0);font-weight:600}
+  .i4-st.i4-on i{background:#111}
+  .i4-mt{margin:8px 8px 0;height:30px;border:1px solid var(--i4-bd);border-radius:15px;background:var(--i4-pan);display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:13px;color:var(--i4-t4)}
+  .i4-mt .i4-m{font-size:14px;margin-left:3px}
+  .i4-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;border:1px solid #BFBFBF;vertical-align:-1px;margin-left:3px}
+  .i4-corps{padding:8px;display:flex;flex-direction:column;gap:8px}
+  /* La lignée : de quelle recette on repart, et ce qu'on en fait */
+  .i4-lignee{display:flex;align-items:center;gap:8px}
+  .i4-ver{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;border:1px solid var(--i4-bdm);background:var(--i4-page);min-width:0}
+  .i4-ver.i4-old{background:var(--i4-pan);border-color:var(--i4-bd)}
+  .i4-verre{width:18px;height:24px;flex:none}
+  .i4-ver b{display:block;font-weight:600;font-size:14px;color:var(--i4-t0);line-height:16px}
+  .i4-ver small{display:block;font-size:13px;color:var(--i4-t4);line-height:16px}
+  .i4-ver small .i4-m{font-size:13px;font-weight:500;color:var(--i4-t4)}
+  .i4-ver input{width:100%;border:0;border-bottom:1px solid var(--i4-bdm);background:none;padding:0;font:600 16px/20px "Source Sans 3",system-ui,sans-serif;color:var(--i4-t0)}
+  .i4-fl{width:16px;height:16px;flex:none;fill:none;stroke:#666;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i4-seg{display:grid;grid-template-columns:1fr 1fr;padding:2px;border-radius:8px;background:var(--i4-sur)}
+  .i4-seg button{height:28px;border:0;border-radius:4px;background:none;font-size:13px;color:var(--i4-t2)}
+  .i4-seg button[aria-checked="true"]{background:var(--i4-page);color:var(--i4-t0);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  /* La table v4 | v3 */
+  .i4-tab{border-radius:8px;background:var(--i4-pan);padding:0 8px}
+  .i4-r{display:grid;grid-template-columns:78px 1fr 64px;align-items:stretch;gap:6px;min-height:40px;border-top:1px solid var(--i4-bd)}
+  .i4-r>.i4-lb,.i4-r>.i4-val,.i4-r>.i4-style,.i4-r>.i4-ferm,.i4-r>.i4-th{align-self:center}
+  .i4-r:first-child{border-top:0;min-height:28px}
+  .i4-th{font-size:13px;color:var(--i4-t4)}
+  .i4-th.i4-c3{text-align:center}
+  .i4-lb{font-size:13px;color:var(--i4-t4)}
+  .i4-val{display:flex;align-items:center;gap:6px;min-width:0}
+  .i4-val input{width:52px;height:32px;border:1px solid var(--i4-bdm);border-radius:8px;background:var(--i4-page);text-align:center;font:600 16px/30px "IBM Plex Mono",monospace;color:var(--i4-t0);font-variant-numeric:tabular-nums;padding:0}
+  .i4-u{font-size:13px;color:var(--i4-t4)}
+  .i4-c3{display:flex;align-items:center;justify-content:center;gap:4px;font-size:13px;color:var(--i4-t4);background:#E1ECDB;margin-right:-8px}
+  .i4-tab:not(.i4-suite) .i4-r:first-child .i4-c3{background:none}
+  .i4-chg .i4-c3,.i4-cons .i4-c3{background:#F2DFB8}
+  .i4-eg::before{content:"="}
+  .i4-eg{display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border-radius:10px;background:none;color:var(--i4-hopt);font:600 13px/20px "IBM Plex Mono",monospace}
+  .i4-r.i4-chg{background:linear-gradient(90deg,#F7EAD0,#F7EAD0) no-repeat;background-size:100% 100%;margin:0 -8px;padding:0 8px}
+  .i4-r.i4-chg .i4-lb{color:var(--i4-attt);font-weight:600}
+  .i4-avant{font:500 13px/16px "IBM Plex Mono",monospace;color:var(--i4-attt);text-decoration:line-through;font-variant-numeric:tabular-nums}
+  .i4-undo{width:24px;height:24px;border-radius:12px;border:1px solid var(--i4-att);background:var(--i4-page);display:grid;place-items:center;padding:0;color:var(--i4-attt)}
+  .i4-undo svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i4-r.i4-cons .i4-lb{color:var(--i4-eaut)}
+  .i4-evap{display:inline-flex;align-items:center;gap:4px;color:var(--i4-eaut);font-size:13px}
+  .i4-evap svg{width:16px;height:16px;fill:none;stroke:var(--i4-eau);stroke-width:1.75}
+  .i4-evap .i4-m{color:var(--i4-eaut);font-size:14px}
+  .i4-old-eau{font:500 13px/16px "IBM Plex Mono",monospace;color:var(--i4-eaut);text-decoration:line-through}
+  .i4-style{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--i4-t0);border:0;background:none;padding:0;text-align:left;min-height:28px}
+  .i4-style b{font-weight:600}
+  .i4-tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;background:#D5EFEC;color:#115E59;font-size:13px;font-weight:600}
+  .i4-sw{position:relative;width:36px;height:20px;border-radius:10px;background:var(--i4-bdm);border:0;padding:0}
+  .i4-sw::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:8px;background:#fff;transition:transform .15s}
+  .i4-sw[aria-checked="true"]{background:#111}
+  .i4-sw[aria-checked="true"]::after{transform:translateX(16px)}
+  .i4-ferm{display:flex;flex-direction:column;gap:4px;padding:6px 0;min-width:0}
+  .i4-fv{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+  .i4-fv .i4-m{font-size:14px}
+  .i4-libre{font-size:13px;color:var(--i4-hopt)}
+  .i4-bar{position:relative;height:10px;border-radius:5px;background:var(--i4-sur);border:1px solid var(--i4-bdm);overflow:hidden}
+  .i4-bar b{position:absolute;inset:0 20% 0 0;background:#8FB07F}
+  .i4-barc b{right:auto;background:#7FA6BE}
+  .i4-goutte{width:16px;height:16px;fill:none;stroke:var(--i4-eau);stroke-width:1.75;flex:none;align-self:center}
+  .i4-prov{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:10px;border:1px dashed var(--i4-att);color:var(--i4-attt);font-size:13px}
+  .i4-bar i{position:absolute;top:0;bottom:0;left:80%;border-left:2px dashed var(--i4-att)}
+  /* Ce qui suit de v3, étape par étape */
+  .i4-suite{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .i4-suite .i4-lb{flex:none}
+  .i4-ch{height:28px;border-radius:14px;border:1px solid var(--i4-bdm);background:var(--i4-page);padding:0 10px;font-size:13px;color:var(--i4-t0);display:inline-flex;align-items:center;gap:4px}
+  .i4-ch .i4-m{font-size:13px}
+  .i4-q{width:24px;height:24px;border-radius:12px;border:1px solid var(--i4-bdm);background:var(--i4-page);font-size:13px;font-weight:600;color:var(--i4-t2);padding:0;flex:none}
+  .i4-tab.i4-suite{display:block}
+  .i4-tab .i4-r.i4-rs{min-height:34px}
+  .i4-tab .i4-r.i4-rs:first-child{min-height:32px}
+  .i4-rs .i4-val{font-size:14px;color:var(--i4-t0)}
+  .i4-rs .i4-m{font-size:14px}
+  .i4-leg{margin:0;padding:8px;border-radius:8px;border:1px solid var(--i4-bd);font-size:13px;color:var(--i4-t2)}
+  .i4-leg[hidden]{display:none}
+  .i4-pied{display:flex;justify-content:space-between;gap:8px}
+  .i4-btn{height:32px;border-radius:8px;padding:0 12px;font-size:14px;border:1px solid var(--i4-bdm);background:var(--i4-page);color:var(--i4-t4)}
+  .i4-btn-p{background:#111;color:#fff;border-color:#111;font-weight:600}
+</style>
+</head>
+<body>
+<!-- ÉTAT : « Dupliquer » neipa v3, puis l'ébullition passée de 60 à 90 min. Tout le reste suit v3. -->
+<div class="i4-ecran" data-etat="reprise">
+  <header class="i4-hd">
+    <div class="i4-tb">
+      <button class="i4-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i4-t">Identité <span>1/7</span></h1>
+      <button class="i4-ab">Abandonner</button>
+      <button class="i4-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i4-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i4-rail" aria-label="Étapes">
+      <button class="i4-st i4-on" aria-current="step">Identité<i></i></button>
+      <button class="i4-st">Malts/sucres<i></i></button>
+      <button class="i4-st">Houblons<i></i></button>
+      <button class="i4-st">Levure<i></i></button>
+      <button class="i4-st">Paliers<i></i></button>
+      <button class="i4-st">Eau<i></i></button>
+      <button class="i4-st">Récap.<i></i></button>
+    </nav>
+  </header>
+  <div class="i4-mt" aria-label="Bandeau de la recette">
+    <span>Grain<span class="i4-m">8,6 kg</span></span>
+    <span>OG<span class="i4-m">1,080</span></span>
+    <span>IBU<span class="i4-m">~93</span><svg width="44" height="10" viewBox="0 0 44 10" style="margin-left:4px;vertical-align:-1px"><rect x="0" y="2" width="44" height="6" rx="3" fill="#DDDDDD"/><rect x="22" y="2" width="15" height="6" rx="3" fill="#9E9E9E"/><rect x="34" y="0" width="2" height="10" fill="#111"/></svg></span>
+    <span>EBC<span class="i4-dot"></span><span class="i4-m">9,5</span></span>
+  </div>
+
+  <main class="i4-corps">
+    <!-- L'idée : une reprise se lit contre sa source. Chaque valeur dit « = v3 », ou ce qu'elle était. -->
+    <section class="i4-lignee" aria-label="Reprise de neipa v3" data-booster="lignee">
+      <div class="i4-ver i4-old">
+        <svg class="i4-verre" viewBox="0 0 18 24" aria-hidden="true"><path d="M2 2h14l-1.6 19a1 1 0 0 1-1 1H4.6a1 1 0 0 1-1-1Z" fill="#FBB123" stroke="#9E9E9E" stroke-width="1"/></svg>
+        <span><b>neipa v3</b><small>brassée <span class="i4-m">12.09</span></small></span>
+      </div>
+      <svg class="i4-fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <label class="i4-ver" style="flex:1">
+        <svg class="i4-verre" viewBox="0 0 18 24" aria-hidden="true"><path d="M2 2h14l-1.6 19a1 1 0 0 1-1 1H4.6a1 1 0 0 1-1-1Z" fill="#FBB123" stroke="#9E9E9E" stroke-width="1"/></svg>
+        <span style="flex:1;min-width:0"><input value="neipa v4" aria-label="Nom de la nouvelle version"></span>
+      </label>
+    </section>
+    <div class="i4-seg" role="radiogroup" aria-label="Que faire de v3" data-booster="version-ou-modifier">
+      <button role="radio" aria-checked="true">Nouvelle version</button>
+      <button role="radio" aria-checked="false">Modifier v3</button>
+    </div>
+
+    <section class="i4-tab" aria-label="Identité, face à v3" data-booster="table-v3">
+      <div class="i4-r"><span></span><span class="i4-th">v4</span><span class="i4-th i4-c3">v3</span></div>
+      <div class="i4-r"><span class="i4-lb">Style</span><button class="i4-style"><b>Double IPA</b><span class="i4-tag">22A</span></button><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r"><span class="i4-lb">Volume</span><span class="i4-val"><input inputmode="decimal" value="24" aria-label="Volume en fermenteur"><span class="i4-u">L</span></span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r i4-chg"><span class="i4-lb">Ébullition</span><span class="i4-val"><input inputmode="numeric" value="90" aria-label="Durée d'ébullition"><span class="i4-u">min</span></span><span class="i4-c3"><span class="i4-avant">60</span><button class="i4-undo" aria-label="Revenir à 60 min, comme v3" data-booster="revenir-v3"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button></span></div>
+      <div class="i4-r i4-cons"><span class="i4-lb">Cuve à chaud</span><div class="i4-ferm i4-cuve" data-booster="evaporation-cuve"><span class="i4-fv"><svg class="i4-goutte" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span class="i4-m">31,7 / 35 L</span><span class="i4-prov">provisoire</span></span><span class="i4-bar i4-barc"><b style="width:90.6%"></b></span></div><span class="i4-c3"><span class="i4-old-eau">30,2</span></span></div>
+      <div class="i4-r"><span class="i4-lb">NOLO</span><span class="i4-val"><button class="i4-sw" role="switch" aria-checked="false" aria-label="NOLO, 0,5 % au plus" data-booster="nolo"></button><span class="i4-u">≤ 0,5 %</span></span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r"><span class="i4-lb">Fermenteur</span><div class="i4-ferm" data-booster="jauge-fermenteur"><span class="i4-fv"><span class="i4-m">24 / 30 L</span><span class="i4-libre">6 L libres</span></span><span class="i4-bar" role="meter" aria-valuemin="0" aria-valuemax="30" aria-valuenow="24" aria-label="Remplissage du fermenteur"><b></b><i></i></span></div><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r"><span class="i4-lb">Matériel</span><span class="i4-val" style="font-size:14px;color:#111"><b style="font-weight:600">Royal Catering</b></span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+    </section>
+
+    <section class="i4-tab i4-suite" aria-label="Les autres étapes reprises de v3" data-booster="suite-v3">
+      <div class="i4-r i4-rs"><span class="i4-lb">Malts</span><span class="i4-val"><span class="i4-m">8,6 kg</span></span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r i4-rs"><span class="i4-lb">Houblons</span><span class="i4-val"><span class="i4-m">84 g</span></span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r i4-rs"><span class="i4-lb">Levure</span><span class="i4-val">Verdant IPA</span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+      <div class="i4-r i4-rs"><span class="i4-lb">Paliers</span><span class="i4-val"><span class="i4-m">67 °C</span><button class="i4-q" style="margin-left:auto" data-role="legende-bouton" aria-expanded="false" aria-controls="i4-leg" aria-label="Légende">?</button></span><span class="i4-c3"><span class="i4-eg" aria-label="comme v3"></span></span></div>
+    </section>
+    <p class="i4-leg" id="i4-leg" data-role="legende" hidden>« = » : la valeur est celle de v3. Barré : ce qu'elle était dans v3 ; la flèche y revient. « Nouvelle version » crée neipa v4 et laisse v3 telle quelle ; « Modifier v3 » ne réécrit jamais le brassin du 12.09. L'évaporation suit ton profil, 3 L/h : 90 min ajoutent 1,5 L à chauffer dans la cuve, face aux 35 L utiles encore provisoires.</p>
+
+    <div class="i4-pied">
+      <button class="i4-btn" disabled>Retour</button>
+      <button class="i4-btn i4-btn-p">Suivant<span class="i4-tir" aria-hidden="true"></span>Malts/sucres</button>
+    </div>
+  </main>
+</div>
+<script>
+(function(){
+  var b=document.querySelector('[data-role="legende-bouton"]'),l=document.getElementById('i4-leg');
+  function ouvrir(o){l.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');}
+  b.addEventListener('click',function(){ouvrir(l.hidden);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')ouvrir(false);});
+  var seg=document.querySelectorAll('.i4-seg button');
+  seg.forEach(function(x){x.addEventListener('click',function(){seg.forEach(function(y){y.setAttribute('aria-checked','false');});x.setAttribute('aria-checked','true');});});
+  var u=document.querySelector('.i4-undo');
+  u.addEventListener('click',function(){var r=u.closest('.i4-r');r.classList.remove('i4-chg');r.querySelector('input').value='60';u.parentNode.innerHTML='<span class="i4-eg" aria-label="comme v3"></span>';var k=document.querySelector('.i4-cuve');k.querySelector('.i4-m').textContent='30,2 / 35 L';k.querySelector('b').style.width='86%';k.closest('.i4-r').querySelector('.i4-c3').innerHTML='<span class="i4-eg" aria-label="comme v3"></span>';});
+  var sw=document.querySelector('.i4-sw');sw.addEventListener('click',function(){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');});
+})();
+</script>
+</body>
+</html>

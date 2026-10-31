@@ -1,0 +1,181 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>g5 — Une réglette pour tout (chaude)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--faible:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;--hop:#3F6B2E;--hopf:#567F45;--alert:#A8291F;--alertf:#C8382F;--att:#7F5B10;--attf:#9C7020;--eau:#2F5F7D;--ebc:#E0A02E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--page);color:var(--t0);font-family:'Source Sans 3',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{width:390px;min-height:844px;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.g5-m{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.g5-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.g5-barre{display:flex;align-items:center;height:40px;padding:0 6px 0 2px;gap:2px}
+.g5-ret,.g5-ico{width:32px;height:32px;border:0;background:none;display:grid;place-items:center;color:var(--t1);border-radius:10px;padding:0}
+.g5-titre{font-size:18px;font-weight:600;margin:0 0 0 2px;flex:1;line-height:22px;white-space:nowrap}
+.g5-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+.g5-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:6px 6px}
+.g5-fil{display:flex;gap:6px;padding:0 10px 5px;overflow-x:auto;scrollbar-width:none}
+.g5-fil button{flex:auto;min-width:0;border:0;background:none;padding:3px 0 0;display:flex;flex-direction:column;gap:4px;align-items:stretch;min-height:28px}
+.g5-fil b{font-weight:400;font-size:13px;color:var(--t2);white-space:nowrap;text-align:left}
+.g5-fil .g5-on b{color:var(--t0);font-weight:600}
+.g5-fil i{height:5px;border-radius:3px;background:var(--bord)}
+.g5-fil .g5-on i{background:var(--t0)}
+.g5-bandeau{margin:8px 10px 0;height:36px;border:1px solid var(--bord);border-radius:18px;background:var(--pan);display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.g5-bandeau>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.g5-bandeau em{font-style:normal;font-size:13px;color:var(--t2)}
+.g5-bandeau b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}
+.g5-bpiste{position:relative;width:36px;height:8px;border-radius:4px;background:var(--sur)}
+.g5-bpiste::before{content:"";position:absolute;left:40%;right:20%;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.g5-bpiste::after{content:"";position:absolute;left:62%;top:-3px;width:2px;height:14px;background:var(--t0);border-radius:1px}
+.g5-bpt{width:10px;height:10px;border-radius:50%;background:var(--ebc)}
+.g5-pied{display:flex;gap:8px;align-items:center;padding:16px 74px 20px 10px}
+.g5-pied button{height:32px;border-radius:10px;padding:0 12px;font-size:13px;border:1px solid var(--bord);background:var(--page)}
+.g5-pied button:disabled{color:var(--t2);border-color:var(--bord)}
+.g5-pied .g5-prim{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600;margin-left:auto}
+.g5-fab{position:fixed;right:12px;bottom:16px;width:52px;height:52px;border-radius:50%;border:0;background:var(--t0);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.g5-etats{margin:24px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.g5-etats>h2{font-size:13px;font-weight:600;color:var(--t2);margin:0 0 8px;text-transform:none}
+.g5-etat{margin:0 0 12px}
+.g5-etat>h3{font-size:12px;font-weight:600;color:var(--t2);margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.g5-ecran{min-height:768px;display:flex;flex-direction:column}
+.g5-id{margin:12px 12px 0;display:flex;align-items:flex-end;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--bord)}
+.g5-id>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.g5-id label{font-size:13px;color:var(--t2)}
+.g5-id input{border:0;border-bottom:1px dashed var(--bordm);font-size:28px;font-weight:600;line-height:32px;padding:0;background:none;width:100%;letter-spacing:-.02em}
+.g5-sty{height:32px;border-radius:16px;border:1px solid var(--t0);background:var(--page);padding:0 8px 0 12px;font-size:16px;display:inline-flex;align-items:center;gap:6px;flex:none}
+.g5-sty small{font-size:13px;color:var(--t2)}
+.g5-rep{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--eau);background:none;border:0;padding:0 12px;height:32px}
+.g5-cibles{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:8px 10px 0;border:1px solid var(--bordm);border-radius:12px;padding:3px;background:var(--pan)}
+.g5-cible{height:52px;border:0;border-radius:10px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
+.g5-cible span{font-size:13px;color:var(--t2)}
+.g5-cible b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:16px;font-weight:600}
+.g5-cible[aria-selected=true]{background:var(--t0)}
+.g5-cible[aria-selected=true] span{color:#fff;font-weight:600}
+.g5-cible[aria-selected=true] b{display:none}
+.g5-lecture{text-align:center;margin-top:22px;line-height:1}
+.g5-lecture output{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;letter-spacing:-.01em}
+.g5-lecture small{font-size:16px;color:var(--t2);margin-left:4px}
+.g5-lecture .g5-nat{display:block;font-size:13px;color:var(--t2);margin-top:6px;min-height:16px}
+.g5-lecture .g5-nat.g5-att{color:var(--att)}.g5-lecture .g5-nat.g5-al{color:var(--alert);font-weight:600}
+.g5-regle{position:relative;margin:10px 10px 0;height:150px;background:var(--t0);border-radius:16px;overflow:hidden}
+.g5-piste{height:150px;overflow-x:scroll;scrollbar-width:none;touch-action:pan-x;scroll-snap-type:x mandatory;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.g5-piste::-webkit-scrollbar{display:none}
+.g5-ticks{display:flex;height:150px;padding:0 calc(185px - 6px);width:max-content;align-items:flex-start}
+.g5-t{flex:none;width:12px;height:150px;position:relative;scroll-snap-align:center}
+.g5-t::before{content:"";position:absolute;left:5px;top:30px;width:2px;height:28px;background:#777;border-radius:1px}
+.g5-t.g5-maj::before{height:48px;background:#eee}
+.g5-t.g5-maj::after{content:attr(data-x);position:absolute;top:86px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;color:#bbb}
+.g5-t.g5-plein{background:repeating-linear-gradient(135deg,rgba(242,146,137,.35) 0 4px,transparent 4px 8px)}
+.g5-t.g5-plein::before{background:#F29289}
+.g5-t.g5-mur::before{width:3px;height:64px;top:22px;background:#F29289}
+.g5-t i{position:absolute;top:116px;left:50%;transform:translateX(-50%);font-style:normal;font-size:12px;white-space:nowrap;color:#ccc}
+.g5-t.g5-mur i{top:2px;color:#F29289;font-weight:600}
+.g5-t.g5-cons::before{background:none;border-left:2px dashed #ddd;width:0;height:80px;top:22px}
+.g5-t.g5-rac::before{background:#fff;height:56px}
+.g5-aiguille{position:absolute;left:calc(50% - 2px);background:#fff!important;top:16px;width:4px;height:76px;border-radius:2px;background:var(--t0);pointer-events:none}
+.g5-aiguille::after{content:"";position:absolute;left:-6px;top:-10px;border:8px solid transparent;border-top:10px solid #fff}
+.g5-cons2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:13px;color:var(--t2);margin:10px 10px 12px}.g5-cons2>span{border:1px solid var(--bord);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:2px}.g5-cons2>span>span{color:var(--t1)}.g5-cons2>span b{font-size:16px;color:var(--t0)}
+.g5-cons2 b{font-weight:600}
+.g5-bas{margin-top:auto}
+.g5-racs{display:flex;gap:6px;justify-content:center;margin:8px 10px 0}.g5-racs button{height:32px;border-radius:16px;border:1px dashed var(--t1);background:var(--page);padding:0 12px;font-size:13px;display:inline-flex;align-items:center;gap:4px}.g5-racs button b{font-family:'IBM Plex Mono',monospace;font-weight:600}
+.g5-row{display:flex;align-items:center;gap:8px;min-height:48px;margin:0 12px;border-top:1px solid var(--bord);font-size:16px}
+.g5-row>span{flex:1}
+.g5-row small{font-size:13px;color:var(--t2)}
+.g5-sw{width:48px;height:28px;border-radius:14px;background:var(--bordm);border:0;position:relative;padding:0;transition:background .18s}
+.g5-sw::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .18s}
+.g5-sw[aria-checked=true]{background:var(--t0)}.g5-sw[aria-checked=true]::after{left:23px}
+.g5-row button.g5-chv{background:none;border:0;height:32px;display:flex;align-items:center;color:var(--t2);padding:0 2px}
+</style></head><body>
+<header class="g5-tete" data-commun="en-tete">
+  <div class="g5-barre">
+    <button class="g5-ret" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1 class="g5-titre">Identité<span>1/7</span></h1>
+    <a class="g5-aband" href="#">Abandonner</a>
+    <button class="g5-ico" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></button>
+    <button class="g5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="g5-fil" aria-label="Étapes" data-commun="fil">
+    <button class="g5-on" aria-current="step"><b>Identité</b><i></i></button><button><b>Malts/sucres</b><i></i></button><button><b>Houblons</b><i></i></button><button><b>Levure</b><i></i></button><button><b>Paliers</b><i></i></button><button><b>Eau</b><i></i></button><button><b>Récap.</b><i></i></button>
+  </nav>
+</header>
+
+<main>
+<div class="g5-ecran">
+<div class="g5-bandeau" data-commun="bandeau"><span><em>Grain</em><b>8,6 kg</b></span><span><em>OG</em><b>1,080</b></span><span><em>IBU</em><b>~93</b><i class="g5-bpiste" title="Plage du style 60–120"></i></span><span><em>EBC</em><i class="g5-bpt"></i><b>9,5</b></span></div>
+
+<section class="g5-id" aria-label="La bière">
+  <div><label for="g5-nom">Nom</label><input id="g5-nom" type="text" value="neipa v3" autocomplete="off"></div>
+  <button class="g5-sty" data-booster="style-liste" aria-haspopup="listbox">Double IPA <small class="g5-m">22A</small><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+</section>
+<button class="g5-rep" data-booster="reperes-repli">Repères du style · BJCP 2021<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+<div class="g5-cibles" role="tablist" aria-label="Ce que règle la réglette" data-booster="cible-reglette">
+  <button class="g5-cible" role="tab" data-c="v" aria-selected="true"><span>Volume</span><b>24 L</b></button>
+  <button class="g5-cible" role="tab" data-c="b" aria-selected="false"><span>Ébullition</span><b>60 min</b></button>
+  <button class="g5-cible" role="tab" data-c="e" aria-selected="false"><span>Espace libre</span><b>~20 %</b></button>
+</div>
+<div class="g5-lecture"><output id="g5-val">24</output><small id="g5-uni">L</small><span class="g5-nat" id="g5-nat">en fermenteur</span></div>
+<div class="g5-regle" data-booster="reglette"><div class="g5-piste" id="g5-piste" tabindex="0" role="slider" aria-label="Réglette" aria-valuenow="24"><div class="g5-ticks" id="g5-ticks"></div></div><div class="g5-aiguille"></div></div>
+<div class="g5-racs" id="g5-racs" data-booster="raccourcis"></div>
+<div class="g5-cons2" aria-live="polite"><span>fermenteur<span id="g5-c1"><b class="g5-m">6 L</b> libres</span></span><span>cuve<span id="g5-c2"><b class="g5-m">~27 L</b> à chauffer</span></span><span>ébullition<span id="g5-c3"><b class="g5-m">~3 L</b> évaporés</span></span></div>
+<div class="g5-bas">
+<div class="g5-row"><span>NOLO <small class="g5-m">≤ 0,5 %</small></span><button class="g5-sw" role="switch" aria-checked="false" aria-label="NOLO" data-booster="nolo-bascule"></button></div>
+<div class="g5-row"><span><small>Matériel</small> Royal Catering · cuve 45 L</span><button class="g5-chv" aria-label="Détail du matériel" data-booster="materiel-repli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<div class="g5-pied" data-commun="pied"><button disabled>Retour</button><button class="g5-prim">Suivant — Malts/sucres</button></div>
+<button class="g5-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+
+</div>
+</div>
+<section class="g5-etats" aria-label="Autres états">
+  <h2>Autres états</h2>
+  <div class="g5-etat"><h3>Réglette sur « Ébullition » : pas de 5 min, 60 et 90 en traits forts, aucun mur</h3></div>
+  <div class="g5-etat"><h3>Réglette sur « Espace libre » : repère ~20 % en tireté (estimation, à ajuster selon la levure)</h3></div>
+  <div class="g5-etat"><h3>Au-delà de 30 L : zone hachurée rouge, « dépasse le fermenteur de 2 L » sous la lecture (rôle alert)</h3></div>
+  <div class="g5-etat"><h3>Volume inconnu : la lecture affiche « — », la réglette n'a pas d'aiguille posée ; « libres : — »</h3></div>
+  <div class="g5-etat"><h3>Toucher la lecture : saisie exacte au clavier décimal (virgule)</h3></div>
+</section>
+</main>
+<script>(function(){
+  var CAP=30, PX=12, st={v:24,b:60,e:20}, c='v';
+  var D={v:{de:10,a:40,pas:1,u:'L',maj:5},b:{de:0,a:150,pas:5,u:'min',maj:30},e:{de:5,a:40,pas:1,u:'%',maj:5}};
+  var $=function(id){return document.getElementById(id)};
+  var q=new URLSearchParams(location.search);if(q.get('v'))st.v=+q.get('v');if(q.get('b'))st.b=+q.get('b');if(q.has('neuf')){var bd=document.querySelector('[data-commun=bandeau]');if(bd)bd.hidden=true;var ab=document.querySelector('.g5-aband');if(ab)ab.hidden=true;var n=document.querySelector('input[type=text]');if(n){n.value='';n.placeholder='Milk Stout #2, NEIPA Tropicale…';}var s=document.querySelector('[data-booster=style-liste]');if(s)s.innerHTML='Choisir un style';var rp=document.querySelector('[data-booster=reperes-repli]');if(rp)rp.hidden=true;}if(q.has('nolo')){var w=document.querySelector('[data-booster=nolo-bascule]');if(w)w.setAttribute('aria-checked','true');}
+  var piste=$('g5-piste'), ticks=$('g5-ticks');
+  function conseil(){return Math.floor(CAP*(1-st.e/100));}
+  function construire(){
+    var d=D[c],h='',co=conseil();
+    for(var x=d.de;x<=d.a;x+=d.pas){
+      var k='g5-t';
+      if((x-d.de)%d.maj===0||x%d.maj===0)k+=' g5-maj';
+      var lab='';
+      if(c==='v'){if(x>CAP)k+=' g5-plein'; if(x===CAP){k+=' g5-mur';lab='<i>plein</i>';} if(x===co){k+=' g5-cons';lab='<i>conseil ~</i>';}}
+      if(c==='b'&&(x===60||x===90))k+=' g5-rac';
+      if(c==='e'&&x===20){k+=' g5-cons';lab='<i>repère ~</i>';}
+      h+='<span class="'+k+'" data-x="'+x+'">'+lab+'</span>';
+    }
+    ticks.innerHTML=h;
+    var R={v:[[co,'conseil']],b:[[60,''],[90,'']],e:[[20,'repère']]}[c];
+    $('g5-racs').innerHTML=R.map(function(x){return '<button data-aller="'+x[0]+'">'+(x[1]?x[1]+' ':'')+'<b>'+(c==='b'?'':'~')+x[0]+' '+d.u+'</b></button>';}).join('');
+    $('g5-racs').querySelectorAll('[data-aller]').forEach(function(k){k.addEventListener('click',function(){piste.scrollTo({left:((+k.dataset.aller-d.de)/d.pas)*PX,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});});
+    piste.scrollLeft=((st[c]-d.de)/d.pas)*PX;
+  }
+  function maj(){
+    var d=D[c], x=d.de+Math.round(piste.scrollLeft/PX)*d.pas; x=Math.max(d.de,Math.min(d.a,x)); st[c]=x;
+    $('g5-val').textContent=(c==='e'?'~':'')+x; $('g5-uni').textContent=d.u; piste.setAttribute('aria-valuenow',x);
+    var n=$('g5-nat'), v=st.v, co=conseil();
+    n.className='g5-nat'; n.removeAttribute('role');
+    if(c==='v'){ if(v>CAP){n.className+=' g5-al';n.setAttribute('role','alert');n.textContent='dépasse le fermenteur de '+(v-CAP)+' L';} else if(v===CAP){n.className+=' g5-al';n.textContent='fermenteur plein';} else if(v>co){n.className+=' g5-att';n.textContent='au-dessus du conseil';} else n.textContent='en fermenteur'; }
+    else if(c==='b') n.textContent='d’ébullition'; else n.textContent='repère à ajuster · conseil ≤ '+co+' L';
+    var ev=st.b?Math.round(v/(1-0.1*st.b/60)-v):0;
+    $('g5-c1').innerHTML=v>=CAP?'<b class="g5-m">0 L</b> libre':'<b class="g5-m">'+(CAP-v)+' L</b> libres';
+    $('g5-c2').innerHTML='<b class="g5-m">~'+(v+ev)+' L</b> à chauffer';
+    $('g5-c3').innerHTML='<b class="g5-m">~'+ev+' L</b> évaporés';
+    document.querySelectorAll('[data-c]').forEach(function(t){var k=t.dataset.c;t.querySelector('b').textContent=(k==='e'?'~':'')+st[k]+' '+D[k].u;});
+  }
+  document.querySelectorAll('[data-c]').forEach(function(t){t.addEventListener('click',function(){
+    c=t.dataset.c; document.querySelectorAll('[data-c]').forEach(function(u){u.setAttribute('aria-selected',u===t?'true':'false');}); construire(); maj();});});
+  piste.addEventListener('scroll',maj,{passive:true});
+  construire(); maj();
+  document.querySelector('[data-booster=nolo-bascule]').addEventListener('click',function(){this.setAttribute('aria-checked',this.getAttribute('aria-checked')!=='true');});
+})();</script>
+</body></html>

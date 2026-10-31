@@ -1,0 +1,141 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>g4 — Les molettes (tiède)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--faible:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;--hop:#3F6B2E;--hopf:#567F45;--alert:#A8291F;--alertf:#C8382F;--att:#7F5B10;--attf:#9C7020;--eau:#2F5F7D;--ebc:#E0A02E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--page);color:var(--t0);font-family:'Source Sans 3',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{width:390px;min-height:844px;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.g4-m{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.g4-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.g4-barre{display:flex;align-items:center;height:40px;padding:0 6px 0 2px;gap:2px}
+.g4-ret,.g4-ico{width:32px;height:32px;border:0;background:none;display:grid;place-items:center;color:var(--t1);border-radius:10px;padding:0}
+.g4-titre{font-size:18px;font-weight:600;margin:0 0 0 2px;flex:1;line-height:22px;white-space:nowrap}
+.g4-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+.g4-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:6px 6px}
+.g4-fil{display:flex;gap:6px;padding:0 10px 5px;overflow-x:auto;scrollbar-width:none}
+.g4-fil button{flex:auto;min-width:0;border:0;background:none;padding:3px 0 0;display:flex;flex-direction:column;gap:4px;align-items:stretch;min-height:28px}
+.g4-fil b{font-weight:400;font-size:13px;color:var(--t2);white-space:nowrap;text-align:left}
+.g4-fil .g4-on b{color:var(--t0);font-weight:600}
+.g4-fil i{height:5px;border-radius:3px;background:var(--bord)}
+.g4-fil .g4-on i{background:var(--t0)}
+.g4-bandeau{margin:8px 10px 0;height:36px;border:1px solid var(--bord);border-radius:18px;background:var(--pan);display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.g4-bandeau>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.g4-bandeau em{font-style:normal;font-size:13px;color:var(--t2)}
+.g4-bandeau b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}
+.g4-bpiste{position:relative;width:36px;height:8px;border-radius:4px;background:var(--sur)}
+.g4-bpiste::before{content:"";position:absolute;left:40%;right:20%;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.g4-bpiste::after{content:"";position:absolute;left:62%;top:-3px;width:2px;height:14px;background:var(--t0);border-radius:1px}
+.g4-bpt{width:10px;height:10px;border-radius:50%;background:var(--ebc)}
+.g4-pied{display:flex;gap:8px;align-items:center;padding:16px 74px 20px 10px}
+.g4-pied button{height:32px;border-radius:10px;padding:0 12px;font-size:13px;border:1px solid var(--bord);background:var(--page)}
+.g4-pied button:disabled{color:var(--t2);border-color:var(--bord)}
+.g4-pied .g4-prim{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600;margin-left:auto}
+.g4-fab{position:fixed;right:12px;bottom:16px;width:52px;height:52px;border-radius:50%;border:0;background:var(--t0);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.g4-etats{margin:24px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.g4-etats>h2{font-size:13px;font-weight:600;color:var(--t2);margin:0 0 8px;text-transform:none}
+.g4-etat{margin:0 0 12px}
+.g4-etat>h3{font-size:12px;font-weight:600;color:var(--t2);margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.g4-ecran{min-height:768px;display:flex;flex-direction:column}
+.g4-id{margin:10px 10px 0;display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:center}
+.g4-id input{height:40px;border:1px solid var(--bord);border-radius:10px;padding:0 10px;font-size:16px;font-weight:600;background:var(--page);min-width:0}
+.g4-sty{height:40px;border-radius:10px;border:1px solid var(--t0);background:var(--page);padding:0 8px 0 12px;font-size:16px;display:inline-flex;align-items:center;gap:6px}
+.g4-sty small{font-size:13px;color:var(--t2)}
+.g4-rep{grid-column:1/3;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--eau);background:none;border:0;padding:0;height:28px}
+.g4-mol{margin:8px 10px 0;background:var(--pan);border-radius:16px;padding:8px 8px 10px;position:relative}
+.g4-tit{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--t2);text-align:center;padding-bottom:4px}
+.g4-roues{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:8px;height:384px}
+.g4-bande{position:absolute;left:0;right:0;top:256px;height:32px;border-radius:10px;background:var(--t0);pointer-events:none;display:none}
+.g4-roue{position:relative;height:384px;scroll-padding-top:256px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;-webkit-mask-image:linear-gradient(transparent,#000 14%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 88%,transparent);touch-action:pan-y}
+.g4-roue::-webkit-scrollbar{display:none}
+.g4-roue ol{list-style:none;margin:0;padding:256px 0 96px}
+.g4-roue li{height:32px;display:flex;align-items:center;justify-content:center;gap:6px;scroll-snap-align:start;font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:16px;color:var(--t2);position:relative;transition:font-size .15s,color .15s}
+.g4-roue li.g4-on{background:var(--t0);border-radius:10px;font-size:28px;font-weight:600;color:#fff;border-top-color:transparent}
+.g4-roue li.g4-on::after{content:attr(data-u);font-family:'Source Sans 3',system-ui,sans-serif;font-size:16px;font-weight:400;color:#ccc}
+.g4-roue li.g4-sup{color:var(--att);background:rgba(227,181,93,.28)}
+.g4-roue li.g4-trop{color:var(--alert)}
+.g4-roue li.g4-mur{border-top:2px solid var(--alertf)}
+.g4-roue li.g4-mur::before{content:"plein";position:absolute;right:6px;top:-18px;font-family:'Source Sans 3',system-ui,sans-serif;font-size:12px;color:var(--alert)}
+.g4-roue li.g4-cons{border-top:2px dashed var(--t1)}.g4-roue li.g4-mout{background:var(--bord);color:var(--t1)}.g4-roue li.g4-mout+li.g4-mout{border-top:1px solid #d2d2d2}.g4-roue li.g4-trop{background:repeating-linear-gradient(135deg,rgba(200,56,47,.14) 0 4px,transparent 4px 8px)}.g4-roue li.g4-hors{visibility:hidden}.g4-roue li:last-child.g4-mout{border-radius:0 0 10px 10px}
+.g4-roue li.g4-rac::before{content:"";position:absolute;left:12px;width:6px;height:6px;border-radius:50%;background:var(--t2)}
+.g4-eff{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;font-size:13px;color:var(--t1);padding-top:6px}
+.g4-eff b{font-weight:600}
+.g4-eff .g4-att{color:var(--att)}.g4-eff .g4-al{color:var(--alert);font-weight:600}
+.g4-row{display:flex;align-items:center;gap:8px;min-height:52px;margin:0 10px;border-bottom:1px solid var(--bord);font-size:16px}
+.g4-row>span{flex:1}
+.g4-row small{font-size:13px;color:var(--t2)}
+.g4-sw{width:48px;height:28px;border-radius:14px;background:var(--bordm);border:0;position:relative;padding:0;transition:background .18s}
+.g4-sw::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .18s}
+.g4-sw[aria-checked=true]{background:var(--t0)}.g4-sw[aria-checked=true]::after{left:23px}
+.g4-row button.g4-chv{background:none;border:0;height:32px;display:flex;align-items:center;color:var(--t2);padding:0 2px}
+.g4-row:first-of-type{margin-top:4px}
+</style></head><body>
+<header class="g4-tete" data-commun="en-tete">
+  <div class="g4-barre">
+    <button class="g4-ret" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1 class="g4-titre">Identité<span>1/7</span></h1>
+    <a class="g4-aband" href="#">Abandonner</a>
+    <button class="g4-ico" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></button>
+    <button class="g4-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="g4-fil" aria-label="Étapes" data-commun="fil">
+    <button class="g4-on" aria-current="step"><b>Identité</b><i></i></button><button><b>Malts/sucres</b><i></i></button><button><b>Houblons</b><i></i></button><button><b>Levure</b><i></i></button><button><b>Paliers</b><i></i></button><button><b>Eau</b><i></i></button><button><b>Récap.</b><i></i></button>
+  </nav>
+</header>
+
+<main>
+<div class="g4-ecran">
+<div class="g4-bandeau" data-commun="bandeau"><span><em>Grain</em><b>8,6 kg</b></span><span><em>OG</em><b>1,080</b></span><span><em>IBU</em><b>~93</b><i class="g4-bpiste" title="Plage du style 60–120"></i></span><span><em>EBC</em><i class="g4-bpt"></i><b>9,5</b></span></div>
+
+<section class="g4-id" aria-label="La bière">
+  <input type="text" value="neipa v3" aria-label="Nom de la bière" autocomplete="off">
+  <button class="g4-sty" data-booster="style-liste" aria-haspopup="listbox">Double IPA <small class="g4-m">22A</small><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  <button class="g4-rep" data-booster="reperes-repli">Repères BJCP 2021<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+</section>
+<section class="g4-mol" aria-label="Volume et ébullition">
+  <div class="g4-tit"><span>en fermenteur</span><span>ébullition</span></div>
+  <div class="g4-roues">
+    <div class="g4-bande"></div>
+    <div class="g4-roue" id="g4-rv" data-booster="volume-molette" role="listbox" aria-label="Volume en fermenteur, litres" tabindex="0"><ol></ol></div>
+    <div class="g4-roue" id="g4-rb" data-booster="ebullition-molette" role="listbox" aria-label="Durée d'ébullition, minutes" tabindex="0"><ol></ol></div>
+  </div>
+  <div class="g4-eff"><span id="g4-lib"><b class="g4-m">6 L</b> libres sur <b class="g4-m">30</b></span><span id="g4-ev"><b class="g4-m">~3 L</b> évaporés</span></div>
+</section>
+<div class="g4-row"><span>NOLO <small class="g4-m">≤ 0,5 %</small></span><button class="g4-sw" role="switch" aria-checked="false" aria-label="NOLO" data-booster="nolo-bascule"></button></div>
+<div class="g4-row"><span><small>Matériel</small> Royal Catering · cuve 45 L</span><button class="g4-chv" aria-label="Détail du matériel" data-booster="materiel-repli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<div class="g4-pied" data-commun="pied"><button disabled>Retour</button><button class="g4-prim">Suivant — Malts/sucres</button></div>
+<button class="g4-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+
+</div>
+<section class="g4-etats" aria-label="Autres états">
+  <h2>Autres états</h2>
+  <div class="g4-etat"><h3>Molette au-delà du fermenteur : les valeurs passent en rouge sous le trait « plein »</h3><p style="font-size:13px;margin:0;color:var(--t1)">À <b class="g4-m">31 L</b> : <span style="color:var(--alert);font-weight:600">dépasse le fermenteur de <b class="g4-m">1 L</b></span> (alerte sous la molette, rôle alert).</p></div>
+  <div class="g4-etat"><h3>Volume inconnu (recette neuve sans matériel)</h3><p style="font-size:13px;margin:0;color:var(--t1)">La molette s'arrête sur « — » ; dessous : « libre : — », jamais <span class="g4-m">0</span>.</p></div>
+  <div class="g4-etat"><h3>Point gris à gauche d'une valeur : raccourci usuel (60, 90 min) ; toute valeur par 5 min reste possible</h3></div>
+  <div class="g4-etat"><h3>Taper la valeur centrale : saisie exacte (clavier décimal, virgule acceptée)</h3></div>
+  <div class="g4-etat"><h3>NOLO coché : l'atelier se déplie sous la rangée</h3></div>
+</section>
+</main>
+<script>(function(){
+  var CAP=30, CONSEIL=24, v=24, b=60, H=32;
+  var $=function(id){return document.getElementById(id)};
+  var q=new URLSearchParams(location.search);if(q.get('v'))v=+q.get('v');if(q.get('b'))b=+q.get('b');if(q.has('neuf')){var bd=document.querySelector('[data-commun=bandeau]');if(bd)bd.hidden=true;var ab=document.querySelector('.g4-aband');if(ab)ab.hidden=true;var n=document.querySelector('input[type=text]');if(n){n.value='';n.placeholder='Milk Stout #2, NEIPA Tropicale…';}var s=document.querySelector('[data-booster=style-liste]');if(s)s.innerHTML='Choisir un style';var rp=document.querySelector('[data-booster=reperes-repli]');if(rp)rp.hidden=true;}if(q.has('nolo')){var w=document.querySelector('[data-booster=nolo-bascule]');if(w)w.setAttribute('aria-checked','true');}
+  function remplir(el,de,a,pas,u,cls){var ol=el.firstElementChild,h='';for(var x=a;x>=de;x-=pas){h+='<li data-x="'+x+'" data-u="'+u+'" class="'+cls(x)+'">'+x+'</li>';}ol.innerHTML=h;}
+  remplir($('g4-rv'),14,36,1,'L',function(x){return (x>CONSEIL&&x<CAP?'g4-sup ':'')+(x>=CAP?'g4-trop ':'')+(x===CAP-1?'g4-mur ':'')+(x===CONSEIL?'g4-cons':'');});
+  remplir($('g4-rb'),0,150,5,'min',function(x){return x===60||x===90?'g4-rac':'';});
+  function lire(el){var lis=el.querySelectorAll('li'),i=Math.max(0,Math.min(lis.length-1,Math.round(el.scrollTop/H)));lis.forEach(function(l,k){l.classList.toggle('g4-on',k===i);l.classList.toggle('g4-hors',k<i-8||k>i+3);});return +lis[i].dataset.x;}
+  function maj(){
+    v=lire($('g4-rv')); b=lire($('g4-rb')); $('g4-rv').querySelectorAll('li').forEach(function(l){var x=+l.dataset.x;l.classList.toggle('g4-mout',x<v);});
+    var l=$('g4-lib'); l.className=v>=CAP?'g4-al':v>CONSEIL?'g4-att':'';
+    l.innerHTML=v>=CAP?(v===CAP?'plein':'dépasse de <b class="g4-m">'+(v-CAP)+' L</b>'):'<b class="g4-m">'+(CAP-v)+' L</b> libres sur <b class="g4-m">30</b>';
+    if(v>=CAP)l.setAttribute('role','alert');else l.removeAttribute('role');
+    var ev=b?Math.round(v/(1-0.1*b/60)-v):0; $('g4-ev').innerHTML=b?'<b class="g4-m">~'+ev+' L</b> évaporés':'rien d’évaporé';
+  }
+  $('g4-rv').scrollTop=(36-v)*H; $('g4-rb').scrollTop=((150-b)/5)*H;
+  ['g4-rv','g4-rb'].forEach(function(id){$(id).addEventListener('scroll',maj,{passive:true});});
+  maj();
+  document.querySelector('[data-booster=nolo-bascule]').addEventListener('click',function(){this.setAttribute('aria-checked',this.getAttribute('aria-checked')!=='true');});
+})();</script>
+</body></html>

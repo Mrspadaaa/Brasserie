@@ -1,0 +1,154 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>g3 — Trois questions, trois rails (tiède)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--faible:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;--hop:#3F6B2E;--hopf:#567F45;--alert:#A8291F;--alertf:#C8382F;--att:#7F5B10;--attf:#9C7020;--eau:#2F5F7D;--ebc:#E0A02E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--page);color:var(--t0);font-family:'Source Sans 3',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{width:390px;min-height:844px;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.g3-m{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.g3-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.g3-barre{display:flex;align-items:center;height:40px;padding:0 6px 0 2px;gap:2px}
+.g3-ret,.g3-ico{width:32px;height:32px;border:0;background:none;display:grid;place-items:center;color:var(--t1);border-radius:10px;padding:0}
+.g3-titre{font-size:18px;font-weight:600;margin:0 0 0 2px;flex:1;line-height:22px;white-space:nowrap}
+.g3-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+.g3-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:6px 6px}
+.g3-fil{display:flex;gap:6px;padding:0 10px 5px;overflow-x:auto;scrollbar-width:none}
+.g3-fil button{flex:auto;min-width:0;border:0;background:none;padding:3px 0 0;display:flex;flex-direction:column;gap:4px;align-items:stretch;min-height:28px}
+.g3-fil b{font-weight:400;font-size:13px;color:var(--t2);white-space:nowrap;text-align:left}
+.g3-fil .g3-on b{color:var(--t0);font-weight:600}
+.g3-fil i{height:5px;border-radius:3px;background:var(--bord)}
+.g3-fil .g3-on i{background:var(--t0)}
+.g3-bandeau{margin:8px 10px 0;height:36px;border:1px solid var(--bord);border-radius:18px;background:var(--pan);display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.g3-bandeau>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.g3-bandeau em{font-style:normal;font-size:13px;color:var(--t2)}
+.g3-bandeau b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}
+.g3-bpiste{position:relative;width:36px;height:8px;border-radius:4px;background:var(--sur)}
+.g3-bpiste::before{content:"";position:absolute;left:40%;right:20%;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.g3-bpiste::after{content:"";position:absolute;left:62%;top:-3px;width:2px;height:14px;background:var(--t0);border-radius:1px}
+.g3-bpt{width:10px;height:10px;border-radius:50%;background:var(--ebc)}
+.g3-pied{display:flex;gap:8px;align-items:center;padding:16px 74px 20px 10px}
+.g3-pied button{height:32px;border-radius:10px;padding:0 12px;font-size:13px;border:1px solid var(--bord);background:var(--page)}
+.g3-pied button:disabled{color:var(--t2);border-color:var(--bord)}
+.g3-pied .g3-prim{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600;margin-left:auto}
+.g3-fab{position:fixed;right:12px;bottom:16px;width:52px;height:52px;border-radius:50%;border:0;background:var(--t0);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.g3-etats{margin:24px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.g3-etats>h2{font-size:13px;font-weight:600;color:var(--t2);margin:0 0 8px;text-transform:none}
+.g3-etat{margin:0 0 12px}
+.g3-etat>h3{font-size:12px;font-weight:600;color:var(--t2);margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.g3-ecran{min-height:768px;display:flex;flex-direction:column}
+.g3-qs{position:relative;margin:8px 0 0;padding:0 0 0 44px}
+.g3-qs::before{content:"";position:absolute;left:21px;top:26px;bottom:60px;width:2px;background:var(--t0)}
+.g3-q{position:relative;padding:16px 0 18px}
+.g3-q+.g3-q{border-top:1px solid var(--bord)}
+.g3-n{position:absolute;left:-35px;top:15px;width:24px;height:24px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:600}
+.g3-n::before{content:attr(data-n)}
+.g3-qh{display:flex;align-items:baseline;gap:8px;padding-right:12px}
+.g3-qh>span:first-child{font-size:16px;font-weight:600;color:var(--t0)}
+.g3-rep{font-size:28px;font-weight:600;line-height:32px;letter-spacing:-.01em}
+.g3-rep small{font-size:16px;font-weight:400;color:var(--t2);margin-left:4px;font-family:'Source Sans 3',system-ui,sans-serif}
+.g3-qh .g3-eff{margin-left:auto;font-size:13px;color:var(--t1);white-space:nowrap}
+.g3-qh .g3-eff b{font-weight:600}
+.g3-eff.g3-att{color:var(--att)}.g3-eff.g3-al{color:var(--alert);font-weight:600}
+.g3-rail{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:8px 12px 2px 0;scroll-snap-type:x proximity}
+.g3-ch{flex:none;height:48px;min-width:48px;justify-content:center;border-radius:10px;border:1px solid var(--bordm);background:var(--page);padding:0 12px;font-size:16px;display:inline-flex;align-items:center;gap:6px;scroll-snap-align:start;transition:background .15s,color .15s}
+.g3-pt{width:10px;height:10px;border-radius:50%;flex:none}.g3-pt.g3-teal{background:#14B8A6}.g3-pt.g3-lime{background:#84CC16}.g3-pt.g3-orange{background:#F97316}
+.g3-ch small{font-size:13px;color:var(--t2)}
+.g3-ch[aria-pressed=true]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.g3-ch[aria-pressed=true] small{color:#ddd}
+.g3-ch.g3-libre{border-style:dashed;color:var(--t1)}
+.g3-ch.g3-plein{position:relative}
+.g3-ch.g3-plein::after{content:"";position:absolute;right:5px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--alertf)}
+.g3-ch.g3-sup{color:var(--att)}.g3-ch.g3-sous{background:var(--sur);border-color:var(--sur)}.g3-rail.g3-jg{gap:4px}.g3-rail.g3-jg .g3-ch{min-width:0;flex:1;padding:0 4px}
+.g3-nomr{display:flex;align-items:center;gap:8px;padding:8px 12px 0 0}
+.g3-nomr span{font-size:13px;color:var(--t2)}
+.g3-nomr input{flex:1;height:32px;border:1px solid var(--bord);border-radius:10px;padding:0 10px;font-size:16px;background:var(--page)}
+.g3-nolo{flex:none;height:36px;border-radius:18px;border:1px dashed var(--t1);background:var(--page);padding:0 12px 0 6px;font-size:16px;display:inline-flex;align-items:center;gap:8px}
+.g3-nolo i{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--t1);display:grid;place-items:center}
+.g3-nolo[aria-pressed=true]{background:var(--t0);color:#fff;border-style:solid}
+.g3-nolo[aria-pressed=true] i{background:#fff;border-color:#fff;color:var(--t0)}
+.g3-nolo small{font-size:13px}
+.g3-aide{display:flex;align-items:center;gap:6px;padding:8px 12px 0 0;font-size:13px;color:var(--t2);background:none;border:0;width:100%;text-align:left;min-height:32px}.g3-aide b{color:var(--t1);font-weight:600}.g3-aide svg{margin-left:auto}.g3-aide.g3-bleu{color:var(--eau)}
+.g3-mat{display:flex;align-items:center;gap:6px;margin:0 12px;padding:6px 0 0;font-size:13px;color:var(--t2);background:none;border:0;border-top:1px solid var(--bord);width:calc(100% - 24px);height:36px}
+.g3-mat b{font-weight:400;color:var(--t1)}
+.g3-mat svg{margin-left:auto}
+</style></head><body>
+<header class="g3-tete" data-commun="en-tete">
+  <div class="g3-barre">
+    <button class="g3-ret" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1 class="g3-titre">Identité<span>1/7</span></h1>
+    <a class="g3-aband" href="#">Abandonner</a>
+    <button class="g3-ico" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></button>
+    <button class="g3-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="g3-fil" aria-label="Étapes" data-commun="fil">
+    <button class="g3-on" aria-current="step"><b>Identité</b><i></i></button><button><b>Malts/sucres</b><i></i></button><button><b>Houblons</b><i></i></button><button><b>Levure</b><i></i></button><button><b>Paliers</b><i></i></button><button><b>Eau</b><i></i></button><button><b>Récap.</b><i></i></button>
+  </nav>
+</header>
+
+<main>
+<div class="g3-ecran">
+<div class="g3-bandeau" data-commun="bandeau"><span><em>Grain</em><b>8,6 kg</b></span><span><em>OG</em><b>1,080</b></span><span><em>IBU</em><b>~93</b><i class="g3-bpiste" title="Plage du style 60–120"></i></span><span><em>EBC</em><i class="g3-bpt"></i><b>9,5</b></span></div>
+
+<div class="g3-qs">
+  <section class="g3-q" aria-label="Quelle bière">
+    <span class="g3-n" data-n="1"></span>
+    <div class="g3-qh"><span>Quelle bière</span><span class="g3-eff"><b class="g3-m">22A</b></span></div>
+    <div class="g3-rail" data-booster="style-puces" role="group" aria-label="Styles du carnet">
+      <button class="g3-ch" data-g="st" aria-pressed="true"><i class="g3-pt g3-teal"></i>Double IPA</button><button class="g3-ch" data-g="st" aria-pressed="false"><i class="g3-pt g3-lime"></i>Hazy IPA</button><button class="g3-ch" data-g="st" aria-pressed="false"><i class="g3-pt g3-teal"></i>American IPA</button><button class="g3-ch" data-g="st" aria-pressed="false"><i class="g3-pt g3-orange"></i>Saison</button><button class="g3-ch g3-libre" aria-haspopup="listbox">Autre…</button>
+    </div>
+    <label class="g3-nomr"><span>Nom</span><input type="text" value="neipa v3" autocomplete="off"></label>
+    <button class="g3-aide g3-bleu" data-booster="reperes-repli">Repères du style<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  </section>
+  <section class="g3-q" aria-label="Combien">
+    <span class="g3-n" data-n="2"></span>
+    <div class="g3-qh"><span>Combien</span><span class="g3-eff" id="g3-lib"><b class="g3-m">6 L</b> libres sur <b class="g3-m">30</b></span></div>
+    <div class="g3-rail g3-jg" data-booster="volume-puces" role="group" aria-label="Volume en fermenteur">
+      <button class="g3-ch g3-m g3-sous" data-g="v" data-x="20" aria-pressed="false" data-s>20</button><button class="g3-ch g3-m g3-sous" data-g="v" data-x="22" aria-pressed="false">22</button><button class="g3-ch g3-m" data-g="v" data-x="24" aria-pressed="true">24 L</button><button class="g3-ch g3-m g3-sup" data-g="v" data-x="26" aria-pressed="false">26</button><button class="g3-ch g3-m g3-sup" data-g="v" data-x="28" aria-pressed="false">28</button><button class="g3-ch g3-m g3-plein" data-g="v" data-x="30" aria-pressed="false">30</button></div>
+    <button class="g3-aide" data-booster="espace-repli">conseil <b class="g3-m">≤ 24 L</b><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  </section>
+  <section class="g3-q" aria-label="Comment">
+    <span class="g3-n" data-n="3"></span>
+    <div class="g3-qh"><span>Comment</span><span class="g3-eff" id="g3-ev"><b class="g3-m">~3 L</b> évaporés</span></div>
+    <div class="g3-rail" data-booster="ebullition-puces" role="group" aria-label="Durée d'ébullition">
+      <button class="g3-ch g3-m" data-g="b" data-x="45" aria-pressed="false">45</button><button class="g3-ch g3-m" data-g="b" data-x="60" aria-pressed="true">60 min</button><button class="g3-ch g3-m" data-g="b" data-x="75" aria-pressed="false">75</button><button class="g3-ch g3-m" data-g="b" data-x="90" aria-pressed="false">90</button></div>
+    <div class="g3-aide" id="g3-cuve">cuve <b class="g3-m">~27 L</b></div>
+    <div class="g3-rail"><button class="g3-nolo" aria-pressed="false" data-booster="nolo-puce"><i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i>NOLO <small class="g3-m">≤ 0,5 %</small></button></div>
+  </section>
+</div>
+<button class="g3-mat" data-booster="materiel-repli"><span>Matériel</span><b>Royal Catering · 45 L</b><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+<div class="g3-pied" data-commun="pied"><button disabled>Retour</button><button class="g3-prim">Suivant — Malts/sucres</button></div>
+<button class="g3-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+
+</div>
+<section class="g3-etats" aria-label="Autres états">
+  <h2>Autres états</h2>
+  <div class="g3-etat"><h3>Recette neuve : rien n'est répondu, la première puce est « Coller »</h3>
+    <div class="g3-qs" style="flex:none"><section class="g3-q"><span class="g3-n" style="background:var(--page);color:var(--t0);border:1.5px solid var(--t0)" data-n="1"></span><div class="g3-qh"><span>Quelle bière</span><span class="g3-eff">style : —</span></div>
+      <div class="g3-rail"><button class="g3-ch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>Coller</button><button class="g3-ch" aria-pressed="false">Double IPA</button><button class="g3-ch" aria-pressed="false">Hazy IPA</button><button class="g3-ch g3-libre">Autre…</button></div></section></div></div>
+  <div class="g3-etat"><h3>Volume au plein, ou hors puces (31 L)</h3>
+    <div class="g3-qs" style="flex:none"><section class="g3-q"><span class="g3-n" data-n="2"></span><div class="g3-qh"><span>Combien</span><span class="g3-eff g3-al" role="alert">dépasse le fermenteur</span></div>
+      <div class="g3-rail"><button class="g3-ch g3-m">28</button><button class="g3-ch g3-m g3-plein">30</button><button class="g3-ch g3-m" aria-pressed="true">31 L</button></div></section></div></div>
+  <div class="g3-etat"><h3>NOLO coché : la puce s'allume, l'atelier s'ouvre dessous</h3>
+    <div class="g3-rail"><button class="g3-nolo" aria-pressed="true"><i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i>NOLO <small class="g3-m">≤ 0,5 %</small></button><button class="g3-ch g3-libre">Atelier NOLO</button></div></div>
+  <div class="g3-etat"><h3>Style hors liste : « Autre… » ouvre la recherche, puis « Nouveau style »</h3></div>
+</section>
+</main>
+<script>(function(){
+  var CAP=30, CONSEIL=24, v=24, b=60;
+  var $=function(id){return document.getElementById(id)};
+  function maj(){
+    document.querySelectorAll('[data-g=v]').forEach(function(y){var x=+y.dataset.x;y.textContent=x===v?x+' L':x;y.classList.toggle('g3-sous',x<v);});document.querySelectorAll('[data-g=b]').forEach(function(y){var x=+y.dataset.x;y.textContent=x===b?x+' min':x;});
+    var l=$('g3-lib'); l.className='g3-eff'+(v>=CAP?' g3-al':v>CONSEIL?' g3-att':'');
+    l.innerHTML=v>=CAP?'plein':'<b class="g3-m">'+(CAP-v)+' L</b> libres sur <b class="g3-m">30</b>';
+    var ev=b?Math.round(v/(1-0.1*b/60)-v):0; $('g3-cuve').innerHTML='cuve <b class="g3-m">~'+(v+ev)+' L</b>';$('g3-ev').innerHTML='<b class="g3-m">~'+ev+' L</b> évaporés';
+  }
+  document.querySelectorAll('[data-g]').forEach(function(x){x.addEventListener('click',function(){
+    document.querySelectorAll('[data-g='+x.dataset.g+']').forEach(function(y){y.setAttribute('aria-pressed',y===x?'true':'false');});
+    if(x.dataset.g==='v')v=+x.dataset.x; else if(x.dataset.g==='b')b=+x.dataset.x; 
+    maj();});});
+  document.querySelector('[data-booster=nolo-puce]').addEventListener('click',function(){this.setAttribute('aria-pressed',this.getAttribute('aria-pressed')!=='true');});
+})();</script>
+</body></html>

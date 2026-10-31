@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r5 — Identité 1/7 · deux anneaux qu’on tourne (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--hop:#567F45;--hopt:#3F6B2E;--eau:#4F7E9B;--eaut:#2F5F7D;--alerte:#C8382F;--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;
+--or:#E0A02E;--paille:#F2C14E;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.r5-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.r5-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.r5-tb{display:flex;align-items:center;gap:6px;height:36px}
+.r5-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.r5-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.r5-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.r5-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.r5-ab{height:28px;padding:0 6px;font-size:12px;color:var(--t1);text-decoration:underline;text-underline-offset:2px}
+.r5-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.r5-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.r5-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.r5-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.r5-rail [aria-current] span{color:var(--t0);font-weight:600}
+.r5-rail [aria-current] i{background:var(--t0)}
+.r5-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.r5-bd>div{display:flex;align-items:baseline;gap:4px}
+.r5-bd .r5-l{font-size:14px;color:var(--t2)}
+.r5-bd .r5-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.r5-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.r5-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.r5-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.r5-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);background:var(--or);align-self:center}
+.r5-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 10px}
+.r5-ret{min-height:24px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px;opacity:.4}
+.r5-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.r5-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.r5-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.r5-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+
+.r5-c{padding:8px 10px 0;min-height:760px;display:flex;flex-direction:column;align-items:center}
+.r5-tete{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px}
+.r5-nom{width:220px;text-align:center;height:32px;border:0;border-bottom:1.5px dotted var(--trait);background:none;font-size:22px;font-weight:600;color:var(--t0);padding:0}
+.r5-stl{display:flex;align-items:center;gap:6px}
+.r5-pas{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 6px 0 4px;border-radius:10px;background:#D5F2EC;border:1px solid #8ED5C7;color:#0E5A50;font-size:14px;font-weight:600}
+.r5-pas i{width:18px;height:18px;border-radius:50%;background:#2BB59F}
+.r5-rep{display:inline-flex;align-items:center;gap:2px;height:28px;padding:0 6px;font-size:12px;color:var(--eaut)}
+.r5-dial{display:block;margin-top:2px;touch-action:none;user-select:none;-webkit-user-select:none;max-width:100%;height:auto}
+.r5-cv{font:600 36px var(--mono);fill:#111;letter-spacing:-.02em}
+.r5-cl{font:600 14px var(--sans);fill:#3F6B2E}
+.r5-cl.r5-plein{fill:#A8291F}
+.r5-cb{font:600 22px var(--mono);fill:#111}
+.r5-ce{font:12px var(--sans);fill:#666}
+.r5-leg{display:flex;justify-content:center;gap:14px;margin-top:-4px;font-size:12px;color:var(--t2)}
+.r5-leg span{display:inline-flex;align-items:center;gap:5px}
+.r5-leg i{width:14px;height:8px;border-radius:4px;display:inline-block}
+.r5-bas{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.r5-nolo{grid-column:1/-1;display:flex;align-items:center;gap:10px;height:44px;padding:0 12px;border-radius:16px;background:var(--panel);text-align:left}
+.r5-nolo b{font-size:16px;color:var(--t0)}
+.r5-k{font-size:12px;color:var(--t2)}
+.r5-tg{position:relative;width:48px;height:28px;border-radius:14px;background:var(--bordm);margin-left:auto;transition:background .15s}
+.r5-tg::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.r5-nolo[aria-checked="true"] .r5-tg{background:var(--t0)}
+.r5-nolo[aria-checked="true"] .r5-tg::after{transform:translateX(20px)}
+.r5-pli{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;border:1px solid var(--bord);border-radius:16px;font-size:14px;color:var(--t1);text-align:left}
+.r5-pli b{font-family:var(--mono);color:var(--t0)}
+.r5-pli svg{margin-left:auto;color:var(--t2);flex-shrink:0}
+.r5-tagr{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 5px;line-height:16px}
+.r5-c .r5-pied{width:100%}
+.r5-annexe .r5-row{display:flex;gap:10px;flex-wrap:wrap}
+.r5-annexe svg{background:var(--panel);border-radius:16px}
+</style></head>
+<body data-concept="r5">
+<header class="r5-hd">
+  <div class="r5-tb">
+    <button class="r5-ic" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="r5-tt"><span class="r5-tn">Identité</span><span class="r5-tp">1/7</span></p>
+    <button class="r5-ab" aria-label="Abandonner le brouillon">Abandonner</button>
+    <button class="r5-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="r5-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="r5-rail" aria-label="Étapes"><button aria-current="step"><span>Identité</span><i></i></button><button><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="r5-bd" data-commun="bandeau">
+  <div><span class="r5-l">Grain</span><span class="r5-v">8,6 kg</span></div>
+  <div><span class="r5-l">OG</span><span class="r5-v">1,080</span></div>
+  <div><span class="r5-l">IBU</span><span class="r5-v">~93</span><span class="r5-pst" role="img" aria-label="style 60–100 IBU"><b style="left:42.9%;width:calc(71.4% - 42.9%)"></b><em style="left:66.4%"></em></span></div>
+  <div><span class="r5-l">EBC</span><span class="r5-sw"></span><span class="r5-v">9,5</span></div>
+</div>
+<main class="r5-c">
+  <div class="r5-tete">
+    <input class="r5-nom" value="neipa v3" aria-label="Nom de la bière">
+    <div class="r5-stl"><button class="r5-pas" aria-haspopup="listbox"><i></i>Double IPA <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><button class="r5-rep" aria-expanded="false">Repères 22A <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  </div>
+  <svg class="r5-dial" viewBox="0 0 360 360" width="360" height="360" data-booster="anneaux" role="group" aria-label="Volume et ébullition">
+  <defs><pattern id="r5-hach" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><line x1="0" y1="0" x2="0" y2="7" stroke="#D0D0D0" stroke-width="3"/></pattern>
+  <linearGradient id="r5-or" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2C860"/><stop offset="1" stop-color="#D99A28"/></linearGradient></defs>
+  <circle cx="180" cy="180" r="132" fill="none" stroke="url(#r5-hach)" stroke-width="26"/>
+  <circle cx="180" cy="180" r="145" fill="none" stroke="#BFBFBF" stroke-width="1"/>
+  <circle cx="180" cy="180" r="119" fill="none" stroke="#BFBFBF" stroke-width="1"/>
+  <circle data-role="av" cx="180" cy="180" r="132" fill="none" stroke="url(#r5-or)" stroke-width="26" stroke-dasharray="663.5043684381644 829.3804605477054" transform="rotate(-90 180 180)"/>
+  <circle cx="180" cy="180" r="96" fill="none" stroke="#EBEBEB" stroke-width="16"/>
+  <circle data-role="ab" cx="180" cy="180" r="96" fill="none" stroke="#111" stroke-width="16" stroke-dasharray="301.59289474462014 603.1857894892403" transform="rotate(-90 180 180)"/>
+  <line x1="282.19099764656374" y1="120.99999999999999" x2="287.3871500692704" y2="117.99999999999999" stroke="#fff" stroke-width="2" opacity=".9"/><line x1="282.1909976465638" y1="238.99999999999997" x2="287.38715006927043" y2="241.99999999999997" stroke="#fff" stroke-width="2" opacity=".9"/><line x1="180.00000000000003" y1="298" x2="180.00000000000003" y2="304" stroke="#fff" stroke-width="2" opacity=".9"/><line x1="77.80900235343626" y1="239.00000000000006" x2="72.61284993072962" y2="242.00000000000006" stroke="#fff" stroke-width="2" opacity=".9"/><line x1="77.80900235343624" y1="120.99999999999999" x2="72.61284993072961" y2="117.99999999999999" stroke="#fff" stroke-width="2" opacity=".9"/><line x1="243.63961030678928" y1="116.36038969321072" x2="252.12489168102786" y2="107.87510831897215" stroke="#fff" stroke-width="1" opacity=".85"/><line x1="270" y1="180" x2="282" y2="180" stroke="#fff" stroke-width="2" opacity=".85"/><line x1="243.63961030678928" y1="243.63961030678928" x2="252.12489168102786" y2="252.12489168102786" stroke="#fff" stroke-width="1" opacity=".85"/><line x1="180" y1="270" x2="180" y2="282" stroke="#fff" stroke-width="2" opacity=".85"/><line x1="116.36038969321072" y1="243.63961030678928" x2="107.87510831897215" y2="252.12489168102786" stroke="#fff" stroke-width="1" opacity=".85"/><line x1="90" y1="180.00000000000003" x2="78" y2="180.00000000000003" stroke="#fff" stroke-width="2" opacity=".85"/><line x1="116.3603896932107" y1="116.36038969321075" x2="107.87510831897214" y2="107.87510831897217" stroke="#fff" stroke-width="1" opacity=".85"/>
+  <line x1="73.48167017494279" y1="145.39009663000593" x2="35.439409523136646" y2="133.02941685500804" stroke="#111" stroke-width="2" stroke-dasharray="3 2"/>
+  <circle data-role="hv" cx="54.46053984903972" cy="139.20975674250695" r="15" fill="#fff" stroke="#111" stroke-width="3"/>
+  <circle data-role="hb" cx="180" cy="276" r="12" fill="#fff" stroke="#111" stroke-width="3"/>
+  <text x="2" y="96" class="r5-ce" style="fill:#111">conseil</text><text x="2" y="112" class="r5-ce r5-m" style="fill:#111;font-weight:600">~24</text>
+  <text x="180" y="20" text-anchor="middle" class="r5-ce">fermenteur · <tspan style="font-family:var(--mono);fill:#111;font-weight:600">30 L</tspan></text>
+  <text x="180" y="152" text-anchor="middle" class="r5-cv" data-role="vol">24 L</text>
+  <text x="180" y="176" text-anchor="middle" class="r5-cl" data-role="libre">6 L libres sur 30</text>
+  <line x1="134" x2="226" y1="190" y2="190" stroke="#DDDDDD"/>
+  <text x="180" y="216" text-anchor="middle" class="r5-cb" data-role="boil">60 min</text>
+  <text x="180" y="236" text-anchor="middle" class="r5-ce" data-role="evap">~3 L évaporés</text>
+</svg>
+    <div class="r5-bas">
+    <button class="r5-nolo" role="switch" aria-checked="false" data-booster="nolo"><b>NOLO</b><span class="r5-k">≤ <span class="r5-m">0,5 %</span></span><span class="r5-tg"></span></button>
+    <button class="r5-pli" aria-expanded="false">Espace <b>20 %</b><span class="r5-tagr">repère</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="r5-pli" aria-expanded="false">Royal Catering <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  </div>
+  <nav class="r5-pied" data-commun="pied"><button class="r5-ret" disabled>Retour</button><button class="r5-suiv">Suivant — Fermentescibles</button></nav>
+</main>
+<section class="r5-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="r5-row"><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="44" fill="none" stroke="url(#r5-hach)" stroke-width="12"/><circle cx="60" cy="60" r="44" fill="none" stroke="#C8382F" stroke-width="12" stroke-dasharray="276.46015351590177 276.46015351590177" transform="rotate(-90 60 60)"/><text x="60" y="60" text-anchor="middle" style="font:600 16px var(--mono);fill:#111">30 L</text><text x="60" y="78" text-anchor="middle" style="font:12px var(--sans);fill:#A8291F">0 L libre</text></svg><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="44" fill="none" stroke="url(#r5-hach)" stroke-width="12"/><text x="60" y="60" text-anchor="middle" style="font:600 16px var(--mono);fill:#111">— L</text><text x="60" y="78" text-anchor="middle" style="font:12px var(--sans);fill:#666">à renseigner</text></svg><svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="44" fill="none" stroke="url(#r5-hach)" stroke-width="12"/><circle cx="60" cy="60" r="44" fill="none" stroke="#E0A02E" stroke-width="12" stroke-dasharray="221.16812281272144 276.46015351590177" transform="rotate(-90 60 60)"/><text x="60" y="60" text-anchor="middle" style="font:600 16px var(--mono);fill:#111">24 L</text><text x="60" y="78" text-anchor="middle" style="font:12px var(--sans);fill:#666">6 L libres</text></svg></div>
+  <p class="r5-k" style="margin-top:6px">Plein ou au-delà : l'anneau passe au rouge et « Fermenteur plein : réduis le volume » s'écrit sous le cadran.</p>
+</section>
+<button class="r5-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s){return document.querySelector(s)};
+var C=180,RO=132,RI=96,vol=24,boil=60;
+var svg=q('.r5-dial');
+function pos(r,f){var a=f*2*Math.PI;return [C+r*Math.sin(a),C-r*Math.cos(a)];}
+function maj(){
+  var fv=Math.min(vol,30)/30, co=2*Math.PI*RO, ci=2*Math.PI*RI;
+  var av=q('[data-role="av"]'); av.setAttribute('stroke-dasharray',(fv*co)+' '+co); av.setAttribute('stroke',vol>=30?'#C8382F':'url(#r5-or)');
+  var p=pos(RO,fv); q('[data-role="hv"]').setAttribute('cx',p[0]); q('[data-role="hv"]').setAttribute('cy',p[1]);
+  q('[data-role="vol"]').textContent=vol+' L';
+  var l=30-vol,t=q('[data-role="libre"]'); t.textContent=l>0?l+' L libres sur 30':'Plein : réduis le volume'; t.classList.toggle('r5-plein',l<=0);
+  var fb=boil/120; q('[data-role="ab"]').setAttribute('stroke-dasharray',(fb*ci)+' '+ci);
+  var b=pos(RI,fb); q('[data-role="hb"]').setAttribute('cx',b[0]); q('[data-role="hb"]').setAttribute('cy',b[1]);
+  q('[data-role="boil"]').textContent=boil+' min';
+  var e=Math.round(3*boil/60*10)/10; q('[data-role="evap"]').textContent=e>0?'~'+String(e).replace('.',',')+' L évaporés':'aucune évaporation';
+}
+var cible=null;
+function lire(ev){var r=svg.getBoundingClientRect(),k=360/r.width;var x=(ev.clientX-r.left)*k-C,y=(ev.clientY-r.top)*k-C;var d=Math.sqrt(x*x+y*y);var a=Math.atan2(x,-y);if(a<0)a+=2*Math.PI;return {d:d,f:a/(2*Math.PI)};}
+svg.addEventListener('pointerdown',function(ev){var m=lire(ev);cible=m.d>RO-22?'v':(m.d>RI-16&&m.d<RI+16?'b':null);if(cible){svg.setPointerCapture(ev.pointerId);bouge(ev);}});
+function bouge(ev){if(!cible)return;var m=lire(ev);if(cible==='v')vol=Math.max(1,Math.round(m.f*30))||30;else boil=Math.round(m.f*120/5)*5;maj();}
+svg.addEventListener('pointermove',bouge);
+svg.addEventListener('pointerup',function(){cible=null;});
+var n=q('[data-booster="nolo"]'); n.addEventListener('click',function(){n.setAttribute('aria-checked',n.getAttribute('aria-checked')==='true'?'false':'true');});
+})();</script>
+</body></html>

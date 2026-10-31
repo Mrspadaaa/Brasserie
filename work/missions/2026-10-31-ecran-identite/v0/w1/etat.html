@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>w1 · Identité · chaque champ montre sa conséquence (froide)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Jetons du thème clair (DESIGN.md, « Colors ») ; classes préfixées par l'id du concept (L26). */
+.w1 {
+  --page: #FFFFFF; --panel: #F5F5F5; --surf: #EBEBEB; --bord: #DDDDDD; --bord2: #BFBFBF; --trait: #9E9E9E;
+  --t2: #666666; --t1: #333333; --t0: #111111; --action: #111111;
+  --hop: #567F45; --hop-t: #3F6B2E; --eau: #4F7E9B; --eau-t: #2F5F7D; --alerte: #C8382F; --alerte-t: #A8291F;
+  --att: #9C7020; --att-t: #7F5B10; --ebc-gold: #E0A02E; --ebc-straw: #F2C14E; --ebc-or-t: #7A5A12;
+  --teal-f: rgba(45, 212, 191, .26); --teal-b: rgba(20, 150, 135, .45); --teal-t: #0E5B53;
+  --sans: 'Source Sans 3', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  font-family: var(--sans); color: var(--t1); background: var(--page); min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+html, body { margin: 0; background: #fff; }
+.w1 *, .w1 *::before, .w1 *::after { box-sizing: border-box; }
+.w1 ::selection { background: rgba(242, 193, 78, .45); color: #111; }
+:where(.w1) button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:where(.w1) input { font: inherit; color: inherit; }
+.w1 :focus-visible { outline: 2px solid var(--t0); outline-offset: 2px; border-radius: 4px; }
+.w1 .w1-m { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+.w1 svg.w1-i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.w1 svg.w1-i * { vector-effect: non-scaling-stroke; }
+.w1 [hidden] { display: none !important; }
+
+/* En-tête commun de l'assistant (baseline, J5, J12 : montré tel quel) */
+.w1-hd { background: var(--page); border-bottom: 1px solid var(--bord); }
+.w1-hd-l { display: flex; align-items: center; gap: 4px; height: 40px; padding: 0 6px 0 4px; }
+.w1-hd-l .w1-ib { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--t1); }
+.w1-ti { margin: 0 0 0 4px; font-size: 18px; font-weight: 600; color: var(--t0); flex: 1; letter-spacing: -.01em; }
+.w1-ti span { font-weight: 400; color: var(--t2); font-size: 15px; margin-left: 2px; }
+.w1-ab { font-size: 14px; color: var(--t1); text-decoration: underline; text-underline-offset: 3px; padding: 4px 6px; margin-right: 6px; }
+.w1[data-neuve="1"] .w1-ab { display: none; }
+.w1-rail { display: flex; gap: 12px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
+.w1-rail button { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 6px; font-size: 14px; color: var(--t2); white-space: nowrap; }
+.w1-rail button::after { content: ''; display: block; height: 4px; border-radius: 2px; background: var(--bord); }
+.w1-rail button[aria-current="step"] { color: var(--t0); font-weight: 600; }
+.w1-rail button[aria-current="step"]::after { background: var(--t0); }
+
+/* Bandeau commun Grain · OG · IBU · EBC (baseline, hors périmètre) ; absent sur une recette neuve (hasMetrics) */
+.w1-bd { margin: 8px 8px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 5px 12px;
+  border: 1px solid var(--bord); border-radius: 999px; background: var(--panel); }
+.w1[data-neuve="1"] .w1-bd { display: none; }
+.w1-bd > span { display: flex; align-items: baseline; gap: 4px; white-space: nowrap; }
+.w1-bd .w1-bl { font-size: 13px; color: var(--t2); }
+.w1-bd .w1-m { font-size: 15px; color: var(--t0); }
+.w1-bd-piste { position: relative; width: 40px; height: 8px; border-radius: 999px; background: var(--bord); align-self: center; margin-left: 2px; }
+.w1-bd-piste i { position: absolute; top: 0; bottom: 0; left: 50%; width: 33%; background: var(--bord2); border-radius: 999px; }
+.w1-bd-piste b { position: absolute; top: -3px; bottom: -3px; left: 77%; width: 2px; background: var(--t0); border-radius: 1px; }
+.w1-bd-pt { width: 10px; height: 10px; border-radius: 50%; background: var(--ebc-gold); border: 1px solid var(--bord2); align-self: center; }
+
+/* Pied commun Retour · Suivant ; il laisse son coin au lanceur + (inventaire w1 17) */
+.w1-pied { display: flex; gap: 8px; padding: 12px 68px 16px 8px; }
+.w1-pied button { height: 32px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+.w1-pied .w1-sec { background: var(--surf); color: var(--t2); }
+.w1-pied .w1-sec[disabled] { cursor: default; opacity: .75; }
+.w1-pied .w1-pri { background: var(--action); color: #fff; }
+.w1-fab { position: fixed; right: 12px; bottom: 12px; width: 48px; height: 48px; border-radius: 50%; background: var(--action); color: #fff;
+  display: grid; place-items: center; box-shadow: 0 8px 24px -12px rgba(0,0,0,.5); }
+.w1-fab svg.w1-i { width: 24px; height: 24px; }
+
+/* Légende commune derrière un « ? » discret (D89) */
+.w1-q { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--bord2); font-size: 13px; font-weight: 600; color: var(--t2);
+  display: inline-grid; place-items: center; flex: none; }
+.w1-q[aria-expanded="true"] { background: var(--t0); color: #fff; border-color: var(--t0); }
+.w1-leg { font-size: 13px; line-height: 18px; color: var(--t1); background: var(--panel); border-radius: 8px; padding: 8px 10px; margin: 6px 0 0; }
+.w1-leg b { color: var(--t0); }
+
+/* Repliables communs (chevron ⌄ unique, DESIGN.md « Shapes ») */
+.w1 details > summary { list-style: none; cursor: pointer; }
+.w1 details > summary::-webkit-details-marker { display: none; }
+.w1-chev { transition: transform 180ms ease-out; }
+.w1 details[open] > summary .w1-chev, .w1 [aria-expanded="true"] > .w1-chev { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .w1 * { transition: none !important; animation: none !important; } }
+
+/* Interrupteur commun */
+.w1-sw { position: relative; width: 40px; height: 24px; border-radius: 999px; background: var(--bord2); flex: none; transition: background 160ms ease-out; }
+.w1-sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform 160ms ease-out; }
+[aria-checked="true"] > .w1-sw, .w1-sw[aria-checked="true"] { background: var(--hop); }
+[aria-checked="true"] > .w1-sw::after, .w1-sw[aria-checked="true"]::after { transform: translateX(16px); }
+:where(.w1) button:active { transform: scale(.97); }
+
+.w1-main { padding: 8px 8px 0; display: flex; flex-direction: column; gap: 8px; }
+.w1-l2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.w1-ch { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 0; min-height: 52px; padding: 4px 10px;
+  border: 1px solid var(--bord); border-radius: 8px; background: var(--page); }
+.w1-ch:focus-within { border-color: var(--t0); }
+.w1-lb { font-size: 12px; color: var(--t2); line-height: 16px; }
+.w1-ch input { border: 0; outline: 0; padding: 0; background: none; font-size: 16px; font-weight: 600; color: var(--t0); width: 100%; height: 26px; }
+.w1-ch input::placeholder { color: var(--t2); font-weight: 400; }
+.w1-sty { display: flex; align-items: center; gap: 6px; height: 26px; }
+.w1-past { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; background: var(--teal-f); border: 1px solid var(--teal-b); color: var(--teal-t); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.w1-past.w1-vide { background: none; border-style: dashed; border-color: var(--bord2); color: var(--t2); font-weight: 400; }
+.w1-sty .w1-chev { margin-left: auto; color: var(--t2); width: 18px; height: 18px; }
+.w1 .w1-rep { width: 100%; text-align: left; display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 2px; font-size: 13px; color: var(--eau-t); }
+.w1-rep .w1-chev { margin-left: auto; width: 18px; height: 18px; }
+.w1-rep-c { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 13px; padding: 4px 2px 6px; color: var(--t1); }
+.w1-rep-c .w1-m { font-size: 13px; }
+.w1[data-neuve="1"] .w1-repd { display: none; }
+
+/* Les deux tuiles : la valeur, et sa conséquence dans la même tuile */
+.w1-tu { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.w1-t { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 8px; background: var(--panel); min-height: 372px; }
+.w1-th { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
+.w1-th svg.w1-i { width: 18px; height: 18px; color: var(--t1); }
+.w1-th .w1-q { margin-left: auto; }
+.w1-val { display: flex; align-items: baseline; gap: 4px; }
+.w1-val input { width: calc(var(--n, 2) * 0.62em + 6px); border: 0; border-bottom: 1px dashed var(--trait); background: none; padding: 0; outline: 0;
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 40px; line-height: 46px; color: var(--t0); letter-spacing: -.03em; }
+.w1-val input:focus { border-bottom: 1px solid var(--t0); }
+.w1-val span { font-size: 18px; color: var(--t2); font-weight: 600; }
+.w1-cons { display: flex; gap: 8px; align-items: stretch; flex: 1; padding-top: 24px; }
+/* Fermenteur dessiné à l'échelle : 30 L en haut, remplissage à la couleur de la bière (EBC 9,5) */
+.w1-fg { position: relative; width: 52px; flex: none; border: 1.5px solid var(--t1); border-radius: 8px; overflow: hidden; background: var(--page); }
+.w1-fg::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: var(--p); background: linear-gradient(#F2C14E, #E0A02E); transition: height 200ms ease-out; }
+.w1[data-ferme="plein"] .w1-fg::before { background: repeating-linear-gradient(135deg, #E0A02E 0 6px, #C8382F 6px 9px); }
+.w1-fg-c { position: absolute; left: -2px; right: -2px; bottom: var(--p); border-top: 1.5px dashed var(--t0); }
+.w1-fl { position: relative; flex: 1; font-size: 13px; color: var(--t2); min-width: 0; }
+.w1-fl > * { position: absolute; left: 0; white-space: nowrap; line-height: 16px; }
+.w1-fl .w1-a-haut { top: -24px; }
+.w1[data-ferme="plein"] .w1-a-libre { display: none; }
+.w1-al { display: none; margin-top: -4px; font-size: 14px; font-weight: 600; color: var(--alerte-t); }
+.w1[data-ferme="plein"] .w1-al { display: block; }
+.w1-fl .w1-a-libre { bottom: calc((var(--p) + 100%) / 2 - 8px); }
+.w1-fl .w1-a-cons { bottom: calc(var(--pc) - 12px); height: 24px; font-size: 13px; color: var(--t2); text-decoration: underline dotted; text-underline-offset: 3px; }
+.w1-fl .w1-m { color: var(--t0); font-size: 14px; }
+.w1-libre { font-size: 14px; color: var(--hop-t); font-weight: 600; }
+.w1[data-ferme="conseil"] .w1-libre { color: var(--att-t); }
+.w1[data-ferme="plein"] .w1-libre { color: var(--alerte-t); }
+.w1-alerte { display: none; font-size: 13px; font-weight: 600; color: var(--alerte-t); }
+.w1[data-ferme="plein"] .w1-alerte { display: block; }
+.w1[data-ferme="plein"] .w1-libre-ok { display: none; }
+.w1-pas { display: flex; gap: 6px; }
+.w1-pas button { width: 32px; height: 28px; border-radius: 8px; background: var(--page); border: 1px solid var(--bord); display: grid; place-items: center; }
+.w1-pas button svg.w1-i { width: 16px; height: 16px; }
+.w1-pre { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.w1-pre button { height: 28px; border-radius: 999px; border: 1px solid var(--bord); background: var(--page); font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 600; color: var(--t1); }
+.w1-pre button[aria-pressed="true"] { background: var(--t0); color: #fff; border-color: var(--t0); }
+.w1-ev { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--eau-t); font-weight: 600; }
+.w1-ev svg.w1-i { width: 18px; height: 18px; }
+.w1-ev-s { font-size: 12px; color: var(--t2); font-weight: 400; line-height: 16px; }
+
+.w1 .w1-nolo { display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 6px 10px; border: 1px solid var(--bord); border-radius: 8px; width: 100%; text-align: left; }
+.w1-nolo b { font-size: 16px; color: var(--t0); margin-right: 4px; }
+.w1-nolo-t { display: flex; flex-direction: column; }
+.w1-nolo-c { font-size: 13px; color: var(--t2); }
+.w1-nolo-c .w1-m { font-size: 13px; }
+.w1 .w1-on { display: none; } .w1[data-nolo="on"] .w1-on { display: inline; color: var(--hop-t); font-weight: 600; } .w1[data-nolo="on"] .w1-off { display: none; }
+.w1 .w1-nolo svg.w1-i { color: var(--t1); }
+.w1-nolo .w1-m { font-size: 14px; color: var(--t2); }
+.w1-nolo .w1-sw { margin-left: auto; }
+.w1[data-nolo="on"] .w1-nolo { border-color: var(--hop); }
+.w1[data-nolo="on"] .w1-nolo .w1-m { color: var(--hop-t); }
+.w1-atel { display: none; }
+.w1[data-nolo="on"] .w1-atel { display: block; }
+.w1 .w1-ln { width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px; border-bottom: 1px solid var(--bord); font-size: 14px; color: var(--t1); }
+.w1-ln svg.w1-i { width: 18px; height: 18px; color: var(--t2); }
+.w1-ln .w1-chev { margin-left: auto; }
+.w1-ln .w1-m { font-size: 14px; color: var(--t0); }
+.w1-ln-c { padding: 6px 10px 8px; font-size: 13px; color: var(--t1); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.w1-ln-c input { width: 56px; height: 32px; border: 1px solid var(--bord); border-radius: 8px; padding: 0 8px; font-family: var(--mono); font-size: 16px; font-weight: 600; }
+.w1-libre-r { background: var(--panel); border-radius: 8px; }
+.w1-coll { display: none; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 8px; border: 1px dashed var(--bord2); font-size: 14px; color: var(--t0); font-weight: 600; }
+.w1[data-neuve="1"] .w1-coll { display: flex; }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="w1-s-gauche" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="w1-s-droite" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="w1-s-bas" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="w1-s-coller" viewBox="0 0 24 24"><path d="M15 4h2a2 2 0 0 1 2 2v3"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><rect x="8" y="2" width="7" height="4" rx="1"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></symbol>
+  <symbol id="w1-s-lune" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="w1-s-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="w1-s-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="w1-s-ferm" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v3L6 9v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9l-4-4V2"/><path d="M6 14h12"/></symbol>
+  <symbol id="w1-s-flamme" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-3-2-5.5-3.5-7-.5 2-1.5 3-3 3.5C13 8 12 5 9.5 2.5 9.5 6 5 9 5 15a7 7 0 0 0 7 7Z"/></symbol>
+  <symbol id="w1-s-vapeur" viewBox="0 0 24 24"><path d="M7 21c-2-2 2-4 0-6s2-4 0-6"/><path d="M12 21c-2-2 2-4 0-6s2-4 0-6 2-4 0-6"/><path d="M17 21c-2-2 2-4 0-6s2-4 0-6"/></symbol>
+  <symbol id="w1-s-cuve" viewBox="0 0 24 24"><path d="M4 7h16v11a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z"/><path d="M2 7h20"/><path d="M8 3v4M16 3v4"/></symbol>
+  <symbol id="w1-s-verre" viewBox="0 0 24 24"><path d="M6 3h12l-1.5 17a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2Z"/><path d="M6.5 9h11"/></symbol>
+  <symbol id="w1-s-etiq" viewBox="0 0 24 24"><path d="M12 2H4a2 2 0 0 0-2 2v8l10 10 10-10Z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+  <symbol id="w1-s-crayon" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+</svg>
+<div class="w1" id="w1-app" data-page-shell data-neuve="0" data-ferme="ok" data-nolo="off">
+<header class="w1-hd">
+  <div class="w1-hd-l">
+    <button class="w1-ib" aria-label="Fermer l'assistant"><svg class="w1-i"><use href="#w1-s-gauche"/></svg></button>
+    <h1 class="w1-ti">Identité <span>1/7</span></h1>
+    <button class="w1-ab">Abandonner</button>
+    <button class="w1-ib" aria-label="Coller une recette trouvée"><svg class="w1-i"><use href="#w1-s-coller"/></svg></button>
+    <button class="w1-ib" aria-label="Thème clair ou cave"><svg class="w1-i"><use href="#w1-s-lune"/></svg></button>
+  </div>
+  <nav class="w1-rail" aria-label="Étapes de la recette">
+    <button aria-current="step">Identité</button><button>Malts/sucres</button><button>Houblons</button><button>Levure</button><button>Paliers</button><button>Eau</button><button>Récap.</button>
+  </nav>
+</header>
+<div class="w1-bd" aria-label="Mesures de la recette">
+  <span><span class="w1-bl">Grain</span><span class="w1-m">8,6 kg</span></span>
+  <span><span class="w1-bl">OG</span><span class="w1-m">1,080</span></span>
+  <span><span class="w1-bl">IBU</span><span class="w1-m">~93</span><span class="w1-bd-piste" aria-hidden="true"><i></i><b></b></span></span>
+  <span><span class="w1-bl">EBC</span><span class="w1-bd-pt" aria-hidden="true"></span><span class="w1-m">9,5</span></span>
+</div>
+<main class="w1-main">
+
+<button class="w1-coll" data-booster="coller-neuve"><svg class="w1-i"><use href="#w1-s-coller"/></svg>Coller une recette trouvée</button>
+<div class="w1-l2">
+  <label class="w1-ch"><span class="w1-lb">Nom</span><input data-champ="nom" data-texte placeholder="NEIPA tropicale…" autocomplete="off"></label>
+  <div class="w1-ch" role="button" tabindex="0" aria-label="Choisir le style" data-booster="style-pastille">
+    <span class="w1-lb">Style</span>
+    <span class="w1-sty"><span class="w1-past" data-v="style" data-vide="à choisir"></span><svg class="w1-i w1-chev"><use href="#w1-s-bas"/></svg></span>
+  </div>
+</div>
+<div class="w1-repd"><button class="w1-rep" data-ouvre="w1-d1" aria-expanded="false" aria-controls="w1-d1">Repères du style <span class="w1-m" data-v="code"></span><svg class="w1-i w1-chev"><use href="#w1-s-bas"/></svg></button><div id="w1-d1" hidden><div class="w1-rep-c"><span>Référentiel</span><span>BJCP 2021</span><span>OG</span><span class="w1-m">1,065–1,085</span><span>IBU</span><span class="w1-m">60–100</span><span>Alcool</span><span class="w1-m">7,5–10 %</span><span>SRM</span><span class="w1-m">6–14</span></div></div></div>
+
+<div class="w1-tu">
+  <section class="w1-t" data-booster="tuile-volume" aria-label="Volume en fermenteur">
+    <div class="w1-th"><svg class="w1-i"><use href="#w1-s-ferm"/></svg>En fermenteur</div>
+    <div class="w1-val"><input data-champ="vol" inputmode="decimal" aria-label="Volume en fermenteur, litres"><span>L</span></div>
+    <div class="w1-al" role="alert"><span data-v="alerte"></span></div>
+    <div class="w1-cons">
+      <div class="w1-fg" data-p="vol" aria-hidden="true"><span class="w1-fg-c" data-p="conseil"></span></div>
+      <div class="w1-fl" data-p="vol">
+        <span class="w1-a-haut"><span class="w1-m" data-v="ferm"></span> L</span>
+        <span class="w1-a-libre w1-libre" role="status"><span data-v="libres"></span> L libres</span>
+        <button class="w1-a-cons" data-ouvre="w1-libre-r" aria-expanded="false" data-booster="conseil-reglable">conseil <span class="w1-m" data-v="conseil"></span></button>
+      </div>
+    </div>
+    <div class="w1-pas"><button data-pas="vol:-1" aria-label="Un litre de moins"><svg class="w1-i"><use href="#w1-s-moins"/></svg></button><button data-pas="vol:1" aria-label="Un litre de plus"><svg class="w1-i"><use href="#w1-s-plus"/></svg></button></div>
+  </section>
+  <section class="w1-t" data-booster="tuile-ebullition" aria-label="Durée d'ébullition">
+    <div class="w1-th"><svg class="w1-i"><use href="#w1-s-flamme"/></svg>Ébullition<button class="w1-q" data-role="legende-bouton" aria-expanded="false" aria-controls="w1-leg" aria-label="Légende">?</button></div>
+    <div class="w1-val"><input data-champ="ebu" inputmode="numeric" aria-label="Durée d'ébullition, minutes"><span>min</span></div>
+    <div class="w1-pre" data-booster="raccourcis-ebullition"><button data-preset="ebu:30">30</button><button data-preset="ebu:60">60</button><button data-preset="ebu:90">90</button></div>
+    <div class="w1-ev"><svg class="w1-i"><use href="#w1-s-vapeur"/></svg><span class="w1-m">~<span data-v="evap"></span> L</span> évaporés</div>
+  </section>
+</div>
+<div class="w1-ln-c w1-libre-r" id="w1-libre-r" hidden><label>Espace libre <input data-champ="libre" inputmode="decimal"> %</label><span>repère provisoire, en attendant la levure</span></div>
+<p class="w1-leg" id="w1-leg" data-role="legende" hidden><b>~ estimé</b> : autant d'eau à prévoir en plus dans la cuve. L'évaporation suit le taux de ton profil de cuverie ; sans taux, 10 % par heure. <b>Conseil</b> : 20 % d'espace libre, repère provisoire tant que la levure n'est pas choisie. Le trait tireté du fermenteur marque ce conseil.</p>
+
+<button class="w1-nolo" role="switch" data-bascule="nolo" aria-checked="false" data-booster="interrupteur-nolo"><svg class="w1-i"><use href="#w1-s-verre"/></svg><span class="w1-nolo-t"><span><b>NOLO</b> <span class="w1-m">≤ 0,5 %</span></span><span class="w1-nolo-c"><span class="w1-off">style <span class="w1-m">7,5–10 %</span></span><span class="w1-on">alcool visé ≤ 0,5 %</span></span></span><span class="w1-sw" aria-hidden="true"></span></button>
+<div class="w1-atel"><button class="w1-ln" data-ouvre="w1-d2" aria-expanded="false" aria-controls="w1-d2">Atelier NOLO : procédé, sucres du moût<svg class="w1-i w1-chev"><use href="#w1-s-bas"/></svg></button><div id="w1-d2" hidden><div class="w1-ln-c">Procédé, matériel disponible, sucres du moût, simulateur.</div></div></div>
+<div>
+  <div><button class="w1-ln" data-ouvre="w1-d3" aria-expanded="false" aria-controls="w1-d3"><svg class="w1-i"><use href="#w1-s-cuve"/></svg><span data-v="mat"></span> <span class="w1-m"><span data-v="cuve"></span> L</span><svg class="w1-i w1-chev"><use href="#w1-s-bas"/></svg></button><div id="w1-d3" hidden><div class="w1-ln-c"><span>Cuve <b class="w1-m">45 L</b></span><span>Fermenteur <b class="w1-m">30 L</b></span><span>Évaporation : taux du profil</span></div></div></div>
+</div>
+
+</main>
+<div class="w1-pied">
+  <button class="w1-sec" disabled>Retour</button>
+  <button class="w1-pri">Suivant — Malts/sucres</button>
+</div>
+<button class="w1-fab" aria-label="Actions rapides"><svg class="w1-i"><use href="#w1-s-plus"/></svg></button>
+</div>
+<script>
+(function () {
+  // État de démonstration : la recette du brasseur, « neipa v3 » (fixture, rien d'écrit). États : #etat=neuve|plein|conseil|nolo|clavier.
+  const BASE = { nom: 'neipa v3', style: 'Double IPA', code: '22A', ref: 'BJCP 2021', vol: 24, ebu: 60, nolo: false,
+    ferm: 30, cuve: 45, mat: 'Royal Catering', libre: 20 };
+  const ETATS = { neuve: { nom: '', style: '', code: '', ref: '', vol: 30, neuve: true }, plein: { vol: 32 }, conseil: { vol: 27 }, nolo: { nolo: true } };
+  const etat = ((location.search + location.hash).match(/etat=(\w+)/) || [, 'repos'])[1];
+  const S = Object.assign({}, BASE, ETATS[etat] || {});
+  const app = document.getElementById('w1-app');
+  const fr = (n, d) => (n == null || Number.isNaN(n) ? '—' : n.toLocaleString('fr-FR', { maximumFractionDigits: d ?? 1 }));
+  const lire = (t) => { const n = parseFloat(String(t).replace(/\s/g, '').replace(',', '.')); return Number.isFinite(n) ? n : NaN; };
+  function deriver() {
+    S.conseil = Math.round(S.ferm * (1 - S.libre / 100) * 10) / 10;            // conseil : fermenteur × (1 − espace libre)
+    S.libres = Math.round((S.ferm - S.vol) * 10) / 10;
+    S.trop = Math.round((S.vol - S.ferm) * 10) / 10;
+    S.evap = Number.isFinite(S.vol) && Number.isFinite(S.ebu) ? Math.round(3 * (S.vol / 24) * (S.ebu / 60)) : NaN; // maquette : ~3 L à 24 L, 60 min (valeur de l'app)
+    S.alerte = S.vol > S.ferm ? fr(S.trop, 1) + ' L de trop' : 'fermenteur plein, aucun espace libre';
+    S.ferme = !Number.isFinite(S.vol) ? 'vide' : S.vol >= S.ferm ? 'plein' : S.vol > S.conseil ? 'conseil' : 'ok';
+  }
+  function rendre() {
+    deriver();
+    app.dataset.neuve = S.neuve ? '1' : '0';
+    app.dataset.ferme = S.ferme;
+    app.dataset.nolo = S.nolo ? 'on' : 'off';
+    document.querySelectorAll('[data-v]').forEach((el) => {
+      const k = el.dataset.v, v = S[k];
+      const vide = v === '' || v == null || (typeof v === 'number' && Number.isNaN(v));
+      el.classList.toggle('w1-vide', vide);
+      el.textContent = vide ? (el.dataset.vide || '—') : typeof v === 'number' ? fr(v, k === 'ebu' ? 0 : 1) : v;
+    });
+    document.querySelectorAll('[data-p]').forEach((el) => {
+      const k = el.dataset.p, base = Number(el.dataset.sur || S.ferm);
+      const v = Math.max(0, Math.min(1, (S[k] || 0) / base));
+      el.style.setProperty('--p', (v * 100).toFixed(2) + '%');
+    });
+    document.querySelectorAll('[data-champ]').forEach((el) => { if (document.activeElement !== el) { const v = S[el.dataset.champ]; el.value = typeof v === 'number' ? (Number.isNaN(v) ? '' : fr(v, 1)) : v; } });
+    document.querySelectorAll('[data-bascule]').forEach((el) => el.setAttribute('aria-checked', S[el.dataset.bascule] ? 'true' : 'false'));
+    document.querySelectorAll('[data-preset]').forEach((el) => { const [k, v] = el.dataset.preset.split(':'); el.setAttribute('aria-pressed', String(S[k]) === v ? 'true' : 'false'); });
+    if (window.w1_rendre) window.w1_rendre(S, fr);
+  }
+  app.addEventListener('click', (ev) => {
+    const pas = ev.target.closest('[data-pas]');
+    if (pas) { const [k, d] = pas.dataset.pas.split(':'); S[k] = Math.max(k === 'ebu' ? 0 : 1, (Number.isFinite(S[k]) ? S[k] : 0) + Number(d)); rendre(); return; }
+    const pre = ev.target.closest('[data-preset]');
+    if (pre) { const [k, v] = pre.dataset.preset.split(':'); S[k] = isNaN(Number(v)) ? v : Number(v); rendre(); return; }
+    const bas = ev.target.closest('[data-bascule]');
+    if (bas) { S[bas.dataset.bascule] = !S[bas.dataset.bascule]; rendre(); return; }
+    const ouv = ev.target.closest('[data-ouvre]');
+    if (ouv) { const cible = document.getElementById(ouv.dataset.ouvre); const ouvert = cible.hidden; document.querySelectorAll('[data-ouvre]').forEach((o) => { if (o !== ouv && o.dataset.groupe && o.dataset.groupe === ouv.dataset.groupe) { o.setAttribute('aria-expanded', 'false'); document.getElementById(o.dataset.ouvre).hidden = true; } }); cible.hidden = !ouvert; ouv.setAttribute('aria-expanded', String(ouvert)); if (ouvert) { const f = cible.querySelector('input'); if (f && ouv.dataset.focus) f.focus(); } return; }
+    const q = ev.target.closest('[data-role="legende-bouton"]');
+    if (q) { const l = document.getElementById(q.getAttribute('aria-controls')); const o = q.getAttribute('aria-expanded') !== 'true'; q.setAttribute('aria-expanded', String(o)); l.hidden = !o; }
+  });
+  app.addEventListener('input', (ev) => {
+    const c = ev.target.closest('[data-champ]'); if (!c) return;
+    const k = c.dataset.champ; S[k] = c.dataset.texte !== undefined ? c.value : lire(c.value); rendre();
+  });
+  app.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && ev.target.matches('input')) ev.target.blur(); });
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape') return;
+    document.querySelectorAll('[data-role="legende-bouton"][aria-expanded="true"]').forEach((q) => { q.setAttribute('aria-expanded', 'false'); document.getElementById(q.getAttribute('aria-controls')).hidden = true; });
+  });
+  window.w1_S = S; window.w1_rendreTout = rendre;
+  
+  window.w1_rendre = (S) => { document.querySelectorAll('.w1-val input').forEach((i) => i.style.setProperty('--n', Math.max(2, i.value.length))); document.querySelectorAll('.w1-fl').forEach((el) => el.style.setProperty('--pc', (Math.min(1, S.conseil / S.ferm) * 100).toFixed(2) + '%')); };
+
+  rendre();
+  if (etat === 'clavier') { const f = document.querySelector('[data-champ="nom"]'); if (f) f.focus(); }
+})();
+</script>
+</body>
+</html>

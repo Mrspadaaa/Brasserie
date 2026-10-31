@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r1 — Identité 1/7 · la jauge à la place de la phrase (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--hop:#567F45;--hopt:#3F6B2E;--eau:#4F7E9B;--eaut:#2F5F7D;--alerte:#C8382F;--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;
+--or:#E0A02E;--paille:#F2C14E;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.r1-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.r1-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.r1-tb{display:flex;align-items:center;gap:6px;height:36px}
+.r1-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.r1-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.r1-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.r1-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.r1-ab{height:28px;padding:0 6px;font-size:12px;color:var(--t1);text-decoration:underline;text-underline-offset:2px}
+.r1-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.r1-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.r1-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.r1-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.r1-rail [aria-current] span{color:var(--t0);font-weight:600}
+.r1-rail [aria-current] i{background:var(--t0)}
+.r1-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.r1-bd>div{display:flex;align-items:baseline;gap:4px}
+.r1-bd .r1-l{font-size:14px;color:var(--t2)}
+.r1-bd .r1-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.r1-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.r1-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.r1-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.r1-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);background:var(--or);align-self:center}
+.r1-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 10px}
+.r1-ret{min-height:24px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px;opacity:.4}
+.r1-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.r1-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.r1-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.r1-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+
+.r1-c{padding:8px 10px 0;min-height:760px}
+.r1-coller{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--bordm);border-radius:10px;font-size:14px;color:var(--t1)}
+.r1-card{margin-top:8px;background:var(--panel);border-radius:16px;padding:0 10px}
+.r1-row{display:flex;align-items:center;gap:8px;min-height:40px;border-bottom:1px solid var(--bord);width:100%;text-align:left}
+.r1-row:last-child{border-bottom:0}
+.r1-rr{min-height:34px;font-size:14px;color:var(--eaut);border-bottom:0}
+.r1-card+.r1-card{margin-top:10px}
+.r1-k{width:92px;font-size:12px;color:var(--t2);flex-shrink:0;display:flex;align-items:center;gap:6px}
+.r1-k svg,.r1-k i{flex-shrink:0;color:var(--t1)}
+.r1-nom{flex:1;min-width:0;height:32px;border:1px solid var(--bord);border-radius:10px;background:#fff;padding:0 8px;font-size:16px;color:var(--t0)}
+.r1-val{font-size:16px;color:var(--t0)}
+.r1-code{font-size:12px;color:var(--t2)}
+.r1-chev{margin-left:auto;color:var(--t2);display:flex}
+.r1-stp{display:flex;align-items:center;border:1px solid var(--bordm);border-radius:10px;background:#fff;height:34px}
+.r1-stp button{width:32px;height:30px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.r1-stp button:active{background:var(--haut)}
+.r1-stp output{min-width:84px;text-align:center;font-size:24px;font-weight:600;color:var(--t0)}
+.r1-stp small{font-size:12px;font-weight:400;color:var(--t2);margin-left:2px}
+.r1-evap{margin-left:auto;font-size:12px;color:var(--t2)}
+.r1-jg{padding:2px 0 12px;border-bottom:1px solid var(--bord)}
+.r1-jh{display:flex;align-items:baseline;justify-content:space-between;height:22px}
+.r1-jh .r1-k{width:auto}
+.r1-libre{font-size:14px;font-weight:600;color:var(--hopt)}
+.r1-libre.r1-plein{color:var(--alertet)}
+.r1-tr{position:relative;height:90px;border-radius:10px;border:1px solid var(--bordm);background:repeating-linear-gradient(135deg,var(--bord) 0 2px,#fff 2px 7px);overflow:visible}
+.r1-fill{position:absolute;left:0;top:0;bottom:0;border-radius:9px 0 0 9px;background:linear-gradient(180deg,#F0C25C,#E0A02E);display:flex;align-items:center;padding-left:8px;font-size:14px;font-weight:600;color:var(--t0);transition:width .2s ease}
+.r1-fill.r1-trop{background:repeating-linear-gradient(135deg,#E9A29C 0 3px,#F7D6D3 3px 7px);border-radius:9px}
+.r1-grad{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(16.666% - 2px),rgba(17,17,17,.45) calc(16.666% - 2px) 16.666%);-webkit-mask:linear-gradient(180deg,#000 0 10px,transparent 10px calc(100% - 10px),#000 calc(100% - 10px));mask:linear-gradient(180deg,#000 0 10px,transparent 10px calc(100% - 10px),#000 calc(100% - 10px))}
+.r1-cons{position:absolute;top:-6px;bottom:-6px;width:0;border-left:2px dashed var(--t0)}
+.r1-ech{display:flex;justify-content:space-between;margin-top:4px;font-size:12px;color:var(--t2)}
+.r1-ech span[style]{position:absolute;left:0;transform:translateX(-50%)}
+.r1-echw{position:relative}
+.r1-sw2{position:relative;width:44px;height:26px;border-radius:13px;background:var(--bordm);margin-left:auto;transition:background .15s}
+.r1-sw2::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.r1-row[aria-checked="true"] .r1-sw2{background:var(--t0)}
+.r1-row[aria-checked="true"] .r1-sw2::after{transform:translateX(18px)}
+.r1-nolov{font-size:14px;color:var(--t0)}
+.r1-replis{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.r1-rep{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px solid var(--bord);border-radius:16px;width:100%;text-align:left;font-size:14px;color:var(--t1)}
+.r1-rep b{font-weight:600;color:var(--t0)}
+.r1-tag{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:18px}
+.r1-reperes{display:grid;grid-template-columns:52px 1fr auto;gap:3px 10px;padding:0 0 10px;font-size:14px}
+.r1-reperes.r1-ferme{display:none}
+.r1-reperes .r1-hs{color:var(--attt)}
+.r1-reperes span{color:var(--t2)}
+.r1-reperes b{font-weight:600;color:var(--t0);text-align:right}
+.r1-etats{display:grid;gap:10px}
+.r1-etat{background:var(--panel);border-radius:16px;padding:8px 10px}
+.r1-etat h3{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px}
+.r1-al{margin-top:6px;font-size:13px;color:var(--alertet)}
+</style></head>
+<body data-concept="r1">
+<header class="r1-hd">
+  <div class="r1-tb">
+    <button class="r1-ic" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="r1-tt"><span class="r1-tn">Identité</span><span class="r1-tp">1/7</span></p>
+    <button class="r1-ab" aria-label="Abandonner le brouillon">Abandonner</button>
+    <button class="r1-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="r1-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="r1-rail" aria-label="Étapes"><button aria-current="step"><span>Identité</span><i></i></button><button><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="r1-bd" data-commun="bandeau">
+  <div><span class="r1-l">Grain</span><span class="r1-v">8,6 kg</span></div>
+  <div><span class="r1-l">OG</span><span class="r1-v">1,080</span></div>
+  <div><span class="r1-l">IBU</span><span class="r1-v">~93</span><span class="r1-pst" role="img" aria-label="style 60–100 IBU"><b style="left:42.9%;width:calc(71.4% - 42.9%)"></b><em style="left:66.4%"></em></span></div>
+  <div><span class="r1-l">EBC</span><span class="r1-sw"></span><span class="r1-v">9,5</span></div>
+</div>
+<main class="r1-c">
+  <button class="r1-coller" data-booster="import"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg> Coller une recette</button>
+  <section class="r1-card" aria-label="Identité">
+    <label class="r1-row"><span class="r1-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></svg>Nom</span><input class="r1-nom" value="neipa v3" aria-label="Nom de la bière"></label>
+    <label class="r1-row"><span class="r1-k"><i style="display:block;width:18px;height:18px;border-radius:50%;background:#2BB59F"></i>Style</span><span class="r1-val">Double IPA</span><span class="r1-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    <button class="r1-row r1-rr" data-booster="reperes" aria-expanded="true"><span>Repères · <span class="r1-m">22A</span></span><span class="r1-chev" style="transform:rotate(180deg)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+    <div class="r1-reperes" data-role="reperes"><span>OG</span><span class="r1-m">1,065–1,085</span><b></b><span>IBU</span><span class="r1-m">60–100</span><b></b><span>EBC</span><span class="r1-m">12–28</span><b class="r1-hs">sous ↓</b><span>Alcool</span><span class="r1-m">7,5–10 %</span><b class="r1-m">—</b></div>
+  </section>
+  <section class="r1-card" aria-label="Ce brassin">
+    <div class="r1-row"><span class="r1-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M6 11h12M10 2h4"/></svg>Volume</span>
+      <div class="r1-stp" data-booster="volume"><button aria-label="Moins 1 L" data-d="-1"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.28" stroke-linecap="round"><path d="M5 12h14"/></svg></button><output class="r1-m" data-role="vol">24<small>L</small></output><button aria-label="Plus 1 L" data-d="1"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.28" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+    </div>
+    <div class="r1-jg" data-booster="jauge-fermenteur">
+      <div class="r1-jh"><span class="r1-k">Fermenteur <b class="r1-m" style="color:var(--t0);font-weight:600">30 L</b></span><span class="r1-libre" data-role="libre"><span class="r1-m">6 L</span> libres</span></div>
+      <div data-role="jauge"><div class="r1-tr" role="img" aria-label="Fermenteur 30 L, 24 L prévus">
+    <div class="r1-fill" style="width:80%"></div><div class="r1-grad"></div>
+    <div class="r1-cons" style="left:80%"></div>
+  </div>
+  <div class="r1-echw"><div class="r1-ech" style="height:16px"><span style="left:80%">conseil <b class="r1-m">~24</b></span></div></div>
+  </div>
+    </div>
+    <div class="r1-row"><span class="r1-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.3 1.6 1.2 2.5 2 2.5-.6-3 0-5.5 1-8Z"/></svg>Ébullition</span>
+      <div class="r1-stp" data-booster="ebullition"><button aria-label="Moins 5 min" data-b="-5"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.28" stroke-linecap="round"><path d="M5 12h14"/></svg></button><output class="r1-m" data-role="boil">60<small>min</small></output><button aria-label="Plus 5 min" data-b="5"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.28" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+      <span class="r1-evap"><b class="r1-m" data-role="evap">~3 L</b> évaporés</span>
+    </div>
+    <div class="r1-row" role="switch" aria-checked="false" tabindex="0" data-booster="nolo"><span class="r1-k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-1.6 17.2a1 1 0 0 1-1 .8H8.6a1 1 0 0 1-1-.8Z"/><path d="M6.6 9h10.8"/><circle cx="12" cy="15" r="2.4"/></svg>NOLO</span><span class="r1-nolov">≤ <b class="r1-m">0,5 %</b></span><span class="r1-sw2"></span></div>
+  </section>
+  <div class="r1-replis">
+    <button class="r1-rep" aria-expanded="false">Espace libre <b class="r1-m">20 %</b><span class="r1-tag">repère</span><span class="r1-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+    <button class="r1-rep" aria-expanded="false">Matériel <span>Royal Catering · cuve <b class="r1-m">45 L</b></span><span class="r1-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+  </div>
+  <nav class="r1-pied" data-commun="pied"><button class="r1-ret" disabled>Retour</button><button class="r1-suiv">Suivant — Fermentescibles</button></nav>
+</main>
+<section class="r1-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="r1-etats">
+    <div class="r1-etat"><h3>Recette neuve : volume du profil, 30 L</h3><div class="r1-tr" role="img" aria-label="Fermenteur 30 L, 30 L prévus">
+    <div class="r1-fill r1-trop" style="width:100%"></div><div class="r1-grad"></div>
+    
+  </div>
+  <div class="r1-echw"><div class="r1-ech" style="height:16px"></div></div>
+  <p class="r1-al" role="alert">Fermenteur plein : réduis le volume.</p></div>
+    <div class="r1-etat"><h3>Volume effacé</h3><div class="r1-tr" role="img" aria-label="volume inconnu" style="background:var(--panel)"></div><div class="r1-ech"><span>Volume à renseigner</span><span class="r1-m">30 L</span></div></div>
+    <div class="r1-etat"><h3>Style créé, hors liste</h3><div class="r1-row" style="min-height:36px;border:0"><span class="r1-k">Style</span><span class="r1-val">NEIPA maison</span><span class="r1-code">créé</span></div></div>
+    <div class="r1-etat"><h3>NOLO coché</h3><div class="r1-row" role="switch" aria-checked="true" style="min-height:36px;border:0"><span class="r1-k">NOLO</span><span class="r1-nolov">≤ <b class="r1-m">0,5 %</b></span><span class="r1-sw2"></span></div></div>
+  </div>
+</section>
+<button class="r1-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s){return document.querySelector(s)};
+var vol=24,boil=60;
+function maj(){
+  q('[data-role="vol"]').innerHTML=vol+'<small>L</small>';
+  var l=30-vol, el=q('[data-role="libre"]');
+  el.className='r1-libre'+(l<=0?' r1-plein':'');
+  el.innerHTML=l>0?'<span class="r1-m">'+l+' L</span> libres':'<span class="r1-m">0 L</span> libre';
+  var f=q('[data-role="jauge"] .r1-fill'); f.style.width=Math.min(100,vol/30*100)+'%';
+  f.classList.toggle('r1-trop',vol>=30);
+  q('[data-role="boil"]').innerHTML=boil+'<small>min</small>';
+  var e=Math.round(3*boil/60*10)/10; q('[data-role="evap"]').textContent='~'+String(e).replace('.',',')+' L';
+}
+document.querySelectorAll('[data-d]').forEach(function(b){b.addEventListener('click',function(){vol=Math.max(1,vol+Number(b.dataset.d));maj();});});
+document.querySelectorAll('[data-b]').forEach(function(b){b.addEventListener('click',function(){boil=Math.max(0,boil+Number(b.dataset.b));maj();});});
+var n=q('[data-booster="nolo"]'); n.addEventListener('click',function(){n.setAttribute('aria-checked',n.getAttribute('aria-checked')==='true'?'false':'true');});
+var r=q('[data-booster="reperes"]'); r.addEventListener('click',function(){var o=!q('[data-role="reperes"]').classList.toggle('r1-ferme');r.setAttribute('aria-expanded',o);r.querySelector('.r1-chev').style.transform=o?'rotate(180deg)':'';});
+})();</script>
+</body></html>

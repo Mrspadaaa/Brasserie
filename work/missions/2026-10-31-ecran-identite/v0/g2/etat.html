@@ -1,0 +1,144 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>g2 — L'œil en haut, le pouce en bas (froide)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--faible:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;--hop:#3F6B2E;--hopf:#567F45;--alert:#A8291F;--alertf:#C8382F;--att:#7F5B10;--attf:#9C7020;--eau:#2F5F7D;--ebc:#E0A02E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--page);color:var(--t0);font-family:'Source Sans 3',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{width:390px;min-height:844px;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.g2-m{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.g2-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.g2-barre{display:flex;align-items:center;height:40px;padding:0 6px 0 2px;gap:2px}
+.g2-ret,.g2-ico{width:32px;height:32px;border:0;background:none;display:grid;place-items:center;color:var(--t1);border-radius:10px;padding:0}
+.g2-titre{font-size:18px;font-weight:600;margin:0 0 0 2px;flex:1;line-height:22px;white-space:nowrap}
+.g2-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+.g2-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:6px 6px}
+.g2-fil{display:flex;gap:6px;padding:0 10px 5px;overflow-x:auto;scrollbar-width:none}
+.g2-fil button{flex:auto;min-width:0;border:0;background:none;padding:3px 0 0;display:flex;flex-direction:column;gap:4px;align-items:stretch;min-height:28px}
+.g2-fil b{font-weight:400;font-size:13px;color:var(--t2);white-space:nowrap;text-align:left}
+.g2-fil .g2-on b{color:var(--t0);font-weight:600}
+.g2-fil i{height:5px;border-radius:3px;background:var(--bord)}
+.g2-fil .g2-on i{background:var(--t0)}
+.g2-bandeau{margin:8px 10px 0;height:36px;border:1px solid var(--bord);border-radius:18px;background:var(--pan);display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.g2-bandeau>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.g2-bandeau em{font-style:normal;font-size:13px;color:var(--t2)}
+.g2-bandeau b{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}
+.g2-bpiste{position:relative;width:36px;height:8px;border-radius:4px;background:var(--sur)}
+.g2-bpiste::before{content:"";position:absolute;left:40%;right:20%;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.g2-bpiste::after{content:"";position:absolute;left:62%;top:-3px;width:2px;height:14px;background:var(--t0);border-radius:1px}
+.g2-bpt{width:10px;height:10px;border-radius:50%;background:var(--ebc)}
+.g2-pied{display:flex;gap:8px;align-items:center;padding:16px 74px 20px 10px}
+.g2-pied button{height:32px;border-radius:10px;padding:0 12px;font-size:13px;border:1px solid var(--bord);background:var(--page)}
+.g2-pied button:disabled{color:var(--t2);border-color:var(--bord)}
+.g2-pied .g2-prim{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600;margin-left:auto}
+.g2-fab{position:fixed;right:12px;bottom:16px;width:52px;height:52px;border-radius:50%;border:0;background:var(--t0);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.g2-etats{margin:24px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.g2-etats>h2{font-size:13px;font-weight:600;color:var(--t2);margin:0 0 8px;text-transform:none}
+.g2-etat{margin:0 0 12px}
+.g2-etat>h3{font-size:12px;font-weight:600;color:var(--t2);margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.g2-ecran{min-height:768px;display:flex;flex-direction:column}
+.g2-id{padding:12px 12px 0;display:flex;flex-direction:column;gap:6px}
+.g2-nom{font-size:28px;font-weight:600;line-height:32px;border:0;border-bottom:1px dashed var(--bordm);padding:0 0 2px;width:100%;background:none;letter-spacing:-.02em}
+.g2-ligne{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.g2-style{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:10px;border:1px solid rgba(20,184,166,.45);background:rgba(45,212,191,.30);color:#0F5F57;font-size:13px;font-weight:600}
+.g2-style span{font-weight:400}
+.g2-lien{display:inline-flex;align-items:center;gap:4px;height:28px;font-size:13px;color:var(--eau);background:none;border:0;padding:0 2px}
+.g2-mat{font-size:13px;color:var(--t2);display:inline-flex;align-items:center;gap:4px;height:28px;background:none;border:0;padding:0}
+.g2-effets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 10px 0}
+.g2-ef{border:1px solid var(--bord);border-radius:16px;padding:8px;display:grid;grid-template-columns:26px 1fr;grid-template-rows:auto 1fr;gap:4px 8px;min-height:250px}.g2-ef>span{grid-column:1/3}.g2-ef>b{align-self:stretch;display:flex;flex-direction:column;gap:2px}.g2-ef>b>em{margin-bottom:auto}.g2-ef>b>span{font-size:28px;line-height:32px}.g2-ef>b small b{font-size:13px;color:var(--t1)}.g2-ef>b small{margin:0}.g2-ef em{font-style:normal;font-size:13px;color:var(--t2);font-family:"IBM Plex Mono",monospace;font-weight:400}
+.g2-ef>span{font-size:13px;color:var(--t2)}
+.g2-ef>b{font-size:16px;font-weight:600}
+.g2-ef>b small b{font-size:13px;color:var(--t1)}.g2-ef>b small{font-family:'Source Sans 3',system-ui,sans-serif;font-size:13px;font-weight:400;color:var(--t2);margin-left:2px}
+.g2-jau{position:relative;width:26px;border-radius:8px;background:var(--bord);grid-row:2;grid-column:1}
+.g2-jau>i{position:absolute;left:0;right:0;bottom:0;border-radius:8px;background:var(--t0);transition:height .18s}
+.g2-jau>u{position:absolute;left:-4px;right:-4px;border-top:2px dashed var(--t2)}
+.g2-ef.g2-att>b{color:var(--att)}.g2-ef.g2-al{border-color:var(--alertf)}.g2-ef.g2-al>b{color:var(--alert)}.g2-ef.g2-al .g2-jau>i{background:var(--alertf)}
+.g2-jau>i.g2-hach{border-radius:8px 8px 0 0;background:repeating-linear-gradient(0deg,var(--t2) 0 3px,transparent 3px 5px)}
+.g2-pouce{margin:auto 0 0;background:var(--pan);border-radius:24px 24px 16px 16px;padding:6px 10px 4px;margin-left:6px;margin-right:6px}
+.g2-poignee{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:0 auto 4px}
+.g2-reg{display:flex;align-items:center;gap:8px;min-height:72px;border-bottom:1px solid var(--bord)}
+.g2-reg>div:first-child{flex:1;display:flex;flex-direction:column}
+.g2-reg>div:first-child>span{font-size:13px;color:var(--t2)}
+.g2-reg output{font-size:28px;font-weight:600;line-height:32px;letter-spacing:-.01em}
+.g2-reg output small{font-family:'Source Sans 3',system-ui,sans-serif;font-size:16px;font-weight:400;color:var(--t2);margin-left:4px}
+.g2-pm{display:flex;gap:6px}
+.g2-pm button{width:48px;height:40px;border-radius:10px;border:1px solid var(--bordm);background:var(--page);display:grid;place-items:center;padding:0}
+.g2-pm button:active{background:var(--t0);color:#fff;border-color:var(--t0)}
+.g2-ligne2{display:flex;align-items:center;gap:8px;min-height:48px;border-bottom:1px solid var(--bord);font-size:16px}
+.g2-ligne2:last-child{border-bottom:0}
+.g2-ligne2>span{flex:1}
+.g2-ligne2 small{font-size:13px;color:var(--t2)}
+.g2-sw{width:48px;height:28px;border-radius:14px;background:var(--bordm);border:0;position:relative;padding:0;transition:background .18s}
+.g2-sw::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .18s}
+.g2-sw[aria-checked=true]{background:var(--t0)}.g2-sw[aria-checked=true]::after{left:23px}
+.g2-ligne2 button.g2-chv{background:none;border:0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t1);padding:0;height:32px}
+.g2-pied{padding-top:8px;padding-bottom:16px}
+</style></head><body>
+<header class="g2-tete" data-commun="en-tete">
+  <div class="g2-barre">
+    <button class="g2-ret" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <h1 class="g2-titre">Identité<span>1/7</span></h1>
+    <a class="g2-aband" href="#">Abandonner</a>
+    <button class="g2-ico" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></button>
+    <button class="g2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="g2-fil" aria-label="Étapes" data-commun="fil">
+    <button class="g2-on" aria-current="step"><b>Identité</b><i></i></button><button><b>Malts/sucres</b><i></i></button><button><b>Houblons</b><i></i></button><button><b>Levure</b><i></i></button><button><b>Paliers</b><i></i></button><button><b>Eau</b><i></i></button><button><b>Récap.</b><i></i></button>
+  </nav>
+</header>
+
+<main>
+<div class="g2-ecran">
+<div class="g2-bandeau" data-commun="bandeau"><span><em>Grain</em><b>8,6 kg</b></span><span><em>OG</em><b>1,080</b></span><span><em>IBU</em><b>~93</b><i class="g2-bpiste" title="Plage du style 60–120"></i></span><span><em>EBC</em><i class="g2-bpt"></i><b>9,5</b></span></div>
+
+<section class="g2-id" aria-label="La bière">
+  <input class="g2-nom" type="text" value="neipa v3" aria-label="Nom de la bière" autocomplete="off">
+  <div class="g2-ligne">
+    <button class="g2-style" data-booster="style-pastille" aria-haspopup="listbox">Double IPA <span class="g2-m">22A</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="g2-lien" data-booster="reperes-repli">Repères BJCP 2021<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  </div>
+  <button class="g2-mat" data-booster="materiel-repli">Royal Catering · cuve 45 L<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.571" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+</section>
+<section class="g2-effets" aria-label="Effets" data-booster="effets">
+  <div class="g2-ef" id="g2-ef1"><span>fermenteur</span><div class="g2-jau"><i id="g2-j1" style="height:80%"></i><u style="bottom:80%"></u></div><b class="g2-m"><em>30 L</em><span><span id="g2-lib">6</span> L</span><small>libres</small></b></div>
+  <div class="g2-ef"><span>cuve, avant ébullition</span><div class="g2-jau"><i id="g2-j2" style="height:53.3%"></i><i class="g2-hach" id="g2-j3" style="bottom:53.3%;height:6.7%"></i><u style="bottom:77.8%" title="limite utile provisoire 35 L"></u></div><b class="g2-m"><em>45 L</em><span>~<span id="g2-cv">27</span> L</span><small>à chauffer</small><small>dont <b class="g2-m">~<span id="g2-ev">3</span> L</b> évaporés</small></b></div>
+  
+</section>
+<section class="g2-pouce" aria-label="Réglages">
+  <div class="g2-poignee"></div>
+  <div class="g2-reg"><div><span>Volume en fermenteur</span><output class="g2-m" id="g2-v">24<small>L</small></output></div><div class="g2-pm" data-booster="volume-pas"><button aria-label="Moins 1 L" data-pas="v" data-d="-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><button aria-label="Plus 1 L" data-pas="v" data-d="1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button></div></div>
+  <div class="g2-reg"><div><span>Ébullition</span><output class="g2-m" id="g2-b">60<small>min</small></output></div><div class="g2-pm" data-booster="ebullition-pas"><button aria-label="Moins 5 min" data-pas="b" data-d="-5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><button aria-label="Plus 5 min" data-pas="b" data-d="5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button></div></div>
+  <div class="g2-ligne2"><span>Espace libre <small class="g2-m">~20 %</small> <small>repère</small></span><button class="g2-chv" data-booster="espace-repli" aria-label="Régler l'espace libre"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <div class="g2-ligne2"><span>NOLO <small class="g2-m">≤ 0,5 %</small></span><button class="g2-sw" role="switch" aria-checked="false" aria-label="NOLO" data-booster="nolo-bascule"></button></div>
+</section>
+<div class="g2-pied" data-commun="pied"><button disabled>Retour</button><button class="g2-prim">Suivant — Malts/sucres</button></div>
+<button class="g2-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+
+</div>
+<section class="g2-etats" aria-label="Autres états">
+  <h2>Autres états</h2>
+  <div class="g2-etat"><h3>Volume au plein : l’effet s’allume en haut, le geste ne bouge pas</h3><div class="g2-effets" style="margin:0"><div class="g2-ef g2-al" role="alert" style="min-height:120px"><span>fermenteur</span><div class="g2-jau"><i style="height:100%"></i><u style="bottom:80%"></u></div><b class="g2-m"><em>30 L</em><span>plein</span><small>0 L libre</small></b></div></div></div>
+  <div class="g2-etat"><h3>Volume effacé : rien d’inventé</h3><div class="g2-effets" style="margin:0"><div class="g2-ef" style="min-height:120px"><span>fermenteur</span><div class="g2-jau" style="background:none;border:1px dashed var(--bordm)"></div><b class="g2-m"><em>30 L</em><span>—</span><small>volume à renseigner</small></b></div></div></div>
+  <div class="g2-etat"><h3>NOLO coché</h3><div class="g2-pouce" style="margin:0"><div class="g2-ligne2"><span>NOLO <small class="g2-m">≤ 0,5 %</small></span><button class="g2-sw" role="switch" aria-checked="true" aria-label="NOLO"></button></div><div class="g2-ligne2"><span><small>Atelier NOLO : procédé, matériel, sucres du moût</small></span><button class="g2-chv" aria-label="Ouvrir"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></div></div></div>
+  <div class="g2-etat"><h3>Hachures : évaporation estimée (taux d'évaporation 10 %/h par défaut si la cuve n'en a pas)</h3></div>
+</section>
+</main>
+<script>(function(){
+  var CAP=30, CONSEIL=24, v=24, b=60;
+  var $=function(id){return document.getElementById(id)};
+  function maj(){
+    $('g2-v').firstChild.nodeValue=v; $('g2-b').firstChild.nodeValue=b;
+    var ev=b?Math.round(v/(1-0.1*b/60)-v):0, ef=$('g2-ef1');
+    ef.className='g2-ef'+(v>=CAP?' g2-al':v>CONSEIL?' g2-att':'');
+    $('g2-lib').textContent=v>CAP?'+'+(v-CAP):CAP-v; ef.querySelector('small').textContent=v>CAP?'de trop':v===CAP?'plein':'libres'; if(v>=CAP)ef.setAttribute('role','alert');else ef.removeAttribute('role');
+    $('g2-j1').style.height=Math.min(100,v/CAP*100)+'%';
+    $('g2-cv').textContent=v+ev; $('g2-j2').style.height=Math.min(100,v/45*100)+'%'; $('g2-j3').style.bottom=Math.min(100,v/45*100)+'%';
+    $('g2-ev').textContent=ev; $('g2-j3').style.height=Math.min(100,ev/45*100)+'%';
+  }
+  document.querySelectorAll('[data-pas]').forEach(function(x){x.addEventListener('click',function(){
+    var d=+x.dataset.d; if(x.dataset.pas==='v'){v=Math.max(1,Math.min(40,v+d));}else{b=Math.max(0,Math.min(180,b+d));} maj();});});
+  document.querySelector('[data-booster=nolo-bascule]').addEventListener('click',function(){this.setAttribute('aria-checked',this.getAttribute('aria-checked')!=='true');});
+})();</script>
+</body></html>

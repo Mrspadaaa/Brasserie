@@ -1,0 +1,21 @@
+<div class="PX-top">
+ <input id="PX-nom" class="PX-f" value="neipa v3" placeholder="Nom de la bière" aria-label="Nom de la bière" autocomplete="off">
+ <div class="PX-combo"><input id="PX-style" class="PX-f" value="Double IPA" placeholder="Style" aria-label="Style" autocomplete="off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></div>
+</div>
+<section class="PX-scene" aria-label="Cuve et fermenteur à l'échelle">
+ <svg id="PX-svg" viewBox="0 0 374 318" width="374" height="318" role="img" aria-label="Cuve 45 L et fermenteur 30 L dessinés à la même échelle"></svg>
+ <div class="PX-hit" id="PX-hit" data-booster="volume-niveau" role="slider" aria-label="Volume en fermenteur, glisser le niveau" aria-valuemin="1" aria-valuemax="30" aria-valuenow="24" tabindex="0"></div>
+ <button class="PX-q PX-qpos" data-role="legende-bouton" aria-expanded="false" aria-label="légende">?</button>
+</section>
+<div class="PX-ctl">
+ <div class="PX-st" aria-label="Durée d'ébullition"><button data-booster="ebullition-moins" aria-label="Moins 5 min">−</button><span><b class="PX-m" id="PX-b">60</b> <span class="PX-m">min</span></span><button data-booster="ebullition-plus" aria-label="Plus 5 min">+</button></div>
+ <div class="PX-st" aria-label="Volume en fermenteur"><button data-booster="volume-moins" aria-label="Moins 0,5 L">−</button><span class="PX-stl">volume<b id="PX-v" hidden></b></span><button data-booster="volume-plus" aria-label="Plus 0,5 L">+</button></div>
+</div>
+<p class="PX-alerte" id="PX-al" role="alert" hidden></p>
+<div class="PX-bas">
+ <label class="PX-nolo" data-booster="nolo"><span>NOLO <span class="PX-m">≤ 0,5 %</span></span><input type="checkbox" role="switch" id="PX-nl"><i class="PX-sw"></i></label>
+ <button class="PX-rep" data-booster="reperes" aria-expanded="false"><span class="PX-m" id="PX-ref">22A</span> repères<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.74"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
+<div class="PX-repd" data-role="reperes" hidden><span>OG <b class="PX-m">1,065–1,085</b></span><span>IBU <b class="PX-m">60–100</b></span><span>Alc. <b class="PX-m">7,5–10 %</b></span></div>
+<p class="PX-nolop" id="PX-np" hidden>Atelier NOLO ouvert ⌄</p>
+<div class="PX-leg" data-role="legende" hidden style="top:200px"><p>Cuve et fermenteur sont dessinés à la même échelle : un litre a la même hauteur dans les deux.</p><p><b>~</b> estimé : l'évaporation (bande bleue) suit un taux de repli de 10 % par heure, pas une mesure. Pointillé vert : conseil provisoire de 20 % d'espace libre. Pointillé noir : limite utile de 35 L, à vérifier.</p></div>

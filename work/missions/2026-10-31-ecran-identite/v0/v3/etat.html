@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v3 · Identité · profil au style</title>
+<!-- Lot v0 Identité · série v · v3 · page statique, fabriquée par fabrique.mjs (données : neipa v3, style 22A BJCP 2021). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  *{box-sizing:border-box} [hidden]{display:none!important} html,body{margin:0;background:#FFFFFF}
+  body{font-family:'Source Sans 3',system-ui,sans-serif;color:#111111;font-size:14px;line-height:1.35;-webkit-font-smoothing:antialiased}
+  .v3{max-width:390px;margin:0 auto;min-height:844px;position:relative;padding-bottom:72px}
+  .v3 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  .v3 .v3-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .v3-hd{padding:0 8px;background:#FFFFFF}
+  .v3-tb{display:flex;align-items:center;gap:6px;min-height:36px;padding-block:2px}
+  .v3 .v3-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#666666;flex:none}
+  .v3-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;margin:0}
+  .v3-tt b{font-size:16px;font-weight:600;color:#111111} .v3-tt span{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#666666}
+  .v3 .v3-ab{height:28px;padding:0 6px;font-size:12px;color:#333333;text-decoration:underline;text-underline-offset:2px;flex:none}
+  .v3-rail{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .v3 .v3-rail button{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:28px;padding:0 4px;flex:none}
+  .v3-rail span{font-size:12px;color:#666666;white-space:nowrap}
+  .v3-rail i{display:block;height:6px;border-radius:9px;background:#DDDDDD}
+  .v3-rail [aria-current] span{color:#111111;font-weight:600} .v3-rail [aria-current] i{background:#111111}
+  .v3-bd{margin:6px 8px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:5px 10px;border:1px solid #DDDDDD;background:#F5F5F5;border-radius:16px}
+  .v3-bd>div{display:flex;align-items:baseline;gap:4px}
+  .v3-bd .v3-bl{font-size:13px;color:#666666} .v3-bd .v3-bv{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap}
+  .v3-bp{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:#DDDDDD}
+  .v3-bp i{position:absolute;top:0;bottom:0;border-radius:9px;background:#9E9E9E} .v3-bp b{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:#111111}
+  .v3-pt{width:10px;height:10px;border-radius:50%;border:1px solid #BFBFBF;background:#E0A02E;align-self:center}
+  .v3 .v3-fab{position:fixed;right:max(12px,calc(50% - 183px));bottom:16px;width:48px;height:48px;border-radius:50%;background:#111111;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:5}
+  .v3-pied{display:flex;gap:8px;padding:8px 68px 8px 0;margin-top:auto}
+  .v3 .v3-pied button{height:32px;padding:0 10px;border-radius:10px;font-size:13px}
+  .v3 .v3-pied .v3-ret{border:1px solid #DDDDDD;color:#666666} .v3 .v3-pied .v3-sui{background:#111111;color:#fff;font-weight:600}
+  .v3-ds2{display:flex;align-items:center;gap:6px;font-size:12px;color:#666666}
+  .v3 .v3-ds2 button{height:28px;padding:0 10px;border:1.5px dashed #9E9E9E;border-radius:999px;font-size:13px;color:#333333}
+  .v3 .v3-ds2 button::after{content:" ›";color:#666666}
+  .v3 .v3-ds2 button:active{background:#EBEBEB}
+  .v3 .v3-lgb{width:24px;height:24px;border-radius:50%;border:1px solid #BFBFBF;font-size:13px;font-weight:600;color:#333333;flex:none;display:inline-flex;align-items:center;justify-content:center}
+  .v3-lg{background:#FFFFFF;border:1px solid #DDDDDD;border-radius:10px;padding:6px 8px;font-size:13px;color:#333333} .v3-lg p{margin:2px 0}
+  .v3 :focus-visible{outline:2px solid #4F7E9B;outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.v3 *{transition:none!important;animation:none!important}}
+
+  .v3-m{padding:8px 8px 0} .v3-e1{min-height:728px;display:flex;flex-direction:column}
+  .v3-id{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 2px 6px}
+  .v3 .v3-nm{font-size:20px;font-weight:700;display:flex;align-items:center;gap:6px;min-height:32px}
+  .v3-cr{color:#666666;display:flex}
+  .v3 .v3-sy{display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:999px;border:1px solid #BFBFBF;font-size:15px;font-weight:600}
+  .v3-sy .v3-mono{font-size:13px;color:#666666;font-weight:400}
+  .v3-gr{position:relative;background:#1A1613;border-radius:16px;padding:8px;display:flex;flex-direction:column;align-items:center}
+  .v3-tl{align-self:stretch;display:flex;align-items:center;justify-content:space-between}
+  .v3 .v3-tl .v3-lgb{color:#D8CEC5;border-color:#574A42}
+  .v3-gr .v3-lg{align-self:stretch;margin-top:6px}
+  .v3-gr svg{color:#F5F0EA}
+  .v3-sg{display:flex;border:1px solid #3D342E;border-radius:10px;padding:2px;background:#221D19}
+  .v3 .v3-sg button{height:26px;padding:0 10px;border-radius:8px;font-size:13px;color:#D8CEC5}
+  .v3 .v3-sg [aria-pressed=true]{background:#F5F0EA;color:#12100E;font-weight:600}
+  .v3-sv{display:block;margin-top:2px}
+  .v3-bn{font:400 12px 'IBM Plex Mono',monospace;fill:#9A8A7E}
+  .v3-ak{font:400 13px 'Source Sans 3',sans-serif;fill:#9A8A7E}
+  .v3-av{font:600 16px 'IBM Plex Mono',monospace;fill:#F5F0EA} .v3-av-i{fill:#9A8A7E} .v3-av-h{fill:#E3B55D}
+  .v3-hx{font:600 12px 'Source Sans 3',sans-serif;fill:#E3B55D}
+  .v3-br{margin-top:8px;background:#F5F5F5;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:8px}
+  .v3-dsw{align-self:stretch;padding:2px 2px 0} .v3-dsw .v3-ds2{color:#9A8A7E} .v3 .v3-dsw .v3-ds2 button{color:#D8CEC5;border-color:#574A42}
+  .v3-rw{display:flex;gap:8px;justify-content:space-between}
+  .v3-rw2{align-items:center}
+  .v3-st{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+  .v3-sl{font-size:13px;color:#666666;margin-right:2px}
+  .v3 .v3-sb{width:32px;height:36px;border-radius:10px;border:1px solid #DDDDDD;background:#FFFFFF;font-size:18px;color:#333333}
+  .v3-sv2{width:40px;height:32px;border:0;background:transparent;text-align:right;font-size:18px;font-weight:600;color:#111111;padding:0}
+  .v3-su{font-size:13px;color:#666666;min-width:22px}
+  .v3-ev{font-size:12px;color:#2F5F7D}
+  .v3 .v3-sw{display:flex;align-items:center;gap:8px;min-height:32px;font-size:14px;font-weight:600}
+  .v3-sw i{width:36px;height:20px;border-radius:12px;background:#BFBFBF;position:relative}
+  .v3-sw i::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+  .v3-sw[aria-checked=true] i{background:#111111} .v3-sw[aria-checked=true] i::after{transform:translateX(16px)}
+  .v3 .v3-fm{display:flex;align-items:center;gap:8px;min-height:40px;width:100%;border-top:1px solid #DDDDDD;padding-top:4px}
+  .v3-fl{font-size:14px;font-weight:600}
+  .v3-fj{flex:1;position:relative;height:12px;border-radius:9px;background:#EBEBEB;border:1px solid #DDDDDD}
+  .v3-fj i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:#3F6B2E}
+  .v3-fj b{position:absolute;left:80%;top:-4px;bottom:-4px;border-left:2px dashed #111111}
+  .v3-fv{font-size:15px;font-weight:600} .v3-fm svg{color:#666666}
+  .v3-fd{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#333333;padding:0 2px}
+  .v3-et{margin-top:24px;border-top:1px dashed #BFBFBF;padding-top:8px;display:flex;flex-direction:column;gap:6px}
+  .v3-et h2{margin:4px 0 0;font-size:13px;color:#666666;font-weight:600}
+  .v3-sb:active{background:#EBEBEB}
+</style>
+</head>
+<body>
+<div class="v3" data-variante="v3">
+<header class="v3-hd" data-commun="en-tete">
+    <div class="v3-tb">
+      <button type="button" class="v3-ic" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <p class="v3-tt"><b>Identité</b><span>1/7</span></p>
+      <button type="button" class="v3-ab">Abandonner</button>
+      <button type="button" class="v3-ic" aria-label="Coller une recette"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button type="button" class="v3-ic" aria-label="Thème"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="v3-rail" aria-label="Étapes" data-commun="fil"><button type="button" aria-current="step" aria-label="Identité"><span>Identité</span><i></i></button><button type="button" aria-label="Malts/sucres"><span>Malts/sucres</span><i></i></button><button type="button" aria-label="Houblons"><span>Houblons</span><i></i></button><button type="button" aria-label="Levure"><span>Levure</span><i></i></button><button type="button" aria-label="Paliers"><span>Paliers</span><i></i></button><button type="button" aria-label="Eau"><span>Eau</span><i></i></button><button type="button" aria-label="Récap."><span>Récap.</span><i></i></button></nav>
+  </header><div class="v3-bd" data-commun="bandeau" aria-label="Mesures de la recette">
+    <div><span class="v3-bl">Grain</span><span class="v3-bv">8,6 kg</span></div>
+    <div><span class="v3-bl">OG</span><span class="v3-bv">1,080</span></div>
+    <div><span class="v3-bl">IBU</span><span class="v3-bv">~93</span><span class="v3-bp" role="img" aria-label="style 60–100 IBU"><i style="left:42.9%;width:28.6%"></i><b style="left:66.4%"></b></span></div>
+    <div><span class="v3-bl">EBC</span><span class="v3-pt"></span><span class="v3-bv">9,5</span></div>
+  </div>
+<main class="v3-m">
+  <div class="v3-e1">
+  <section class="v3-id" aria-label="La bière">
+    <button type="button" class="v3-nm" data-booster="nom">neipa v3 <span class="v3-cr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></span></button>
+    <button type="button" class="v3-sy" data-booster="style">Double IPA <span class="v3-mono">22A</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+  </section>
+  <section class="v3-gr" aria-label="Ta recette dans le style">
+    <div class="v3-tl"><div class="v3-sg" role="group" data-booster="echelle"><button type="button" aria-pressed="true" data-m="style">Au style</button><button type="button" aria-pressed="false" data-m="abs">Absolu</button></div><button type="button" class="v3-lgb" data-role="legende-bouton" aria-expanded="false" aria-controls="v3-lg" aria-label="Légende">?</button></div><div id="v3-lg" class="v3-lg" data-role="legende" hidden><p>Bande : la plage du style 22A, BJCP 2021.</p><p>Trait ou point : ta recette.</p><p>Hachuré : inconnu ; la FG et l’alcool viennent de la levure, étape 4.</p><p>Tireté : un conseil, pas une limite.</p><p>~ : estimé ou simulé, jamais mesuré.</p></div>
+    <svg class="v3-sv" viewBox="0 0 374 372" width="358" role="img" aria-label="Profil de la recette dans le style 22A, au style" data-mode="style">
+    <defs><pattern id="v3-hach-style" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#221D19"/><line x1="0" y1="0" x2="0" y2="6" stroke="#3D342E" stroke-width="3"/></pattern></defs><line x1="34" y1="26" x2="34" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="23" y="116" width="22" height="120" rx="8" fill="#6B5D53" /><text x="34" y="111" class="v3-bn" text-anchor="middle">1,085</text><text x="34" y="250" class="v3-bn" text-anchor="middle">1,065</text><text x="34" y="350" class="v3-ak" text-anchor="middle">OG</text><text x="34" y="366" class="v3-av" text-anchor="middle">1,080</text><line x1="110.5" y1="26" x2="110.5" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="99.5" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="110.5" y="111" class="v3-bn" text-anchor="middle">1,018</text><text x="110.5" y="250" class="v3-bn" text-anchor="middle">1,008</text><text x="110.5" y="350" class="v3-ak" text-anchor="middle">FG</text><text x="110.5" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="187" y1="26" x2="187" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="176" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="187" y="111" class="v3-bn" text-anchor="middle">10</text><text x="187" y="250" class="v3-bn" text-anchor="middle">7,5</text><text x="187" y="350" class="v3-ak" text-anchor="middle">Alc. %</text><text x="187" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="263.5" y1="26" x2="263.5" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="252.5" y="116" width="22" height="120" rx="8" fill="#6B5D53" /><text x="263.5" y="111" class="v3-bn" text-anchor="middle">100</text><text x="263.5" y="250" class="v3-bn" text-anchor="middle">60</text><text x="263.5" y="350" class="v3-ak" text-anchor="middle">IBU</text><text x="263.5" y="366" class="v3-av" text-anchor="middle">~93</text><line x1="340" y1="26" x2="340" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="329" y="116" width="22" height="120" rx="8" fill="#6B5D53" /><text x="340" y="111" class="v3-bn" text-anchor="middle">28</text><text x="354" y="240" class="v3-bn" text-anchor="start">12</text><text x="340" y="350" class="v3-ak" text-anchor="middle">EBC</text><text x="340" y="366" class="v3-av v3-av-h" text-anchor="middle">9,5</text><line x1="34" y1="145.99999999999932" x2="263.5" y2="137" stroke="#F5F0EA" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/><line x1="263.5" y1="137" x2="340" y2="254.75" stroke="#F5F0EA" stroke-width="3"  stroke-linecap="round"/><circle cx="34" cy="145.99999999999932" r="7" fill="#F5F0EA" stroke="#1A1613" stroke-width="2"/><circle cx="263.5" cy="137" r="7" fill="#F5F0EA" stroke="#1A1613" stroke-width="2"/><circle cx="340" cy="254.75" r="7" fill="#E3B55D" stroke="#1A1613" stroke-width="2"/><text x="328" y="258.75" class="v3-hx" text-anchor="end">pâle</text></svg><svg class="v3-sv" viewBox="0 0 374 372" width="358" role="img" aria-label="Profil de la recette dans le style 22A, en absolu" data-mode="abs" hidden>
+    <defs><pattern id="v3-hach-abs" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#221D19"/><line x1="0" y1="0" x2="0" y2="6" stroke="#3D342E" stroke-width="3"/></pattern></defs><line x1="34" y1="26" x2="34" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="23" y="119.7500000000004" width="22" height="75.00000000000003" rx="8" fill="#6B5D53" /><text x="34" y="114.7500000000004" class="v3-bn" text-anchor="middle">1,085</text><text x="34" y="208.75000000000043" class="v3-bn" text-anchor="middle">1,065</text><text x="34" y="350" class="v3-ak" text-anchor="middle">OG</text><text x="34" y="366" class="v3-av" text-anchor="middle">1,080</text><line x1="110.5" y1="26" x2="110.5" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="99.5" y="146" width="22" height="100" rx="8" fill="url(#v3-hach-abs)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="110.5" y="141" class="v3-bn" text-anchor="middle">1,018</text><text x="110.5" y="260" class="v3-bn" text-anchor="middle">1,008</text><text x="110.5" y="350" class="v3-ak" text-anchor="middle">FG</text><text x="110.5" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="187" y1="26" x2="187" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="176" y="92.66666666666666" width="22" height="83.33333333333334" rx="8" fill="url(#v3-hach-abs)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="187" y="87.66666666666666" class="v3-bn" text-anchor="middle">10</text><text x="187" y="190" class="v3-bn" text-anchor="middle">7,5</text><text x="187" y="350" class="v3-ak" text-anchor="middle">Alc. %</text><text x="187" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="263.5" y1="26" x2="263.5" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="252.5" y="76" width="22" height="100" rx="8" fill="#6B5D53" /><text x="263.5" y="71" class="v3-bn" text-anchor="middle">100</text><text x="263.5" y="190" class="v3-bn" text-anchor="middle">60</text><text x="263.5" y="350" class="v3-ak" text-anchor="middle">IBU</text><text x="263.5" y="366" class="v3-av" text-anchor="middle">~93</text><line x1="340" y1="26" x2="340" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="329" y="186" width="22" height="80" rx="8" fill="#6B5D53" /><text x="340" y="181" class="v3-bn" text-anchor="middle">28</text><text x="354" y="270" class="v3-bn" text-anchor="start">12</text><text x="340" y="350" class="v3-ak" text-anchor="middle">EBC</text><text x="340" y="366" class="v3-av v3-av-h" text-anchor="middle">9,5</text><line x1="34" y1="138.5" x2="263.5" y2="93.5" stroke="#F5F0EA" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/><line x1="263.5" y1="93.5" x2="340" y2="278.5" stroke="#F5F0EA" stroke-width="3"  stroke-linecap="round"/><circle cx="34" cy="138.5" r="7" fill="#F5F0EA" stroke="#1A1613" stroke-width="2"/><circle cx="263.5" cy="93.5" r="7" fill="#F5F0EA" stroke="#1A1613" stroke-width="2"/><circle cx="340" cy="278.5" r="7" fill="#E3B55D" stroke="#1A1613" stroke-width="2"/><text x="328" y="282.5" class="v3-hx" text-anchor="end">pâle</text></svg>
+    <div class="v3-dsw"><div class="v3-ds2" data-booster="du-style"><span>Du style</span><button type="button">Empâtage</button><button type="button">Fermentation</button></div></div>
+  </section>
+  <section class="v3-br" aria-label="Le brassin">
+    <div class="v3-rw"><div class="v3-st" data-booster="volume"><span class="v3-sl">Volume</span>
+  <button type="button" class="v3-sb" aria-label="Moins">−</button><input class="v3-sv2 v3-mono" inputmode="decimal" value="24" aria-label="Volume"><span class="v3-su">L</span><button type="button" class="v3-sb" aria-label="Plus">+</button></div><div class="v3-st" data-booster="ebullition"><span class="v3-sl">Ébullition</span>
+  <button type="button" class="v3-sb" aria-label="Moins">−</button><input class="v3-sv2 v3-mono" inputmode="decimal" value="60" aria-label="Ébullition"><span class="v3-su">min</span><button type="button" class="v3-sb" aria-label="Plus">+</button></div></div>
+    <div class="v3-rw v3-rw2">
+      <span class="v3-ev"><span class="v3-mono">~3 L</span> évaporés</span>
+      <button type="button" class="v3-sw" role="switch" aria-checked="false" data-booster="nolo">NOLO <span class="v3-mono">≤ 0,5 %</span><i></i></button>
+    </div>
+    <button type="button" class="v3-fm" data-booster="fermenteur" aria-expanded="false">
+      <span class="v3-fl">Fermenteur</span><span class="v3-fj"><i style="width:80%"></i><b></b></span><span class="v3-mono v3-fv">24/30 L</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="v3-fd" hidden><span>Espace libre · conseil <span class="v3-mono">~20 %</span></span><span>Royal Catering · cuve 45 L</span></div>
+  </section>
+  <footer class="v3-pied" data-commun="pied"><button type="button" class="v3-ret" disabled>Retour</button><button type="button" class="v3-sui">Suivant — Malts/sucres</button></footer>
+  <button type="button" class="v3-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+  </div>
+  <section class="v3-et" aria-label="Autres états">
+    <h2>Recette neuve : les bandes du style, sans ligne</h2>
+    <div class="v3-gr"><svg class="v3-sv" viewBox="0 0 374 372" width="358" role="img" aria-label="Profil de la recette dans le style 22A, au style" data-mode="style">
+    <defs><pattern id="v3-hach-style-n" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#221D19"/><line x1="0" y1="0" x2="0" y2="6" stroke="#3D342E" stroke-width="3"/></pattern></defs><line x1="34" y1="26" x2="34" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="23" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style-n)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="34" y="111" class="v3-bn" text-anchor="middle">1,085</text><text x="34" y="250" class="v3-bn" text-anchor="middle">1,065</text><text x="34" y="350" class="v3-ak" text-anchor="middle">OG</text><text x="34" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="110.5" y1="26" x2="110.5" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="99.5" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style-n)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="110.5" y="111" class="v3-bn" text-anchor="middle">1,018</text><text x="110.5" y="250" class="v3-bn" text-anchor="middle">1,008</text><text x="110.5" y="350" class="v3-ak" text-anchor="middle">FG</text><text x="110.5" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="187" y1="26" x2="187" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="176" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style-n)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="187" y="111" class="v3-bn" text-anchor="middle">10</text><text x="187" y="250" class="v3-bn" text-anchor="middle">7,5</text><text x="187" y="350" class="v3-ak" text-anchor="middle">Alc. %</text><text x="187" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="263.5" y1="26" x2="263.5" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="252.5" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style-n)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="263.5" y="111" class="v3-bn" text-anchor="middle">100</text><text x="263.5" y="250" class="v3-bn" text-anchor="middle">60</text><text x="263.5" y="350" class="v3-ak" text-anchor="middle">IBU</text><text x="263.5" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text><line x1="340" y1="26" x2="340" y2="326" stroke="#3D342E" stroke-width="2"/><rect x="329" y="116" width="22" height="120" rx="8" fill="url(#v3-hach-style-n)" stroke="#9A8A7E" stroke-dasharray="3 3"/><text x="340" y="111" class="v3-bn" text-anchor="middle">28</text><text x="340" y="250" class="v3-bn" text-anchor="middle">12</text><text x="340" y="350" class="v3-ak" text-anchor="middle">EBC</text><text x="340" y="366" class="v3-av v3-av-i" text-anchor="middle">—</text></svg></div>
+  </section>
+</main>
+</div>
+<script>(function(){
+  var sg=document.querySelectorAll('.v3-sg button');
+  sg.forEach(function(b){b.addEventListener('click',function(){sg.forEach(function(o){o.setAttribute('aria-pressed',String(o===b));});
+    document.querySelectorAll('.v3-e1 .v3-sv').forEach(function(s){s.toggleAttribute('hidden',s.getAttribute('data-mode')!==b.getAttribute('data-m'));});});});
+  document.querySelectorAll('.v3-sw').forEach(function(s){s.addEventListener('click',function(){s.setAttribute('aria-checked',s.getAttribute('aria-checked')==='true'?'false':'true');});});
+  var fm=document.querySelector('.v3-fm');fm.addEventListener('click',function(){var d=fm.nextElementSibling;d.hidden=!d.hidden;fm.setAttribute('aria-expanded',String(!d.hidden));});
+  document.querySelectorAll('.v3-st').forEach(function(st){var inp=st.querySelector('input');var b=st.querySelectorAll('.v3-sb');var pas=inp.getAttribute('aria-label')==='Ébullition'?5:1;
+    b[0].addEventListener('click',function(){inp.value=Math.max(0,(parseFloat(inp.value.replace(',','.'))||0)-pas);});
+    b[1].addEventListener('click',function(){inp.value=(parseFloat(inp.value.replace(',','.'))||0)+pas;});});
+  var lb=document.querySelector('.v3-lgb'),lg=document.getElementById('v3-lg');
+  if(lb&&lg){lb.addEventListener('click',function(){lg.hidden=!lg.hidden;lb.setAttribute('aria-expanded',String(!lg.hidden));});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!lg.hidden){lg.hidden=true;lb.setAttribute('aria-expanded','false');lb.focus();}});}
+})();</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Identité 1/7 · e4 · Le fermenteur en colonne</title>
+<!-- Lot v0 Identité, série e (l'échelle du matériel), concept e4. Page statique, données de démonstration : « neipa v3 », Double IPA 22A, 24 L, 60 min, cuve Royal Catering 45 L, fermenteur 30 L. Estimations marquées ~ (évaporation de repli 10 %/h, conseil de 20 % d'espace libre, limite utile 35 L à vérifier). -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--page:#FFFFFF;--panneau:#F5F5F5;--surf:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t3:#666666;--t2:#333333;--t1:#111111;
+--hop:#567F45;--hopt:#3F6B2E;--eau:#4F7E9B;--eaut:#2F5F7D;--al:#C8382F;--alt:#A8291F;--att:#9C7020;--attt:#7F5B10;
+--straw:#F2C14E;--gold:#E0A02E;--goldt:#7A5A12;--amber:#C87A2C;
+--sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--page)}
+body{background:var(--page);color:var(--t2);font:400 14px/18px var(--sans);-webkit-tap-highlight-color:transparent}
+::selection{background:#F2C14E66}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg{display:block;flex:none}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--t1);outline-offset:2px;border-radius:6px}
+.e4-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.e4-app{max-width:390px;margin:0 auto;min-height:844px;position:relative;overflow-x:hidden}
+.e4-hd{display:flex;align-items:center;height:44px;padding:0 6px 0 2px;gap:2px}
+.e4-back{width:32px;height:32px;display:grid;place-items:center;color:var(--t1)}
+.e4-ttl{font:600 18px/22px var(--sans);color:var(--t1);padding-left:4px}
+.e4-ttl span{font-weight:400;color:var(--t3)}
+.e4-sp{flex:1}
+.e4-ab{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;height:32px;padding:0 6px}
+.e4-ic{width:32px;height:32px;display:grid;place-items:center;color:var(--t2)}
+.e4-tabs{display:flex;justify-content:space-between;padding:0 8px;border-bottom:1px solid var(--bord)}
+.e4-tab{font-size:14px;line-height:18px;color:var(--t3);display:flex;flex-direction:column;gap:5px;padding:4px 0 8px;white-space:nowrap}
+.e4-tab i{display:block;height:4px;border-radius:2px;background:var(--bord)}
+.e4-tab.e4-on{color:var(--t1);font-weight:600}
+.e4-tab.e4-on i{background:var(--t1)}
+.e4-band{margin:8px 8px 0;height:40px;border:1px solid var(--bord);border-radius:20px;background:var(--panneau);display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:6px}
+.e4-band span{display:inline-flex;align-items:baseline;gap:4px;font-size:12px;color:var(--t3);white-space:nowrap}
+.e4-band b{font:600 16px/20px var(--mono);font-variant-numeric:tabular-nums;color:var(--t1)}
+.e4-ibu{align-items:center!important}
+.e4-trk{position:relative;width:44px;height:8px;border-radius:4px;background:var(--surf);margin-left:2px;align-self:center}
+.e4-trk::before{content:"";position:absolute;left:18px;width:20px;top:0;bottom:0;border-radius:4px;background:var(--bordm)}
+.e4-trk::after{content:"";position:absolute;left:33px;top:-4px;width:2px;height:16px;background:var(--t1);border-radius:1px}
+.e4-ebc{width:10px;height:10px;border-radius:50%;background:var(--gold);align-self:center}
+body.e4-neuve .e4-band,body.e4-neuve .e4-ab{display:none}
+.e4-fab{position:fixed;right:max(12px,calc(50vw - 183px));bottom:16px;width:52px;height:52px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:5}
+.e4-pied{display:flex;gap:8px;align-items:center;padding:12px 76px 20px 8px}
+.e4-btn2{height:32px;padding:0 10px;border:1px solid var(--bordm);border-radius:10px;font-size:14px;color:var(--t1);background:var(--page)}
+.e4-btn1{height:32px;padding:0 12px;border-radius:10px;font-size:14px;font-weight:600;color:#fff;background:#111}
+.e4-leg{position:absolute;z-index:6;left:8px;right:8px;background:var(--page);border:1px solid var(--bordm);border-radius:16px;padding:10px 12px;box-shadow:0 8px 24px -12px rgba(0,0,0,.35);font-size:14px;line-height:19px;color:var(--t2)}
+.e4-leg[hidden]{display:none}
+.e4-leg p+p{margin-top:6px}
+.e4-q{width:28px;height:28px;border-radius:50%;border:1px solid var(--bordm);font-size:14px;font-weight:600;color:var(--t2);display:inline-grid;place-items:center;flex:none}
+.e4-etats{max-width:374px;margin:0 auto 40px;padding-top:12px;border-top:1px dashed var(--bordm)}
+.e4-etats h2{font:600 14px/18px var(--sans);color:var(--t1);margin-bottom:6px}
+.e4-etats div{display:flex;flex-wrap:wrap;gap:6px;padding-right:64px}
+.e4-etats button{height:28px;padding:0 10px;border-radius:14px;border:1px solid var(--bordm);font-size:14px}
+.e4-etats button[aria-pressed="true"]{background:#111;color:#fff;border-color:#111}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.e4-g{position:relative;display:grid;grid-template-columns:1fr 104px;gap:0 28px;margin:10px 8px 0}
+.e4-col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.e4-it{display:flex;flex-direction:column;gap:4px}
+.e4-k{font-size:12px;line-height:16px;color:var(--t3);display:flex;align-items:center;gap:6px}
+.e4-ref{height:18px;padding:0 6px;border-radius:9px;background:var(--surf);font-size:12px;line-height:18px;color:var(--t2)}
+.e4-f{width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);padding:0 10px;font-size:16px;color:var(--t1)}
+.e4-f::placeholder{color:var(--t3)}
+.e4-combo{position:relative}.e4-combo svg{position:absolute;right:8px;top:10px;color:var(--t2)}
+.e4-vr{display:flex;align-items:center;gap:6px}
+.e4-pm{width:32px;height:32px;border-radius:10px;border:1px solid var(--bordm);font:500 18px/1 var(--mono);color:var(--t1);flex:none}
+.e4-pm:active{background:var(--surf)}
+.e4-big{flex:1;display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:14px;color:var(--t2)}
+.e4-big b{font-size:28px;line-height:32px;font-weight:600;color:var(--t1)}
+.e4-vol .e4-big b{color:var(--t1)}
+.e4-lib{font-size:14px;color:var(--hopt);text-align:center}
+.e4-lib.e4-serre{color:var(--attt)}.e4-lib.e4-plein{color:var(--alt);font-weight:600}
+.e4-ev{font-size:14px;color:var(--eaut);text-align:center}
+.e4-cb{position:relative;height:10px;border-radius:5px;border:1px solid var(--t2);overflow:hidden;background:var(--page)}
+.e4-cb i:first-child{position:absolute;left:0;top:0;bottom:0;background:var(--straw)}
+.e4-cl{position:absolute;top:0;bottom:0;left:77.8%;border-left:2px dashed var(--t1)}
+.e4-cv{font-size:14px;color:var(--t3)}.e4-cv .e4-m{color:var(--t1)}
+.e4-nolo{display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 6px 0 10px;border:1px solid var(--bord);border-radius:10px;background:var(--panneau);font-size:14px;font-weight:600;color:var(--t1);position:relative;cursor:pointer}
+.e4-nolo input{position:absolute;opacity:0;width:1px;height:1px}
+.e4-sw{width:40px;height:24px;border-radius:12px;background:var(--bordm);position:relative;transition:background .15s}
+.e4-sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
+.e4-nolo input:checked+.e4-sw{background:var(--hop)}.e4-nolo input:checked+.e4-sw::after{left:19px}
+.e4-nolo input:focus-visible+.e4-sw{outline:2px solid var(--t1);outline-offset:2px}
+.e4-tube{position:relative;display:flex;flex-direction:column;cursor:ns-resize;padding-top:4px}
+.e4-cap{height:22px;margin:0 -6px;border-radius:8px 8px 2px 2px;background:#111;color:#fff;display:grid;place-items:center;font-size:12px}
+.e4-in{position:relative;flex:1;border:2px solid #111;border-top:0;border-radius:0 0 18px 18px;overflow:hidden;background:#fff}
+.e4-tube.e4-tient .e4-in{box-shadow:0 0 0 3px #E0A02E66}
+.e4-tube.e4-over .e4-in{border-color:var(--al)}
+.e4-mousse{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 3px,#CFCFCF 3.5px,transparent 4.5px) 0 0/12px 12px,radial-gradient(circle at 50% 50%,transparent 2px,#DDDDDD 2.5px,transparent 3.5px) 6px 6px/12px 12px}
+.e4-liq{position:absolute;left:0;right:0;bottom:0;background:var(--gold);transition:height .15s ease-out}
+.e4-bulle{position:absolute;width:6px;height:6px;border-radius:50%;border:1.5px solid #FFFFFFAA}
+.e4-tk{position:absolute;left:0;right:0;border-top:2px dashed var(--hop)}
+.e4-surf{position:absolute;left:50%;width:36px;height:14px;margin:-7px 0 0 -18px;border-radius:7px;background:#111;box-shadow:0 0 0 2px #fff;transform:translateY(0)}
+.e4-surf::before,.e4-surf::after{content:"";position:absolute;left:12px;right:12px;height:2px;background:#fff;top:4px}
+.e4-surf::after{top:8px}
+.e4-grad span{position:absolute;left:0;width:10px;border-top:1.5px solid #111;font:400 12px/12px var(--mono);color:var(--t2)}
+.e4-grad span{text-indent:14px;transform:translateY(-6px);padding-top:0;height:12px;border-top:0;background:linear-gradient(#111,#111) 0 50%/10px 1.5px no-repeat;white-space:nowrap}
+.e4-lead{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.e4-qp{position:absolute;right:-4px;bottom:-40px;background:var(--page)}
+.e4-alerte{margin:8px 8px 0;font-size:14px;font-weight:600;color:var(--alt)}
+.e4-nolop{margin:6px 10px 0;font-size:14px;color:var(--hopt)}
+.e4-more{display:flex;align-items:center;justify-content:space-between;width:calc(100% - 16px - 40px);height:36px;margin:8px 8px 0;padding:0 10px;border:1px solid var(--bord);border-radius:10px;font-size:14px;color:var(--t2)}
+.e4-matd{display:grid;grid-template-columns:1fr auto;gap:4px 8px;margin:6px 8px 0;padding:8px 10px;border:1px solid var(--bord);border-radius:10px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="e4-app">
+
+<header class="e4-coque">
+ <div class="e4-hd">
+  <button class="e4-back" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.13" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <h1 class="e4-ttl">Identité <span>1/7</span></h1>
+  <span class="e4-sp"></span>
+  <button class="e4-ab">Abandonner</button>
+  <button class="e4-ic" aria-label="Coller une recette trouvée"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.92" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6v3H9z"/><path d="M15 5h2a2 2 0 0 1 2 2v3M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"/><path d="M14 16h7M18 13l3 3-3 3"/></svg></button>
+  <button class="e4-ic" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.92" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+ </div>
+ <nav class="e4-tabs" aria-label="Étapes">
+  <span class="e4-tab e4-on">Identité<i></i></span><span class="e4-tab">Malts/sucres<i></i></span><span class="e4-tab">Houblons<i></i></span><span class="e4-tab">Levure<i></i></span><span class="e4-tab">Paliers<i></i></span><span class="e4-tab">Eau<i></i></span><span class="e4-tab">Récap.<i></i></span>
+ </nav>
+ <div class="e4-band" aria-label="Mesures de la recette">
+  <span>Grain <b>8,6 kg</b></span><span>OG <b>1,080</b></span><span class="e4-ibu">IBU <b>~93</b><i class="e4-trk"></i></span><span class="e4-ibu">EBC <i class="e4-ebc"></i><b>9,5</b></span>
+ </div>
+</header>
+<main class="e4-zone">
+<section class="e4-g" id="e4-g" aria-label="Identité et fermenteur">
+ <div class="e4-col">
+  <div class="e4-it"><label class="e4-k" for="e4-nom">Bière</label><input id="e4-nom" class="e4-f" value="neipa v3" placeholder="Nom, plus tard" autocomplete="off"></div>
+  <div class="e4-it"><label class="e4-k" for="e4-style">Style <span class="e4-ref e4-m" id="e4-ref">22A</span></label><div class="e4-combo"><input id="e4-style" class="e4-f" value="Double IPA" placeholder="NEIPA, Stout…" autocomplete="off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></div></div>
+  <div class="e4-it e4-vol" id="e4-volrow"><span class="e4-k">En fermenteur</span>
+   <div class="e4-vr"><button class="e4-pm" data-booster="volume-moins" aria-label="Moins 0,5 L">−</button><span class="e4-big"><b class="e4-m" id="e4-v">24</b><span class="e4-m">L</span></span><button class="e4-pm" data-booster="volume-plus" aria-label="Plus 0,5 L">+</button></div>
+   <span class="e4-lib" id="e4-lib"></span>
+  </div>
+  <div class="e4-it"><span class="e4-k">Ébullition</span>
+   <div class="e4-vr"><button class="e4-pm" data-booster="ebullition-moins" aria-label="Moins 5 min">−</button><span class="e4-big"><b class="e4-m" id="e4-b">60</b><span class="e4-m">min</span></span><button class="e4-pm" data-booster="ebullition-plus" aria-label="Plus 5 min">+</button></div>
+   <span class="e4-ev" id="e4-ev"></span>
+  </div>
+  <div class="e4-it e4-cu"><span class="e4-k">Cuve Royal Catering</span><div class="e4-cb"><i id="e4-cf"></i><i class="e4-cl"></i></div><span class="e4-cv"><span class="e4-m" id="e4-pre">~27 L</span> sur <span class="e4-m">45 L</span></span></div>
+  <label class="e4-nolo" data-booster="nolo"><span>NOLO <span class="e4-m">≤ 0,5 %</span></span><input type="checkbox" role="switch" id="e4-nl"><i class="e4-sw"></i></label>
+ </div>
+ <div class="e4-tube" id="e4-tube" data-booster="volume-colonne" role="slider" aria-label="Volume en fermenteur, glisser le niveau" aria-valuemin="1" aria-valuemax="30" aria-valuenow="24" tabindex="0">
+  <div class="e4-cap"><span class="e4-m">30 L</span></div>
+  <div class="e4-in" id="e4-in">
+   <i class="e4-mousse"></i>
+   <i class="e4-liq" id="e4-liq"><span class="e4-bulle" style="left:22%;bottom:18%"></span><span class="e4-bulle" style="left:62%;bottom:40%"></span><span class="e4-bulle" style="left:38%;bottom:66%"></span></i>
+   <i class="e4-tk" id="e4-tk"></i>
+   <i class="e4-surf" id="e4-surf"></i>
+   <div class="e4-grad" aria-hidden="true"><span style="bottom:16.67%">5</span><span style="bottom:33.33%">10</span><span style="bottom:50%">15</span><span style="bottom:66.67%">20</span><span style="bottom:83.33%">25</span></div>
+  </div>
+ </div>
+ <svg class="e4-lead" id="e4-lead" aria-hidden="true"></svg>
+ <button class="e4-q e4-qp" data-role="legende-bouton" aria-expanded="false" aria-label="légende">?</button>
+</section>
+<p class="e4-alerte" id="e4-al" role="alert" hidden></p>
+<p class="e4-nolop" id="e4-np" hidden>Atelier NOLO ouvert ⌄</p>
+<button class="e4-more" data-booster="materiel" aria-expanded="false">Espace libre et repères du style<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="e4-matd" data-role="materiel" hidden><span>Espace libre visé</span><b class="e4-m">20 %</b><span>Style 22A, OG</span><b class="e4-m">1,065–1,085</b></div>
+<div class="e4-leg" data-role="legende" hidden style="top:250px"><p>La colonne est le fermenteur de 30 L, gradué tous les 5 L. On glisse le niveau du moût.</p><p>Bulles au-dessus : l'espace libre pour la mousse. Pointillé vert : le conseil de 20 %, provisoire. <b>~</b> estimé : évaporation au taux de repli de 10 % par heure, pas mesurée ; limite utile de la cuve, 35 L, à vérifier.</p></div>
+
+</main>
+
+<div class="e4-pied"><button class="e4-btn2" disabled>Retour</button><button class="e4-btn1">Suivant — Malts/sucres</button></div>
+<button class="e4-fab" aria-label="Actions rapides"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.60" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+
+<section class="e4-etats" aria-label="Cas limites">
+ <h2>Cas limites (démo)</h2>
+ <div>
+  <button data-booster="etat" data-etat="" aria-pressed="true">neipa v3</button>
+  <button data-booster="etat" data-etat="neuve">Recette neuve</button>
+  <button data-booster="etat" data-etat="plein">Fermenteur plein</button>
+  <button data-booster="etat" data-etat="nolo">NOLO coché</button>
+  <button data-booster="etat" data-etat="long">Ébullition 90 min</button>
+ </div>
+</section>
+<script>
+(() => {
+
+const M = { F: 30, C: 45, CU: 35, TAUX: 0.10, LIBRE: 20 };
+const S = { nom: 'neipa v3', style: 'Double IPA', ref: '22A', V: 24, B: 60, nolo: false, neuve: false };
+const fr = (n, d = 0) => (Number.isFinite(n) ? n.toFixed(d).replace('.', ',') : '—');
+function calc(s) {
+  const ok = Number.isFinite(s.V) && s.V > 0 && Number.isFinite(s.B);
+  if (!ok) return { ok: false };
+  const k = Math.min(0.9, M.TAUX * s.B / 60);
+  const pre = s.V / (1 - k), ev = pre - s.V, libre = M.F - s.V;
+  return { ok: true, pre, ev, libre, pct: libre / M.F * 100, conseil: M.F * (1 - M.LIBRE / 100), plein: s.V >= M.F, serre: libre / M.F * 100 < M.LIBRE, cuveHors: pre > M.CU };
+}
+const ETATS = {
+  '': () => Object.assign(S, { nom: 'neipa v3', style: 'Double IPA', ref: '22A', V: 24, B: 60, nolo: false, neuve: false }),
+  neuve: () => Object.assign(S, { nom: '', style: '', ref: '', V: 30, B: 60, nolo: false, neuve: true }),
+  plein: () => Object.assign(S, { nom: 'neipa v3', style: 'Double IPA', ref: '22A', V: 31, B: 60, nolo: false, neuve: false }),
+  nolo: () => Object.assign(S, { nom: 'neipa v3', style: 'Double IPA', ref: '22A', V: 24, B: 60, nolo: true, neuve: false }),
+  long: () => Object.assign(S, { nom: 'neipa v3', style: 'Double IPA', ref: '22A', V: 24, B: 90, nolo: false, neuve: false }),
+};
+function poserEtat(nom) {
+  (ETATS[nom] || ETATS[''])();
+  document.body.classList.toggle('e4-neuve', S.neuve);
+  document.querySelectorAll('[data-booster="etat"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.etat === (nom || ''))));
+  rendre();
+}
+function brancherCommun() {
+  document.querySelectorAll('[data-booster="etat"]').forEach((b) => b.addEventListener('click', () => poserEtat(b.dataset.etat)));
+  const qb = document.querySelector('[data-role="legende-bouton"]'), lg = document.querySelector('[data-role="legende"]');
+  if (qb && lg) {
+    qb.addEventListener('click', () => { const o = lg.hidden; lg.hidden = !o; qb.setAttribute('aria-expanded', String(o)); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { lg.hidden = true; qb.setAttribute('aria-expanded', 'false'); } });
+  }
+  const lireHash = () => { const h = (location.hash || '').slice(1); poserEtat(ETATS[h] ? h : ''); };
+  addEventListener('hashchange', lireHash);
+  lireHash();
+}
+// Glisser : appelle f(fraction 0..1) pendant le geste ; retour visible sous le doigt (classe e4-tient).
+function glisser(el, axe, f) {
+  el.style.touchAction = 'none';
+  const lire = (e) => { const r = el.getBoundingClientRect(); return axe === 'y' ? 1 - (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width; };
+  el.addEventListener('pointerdown', (e) => { el.setPointerCapture(e.pointerId); el.classList.add('e4-tient'); f(Math.max(0, Math.min(1, lire(e)))); });
+  el.addEventListener('pointermove', (e) => { if (el.hasPointerCapture(e.pointerId)) f(Math.max(0, Math.min(1, lire(e)))); });
+  const fin = (e) => { el.classList.remove('e4-tient'); if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId); };
+  el.addEventListener('pointerup', fin); el.addEventListener('pointercancel', fin);
+}
+function lireNombre(t) { const n = Number(String(t).replace(',', '.').replace(/[^0-9.]/g, '')); return String(t).trim() === '' ? NaN : n; }
+
+const $ = (id) => document.getElementById('e4-' + id);
+function relier() {
+  const g = $('g').getBoundingClientRect(), row = $('volrow').querySelector('.e4-big').getBoundingClientRect();
+  const s = $('surf').getBoundingClientRect(), tube = $('in').getBoundingClientRect();
+  const x1 = row.right - g.left + 38, y1 = row.top + row.height / 2 - g.top;
+  const x2 = tube.left - g.left, y2 = s.top + s.height / 2 - g.top;
+  const xm = x2 - 10;
+  $('lead').innerHTML = `<path d="M${x1} ${y1} H${xm} V${y2} H${x2 + 2}" fill="none" stroke="#111" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="${x1}" cy="${y1}" r="3" fill="#111"/>`;
+}
+function rendre() {
+  const c = calc(S);
+  $('nom').value = S.nom; $('style').value = S.style; $('ref').hidden = !S.ref;
+  $('v').textContent = fr(S.V, S.V % 1 ? 1 : 0); $('b').textContent = fr(S.B);
+  const p = Math.min(100, S.V / M.F * 100);
+  $('liq').style.height = p + '%';
+  $('surf').style.top = (100 - p) + '%';
+  $('tk').style.top = (100 - c.conseil / M.F * 100) + '%';
+  $('tube').setAttribute('aria-valuenow', S.V);
+  $('tube').classList.toggle('e4-over', c.plein);
+  const lib = $('lib');
+  lib.className = 'e4-lib' + (c.plein ? ' e4-plein' : c.serre ? ' e4-serre' : '');
+  lib.innerHTML = c.plein ? 'plein' : '<span class=e4-m>' + fr(c.libre, c.libre % 1 ? 1 : 0) + ' L</span> libres · <span class=e4-m>' + fr(c.pct) + ' %</span>';
+  $('ev').innerHTML = '<span class=e4-m>~' + fr(c.ev) + ' L</span> évaporés';
+  $('pre').textContent = '~' + fr(c.pre) + ' L';
+  $('cf').style.width = Math.min(100, c.pre / M.C * 100) + '%';
+  $('al').hidden = !c.plein; $('al').textContent = c.plein ? 'Fermenteur plein : ' + fr(S.V) + ' L pour 30 L' : '';
+  $('nl').checked = S.nolo; $('np').hidden = !S.nolo;
+  requestAnimationFrame(relier);
+}
+glisser($('in'), 'y', (t) => { S.V = Math.max(1, Math.round(t * M.F * 2) / 2); rendre(); });
+const pas = (d) => { S.V = Math.max(1, Math.min(34, Math.round((S.V + d) * 2) / 2)); rendre(); };
+document.querySelector('[data-booster="volume-moins"]').addEventListener('click', () => pas(-0.5));
+document.querySelector('[data-booster="volume-plus"]').addEventListener('click', () => pas(0.5));
+document.querySelector('[data-booster="ebullition-moins"]').addEventListener('click', () => { S.B = Math.max(0, S.B - 5); rendre(); });
+document.querySelector('[data-booster="ebullition-plus"]').addEventListener('click', () => { S.B = Math.min(240, S.B + 5); rendre(); });
+$('nl').addEventListener('change', (e) => { S.nolo = e.target.checked; rendre(); });
+const b = document.querySelector('[data-booster="materiel"]'), d = document.querySelector('[data-role="materiel"]');
+b.addEventListener('click', () => { d.hidden = !d.hidden; b.setAttribute('aria-expanded', String(!d.hidden)); });
+document.fonts && document.fonts.ready.then(relier);
+addEventListener('resize', relier);
+
+brancherCommun();
+})();
+</script>
+</body>
+</html>

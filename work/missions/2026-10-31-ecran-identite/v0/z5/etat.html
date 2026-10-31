@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>z5 — Le dialogue · Identité 1/7 (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--page:#fff;--panel:#F5F5F5;--surf:#EBEBEB;--bord:#DDD;--bord2:#BFBFBF;--t1:#111;--t2:#333;--t3:#666;
+--hop:#567F45;--hopT:#3F6B2E;--water:#4F7E9B;--eau:#2F6E96;--waterT:#2F5F7D;--alert:#C8382F;--att:#9C7020;--attT:#7F5B10;--gold:#E0A02E;--goldT:#7A5A12;--violet:#6A4FB0;--violetT:#4E3A86}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--t2)}
+body{width:390px;min-height:844px;font:14px/18px 'Source Sans 3',system-ui,sans-serif;position:relative;padding-bottom:8px}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+.z5-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.z5-haut{padding:0 8px;background:var(--page);border-bottom:1px solid var(--bord)}
+.z5-titre{display:flex;align-items:center;gap:6px;height:36px}
+.z5-ico{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--t3);flex:none}
+.z5-nomEtape{flex:1;min-width:0;margin:0;display:flex;align-items:baseline;gap:6px;font-size:16px;color:var(--t1)}
+.z5-pos{font-size:14px;color:var(--t3);font-weight:400}
+.z5-abandon{height:28px;padding:0 6px;font-size:12px;color:var(--t2);text-decoration:underline;text-underline-offset:2px;border-radius:4px}
+.z5-fil{display:flex;gap:4px;height:32px;align-items:center}
+.z5-fil button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 2px}
+.z5-fil span{font-size:12px;color:var(--t3);white-space:nowrap}
+.z5-fil i{display:block;height:6px;width:100%;border-radius:999px;background:var(--bord)}
+.z5-fil [aria-current] span{color:var(--t1);font-weight:600}
+.z5-fil [aria-current] i{background:var(--t1)}
+.z5-bandeau{margin:8px 8px 0;height:32px;padding:0 10px;background:var(--panel);border:1px solid var(--bord);border-radius:999px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.z5-bl{display:flex;align-items:center;gap:4px;color:var(--t3);font-size:14px;white-space:nowrap}
+.z5-bl b{color:var(--t1);font-size:14px}
+.z5-og{color:var(--goldT)}
+.z5-piste{position:relative;display:inline-block;width:46px;height:8px;border-radius:999px;background:var(--bord);margin-left:2px}
+.z5-piste u{position:absolute;left:46%;width:36%;top:0;bottom:0;background:var(--bord2);border-radius:999px}
+.z5-piste s{position:absolute;left:66%;top:-3px;width:2px;height:14px;background:var(--t1);border-radius:1px}
+.z5-ebc{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gold)}
+.z5-pied{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 8px 0;margin-right:72px}
+.z5-retour{height:28px;padding:0 10px;border-radius:4px;color:var(--t3);border:1px solid var(--bord);opacity:.6}
+.z5-suivant{height:32px;padding:0 10px;border-radius:4px;background:var(--t1);color:#fff;font-weight:600}
+.z5-plus{position:absolute;right:16px;bottom:16px;width:56px;height:56px;border-radius:50%;background:var(--t1);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.z5-tag{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(217,119,6,.4);background:rgba(251,191,36,.4);color:#6B3F05;font-weight:600;font-size:14px;white-space:nowrap}
+.z5-tiret{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:999px;border:1px dashed var(--bord2);color:var(--t3);font-size:12px;white-space:nowrap;list-style:none}
+.z5-tiret::-webkit-details-marker{display:none}
+.z5-champ{height:32px;border:1px solid var(--bord2);border-radius:4px;background:var(--page);padding:0 8px;font-size:16px;color:var(--t1);min-width:0}
+.z5-num{width:58px;text-align:right}
+.z5-sim{color:var(--t3)}
+.z5-pl{display:flex;align-items:center;gap:6px;min-height:20px}
+.z5-pln{width:30px;font-size:12px;color:var(--t3);flex:none}
+.z5-plb{position:relative;flex:1;height:8px;border-radius:999px;background:var(--bord)}
+.z5-plb u{position:absolute;top:0;bottom:0;background:var(--bord2);border-radius:999px}
+.z5-plb s{position:absolute;top:-4px;width:2px;height:16px;background:var(--t1);margin-left:-1px;border-radius:1px}
+.z5-plb s.z5-hors{background:var(--att)}
+
+.z5-corps{padding:12px 8px 0;display:flex;flex-direction:column;gap:16px}
+.z5-q{font-size:14px;color:var(--t2);display:flex;align-items:center;gap:8px;margin:0;min-height:28px}
+.z5-q::before{content:'';width:28px;height:28px;border-radius:50%;background:var(--water);flex:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E");background-size:16px;background-position:center;background-repeat:no-repeat}
+.z5-r{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:6px;padding-left:36px}
+.z5-bulle{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--t1);background:var(--t1);color:#fff;font-weight:600;white-space:nowrap}
+.z5-bulle input{border:0;background:transparent;padding:0;font-size:16px;font-weight:600;color:#fff;width:84px}
+.z5-bulle input.z5-n{width:34px;text-align:right}
+.z5-bulle .z5-u{color:#ccc;font-weight:400}
+.z5-fait{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;background:var(--panel);border:1px solid var(--bord);color:var(--t2);font-size:12px;white-space:nowrap}
+.z5-fait b{color:var(--t1)}
+.z5-fait.ok{background:rgba(86,127,69,.16);border-color:transparent;color:var(--hopT)}
+.z5-fait.ok b{color:var(--hopT)}
+.z5-fait.z5-eau{background:rgba(79,126,155,.14);border-color:transparent;color:var(--waterT)}
+.z5-fait.z5-eau b{color:var(--waterT)}
+.z5-tag{height:36px;font-size:16px}
+.z5-tog{background:var(--page);color:var(--t1)}
+.z5-tog .z5-u{color:var(--t3)}
+.z5-tog[aria-pressed="true"]{background:var(--violet);border-color:var(--violet);color:#fff}
+.z5-tog[aria-pressed="true"] .z5-u{color:#fff}
+</style>
+</head>
+<body class="z5" data-concept="z5">
+
+<header class="z5-haut" data-commun="en-tete">
+  <div class="z5-titre">
+    <button type="button" class="z5-ico" aria-label="Fermer" data-role="fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="z5-nomEtape"><b>Identité</b> <span class="z5-mono z5-pos">1/7</span></p>
+    <button type="button" class="z5-abandon" data-role="abandonner-brouillon">Abandonner</button>
+    <button type="button" class="z5-ico" aria-label="Coller une recette" data-role="import"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button type="button" class="z5-ico" aria-label="Thème" data-role="theme"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="z5-fil" aria-label="Étapes" data-commun="fil">
+    <button type="button" aria-current="step"><span>Identité</span><i></i></button><button type="button" ><span>Malts/sucres</span><i></i></button><button type="button" ><span>Houblons</span><i></i></button><button type="button" ><span>Levure</span><i></i></button><button type="button" ><span>Paliers</span><i></i></button><button type="button" ><span>Eau</span><i></i></button><button type="button" ><span>Récap.</span><i></i></button>
+  </nav>
+</header>
+<div class="z5-bandeau" data-commun="bandeau">
+  <span class="z5-bl">Grain <b class="z5-mono">8,6 kg</b></span>
+  <span class="z5-bl">OG <b class="z5-mono z5-og">1,080</b></span>
+  <span class="z5-bl">IBU <b class="z5-mono">~93</b><i class="z5-piste"><u></u><s></s></i></span>
+  <span class="z5-bl">EBC <i class="z5-ebc"></i><b class="z5-mono">9,5</b></span>
+</div>
+
+<main class="z5-corps" aria-label="Identité, en quatre questions">
+  <p class="z5-q">Quelle bière ?</p>
+  <div class="z5-r">
+    <span class="z5-bulle"><input value="neipa v3" aria-label="Nom de la bière"></span>
+    <button type="button" class="z5-tag" data-booster="pastille-style">Double IPA <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  </div>
+  <div class="z5-r" style="margin-top:-10px">
+    <span class="z5-fait">22A BJCP 2021</span>
+    <span class="z5-fait">OG <b class="z5-mono">1,065 – 1,085</b></span>
+    <span class="z5-fait">IBU <b class="z5-mono">60 – 100</b></span>
+  </div>
+  <p class="z5-q">Combien ?</p>
+  <div class="z5-r">
+    <span class="z5-bulle"><input class="z5-n z5-mono" value="24" inputmode="decimal" aria-label="Volume en fermenteur"><span class="z5-u">L</span></span>
+    <span class="z5-fait ok" data-booster="fait-fermenteur"><b class="z5-mono">6 L</b> libres sur <b class="z5-mono">30</b></span>
+  </div>
+  <div class="z5-r" style="margin-top:-10px">
+    <span class="z5-fait">conseil <b class="z5-mono">24 L</b></span>
+    <span class="z5-fait">espace libre <b class="z5-mono">~20 %</b></span>
+  </div>
+  <p class="z5-q">Comment ?</p>
+  <div class="z5-r">
+    <span class="z5-bulle"><input class="z5-n z5-mono" value="60" inputmode="numeric" aria-label="Durée d'ébullition"><span class="z5-u">min</span></span>
+    <button type="button" class="z5-bulle z5-tog" aria-pressed="false" id="z5-nolo" data-booster="bulle-nolo">NOLO <span class="z5-u">non</span></button>
+  </div>
+  <div class="z5-r" style="margin-top:-10px">
+    <span class="z5-fait z5-eau" data-booster="fait-evaporation"><b class="z5-mono">~3 L</b> évaporés</span>
+    <span class="z5-fait z5-eau">avant ébullition <b class="z5-mono">~27 L</b></span>
+  </div>
+  <p class="z5-q">Avec quoi ?</p>
+  <div class="z5-r">
+    <span class="z5-bulle">Royal Catering</span>
+    <span class="z5-fait">cuve <b class="z5-mono">45 L</b></span>
+  </div>
+</main>
+
+<footer class="z5-pied" data-commun="pied">
+  <button type="button" class="z5-retour" disabled>Retour</button>
+  <button type="button" class="z5-suivant">Suivant — Malts/sucres</button>
+</footer>
+<button type="button" class="z5-plus" aria-label="Actions rapides" data-commun="plus"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){var b=document.getElementById('z5-nolo');b.addEventListener('click',function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.querySelector('span').textContent=on?'≤ 0,5 %':'non'});})();</script>
+</body>
+</html>

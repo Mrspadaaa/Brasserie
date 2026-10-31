@@ -79,3 +79,7 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   3. corriger les outils (D202 : `controle-panel` par nom de fichier, `<details>` fermé, contraste, profil sans houblons) ;
   4. lancer un critique Fable unique pour le tri (`critique/SYNTHESE.md`) ;
   5. lancer les passes 2 chez les mêmes agents (`## Agents`).
+- 31.10 : **les 8 séries v0 sont rendues (48 concepts) et commitées.** En vol :
+  - la page du panel (executant ae0de61eea3a6e407, `panel-v0/page.html`), que le pilote publiera dans un artefact neuf ;
+  - o1, la correction des outils (auteur a0b178aca728e039d).
+  Ensuite : le tri par un critique Fable unique, puis les passes 2. En passe 2, la série i, qui a suivi les rayons de 2, 4 et 8 px, s'aligne sur DESIGN.md (10, 16 et 24 px).

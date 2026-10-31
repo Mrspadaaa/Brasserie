@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>z6 — La ligne · Identité 1/7 (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--page:#fff;--panel:#F5F5F5;--surf:#EBEBEB;--bord:#DDD;--bord2:#BFBFBF;--t1:#111;--t2:#333;--t3:#666;
+--hop:#567F45;--hopT:#3F6B2E;--water:#4F7E9B;--eau:#2F6E96;--waterT:#2F5F7D;--alert:#C8382F;--att:#9C7020;--attT:#7F5B10;--gold:#E0A02E;--goldT:#7A5A12;--violet:#6A4FB0;--violetT:#4E3A86}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--t2)}
+body{width:390px;min-height:844px;font:14px/18px 'Source Sans 3',system-ui,sans-serif;position:relative;padding-bottom:8px}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+.z6-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.z6-haut{padding:0 8px;background:var(--page);border-bottom:1px solid var(--bord)}
+.z6-titre{display:flex;align-items:center;gap:6px;height:36px}
+.z6-ico{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--t3);flex:none}
+.z6-nomEtape{flex:1;min-width:0;margin:0;display:flex;align-items:baseline;gap:6px;font-size:16px;color:var(--t1)}
+.z6-pos{font-size:14px;color:var(--t3);font-weight:400}
+.z6-abandon{height:28px;padding:0 6px;font-size:12px;color:var(--t2);text-decoration:underline;text-underline-offset:2px;border-radius:4px}
+.z6-fil{display:flex;gap:4px;height:32px;align-items:center}
+.z6-fil button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 2px}
+.z6-fil span{font-size:12px;color:var(--t3);white-space:nowrap}
+.z6-fil i{display:block;height:6px;width:100%;border-radius:999px;background:var(--bord)}
+.z6-fil [aria-current] span{color:var(--t1);font-weight:600}
+.z6-fil [aria-current] i{background:var(--t1)}
+.z6-bandeau{margin:8px 8px 0;height:32px;padding:0 10px;background:var(--panel);border:1px solid var(--bord);border-radius:999px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.z6-bl{display:flex;align-items:center;gap:4px;color:var(--t3);font-size:14px;white-space:nowrap}
+.z6-bl b{color:var(--t1);font-size:14px}
+.z6-og{color:var(--goldT)}
+.z6-piste{position:relative;display:inline-block;width:46px;height:8px;border-radius:999px;background:var(--bord);margin-left:2px}
+.z6-piste u{position:absolute;left:46%;width:36%;top:0;bottom:0;background:var(--bord2);border-radius:999px}
+.z6-piste s{position:absolute;left:66%;top:-3px;width:2px;height:14px;background:var(--t1);border-radius:1px}
+.z6-ebc{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gold)}
+.z6-pied{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 8px 0;margin-right:72px}
+.z6-retour{height:28px;padding:0 10px;border-radius:4px;color:var(--t3);border:1px solid var(--bord);opacity:.6}
+.z6-suivant{height:32px;padding:0 10px;border-radius:4px;background:var(--t1);color:#fff;font-weight:600}
+.z6-plus{position:absolute;right:16px;bottom:16px;width:56px;height:56px;border-radius:50%;background:var(--t1);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.z6-tag{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(217,119,6,.4);background:rgba(251,191,36,.4);color:#6B3F05;font-weight:600;font-size:14px;white-space:nowrap}
+.z6-tiret{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:999px;border:1px dashed var(--bord2);color:var(--t3);font-size:12px;white-space:nowrap;list-style:none}
+.z6-tiret::-webkit-details-marker{display:none}
+.z6-champ{height:32px;border:1px solid var(--bord2);border-radius:4px;background:var(--page);padding:0 8px;font-size:16px;color:var(--t1);min-width:0}
+.z6-num{width:58px;text-align:right}
+.z6-sim{color:var(--t3)}
+.z6-pl{display:flex;align-items:center;gap:6px;min-height:20px}
+.z6-pln{width:30px;font-size:12px;color:var(--t3);flex:none}
+.z6-plb{position:relative;flex:1;height:8px;border-radius:999px;background:var(--bord)}
+.z6-plb u{position:absolute;top:0;bottom:0;background:var(--bord2);border-radius:999px}
+.z6-plb s{position:absolute;top:-4px;width:2px;height:16px;background:var(--t1);margin-left:-1px;border-radius:1px}
+.z6-plb s.z6-hors{background:var(--att)}
+
+.z6-corps{padding:12px 8px 0 8px}
+.z6-ligne{position:relative;padding-left:34px}
+.z6-ligne::before{content:'';position:absolute;left:6px;top:14px;bottom:30px;width:12px;background:var(--hop);border-radius:6px}
+.z6-st{position:relative;min-height:74px;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:4px 0 12px}
+.z6-st::before{content:'';position:absolute;left:-34px;top:8px;width:24px;height:24px;border-radius:50%;background:var(--page);border:7px solid var(--hop);box-shadow:0 0 0 2px var(--page);box-sizing:border-box}
+.z6-st.z6-off::before{background:var(--page);border:3px solid var(--t1)}
+.z6-st.z6-on::before{background:var(--violet);border:3px solid var(--violet)}
+.z6-st.z6-gris::before{background:var(--page);border:3px dashed var(--bord2)}
+.z6-v{display:flex;align-items:center;gap:6px;min-height:32px}
+.z6-v input{border:0;border-bottom:1px solid var(--bord2);border-radius:0;background:transparent;padding:0;height:30px;font-size:16px;color:var(--t1);font-weight:600}
+.z6-v input.z6-n{width:40px;text-align:right}
+.z6-unit{color:var(--t3)}
+.z6-br{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.z6-br::before{content:'';width:10px;height:2px;background:var(--bord2)}
+.z6-br b{color:var(--t1)}
+.z6-vert{color:var(--hopT);font-weight:600}
+.z6-mini{display:inline-block;position:relative;width:110px;height:10px;border-radius:999px;background:var(--bord)}
+.z6-mini u{position:absolute;left:0;top:0;bottom:0;width:80%;background:var(--hop);border-radius:999px}
+.z6-mini s{position:absolute;left:80%;top:-3px;width:0;height:16px;border-left:2px dashed var(--t1)}
+.z6-mini.z6-eau u{width:66%;background:var(--eau)}
+.z6-mini.z6-eau s{left:66%;border-left-style:solid}
+.z6-tog{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--t1);background:var(--page);font-weight:600;color:var(--t1)}
+.z6-tog[aria-pressed="true"]{background:var(--violet);border-color:var(--violet);color:#fff}
+.z6-pls{display:flex;flex-direction:column;gap:2px;width:250px}
+.z6-pls .z6-pln{width:28px}
+.z6-coller{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border:1px dashed var(--bord2);border-radius:999px;color:var(--t2)}
+</style>
+</head>
+<body class="z6" data-concept="z6">
+
+<header class="z6-haut" data-commun="en-tete">
+  <div class="z6-titre">
+    <button type="button" class="z6-ico" aria-label="Fermer" data-role="fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="z6-nomEtape"><b>Identité</b> <span class="z6-mono z6-pos">1/7</span></p>
+    <button type="button" class="z6-abandon" data-role="abandonner-brouillon">Abandonner</button>
+    <button type="button" class="z6-ico" aria-label="Coller une recette" data-role="import"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button type="button" class="z6-ico" aria-label="Thème" data-role="theme"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="z6-fil" aria-label="Étapes" data-commun="fil">
+    <button type="button" aria-current="step"><span>Identité</span><i></i></button><button type="button" ><span>Malts/sucres</span><i></i></button><button type="button" ><span>Houblons</span><i></i></button><button type="button" ><span>Levure</span><i></i></button><button type="button" ><span>Paliers</span><i></i></button><button type="button" ><span>Eau</span><i></i></button><button type="button" ><span>Récap.</span><i></i></button>
+  </nav>
+</header>
+<div class="z6-bandeau" data-commun="bandeau">
+  <span class="z6-bl">Grain <b class="z6-mono">8,6 kg</b></span>
+  <span class="z6-bl">OG <b class="z6-mono z6-og">1,080</b></span>
+  <span class="z6-bl">IBU <b class="z6-mono">~93</b><i class="z6-piste"><u></u><s></s></i></span>
+  <span class="z6-bl">EBC <i class="z6-ebc"></i><b class="z6-mono">9,5</b></span>
+</div>
+
+<main class="z6-corps" aria-label="Identité, station par station">
+  <div class="z6-ligne" data-booster="ligne-decisions">
+    <div class="z6-st"><div class="z6-v"><input value="neipa v3" aria-label="Nom de la bière" style="width:200px"></div><div class="z6-br">brouillon repris</div></div>
+    <div class="z6-st">
+      <div class="z6-v"><button type="button" class="z6-tag" data-booster="pastille-style">Double IPA <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><span class="z6-unit" style="font-size:12px">22A BJCP 2021</span></div>
+      <div class="z6-br" data-booster="plages-au-style"><span class="z6-pls"><span class="z6-pl"><span class="z6-pln">OG</span><i class="z6-plb"><u style="left:42%;width:33%"></u><s style="left:66%" class=""></s></i></span><span class="z6-pl"><span class="z6-pln">FG</span><i class="z6-plb"><u style="left:27%;width:33%"></u></i></span><span class="z6-pl"><span class="z6-pln">alc.</span><i class="z6-plb"><u style="left:62%;width:21%"></u></i></span><span class="z6-pl"><span class="z6-pln">IBU</span><i class="z6-plb"><u style="left:43%;width:28%"></u><s style="left:66%" class=""></s></i></span><span class="z6-pl"><span class="z6-pln">EBC</span><i class="z6-plb"><u style="left:30%;width:40%"></u><s style="left:24%" class="z6-hors"></s></i></span></span></div>
+    </div>
+    <div class="z6-st">
+      <div class="z6-v"><input class="z6-n z6-mono" value="24" inputmode="decimal" aria-label="Volume en fermenteur"><span class="z6-unit">L</span><span class="z6-mini" role="img" aria-label="24 sur 30 litres"><u></u><s></s></span></div>
+      <div class="z6-br" data-booster="branche-fermenteur"><span class="z6-vert z6-mono">6 L libres</span> sur <b class="z6-mono">30 L</b> conseil <b class="z6-mono">24 L</b></div>
+    </div>
+    <div class="z6-st">
+      <div class="z6-v"><input class="z6-n z6-mono" value="60" inputmode="numeric" aria-label="Durée d'ébullition"><span class="z6-unit">min</span><span class="z6-mini z6-eau" role="img" aria-label="60 minutes sur 90"><u></u><s></s></span></div>
+      <div class="z6-br"><b class="z6-mono">~3 L</b> évaporés avant ébullition <b class="z6-mono">~27 L</b></div>
+    </div>
+    <div class="z6-st z6-off" id="z6-st-nolo">
+      <div class="z6-v"><button type="button" class="z6-tog" aria-pressed="false" id="z6-nolo" data-booster="station-nolo">NOLO non</button></div>
+    </div>
+    <div class="z6-st">
+      <div class="z6-v"><b>Royal Catering</b></div>
+      <div class="z6-br">cuve <b class="z6-mono">45 L</b> espace libre <b class="z6-mono">~20 %</b></div>
+    </div>
+    <div class="z6-st z6-gris">
+      <div class="z6-v"><button type="button" class="z6-coller" data-booster="coller-recette" data-role="import-corps"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg>Coller une recette</button></div>
+    </div>
+  </div>
+</main>
+
+<footer class="z6-pied" data-commun="pied">
+  <button type="button" class="z6-retour" disabled>Retour</button>
+  <button type="button" class="z6-suivant">Suivant — Malts/sucres</button>
+</footer>
+<button type="button" class="z6-plus" aria-label="Actions rapides" data-commun="plus"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){var b=document.getElementById('z6-nolo'),s=document.getElementById('z6-st-nolo');b.addEventListener('click',function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.textContent=on?'NOLO ≤ 0,5 %':'NOLO non';s.className='z6-st '+(on?'z6-on':'z6-off')});})();</script>
+</body>
+</html>

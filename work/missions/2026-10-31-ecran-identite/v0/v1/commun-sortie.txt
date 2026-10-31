@@ -1,0 +1,47 @@
+mots       sauté (--sans)
+couleurs   OK
+au-style   ECHEC
+    AU-STYLE ECHEC 12 problème(s)
+    v1 etat.html : S1, pas de lentille au style / absolu ([data-e="style"], [data-e="absolu"])
+    v1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role="zone"])
+    v2 etat.html : S1, pas de lentille au style / absolu ([data-e="style"], [data-e="absolu"])
+    v2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role="zone"])
+    v3 etat.html : S1, pas de lentille au style / absolu ([data-e="style"], [data-e="absolu"])
+    v3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role="zone"])
+    v4 etat.html : S1, pas de lentille au style / absolu ([data-e="style"], [data-e="absolu"])
+    v4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role="zone"])
+    v5 etat.html : S1, pas de lentille au style / absolu ([data-e="style"], [data-e="absolu"])
+    v5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role="zone"])
+    v6 etat.html : S1, pas de lentille au style / absolu ([data-e="style"], [data-e="absolu"])
+survol     OK
+blocs      OK
+contraste  OK
+fiche      ECHEC
+    FICHE ECHEC 6 problème(s)
+    v1 : D25 etat.html : aucun houblon marqué data-houblon visible
+    v2 : D25 etat.html : aucun houblon marqué data-houblon visible
+    v3 : D25 etat.html : aucun houblon marqué data-houblon visible
+    v4 : D25 etat.html : aucun houblon marqué data-houblon visible
+    v5 : D25 etat.html : aucun houblon marqué data-houblon visible
+    v6 : D25 etat.html : aucun houblon marqué data-houblon visible
+standard   ECHEC
+    STANDARD ECHEC 7 problème(s)
+    work/missions/2026-10-31-ecran-identite/v0/v1/etat.html : S3, rayons hors échelle : 16px×4 10px×6
+    work/missions/2026-10-31-ecran-identite/v0/v2/etat.html : S3, rayons hors échelle : 16px×5 10px×17
+    work/missions/2026-10-31-ecran-identite/v0/v3/etat.html : S3, rayons hors échelle : 16px×3 10px×7
+    work/missions/2026-10-31-ecran-identite/v0/v4/etat.html : S3, rayons hors échelle : 10px×9 16px×3
+    work/missions/2026-10-31-ecran-identite/v0/v5/etat.html : S3, rayons hors échelle : 16px×3 6px×3 10px×2
+    work/missions/2026-10-31-ecran-identite/v0/v6/etat.html : S3, rayons hors échelle : 16px×6 10px×4 9px×2
+    S4, 2 épaisseurs de trait d'icône : 1.1/1.2/1.3 px (34), 2 px (6)
+trait      ECHEC
+    TRAIT ECHEC 6 problème(s)
+    v1 etat.html : aucun picto de famille visible (svg[data-famille])
+    v2 etat.html : aucun picto de famille visible (svg[data-famille])
+    v3 etat.html : aucun picto de famille visible (svg[data-famille])
+    v4 etat.html : aucun picto de famille visible (svg[data-famille])
+    v5 etat.html : aucun picto de famille visible (svg[data-famille])
+    v6 etat.html : aucun picto de famille visible (svg[data-famille])
+legende    OK
+parlant    OK
+brutes     OK
+COMMUN ECHEC 4 contrôle(s)

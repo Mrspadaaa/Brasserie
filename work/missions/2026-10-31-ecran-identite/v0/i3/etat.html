@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>i3 · Identité · coller d'abord, sinon un style (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--i3-page:#fff;--i3-pan:#F5F5F5;--i3-sur:#EBEBEB;--i3-bd:#DDDDDD;--i3-bdm:#BFBFBF;--i3-t0:#111;--i3-t2:#333;--i3-t4:#666;
+    --i3-hopt:#3F6B2E;--i3-eau:#4F7E9B;--i3-eaut:#2F5F7D;--i3-att:#9C7020;--i3-attt:#7F5B10}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--i3-page);color:var(--i3-t2);font:400 14px/18px "Source Sans 3",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#111;color:#fff}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #111;outline-offset:2px}
+  .i3-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--i3-t0)}
+  .i3-sep::before{content:"·";margin:0 4px}
+  .i3-tir::before{content:"—";margin:0 4px}
+  .i3-ecran{width:390px;min-height:844px}
+  .i3-hd{padding:0 8px;border-bottom:1px solid var(--i3-bd)}
+  .i3-tb{display:flex;align-items:center;gap:6px;height:36px}
+  .i3-ic{width:28px;height:28px;border:0;background:none;color:var(--i3-t4);display:grid;place-items:center;border-radius:8px;padding:0}
+  .i3-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i3-t{margin:0;flex:1;font:600 18px/22px "Source Sans 3",system-ui,sans-serif;color:var(--i3-t0)}
+  .i3-t span{font-weight:400;color:var(--i3-t4)}
+  .i3-rail{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+  .i3-st{flex:1 0 auto;border:0;background:none;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:16px;color:var(--i3-t4);min-height:24px}
+  .i3-st i{display:block;height:4px;border-radius:2px;background:var(--i3-bd)}
+  .i3-st.i3-on{color:var(--i3-t0);font-weight:600}
+  .i3-st.i3-on i{background:#111}
+  .i3-corps{padding:8px;display:flex;flex-direction:column;gap:10px}
+  /* Le puits : coller, le geste d'une recette trouvée */
+  .i3-puits{border:1.5px dashed var(--i3-bdm);border-radius:8px;padding:12px 10px 10px;display:flex;flex-direction:column;gap:10px;background:var(--i3-page)}
+  .i3-papier{display:flex;gap:10px;align-items:center}
+  .i3-feuille{width:64px;height:76px;flex:none;display:block}
+  .i3-actions{display:flex;flex-direction:column;gap:6px;flex:1}
+  .i3-coller{height:32px;border-radius:8px;background:#111;color:#fff;border:0;font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;padding:0 12px;width:max-content}
+  .i3-coller svg,.i3-photo svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i3-photo{height:28px;border-radius:8px;border:1px solid var(--i3-bdm);background:var(--i3-page);font-size:13px;display:flex;align-items:center;gap:6px;padding:0 10px;width:max-content;color:var(--i3-t0)}
+  .i3-remplit{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .i3-remplit span{height:8px;border-radius:4px;background:repeating-linear-gradient(135deg,#BFBFBF 0 2px,#EBEBEB 2px 5px)}
+  .i3-remplit span:first-child{background:#111}
+  /* Ou un style : le nuancier des styles, à la couleur réelle de leur plage */
+  .i3-ou{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--i3-t4)}
+  .i3-ou::before,.i3-ou::after{content:"";flex:1;height:1px;background:var(--i3-bd)}
+  .i3-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .i3-sty{border:1px solid var(--i3-bdm);border-radius:8px;background:var(--i3-teinte,#fff);padding:0 0 6px;display:flex;flex-direction:column;gap:3px;text-align:left;overflow:hidden}
+  .i3-sty .i3-band{height:30px;display:block}
+  .i3-sty b{font-weight:600;font-size:14px;color:var(--i3-t0);padding:0 6px;line-height:16px}
+  .i3-sty .i3-code{font-size:13px;color:var(--i3-t4);padding:0 6px;display:flex;align-items:center;gap:4px}
+  .i3-sty .i3-code .i3-m{font-size:13px;font-weight:500;color:var(--i3-t2)}
+  .i3-sty[aria-pressed="true"]{border:2px solid #111}
+  .i3-pt{width:8px;height:8px;border-radius:4px;display:inline-block}
+  .i3-autre{display:flex;align-items:center;gap:6px;height:32px;border:1px solid var(--i3-bdm);border-radius:8px;padding:0 8px;background:var(--i3-page);color:var(--i3-t4);font-size:14px;width:100%;text-align:left}
+  .i3-autre svg{width:16px;height:16px;fill:none;stroke:#333;stroke-width:1.75;stroke-linecap:round}
+  /* Le brassin : ce qui est déjà posé, en une rangée */
+  .i3-brassin{display:grid;grid-template-columns:1fr 1fr .9fr 1.4fr;gap:6px;background:var(--i3-pan);border-radius:8px;padding:8px}
+  .i3-c{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .i3-c .i3-lb{font-size:13px;color:var(--i3-t4)}
+  .i3-c .i3-v{display:flex;align-items:baseline;gap:3px}
+  .i3-c input{width:40px;height:28px;border:1px solid var(--i3-bdm);border-radius:8px;background:var(--i3-page);text-align:center;font:600 16px/26px "IBM Plex Mono",monospace;color:var(--i3-t0);font-variant-numeric:tabular-nums;padding:0}
+  .i3-u{font-size:13px;color:var(--i3-t4)}
+  .i3-sw{position:relative;width:36px;height:20px;border-radius:10px;background:var(--i3-bdm);border:0;padding:0;margin-top:4px}
+  .i3-sw::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:8px;background:#fff;transition:transform .15s}
+  .i3-sw[aria-checked="true"]{background:#111}
+  .i3-sw[aria-checked="true"]::after{transform:translateX(16px)}
+  .i3-fv{display:flex;align-items:baseline;gap:4px}
+  .i3-fv .i3-m{font-size:14px}
+  .i3-bar{position:relative;height:10px;border-radius:5px;background:var(--i3-sur);border:1px solid var(--i3-bdm);overflow:hidden;margin-top:3px}
+  .i3-bar b{position:absolute;inset:0 20% 0 0;background:#8FB07F}
+  .i3-bar i{position:absolute;top:0;bottom:0;left:80%;border-left:2px dashed var(--i3-att)}
+  .i3-q{width:24px;height:24px;border-radius:12px;border:1px solid var(--i3-bdm);background:var(--i3-page);font-size:13px;font-weight:600;color:var(--i3-t2);padding:0;flex:none}
+  .i3-leg{margin:0;padding:8px;border-radius:8px;border:1px solid var(--i3-bd);font-size:13px;color:var(--i3-t2)}
+  .i3-leg[hidden]{display:none}
+  .i3-nom{display:flex;align-items:center;gap:8px}
+  .i3-nom .i3-lb{font-size:13px;color:var(--i3-t4);flex:none}
+  .i3-nom input{flex:1;min-width:0;height:32px;border:1px solid var(--i3-bdm);border-radius:8px;padding:0 8px;font:400 16px/30px "Source Sans 3",system-ui,sans-serif;color:var(--i3-t0);background:var(--i3-page)}
+  .i3-nom input::placeholder{color:var(--i3-t4)}
+  .i3-pied{display:flex;justify-content:space-between;gap:8px}
+  .i3-btn{height:32px;border-radius:8px;padding:0 12px;font-size:14px;border:1px solid var(--i3-bdm);background:var(--i3-page);color:var(--i3-t4)}
+  .i3-btn-s{color:var(--i3-t0);font-weight:600}
+  .i3-etat{margin-top:16px;padding:8px;background:#F0F0F0;border-top:1px solid var(--i3-bd);border-bottom:1px solid var(--i3-bd);font-size:13px;color:var(--i3-t4)}
+  .i3-mt{margin:8px 8px 0;height:30px;border:1px solid var(--i3-bd);border-radius:15px;background:var(--i3-pan);display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:13px;color:var(--i3-t4)}
+  .i3-mt .i3-m{font-size:14px;margin-left:3px}
+  .i3-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;border:1px solid #BFBFBF;vertical-align:-1px;margin-left:3px}
+  .i3-lu{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:var(--i3-pan)}
+  .i3-lu b{font-weight:600;color:var(--i3-t0)}
+  .i3-mat{grid-column:1 / -1;display:flex;align-items:center;gap:6px;border-top:1px solid var(--i3-bd);padding-top:6px}
+  .i3-matb{display:flex;align-items:center;gap:0;border:0;background:none;padding:0;font-size:14px;color:var(--i3-t0);min-height:28px}
+  .i3-matb b{font-weight:600}
+  .i3-matb svg{width:16px;height:16px;fill:none;stroke:#333;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;margin-left:4px}
+  .i3-evap{margin-left:auto;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:12px;background:#E3EDF3;color:var(--i3-eaut);font-size:13px}
+  .i3-evap svg{width:16px;height:16px;fill:none;stroke:var(--i3-eau);stroke-width:1.75}
+  .i3-evap .i3-m{color:var(--i3-eaut);font-size:13px}
+</style>
+</head>
+<body>
+<!-- ÉTAT 1 : recette neuve. Pas de bandeau ni d'« Abandonner » (comme dans l'app). Le nom vient après (J2). -->
+<div class="i3-ecran" data-etat="recette-neuve">
+  <header class="i3-hd">
+    <div class="i3-tb">
+      <button class="i3-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i3-t">Identité <span>1/7</span></h1>
+      <button class="i3-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i3-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i3-rail" aria-label="Étapes">
+      <button class="i3-st i3-on" aria-current="step">Identité<i></i></button>
+      <button class="i3-st">Malts/sucres<i></i></button>
+      <button class="i3-st">Houblons<i></i></button>
+      <button class="i3-st">Levure<i></i></button>
+      <button class="i3-st">Paliers<i></i></button>
+      <button class="i3-st">Eau<i></i></button>
+      <button class="i3-st">Récap.<i></i></button>
+    </nav>
+  </header>
+
+  <main class="i3-corps">
+    <!-- L'idée : sur une recette vide, l'écran commence par le geste le plus rapide, coller ; un style, sinon. -->
+    <section class="i3-puits" aria-label="Coller une recette trouvée" data-booster="puits-coller">
+      <div class="i3-papier">
+        <svg class="i3-feuille" viewBox="0 0 64 76" aria-hidden="true">
+          <path d="M8 4h36l12 12v54a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" fill="#F5F5F5" stroke="#9E9E9E" stroke-width="1.3"/>
+          <path d="M44 4v12h12" fill="none" stroke="#9E9E9E" stroke-width="1.3"/>
+          <rect x="12" y="14" width="22" height="4" rx="2" fill="#111"/>
+          <rect x="12" y="24" width="38" height="3" rx="1.5" fill="#BFBFBF"/><rect x="12" y="31" width="30" height="3" rx="1.5" fill="#BFBFBF"/>
+          <rect x="12" y="38" width="34" height="3" rx="1.5" fill="#E0A02E"/><rect x="12" y="45" width="26" height="3" rx="1.5" fill="#567F45"/>
+          <rect x="12" y="52" width="36" height="3" rx="1.5" fill="#BFBFBF"/><rect x="12" y="59" width="20" height="3" rx="1.5" fill="#4F7E9B"/>
+        </svg>
+        <div class="i3-actions">
+          <button class="i3-coller" data-booster="coller"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg>Coller une recette</button>
+          <button class="i3-photo" data-booster="photo"><svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Photo</button>
+        </div>
+      </div>
+      <div class="i3-remplit" role="img" aria-label="Une recette collée remplit les sept étapes"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    </section>
+
+    <div class="i3-ou">ou partir d'un style</div>
+    <section class="i3-styles" aria-label="Styles" data-booster="nuancier-styles">
+      <!-- Bande : la couleur du style, de son SRM minimum à son maximum (BJCP 2021) ; pastille : la famille (BeerStyleTag) -->
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#F8A600,#C35900)"></span><b>Double IPA</b><span class="i3-code"><span class="i3-pt" style="background:#14B8A6"></span><i data-t="#D5F2EE"></i><span class="i3-m">22A</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#FFCA5A,#F39C00)"></span><b>Hazy IPA</b><span class="i3-code"><span class="i3-pt" style="background:#84CC16"></span><i data-t="#E7F5D0"></i><span class="i3-m">21C</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#F8A600,#C35900)"></span><b>American IPA</b><span class="i3-code"><span class="i3-pt" style="background:#14B8A6"></span><i data-t="#D5F2EE"></i><span class="i3-m">21A</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#FBB123,#C35900)"></span><b>Saison</b><span class="i3-code"><span class="i3-pt" style="background:#F97316"></span><i data-t="#FDE3D0"></i><span class="i3-m">25B</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#8E2900,#36080A)"></span><b>Oatmeal Stout</b><span class="i3-code"><span class="i3-pt" style="background:#8B5CF6"></span><i data-t="#E9E1FD"></i><span class="i3-m">16B</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#FFD878,#FFBF42)"></span><b>German Pils</b><span class="i3-code"><span class="i3-pt" style="background:#EAB308"></span><i data-t="#FBF0C8"></i><span class="i3-m">5D</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#FFD878,#FFBF42)"></span><b>Witbier</b><span class="i3-code"><span class="i3-pt" style="background:#06B6D4"></span><i data-t="#D3F1F7"></i><span class="i3-m">24A</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#FFBF42,#F39C00)"></span><b>Belgian Tripel</b><span class="i3-code"><span class="i3-pt" style="background:#3B82F6"></span><i data-t="#DCE7FD"></i><span class="i3-m">26C</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#5E0B00,#36080A)"></span><b>Imperial Stout</b><span class="i3-code"><span class="i3-pt" style="background:#8B5CF6"></span><i data-t="#E9E1FD"></i><span class="i3-m">20C</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#FBB123,#DE7C00)"></span><b>American Pale Ale</b><span class="i3-code"><span class="i3-pt" style="background:#22C55E"></span><i data-t="#DDF5E4"></i><span class="i3-m">18B</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#E58500,#C35900)"></span><b>Irish Red Ale</b><span class="i3-code"><span class="i3-pt" style="background:#EF4444"></span><i data-t="#FCE0E0"></i><span class="i3-m">15A</span></span></button>
+      <button class="i3-sty" aria-pressed="false"><span class="i3-band" style="background:linear-gradient(90deg,#DE7C00,#B04500)"></span><b>Belgian Dubbel</b><span class="i3-code"><span class="i3-pt" style="background:#3B82F6"></span><i data-t="#DCE7FD"></i><span class="i3-m">26B</span></span></button>
+    </section>
+    <button class="i3-autre" data-booster="chercher-style"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Autre style, ou créer</button>
+
+    <section class="i3-brassin" aria-label="Le brassin">
+      <label class="i3-c"><span class="i3-lb">Volume</span><span class="i3-v"><input inputmode="decimal" value="24" aria-label="Volume en fermenteur"><span class="i3-u">L</span></span></label>
+      <label class="i3-c"><span class="i3-lb">Ébullition</span><span class="i3-v"><input inputmode="numeric" value="60" aria-label="Durée d'ébullition"><span class="i3-u">min</span></span></label>
+      <div class="i3-c"><span class="i3-lb">NOLO</span><button class="i3-sw" role="switch" aria-checked="false" aria-label="NOLO, 0,5 % au plus" data-booster="nolo"></button></div>
+      <div class="i3-c" data-booster="jauge-fermenteur"><span class="i3-lb" style="display:flex;justify-content:space-between;align-items:center">Fermenteur<button class="i3-q" data-role="legende-bouton" aria-expanded="false" aria-controls="i3-leg" aria-label="Légende">?</button></span><span class="i3-fv"><span class="i3-m">24/30</span><span class="i3-u">L</span></span><span class="i3-bar" role="meter" aria-valuemin="0" aria-valuemax="30" aria-valuenow="24" aria-label="Remplissage du fermenteur"><b></b><i></i></span></div>
+      <div class="i3-mat"><button class="i3-matb"><b>Royal Catering</b><span class="i3-sep" aria-hidden="true"></span>cuve 45 L<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><span class="i3-evap" data-booster="evaporation"><svg viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span class="i3-m">−3 L</span></span></div>
+    </section>
+    <p class="i3-leg" id="i3-leg" data-role="legende" hidden>Volume et fermenteur viennent de ton profil Royal Catering (30 L). Le tireté : remplissage conseillé, 24 L, avec le repère provisoire de 20 % d'espace libre. NOLO vise 0,5 % au plus. Les sept traits : ce qu'une recette collée remplit.</p>
+
+    <label class="i3-nom"><span class="i3-lb">Nom</span><input placeholder="plus tard, ou lu dans la recette" autocomplete="off"></label>
+
+    <div class="i3-pied">
+      <button class="i3-btn" disabled>Retour</button>
+      <button class="i3-btn i3-btn-s">Suivant<span class="i3-tir" aria-hidden="true"></span>Malts/sucres</button>
+    </div>
+  </main>
+</div>
+
+<!-- ÉTAT 2 : après le collage (neipa v3). Le puits et les styles se retirent ; l'identité remplie prend leur place. -->
+<div class="i3-etat">État suivant : recette collée, neipa v3</div>
+<div class="i3-ecran" data-etat="recette-collee" style="min-height:0">
+  <header class="i3-hd">
+    <div class="i3-tb">
+      <button class="i3-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i3-t">Identité <span>1/7</span></h1>
+      <button class="i3-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i3-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i3-rail" aria-label="Étapes">
+      <button class="i3-st i3-on" aria-current="step">Identité<i></i></button><button class="i3-st">Malts/sucres<i></i></button><button class="i3-st">Houblons<i></i></button><button class="i3-st">Levure<i></i></button><button class="i3-st">Paliers<i></i></button><button class="i3-st">Eau<i></i></button><button class="i3-st">Récap.<i></i></button>
+    </nav>
+  </header>
+  <div class="i3-mt"><span>Grain<span class="i3-m">8,6 kg</span></span><span>OG<span class="i3-m">1,080</span></span><span>IBU<span class="i3-m">~93</span></span><span>EBC<span class="i3-dot"></span><span class="i3-m">9,5</span></span></div>
+  <main class="i3-corps">
+    <div class="i3-lu"><b>neipa v3</b><span class="i3-sep" aria-hidden="true"></span>Double IPA<span class="i3-sep" aria-hidden="true"></span><span class="i3-m" style="font-size:13px">22A</span></div>
+    <section class="i3-brassin" aria-label="Le brassin">
+      <label class="i3-c"><span class="i3-lb">Volume</span><span class="i3-v"><input inputmode="decimal" value="24"><span class="i3-u">L</span></span></label>
+      <label class="i3-c"><span class="i3-lb">Ébullition</span><span class="i3-v"><input inputmode="numeric" value="60"><span class="i3-u">min</span></span></label>
+      <div class="i3-c"><span class="i3-lb">NOLO</span><button class="i3-sw" role="switch" aria-checked="false" aria-label="NOLO"></button></div>
+      <div class="i3-c"><span class="i3-lb">Fermenteur</span><span class="i3-fv"><span class="i3-m">24/30</span><span class="i3-u">L</span></span><span class="i3-bar"><b></b><i></i></span></div>
+    </section>
+  </main>
+</div>
+<script>
+(function(){
+  var b=document.querySelector('[data-role="legende-bouton"]'),l=document.getElementById('i3-leg');
+  function ouvrir(o){l.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');}
+  b.addEventListener('click',function(){ouvrir(l.hidden);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')ouvrir(false);});
+  document.querySelectorAll('.i3-sty').forEach(function(c){var t=c.querySelector('i[data-t]');if(t)c.style.setProperty('--i3-teinte',t.getAttribute('data-t'));});
+  document.querySelectorAll('.i3-sty').forEach(function(c){c.addEventListener('click',function(){document.querySelectorAll('.i3-sty').forEach(function(x){x.setAttribute('aria-pressed','false');});c.setAttribute('aria-pressed','true');});});
+  document.querySelectorAll('.i3-sw').forEach(function(sw){sw.addEventListener('click',function(){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');});});
+})();
+</script>
+</body>
+</html>

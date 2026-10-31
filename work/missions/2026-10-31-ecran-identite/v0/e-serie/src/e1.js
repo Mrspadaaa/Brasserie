@@ -1,0 +1,34 @@
+const $ = (id) => document.getElementById('PXID-' + id);
+function rendre() {
+  const c = calc(S);
+  $('nom').value = S.nom; $('style').value = S.style;
+  document.querySelector('.PXID-rep').style.visibility = S.style ? 'visible' : 'hidden';
+  $('pl').hidden = !S.style || S.neuve;
+  $('v').textContent = fr(S.V, S.V % 1 ? 1 : 0);
+  $('ff').style.width = Math.min(100, S.V / M.F * 100) + '%';
+  $('tk').style.left = (c.conseil / M.F * 100) + '%';
+  $('jf').setAttribute('aria-valuenow', S.V);
+  $('jf').classList.toggle('PXID-over', c.plein);
+  const lib = $('lib');
+  lib.className = 'PXID-lib' + (c.plein ? ' PXID-plein' : c.serre ? ' PXID-serre' : '');
+  lib.innerHTML = c.plein ? 'plein' : '<b class=PXID-m>' + fr(c.libre, c.libre % 1 ? 1 : 0) + ' L</b> libres · <b class=PXID-m>' + fr(c.pct) + ' %</b>';
+  const al = $('al'); al.hidden = !c.plein;
+  al.textContent = c.plein ? 'Fermenteur plein : ' + fr(S.V) + ' L pour 30 L' : '';
+  $('b').textContent = fr(S.B);
+  $('ev').innerHTML = '<b class=PXID-m>~' + fr(c.ev) + ' L</b> évaporés';
+  $('pre').textContent = fr(c.pre);
+  $('fc').style.width = Math.min(100, c.pre / M.C * 100) + '%';
+  $('fe').style.left = (S.V / M.C * 100) + '%';
+  $('fe').style.width = (c.ev / M.C * 100) + '%';
+  $('nl').checked = S.nolo; $('np').hidden = !S.nolo;
+}
+const pas = (d) => { S.V = Math.max(1, Math.min(34, Math.round((S.V + d) * 2) / 2)); rendre(); };
+document.querySelector('[data-booster="volume-moins"]').addEventListener('click', () => pas(-0.5));
+document.querySelector('[data-booster="volume-plus"]').addEventListener('click', () => pas(0.5));
+glisser($('jf'), 'x', (t) => { S.V = Math.max(1, Math.round(t * M.F * 2) / 2); rendre(); });
+document.querySelector('[data-booster="ebullition-moins"]').addEventListener('click', () => { S.B = Math.max(0, S.B - 5); rendre(); });
+document.querySelector('[data-booster="ebullition-plus"]').addEventListener('click', () => { S.B = Math.min(240, S.B + 5); rendre(); });
+$('nl').addEventListener('change', (e) => { S.nolo = e.target.checked; rendre(); });
+const ouvrir = (sel, cible) => { const b = document.querySelector(sel), d = document.querySelector(cible); b.addEventListener('click', () => { d.hidden = !d.hidden; b.setAttribute('aria-expanded', String(!d.hidden)); }); };
+ouvrir('[data-booster="reperes"]', '[data-role="reperes"]');
+ouvrir('[data-booster="materiel"]', '[data-role="materiel"]');

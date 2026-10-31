@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r3 — Identité 1/7 · le fermenteur qu’on remplit au pouce (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--hop:#567F45;--hopt:#3F6B2E;--eau:#4F7E9B;--eaut:#2F5F7D;--alerte:#C8382F;--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;
+--or:#E0A02E;--paille:#F2C14E;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.r3-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.r3-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.r3-tb{display:flex;align-items:center;gap:6px;height:36px}
+.r3-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.r3-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.r3-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.r3-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.r3-ab{height:28px;padding:0 6px;font-size:12px;color:var(--t1);text-decoration:underline;text-underline-offset:2px}
+.r3-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.r3-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.r3-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.r3-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.r3-rail [aria-current] span{color:var(--t0);font-weight:600}
+.r3-rail [aria-current] i{background:var(--t0)}
+.r3-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.r3-bd>div{display:flex;align-items:baseline;gap:4px}
+.r3-bd .r3-l{font-size:14px;color:var(--t2)}
+.r3-bd .r3-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.r3-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.r3-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.r3-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.r3-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);background:var(--or);align-self:center}
+.r3-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 10px}
+.r3-ret{min-height:24px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px;opacity:.4}
+.r3-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.r3-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.r3-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.r3-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+
+.r3-c{padding:10px 8px 0 10px;min-height:760px}
+.r3-grid{display:grid;grid-template-columns:1fr 172px;gap:6px;align-items:start}
+.r3-col{display:flex;flex-direction:column;gap:12px;padding-top:6px}
+.r3-nom{width:100%;border:0;border-bottom:1.5px dotted var(--trait);background:none;font-size:22px;font-weight:600;color:var(--t0);height:34px;padding:0}
+.r3-pas{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px 0 4px;border-radius:10px;background:#D5F2EC;border:1px solid #8ED5C7;color:#0E5A50;font-size:14px;font-weight:600;width:max-content}
+.r3-pas i{width:18px;height:18px;border-radius:50%;background:#2BB59F}
+.r3-rep{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--eaut);height:24px}
+.r3-k{font-size:12px;color:var(--t2)}
+.r3-blk{display:flex;flex-direction:column;gap:4px;padding:10px;background:var(--panel);border-radius:16px}
+.r3-boil{display:flex;align-items:center;gap:8px}
+.r3-rd{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--t0);display:flex;align-items:center;justify-content:center;background:#fff;color:var(--t0)}
+.r3-rd:active{background:var(--haut)}
+.r3-bv{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);min-width:56px;text-align:center;line-height:32px}
+.r3-bv small{font-size:14px;color:var(--t2);font-weight:500}
+.r3-ev{font-size:12px;color:var(--t2)}
+.r3-ev b{font-family:var(--mono);color:var(--t1)}
+.r3-nl{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px}
+.r3-nl b{font-size:16px;color:var(--t0)}
+.r3-tg{position:relative;width:44px;height:26px;border-radius:13px;background:var(--bordm);flex-shrink:0}
+.r3-tg::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+[aria-checked="true"] .r3-tg{background:var(--t0)}
+[aria-checked="true"] .r3-tg::after{transform:translateX(18px)}
+.r3-mini{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:32px;font-size:14px;color:var(--t1);border-top:1px solid var(--bord);width:100%;text-align:left}
+.r3-mini b{font-family:var(--mono);color:var(--t0)}
+.r3-tagr{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:18px}
+.r3-ferm{display:flex;flex-direction:column;align-items:center}
+.r3-fh{font-size:12px;color:var(--t2);align-self:flex-end;margin-right:14px}
+.r3-fh b{font-family:var(--mono);font-size:14px;color:var(--t0)}
+.r3-cuve{touch-action:none;user-select:none;-webkit-user-select:none;cursor:ns-resize;display:block}
+.r3-gt{font:500 12px var(--mono);fill:#666}
+.r3-gc{font:12px var(--sans);fill:#111}
+.r3-gm{font:600 12px var(--mono)}
+.r3-gv{font:600 14px var(--mono);fill:#fff}
+.r3-gl{font:600 13px var(--sans);fill:#3F6B2E}
+.r3-al{font-size:13px;color:var(--alertet);text-align:right;min-height:18px}
+.r3-etats{display:flex;gap:10px;flex-wrap:wrap}
+.r3-etats figure{flex:1;min-width:150px;background:var(--panel);border-radius:16px;padding:8px;font-size:12px;color:var(--t2)}
+</style></head>
+<body data-concept="r3">
+<header class="r3-hd">
+  <div class="r3-tb">
+    <button class="r3-ic" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="r3-tt"><span class="r3-tn">Identité</span><span class="r3-tp">1/7</span></p>
+    <button class="r3-ab" aria-label="Abandonner le brouillon">Abandonner</button>
+    <button class="r3-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="r3-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="r3-rail" aria-label="Étapes"><button aria-current="step"><span>Identité</span><i></i></button><button><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="r3-bd" data-commun="bandeau">
+  <div><span class="r3-l">Grain</span><span class="r3-v">8,6 kg</span></div>
+  <div><span class="r3-l">OG</span><span class="r3-v">1,080</span></div>
+  <div><span class="r3-l">IBU</span><span class="r3-v">~93</span><span class="r3-pst" role="img" aria-label="style 60–100 IBU"><b style="left:42.9%;width:calc(71.4% - 42.9%)"></b><em style="left:66.4%"></em></span></div>
+  <div><span class="r3-l">EBC</span><span class="r3-sw"></span><span class="r3-v">9,5</span></div>
+</div>
+<main class="r3-c">
+  <div class="r3-grid">
+    <div class="r3-col">
+      <input class="r3-nom" value="neipa v3" aria-label="Nom de la bière">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <button class="r3-pas" aria-haspopup="listbox"><i></i>Double IPA <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button class="r3-rep" aria-expanded="false">Repères · 22A · BJCP 2021 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="r3-blk">
+        <span class="r3-k">Ébullition</span>
+        <div class="r3-boil" data-booster="ebullition">
+          <button class="r3-rd" data-b="-5" aria-label="Moins 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.28" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+          <span class="r3-bv" data-role="boil">60<small>′</small></span>
+          <button class="r3-rd" data-b="5" aria-label="Plus 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.28" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+        <span class="r3-ev"><b data-role="evap">~3 L</b> évaporés</span>
+      </div>
+      <div class="r3-blk">
+        <div class="r3-nl" role="switch" aria-checked="false" tabindex="0" data-booster="nolo"><span><b>NOLO</b> <span class="r3-k">≤ <span class="r3-m">0,5 %</span></span></span><span class="r3-tg"></span></div>
+      </div>
+      <div class="r3-blk" style="padding-top:4px;padding-bottom:4px">
+        <button class="r3-mini" style="border-top:0" aria-expanded="false">Espace libre <span><b>20 %</b> <span class="r3-tagr">repère</span></span></button>
+        <button class="r3-mini" aria-expanded="false">Royal Catering <span class="r3-k">cuve <b>45 L</b></span></button>
+      </div>
+    </div>
+    <div class="r3-ferm">
+      <span class="r3-fh">Fermenteur <b>30 L</b></span>
+      <svg class="r3-cuve" viewBox="0 0 170 570" width="170" height="570" data-booster="cuve-glisser" role="slider" aria-label="Volume en fermenteur" aria-valuemin="1" aria-valuemax="33" aria-valuenow="24" aria-valuetext="24 L sur 30" tabindex="0">
+  <defs>
+    <pattern id="r3-hach" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><line x1="0" y1="0" x2="0" y2="7" stroke="#DDDDDD" stroke-width="3"/></pattern>
+    <pattern id="r3-trop" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#F7D6D3"/><line x1="0" y1="0" x2="0" y2="7" stroke="#E9A29C" stroke-width="3"/></pattern>
+    <linearGradient id="r3-biere" x1="0" x2="1"><stop offset="0" stop-color="#E7AE3E"/><stop offset=".5" stop-color="#F2C860"/><stop offset="1" stop-color="#DA9C2A"/></linearGradient>
+    <clipPath id="r3-int"><rect x="50" y="34" width="108" height="500" rx="14"/></clipPath>
+  </defs>
+  <rect x="50" y="34" width="108" height="500" rx="14" fill="url(#r3-hach)"/>
+  <g clip-path="url(#r3-int)">
+    <rect data-role="moût" x="50" y="134" width="108" height="500" fill="url(#r3-biere)"/>
+    <rect data-role="mousse" x="50" y="133" width="108" height="7" fill="#FFF4D6" opacity=".9"/>
+  </g>
+  <rect data-role="debord" x="44" y="8" width="120" height="0" rx="6" fill="url(#r3-trop)"/>
+  <rect x="50" y="34" width="108" height="500" rx="14" fill="none" stroke="#111" stroke-width="2"/>
+  <rect x="44" y="24" width="120" height="10" rx="4" fill="#fff" stroke="#111" stroke-width="2"/>
+  <rect x="94" y="14" width="20" height="10" rx="3" fill="#fff" stroke="#111" stroke-width="2"/>
+  <path d="M50 504 h-14 v12 h14" fill="#fff" stroke="#111" stroke-width="2"/>
+  <line x1="144" x2="158" y1="534" y2="534" stroke="#666" stroke-width="1.5"/><text x="140" y="538" text-anchor="end" class="r3-gt">0</text><line x1="151" x2="158" y1="492.3333333333333" y2="492.3333333333333" stroke="#9E9E9E" stroke-width="1"/><line x1="144" x2="158" y1="450.6666666666667" y2="450.6666666666667" stroke="#666" stroke-width="1.5"/><text x="140" y="454.6666666666667" text-anchor="end" class="r3-gt">5</text><line x1="151" x2="158" y1="409" y2="409" stroke="#9E9E9E" stroke-width="1"/><line x1="144" x2="158" y1="367.33333333333337" y2="367.33333333333337" stroke="#666" stroke-width="1.5"/><text x="140" y="371.33333333333337" text-anchor="end" class="r3-gt">10</text><line x1="151" x2="158" y1="325.66666666666663" y2="325.66666666666663" stroke="#9E9E9E" stroke-width="1"/><line x1="144" x2="158" y1="284" y2="284" stroke="#666" stroke-width="1.5"/><text x="140" y="288" text-anchor="end" class="r3-gt">15</text><line x1="151" x2="158" y1="242.33333333333331" y2="242.33333333333331" stroke="#9E9E9E" stroke-width="1"/><line x1="144" x2="158" y1="200.66666666666669" y2="200.66666666666669" stroke="#666" stroke-width="1.5"/><text x="140" y="204.66666666666669" text-anchor="end" class="r3-gt">20</text><line x1="151" x2="158" y1="159" y2="159" stroke="#9E9E9E" stroke-width="1"/><line x1="144" x2="158" y1="117.33333333333331" y2="117.33333333333331" stroke="#666" stroke-width="1.5"/><text x="140" y="121.33333333333331" text-anchor="end" class="r3-gt">25</text><line x1="151" x2="158" y1="75.66666666666669" y2="75.66666666666669" stroke="#9E9E9E" stroke-width="1"/><line x1="144" x2="158" y1="34" y2="34" stroke="#666" stroke-width="1.5"/><text x="140" y="38" text-anchor="end" class="r3-gt">30</text>
+  <line x1="2" x2="158" y1="134" y2="134" stroke="#111" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="2" y="128" class="r3-gc">conseil</text>
+  <text x="2" y="149" class="r3-gc r3-gm">~24</text>
+  <g data-role="poignee" transform="translate(0 134)">
+    <rect x="58" y="-15" width="62" height="30" rx="15" fill="#111"/>
+    <text x="89" y="5" text-anchor="middle" class="r3-gv" data-role="vol">24 L</text>
+  </g>
+  <text x="104" y="89" text-anchor="middle" class="r3-gl" data-role="libre">6 L libres</text>
+</svg>
+      <p class="r3-al" role="alert" data-role="alerte"></p>
+    </div>
+  </div>
+  <nav class="r3-pied" data-commun="pied"><button class="r3-ret" disabled>Retour</button><button class="r3-suiv">Suivant — Fermentescibles</button></nav>
+</main>
+<section class="r3-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="r3-etats">
+    <figure>Trop plein, 32 L : le moût déborde au-dessus du couvercle, hachuré rouge, et « Fermenteur plein : réduis le volume ».</figure>
+    <figure>Volume effacé : cuve vide, poignée « — L », « Volume à renseigner ».</figure>
+    <figure>Fermenteur inconnu : cuve en pointillé sans graduations, « Fermenteur à renseigner ».</figure>
+    <figure>Ébullition 90′ : « ~4,5 L évaporés » ; 0′ : « aucune évaporation ».</figure>
+  </div>
+</section>
+<button class="r3-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s){return document.querySelector(s)};
+var H=500,TOP=34,vol=24,boil=60;
+var svg=q('.r3-cuve');
+function y(l){return TOP+H-(Math.min(l,30)/30)*H;}
+function maj(){
+  q('[data-role="moût"]').setAttribute('y',y(vol));
+  q('[data-role="mousse"]').setAttribute('y',y(vol)-1);
+  q('[data-role="poignee"]').setAttribute('transform','translate(0 '+Math.max(TOP+16,y(vol))+')');
+  q('[data-role="vol"]').textContent=vol+' L';
+  var l=30-vol, t=q('[data-role="libre"]');
+  t.textContent=l>0?l+' L libres':'';
+  t.setAttribute('y',(TOP+y(vol))/2+5);
+  var d=q('[data-role="debord"]'); var trop=vol>30;
+  d.setAttribute('height',trop?Math.min(24,(vol-30)/30*H):0);
+  q('[data-role="alerte"]').textContent=vol>=30?'Fermenteur plein : réduis le volume.':'';
+  svg.setAttribute('aria-valuenow',vol); svg.setAttribute('aria-valuetext',vol+' L sur 30');
+  q('[data-role="boil"]').innerHTML=boil+'<small>′</small>';
+  var e=Math.round(3*boil/60*10)/10; q('[data-role="evap"]').textContent=e>0?'~'+String(e).replace('.',',')+' L':'0 L';
+}
+function depuis(ev){var r=svg.getBoundingClientRect();var py=(ev.clientY-r.top)*(svg.viewBox.baseVal.height/r.height);vol=Math.max(1,Math.min(32,Math.round((TOP+H-py)/H*30)));maj();}
+var tir=false;
+svg.addEventListener('pointerdown',function(e){tir=true;svg.setPointerCapture(e.pointerId);depuis(e);});
+svg.addEventListener('pointermove',function(e){if(tir)depuis(e);});
+svg.addEventListener('pointerup',function(){tir=false;});
+svg.addEventListener('keydown',function(e){if(e.key==='ArrowUp'){vol=Math.min(32,vol+1);maj();}if(e.key==='ArrowDown'){vol=Math.max(1,vol-1);maj();}});
+document.querySelectorAll('[data-b]').forEach(function(b){b.addEventListener('click',function(){boil=Math.max(0,boil+Number(b.dataset.b));maj();});});
+var n=q('[data-booster="nolo"]'); n.addEventListener('click',function(){n.setAttribute('aria-checked',n.getAttribute('aria-checked')==='true'?'false':'true');});
+})();</script>
+</body></html>

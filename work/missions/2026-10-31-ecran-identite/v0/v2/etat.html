@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v2 · Identité · chiffre contre chiffre</title>
+<!-- Lot v0 Identité · série v · v2 · page statique, fabriquée par fabrique.mjs (données : neipa v3, style 22A BJCP 2021). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  *{box-sizing:border-box} [hidden]{display:none!important} html,body{margin:0;background:#FFFFFF}
+  body{font-family:'Source Sans 3',system-ui,sans-serif;color:#111111;font-size:14px;line-height:1.35;-webkit-font-smoothing:antialiased}
+  .v2{max-width:390px;margin:0 auto;min-height:844px;position:relative;padding-bottom:72px}
+  .v2 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  .v2 .v2-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .v2-hd{padding:0 8px;background:#FFFFFF}
+  .v2-tb{display:flex;align-items:center;gap:6px;min-height:36px;padding-block:2px}
+  .v2 .v2-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#666666;flex:none}
+  .v2-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;margin:0}
+  .v2-tt b{font-size:16px;font-weight:600;color:#111111} .v2-tt span{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#666666}
+  .v2 .v2-ab{height:28px;padding:0 6px;font-size:12px;color:#333333;text-decoration:underline;text-underline-offset:2px;flex:none}
+  .v2-rail{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .v2 .v2-rail button{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:28px;padding:0 4px;flex:none}
+  .v2-rail span{font-size:12px;color:#666666;white-space:nowrap}
+  .v2-rail i{display:block;height:6px;border-radius:9px;background:#DDDDDD}
+  .v2-rail [aria-current] span{color:#111111;font-weight:600} .v2-rail [aria-current] i{background:#111111}
+  .v2-bd{margin:6px 8px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:5px 10px;border:1px solid #DDDDDD;background:#F5F5F5;border-radius:16px}
+  .v2-bd>div{display:flex;align-items:baseline;gap:4px}
+  .v2-bd .v2-bl{font-size:13px;color:#666666} .v2-bd .v2-bv{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap}
+  .v2-bp{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:#DDDDDD}
+  .v2-bp i{position:absolute;top:0;bottom:0;border-radius:9px;background:#9E9E9E} .v2-bp b{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:#111111}
+  .v2-pt{width:10px;height:10px;border-radius:50%;border:1px solid #BFBFBF;background:#E0A02E;align-self:center}
+  .v2 .v2-fab{position:fixed;right:max(12px,calc(50% - 183px));bottom:16px;width:48px;height:48px;border-radius:50%;background:#111111;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:5}
+  .v2-pied{display:flex;gap:8px;padding:8px 68px 8px 0;margin-top:auto}
+  .v2 .v2-pied button{height:32px;padding:0 10px;border-radius:10px;font-size:13px}
+  .v2 .v2-pied .v2-ret{border:1px solid #DDDDDD;color:#666666} .v2 .v2-pied .v2-sui{background:#111111;color:#fff;font-weight:600}
+  .v2-ds2{display:flex;align-items:center;gap:6px;font-size:12px;color:#666666}
+  .v2 .v2-ds2 button{height:28px;padding:0 10px;border:1.5px dashed #9E9E9E;border-radius:999px;font-size:13px;color:#333333}
+  .v2 .v2-ds2 button::after{content:" ›";color:#666666}
+  .v2 .v2-ds2 button:active{background:#EBEBEB}
+  .v2 .v2-lgb{width:24px;height:24px;border-radius:50%;border:1px solid #BFBFBF;font-size:13px;font-weight:600;color:#333333;flex:none;display:inline-flex;align-items:center;justify-content:center}
+  .v2-lg{background:#FFFFFF;border:1px solid #DDDDDD;border-radius:10px;padding:6px 8px;font-size:13px;color:#333333} .v2-lg p{margin:2px 0}
+  .v2 :focus-visible{outline:2px solid #4F7E9B;outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.v2 *{transition:none!important;animation:none!important}}
+
+  .v2-m{padding:8px 8px 0} .v2-e1{min-height:728px;display:flex;flex-direction:column}
+  .v2-pn{background:#F5F5F5;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:8px}
+  .v2-p2{margin-top:8px;gap:4px}
+  .v2-ns{display:grid;grid-template-columns:1fr 1.15fr;gap:6px}
+  .v2-ns label{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .v2-lb{font-size:12px;color:#666666}
+  .v2-in{height:34px;border:1px solid #DDDDDD;border-radius:10px;background:#FFFFFF;padding:0 10px;font:inherit;font-size:16px;color:#111111;width:100%;min-width:0}
+  .v2 .v2-cb{display:flex;align-items:center;justify-content:space-between;text-align:left;border:1px solid #DDDDDD;background:#FFFFFF;padding:0 8px 0 10px;white-space:nowrap}
+  .v2-cb svg{color:#666666;flex:none}
+  .v2-tab{display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DDDDDD;border-radius:10px;overflow:hidden}
+  .v2-th,.v2 .v2-tr{display:grid;grid-template-columns:38px 1fr 62px 1.25fr 62px 1fr;align-items:center;width:100%}
+  .v2-th{height:28px;font-size:12px;color:#fff;background:#111111;text-align:center;border-bottom:1px solid #DDDDDD}
+  .v2-thl{display:flex;justify-content:center} .v2 .v2-thl .v2-lgb{color:#fff;border-color:#777;width:22px;height:22px}
+  .v2-thi{background:#3F6B2E;color:#fff;font-weight:600;align-self:stretch;display:flex;align-items:center;justify-content:center}
+  .v2 .v2-tr{min-height:44px;border-bottom:1px solid #F5F5F5;text-align:center}
+  .v2-tr:last-of-type{border-bottom:0}
+  .v2-k{font-size:13px;color:#666666;text-align:left;padding-left:8px}
+  .v2-b{font-size:13px;color:#666666}
+  .v2-z{align-self:stretch;display:flex;align-items:center;justify-content:center}
+  .v2-zi{background:rgba(86,127,69,.2)}
+  .v2-v{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:17px;font-weight:600;color:#111111;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+  .v2-v-h{color:#7F5B10;border:1.5px solid #9C7020;border-radius:10px;padding:2px 6px;background:#FBF4E6}
+  .v2-v em{font-style:normal;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600}
+  .v2-inc{width:44px;height:20px;border:1.5px dashed #9E9E9E;border-radius:8px;background:repeating-linear-gradient(135deg,#DDDDDD 0 3px,transparent 3px 6px)}
+  .v2-dt{font-size:12px;color:#666666;padding:2px 8px 6px;background:#FFFFFF}
+  .v2-g{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .v2 .v2-tu{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:#111111;color:#fff;border:1px solid #111111;border-radius:10px;padding:6px 8px 16px;min-height:70px;text-align:left;position:relative}
+  .v2-tl{font-size:12px;color:#CFCFCF}
+  .v2-tv{font-size:13px;color:#CFCFCF;display:flex;align-items:center;gap:4px}
+  .v2-tv b{font-size:24px;color:#fff;font-weight:600}
+  .v2-no .v2-tv b{font-size:16px}
+  .v2-no input{width:20px;height:20px;margin:0;accent-color:#F2C14E}
+  .v2-ts{font-size:12px;color:#CFCFCF}
+  .v2-eau{color:#8FC3E6}
+  .v2-ap{color:#F29289;font-weight:600}
+  .v2-jg{position:absolute;left:8px;right:8px;bottom:6px;height:6px;border-radius:9px;background:#444}
+  .v2-jg i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:#3F6B2E}
+  .v2-jg b{position:absolute;left:80%;top:-3px;bottom:-3px;border-left:2px dashed #fff}
+  .v2-jg-a i{background:#C8382F}
+  .v2 .v2-dp{display:flex;align-items:center;justify-content:space-between;min-height:28px;width:100%;font-size:13px;color:#333333;text-align:left;padding:0 2px}
+  .v2-dp svg{color:#666666}
+  .v2 .v2-imp{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid #BFBFBF;border-radius:10px;font-size:14px;align-self:flex-start}
+  .v2-al{margin:0;font-size:13px;color:#A8291F}
+  .v2-vide{padding:10px;font-size:13px;color:#666666;text-align:center;border-style:dashed}
+  .v2-et{margin-top:24px;border-top:1px dashed #BFBFBF;padding-top:8px;display:flex;flex-direction:column;gap:6px}
+  .v2-et h2{margin:4px 0 0;font-size:13px;color:#666666;font-weight:600}
+  .v2-tr:active{background:#EBEBEB} .v2-tu:active{background:#333}
+</style>
+</head>
+<body>
+<div class="v2" data-variante="v2">
+<header class="v2-hd" data-commun="en-tete">
+    <div class="v2-tb">
+      <button type="button" class="v2-ic" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <p class="v2-tt"><b>Identité</b><span>1/7</span></p>
+      <button type="button" class="v2-ab">Abandonner</button>
+      <button type="button" class="v2-ic" aria-label="Coller une recette"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button type="button" class="v2-ic" aria-label="Thème"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="v2-rail" aria-label="Étapes" data-commun="fil"><button type="button" aria-current="step" aria-label="Identité"><span>Identité</span><i></i></button><button type="button" aria-label="Malts/sucres"><span>Malts/sucres</span><i></i></button><button type="button" aria-label="Houblons"><span>Houblons</span><i></i></button><button type="button" aria-label="Levure"><span>Levure</span><i></i></button><button type="button" aria-label="Paliers"><span>Paliers</span><i></i></button><button type="button" aria-label="Eau"><span>Eau</span><i></i></button><button type="button" aria-label="Récap."><span>Récap.</span><i></i></button></nav>
+  </header><div class="v2-bd" data-commun="bandeau" aria-label="Mesures de la recette">
+    <div><span class="v2-bl">Grain</span><span class="v2-bv">8,6 kg</span></div>
+    <div><span class="v2-bl">OG</span><span class="v2-bv">1,080</span></div>
+    <div><span class="v2-bl">IBU</span><span class="v2-bv">~93</span><span class="v2-bp" role="img" aria-label="style 60–100 IBU"><i style="left:42.9%;width:28.6%"></i><b style="left:66.4%"></b></span></div>
+    <div><span class="v2-bl">EBC</span><span class="v2-pt"></span><span class="v2-bv">9,5</span></div>
+  </div>
+<main class="v2-m">
+  <div class="v2-e1">
+  <section class="v2-pn" aria-label="La bière">
+    <div class="v2-ns">
+      <label><span class="v2-lb">Nom</span><input class="v2-in" value="neipa v3"></label>
+      <label><span class="v2-lb">Style</span><button type="button" class="v2-in v2-cb" data-booster="style">Double IPA <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></label>
+    </div>
+    <div class="v2-tab" data-booster="tableau-style" role="table" aria-label="Ta recette dans les bornes du style">
+    <div class="v2-th"><span class="v2-thl"><button type="button" class="v2-lgb" data-role="legende-bouton" aria-expanded="false" aria-controls="v2-lg" aria-label="Légende">?</button></span><span></span><span>min</span><span class="v2-thi">22A</span><span>max</span><span></span></div><button type="button" class="v2-tr" data-booster="ligne-OG" aria-expanded="false">
+      <span class="v2-k">OG</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">1,065</span>
+      <span class="v2-z v2-zi"><span class="v2-v">1,080</span></span>
+      <span class="v2-b v2-mono">1,085</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>BJCP 2021 · 22A</div><button type="button" class="v2-tr" data-booster="ligne-FG" aria-expanded="false">
+      <span class="v2-k">FG</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">1,008</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : FG : à la levure, étape 4"></span></span>
+      <span class="v2-b v2-mono">1,018</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>FG : à la levure, étape 4</div><button type="button" class="v2-tr" data-booster="ligne-Alc" aria-expanded="false">
+      <span class="v2-k">Alc.</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">7,5 %</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : Alcool : à la levure, étape 4"></span></span>
+      <span class="v2-b v2-mono">10 %</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>Alcool : à la levure, étape 4</div><button type="button" class="v2-tr" data-booster="ligne-IBU" aria-expanded="false">
+      <span class="v2-k">IBU</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">60</span>
+      <span class="v2-z v2-zi"><span class="v2-v">~93</span></span>
+      <span class="v2-b v2-mono">100</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>~ simulé, étape Houblons</div><button type="button" class="v2-tr" data-booster="ligne-EBC" aria-expanded="false">
+      <span class="v2-k">EBC</span>
+      <span class="v2-z v2-zb"><span class="v2-v v2-v-h">9,5<em>pâle</em></span></span>
+      <span class="v2-b v2-mono">12</span>
+      <span class="v2-z v2-zi"></span>
+      <span class="v2-b v2-mono">28</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>BJCP en SRM 6–14, converti en EBC</div></div>
+    <div id="v2-lg" class="v2-lg" data-role="legende" hidden><p>Bande : la plage du style 22A, BJCP 2021.</p><p>Trait ou point : ta recette.</p><p>Hachuré : inconnu ; la FG et l’alcool viennent de la levure, étape 4.</p><p>Tireté : un conseil, pas une limite.</p><p>~ : estimé ou simulé, jamais mesuré.</p></div>
+    <div class="v2-ds2" data-booster="du-style"><span>Du style</span><button type="button">Empâtage</button><button type="button">Fermentation</button></div>
+  </section>
+  <section class="v2-pn v2-p2" aria-label="Le brassin">
+    <div class="v2-g">
+    <button type="button" class="v2-tu" data-booster="volume"><span class="v2-tl">Volume</span><span class="v2-tv"><b class="v2-mono">24</b> L</span></button>
+    <button type="button" class="v2-tu" data-booster="ebullition"><span class="v2-tl">Ébullition</span><span class="v2-tv"><b class="v2-mono">60</b> min</span><span class="v2-ts"><span class="v2-eau"><span class="v2-mono">~3 L</span> évaporés</span></span></button>
+    <label class="v2-tu v2-no" data-booster="nolo"><span class="v2-tl">NOLO</span><span class="v2-tv"><input type="checkbox"> <b class="v2-mono">≤ 0,5 %</b></span></label>
+    <button type="button" class="v2-tu" data-booster="fermenteur"><span class="v2-tl">Fermenteur</span><span class="v2-tv"><b class="v2-mono">24/30</b> L</span><span class="v2-jg"><i style="width:80%"></i><b></b></span></button>
+  </div>
+    <button type="button" class="v2-dp" aria-expanded="false" data-booster="espace-libre"><span>Espace libre <span class="v2-mono">~20 %</span> · cuve 45 L</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+  </section>
+  <footer class="v2-pied" data-commun="pied"><button type="button" class="v2-ret" disabled>Retour</button><button type="button" class="v2-sui">Suivant — Malts/sucres</button></footer>
+  <button type="button" class="v2-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+  </div>
+  <section class="v2-et" aria-label="Autres états">
+    <h2>Recette neuve : le collage d’abord, les bornes sans valeur</h2>
+    <button type="button" class="v2-imp"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></svg> Coller une recette trouvée</button>
+    <div class="v2-pn"><div class="v2-tab" data-booster="tableau-style" role="table" aria-label="Ta recette dans les bornes du style">
+    <div class="v2-th"><span class="v2-thl"></span><span></span><span>min</span><span class="v2-thi">22A</span><span>max</span><span></span></div><button type="button" class="v2-tr" data-booster="ligne-OG" aria-expanded="false">
+      <span class="v2-k">OG</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">1,065</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : "></span></span>
+      <span class="v2-b v2-mono">1,085</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>BJCP 2021 · 22A</div><button type="button" class="v2-tr" data-booster="ligne-FG" aria-expanded="false">
+      <span class="v2-k">FG</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">1,008</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : FG : à la levure, étape 4"></span></span>
+      <span class="v2-b v2-mono">1,018</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>FG : à la levure, étape 4</div><button type="button" class="v2-tr" data-booster="ligne-Alc" aria-expanded="false">
+      <span class="v2-k">Alc.</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">7,5 %</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : Alcool : à la levure, étape 4"></span></span>
+      <span class="v2-b v2-mono">10 %</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>Alcool : à la levure, étape 4</div><button type="button" class="v2-tr" data-booster="ligne-IBU" aria-expanded="false">
+      <span class="v2-k">IBU</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">60</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : "></span></span>
+      <span class="v2-b v2-mono">100</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>~ simulé, étape Houblons</div><button type="button" class="v2-tr" data-booster="ligne-EBC" aria-expanded="false">
+      <span class="v2-k">EBC</span>
+      <span class="v2-z v2-zb"></span>
+      <span class="v2-b v2-mono">12</span>
+      <span class="v2-z v2-zi"><span class="v2-inc" role="img" aria-label="inconnu : "></span></span>
+      <span class="v2-b v2-mono">28</span>
+      <span class="v2-z v2-zh"></span>
+    </button><div class="v2-dt" hidden>BJCP en SRM 6–14, converti en EBC</div></div></div>
+    <h2>Fermenteur plein</h2>
+    <div class="v2-pn"><div class="v2-g">
+    <button type="button" class="v2-tu" data-booster="volume"><span class="v2-tl">Volume</span><span class="v2-tv"><b class="v2-mono">30</b> L</span></button>
+    <button type="button" class="v2-tu" data-booster="ebullition"><span class="v2-tl">Ébullition</span><span class="v2-tv"><b class="v2-mono">60</b> min</span><span class="v2-ts"><span class="v2-eau"><span class="v2-mono">~3 L</span> évaporés</span></span></button>
+    <label class="v2-tu v2-no" data-booster="nolo"><span class="v2-tl">NOLO</span><span class="v2-tv"><input type="checkbox"> <b class="v2-mono">≤ 0,5 %</b></span></label>
+    <button type="button" class="v2-tu" data-booster="fermenteur"><span class="v2-tl">Fermenteur</span><span class="v2-tv"><b class="v2-mono">30/30</b> L</span><span class="v2-ts"><span class="v2-ap">plein</span></span><span class="v2-jg v2-jg-a"><i style="width:100%"></i><b></b></span></button>
+  </div><p class="v2-al" role="alert">30 L remplit le fermenteur : baisse le volume.</p></div>
+    <h2>Style créé, hors liste</h2>
+    <div class="v2-pn"><div class="v2-tab v2-vide">Aucune borne connue pour « NEIPA maison ».</div></div>
+  </section>
+</main>
+</div>
+<script>(function(){
+  document.querySelectorAll('.v2-tr').forEach(function(b){b.addEventListener('click',function(){var d=b.nextElementSibling;d.hidden=!d.hidden;b.setAttribute('aria-expanded',String(!d.hidden));});});
+  var lb=document.querySelector('.v2-lgb'),lg=document.getElementById('v2-lg');
+  if(lb&&lg){lb.addEventListener('click',function(){lg.hidden=!lg.hidden;lb.setAttribute('aria-expanded',String(!lg.hidden));});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!lg.hidden){lg.hidden=true;lb.setAttribute('aria-expanded','false');lb.focus();}});}
+})();</script>
+</body>
+</html>
