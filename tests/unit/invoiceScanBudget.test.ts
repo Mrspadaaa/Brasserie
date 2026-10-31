@@ -6,7 +6,7 @@ function doc(path:string):any{return {path,get:async()=>({data:()=>structuredClo
 // Firestore transactions serialize conflicting reservations. The in-memory fake must do the same
 // or parallel vision readers would observe a lost-update behavior that production does not have.
 vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js',()=>({getFirestore:()=>({doc,runTransaction:(fn:any)=>{const operation=state.transactionTail.then(async()=>{state.transactions++;const writes:Array<()=>void>=[];const result=await fn({get:(ref:any)=>ref.get(),set:(ref:any,value:any)=>writes.push(()=>state.docs.set(ref.path,structuredClone(value))),update:(ref:any,patch:any)=>writes.push(()=>update(ref.path,patch))});if(state.failAfter===state.transactions)throw Error('Storage unavailable');writes.forEach(write=>write());state.afterTransaction?.(state.transactions);return result;});state.transactionTail=operation.then(()=>undefined,()=>undefined);return operation;}})}));
-import {runBudgetedInvoiceScan} from '../../functions/src/invoiceScanBudget';
+import {runBudgetedInvoiceScan,RUNNING_STALE_MS} from '../../functions/src/invoiceScanBudget';
 import {SCAN_MODEL} from '../../functions/src/invoiceScanCore';
 import {BrewerBudgetError} from '../../functions/src/brewerLimits';
 import {GeminiApiError} from '../../functions/src/geminiErrors';
@@ -130,5 +130,89 @@ describe('Budget scan isolé, fournisseur simulé',()=>{
     expect(provider).toHaveBeenCalledOnce();expect(daily().tokens).toBeGreaterThan(65000);
     const ledger=[...state.docs.entries()].find(([path])=>path.startsWith('invoiceScans/'))![1];
     expect(Object.values(ledger.reservations).map((reservation:any)=>reservation.status)).toEqual(['reserved']);
+  });
+  // l2 (P8) : une lecture coupée n'est pas figée comme complète ; elle peut être relue UNE fois.
+  describe('résultat dégradé (lecture coupée)',()=>{
+    const ledgerOf=()=>[...state.docs.entries()].find(([path])=>path.startsWith('invoiceScans/'))![1];
+    const provider=()=>vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
+    const options={degraded:(result:any)=>result.coupee===true};
+    it('est marqué dégradé, relu une seule fois, puis servi tel quel',async()=>{
+      const p=provider();
+      const coupe=async(gen:any)=>{await gen(request,signal());return {coupee:true};};
+      const first=await runBudgetedInvoiceScan('u',file,coupe,p,options);
+      expect(first.cached).toBe(false);expect(ledgerOf().status).toBe('degraded');
+      const second=await runBudgetedInvoiceScan('u',file,coupe,p,options);
+      expect(second.cached).toBe(false);expect(p).toHaveBeenCalledTimes(2);expect(ledgerOf().status).toBe('completed');
+      const third=await runBudgetedInvoiceScan('u',file,coupe,p,options);
+      expect(third).toMatchObject({cached:true,result:{coupee:true}});expect(p).toHaveBeenCalledTimes(2);
+    });
+    it('la relecture qui réussit remplace le résultat dégradé',async()=>{
+      const p=provider();
+      await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {coupee:true};},p,options);
+      const bon=await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {coupee:false,amount:42};},p,options);
+      expect(bon).toMatchObject({cached:false,result:{amount:42}});expect(ledgerOf().status).toBe('completed');
+      expect(await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {amount:0};},p,options)).toMatchObject({cached:true,result:{amount:42}});
+    });
+    it('un résultat complet n\'est jamais marqué dégradé',async()=>{
+      const p=provider();
+      await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {coupee:false};},p,options);
+      expect(ledgerOf().status).toBe('completed');
+    });
+    // Relecture d'un résultat dégradé (relecture l2, point 4) : ce qui était servi n'est jamais perdu.
+    const coupe=async(gen:any)=>{await gen(request,signal());return {coupee:true,lectures:1};};
+    const degrade=async(p:any)=>{await runBudgetedInvoiceScan('u',file,coupe,p,options);expect(ledgerOf().status).toBe('degraded');};
+    it('relecture en échec : le résultat dégradé reste servi, statut « degraded », jamais « completed », pas de troisième passe',async()=>{
+      const p=provider();await degrade(p);
+      const retry=await runBudgetedInvoiceScan('u',file,async()=>{throw new Error('panne');},p,options);
+      expect(retry).toMatchObject({cached:true,result:{coupee:true,lectures:1}});
+      expect(ledgerOf()).toMatchObject({status:'degraded',retried:true,result:{coupee:true}});
+      const again=await runBudgetedInvoiceScan('u',file,coupe,p,options);
+      expect(again).toMatchObject({cached:true,result:{coupee:true}});expect(p).toHaveBeenCalledTimes(1);
+    });
+    it('relecture bloquée par un plafond : résultat dégradé servi, retried:true gardé à travers « blocked »',async()=>{
+      const p=provider();await degrade(p);
+      state.docs.set('brewerAiControls/current',{limits:{dailyCalls:0}});
+      const retry=await runBudgetedInvoiceScan('u',file,coupe,p,options);
+      expect(retry).toMatchObject({cached:true,result:{coupee:true}});
+      expect(ledgerOf()).toMatchObject({status:'degraded',retried:true});
+      state.docs.set('brewerAiControls/current',{paused:false});
+      expect(await runBudgetedInvoiceScan('u',file,coupe,p,options)).toMatchObject({cached:true});expect(p).toHaveBeenCalledTimes(1);
+    });
+    it('pause globale sur un résultat dégradé : servi sans erreur, sans consommer la relecture permise',async()=>{
+      const p=provider();await degrade(p);
+      state.docs.set('brewerAiControls/current',{paused:true});
+      expect(await runBudgetedInvoiceScan('u',file,coupe,p,options)).toMatchObject({cached:true,result:{coupee:true}});
+      expect(ledgerOf()).toMatchObject({status:'degraded',retried:false});
+      state.docs.set('brewerAiControls/current',{paused:false});
+      const bon=await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {coupee:false,lectures:2};},p,options);
+      expect(bon).toMatchObject({cached:false,result:{lectures:2}});expect(ledgerOf().status).toBe('completed');
+    });
+    // Contre-vérification l2, détail B : une instance qui plante pendant la relecture laisse le document « running » ; passé un délai nommé,
+    // le résultat dégradé qu'on servait l'est de nouveau, et une relecture reste possible. Un « running » récent répond toujours « déjà en cours ».
+    const planter=(age:number)=>{
+      const [path,doc]=[...state.docs.entries()].find(([key])=>key.startsWith('invoiceScans/'))!;
+      state.docs.set(path,{uid:'u',fence:'planté',status:'running',calls:1,reservedTokens:1,createdAt:Date.now()-age,retried:true,previousResult:doc.result});
+    };
+    it('un « running » plus ancien que le délai, avec previousResult, sert le résultat dégradé et laisse la relecture possible',async()=>{
+      const p=provider();await degrade(p);planter(RUNNING_STALE_MS+1000);
+      const servi=await runBudgetedInvoiceScan('u',file,coupe,p,options);
+      expect(servi).toMatchObject({cached:true,result:{coupee:true,lectures:1}});expect(p).toHaveBeenCalledTimes(1);
+      expect(ledgerOf()).toMatchObject({status:'degraded',retried:false});
+      const bon=await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {coupee:false,lectures:2};},p,options);
+      expect(bon).toMatchObject({cached:false,result:{lectures:2}});expect(ledgerOf().status).toBe('completed');
+    });
+    it('un « running » récent répond toujours « déjà en cours »',async()=>{
+      const p=provider();await degrade(p);planter(1000);
+      await expect(runBudgetedInvoiceScan('u',file,coupe,p,options)).rejects.toThrow('déjà en cours');expect(p).toHaveBeenCalledTimes(1);
+      planter(RUNNING_STALE_MS-1000);
+      await expect(runBudgetedInvoiceScan('u',file,coupe,p,options)).rejects.toThrow('déjà en cours');
+    });
+    it('deux envois simultanés sur un résultat dégradé : une seule relecture, un seul appel',async()=>{
+      const p=provider();await degrade(p);
+      const bon=async(gen:any)=>{await gen(request,signal());return {coupee:false};};
+      const [a,b]=await Promise.allSettled([runBudgetedInvoiceScan('u',file,bon,p,options),runBudgetedInvoiceScan('u',file,bon,p,options)]);
+      expect([a.status,b.status].sort()).toEqual(['fulfilled','rejected']);
+      expect(p).toHaveBeenCalledTimes(2);
+    });
   });
 });

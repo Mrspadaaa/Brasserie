@@ -21,13 +21,32 @@ type Generate = (body: Record<string, unknown>, signal: AbortSignal) => Promise<
  * The byte hash is server-owned; concurrent/repeated requests never pay twice.
  * A crash/timeout deliberately retains its reservation and does not permit retry.
  */
-export async function runBudgetedInvoiceScan<T>(uid: string, file: InvoiceFile, work: (generate: Generate) => Promise<T>, provider: Generate): Promise<{ result: T; cached: boolean; documentHash: string }> {
+/** Au-delà de ce délai (le double du temps maximal d'une fonction), un document « running » est considéré comme planté. */
+export const RUNNING_STALE_MS = 10 * 60 * 1000;
+export async function runBudgetedInvoiceScan<T>(uid: string, file: InvoiceFile, work: (generate: Generate) => Promise<T>, provider: Generate, options?: { degraded?: (result: T) => boolean }): Promise<{ result: T; cached: boolean; documentHash: string }> {
   const db = getFirestore(), id = invoiceScanId(uid, file), ref = db.doc(`invoiceScans/${id}`), fence = randomUUID();
+  let retrying = false, previous: T | undefined;
   const cached = await db.runTransaction(async tx => {
     const [prior, control] = await Promise.all([tx.get(ref), tx.get(db.doc(controlPath))]);
     const existing = prior.data();
     // Reading a completed extraction incurs no new cost, including while paused.
     if (existing?.status === 'completed') return { result: existing.result as T };
+    // Une instance qui a planté pendant la relecture laisse le document « running » : passé le délai nommé, le résultat dégradé qu'on servait l'est de
+    // nouveau (statut « degraded », relecture de nouveau possible). Un « running » plus récent répond toujours « déjà en cours ».
+    if (existing?.status === 'running' && existing.previousResult !== undefined && Date.now() - Number(existing.createdAt ?? 0) > RUNNING_STALE_MS) {
+      tx.set(ref, { uid, status:'degraded', result:existing.previousResult, retried:false, finishedAt:Date.now() });
+      return { result: existing.previousResult as T };
+    }
+    // l2 (P8) : un résultat dégradé (lecture coupée) n'est pas figé comme complet ; le même justificatif est relu UNE fois, puis le résultat est servi tel quel.
+    // Relecture déjà faite (même bloquée ou en échec : `retried` reste vrai) ou pause globale : le résultat dégradé est servi, sans erreur ni nouvel appel.
+    if (existing?.status === 'degraded') {
+      let allowed = existing.retried !== true;
+      if (allowed) { try { controls(control.data()); } catch { allowed = false; } }
+      if (!allowed) return { result: existing.result as T };
+      retrying = true; previous = existing.result as T;
+      tx.set(ref, { uid, fence, status:'running', calls:0, reservedTokens:0, createdAt:Date.now(), retried:true, previousResult:existing.result });
+      return null;
+    }
     controls(control.data());
     if (existing && existing.status !== 'blocked') throw new Error(existing.status === 'running' ? 'Ce justificatif est déjà en cours d’analyse. Patiente avant de le rouvrir.' : 'Ce justificatif a déjà été analysé sans résultat exploitable. Complète-le manuellement.');
     tx.set(ref, { uid, fence, status:'running', calls:0, reservedTokens:0, createdAt:Date.now() });
@@ -106,9 +125,18 @@ export async function runBudgetedInvoiceScan<T>(uid: string, file: InvoiceFile, 
     // Work may deliberately return a partial extraction after a reviewer error. A global pause
     // still cancels the whole scan instead of being swallowed by that recovery path.
     stopped.signal.throwIfAborted();
-    await ref.update({ status:'completed', result, finishedAt:Date.now() });
+    const degraded = !retrying && options?.degraded?.(result) === true;
+    await ref.update({ status:degraded ? 'degraded' : 'completed', result, finishedAt:Date.now(), ...(degraded ? { retried:false } : {}) });
     return { result, cached:false, documentHash };
   } catch (error) {
+    if (retrying && previous !== undefined) {
+      // La relecture a échoué ou a été bloquée : le résultat dégradé qu'on servait reste servi (statut « degraded », jamais « completed »).
+      // `retried` reste vrai (pas de troisième passe payée) sauf si une pause globale l'a arrêtée avant tout appel : la relecture reste permise.
+      const paused = stopped.signal.aborted;
+      await ref.update({ status:'degraded', result:previous, retried:!paused, finishedAt:Date.now() }).catch(() => undefined);
+      if (paused) throw error;
+      return { result:previous, cached:true, documentHash };
+    }
     await ref.update({ status: providerStarted ? 'failed' : 'blocked', finishedAt:Date.now() }).catch(() => undefined);
     throw error;
   } finally { unsubscribe(); }

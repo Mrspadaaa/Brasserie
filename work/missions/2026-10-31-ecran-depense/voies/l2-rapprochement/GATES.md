@@ -1,6 +1,6 @@
 # Gates: voie l2-rapprochement — rapprochement des lectures, statut, points typés jusqu'au client
 
-OWNS: functions/src/invoiceVisionReview.ts, functions/src/ai.ts, functions/src/invoiceScanCore.ts, src/services/geminiScanner.ts, src/services/purchasePrefill.ts, src/services/invoicePoints.ts, src/domain/finance/invoicePoints.ts, tests/unit/invoiceVisionReview.test.ts, tests/unit/invoiceScanCore.test.ts, tests/unit/purchasePrefill.test.ts, tests/unit/geminiScanner.test.ts, tests/unit/depense/rapprochement/, work/missions/2026-10-31-ecran-depense/voies/l2-rapprochement/
+OWNS: functions/src/invoiceVisionReview.ts, functions/src/ai.ts, functions/src/invoiceScanCore.ts, functions/src/invoiceControls.ts, functions/src/invoiceScanBudget.ts, tests/unit/invoiceScanBudget.test.ts, src/services/geminiScanner.ts, src/services/purchasePrefill.ts, src/services/invoicePoints.ts, src/domain/finance/invoicePoints.ts, tests/unit/invoiceVisionReview.test.ts, tests/unit/invoiceScanCore.test.ts, tests/unit/purchasePrefill.test.ts, tests/unit/geminiScanner.test.ts, tests/unit/depense/rapprochement/, work/missions/2026-10-31-ecran-depense/voies/l2-rapprochement/
 
 Scope: A1, A2, U1, LE1, LE4 et les relais 1 à 4 de l1 ; Gemini simulé ; aucun déploiement.
 

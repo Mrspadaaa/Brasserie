@@ -1,0 +1,310 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/geminiScanner.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+   [32m✓[39m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun résultat serveur complet traverse sans perte[32m 8[2mms[22m[39m
+   [32m✓[39m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mles unités restent telles qu'imprimées (Kg, g, Stk) : aucune conversion[32m 2[2mms[22m[39m
+   [32m✓[39m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun ancien résultat sort sans aucune des nouvelles clés[32m 1[2mms[22m[39m
+[31m   [31m×[31m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun point mal formé est assaini : texte coupé, nombre non fini → null, « » → null, valeurs bornées[39m[32m 5[2mms[22m[39m
+[31m     → expected [ …(3) ] to have a length of 4 but got 3[39m
+[31m   [31m×[31m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mdix lignes non rapprochées (dix valeurs) traversent intactes[39m[32m 3[2mms[22m[39m
+[31m     → expected [ { lecture: 1, …(3) }, …(2) ] to deeply equal [ …(10) ][39m
+[31m   [31m×[31m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mles points qui pèsent passent d'abord ; au-delà de la limite, un point qui pèse perdu rend la lecture « à confirmer » (point 6)[39m[32m 1[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+   [32m✓[39m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun documentTypeRetenu inconnu retombe sur documentType[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/invoiceScanBudget.test.ts [2m([22m[2m22 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 130[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mréserve avant génération, partage le quota global, conserve les jobs du compagnon[32m 13[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22msert le cache sans nouvel appel même après pause[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrefuse pause et budget zéro sans appel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mborne le document à trois générations sans quatrième appel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun échec réseau ne réessaie pas et conserve la réservation[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun document simultané est refusé avant un second appel[32m 51[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mréserve deux lectures parallèles et comptabilise leur usage réel sans mise à jour perdue[32m 51[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun signal déjà expiré empêche toute réservation payante[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrevérifie le signal immédiatement après la réservation quotidienne[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrevérifie le signal avant le fournisseur même si la réservation mensuelle a commencé[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens quotidiens après un rejet certain 429 en conservant le compteur de tentative[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens quotidiens si la pause refuse la réservation mensuelle[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mune pause reste prioritaire quand le travail avale l’erreur de la lecture complémentaire[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens lorsque le fournisseur confirme explicitement une consommation nulle[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mpréserve la réservation si la mise à jour de consommation échoue après le fournisseur[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mest marqué dégradé, relu une seule fois, puis servi tel quel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mla relecture qui réussit remplace le résultat dégradé[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mun résultat complet n'est jamais marqué dégradé[32m 0[2mms[22m[39m
+[31m   [31m×[31m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mrelecture en échec : le résultat dégradé reste servi, statut « degraded », jamais « completed », pas de troisième passe[39m[32m 3[2mms[22m[39m
+[31m     → panne[39m
+[31m   [31m×[31m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mrelecture bloquée par un plafond : résultat dégradé servi, retried:true gardé à travers « blocked »[39m[32m 1[2mms[22m[39m
+[31m     → Plafond quotidien IA atteint. Complète le justificatif manuellement.[39m
+[31m   [31m×[31m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mpause globale sur un résultat dégradé : servi sans erreur, sans consommer la relecture permise[39m[32m 1[2mms[22m[39m
+[31m     → L’IA est suspendue dans « Limites IA ». La saisie manuelle reste disponible.[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mdeux envois simultanés sur un résultat dégradé : une seule relecture, un seul appel[32m 1[2mms[22m[39m
+ [31m❯[39m tests/unit/purchasePrefill.test.ts [2m([22m[2m14 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 7[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mpropose le libellé par le code (fournisseur, n°, familles) et ne reprend plus la prose du modèle (A12, voie s2)[32m 1[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mpropose la somme au centime et distingue cette proposition du total source absent[32m 1[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mpréserve un total imprimé divergent et demande de le confirmer[32m 0[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mne convertit pas une devise étrangère et ne somme pas un détail incomplet[32m 0[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22minclut la remise et ne transforme pas un avoir en dépense positive[32m 0[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22msignale les champs corrigés, absents et les vérifications indisponibles[32m 0[2mms[22m[39m
+   [32m✓[39m Date de l’achat et paiement quotidien[2m > [22mpropose payé à la date du document, sauf indication contraire ou achat futur[32m 0[2mms[22m[39m
+   [32m✓[39m Date de l’achat et paiement quotidien[2m > [22mdéplace ensemble achat et paiement, et préserve une date de paiement distincte[32m 0[2mms[22m[39m
+   [32m✓[39m Date de l’achat et paiement quotidien[2m > [22mchange le mois sans perdre le jour, avec fins de mois et changements d’année[32m 0[2mms[22m[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mpro-forma payée lue « quote », type retenu facture → Déjà payé[32m 0[2mms[22m[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mle même résultat sans documentTypeRetenu (ancien résultat) → À payer, comme avant[32m 0[2mms[22m[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mpro-forma lue « quote » sans paiement imprimé → À payer[32m 0[2mms[22m[39m
+[31m   [31m×[31m scannedPayment — documentTypeRetenu[2m > [22mpro-forma lue « invoice » sans preuve de paiement → À payer, jamais préremplie comme payée[39m[32m 3[2mms[22m[39m
+[31m     → expected 'paid' to be 'unpaid' // Object.is equality[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mavoir et date future → À payer[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/desaccords.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 19[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mtvaAmount 2,80 / 4,15 → un point de désaccord qui porte les deux valeurs[32m 6[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mtrois valeurs différentes → trois entrées, la première lecture reste retenue[32m 1[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mune valeur absente est null, jamais 0 ; une chaîne vide devient null[32m 1[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mgabarit des phrases : en-tête et ligne[32m 1[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mprix divergent où seule la lecture 2 tient quantité × prix : la valeur retenue est celle de la lecture 2 (recoupée)[32m 0[2mms[22m[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mrelecture point 3 : une cellule qui a une majorité n'est jamais écrasée par la lecture « recoupée », et les points disent la valeur réellement retenue[39m[32m 4[2mms[22m[39m
+[31m     → expected 12 to be 10 // Object.is equality[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mnom, unité, taille, catégorie de stock en désaccord : enjeu stock et pas de liaison automatique[32m 1[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mune ligne manquante : 22 lignes votées, la 23e nommée dans lignes-non-rapprochees[32m 2[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mN3 : la ligne orpheline de la seule lecture minoritaire ne pèse pas (deux lectures sur trois s'accordent)[32m 1[2mms[22m[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mles points sont du JSON pur et les lectures ne sont pas mutées[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/points-uniques.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/recalcul.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 10[2mms[22m[39m
+   [32m✓[39m R4 — même source de règles que le serveur[2m > [22mlineMathCheck et sumCheck du client sont les fonctions du serveur[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22m60 Kg lus pour 6 : ligne-montant ; corrigé en 6 : le point disparaît et plus rien ne pèse[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mun total tapé faux donne somme-ecart au centime ; le bon total la fait disparaître[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mun prix par 100 g n'est jamais un écart ; une fraction de centime n'est pas vérifiée[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mlinesLost > 0 : la somme est incomplète[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mune ligne supprimée : son point part, les rangs des autres ne bougent pas (rang par id)[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mune ligne déplacée garde ses cles[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22m« revu » ne vaut que pour la même signature[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mles autres points (TVA, désaccord) sont gardés tels quels[32m 0[2mms[22m[39m
+   [32m✓[39m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mun ancien résultat (sans points ni controls) : statut jamais checked tant que le recalcul n'a pas tourné[32m 0[2mms[22m[39m
+[31m   [31m×[31m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mplancher (relecture, point 2) : un serveur qui dit disputed avec points et controls vides n'est jamais checked tant que le recalcul n'a pas posé ses points[39m[32m 4[2mms[22m[39m
+[31m     → expected 'checked' to be 'disputed' // Object.is equality[39m
+[31m   [31m×[31m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mtotal saisi (relecture, point 5) : total-absent et ht-tva-ttc sont refaits depuis le total courant[39m[32m 2[2mms[22m[39m
+[31m     → expected [ 'total-absent' ] to not include 'total-absent'[39m
+   [32m✓[39m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mune lecture indisponible reste indisponible[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/relais.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/rapprochement/lecture-coupee.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [32m✓[39m tests/unit/depense/rapprochement/lecture-coupee.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/statut.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/troisieme-lecture.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 10 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/geminiScanner.test.ts[2m > [22mR1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun point mal formé est assaini : texte coupé, nombre non fini → null, « » → null, valeurs bornées
+[31m[1mAssertionError[22m: expected [ …(3) ] to have a length of 4 but got 3[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 4[39m
+[31m+ 3[39m
+
+[36m [2m❯[22m tests/unit/geminiScanner.test.ts:[2m48:33[22m[39m
+    [90m 46| [39m    [34mexpect[39m(r[33m.[39mpoints[[34m0[39m][33m.[39mlu)[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 47| [39m    // relecture l2, point 1 : les valeurs ne sont plus coupées à 3 (u…
+    [90m 48| [39m    [34mexpect[39m(r[33m.[39mpoints[[34m0[39m][33m.[39mvaleurs)[33m.[39m[34mtoHaveLength[39m([34m4[39m)[33m;[39m
+    [90m   | [39m                                [31m^[39m
+    [90m 49| [39m    [34mexpect[39m(r[33m.[39mpoints[[34m0[39m][33m.[39mvaleurs[[34m0[39m][33m.[39mvaleur)[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 50| [39m    [34mexpect[39m(r[33m.[39mpoints[[34m1[39m][33m.[39mcode)[33m.[39m[34mtoBe[39m([32m'code-futur'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/geminiScanner.test.ts[2m > [22mR1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mdix lignes non rapprochées (dix valeurs) traversent intactes
+[31m[1mAssertionError[22m: expected [ { lecture: 1, …(3) }, …(2) ] to deeply equal [ …(10) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -15,48 +15,6 @@[39m
+[2m      "lecture": 1,[22m
+[2m      "ligne": 3,[22m
+[2m      "retenue": false,[22m
+[2m      "valeur": "Gerstenflocken, 1 Kg · 1 Kg · 2,40",[22m
+[2m    },[22m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 4,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "Röstgerste, Kg · 1 Kg · 1,80",[39m
+[32m-   },[39m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 5,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "Zuschlag Schrotung · 1 Kg · 0,10",[39m
+[32m-   },[39m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 6,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "CARAMÜNCH® Typ 2 Kg · 1 Kg · 1,75",[39m
+[32m-   },[39m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 7,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "Zuschlag Schrotung · 1 Kg · 0,10",[39m
+[32m-   },[39m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 8,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "Target 11.3% · 40 g · 1,60",[39m
+[32m-   },[39m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 9,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "Goldings East Kent 5.5% · 20 g · 0,80",[39m
+[32m-   },[39m
+[32m-   {[39m
+[32m-     "lecture": 1,[39m
+[32m-     "ligne": 10,[39m
+[32m-     "retenue": false,[39m
+[32m-     "valeur": "LALLEMAND Windsor 11g · 2 Stk · 9,00",[39m
+[32m-   },[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/geminiScanner.test.ts:[2m59:84[22m[39m
+    [90m 57| [39m    [34mexpect[39m(point[33m.[39mvaleurs)[33m.[39m[34mtoHaveLength[39m([34m10[39m)[33m;[39m
+    [90m 58| [39m    [35mconst[39m r [33m=[39m [33mGeminiScannerService[39m[33m.[39m[34mnormalizeResult[39m(brut) [35mas[39m any[33m;[39m
+    [90m 59| [39m    expect(r.points.find((p: any) => p.code === 'lignes-non-rapprochee…
+    [90m   | [39m                                                                                   [31m^[39m
+    [90m 60| [39m    expect(r.points.find((p: any) => p.code === 'lignes-non-rapprochee…
+    [90m 61| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/geminiScanner.test.ts[2m > [22mR1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mles points qui pèsent passent d'abord ; au-delà de la limite, un point qui pèse perdu rend la lecture « à confirmer » (point 6)
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/geminiScanner.test.ts:[2m69:58[22m[39m
+    [90m 67| [39m    const r = GeminiScannerService.normalizeResult({ items: [], points…
+    [90m 68| [39m    [34mexpect[39m(r[33m.[39mpoints[33m.[39mlength)[33m.[39m[34mtoBeLessThanOrEqual[39m([34m60[39m)[33m;[39m
+    [90m 69| [39m    [34mexpect[39m(r[33m.[39mpoints[33m.[39m[34msome[39m((p[33m:[39m any) [33m=>[39m p[33m.[39mcle [33m===[39m [32m'lourd'[39m))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                                                         [31m^[39m
+    [90m 70| [39m    // coupure qui perd un point lourd : le statut ne peut plus être «…
+    [90m 71| [39m    const lourds = Array.from({ length: 70 }, (_, i) => ({ ...muet(i),…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceScanBudget.test.ts[2m > [22mBudget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mrelecture en échec : le résultat dégradé reste servi, statut « degraded », jamais « completed », pas de troisième passe
+[31m[1mError[22m: panne[39m
+[36m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m166:73[22m[39m
+    [90m164| [39m    it('relecture en échec : le résultat dégradé reste servi, statut «…
+    [90m165| [39m      [35mconst[39m p[33m=[39m[34mprovider[39m()[33m;[39m[35mawait[39m [34mdegrade[39m(p)[33m;[39m
+    [90m166| [39m      const retry=await runBudgetedInvoiceScan('u',file,async()=>{thro…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m167| [39m      expect(retry).toMatchObject({cached:true,result:{coupee:true,lec…
+    [90m168| [39m      expect(ledgerOf()).toMatchObject({status:'degraded',retried:true…
+[90m [2m❯[22m Module.runBudgetedInvoiceScan functions/src/invoiceScanBudget.ts:[2m112:26[22m[39m
+[90m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m166:19[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceScanBudget.test.ts[2m > [22mBudget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mrelecture bloquée par un plafond : résultat dégradé servi, retried:true gardé à travers « blocked »
+[31m[1mError[22m: Plafond quotidien IA atteint. Complète le justificatif manuellement.[39m
+[36m [2m❯[22m functions/src/invoiceScanBudget.ts:[2m71:101[22m[39m
+    [90m 69| [39m      if (Object.values(usage).some(n => !Number.isSafeInteger(n) || N…
+    [90m 70| [39m      if (current?.status !== 'running' || current.fence !== fence || …
+    [90m 71| [39m      if (usage.calls + 1 > limits.dailyCalls || usage.tokens + reserv…
+    [90m   | [39m                                                                                                    [31m^[39m
+    [90m 72| [39m      if (current.calls + 1 > limits.questionCalls || current.reserved…
+    [90m 73| [39m      requestSignal[33m.[39m[34mthrowIfAborted[39m()[33m;[39m
+[90m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m8:256[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceScanBudget.test.ts[2m > [22mBudget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mpause globale sur un résultat dégradé : servi sans erreur, sans consommer la relecture permise
+[31m[1mError[22m: L’IA est suspendue dans « Limites IA ». La saisie manuelle reste disponible.[39m
+[36m [2m❯[22m controls functions/src/invoiceScanBudget.ts:[2m13:35[22m[39m
+    [90m 11| [39m[35mfunction[39m [34mcontrols[39m(raw[33m:[39m any) {
+    [90m 12| [39m  [35mconst[39m limits [33m=[39m { [33m...[39m[33mDEFAULT_BREWER_LIMITS[39m[33m,[39m [33m...[39mraw[33m?.[39mlimits }[33m;[39m
+    [90m 13| [39m  if (raw?.paused === true) throw new Error('L’IA est suspendue dans «…
+    [90m   | [39m                                  [31m^[39m
+    [90m 14| [39m  if ((raw?.paused != null && typeof raw.paused !== 'boolean') || Obje…
+    [90m 15| [39m    throw new Error('Les limites IA ne peuvent pas être vérifiées. Uti…
+[90m [2m❯[22m functions/src/invoiceScanBudget.ts:[2m32:5[22m[39m
+[90m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m8:256[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/purchasePrefill.test.ts[2m > [22mscannedPayment — documentTypeRetenu[2m > [22mpro-forma lue « invoice » sans preuve de paiement → À payer, jamais préremplie comme payée
+[31m[1mAssertionError[22m: expected 'paid' to be 'unpaid' // Object.is equality[39m
+
+Expected: [32m"[7mun[27mpaid"[39m
+Received: [31m"paid"[39m
+
+[36m [2m❯[22m tests/unit/purchasePrefill.test.ts:[2m87:164[22m[39m
+    [90m 85| [39m  // n'est jamais préremplie comme payée. Une pro-forma payée (preuve …
+    [90m 86| [39m  it('pro-forma lue « invoice » sans preuve de paiement → À payer, jam…
+    [90m 87| [39m    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRe…
+    [90m   | [39m                                                                                                                                                                   [31m^[39m
+    [90m 88| [39m    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRe…
+    [90m 89| [39m    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRe…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mrelecture point 3 : une cellule qui a une majorité n'est jamais écrasée par la lecture « recoupée », et les points disent la valeur réellement retenue
+[31m[1mAssertionError[22m: expected 12 to be 10 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 10[39m
+[31m+ 12[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m53:27[22m[39m
+    [90m 51| [39m    const r = reconcileInvoiceVision([lire(ligneTrois(12, 5, 60)), lir…
+    [90m 52| [39m    [35mconst[39m item [33m=[39m r[33m.[39mresult[33m.[39mitems[[34m0[39m] [35mas[39m any[33m;[39m
+    [90m 53| [39m    [34mexpect[39m(item[33m.[39mquantity)[33m.[39m[34mtoBe[39m([34m10[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 54| [39m    [34mexpect[39m(item[33m.[39mamountTTC)[33m.[39m[34mtoBe[39m([34m50[39m)[33m;[39m
+    [90m 55| [39m    const pts = (r.result as any).points.filter((p: any) => p.code ===…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/recalcul.test.ts[2m > [22mP9 — non contrôlé n'est jamais « vérifié »[2m > [22mplancher (relecture, point 2) : un serveur qui dit disputed avec points et controls vides n'est jamais checked tant que le recalcul n'a pas posé ses points
+[31m[1mAssertionError[22m: expected 'checked' to be 'disputed' // Object.is equality[39m
+
+Expected: [32m"[7mdisput[27med"[39m
+Received: [31m"[7mcheck[27med"[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/recalcul.test.ts:[2m92:41[22m[39m
+    [90m 90| [39m  it('plancher (relecture, point 2) : un serveur qui dit disputed avec…
+    [90m 91| [39m    const serveurDit = { review: { status: 'disputed', findings: [] },…
+    [90m 92| [39m    [34mexpect[39m([34mstatutDeLecture[39m(serveurDit))[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m   | [39m                                        [31m^[39m
+    [90m 93| [39m    // une fois le recalcul fait (le brasseur a corrigé), l'écran pass…
+    [90m 94| [39m    [34mexpect[39m([34mstatutDeLecture[39m(serveurDit[33m,[39m [35mtrue[39m))[33m.[39m[34mtoBe[39m([32m'checked'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/recalcul.test.ts[2m > [22mP9 — non contrôlé n'est jamais « vérifié »[2m > [22mtotal saisi (relecture, point 5) : total-absent et ht-tva-ttc sont refaits depuis le total courant
+[31m[1mAssertionError[22m: expected [ 'total-absent' ] to not include 'total-absent'[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/recalcul.test.ts:[2m102:54[22m[39m
+    [90m100| [39m    expect(sans.points.map((p: any) => p.code)).toContain('total-absen…
+    [90m101| [39m    const saisi = recomputeInvoicePoints(scan({ items: [l(1)], amountT…
+    [90m102| [39m    expect(saisi.points.map((p: any) => p.code)).not.toContain('total-…
+    [90m   | [39m                                                     [31m^[39m
+    [90m103| [39m    [34mexpect[39m(saisi[33m.[39mstatut)[33m.[39m[34mtoBe[39m([32m'ok'[39m)[33m;[39m
+    [90m104| [39m    const ht = recomputeInvoicePoints(scan({ items: [l(1)], amountTTC:…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m [1m[31m10 failed[39m[22m[2m | [22m[1m[32m157 passed[39m[22m[90m (167)[39m
+[2m   Start at [22m 23:48:35
+[2m   Duration [22m 1.98s[2m (transform 270ms, setup 874ms, collect 1.13s, tests 295ms, environment 1ms, prepare 543ms)[22m
+

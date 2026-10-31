@@ -1,6 +1,13 @@
 import { createHash } from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 import { TIERS } from './models.js';
+import {
+  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
+  type ControlStatus, type InvoiceField, type ScanControls, type ScanPoint, type ScanPointCode, type ScanPointDetail, type ScanRejet, type ScanVatRow,
+} from './invoiceControls.js';
+// Les règles de calcul vivent dans `invoiceControls.ts` (module pur, partagé avec le client) ; elles restent exportées d'ici.
+export { INVOICE_FIELDS, SCAN_POINT_CODES, lineMathCheck, sumCheck, toCents };
+export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCode, ScanPointDetail, ScanRejet, ScanVatRow };
 
 /** v5 (31.10.2026) : le résultat porte `points`, `controls`, `vat`, `proForma`, `linesLost`… Le hachage de la lecture en dépend :
  * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. */
@@ -13,66 +20,11 @@ export const SCAN_MAX_CALLS = 3;
 export const SCAN_MAX_ITEMS = 35;
 export const SCAN_MAX_VAT_ROWS = 6;
 export const SCAN_KINDS = ['equipment', 'maintenance', 'stock', 'service', 'packaging', 'shipping', 'discount', 'other', 'unknown'] as const;
-export const INVOICE_FIELDS = ['vendor', 'date', 'currency', 'invoiceNumber', 'amountHT', 'amountTTC', 'tvaRate', 'tvaAmount', 'category', 'items', 'documentType', 'paymentEvidence'] as const;
-export type InvoiceField = typeof INVOICE_FIELDS[number];
 export interface InvoiceFieldWarning { field: InvoiceField; message: string }
 export const DOCUMENT_TYPES = ['invoice', 'receipt', 'delivery_note', 'quote', 'credit_note', 'other'] as const;
 export type DocumentType = typeof DOCUMENT_TYPES[number];
 export interface InvoiceFile { data: string; mimeType: string }
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Contrat du point typé (voie l1-lecture, PLAN.md § 0 et § 2.1). Tout est AJOUTÉ au résultat ; `issues` reste rempli.
-// `points` est un instantané de la lecture : il ne se recalcule pas quand le brasseur corrige une valeur (recalcul client : l2).
-// Montants en centimes entiers. `lu` = toujours un nombre imprimé ; `calcule` = toujours le résultat du code ; `ecart = lu − calcule`.
-// ---------------------------------------------------------------------------------------------------------------------
-export const SCAN_POINT_CODES = [
-  'ligne-montant',       // C1  quantité × prix ≠ montant de la ligne
-  'ligne-prix-par-lot',  // C1  prix probablement par 100 g ou par kg : inverifiable, jamais un écart
-  'somme-ecart',         // C2  somme des lignes ≠ total imprimé
-  'somme-incomplete',    // C2b une ligne sans montant lisible : la somme ne peut pas être vérifiée
-  'tva-incoherente',     // C3  le bloc TVA imprimé ne se recoupe pas (détails dans `details`)
-  'ht-tva-ttc',          // C4  HT + TVA ≠ TTC
-  'lignes-perdues',      // P2  des lignes n'ont pas été conservées
-  'lignes-annoncees',    // P2  le modèle annonce plus de lignes qu'il n'en a transcrit, mais la somme tombe juste
-  'pro-forma-non-payee', // A6  pro-forma sans paiement imprimé
-  'type-deduit',         // A6  pro-forma payée lue « devis » : `documentTypeRetenu` = invoice, `documentType` reste tel que lu
-  'devis',               // un vrai devis (pas une pro-forma) : à vérifier
-  'alpha-libelle',       // A9  α lu ≠ pourcentage imprimé dans le libellé
-  'unite-absente',       // D213  ligne sans unité lisible : aucune unité devinée, elle est à préciser (D214)
-  'forme-rejetee',       // une valeur lue a été rejetée à la mise en forme (hors plage, coupée) : elle est tracée dans `rejets`
-] as const;
-export type ScanPointCode = typeof SCAN_POINT_CODES[number];
-export interface ScanPointDetail {
-  relation: string; lu: number | null; calcule: number | null; ecart: number | null; code?: string; arrondiPossible?: boolean;
-}
-export interface ScanPoint {
-  code: ScanPointCode;
-  gravite: 'ecart' | 'inverifiable';          // ecart : deux nombres lus ne se recoupent pas ; inverifiable : le contrôle ne peut pas tourner
-  origine: 'controle' | 'forme';
-  enjeu: 'argent' | 'stock' | 'info';
-  bloque: boolean;                            // le client refuserait d'enregistrer en l'état (somme-ecart seulement)
-  champ: InvoiceField | 'vat';
-  champs: string[];                           // les cellules en cause, ex. ['items.1.quantity', 'items.1.price', 'items.1.amountTTC']
-  ligne: number | null;                       // 1-based (id `line-<n>`), null pour l'en-tête
-  lignes?: number[];
-  cle: string;                                // `<code>:<ligne|->:<champ>` : stable, pour marquer « revu »
-  regle: string;
-  lu: number | null; calcule: number | null; ecart: number | null;
-  unite: 'centimes' | 'pourcent' | 'lignes' | 'texte';
-  luTexte?: string;                           // valeur lue qui est un texte
-  candidats?: number[];                       // réservé (l2) : non rempli ici
-  message: string;                            // la phrase poussée aussi dans `issues`
-  details?: ScanPointDetail[];
-}
-export type ControlStatus = 'ok' | 'ecart' | 'incomplet' | 'non-verifiable';
-export interface ScanControls {
-  lines: { checked: number; failed: number; skipped: number; skippedIds: string[] };
-  sum: { statut: ControlStatus; base: 'TTC' | 'HT' | null };
-  vat: { statut: ControlStatus; base: 'TTC' | 'HT' | null };
-  totals: { statut: ControlStatus };
-}
-export interface ScanVatRow { code: string; rate: number | null; base: number | null; amount: number | null }
-export interface ScanRejet { champ: string; ligne: number | null; luTexte: string; raison: string }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Fichier : comptage des pages d'un PDF (P1)
@@ -175,101 +127,10 @@ export function invoiceDate(value: unknown): string {
 // ---------------------------------------------------------------------------------------------------------------------
 // Contrôles arithmétiques (C1 à C4, P2). Fonctions pures : aucune valeur lue n'est jamais modifiée.
 // ---------------------------------------------------------------------------------------------------------------------
-/** Un montant en CHF devient un entier de centimes, ou `null` s'il n'en est pas un (1,345 : jamais arrondi sans trace). */
-export function toCents(value: unknown): number | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  const cents = value * 100, rounded = Math.round(cents);
-  return Math.abs(cents - rounded) <= 1e-7 * Math.max(1, Math.abs(cents)) ? rounded : null;
-}
-const chf = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
-const defined = <T extends object>(value: T): T => Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as T;
-/** Le produit exact tombe sur un demi-centime : les deux voisins sont acceptés (l'arrondi du fournisseur est inconnu). */
-const withinRounding = (read: number, expected: number, tolerance = 0.5) => Math.abs(read - expected) <= tolerance + 1e-9;
-
 type CoreItem = {
   id: string; name: string; kind: typeof SCAN_KINDS[number]; quantity: number | null; unit: string; price: number | null; amountTTC: number | null;
   reference: string; variant: string; stockCategory: string; evidence: string; ambiguity: string; vatCode: string; alphaPct: number | null; alphaPctLu: number | null;
 };
-
-function makePoint(code: ScanPointCode, gravite: ScanPoint['gravite'], champ: ScanPoint['champ'], ligne: number | null, rest: {
-  regle: string; message: string; unite: ScanPoint['unite']; enjeu: ScanPoint['enjeu']; lu?: number | null; calcule?: number | null; bloque?: boolean;
-  origine?: ScanPoint['origine']; champs?: string[]; lignes?: number[]; luTexte?: string; details?: ScanPointDetail[];
-}): ScanPoint {
-  const lu = rest.lu ?? null, calcule = rest.calcule ?? null;
-  return defined({
-    code, gravite, origine: rest.origine ?? 'controle', enjeu: rest.enjeu, bloque: rest.bloque ?? false, champ, champs: rest.champs ?? [champ], ligne,
-    lignes: rest.lignes, cle: `${code}:${ligne ?? '-'}:${champ}`, regle: rest.regle, lu, calcule, ecart: lu !== null && calcule !== null ? lu - calcule : null,
-    unite: rest.unite, luTexte: rest.luTexte, message: rest.message.slice(0, 250), details: rest.details,
-  });
-}
-
-/** C1 — quantité × prix unitaire = montant de la ligne, au centime. Remise : valeurs absolues. Sans prix, sans quantité ou sans montant :
- * non vérifiable (comptée, jamais un point : un port ou un forfait est normal). Un rapport de 1/100 ou 1/1000 sur une unité de poids ou
- * de volume est un prix par 100 g ou par kg : point inverifiable, jamais un écart. */
-export function lineMathCheck(items: Array<Pick<CoreItem, 'id' | 'name' | 'kind' | 'quantity' | 'unit' | 'price' | 'amountTTC'>>): { points: ScanPoint[]; lines: ScanControls['lines'] } {
-  const points: ScanPoint[] = [], lines: ScanControls['lines'] = { checked: 0, failed: 0, skipped: 0, skippedIds: [] };
-  items.forEach((item, index) => {
-    const n = index + 1, amount = toCents(item.amountTTC);
-    if (item.quantity === null || item.price === null || item.amountTTC === null || amount === null) {
-      lines.skipped++; lines.skippedIds.push(item.id); return;
-    }
-    const discount = item.kind === 'discount';
-    const expected = item.quantity * item.price * 100, read = discount ? Math.abs(amount) : amount, wanted = discount ? Math.abs(expected) : expected;
-    if (withinRounding(read, wanted)) { lines.checked++; return; }
-    const ratio = wanted > 0 ? read / wanted : NaN;
-    // D213 : un prix se lit pour son unité. Quantité en g/ml avec un prix par 100 g ou par kg (rapport 1/100, 1/1000) ; quantité en kg/l
-    // avec un prix par 100 g (rapport 10). Un autre rapport (60 lu pour 6 : 1/10) reste un écart.
-    const small = /^(g|gr|gramm?e?s?|ml|cl)$/i.test(item.unit.trim()), large = /^(kg|kilos?|l|lt|litres?)$/i.test(item.unit.trim());
-    const perLot = (small && [0.01, 0.001].some(factor => Math.abs(ratio / factor - 1) < 0.06)) || (large && Math.abs(ratio / 10 - 1) < 0.06);
-    const label = `Ligne ${n} (${item.name.slice(0, 40)})`;
-    const cells = [`items.${n}.quantity`, `items.${n}.price`, `items.${n}.amountTTC`];
-    if (perLot) {
-      lines.skipped++; lines.skippedIds.push(item.id);
-      points.push(makePoint('ligne-prix-par-lot', 'inverifiable', 'items', n, {
-        regle: 'quantité × prix unitaire = montant de la ligne', unite: 'centimes', enjeu: 'argent', lu: read, calcule: Math.round(wanted), champs: cells,
-        message: `${label} : le prix semble donné par 100 g ou par kg (${chf(read)} CHF lu pour ${chf(Math.round(wanted))} CHF au prix affiché) : lignes non vérifiées.`,
-      }));
-      return;
-    }
-    lines.checked++; lines.failed++;
-    points.push(makePoint('ligne-montant', 'ecart', 'items', n, {
-      regle: 'quantité × prix unitaire = montant de la ligne', unite: 'centimes', enjeu: 'argent', lu: read, calcule: Math.round(wanted), champs: cells,
-      message: `${label} : quantité × prix = ${chf(Math.round(wanted))} CHF, montant lu ${chf(read)} CHF (lignes à vérifier).`,
-    }));
-  });
-  return { points, lines };
-}
-
-/** C2 et P2 — somme des lignes = total, au centime. `ok` seulement si rien ne manque : lignes toutes lisibles, aucune perdue. */
-export function sumCheck(items: Array<Pick<CoreItem, 'amountTTC'>>, amountTTC: number | null, amountHT: number | null, linesLost: number): { points: ScanPoint[]; sum: ScanControls['sum'] } {
-  const none = { points: [] as ScanPoint[], sum: { statut: 'non-verifiable' as ControlStatus, base: null } };
-  const ttc = toCents(amountTTC);
-  if (!items.length || ttc === null) return none;
-  const missing: number[] = [];
-  let sum = 0;
-  items.forEach((item, index) => { const cents = toCents(item.amountTTC); if (cents === null) missing.push(index + 1); else sum += cents; });
-  if (linesLost > 0) return { points: [], sum: { statut: 'incomplet', base: null } };
-  if (missing.length) {
-    return {
-      points: [makePoint('somme-incomplete', 'inverifiable', 'amountTTC', null, {
-        regle: 'somme des lignes = total TTC', unite: 'centimes', enjeu: 'argent', lu: ttc, calcule: sum, lignes: missing, champs: ['amountTTC', ...missing.map(n => `items.${n}.amountTTC`)],
-        message: `Total des lignes non vérifiable : ${missing.length} ligne(s) sans montant lisible (lignes ${missing.join(', ')}).`,
-      })], sum: { statut: 'incomplet', base: null },
-    };
-  }
-  if (sum === ttc) return { points: [], sum: { statut: 'ok', base: 'TTC' } };
-  const ht = toCents(amountHT);
-  if (ht !== null && sum === ht) return { points: [], sum: { statut: 'ok', base: 'HT' } };
-  const gap = ttc - sum;
-  const hint = Math.abs(gap) <= 5 ? ' (un arrondi imprimé, Rundung, est-il une ligne omise ?)' : '';
-  return {
-    points: [makePoint('somme-ecart', 'ecart', 'amountTTC', null, {
-      regle: 'somme des lignes = total TTC', unite: 'centimes', enjeu: 'argent', lu: ttc, calcule: sum, bloque: true,
-      champs: ['amountTTC', ...items.map((_, i) => `items.${i + 1}.amountTTC`)],
-      message: `La somme des lignes ne correspond pas au total TTC. Écart ${chf(gap)} CHF (lignes ${chf(sum)}, document ${chf(ttc)})${hint}.`,
-    })], sum: { statut: 'ecart', base: 'TTC' },
-  };
-}
 
 type VatKey = { code: string; rate: number | null };
 const normalizedVatCode = (value: string) => value.trim().split(/[\s(/]/)[0].replace(/%.*$/, '').toUpperCase();
@@ -424,16 +285,10 @@ export function normalizeInvoiceScan(raw: any) {
   if (result.amountTTC === null || result.amountTTC <= 0) issues.push('Total TTC absent ou non positif : à saisir.');
 
   // C4 — HT + TVA = TTC (comportement d'avant : 2 centimes de tolérance, chacun des trois arrondi séparément). Un HT n'est jamais calculé.
-  const ht = toCents(result.amountHT), vatCents = toCents(result.tvaAmount), ttc = toCents(result.amountTTC);
-  if (ht !== null && vatCents !== null && ttc !== null) {
-    if (Math.abs(ht + vatCents - ttc) > 2) {
-      result.controls.totals = { statut: 'ecart' };
-      say(makePoint('ht-tva-ttc', 'ecart', 'amountHT', null, {
-        regle: 'HT + TVA = TTC', unite: 'centimes', enjeu: 'info', lu: ttc, calcule: ht + vatCents, champs: ['amountHT', 'tvaAmount', 'amountTTC'],
-        message: 'Les totaux HT + TVA ne correspondent pas au TTC du document.',
-      }));
-    } else result.controls.totals = { statut: 'ok' };
-  }
+  // (la règle vit dans `invoiceControls.ts` : le client la refait avec la même fonction)
+  const totals = totalsCheck(result.amountHT, result.tvaAmount, result.amountTTC);
+  if (totals.point) { result.controls.totals = totals.totals; say(totals.point); }
+  else if (totals.totals.statut === 'ok') result.controls.totals = totals.totals;
   if (result.tvaRate !== null && (result.tvaRate < 0 || result.tvaRate > 1)) issues.push('Taux TVA incohérent : vérifier le document.');
 
   // C1 — quantité × prix.

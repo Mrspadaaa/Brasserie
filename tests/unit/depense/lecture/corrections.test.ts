@@ -71,9 +71,18 @@ describe('relecture n° 2 — lignes-annoncees n’achète pas de troisième lec
     expect(hints.items).toBeTruthy();
   });
 
-  it('garde : un vrai écart de somme déclenche toujours la troisième lecture', () => {
+  // l2 (P5, option A du pilote, 31.10) : deux lectures qui lisent la MÊME somme fausse n'achètent pas de troisième lecture (le même modèle sur
+  // la même image relirait la même chose) ; le point somme-ecart pèse et le statut est « à confirmer ». Une divergence entre lectures en achète une.
+  it('un vrai écart de somme lu à l’identique : le point somme-ecart pèse, statut disputed, pas de troisième lecture', () => {
     const faux = () => lire(entete({ amountTTC: 5, items: [ligne({ price: 1, amountTTC: 1 })] }));
-    expect(reconcileInvoiceVision([faux(), faux()]).needsCorrection).toBe(true);
+    const { needsCorrection, result, review } = reconcileInvoiceVision([faux(), faux()]);
+    expect(needsCorrection).toBe(false);
+    expect(review.status).toBe('disputed');
+    expect((result as any).points.find((p: any) => p.code === 'somme-ecart')).toMatchObject({ pese: true });
+  });
+  it('un vrai écart de somme dont une valeur diverge entre les lectures déclenche la troisième lecture', () => {
+    const faux = (total: number) => lire(entete({ amountTTC: total, items: [ligne({ price: 1, amountTTC: 1 })] }));
+    expect(reconcileInvoiceVision([faux(5), faux(6)]).needsCorrection).toBe(true);
   });
 
   it('garde : une annonce de lignes avec une somme fausse reste « lignes-perdues », sans troisième lecture', () => {

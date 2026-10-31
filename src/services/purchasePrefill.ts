@@ -118,7 +118,10 @@ export function patchPurchaseDraft(previous: PurchaseDraft, value: Partial<Purch
  * est marquée `document_date` (supposée). Sans date lue, pas de base (la clé reste présente pour que le patch la prenne en compte).
  */
 export function scannedPayment(scan: ScannedInvoiceResult, today: string): Pick<PurchaseDraft, 'paymentStatus' | 'paymentDate' | 'paymentDateBasis'> {
-  return { paymentDate: scan.date, paymentDateBasis: scan.date ? 'document_date' : undefined, paymentStatus: scan.paymentEvidence === 'unpaid' || scan.documentType === 'quote' || scan.documentType === 'credit_note' || scan.date && iso(scan.date) > iso(today) ? 'unpaid' : 'paid' };
+  // Une pro-forma sans preuve de paiement imprimée est une demande de paiement : jamais préremplie comme payée (relecture l2, point 7).
+  // Le type RETENU décide (l2, relais n° 3) : une pro-forma payée lue « devis » est une facture réglée ; sans lui (ancien résultat), le type lu.
+  const type = scan.documentTypeRetenu ?? scan.documentType;
+  return { paymentDate: scan.date, paymentDateBasis: scan.date ? 'document_date' : undefined, paymentStatus: scan.paymentEvidence === 'unpaid' || scan.proForma && scan.paymentEvidence !== 'paid' || type === 'quote' || type === 'credit_note' || scan.date && iso(scan.date) > iso(today) ? 'unpaid' : 'paid' };
 }
 
 /**
