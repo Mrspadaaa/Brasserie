@@ -101,3 +101,9 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 - 31.10 : **le tri est fait** (`critique/SYNTHESE.md`) : 8 très bien, 34 moyen, 6 très mauvais. Candidates : e1, z3, w3, r4 et w6. La page du tri est publiée (JkXn7UbyGCLfXLn3FTW9eN), pour qu'il compare. Ensuite : quand o1 rend, la passe 2 des 5 candidates, avec les greffes de SYNTHESE (agents e, z, w ×2, r).
 - r4 choisie : « Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien ! » (D205). La passe 2 sur 5 candidates est annulée : seule r4 est reprise avec ses adaptations, dans `v1/r4-a/`, par l'agent de la série r ; le critique la juge ensuite, puis une page neuve la montre à côté de r4.
 - 31.10 : **o1 est fini** (22 témoins verts ; les profils `--profil=sans-houblons` de mots et de contraste ; sur houblons, rien ne bouge). **r4-a** est rendue, et le critique demandait deux retouches (`v1/r4-a/CRITIQUE.md`), faites : le « › » au bout des règles, le pointillé sous les nombres. La page est publiée (6HGuqpXUoHS3XLnYqj73ci). Ensuite, sur son accord : le registre `ecrans.json` (r4-a), puis le port dans l'app (auteur Sonnet, critique Fable, baseline, lint). Au port, « ~27 L avant ébullition » vient du moteur (`brewingMath.ts`), pas de l'addition de la maquette.
+- 31.10, soir : son verdict sur r4-a : « ça semble vraiment bien ». Ses deux questions ont été vérifiées dans la maquette, à 1280 px :
+  - la saisie au clavier marche ;
+  - une ébullition de 240 min donne une règle de 0 à 270 ;
+  - un fermenteur de 60 L donne une règle de 0 à 70.
+  Un trou a été vu : la cuve qui déborde (~67 L dans 45 L) ne le dit pas. Il est ajouté au portage.
+  **Le portage p1 est en vol** (auteur ac33fb2cfc4d362b6, `voies/p1-port/`, registre `ecrans-app.json`, D206). Ensuite : l'exécutant fait les captures Chrome, puis le critique juge.
