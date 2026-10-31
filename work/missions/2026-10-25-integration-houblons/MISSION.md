@@ -496,3 +496,8 @@ Quota hebdomadaire : 4 % (remis à zéro le 31.10). La production est à **ae7c7
 
 Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
 - 31.10 : le brasseur choisit **B** (D201). **b1** est en vol : les étiquettes et « 1 source », sans changer un chiffre. B2, le panel des valeurs, viendra après c9 ; B3, l'usage continu, après h1 et k2. Le conseil n'est plus nécessaire sur le choix de l'option ; il reste peut-être utile pour les poids par type de source, qui seront de toute façon réglés sur une moitié des variétés et jugés sur l'autre.
+- 31.10 : **c9 commitée**. Suites :
+  - le moteur doit lire `nature` (`substitution.ts`, `quickAdd.ts`) pour qu'un produit ne sorte plus comme remplaçant ;
+  - le libellé « usage arôme (Beer Maverick) » de `substitution.ts:350` est à corriger (b1 ou B3) ;
+  - 66 houblons de Beer Analytics manquent (`voies/c9-ajouts-amertume/ba-manquants.md`), une voie dédiée en B2.
+  Identité : la série r est rendue (6 concepts, PANEL OK). `controle-commun` échoue sur les rayons 10/16 de DESIGN.md et sur le trait de 2 px du + commun : il faut un profil « sans houblons » pour les écrans hors houblons.
