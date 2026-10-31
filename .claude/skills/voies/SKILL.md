@@ -53,12 +53,12 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    ui-design-system.
 5 bis. **Ce que le brasseur verra (lot de maquettes, planche de pictos) suit l'entonnoir** :
    `references/entonnoir.md`. Il comprend :
-   - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 48 au moins en
-     6 séries au moins, avec trois chaleurs (froide, tiède, chaude) et la baseline suivie partout ;
-   - un tri par le critique, qui garde 5 candidates pour leur diversité, avec leurs greffes ;
+   - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 12 à 16 en
+     3 ou 4 séries (D204 : « trop demandant en quotas »), avec trois chaleurs (froide, tiède, chaude) et la baseline suivie partout ;
+   - un tri par le critique, qui garde 3 candidates pour leur diversité, avec leurs greffes ;
    - une passe 2 par les mêmes agents, avec tous les contrôles ;
    - puis tout est montré.
-   Le plafond (L18) porte sur les agents et les tours, jamais sur le nombre de variantes. Colonne « Étape »
+   Le plafond (L18) porte sur les agents et les tours ; les variantes, 12 à 16 (D204). Colonne « Étape »
    de MISSION.md ; M13.
 6. Vérifier : `node scripts/agents/systeme.mjs mission work/missions/<id>/MISSION.md` → MISSION OK.
 

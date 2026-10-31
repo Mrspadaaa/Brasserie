@@ -104,7 +104,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports dans l'app compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Plafond sur agents et tours, jamais sur les variantes (M13). Petite suite : Haiku neuf, pas l'agent au long contexte (300 k, 26.10).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports dans l'app compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Plafond sur agents et tours ; les variantes, 12 à 16 (D204). Petite suite : Haiku neuf, pas l'agent au long contexte (300 k, 26.10).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
@@ -162,5 +162,5 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Mécanisées
 
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert).
-- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes) a perdu face au lot 21 (44 v0 : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
+- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

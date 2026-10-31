@@ -194,8 +194,8 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
   jugée « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans
   amélioration).
 - **v0** : des concepts minimalistes (une idée sur un écran plein, sa propre composition ; M14), en séries de 4 à 12,
-  un concepteur par série, 48 au moins en 6 séries
-  au moins (« Et plus de diversité et de nombre de mini proto »). La chaleur varie dans chaque série : froide, tiède
+  un concepteur par série, 12 à 16 en 3 ou 4 séries (D204 : « il faudra pas autant de mini maquettes et
+  série, c'est trop demandant en quotas » ; avant, 48 en 6 séries). La chaleur varie dans chaque série : froide, tiède
   ou chaude (D22).
   - Une série Fable « créative à fond », et une série libre au brief minimal.
   - Obligatoires : la baseline (toujours suivie, `controle-commun --sans=mots`), l'honnêteté, le doigt, les interdits
@@ -210,8 +210,8 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
   satisfaisant, il n'y a plus de gain, ou quatre passes ont été faites.
 - **Montrer** : la dernière passe, puis toutes les v0 dans l'ordre du classement. Le brasseur choisit ; ensuite,
   `reprise` de la variante choisie avec les éléments qu'il a notés (D104).
-- Le coût est voisin de celui du lot 22, pour trois fois plus de choix. Le plafond (L18) porte sur les agents et les
-  tours, pas sur les variantes.
+- Le plafond (L18) porte sur les agents et les tours ; le nombre de variantes suit D204 (12 à 16, « trop demandant en
+  quotas »).
 
 ## Corriger : trois boucles
 
