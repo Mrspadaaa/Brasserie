@@ -53,3 +53,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   - z : PAGE OK ×4, MOTS OK.
   - u : COMMUN OK, MOTS OK, contraste OK.
   Le tri du critique est en vol (`critique/SYNTHESE.md`, 3 candidates). Ensuite : la passe 2 chez les mêmes agents (r a48bacb65242c02e1, z a57b38d5523944a01, u a550c22545d3a7792).
+- 31.10, soir : **tri fait** (`critique/SYNTHESE.md`).
+  - Classement : r4, z2, u3, r3, r2, u2, u4, z3, z4, r1, u1, z1. Aucun rejet, aucun « très mauvais ».
+  - Candidates : **r4** (le réglage, dans sa langue r4-a), **z2** (la composition ; absorbe r3 et u3) et **u2** (l'ajout au clavier).
+  **La passe 2 est lancée** chez les mêmes agents, dans `v1/r4b`, `v1/z2b` et `v1/u2b`, avec les captures à 8 grains (D5). Ensuite : le critique juge chaque variante, puis une page neuve.
