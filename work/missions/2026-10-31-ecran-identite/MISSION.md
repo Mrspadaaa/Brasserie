@@ -29,6 +29,7 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 ## Étapes (entonnoir, `.claude/skills/voies/references/entonnoir.md`)
 | Étape | Qui | Livrable | État |
 |---|---|---|---|
+| Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `panel-v0/page.html` |
 | 0. Cadrage | jury (e4, essai réel) et inventaire (e2) | `cadrage-jury.md`, `inventaire-identite.md` | en vol |
 | 1. v0 | 8 séries, un concepteur (Opus) par série, dont une série Fable créative et une série libre ; trois chaleurs ; la baseline = l'écran d'aujourd'hui et ses acquis | 48 concepts au moins (60 visés), publiés dès qu'ils sont faits | à venir |
 | 2. Tri | critique (Fable) | `critique/SYNTHESE.md` : classement, 5 candidates, greffes | à venir |
@@ -49,6 +50,7 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `panel-v0/page.html` |
 
 ## Agents
 - v0 (31.10) : g af688d7c3b4c1d8dc ; w a95dbcb30c165788b ; v a3f468d6fd75b44d7 ; r af505646da84f8574 ; e ae29161fae3410bb7 ; i a270f131ab87e2197 ; z (Fable) a9544f6c979771512 ; u a63ad22afca40541e. La passe 2 repart chez le même agent.
@@ -83,3 +85,4 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   - la page du panel (executant ae0de61eea3a6e407, `panel-v0/page.html`), que le pilote publiera dans un artefact neuf ;
   - o1, la correction des outils (auteur a0b178aca728e039d).
   Ensuite : le tri par un critique Fable unique, puis les passes 2. En passe 2, la série i, qui a suivi les rayons de 2, 4 et 8 px, s'aligne sur DESIGN.md (10, 16 et 24 px).
+- 31.10 : **le panel v0 est publié** (F5Laf6mqwAtp7dF4ZVVZBx). Ensuite : le tri par un critique Fable unique, puis les passes 2.
