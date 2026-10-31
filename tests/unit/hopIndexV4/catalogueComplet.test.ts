@@ -98,8 +98,23 @@ describe('le catalogue complet', () => {
       // Une plage vient de l'enveloppe de complements.json (valeurs valides, deux bornes publiées) ; sans enveloppe complète, elle est inconnue (null), jamais 0.
       const champs: [string, [number, number] | null | undefined][] = [['alpha', v.alpha], ['beta', v.beta], ['huile', v.oil], ['cohumulone', v.cohumulone], ['myrcene', v.oils.myrcene],
         ['humulene', v.oils.humulene], ['caryophyllene', v.oils.caryophyllene], ['farnesene', v.oils.farnesene]];
+      // D199 (c9) : α, β, huile et cohumulone sont des plages CROISÉES (`croise` : fiches valides, fiches sans unité de sources calibrées, sinon recettes déclarées),
+      // plus seulement l'enveloppe `e` de complements.json. Les autres champs gardent la règle de c6.
+      const CROISE: Record<string, string> = { alpha: 'alpha', beta: 'beta', huile: 'oil', cohumulone: 'cohumulone' };
+      const arr1 = (x: number) => Math.round(x * 10) / 10;
       for (const [champ, r] of champs) {
         const e = C.varietes[v.id]?.c[champ]?.e;
+        const voix: [string, number | null, number | null, string][] = (v as any).croise?.[CROISE[champ]]?.voix ?? [];
+        if (CROISE[champ]) {
+          const admises = voix.filter((x) => (x[3] === 'f' || x[3] === 'u') && x[1] != null && x[2] != null);
+          const base = admises.length ? admises : voix.filter((x) => x[3] === 'r' && x[1] != null && x[2] != null);
+          if (r != null) {
+            expect(base.length, `${v.id} ${champ} : une plage sans source`).toBeGreaterThan(0);
+            expect(r, `${v.id} ${champ}`).toEqual([arr1(Math.min(...base.map((x) => x[1]!))), arr1(Math.max(...base.map((x) => x[2]!)))]);
+            expect(r[1]).toBeGreaterThanOrEqual(r[0]);
+          } else expect(base.length, `${v.id} ${champ} : une valeur croisée ne peut pas rester inconnue`).toBe(0);
+          continue;
+        }
         if (r != null) { expect(r, `${v.id} ${champ}`).toEqual([e![0], e![1]]); expect(r[1]).toBeGreaterThanOrEqual(r[0]); }
         else expect(e == null || e[0] == null || e[1] == null, `${v.id} ${champ} : une enveloppe complète ne peut pas rester inconnue`).toBe(true);
       }
@@ -111,7 +126,10 @@ describe('le catalogue complet', () => {
     for (const v of ajouts) {
       expect(v.id.startsWith('sources-'), v.id).toBe(true);
       expect(v.nbSources, v.id).toBeGreaterThanOrEqual(0);
-      expect(v.peuDeDonnees, v.id).toBe((v.nbSources ?? 0) < 2 || !v.alpha);
+      // D199 (c9) : `peuDeDonnees` compte aussi les voix de recettes (Beer Analytics, Brewer's Friend) ; sans α il reste vrai, avec une seule voix aussi.
+      if (!v.alpha) expect(v.peuDeDonnees, v.id).toBe(true);
+      if (v.peuDeDonnees === false) expect(v.alpha, v.id).not.toBeNull();
+      if ((v.nbSources ?? 0) >= 2 && v.alpha) expect(v.peuDeDonnees, v.id).toBe(false);
       expect(v.bm ?? null).toBeNull();
     }
     expect(ajouts.some((v) => v.peuDeDonnees)).toBe(true);

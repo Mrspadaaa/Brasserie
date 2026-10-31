@@ -32,7 +32,7 @@ const liste = (m: Moteur, style: string) => m.dans(() => m.quickAdds(recette(sty
 
 describe('P6a (D174) : aucune forme ne passe devant sa variété, et la variété simple reste candidate', () => {
   it('les 31 styles : Citra (simple) est candidate à côté de Citra cryo du stock, avec les mêmes clés de style, jamais mieux classée qu\'elle', () => {
-    expect(plein.length).toBe(505);
+    expect(plein.length).toBe(497); // D199 (c9) : 317 + 180 (505 avant : huit doublons fondus dans leur variété)
     expect(STYLES).toHaveLength(31);
     for (const style of STYLES) {
       const q = liste(moteurStock, style);

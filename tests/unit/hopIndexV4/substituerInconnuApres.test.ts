@@ -31,7 +31,9 @@ describe('K1 : à un moment d\'amertume, l\'inconnu passe après le connu (D196)
   it('Nugget 46 g à 60′ (stout S1) : aucun inconnu d\'amertume parmi les cinq premiers ni les trente premiers ; la tête est faite d\'amérisants connus', () => {
     const res = sub('nugget', '16D', 'b60', 46, { limit: 700 });
     expect(res.candidats).toBeGreaterThan(400); // témoin positif : le catalogue plein, 76 candidats à amertume inconnue dans la mesure d60
-    expect(res.remplacants.filter(inconnue).length).toBeGreaterThan(50);
+    // D199 (c9) : l'amertume inconnue passait de 76 à 13 candidats (les recettes et les fiches croisées en ont rendu 63) ; les 13 restants (aucune valeur nulle part, ou un mélange) suffisent au témoin.
+    expect(res.remplacants.filter(inconnue).length).toBeGreaterThanOrEqual(10);
+    expect(res.remplacants.filter(inconnue).length).toBeLessThanOrEqual(20);
     const tete = res.remplacants.slice(0, 5);
     expect(tete.filter(inconnue).map((s) => s.name)).toEqual([]);
     expect(res.remplacants.slice(0, 30).filter(inconnue)).toHaveLength(0);
@@ -76,6 +78,8 @@ describe('K1 : à un moment d\'amertume, l\'inconnu passe après le connu (D196)
       out.push([`${id}@${moment}`, sha({ ...res, regle: undefined })]);
     }
     expect(out).toHaveLength(80);
-    expect(sha(out)).toBe('033aba7bab46fcfc2f4f3862a02fcbf50c5b6f0fef4e05ffcf08d02988014b9b');
+    // D199 (c9, 31.10) : 033aba7b… → 17f1f88d… Les 76 ajouts sans amertume en ont retrouvé une (fiches croisées et recettes), 8 doublons sont fondus (497 variétés au lieu de 505) :
+    // la règle de K1 n'a pas bougé, ce sont les données du catalogue plein qui ont changé.
+    expect(sha(out)).toBe('17f1f88d5ae63027b709e31b35fb6b180c0e8208ed293d7ee1a1ee2ad075cee3');
   }, 120_000);
 });
