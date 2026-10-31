@@ -46,6 +46,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 | Malts/sucres · panel v0 (12 concepts) | 31.10 v1 | https://claude.ai/artifact/Hn6WHBqAAEzV7UuJj9qCoh | `work/missions/2026-10-31-ecran-fermentescibles/panel-v0.html` |
 | Malts/sucres · passe 3 (r4c, z2c, u2c) et ses axes | 31.10 v1 | https://claude.ai/artifact/2bBQ7dcRjwnyGfbUgf7vUG | `work/missions/2026-10-31-ecran-fermentescibles/choix-v2/index.html` |
 | Malts/sucres · passe 4 (r4c et r4d, gestes sur la ligne, plateau visible ou replié) | 31.10 v1 | https://claude.ai/artifact/9TYpaMsGrfuBYYMPUf8XeU | `work/missions/2026-10-31-ecran-fermentescibles/choix-v3/index.html` |
+| Malts/sucres · passe 5 (r4e-a et r4e-b, besoins à la volée sur la ligne) | 31.10 v1 | https://claude.ai/artifact/L1yhL5ei1UmHyYAdHVFPnd | `work/missions/2026-10-31-ecran-fermentescibles/choix-v4/index.html` |
 
 ## Sources
 - `src/pages/BrewWizard.tsx` (étape `fermentescibles`, l. 437 ; `fermentables`, l. 660)
@@ -91,3 +92,9 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   n° 1, n° 5 et Q4 : rien à faire avant ses mots. Page de la passe 4 publiée (PAGE OK, captures ouvertes), table « Pages ».
   **Attend son verdict** : r4d lui va-t-elle, et quel plateau (visible ou replié). Ensuite : Malts dans `ecrans-app.json`, puis le port
   (avec l'alias « Munich » → « Münchner Malz », vu sur r4d : le champ crée une ligne au lieu de proposer la fiche existante).
+- 31.10, nuit : **critique t5** (`critique/VERDICT-v4.md`) : PRÊT À MONTRER, r4e-a et r4e-b, 0 bloquant, 0 majeur, 6 détails. Retouches d'une ligne faites
+  par le pilote : a1 (la masse déduite de la part tapée tombe au cran de la piste : « 30 » → 2,8 kg, grain 9,3 kg ; attente de `capturer.mjs` de a mise à jour),
+  a2 (le champ couleur fait 36 px et déborde de 6 px de chaque côté : la ligne ne bouge plus), b2 (« Annuler » du moment prend la place de « du grain » :
+  la part « 19 % » reste, la barre perd 20 px ; d'abord essayé à la place du ×, il couvrait le « kg » sur la capture, écarté). a3 et b1 dits sur la page.
+  Captures refaites et ouvertes, `systeme.mjs voies` → VOIES OK 3/3 (approbations rejouées). Page de la passe 5 publiée (PAGE OK, trois captures
+  ouvertes), table « Pages ». **Attend son verdict** : a, b ou un mélange. Ensuite : Malts dans `ecrans-app.json`, puis le port (alias « Munich »).

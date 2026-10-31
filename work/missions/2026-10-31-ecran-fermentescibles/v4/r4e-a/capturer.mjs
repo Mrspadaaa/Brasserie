@@ -59,7 +59,7 @@ await p.focus('[data-kl="0"]'); await p.keyboard.type('4.5'); await p.keyboard.p
 const tb = await actif(); L = await lignes();
 if (L[0] !== 'Pilsner Malz 4,5' || !/Masse de Weizenmalz hell/.test(tb.l || '')) err.push('point/Tab : ' + L[0] + ' ' + tb.l);
 
-// PART, pendant puis après : un toucher sur « 19 » de Weizenmalz, « 30 » ; la masse suit (2,79 kg), le grain passe à 9,29 kg,
+// PART, pendant puis après : un toucher sur « 19 » de Weizenmalz, « 30 » ; la masse suit (2,8 kg, au cran de la piste), le grain passe à 9,3 kg,
 // Pilsner et Haferflocken gardent la leur, le plateau reste sur Pilsner.
 await p.goto(url); await pret();
 await tap('[data-pl="1"]');
@@ -69,7 +69,7 @@ await p.keyboard.type('30'); await pret();
 await p.screenshot({ path: out('part-pendant') });
 let bd = await bandeau(); L = await lignes();
 console.log('part pendant :', bd, '|', L.join(' | '));
-if (!/Grain 9,29 kg/.test(bd) || L[1] !== 'Weizenmalz hell 2,79' || L[0] !== 'Pilsner Malz 5,0' || L[2] !== 'Haferflocken 1,5') err.push('part pendant : ' + bd + ' ' + L.join(' | '));
+if (!/Grain 9,3 kg/.test(bd) || L[1] !== 'Weizenmalz hell 2,8' || L[0] !== 'Pilsner Malz 5,0' || L[2] !== 'Haferflocken 1,5') err.push('part pendant : ' + bd + ' ' + L.join(' | '));
 if ((await plateau()) !== 'Pilsner Malz') err.push('part : le plateau a bougé');
 await p.keyboard.press('Enter'); await pret();
 await p.screenshot({ path: out('part-apres') });
