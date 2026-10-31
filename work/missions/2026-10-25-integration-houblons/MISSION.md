@@ -508,3 +508,7 @@ Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
   3. le moteur qui lit `nature`, et le libellé de `substitution.ts:350` ;
   4. le rejeu, le déploiement, la PR.
   La production reste à ae7c7a8d.
+- 31.10, soir : **h1** (acda61415135e9f5b) a été arrêté par une interruption.
+  - Son RESULTAT est un brouillon : la règle de principe est écrite (l'herbacé et le végétal `neutre` comptent au rang et en hors du style), mais rien n'est mesuré.
+  - `src/domain/hopIndex/v4/voies.ts` est modifié et non commité. À relire avant de relancer.
+  Un agent neuf ne part que sur sa demande.

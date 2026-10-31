@@ -86,3 +86,12 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   - o1, la correction des outils (auteur a0b178aca728e039d).
   Ensuite : le tri par un critique Fable unique, puis les passes 2. En passe 2, la série i, qui a suivi les rayons de 2, 4 et 8 px, s'aligne sur DESIGN.md (10, 16 et 24 px).
 - 31.10 : **le panel v0 est publié** (F5Laf6mqwAtp7dF4ZVVZBx). Ensuite : le tri par un critique Fable unique, puis les passes 2.
+- 31.10, après le panel (**état courant**) : ses mots dans SPEC-BRASSEUR ; D203 : le panel sert d'épreuve à l'aveugle du critique ; écrans suivants allégés.
+  Une interruption a arrêté trois agents, qui ne se reprennent pas : il faut un agent neuf, sur sa demande.
+  1. **Le critique** (a470b5e82b5327d57) : `critique/g.md`, `r.md`, `v.md` et `w.md` sont écrits. Il reste e, i, z et u, puis `SYNTHESE.md` :
+     - le classement des 48, avec un verdict par concept (très bien, moyen ou très mauvais ; au moins 6 de chaque extrême) ;
+     - 5 candidates ;
+     - les greffes.
+     Un critique neuf reprend au même format, sans rien savoir de son avis.
+  2. **o1** (a0b178aca728e039d) : ses changements dans les 5 outils de `tournoi/outils/` ne sont pas commités, et il n'y a pas de RESULTAT. Il faut les relire, puis finir ou annuler.
+  Ensuite : la passe 2 sur les 5 candidates seulement, puis une page neuve (le classement du critique et la passe 2), pour qu'il compare.

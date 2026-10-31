@@ -1201,3 +1201,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   2. **B2** : le panel des valeurs (α, β, cohumulone, huiles, linalol), avec un banc de non-régression, après c9 ;
   3. **B3** : l'usage continu (60′, D106), la typicité par le rattachement, et un radar de repli, après h1 et k2.
   Les poids par type de source sont des hypothèses : ils se règlent sur une moitié des variétés et se jugent sur l'autre (L20).
+- D202 (pilote, 31.10) : avant les passes 2 d'Identité, les outils de contrôle de maquette sont corrigés (voie o1) : capture reconnue au chemin, texte visible seul, fond réellement peint, profil « sans houblons » qui lit DESIGN.md (rayons 10, 16, 24 px).
+- D203 (l'utilisateur et le pilote, 31.10) : « ça va coûter "trop chère" de faire ça à chaque étape » ; « C'est un bon test pour voir si la critique est bien qualibré ».
+  1. Le panel v0 d'Identité (48 concepts) sert d'**épreuve à l'aveugle** du critique (L27). Il classe les 48 et donne à chacun un verdict (très bien, moyen, très mauvais), sans rien savoir de son avis. Le brasseur compare.
+  2. La passe 2 ne porte que sur les 5 candidates du critique, chez les mêmes agents.
+  3. **Écrans suivants** : l'entonnoir à 48 v0 n'est plus la règle. Une dérogation M13 s'appuie sur ses mots. La taille se fixe après l'épreuve :
+     - si le critique retrouve ses « très bien » et ses « très mauvaise », 16 v0 en 4 séries, une passe 2 sur 3 candidates, et il voit d'abord les candidates ;
+     - sinon, on recalibre le critique avant de réduire.
