@@ -46,6 +46,11 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    d'écrire les voies. Sinon, pas de conseil (§ « Quand le conseil intervient »).
 5. Vérifier les entrées partagées avant l'éventail (L08) : une voie Haiku « entrées » passe en
    premier quand moteur, JSON ou constantes sont en jeu.
+   **Cadrer par le jury** (skill `jury`, D198) avant le premier VOIE.md d'un lot montré au brasseur ou d'un écran refait. Le jury
+   rend une fiche de cadrage : les réponses sourcées, les goûts devenus axes de variantes, et l'irréversible aux accords. Il ne
+   bloque jamais. Juste avant de le lancer, relance un grep de SPEC-BRASSEUR : ses derniers mots comptent. Un élément commun déjà
+   refusé à part ne sert jamais de référence. Chaque concepteur et le critique chargent `boosters-ux` avec impeccable et
+   ui-design-system.
 5 bis. **Ce que le brasseur verra (lot de maquettes, planche de pictos) suit l'entonnoir** :
    `references/entonnoir.md`. Il comprend :
    - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 48 au moins en
