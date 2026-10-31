@@ -1813,7 +1813,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     setMaterielOuvert(true);
     requestAnimationFrame(() => document.getElementById('wz-fermenteur')?.focus());
   };
-  useEffect(() => { if ((installationNeedsAdoption || equipmentNotice) && step === 'identite') setMaterielOuvert(true); }, [installationNeedsAdoption, equipmentNotice, step]);
+  // r4-a : les deux tuiles du bas sont fermées et côte à côte au repos. Une installation à adopter se dit au premier plan (ligne d'alerte),
+  // avec un bouton qui ouvre « Matériel » ; la notice d'une adaptation se lit sous les tuiles. Rien ne s'ouvre seul.
   const stepIndex = STEPS.findIndex((s) => s.id === step);
   /** Le message de reprise ou de conservation du brouillon : ni erreur ni événement, il ne prend plus de ligne. */
   const messageDeBase = /^(Brouillon (repris|conservé) sur cet appareil|Changement appliqué et brouillon conservé sur cet appareil).$/.test(draftNotice);
@@ -2363,7 +2364,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         const reco = fermenterRecommendation(recette, equipement);
         const cible = installationNeedsAdoption ? configuredBrewhouse : brewhouse;
         const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
-        const teinte = teinteDuStyle(style);
+        // La famille se lit sur le nom saisi, puis sur le nom du style résolu (un code « 16D » ne dit rien, « Foreign Extra Stout » oui).
+        const teinte = teinteDuStyle(style) ?? (styleRepere ? teinteDuStyle(styleRepere.name) : null);
         const recetteVide = fermentables.length === 0 && hops.length === 0;
         const noloActif = !!details.nolo?.enabled;
         const problemesInstallation = recipeInstallationIssues(recette, configuredBrewhouse);
@@ -2373,7 +2375,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         const avantMoteur = avantEbullitionDuPlan(recette.preBoilHotL, evaporationIdentite?.litres);
         const alertesInstallation = (equipement || installationNeedsAdoption && configuredBrewhouse?.equipment)
           ? problemesInstallation.map(issue=><p key={issue} role="status" className="text-xs text-ebc-amber" data-role="alerte-installation">{installationNeedsAdoption && configuredBrewhouse?.equipment
-              ? 'Adopte ton installation avec « Adapter à mon matériel actuel » avant de lancer ce brassin.'
+              ? <>Adopte ton installation avant de lancer ce brassin. <button type="button" className="idn-lien" onClick={()=>setMaterielOuvert(true)}>Ouvrir Matériel</button></>
               : issue}</p>)
           : null;
         return (

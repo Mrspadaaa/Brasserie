@@ -15,7 +15,7 @@
 }
 .recipe-wizard :is(input, textarea).idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']):focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); }
 .idn-pas {
-  position: relative; display: inline-flex; align-items: center; flex-shrink: 0; width: 11.5rem; max-width: 52%;
+  position: relative; display: inline-flex; align-items: center; flex-shrink: 0; width: 13.5rem; max-width: 62%;
   height: 30px; border-radius: 10px; border: 1px solid rgb(var(--idn-teinte, var(--cave-600)) / 0.5);
   background: rgb(var(--idn-teinte, var(--cave-600)) / 0.2);
   color: color-mix(in srgb, rgb(var(--idn-teinte, var(--cave-600))) 30%, rgb(var(--cave-texte-50)));
@@ -24,7 +24,7 @@
 .idn-pas > small { flex-shrink: 0; margin-right: 6px; font-size: 12px; }
 .idn-pas .idn-combo { flex: 1; min-width: 0; }
 .recipe-wizard .idn-pas :is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
-  height: 28px; min-height: 28px; padding: 0 26px 0 6px; border: 0; border-radius: 0; background: transparent; box-shadow: none; line-height: 28px; text-overflow: ellipsis;
+  height: 28px; min-height: 28px; padding: 0 30px 0 6px; border: 0; border-radius: 0; background: transparent; box-shadow: none; line-height: 28px; text-overflow: ellipsis;
   font-size: 14px; font-weight: 600; color: inherit;
 }
 .recipe-wizard .idn-pas :is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox'])::placeholder { color: inherit; opacity: 0.7; font-weight: 400; }
@@ -181,5 +181,7 @@
 .recipe-wizard .idn-pas button[aria-label$='la liste'] { position: absolute; right: 0; top: 0; bottom: 0; width: 26px; min-height: 0; padding: 0; color: inherit; }
 .idn-pas button[aria-label$='la liste'] svg { width: 16px; height: 16px; }
 .idn-pas > small { position: relative; z-index: 1; }
+/* Le lien « Ouvrir Matériel » de la ligne d'alerte d'installation (rien ne s'ouvre seul). */
+.recipe-wizard .idn-lien { display: inline; min-height: 0; padding: 0; font-size: 12px; text-decoration: underline; color: rgb(var(--water-texte)); }
 /* Le choix pour ce brassin (composant existant) dans la tuile : aucun texte sous 12 px. */
 .recipe-wizard .idn-tuile-corps small { font-size: 12px; line-height: 1.3; }

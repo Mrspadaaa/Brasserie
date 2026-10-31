@@ -32,6 +32,7 @@ de comparatif ect .. ». Entonnoir allégé (D204 : « il faudra pas autant de m
 | p3 | relance des 3 passes (r4c, z2c, u2c), agents neufs sur RELANCE-v1.md (D207) ; z2c en Fable | conception | concepteur | opus | 40 | work/missions/2026-10-31-ecran-fermentescibles/v2/** | t2 | controle-commun --profil=sans-houblons, controle-choix, controle-continuite, controle-panel, controle-hauteur | brasseur | passe 3 |
 | t3 | verdicts des passes 3 (r4c, z2c, u2c), agent neuf (D207) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/VERDICTS-v2.md | p3 | captures ouvertes | pilote | — |
 | p4 | r4d : r4c avec modifier, retirer et ajouter sur la ligne, détail au toucher du nom (D208, D209) ; agent neuf, compréhension testée (COMPRIS OK) | conception | concepteur | opus | 40 | work/missions/2026-10-31-ecran-fermentescibles/v3/r4d/** | t3 | controle-gestes-ligne, controle-choix (s.o. : Malts entre au registre après son accord sur r4d), verifier-page, mots-premier-ecran, controle-commun, controle-contraste, controle-hauteur, captures | brasseur | passe 4 |
+| t4 | verdict de r4d contre r4c, agent neuf (D207) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/VERDICT-v3.md, work/missions/2026-10-31-ecran-fermentescibles/critique/t4/** | p4 | captures ouvertes | pilote | — |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RECURRENTS.md avec son contrôle, et son choix va dans
@@ -40,8 +41,8 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
-| Malts/sucres · panel v0 (12 concepts) | 31.10 v1 | https://claude.ai/artifact/Hn6WHBqAAEzV7UuJj9qCoh | `panel-v0.html` |
-| Malts/sucres · passe 3 (r4c, z2c, u2c) et ses axes | 31.10 v1 | https://claude.ai/artifact/2bBQ7dcRjwnyGfbUgf7vUG | `choix-v2/index.html` |
+| Malts/sucres · panel v0 (12 concepts) | 31.10 v1 | https://claude.ai/artifact/Hn6WHBqAAEzV7UuJj9qCoh | `work/missions/2026-10-31-ecran-fermentescibles/panel-v0.html` |
+| Malts/sucres · passe 3 (r4c, z2c, u2c) et ses axes | 31.10 v1 | https://claude.ai/artifact/2bBQ7dcRjwnyGfbUgf7vUG | `work/missions/2026-10-31-ecran-fermentescibles/choix-v2/index.html` |
 
 ## Sources
 - `src/pages/BrewWizard.tsx` (étape `fermentescibles`, l. 437 ; `fermentables`, l. 660)
@@ -74,3 +75,10 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   Deux micro-correctifs du pilote, captures refaites et ouvertes : r4c dit « 90 % ferm. » pour le fruit (fermentabilité par famille, `KIND_DEF`) et
   « Lactose : non fermentescible… » ; z2c dit « OG — · style 1,060–1,085 » (décision OG, PPG retirés). L'OG en piste ou en puce reste un axe montré.
   **Page de choix publiée** (2bBQ7dcRjwnyGfbUgf7vUG, PAGE OK, captures ouvertes). Ensuite : son choix dans `choix/ecrans-app.json` (D206), puis le port.
+- 31.10, nuit : **r4d rendue** (p4, Opus) : GESTES OK (16), G1 à G8 OK au rejeu du pilote ; les 6 captures ouvertes. La masse se tape sur la
+  ligne (trait de 2 px, total et % suivent), le retrait laisse « … retiré · Annuler » à sa place, le nom ouvre le détail.
+  Décision du pilote (réversible) : au toucher, la frappe remplace la masse (l'ancienne reste en gris, Échap la rend), comme la retouche B
+  d'Identité ; une ligne à changer s'il veut compléter le chiffre. Le rejeu dit « ECHEC mission — 1 voie (2 au moins) » : les voies
+  i1 à t3 ont tourné sans dossier `voies/` (D204, économie), seule p4 en a un ; écart connu, pas un défaut de p4.
+  **Le critique t4 est en vol** (`critique/VERDICT-v3.md`). Ensuite : la page de la passe 4 (r4c et r4d côte à côte, gestes repos /
+  pendant / après, les deux états du plateau), un artefact neuf.

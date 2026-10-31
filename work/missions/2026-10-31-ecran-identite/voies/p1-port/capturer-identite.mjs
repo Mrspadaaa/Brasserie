@@ -3,7 +3,8 @@
 //
 // Usage (le serveur tourne dans une COPIE, jamais dans l'arbre principal) :
 //   node scripts/with_server.mjs --server "cd <copie> && npm run dev -- --port 5611 --strictPort" --port 5611 \
-//     --env VITE_FIREBASE_API_KEY=fake -- node <ce fichier> --sortie=<dossier des captures>
+//     --env VITE_HOP_V4=on --env VITE_FIREBASE_API_KEY=fake -- node <ce fichier> --sortie=<dossier des captures>
+//   (VITE_HOP_V4=on : la même configuration que baseline-visuelle.mjs ; sans elle, l'étape Houblons ne monte pas `ma-biere`.)
 //   ou, avec un serveur déjà lancé : node <ce fichier> --url=http://localhost:5611 --sortie=<dossier>
 //
 // Fixtures seulement : `?dev-local&etape=houblons&recette=vide` ouvre le wizard sur une recette neuve, sans donnée réelle,
@@ -44,7 +45,8 @@ const derniereAvecChevron = (page, nom) => page.$eval(`[data-role="echelle-${nom
 // `vide` : recette neuve (sans malts ni style). Sinon : la recette de démonstration (fixture, style 16D, malts), qui a des plages de style
 // et un plan d'eau — celle des gestes (relance 1 : sans style, les pastilles de plages ne peuvent pas s'afficher).
 async function ouvrirIdentite(page, vide = false) {
-  await page.goto(`${url}/?dev-local&etape=houblons${vide ? '&recette=vide' : ''}`, { waitUntil: 'networkidle0' });
+  // `recette=identite` : la fixture d'Identité (src/ui/identite/apercuDev.ts, AVEC grains et plan d'eau) ; `recette=vide` : recette neuve.
+  await page.goto(`${url}/?dev-local&etape=houblons&recette=${vide ? 'vide' : 'identite'}`, { waitUntil: 'networkidle0' });
   await page.waitForSelector('nav[aria-label="Étapes"]', { timeout: 150000 });
   await page.evaluate(() => {
     const b = [...document.querySelectorAll('nav[aria-label="Étapes"] button')].find((x) => /Identité/.test(x.textContent));
@@ -79,7 +81,9 @@ async function serie(largeur) {
     if (mobile) verifier(!!pied && pied.bas <= pied.haut, `${tag} : le pied Suivant se voit sans défiler (${JSON.stringify(pied)})`);
     // Le + flottant ne recouvre aucun texte du bloc au repos.
     const recouvre = await page.evaluate(() => {
-      const f = [...document.querySelectorAll('button')].find((b) => /Actions rapides/i.test(b.getAttribute('aria-label') || '') && getComputedStyle(b).position === 'fixed');
+      // Le + est un bouton « Actions rapides » dont un ancêtre (ou lui) est en position fixe.
+      const fixe = (n) => { for (let x = n; x && x !== document.body; x = x.parentElement) if (getComputedStyle(x).position === 'fixed') return true; return false; };
+      const f = [...document.querySelectorAll('button')].find((b) => /^Actions rapides/i.test(b.getAttribute('aria-label') || '') && fixe(b));
       if (!f) return ['(+ introuvable)'];
       const a = f.getBoundingClientRect(); const r = [];
       for (const n of document.querySelectorAll('.idn-c *')) {
@@ -167,7 +171,8 @@ async function serie(largeur) {
       verifier(!!deb && /\+\d[\d,]* L.*de trop\|alert/.test(texteDeb), `${tag} : la cuve dit son dépassement « ${texteDeb} »`);
       // « Repères ⌄ » : plages du style (FG, alcool, EBC, source) à un toucher.
       await page.evaluate(() => document.querySelector('[data-role="repbtn"]')?.click()); await dormir(300);
-      verifier(await page.$eval(sel('r4a-reperes'), (n) => !n.hidden && n.getClientRects().length > 0), `${tag} : « Repères ⌄ » déplie la source et les plages restantes`);
+      const reperes = await page.$(sel('r4a-reperes'));
+      verifier(!!reperes && await reperes.evaluate((n) => !n.hidden && n.getClientRects().length > 0), `${tag} : « Repères ⌄ » déplie la source et les plages restantes`);
       await cap('app-reperes-ouverts');
       await page.evaluate(() => document.querySelector('[data-role="repbtn"]')?.click()); await dormir(200);
       verifier(Number(await derniere(page, 'volume')) >= 65, `${tag} : la règle du volume contient le moût avant ébullition (${await derniere(page, 'volume')})`);
@@ -229,8 +234,11 @@ async function serie(largeur) {
     await dormir(500);
     await m.page.screenshot({ path: path.join(SORTIE, `maquette-repos-${tag}.png`) });
     await m.browser.close();
-    await ouvrirIdentite(page);
-    await cap('app-repos-bis');
+    // Le brouillon de la page persiste (localStorage) : le repos à comparer à la maquette s'ouvre dans un Chrome neuf.
+    const frais = await ouvrir({ largeur, hauteur: mobile ? 844 : 900, mobile, echelle: 2 });
+    await ouvrirIdentite(frais.page);
+    await frais.page.screenshot({ path: path.join(SORTIE, `app-repos-bis-${tag}.png`) });
+    await frais.browser.close();
     const b64 = (f) => fs.readFileSync(path.join(SORTIE, f)).toString('base64');
     const duo = await ouvrir({ largeur: largeur * 2 + 30, hauteur: mobile ? 900 : 950, mobile: false, echelle: 1 });
     await duo.page.setContent(`<body style="margin:0;background:#888;display:flex;gap:30px;font:12px sans-serif"><figure style="margin:0"><figcaption>maquette r4-a</figcaption><img style="width:${largeur}px" src="data:image/png;base64,${b64(`maquette-repos-${tag}.png`)}"></figure><figure style="margin:0"><figcaption>app (étape Identité)</figcaption><img style="width:${largeur}px" src="data:image/png;base64,${b64(`app-repos-bis-${tag}.png`)}"></figure></body>`);

@@ -29,7 +29,7 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 ## Étapes (entonnoir, `.claude/skills/voies/references/entonnoir.md`)
 | Étape | Qui | Livrable | État |
 |---|---|---|---|
-| Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `panel-v0/page.html` |
+| Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `work/missions/2026-10-31-ecran-identite/panel-v0/page.html` |
 | 0. Cadrage | jury (e4, essai réel) et inventaire (e2) | `cadrage-jury.md`, `inventaire-identite.md` | en vol |
 | 1. v0 | 8 séries, un concepteur (Opus) par série, dont une série Fable créative et une série libre ; trois chaleurs ; la baseline = l'écran d'aujourd'hui et ses acquis | 48 concepts au moins (60 visés), publiés dès qu'ils sont faits | à venir |
 | 2. Tri | critique (Fable) | `critique/SYNTHESE.md` : classement, 5 candidates, greffes | à venir |
@@ -50,9 +50,9 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
-| Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `panel-v0/page.html` |
-| Identité · tri du critique à l'aveugle (D203) | 31.10 v1 | https://claude.ai/artifact/JkXn7UbyGCLfXLn3FTW9eN | `panel-v0/tri-critique.html` |
-| Identité · r4 adaptée (D205) | 31.10 v1 | https://claude.ai/artifact/6HGuqpXUoHS3XLnYqj73ci | `v1/page.html` |
+| Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `work/missions/2026-10-31-ecran-identite/panel-v0/page.html` |
+| Identité · tri du critique à l'aveugle (D203) | 31.10 v1 | https://claude.ai/artifact/JkXn7UbyGCLfXLn3FTW9eN | `work/missions/2026-10-31-ecran-identite/panel-v0/tri-critique.html` |
+| Identité · r4 adaptée (D205) | 31.10 v1 | https://claude.ai/artifact/6HGuqpXUoHS3XLnYqj73ci | `work/missions/2026-10-31-ecran-identite/v1/page.html` |
 
 ## Agents
 - v0 (31.10) : g af688d7c3b4c1d8dc ; w a95dbcb30c165788b ; v a3f468d6fd75b44d7 ; r af505646da84f8574 ; e ae29161fae3410bb7 ; i a270f131ab87e2197 ; z (Fable) a9544f6c979771512 ; u a63ad22afca40541e. La passe 2 repart chez le même agent.
@@ -116,3 +116,8 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   5. parcours sur l'app en ligne avec **une seule recette de test** (un brouillon), dans son Chrome ou le navigateur intégré : 390 et 1280 px ; saisie au clavier, 240 min, fermenteur 60 L, cuve qui déborde ;
   6. captures regardées ;
   7. le brouillon remis dans son état, ou abandonné par le geste de l'app.
+- 31.10, nuit : rejeu `voies --approuver` : **VOIES OK 2/2** (G2 de p1-port réécrit en `&& echo TESTS IDENTITE OK` : la sortie colorée
+  de vitest cassait le motif), manifeste 21dd75b3. **Verdict du critique sur le port : À CORRIGER** (`critique/VERDICT-port.md`,
+  11 écarts dont 1 bloquant et 4 majeurs) : au repos c'est r4-a ; au toucher, l'ancien bloc revient (alertes redites, tableau de
+  Matériel, deux boutons de repères), et le bandeau se casse en deux à 1280. Voie **p2-correctifs** écrite (auteur Sonnet, agent neuf,
+  contrôles qui échouent d'abord) ; test de compréhension en vol. Le déploiement attend ses critères et un second regard du critique.
