@@ -19,7 +19,11 @@ de comparatif ect .. ». Entonnoir allégé (D204 : « il faudra pas autant de m
 |---|---|---|---|---|---|---|---|---|---|---|
 | i1 | inventaire et captures de l'écran actuel | mécanique | executant | haiku | 60 | work/missions/2026-10-31-ecran-fermentescibles/inventaire/** | — | inventaire-fermentescibles.md, captures ouvertes | pilote | — |
 
-(les séries v0, le tri et la passe 2 s'ajoutent après la fiche du jury)
+| r | série r, représentations distinctes (A1, A2, A4) | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-fermentescibles/v0/r*/** | — | baseline : controle-commun --profil=sans-houblons, controle-choix, controle-continuite | brasseur | v0 ×4 (1 froide, 1 tiède, 2 chaude) |
+| z | série z, créative à fond | conception | concepteur | fable | 60 | work/missions/2026-10-31-ecran-fermentescibles/v0/z*/** | — | baseline : controle-commun --profil=sans-houblons, controle-choix, controle-continuite | brasseur | v0 ×4 (1 froide, 1 tiède, 2 chaude) |
+| u | série u, libre au brief minimal | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-fermentescibles/v0/u*/** | — | baseline : controle-commun --profil=sans-houblons, controle-choix, controle-continuite | brasseur | v0 ×4 (1 froide, 1 tiède, 2 chaude) |
+| t | tri des 12 concepts (classement, 3 candidates, greffes) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/** | r, z, u | controle-panel, captures ouvertes | pilote | tri |
+| p2 | passe 2 des 3 candidates | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-fermentescibles/v1/** | t | controle-commun --profil=sans-houblons, controle-choix, controle-continuite | brasseur | passe 2 |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RECURRENTS.md avec son contrôle, et son choix va dans
@@ -32,7 +36,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 ## Sources
 - `src/pages/BrewWizard.tsx` (étape `fermentescibles`, l. 437 ; `fermentables`, l. 660)
 - `work/refonte-frontend/v4/SPEC-BRASSEUR.md` l. 76 ; `PRODUCT.md` l. 120–130 et 163–168
-- `work/missions/2026-10-31-ecran-identite/cadrage-jury.md` (réponses communes) ; `v1/r4-a/` (l'en-tête et le bandeau choisis)
+- `work/missions/2026-10-31-ecran-identite/cadrage-jury.md` (réponses communes) ; `work/missions/2026-10-31-ecran-identite/v1/r4-a/etat.html` (sa langue, l'étape 1 choisie)
 
 ## Reprise
 - 31.10, soir : la mission est ouverte. i1 (inventaire et captures) est en vol, le dossier du jury est en écriture.
@@ -40,3 +44,6 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
   L'état rempli a été lu sur l'app en ligne, dans la page (NEIPA Test multi-houblons : 3 grains, « Couleur à renseigner », EBC —). La capture d'écran de l'étape 2 a expiré trois fois dans Chrome.
   **Le jury rapide est en vol** : Brasseur (Fable) a72f8d2e78ccab312, Contradicteur (Opus) ac4d81e570ab7e227, sur `jury-fermentescibles/dossier.md`.
   Ensuite : la fiche, puis 3 ou 4 séries v0 (12 à 16 concepts), avec une fixture de recette remplie à donner aux concepteurs.
+- 31.10, soir : **la fiche du jury est écrite** (`jury-fermentescibles/fiche.md` : 14 tranchées, 4 axes, 5 hypothèses, 2 accords). Le Contradicteur a corrigé le dossier : la création à la volée existe, le clavier PC est un acquis, et le « panel de comparatif » visait les houblons.
+  **Les 3 séries v0 sont lancées** (4 concepts chacune, 12 en tout, D204) : r (Opus) a48bacb65242c02e1, z (Fable) a57b38d5523944a01, u (Opus, libre) a550c22545d3a7792. La passe 2 repart chez les mêmes agents.
+  Ensuite : regarder leurs captures, publier le panel (un artefact neuf), faire le tri par le critique, puis la passe 2 sur 3 candidates.

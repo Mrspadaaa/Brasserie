@@ -20,6 +20,10 @@ Le brasseur, lui, choisit sur des variantes montrées (L24) ; l'utilisateur acco
 1. **Hypothèse** en une phrase, avec une confiance en % ; sous 70 %, dire pourquoi sur la même ligne.
 2. **Lire d'abord** : ce que les sources répondent déjà n'est pas mis au jury. Un fait du code se lit ou se mesure ;
    aucun regard n'est payé pour ça.
+   - Un point écrit « non vérifié » ou classé `MESURE` dans le dossier se vérifie avant l'envoi, ou bien il sort du dossier. Le 31.10, la
+     création à la volée, supposée absente, a faussé J3, J4 et J9 de Malts/sucres.
+   - Une phrase du brasseur se relit avec l'écran qu'elle vise (L01). Son « panel de comparatif » (SPEC l. 76) visait les houblons, pas
+     les malts.
 3. **Taille** : un cadrage par écran ou par outil. Une mission qui en contient plusieurs se découpe.
 4. **Le dossier** : `work/missions/<mission>/jury-<sujet>/dossier.md`. Il contient :
    - l'hypothèse ;
