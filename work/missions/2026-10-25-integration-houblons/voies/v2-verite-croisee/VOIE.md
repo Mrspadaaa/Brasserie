@@ -6,6 +6,10 @@ Agent : auteur (Sonnet). **Un audit, pas une correction** : rien dans `src/` ni 
 « Beer Maverick ne doit pas être la source de vérité. La source de vérité est un penel croisé de plusieurs source et donnée » (D200). Lis
 `cerveau/metier/verite-croisee.md` et `cerveau/metier/role-continu.md`.
 
+Précision (31.10, mot pour mot) : « SI on a que une seul source pour ce houblons, tempis il faut pas se limité à si une seul source on
+montre pas, non ». Croiser sert à dire la confiance, jamais à exclure : un houblon ou une valeur d'une seule source se montre, marqué
+« 1 source ».
+
 ## Ce qui est demandé
 1. **L'inventaire**, par un grep du code et des données : chaque endroit où une seule source fait foi.
    - L'identité des variétés : les ids `beermaverick-*`, le catalogue de base `proto-data.json`, les « ajouts » définis comme absents de

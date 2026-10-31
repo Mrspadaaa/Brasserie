@@ -17,6 +17,8 @@ et donnée ».
   sources et leur écart. Une valeur qui s'écarte se signale, sans être ni gardée seule ni effacée.
 - **Un usage** se lit sur la donnée réelle, comme les recettes de Beer Analytics, et non sur une étiquette ([[role-continu]]).
 - **Un inconnu** reste inconnu, jamais 0.
+- **Une seule source** suffit pour montrer : « SI on a que une seul source pour ce houblons, tempis il faut pas se limité à si une seul
+  source on montre pas, non ». Le nombre de sources dit la confiance ; il n'exclut jamais.
 
 ## Déjà acquis
 - D102 D : un banc à références indépendantes (Hopsteiner par moment, Hopslist, Hops Direct, ses jugements), jamais Beer Maverick seul.
