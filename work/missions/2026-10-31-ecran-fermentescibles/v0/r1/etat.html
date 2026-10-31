@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r1 — Malts/sucres 2/7 · la liste nette, l'ajout toujours ouvert (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--eau:#4F7E9B;--eaut:#2F5F7D;--alerte:#C8382F;--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;--or:#E0A02E;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+::selection{background:#F2DDA6}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.r1-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* Éléments communs, repris d'Identité r4-a (hors périmètre, J12). */
+.r1-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.r1-tb{display:flex;align-items:center;gap:6px;height:36px}
+.r1-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.r1-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.r1-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.r1-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.r1-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.r1-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.r1-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.r1-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.r1-rail .r1-fait i{background:var(--trait)}
+.r1-rail [aria-current] span{color:var(--t0);font-weight:600}
+.r1-rail [aria-current] i{background:var(--t0)}
+.r1-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.r1-bd>div{display:flex;align-items:baseline;gap:4px}
+.r1-l{font-size:14px;color:var(--t2)}
+.r1-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.r1-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);align-self:center;background:#fff}
+.r1-sw.r1-inc{border-style:dashed;border-color:var(--trait)}
+.r1-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 0}
+.r1-ret{min-height:28px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t1);font-size:14px}
+.r1-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.r1-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+
+/* Le corps : l'ajout en haut, toujours ouvert, puis la liste nette. */
+.r1-c{padding:10px 10px 0;min-height:740px;display:flex;flex-direction:column;gap:10px}
+.r1-aj{background:var(--panel);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:8px}
+.r1-fams{display:flex;gap:2px;background:var(--haut);border-radius:10px;padding:2px}
+.r1-fams button{flex:1;height:28px;border-radius:10px;font-size:14px;color:var(--t2)}
+.r1-fams [aria-pressed="true"]{background:#fff;color:var(--t0);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.r1-champ{position:relative;display:flex;align-items:center}
+.r1-in{width:100%;height:36px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 36px 0 10px;font-size:16px;color:var(--t0)}
+.r1-in::placeholder{color:#767676}
+.r1-in:focus{outline:2px solid var(--t0);outline-offset:-1px}
+.r1-ent{position:absolute;right:6px;width:24px;height:24px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);border:1px solid var(--bord);background:var(--panel)}
+.r1-puces{display:flex;flex-wrap:wrap;gap:6px;min-height:28px}
+.r1-pu{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px 0 6px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t1)}
+.r1-pu svg{color:var(--t2)}
+.r1-pu.r1-cree{border-style:dashed;color:var(--t0)}
+.r1-pu.r1-prem{border-color:var(--t0)}
+.r1-pu:active{transform:scale(.96)}
+
+.r1-liste{list-style:none;background:var(--panel);border-radius:16px;padding:0 10px}
+.r1-liste .r1-li:last-child{border-bottom:0}
+.r1-ample .r1-puces{display:grid;grid-template-columns:1fr 1fr}.r1-ample .r1-pu{height:36px}
+.r1-ample .r1-li{min-height:68px}.r1-ample .r1-barre{display:block}
+.r1-barre{grid-column:2/-1;display:none;height:6px;border-radius:9px;background:#fff;border:1px solid var(--bord);overflow:hidden;margin:-2px 0 2px}
+.r1-barre i{display:block;height:100%;border-radius:9px}
+.r1-barre i.r1-inc{background:repeating-linear-gradient(135deg,#BDBDBD 0 2px,#fff 2px 6px)}
+.r1-li{display:grid;grid-template-columns:32px 1fr auto 24px;align-items:center;gap:8px;min-height:56px;padding:6px 0;border-bottom:1px solid var(--bord)}
+.r1-li.r1-neuf{animation:r1-flash .6s ease-out}
+@keyframes r1-flash{from{background:#FBF1D8}to{background:transparent}}
+.r1-pas{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;letter-spacing:-.04em;font-weight:600;border:1px solid rgba(0,0,0,.18)}
+.r1-pas.r1-inc{border:1.5px dashed var(--trait);color:var(--t2);background:#fff}
+.r1-pas.r1-fam{border-radius:10px;background:#fff;border:1px solid var(--bordm);color:var(--t2)}
+.r1-ebc{width:44px;height:28px;border:1px solid var(--t0);border-radius:10px;text-align:center;font-family:var(--mono);font-size:14px;padding:0 2px}
+.r1-nm{min-width:0}
+.r1-nm b{display:block;font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r1-meta{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:12px;color:var(--t2);white-space:nowrap}
+.r1-mo{display:inline-flex;align-items:center;gap:2px;height:24px;padding:0 6px;border-radius:10px;border:1px solid var(--bord);font-size:12px;color:var(--t1);background:#fff}
+.r1-tag{height:24px;line-height:22px;padding:0 6px;border-radius:10px;background:var(--haut);font-size:12px;color:var(--t1)}
+.r1-pc{font-family:var(--mono);font-size:12px;color:var(--t1)}
+.r1-j{display:inline-flex;align-items:baseline;gap:1px;font-size:12px;color:var(--t1)}
+.r1-jin{width:3ch;height:24px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:center;font-family:var(--mono);font-size:13px;color:var(--t0)}
+.r1-st{display:flex;align-items:center;gap:2px}
+.r1-sb{width:28px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1);background:var(--panel)}
+.r1-sb:active{background:var(--haut)}
+.r1-kg{display:flex;align-items:baseline;gap:2px;height:32px;padding:0 6px;border:1px solid var(--bordm);border-radius:10px;background:#fff}
+.r1-kin{width:4.2ch;border:0;background:none;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0);line-height:30px;padding:0}
+.r1-kin:focus{outline:none}
+.r1-kg:focus-within{outline:2px solid var(--t0);outline-offset:-1px}
+.r1-kg.r1-zero .r1-kin{color:var(--attt)}
+.r1-u{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.r1-del{width:24px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t2);border-radius:10px}
+.r1-bas{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.r1-arens{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px 0 4px;border-radius:10px;border:1px dashed var(--att);color:var(--attt);font-size:14px;background:#fff}
+.r1-arens i{width:20px;height:20px;border-radius:50%;border:1.5px dashed var(--att);display:flex;align-items:center;justify-content:center;font-style:normal;font-family:var(--mono);font-size:12px;font-weight:600}
+.r1-pli{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 4px;font-size:14px;color:var(--t1);margin-left:auto}
+.r1-pli b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.r1-rep{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:16px}
+.r1-plic{display:none;background:var(--panel);border-radius:16px;padding:8px 10px;font-size:14px;color:var(--t1)}
+.r1-plic.r1-ouv{display:block}
+.r1-alerte{font-size:14px;color:var(--attt);background:#F6EBD3;border-radius:10px;padding:6px 10px}
+.r1-vide{padding:14px 0;color:var(--t2);font-size:14px;border-bottom:1px solid var(--bord)}
+.r1-annexe{margin:28px 10px 90px;padding-top:10px;border-top:1px dashed var(--bordm);display:flex;flex-direction:column;gap:10px}
+.r1-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.r1-ax{border:1px solid var(--bord);border-radius:16px;padding:8px 10px}
+.r1-ax>p{font-size:12px;color:var(--t2);margin-bottom:4px}
+.r1-ax .r1-liste{border-top:0}
+.r1-ax .r1-li:last-child{border-bottom:0}
+[data-m="ébullition"]{color:#A8291F!important;border-color:rgba(200,56,47,.4)!important;background:#FBEDEC!important}[data-m="fermentation"]{color:#3F6B2E!important;border-color:rgba(86,127,69,.45)!important;background:#EEF4EA!important}
+.r1-ax .r1-liste{background:none;padding:0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (min-width:700px){.r1-hd,.r1-c,.r1-annexe{max-width:560px;margin-left:auto;margin-right:auto}.r1-bd{max-width:540px;margin:8px auto 0}.r1-fab{right:calc(50% - 280px)}}
+</style></head>
+<body data-concept="r1">
+<header class="r1-hd">
+  <div class="r1-tb">
+    <button class="r1-ic" aria-label="Retour à l'étape précédente"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="r1-tt"><span class="r1-tn">Fermentescibles</span><span class="r1-tp">2/7</span></p>
+    <button class="r1-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="r1-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="r1-rail" aria-label="Étapes"><button class="r1-fait"><span>Identité</span><i></i></button><button aria-current="step"><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="r1-bd" data-commun="bandeau" data-role="bandeau"></div>
+<main class="r1-c">
+  <ul class="r1-liste" data-role="liste" aria-label="Malts et sucres de la recette"></ul>
+  <div class="r1-bas" data-role="bas"></div>
+  <div class="r1-plic" data-role="plic" id="r1-rend">Rendement <b class="r1-m">75 %</b> <span class="r1-rep">repère</span> : celui de l'équipement, tant que le profil n'en donne pas.</div>
+  <section class="r1-aj" aria-label="Ajouter">
+    <div class="r1-fams" role="group" aria-label="Famille" data-booster="familles" data-role="fams"></div>
+    <label class="r1-champ"><input class="r1-in" data-role="ajout" data-booster="ajout-clavier" placeholder="Nom, puis Entrée" enterkeyhint="enter" autocomplete="off" aria-label="Nom du malt ou du sucre à ajouter"><span class="r1-ent" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/></svg></span></label>
+    <div class="r1-puces" data-role="puces" data-booster="puces-habituels" aria-label="Habituels"></div>
+  </section>
+  <div data-role="alertes"></div>
+  <nav class="r1-pied" data-commun="pied"><button class="r1-ret">Retour</button><button class="r1-suiv">Suivant — Houblons</button></nav>
+</main>
+<section class="r1-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="r1-ax"><p>Recette vide : pas d'avertissement, l'ajout reste en haut</p><div class="r1-vide" style="border:0;padding:4px 0">Rien encore.</div></div>
+  <div class="r1-ax"><p>Lactose rangé à l'ajout, et son avertissement</p><ul class="r1-liste" data-annexe="lactose" inert></ul><p class="r1-alerte" style="margin-top:6px">Non fermentescible : il remonte la densité finale.</p></div>
+  <div class="r1-ax"><p>Fruit en fermentation, jour d'ajout</p><ul class="r1-liste" data-annexe="fruit" inert></ul></div>
+  <div class="r1-ax"><p>Stock vide pour la famille : la création à la volée</p><div class="r1-puces"><button class="r1-pu r1-cree"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Créer « Mangue »</button></div></div>
+  <div class="r1-ax"><p>OG haute (exemple d'une autre recette)</p><p class="r1-alerte">À 1,072, le moût sature : compte plutôt 70 % de rendement que 75 %.</p></div>
+</section>
+<button class="r1-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s,r){return (r||document).querySelector(s)};
+var VOL=30;
+var FAM={grain:{l:'Grain',m:'empâtage'},sucre:{l:'Sucre',m:'ébullition'},lactose:{l:'Lactose',m:'ébullition'},fruit:{l:'Fruit',m:'fermentation'},extrait:{l:'Extrait',m:'ébullition'}};
+var MOMS=['empâtage','ébullition','fermentation'];
+// Stock de démonstration (maquette) : des noms seulement, sans couleur connue.
+var STOCK={grain:['Pale Ale Malz','Münchner Malz','Carapils','Pilsner Malz','Weizenmalz hell','Haferflocken'],sucre:['Dextrose','Sucre candi'],lactose:['Lactose'],fruit:[],extrait:['Extrait sec clair']};
+function L(nom,sous,fam,kg,ebc,mom){return {nom:nom,sous:sous,fam:fam,mom:mom||FAM[fam].m,kg:kg,ebc:ebc==null?null:ebc,jour:3};}
+function recette(h){
+  var r=[L('Pilsner Malz','Weyermann','grain',5),L('Weizenmalz hell','Weyermann','grain',1.5),L('Haferflocken','flocons d’avoine','grain',1.5)];
+  if(h==='couleurs'||h==='sucre'){r[0].ebc=3.5;r[1].ebc=4;r[2].ebc=2;}
+  if(h==='sucre')r.push(L('Dextrose','','sucre',0.4));
+  if(h==='vide')r=[];
+  if(h==='huit'){r=r.concat([L('Pale Ale Malz','','grain',0.5),L('Carapils','','grain',0.3),L('Münchner Malz','','grain',0.25),L('Dextrose','','sucre',0.4),L('Lactose','','lactose',0.3)]);}
+  return r;
+}
+var st={fam:'grain',r:recette(location.hash.slice(1)),saisieEbc:-1};
+function fr(x,d){return x.toFixed(d).replace('.',',');}
+function kgTxt(x){if(!x)return '0';var s=x<1?x.toFixed(2):x.toFixed(1);if(Math.abs(parseFloat(s)-x)>1e-9)s=x.toFixed(3).replace(/0+$/,'');return s.replace('.',',');}
+function lit(s){var v=parseFloat(String(s).replace(',','.').replace(/[^0-9.]/g,''));return isFinite(v)?v:null;}
+function pas(x,dir){var s=dir>0?(x<1-1e-9?0.05:0.1):(x<=1+1e-9?0.05:0.1);return Math.max(0,Math.round((x+dir*s)*1000)/1000);}
+var TE=[[2,[246,233,170]],[4,[242,214,110]],[7,[234,186,64]],[12,[219,150,40]],[20,[184,98,30]],[35,[128,52,20]],[60,[74,30,12]],[150,[30,14,8]]];
+function teinte(e){if(e<=TE[0][0])return 'rgb('+TE[0][1]+')';for(var i=1;i<TE.length;i++){if(e<=TE[i][0]){var a=TE[i-1],b=TE[i],t=(e-a[0])/(b[0]-a[0]);return 'rgb('+a[1].map(function(c,k){return Math.round(c+(b[1][k]-c)*t)})+')';}}return 'rgb('+TE[TE.length-1][1]+')';}
+function grains(){return st.r.filter(function(f){return f.fam==='grain'});}
+function grainKg(){return grains().reduce(function(s,f){return s+f.kg},0);}
+// Morey, comme computeBeerColor : incalculable tant qu'une couleur de grain manque.
+function ebcBiere(){var g=grains();if(!g.length||g.some(function(f){return f.ebc==null}))return null;var mcu=g.reduce(function(s,f){return s+f.ebc/1.97*f.kg*2.2046226},0)/(VOL*0.26417205);return Math.round(1.4922*Math.pow(mcu,0.6859)*1.97*10)/10;}
+function part(f){var t=grainKg();return f.fam!=='grain'?'':(t>0?Math.round(f.kg/t*100)+' %':'— %');}
+function bandeau(){var e=ebcBiere(),g=grainKg();
+  q('[data-role="bandeau"]').innerHTML='<div><span class="r1-l">Grain</span><span class="r1-v">'+(g?kgTxt(g)+' kg':'—')+'</span></div><div><span class="r1-l">OG</span><span class="r1-v">—</span></div><div><span class="r1-l">IBU</span><span class="r1-v">24</span></div><div><span class="r1-l">EBC</span><span class="r1-sw'+(e==null?' r1-inc':'')+'"'+(e==null?'':' style="background:'+teinte(e)+'"')+'></span><span class="r1-v">'+(e==null?'—':fr(e,1))+'</span></div>';}
+var IC={cube:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9Z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>',moins:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M5 12h14"/></svg>',plus:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',del:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',chev:'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.33" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'};
+function pastille(f,i,inerte){
+  if(f.fam!=='grain')return '<span class="r1-pas r1-fam" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9Z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg></span>';
+  if(!inerte&&st.saisieEbc===i)return '<input class="r1-ebc" data-ebc="'+i+'" inputmode="decimal" enterkeyhint="done" aria-label="Couleur de '+f.nom+', en EBC" placeholder="EBC" autocomplete="off">';
+  if(f.ebc==null)return '<button class="r1-pas r1-inc" data-teinte="'+i+'" data-booster="teinte-pastille" aria-label="Couleur de '+f.nom+' à renseigner">?</button>';
+  return '<button class="r1-pas" data-teinte="'+i+'" data-booster="teinte-pastille" style="background:'+teinte(f.ebc)+';color:'+(f.ebc>20?'#fff':'#3a2a06')+'" aria-label="Couleur de '+f.nom+' : '+fr(f.ebc,1)+' EBC">'+(f.ebc<10?fr(f.ebc,1).replace(',0',''):Math.round(f.ebc))+'</button>';
+}
+function ligne(f,i,inerte){
+  var meta=(f.fam!=='grain'?'<span class="r1-tag">'+FAM[f.fam].l+'</span>':'')+'<button class="r1-mo" data-mom="'+i+'" data-m="'+f.mom+'" data-booster="moment-cycle" aria-label="Moment de '+f.nom+'">'+f.mom+IC.chev+'</button>'+
+    (f.mom==='fermentation'?'<label class="r1-j">J+<input class="r1-jin" data-jour="'+i+'" inputmode="numeric" value="'+f.jour+'" aria-label="Jour d\'ajout de '+f.nom+'"></label>':'')+
+    (f.fam==='grain'?'<span class="r1-pc">'+part(f)+'</span>':'');
+  return '<li class="r1-li" data-i="'+i+'">'+pastille(f,i,inerte)+'<div class="r1-nm"><b>'+f.nom+'</b><div class="r1-meta">'+meta+'</div></div>'+
+    '<div class="r1-st" data-booster="pas-masse"><button class="r1-sb" data-pas="-1" data-k="'+i+'" aria-label="Moins de '+f.nom+'">'+IC.moins+'</button><label class="r1-kg'+(f.kg?'':' r1-zero')+'"><input class="r1-kin" data-kg="'+i+'" inputmode="decimal" enterkeyhint="next" value="'+kgTxt(f.kg)+'" aria-label="Masse de '+f.nom+', en kg" autocomplete="off"><span class="r1-u">kg</span></label><button class="r1-sb" data-pas="1" data-k="'+i+'" aria-label="Plus de '+f.nom+'">'+IC.plus+'</button></div>'+
+    '<button class="r1-del" data-del="'+i+'" aria-label="Retirer '+f.nom+'">'+IC.del+'</button>'+
+    (f.fam==='grain'?'<i class="r1-barre" data-booster="part-barre" aria-hidden="true"><i class="'+(f.ebc==null?'r1-inc':'')+'" style="width:'+(grainKg()?f.kg/grainKg()*100:0)+'%'+(f.ebc==null?'':';background:'+teinte(f.ebc))+'"></i></i>':'')+'</li>';
+}
+// Les habituels : la famille choisie d'abord, puis les autres ; un toucher ajoute la ligne dans sa famille, figée.
+function puces(){
+  var t=q('[data-role="ajout"]').value.trim().toLowerCase(),l=[];
+  [st.fam].concat(Object.keys(FAM).filter(function(k){return k!==st.fam})).forEach(function(k){
+    if(t&&k!==st.fam)return;
+    var dans=st.r.filter(function(f){return f.fam===k}).map(function(f){return f.nom});
+    STOCK[k].forEach(function(n){if(dans.indexOf(n)<0&&(!t||n.toLowerCase().indexOf(t)>=0))l.push([n,k]);});
+  });
+  l=l.slice(0,8);
+  var h=l.map(function(p,k){return '<button class="r1-pu'+(t&&k===0?' r1-prem':'')+'" data-pu="'+p[0]+'" data-pf="'+p[1]+'">'+(p[1]==='grain'?IC.plus:IC.cube)+p[0]+'</button>'}).join('');
+  if(t.length>=2&&!l.some(function(n){return n[0].toLowerCase()===t}))h+='<button class="r1-pu r1-cree" data-cree="1">'+IC.plus+'Créer « '+q('[data-role="ajout"]').value.trim()+' »</button>';
+  q('[data-role="puces"]').innerHTML=h;
+}
+function fams(){q('[data-role="fams"]').innerHTML=Object.keys(FAM).map(function(k){return '<button data-fam="'+k+'" aria-pressed="'+(st.fam===k)+'">'+FAM[k].l+'</button>'}).join('');}
+function rendre(neuf){
+  bandeau();fams();puces();
+  var ul=q('[data-role="liste"]');
+  document.body.classList.toggle('r1-ample',st.r.length<=4);
+  ul.innerHTML=st.r.length?st.r.map(function(f,i){return ligne(f,i)}).join(''):'<li class="r1-vide">Rien encore.</li>';
+  if(neuf!=null){var li=ul.children[neuf];if(li)li.classList.add('r1-neuf');}
+  var manque=grains().filter(function(f){return f.ebc==null}).length;
+  q('[data-role="bas"]').innerHTML=st.r.length?((manque?'<button class="r1-arens" data-role="arens" data-booster="a-renseigner"><i>?</i><span class="r1-m">'+manque+'</span> à renseigner</button>':'')+
+    '<button class="r1-pli" data-role="pli" aria-expanded="'+q('[data-role="plic"]').classList.contains('r1-ouv')+'" aria-controls="r1-rend">Rendement <b>75 %</b><span class="r1-rep">repère</span>'+IC.chev+'</button>'):'';
+  var a='';st.r.forEach(function(f){if(f.fam==='lactose'&&f.kg>0)a='<p class="r1-alerte">Non fermentescible : il remonte la densité finale.</p>';});
+  q('[data-role="alertes"]').innerHTML=a;
+  var ie=q('[data-ebc]');if(ie)ie.focus();
+}
+function ajouter(nom,fam){
+  fam=fam||st.fam;
+  var d=st.r.findIndex(function(f){return f.fam===fam&&f.nom.toLowerCase()===nom.toLowerCase()});
+  var inp=q('[data-role="ajout"]');inp.value='';
+  if(d>=0){rendre(d);return;}
+  st.r.push(L(nom,'',fam,0));rendre(st.r.length-1);
+  var k=q('[data-kg="'+(st.r.length-1)+'"]');k.focus();k.select();
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.fam){st.fam=b.dataset.fam;rendre();q('[data-role="ajout"]').focus();}
+  else if(b.dataset.pu){ajouter(b.dataset.pu,b.dataset.pf);}
+  else if(b.dataset.cree){ajouter(q('[data-role="ajout"]').value.trim());}
+  else if(b.dataset.pas){var i=+b.dataset.k;st.r[i].kg=pas(st.r[i].kg,+b.dataset.pas);rendre();}
+  else if(b.dataset.del!=null){st.r.splice(+b.dataset.del,1);rendre();}
+  else if(b.dataset.mom!=null){var f=st.r[+b.dataset.mom];f.mom=MOMS[(MOMS.indexOf(f.mom)+1)%3];rendre();}
+  else if(b.dataset.teinte!=null){st.saisieEbc=+b.dataset.teinte;rendre();}
+  else if(b.dataset.role==='arens'){var i2=st.r.findIndex(function(f){return f.fam==='grain'&&f.ebc==null});st.saisieEbc=i2;rendre();}
+  else if(b.dataset.role==='pli'){q('[data-role="plic"]').classList.toggle('r1-ouv');rendre();}
+});
+document.addEventListener('keydown',function(e){
+  var t=e.target;
+  if(t.dataset.role==='ajout'){
+    if(e.key==='Enter'){e.preventDefault();var v=t.value.trim();if(!v)return;var p=q('[data-pu]');if(p&&v.length>=2)ajouter(p.dataset.pu,p.dataset.pf);else ajouter(v);}
+    else if(e.key==='Escape'){t.value='';puces();}
+  } else if(t.dataset.kg!=null){
+    var i=+t.dataset.kg;
+    if(e.key==='Enter'){e.preventDefault();t.blur();q('[data-role="ajout"]').focus();}
+    else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();st.r[i].kg=pas(st.r[i].kg,e.key==='ArrowUp'?1:-1);rendre();var k=q('[data-kg="'+i+'"]');k.focus();}
+  } else if(t.dataset.ebc!=null&&(e.key==='Enter'||e.key==='Escape')){e.preventDefault();var v2=lit(t.value);if(e.key==='Enter'&&v2!=null)st.r[+t.dataset.ebc].ebc=v2;st.saisieEbc=-1;rendre();}
+});
+document.addEventListener('input',function(e){if(e.target.dataset.role==='ajout')puces();});
+document.addEventListener('change',function(e){var t=e.target;
+  if(t.dataset.kg!=null){var v=lit(t.value);st.r[+t.dataset.kg].kg=v==null?0:Math.round(v*1000)/1000;rendre();}
+  if(t.dataset.jour!=null){var j=lit(t.value);if(j!=null)st.r[+t.dataset.jour].jour=Math.round(j);rendre();}
+});
+document.addEventListener('focusout',function(e){if(e.target.dataset&&e.target.dataset.ebc!=null){var v=lit(e.target.value);if(v!=null)st.r[+e.target.dataset.ebc].ebc=v;st.saisieEbc=-1;setTimeout(rendre,0);}});
+window.addEventListener('hashchange',function(){st.r=recette(location.hash.slice(1));rendre();});
+rendre();
+q('[data-annexe="lactose"]').innerHTML=ligne(L('Lactose','','lactose',0.3),90,true);
+q('[data-annexe="fruit"]').innerHTML=ligne(L('Purée de mangue','','fruit',1.0),91,true);
+})();</script>
+</body></html>

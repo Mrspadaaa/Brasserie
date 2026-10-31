@@ -1,0 +1,36 @@
+u1 recette   pied bas 494 px (0.59 écran) ; débord 0
+u1 couleurs  pied bas 462 px (0.55 écran) ; débord 0
+u1 sucre     pied bas 516 px (0.61 écran) ; débord 0
+u1 lactose   pied bas 588 px (0.70 écran) ; débord 0
+u1 huit      pied bas 730 px (0.86 écran) ; débord 0
+u1 vide      pied bas 333 px (0.39 écran) ; débord 0
+u1 clavier : après Entrée, focus sur « Masse de Pale Ale Malz, en kg » ; après la masse, focus sur « q »
+u1 couleurs 3,5 · 4 · 2 tapées : EBC du bandeau « 7,3 »
+u1 erreurs de script : 0
+u2 recette   pied bas 552 px (0.65 écran) ; débord 0
+u2 couleurs  pied bas 514 px (0.61 écran) ; débord 0
+u2 sucre     pied bas 581 px (0.69 écran) ; débord 0
+u2 lactose   pied bas 668 px (0.79 écran) ; débord 0
+u2 huit      pied bas 853 px (1.01 écran) ; débord 0
+u2 vide      pied bas 311 px (0.37 écran) ; débord 0
+u2 clavier : après Entrée, focus sur « Masse de Pale Ale Malz, en kg » ; après la masse, focus sur « q »
+u2 couleurs 3,5 · 4 · 2 tapées : EBC du bandeau « 7,3 »
+u2 erreurs de script : 0
+u3 recette   pied bas 620 px (0.73 écran) ; débord 0
+u3 couleurs  pied bas 620 px (0.73 écran) ; débord 0
+u3 sucre     pied bas 672 px (0.80 écran) ; débord 0
+u3 lactose   pied bas 744 px (0.88 écran) ; débord 0
+u3 huit      pied bas 880 px (1.04 écran) ; débord 0
+u3 vide      pied bas 463 px (0.55 écran) ; débord 0
+u3 clavier : après Entrée, focus sur « Masse de Pale Ale Malz, en kg » ; après la masse, focus sur « q »
+u3 couleurs 3,5 · 4 · 2 tapées : EBC du bandeau « 7,3 »
+u3 erreurs de script : 0
+u4 recette   pied bas 531 px (0.63 écran) ; débord 0
+u4 couleurs  pied bas 495 px (0.59 écran) ; débord 0
+u4 sucre     pied bas 560 px (0.66 écran) ; débord 0
+u4 lactose   pied bas 644 px (0.76 écran) ; débord 0
+u4 huit      pied bas 856 px (1.01 écran) ; débord 0
+u4 vide      pied bas 300 px (0.36 écran) ; débord 0
+u4 clavier : après Entrée, focus sur « Masse de Pale Ale Malz, en kg » ; après la masse, focus sur « q »
+u4 couleurs 3,5 · 4 · 2 tapées : EBC du bandeau « 7,3 »
+u4 erreurs de script : 0

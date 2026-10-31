@@ -1,0 +1,5 @@
+u1 · 58 textes mesurés · pire « Grain » 5.27:1
+u2 · 60 textes mesurés · pire « Grain » 5.27:1 · 2 sur un fond peint par un autre élément
+u3 · 58 textes mesurés · pire « Grain » 5.27:1 · 4 sur fond d'image ou de dégradé, non mesurables
+u4 · 56 textes mesurés · pire « Grain » 5.27:1
+CONTRASTE OK

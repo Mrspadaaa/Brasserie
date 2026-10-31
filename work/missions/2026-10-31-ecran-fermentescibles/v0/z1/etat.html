@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z1 — Malts/sucres 2/7 · le champ toujours prêt, la ligne qui se tape (v0 froide, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--hop:#567F45;--hopt:#3F6B2E;--eau:#4F7E9B;--eaut:#2F5F7D;--alerte:#C8382F;--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+::selection{background:#D5E3EC;color:var(--t0)}
+.z1-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+/* ── chrome commun (J12), repris de r4-a ── */
+.z1-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.z1-tb{display:flex;align-items:center;gap:6px;height:36px}
+.z1-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.z1-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.z1-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.z1-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.z1-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.z1-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.z1-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.z1-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.z1-rail [aria-current] span{color:var(--t0);font-weight:600}
+.z1-rail [aria-current] i{background:var(--t0)}
+.z1-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.z1-bd>div{display:flex;align-items:baseline;gap:4px}
+.z1-bd .z1-l{font-size:14px;color:var(--t2)}
+.z1-bd .z1-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.z1-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.z1-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.z1-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.z1-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 10px}
+.z1-ret{min-height:24px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px}
+.z1-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.z1-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.z1-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.z1-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+/* ── la teinte : pastille pleine si connue, tiretée « ? » sinon (J7) ── */
+.z1-sw{width:16px;height:16px;border-radius:50%;border:1px solid var(--bordm);flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--t2);background:#fff}
+.z1-sw.z1-inc{border-style:dashed;border-color:var(--trait)}
+.z1-bd .z1-sw{width:10px;height:10px;font-size:0;align-self:center}
+/* ── corps ── */
+.z1-c{padding:10px 10px 0;min-height:764px;display:flex;flex-direction:column;gap:8px}
+.z1-ajout{display:flex;align-items:center;gap:6px;height:34px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 4px 0 10px}
+.z1-ajout:focus-within{border-color:var(--t0)}
+.z1-ajout svg{color:var(--t2);flex-shrink:0}
+.z1-nom{flex:1;min-width:0;height:32px;border:0;background:none;font-size:16px;color:var(--t0);padding:0}
+.z1-nom::placeholder{color:var(--t2)}
+.z1-nom:focus{outline:none}
+.z1-fam{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 6px 0 9px;border-radius:10px;border:1px solid var(--bordm);background:var(--panel);font-size:14px;color:var(--t0);font-weight:600;flex-shrink:0}
+.z1-fam svg{color:var(--t2)}
+.z1-kbd{font-family:var(--mono);font-size:12px;color:var(--t2);border:1px solid var(--bord);border-radius:10px;padding:0 5px;line-height:18px;margin-right:4px}
+.z1-fams{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:-2px}
+.z1-fams button{height:30px;border-radius:10px;border:1px solid var(--bord);font-size:14px;color:var(--t1);background:#fff}
+.z1-fams button[aria-checked="true"]{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.z1-ren{height:20px;padding:0 6px;border-radius:10px;border:1px dashed var(--att);font-size:12px;color:var(--attt);white-space:nowrap}
+.z1-creer{display:none;align-items:center;gap:8px;min-height:32px;margin-top:-4px;padding:0 10px;border:1px dashed var(--bordm);border-radius:10px;font-size:14px;color:var(--t1)}
+.z1-creer.z1-on{display:flex}
+.z1-creer b{color:var(--t0)}
+.z1-creer kbd{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--t2);border:1px solid var(--bord);border-radius:10px;padding:0 5px;line-height:18px}
+.z1-liste{list-style:none;display:flex;flex-direction:column;border:1px solid var(--bord);border-radius:16px;overflow:hidden;background:#fff}
+.z1-lg{display:grid;grid-template-columns:16px 1fr auto;grid-template-rows:auto auto;column-gap:8px;row-gap:4px;align-items:center;padding:9px 10px 10px;min-height:58px;border-top:1px solid var(--bord);position:relative}
+.z1-lg:first-child{border-top:0}
+.z1-lg .z1-sw{grid-row:1/3;grid-column:1;align-self:center}
+.z1-lg .z1-n{grid-column:2;grid-row:1}
+.z1-lg .z1-mt{grid-column:2;grid-row:2}
+.z1-n{display:flex;align-items:baseline;gap:6px;min-width:0}
+.z1-n b{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z1-n small{font-size:12px;color:var(--t2);white-space:nowrap}
+.z1-mt{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.z1-mom{height:20px;padding:0 7px;border-radius:10px;border:1px solid var(--bord);font-size:12px;color:var(--t1);background:var(--panel);display:inline-flex;align-items:center;gap:4px}
+.z1-mom svg{width:12px;height:12px}
+.z1-part{position:relative;flex:1;max-width:120px;height:6px;border-radius:9px;background:var(--bord);overflow:hidden}
+.z1-part i{position:absolute;left:0;top:0;bottom:0;background:var(--t0);border-radius:9px}
+.z1-pc{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--t1);min-width:4ch;text-align:right}
+.z1-kg{grid-row:1/3;grid-column:3;display:flex;align-items:center;gap:2px}
+.z1-pm{width:24px;height:28px;border-radius:10px;color:var(--t2);display:flex;align-items:center;justify-content:center}
+.z1-pm:active{background:var(--haut)}
+.z1-in{width:3.4ch;height:32px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0);padding:0;border-radius:0;caret-color:var(--t0)}
+.z1-in:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z1-u{font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:2px}
+.z1-jour{grid-column:2/4;grid-row:3;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.z1-jour .z1-in{width:2.4ch;height:26px;font-size:14px}
+.z1-avert{grid-column:2/4;grid-row:3;font-size:12px;color:var(--attt);line-height:1.25}
+.z1-vide{padding:10px;font-size:14px;color:var(--t2)}
+.z1-marq{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 10px;border-radius:10px;background:#F6EBD3;border:1px solid #E8D3A6;color:var(--attt);font-size:14px;width:100%;text-align:left}
+.z1-marq b{font-family:var(--mono);color:var(--attt)}
+.z1-marq svg{margin-left:auto;flex-shrink:0}
+.z1-marq[aria-expanded="true"] svg{transform:rotate(180deg)}
+.z1-coul{display:none;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.z1-coul.z1-on{display:grid}
+.z1-ce{display:flex;flex-direction:column;gap:2px;padding:6px 8px;border:1px solid var(--bord);border-radius:10px}
+.z1-ce span{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z1-ce label{display:flex;align-items:baseline;gap:3px}
+.z1-plis{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.z1-pli{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border:1px solid var(--bord);border-radius:16px;text-align:left;min-height:48px;position:relative;width:100%}
+.z1-pli b{font-family:var(--mono);font-size:14px;color:var(--t0)}
+.z1-pli span{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:6px}
+.z1-pli .z1-chev{position:absolute;right:8px;top:14px;color:var(--t2)}
+.z1-tagr{font-family:var(--sans);font-size:12px;font-weight:400;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:16px;margin-left:4px}
+.z1-dens{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:#F6EBD3;border:1px solid #E8D3A6;color:var(--attt);font-size:14px}
+.z1-dens b{font-family:var(--mono)}
+.z1-ax{margin-bottom:8px;border:1px solid var(--bord);border-radius:16px;padding:8px 10px}
+.z1-ax>h3{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px}
+@media (min-width:700px){.z1-hd,.z1-c,.z1-annexe{max-width:560px;margin-left:auto;margin-right:auto}.z1-bd{max-width:540px;margin:8px auto 0}.z1-fab{right:calc(50% - 280px)}}
+</style></head>
+<body data-concept="z1">
+<header class="z1-hd" data-commun="en-tete">
+  <div class="z1-tb">
+    <button class="z1-ic" aria-label="Retour"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="z1-tt"><span class="z1-tn">Fermentescibles</span><span class="z1-tp">2/7</span></p>
+    <button class="z1-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="z1-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="z1-rail" aria-label="Étapes"><button><span>Identité</span><i></i></button><button aria-current="step"><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="z1-bd" data-commun="bandeau">
+  <div><span class="z1-l">Grain</span><span class="z1-v"><span data-role="grain">8</span> kg</span></div>
+  <div><span class="z1-l">OG</span><span class="z1-v">—</span></div>
+  <div><span class="z1-l">IBU</span><span class="z1-v">24</span><span class="z1-pst" role="img" aria-label="style 25–60 IBU"><b style="left:31%;width:44%"></b><em style="left:30%"></em></span></div>
+  <div><span class="z1-l">EBC</span><span class="z1-sw z1-inc" data-role="bsw"></span><span class="z1-v" data-role="bebc">—</span></div>
+</div>
+<main class="z1-c">
+  <!-- L'idée : l'ajout est un champ toujours prêt, en tête ; nom, Entrée, puis la masse (J1, J5). La famille se choisit à côté, segmentée. -->
+  <div class="z1-ajout" data-booster="champ-toujours-pret">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    <input class="z1-nom" data-role="nom" placeholder="Ajouter un malt, un sucre…" aria-label="Nom du fermentescible" autocomplete="off" enterkeyhint="next">
+    <kbd class="z1-kbd" aria-hidden="true">↵</kbd>
+  </div>
+  <!-- Les 5 familles (J5), en segments : la famille de la prochaine ligne. -->
+  <div class="z1-fams" role="radiogroup" aria-label="Famille du prochain ajout" data-role="fam" data-booster="familles-segmentees">
+    <button role="radio" aria-checked="true" data-fam="grain" data-role="fam-grain">Grain</button><button role="radio" aria-checked="false" data-fam="sucre" data-role="fam-sucre">Sucre</button><button role="radio" aria-checked="false" data-fam="lactose" data-role="fam-lactose">Lactose</button><button role="radio" aria-checked="false" data-fam="fruit" data-role="fam-fruit">Fruit</button><button role="radio" aria-checked="false" data-fam="extrait" data-role="fam-extrait">Extrait</button>
+  </div>
+  <div class="z1-creer" data-role="creer" aria-live="polite"></div>
+
+  <ul class="z1-liste" data-role="liste" aria-label="Fermentescibles de la recette"></ul>
+
+  <button class="z1-marq" data-role="marq" aria-expanded="false" aria-controls="z1-coul" data-booster="couleurs-a-renseigner"><span class="z1-sw z1-inc">?</span><span><b data-role="nbinc">3</b> couleurs à renseigner</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="z1-coul" id="z1-coul" data-role="coul"></div>
+
+  <div class="z1-plis">
+    <button class="z1-pli" aria-expanded="false"><span>Rendement</span><b>75 %<span class="z1-tagr">repère</span></b><span class="z1-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+    <button class="z1-pli" aria-expanded="false"><span>Volume</span><b>30 L</b><span class="z1-chev"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+  </div>
+  <nav class="z1-pied" data-commun="pied"><button class="z1-ret">Retour</button><button class="z1-suiv">Suivant — Houblons</button></nav>
+</main>
+
+<section class="z1-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="z1-ax"><h3>Recette vide</h3>
+    <div class="z1-ajout" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><input class="z1-nom" placeholder="Ajouter un malt, un sucre…" aria-label="Nom du fermentescible (recette vide)"><kbd class="z1-kbd">↵</kbd></div>
+    <ul class="z1-liste"><li class="z1-vide">Rien encore.</li></ul>
+    <p style="font-size:12px;color:var(--t2);margin-top:6px">Ni bandeau, ni marque de couleur, ni avertissement.</p>
+  </div>
+  <div class="z1-ax"><h3>En tapant « dex » (stock sans sucre : création à la volée)</h3>
+    <div class="z1-ajout" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><input class="z1-nom" value="dex" aria-label="Nom en cours de saisie"><kbd class="z1-kbd">↵</kbd></div>
+    <div class="z1-creer z1-on">Créer <b>« dex »</b> · sucre · à l'ébullition<kbd>↵</kbd></div>
+  </div>
+  <div class="z1-ax"><h3>Lactose 0,5 kg à l'ébullition, puis fruit en fermentation</h3>
+    <ul class="z1-liste">
+      <li class="z1-lg"><span class="z1-sw" style="background:#fff;border-color:var(--bordm)"></span><div class="z1-n"><b>Lactose</b></div><div class="z1-kg"><button class="z1-pm" aria-label="Moins">−</button><input class="z1-in" value="0,5" inputmode="decimal" aria-label="Masse de lactose"><span class="z1-u">kg</span><button class="z1-pm" aria-label="Plus">+</button></div><div class="z1-mt"><span class="z1-mom">ébullition</span><span class="z1-part"><i style="width:6%"></i></span><span class="z1-pc">6 %</span></div><p class="z1-avert">Non fermentescible : remonte la densité finale.</p></li>
+      <li class="z1-lg"><span class="z1-sw" style="background:#fff;border-color:var(--bordm)"></span><div class="z1-n"><b>Purée de mangue</b></div><div class="z1-kg"><button class="z1-pm" aria-label="Moins">−</button><input class="z1-in" value="1,0" inputmode="decimal" aria-label="Masse de purée de mangue"><span class="z1-u">kg</span><button class="z1-pm" aria-label="Plus">+</button></div><div class="z1-mt"><span class="z1-mom">fermentation</span><span class="z1-part"><i style="width:11%"></i></span><span class="z1-pc">11 %</span></div><div class="z1-jour">jour <input class="z1-in" value="3" inputmode="numeric" aria-label="Jour d'ajout"></div></li>
+    </ul>
+  </div>
+  <div class="z1-ax"><h3>Densité trop haute (OG calculée)</h3>
+    <div class="z1-dens"><b>1,066</b><span>le moût sature au rendement repère de 75 %. Plus de volume, ou moins de grain.</span></div>
+  </div>
+</section>
+<button class="z1-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s,r){return (r||document).querySelector(s)};
+var FAM={grain:{mom:'empâtage',ferm:true},sucre:{mom:'ébullition',ferm:true},lactose:{mom:'ébullition',ferm:false},fruit:{mom:'fermentation',ferm:true},extrait:{mom:'ébullition',ferm:true}};
+// Sa recette, telle que l'app l'affiche le 31.10 : trois grains, couleurs à renseigner (J7).
+var L=[{nom:'Pilsner Malz',marque:'Weyermann',fam:'grain',mom:'empâtage',kg:5,ebc:null},
+       {nom:'Weizenmalz hell',marque:'Weyermann',fam:'grain',mom:'empâtage',kg:1.5,ebc:null},
+       {nom:'Haferflocken',marque:'flocons d’avoine',fam:'grain',mom:'empâtage',kg:1.5,ebc:null}];
+var VOL=30, fam='grain', ouvertUneFois=false;
+function fr(x,d){return x.toFixed(d==null?1:d).replace('.',',');}
+function lit(s){var v=parseFloat(String(s).replace(',','.').replace(/[^0-9.]/g,''));return isFinite(v)?v:null;}
+function teinte(e){ // rendu d'une couleur connue : paille → noire
+  var s=[[0,'#F8E9B8'],[8,'#F2C14E'],[14,'#E0A02E'],[26,'#C77A2C'],[40,'#A0522D'],[60,'#6B3A1E'],[80,'#2B1A12']];
+  for(var i=1;i<s.length;i++){if(e<=s[i][0]){var a=s[i-1],b=s[i],t=(e-a[0])/(b[0]-a[0]);return mix(a[1],b[1],t);}} return s[s.length-1][1];}
+function mix(a,b,t){var p=function(h){return [1,3,5].map(function(i){return parseInt(h.slice(i,i+2),16)})};var x=p(a),y=p(b);return '#'+x.map(function(c,i){return Math.round(c+(y[i]-c)*t).toString(16).padStart(2,'0')}).join('');}
+function ebcTotal(){ // Morey ; null dès qu'une couleur manque (src/domain/beerColor.ts)
+  var g=L.filter(function(l){return l.fam==='grain'}); if(!g.length||g.some(function(l){return l.ebc==null})) return null;
+  var gal=VOL*0.26417205, mcu=0; g.forEach(function(l){var lov=(l.ebc/1.97+0.76)/1.3546; mcu+=lov*l.kg*2.2046226;}); mcu/=gal;
+  return 1.4922*Math.pow(mcu,0.6859)*1.97; }
+function rendu(){
+  var ul=q('[data-role="liste"]'); ul.innerHTML='';
+  var tg=L.filter(function(l){return l.fam==='grain'}).reduce(function(s,l){return s+l.kg},0);
+  var tt=L.reduce(function(s,l){return s+l.kg},0);
+  L.forEach(function(l,i){
+    var li=document.createElement('li'); li.className='z1-lg';
+    var part=l.fam==='grain'?(tg?l.kg/tg*100:0):(tt?l.kg/tt*100:0);
+    var sw=l.fam==='grain'?(l.ebc==null?'<span class="z1-sw z1-inc">?</span>':'<span class="z1-sw" style="background:'+teinte(l.ebc)+'" title="'+fr(l.ebc)+' EBC"></span>'):'<span class="z1-sw" style="border-color:var(--bordm)"></span>';
+    li.innerHTML=sw+'<div class="z1-n"><b>'+l.nom+'</b>'+(l.marque?'<small>'+l.marque+'</small>':'')+'</div>'
+      +'<div class="z1-kg"><button class="z1-pm" aria-label="Moins" data-d="-1">−</button><input class="z1-in" data-role="kg" inputmode="decimal" enterkeyhint="done" value="'+fr(l.kg)+'" aria-label="Masse de '+l.nom+', en kilogrammes" autocomplete="off"><span class="z1-u">kg</span><button class="z1-pm" aria-label="Plus" data-d="1">+</button></div>'
+      +'<div class="z1-mt"><span class="z1-mom">'+l.mom+'</span><span class="z1-part"><i style="width:'+Math.min(100,part)+'%"></i></span><span class="z1-pc">'+Math.round(part)+' %'+(l.fam!=='grain'?' ferm.':'')+'</span>'+(l.fam==='grain'&&l.ebc==null?'<button class="z1-ren" data-role="ren" data-i="'+i+'">à renseigner</button>':'')+'</div>'
+      +(l.mom==='fermentation'?'<div class="z1-jour">jour <input class="z1-in" inputmode="numeric" value="'+(l.jour||3)+'" aria-label="Jour d’ajout de '+l.nom+'"></div>':'')
+      +(l.fam==='lactose'&&l.kg>0?'<p class="z1-avert">Non fermentescible : remonte la densité finale.</p>':'');
+    var ren=q('[data-role="ren"]',li); if(ren) ren.addEventListener('click',function(){q('[data-role="coul"]').classList.add('z1-on');q('[data-role="marq"]').setAttribute('aria-expanded','true');var k=L.filter(function(x){return x.fam==='grain'}).indexOf(l);var f=q('[data-role="coul"]').querySelectorAll('input')[k];if(f)f.focus();});
+    var inp=q('[data-role="kg"]',li);
+    champ(inp,function(v){l.kg=v;rendu();},function(){return l.kg});
+    li.querySelectorAll('.z1-pm').forEach(function(b){b.addEventListener('click',function(){var p=l.kg<1?0.05:0.1;l.kg=Math.max(0,Math.round((l.kg+p*Number(b.dataset.d))*100)/100);rendu();});});
+    ul.appendChild(li);
+  });
+  if(!L.length) ul.innerHTML='<li class="z1-vide">Rien encore.</li>';
+  q('[data-role="grain"]').textContent=fr(tg,tg%1?1:0);
+  var inc=L.filter(function(l){return l.fam==='grain'&&l.ebc==null}).length, e=ebcTotal();
+  q('[data-role="nbinc"]').textContent=inc; q('[data-role="marq"]').style.display=inc?'':'none';
+  q('[data-role="bebc"]').textContent=e==null?'—':'~'+fr(e); var bs=q('[data-role="bsw"]'); bs.className='z1-sw'+(e==null?' z1-inc':''); bs.style.background=e==null?'#fff':teinte(e);
+  var c=q('[data-role="coul"]'); c.innerHTML=''; L.forEach(function(l){ if(l.fam!=='grain')return; var d=document.createElement('div'); d.className='z1-ce';
+    d.innerHTML='<span>'+l.nom+'</span><label><input class="z1-in" inputmode="decimal" enterkeyhint="next" value="'+(l.ebc==null?'':fr(l.ebc))+'" aria-label="Couleur de '+l.nom+', en EBC" style="width:3.4ch"><span class="z1-u">EBC</span></label>';
+    var ci=q('input',d); ci.addEventListener('change',function(){var v=lit(ci.value);l.ebc=v;rendu();q('[data-role="coul"]').classList.add('z1-on');});
+    ci.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();var all=[].slice.call(c.querySelectorAll('input'));var i=all.indexOf(ci);ci.blur();var n=c.querySelectorAll('input')[i+1];if(n)n.focus();}});
+    c.appendChild(d); });
+}
+function champ(el,set,get){
+  var avant;
+  el.addEventListener('focus',function(){avant=get();el.select();});
+  el.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();el.blur();}
+    else if(e.key==='Escape'){e.preventDefault();el.value=fr(avant);el.blur();}
+    else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();var v=get(),p=v<1?0.05:0.1;set(Math.max(0,Math.round((v+(e.key==='ArrowUp'?p:-p))*100)/100));}
+  });
+  el.addEventListener('blur',function(){var v=lit(el.value);set(v==null?avant:v);});
+}
+var nom=q('[data-role="nom"]'), creer=q('[data-role="creer"]');
+var FAMS=['grain','sucre','lactose','fruit','extrait'];
+q('[data-role="fam"]').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;fam=b.dataset.fam;q('[data-role="fam"]').querySelectorAll('button').forEach(function(x){x.setAttribute('aria-checked',x===b?'true':'false')});aide();});
+function aide(){var t=nom.value.trim();creer.classList.toggle('z1-on',t.length>=2);if(t.length>=2)creer.innerHTML='Créer <b>« '+t+' »</b> · '+fam+' · '+(fam==='fruit'?'en fermentation':fam==='grain'?'à l’empâtage':'à l’ébullition')+'<kbd>↵</kbd>';}
+nom.addEventListener('input',aide);
+// Nom, Entrée, puis la masse : la ligne naît à 0 kg (J5) et le curseur passe au poids.
+nom.addEventListener('keydown',function(e){ if(e.key!=='Enter')return; e.preventDefault(); var t=nom.value.trim(); if(t.length<2)return;
+  var l={nom:t.charAt(0).toUpperCase()+t.slice(1),marque:'',fam:fam,mom:FAM[fam].mom,kg:0,ebc:null,jour:3}; L.push(l); nom.value=''; aide(); rendu();
+  var ins=document.querySelectorAll('[data-role="liste"] [data-role="kg"]'); var last=ins[ins.length-1]; if(last){last.focus();} });
+q('[data-role="marq"]').addEventListener('click',function(){var o=q('[data-role="coul"]').classList.toggle('z1-on');q('[data-role="marq"]').setAttribute('aria-expanded',o);if(o){var f=q('[data-role="coul"] input');if(f)f.focus();}});
+rendu();
+})();</script>
+</body></html>

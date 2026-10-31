@@ -32,6 +32,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Malts/sucres · panel v0 (12 concepts) | 31.10 v1 | https://claude.ai/artifact/Hn6WHBqAAEzV7UuJj9qCoh | `panel-v0.html` |
 
 ## Sources
 - `src/pages/BrewWizard.tsx` (étape `fermentescibles`, l. 437 ; `fermentables`, l. 660)
@@ -47,3 +48,8 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 - 31.10, soir : **la fiche du jury est écrite** (`jury-fermentescibles/fiche.md` : 14 tranchées, 4 axes, 5 hypothèses, 2 accords). Le Contradicteur a corrigé le dossier : la création à la volée existe, le clavier PC est un acquis, et le « panel de comparatif » visait les houblons.
   **Les 3 séries v0 sont lancées** (4 concepts chacune, 12 en tout, D204) : r (Opus) a48bacb65242c02e1, z (Fable) a57b38d5523944a01, u (Opus, libre) a550c22545d3a7792. La passe 2 repart chez les mêmes agents.
   Ensuite : regarder leurs captures, publier le panel (un artefact neuf), faire le tri par le critique, puis la passe 2 sur 3 candidates.
+- 31.10, soir : **les 12 concepts v0 sont rendus** et le panel est publié (Hn6WHBqAAEzV7UuJj9qCoh).
+  - r : MOTS OK, COMMUN échoue sur les couleurs (voulu : ses couleurs sont inconnues), PANEL échoue parce que r1 est trop vide.
+  - z : PAGE OK ×4, MOTS OK.
+  - u : COMMUN OK, MOTS OK, contraste OK.
+  Le tri du critique est en vol (`critique/SYNTHESE.md`, 3 candidates). Ensuite : la passe 2 chez les mêmes agents (r a48bacb65242c02e1, z a57b38d5523944a01, u a550c22545d3a7792).

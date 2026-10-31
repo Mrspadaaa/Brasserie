@@ -1,0 +1,138 @@
+<title>Malts/sucres · panel v0 · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Le panel v0 de l'étape Malts/sucres (D204 : 12 concepts en 3 séries). Une rangée par série, la référence en tête ; chaque capture
+   s'ouvre en grand au toucher. Polices système seules. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --froide: #2d5f8a;
+  --tiede: #8a6a10;
+  --chaude: #a3401c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --froide: #8ab8e0; --tiede: #e3c26a; --chaude: #f0937a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --froide: #8ab8e0; --tiede: #e3c26a; --chaude: #f0937a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 26px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.2rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.legende { font-size: 0.875rem; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+section { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; align-items: start; }
+.vue { margin: 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.reference .ecran { max-width: 360px; border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 3px; }
+figcaption b { font-weight: 800; }
+.idee { color: var(--discret); }
+.chaleur { font-weight: 700; }
+.froide { color: var(--froide); }
+.tiede { color: var(--tiede); }
+.chaude { color: var(--chaude); }
+@media (min-width: 700px) { .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 960px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Malts/sucres 2/7</p>
+    <h1>Malts/sucres · panel v0 · 31.10</h1>
+    <div id="a-choisir">
+      <p>L'étape 2, en 12 concepts sur ta recette « NEIPA Test multi-houblons ».</p>
+      <p>Chacun garde l'acquis : voir la recette d'un coup d'œil, ajouter vite, taper le nom puis la masse au clavier.</p>
+      <p>Tes couleurs de malts sont inconnues, et chacun le dit (« ? »). Le critique les classe ensuite.</p>
+    </div>
+    <div class="reference">
+      <figure class="vue">
+        <button class="ecran" type="button" data-agrandir data-src="inventaire/captures/fermentescibles-vide-390.png" data-titre="Référence · l'étape 2 aujourd'hui (recette vide)"><img src="inventaire/captures/fermentescibles-vide-390.png" alt="L'étape Malts/sucres aujourd'hui"></button>
+        <figcaption><b>La référence</b><span class="idee">L'étape 2 aujourd'hui, sur une recette vide. Une capture remplie n'a pas pu être prise ; sur l'app en ligne, tes trois malts y portent « Couleur à renseigner ».</span></figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <section aria-labelledby="t-r">
+    <h2 id="t-r">Série r · des représentations, dans la langue de r4-a</h2>
+    <div class="planche">
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r1/r1-haut.png" data-titre="r1 · froide · La liste nette, le rayon sous la main"><img src="v0/r1/r1-haut.png" alt="Capture r1"></button><figcaption><span><b>r1</b> · <span class="chaleur froide">froide</span></span><span>La liste nette, le rayon sous la main</span><span class="idee">− masse +, une barre de part, tes malts habituels sous la liste.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r2/r2-haut.png" data-titre="r2 · tiède · Une règle pour tous les grains"><img src="v0/r2/r2-haut.png" alt="Capture r2"></button><figcaption><span><b>r2</b> · <span class="chaleur tiede">tiède</span></span><span>Une règle pour tous les grains</span><span class="idee">Chaque masse est un curseur, comme r4-a ; la barre compose le grain.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r3/r3-haut.png" data-titre="r3 · chaude · La colonne de grain se remplit"><img src="v0/r3/r3-haut.png" alt="Capture r3"></button><figcaption><span><b>r3</b> · <span class="chaleur chaude">chaude</span></span><span>La colonne de grain se remplit</span><span class="idee">Une couche par ingrédient, la bière teintée au sommet.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/r4/r4-haut.png" data-titre="r4 · chaude · On pèse comme à la balance"><img src="v0/r4/r4-haut.png" alt="Capture r4"></button><figcaption><span><b>r4</b> · <span class="chaleur chaude">chaude</span></span><span>On pèse comme à la balance</span><span class="idee">Un ticket de pesée ; le plateau sous le pouce, la règle qui défile.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-z">
+    <h2 id="t-z">Série z · créative à fond</h2>
+    <div class="planche">
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z1/z1-haut.png" data-titre="z1 · froide · Le champ toujours prêt"><img src="v0/z1/z1-haut.png" alt="Capture z1"></button><figcaption><span><b>z1</b> · <span class="chaleur froide">froide</span></span><span>Le champ toujours prêt, la ligne qui se tape</span><span class="idee">Les 5 familles en segments ; « à renseigner » sur chaque ligne.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z2/z2-haut.png" data-titre="z2 · tiède · Le verre en couches"><img src="v0/z2/z2-haut.png" alt="Capture z2"></button><figcaption><span><b>z2</b> · <span class="chaleur tiede">tiède</span></span><span>Le verre : chaque malt est une couche</span><span class="idee">Hachurée « ? » tant que la couleur manque ; la bière prend sa teinte ensuite.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z3/z3-haut.png" data-titre="z3 · chaude · La facture en pavés"><img src="v0/z3/z3-haut.png" alt="Capture z3"></button><figcaption><span><b>z3</b> · <span class="chaleur chaude">chaude</span></span><span>La facture en pavés</span><span class="idee">Chaque malt occupe l'aire de sa part ; toucher un pavé, c'est taper sa masse.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/z4/z4-haut.png" data-titre="z4 · chaude · La frise des moments"><img src="v0/z4/z4-haut.png" alt="Capture z4"></button><figcaption><span><b>z4</b> · <span class="chaleur chaude">chaude</span></span><span>La frise des moments</span><span class="idee">Empâtage, ébullition, fermentation : la puce se glisse d'un moment à l'autre.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-u">
+    <h2 id="t-u">Série u · libre</h2>
+    <div class="planche">
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u1/cap-recette.png" data-titre="u1 · froide · La ligne suivante est déjà là"><img src="v0/u1/cap-recette.png" alt="Capture u1"></button><figcaption><span><b>u1</b> · <span class="chaleur froide">froide</span></span><span>La ligne suivante est déjà là</span><span class="idee">« Malt ou sucre, puis Entrée », et tes malts habituels en puces.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u2/cap-recette.png" data-titre="u2 · tiède · Nom et masse d'un trait"><img src="v0/u2/cap-recette.png" alt="Capture u2"></button><figcaption><span><b>u2</b> · <span class="chaleur tiede">tiède</span></span><span>Nom et masse d'un trait</span><span class="idee">« pils 5 » tapé d'un coup ajoute la ligne et sa masse.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u3/cap-recette.png" data-titre="u3 · chaude · Le verre se compose"><img src="v0/u3/cap-recette.png" alt="Capture u3"></button><figcaption><span><b>u3</b> · <span class="chaleur chaude">chaude</span></span><span>Le verre se compose</span><span class="idee">La teinte de la bière se bâtit au-dessus de la liste ; « ? » tant qu'elle manque.</span></figcaption></figure>
+      <figure class="vue"><button class="ecran" type="button" data-agrandir data-src="v0/u4/cap-recette.png" data-titre="u4 · chaude · La recette en sacs"><img src="v0/u4/cap-recette.png" alt="Capture u4"></button><figcaption><span><b>u4</b> · <span class="chaleur chaude">chaude</span></span><span>La recette en sacs</span><span class="idee">Chaque ingrédient est un sac, à sa masse.</span></figcaption></figure>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
