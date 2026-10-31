@@ -52,6 +52,7 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
 |---|---|---|---|
 | Identité · panel v0 (48 concepts) | 31.10 v1 | https://claude.ai/artifact/F5Laf6mqwAtp7dF4ZVVZBx | `panel-v0/page.html` |
 | Identité · tri du critique à l'aveugle (D203) | 31.10 v1 | https://claude.ai/artifact/JkXn7UbyGCLfXLn3FTW9eN | `panel-v0/tri-critique.html` |
+| Identité · r4 adaptée (D205) | 31.10 v1 | https://claude.ai/artifact/6HGuqpXUoHS3XLnYqj73ci | `v1/page.html` |
 
 ## Agents
 - v0 (31.10) : g af688d7c3b4c1d8dc ; w a95dbcb30c165788b ; v a3f468d6fd75b44d7 ; r af505646da84f8574 ; e ae29161fae3410bb7 ; i a270f131ab87e2197 ; z (Fable) a9544f6c979771512 ; u a63ad22afca40541e. La passe 2 repart chez le même agent.
@@ -98,3 +99,5 @@ C'est le premier écran du programme, et le banc d'essai des outils de la missio
   Ensuite : la passe 2 sur les 5 candidates seulement, puis une page neuve (le classement du critique et la passe 2), pour qu'il compare.
 - 31.10, relance sur sa demande (« Reprend, c'est une demande explicite ») : un critique neuf fait le tri à l'aveugle (ab55281b7c63f8839 ; e, i, z, u et SYNTHESE) ; un auteur neuf finit o1 (adc66a3d9e7549c50). Ensuite, la passe 2 sur les 5 candidates, puis une page neuve.
 - 31.10 : **le tri est fait** (`critique/SYNTHESE.md`) : 8 très bien, 34 moyen, 6 très mauvais. Candidates : e1, z3, w3, r4 et w6. La page du tri est publiée (JkXn7UbyGCLfXLn3FTW9eN), pour qu'il compare. Ensuite : quand o1 rend, la passe 2 des 5 candidates, avec les greffes de SYNTHESE (agents e, z, w ×2, r).
+- r4 choisie : « Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien ! » (D205). La passe 2 sur 5 candidates est annulée : seule r4 est reprise avec ses adaptations, dans `v1/r4-a/`, par l'agent de la série r ; le critique la juge ensuite, puis une page neuve la montre à côté de r4.
+- 31.10 : **o1 est fini** (22 témoins verts ; les profils `--profil=sans-houblons` de mots et de contraste ; sur houblons, rien ne bouge). **r4-a** est rendue, et le critique demandait deux retouches (`v1/r4-a/CRITIQUE.md`), faites : le « › » au bout des règles, le pointillé sous les nombres. La page est publiée (6HGuqpXUoHS3XLnYqj73ci). Ensuite, sur son accord : le registre `ecrans.json` (r4-a), puis le port dans l'app (auteur Sonnet, critique Fable, baseline, lint). Au port, « ~27 L avant ébullition » vient du moteur (`brewingMath.ts`), pas de l'addition de la maquette.

@@ -1,0 +1,155 @@
+<title>Identité · r4 adaptée · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* r4, son choix, reprise avec ses adaptations (D205). Côte à côte d'abord, puis les trois gestes, l'ordinateur, la maquette
+   jouable. Une capture s'ouvre en grand au toucher. Polices système seules. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --bien: #2f6b1f;
+  --bien-fond: #e6f0dc;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --bien: #8cc062; --bien-fond: #24331b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --bien: #8cc062; --bien-fond: #24331b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1100px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.2rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); font-weight: 700; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.legende { font-size: 0.875rem; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.jouer { display: inline-block; justify-self: start; padding: 8px 16px; border-radius: 999px; background: var(--houblon); color: var(--fond); text-decoration: none; }
+section { display: grid; gap: 14px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.cote { max-width: 820px; }
+.geste { display: grid; gap: 8px; }
+.trois { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: start; }
+.trois figure, .seul { margin: 0; display: grid; gap: 4px; min-width: 0; }
+figcaption { font-size: 0.875rem; color: var(--discret); }
+ul.changes { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+ul.changes b { font-weight: 800; }
+@media (min-width: 900px) {
+  .gestes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1280px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Identité 1/7</p>
+    <h1>Identité · r4 adaptée · 31.10</h1>
+    <div id="a-choisir">
+      <p>Ta r4, reprise telle quelle, avec tes adaptations.</p>
+      <p>Les règles s'ouvrent au-delà de leur bout (le «&nbsp;›&nbsp;»), le fermenteur se change, et chaque nombre souligné en pointillé se tape, au téléphone comme à l'ordinateur. Dis-moi si c'est bon pour le port dans l'app.</p>
+      <a class="jouer" href="r4-a/etat.html">Jouer la maquette</a>
+    </div>
+  </header>
+
+  <section aria-labelledby="t-cote">
+    <h2 id="t-cote">r4 et r4-a, au repos</h2>
+    <div class="cote">
+      <button class="ecran" type="button" data-agrandir data-src="r4-a/r4-et-r4a-repos.png" data-titre="r4 (ton choix) et r4-a, au repos"><img src="r4-a/r4-et-r4a-repos.png" alt="r4 à gauche, r4-a à droite, au repos"></button>
+    </div>
+    <ul class="changes">
+      <li><b>Ébullition</b> : la règle s'étend d'une demi-heure au-delà de la valeur (120 donne 0–150), au relâché ou à la saisie, toujours par 5′.</li>
+      <li><b>Fermenteur</b> : la puce « fermenteur 30 L » ouvre le matériel ; la règle du volume et le conseil suivent le fermenteur choisi.</li>
+      <li><b>Saisie</b> : 24 et 60 se tapent. Au clavier, Tab, ↑ ↓ pour ±1 L ou ±5′, Entrée pour valider, Échap pour annuler.</li>
+      <li><b>Greffes du tri</b> : « +1 L de trop » en rouge au lieu de la phrase, la cuve sur la même règle (~27 L avant ébullition), les plages OG et IBU du style en pastilles.</li>
+      <li><b>Le reste</b> : tel quel. « BJCP 2021 » est sous « Repères ⌄ », et « Coller une recette » n'apparaît que sur une recette vide.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="t-gestes">
+    <h2 id="t-gestes">Les trois gestes</h2>
+    <p class="legende">Pendant le geste, puis après.</p>
+    <div class="gestes">
+      <div class="geste">
+        <p><b>Ébullition à 120 min</b></p>
+        <div class="trois">
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g1-ebullition-repos.png" data-titre="Ébullition · au repos"><img src="r4-a/g1-ebullition-repos.png" alt="Ébullition au repos"></button><figcaption>repos</figcaption></figure>
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g1-ebullition-pendant.png" data-titre="Ébullition · pendant"><img src="r4-a/g1-ebullition-pendant.png" alt="Ébullition pendant le geste"></button><figcaption>pendant</figcaption></figure>
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g1-ebullition-apres.png" data-titre="Ébullition · après, 120 min"><img src="r4-a/g1-ebullition-apres.png" alt="Ébullition après, 120 min"></button><figcaption>après</figcaption></figure>
+        </div>
+      </div>
+      <div class="geste">
+        <p><b>Un fermenteur de 60 L</b></p>
+        <div class="trois">
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g2-fermenteur-repos.png" data-titre="Fermenteur · au repos"><img src="r4-a/g2-fermenteur-repos.png" alt="Fermenteur au repos"></button><figcaption>repos</figcaption></figure>
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g2-fermenteur-pendant.png" data-titre="Fermenteur · pendant, le matériel ouvert"><img src="r4-a/g2-fermenteur-pendant.png" alt="Le matériel ouvert sur le fermenteur"></button><figcaption>pendant</figcaption></figure>
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g2-fermenteur-apres.png" data-titre="Fermenteur · après, 60 L"><img src="r4-a/g2-fermenteur-apres.png" alt="Fermenteur de 60 L, après"></button><figcaption>après</figcaption></figure>
+        </div>
+      </div>
+      <div class="geste">
+        <p><b>31 L dans 30 L</b></p>
+        <div class="trois">
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g3-volume-repos.png" data-titre="Volume · au repos"><img src="r4-a/g3-volume-repos.png" alt="Volume au repos"></button><figcaption>repos</figcaption></figure>
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g3-volume-pendant.png" data-titre="Volume · pendant"><img src="r4-a/g3-volume-pendant.png" alt="Volume pendant le geste"></button><figcaption>pendant</figcaption></figure>
+          <figure><button class="ecran" type="button" data-agrandir data-src="r4-a/g3-volume-apres.png" data-titre="Volume · après, +1 L de trop"><img src="r4-a/g3-volume-apres.png" alt="31 L, +1 L de trop"></button><figcaption>après</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-ordi">
+    <h2 id="t-ordi">À l'ordinateur</h2>
+    <p class="legende">1280 px, après la saisie au clavier de 120 dans l'ébullition.</p>
+    <figure class="seul">
+      <button class="ecran" type="button" data-agrandir data-src="r4-a/ordinateur-1280-ebullition-120.png" data-titre="Ordinateur · 1280 px · ébullition tapée à 120"><img src="r4-a/ordinateur-1280-ebullition-120.png" alt="r4-a à 1280 px, ébullition tapée à 120"></button>
+    </figure>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

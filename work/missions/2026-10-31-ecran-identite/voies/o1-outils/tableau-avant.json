@@ -1,0 +1,3094 @@
+{
+ "profil": "sans-houblons",
+ "outils": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-ecran-identite\\voies\\o1-outils\\avant-head\\work\\refonte-frontend\\v4\\tournoi\\outils",
+ "concepts": {
+  "e3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "e3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "e3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "e3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e3/etat.html : S3, rayons hors échelle : 10px×8"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "e3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "e1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "e1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "e1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e1/etat.html : S3, rayons hors échelle : 10px×13 16px×1"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "e1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "e4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "e4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "e4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e4/etat.html : S3, rayons hors échelle : 10px×10"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "e4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "e2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "e2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "e2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e2/etat.html : S3, rayons hors échelle : 10px×6 16px×2"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "e2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "e5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "e5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "e5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e5/etat.html : S3, rayons hors échelle : 10px×6 16px×2"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "e5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "g1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "g1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "g1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/g1/etat.html : S3, rayons hors échelle : 16px×8 10px×8",
+     "S4, 2 épaisseurs de trait d'icône : 1.5/1.7 px (11), 2.3 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "g1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "g1 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "g1 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "e6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "e6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "e6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e6/etat.html : S3, rayons hors échelle : 10px×9 16px×1"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "e6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "g2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "g2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "g2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/g2/etat.html : S3, rayons hors échelle : 10px×7 16px×4 24px×2",
+     "S4, 2 épaisseurs de trait d'icône : 1.5/1.7 px (12), 2.3 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "g2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "g2 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "g2 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "g3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "g3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "g3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/g3/etat.html : S3, rayons hors échelle : 10px×26",
+     "S4, 2 épaisseurs de trait d'icône : 1.5/1.7 px (9), 2.3 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "g3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "g3 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "g3 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "g4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "g4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "g4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/g4/etat.html : S3, rayons hors échelle : 10px×6 16px×1",
+     "S4, 2 épaisseurs de trait d'icône : 1.5/1.7 px (6), 2.3 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "g4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "g4 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "g4 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "g5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "g5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "g5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/g5/etat.html : S3, rayons hors échelle : 12px×1 10px×6 16px×1",
+     "S4, 2 épaisseurs de trait d'icône : 1.5/1.7 px (6), 2.3 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "g5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "g5 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "g5 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "g6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "g6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "g6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/g6/etat.html : S3, rayons hors échelle : 10px×2",
+     "S4, 2 épaisseurs de trait d'icône : 1.5/1.7 px (7), 2.3 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "g6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "g6 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "g6 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "i2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "i2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "i2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "i2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "i1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "i1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "i1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "i1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "i3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "i3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "i3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "i3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "i4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "i4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "i4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "i4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "i5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "i5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "i5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "i5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "r1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "r1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "r1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/r1/etat.html : S3, rayons hors échelle : 16px×9 10px×9",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (16), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "r1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "r1 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "r1 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "r2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "r2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "r2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/r2/etat.html : S3, rayons hors échelle : 16px×1 10px×20",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (7), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "r2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "r2 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "r2 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "i6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "i6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "i6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "i6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "r4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "r4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "r4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/r4/etat.html : S3, rayons hors échelle : 16px×10 10px×5",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (11), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "r4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "r4 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "r4 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "r3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "r3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "r3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/r3/etat.html : S3, rayons hors échelle : 16px×8 10px×3",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (7), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "r3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "r3 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "r3 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "r5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "r5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "r5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/r5/etat.html : S3, rayons hors échelle : 16px×7 10px×3",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (7), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "r5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "r5 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "r5 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "r6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "r6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "r6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/r6/etat.html : S3, rayons hors échelle : 16px×9 10px×3",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (11), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "r6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "r6 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "r6 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u3 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "u3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "u3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "u3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "u3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "u3 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "u3 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u1 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "u1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "u1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "u1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "u1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "u1 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "u1 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u2 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "u2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "u2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "u2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "u2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "u2 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "u2 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u4 : 2 teinte(s) franche(s) au premier écran hors alerte (4°, 38°), 3 au moins : trop retenu"
+    ]
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "u4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "u4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "u4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "u4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "u4 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "u4 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u5 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "u5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "u5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "u5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "u5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "u5 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "u5 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u6 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "u6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "u6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "u6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "u6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "u6 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "u6 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "v1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "v1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "v1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/v1/etat.html : S3, rayons hors échelle : 16px×4 10px×6",
+     "S4, 2 épaisseurs de trait d'icône : 1.3 px (5), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "v1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "v3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "v3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "v3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/v3/etat.html : S3, rayons hors échelle : 16px×3 10px×7",
+     "S4, 2 épaisseurs de trait d'icône : 1.1/1.3 px (6), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "v3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "v2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "v2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "v2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/v2/etat.html : S3, rayons hors échelle : 16px×5 10px×17",
+     "S4, 2 épaisseurs de trait d'icône : 1.3 px (6), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "v2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "v5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "v5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "v5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/v5/etat.html : S3, rayons hors échelle : 16px×3 6px×3 10px×2",
+     "S4, 2 épaisseurs de trait d'icône : 1.3 px (5), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "v5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "v4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "v4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "v4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/v4/etat.html : S3, rayons hors échelle : 10px×9 16px×3",
+     "S4, 2 épaisseurs de trait d'icône : 1.2/1.3 px (6), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "v4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "v6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "v6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "v6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 2 problème(s)",
+     "../../v0/v6/etat.html : S3, rayons hors échelle : 16px×6 10px×4 9px×2",
+     "S4, 2 épaisseurs de trait d'icône : 1.1/1.3 px (6), 2 px (1)"
+    ]
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "v6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "w1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "w1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "w1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "w1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "w2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "w2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "w2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "w2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "w3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "w3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "w3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "w3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "w5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "w5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "w5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "w5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "w4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "w4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "w4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "w4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "w6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "w6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "w6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "w6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "z1 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "z1 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "z1 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "z1 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "z1 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "z1 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "z2 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "z2 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "z2 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "z2 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "z2 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "z2 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "z4 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "z4 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "z4 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "z4 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "z4 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "z4 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "z3 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "z3 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "z3 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "z3 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "z3 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "z3 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "z5 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "z5 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "z5 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "z5 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "z5 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "z5 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "au-style": {
+    "etat": "ECHEC",
+    "detail": [
+     "AU-STYLE ECHEC 2 problème(s)",
+     "z6 etat.html : S1, pas de lentille au style / absolu ([data-e=\"style\"], [data-e=\"absolu\"])",
+     "z6 etat.html : S2, aucune famille ne se lit face à la zone du style ([data-role=\"zone\"])"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "fiche": {
+    "etat": "ECHEC",
+    "detail": [
+     "FICHE ECHEC 1 problème(s)",
+     "z6 : D25 etat.html : aucun houblon marqué data-houblon visible"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "trait": {
+    "etat": "ECHEC",
+    "detail": [
+     "TRAIT ECHEC 1 problème(s)",
+     "z6 etat.html : aucun picto de famille visible (svg[data-famille])"
+    ]
+   },
+   "legende": {
+    "etat": "ECHEC",
+    "detail": [
+     "LEGENDE ECHEC 2 problème(s)",
+     "z6 etat.html : pas de bouton [data-role=\"legende-bouton\"]",
+     "z6 etat.html : pas de [data-role=\"legende\"]"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  }
+ },
+ "panel": {
+  "sortie": "48 captures · remplissage médian 0,58, 5 sous 0,50 · ressemblance moyenne 0,84 · paires presque identiques 66/1128 (6 %)\n  - DIVERSITÉ : 6 % de paires presque identiques (≥ 0,95), 1 % au plus ; par exemple capture-haut~capture-haut, capture-haut~capture-haut, capture-haut~capture-haut, capture-haut~capture-haut, capture-haut~capture-haut\nPANEL ECHEC\n",
+  "code": 1
+ }
+}
