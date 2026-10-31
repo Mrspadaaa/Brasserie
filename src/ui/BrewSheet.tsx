@@ -28,6 +28,7 @@ import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
 import { RecipeReview } from './RecipeReview';
 import { formatDecimal } from './numericInput';
+import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from './identite/regles';
 
 /** Preserve Units' conversion and rounding; only localize the displayed number. */
 const formatQuantity = (quantity: number, unit: string) =>
@@ -348,10 +349,12 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           />
         </Row>
         <Row label="Volume">
-          <Cell label="Volume" value={volumeL} onValue={onVolumeL} unit="L" min={1} />
+          {/* Les mêmes garde-fous que les champs de l'étape Identité (regles.ts) : un zéro de trop est une faute de frappe,
+              pas une règle à étendre jusqu'à l'absurde. Appliqués à la sortie du champ, comme les autres bornes de la fiche. */}
+          <Cell label="Volume" value={volumeL} onValue={onVolumeL} unit="L" min={1} max={VOLUME_SAISIE_MAX} />
         </Row>
         <Row label="Ébullition">
-          <Cell label="Ébullition" value={boilMin} onValue={onBoilMin} unit="min" integer min={0} />
+          <Cell label="Ébullition" value={boilMin} onValue={onBoilMin} unit="min" integer min={0} max={EBULLITION_SAISIE_MAX} />
         </Row>
         <Row label="Carbonatation" hint="Ce que la recette annonce — « 2,5 vol ».">
           <Input

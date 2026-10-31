@@ -1,0 +1,499 @@
+   PRE <input type=text> « Durée d’ébullition » geste=0 cibles=40
+3 #0 16ms heap=229Mo rss=412Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP champ Durée d’ébullition ← « -3 »
+   PRE <button type=button> « Thème sombre (cave) » geste=7 cibles=40
+3 #1 9ms heap=230Mo rss=413Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur Thème sombre (cave)
+   PRE <input type=text> « Nom de la bière » geste=1 cibles=40
+3 #2 22ms heap=233Mo rss=413Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP champ Nom de la bière ← « 12,5 »
+   PRE <button type=button> « Repères » geste=1 cibles=40
+3 #3 8ms heap=235Mo rss=413Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Repères
+   PRE <button type=button> « Identité » geste=7 cibles=40
+3 #4 8ms heap=236Mo rss=409Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur Identité
+   PRE <button type=button> « Espace libre~20 %repère » geste=8 cibles=40
+3 #5 6ms heap=237Mo rss=409Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Espace libre~20 %repère
+   PRE <button type=button> « Identité » geste=6 cibles=40
+3 #6 6ms heap=238Mo rss=409Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Identité
+   PRE <button type=button> « Thème sombre (cave) » geste=6 cibles=40
+3 #7 5ms heap=238Mo rss=409Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Thème sombre (cave)
+   PRE <button type=button> « Ouvrir la liste » geste=8 cibles=40
+3 #8 11ms heap=240Mo rss=410Mo dom=307 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Ouvrir la liste
+   PRE <li type=> « _r_3_-opt-0 » geste=0 cibles=42
+3 #9 25ms heap=243Mo rss=411Mo dom=298 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic _r_3_-opt-0
+   PRE <button type=button> « ↺ profil » geste=3 cibles=40
+3 #10 23ms heap=247Mo rss=410Mo dom=296 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic ↺ profil
+   PRE <button type=button> « Adapter la recette à 30  » geste=7 cibles=39
+3 #11 8ms heap=248Mo rss=410Mo dom=296 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur Adapter la recette à 30 
+   PRE <input type=range> « Volume en fermenteur, curseur » geste=1 cibles=39
+3 #12 39ms heap=253Mo rss=411Mo dom=296 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP curseur Volume en fermenteur, curseur ← 13.509
+   PRE <input type=text> « Durée d’ébullition » geste=0 cibles=39
+3 #13 23ms heap=256Mo rss=412Mo dom=293 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP champ Durée d’ébullition ← «  »
+   PRE <button type=button> « Récapitulatif » geste=8 cibles=39
+3 #14 553ms heap=221Mo rss=424Mo dom=705 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <input type=text> « Masse de Citra » geste=6 cibles=61
+3 #15 11ms heap=223Mo rss=425Mo dom=705 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl pointeur Masse de Citra
+   PRE <input type=text> « Température du palier Saccharification » geste=5 cibles=61
+3 #16 215ms heap=250Mo rss=429Mo dom=705 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Température du palier Saccharification ← « 999999999999 »
+   PRE <button type=button> « Fermentescibles » geste=3 cibles=61
+3 #17 44ms heap=258Mo rss=429Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Fermentescibles
+   PRE <button type=button> « Famille de fermentescible : Grain — appuyer pour passer à Sucre » geste=8 cibles=36
+3 #18 19ms heap=260Mo rss=430Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Famille de fermentescible : Grain — appuyer pour passer à Sucre
+   PRE <button type=button> « Houblons » geste=4 cibles=36
+3 #19 60ms heap=268Mo rss=430Mo dom=330 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Moment de Magnum : Ébullition — appuyer pour passer à Whirlpool » geste=5 cibles=54
+3 #20 43ms heap=274Mo rss=431Mo dom=331 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Moment de Magnum : Ébullition — appuyer pour passer à Whirlpool
+   PRE <button type=button> « Moment de Citra : Houblonnage à cru — appuyer pour passer à Premier moût » geste=8 cibles=55
+3 #21 35ms heap=280Mo rss=431Mo dom=310 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Moment de Citra : Houblonnage à cru — appuyer pour passer à Premier moût
+   PRE <input type=text> « Température de whirlpool pour Magnum » geste=3 cibles=51
+3 #22 7ms heap=281Mo rss=431Mo dom=310 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP champ Température de whirlpool pour Magnum ← « 1e9 »
+   PRE <button type=button> « Retirer 1 g » geste=4 cibles=51
+3 #23 36ms heap=226Mo rss=427Mo dom=310 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retirer 1 g
+   PRE <button type=button> « Retour » geste=8 cibles=51
+3 #24 33ms heap=232Mo rss=426Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Retour
+   PRE <button type=button> « Ajouter 0,1 kg » geste=6 cibles=36
+3 #25 5ms heap=233Mo rss=427Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH pointeur Ajouter 0,1 kg
+   PRE <button type=button> « Retour » geste=7 cibles=36
+3 #26 4ms heap=233Mo rss=427Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH touche sur Retour
+   PRE <button type=button> « Thème sombre (cave) » geste=5 cibles=36
+3 #27 7ms heap=234Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Thème sombre (cave)
+   PRE <input type=text> « Quantité en kg » geste=3 cibles=36
+3 #28 23ms heap=237Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH champ Quantité en kg ← « 999999999999 »
+   PRE <button type=button> « Fermer » geste=4 cibles=36
+3 #29 3ms heap=238Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Fermer
+   PRE <button type=button> « Famille de fermentescible : Sucre — appuyer pour passer à Lactose » geste=5 cibles=36
+3 #30 18ms heap=240Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Famille de fermentescible : Sucre — appuyer pour passer à Lactose
+   PRE <button type=button> « Houblons » geste=7 cibles=36
+3 #31 3ms heap=241Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH touche sur Houblons
+   PRE <button type=button> « Retour » geste=6 cibles=36
+3 #32 3ms heap=241Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH pointeur Retour
+   PRE <input type=text> « Couleur de Pilsner en EBC » geste=7 cibles=36
+3 #33 3ms heap=242Mo rss=428Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH touche sur Couleur de Pilsner en EBC
+   PRE <button type=button> « Houblons » geste=1 cibles=36
+3 #34 49ms heap=250Mo rss=428Mo dom=326 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Retirer 1 g » geste=7 cibles=51
+3 #35 6ms heap=251Mo rss=428Mo dom=326 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur Retirer 1 g
+   PRE <button type=button> « Suivant — Levure » geste=9 cibles=51
+3 #36 388ms heap=259Mo rss=444Mo dom=1024 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Suivant — Levure
+   PRE <button type=button> « Retour » geste=5 cibles=97
+3 #37 72ms heap=272Mo rss=444Mo dom=326 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retour
+   PRE <button type=button> « Ajouter 1 g » geste=9 cibles=51
+3 #38 32ms heap=276Mo rss=444Mo dom=326 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Ajouter 1 g
+   PRE <input type=text> « Température de whirlpool pour Citra » geste=3 cibles=51
+3 #39 6ms heap=277Mo rss=445Mo dom=326 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP champ Température de whirlpool pour Citra ← « 1e9 »
+   PRE <button type=button> « Compléter les données ma » geste=3 cibles=51
+3 #40 8ms heap=278Mo rss=445Mo dom=324 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Compléter les données ma
+   PRE <button type=button> « Retirer Magnum » geste=1 cibles=51
+3 #41 31ms heap=284Mo rss=446Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retirer Magnum
+   PRE <button type=button> « Retirer 1 g » geste=5 cibles=43
+3 #42 27ms heap=288Mo rss=446Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retirer 1 g
+   PRE <button type=button> « Thème clair » geste=8 cibles=43
+3 #43 6ms heap=289Mo rss=444Mo dom=262 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Thème clair
+   PRE <button type=button> « Thème sombre (cave) » geste=8 cibles=43
+3 #44 6ms heap=290Mo rss=444Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Thème sombre (cave)
+   PRE <button type=button> « Identité » geste=4 cibles=43
+3 #45 38ms heap=297Mo rss=446Mo dom=309 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Identité
+   PRE <input type=text> « Capacité du fermenteur pour ce brassin, en litres » geste=0 cibles=39
+3 #46 7ms heap=298Mo rss=446Mo dom=309 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP champ Capacité du fermenteur pour ce brassin, en litres ← « 1e9 »
+   PRE <button type=button> « Fermentescibles » geste=2 cibles=39
+3 #47 34ms heap=251Mo rss=452Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Fermentescibles
+   PRE <button type=button> « Suivant — Houblons » geste=5 cibles=36
+3 #48 36ms heap=257Mo rss=452Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Suivant — Houblons
+   PRE <button type=button> « Paliers » geste=0 cibles=43
+3 #49 34ms heap=263Mo rss=451Mo dom=236 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Paliers
+   PRE <button type=button> « Paliers » geste=6 cibles=45
+3 #50 4ms heap=263Mo rss=451Mo dom=236 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal pointeur Paliers
+   PRE <input type=text> « Durée du palier 1 — Saccharification, en minutes » geste=8 cibles=45
+3 #51 4ms heap=264Mo rss=451Mo dom=236 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Durée du palier 1 — Saccharification, en minutes
+   PRE <button type=button> « _r_1o_-fly » geste=8 cibles=45
+3 #52 19ms heap=266Mo rss=451Mo dom=236 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic _r_1o_-fly
+   PRE <button type=button> « Houblons » geste=1 cibles=45
+3 #53 36ms heap=273Mo rss=451Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Houblons » geste=6 cibles=43
+3 #54 5ms heap=274Mo rss=451Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Houblons
+   PRE <button type=button> « Ajouter 1 g » geste=5 cibles=43
+3 #55 28ms heap=278Mo rss=451Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Ajouter 1 g
+   PRE <input type=text> « Alpha de Citra en pourcent » geste=3 cibles=43
+3 #56 7ms heap=279Mo rss=451Mo dom=278 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP champ Alpha de Citra en pourcent ← « - »
+   PRE <button type=button> « Fermentescibles » geste=9 cibles=43
+3 #57 32ms heap=283Mo rss=451Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Fermentescibles
+   PRE <button type=button> « Paliers » geste=3 cibles=36
+3 #58 30ms heap=288Mo rss=453Mo dom=236 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Paliers
+   PRE <button type=button> « Programme d’empâtage : Paliers lager » geste=4 cibles=45
+3 #59 30ms heap=293Mo rss=452Mo dom=303 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme d’empâtage : Paliers lager
+   PRE <button type=button> « Retirer le palier β-amylase » geste=2 cibles=58
+3 #60 25ms heap=296Mo rss=452Mo dom=281 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Retirer le palier β-amylase
+   PRE <input type=text> « Température du palier 3 — Mashout, en degrés » geste=0 cibles=54
+3 #61 6ms heap=297Mo rss=452Mo dom=281 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal champ Température du palier 3 — Mashout, en degrés ← « abc »
+   PRE <button type=button> « Programme de fermentation : Ale » geste=3 cibles=54
+3 #62 26ms heap=300Mo rss=452Mo dom=302 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme de fermentation : Ale
+   PRE <button type=button> « Programme d’empâtage : Impériale » geste=3 cibles=57
+3 #63 25ms heap=303Mo rss=452Mo dom=280 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme d’empâtage : Impériale
+   PRE <button type=button> « Suivant — Eau et sels » geste=0 cibles=53
+3 #64 202ms heap=286Mo rss=468Mo dom=982 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Suivant — Eau et sels
+   PRE <button type=button> « Fermer » geste=1 cibles=102
+3 #65 17ms heap=289Mo rss=468Mo dom=982 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Fermer
+   PRE <button type=button> « Identité » geste=8 cibles=102
+3 #66 33ms heap=298Mo rss=468Mo dom=309 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Identité
+   PRE <button type=button> « Objectif NOLO · ≤ 0,5 % » geste=8 cibles=39
+3 #67 221ms heap=280Mo rss=480Mo dom=957 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Objectif NOLO · ≤ 0,5 %
+   PRE <input type=text> « _r_2n_ » geste=0 cibles=111
+3 #68 37ms heap=294Mo rss=481Mo dom=961 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP champ _r_2n_ ← « 12.5 »
+   PRE <button type=button> « Objectif NOLO · ≤ 0,5 % » geste=1 cibles=111
+3 #69 35ms heap=300Mo rss=481Mo dom=309 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Objectif NOLO · ≤ 0,5 %
+   PRE <button type=button> « Fermentescibles » geste=4 cibles=39
+3 #70 30ms heap=305Mo rss=481Mo dom=218 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Fermentescibles
+   PRE <button type=button> « Eau et sels » geste=0 cibles=36
+3 #71 85ms heap=326Mo rss=482Mo dom=982 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Eau et sels
+   PRE <button type=button> « Ajouter 0,5 g de Chlorure de calcium » geste=4 cibles=102
+3 #72 70ms heap=334Mo rss=482Mo dom=1010 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Ajouter 0,5 g de Chlorure de calcium
+   PRE <button type=button> « Créer une cible d’eau chiffrée » geste=9 cibles=103
+3 #73 194ms heap=315Mo rss=485Mo dom=1010 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Créer une cible d’eau chiffrée
+   PRE <button type=button> « Sélectionner : Chlorure » geste=9 cibles=103
+3 #74 157ms heap=289Mo rss=494Mo dom=1021 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Sélectionner : Chlorure
+   PRE <input type=text> « _r_3u_ » geste=3 cibles=104
+3 #75 75ms heap=307Mo rss=495Mo dom=1003 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL champ _r_3u_ ← « 12,5 »
+   PRE <button type=button> « Modifier » geste=7 cibles=104
+3 #76 14ms heap=310Mo rss=494Mo dom=1003 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL touche sur Modifier
+   PRE <button type=button> « 2. Sels0,5 g » geste=3 cibles=104
+3 #77 55ms heap=316Mo rss=494Mo dom=1003 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic 2. Sels0,5 g
+   PRE <button type=button> « Retour » geste=3 cibles=104
+3 #78 65ms heap=327Mo rss=495Mo dom=280 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Retour
+   PRE <input type=text> « Durée du palier 1 — Saccharification, en minutes » geste=1 cibles=53
+3 #79 12ms heap=329Mo rss=495Mo dom=280 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal champ Durée du palier 1 — Saccharification, en minutes ← « 999999999999 »
+   PRE <button type=button> « Programme de fermentation : Saison » geste=0 cibles=53
+3 #80 13ms heap=332Mo rss=495Mo dom=301 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme de fermentation : Saison
+   PRE <button type=button> « Suivant — Eau et sels » geste=3 cibles=56
+3 #81 62ms heap=300Mo rss=498Mo dom=992 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Suivant — Eau et sels
+   PRE <button type=button> « Eau et sels » geste=0 cibles=103
+3 #82 16ms heap=303Mo rss=498Mo dom=992 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Eau et sels
+   PRE <button type=button> « Gypse — autorisé » geste=6 cibles=103
+3 #83 27ms heap=308Mo rss=499Mo dom=994 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL pointeur Gypse — autorisé
+   PRE <button type=button> « Retirer 0,5 mL — rinçage » geste=5 cibles=103
+3 #84 112ms heap=325Mo rss=510Mo dom=1011 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Retirer 0,5 mL — rinçage
+   PRE <button type=button> « Sel d’Epsom — autorisé » geste=8 cibles=105
+3 #85 92ms heap=306Mo rss=510Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Sel d’Epsom — autorisé
+   PRE <button type=button> « Détail des minéraux de Sel de table » geste=8 cibles=103
+3 #86 110ms heap=323Mo rss=511Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Détail des minéraux de Sel de table
+   PRE <button type=button> « Retirer 0,5 mL — rinçage » geste=6 cibles=103
+3 #87 54ms heap=330Mo rss=511Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL pointeur Retirer 0,5 mL — rinçage
+   PRE <input type=text> « Osmosée disponible au total (L) » geste=5 cibles=103
+3 #88 16ms heap=332Mo rss=511Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL champ Osmosée disponible au total (L) ← « - »
+   PRE <button type=button> « Détail des minéraux de Chlorure de calcium » geste=1 cibles=103
+3 #89 42ms heap=337Mo rss=511Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Détail des minéraux de Chlorure de calcium
+   PRE <button type=button> « Eau et sels » geste=5 cibles=103
+3 #90 15ms heap=339Mo rss=510Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Eau et sels
+   PRE <button type=button> « Modifier » geste=6 cibles=103
+3 #91 15ms heap=342Mo rss=510Mo dom=999 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL pointeur Modifier
+   PRE <button type=button> « Retirer 0,5 mL — rinçage » geste=1 cibles=103
+3 #92 92ms heap=324Mo rss=512Mo dom=1011 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Retirer 0,5 mL — rinçage
+   PRE <button type=button> « Ajouter 0,5 g de Chlorure de potassium » geste=6 cibles=103
+3 #93 55ms heap=330Mo rss=512Mo dom=1011 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL pointeur Ajouter 0,5 g de Chlorure de potassium
+   PRE <input type=text> « Litres d’osmosée (Osmosée — empâtage) » geste=2 cibles=103
+3 #94 15ms heap=333Mo rss=512Mo dom=1011 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL champ Litres d’osmosée (Osmosée — empâtage) ← « 1,2,3 »
+   PRE <button type=button> « Ajouter 0,5 g de Craie » geste=4 cibles=103
+3 #95 67ms heap=341Mo rss=512Mo dom=1020 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Ajouter 0,5 g de Craie
+   PRE <button type=button> « Sélectionner : Chlorure » geste=4 cibles=104
+3 #96 140ms heap=363Mo rss=513Mo dom=1029 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Sélectionner : Chlorure
+   PRE <button type=button> « Acidifiant : Lactique — appuyer pour passer à Phosphorique » geste=4 cibles=105
+3 #97 63ms heap=339Mo rss=514Mo dom=1006 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Acidifiant : Lactique — appuyer pour passer à Phosphorique
+   PRE <button type=button> « _r_4c_-tab-rincage » geste=7 cibles=103
+3 #98 25ms heap=344Mo rss=514Mo dom=1006 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL touche sur _r_4c_-tab-rincage
+   PRE <button type=button> « Détail des minéraux de Bicarbonate de soude » geste=2 cibles=103
+3 #99 81ms heap=360Mo rss=514Mo dom=1006 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Détail des minéraux de Bicarbonate de soude
+   PRE <button type=button> « Chaux éteinte — autorisé » geste=4 cibles=103
+3 #100 50ms heap=335Mo rss=514Mo dom=1006 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Chaux éteinte — autorisé
+   PRE <button type=button> « Bicarbonate de soude — autorisé » geste=9 cibles=101
+3 #101 50ms heap=307Mo rss=517Mo dom=1006 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Bicarbonate de soude — autorisé
+   PRE <button type=button> « Ajouter 0,5 mL — rinçage » geste=8 cibles=99
+3 #102 83ms heap=343Mo rss=516Mo dom=1025 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Ajouter 0,5 mL — rinçage
+   PRE <button type=button> « Créer une cible d’eau chiffrée » geste=2 cibles=101
+3 #103 134ms heap=369Mo rss=517Mo dom=1025 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Créer une cible d’eau chiffrée
+   PRE <button type=button> « Levure » geste=2 cibles=101
+3 #104 376ms heap=369Mo rss=527Mo dom=1070 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Levure
+   PRE <select type=select-one> « Accent recherché » geste=6 cibles=102
+3 #105 17ms heap=372Mo rss=527Mo dom=1070 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie pointeur Accent recherché
+   PRE <input type=text> « Durée principale du scénario en jours » geste=2 cibles=102
+3 #106 77ms heap=331Mo rss=536Mo dom=1089 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ Durée principale du scénario en jours ← «    »
+   PRE <button type=button> « Choisir avec cette offre » geste=8 cibles=105
+3 #107 138ms heap=358Mo rss=537Mo dom=1071 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Choisir avec cette offre
+   PRE <button type=button> « Saisir une levure hors c » geste=4 cibles=107
+3 #108 28ms heap=364Mo rss=538Mo dom=1075 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Saisir une levure hors c
+   PRE <input type=text> « IBU à chaud cible minimum » geste=8 cibles=108
+3 #109 17ms heap=366Mo rss=538Mo dom=1075 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic IBU à chaud cible minimum
+   PRE <button type=button> « Relire et appliquer · 0  » geste=0 cibles=108
+3 #110 15ms heap=369Mo rss=537Mo dom=1075 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Relire et appliquer · 0 
+   PRE <input type=text> « _r_55_-phase-0-name » geste=2 cibles=108
+3 #111 30ms heap=374Mo rss=538Mo dom=1076 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ _r_55_-phase-0-name ← « 1,2,3 »
+   PRE <select type=select-one> « _r_55_-phase-0-kind » geste=7 cibles=108
+3 #112 16ms heap=376Mo rss=538Mo dom=1076 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie touche sur _r_55_-phase-0-kind
+   PRE <input type=text> « Durée indicative de la fiche, en jours » geste=0 cibles=108
+3 #113 108ms heap=348Mo rss=543Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ Durée indicative de la fiche, en jours ← « 12,5 »
+   PRE <select type=select-one> « _r_55_-goal » geste=5 cibles=108
+3 #114 15ms heap=351Mo rss=543Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic _r_55_-goal
+   PRE <button type=button> « Saisir une mesure ou une » geste=6 cibles=108
+3 #115 14ms heap=354Mo rss=543Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie pointeur Saisir une mesure ou une
+   PRE <button type=button> « Levure » geste=8 cibles=108
+3 #116 15ms heap=356Mo rss=543Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Levure
+   PRE <input type=text> « Tous les fermentescibles, pourcentage exact » geste=6 cibles=108
+3 #117 15ms heap=359Mo rss=543Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie pointeur Tous les fermentescibles, pourcentage exact
+   PRE <button type=button> « Supprimer le palier 1 · Départ » geste=9 cibles=108
+3 #118 15ms heap=361Mo rss=543Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Supprimer le palier 1 · Départ
+   PRE <button type=button> « Annuler l’essai » geste=9 cibles=108
+3 #119 71ms heap=372Mo rss=543Mo dom=1087 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Annuler l’essai
+   PRE <button type=button> « Ajouter un palier après le palier 1 » geste=0 cibles=104
+3 #120 100ms heap=387Mo rss=544Mo dom=1153 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Ajouter un palier après le palier 1
+   PRE <button type=button> « Ajouter une correction » geste=5 cibles=111
+3 #121 42ms heap=343Mo rss=552Mo dom=1187 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Ajouter une correction
+   PRE <button type=button> « Thème clair » geste=5 cibles=115
+3 #122 22ms heap=346Mo rss=552Mo dom=1171 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Thème clair
+   PRE <button type=button> « ObjectifsProfil : aucunC » geste=8 cibles=115
+3 #123 73ms heap=353Mo rss=552Mo dom=1171 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic ObjectifsProfil : aucunC
+   PRE <button type=button> « Sélectionner le palier 2 : Garde, début J3, fin inconnue · durée inconnue · position non calculable » geste=2 cibles=115
+3 #124 16ms heap=356Mo rss=552Mo dom=1171 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Sélectionner le palier 2 : Garde, début J3, fin inconnue · durée inconnue · position non calculable
+   PRE <select type=select-one> « Forme de la levure » geste=5 cibles=115
+3 #125 15ms heap=359Mo rss=552Mo dom=1171 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Forme de la levure
+   PRE <button type=button> « Voir la conduite » geste=0 cibles=115
+3 #126 68ms heap=366Mo rss=552Mo dom=1171 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Voir la conduite
+   PRE <button type=button> « Corriger Tolérance à l’alcool » geste=7 cibles=115
+3 #127 24ms heap=370Mo rss=552Mo dom=1171 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie touche sur Corriger Tolérance à l’alcool
+   PRE <input type=text> « Source de la fiche technique » geste=5 cibles=115
+3 #128 136ms heap=393Mo rss=553Mo dom=1149 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ Source de la fiche technique ← « abc »
+   PRE <button type=button> « Récapitulatif » geste=0 cibles=116
+3 #129 276ms heap=384Mo rss=563Mo dom=737 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <input type=text> « Masse de Pilsner » geste=0 cibles=65
+3 #130 233ms heap=359Mo rss=567Mo dom=737 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Masse de Pilsner ← « 12.5 »
+   PRE <button type=button> « Paliers » geste=3 cibles=65
+3 #131 50ms heap=369Mo rss=567Mo dom=279 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Paliers
+   PRE <button type=button> « Programme d’empâtage : Sec et atténué » geste=7 cibles=55
+3 #132 8ms heap=370Mo rss=567Mo dom=279 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal touche sur Programme d’empâtage : Sec et atténué
+   PRE <button type=button> « Programme de fermentation : Belge forte » geste=4 cibles=55
+3 #133 29ms heap=374Mo rss=568Mo dom=300 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme de fermentation : Belge forte
+   PRE <button type=button> « Suivant — Eau et sels » geste=9 cibles=58
+3 #134 112ms heap=369Mo rss=569Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Suivant — Eau et sels
+   PRE <button type=button> « Sel de table — autorisé » geste=8 cibles=100
+3 #135 68ms heap=386Mo rss=567Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Sel de table — autorisé
+   PRE <input type=text> « Dose de Chlorure de potassium en grammes » geste=8 cibles=98
+3 #136 15ms heap=389Mo rss=568Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Dose de Chlorure de potassium en grammes
+   PRE <button type=button> « Détail des minéraux de Chlorure de potassium » geste=4 cibles=98
+3 #137 98ms heap=405Mo rss=568Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Détail des minéraux de Chlorure de potassium
+   PRE <button type=button> « Revoir l’eau et les volu » geste=2 cibles=98
+3 #138 15ms heap=408Mo rss=569Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Revoir l’eau et les volu
+   PRE <button type=button> « _r_5q_-tab-rincage » geste=3 cibles=98
+3 #139 53ms heap=414Mo rss=569Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic _r_5q_-tab-rincage
+   PRE <input type=text> « Osmosée disponible au total (L) » geste=7 cibles=98
+3 #140 25ms heap=418Mo rss=569Mo dom=986 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL touche sur Osmosée disponible au total (L)
+   PRE <button type=button> « Ouvrir la liste » geste=5 cibles=98
+3 #141 108ms heap=386Mo rss=578Mo dom=1105 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Ouvrir la liste
+   PRE <li type=> « w-style-opt-10 » geste=4 cibles=127
+3 #142 110ms heap=395Mo rss=583Mo dom=991 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic w-style-opt-10
+   PRE <button type=button> « Fermentescibles » geste=2 cibles=98
+3 #143 45ms heap=404Mo rss=583Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Fermentescibles
+   PRE <button type=button> « Levure » geste=7 cibles=36
+3 #144 4ms heap=405Mo rss=583Mo dom=202 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH touche sur Levure
+   PRE <button type=button> « Retirer Lactose » geste=5 cibles=36
+3 #145 22ms heap=408Mo rss=583Mo dom=173 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Retirer Lactose
+   PRE <button type=button> « Thème sombre (cave) » geste=7 cibles=31
+3 #146 3ms heap=409Mo rss=583Mo dom=173 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH touche sur Thème sombre (cave)
+   PRE <button type=button> « Levure » geste=4 cibles=31
+3 #147 360ms heap=411Mo rss=595Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Levure
+   PRE <button type=button> « Définir ma cible » geste=5 cibles=105
+3 #148 22ms heap=414Mo rss=595Mo dom=1081 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Définir ma cible
+   PRE <input type=text> « _r_6j_-label » geste=2 cibles=105
+3 #149 25ms heap=419Mo rss=595Mo dom=1082 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ _r_6j_-label ← « 0012 »
+   PRE <button type=button> « Renommer » geste=3 cibles=107
+3 #150 135ms heap=396Mo rss=605Mo dom=1082 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Renommer
+   PRE <input type=text> « Houblons à chaud, pourcentage exact » geste=0 cibles=107
+3 #151 30ms heap=402Mo rss=605Mo dom=1123 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ Houblons à chaud, pourcentage exact ← « 12,5 »
+   PRE <select type=select-one> « _r_6k_-phase-0-kind » geste=2 cibles=107
+3 #152 16ms heap=404Mo rss=605Mo dom=1123 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic _r_6k_-phase-0-kind
+   PRE <input type=text> « _r_6k_-phase-0-name » geste=3 cibles=107
+3 #153 92ms heap=416Mo rss=605Mo dom=1176 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie champ _r_6k_-phase-0-name ← « 999999999999 »
+   PRE <button type=button> « Coller une recette » geste=1 cibles=111
+3 #154 204ms heap=452Mo rss=607Mo dom=1176 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Coller une recette
+   PRE <button type=button> « Paliers » geste=4 cibles=111
+3 #155 80ms heap=413Mo rss=610Mo dom=300 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Paliers
+   PRE <button type=button> « Programme de fermentation : Lager » geste=0 cibles=58
+3 #156 30ms heap=417Mo rss=610Mo dom=279 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme de fermentation : Lager
+   PRE <button type=button> « Houblons » geste=6 cibles=55
+3 #157 4ms heap=418Mo rss=610Mo dom=279 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal pointeur Houblons
+   PRE <button type=button> « Programme de fermentation : Saison » geste=3 cibles=55
+3 #158 30ms heap=422Mo rss=610Mo dom=279 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme de fermentation : Saison
+   PRE <button type=button> « Levure » geste=2 cibles=55
+3 #159 370ms heap=431Mo rss=626Mo dom=1067 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Levure
+   PRE <button type=button> « Levure » geste=0 cibles=103
+3 #160 15ms heap=434Mo rss=626Mo dom=1067 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Levure
+   PRE <button type=button> « Renommer » geste=9 cibles=103
+3 #161 131ms heap=459Mo rss=626Mo dom=1067 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Renommer
+   PRE <button type=button> « Corriger cette offre dan » geste=0 cibles=103
+3 #162 100ms heap=430Mo rss=635Mo dom=1067 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Corriger cette offre dan
+   PRE <button type=button> « Houblons » geste=2 cibles=103
+3 #163 63ms heap=442Mo rss=635Mo dom=262 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <input type=text> « Quantité en g » geste=5 cibles=43
+3 #164 31ms heap=446Mo rss=635Mo dom=262 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP champ Quantité en g ← « 5 »
+   PRE <button type=button> « _r_7k_-dryHop » geste=1 cibles=43
+3 #165 25ms heap=449Mo rss=635Mo dom=262 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic _r_7k_-dryHop
+   PRE <button type=button> « Coller une recette » geste=0 cibles=43
+3 #166 4ms heap=450Mo rss=635Mo dom=262 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Coller une recette
+   PRE <button type=button> « Fermer » geste=4 cibles=43
+3 #167 4ms heap=451Mo rss=635Mo dom=262 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Fermer
+   PRE <button type=button> « Moment de Citra : Premier moût — appuyer pour passer à Ébullition » geste=0 cibles=43
+3 #168 32ms heap=456Mo rss=635Mo dom=267 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Moment de Citra : Premier moût — appuyer pour passer à Ébullition
+   PRE <button type=button> « Retirer 1 g » geste=1 cibles=44
+3 #169 31ms heap=461Mo rss=635Mo dom=267 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retirer 1 g
+   PRE <button type=button> « Moment de Citra : Ébullition — appuyer pour passer à Whirlpool » geste=1 cibles=44
+3 #170 37ms heap=466Mo rss=636Mo dom=268 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Moment de Citra : Ébullition — appuyer pour passer à Whirlpool
+   PRE <button type=button> « Identité » geste=8 cibles=45
+3 #171 41ms heap=473Mo rss=636Mo dom=297 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Identité
+   PRE <button type=button> « Houblons » geste=3 cibles=39
+3 #172 44ms heap=480Mo rss=634Mo dom=268 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Retirer Citra » geste=8 cibles=45
+3 #173 32ms heap=431Mo rss=639Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retirer Citra
+   PRE <input type=text> « Quantité en g » geste=3 cibles=36
+3 #174 5ms heap=431Mo rss=639Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP champ Quantité en g ← « 1e9 »
+   PRE <button type=button> « Retirer 1 g » geste=1 cibles=36
+3 #175 27ms heap=435Mo rss=639Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Retirer 1 g
+   PRE <button type=button> « Eau et sels » geste=9 cibles=36
+3 #176 88ms heap=457Mo rss=641Mo dom=991 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Eau et sels
+   PRE <input type=text> « Dose de Chlorure de magnésium en grammes » geste=8 cibles=98
+3 #177 17ms heap=459Mo rss=641Mo dom=991 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Dose de Chlorure de magnésium en grammes
+   PRE <button type=button> « Craie — autorisé » geste=4 cibles=98
+3 #178 61ms heap=439Mo rss=646Mo dom=994 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Craie — autorisé
+   PRE <button type=button> « Détail des minéraux de Sel de table » geste=4 cibles=95
+3 #179 82ms heap=455Mo rss=646Mo dom=994 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Détail des minéraux de Sel de table
+   PRE <button type=button> « Recalculer aussi les dos » geste=2 cibles=95
+3 #180 28ms heap=487Mo rss=646Mo dom=993 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Recalculer aussi les dos
+   PRE <button type=button> « Sélectionner : Chlorure » geste=5 cibles=95
+3 #181 147ms heap=454Mo rss=654Mo dom=1004 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Sélectionner : Chlorure
+   PRE <button type=button> « Houblons » geste=1 cibles=96
+3 #182 55ms heap=463Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Paliers » geste=6 cibles=36
+3 #183 4ms heap=464Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Paliers
+   PRE <input type=checkbox> « INPUT » geste=4 cibles=36
+3 #184 4ms heap=465Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP champ INPUT ← «    »
+   PRE <button type=button> « Paliers » geste=7 cibles=36
+3 #185 22ms heap=467Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur Paliers
+   PRE <button type=button> « Fermer » geste=7 cibles=36
+3 #186 3ms heap=468Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur Fermer
+   PRE <button type=button> « _r_89_-firstWort » geste=8 cibles=36
+3 #187 19ms heap=470Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic _r_89_-firstWort
+   PRE <button type=button> « _r_89_-firstWort » geste=4 cibles=36
+3 #188 3ms heap=471Mo rss=654Mo dom=204 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic _r_89_-firstWort
+   PRE <button type=button> « Eau et sels » geste=9 cibles=36
+3 #189 83ms heap=491Mo rss=655Mo dom=993 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Eau et sels
+   PRE <button type=button> « Ouvrir la liste » geste=1 cibles=95
+3 #190 26ms heap=496Mo rss=655Mo dom=1112 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Ouvrir la liste
+   PRE <li type=> « w-style-opt-14 » geste=1 cibles=124
+3 #191 80ms heap=460Mo rss=656Mo dom=977 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic w-style-opt-14
+   PRE <button type=button> « Identité » geste=5 cibles=95
+3 #192 53ms heap=471Mo rss=656Mo dom=297 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP clic Identité
+   PRE <button type=button> « Identité » geste=6 cibles=39
+3 #193 4ms heap=471Mo rss=656Mo dom=297 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Identité
+   PRE <button type=button> « Fermentescibles » geste=6 cibles=39
+3 #194 4ms heap=472Mo rss=656Mo dom=297 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Fermentescibles
+   PRE <button type=button> « Paliers » geste=6 cibles=39
+3 #195 5ms heap=473Mo rss=656Mo dom=297 TXT=Identité1/7Identité — étape 1 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Paliers
+   PRE <button type=button> « Récapitulatif » geste=4 cibles=39
+3 #196 238ms heap=460Mo rss=667Mo dom=669 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <input type=text> « Durée de Citra » geste=7 cibles=59
+3 #197 126ms heap=493Mo rss=668Mo dom=669 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl touche sur Durée de Citra
+   PRE <button type=button> « Thème sombre (cave) » geste=1 cibles=59
+3 #198 13ms heap=495Mo rss=669Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Thème sombre (cave)
+   PRE <input type=text> « Durée de Départ » geste=4 cibles=59
+3 #199 222ms heap=465Mo rss=675Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Durée de Départ ← « -3 »
+   PRE <input type=text> « Durée de Citra » geste=4 cibles=59
+3 #200 222ms heap=493Mo rss=677Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Durée de Citra ← « 999999999999 »
+   PRE <input type=text> « Durée de Maturation » geste=1 cibles=59
+3 #201 11ms heap=495Mo rss=678Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Durée de Maturation ← « 1,2,3 »
+   PRE <input type=text> « Température de Citra » geste=1 cibles=59
+3 #202 10ms heap=497Mo rss=678Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Température de Citra ← « 1,2,3 »
+   PRE <button type=button> « Estimer le budget de ce  » geste=7 cibles=59
+3 #203 16ms heap=499Mo rss=679Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl touche sur Estimer le budget de ce 
+   PRE <input type=text> « Température de Citra » geste=2 cibles=59
+3 #204 224ms heap=467Mo rss=679Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Température de Citra ← « 12.5 »
+   PRE <button type=button> « Récapitulatif » geste=1 cibles=59
+3 #205 10ms heap=469Mo rss=679Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <input type=text> « Atténuation » geste=6 cibles=59
+3 #206 9ms heap=471Mo rss=679Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl pointeur Atténuation
+   PRE <input type=text> « Durée de Maturation » geste=8 cibles=59
+3 #207 9ms heap=472Mo rss=679Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Durée de Maturation
+   PRE <button type=button> « Houblons » geste=7 cibles=59
+3 #208 16ms heap=474Mo rss=679Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl touche sur Houblons
+   PRE <input type=text> « Nom de la recette » geste=1 cibles=59
+3 #209 206ms heap=500Mo rss=680Mo dom=685 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Nom de la recette ← « 999999999999 »
+   PRE <button type=button> « Retirer » geste=4 cibles=59
+3 #210 211ms heap=465Mo rss=683Mo dom=668 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Retirer
+   PRE <input type=text> « Couleur de Pilsner en EBC » geste=0 cibles=56
+3 #211 11ms heap=466Mo rss=681Mo dom=668 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Couleur de Pilsner en EBC ← « 1,2,3 »
+   PRE <input type=text> « Durée du palier Mashout » geste=8 cibles=56
+3 #212 9ms heap=468Mo rss=681Mo dom=668 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Durée du palier Mashout
+   PRE <input type=text> « Ébullition » geste=4 cibles=56
+3 #213 406ms heap=518Mo rss=685Mo dom=682 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Ébullition ← « 999999999999 »
+   PRE <button type=button> « Copier la recette en tex » geste=1 cibles=56
+3 #214 16ms heap=522Mo rss=685Mo dom=690 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Copier la recette en tex
+   PRE <input type=text> « Température de Citra » geste=5 cibles=57
+3 #215 224ms heap=491Mo rss=687Mo dom=690 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Température de Citra ← « 5 »
+   PRE <button type=button> « Levure » geste=7 cibles=57
+3 #216 9ms heap=492Mo rss=687Mo dom=690 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl touche sur Levure
+   PRE <button type=button> « Eau et sels » geste=9 cibles=57
+3 #217 130ms heap=504Mo rss=688Mo dom=1009 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Eau et sels
+   PRE <input type=checkbox> « Sels et acides suivent la recette » geste=9 cibles=93
+3 #218 98ms heap=502Mo rss=689Mo dom=1014 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Sels et acides suivent la recette
+   PRE <button type=button> « Thème clair » geste=8 cibles=95
+3 #219 23ms heap=505Mo rss=689Mo dom=998 TXT=Eau et sels6/7Eau et sels — étape 6 sur 7IdentitéMalts/sucresHoublonsL clic Thème clair
+   PRE <button type=button> « Récapitulatif » geste=5 cibles=95
+3 #220 263ms heap=492Mo rss=698Mo dom=666 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <button type=button> « Thème sombre (cave) » geste=0 cibles=56
+3 #221 13ms heap=495Mo rss=698Mo dom=682 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Thème sombre (cave)
+   PRE <button type=button> « Récapitulatif » geste=3 cibles=56
+3 #222 10ms heap=496Mo rss=698Mo dom=682 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <button type=button> « Paliers » geste=3 cibles=56
+3 #223 47ms heap=505Mo rss=698Mo dom=274 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Paliers
+   PRE <button type=button> « _r_9q_-none » geste=3 cibles=52
+3 #224 48ms heap=512Mo rss=698Mo dom=280 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic _r_9q_-none
+   PRE <button type=button> « Récapitulatif » geste=4 cibles=53
+3 #225 233ms heap=494Mo rss=705Mo dom=664 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Récapitulatif
+   PRE <input type=text> « Durée de Montée » geste=1 cibles=56
+3 #226 11ms heap=496Mo rss=705Mo dom=664 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl champ Durée de Montée ← « - »
+   PRE <button type=button> « Eau et sels » geste=7 cibles=56
+3 #227 8ms heap=498Mo rss=705Mo dom=664 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl touche sur Eau et sels
+   PRE <button type=button> « Retirer » geste=9 cibles=56
+3 #228 208ms heap=526Mo rss=711Mo dom=647 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Retirer
+   PRE <input type=text> « Température du palier Saccharification » geste=8 cibles=53
+3 #229 9ms heap=527Mo rss=711Mo dom=647 TXT=Récapitulatif7/7Récapitulatif — étape 7 sur 7IdentitéMalts/sucresHoubl clic Température du palier Saccharification
+   PRE <button type=button> « Houblons » geste=9 cibles=53
+3 #230 37ms heap=534Mo rss=712Mo dom=221 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Moment de Citra : Whirlpool — appuyer pour passer à Houblonnage à cru » geste=6 cibles=36
+3 #231 4ms heap=535Mo rss=712Mo dom=221 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur Moment de Citra : Whirlpool — appuyer pour passer à Houblonnage à cru
+   PRE <button type=button> « _r_a4_-dryHop » geste=7 cibles=36
+3 #232 3ms heap=535Mo rss=712Mo dom=221 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP touche sur _r_a4_-dryHop
+   PRE <input type=checkbox> « INPUT » geste=6 cibles=36
+3 #233 3ms heap=536Mo rss=712Mo dom=221 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP pointeur INPUT
+   PRE <button type=button> « Moment de Citra : Whirlpool — appuyer pour passer à Houblonnage à cru » geste=0 cibles=36
+3 #234 33ms heap=542Mo rss=712Mo dom=231 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Moment de Citra : Whirlpool — appuyer pour passer à Houblonnage à cru
+   PRE <button type=button> « Levure » geste=3 cibles=38
+3 #235 345ms heap=540Mo rss=722Mo dom=1071 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Levure
+   PRE <input type=checkbox> « INPUT » geste=6 cibles=102
+3 #236 16ms heap=543Mo rss=722Mo dom=1071 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie pointeur INPUT
+   PRE <button type=button> « Houblons » geste=6 cibles=102
+3 #237 14ms heap=545Mo rss=722Mo dom=1071 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie pointeur Houblons
+   PRE <button type=button> « Retirer » geste=4 cibles=102
+3 #238 125ms heap=521Mo rss=732Mo dom=1053 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Retirer
+   PRE <button type=button> « Corriger Tolérance à l’alcool » geste=0 cibles=100
+3 #239 26ms heap=528Mo rss=732Mo dom=1073 TXT=Levure4/7Levure — étape 4 sur 7IdentitéMalts/sucresHoublonsLevurePalie clic Corriger Tolérance à l’alcool
+   PRE <button type=button> « Suivant — Paliers » geste=2 cibles=105
+3 #240 55ms heap=539Mo rss=732Mo dom=263 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Suivant — Paliers
+   PRE <button type=button> « Eau et sels » geste=7 cibles=49
+3 #241 4ms heap=540Mo rss=732Mo dom=263 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal touche sur Eau et sels
+   PRE <button type=button> « Programme d’empâtage : Infusion simple » geste=1 cibles=49
+3 #242 41ms heap=546Mo rss=732Mo dom=257 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme d’empâtage : Infusion simple
+   PRE <button type=button> « Retirer le palier Saccharification » geste=2 cibles=48
+3 #243 22ms heap=549Mo rss=732Mo dom=235 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Retirer le palier Saccharification
+   PRE <button type=button> « Programme d’empâtage : Infusion simple » geste=7 cibles=44
+3 #244 4ms heap=549Mo rss=732Mo dom=235 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal touche sur Programme d’empâtage : Infusion simple
+   PRE <button type=button> « Programme de fermentation : Lager » geste=9 cibles=44
+3 #245 23ms heap=553Mo rss=732Mo dom=256 TXT=Paliers5/7Paliers — étape 5 sur 7IdentitéMalts/sucresHoublonsLevurePal clic Programme de fermentation : Lager
+   PRE <button type=button> « Houblons » geste=8 cibles=47
+3 #246 33ms heap=558Mo rss=733Mo dom=231 TXT=Houblons3/7Houblons — étape 3 sur 7IdentitéMalts/sucresHoublonsLevureP clic Houblons
+   PRE <button type=button> « Retour » geste=1 cibles=38
+3 #247 26ms heap=562Mo rss=733Mo dom=189 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH clic Retour
+   PRE <button type=button> « Identité » geste=7 cibles=31
+3 #248 72ms heap=525Mo rss=735Mo dom=189 TXT=Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresH touche sur Identité
+   PRE <button type=button> « Retour » geste=4 cibles=31

@@ -16,6 +16,8 @@ export const VOLUME_MARGE_REGLE = 3;
 /** Garde-fous de saisie : au-delà, c'est une faute de frappe, pas une règle à étendre jusqu'à l'absurde. */
 export const VOLUME_SAISIE_MAX = 2000;
 export const EBULLITION_SAISIE_MAX = 1440;
+/** Le nombre de chiffres qu'une règle écrit au plus, quelle que soit sa longueur. */
+export const GRADUATIONS_MAX = 200;
 
 const fini = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -62,6 +64,9 @@ export interface Graduation { valeur: number; /** 0 à 100 */ position: number; 
 /** Les chiffres d'une règle de 0 à `max` : un tous les `etiquette`. Le dernier ouvre la règle (« 40 › »). */
 export function graduations(max: number, etiquette: number): Graduation[] {
   if (!fini(max) || max <= 0 || !(etiquette > 0)) return [];
+  // Une règle démesurée garde 200 chiffres au plus : l'étiquette grandit, mais la règle ne gèle jamais l'écran
+  // (31.10 : 999 999 999 999 min dans la fiche de brassage = 1,7 × 10^10 éléments, tas épuisé).
+  if (max / etiquette > GRADUATIONS_MAX) etiquette = Math.ceil(max / GRADUATIONS_MAX / etiquette) * etiquette;
   const dernier = Math.floor(max / etiquette) * etiquette;
   const out: Graduation[] = [];
   for (let x = 0; x <= max + 1e-9; x += etiquette) out.push({ valeur: x, position: (x / max) * 100, derniere: x === dernier });

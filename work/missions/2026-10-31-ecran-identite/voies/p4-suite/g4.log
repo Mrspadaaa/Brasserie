@@ -1,0 +1,900 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE fixture-ready 2513ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 42ms revision 1 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 151ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE active-reading 9717ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 203ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 85ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 85ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 250ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE scopes-retained 16064ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 163ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 128ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 396ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 126ms
+Q09_ADVICE_BUILD 310ms variants 298
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 129ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 135ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 351ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 130ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 3203ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 129ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 131ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 1655ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE study-visible-after-CAS-retry 37923ms
+Q09_FULL_CATALOGUE_RESULT {"referenceVarieties":136,"referenceKnowledge":1779,"fixtureVarieties":3,"savedVarieties":140,"assembledVariants":298,"basisEvidence":0,"oldDiagnostic":{"sourceReadingReference":"hop-v55-decision-reading-v3:sha256:02e43d3cef4bb942069fcbf094263396d5aa7a2798205251b5a07df8594551b2","assembledVariants":162,"savedVarieties":4,"savedLots":0,"basisEvidence":0},"currentSourceReadingReference":"hop-v55-decision-reading-v3:sha256:1ddca9f41a726f3b5177c0964f18324502d8abe1696b22c7acc2f8292b246174","candidateIds":["variety:fixture-q09-candidate"],"studyReference":"hop-advice-study-v3:sha256:bd662fa17826457d0f180a1765f92fc79395421738738e84c29c991e3766ef02","optionCount":5}
+Q09_FULL_PHASE before-create-button-wait 37999ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE create-button-enabled 38013ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1251ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 884ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 883ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 908ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 3889ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_CREATE_BEGIN 1
+Q09_DAO_CREATE_CLONE 1 35ms
+Q09_DAO_CREATE_FAIL 1 36ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE dao-retry-ready 50343ms
+Q09_FULL_PHASE before-DAO-retry-button-wait 50408ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE DAO-retry-button-enabled 50420ms
+Q09_FULL_PHASE dao-retry-clicked 50756ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1148ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 887ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 990ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 870ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 16094ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_CREATE_BEGIN 2
+Q09_DAO_CREATE_CLONE 2 30ms
+Q09_DAO_CREATE_VALIDATE 2 198ms
+Q09_DAO_CREATE_DONE 2 257ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 30ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 136ms
+Q09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 870ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 2358ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE study-saved-after-DAO-retry 80737ms
+Q09_FULL_PHASE before-preference-choice 80826ms
+Q09_FULL_PHASE preference-choice-selected 80922ms
+Q09_FULL_PHASE before-preference-submit 80957ms
+Q09_FULL_PHASE preference-submit-clicked 81349ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1174ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 37ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 132ms
+Q09_STUDY_REFERENCE 131ms
+Q09_ADVICE_BUILD 310ms variants 298
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 854ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 881ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 18360ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 2371ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 30ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 891ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 31ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 907ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE preference-appended 113553ms
+Q09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 31ms
+Q09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE history-reloaded 118281ms
+Q09_FULL_PHASE complete 118434ms
+
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 118447[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — Q09 avec catalogue local complet[2m > [22mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local [33m 118441[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 109207[2mms[22m[39m
+   [33m[2m✓[22m[39m #39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mscelle source/scope/policy, persiste le ticket avant l’émission, puis choix → aperçu → confirmation → historique → rejeu [33m 12390[2mms[22m[39m
+   [33m[2m✓[22m[39m #39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mun échec du CAS du ticket produit zéro émission [33m 3471[2mms[22m[39m
+   [33m[2m✓[22m[39m #39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mun changement d’acteur avant l’envoi refuse le ticket et l’émission [33m 3276[2mms[22m[39m
+   [33m[2m✓[22m[39m #39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mune génération serveur changée avant l’émission garde le ticket mais n’émet rien [33m 3962[2mms[22m[39m
+   [33m[2m✓[22m[39m #39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mune source modifiée après l’aperçu refuse la confirmation et invalide l’aperçu [33m 8114[2mms[22m[39m
+   [33m[2m✓[22m[39m #39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22msans capability explicite, l’archive V4 reste indisponible avec sa raison, sans ticket [33m 1367[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mlit le brouillon B vivant face à la Recipe A du même ID, scelle origine/snapshot/archive puis ticket, retry, choix, aperçu, confirmation, histoire et correction sans enregistrer [33m 21460[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mrelit le reçu exact du brouillon confirmé après fermeture réelle du créateur, sans provider ni lecteur vivant [33m 16568[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mretrouve et corrige la réponse V4 du brouillon fermé sous son origine Wizard, face à une Recipe A de même ID et même contenu [33m 12881[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mrefuse la correction avant écriture si l’acteur change ou si une version plus récente non reconnue apparaît, sans perdre l’historique [33m 11816[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mun acteur changé avant l’envoi refuse ticket et émission Wizard [33m 3017[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mun brouillon modifié pendant la session refuse le ticket avant tout effet [33m 3347[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mune génération serveur changée garde le ticket Wizard mais n’émet rien [33m 3421[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22msans fabrique Wizard déclarée, le créateur garde sa raison, le compagnon habituel et aucun dossier assisté [33m 1398[2mms[22m[39m
+   [33m[2m✓[22m[39m #88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mla Page n’ouvre jamais la voie classique pour un brouillon; le dossier assisté s’ouvre sur geste explicite [33m 2557[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 312552[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mrefuse une question éditée, puis conserve un ticket exact avant l’envoi; un retry relit ce ticket [33m 6051[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mexplique le blocage quand aucune base documentaire V3/V4 n’a été capturée [33m 3950[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22marchive le retour tardif A sous sa lecture, le marque périmé sous B puis relit l’archive sans parser ni reconstruire [33m 9991[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mrattache un ticket A après rechargement sans onBeforeSend, parsing ni capture neuve, même si B est affichée [33m 11978[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mconfirme une suggestion fraîche via la transition V3→V4, conserve la réponse source et relit le receipt en lecture seule [33m 15545[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mreprend la même correction après échec post-upgrade, sans nouvel upgrade ni reconstruction [33m 14844[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mrefuse la suggestion si une autre version V4 de la même lecture est affichée [33m 12908[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22marchive le receipt frais du vrai tour froid sans changer les preuves du Runtime fixture [33m 94824[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lancement et archive du compagnon assisté[2m > [22mrattache le ticket et le tour froid A sous B sans déplacer son receipt ni son contexte [33m 127345[2mms[22m[39m
+   [33m[2m✓[22m[39m R23-1 — identification des reprises avant ouverture[2m > [22mdistingue le reçu A du ticket B par question, date et contexte avant ouverture [33m 14930[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceStudy.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 82990[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mgarde les deux portées, sélectionne un ID chargé, reprend le CAS, sauve l’étude et la préférence, puis relit sans recalcul [33m 59205[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mne propose pas d’étude lorsque les deux portées Q09 sont explicitement écartées [33m 2446[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mexige un stade et un motif pour la source exploration et relit ces valeurs sans reparsing [33m 6651[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mgarde le stade exact du batch sans guide et ne le renomme pas en planning ou exploration future [33m 14686[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 48143[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mexpose la plage variétale, conserve un nominal refusé et accepte un choix motivé dans le domaine [33m 5786[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mprépare une culture maison sans fabricant ni produit inventé, puis réessaie le même ID si la transmission échoue [33m 4496[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mn’appelle le contexte frais qu’au moment de prévisualiser et ne force pas le statut J5 à available [33m 2505[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mgarde les choix saisis et exige de choisir la cible de température avant toute reprise [33m 4325[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mtermine une reprise besoinRecompute par une nouvelle prévision J5 puis une copie exacte [33m 6953[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mgarde la condition stock nulle en annexe et permet un brouillon avec le houblon source [33m 6444[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mexige un motif d’approvisionnement futur et conserve le choix quand le stock reste inconnu [33m 7158[2mms[22m[39m
+   [33m[2m✓[22m[39m copie complète Recipe V5.5 dans l’atelier[2m > [22mne force pas le programme proposé pour un volume futur et exige l’approvisionnement des houblons source à stock nul [33m 10475[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 57451[2mms[22m[39m
+   [33m[2m✓[22m[39m renderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22maffiche la réponse directe puis les voies, avec détails conservés et inventaire après les stratégies [33m 1431[2mms[22m[39m
+   [33m[2m✓[22m[39m renderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22majoute une intention issue d’un fragment exact au draft sans réécrire les intentions existantes [33m 20290[2mms[22m[39m
+   [33m[2m✓[22m[39m renderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mconserve le même commandId et les références exactes après un échec de sauvegarde [33m 8487[2mms[22m[39m
+   [33m[2m✓[22m[39m renderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mgarde le stade source figé dans la correction et archive l’ancienne réponse après un changement d’intention [33m 12282[2mms[22m[39m
+   [33m[2m✓[22m[39m renderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mn’accepte un nouvel ID que pour un réexamen filié aux références exactes de la réponse source [33m 13992[2mms[22m[39m
+   [33m[2m✓[22m[39m renderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mreste en lecture seule quand le parent transmet une archive [33m 968[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 36183[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mpart sans source ni ligne choisies, prépare la source canonique et transmet une preuve complète sans application [33m 5986[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22m#75 : la dose de la référence suit la règle unique, avec sa coordonnée exacte et des unités insécables [33m 1623[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mrefuse une conservation si la masse change pendant la relecture, puis retire la proposition périmée [33m 1758[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mrelit A comme historique après changement de masse en B, en gardant son instantané et son export [33m 6540[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mnomme en français les écarts de source d’une preuve devenue historique, sans clé interne, et garde les clés exactes hors de la prose [33m 7680[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22m#40 : ne propose pas une ligne d’ébullition comme contact à froid et nomme la vraie raison [33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mREV-WIZ M1 : nomme « contenu du brouillon d’origine » quand seule la levure a changé, programme intact [33m 6833[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mREV-WIZ M2 : relit une preuve règle 1 dès qu’un champ non ensemencé de la levure change, sans attendre la réouverture [33m 4912[2mms[22m[39m
+   [33m[2m✓[22m[39m workbench réel de contact à froid · recette locale[2m > [22mexporte sans réécriture une enveloppe de journal froide d’un format futur [33m 337[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceSemanticV4.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 40076[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mprépare et conserve Q09 avec les critères projetés, les portées et la source recette exacts, puis relit sans recalcul [33m 37158[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mrefuse une préparation V4 quand la source a changé avant la confirmation [33m 1238[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mrefuse une préparation V4 quand la ledger a changé avant la confirmation [33m 835[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mrefuse une préparation V4 quand la runtime a changé avant la confirmation [33m 844[2mms[22m[39m
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV4.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 30867[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — reprise V4 de la lecture R20[2m > [22mupgrade V3 explicite, garde les exclusions et le résumé proposé, trace rejet/restauration, choix, reload et réexamen historique avec retry exact [33m 17733[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — reprise V4 de la lecture R20[2m > [22mne présente pas un retour V4 incohérent comme un succès après le vrai commit, puis reprend le reçu même sans rebâtir [33m 7150[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — reprise V4 de la lecture R20[2m > [22mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A [33m 5983[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV3.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 24628[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — parcours V3 du conseil par propriétés[2m > [22mconserve Q10, corrige une annotation, archive un dossier, relit sans recalcul puis réexamine en nouvelle lignée [33m 6140[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — parcours V3 du conseil par propriétés[2m > [22mpasse de explicit[] à discover uniquement après le clic de recherche et garde les IDs exacts [33m 1734[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — parcours V3 du conseil par propriétés[2m > [22marchive une attestation positive d’accès seulement après une déclaration personnelle explicite [33m 10912[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — parcours V3 du conseil par propriétés[2m > [22mvalide aussi une attestation négative, sourcée et typée process, sans réécrire le snapshot précédent [33m 4216[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — parcours V3 du conseil par propriétés[2m > [22mrefuse un clic de découverte si un autre acteur a déjà avancé la tête de la lecture [33m 1625[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageDisplayedPropertyVersionV4.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 21150[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — identité de version affichée dans le réexamen V4 externe[2m > [22mréexamine B affichée depuis A dans l’historique, conserve parent/registre/texte/dossiers et relit cette lignée sans recalcul [33m 21149[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55WizardCorrectionRelations.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 19670[2mms[22m[39m
+   [33m[2m✓[22m[39m Correction d’une réponse Wizard fermée · relations entre termes[2m > [22mrefuse lisiblement une cible liée seule, délie son dernier constat comparé en montrant la comparaison retirée, prévisualise et enregistre une nouvelle version [33m 7739[2mms[22m[39m
+   [33m[2m✓[22m[39m Correction d’une réponse Wizard fermée · relations entre termes[2m > [22mécarte aussi le propriétaire par un choix explicite, montre le lien retiré, puis abandonne sans rien écrire [33m 9214[2mms[22m[39m
+   [33m[2m✓[22m[39m Correction d’une réponse Wizard fermée · branches de Délier sur fixtures typées[2m > [22mdélie un constat d’une comparaison à deux constats : la comparaison garde l’autre, le constat délié reste actif, le parent reste exact [33m 1360[2mms[22m[39m
+   [33m[2m✓[22m[39m Correction d’une réponse Wizard fermée · branches de Délier sur fixtures typées[2m > [22misole la garde du partenaire interne : écarter A seul est refusé, Délier P→A retire ce seul partenaire et garde le partenaire externe de E [33m 1356[2mms[22m[39m
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PagePropertyRequalificationV4.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 20002[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — réconciliation V4 du contexte frais[2m > [22mprévisualise sans écrire, annule, puis reprend après CAS1 sans rebâtir ni altérer la version parent [33m 6045[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — réconciliation V4 du contexte frais[2m > [22mactive la nouvelle lecture réconciliée depuis l’historique et permet une correction sur son contexte frais [33m 5849[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — réconciliation V4 du contexte frais[2m > [22mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version [33m 4592[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — réconciliation V4 du contexte frais[2m > [22mrefuse le lien de même identifiant avec une unité différente et conserve les rejets explicites [33m 3514[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 20965[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mstock fixture: une ligne J1 liée au lot local atteint J5 avec disponibilité sourcée connue [33m 2935[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mstock fixture: refuse J5 si la disponibilité change pendant la lecture workspace après le Prepared frais [33m 1615[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mstock fixture: refuse J5 si la disponibilité change pendant le CAS de staging J5 du commit [33m 1620[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mprépare chaque lecture une fois et calcule J5 sur une relecture postérieure au staging [33m 4276[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mrefuse J5 sous l’ancienne capture si le volume de la source physique change pendant le staging [33m 2108[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mrefuse J5 sous l’ancienne capture si le catalogue complet change pendant le staging [33m 2111[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mrefuse J5 sous l’ancienne capture si les cultures chargées change pendant le staging [33m 2078[2mms[22m[39m
+   [33m[2m✓[22m[39m Page native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mune nouvelle commande relit la source et ne réemploie pas la preuve de la précédente [33m 4222[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 17472[2mms[22m[39m
+   [33m[2m✓[22m[39m Étape Houblons V5.5 — application explicite au brouillon[2m > [22mapplique les seules lignes de houblon au brouillon courant, garde les autres champs et les traces futures [33m 3768[2mms[22m[39m
+   [33m[2m✓[22m[39m Étape Houblons V5.5 — application explicite au brouillon[2m > [22m#81 : double activation, clic pendant le calcul et clic tardif n’appliquent qu’une fois, sans erreur résiduelle [33m 4287[2mms[22m[39m
+   [33m[2m✓[22m[39m Étape Houblons V5.5 — application explicite au brouillon[2m > [22mrefuse une application devenue périmée après une modification du brouillon et garde le geste de correction [33m 3385[2mms[22m[39m
+   [33m[2m✓[22m[39m Étape Houblons V5.5 — application explicite au brouillon[2m > [22mV4 : la base du programme choisie ne mène à aucune impasse : rien à appliquer, sans correction de contexte hors sujet [33m 2045[2mms[22m[39m
+   [33m[2m✓[22m[39m Étape Houblons V5.5 — application explicite au brouillon[2m > [22mV4 : aperçu, application et origine nomment matières et moments, avec une seule confirmation [33m 3952[2mms[22m[39m
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PageExplorationTrial.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 16873[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — essai d’exploration append-only[2m > [22mconserve deux versions de profil, prépare puis simule une seule fois, copie le programme et relit le même reçu hors ligne [33m 16872[2mms[22m[39m
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55QualifiedStudyPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55QualifiedStudyPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55QualifiedStudyPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PageQualifiedProductStudy.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 14726[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude produit qualifiée Q03[2m > [22mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture [33m 11905[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude produit qualifiée Q03[2m > [22mscelle le numéro de révision réel du journal du brassin dans la préparation produit [33m 2339[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — étude produit qualifiée Q03[2m > [22mrefuse un brassin sans révision de journal au lieu d’en créer une valeur zéro [33m 481[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ObservationStateEditor.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 11560[2mms[22m[39m
+   [33m[2m✓[22m[39m État dégusté, ancre et journal dans le même CAS[2m > [22mconserve la note 37/100 avec la définition ordinale exacte, sans attestation de contact ni complétude inventée [33m 1224[2mms[22m[39m
+   [33m[2m✓[22m[39m État dégusté, ancre et journal dans le même CAS[2m > [22mprépare une entrée seulement avec la portée explicite, puis corrige depuis l’ancre malgré un contexte courant modifié [33m 3659[2mms[22m[39m
+   [33m[2m✓[22m[39m État dégusté, ancre et journal dans le même CAS[2m > [22msépare la date de prélèvement, l’instant de dégustation et une continuité laissée inconnue [33m 1942[2mms[22m[39m
+   [33m[2m✓[22m[39m État dégusté, ancre et journal dans le même CAS[2m > [22mconserve un currentPreparation sans créer de note/ancre NR et laisse sélectionnable la note de l’état exact [33m 2356[2mms[22m[39m
+   [33m[2m✓[22m[39m État dégusté, ancre et journal dans le même CAS[2m > [22mconserve un 0 sans unité comme inconnu, puis qualifie seulement la clé de journal choisie avec source [33m 2377[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 11359[2mms[22m[39m
+   [33m[2m✓[22m[39m configuration utilisateur du support de comparaison V5.5[2m > [22mconserve un protocole sourcé et une portée sans attestation, sélectionne leurs références exactes puis les relit [33m 2877[2mms[22m[39m
+   [33m[2m✓[22m[39m configuration utilisateur du support de comparaison V5.5[2m > [22mrefuse la correspondance ordinale 0–5 vers indice 0–100 sans créer un contrat [33m 1760[2mms[22m[39m
+   [33m[2m✓[22m[39m configuration utilisateur du support de comparaison V5.5[2m > [22maffiche la note et son échelle avant la date/version, puis replie les identifiants exacts [33m 2545[2mms[22m[39m
+   [33m[2m✓[22m[39m configuration utilisateur du support de comparaison V5.5[2m > [22mcrée la référence d’une déclaration personnelle au geste de conservation, sans URI à inventer [33m 1489[2mms[22m[39m
+   [33m[2m✓[22m[39m configuration utilisateur du support de comparaison V5.5[2m > [22mpropose une autre dépendance déjà enregistrée sans la cocher ni déclarer sa couverture [33m 1398[2mms[22m[39m
+   [33m[2m✓[22m[39m configuration utilisateur du support de comparaison V5.5[2m > [22mne transforme pas une déclaration de registre illisible en source ou dépendance déjà choisie [33m 1289[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 10262[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lecture sémantique V4[2m > [22marchive la nouvelle lecture V4, corrige en nouvelle archive puis relit les deux sans parser [33m 2903[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lecture sémantique V4[2m > [22mrévise les portées V4 dans un ledger successoral sans convertir ni modifier le parent [33m 687[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lecture sémantique V4[2m > [22marchive une préparation incomplète de programme dans V4 et relit ses opérations sans reparser [33m 1298[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — lecture sémantique V4[2m > [22mne crée pas de ticket assisté pour V4 et indique la garde de version [33m 758[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question à quantité décimale dans la vraie Page[2m > [22mgarde la quantité exacte de la question et n’affiche qu’une fois « Lecture proposée » dans la réponse documentaire [33m 831[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question à quantité décimale dans la vraie Page[2m > [22mgarde la quantité d’une consigne comme contexte cité, distinct de la cible sensorielle, dans l’archive et dans la Page [33m 1217[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question à quantité décimale dans la vraie Page[2m > [22mgarde « Constat » pour un constat sur un sujet de procédé, dans la puce, la lecture et la portée [33m 696[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question à quantité décimale dans la vraie Page[2m > [22mrelit une lecture archivée sous sa propre question, distincte de la dernière question du dossier [33m 1871[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 9451[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — utilisation explicite d’une fiche catalogue sans workspace[2m > [22mcrée d’abord le dossier, ajoute la matière exacte sans masse/emploi, et reste idempotent au second geste [33m 1397[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — utilisation explicite d’une fiche catalogue sans workspace[2m > [22msans recette : garde la fiche en attente visible, sans annonce de conservation, puis l’ajoute une seule fois après l’adoption d’une référence [33m 2398[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — utilisation explicite d’une fiche catalogue sans workspace[2m > [22mavec recette : la ligne garde identité et provenance jusqu’à la préparation J5, puis se relit après réouverture [33m 5257[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 7897[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22mne crée aucun workspace à l’ouverture et ouvre le journal avec la première commande réellement conservée [33m 743[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22mlit un événement V2 de réactivation historique comme activation distincte, sans mutation [33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22mréactive une version exacte sans nouvelle adoption, puis crée la version suivante depuis le nouvel ancrage [33m 1544[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22mdemande un libellé explicite face aux versions opaques sans les convertir [33m 1081[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22menregistre une observation relative avant la première référence; adoption et lien séparé ne réancrent pas son null [33m 1440[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22mgarde la note 3 avec échelle inconnue, puis accepte une échelle ordinale seulement quand le brasseur en déclare les bornes [33m 859[2mms[22m[39m
+   [33m[2m✓[22m[39m Référence et observations dans le vrai journal de workspace[2m > [22mrefuse une mesure analytique incomplète, puis corrige en nouvelle version et garde une nouvelle dégustation sous un nouvel ID [33m 851[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55FutureRecipeDraftPanel.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 7185[2mms[22m[39m
+   [33m[2m✓[22m[39m atelier de brouillon futur V5.5[2m > [22mconserve d’abord le scénario incomplet, restaure les champs puis ajoute une révision sans perdre la lignée [33m 868[2mms[22m[39m
+   [33m[2m✓[22m[39m atelier de brouillon futur V5.5[2m > [22mouvre une nouvelle exploration sur le baseline du brouillon et matérialise seulement après revalidation [33m 1207[2mms[22m[39m
+   [33m[2m✓[22m[39m atelier de brouillon futur V5.5[2m > [22mprépare la nouvelle origine J5 comme révision explicite, sans transférer les alpha d’une autre opération [33m 687[2mms[22m[39m
+   [33m[2m✓[22m[39m atelier de brouillon futur V5.5[2m > [22mfait confirmer le nouveau volume avant la révision et conserve les masses J5 sans scaler [33m 549[2mms[22m[39m
+   [33m[2m✓[22m[39m atelier de brouillon futur V5.5[2m > [22mtraite une masse J5 inconnue comme un choix de programme et exige un nouveau J5 avant l’export [33m 3874[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 9141[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22mrelit Q1 sans moteur et le garde ouvert quand une note plus récente devient courante [33m 485[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22maffiche le delta canonique de Q2 malgré la stabilité inconnue et distingue la note de la simulation à l’ancre [33m 353[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22mdistingue un domaine note/modèle incompatible tout en gardant le delta de modèle porté par le DTO [33m 348[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22mouvre une comparaison depuis une ancre historique exacte sans rétablir la note comme courante [33m 1505[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22mlaisse les choix de cible, de contact, de faits réalisés et de cadres explicites avant l’appel parent [33m 3176[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22mreprésente une ancienne stabilité comme brouillon et exige sa réadoption attribuée [33m 1996[2mms[22m[39m
+   [33m[2m✓[22m[39m Explorateur d’observation ancrée V5.5[2m > [22mretire la déclaration de stabilité quand la cible change dans le brouillon [33m 783[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceCompensationV3UI.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 5284[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur V3 · cohérence investigation/constat avant callbacks[2m > [22mbloque le réexamen si la direction de la question disparaît, puis applique le choix explicite « l’examiner » [33m 2094[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur V3 · cohérence investigation/constat avant callbacks[2m > [22mretire un constat à direction d’objectif du choix et ne le restaure qu’après un geste explicite [33m 2719[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur V3 · cohérence investigation/constat avant callbacks[2m > [22mrefuse une nouvelle compensation à direction vide, puis valide le DTO après le choix explicite [33m 470[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 5103[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22mrecherche chacun des trois types via le client injecté [33m 640[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22mcrée une souche et un style avec leurs minima métier, source commune et plages laissées inconnues [33m 606[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22mconserve le formulaire au conflit, reprend le même payload avec le même operationId et garde la source brute [33m 388[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22mENRICH cible ID, révision et empreinte relus; garde l’ancienne assertion contradictoire et permet Utiliser [33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22msaisie guidée d’une analyse envoie propriété, valeurs, base, confiance et source dans la commande exacte [33m 543[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22mENRICH ajoute la description au même ID, garde la contradiction et choisit le target append-only [33m 376[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22mENRICH un style par son ID de guide et son ID de style, avec une nouvelle version demandée [33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m Catalogue de la tranche V5.5[2m > [22msaisie guidée de levure relie température, unité, contexte et source au claim de la souche [33m 448[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 4175[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55PropertyAdviceDecisionV4 — liens pendants et avant/après[2m > [22mécarter un constat comparé bloque jusqu’à un geste explicite; rien n’est délié en silence [33m 308[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mdéclare un accès oui en un seul constat; la source locale est construite du geste et visible [33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mconserve une voie avec les références exactes, refuse un reçu étranger et rejoue la même commande [33m 360[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mA→B : motifs de dossier et de relecture, reçu affiché ne passent pas sur B, même avec le même strategyId [33m 588[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 4332[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mconstruit une enveloppe depuis la requête exacte avec une suggestion V4 et une preuve froide canonique [33m 642[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mreçoit la preuve froide complète et refuse sa mutation, sans projeter les evidence fields [33m 1470[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mdérive la suggestion d’une annotation poire/floral sans exiger un mot de contact [33m 403[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mdéclare explicitement l’absence de suggestion lorsque la lecture ne garde que garder/éviter [33m 357[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mrecharge le pending dans le namespace fixture après une recréation du runtime [33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mne répond pas à A avec le contexte courant B quand le ticket A a disparu [33m 323[2mms[22m[39m
+   [33m[2m✓[22m[39m runtime de transport assistantFixture[2m > [22mlibère le pending A depuis le namespace après changement de scope sans exposer A au snapshot de B [33m 318[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceReexaminationPanelV4.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 3607[2mms[22m[39m
+   [33m[2m✓[22m[39m réexamen V4 · panel de réconciliation[2m > [22mgarde la version source en lecture seule, montre un preview distinct et confirme le choix exact avec retry stable [33m 1208[2mms[22m[39m
+   [33m[2m✓[22m[39m réexamen V4 · panel de réconciliation[2m > [22mn’annonce pas le résultat tardif d’une confirmation A après affichage de B [33m 763[2mms[22m[39m
+   [33m[2m✓[22m[39m réexamen V4 · panel de réconciliation[2m > [22mrefuse de présenter le parent comme résultat d’une confirmation [33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m réexamen V4 · panel de réconciliation[2m > [22mpublie une issue tout-rejeté sans réponse de domaine [33m 890[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55BiologicalInputsEditor.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 3882[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur des entrées biologiques[2m > [22mcrée une branche si nécessaire, garde les quantités vides comme inconnues et soumet uniquement après ajout explicite [33m 1917[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur des entrées biologiques[2m > [22mexige une matrice et un temps cibles explicites pour le transfert [33m 1964[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55RecipeDraftLiveRefresh.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 3873[2mms[22m[39m
+   [33m[2m✓[22m[39m Recette V5.5 — relecture live du brouillon dans l’atelier monté[2m > [22mactualise le programme après correction manuelle sans remonter l’atelier ni appliquer une ancienne prévision [33m 3872[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationTrialNative.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 4004[2mms[22m[39m
+   [33m[2m✓[22m[39m Page + Explorer natifs — composition J1 transmise à J5[2m > [22mconserve exactement le J1 préparé avant de lancer la prévision J5 [33m 4003[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 3596[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparaison V5.5 des profils[2m > [22mbascule sur les mêmes branches et axes, sans perdre les valeurs, plages, centrales ou références [33m 385[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparaison V5.5 des profils[2m > [22mqualifie le baseline recette comme projection totale du programme après ajouts prévus, sans le confondre avec une dégustation [33m 471[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparaison V5.5 des profils[2m > [22mC01 · garde la même identité par branche dans sélection, légende, Barres, Radar, lacunes et tableau [33m 794[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparaison V5.5 des profils[2m > [22mCreuset · trois axes du même résultat font une forme ; un ou deux axes restent en lecture par axe, mêmes séries, valeurs et table [33m 651[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparaison V5.5 des profils[2m > [22mCreuset · mélange valide : chaque élément garde matière, dose, moment et conditions reçus, sans dose cumulée, dans les deux lectures [33m 343[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55DocumentaryDecision.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 2722[2mms[22m[39m
+   [33m[2m✓[22m[39m synthèse documentaire au poste du brasseur[2m > [22maffiche le corps et ses raisons avant les voies, distingue couverture/applicabilité/préparation et conserve un dossier exact [33m 2686[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1921[2mms[22m[39m
+   [33m[2m✓[22m[39m Contrat de présentation sensorielle · fixture multi-axes[2m > [22mtrace trois axes réellement compatibles et garde exacts, inconnus, unités et contexte identiques en Barres/Radar [33m 671[2mms[22m[39m
+   [33m[2m✓[22m[39m Contrat de présentation sensorielle · fixture multi-axes[2m > [22mComparaison · expose deux branches et leurs hypothèses en lecture passive, sans perdre sélection ni mode [33m 315[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PagePreparationResume.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 2182[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — reprise exacte d’une préparation de programme archivée[2m > [22mreprend A→Hallertau après reload, retire le vieux conseil du contexte courant et garde l’archive source intacte [33m 1376[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — reprise exacte d’une préparation de programme archivée[2m > [22mrefuse le contexte qui a changé pendant l’action sans retirer ni remplacer l’archive [33m 805[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55NuanceExplorer.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 2011[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55NuanceExplorer[2m > [22mpropose, adopte, révise et archive deux projections sans modifier la première ni relancer son moteur à la relecture [33m 1761[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageHistoricalReading.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 2110[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question historique liée au snapshot exact[2m > [22mgarde Q1 et ses critères sans joindre une lecture lorsque le lien du snapshot est absent [33m 666[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question historique liée au snapshot exact[2m > [22mne joint que l’archive Q1 référencée exactement par le snapshot [33m 688[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — question historique liée au snapshot exact[2m > [22mefface intention et lecture si le snapshot n’a pas de snapshotIntent, sans toucher au Q2 durable [33m 755[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1811[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdvice.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 1864[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — réponse V3 par propriétés après réception[2m > [22marchive Q10 avec ses fragments exacts, prépare une réponse V3 explicit[] et relit l’historique sans recalcul [33m 1863[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ReferenceSelectionFocusC04.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1120[2mms[22m[39m
+   [33m[2m✓[22m[39m C04 · comparaison à la référence adoptée pendant un changement de sélection[2m > [22mgarde le comparateur monté et le focus pendant l’archivage d’une sélection de candidat puis de nuance [33m 593[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1183[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55Explorer[2m > [22mgarde une masse décimale, une matière inconnue et les choix du creuset après un changement de focus [33m 458[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55CreusetCompatible.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1060[2mms[22m[39m
+   [33m[2m✓[22m[39m Creuset compatible · Barres et Radar sur des cadres exacts[2m > [22mgarde identités, valeurs, table et sources en Barres ↔ Radar, filtre de série puis rétablissement, nuance retirée puis remise [33m 422[2mms[22m[39m
+   [33m[2m✓[22m[39m Creuset compatible · Barres et Radar sur des cadres exacts[2m > [22mmême J5 : trois axes forment le profil standard ; le sensoriel ne trace une forme que pour un cadre commun déclaré [33m 480[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 1111[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparaison sensorielle V5.5[2m > [22mqualifie la baseline J5 depuis son programme exact sans transformer une note observée en hypothèse [33m 499[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ProgramEditor.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 900[2mms[22m[39m
+   [33m[2m✓[22m[39m Éditeur de programme vers le moteur[2m > [22mcompare un retrait et une correction de contact comme un seul programme, source intacte [33m 574[2mms[22m[39m
+   [33m[2m✓[22m[39m Éditeur de programme vers le moteur[2m > [22méprouve la dose décimale avec jour absent et refuse une saisie illisible après cette dose [33m 326[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55QuestionScopePanel.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 872[2mms[22m[39m
+   [33m[2m✓[22m[39m disposition des portées d’une lecture V3[2m > [22mmontre le fragment exact et distingue couverture de disposition; confirme une révision append-only puis la relit [33m 638[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[33m 931[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ReferenceEditor.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 860[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur de référence et culture confirmée[2m > [22madopte par le geste NR explicite une culture mixte exacte, la relit sans toucher à la recette et garde les parts manquantes [33m 710[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 822[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[33m 703[2mms[22m[39m
+   [33m[2m✓[22m[39m HopV55QualifiedAdvicePreparationControls[2m > [22mgarde la lecture V4, ses annotations et ses portées exactes pendant le choix du contexte qualifié [33m 452[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 758[2mms[22m[39m
+   [33m[2m✓[22m[39m Éditeur de branche de planification V5.5[2m > [22mlit une décimale française et transmet le volume exact sans toucher aux masses source [33m 337[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55NuancePlanEditor.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 678[2mms[22m[39m
+   [33m[2m✓[22m[39m éditeur de plans de nuance indépendant d’une prévision[2m > [22mpropose, adopte et révise un plan depuis les références communes sans lancer de simulation [33m 662[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 625[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PageFreshWorkspace.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 613[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — source du dossier avant une commande[2m > [22mrelit la révision sauvée par une autre vue au lieu du cache React [33m 358[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55RecipeDraftWorkspaceSource.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 685[2mms[22m[39m
+   [33m[2m✓[22m[39m Page V5.5 — la source d’un brouillon recette ouvert[2m > [22mgarde le contexte 23 L du brouillon et ne restaure pas implicitement activeCopy du workspace homonyme [33m 393[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceOperationalPresentation.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 516[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 541[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 475[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdvicePanel.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 471[2mms[22m[39m
+   [33m[2m✓[22m[39m panneau de proposition assistée[2m > [22mne confirme pas au montage ni sur simple saisie de motif; retry réutilise le même acte et succès bloque un second envoi [33m 310[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 311[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceContextNotice.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m slot du contexte reçu · entrée effectivement affichée[2m > [22mtransmet la référence courante, puis la référence historique exacte et le bon geste de correction [33m 454[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55CultureHypothesisEditor.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 259[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 241[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAssociatedMaterials.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 200[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 139[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55FixturePreview.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4CultureProvenance.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 106[2mms[22m[39m
+ [32m✓[39m tests/integration/hopV55Host.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m68 passed[39m[22m[90m (68)[39m
+[2m      Tests [22m [1m[32m425 passed[39m[22m[90m (425)[39m
+[2m   Start at [22m 22:55:26
+[2m   Duration [22m 611.80s[2m (transform 5.91s, setup 5.99s, collect 38.21s, tests 1127.53s, environment 38.37s, prepare 3.51s)[22m
+
+EXIT 0

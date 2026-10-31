@@ -1,0 +1,1063 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mscelle source/scope/policy, persiste le ticket avant l’émission, puis choix → aperçu → confirmation → historique → rejeu[33m 13419[2mms[22m[39m[35m 330 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mun échec du CAS du ticket produit zéro émission[33m 3607[2mms[22m[39m[35m 302 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mun changement d’acteur avant l’envoi refuse le ticket et l’émission[33m 3465[2mms[22m[39m[35m 366 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mune génération serveur changée avant l’émission garde le ticket mais n’émet rien[33m 4209[2mms[22m[39m[35m 438 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mune source modifiée après l’aperçu refuse la confirmation et invalide l’aperçu[33m 8563[2mms[22m[39m[35m 516 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22msans capability explicite, l’archive V4 reste indisponible avec sa raison, sans ticket[33m 1543[2mms[22m[39m[35m 326 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#39 · compagnon Request3/V6 sur l’archive V4 de la vraie Page[2m > [22mles tickets et reçus futurs restent en lecture seule dans l’historique[32m 112[2mms[22m[39m[35m 309 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mlit le brouillon B vivant face à la Recipe A du même ID, scelle origine/snapshot/archive puis ticket, retry, choix, aperçu, confirmation, histoire et correction sans enregistrer[33m 21286[2mms[22m[39m[35m 533 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mrelit le reçu exact du brouillon confirmé après fermeture réelle du créateur, sans provider ni lecteur vivant[33m 16978[2mms[22m[39m[35m 709 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mretrouve et corrige la réponse V4 du brouillon fermé sous son origine Wizard, face à une Recipe A de même ID et même contenu[33m 12572[2mms[22m[39m[35m 868 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mrefuse la correction avant écriture si l’acteur change ou si une version plus récente non reconnue apparaît, sans perdre l’historique[33m 11536[2mms[22m[39m[35m 950 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mun dossier assisté aux membres futurs reste listé brut dans l’atelier ordinaire, sans relecture ni rejeu[32m 66[2mms[22m[39m[35m 970 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mun acteur changé avant l’envoi refuse ticket et émission Wizard[33m 2712[2mms[22m[39m[35m 1037 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mun brouillon modifié pendant la session refuse le ticket avant tout effet[33m 3719[2mms[22m[39m[35m 338 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mune génération serveur changée garde le ticket Wizard mais n’émet rien[33m 3704[2mms[22m[39m[35m 293 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22msans fabrique Wizard déclarée, le créateur garde sa raison, le compagnon habituel et aucun dossier assisté[33m 1422[2mms[22m[39m[35m 369 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mla Page n’ouvre jamais la voie classique pour un brouillon; le dossier assisté s’ouvre sur geste explicite[33m 2468[2mms[22m[39m[35m 444 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticCompanion39.test.tsx[2m > [22m#88 · étape Houblons du vrai créateur · brouillon vivant[2m > [22mla fabrique Wizard explicite consomme l’adaptateur API reçu, distingue le fournisseur et n’appelle aucun réseau[32m 2[2mms[22m[39m[35m 445 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55WizardCorrectionRelations.test.tsx[2m > [22mCorrection d’une réponse Wizard fermée · relations entre termes[2m > [22mrefuse lisiblement une cible liée seule, délie son dernier constat comparé en montrant la comparaison retirée, prévisualise et enregistre une nouvelle version[33m 7932[2mms[22m[39m[35m 302 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55WizardCorrectionRelations.test.tsx[2m > [22mCorrection d’une réponse Wizard fermée · relations entre termes[2m > [22mécarte aussi le propriétaire par un choix explicite, montre le lien retiré, puis abandonne sans rien écrire[33m 9288[2mms[22m[39m[35m 413 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55WizardCorrectionRelations.test.tsx[2m > [22mCorrection d’une réponse Wizard fermée · branches de Délier sur fixtures typées[2m > [22mdélie un constat d’une comparaison à deux constats : la comparaison garde l’autre, le constat délié reste actif, le parent reste exact[33m 1323[2mms[22m[39m[35m 437 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55WizardCorrectionRelations.test.tsx[2m > [22mCorrection d’une réponse Wizard fermée · branches de Délier sur fixtures typées[2m > [22misole la garde du partenaire interne : écarter A seul est refusé, Délier P→A retire ce seul partenaire et garde le partenaire externe de E[33m 1345[2mms[22m[39m[35m 472 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mrefuse une question éditée, puis conserve un ticket exact avant l’envoi; un retry relit ce ticket[33m 5605[2mms[22m[39m[35m 335 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mexplique le blocage quand aucune base documentaire V3/V4 n’a été capturée[33m 4056[2mms[22m[39m[35m 368 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22marchive le retour tardif A sous sa lecture, le marque périmé sous B puis relit l’archive sans parser ni reconstruire[33m 9796[2mms[22m[39m[35m 597 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mrattache un ticket A après rechargement sans onBeforeSend, parsing ni capture neuve, même si B est affichée[33m 12043[2mms[22m[39m[35m 331 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mconfirme une suggestion fraîche via la transition V3→V4, conserve la réponse source et relit le receipt en lecture seule[33m 15210[2mms[22m[39m[35m 412 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mreprend la même correction après échec post-upgrade, sans nouvel upgrade ni reconstruction[33m 15346[2mms[22m[39m[35m 551 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mrefuse la suggestion si une autre version V4 de la même lecture est affichée[33m 13630[2mms[22m[39m[35m 813 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22marchive le receipt frais du vrai tour froid sans changer les preuves du Runtime fixture[33m 94535[2mms[22m[39m[35m 1820 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mPage V5.5 — lancement et archive du compagnon assisté[2m > [22mrattache le ticket et le tour froid A sous B sans déplacer son receipt ni son contexte[33m 127057[2mms[22m[39m[35m 2681 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mR23-1 — identification des reprises avant ouverture[2m > [22mlaisse un ticket futur consultable en brut sans geste de rattachement[32m 202[2mms[22m[39m[35m 2661 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageAssistedAdvice.test.tsx[2m > [22mR23-1 — identification des reprises avant ouverture[2m > [22mdistingue le reçu A du ticket B par question, date et contexte avant ouverture[33m 14862[2mms[22m[39m[35m 1153 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — écarter, restaurer, confirmer[2m > [22mgarde la question mot pour mot et marque les passages exacts retenus ou écartés[32m 235[2mms[22m[39m[35m 122 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — écarter, restaurer, confirmer[2m > [22mécarte un faux terme avec motif, envoie l’acte exact et n’annonce le succès qu’après vérification du retour[32m 224[2mms[22m[39m[35m 148 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — écarter, restaurer, confirmer[2m > [22mrefuse un retour cohérent mais d’un autre motif, puis renvoie exactement la même commande[32m 224[2mms[22m[39m[35m 112 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — écarter, restaurer, confirmer[2m > [22merreur réseau : même commandId au retry; un nouveau geste crée une nouvelle commande[32m 226[2mms[22m[39m[35m 148 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — écarter, restaurer, confirmer[2m > [22mretour tardif : une réponse A arrivée après l’installation de B n’est pas annoncée comme succès[32m 144[2mms[22m[39m[35m 178 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — liens pendants et avant/après[2m > [22mécarter un constat comparé bloque jusqu’à un geste explicite; rien n’est délié en silence[32m 297[2mms[22m[39m[35m 159 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — liens pendants et avant/après[2m > [22mécarter « augmenter » exige de relier explicitement l’exclusion qui le cite[32m 230[2mms[22m[39m[35m 167 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — liens pendants et avant/après[2m > [22mune correction de rôle montre l’avant/après, s’annule sans trace et part en révision d’origine user[33m 312[2mms[22m[39m[35m 178 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22msans terme retenu : aucune réponse, voie ni dossier; restauration explicite de la projection d’avant l’écart[32m 245[2mms[22m[39m[35m 189 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22mle repère « contexte relu » suit la version affichée; l’ancienne version reste figée et sans geste[32m 281[2mms[22m[39m[35m 214 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22mconserve le repère de relecture après une correction d’accès sans présenter le nouvel oui comme relu auparavant[32m 214[2mms[22m[39m[35m 226 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22mqualifie une parent V4 absent sans deviner le contexte relu[32m 94[2mms[22m[39m[35m 200 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22mqualifie une filiation cyclique sans deviner le contexte relu[32m 87[2mms[22m[39m[35m 223 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22mdistingue une reprise V3 sans inventer de relecture antérieure[32m 101[2mms[22m[39m[35m 251 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — tout écarté, histoire, lecture seule[2m > [22mreadOnly : aucun geste de correction, de restauration ou de dossier[32m 74[2mms[22m[39m[35m 222 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mpublie l’identité exacte de la version affichée à l’ouverture, au choix B puis au retour A, sans boucle[32m 205[2mms[22m[39m[35m 118 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mnotifie l’identité parent exacte lorsque le lien de contexte relu ouvre la version précédente[32m 40[2mms[22m[39m[35m 137 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mdéclare un accès oui en un seul constat; la source locale est construite du geste et visible[33m 383[2mms[22m[39m[35m 144 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mconserve une voie avec les références exactes, refuse un reçu étranger et rejoue la même commande[33m 384[2mms[22m[39m[35m 130 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mHopV55PropertyAdviceDecisionV4 — accès sourcé, dossier, séparation A→B[2m > [22mA→B : motifs de dossier et de relecture, reçu affiché ne passent pas sur B, même avec le même strategyId[33m 430[2mms[22m[39m[35m 153 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22maccepte le retour conforme[32m 1[2mms[22m[39m[35m 153 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse un autre acte[32m 1[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse un autre motif global[32m 0[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse un autre motif de rejet[32m 1[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse une autre annotation source ajoutée[32m 1[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse une trace amputée[32m 0[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse un prédécesseur faux[32m 0[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse une autre lecture source[32m 0[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse une issue sans réponse[32m 1[2mms[22m[39m[35m 155 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse un accès recopié[32m 1[2mms[22m[39m[35m 155 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse une révision présentée comme réexamen et des termes retenus différents[32m 0[2mms[22m[39m[35m 155 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mexige les projections exactes et le cadre de lecture de cette version[32m 2[2mms[22m[39m[35m 156 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mautorise seulement le résumé proposé régénéré sur le cadre parent inchangé[32m 1[2mms[22m[39m[35m 157 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4.test.tsx[2m > [22mverifyRecordResultV4 / verifyDossierResultV4 — contre-épreuves de retours incohérents[2m > [22mrefuse un dossier au motif ou au registre différent[32m 0[2mms[22m[39m[35m 157 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx[2m > [22mContrat de présentation sensorielle · fixture multi-axes[2m > [22mtrace trois axes réellement compatibles et garde exacts, inconnus, unités et contexte identiques en Barres/Radar[33m 659[2mms[22m[39m[35m 224 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx[2m > [22mContrat de présentation sensorielle · fixture multi-axes[2m > [22mn’affiche pas de profil radar pour un groupe compatible limité à deux axes et conserve la lecture exacte[32m 231[2mms[22m[39m[35m 188 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx[2m > [22mContrat de présentation sensorielle · fixture multi-axes[2m > [22mn’unit pas les groupes incompatibles d’un et deux axes pour en fabriquer un radar, sans perdre leur tableau[32m 189[2mms[22m[39m[35m 220 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx[2m > [22mContrat de présentation sensorielle · fixture multi-axes[2m > [22mJ5 fixture · trois axes aux domaines mixtes restent exacts dans le profil standard et séparés en sensoriel[32m 222[2mms[22m[39m[35m 233 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx[2m > [22mContrat de présentation sensorielle · fixture multi-axes[2m > [22mComparaison · expose deux branches et leurs hypothèses en lecture passive, sans perdre sélection ni mode[33m 389[2mms[22m[39m[35m 239 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryPresentation.test.tsx[2m > [22mContrat de présentation sensorielle · fixture multi-axes[2m > [22mSensory · montre les hypothèses de sourceResult exactes, jamais celles de la référence adoptée ou d’un contexte différent[33m 413[2mms[22m[39m[35m 229 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mconserve les extraits exacts, corrige les relations et laisse le facultatif hors des critères requis[32m 169[2mms[22m[39m[35m 88 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mefface une association lexicale quand le terme change et ne modifie pas le fragment source[32m 39[2mms[22m[39m[35m 110 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mgarde les archives historiques en lecture seule et refuse une correction sans référence de lecture[32m 45[2mms[22m[39m[35m 135 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mcompare une source à une cible exactes avant de demander la convention de dose[32m 38[2mms[22m[39m[35m 97 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mgarde un retrait partiel et un ajout à froid séparés dans une seule soumission incomplète, sans zéro ni simulation[32m 89[2mms[22m[39m[35m 143 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mrend une préparation needsInput archivée avec ses opérations et besoins exacts, puis reprend le premier choix sans J5[32m 33[2mms[22m[39m[35m 99 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mtransmet une préparation archivée incomplète intacte pour une reprise contrôlée dans le contexte actif[32m 16[2mms[22m[39m[35m 108 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mreprend des opérations sourcespanned sans perdre 20 g et laisse dose/phase de l’ajout froid inconnues[32m 53[2mms[22m[39m[35m 139 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mne choisit pas entre deux lignes source compatibles et n’affiche la paire exacte qu’après le choix[32m 25[2mms[22m[39m[35m 153 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mdistingue une fiche canonique des deux identités de ligne liées par varietyId sans sélectionner leurs lignes[32m 28[2mms[22m[39m[35m 108 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mrefuse la ligne partielle, puis choisit explicitement toute la portée, chaque emploi et une voie du planificateur[32m 261[2mms[22m[39m[35m 134 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionPreparation.test.tsx[2m > [22mHopV55DecisionPreparation — correction explicite des critères[2m > [22mscelle V2 correction, produits et opération incomplète puis la relit sans moteur ni contexte actif[32m 20[2mms[22m[39m[35m 144 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mrecherche chacun des trois types via le client injecté[33m 647[2mms[22m[39m[35m 85 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mcrée une variété absente sans inventer analyse ou alias, puis relit le record canonique[32m 218[2mms[22m[39m[35m 100 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mconserve une valeur hors schéma avec son chemin JSON et sa source exacte sous les détails avancés[32m 252[2mms[22m[39m[35m 76 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mcrée une souche et un style avec leurs minima métier, source commune et plages laissées inconnues[33m 590[2mms[22m[39m[35m 125 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mconserve le formulaire au conflit, reprend le même payload avec le même operationId et garde la source brute[33m 381[2mms[22m[39m[35m 107 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mENRICH cible ID, révision et empreinte relus; garde l’ancienne assertion contradictoire et permet Utiliser[33m 513[2mms[22m[39m[35m 121 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22msaisie guidée d’une analyse envoie propriété, valeurs, base, confiance et source dans la commande exacte[33m 568[2mms[22m[39m[35m 85 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mprojette une description sourcée dans un houblon créé avec son contexte exact[32m 275[2mms[22m[39m[35m 124 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mENRICH ajoute la description au même ID, garde la contradiction et choisit le target append-only[33m 410[2mms[22m[39m[35m 117 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mENRICH un style par son ID de guide et son ID de style, avec une nouvelle version demandée[33m 377[2mms[22m[39m[35m 115 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22msaisie guidée de levure relie température, unité, contexte et source au claim de la souche[33m 427[2mms[22m[39m[35m 111 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mdemande une raison de distinction des homonymes sans perdre le brouillon ni réutiliser un ID avec payload modifié[32m 237[2mms[22m[39m[35m 129 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Catalogue.test.tsx[2m > [22mCatalogue de la tranche V5.5[2m > [22mne propose pas CREATE quand la recherche ne prouve pas une absence complète[32m 190[2mms[22m[39m[35m 132 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mne crée aucun workspace à l’ouverture et ouvre le journal avec la première commande réellement conservée[33m 711[2mms[22m[39m[35m 227 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mprésente le programme et son horizon en premier, replie l’hypothèse si une recette existe et réserve les identifiants aux détails[32m 90[2mms[22m[39m[35m 225 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mne relit ni n’écrit le workspace lors d’une transition de contexte unknown vers planning[32m 102[2mms[22m[39m[35m 232 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mcorrige une note historique sans déplacer son instant, son lot ou son contact; une nouvelle note garde un nouvel ID[32m 298[2mms[22m[39m[35m 223 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mlit un événement V2 de réactivation historique comme activation distincte, sans mutation[33m 304[2mms[22m[39m[35m 200 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mréactive une version exacte sans nouvelle adoption, puis crée la version suivante depuis le nouvel ancrage[33m 1319[2mms[22m[39m[35m 229 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mdemande un libellé explicite face aux versions opaques sans les convertir[33m 1012[2mms[22m[39m[35m 259 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22menregistre une observation relative avant la première référence; adoption et lien séparé ne réancrent pas son null[33m 1183[2mms[22m[39m[35m 282 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mgarde la note 3 avec échelle inconnue, puis accepte une échelle ordinale seulement quand le brasseur en déclare les bornes[33m 800[2mms[22m[39m[35m 280 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mrefuse une mesure analytique incomplète, puis corrige en nouvelle version et garde une nouvelle dégustation sous un nouvel ID[33m 782[2mms[22m[39m[35m 253 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22maffiche une erreur de CAS sans effacer la note ni écrire le journal local[32m 263[2mms[22m[39m[35m 256 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mbloque une date observée future sans ajouter d’événement[32m 154[2mms[22m[39m[35m 303 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferencePanel.test.tsx[2m > [22mRéférence et observations dans le vrai journal de workspace[2m > [22mconserve un format de journal futur en lecture seule sans tentative de sauvegarde[32m 39[2mms[22m[39m[35m 266 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mpart sans source ni ligne choisies, prépare la source canonique et transmet une preuve complète sans application[33m 5901[2mms[22m[39m[35m 230 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22m#75 : la dose de la référence suit la règle unique, avec sa coordonnée exacte et des unités insécables[33m 1790[2mms[22m[39m[35m 242 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mrend une archive après fermentation en français sans réécrire son JSON, ses sceaux ni ses identifiants[32m 33[2mms[22m[39m[35m 251 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mrelit une enveloppe pré-A1 scellée telle quelle et présente ses anciennes raisons en français sans réévaluation[32m 21[2mms[22m[39m[35m 258 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mrelit un contact composite pré-A1 en nommant les propriétés qui diffèrent, sans fusion ni réécriture[32m 20[2mms[22m[39m[35m 264 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mrefuse une conservation si la masse change pendant la relecture, puis retire la proposition périmée[33m 1663[2mms[22m[39m[35m 247 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mrelit A comme historique après changement de masse en B, en gardant son instantané et son export[33m 6973[2mms[22m[39m[35m 270 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mnomme en français les écarts de source d’une preuve devenue historique, sans clé interne, et garde les clés exactes hors de la prose[33m 7863[2mms[22m[39m[35m 249 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22m#40 : ne propose pas une ligne d’ébullition comme contact à froid et nomme la vraie raison[33m 423[2mms[22m[39m[35m 192 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22m#40 : relit une preuve déjà conservée sur une ligne d’ébullition sans la réécrire, avec le vrai motif[32m 10[2mms[22m[39m[35m 198 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mREV-WIZ M7 : nomme en français les écarts d’une source périmée et garde les clés exactes hors de la prose[32m 16[2mms[22m[39m[35m 204 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mREV-WIZ M1 : nomme « contenu du brouillon d’origine » quand seule la levure a changé, programme intact[33m 6984[2mms[22m[39m[35m 274 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mREV-WIZ M2 : relit une preuve règle 1 dès qu’un champ non ensemencé de la levure change, sans attendre la réouverture[33m 5095[2mms[22m[39m[35m 246 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeColdContactWorkbench.test.tsx[2m > [22mworkbench réel de contact à froid · recette locale[2m > [22mexporte sans réécriture une enveloppe de journal froide d’un format futur[33m 308[2mms[22m[39m[35m 269 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mbascule sur les mêmes branches et axes, sans perdre les valeurs, plages, centrales ou références[33m 399[2mms[22m[39m[35m 208 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mgarde dose, moment et souche séparés par branche et expose les axes et contrôles parentaux[32m 141[2mms[22m[39m[35m 197 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mV4 : une ébullition sans température déclarée ne porte pas « température inconnue »[32m 81[2mms[22m[39m[35m 262 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22m#75 : la dose s’écrit à 3 décimales avec sa valeur complète, jamais en flottant long[32m 83[2mms[22m[39m[35m 252 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mprésente la durée d’ébullition et les contacts courts en minutes, sans modifier les heures du snapshot[32m 93[2mms[22m[39m[35m 250 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mconserve l’échelle propre du panel 0–15 quand l’axe est disponible sans estimation supportée[32m 75[2mms[22m[39m[35m 222 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mlaisse une souche manquante inconnue : aucun zéro ni polygone fermé ne la remplace[32m 113[2mms[22m[39m[35m 250 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mqualifie le baseline recette comme projection totale du programme après ajouts prévus, sans le confondre avec une dégustation[33m 444[2mms[22m[39m[35m 270 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mC01 · garde la même identité par branche dans sélection, légende, Barres, Radar, lacunes et tableau[33m 645[2mms[22m[39m[35m 287 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mC02 · garde des plages recouvrantes sur des couloirs distincts, attribuables sans couleur ni bande inter-axes[32m 144[2mms[22m[39m[35m 279 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mC02 · ne dessine aucune centrale quand le modèle n’en fournit pas[32m 40[2mms[22m[39m[35m 308 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mC02 lisibilité · noms d’axes entiers sur le radar, lecture rapide arrondie et valeurs exactes conservées[32m 73[2mms[22m[39m[35m 297 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mCreuset · trois axes du même résultat font une forme ; un ou deux axes restent en lecture par axe, mêmes séries, valeurs et table[33m 329[2mms[22m[39m[35m 330 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Comparison.test.tsx[2m > [22mComparaison V5.5 des profils[2m > [22mCreuset · mélange valide : chaque élément garde matière, dose, moment et conditions reçus, sans dose cumulée, dans les deux lectures[33m 308[2mms[22m[39m[35m 327 MB heap used[39m
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE fixture-ready 1240ms
+
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22madaptateur mémoire de transaction — journal et isolement[2m > [22mrestaure les clés écrites après échec et n’expose ni la ligne passée ni la ligne lue[32m 2[2mms[22m[39m[35m 187 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22mPage V5.5 — Q09 avec catalogue local complet[2m > [22mcompare les copies plaines détachées dans le runtime Page[32m 0[2mms[22m[39m[35m 188 MB heap used[39m
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 43ms revision 1 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 151ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE active-reading 8015ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 208ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 84ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 85ms revision 2 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 245ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE scopes-retained 14201ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 169ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 127ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 396ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 130ms
+Q09_ADVICE_BUILD 321ms variants 298
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 133ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 130ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 293ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 127ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 14112ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 130ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 128ms revision 3 preparations 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 1574ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE study-visible-after-CAS-retry 46959ms
+Q09_FULL_CATALOGUE_RESULT {"referenceVarieties":136,"referenceKnowledge":1779,"fixtureVarieties":3,"savedVarieties":140,"assembledVariants":298,"basisEvidence":0,"oldDiagnostic":{"sourceReadingReference":"hop-v55-decision-reading-v3:sha256:02e43d3cef4bb942069fcbf094263396d5aa7a2798205251b5a07df8594551b2","assembledVariants":162,"savedVarieties":4,"savedLots":0,"basisEvidence":0},"currentSourceReadingReference":"hop-v55-decision-reading-v3:sha256:8a08ba061969a8423d6bbfa771507e0b5361d5bbe8f697e5ebd5e6091c8a4666","candidateIds":["variety:fixture-q09-candidate"],"studyReference":"hop-advice-study-v3:sha256:bd662fa17826457d0f180a1765f92fc79395421738738e84c29c991e3766ef02","optionCount":5}
+Q09_FULL_PHASE before-create-button-wait 47038ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE create-button-enabled 47053ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1154ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 895ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 882ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 876ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 10567ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_CREATE_BEGIN 1
+Q09_DAO_CREATE_CLONE 1 21ms
+Q09_DAO_CREATE_FAIL 1 21ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE dao-retry-ready 66055ms
+Q09_FULL_PHASE before-DAO-retry-button-wait 66086ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE DAO-retry-button-enabled 66094ms
+Q09_FULL_PHASE dao-retry-clicked 66372ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1101ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 860ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 835ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 899ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 10507ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_CREATE_BEGIN 2
+Q09_DAO_CREATE_CLONE 2 30ms
+Q09_DAO_CREATE_VALIDATE 2 207ms
+Q09_DAO_CREATE_DONE 2 267ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 34ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 136ms
+Q09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1057ms revision 4 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 2268ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE study-saved-after-DAO-retry 90821ms
+Q09_FULL_PHASE before-preference-choice 90926ms
+Q09_FULL_PHASE preference-choice-selected 91024ms
+Q09_FULL_PHASE before-preference-submit 91059ms
+Q09_FULL_PHASE preference-submit-clicked 91472ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 1221ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 31ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_STUDY_REFERENCE 98ms
+Q09_STUDY_REFERENCE 128ms
+Q09_ADVICE_BUILD 308ms variants 298
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 861ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 880ms revision 5 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_CATALOGUE_LOAD 11765ms saved 140 varieties/0 lots variants 298 evidence 0
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_CAS_SAVE 2371ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 33ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 888ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 30ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_REPOSITORY_READ 864ms revision 6 preparations 1
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE preference-appended 117179ms
+Q09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_DAO_READ 30ms
+Q09_DAO_READ_EVENTS 0ms
+
+[90mstdout[2m | tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22m[2mPage V5.5 — Q09 avec catalogue local complet[2m > [22m[2mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local
+[22m[39mQ09_FULL_PHASE history-reloaded 121930ms
+Q09_FULL_PHASE complete 122080ms
+
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceFullCatalogue.test.tsx[2m > [22mPage V5.5 — Q09 avec catalogue local complet[2m > [22mparcourt la lecture Q09, l’étude, la préférence et la relecture avec le catalogue complet local[33m 122088[2mms[22m[39m[35m 1934 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22msépare le 0 observé sur 5 de l’indice hypothétique 0–100, sans radar d’un seul axe, et nomme les mesures gardées au tableau[32m 81[2mms[22m[39m[35m 195 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mgarde la mention qualitative, la non-mention et l’inconnu distincts sans points graphiques[32m 71[2mms[22m[39m[35m 189 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mgarde les groupes d’échelle, valeurs, contexte, sources et sélections en basculant dans les deux sens[32m 186[2mms[22m[39m[35m 193 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mplace le premier profil avant les filtres et garde les noms/statuts visibles avec les références au détail[32m 28[2mms[22m[39m[35m 210 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mgarde les petites plages recouvrantes exactes, la centrale fournie et la plage complète[32m 22[2mms[22m[39m[35m 223 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mqualifie la baseline J5 depuis son programme exact sans transformer une note observée en hypothèse[33m 456[2mms[22m[39m[35m 194 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mC02 · sépare les plages recouvrantes par couloir et symbole, sans centrale inventée pour A[32m 45[2mms[22m[39m[35m 214 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mC01 · garde le symbole de chaque candidat quand la sélection change d’ordre[32m 57[2mms[22m[39m[35m 198 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SensoryComparison.test.tsx[2m > [22mComparaison sensorielle V5.5[2m > [22mC02 lisibilité · noms de nuances entiers sur le radar et lecture rapide arrondie, statut et texte exact conservés[32m 15[2mms[22m[39m[35m 212 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mstock fixture: une ligne J1 liée au lot local atteint J5 avec disponibilité sourcée connue[33m 2691[2mms[22m[39m[35m 243 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mstock fixture: refuse J5 si la disponibilité change pendant la lecture workspace après le Prepared frais[33m 1505[2mms[22m[39m[35m 317 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mstock fixture: refuse J5 si la disponibilité change pendant le CAS de staging J5 du commit[33m 1376[2mms[22m[39m[35m 305 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mprépare chaque lecture une fois et calcule J5 sur une relecture postérieure au staging[33m 4020[2mms[22m[39m[35m 374 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mrefuse J5 sous l’ancienne capture si le volume de la source physique change pendant le staging[33m 1985[2mms[22m[39m[35m 393 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mrefuse J5 sous l’ancienne capture si le catalogue complet change pendant le staging[33m 1753[2mms[22m[39m[35m 413 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mrefuse J5 sous l’ancienne capture si les cultures chargées change pendant le staging[33m 1790[2mms[22m[39m[35m 432 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationPreparationReuse.test.tsx[2m > [22mPage native — préparation réutilisée dans une même lecture, jamais au-delà d’un await[2m > [22mune nouvelle commande relit la source et ne réemploie pas la preuve de la précédente[33m 3713[2mms[22m[39m[35m 423 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV3.test.tsx[2m > [22mPage V5.5 — parcours V3 du conseil par propriétés[2m > [22mconserve Q10, corrige une annotation, archive un dossier, relit sans recalcul puis réexamine en nouvelle lignée[33m 6051[2mms[22m[39m[35m 341 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV3.test.tsx[2m > [22mPage V5.5 — parcours V3 du conseil par propriétés[2m > [22mpasse de explicit[] à discover uniquement après le clic de recherche et garde les IDs exacts[33m 1778[2mms[22m[39m[35m 414 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV3.test.tsx[2m > [22mPage V5.5 — parcours V3 du conseil par propriétés[2m > [22marchive une attestation positive d’accès seulement après une déclaration personnelle explicite[33m 10049[2mms[22m[39m[35m 636 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV3.test.tsx[2m > [22mPage V5.5 — parcours V3 du conseil par propriétés[2m > [22mvalide aussi une attestation négative, sourcée et typée process, sans réécrire le snapshot précédent[33m 3936[2mms[22m[39m[35m 690 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV3.test.tsx[2m > [22mPage V5.5 — parcours V3 du conseil par propriétés[2m > [22mrefuse un clic de découverte si un autre acteur a déjà avancé la tête de la lecture[33m 1421[2mms[22m[39m[35m 751 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceStudy.test.tsx[2m > [22mPage V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mgarde les deux portées, sélectionne un ID chargé, reprend le CAS, sauve l’étude et la préférence, puis relit sans recalcul[33m 59501[2mms[22m[39m[35m 783 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceStudy.test.tsx[2m > [22mPage V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mne propose pas d’étude lorsque les deux portées Q09 sont explicitement écartées[33m 2028[2mms[22m[39m[35m 835 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceStudy.test.tsx[2m > [22mPage V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mexige un stade et un motif pour la source exploration et relit ces valeurs sans reparsing[33m 6461[2mms[22m[39m[35m 1421 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceStudy.test.tsx[2m > [22mPage V5.5 — étude qualifiée Q09 avec portées V3[2m > [22mgarde le stade exact du batch sans guide et ne le renomme pas en planning ou exploration future[33m 14488[2mms[22m[39m[35m 1922 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mrelit Q1 sans moteur et le garde ouvert quand une note plus récente devient courante[33m 465[2mms[22m[39m[35m 235 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22maffiche le delta canonique de Q2 malgré la stabilité inconnue et distingue la note de la simulation à l’ancre[33m 348[2mms[22m[39m[35m 308 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mdistingue un domaine note/modèle incompatible tout en gardant le delta de modèle porté par le DTO[33m 344[2mms[22m[39m[35m 252 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mne fabrique aucun delta quand le DTO cadre ne porte pas de calcul disponible[32m 103[2mms[22m[39m[35m 278 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mouvre une comparaison depuis une ancre historique exacte sans rétablir la note comme courante[33m 1205[2mms[22m[39m[35m 282 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mlaisse les choix de cible, de contact, de faits réalisés et de cadres explicites avant l’appel parent[33m 2152[2mms[22m[39m[35m 342 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mreprésente une ancienne stabilité comme brouillon et exige sa réadoption attribuée[33m 1293[2mms[22m[39m[35m 374 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mretire la déclaration de stabilité quand la cible change dans le brouillon[33m 739[2mms[22m[39m[35m 417 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationExplorer.test.tsx[2m > [22mExplorateur d’observation ancrée V5.5[2m > [22mmarque les formats futurs en lecture seule et ne rend pas leur archive brute[32m 4[2mms[22m[39m[35m 421 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22mPage V5.5 — reprise V4 de la lecture R20[2m > [22mupgrade V3 explicite, garde les exclusions et le résumé proposé, trace rejet/restauration, choix, reload et réexamen historique avec retry exact[33m 17553[2mms[22m[39m[35m 574 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22mPage V5.5 — reprise V4 de la lecture R20[2m > [22mne présente pas un retour V4 incohérent comme un succès après le vrai commit, puis reprend le reçu même sans rebâtir[33m 7080[2mms[22m[39m[35m 790 MB heap used[39m
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22m[2mPage V5.5 — reprise V4 de la lecture R20[2m > [22m[2mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PagePropertyAdviceV4.test.tsx[2m > [22mPage V5.5 — reprise V4 de la lecture R20[2m > [22mne présente pas comme un succès dans B le reçu tardif d’une correction lancée dans A[33m 5481[2mms[22m[39m[35m 394 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mgroupe uniquement les signatures identiques tout en gardant raisons, conditions et sources propres à chaque matière[32m 152[2mms[22m[39m[35m 86 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mclasse d’abord les appuis sourcés sur les critères, sans score global ni ordre alphabétique[32m 34[2mms[22m[39m[35m 109 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mannonce quand aucune source ne documente de gain et garde l’inconnu distinct de zéro[32m 16[2mms[22m[39m[35m 118 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mrend les vrais contrats produits avec emplois, ratios limités, précautions et sources fabricant[32m 64[2mms[22m[39m[35m 109 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mrecherche dans tout le résultat, prépare seulement une portée résolue et n’ouvre que les identités disponibles[32m 79[2mms[22m[39m[35m 105 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mbloque les anciennes voies pendant une correction locale et appelle la correction V2 avant toute préparation[32m 51[2mms[22m[39m[35m 128 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mrestitue une lecture historique sans substituer le contexte actif ni réexposer ses actions[32m 46[2mms[22m[39m[35m 153 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionResponse[2m > [22mrelit une préparation V2 incomplète en lecture seule sans moteur ni contexte courant[32m 22[2mms[22m[39m[35m 107 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DecisionResponse.test.tsx[2m > [22mHopV55DecisionReadingArchive[2m > [22mrelit le contenu scellé, accepte une source brouillon exacte et refuse un contenu altéré sans relire le moteur[32m 2[2mms[22m[39m[35m 108 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mgarde une masse décimale, une matière inconnue et les choix du creuset après un changement de focus[33m 361[2mms[22m[39m[35m 155 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22m#75 · lit la masse totale et la dose réelle du creuset selon la règle unique, sans flottant brut[32m 161[2mms[22m[39m[35m 111 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mcherche dans tout le catalogue même quand les matières tardives ne sont pas rendues au départ[32m 57[2mms[22m[39m[35m 145 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mreçoit une sélection du Catalogue sans inventer sa masse et conserve les choix à la demande suivante[32m 79[2mms[22m[39m[35m 127 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mcompare sans composer puis place l’alternative au creuset sans masse ni emploi[32m 83[2mms[22m[39m[35m 165 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mtransmet toutes les matières d’une voie sans créer de doses et conserve les termes[32m 26[2mms[22m[39m[35m 120 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mC03 · place les douze familles sur la carte, avec index et comptes en jetons et des noms entiers[32m 62[2mms[22m[39m[35m 161 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mC03 · mène du territoire au centre, aux voisins documentés puis au creuset, au clavier[32m 105[2mms[22m[39m[35m 160 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mC03 · ne propose un voisin que sur une fiche ou un terme exact, et garde « ? » distinct[32m 75[2mms[22m[39m[35m 151 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Explorer.test.tsx[2m > [22mHopV55Explorer[2m > [22mC03 · garde statique : comptes insécables et noms coupés entre les mots seulement[32m 1[2mms[22m[39m[35m 151 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CreusetCompatible.test.tsx[2m > [22mCreuset compatible · Barres et Radar sur des cadres exacts[2m > [22mtrace une seule forme pour le cadre déclaré de trois nuances ; cadre distinct, mesure, mention et domaine inconnu restent nommés hors forme[32m 128[2mms[22m[39m[35m 181 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CreusetCompatible.test.tsx[2m > [22mCreuset compatible · Barres et Radar sur des cadres exacts[2m > [22mgarde identités, valeurs, table et sources en Barres ↔ Radar, filtre de série puis rétablissement, nuance retirée puis remise[33m 360[2mms[22m[39m[35m 210 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CreusetCompatible.test.tsx[2m > [22mCreuset compatible · Barres et Radar sur des cadres exacts[2m > [22mgarde trois lectures par axe quand chaque nuance a sa propre métrique 0–100 « axisScale », sans polygone commun[32m 29[2mms[22m[39m[35m 228 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CreusetCompatible.test.tsx[2m > [22mCreuset compatible · Barres et Radar sur des cadres exacts[2m > [22mmême J5 : trois axes forment le profil standard ; le sensoriel ne trace une forme que pour un cadre commun déclaré[33m 470[2mms[22m[39m[35m 269 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22mPage V5.5 — réconciliation V4 du contexte frais[2m > [22mprévisualise sans écrire, annule, puis reprend après CAS1 sans rebâtir ni altérer la version parent[33m 5685[2mms[22m[39m[35m 310 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22mPage V5.5 — réconciliation V4 du contexte frais[2m > [22mactive la nouvelle lecture réconciliée depuis l’historique et permet une correction sur son contexte frais[33m 5442[2mms[22m[39m[35m 396 MB heap used[39m
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22m[2mPage V5.5 — réconciliation V4 du contexte frais[2m > [22m[2mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22mPage V5.5 — réconciliation V4 du contexte frais[2m > [22mne publie pas sur B une confirmation A dont la sauvegarde attend pendant le choix d’une autre version[33m 4803[2mms[22m[39m[35m 488 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyRequalificationV4.test.tsx[2m > [22mPage V5.5 — réconciliation V4 du contexte frais[2m > [22mrefuse le lien de même identifiant avec une unité différente et conserve les rejets explicites[33m 3395[2mms[22m[39m[35m 527 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · comparaison documentaire hors recette[2m > [22mcompare une source et une alternative exactes sans choisir de fiche, de masse ni de centre[32m 211[2mms[22m[39m[35m 129 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · comparaison documentaire hors recette[2m > [22mgarde une description absente inconnue et refuse de comparer une identité à elle-même[32m 62[2mms[22m[39m[35m 113 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · profil libre[2m > [22msans raccord de conservation, le profil reste un brouillon déclaré tel quel et non un style[32m 194[2mms[22m[39m[35m 104 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · profil libre[2m > [22mtransmet une version immuable au parent et ne la dit conservée qu’après son retour[32m 162[2mms[22m[39m[35m 132 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · profil libre[2m > [22mrelit les profils conservés à côté d’une prévision sans les convertir[32m 2[2mms[22m[39m[35m 132 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · profil libre[2m > [22mgarde le profil V1 exact lié à une branche même si V2 est la dernière version[32m 2[2mms[22m[39m[35m 133 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · archive sémantique source[2m > [22maffiche l’archive V4 exacte avec cible qualitative et constat de compensation sans reparsing[32m 281[2mms[22m[39m[35m 164 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mprépare un ajout par ligne via le contrôle canonique puis refuse une préparation A envoyée sur B[32m 198[2mms[22m[39m[35m 146 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mrefuse source A→B puis retour A sous un autre owner/workspace avant préparation, même avec le même programme[32m 88[2mms[22m[39m[35m 132 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mdésactive l’envoi si une autre source conserve exactement le même programme[32m 107[2mms[22m[39m[35m 125 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mbloque le premier geste de ligne quand Page ne fournit pas de cadre exact[32m 40[2mms[22m[39m[35m 149 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mdésactive une entrée prête si le volume hypothétique change après préparation[32m 104[2mms[22m[39m[35m 146 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mréessaie la même entrée avec le même commandId après un refus réseau du parent[32m 119[2mms[22m[39m[35m 146 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22mtransforme la comparaison en remplacement de ligne sans dose implicite[32m 166[2mms[22m[39m[35m 167 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ContextualExploration.test.tsx[2m > [22mExploration contextualisée · essai explicite[2m > [22msans programme, l’essai l’explique et la comparaison reste disponible[32m 50[2mms[22m[39m[35m 134 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mexpose la plage variétale, conserve un nominal refusé et accepte un choix motivé dans le domaine[33m 5971[2mms[22m[39m[35m 184 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mprépare une culture maison sans fabricant ni produit inventé, puis réessaie le même ID si la transmission échoue[33m 4550[2mms[22m[39m[35m 219 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mn’appelle le contexte frais qu’au moment de prévisualiser et ne force pas le statut J5 à available[33m 2519[2mms[22m[39m[35m 194 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mgarde les choix saisis et exige de choisir la cible de température avant toute reprise[33m 4385[2mms[22m[39m[35m 197 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mtermine une reprise besoinRecompute par une nouvelle prévision J5 puis une copie exacte[33m 7020[2mms[22m[39m[35m 200 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mgarde la condition stock nulle en annexe et permet un brouillon avec le houblon source[33m 6058[2mms[22m[39m[35m 239 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mexige un motif d’approvisionnement futur et conserve le choix quand le stock reste inconnu[33m 6606[2mms[22m[39m[35m 282 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeCopyPanel.test.tsx[2m > [22mcopie complète Recipe V5.5 dans l’atelier[2m > [22mne force pas le programme proposé pour un volume futur et exige l’approvisionnement des houblons source à stock nul[33m 10208[2mms[22m[39m[35m 219 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceSemanticV4.test.tsx[2m > [22mPage V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mprépare et conserve Q09 avec les critères projetés, les portées et la source recette exacts, puis relit sans recalcul[33m 34569[2mms[22m[39m[35m 1813 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceSemanticV4.test.tsx[2m > [22mPage V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mrefuse une préparation V4 quand la source a changé avant la confirmation[33m 826[2mms[22m[39m[35m 1842 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceSemanticV4.test.tsx[2m > [22mPage V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mrefuse une préparation V4 quand la ledger a changé avant la confirmation[33m 696[2mms[22m[39m[35m 1842 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedAdviceSemanticV4.test.tsx[2m > [22mPage V5.5 — étude qualifiée depuis une lecture sémantique V4[2m > [22mrefuse une préparation V4 quand la runtime a changé avant la confirmation[33m 854[2mms[22m[39m[35m 1891 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mgarde Q1 sélectionnée quand la note actuelle change[32m 97[2mms[22m[39m[35m 99 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mcalcule une fois puis rebase le même archive après conflit CAS[32m 39[2mms[22m[39m[35m 109 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mrefuse le draft si un nouveau currentPreparation apparaît avant submit et conserve la sélection Q1[32m 25[2mms[22m[39m[35m 117 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mrefuse un hôte dont le batch diverge avant le calcul, sans masquer les archives[32m 27[2mms[22m[39m[35m 83 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mgarde le current NR vide, choisit explicitement l’ancre historique et cible la dernière préparation[32m 16[2mms[22m[39m[35m 88 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mrefuse le draft si le registre courant change de cadre après son ouverture[32m 13[2mms[22m[39m[35m 92 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22mlie l’adoption au binding exact puis sauvegarde record et archive dans un seul CAS[32m 15[2mms[22m[39m[35m 97 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationWorkbench.test.tsx[2m > [22morchestrateur des observations V5.5[2m > [22maprès conflit CAS réutilise le même record et la même archive sans recalculer[32m 16[2mms[22m[39m[35m 102 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationStateEditor.test.tsx[2m > [22mÉtat dégusté, ancre et journal dans le même CAS[2m > [22mconserve la note 37/100 avec la définition ordinale exacte, sans attestation de contact ni complétude inventée[33m 1239[2mms[22m[39m[35m 202 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationStateEditor.test.tsx[2m > [22mÉtat dégusté, ancre et journal dans le même CAS[2m > [22mprépare une entrée seulement avec la portée explicite, puis corrige depuis l’ancre malgré un contexte courant modifié[33m 4369[2mms[22m[39m[35m 254 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationStateEditor.test.tsx[2m > [22mÉtat dégusté, ancre et journal dans le même CAS[2m > [22msépare la date de prélèvement, l’instant de dégustation et une continuité laissée inconnue[33m 1947[2mms[22m[39m[35m 320 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationStateEditor.test.tsx[2m > [22mÉtat dégusté, ancre et journal dans le même CAS[2m > [22mconserve un currentPreparation sans créer de note/ancre NR et laisse sélectionnable la note de l’état exact[33m 2613[2mms[22m[39m[35m 379 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationStateEditor.test.tsx[2m > [22mÉtat dégusté, ancre et journal dans le même CAS[2m > [22mconserve un 0 sans unité comme inconnu, puis qualifie seulement la clé de journal choisie avec source[33m 2195[2mms[22m[39m[35m 460 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22mapplique les seules lignes de houblon au brouillon courant, garde les autres champs et les traces futures[33m 3619[2mms[22m[39m[35m 265 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22m#81 : double activation, clic pendant le calcul et clic tardif n’appliquent qu’une fois, sans erreur résiduelle[33m 3958[2mms[22m[39m[35m 301 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22mrefuse une application devenue périmée après une modification du brouillon et garde le geste de correction[33m 3165[2mms[22m[39m[35m 302 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22mmontre dans l’origine du programme appliqué ses hypothèses, distinctes des conditions et des limites[32m 28[2mms[22m[39m[35m 323 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22mV4 : la base du programme choisie ne mène à aucune impasse : rien à appliquer, sans correction de contexte hors sujet[33m 1928[2mms[22m[39m[35m 323 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22mV4 : aperçu, application et origine nomment matières et moments, avec une seule confirmation[33m 3284[2mms[22m[39m[35m 337 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeStep.test.tsx[2m > [22mÉtape Houblons V5.5 — application explicite au brouillon[2m > [22mreste fermée sans profil explicite et n’ouvre aucun dossier local[32m 2[2mms[22m[39m[35m 338 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx[2m > [22mconfiguration utilisateur du support de comparaison V5.5[2m > [22mconserve un protocole sourcé et une portée sans attestation, sélectionne leurs références exactes puis les relit[33m 2061[2mms[22m[39m[35m 259 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx[2m > [22mconfiguration utilisateur du support de comparaison V5.5[2m > [22mrefuse la correspondance ordinale 0–5 vers indice 0–100 sans créer un contrat[33m 1901[2mms[22m[39m[35m 317 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx[2m > [22mconfiguration utilisateur du support de comparaison V5.5[2m > [22maffiche la note et son échelle avant la date/version, puis replie les identifiants exacts[33m 2502[2mms[22m[39m[35m 409 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx[2m > [22mconfiguration utilisateur du support de comparaison V5.5[2m > [22mcrée la référence d’une déclaration personnelle au geste de conservation, sans URI à inventer[33m 1515[2mms[22m[39m[35m 461 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx[2m > [22mconfiguration utilisateur du support de comparaison V5.5[2m > [22mpropose une autre dépendance déjà enregistrée sans la cocher ni déclarer sa couverture[33m 1374[2mms[22m[39m[35m 531 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ObservationSupportPanel.test.tsx[2m > [22mconfiguration utilisateur du support de comparaison V5.5[2m > [22mne transforme pas une déclaration de registre illisible en source ou dépendance déjà choisie[33m 1280[2mms[22m[39m[35m 589 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceSelectionFocusC04.test.tsx[2m > [22mC04 · comparaison à la référence adoptée pendant un changement de sélection[2m > [22mgarde le comparateur monté et le focus pendant l’archivage d’une sélection de candidat puis de nuance[33m 572[2mms[22m[39m[35m 215 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceSelectionFocusC04.test.tsx[2m > [22mC04 · comparaison à la référence adoptée pendant un changement de sélection[2m > [22mmontre une erreur explicite sans perdre le comparateur ni le focus quand l’écriture échoue[32m 125[2mms[22m[39m[35m 254 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceSelectionFocusC04.test.tsx[2m > [22mC04 · comparaison à la référence adoptée pendant un changement de sélection[2m > [22mrelit une archive telle que conservée, sans calcul ni lecture du dépôt[32m 109[2mms[22m[39m[35m 234 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceSelectionFocusC04.test.tsx[2m > [22mC04 · comparaison à la référence adoptée pendant un changement de sélection[2m > [22mne sert jamais l’ancienne comparaison après un changement de référence adoptée[32m 111[2mms[22m[39m[35m 218 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceSelectionFocusC04.test.tsx[2m > [22mC04 · comparaison à la référence adoptée pendant un changement de sélection[2m > [22mcontre-épreuve : l’effet et le ternaire d’origine montrent le J5 et perdent le focus pendant la même écriture[32m 141[2mms[22m[39m[35m 230 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mconstruit une enveloppe depuis la requête exacte avec une suggestion V4 et une preuve froide canonique[33m 632[2mms[22m[39m[35m 200 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mreçoit la preuve froide complète et refuse sa mutation, sans projeter les evidence fields[33m 1310[2mms[22m[39m[35m 252 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mdérive la suggestion d’une annotation poire/floral sans exiger un mot de contact[33m 391[2mms[22m[39m[35m 176 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mdéclare explicitement l’absence de suggestion lorsque la lecture ne garde que garder/éviter[33m 352[2mms[22m[39m[35m 184 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mattend le geste visible de libération en mode manuel et conserve le même operationId[32m 184[2mms[22m[39m[35m 226 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mrefuse une source recipe assortie de champs draft/localJournal avant de créer un job[32m 132[2mms[22m[39m[35m 173 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mrefuse une source exploration qui prétend porter le scope recipe de la session[32m 133[2mms[22m[39m[35m 186 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mrecharge le pending dans le namespace fixture après une recréation du runtime[33m 313[2mms[22m[39m[35m 174 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mne répond pas à A avec le contexte courant B quand le ticket A a disparu[33m 312[2mms[22m[39m[35m 230 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdviceFixtureRuntime.test.ts[2m > [22mruntime de transport assistantFixture[2m > [22mlibère le pending A depuis le namespace après changement de scope sans exposer A au snapshot de B[33m 314[2mms[22m[39m[35m 220 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx[2m > [22mrenderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22maffiche la réponse directe puis les voies, avec détails conservés et inventaire après les stratégies[33m 1393[2mms[22m[39m[35m 199 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx[2m > [22mrenderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22majoute une intention issue d’un fragment exact au draft sans réécrire les intentions existantes[33m 16143[2mms[22m[39m[35m 427 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx[2m > [22mrenderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mconserve le même commandId et les références exactes après un échec de sauvegarde[33m 6212[2mms[22m[39m[35m 399 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx[2m > [22mrenderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mgarde le stade source figé dans la correction et archive l’ancienne réponse après un changement d’intention[33m 10054[2mms[22m[39m[35m 405 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx[2m > [22mrenderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mn’accepte un nouvel ID que pour un réexamen filié aux références exactes de la réponse source[33m 10767[2mms[22m[39m[35m 616 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecision.test.tsx[2m > [22mrenderer PropertyAdvice V2 · couche candidate, non activée dans Page[2m > [22mreste en lecture seule quand le parent transmet une archive[33m 759[2mms[22m[39m[35m 687 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx[2m > [22mPage V5.5 — utilisation explicite d’une fiche catalogue sans workspace[2m > [22mcrée d’abord le dossier, ajoute la matière exacte sans masse/emploi, et reste idempotent au second geste[33m 1394[2mms[22m[39m[35m 220 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx[2m > [22mPage V5.5 — utilisation explicite d’une fiche catalogue sans workspace[2m > [22msans recette : garde la fiche en attente visible, sans annonce de conservation, puis l’ajoute une seule fois après l’adoption d’une référence[33m 2394[2mms[22m[39m[35m 264 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx[2m > [22mPage V5.5 — utilisation explicite d’une fiche catalogue sans workspace[2m > [22mavec recette : la ligne garde identité et provenance jusqu’à la préparation J5, puis se relit après réouverture[33m 4886[2mms[22m[39m[35m 258 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx[2m > [22mExplorer V5.5 — essai lié au dossier du geste[2m > [22mne fait pas entrer une fiche en attente dans l’essai d’un autre dossier et le dit[32m 118[2mms[22m[39m[35m 240 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx[2m > [22mExplorer V5.5 — essai lié au dossier du geste[2m > [22mne rejoue pas dans un autre dossier la demande d’un geste fait ailleurs, au remontage de l’Explorer[32m 119[2mms[22m[39m[35m 241 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageCatalogueUse.test.tsx[2m > [22mExplorer V5.5 — essai lié au dossier du geste[2m > [22mgarde l’attente quand le dossier du geste vient seulement d’être créé[32m 62[2mms[22m[39m[35m 276 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — lecture sémantique V4[2m > [22marchive la nouvelle lecture V4, corrige en nouvelle archive puis relit les deux sans parser[33m 2990[2mms[22m[39m[35m 349 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — lecture sémantique V4[2m > [22mrévise les portées V4 dans un ledger successoral sans convertir ni modifier le parent[33m 677[2mms[22m[39m[35m 351 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — lecture sémantique V4[2m > [22marchive une préparation incomplète de programme dans V4 et relit ses opérations sans reparser[33m 1341[2mms[22m[39m[35m 398 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — lecture sémantique V4[2m > [22mne crée pas de ticket assisté pour V4 et indique la garde de version[33m 761[2mms[22m[39m[35m 391 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — question à quantité décimale dans la vraie Page[2m > [22mgarde la quantité exacte de la question et n’affiche qu’une fois « Lecture proposée » dans la réponse documentaire[33m 841[2mms[22m[39m[35m 436 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — question à quantité décimale dans la vraie Page[2m > [22mgarde la quantité d’une consigne comme contexte cité, distinct de la cible sensorielle, dans l’archive et dans la Page[33m 1002[2mms[22m[39m[35m 435 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — question à quantité décimale dans la vraie Page[2m > [22mgarde « Constat » pour un constat sur un sujet de procédé, dans la puce, la lecture et la portée[33m 662[2mms[22m[39m[35m 458 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageSemanticReading.test.tsx[2m > [22mPage V5.5 — question à quantité décimale dans la vraie Page[2m > [22mrelit une lecture archivée sous sa propre question, distincte de la dernière question du dossier[33m 1879[2mms[22m[39m[35m 495 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FutureRecipeDraftPanel.test.tsx[2m > [22matelier de brouillon futur V5.5[2m > [22mconserve d’abord le scénario incomplet, restaure les champs puis ajoute une révision sans perdre la lignée[33m 805[2mms[22m[39m[35m 206 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FutureRecipeDraftPanel.test.tsx[2m > [22matelier de brouillon futur V5.5[2m > [22mouvre une nouvelle exploration sur le baseline du brouillon et matérialise seulement après revalidation[33m 1218[2mms[22m[39m[35m 202 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FutureRecipeDraftPanel.test.tsx[2m > [22matelier de brouillon futur V5.5[2m > [22mprépare la nouvelle origine J5 comme révision explicite, sans transférer les alpha d’une autre opération[33m 635[2mms[22m[39m[35m 229 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FutureRecipeDraftPanel.test.tsx[2m > [22matelier de brouillon futur V5.5[2m > [22mfait confirmer le nouveau volume avant la révision et conserve les masses J5 sans scaler[33m 530[2mms[22m[39m[35m 251 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FutureRecipeDraftPanel.test.tsx[2m > [22matelier de brouillon futur V5.5[2m > [22mtraite une masse J5 inconnue comme un choix de programme et exige un nouveau J5 avant l’export[33m 2820[2mms[22m[39m[35m 257 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationTrial.test.tsx[2m > [22mPage V5.5 — essai d’exploration append-only[2m > [22mconserve deux versions de profil, prépare puis simule une seule fois, copie le programme et relit le même reçu hors ligne[33m 15899[2mms[22m[39m[35m 399 MB heap used[39m
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55Page inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22m[2mPage V5.5 — étude produit qualifiée Q03[2m > [22m[2mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture
+[22m[39mAn update to HopV55QualifiedStudyPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55QualifiedStudyPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to HopV55QualifiedStudyPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22mPage V5.5 — étude produit qualifiée Q03[2m > [22mprépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture[33m 11306[2mms[22m[39m[35m 1906 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22mPage V5.5 — étude produit qualifiée Q03[2m > [22mscelle le numéro de révision réel du journal du brassin dans la préparation produit[33m 2316[2mms[22m[39m[35m 2152 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageQualifiedProductStudy.test.tsx[2m > [22mPage V5.5 — étude produit qualifiée Q03[2m > [22mrefuse un brassin sans révision de journal au lieu d’en créer une valeur zéro[33m 482[2mms[22m[39m[35m 2184 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mgarde les faits exacts, permet de chercher sans sélectionner et envoie uniquement les identités cochées[32m 112[2mms[22m[39m[35m 196 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22menvoie un périmètre explicitement vide lorsque les fiches sont seulement consultées[32m 41[2mms[22m[39m[35m 174 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mexige un stade et un motif avant de préparer une exploration sans programme exact[32m 22[2mms[22m[39m[35m 183 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mrefuse un batch sans stade exact et ne propose pas de le renommer en exploration future[32m 4[2mms[22m[39m[35m 185 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mgarde le stade réel d’un batch quand aucun programme exact n’est transmis, sans proposer un stade futur[32m 14[2mms[22m[39m[35m 191 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mrefuse un programme qui ne correspond pas à l’empreinte du journal du batch[32m 3[2mms[22m[39m[35m 193 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mne remplace pas un programme non fourni par celui qui se trouve dans Prepared[32m 3[2mms[22m[39m[35m 194 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mne reprend pas une recette hôte pour une lecture d’exploration sans source physique[32m 3[2mms[22m[39m[35m 196 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mne présente pas comme réussite de A une demande tardive après le passage à une autre lecture[32m 21[2mms[22m[39m[35m 205 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mréessaie strictement la même demande après un échec[32m 26[2mms[22m[39m[35m 214 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mgarde les commandes absentes en lecture seule[32m 9[2mms[22m[39m[35m 218 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedAdvicePreparationControls.test.tsx[2m > [22mHopV55QualifiedAdvicePreparationControls[2m > [22mgarde la lecture V4, ses annotations et ses portées exactes pendant le choix du contexte qualifié[33m 452[2mms[22m[39m[35m 219 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceReexaminationPanelV4.test.tsx[2m > [22mréexamen V4 · panel de réconciliation[2m > [22mgarde la version source en lecture seule, montre un preview distinct et confirme le choix exact avec retry stable[33m 1228[2mms[22m[39m[35m 229 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceReexaminationPanelV4.test.tsx[2m > [22mréexamen V4 · panel de réconciliation[2m > [22mignore un preview tardif d’une autre version et annule localement sans confirmation[32m 283[2mms[22m[39m[35m 188 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceReexaminationPanelV4.test.tsx[2m > [22mréexamen V4 · panel de réconciliation[2m > [22mn’annonce pas le résultat tardif d’une confirmation A après affichage de B[33m 703[2mms[22m[39m[35m 245 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceReexaminationPanelV4.test.tsx[2m > [22mréexamen V4 · panel de réconciliation[2m > [22mrefuse de présenter le parent comme résultat d’une confirmation[33m 875[2mms[22m[39m[35m 214 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceReexaminationPanelV4.test.tsx[2m > [22mréexamen V4 · panel de réconciliation[2m > [22mpublie une issue tout-rejeté sans réponse de domaine[33m 960[2mms[22m[39m[35m 232 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mmontre la réponse produit, les emplois, le rapport et ses limites avant le geste de conservation[32m 100[2mms[22m[39m[35m 99 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mrefuse une confirmation de sauvegarde rattachée à une autre lecture avant d’annoncer la conservation[32m 20[2mms[22m[39m[35m 107 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mn’affiche pas le succès d’une sauvegarde A après que le parent a basculé sur l’étude B[32m 17[2mms[22m[39m[35m 116 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22maffiche d’abord le conseil Q09, garde les options exactes puis enregistre une préférence motivée[32m 187[2mms[22m[39m[35m 128 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22maffiche un périmètre explicitement vide sans le confondre avec l’omission du champ[32m 12[2mms[22m[39m[35m 136 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mrend un programme réellement fourni dans ses détails sans convertir ses inconnues en zéro[32m 39[2mms[22m[39m[35m 112 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mne propose aucun geste d’écriture depuis une étude historique explicitement en lecture seule[32m 4[2mms[22m[39m[35m 114 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mrelit un conseil archivé en lecture seule sans action de préférence[32m 36[2mms[22m[39m[35m 141 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mrefuse de présenter une préférence si le dossier renvoyé ne suit pas la révision attendue[32m 131[2mms[22m[39m[35m 154 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QualifiedStudyPanel.test.tsx[2m > [22métudes produit et conseil qualifiés · rendu et conservation[2m > [22mn’applique pas la réponse d’une préférence A après le passage du parent à l’étude B[32m 86[2mms[22m[39m[35m 167 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55NuanceExplorer.test.tsx[2m > [22mHopV55NuanceExplorer[2m > [22m#75 : la dose d’une variante s’écrit à 3 décimales avec sa valeur complète ; une ébullition n’a pas de température inconnue[32m 32[2mms[22m[39m[35m 98 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55NuanceExplorer.test.tsx[2m > [22mHopV55NuanceExplorer[2m > [22maffiche le profil exact lié à la branche séparément de la dernière version du profil[32m 15[2mms[22m[39m[35m 105 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55NuanceExplorer.test.tsx[2m > [22mHopV55NuanceExplorer[2m > [22mpropose, adopte, révise et archive deux projections sans modifier la première ni relancer son moteur à la relecture[33m 1698[2mms[22m[39m[35m 248 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55NuanceExplorer.test.tsx[2m > [22mHopV55NuanceExplorer[2m > [22mgarde la création libre accessible dans le volet « Ajouter ou corriger une nuance »[32m 196[2mms[22m[39m[35m 234 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageExplorationTrialNative.test.tsx[2m > [22mPage + Explorer natifs — composition J1 transmise à J5[2m > [22mconserve exactement le J1 préparé avant de lancer la prévision J5[33m 3603[2mms[22m[39m[35m 267 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx[2m > [22méditeur des intentions V2[2m > [22majoute une annotation depuis la deuxième occurrence exacte, relie une intention et reprend le DTO appendé[32m 265[2mms[22m[39m[35m 94 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx[2m > [22méditeur des intentions V2[2m > [22mrefuse un fragment absent et une intention doublon de la même occurrence/propriété/rôle[32m 114[2mms[22m[39m[35m 91 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx[2m > [22méditeur des intentions V2[2m > [22mréutilise un ID stable si l’append du parent échoue et que le brasseur réessaie[32m 64[2mms[22m[39m[35m 113 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx[2m > [22méditeur des intentions V2[2m > [22mgarde une faible amertume comme cible qualitative sans direction de baisse[32m 48[2mms[22m[39m[35m 81 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx[2m > [22méditeur des intentions V2[2m > [22mgarde explicit[] vide et borne discover au périmètre exact sans cocher les autres matières chargées[32m 219[2mms[22m[39m[35m 113 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceIntentEditor.test.tsx[2m > [22méditeur des intentions V2[2m > [22majoute une attestation d’accès locale au draft sans toucher aux assertions préparées[32m 53[2mms[22m[39m[35m 136 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageDisplayedPropertyVersionV4.test.tsx[2m > [22mPage V5.5 — identité de version affichée dans le réexamen V4 externe[2m > [22mréexamine B affichée depuis A dans l’historique, conserve parent/registre/texte/dossiers et relit cette lignée sans recalcul[33m 20187[2mms[22m[39m[35m 645 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mregistre V4 et brouillon de gestes[2m > [22mpartitionne par dernière entrée et garde la projection d’avant l’écart[32m 1[2mms[22m[39m[35m 73 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mregistre V4 et brouillon de gestes[2m > [22mdérive une action par terme, origine user et motifs exacts; un changement d’origine seul n’est pas une révision[32m 1[2mms[22m[39m[35m 73 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mregistre V4 et brouillon de gestes[2m > [22msignale les liens pendants (relation, constat comparé, partenaire, exclusion) sans jamais les retirer[32m 1[2mms[22m[39m[35m 73 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mregistre V4 et brouillon de gestes[2m > [22mdélier retire seulement la cible choisie, sans propriété indéfinie envoyée[32m 1[2mms[22m[39m[35m 74 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mregistre V4 et brouillon de gestes[2m > [22mattestation d’accès : un constat sert la déclaration, le motif et la source locale; inconnu ne crée rien[32m 1[2mms[22m[39m[35m 73 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mregistre V4 et brouillon de gestes[2m > [22mavant/après : rôle, direction et relations nommés; le motif prérempli les reprend[32m 1[2mms[22m[39m[35m 73 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mHopV55PropertyAdviceAnnotationEditorV4 — composant[2m > [22mlecture seule : question exacte, passages marqués, écart tracé avec motif et aucun geste[32m 47[2mms[22m[39m[35m 84 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mHopV55PropertyAdviceAnnotationEditorV4 — composant[2m > [22mécarter avec motif puis garder, restaurer : seul le brouillon change, jamais le registre reçu[32m 248[2mms[22m[39m[35m 91 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAnnotationEditorV4.test.tsx[2m > [22mHopV55PropertyAdviceAnnotationEditorV4 — composant[2m > [22mles blocages proposent des gestes explicites; « ne pas écarter » ne délie rien en douce[32m 4[2mms[22m[39m[35m 94 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DocumentaryDecision.test.tsx[2m > [22msynthèse documentaire au poste du brasseur[2m > [22maffiche le corps et ses raisons avant les voies, distingue couverture/applicabilité/préparation et conserve un dossier exact[33m 2416[2mms[22m[39m[35m 133 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DocumentaryDecision.test.tsx[2m > [22msynthèse documentaire au poste du brasseur[2m > [22mreste en lecture seule quand le parent indique une archive[32m 85[2mms[22m[39m[35m 111 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55DocumentaryDecision.test.tsx[2m > [22msynthèse documentaire au poste du brasseur[2m > [22mreplie seulement une raison textuellement reprise par le corps et conserve son type visible[32m 20[2mms[22m[39m[35m 117 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeDraftLiveRefresh.test.tsx[2m > [22mRecette V5.5 — relecture live du brouillon dans l’atelier monté[2m > [22mactualise le programme après correction manuelle sans remonter l’atelier ni appliquer une ancienne prévision[33m 3725[2mms[22m[39m[35m 263 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Host.test.tsx[2m > [22mHopV55Host — session compagnon assistée[2m > [22mgarde le mode assisté fermé par défaut et laisse le compagnon normal disponible[32m 19[2mms[22m[39m[35m 172 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Host.test.tsx[2m > [22mHopV55Host — session compagnon assistée[2m > [22mconserve la session A exacte lorsque le Host bascule sur la recette et le brassin B[32m 7[2mms[22m[39m[35m 174 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Host.test.tsx[2m > [22mHopV55Host — session compagnon assistée[2m > [22mrefuse un runtime de mauvaise partition, un mauvais mode et un owner différent[32m 3[2mms[22m[39m[35m 175 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Host.test.tsx[2m > [22mHopV55Host — session compagnon assistée[2m > [22mne détruit pas le runtime A déjà mis en cache si une factory le réutilise à tort pour B[32m 4[2mms[22m[39m[35m 175 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55Host.test.tsx[2m > [22mHopV55Host — session compagnon assistée[2m > [22mdispose le cache au retrait du gate et à l’unmount, sans accepter l’ancien callback[32m 13[2mms[22m[39m[35m 176 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QuestionScopePanel.test.tsx[2m > [22mdisposition des portées d’une lecture V3[2m > [22mmontre le fragment exact et distingue couverture de disposition; confirme une révision append-only puis la relit[33m 623[2mms[22m[39m[35m 188 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QuestionScopePanel.test.tsx[2m > [22mdisposition des portées d’une lecture V3[2m > [22mn’écarte pas une portée tant qu’une portée conservée y reste liée, puis retire la liaison avant append[32m 112[2mms[22m[39m[35m 204 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QuestionScopePanel.test.tsx[2m > [22mdisposition des portées d’une lecture V3[2m > [22mgarde les archives aux formats futurs en lecture seule et bloque les gestes selon readOnly[32m 39[2mms[22m[39m[35m 240 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55QuestionScopePanel.test.tsx[2m > [22mdisposition des portées d’une lecture V3[2m > [22mréutilise le même commandId quand la confirmation échoue et que le brasseur réessaie sans modifier son geste[32m 68[2mms[22m[39m[35m 228 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePreparationResume.test.tsx[2m > [22mPage V5.5 — reprise exacte d’une préparation de programme archivée[2m > [22mreprend A→Hallertau après reload, retire le vieux conseil du contexte courant et garde l’archive source intacte[33m 1381[2mms[22m[39m[35m 263 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePreparationResume.test.tsx[2m > [22mPage V5.5 — reprise exacte d’une préparation de programme archivée[2m > [22mrefuse le contexte qui a changé pendant l’action sans retirer ni remplacer l’archive[33m 681[2mms[22m[39m[35m 288 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdvicePanel.test.tsx[2m > [22mpanneau de proposition assistée[2m > [22mgarde la question et les références exactes, sépare lecture locale, proposition, preuves et réserves[32m 127[2mms[22m[39m[35m 115 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdvicePanel.test.tsx[2m > [22mpanneau de proposition assistée[2m > [22mne confirme pas au montage ni sur simple saisie de motif; retry réutilise le même acte et succès bloque un second envoi[33m 303[2mms[22m[39m[35m 79 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdvicePanel.test.tsx[2m > [22mpanneau de proposition assistée[2m > [22mlaisse un résultat historique ou devenu périmé en lecture seule[32m 27[2mms[22m[39m[35m 99 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedAdvicePanel.test.tsx[2m > [22mpanneau de proposition assistée[2m > [22mune proposition périmée n’affiche pas de réponse ni de métrique reconstruite[32m 3[2mms[22m[39m[35m 101 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx[2m > [22mSemanticDecisionReading — restitution et correction de la lecture V4[2m > [22mmontre une cible qualitative engagée sans direction et conserve sa couverture hors projection[32m 268[2mms[22m[39m[35m 88 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx[2m > [22mSemanticDecisionReading — restitution et correction de la lecture V4[2m > [22mdistingue les constats, enquêtes et gardes formulés, sans convertir leur sens en changement choisi[32m 33[2mms[22m[39m[35m 105 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx[2m > [22mSemanticDecisionReading — restitution et correction de la lecture V4[2m > [22mexige motif et confirmation, garde les spans exacts et reprend le même identifiant après refus transitoire[32m 108[2mms[22m[39m[35m 85 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx[2m > [22mSemanticDecisionReading — restitution et correction de la lecture V4[2m > [22mgarde une archive historique ou sans référence exacte consultable mais non modifiable[32m 15[2mms[22m[39m[35m 93 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx[2m > [22mSemanticDecisionReading — restitution et correction de la lecture V4[2m > [22mne reporte pas le succès d’une correction en attente sur une autre lecture affichée[32m 38[2mms[22m[39m[35m 108 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55SemanticDecisionReading.test.tsx[2m > [22mSemanticDecisionReading — restitution et correction de la lecture V4[2m > [22maccepte la lecture V4 exacte dans la réponse sans la réduire au correcteur V1–V3[32m 47[2mms[22m[39m[35m 131 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55BiologicalInputsEditor.test.tsx[2m > [22méditeur des entrées biologiques[2m > [22mcrée une branche si nécessaire, garde les quantités vides comme inconnues et soumet uniquement après ajout explicite[33m 1930[2mms[22m[39m[35m 102 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55BiologicalInputsEditor.test.tsx[2m > [22méditeur des entrées biologiques[2m > [22mexige une matrice et un temps cibles explicites pour le transfert[33m 1821[2mms[22m[39m[35m 108 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceEditor.test.tsx[2m > [22méditeur de référence et culture confirmée[2m > [22madopte par le geste NR explicite une culture mixte exacte, la relit sans toucher à la recette et garde les parts manquantes[33m 660[2mms[22m[39m[35m 211 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ReferenceEditor.test.tsx[2m > [22méditeur de référence et culture confirmée[2m > [22mn’inscrit un ID dans l’entrée de scénario qu’avec une souche unique documentée; un nom libre reste sans ID[32m 151[2mms[22m[39m[35m 232 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55NuancePlanEditor.test.tsx[2m > [22méditeur de plans de nuance indépendant d’une prévision[2m > [22mpropose, adopte et révise un plan depuis les références communes sans lancer de simulation[33m 676[2mms[22m[39m[35m 112 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55NuancePlanEditor.test.tsx[2m > [22méditeur de plans de nuance indépendant d’une prévision[2m > [22mrefuse une proposition tant que le modèle, les dimensions ou la provenance déclarée manquent[32m 16[2mms[22m[39m[35m 120 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceCompensationV3UI.test.tsx[2m > [22méditeur V3 · cohérence investigation/constat avant callbacks[2m > [22mbloque le réexamen si la direction de la question disparaît, puis applique le choix explicite « l’examiner »[33m 1962[2mms[22m[39m[35m 145 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceCompensationV3UI.test.tsx[2m > [22méditeur V3 · cohérence investigation/constat avant callbacks[2m > [22mretire un constat à direction d’objectif du choix et ne le restaure qu’après un geste explicite[33m 2735[2mms[22m[39m[35m 266 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceCompensationV3UI.test.tsx[2m > [22méditeur V3 · cohérence investigation/constat avant callbacks[2m > [22mrefuse une nouvelle compensation à direction vide, puis valide le DTO après le choix explicite[33m 450[2mms[22m[39m[35m 312 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mlit une décimale française et transmet le volume exact sans toucher aux masses source[33m 344[2mms[22m[39m[35m 198 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mne transmet pas un nombre illisible et garde le formulaire corrigeable[32m 75[2mms[22m[39m[35m 194 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mefface un ancien override quand son champ est vidé au lieu de le garder caché[32m 63[2mms[22m[39m[35m 189 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mrequiert le rôle avant d’adopter un style prérempli et garde ses références exactes[32m 93[2mms[22m[39m[35m 194 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mne choisit pas arbitrairement le premier style d’un guide à plusieurs entrées[32m 42[2mms[22m[39m[35m 231 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mgarde les comparaisons accessibles après le début de la fermentation[32m 74[2mms[22m[39m[35m 224 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PlanningEditor.test.tsx[2m > [22mÉditeur de branche de planification V5.5[2m > [22mlaisse retirer un ancien réglage devenu non futur sans déverrouiller les faits réalisés[32m 66[2mms[22m[39m[35m 213 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PagePropertyAdvice.test.tsx[2m > [22mPage V5.5 — réponse V3 par propriétés après réception[2m > [22marchive Q10 avec ses fragments exacts, prépare une réponse V3 explicit[] et relit l’historique sans recalcul[33m 1633[2mms[22m[39m[35m 347 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageHistoricalReading.test.tsx[2m > [22mPage V5.5 — question historique liée au snapshot exact[2m > [22mgarde Q1 et ses critères sans joindre une lecture lorsque le lien du snapshot est absent[33m 664[2mms[22m[39m[35m 199 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageHistoricalReading.test.tsx[2m > [22mPage V5.5 — question historique liée au snapshot exact[2m > [22mne joint que l’archive Q1 référencée exactement par le snapshot[33m 678[2mms[22m[39m[35m 241 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageHistoricalReading.test.tsx[2m > [22mPage V5.5 — question historique liée au snapshot exact[2m > [22mefface intention et lecture si le snapshot n’a pas de snapshotIntent, sans toucher au Q2 durable[33m 473[2mms[22m[39m[35m 223 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeDraftWorkspaceSource.test.tsx[2m > [22mPage V5.5 — la source d’un brouillon recette ouvert[2m > [22mgarde le contexte 23 L du brouillon et ne restaure pas implicitement activeCopy du workspace homonyme[33m 375[2mms[22m[39m[35m 211 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeDraftWorkspaceSource.test.tsx[2m > [22mPage V5.5 — la source d’un brouillon recette ouvert[2m > [22mgarde le contexte 23 L du brouillon et ne restaure pas implicitement activeProgramCopy du workspace homonyme[32m 137[2mms[22m[39m[35m 224 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55RecipeDraftWorkspaceSource.test.tsx[2m > [22mPage V5.5 — la source d’un brouillon recette ouvert[2m > [22mgarde le contexte 23 L du brouillon et ne restaure pas implicitement activeFutureDraft du workspace homonyme[32m 111[2mms[22m[39m[35m 207 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22mprésente le BU de référence, le témoin, le contraste, la dose et les preuves exactes[32m 98[2mms[22m[39m[35m 112 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22mdistingue une dose inconnue d’une dose hors domaine sans attribuer de BU[32m 12[2mms[22m[39m[35m 119 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22m#75 · lit les doses calculées depuis les masses selon la règle unique, avec la coordonnée scellée[32m 5[2mms[22m[39m[35m 120 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22m#75 · lit les BU d’une dose non ronde comme la preuve froide de la recette (4 décimales), sans flottant brut[32m 5[2mms[22m[39m[35m 123 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22mgarde visible l’avertissement quand une coordonnée positive s’affiche arrondie à zéro[32m 8[2mms[22m[39m[35m 127 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22mconserve une version future sans lui inventer de métrique[32m 11[2mms[22m[39m[35m 130 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55AssistedColdContactCard.test.tsx[2m > [22mcarte de référence BU au contact froid[2m > [22mmontre les preuves invalides et les outils non applicables sans produire de référence BU[32m 2[2mms[22m[39m[35m 131 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CultureHypothesisEditor.test.tsx[2m > [22méditeur de culture hypothétique[2m > [22mconstruit une culture mixte par choix explicites, garde le nom libre sans ID et ne normalise pas les plages[32m 154[2mms[22m[39m[35m 106 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CultureHypothesisEditor.test.tsx[2m > [22méditeur de culture hypothétique[2m > [22mcorrige l’identité A vers B, conserve la plage initiale et permet une nouvelle tentative avec le même motif après refus[32m 47[2mms[22m[39m[35m 75 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CultureHypothesisEditor.test.tsx[2m > [22méditeur de culture hypothétique[2m > [22mrefuse une culture mixte avec un seul membre et ne transforme pas une absence en unknown implicite[32m 37[2mms[22m[39m[35m 95 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55CultureHypothesisEditor.test.tsx[2m > [22méditeur de culture hypothétique[2m > [22mconfirme unknown seulement après choix explicite et sans membres[32m 15[2mms[22m[39m[35m 102 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FixturePreview.test.tsx[2m > [22mHopV55FixturePreview lifecycle[2m > [22mremounts the selected mode with a fresh database service after the old Page unmounts[32m 86[2mms[22m[39m[35m 151 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FixturePreview.test.tsx[2m > [22mHopV55FixturePreview lifecycle[2m > [22mn’active pas le transport simulé sans le paramètre explicite[32m 6[2mms[22m[39m[35m 153 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55FixturePreview.test.tsx[2m > [22mHopV55FixturePreview lifecycle[2m > [22mouvre le compagnon existant sur un geste de Page et ne transmet que le champ source du scope[32m 27[2mms[22m[39m[35m 133 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceOperationalPresentation.test.tsx[2m > [22msuite du choix opérationnelle · portée de la voie conservée[2m > [22mprésente une caractérisation documentaire sans programme/copie obligatoires et garde son motif canonique au détail[32m 207[2mms[22m[39m[35m 94 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceOperationalPresentation.test.tsx[2m > [22msuite du choix opérationnelle · portée de la voie conservée[2m > [22mgarde une option future conditionnelle au choix de poursuivre, sans annoncer un programme déjà fourni[32m 125[2mms[22m[39m[35m 136 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceOperationalPresentation.test.tsx[2m > [22msuite du choix opérationnelle · portée de la voie conservée[2m > [22mconserve une voie opérationnelle reçue dans la projection sans la rabattre sur « aucune opération »[32m 147[2mms[22m[39m[35m 129 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageFreshWorkspace.test.tsx[2m > [22mPage V5.5 — source du dossier avant une commande[2m > [22mrelit la révision sauvée par une autre vue au lieu du cache React[33m 337[2mms[22m[39m[35m 198 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageFreshWorkspace.test.tsx[2m > [22mPage V5.5 — source du dossier avant une commande[2m > [22mrefuse un dossier disparu sans recréer un autre dossier depuis le cache[32m 72[2mms[22m[39m[35m 209 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PageFreshWorkspace.test.tsx[2m > [22mPage V5.5 — source du dossier avant une commande[2m > [22mrefuse une lecture tardive de A et ne partage pas sa promesse avec le dossier B[32m 140[2mms[22m[39m[35m 212 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceAssociatedMaterials.test.tsx[2m > [22mrenderer V3 · matière liée hors périmètre candidat[2m > [22mmontre le partenaire exact et le sujet transmis sans compter ni évaluer Nugget comme candidate[32m 181[2mms[22m[39m[35m 106 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceDecisionV4CultureProvenance.test.tsx[2m > [22mprovenance du cadre culturel adopté · rendu V4[2m > [22mmontre le cadre, sa création et son adoption sans fabriquer une source documentaire[32m 97[2mms[22m[39m[35m 99 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ProgramEditor.test.tsx[2m > [22mÉditeur de programme vers le moteur[2m > [22mcompare un retrait et une correction de contact comme un seul programme, source intacte[33m 564[2mms[22m[39m[35m 214 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55ProgramEditor.test.tsx[2m > [22mÉditeur de programme vers le moteur[2m > [22méprouve la dose décimale avec jour absent et refuse une saisie illisible après cette dose[32m 289[2mms[22m[39m[35m 182 MB heap used[39m
+ [32m✓[39m tests/integration/hopV55PropertyAdviceContextNotice.test.tsx[2m > [22mslot du contexte reçu · entrée effectivement affichée[2m > [22mtransmet la référence courante, puis la référence historique exacte et le bon geste de correction[33m 424[2mms[22m[39m[35m 117 MB heap used[39m
+
+[2m Test Files [22m [1m[32m68 passed[39m[22m[90m (68)[39m
+[2m      Tests [22m [1m[32m425 passed[39m[22m[90m (425)[39m
+[2m   Start at [22m 22:35:11
+[2m   Duration [22m 1192.41s[2m (transform 5.69s, setup 6.05s, collect 35.14s, tests 1101.26s, environment 38.20s, prepare 3.48s)[22m
+

@@ -1,6 +1,6 @@
 # Gates: voie p4-suite — la suite de tests se termine sans épuiser la mémoire
 
-OWNS: tests/integration/monkey.test.tsx, src/ui/SaltSolver.tsx, vitest.config.ts, work/missions/2026-10-31-ecran-identite/voies/p4-suite/
+OWNS: tests/integration/monkey.test.tsx, src/ui/SaltSolver.tsx, vitest.config.ts, src/ui/identite/regles.ts, src/ui/BrewSheet.tsx, tests/unit/regleBornee.test.ts, tests/unit/identite/, work/missions/2026-10-31-ecran-identite/voies/p4-suite/
 
 Scope: la graine 42 du singe de l'atelier de l'eau et les hopV55 qui épuisent le tas ; cause trouvée et corrigée, le singe jamais réduit.
 
