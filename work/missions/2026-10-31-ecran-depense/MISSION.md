@@ -15,6 +15,7 @@ Fini veut dire :
 - un temps de lecture mesuré et réduit ;
 - les points incertains montrés à leur place ;
 - l'écran refait en entonnoir allégé (D204), choisi par lui, porté ;
+- un produit nouveau (malt, houblon, levure ou autre sans fiche) : sa fiche remplie par une recherche en arrière-plan après la validation, sans jamais créer un doublon d'un produit déjà connu (ses mots du 31.10 : « Attention au mapping, on veut pas de retrouver avec plein de fiche du même produit ») ;
 - le tout joué sur l'app en ligne, dans les accords qu'il donne.
 
 ## Décisions
@@ -22,7 +23,8 @@ Fini veut dire :
 |---|---|---|---|
 | Ordre : fiabilité d'abord (lecture, stock, Drive, lenteur), interface ensuite | — | pilote | tranchée : c'est de la facturation (« ça doit être très fiable ») |
 | Les contrôles de cohérence (somme des lignes, TVA par taux, total) | par l'IA ; par le code | pilote | tranchée : par le code, déterministes ; l'IA lit, le code vérifie |
-| Tests sur l'app en ligne : lectures Gemini facturées, dépense de test écrite puis supprimée, fichier de test dans son Drive | — | utilisateur | ouverte : accords groupés |
+| Tests sur l'app en ligne : lectures Gemini facturées, dépense de test écrite puis supprimée, fichier de test dans son Drive | A, B, rien | utilisateur | **accordée, A et B** (31.10 : « A : des lectures Gemini réelles, facturées » ; « Et b »). Bornes D210 : 40 lectures et 2 CHF au plus, journal `journal-gemini.md` ; une dépense « TEST pilote » à la fois, fichier Drive compris, supprimés dans la séance ; aucun article ni mouvement de stock réel ; sur le code corrigé et déployé |
+| Fiche d'un produit nouveau : le rapprochement d'abord (alias, α et récolte hors du nom, S3), puis une recherche en arrière-plan qui ne comble que les trous ([[export-et-ia]]) ; jamais d'écrasement d'une valeur saisie | où vit la fiche (article de stock, catalogue partagé) ; par qui (Gemini, panel croisé des sources) | pilote, avec revue du plan à deux regards (données, schéma) ; Gemini en production : coût par produit montré avant activation | ouverte : voie du plan |
 | Le choix de la variante d'écran | — | brasseur | ouverte |
 
 ## Voies

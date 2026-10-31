@@ -14,7 +14,9 @@ de comparatif ect .. ». Entonnoir allégé (D204 : « il faudra pas autant de m
 | La baseline est l'écran d'aujourd'hui (production ae7c7a8d), et l'en-tête, le fil et le bandeau d'Identité r4-a, communs aux 7 étapes | pilote |
 | Passe 3 : le remplissage ≥ 0,80 de RELANCE-v1 était mal étalonné (r4-a, sa référence, fait 0,54 sur `controle-panel`). Seuil retenu : celui de r4-a (≥ 0,50) et le vide sous le pied jugé sur capture ; r4c 0,55, u2c 0,51 | pilote |
 | L'OG suit l'app : « — » tant qu'un potentiel manque (`brewCompanion.ts:505`, « Aucun rendement inventé ») ; l'OG estimée « ~1,061 » de r4c (PPG tapés dans la maquette) est retirée par le pilote, captures refaites | pilote |
-| Le choix de la variante | brasseur |
+| Le choix : **r4c (La balance)**, avec une adaptation : modifier, supprimer et ajouter sur la ligne, sans plateau ; toucher la ligne ouvre le détail (D208, D209). Passe 4 : r4d | brasseur |
+| Les axes de la page qu'il n'a pas tranchés (plateau, sucre, teinte, OG) gardent la forme de r4c ; la page de la passe 4 le dit (L01) | pilote |
+| Le registre `choix/ecrans-app.json` reçoit Malts/sucres après son accord sur r4d, comme Identité | pilote |
 
 ## Voies
 | Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |
@@ -29,6 +31,7 @@ de comparatif ect .. ». Entonnoir allégé (D204 : « il faudra pas autant de m
 | t2 | verdicts des passes 2 (r4b, z2b, u2b), agent neuf (D207) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/VERDICTS-v1.md | p2 | captures ouvertes | pilote | — |
 | p3 | relance des 3 passes (r4c, z2c, u2c), agents neufs sur RELANCE-v1.md (D207) ; z2c en Fable | conception | concepteur | opus | 40 | work/missions/2026-10-31-ecran-fermentescibles/v2/** | t2 | controle-commun --profil=sans-houblons, controle-choix, controle-continuite, controle-panel, controle-hauteur | brasseur | passe 3 |
 | t3 | verdicts des passes 3 (r4c, z2c, u2c), agent neuf (D207) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-fermentescibles/critique/VERDICTS-v2.md | p3 | captures ouvertes | pilote | — |
+| p4 | r4d : r4c avec modifier, retirer et ajouter sur la ligne, détail au toucher du nom (D208, D209) ; agent neuf, compréhension testée (COMPRIS OK) | conception | concepteur | opus | 40 | work/missions/2026-10-31-ecran-fermentescibles/v3/r4d/** | t3 | controle-gestes-ligne, controle-choix (s.o. : Malts entre au registre après son accord sur r4d), verifier-page, mots-premier-ecran, controle-commun, controle-contraste, controle-hauteur, captures | brasseur | passe 4 |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RECURRENTS.md avec son contrôle, et son choix va dans
