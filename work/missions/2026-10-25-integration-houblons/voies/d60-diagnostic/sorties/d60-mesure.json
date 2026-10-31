@@ -1,0 +1,2597 @@
+{
+ "commit": "ae7c7a8d",
+ "date": "2026-10-31",
+ "catalogue": 505,
+ "stockFixture": 9,
+ "recettes": {
+  "neipa v3 (22A)": {
+   "sans stock": {
+    "plus d’agrumes": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@wp": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1045,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 373,
+       "apresProgres_pool400": 229,
+       "apresProgres_pool80": 65,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 229
+       },
+       "sansConflit": 229,
+       "apresExclue": 229,
+       "rangDuPremierDansLaListeComplete": 1089,
+       "voiesAvantLui": {
+        "total": 1088,
+        "ajouter": 1088,
+        "domaineStock": 0,
+        "domaineAcheter": 1088
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5490
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@wp": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 373,
+       "apresProgres_pool400": 115,
+       "apresProgres_pool80": 66,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 115
+       },
+       "sansConflit": 115,
+       "apresExclue": 115,
+       "rangDuPremierDansLaListeComplete": 573,
+       "voiesAvantLui": {
+        "total": 572,
+        "ajouter": 572,
+        "domaineStock": 0,
+        "domaineAcheter": 572
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2505
+    },
+    "plus floral": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 373,
+       "apresProgres_pool400": 156,
+       "apresProgres_pool80": 74,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 156
+       },
+       "sansConflit": 156,
+       "apresExclue": 156,
+       "rangDuPremierDansLaListeComplete": 681,
+       "voiesAvantLui": {
+        "total": 680,
+        "ajouter": 680,
+        "domaineStock": 0,
+        "domaineAcheter": 680
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3040
+    },
+    "plus de résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1045,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 373,
+       "apresProgres_pool400": 145,
+       "apresProgres_pool80": 80,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 145
+       },
+       "sansConflit": 145,
+       "apresExclue": 145,
+       "rangDuPremierDansLaListeComplete": 445,
+       "voiesAvantLui": {
+        "total": 444,
+        "ajouter": 444,
+        "domaineStock": 0,
+        "domaineAcheter": 444
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2639
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 85,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 373,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 57
+    },
+    "bannir résineux": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 85,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 328,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 69
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@wp": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 328,
+       "apresProgres_pool400": 88,
+       "apresProgres_pool80": 68,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 88
+       },
+       "sansConflit": 88,
+       "apresExclue": 68,
+       "rangDuPremierDansLaListeComplete": 333,
+       "voiesAvantLui": {
+        "total": 332,
+        "ajouter": 332,
+        "domaineStock": 0,
+        "domaineAcheter": 332
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 1945
+    }
+   },
+   "stock fixture": {
+    "plus d’agrumes": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@wp": 12,
+      "assemblage@wp": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1199,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 228,
+       "apresProgres_pool80": 72,
+       "domaine_pool400": {
+        "stock": 7,
+        "acheter": 221
+       },
+       "sansConflit": 228,
+       "apresExclue": 228,
+       "rangDuPremierDansLaListeComplete": 1093,
+       "voiesAvantLui": {
+        "total": 1092,
+        "ajouter": 1092,
+        "domaineStock": 36,
+        "domaineAcheter": 1056
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5346
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "assemblage@dryActive": 2,
+      "ajouter@dryActive": 3,
+      "ajouter@wp": 9,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1198,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 114,
+       "apresProgres_pool80": 72,
+       "domaine_pool400": {
+        "stock": 6,
+        "acheter": 108
+       },
+       "sansConflit": 114,
+       "apresExclue": 114,
+       "rangDuPremierDansLaListeComplete": 577,
+       "voiesAvantLui": {
+        "total": 576,
+        "ajouter": 576,
+        "domaineStock": 32,
+        "domaineAcheter": 544
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2546
+    },
+    "plus floral": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 9,
+      "assemblage@b10": 2,
+      "ajouter@dryPost": 1,
+      "ajouter@dryActive": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1198,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 156,
+       "apresProgres_pool80": 79,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 151
+       },
+       "sansConflit": 156,
+       "apresExclue": 156,
+       "rangDuPremierDansLaListeComplete": 685,
+       "voiesAvantLui": {
+        "total": 684,
+        "ajouter": 684,
+        "domaineStock": 24,
+        "domaineAcheter": 660
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3059
+    },
+    "plus de résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 8,
+      "assemblage@b10": 2,
+      "ajouter@dryPost": 2,
+      "ajouter@dryActive": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1199,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 146,
+       "apresProgres_pool80": 85,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 141
+       },
+       "sansConflit": 146,
+       "apresExclue": 146,
+       "rangDuPremierDansLaListeComplete": 450,
+       "voiesAvantLui": {
+        "total": 449,
+        "ajouter": 449,
+        "domaineStock": 17,
+        "domaineAcheter": 432
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2762
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 94,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 53
+    },
+    "bannir résineux": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 93,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 331,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 72
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@dryActive": 4,
+      "assemblage@dryActive": 2,
+      "ajouter@wp": 8,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1198,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "lotus @b30 84 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 331,
+       "apresProgres_pool400": 88,
+       "apresProgres_pool80": 73,
+       "domaine_pool400": {
+        "stock": 6,
+        "acheter": 82
+       },
+       "sansConflit": 87,
+       "apresExclue": 67,
+       "rangDuPremierDansLaListeComplete": 333,
+       "voiesAvantLui": {
+        "total": 332,
+        "ajouter": 332,
+        "domaineStock": 16,
+        "domaineAcheter": 316
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2011
+    }
+   }
+  },
+  "stout S1 (16D)": {
+   "sans stock": {
+    "plus d’agrumes": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 375,
+       "apresProgres_pool400": 182,
+       "apresProgres_pool80": 51,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 182
+       },
+       "sansConflit": 182,
+       "apresExclue": 182,
+       "rangDuPremierDansLaListeComplete": 273,
+       "voiesAvantLui": {
+        "total": 272,
+        "ajouter": 272,
+        "domaineStock": 0,
+        "domaineAcheter": 272
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5099
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 375,
+       "apresProgres_pool400": 86,
+       "apresProgres_pool80": 46,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 86
+       },
+       "sansConflit": 86,
+       "apresExclue": 86,
+       "rangDuPremierDansLaListeComplete": 144,
+       "voiesAvantLui": {
+        "total": 143,
+        "ajouter": 143,
+        "domaineStock": 0,
+        "domaineAcheter": 143
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2530
+    },
+    "plus floral": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 375,
+       "apresProgres_pool400": 132,
+       "apresProgres_pool80": 62,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 132
+       },
+       "sansConflit": 132,
+       "apresExclue": 132,
+       "rangDuPremierDansLaListeComplete": 341,
+       "voiesAvantLui": {
+        "total": 340,
+        "ajouter": 340,
+        "domaineStock": 0,
+        "domaineAcheter": 340
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3132
+    },
+    "plus de résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 375,
+       "apresProgres_pool400": 93,
+       "apresProgres_pool80": 47,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 93
+       },
+       "sansConflit": 93,
+       "apresExclue": 93,
+       "rangDuPremierDansLaListeComplete": 149,
+       "voiesAvantLui": {
+        "total": 148,
+        "ajouter": 148,
+        "domaineStock": 0,
+        "domaineAcheter": 148
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2535
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 84,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 375,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 53
+    },
+    "bannir résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "remplacer@b60": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [
+      "remplacer à IBU égal Nelson Sauvin ← nugget @b60 51 g [à acheter]",
+      "remplacer à IBU égal Cashmere ← nugget @b60 70 g [à acheter]",
+      "remplacer à IBU égal El Dorado ← nugget @b60 39 g [à acheter]",
+      "remplacer à IBU égal East Kent Goldings ← nugget @b60 112 g [à acheter]"
+     ],
+     "aucuneVoieDuTout": false,
+     "evalues": 84,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 328,
+       "apresProgres_pool400": 297,
+       "apresProgres_pool80": 52,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 297
+       },
+       "sansConflit": 297,
+       "apresExclue": 283,
+       "rangDuPremierDansLaListeComplete": 1,
+       "voiesAvantLui": {
+        "total": 0,
+        "ajouter": 0,
+        "domaineStock": 0,
+        "domaineAcheter": 0
+       },
+       "montreesALEcran": 4
+      }
+     ],
+     "ms": 1416
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "remplacer@b60": 1,
+      "ajouter@b10": 3
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [
+      "remplacer à IBU égal Relax ← nugget @b60 273 g [à acheter]"
+     ],
+     "aucuneVoieDuTout": false,
+     "evalues": 1044,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 328,
+       "apresProgres_pool400": 308,
+       "apresProgres_pool80": 76,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 308
+       },
+       "sansConflit": 308,
+       "apresExclue": 283,
+       "rangDuPremierDansLaListeComplete": 1,
+       "voiesAvantLui": {
+        "total": 0,
+        "ajouter": 0,
+        "domaineStock": 0,
+        "domaineAcheter": 0
+       },
+       "montreesALEcran": 1
+      }
+     ],
+     "ms": 3070
+    }
+   },
+   "stock fixture": {
+    "plus d’agrumes": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@dryPost": 1,
+      "assemblage@dryPost": 2,
+      "ajouter@b10": 11,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1191,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 185,
+       "apresProgres_pool80": 57,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 180
+       },
+       "sansConflit": 185,
+       "apresExclue": 185,
+       "rangDuPremierDansLaListeComplete": 277,
+       "voiesAvantLui": {
+        "total": 276,
+        "ajouter": 276,
+        "domaineStock": 12,
+        "domaineAcheter": 264
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5293
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 12,
+      "assemblage@b10": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1191,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 90,
+       "apresProgres_pool80": 55,
+       "domaine_pool400": {
+        "stock": 4,
+        "acheter": 86
+       },
+       "sansConflit": 90,
+       "apresExclue": 90,
+       "rangDuPremierDansLaListeComplete": 145,
+       "voiesAvantLui": {
+        "total": 144,
+        "ajouter": 144,
+        "domaineStock": 8,
+        "domaineAcheter": 136
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2601
+    },
+    "plus floral": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 10,
+      "assemblage@b10": 2,
+      "ajouter@dryPost": 1,
+      "ajouter@wp": 1,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1191,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 136,
+       "apresProgres_pool80": 68,
+       "domaine_pool400": {
+        "stock": 4,
+        "acheter": 132
+       },
+       "sansConflit": 136,
+       "apresExclue": 136,
+       "rangDuPremierDansLaListeComplete": 350,
+       "voiesAvantLui": {
+        "total": 349,
+        "ajouter": 349,
+        "domaineStock": 19,
+        "domaineAcheter": 330
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3178
+    },
+    "plus de résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@dryActive": 1,
+      "assemblage@dryActive": 2,
+      "ajouter@b10": 9,
+      "remplacer@b60": 1,
+      "ajouter@wp": 1,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [
+      "remplacer à IBU égal Cascade ← nugget @b60 92 g [stock]"
+     ],
+     "aucuneVoieDuTout": false,
+     "evalues": 1191,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 98,
+       "apresProgres_pool80": 54,
+       "domaine_pool400": {
+        "stock": 2,
+        "acheter": 96
+       },
+       "sansConflit": 98,
+       "apresExclue": 98,
+       "rangDuPremierDansLaListeComplete": 153,
+       "voiesAvantLui": {
+        "total": 152,
+        "ajouter": 152,
+        "domaineStock": 8,
+        "domaineAcheter": 144
+       },
+       "montreesALEcran": 1
+      }
+     ],
+     "ms": 2663
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 93,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 380,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 49
+    },
+    "bannir résineux": {
+     "voiesMontrees": 8,
+     "parMoment": {
+      "remplacer@b60": 8
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [
+      "remplacer à IBU égal Galaxy ← nugget @b60 35 g [stock]",
+      "remplacer à IBU égal Motueka ← nugget @b60 74 g [stock]",
+      "remplacer à IBU égal Hallertau Blanc ← nugget @b60 63 g [stock]",
+      "remplacer à IBU égal Nelson Sauvin ← nugget @b60 62 g [stock]",
+      "remplacer à IBU égal Cashmere ← nugget @b60 71 g [à acheter]",
+      "remplacer à IBU égal El Dorado ← nugget @b60 40 g [à acheter]",
+      "remplacer à IBU égal East Kent Goldings ← nugget @b60 109 g [à acheter]",
+      "remplacer à IBU égal Hallertau Tradition ← nugget @b60 103 g [à acheter]"
+     ],
+     "aucuneVoieDuTout": false,
+     "evalues": 93,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 331,
+       "apresProgres_pool400": 298,
+       "apresProgres_pool80": 57,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 293
+       },
+       "sansConflit": 298,
+       "apresExclue": 284,
+       "rangDuPremierDansLaListeComplete": 1,
+       "voiesAvantLui": {
+        "total": 0,
+        "ajouter": 0,
+        "domaineStock": 0,
+        "domaineAcheter": 0
+       },
+       "montreesALEcran": 8
+      }
+     ],
+     "ms": 1422
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "remplacer@b60": 5,
+      "ajouter@b10": 7,
+      "assemblage@b10": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [
+      "remplacer à IBU égal Relax ← nugget @b60 278 g [à acheter]",
+      "remplacer à IBU égal Motueka ← nugget @b60 74 g [stock]",
+      "remplacer à IBU égal Hallertau Blanc ← nugget @b60 63 g [stock]",
+      "remplacer à IBU égal Nelson Sauvin ← nugget @b60 62 g [stock]",
+      "remplacer à IBU égal Galaxy ← nugget @b60 35 g [stock]"
+     ],
+     "aucuneVoieDuTout": false,
+     "evalues": 1191,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 46 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 331,
+       "apresProgres_pool400": 312,
+       "apresProgres_pool80": 85,
+       "domaine_pool400": {
+        "stock": 6,
+        "acheter": 306
+       },
+       "sansConflit": 312,
+       "apresExclue": 284,
+       "rangDuPremierDansLaListeComplete": 1,
+       "voiesAvantLui": {
+        "total": 0,
+        "ajouter": 0,
+        "domaineStock": 0,
+        "domaineAcheter": 0
+       },
+       "montreesALEcran": 5
+      }
+     ],
+     "ms": 3124
+    }
+   }
+  },
+  "21C hazy": {
+   "sans stock": {
+    "plus d’agrumes": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1128,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 689,
+       "apresProgres_pool400": 121,
+       "apresProgres_pool80": 52,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 121
+       },
+       "sansConflit": 121,
+       "apresExclue": 121,
+       "rangDuPremierDansLaListeComplete": 605,
+       "voiesAvantLui": {
+        "total": 604,
+        "ajouter": 602,
+        "domaineStock": 0,
+        "domaineAcheter": 604
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 4165
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1128,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 689,
+       "apresProgres_pool400": 64,
+       "apresProgres_pool80": 49,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 64
+       },
+       "sansConflit": 64,
+       "apresExclue": 64,
+       "rangDuPremierDansLaListeComplete": 341,
+       "voiesAvantLui": {
+        "total": 340,
+        "ajouter": 338,
+        "domaineStock": 0,
+        "domaineAcheter": 340
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2478
+    },
+    "plus floral": {
+     "voiesMontrees": 2,
+     "parMoment": {
+      "ajouter@b10": 2
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1128,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 689,
+       "apresProgres_pool400": 74,
+       "apresProgres_pool80": 61,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 74
+       },
+       "sansConflit": 74,
+       "apresExclue": 74,
+       "rangDuPremierDansLaListeComplete": 62,
+       "voiesAvantLui": {
+        "total": 61,
+        "ajouter": 59,
+        "domaineStock": 0,
+        "domaineAcheter": 61
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2428
+    },
+    "plus de résineux": {
+     "voiesMontrees": 2,
+     "parMoment": {
+      "ajouter@b10": 2
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1128,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 689,
+       "apresProgres_pool400": 51,
+       "apresProgres_pool80": 44,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 51
+       },
+       "sansConflit": 51,
+       "apresExclue": 51,
+       "rangDuPremierDansLaListeComplete": 54,
+       "voiesAvantLui": {
+        "total": 53,
+        "ajouter": 51,
+        "domaineStock": 0,
+        "domaineAcheter": 53
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2141
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 168,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 689,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 76
+    },
+    "bannir résineux": {
+     "voiesMontrees": 3,
+     "parMoment": {
+      "remplacer@dryActive": 3
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 168,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 567,
+       "apresProgres_pool400": 230,
+       "apresProgres_pool80": 61,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 230
+       },
+       "sansConflit": 230,
+       "apresExclue": 219,
+       "rangDuPremierDansLaListeComplete": 2,
+       "voiesAvantLui": {
+        "total": 1,
+        "ajouter": 0,
+        "domaineStock": 1,
+        "domaineAcheter": 0
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3583
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1123,
+     "sautees": 5,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 567,
+       "apresProgres_pool400": 240,
+       "apresProgres_pool80": 73,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 240
+       },
+       "sansConflit": 240,
+       "apresExclue": 219,
+       "rangDuPremierDansLaListeComplete": 210,
+       "voiesAvantLui": {
+        "total": 209,
+        "ajouter": 208,
+        "domaineStock": 1,
+        "domaineAcheter": 208
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5139
+    }
+   },
+   "stock fixture": {
+    "plus d’agrumes": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "assemblage@dryPost": 2,
+      "ajouter@dryPost": 1,
+      "ajouter@b10": 6,
+      "ajouter@dryActive": 3,
+      "ajouter@wp": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1268,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 695,
+       "apresProgres_pool400": 127,
+       "apresProgres_pool80": 60,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 122
+       },
+       "sansConflit": 126,
+       "apresExclue": 127,
+       "rangDuPremierDansLaListeComplete": 609,
+       "voiesAvantLui": {
+        "total": 608,
+        "ajouter": 606,
+        "domaineStock": 20,
+        "domaineAcheter": 588
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 4322
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "assemblage@dryPost": 2,
+      "ajouter@dryPost": 1,
+      "ajouter@dryActive": 6,
+      "ajouter@b10": 5,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1268,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 695,
+       "apresProgres_pool400": 69,
+       "apresProgres_pool80": 57,
+       "domaine_pool400": {
+        "stock": 4,
+        "acheter": 65
+       },
+       "sansConflit": 69,
+       "apresExclue": 69,
+       "rangDuPremierDansLaListeComplete": 345,
+       "voiesAvantLui": {
+        "total": 344,
+        "ajouter": 342,
+        "domaineStock": 20,
+        "domaineAcheter": 324
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2590
+    },
+    "plus floral": {
+     "voiesMontrees": 12,
+     "parMoment": {
+      "assemblage@b10": 2,
+      "ajouter@b10": 5,
+      "ajouter@wp": 1,
+      "ajouter@dryActive": 2,
+      "ajouter@dryPost": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1268,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 695,
+       "apresProgres_pool400": 80,
+       "apresProgres_pool80": 69,
+       "domaine_pool400": {
+        "stock": 4,
+        "acheter": 76
+       },
+       "sansConflit": 79,
+       "apresExclue": 80,
+       "rangDuPremierDansLaListeComplete": 63,
+       "voiesAvantLui": {
+        "total": 62,
+        "ajouter": 60,
+        "domaineStock": 3,
+        "domaineAcheter": 59
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2697
+    },
+    "plus de résineux": {
+     "voiesMontrees": 12,
+     "parMoment": {
+      "assemblage@b10": 2,
+      "ajouter@b10": 6,
+      "ajouter@wp": 1,
+      "ajouter@dryActive": 2,
+      "ajouter@dryPost": 1,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1268,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 695,
+       "apresProgres_pool400": 58,
+       "apresProgres_pool80": 51,
+       "domaine_pool400": {
+        "stock": 2,
+        "acheter": 56
+       },
+       "sansConflit": 57,
+       "apresExclue": 58,
+       "rangDuPremierDansLaListeComplete": 55,
+       "voiesAvantLui": {
+        "total": 54,
+        "ajouter": 52,
+        "domaineStock": 3,
+        "domaineAcheter": 51
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 2297
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 184,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 695,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 75
+    },
+    "bannir résineux": {
+     "voiesMontrees": 11,
+     "parMoment": {
+      "remplacer@dryActive": 7,
+      "remplacer@b60": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [
+      "remplacer à IBU égal Galaxy ← nugget @b60 15 g [stock]",
+      "remplacer à IBU égal Nelson Sauvin ← nugget @b60 27 g [stock]",
+      "remplacer à IBU égal Hallertau Blanc ← nugget @b60 27 g [stock]",
+      "remplacer à IBU égal Motueka ← nugget @b60 32 g [stock]"
+     ],
+     "aucuneVoieDuTout": false,
+     "evalues": 184,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 573,
+       "apresProgres_pool400": 230,
+       "apresProgres_pool80": 66,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 225
+       },
+       "sansConflit": 230,
+       "apresExclue": 219,
+       "rangDuPremierDansLaListeComplete": 2,
+       "voiesAvantLui": {
+        "total": 1,
+        "ajouter": 0,
+        "domaineStock": 1,
+        "domaineAcheter": 0
+       },
+       "montreesALEcran": 4
+      }
+     ],
+     "ms": 3593
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "assemblage@dryPost": 2,
+      "ajouter@dryPost": 3,
+      "ajouter@dryActive": 4,
+      "ajouter@b10": 5,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1203,
+     "sautees": 5,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "nugget @b60 20 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 573,
+       "apresProgres_pool400": 242,
+       "apresProgres_pool80": 80,
+       "domaine_pool400": {
+        "stock": 6,
+        "acheter": 236
+       },
+       "sansConflit": 242,
+       "apresExclue": 219,
+       "rangDuPremierDansLaListeComplete": 210,
+       "voiesAvantLui": {
+        "total": 209,
+        "ajouter": 208,
+        "domaineStock": 11,
+        "domaineAcheter": 198
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5278
+    }
+   }
+  },
+  "pale ale 18B (Magnum 60′)": {
+   "sans stock": {
+    "plus d’agrumes": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1210,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1173,
+       "apresProgres_pool400": 186,
+       "apresProgres_pool80": 53,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 186
+       },
+       "sansConflit": 186,
+       "apresExclue": 186,
+       "rangDuPremierDansLaListeComplete": 821,
+       "voiesAvantLui": {
+        "total": 820,
+        "ajouter": 816,
+        "domaineStock": 0,
+        "domaineAcheter": 820
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 6059
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1210,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1173,
+       "apresProgres_pool400": 136,
+       "apresProgres_pool80": 80,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 136
+       },
+       "sansConflit": 136,
+       "apresExclue": 136,
+       "rangDuPremierDansLaListeComplete": 434,
+       "voiesAvantLui": {
+        "total": 433,
+        "ajouter": 429,
+        "domaineStock": 0,
+        "domaineAcheter": 433
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3697
+    },
+    "plus floral": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1210,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1173,
+       "apresProgres_pool400": 132,
+       "apresProgres_pool80": 61,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 132
+       },
+       "sansConflit": 132,
+       "apresExclue": 132,
+       "rangDuPremierDansLaListeComplete": 515,
+       "voiesAvantLui": {
+        "total": 514,
+        "ajouter": 510,
+        "domaineStock": 0,
+        "domaineAcheter": 514
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 4153
+    },
+    "plus de résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1210,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1173,
+       "apresProgres_pool400": 145,
+       "apresProgres_pool80": 80,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 145
+       },
+       "sansConflit": 145,
+       "apresExclue": 145,
+       "rangDuPremierDansLaListeComplete": 449,
+       "voiesAvantLui": {
+        "total": 448,
+        "ajouter": 444,
+        "domaineStock": 0,
+        "domaineAcheter": 448
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3797
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 250,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1173,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 100
+    },
+    "bannir résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "remplacer@dryActive": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 250,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1126,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5161
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 4,
+     "parMoment": {
+      "ajouter@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1210,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1126,
+       "apresProgres_pool400": 104,
+       "apresProgres_pool80": 80,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 104
+       },
+       "sansConflit": 104,
+       "apresExclue": 77,
+       "rangDuPremierDansLaListeComplete": 279,
+       "voiesAvantLui": {
+        "total": 278,
+        "ajouter": 249,
+        "domaineStock": 0,
+        "domaineAcheter": 278
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 8031
+    }
+   },
+   "stock fixture": {
+    "plus d’agrumes": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 12,
+      "assemblage@b10": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1358,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1194,
+       "apresProgres_pool400": 185,
+       "apresProgres_pool80": 57,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 180
+       },
+       "sansConflit": 185,
+       "apresExclue": 185,
+       "rangDuPremierDansLaListeComplete": 829,
+       "voiesAvantLui": {
+        "total": 828,
+        "ajouter": 824,
+        "domaineStock": 36,
+        "domaineAcheter": 792
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 6207
+    },
+    "plus de tropicaux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 12,
+      "assemblage@b10": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1358,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1194,
+       "apresProgres_pool400": 137,
+       "apresProgres_pool80": 87,
+       "domaine_pool400": {
+        "stock": 8,
+        "acheter": 129
+       },
+       "sansConflit": 137,
+       "apresExclue": 137,
+       "rangDuPremierDansLaListeComplete": 441,
+       "voiesAvantLui": {
+        "total": 440,
+        "ajouter": 436,
+        "domaineStock": 32,
+        "domaineAcheter": 408
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 3828
+    },
+    "plus floral": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 10,
+      "assemblage@b10": 2,
+      "ajouter@wp": 2,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1358,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1194,
+       "apresProgres_pool400": 131,
+       "apresProgres_pool80": 63,
+       "domaine_pool400": {
+        "stock": 4,
+        "acheter": 127
+       },
+       "sansConflit": 131,
+       "apresExclue": 131,
+       "rangDuPremierDansLaListeComplete": 522,
+       "voiesAvantLui": {
+        "total": 521,
+        "ajouter": 517,
+        "domaineStock": 26,
+        "domaineAcheter": 495
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 4345
+    },
+    "plus de résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 9,
+      "assemblage@b10": 2,
+      "ajouter@wp": 3,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1358,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1194,
+       "apresProgres_pool400": 146,
+       "apresProgres_pool80": 84,
+       "domaine_pool400": {
+        "stock": 5,
+        "acheter": 141
+       },
+       "sansConflit": 146,
+       "apresExclue": 146,
+       "rangDuPremierDansLaListeComplete": 455,
+       "voiesAvantLui": {
+        "total": 454,
+        "ajouter": 450,
+        "domaineStock": 22,
+        "domaineAcheter": 432
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 4058
+    },
+    "amertume (aucune famille)": {
+     "voiesMontrees": 0,
+     "parMoment": {},
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": true,
+     "evalues": 274,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1194,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 106
+    },
+    "bannir résineux": {
+     "voiesMontrees": 12,
+     "parMoment": {
+      "remplacer@dryActive": 8,
+      "remplacer@b10": 4
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 274,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1139,
+       "apresProgres_pool400": 0,
+       "apresProgres_pool80": 0,
+       "domaine_pool400": {
+        "stock": 0,
+        "acheter": 0
+       },
+       "sansConflit": 0,
+       "apresExclue": 0,
+       "rangDuPremierDansLaListeComplete": null,
+       "voiesAvantLui": null,
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 5366
+    },
+    "tropicaux + bannir résineux": {
+     "voiesMontrees": 14,
+     "parMoment": {
+      "ajouter@b10": 8,
+      "assemblage@b10": 2,
+      "ajouter@wp": 4,
+      "dryhop(levier)@dryActive": 1
+     },
+     "ajoutsB60": 0,
+     "remplacer60Montres": [],
+     "aucuneVoieDuTout": false,
+     "evalues": 1358,
+     "sautees": 0,
+     "entonnoirRemplacerAmertume": [
+      {
+       "ajout": "magnum-us @b60 14 g",
+       "typeVoie": "remplacer à IBU égal",
+       "candidatsExamines_toutPool": 1139,
+       "apresProgres_pool400": 106,
+       "apresProgres_pool80": 87,
+       "domaine_pool400": {
+        "stock": 8,
+        "acheter": 98
+       },
+       "sansConflit": 105,
+       "apresExclue": 77,
+       "rangDuPremierDansLaListeComplete": 281,
+       "voiesAvantLui": {
+        "total": 280,
+        "ajouter": 251,
+        "domaineStock": 16,
+        "domaineAcheter": 264
+       },
+       "montreesALEcran": 0
+      }
+     ],
+     "ms": 8679
+    }
+   }
+  }
+ },
+ "substituer": {
+  "neipa v3 (22A)": {
+   "sans stock": [
+    {
+     "ajout": "lotus @b30 84 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      100,
+      100,
+      100,
+      100,
+      97
+     ],
+     "tete": [
+      "Kohia Nelson 100",
+      "Limequat 100",
+      "Tropical Fusion 100",
+      "Turkeys pick 100",
+      "Experimental D5 055 97"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "lotus @b30 84 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 7,
+     "reculesParmiMontres": 0,
+     "enStock": 3,
+     "scores": [
+      100,
+      100,
+      100,
+      100,
+      82,
+      81,
+      81
+     ],
+     "tete": [
+      "Kohia Nelson 100",
+      "Limequat 100",
+      "Tropical Fusion 100",
+      "Turkeys pick 100",
+      "Target 82"
+     ]
+    }
+   ]
+  },
+  "stout S1 (16D)": {
+   "sans stock": [
+    {
+     "ajout": "nugget @b60 46 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "tete": [
+      "Bru 100",
+      "Cluster fugget 100",
+      "Extra styrian dana 100",
+      "Kohia Nelson 100",
+      "Limequat 100"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "nugget @b60 46 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 6,
+     "reculesParmiMontres": 0,
+     "enStock": 1,
+     "scores": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      80
+     ],
+     "tete": [
+      "Bru 100",
+      "Cluster fugget 100",
+      "Extra styrian dana 100",
+      "Kohia Nelson 100",
+      "Limequat 100"
+     ]
+    }
+   ]
+  },
+  "21C hazy": {
+   "sans stock": [
+    {
+     "ajout": "nugget @b60 20 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "tete": [
+      "Bru 100",
+      "Cluster fugget 100",
+      "Extra styrian dana 100",
+      "Kohia Nelson 100",
+      "Limequat 100"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive 80 g",
+     "contexte": "arôme",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      65,
+      63,
+      63,
+      62,
+      62
+     ],
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Mandarina Bavaria 63",
+      "Centennial 62",
+      "Sorachi Ace 62"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "nugget @b60 20 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 6,
+     "reculesParmiMontres": 0,
+     "enStock": 1,
+     "scores": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      80
+     ],
+     "tete": [
+      "Bru 100",
+      "Cluster fugget 100",
+      "Extra styrian dana 100",
+      "Kohia Nelson 100",
+      "Limequat 100"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive 80 g",
+     "contexte": "arôme",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 3,
+     "scores": [
+      65,
+      63,
+      51,
+      61,
+      58
+     ],
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Nelson Sauvin 51",
+      "Target 61",
+      "Hallertau Blanc 58"
+     ]
+    }
+   ]
+  },
+  "pale ale 18B (Magnum 60′)": {
+   "sans stock": [
+    {
+     "ajout": "magnum-us @b60 14 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      96,
+      93,
+      93,
+      91,
+      91
+     ],
+     "tete": [
+      "Magnum (GR) 96",
+      "Buzz Bullets 93",
+      "Hallertau Taurus 93",
+      "Boomerang 91",
+      "Yeoman 91"
+     ]
+    },
+    {
+     "ajout": "cascade @b10 20 g",
+     "contexte": "arôme",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      68,
+      66,
+      64,
+      64,
+      63
+     ],
+     "tete": [
+      "Taiheke 68",
+      "Cluster 66",
+      "Centennial 64",
+      "KARMA 64",
+      "Mandarina Bavaria 63"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive 40 g",
+     "contexte": "arôme",
+     "candidatsDuMoteur": 504,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      65,
+      63,
+      63,
+      62,
+      61
+     ],
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Mandarina Bavaria 63",
+      "Centennial 62",
+      "Bravo 61"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "magnum-us @b60 14 g",
+     "contexte": "amertume",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 0,
+     "scores": [
+      96,
+      93,
+      93,
+      91,
+      91
+     ],
+     "tete": [
+      "Magnum (GR) 96",
+      "Buzz Bullets 93",
+      "Hallertau Taurus 93",
+      "Boomerang 91",
+      "Yeoman 91"
+     ]
+    },
+    {
+     "ajout": "cascade @b10 20 g",
+     "contexte": "arôme",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 3,
+     "scores": [
+      68,
+      66,
+      61,
+      57,
+      57
+     ],
+     "tete": [
+      "Taiheke 68",
+      "Cluster 66",
+      "Motueka 61",
+      "Hallertau Blanc 57",
+      "Idaho 7 57"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive 40 g",
+     "contexte": "arôme",
+     "candidatsDuMoteur": 505,
+     "rendusMoteur": 8,
+     "montresALEcran": 5,
+     "reculesParmiMontres": 0,
+     "enStock": 3,
+     "scores": [
+      65,
+      63,
+      54,
+      50,
+      61
+     ],
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Citra cryo 54",
+      "Nelson Sauvin 50",
+      "Target 61"
+     ]
+    }
+   ]
+  }
+ },
+ "substituerTemoins": [
+  {
+   "ajout": "citra @b60 30 g",
+   "contexte": "amertume",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "tete": [
+    "Kohia Nelson 100",
+    "Limequat 100",
+    "Mapuche 100",
+    "Peacharine 100",
+    "Tropical Fusion 100"
+   ]
+  },
+  {
+   "ajout": "citra @b10 30 g",
+   "contexte": "arôme",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    69,
+    69,
+    67,
+    67,
+    67
+   ],
+   "tete": [
+    "Falconer's Flight 69",
+    "Mosaic 69",
+    "Nectaron 67",
+    "Styrian Cardinal 67",
+    "YQH-1380 67"
+   ]
+  },
+  {
+   "ajout": "magnum-us @b60 30 g",
+   "contexte": "amertume",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    96,
+    93,
+    93,
+    91,
+    91
+   ],
+   "tete": [
+    "Magnum (GR) 96",
+    "Buzz Bullets 93",
+    "Hallertau Taurus 93",
+    "Boomerang 91",
+    "Yeoman 91"
+   ]
+  },
+  {
+   "ajout": "magnum-us @b10 30 g",
+   "contexte": "arôme",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    65,
+    63,
+    62,
+    62,
+    59
+   ],
+   "tete": [
+    "Magnum (GR) 65",
+    "Pacific Jade 63",
+    "Boomerang 62",
+    "Santiam 62",
+    "Agnus 59"
+   ]
+  },
+  {
+   "ajout": "nugget @b60 30 g",
+   "contexte": "amertume",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "tete": [
+    "Bru 100",
+    "Cluster fugget 100",
+    "Extra styrian dana 100",
+    "Kohia Nelson 100",
+    "Limequat 100"
+   ]
+  },
+  {
+   "ajout": "nugget @b10 30 g",
+   "contexte": "arôme",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    65,
+    65,
+    63,
+    63,
+    63
+   ],
+   "tete": [
+    "Centennial 65",
+    "Loral 65",
+    "Falconer's Flight 63",
+    "Sabro 63",
+    "Warrior 63"
+   ]
+  },
+  {
+   "ajout": "saaz-cz @b60 30 g",
+   "contexte": "amertume",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    100,
+    100,
+    99,
+    95,
+    95
+   ],
+   "tete": [
+    "Cluster fugget 100",
+    "Ycr 1 100",
+    "Wild Loyalist 99",
+    "Amethyst 95",
+    "Saaz Late 95"
+   ]
+  },
+  {
+   "ajout": "saaz-cz @b10 30 g",
+   "contexte": "arôme",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    66,
+    65,
+    63,
+    60,
+    60
+   ],
+   "tete": [
+    "Spalter Select 66",
+    "Tettnanger 65",
+    "Tettnang (US) 63",
+    "Aurum 60",
+    "Pacific Crest 60"
+   ]
+  },
+  {
+   "ajout": "galaxy @b60 30 g",
+   "contexte": "amertume",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    100,
+    100,
+    100,
+    95,
+    94
+   ],
+   "tete": [
+    "Kohia Nelson 100",
+    "Mapuche 100",
+    "Tropical Fusion 100",
+    "Luna 95",
+    "Experimental D5 055 94"
+   ]
+  },
+  {
+   "ajout": "galaxy @b10 30 g",
+   "contexte": "arôme",
+   "candidatsDuMoteur": 504,
+   "rendusMoteur": 8,
+   "montresALEcran": 5,
+   "reculesParmiMontres": 0,
+   "enStock": 0,
+   "scores": [
+    69,
+    63,
+    62,
+    62,
+    61
+   ],
+   "tete": [
+    "Harlequin 69",
+    "Mosaic 63",
+    "Citra 62",
+    "Nectaron 62",
+    "Azacca 61"
+   ]
+  }
+ ]
+}

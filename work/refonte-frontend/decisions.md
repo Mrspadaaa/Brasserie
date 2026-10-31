@@ -1177,3 +1177,18 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     tête. 1083 tests, ETATS 138/138.
   - **Reste à faire, voie s3 suite (R4)** : Warrior et Nugget, deux amérisants, arrivent en tête de « plus d'agrumes » saturé. Au whirlpool
     et au dry hop, un amérisant passera après les houblons d'arôme et les mixtes. C'est la règle symétrique de g2b et de D106.
+- D196 (pilote, 31.10, diagnostic d60, sur « surtout sur la partie 60', il y a souvent pas de propostion du tout ») : les causes sont
+  prouvées au commit de production ae7c7a8d.
+  - **C1** : Suggérer ne demande jamais 60′ au moteur. M1 et M2 (« Amérisant · 60′ », « Plus d'amertume ») ne sont pas branchés.
+  - **C2** : les « Remplacer X · 60′ » passent derrière des centaines d'ajouts, puis la coupe globale (`buyLimit`) les retire.
+  - **C3** : la règle d'usage à 60′ (g2b) n'est pas appliquée : Cashmere, un houblon d'arôme, amérise à la place de Nugget.
+  - **C4** : dans Substituer, à 60′, un candidat dont l'amertume est inconnue sort à 100, « très proche », sur 10 % du poids. Il arrive
+    en tête pour 17 houblons sur 20.
+
+  Décisions :
+  - **K1** (pilote, Substituer) : un inconnu d'amertume passe après le connu, et n'est jamais « très proche ».
+  - **K5** (pilote) : la règle d'usage s'applique aussi à « remplacer à IBU égal ».
+  - **K4** (pilote) : chaque houblon remplacé garde sa place, et l'exclusion D194 passe avant la coupe.
+  - **K2** (son écran choisi M1 + M2, repris tel quel ; règle n° 1) : le groupe « Amérisant · 60′ » et la carte « Plus d'amertume ». Les
+    rangées disent ce que chacune apporte (D165), puis le critique juge.
+  - **K3**, la phrase « rien d'aromatique à 60′ », est un texte qu'il choisira : elle lui sera montrée en mini maquettes, plus tard.

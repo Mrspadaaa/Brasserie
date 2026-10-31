@@ -1,0 +1,28 @@
+{
+ "cas": "stout-bannir",
+ "visee": {
+  "resin": 0
+ },
+ "lecture": {
+  "groupes": [
+   {
+    "id": "remplacer",
+    "titre": "Remplacer Nugget60′",
+    "nbLignes": 4,
+    "texte": "Remplacer Nugget60′mixteNelson Sauvin 11,5%51 g◇lui seul : groseille à maquereau, vin blanc◇arômeCashmere 8,4%70 g◇hors 16D : thym, bonbon◇mixteEl Dorado 15%39 "
+   },
+   {
+    "id": "levure",
+    "titre": "Changer de levurelevureestimé",
+    "nbLignes": 2,
+    "texte": "Changer de levurelevureestiméLalBrew Verdant IPAelle : abricot dominant, POF négativeLalBrew Pomonaelle : pêche, POF négative"
+   }
+  ],
+  "cartes": [
+   "Sans résineuxAtteint"
+  ],
+  "dir": "{\"resin\":-1}",
+  "apercu": "IBU55OG1,066EBC70Au styleAbsolu?Carte : le verdict de la meilleure voie qui reste au style ; Atteint, la visée ; Approche, la moitié du chemin.Barres : à droite de l’axe, ce qui monte ; à gauche, ce qui baisse ; tirets, la visée ; trait fin, jusqu’au haut du style 16D ; orangé, hors du style ; hachures, effet non établi.Sous un picto : un trait par cran du style, puis, en creux, les crans qui manquent jusqu’au plus grand du groupe ; toucher le picto dit sa famille et sa valeur. Cerclés : tes objectifs.Usage : amer, arôme ou mixte ; souligné en pointillé, déduit de l’α. Appui long sur une voie : sa fiche.BarresRadarSans résineuxAtteintRemplacer Nugget60′mixteNelson Sauvin 11,5%51 g◇lui seul :"
+ },
+ "erreurs": []
+}
