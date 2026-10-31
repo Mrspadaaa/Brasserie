@@ -70,6 +70,7 @@ describe('Prévision explicable sans double paiement', () => {
   });
   it('utilise la médiane de mois complets confirmés en excluant achats planifiés et investissements', () => {
     const txs = [expense('a', 10_000, '2026-06-01'), expense('b', 20_000, '2026-07-01'), expense('c', 90_000, '2026-08-01')];
+    txs.forEach(t => { t.category = 'chargesFixes'; }); // TA6 : seules les charges fixes nourrissent la tendance
     const machine = expense('machine', 5_000_000, '2026-08-01'); machine.category = 'materiel'; txs.push(machine);
     const linked = expense('linked', 2_000_000, '2026-07-02'); linked.finance!.planId = 'P-old'; txs.push(linked);
     txs.forEach(t => { t.finance!.paymentStatus = 'unknown'; });

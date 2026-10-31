@@ -39,7 +39,7 @@ const transactions: Transaction[] = [
   invoice('FACTURE-MALT', 'Facture de malt à régler', 15475, 'out', dateIn(18)),
   invoice('FACTURE-VENTE', 'Facture de vente à encaisser', 38000, 'in', dateIn(47)),
   { id: 'ACHAT-MOIS', description: 'Houblon Cascade', date: today, category: 'brassage', subcategory: '', amountHT: 68, amountTTC: 68,
-    tvaAmount: 0, tvaRate: 0, finance: { version: 1, kind: 'expense', amountCents: 6800, paymentStatus: 'unpaid', recordedAt, lines: [] } }
+    tvaAmount: 0, tvaRate: 0, finance: { version: 1, kind: 'expense', amountCents: 6800, paymentStatus: 'unpaid', dueDate: today, recordedAt, lines: [] } }
 ];
 const plans = [
   plan('PLAN-SEPTEMBRE', 'Estimation emballages', 2, 4250, 'out'),

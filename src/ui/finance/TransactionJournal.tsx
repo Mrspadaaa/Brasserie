@@ -231,6 +231,11 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     isActiveTransaction(entry.transaction)
       ? total + (entry.direction === 'in' ? 1 : -1) * transactionAmount(entry.transaction)
       : total, 0);
+  /** Le compteur suit le total : les opérations actives se comptent, les annulées (listées) se disent à part. */
+  const voidedCount = filtered.filter(entry => !isActiveTransaction(entry.transaction)).length;
+  const activeCount = filtered.length - voidedCount;
+  const countLabel = voidedCount === 0 ? compte(activeCount, 'opération')
+    : activeCount === 0 ? compte(voidedCount, 'annulée') : `${compte(activeCount, 'opération')} + ${compte(voidedCount, 'annulée')}`;
   /** Une écriture porte sa date une seule fois, en tête de son jour. */
   const days = useMemo(() => {
     const groups: Array<{ key: string; date: string | null; rows: typeof filtered }> = [];
@@ -250,7 +255,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   return <div className="finance-journal">
     <div className="journal-toolbar" aria-label="Filtres du journal">
       <FinancePeriodBar
-        count={`${compte(filtered.length, 'opération')}${filtered.length > PAGE_SIZE ? ` · ${offset + 1}–${Math.min(offset + PAGE_SIZE, filtered.length)} affichées` : ''}`}
+        count={`${countLabel}${filtered.length > PAGE_SIZE ? ` · ${offset + 1}–${Math.min(offset + PAGE_SIZE, filtered.length)} affichées` : ''}`}
         context={followingUp ? 'Suivi sur tous les exercices, archives comprises.' : scope === 'current' ? 'Factures ouvertes incluses' : scope === 'all' ? 'Archives comprises' : `${archivedCount} pièce(s) conservée(s) · ${periodLabel}`}
         total={filtered.length ? signedCHF(netCents(filtered)) : undefined} totalLabel="Solde net des opérations affichées">
         {scope === 'archives' ? <Field label="Année archivée"><select aria-label="Année archivée" value={selectedYear} onChange={e => change({ archiveYear: e.target.value })}>

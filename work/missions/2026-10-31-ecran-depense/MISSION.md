@@ -78,5 +78,18 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
   produit (S6) nommera l'article créé par le nom propre de s1 et écrira son α. Leçon des quatre plans versée à `sans-memoire.md` § 2.
   À verser au cerveau à la signature : les variations de chasse d'appariement (nature absente, `kind`, poids, parenthèse après un
   code générique ; LEÇON PROPOSÉE de la revue s1).
+- 31.10, nuit (code) : **t1, s2, l1 rendus**, critères rejoués par le pilote : t1 `TESTS ONGLETS OK` (18 fichiers, 163 tests), s2
+  `TESTS ENREGISTREMENT OK` (14 fichiers), l1 `FONCTIONS TYPEES OK` et `TESTS LECTURE OK` (13 fichiers), `REVUE OK` et `NOTE OK` pour
+  les trois. t1 : diff lu ; `FinancesTab.tsx:183` (trois props pour la ligne « Échéance à préciser ») accepté, seul conduit. L'échec de
+  `tests/ux-mobile/financePeriodDrilldown.test.tsx` (259,25 contre 216,75) est **préexistant**, prouvé sur HEAD dans un worktree
+  temporaire : dates relatives au jour, test hors `include` de vitest ; à corriger à part. Décisions du pilote : la ligne « Échéance à
+  préciser » reste une `finance-notice` jusqu'à la voie écran ; « Prévision incomplète », qui s'affiche dès que du brassage est écarté
+  (TA6), et « Achats de divers » (clé brute) vont aux critères de la voie écran ; `SCAN_MAX_OUTPUT` passe à 5 100 à l'intégration de l1
+  (option B : pire cas 4 050 jetons), avec `invoiceReview.test.ts:61`, `invoiceScanTransport.test.ts:29` et les deux `4500` de
+  `ai.ts:100-101`. Relectures du code de s2 et l1 par deux relecteurs neufs (`RELECTURE.md`), avant leur commit. t1 commité.
+- 31.10, nuit : **D214**, le brasseur sur la règle n° 4 de D213 : « Unité illisible : la ligne n'est reliée à aucun article.???? ».
+  Règle refusée : elle était du pilote. Lecture étroite : la ligne reste proposée, l'unité vide, « unité à préciser », rien en stock tant
+  qu'elle manque (garde : voie r1). s1, encore en vol, a reçu la correction ; COMMUN.md, decisions, SPEC, DEFAUTS, REMPLACES à jour.
+  Les jus0Journey rouges (2) attendent s1, qui possède le fichier.
 
 ## Signature

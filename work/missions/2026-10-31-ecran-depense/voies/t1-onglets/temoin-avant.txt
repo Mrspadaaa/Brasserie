@@ -1,0 +1,77 @@
+   × TA4 : pièce sans échéance > sonde E : une vente à encaisser sans échéance sort des entrées prévues et va à part 7ms
+   × TA4 : pièce sans échéance > sonde B : une facture à payer sans échéance sort du premier mois, l’avertissement donne le montant 1ms
+   × TA4 : pièce sans échéance > une échéance invalide vaut une échéance absente 1ms
+   × TA4 : pièce sans échéance > une échéance future est placée à sa date ; une échéance passée reste due aujourd’hui ; aucune date inventée 1ms
+   × TA4 : pièce sans échéance > une pièce soldée sans échéance n’apparaît ni dans les mois ni à part 0ms
+   × TA4 : pièce sans échéance > une pièce partielle sans échéance : le reste à payer, pas le total 0ms
+   × TA4 : pièce sans échéance > une ancienne pièce sans finance n’est ni dans les mois ni à part 0ms
+   × TA4 : pièce sans échéance > pièce au règlement inconnu liée à un plan actif : à part, marquée non confirmée 1ms
+   × TA4 : pièce sans échéance > une pièce sans échéance liée à un plan ne remplace pas l’occurrence du plan : le plan reste dans le mois 0ms
+   × TA4 : pièce sans échéance > un plan non projeté (brouillon) et une facture sans échéance : la facture se voit à part 0ms
+   × TA4 : pièce sans échéance > non-régression : une pièce liée soldée sans échéance remplace toujours l’occurrence 0ms
+   × TA4 : pièce sans échéance > cas vide et centimes entiers 0ms
+   × TA3 : pièce à payer datée dans le futur > sonde A : la Synthèse la compte comme les Prévisions (5 000 centimes) 6ms
+   × TA3 : pièce à payer datée dans le futur > une vente future à encaisser compte de même 1ms
+   × TA3 : pièce à payer datée dans le futur > pièce future partiellement réglée : le reste dans les deux vues 1ms
+   × TA3 : pièce à payer datée dans le futur > avoir futur bien lié : compté ; mal lié : rien d’ajouté et un avertissement ; montant invalide : rien d’ajouté 0ms
+   × TA3 : pièce à payer datée dans le futur > identité entre vues : Synthèse = Σ factures de la prévision + pièces sans échéance, hors horizon nommé 1ms
+   × TA6 : tendance des dépenses courantes > sonde F : trois achats de brassage isolés ne deviennent pas une charge mensuelle 8ms
+   × TA6 : tendance des dépenses courantes > la raison est dite : une ligne d’avertissement nomme les achats non projetés 1ms
+   ✓ TA6 : tendance des dépenses courantes > trois charges fixes : la tendance garde sa médiane (50,00 CHF × 13 mois ne change pas de règle) 0ms
+   × TA6 : tendance des dépenses courantes > un jeu mêlé : seule la catégorie récurrente produit une ligne 1ms
+   × TA6 : tendance des dépenses courantes > nettoyage et divers : pas de périodicité connue, donc pas de projection 1ms
+   × TA6 : tendance des dépenses courantes > la liste des catégories récurrentes est un réglage lisible 1ms
+   × TA2 : compteur du journal > Tout, 2 actives et 1 annulée : « 2 opérations + 1 annulée », les trois lignes restent listées 31ms
+   × TA2 : compteur du journal > Tout, 1 active et 2 annulées : accord au pluriel 9ms
+   × TA2 : compteur du journal > filtre « Écritures annulées » : on dit seulement « 1 annulée », jamais « 0 opération » 10ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 25 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/unit/depense/onglets/ta2-compteur.test.tsx > TA2 : compteur du journal > Tout, 2 actives et 1 annulée : « 2 opérations + 1 annulée », les trois lignes restent listées
+AssertionError: expected 'Toutes les dates3 opérationsArchives …' to match /2 opérations \+ 1 annulée/
+ FAIL  tests/unit/depense/onglets/ta2-compteur.test.tsx > TA2 : compteur du journal > Tout, 1 active et 2 annulées : accord au pluriel
+AssertionError: expected 'Toutes les dates3 opérationsArchives …' to match /1 opération \+ 2 annulées/
+ FAIL  tests/unit/depense/onglets/ta2-compteur.test.tsx > TA2 : compteur du journal > filtre « Écritures annulées » : on dit seulement « 1 annulée », jamais « 0 opération »
+AssertionError: expected 'Toutes les dates1 opérationArchives c…' to match /1 annulée/
+ FAIL  tests/unit/depense/onglets/ta3-a-payer.test.ts > TA3 : pièce à payer datée dans le futur > sonde A : la Synthèse la compte comme les Prévisions (5 000 centimes)
+AssertionError: expected +0 to be 5000 // Object.is equality
+ FAIL  tests/unit/depense/onglets/ta3-a-payer.test.ts > TA3 : pièce à payer datée dans le futur > une vente future à encaisser compte de même
+AssertionError: expected +0 to be 30000 // Object.is equality
+ FAIL  tests/unit/depense/onglets/ta3-a-payer.test.ts > TA3 : pièce à payer datée dans le futur > pièce future partiellement réglée : le reste dans les deux vues
+AssertionError: expected +0 to be 25000 // Object.is equality
+ FAIL  tests/unit/depense/onglets/ta3-a-payer.test.ts > TA3 : pièce à payer datée dans le futur > avoir futur bien lié : compté ; mal lié : rien d’ajouté et un avertissement ; montant invalide : rien d’ajouté
+AssertionError: expected +0 to be 2000 // Object.is equality
+ FAIL  tests/unit/depense/onglets/ta3-a-payer.test.ts > TA3 : pièce à payer datée dans le futur > identité entre vues : Synthèse = Σ factures de la prévision + pièces sans échéance, hors horizon nommé
+AssertionError: expected NaN to be 7000 // Object.is equality
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > sonde E : une vente à encaisser sans échéance sort des entrées prévues et va à part
+AssertionError: expected [ { id: 'invoice:E-vente', …(8) } ] to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > sonde B : une facture à payer sans échéance sort du premier mois, l’avertissement donne le montant
+AssertionError: expected [ { id: 'invoice:B-facture', …(8) } ] to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > une échéance invalide vaut une échéance absente
+AssertionError: expected [ { id: 'invoice:INV', …(8) } ] to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > une échéance future est placée à sa date ; une échéance passée reste due aujourd’hui ; aucune date inventée
+AssertionError: expected undefined to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > une pièce soldée sans échéance n’apparaît ni dans les mois ni à part
+AssertionError: expected undefined to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > une pièce partielle sans échéance : le reste à payer, pas le total
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > une ancienne pièce sans finance n’est ni dans les mois ni à part
+AssertionError: expected undefined to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > pièce au règlement inconnu liée à un plan actif : à part, marquée non confirmée
+AssertionError: Target cannot be null or undefined.
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > une pièce sans échéance liée à un plan ne remplace pas l’occurrence du plan : le plan reste dans le mois
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > un plan non projeté (brouillon) et une facture sans échéance : la facture se voit à part
+AssertionError: expected [ { id: 'invoice:LIE', …(8) } ] to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > non-régression : une pièce liée soldée sans échéance remplace toujours l’occurrence
+AssertionError: expected undefined to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta4-sans-echeance.test.ts > TA4 : pièce sans échéance > cas vide et centimes entiers
+AssertionError: expected undefined to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta6-tendance.test.ts > TA6 : tendance des dépenses courantes > sonde F : trois achats de brassage isolés ne deviennent pas une charge mensuelle
+AssertionError: expected [ { …(7) }, { …(7) }, { …(7) }, …(9) ] to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta6-tendance.test.ts > TA6 : tendance des dépenses courantes > la raison est dite : une ligne d’avertissement nomme les achats non projetés
+AssertionError: expected false to be true // Object.is equality
+ FAIL  tests/unit/depense/onglets/ta6-tendance.test.ts > TA6 : tendance des dépenses courantes > un jeu mêlé : seule la catégorie récurrente produit une ligne
+AssertionError: expected [ 'brassage', 'chargesFixes' ] to deeply equal [ 'chargesFixes' ]
+ FAIL  tests/unit/depense/onglets/ta6-tendance.test.ts > TA6 : tendance des dépenses courantes > nettoyage et divers : pas de périodicité connue, donc pas de projection
+AssertionError: expected [ { …(7) }, { …(7) }, { …(7) }, …(21) ] to deeply equal []
+ FAIL  tests/unit/depense/onglets/ta6-tendance.test.ts > TA6 : tendance des dépenses courantes > la liste des catégories récurrentes est un réglage lisible
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ Test Files  4 failed (4)
+      Tests  25 failed | 10 passed (35)
