@@ -17,7 +17,12 @@
  */
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { CAS_FILES, MISSION_DIR, VARIANTS, VARIANT_LABEL, loadCases, valueAtPath, type AppliedFault, type BenchCase, type DrawRecord, type VariantId } from './banc-lecture-facture';
+import { CAS_FILES, MISSION_DIR, N_SUFFIX, baseOfId, isNId, loadCases, orderVariants, valueAtPath, variantLabel, type AppliedFault, type BenchCase, type DrawRecord } from './banc-lecture-facture';
+
+/** Les ids de variante présents dans les parcours (`Cs`, `Cs+N`…), dans l'ordre des tableaux. */
+export const variantIds = (records: DrawRecord[]): string[] => orderVariants(new Set(records.flatMap(record => Object.keys(record.variants))));
+/** Court : `C′`, `C★`, `Lm+N` (pour les défauts et les journaux). */
+export const shortLabel = (id: string) => baseOfId(id).replace('Csp', 'C★′').replace('Cs', 'C★').replace('Cp', 'C′') + (isNId(id) ? N_SUFFIX : '');
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Tolérances d'octobre
@@ -96,20 +101,20 @@ export interface VariantStats {
   fauxVerts: number; fauxCorriges: number; alertesJustes: number; alertesInutiles: number; vraisVerts: number;
   statuts: Record<string, number>; inutilesCodes: Record<string, number>; ms: number[]; costMicro: number[]; calls: number[]; thirdFrom: Record<string, number>; secondRead: number; defects: string[];
 }
-export interface DrawVerdict { doc: string; tirage: number; variant: VariantId; status: string | null; wrong: string[]; verdict: Verdict | null }
+export interface DrawVerdict { doc: string; tirage: number; variant: string; status: string | null; wrong: string[]; verdict: Verdict | null }
 
 const median = (values: number[]) => { if (!values.length) return null; const s = [...values].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 
-export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: Record<VariantId, VariantStats>; draws: DrawVerdict[] } {
+export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: Record<string, VariantStats>; draws: DrawVerdict[] } {
   const byId = new Map(cases.map(c => [c.id, c]));
   const blank = (): VariantStats => ({ draws: 0, failures: 0, judged: 0, right: 0, lineJudged: 0, lineRight: 0, fauxVerts: 0, fauxCorriges: 0, alertesJustes: 0, alertesInutiles: 0, vraisVerts: 0,
     statuts: {}, inutilesCodes: {}, ms: [], costMicro: [], calls: [], thirdFrom: {}, secondRead: 0, defects: [] });
-  const stats = Object.fromEntries(VARIANTS.map(v => [v, blank()])) as Record<VariantId, VariantStats>;
+  const stats: Record<string, VariantStats> = Object.fromEntries(variantIds(records).map(v => [v, blank()]));
   const draws: DrawVerdict[] = [];
   for (const record of records) {
     const expected = byId.get(record.doc)?.expected;
     if (!expected) throw new Error(`Cas inconnu : ${record.doc}.`);
-    for (const variant of VARIANTS) {
+    for (const variant of orderVariants(Object.keys(record.variants))) {
       const run = record.variants[variant], stat = stats[variant];
       stat.draws++;
       stat.ms.push(run.ms); stat.costMicro.push(run.costMicroChf); stat.calls.push(run.calls);
@@ -129,7 +134,7 @@ export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: 
         for (const code of new Set<string>((run.result.points ?? []).filter((point: any) => point.pese).map((point: any) => point.code))) stat.inutilesCodes[code] = (stat.inutilesCodes[code] ?? 0) + 1;
       } else stat.vraisVerts++;
       // Défauts : par champ, les lignes d'un même champ sont regroupées (« unit faux sur 26 lignes »).
-      const label = variant === 'Cp' ? 'C′' : variant;
+      const label = shortLabel(variant);
       const grouped = new Map<string, number>();
       for (const route of verdict.wrong) {
         const parts = route.split('.');
@@ -153,7 +158,7 @@ export function checkSimulation(records: DrawRecord[], draws: DrawVerdict[], app
   for (const entry of applied) {
     const record = records.find(item => item.doc === entry.doc && item.tirage === entry.tirage);
     if (!record) continue;
-    for (const variant of VARIANTS) {
+    for (const variant of orderVariants(Object.keys(record.variants))) {
       const result = record.variants[variant].result;
       if (!result || JSON.stringify(valueAtPath(result, entry.path)) !== JSON.stringify(entry.wrongValue)) continue;
       present++;
@@ -176,17 +181,74 @@ const sec = (ms: number | null) => (ms === null ? '—' : `${(ms / 1000).toFixed
 const francs = (micro: number | null) => (micro === null ? '—' : `${(micro / 1e6).toFixed(4).replace('.', ',')}`);
 const ratio = (a: number, b: number) => `${a} / ${b}`;
 
-export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: Record<VariantId, VariantStats>, simulation?: SimulationCheck): string {
+const median0 = median;
+const totalOf = (values: number[]) => values.reduce((a, b) => a + b, 0);
+const signed = (value: number) => (value > 0 ? `+${value}` : String(value));
+
+/** Nom d'un chemin faux, comme dans les défauts : `lignes : price`, `ligne manquante`, `items.count`, ou le champ d'en-tête. */
+function fieldName(route: string): string {
+  const parts = route.split('.');
+  return parts[0] === 'items' ? (parts[1] === 'count' ? 'items.count' : parts[2] ? `lignes : ${parts[2]}` : 'ligne manquante') : route;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Par document : pour voir si un gain vient d'un seul document
+// ---------------------------------------------------------------------------------------------------------------------
+export interface DocCell { draws: number; failures: number; judged: number; right: number; lineJudged: number; lineRight: number; fauxVerts: number }
+export function perDocument(draws: DrawVerdict[]): Map<string, Map<string, DocCell>> {
+  const out = new Map<string, Map<string, DocCell>>();
+  for (const draw of draws) {
+    const row = out.get(draw.doc) ?? new Map<string, DocCell>();
+    out.set(draw.doc, row);
+    const cell = row.get(draw.variant) ?? { draws: 0, failures: 0, judged: 0, right: 0, lineJudged: 0, lineRight: 0, fauxVerts: 0 };
+    row.set(draw.variant, cell);
+    cell.draws++;
+    if (!draw.verdict) { cell.failures++; continue; }
+    cell.judged += draw.verdict.judged; cell.right += draw.verdict.right; cell.lineJudged += draw.verdict.lineJudged; cell.lineRight += draw.verdict.lineRight;
+    if (draw.status === 'checked' && draw.wrong.length) cell.fauxVerts++;
+  }
+  return out;
+}
+export function renderPerDocument(draws: DrawVerdict[], ids: string[]): string[] {
+  const table = perDocument(draws);
+  const lines = [`| document | ${ids.map(shortLabel).join(' | ')} |`, `|---|${ids.map(() => '---').join('|')}|`];
+  for (const doc of [...table.keys()].sort()) {
+    const row = table.get(doc)!;
+    lines.push(`| ${doc} | ${ids.map(id => { const c = row.get(id); return c ? `${c.right}/${c.judged} · ${c.lineRight}/${c.lineJudged}${c.fauxVerts ? ` · FV ${c.fauxVerts}` : ''}${c.failures ? ` · ${c.failures} sans résultat` : ''}` : '—'; }).join(' | ')} |`);
+  }
+  return lines;
+}
+
+/** Les champs qui changent d'état entre deux variantes, parcours par parcours : `doc2 : currency (×3)`. */
+export function fieldDiff(draws: DrawVerdict[], from: string, to: string): { fixed: string[]; broken: string[] } {
+  const wrongOf = (id: string) => new Map(draws.filter(d => d.variant === id && d.verdict).map(d => [`${d.doc}|${d.tirage}`, new Set(d.wrong.map(fieldName))]));
+  const a = wrongOf(from), b = wrongOf(to);
+  const fixed = new Map<string, number>(), broken = new Map<string, number>();
+  for (const [key, wrongFrom] of a) {
+    const wrongTo = b.get(key);
+    if (!wrongTo) continue;
+    const doc = key.split('|')[0];
+    for (const name of wrongFrom) if (!wrongTo.has(name)) fixed.set(`${doc} : ${name}`, (fixed.get(`${doc} : ${name}`) ?? 0) + 1);
+    for (const name of wrongTo) if (!wrongFrom.has(name)) broken.set(`${doc} : ${name}`, (broken.get(`${doc} : ${name}`) ?? 0) + 1);
+  }
+  const show = (map: Map<string, number>) => [...map].sort().map(([name, n]) => `${name}${n > 1 ? ` (×${n} parcours)` : ''}`);
+  return { fixed: show(fixed), broken: show(broken) };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: Record<string, VariantStats>, simulation?: SimulationCheck, draws: DrawVerdict[] = []): string {
   const { meta, records } = file;
-  const L = (label: string, pick: (s: VariantStats) => string) => `| ${label} | ${VARIANTS.map(v => pick(stats[v])).join(' | ')} |`;
-  const total = (values: number[]) => values.reduce((a, b) => a + b, 0);
-  const real = records.flatMap(r => r.readings), realCost = total(real.map(r => r.costMicroChf ?? 0));
+  const ids = variantIds(records);
+  const L = (label: string, pick: (s: VariantStats) => string) => `| ${label} | ${ids.map(v => pick(stats[v])).join(' | ')} |`;
+  const heads = `| | ${ids.map(variantLabel).join(' | ')} |`, rule = `|---|${ids.map(() => '---').join('|')}|`;
+  const real = records.flatMap(r => r.readings).filter(r => !r.lent), realCost = totalOf(real.map(r => r.costMicroChf ?? 0));
+  const lentCount = records.flatMap(r => r.readings).filter(r => r.lent).length;
   const docs = [...new Set(records.map(r => r.doc))];
   const lines: string[] = [];
   lines.push(`# Banc de lecture des factures — résultat${meta.mode === 'simuler' ? ' (SIMULÉ, réponses fabriquées : ne prouve rien sur les modèles)' : ''}`, '');
-  lines.push(`Mode ${meta.mode} · ${records.length} parcours (${docs.length} documents × ${meta.repeat} tirages${meta.stopped ? `, arrêté : ${meta.stopped}` : ''}) · modèles ${meta.models.strong} (A, B, 3ᵉ lecture) et ${meta.models.lite} (C, C′) · réflexion LOW, température 0, haute résolution.`);
+  lines.push(`Mode ${meta.mode} · ${records.length} parcours (${docs.length} documents × ${meta.repeat} tirages${meta.stopped ? `, arrêté : ${meta.stopped}` : ''}) · modèles ${meta.models.strong} (A, B, 3ᵉ lecture) et ${meta.models.lite} (les autres) · température 0, haute résolution · variantes ${(meta.variantes ?? ['A', 'B', 'C', 'Cp']).map(shortLabel).join(', ')}${meta.normaliser ? ' (chacune aussi avec N)' : ''}.`);
   lines.push('Aucune valeur des documents ici : des comptes, des durées, des coûts et le nom du champ en défaut. Coûts au tarif provisionné de `geminiCosts.ts` (1,25 CHF/USD), pas une facture.', '');
-  lines.push(`| | ${VARIANTS.map(v => VARIANT_LABEL[v]).join(' | ')} |`, `|---|${VARIANTS.map(() => '---').join('|')}|`);
+  lines.push(heads, rule);
   lines.push(L('Parcours lus (échecs sans résultat)', s => `${s.draws - s.failures} (${s.failures})`));
   lines.push(L('Champs justes / jugés', s => ratio(s.right, s.judged)));
   lines.push(L('Lignes justes / jugées', s => ratio(s.lineRight, s.lineJudged)));
@@ -195,22 +257,37 @@ export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: R
   lines.push(L('Alertes justes (disputed / unavailable, vraie erreur)', s => String(s.alertesJustes)));
   lines.push(L('Alertes inutiles (rien de faux)', s => String(s.alertesInutiles)));
   lines.push(L('Verts justes (checked / corrected, tout juste)', s => String(s.vraisVerts)));
-  lines.push(L('Durée médiane du parcours', s => sec(median(s.ms))));
+  lines.push(L('Durée médiane du parcours', s => sec(median0(s.ms))));
   lines.push(L('Durée maximale du parcours', s => sec(s.ms.length ? Math.max(...s.ms) : null)));
-  lines.push(L('Appels (total · moyenne par parcours)', s => `${total(s.calls)} · ${s.calls.length ? (total(s.calls) / s.calls.length).toFixed(2).replace('.', ',') : '—'}`));
-  lines.push(L('Coût médian par parcours (CHF)', s => francs(median(s.costMicro))));
-  lines.push(L('Coût total comme en production (CHF)', s => francs(total(s.costMicro))));
-  lines.push('', `Dépense réelle du banc (appels distincts, 3ᵉ lectures prêtées comptées une fois) : ${francs(realCost)} CHF pour ${real.length} appels.`, '');
-  lines.push('## Statuts finaux', '', `| | ${VARIANTS.map(v => VARIANT_LABEL[v]).join(' | ')} |`, `|---|${VARIANTS.map(() => '---').join('|')}|`);
+  lines.push(L('Appels (total · moyenne par parcours)', s => `${totalOf(s.calls)} · ${s.calls.length ? (totalOf(s.calls) / s.calls.length).toFixed(2).replace('.', ',') : '—'}`));
+  lines.push(L('Coût médian par parcours (CHF)', s => francs(median0(s.costMicro))));
+  lines.push(L('Coût total comme en production (CHF)', s => francs(totalOf(s.costMicro))));
+  lines.push('', `Dépense réelle de cette passe (appels distincts, 3ᵉ lectures partagées comptées une fois${lentCount ? `, ${lentCount} lectures prêtées par ${meta.reprendre ?? 'une sortie précédente'} non comptées` : ''}) : ${francs(realCost)} CHF pour ${real.length} appels.`, '');
+  lines.push('## Statuts finaux', '', heads, rule);
   for (const status of ['checked', 'corrected', 'disputed', 'unavailable']) lines.push(L(status, s => String(s.statuts[status] ?? 0)));
+  if (draws.length) lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids));
   lines.push('', '## Pourquoi sonnent les alertes inutiles (points qui pèsent, tous champs justes)', '');
-  for (const v of VARIANTS) lines.push(`- ${VARIANT_LABEL[v]} : ${Object.entries(stats[v].inutilesCodes).sort((a, b) => b[1] - a[1]).map(([code, n]) => `${code} ×${n}`).join(', ') || 'aucune'}`);
+  for (const v of ids) lines.push(`- ${variantLabel(v)} : ${Object.entries(stats[v].inutilesCodes).sort((a, b) => b[1] - a[1]).map(([code, n]) => `${code} ×${n}`).join(', ') || 'aucune'}`);
   lines.push('', '## Ce que chaque variante a appelé', '');
-  lines.push(`- B : la lecture 2 a été appelée dans ${stats.B.secondRead} parcours sur ${stats.B.draws}.`);
-  for (const v of ['C', 'Cp'] as const) lines.push(`- ${VARIANT_LABEL[v]} : 3.8 prêtée par A ${stats[v].thirdFrom.A ?? 0} fois, appel 3.8 neuf ${stats[v].thirdFrom.neuf ?? 0} fois, sans 3ᵉ lecture ${stats[v].draws - (stats[v].thirdFrom.A ?? 0) - (stats[v].thirdFrom.neuf ?? 0)} fois.`);
+  if (ids.includes('B')) lines.push(`- B : la lecture 2 a été appelée dans ${stats.B.secondRead} parcours sur ${stats.B.draws}.`);
+  for (const v of ids.filter(id => !['A', 'B'].includes(baseOfId(id)))) {
+    const t = stats[v].thirdFrom;
+    lines.push(`- ${variantLabel(v)} : 3.8 prêtée par A ${t.A ?? 0} fois, prêtée par k1 ${t.k1 ?? 0} fois, appel 3.8 neuf ${t.neuf ?? 0} fois, sans 3ᵉ lecture ${stats[v].draws - (t.A ?? 0) - (t.k1 ?? 0) - (t.neuf ?? 0)} fois.`);
+  }
+  // Par groupe d'appel (A, C, Lm, Lh, Lp) : coupures, lectures longues, sortie moyenne — les appels distincts de cette passe seulement.
+  const byGroup = new Map<string, Array<DrawRecord['readings'][number]>>();
+  for (const read of records.flatMap(r => r.readings)) if (read.meta.lecture !== 3) byGroup.set(read.meta.variant, [...(byGroup.get(read.meta.variant) ?? []), read]);
+  if (byGroup.size) {
+    lines.push('', '## Les lectures, par réglage (lectures 1 et 2)', '');
+    for (const [group, reads] of byGroup) {
+      const cut = reads.filter(r => /^coupée/.test(r.state)).length, slow = reads.filter(r => r.ms > 45_000).length;
+      const outs = reads.map(r => r.outputTokens).filter((n): n is number => n !== null), costs = reads.map(r => r.costMicroChf).filter((n): n is number => n !== null);
+      lines.push(`- ${group} : ${reads.length} lectures${reads.some(r => r.lent) ? ' (dont prêtées)' : ''}, ${cut} coupée(s) par la limite de sortie, ${slow} de plus de 45 s, sortie moyenne ${outs.length ? Math.round(totalOf(outs) / outs.length) : '—'} jetons (réflexion comprise), coût moyen ${francs(costs.length ? totalOf(costs) / costs.length : null)} CHF, durée médiane ${sec(median0(reads.map(r => r.ms)))}.`);
+    }
+  }
   lines.push('', '## Défauts relevés (nom du champ seulement)', '');
-  for (const v of VARIANTS) {
-    lines.push(`### ${VARIANT_LABEL[v]}`);
+  for (const v of ids) {
+    lines.push(`### ${variantLabel(v)}`);
     lines.push(...(stats[v].defects.length ? stats[v].defects.map(d => `- ${d}`) : ['- aucun champ faux']));
     lines.push('');
   }
@@ -222,32 +299,95 @@ export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: R
   }
   lines.push('## Lecture honnête', '',
     `- ${records.length} parcours par variante : peu pour trancher entre deux taux d'erreur proches ; un faux vert de plus ou de moins se lit comme un indice, pas comme une mesure.`,
-    '- B et C′ sont calculés hors ligne depuis les appels réels de A et de C : mêmes réponses, aucun appel de plus (sauf une 3.8 neuve quand C′ en a besoin et que ni A ni C n’en ont).',
-    '- La durée d’un parcours est la somme des durées mesurées appel par appel : le plus long des deux appels parallèles, puis la 3ᵉ lecture (A, C, C′) ; la somme séquentielle (B).', '');
+    '- B, C′, C★ et C★′ sont calculés hors ligne depuis les appels de A et de C : mêmes réponses, aucun appel de plus (sauf une 3.8 neuve quand une variante en a besoin et qu’aucune n’est prêtée). N relit les mêmes réponses avec la devise en code ISO.',
+    '- La durée d’un parcours est la somme des durées mesurées appel par appel : le plus long des deux appels parallèles, puis la 3ᵉ lecture ; la somme séquentielle (B). Pour une 3.8 prêtée, la durée est celle mesurée au banc de k1.', '');
+  return `${lines.join('\n')}\n`;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// HORS-LIGNE.md : C★, C★′ et N recalculés sur la sortie payante de k1, sans appel
+// ---------------------------------------------------------------------------------------------------------------------
+export function renderHorsLigne(file: { meta: any; records: DrawRecord[] }, stats: Record<string, VariantStats>, draws: DrawVerdict[]): string {
+  const { meta, records } = file;
+  const ids = variantIds(records);
+  const L = (label: string, pick: (s: VariantStats) => string) => `| ${label} | ${ids.map(v => pick(stats[v])).join(' | ')} |`;
+  const heads = `| | ${ids.map(shortLabel).join(' | ')} |`, rule = `|---|${ids.map(() => '---').join('|')}|`;
+  const lines: string[] = [];
+  lines.push('# Hors ligne — C★, C★′ et N sur la sortie payante de k1', '');
+  lines.push(`Recalcul sans aucun appel ni clé, depuis les ${records.length} parcours déjà payés (${meta.reprendre ?? 'sortie k1'} : 7 documents × ${meta.repeat} tirages). Mêmes lectures, mêmes durées mesurées, mêmes coûts : seule la façon de conclure change.`);
+  lines.push('- **C★** : comme C (deux Flash-Lite, la 3.8 sur désaccord), mais la 3.8 **tranche seule** : son résultat remplace le vote à trois. Statut d’une lecture seule : « checked » si aucun point ne pèse, « disputed » sinon.');
+  lines.push('- **C★′** : comme C★, et la 3.8 est aussi appelée quand les deux Flash-Lite concordent mais que l’arithmétique échoue (comme C′).');
+  lines.push('- **+N** : normalisation de code appliquée à chaque lecture avant le vote, pour toutes les variantes : devise « Fr. », « SFr. », « CHF. » → « CHF ». Rien d’autre ; une devise étrangère n’est jamais devinée.');
+  lines.push('- Aucune valeur des documents ici : des comptes, des durées, des coûts et des noms de champs. Une lecture des défauts communs à toutes les variantes est dans `RESULTAT-BANC.md` de la mission.', '');
+  lines.push('## Total', '', heads, rule);
+  lines.push(L('Champs justes / jugés', s => ratio(s.right, s.judged)));
+  lines.push(L('Lignes justes / jugées', s => ratio(s.lineRight, s.lineJudged)));
+  lines.push(L('**Faux verts**', s => `**${s.fauxVerts}**`));
+  lines.push(L('Faux « corrigés »', s => String(s.fauxCorriges)));
+  lines.push(L('Alertes justes', s => String(s.alertesJustes)));
+  lines.push(L('Alertes inutiles', s => String(s.alertesInutiles)));
+  lines.push(L('Verts justes', s => String(s.vraisVerts)));
+  lines.push(L('Durée médiane', s => sec(median0(s.ms))));
+  lines.push(L('Durée maximale', s => sec(s.ms.length ? Math.max(...s.ms) : null)));
+  lines.push(L('Appels (moyenne par parcours)', s => (s.calls.length ? (totalOf(s.calls) / s.calls.length).toFixed(2).replace('.', ',') : '—')));
+  lines.push(L('Coût médian par parcours (CHF)', s => francs(median0(s.costMicro))));
+  lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids), '');
+
+  const delta = (from: string, to: string) => {
+    const a = stats[from], b = stats[to];
+    if (!a || !b) return null;
+    const diff = fieldDiff(draws, from, to);
+    return { champs: b.right - a.right, lignes: b.lineRight - a.lineRight, fv: b.fauxVerts - a.fauxVerts, ms: (median0(b.ms) ?? 0) - (median0(a.ms) ?? 0), diff };
+  };
+  const bullets = (label: string, d: ReturnType<typeof delta>) => d ? [
+    `- ${label} : champs ${signed(d.champs)}, lignes ${signed(d.lignes)}, faux verts ${signed(d.fv)}, durée médiane ${d.ms >= 0 ? '+' : '−'}${sec(Math.abs(d.ms))}.`,
+    `  - champs qui deviennent justes : ${d.diff.fixed.join(' ; ') || 'aucun'}`,
+    `  - champs qui deviennent faux : ${d.diff.broken.join(' ; ') || 'aucun'}`
+  ] : [`- ${label} : variante absente de cette sortie.`];
+
+  lines.push('## Ce que la 3.8 qui tranche seule change', '');
+  lines.push(...bullets('C★ contre C', delta('C', 'Cs')), ...bullets('C★′ contre C′', delta('Cp', 'Csp')), '');
+  lines.push('## Ce que N rattrape seule', '');
+  for (const id of ids.filter(id => !isNId(id))) if (ids.includes(`${id}${N_SUFFIX}`)) lines.push(...bullets(`${shortLabel(id)} + N contre ${shortLabel(id)}`, delta(id, `${id}${N_SUFFIX}`)));
+  lines.push('', '## Lecture honnête', '',
+    `- ${records.length} parcours par variante, sept documents : un gain porté par un seul document se voit dans le tableau par document ; il ne prouve pas que la règle vaille pour une autre facture.`,
+    '- Le vote à trois garde une valeur sur laquelle les deux Flash-Lite s’accordent à tort ; la 3.8 qui tranche seule n’y change rien tant qu’elle n’est pas appelée (accord des deux lectures, arithmétique juste). Seul un désaccord ou un contrôle en échec la fait parler.',
+    '- N ne touche que la devise : il ne rattrape rien d’autre, et seulement quand la lecture a écrit une abréviation de franc.', '');
   return `${lines.join('\n')}\n`;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 function main() {
   const args = process.argv.slice(2).filter(arg => arg !== '--');
-  const dir = args.find(arg => !arg.startsWith('--'));
+  const valueOfMd = args.indexOf('--hors-ligne-md') >= 0 ? args.indexOf('--hors-ligne-md') + 1 : -1;
+  const dir = args.find((arg, index) => !arg.startsWith('--') && index !== valueOfMd);
   if (!dir) throw new Error('Dossier de sortie du banc manquant.');
   const file = JSON.parse(readFileSync(path.join(dir, 'results.json'), 'utf8'));
   const cases = loadCases(file.meta.casFiles?.length ? file.meta.casFiles.map((name: string) => CAS_FILES.find(candidate => path.basename(candidate) === name) ?? name) : CAS_FILES);
   const { stats, draws } = judgeBench(file.records, cases);
   const faultsPath = path.join(dir, 'faults.json');
   const simulation = existsSync(faultsPath) ? checkSimulation(file.records, draws, JSON.parse(readFileSync(faultsPath, 'utf8')).applied) : undefined;
-  const table = renderTable(file, stats, simulation);
+  const table = renderTable(file, stats, simulation, draws);
   const target = path.join(dir, 'RESULTAT-BANC.md');
   writeFileSync(target, table);
-  for (const v of VARIANTS) {
+  for (const v of variantIds(file.records)) {
     const s = stats[v];
-    console.log(`${VARIANT_LABEL[v]} : champs ${ratio(s.right, s.judged)}, lignes ${ratio(s.lineRight, s.lineJudged)}, faux verts ${s.fauxVerts}, alertes justes ${s.alertesJustes}, inutiles ${s.alertesInutiles}, échecs ${s.failures}, durée médiane ${sec(median(s.ms))}, coût total ${francs(s.costMicro.reduce((a, b) => a + b, 0))} CHF`);
+    console.log(`${variantLabel(v)} : champs ${ratio(s.right, s.judged)}, lignes ${ratio(s.lineRight, s.lineJudged)}, faux verts ${s.fauxVerts}, alertes justes ${s.alertesJustes}, inutiles ${s.alertesInutiles}, échecs ${s.failures}, durée médiane ${sec(median(s.ms))}, coût total ${francs(s.costMicro.reduce((a, b) => a + b, 0))} CHF`);
+  }
+  // HORS-LIGNE.md : le recalcul sans appel (sortie `--hors-ligne`), écrit où on le demande
+  const horsLigneAt = args.indexOf('--hors-ligne-md');
+  if (horsLigneAt >= 0) {
+    const out = args[horsLigneAt + 1];
+    if (!out || out.startsWith('--')) throw new Error('--hors-ligne-md attend un chemin de fichier.');
+    writeFileSync(out, renderHorsLigne(file, stats, draws));
+    console.log(`Hors ligne : ${out}`);
   }
   if (args.includes('--publier')) {
-    if (file.meta.mode !== 'payant') throw new Error('Un tableau simulé ne se publie pas.');
-    copyFileSync(target, path.join(MISSION_DIR, 'RESULTAT-BANC.md'));
-    console.log(`Publié : ${path.join(MISSION_DIR, 'RESULTAT-BANC.md')}`);
+    if (file.meta.mode !== 'payant') throw new Error('Un tableau simulé ou hors ligne ne se publie pas ici.');
+    // k2 : jamais par-dessus le RESULTAT-BANC.md de k1
+    const published = path.join(MISSION_DIR, 'voies/k2-reglages/RESULTAT-BANC-K2.md');
+    copyFileSync(target, published);
+    console.log(`Publié : ${published}`);
   }
   if (simulation) {
     if (simulation.ok) console.log(`BANC SIMULE OK — ${simulation.found}/${simulation.present} fausses réponses fabriquées retrouvées, ${simulation.fauxVerts} faux verts comptés, ${simulation.cleanDraws} parcours propres sans champ faux, aucun réseau.`);
@@ -256,4 +396,4 @@ function main() {
 }
 /** vite-node ne laisse pas le nom du script dans process.argv : le jugement se lance avec un dossier de banc, jamais sous vitest. */
 const rest = process.argv.slice(2).filter(arg => arg !== '--');
-if (!process.env.VITEST && rest.some(arg => !arg.startsWith('--')) && !rest.includes('--simuler') && !rest.includes('--payant')) main();
+if (!process.env.VITEST && rest.some(arg => !arg.startsWith('--')) && !rest.includes('--simuler') && !rest.includes('--payant') && !rest.includes('--hors-ligne')) main();
