@@ -908,3 +908,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   qualité ? » (réponse : pas plus juste que la production sur ses 13 pièces, à ±2 points, ce que 13 pièces ne départagent pas ; gagné :
   même justesse pour ≈ 44 % de moins avec C★v8, plus de lecture coupée, le QR qui certifie sans IA ; les skills ne tournent pas dans
   l'app ; le levier suivant : plus de pièces, et la bascule en production, à son accord ; `GESTES.md` du banc).
+- **La bascule de la lecture** (01.11, soir), à « basculer la production sur C★v8 avec la correction automatique et le QR : même
+  justesse, moins cher, sans lecture coupée. Ça demande ton accord, car il faut redéployer la lecture en production », mot pour mot :
+  « Yes ok » (D247).
