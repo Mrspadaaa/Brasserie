@@ -97,14 +97,56 @@ function duplicateMatch(draft:PurchaseDraft,tx:FinanceTransaction,today:()=>stri
   if (sameItems ? gap()>60 : days===undefined || days>14) return undefined;
   return {reasons:['Même fournisseur et même total',...(sameItems?[`${shared} référence${shared>1?'s':''} d’article en commun`]:[]),days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`],rank:3,gap:gap()};
 }
+/**
+ * D264a (AUDIT R1) : un achat déjà au registre sous la forme HISTORIQUE. Ses écritures (`B-001`, `B-002`… : une par ligne de la commande) n'ont ni `finance`,
+ * ni lignes, ni fournisseur, ni numéro de facture ; leur libellé commence par la référence d'article. La pièce = les écritures de même série et de même date
+ * (hors apports et recettes). Elle est reconnue quand la somme de ses écritures vaut le total du brouillon (à 5 centimes près : Rundung), que des références
+ * d'articles sont en commun (au moins la moitié du plus petit des deux jeux) et que les dates sont à 14 jours au plus. Le fournisseur n'existe pas sur ces
+ * écritures : il n'est pas comparé (donc total, références et date, jamais le total seul). Rien n'est écrit, aucune écriture n'est modifiée ni supprimée.
+ * Limite : une autre commande de la même série le même jour fausse la somme, et rien n'est signalé (prudent). Une entrée par pièce : sa première écriture.
+ */
+const SERIE_HISTORIQUE=/^([A-Za-z]+)-(\d+)$/;
+const referenceDuLibelle=(description:string)=>(description.trim().split(/[\s,;:|]+/)[0]??'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const raisonsHistoriques=new WeakMap<FinanceTransaction,{draft:PurchaseDraft;reasons:string[]}>();
+function historicDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):Array<{tx:FinanceTransaction;match:DuplicateMatch}> {
+  if (!isMoney(draft.amount) || draft.amount<=0) return [];
+  const mine=lineReferences(draft.lines), from=purchaseIsoDate(draft.date);
+  if (!mine.size || !from) return [];
+  const pieces=new Map<string,FinanceTransaction[]>();
+  for (const tx of transactions) {
+    if (tx.finance || !SERIE_HISTORIQUE.test(tx.id) || tx.category==='apports' || tx.category==='recettes' || !isMoney(tx.amountTTC) || tx.amountTTC<=0 || !isoDate(tx.date)) continue;
+    const key=`${tx.id.split('-')[0].toLowerCase()}|${tx.date}`;
+    pieces.set(key,[...(pieces.get(key)??[]),tx]);
+  }
+  const found:Array<{tx:FinanceTransaction;match:DuplicateMatch}>=[];
+  for (const group of pieces.values()) {
+    const sum=group.reduce((total,tx)=>total+cents(tx.amountTTC),0);
+    if (Math.abs(sum-cents(draft.amount))>5) continue;
+    const days=Math.round(Math.abs(Date.parse(from)-Date.parse(isoDate(group[0].date)!))/DAY);
+    if (days>14) continue;
+    const theirs=new Set(group.map(tx=>referenceDuLibelle(tx.description)).filter(Boolean)), shared=[...mine].filter(ref=>theirs.has(ref)).length;
+    if (!shared || shared*2<Math.min(mine.size,theirs.size)) continue;
+    const ordered=[...group].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+    const reasons=[
+      'Même total et mêmes références qu’un achat déjà au registre',
+      `${ordered.length} ${ordered.length>1?'écritures historiques':'écriture historique'} (${ordered[0].id}${ordered.length>1?` à ${ordered[ordered.length-1].id}`:''})`,
+      `${shared} référence${shared>1?'s':''} d’article en commun`,
+      days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`,
+    ];
+    raisonsHistoriques.set(ordered[0],{draft,reasons});
+    found.push({tx:ordered[0],match:{reasons,rank:3,gap:days}});
+  }
+  return found;
+}
 export function purchaseDuplicateReasons(draft:PurchaseDraft,tx:FinanceTransaction):string[] {
-  return duplicateMatch(draft,tx,todayISO)?.reasons??[];
+  const historic=raisonsHistoriques.get(tx);
+  return duplicateMatch(draft,tx,todayISO)?.reasons??(historic?.draft===draft?historic.reasons:[]);
 }
 /** Dépenses proches, la plus forte d'abord : règle la plus sûre, puis plus petit écart de dates. */
 export function purchaseDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):FinanceTransaction[] {
   let day='';
   const today=()=>day||(day=todayISO());
-  return transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];})
+  return [...transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];}),...historicDuplicates(draft,transactions)]
     .sort((a,b)=>a.match.rank-b.match.rank||a.match.gap-b.match.gap).map(entry=>entry.tx);
 }
 /** Règle écrite sur le paiement quand sa date est supposée : la date de paiement n'est pas imprimée sur le document. */

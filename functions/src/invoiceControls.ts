@@ -174,6 +174,8 @@ export function sumCheck(items: Array<Pick<CoreItem, 'amountTTC'>>, amountTTC: n
   const ht = toCents(amountHT);
   if (ht !== null && sum === ht) return { points: [], sum: { statut: 'ok', base: 'HT' } };
   const gap = ttc - sum;
+  // D261b : un total imprimé multiple de 5 centimes qui est la somme des lignes arrondie au 5 centimes le plus proche (Rundung suisse) n'est pas un écart.
+  if (ttc % 5 === 0 && Math.abs(gap) <= 2 && Math.round(sum / 5) * 5 === ttc) return { points: [], sum: { statut: 'ok', base: 'TTC' } };
   const hint = Math.abs(gap) <= 5 ? ' (un arrondi imprimé, Rundung, est-il une ligne omise ?)' : '';
   return {
     points: [makePoint('somme-ecart', 'ecart', 'amountTTC', null, {

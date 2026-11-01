@@ -487,6 +487,66 @@ export const hasArithmeticFailure = (points: Array<{ code: string; origine?: str
 export function needsThird(r1: Reading, r2: Reading): boolean {
   return !!(r1.normalized && r2.normalized) && reconcileInvoiceVision([r1.normalized, r2.normalized]).needsCorrection;
 }
+// ---------------------------------------------------------------------------------------------------------------------
+// Voie k6-diagnostic (01.11) : QUELS CHAMPS des deux lectures divergent, et lesquels appellent la 3.8 (D261c : « 27 s pour une facture simple »).
+// Un relevé de champs, jamais de valeurs : ni nom d'article ni montant. Il ne change ni `needsThird` ni le jugement ; il le rend lisible.
+// Les règles du déclencheur sont celles de `reconcileInvoiceVision` (functions/src/invoiceVisionReview.ts : `triggered`, `controlTriggered`) ;
+// `tests/unit/depense/banc-k6/troisieme-d261c.test.ts` vérifie que `declenche` coïncide avec `needsCorrection` sur le jeu de 20 paires.
+// ---------------------------------------------------------------------------------------------------------------------
+export interface Divergence {
+  /** La cellule : `category`, `items.3.kind`, `items` (lignes sans vis-à-vis)… */
+  champ: string; ligne: number | null; code: string; lectures: number[]; pese: boolean;
+  /** Ce point appelle la 3.8 à lui seul (il suffirait ; d'autres peuvent la demander aussi). */
+  declenche: boolean;
+}
+const TRIGGER_ITEM_FIELDS = new Set(['quantity', 'unit', 'amountTTC', 'kind', 'reference']);
+const NO_TRIGGER_HEADER = new Set(['tvaAmount', 'tvaRate', 'vat']);
+const MONEY_FIELDS = new Set(['quantity', 'price', 'amountTTC']);
+const flat = (value: string) => value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ');
+const withinOneEdit = (a: string, b: string): boolean => {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  if (a.length === b.length) return a.slice(i + 1) === b.slice(i + 1);
+  return a.length > b.length ? a.slice(i + 1) === b.slice(i) : b.slice(i + 1) === a.slice(i);
+};
+/** Une coquille ou les mêmes mots dans un autre ordre (la règle de `sameName` de la production). */
+const sameNameAs = (a: string, b: string): boolean => {
+  const x = flat(a), y = flat(b), words = (s: string) => s.split(/[^a-z0-9]+/).filter(Boolean).sort().join(' ');
+  return withinOneEdit(x, y) || words(x) === words(y);
+};
+export function releveDivergences(r1: InvoiceScanResult, r2: InvoiceScanResult): Divergence[] {
+  const points = reconcileInvoiceVision([r1, r2]).result.points as any[];
+  const out: Divergence[] = [], moneyCells = new Set<string>();
+  for (const p of points) {
+    if (p.code === 'ambiguite-ligne') { out.push({ champ: `items.${p.ligne}.ambiguity`, ligne: p.ligne ?? null, code: p.code, lectures: [], pese: !!p.pese, declenche: true }); continue; }
+    if (p.source !== 'désaccord') continue;
+    const champ: string = p.champs?.[0] ?? String(p.champ), field = champ.split('.').pop()!, ligne: number | null = p.ligne ?? null;
+    const lectures = (p.valeurs ?? []).map((v: any) => v.lecture);
+    if (p.code === 'lignes-non-rapprochees') { out.push({ champ: 'items', ligne: null, code: p.code, lectures, pese: !!p.pese, declenche: true }); continue; }
+    if (MONEY_FIELDS.has(field) && champ !== 'items') moneyCells.add(champ);
+    let declenche = false;
+    if (p.pese) {
+      if (ligne === null) declenche = champ !== 'items' && !NO_TRIGGER_HEADER.has(field);
+      else if (field === 'name') { const [a, b] = (p.valeurs ?? []).map((v: any) => String(v.valeur ?? '')); declenche = !sameNameAs(a ?? '', b ?? ''); }
+      else declenche = TRIGGER_ITEM_FIELDS.has(field);
+    }
+    out.push({ champ, ligne, code: p.code, lectures, pese: !!p.pese, declenche });
+  }
+  // Un écart de ligne ou de somme dont une cellule en cause diverge appelle aussi la 3.8 (`controlTriggered`).
+  for (const p of points) {
+    if ((p.code === 'ligne-montant' || p.code === 'somme-ecart') && (p.champs as string[]).some(c => moneyCells.has(c)))
+      out.push({ champ: p.code === 'somme-ecart' ? 'amountTTC' : `items.${p.ligne}`, ligne: p.ligne ?? null, code: p.code, lectures: [], pese: !!p.pese, declenche: true });
+  }
+  return out;
+}
+/** Le résumé en une ligne du relevé (« kind×7, name×2, items »), pour le journal du banc : champs seulement. */
+export const texteDivergences = (list: readonly Divergence[]): string => {
+  const par = new Map<string, number>();
+  for (const d of list) { const cle = `${d.declenche ? '!' : ''}${d.champ.replace(/^items\.\d+\./, '')}`; par.set(cle, (par.get(cle) ?? 0) + 1); }
+  return [...par].map(([cle, n]) => (n > 1 ? `${cle}×${n}` : cle)).join(', ') || 'aucune';
+};
 /** C′ : les deux lectures concordent mais l'arithmétique du résultat réconcilié ne tient pas. */
 export function arithmeticFailsOnTwo(r1: Reading, r2: Reading): boolean {
   return !!(r1.normalized && r2.normalized) && hasArithmeticFailure(reconcileInvoiceVision([r1.normalized, r2.normalized]).result.points as any);
@@ -914,7 +974,18 @@ export const isTileable = (files: InvoiceFile[]) => files.length === 1 && files[
 export const TILE_SHARE = 0.6;
 export interface VariantRecord { capLost?: number; ids: string[]; calls: number; ms: number; costMicroChf: number; costUnknown: number; result: any | null; failure?: string; thirdFrom?: ThirdFrom }
 /** `variants` : les ids de variante lus (`Cs`, `Lm`…) et leurs versions N (`Cs+N`). */
-export interface DrawRecord { doc: string; tirage: number; readings: Array<Omit<Reading, 'normalized' | 'raw'>>; variants: Record<string, VariantRecord> }
+export interface DrawRecord {
+  doc: string; tirage: number; readings: Array<Omit<Reading, 'normalized' | 'raw'>>; variants: Record<string, VariantRecord>;
+  /** k6 : par paire de lectures (`A` : deux 3.8 ; `C` : deux Flash-Lite ; un groupe lite : `Lm`…), les champs qui divergent (jamais de valeurs). */
+  divergences?: Record<string, Divergence[]>;
+}
+/** Le relevé des divergences de chaque paire de lectures exploitables d'un tirage. */
+export function divergencesDe(reads: DrawReads): Record<string, Divergence[]> {
+  const pairs: Array<[string, Reading | undefined, Reading | undefined]> = [['A', reads.a1, reads.a2], ['C', reads.l1, reads.l2], ...LITE_GROUPS.map(group => [group, reads.lite[group]?.r1, reads.lite[group]?.r2] as [string, Reading | undefined, Reading | undefined])];
+  const out: Record<string, Divergence[]> = {};
+  for (const [name, a, b] of pairs) if (a?.normalized && b?.normalized) out[name] = releveDivergences(a.normalized, b.normalized);
+  return out;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Prêt d'appels : une sortie précédente (k1) dont les lectures déjà payées sont rendues telles quelles
@@ -1269,7 +1340,9 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
         put('', deriveVariants(reads, want));
         // N : les mêmes lectures, la devise relue en code ISO ; aucun appel de plus (une 3.8 inutile devient simplement non demandée)
         if (options.normaliser) put(N_SUFFIX, deriveVariants(mapReads(reads, withCodesNormalized), want));
-        records.push({ doc: c.id, tirage, readings: readings.slice(before).map(({ normalized: _n, raw: _r, ...rest }) => rest), variants });
+        const divergences = divergencesDe(reads);
+        records.push({ doc: c.id, tirage, readings: readings.slice(before).map(({ normalized: _n, raw: _r, ...rest }) => rest), variants, ...(Object.keys(divergences).length ? { divergences } : {}) });
+        for (const [paire, list] of Object.entries(divergences)) log(`${c.id} tirage ${tirage} : divergences ${paire} : ${texteDivergences(list)} (! = appelle la 3.8)`);
         log(`${c.id} tirage ${tirage} : ${Object.keys(variants).map(id => `${shortId(id)} ${variants[id].calls} appel(s) ${Math.round(variants[id].ms / 100) / 10} s`).join(' · ')}`);
         save();
       } catch (error: any) {

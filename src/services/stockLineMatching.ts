@@ -306,6 +306,7 @@ export type RegleProduit =
   | { cas: 'neuf'; nom: string; ecarts: Ecart[]; voisin: StockItem; motif: 'origine' | 'bis' };
 
 const CONTEXTE_DE_CATEGORIE: Record<string, Contexte> = { Houblon: 'Houblon', Malt: 'Malt', Levure: 'Levure' };
+const NATURES_HORS_STOCK = new Set(['packaging', 'cleaning', 'equipment', 'maintenance', 'service', 'shipping', 'discount']);
 function contexteDeTexte(texte: string, categorie?: string, reference?: string): Contexte {
   const canonique = categorie ? canonicalStockCategory(categorie) : undefined;
   const nature = inferNature(texte, reference, canonique && STOCK_CATEGORIES.includes(canonique) ? canonique : undefined);
@@ -317,8 +318,13 @@ function contexteDeTexte(texte: string, categorie?: string, reference?: string):
 }
 /** Ce qu'une ligne est : houblon, malt, levure, ou autre chose (emballage, entretien, inconnu). Même lecture que s1. */
 export function contexteDe(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'>): Contexte {
-  if (l.kind === 'packaging' || l.kind === 'cleaning') return 'autre';
-  return contexteDeTexte(l.description, l.stockCategory, l.reference);
+  // D262c : une ligne que la lecture dit emballage, nettoyage, matériel, entretien, service, port ou remise n'est jamais un ingrédient : un « Hop Filter Bag » n'est pas un houblon.
+  if (NATURES_HORS_STOCK.has(l.kind ?? '')) return 'autre';
+  const contexte = contexteDeTexte(l.description, l.stockCategory, l.reference);
+  // Un ingrédient sans mot de famille (un malt sous un nom de marque) : le préfixe de la référence imprimée (MA, HO, HE) départage, à défaut de mieux.
+  // Il ne remplace jamais un mot de famille ni la catégorie lue (déjà passés ci-dessus), et seulement pour un ingrédient.
+  if (contexte === 'autre' && l.kind === 'ingredient') return CONTEXTE_DE_CATEGORIE[inferNature(l.description, l.reference).weak ?? ''] ?? 'autre';
+  return contexte;
 }
 /** Ce qu'un article est : sa catégorie d'abord, sinon les mots de son nom. */
 export function contexteDeArticle(item: Pick<StockItem, 'name' | 'category'>): Contexte {

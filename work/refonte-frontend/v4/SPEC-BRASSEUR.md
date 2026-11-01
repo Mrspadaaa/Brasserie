@@ -982,3 +982,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   données ; vérifier que le stock bouge et que la facture suit partout. Une écriture sur un article réel reste à son accord, D217. D264).
 - **Toutes les pièces au banc** (01.11, nuit), mot pour mot : « Il faut testé aussi avec les autres pièces de test btw pas juste
   celle-ci... » (lu : la comparaison C★v8 contre « 2 × 3.8 puis 3.8 » se fait sur les 14 pièces, la sienne comprise. D263).
+- **Les réponses de la nuit** (01.11, nuit, sur le rapport du banc), mot pour mot : à « Une partie de la règle TVA tourne sur le serveur.
+  Pour qu'elle s'applique, il faut redéployer aiTask, ce qui demande ton accord » : « Ok » (D267) ; à « il faut trois bandes de plus sur
+  l'écran que tu as choisi. Je te les montrerai en mini maquettes » : « Je comprends pas ,j'ai validé les maquettes de tout ça ?? », puis
+  « Le classement par famille ou sous familles était pas que pour malt et houblons mais pour tout type de famille ??? » (lu : son choix
+  p3a-3/p3c-3, « trié par catégorie avec sous total de quantité » (D235), vaut pour toutes les familles ; la maquette n'en montrait que
+  quatre parce que sa facture d'exemple n'avait que celles-là. D262d) ; à « l'annulation de la saisie en double de la commande d'avril
+  (TX-6770960b) » : « Ok » (D268).

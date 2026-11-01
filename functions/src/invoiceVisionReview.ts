@@ -261,6 +261,18 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
     const unanime = vals.every(v => comparisonKey(field, v) === comparisonKey(field, vals[0]));
     const enjeu: ScanPoint['enjeu'] = field === 'amountHT' || field === 'amountTTC' ? 'argent' : 'info';
     if (!unanime && field === 'amountTTC') divergentCells.add('amountTTC');
+    // D262a : aucun total de TVA n'est imprimé quand le document donne une taxe par taux. Une lecture qui écrit la somme des rangées du bloc et une autre
+    // qui écrit null ne sont pas en désaccord : la valeur lue est recoupée par le bloc imprimé de sa propre lecture. Une valeur qui n'est NI null NI la
+    // somme de son bloc reste un désaccord (le vrai écart n'est pas masqué).
+    if (!decision && field === 'tvaAmount' && !unanime) {
+      const sommeBloc = (r: InvoiceScanResult): number | null => (r.vat.length && r.vat.every(row => toCents(row.amount) !== null) ? r.vat.reduce((s, row) => s + toCents(row.amount)!, 0) : null);
+      if (vals.every((v, i) => v === null || (toCents(v) !== null && toCents(v) === sommeBloc(readings[i])))) {
+        const lu = vals.find(v => v !== null);
+        // pas de `correctedFields` : la valeur est recoupée, elle ne doit pas non plus poser « Valeur corrigée… À confirmer » (invoiceFieldHints)
+        if (lu !== undefined && lu !== null) merged[field] = lu;
+        continue;
+      }
+    }
     if (!decision) {
       const message = `${labels[field]} : lectures divergentes (${vals.map(v => montrer(field, v)).join(' / ')}), vérifier le justificatif.`;
       findings.push(message);

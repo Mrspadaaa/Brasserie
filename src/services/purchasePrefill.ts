@@ -64,7 +64,10 @@ export function invoiceTotalProposal(scan: ScannedInvoiceResult): { amount?: num
 
 export function invoiceFieldHints(scan: ScannedInvoiceResult): Record<string, string> {
   const hints: Record<string, string> = {};
-  for (const warning of scan.fieldWarnings ?? []) if (!hints[warning.field]) hints[warning.field] = warning.message;
+  // D262a : « plusieurs taux, taux global fixé à null » n'est pas un doute quand le bloc de TVA imprimé par taux (≥ 2 taux) ne se contredit pas.
+  const tauxImprimes = new Set((scan.vat ?? []).map(row => row.rate).filter((rate): rate is number => typeof rate === 'number')).size;
+  const blocJuste = tauxImprimes >= 2 && (scan as { controls?: { vat?: { statut?: string } } }).controls?.vat?.statut !== 'ecart';
+  for (const warning of scan.fieldWarnings ?? []) if (!hints[warning.field] && !(warning.field === 'tvaRate' && blocJuste)) hints[warning.field] = warning.message;
   for (const message of [...scan.issues, ...(scan.review?.findings ?? [])]) {
     const field = /^(?:Date)\s|^Date\s*:/i.test(message) ? 'date'
       : /^(?:Fournisseur)\s*:/i.test(message) ? 'vendor'

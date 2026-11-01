@@ -21,14 +21,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L02 — Expliquer une chose qui marche, ce n'est pas la refaire
 - Erreur : 19.10, lots 12 et 12b. Il voulait une explication à l'appui long ; les lots ont refait la carte. « Tu as pas du tout bien compris le besoin ».
 - Cause : le comportement actuel n'a pas été lu (l'appui long ouvrait déjà la fiche).
-- Faire : lire ce que la base fait déjà à cet endroit, garder l'actuel au repos et n'ajouter qu'un petit élément. Quand il demande de challenger, rendre l'analyse avant de construire.
+- Faire : lire ce que la base fait déjà, garder l'actuel au repos et n'ajouter qu'un petit élément. Quand il demande de challenger, rendre l'analyse avant de construire.
 - Rôles : pilote, auteur
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155).
+- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155). 01.11 : D262d.
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -74,14 +74,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ». 01.11 : Dépense testée au bureau ; au téléphone, l'écran sautille.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`). Une reprise sur événement : rechargement et réseau rendu, joués dans Chrome (01.11 : envoi bloqué 240 s, tests verts).
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`). Une reprise sur événement : rechargement et réseau rendu, joués dans Chrome (01.11).
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit) ; 20.10, « épicé » critiqué une deuxième fois (lots 15 et 21), la première plainte n'étant pas un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : tout message, question comprise, va mot pour mot dans SPEC au tour même (01.11 : six oubliés). Ligne à DEFAUTS-RECURRENTS avec ses mots, contrôle qui échoue sur la version rejetée, puis corriger. Rien montré sans LOT OK. Après deux refus du même élément, changer de genre de solution, et partir d'une référence qu'il connaît ([[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD et sur la version voulue avant la voie (r14 ; GESTES, 31.10).
+- Faire : tout message, question comprise, va mot pour mot dans SPEC au tour même (01.11 : six oubliés). Ligne à DEFAUTS-RECURRENTS avec ses mots, contrôle qui échoue sur la version rejetée, puis corriger. Rien montré sans LOT OK. Après deux refus du même élément, changer de genre de solution, et partir d'une référence qu'il connaît ([[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD et sur la version voulue avant la voie.
 - Rôles : pilote, auteur
 - Contrôle : `systeme.mjs mission` (portée), cablage (« OK 0/0 »)
 
@@ -97,7 +97,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie, sources remises à HEAD.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` ; jamais un fichier remis à HEAD sans copie vérifiée (26.10, 01.11). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` ; jamais un fichier remis à HEAD sans copie vérifiée. Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
