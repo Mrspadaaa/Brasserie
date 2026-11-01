@@ -63,12 +63,22 @@ describe('receiptSentence : chaque morceau vient du reçu, rien d’autre', () =
 });
 
 describe('R4 : le reçu arrive à l’écran', () => {
-  it('au premier clic : onSaved reçoit le reçu de Drive, la feuille se ferme', async () => {
+  it('au premier clic : onSaved reçoit le reçu de Drive ; la feuille reste ouverte sur le reçu et ne se ferme qu’à « Terminé » (e-port, T5)', async () => {
     state.save.mockResolvedValue({ transactionId: 'TX-test', proof: RECEIPT });
     await open();
     click(CONFIRM);
     await waitFor(() => expect(state.onSaved).toHaveBeenCalled());
     expect(state.onSaved).toHaveBeenCalledWith(expect.objectContaining({ folder: RECEIPT.folder, fileName: RECEIPT.fileName, webViewLink: RECEIPT.webViewLink }));
+    expect(state.onClose).not.toHaveBeenCalled();
+    expect(await screen.findByText(RECEIPT.fileName)).toBeInTheDocument();
+    click('Terminé');
+    expect(state.onClose).toHaveBeenCalledTimes(1);
+  });
+  it('sans reçu Drive à montrer, la feuille se ferme comme avant (e-port, T5)', async () => {
+    state.save.mockResolvedValue({ transactionId: 'TX-test' });
+    await open();
+    click(CONFIRM);
+    await waitFor(() => expect(state.onSaved).toHaveBeenCalled());
     expect(state.onClose).toHaveBeenCalled();
   });
   it('Drive confirmé puis confirmation en attente : la ligne du pied dit le reçu et son lien ; la reprise ne renvoie rien et rend le même reçu', async () => {

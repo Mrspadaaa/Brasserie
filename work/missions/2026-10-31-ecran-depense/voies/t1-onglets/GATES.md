@@ -7,12 +7,12 @@ Scope: TA2, TA3, TA4, TA6 du diagnostic d2, dans le calcul ; la forme des vues n
 - [x] G1: l'app se construit
   CHECK: npm run build
   EXPECT: built in
-  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=ec87ef4935595d037e0c29cd8aadfdf10ff0043aad0e10dd92d1e2f94dd0fb80; output-bytes=47234; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=98a824d5c4f7bb6104c0157d3f2ccd297794a69fdaca8edcdd42c868631e3fbe; output-bytes=47377; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G2: les tests des finances passent, les sondes du diagnostic comprises
   CHECK: npx vitest run tests/unit/finance.test.ts tests/unit/financeForecast.test.ts tests/unit/forecastHorizon.test.ts tests/unit/brewerBudgetLedger.test.ts tests/integration/financeJournalUx.test.tsx tests/unit/fribourgTax.test.ts tests/unit/financeArchiveContinuity.test.ts tests/unit/financeRefunds.test.ts tests/integration/dashboardNavigation.test.tsx tests/integration/equipmentProjects.test.tsx tests/integration/financeArchives.test.tsx tests/integration/financeWorkspace.test.tsx tests/integration/fix114.test.tsx tests/integration/mobileDailyViews.test.tsx tests/ux-mobile/financePeriodDrilldown.test.tsx tests/unit/depense/onglets --maxWorkers=2 && echo TESTS ONGLETS OK
   EXPECT: TESTS ONGLETS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=3aad819b354c6d38c1480068ca2aae0d304773f490d60903b2838762c7b4a6c5; exit=0; EXPECT=matched; output-sha256=ca53b435cd25595d0bade1fd381d2cf7acd1affafa4de4badd165ead2c191884; output-bytes=8210; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=3aad819b354c6d38c1480068ca2aae0d304773f490d60903b2838762c7b4a6c5; exit=0; EXPECT=matched; output-sha256=3ce1b6f90f1d868b1a38433adb6f8ebbec289d8b6ff5663366e1630b1a67f205; output-bytes=8626; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: le plan a été relu par deux regards neufs, sans bloquant laissé
   CHECK: node scripts/agents/systeme.mjs revue work/missions/2026-10-31-ecran-depense/voies/t1-onglets/REVUE-PLAN.md

@@ -64,6 +64,7 @@ Exigences de l'interface (`.claude/rules/affinee-frontend.md`, DESIGN.md, docs/u
 ## Possède
 - `src/ui/finance/ExpenseSheet.tsx`, `src/ui/finance/InvoiceScanReview.tsx` ;
 - `src/ui/depense/` (neuf : composants, styles, fixture de développement) ;
+- `src/ui/ModalShell.tsx`, pour la seule prop facultative `size` (T2 de REVUE-PLAN.md) ; `tests/unit/depense/raccord/ecran-recu.test.tsx`, pour le seul reçu qui reste (T5) ;
 - `src/components/QuickActionModal.tsx`, pour le seul crochet de développement qui ouvre la fixture, sous `import.meta.env.DEV` ;
 - `src/domain/finance/forecast.ts` (le libellé de la ligne 125), `src/ui/finance/FinanceForecastSummary.tsx` (la phrase TA6) ;
 - `tests/integration/expenseSheet.test.tsx`, `tests/unit/depense/ecran/` (neuf) ;

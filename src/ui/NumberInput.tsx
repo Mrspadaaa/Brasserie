@@ -25,6 +25,8 @@ import { useCoarsePointer } from './useViewport';
  */
 
 interface NumberInputProps {
+  /** Décimales affichées hors frappe (un montant : 2). Absent : affichage inchangé. */
+  fractionDigits?: number;
   /** `undefined` sur un champ facultatif non renseigné. */
   value: number | undefined;
   /** Reçoit le nombre lu, ou la sentinelle emptyValue explicitement choisie. */
@@ -72,7 +74,7 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
   const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
   const inputRef = useRef<InputElement>(null);
   const coarse = useCoarsePointer();
-  const { draft, push, settle } = useNumericDraft(value, onValue, { emptyValue });
+  const { draft, push, settle } = useNumericDraft(value, onValue, { emptyValue, fractionDigits: props.fractionDigits });
 
   return (
     <Input

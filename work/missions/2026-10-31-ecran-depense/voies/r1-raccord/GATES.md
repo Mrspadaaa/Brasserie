@@ -17,7 +17,7 @@ Scope: R1 à R7 (A11, A12, A7, DR1, DR4 à l'écran ; Stk ↔ sachet, écritures
 - [x] G3: l'app se construit
   CHECK: npm run build
   EXPECT: built in
-  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=561edc60f561e2eadc9878b2e80e823ccf08cf05b09c30910b52059038e2b7c6; output-bytes=47234; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=a841f0b8b97895a17412441315b1cf51332f0e21681bfd5e320216c5576269bc; output-bytes=47377; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G4: les types tiennent
   CHECK: npx tsc --noEmit -p . && echo TYPES OK
@@ -27,7 +27,7 @@ Scope: R1 à R7 (A11, A12, A7, DR1, DR4 à l'écran ; Stk ↔ sachet, écritures
 - [x] G5: les tests du raccord, de l'enregistrement, du stock et de l'écran passent
   CHECK: npx vitest run tests/unit/depense tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/unit/stockLineMatching.test.ts tests/integration/expenseSheet.test.tsx tests/integration/jus0Journey.test.tsx tests/integration/driveFileStore.test.ts tests/integration/financeDocumentPersistence.test.ts tests/integration/equipmentProjects.test.tsx --maxWorkers=2 && echo TESTS RACCORD OK
   EXPECT: TESTS RACCORD OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=76445e9fda10ed985cca570cd311d86e253283b849971b2d8f40e594d6adba22; exit=0; EXPECT=matched; output-sha256=cc09cf8bc775358426110d31282de4a2a5a26639599154124b05a85ebdada436; output-bytes=9015; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=76445e9fda10ed985cca570cd311d86e253283b849971b2d8f40e594d6adba22; exit=0; EXPECT=matched; output-sha256=128826ba685e098ed4d39a5cc5f40bef56c7dd7c58f3773a258392fea346a911; output-bytes=15111; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G6: le résultat dit le témoin, la facture 372765, le lien et ce qui ne se perd pas
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-31-ecran-depense/voies/r1-raccord/RESULTAT.md --contient "TEMOIN AVANT,372765,Stk,Kilo,webViewLink,unité à préciser,Rien ne se perd"

@@ -12,6 +12,8 @@ export interface FinanceForecast {
 }
 /** Seules les catégories de dépenses récurrentes nourrissent la tendance : l'achat de malt, de houblon ou de levure est irrégulier. */
 export const TREND_CATEGORIES: readonly string[] = ['chargesFixes'];
+/** Les mêmes mots que `CATEGORY_LABELS` (FinanceForms), en phrase : « Achats de brassage non projetés », jamais la clé brute (`chargesFixes`, `renovation`). */
+const CATEGORY_PHRASE: Record<string, string> = { brassage: 'de brassage', materiel: 'de matériel', nettoyage: 'de nettoyage', chargesFixes: 'de charges fixes', renovation: 'de local et travaux', divers: 'divers' };
 const monthKey = (date: string) => date.slice(0, 7);
 function shiftMonth(month: string, offset: number): string {
   const date = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + offset, 1));
@@ -122,7 +124,7 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
   else {
     const seen = [...new Set(residual.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(tx => tx.category))];
     const categories = seen.filter(category => TREND_CATEGORIES.includes(category));
-    for (const category of seen.filter(category => !TREND_CATEGORIES.includes(category))) warnings.push(`Achats de ${category} non projetés (irréguliers).`);
+    for (const category of seen.filter(category => !TREND_CATEGORIES.includes(category))) warnings.push(`Achats ${CATEGORY_PHRASE[category] ?? `de ${category}`} non projetés (irréguliers).`);
     for (const category of categories) {
       const relevant = residual.filter(tx => tx.category === category);
       const historicalVendors = new Set(relevant.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(txVendor));

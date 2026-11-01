@@ -12,7 +12,7 @@ Scope: C1 à C3, A10, A6, A9, P1, P2, A3 du diagnostic d1 ; un point typé par c
 - [x] G2: les tests de la lecture passent, la vérité de sa facture comprise
   CHECK: npx vitest run tests/unit/invoiceScanCore.test.ts tests/unit/depense/lecture tests/unit/invoiceVisionReview.test.ts tests/unit/purchasePrefill.test.ts tests/integration/invoiceReview.test.ts tests/unit/invoiceScanTransport.test.ts --maxWorkers=2 && node scripts/check-prompts.mjs && echo TESTS LECTURE OK
   EXPECT: TESTS LECTURE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=2c01cf7902152f990882b77c0e2fed337a928f0fb2018d1e132812196fa652c0; exit=0; EXPECT=matched; output-sha256=487b2c94c55a5f3c2f8fdc1c0f12836f408d4d4f98f6c0e1f31f545817784a14; output-bytes=3142; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=2c01cf7902152f990882b77c0e2fed337a928f0fb2018d1e132812196fa652c0; exit=0; EXPECT=matched; output-sha256=4a5da12b9698d0867ecebf82bcfbd2c60da5f236ee03d328b3df048b424b6f0a; output-bytes=45920; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: le plan a été relu par deux regards neufs, sans bloquant laissé
   CHECK: node scripts/agents/systeme.mjs revue work/missions/2026-10-31-ecran-depense/voies/l1-lecture/REVUE-PLAN.md

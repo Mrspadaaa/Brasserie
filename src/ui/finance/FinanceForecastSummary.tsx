@@ -22,9 +22,12 @@ interface Props {
 
 export function FinanceForecastSummary({ ledger, openingCashReady, warnings, undatedCount = 0, undatedOutCents = 0, undatedInCents = 0, invoiceOut, estimatedOut, incoming, projectedCash, horizonLabel, onProfile, onPayments }: Props) {
   const incomplete = warnings.length > 0 || !ledger.cashComplete;
+  /* Ce qui manque, une phrase vraie : seulement les causes que les données disent (aucune cause inventée). */
+  const causes = [!openingCashReady ? 'le solde de départ' : '', ledger.unknownPaymentCount > 0 ? compte(ledger.unknownPaymentCount, 'paiement') + ' à confirmer' : ''].filter(Boolean);
+  const manque = causes.length ? `Il manque ${causes.join(' et ')} ; les montants couvrent le reste.` : warnings.length ? 'Voir les limites ci-dessous : certains montants restent partiels.' : 'Certaines données manquent : les montants sont partiels.';
   return <section className="finance-forecast-summary" aria-label={`Prévision sur ${horizonLabel}`}>
     {incomplete && <div className="finance-forecast-warning" role="status">
-      <AlertCircle size={16}/><div><strong>Prévision incomplète</strong><p>Les montants ci-dessous couvrent les données renseignées.</p></div>
+      <AlertCircle size={16}/><div><strong>Prévision incomplète</strong><p>{manque}</p></div>
     </div>}
     <dl className="finance-forecast-values">
       <div><dt>Factures à régler</dt><dd className="finance-money">{formatCHF(invoiceOut)}</dd></div>

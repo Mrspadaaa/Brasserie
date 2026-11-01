@@ -28,7 +28,9 @@ export function parseDecimal(input: string): number | null {
 }
 
 /** Nombre ➔ texte affiché, séparateur décimal suisse romand. */
-export function formatDecimal(n: number | null | undefined): string {
+export function formatDecimal(n: number | null | undefined, fractionDigits?: number): string {
+  // `fractionDigits` (facultatif) : affichage hors frappe d'un montant (« 86,50 ») ; sans lui, l'affichage est inchangé.
+  if (fractionDigits !== undefined && n !== null && n !== undefined && Number.isFinite(n)) return n.toFixed(fractionDigits).replace('.', ',');
   if (n === null || n === undefined || !Number.isFinite(n)) return '';
   return String(n).replace('.', ',');
 }
@@ -43,6 +45,8 @@ interface DraftOptions {
    * densité finale sur une atténuation nulle.
    */
   emptyValue?: number | undefined;
+  /** Décimales affichées hors frappe (un montant : 2). Absent : affichage inchangé. */
+  fractionDigits?: number;
 }
 
 /**
@@ -63,7 +67,8 @@ export function useNumericDraft(
   options: DraftOptions = {}
 ) {
   const emptyValue = 'emptyValue' in options ? options.emptyValue : 0;
-  const [draft, setDraft] = useState(() => formatDecimal(value));
+  const digits = options.fractionDigits;
+  const [draft, setDraft] = useState(() => formatDecimal(value, digits));
 
   /*
    * Dernière valeur QUE L'ON A REMONTÉE. Elle distingue un changement venu du
@@ -75,7 +80,7 @@ export function useNumericDraft(
   useEffect(() => {
     if (!Object.is(value, emitted.current)) {
       emitted.current = value;
-      setDraft(formatDecimal(value));
+      setDraft(formatDecimal(value, digits));
     }
   }, [value]);
 
@@ -108,14 +113,14 @@ export function useNumericDraft(
   const settle = (bounds: { min?: number; max?: number; integer?: boolean } = {}) => {
     const parsed = parseDecimal(draft);
     if (parsed === null) {
-      setDraft(formatDecimal(emitted.current));
+      setDraft(formatDecimal(emitted.current, digits));
       return emitted.current;
     }
     let next = parsed;
     if (bounds.integer) next = Math.round(next);
     if (bounds.min !== undefined) next = Math.max(bounds.min, next);
     if (bounds.max !== undefined) next = Math.min(bounds.max, next);
-    setDraft(formatDecimal(next));
+    setDraft(formatDecimal(next, digits));
     if (next !== emitted.current) {
       emitted.current = next;
       onChange(next);

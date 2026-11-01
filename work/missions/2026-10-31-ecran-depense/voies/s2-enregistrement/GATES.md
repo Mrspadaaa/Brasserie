@@ -7,12 +7,12 @@ Scope: A7, A11, A12, S5, S7, S8, DR1, DR4 (message), DR5 ; Drive factice, Gemini
 - [x] G1: l'app se construit
   CHECK: npm run build
   EXPECT: built in
-  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=7e5fec750584b0ced33e5512f1188b2199c3aec278a960dbfd5c5c186dbb31f9; output-bytes=47234; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=46d72eccd628b28a4b0e974e69890ad856bb5d28a16876531804fc540a571513; exit=0; EXPECT=matched; output-sha256=ae408013f763ff14ead69041a59c97fe78e06a2aeb05c65733552b89f7343712; output-bytes=47377; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G2: les tests de l'enregistrement et du Drive factice passent
   CHECK: npx vitest run tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/unit/financeDocuments.test.ts tests/integration/driveFileStore.test.ts tests/integration/financeDocumentPersistence.test.ts tests/integration/expenseSheet.test.tsx tests/unit/brewBudget.test.ts tests/unit/financeArchiveContinuity.test.ts tests/unit/depense/enregistrement --maxWorkers=2 && echo TESTS ENREGISTREMENT OK
   EXPECT: TESTS ENREGISTREMENT OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=44fd9fec6658b7201b41e5e3ca247118cb3b8dbc369e9a686788bdf8e977e9a6; exit=0; EXPECT=matched; output-sha256=6bd47ce90916801e6d8c73ae2a378b6aae69545f8467147c7141211c7f747a9a; output-bytes=2495; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=44fd9fec6658b7201b41e5e3ca247118cb3b8dbc369e9a686788bdf8e977e9a6; exit=0; EXPECT=matched; output-sha256=d1c0d36e63108e3071dad09f2e77c55250eca96b939d41a85bed0d554bb48ebb; output-bytes=2496; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: le plan a été relu par deux regards neufs, sans bloquant laissé
   CHECK: node scripts/agents/systeme.mjs revue work/missions/2026-10-31-ecran-depense/voies/s2-enregistrement/REVUE-PLAN.md

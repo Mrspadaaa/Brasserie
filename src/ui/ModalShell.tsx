@@ -54,7 +54,7 @@ interface ModalShellProps {
   onClose: () => void;
   children: React.ReactNode;
   /** Largeur sur ordinateur. `md` pour un formulaire court, `lg` au-delà. */
-  size?: 'md' | 'lg';
+  size?: 'md' | 'lg' | 'xl';
   /**
    * Empêche la fermeture au clic extérieur et à Échap — pour une saisie qu'on
    * ne veut pas perdre d'un geste maladroit.
@@ -146,7 +146,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
 
   if (!open) return null;
 
-  const maxWidth = size === 'md' ? 'sm:max-w-md' : 'sm:max-w-lg';
+  const maxWidth = size === 'md' ? 'sm:max-w-md' : size === 'xl' ? 'sm:max-w-lg lg:max-w-[min(1240px,96vw)]' : 'sm:max-w-lg';
 
   return (
     <div

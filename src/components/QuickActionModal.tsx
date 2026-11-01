@@ -44,6 +44,7 @@ import { useDensity } from '../ui/useViewport';
 import { NumericField } from '../ui/NumericField';
 import { MoneyField, splitTva } from '../ui/MoneyField';
 import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
+import type { ApercuDepense } from '../ui/depense/types';
 import { saveIncomeEntry, type IncomeEntry } from '../services/incomeEntry';
 import { prepareFinanceDocument } from '../services/financeDocuments';
 import { DriveConnection } from '../ui/finance/DriveConnection';
@@ -104,6 +105,16 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     }
     wasOpen.current = isOpen;
   }, [isOpen, initialScreen]);
+  // Banc local de l'écran « Nouvelle dépense » (e-port) : `?dev-local&depense=<état>` ouvre la feuille sur la facture 372765 SIMULÉE, sans Gemini ni Drive.
+  // Développement seulement : le bloc et la fixture sont éliminés de `dist/`.
+  const [apercuDepense, setApercuDepense] = useState<ApercuDepense | null>(null);
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const etat = isOpen ? new URLSearchParams(location.search).get('depense') : null;
+      if (etat === null) return;
+      import('../ui/depense/apercuDev').then(({ apercuDepense: fabrique }) => { setApercuDepense(fabrique(etat || '3')); setExpenseMode('manual'); });
+    }
+  }, [isOpen]);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScannedInvoiceResult | null>(null);
   /** Message d'échec du scan, affiché au-dessus de la saisie manuelle. */
@@ -601,7 +612,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   };
 
   if (!isOpen) return null;
-  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'}/>;
+  // Banc local : la feuille attend sa fixture (sinon elle se monterait sans elle et ouvrirait le sélecteur de fichiers).
+  if(import.meta.env.DEV && !apercuDepense && new URLSearchParams(location.search).has('depense')) return null;
+  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined}/>;
 
   return (
     <>
