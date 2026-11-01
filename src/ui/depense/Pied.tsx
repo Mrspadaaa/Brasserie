@@ -7,7 +7,7 @@ export interface BoutonPied { texte: string; aria: string; disabled: boolean; ti
 
 export function Pied(p: {
   ordre: 'cat' | 'papier' | null; onOrdre: (o: 'cat' | 'papier') => void; statut: { texte: string; attention?: boolean } | null;
-  courant: { numero: number; nom: string } | null; tout: boolean; onAllerCourant: () => void; bouton: BoutonPied;
+  courant: { numero: number; nom: string; niveau?: "repris" | "inconnu" } | null; tout: boolean; onAllerCourant: () => void; bouton: BoutonPied;
   cible: React.RefObject<HTMLElement | null>; racine: React.RefObject<HTMLElement | null>; keyboardInset: boolean; aPoints: boolean;
 }) {
   const [recapSorti, setRecapSorti] = useState(false);
@@ -20,7 +20,7 @@ export function Pied(p: {
   const icone = p.bouton.icone === 'spin' ? <Loader2 size={14} className="animate-spin"/> : p.bouton.icone === 'x' ? <X size={14}/> : p.bouton.icone === 'file' ? <FileText size={14}/> : <Check size={14}/>;
   const milieu = recapSorti && p.aPoints ? (p.tout
     ? <span data-dp="pied-revus" className="min-w-0 flex-1 truncate text-sm text-hop">✓ points revus</span>
-    : p.courant ? <button type="button" data-dp="pied-courant" onClick={p.onAllerCourant} className="inline-flex min-h-8 min-w-0 max-w-[60%] flex-none items-center gap-1 truncate rounded-control border border-dashed border-attention bg-attention/5 px-2 text-sm text-cave-50"><span className="inline-flex size-[18px] shrink-0 items-center justify-center rounded-full border border-dashed border-attention font-mono text-xs text-attention">{p.courant.numero}</span><span className="truncate">{p.courant.nom}</span></button> : null) : null;
+    : p.courant ? <button type="button" data-dp="pied-courant" data-dp-niveau={p.courant.niveau ?? 'repris'} onClick={p.onAllerCourant} className={`inline-flex min-h-8 min-w-0 max-w-[60%] flex-none items-center gap-1 truncate rounded-control border border-dashed px-2 text-sm text-cave-50 ${p.courant.niveau === 'inconnu' ? 'border-alert bg-alert/5' : 'border-attention bg-attention/5'}`}><span className={`inline-flex size-[18px] shrink-0 items-center justify-center rounded-full border border-dashed font-mono text-xs ${p.courant.niveau === 'inconnu' ? 'border-alert text-alert' : 'border-attention text-attention'}`}>{p.courant.numero}</span><span className="truncate">{p.courant.nom}</span></button> : null) : null;
   return <footer className={`flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2${p.keyboardInset ? '' : ' pb-safe'}`}>
     {p.statut ? <div className={`min-w-0 flex-1 text-xs ${p.statut.attention ? 'text-attention' : 'text-cave-200'}`}><span>{p.statut.texte}</span></div>
       : <>{p.ordre ? <div role="group" aria-label="Ordre des lignes" className="inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600">

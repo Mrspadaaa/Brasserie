@@ -79,9 +79,9 @@ describe('unités : jamais additionnées entre elles', () => {
     const q = bandes([L('a', 'malt', 1, 6, 'Kg'), L('b', 'malt', 1, 12, 'kg'), L('c', 'malt', 1, 1, 'Kg')]).find(x => x.cle === 'malt')!.qte;
     expect(q).toEqual([{ unite: 'Kg', n: 19, inconnue: false }]);
   });
-  it('« Kg » + « g » : deux entrées', () => {
+  it('« Kg » + « g » (D275, voie f3) : une même famille d’unités s’additionne dans la forme la plus courante (HEAD : « 6 Kg + 500 g »)', () => {
     const q = bandes([L('a', 'malt', 1, 6, 'Kg'), L('b', 'malt', 1, 500, 'g')]).find(x => x.cle === 'malt')!.qte;
-    expect(texteQte(q)).toBe('6 Kg + 500 g');
+    expect(texteQte(q)).toBe('6,5 Kg');
   });
   it('une quantité absente se dit « ? », jamais 0', () => {
     expect(texteQte(bandes([L('a', 'malt', 1, undefined, 'Kg')]).find(x => x.cle === 'malt')!.qte)).toBe('?');

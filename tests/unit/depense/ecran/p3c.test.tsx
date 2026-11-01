@@ -44,7 +44,8 @@ describe('p3c-3 : les bandes teintées de la facture 372765', () => {
     const bandes = qa('[data-dp-bande]');
     expect(bandes.map(b => b.getAttribute('data-dp-bande'))).toEqual(['malt', 'houblon', 'levure']);
     expect(bandes.map(b => b.querySelector('[data-dp-sous-montant]')!.textContent)).toEqual(['36,85', '20,05', '29,60']);
-    expect(bandes.map(b => b.querySelector('[data-dp-sous-qte]')!.textContent)).toEqual(['18 Kg', '270 g + 30 ?', '7 Stk']);
+    // D275 (voie f3) : une même famille d'unités s'additionne, Sabro « 30 » prend le g de ses voisines (deux l'impriment : sûr) : jamais « ? » quand l'unité se déduit (HEAD : « 270 g + 30 ? »).
+    expect(bandes.map(b => b.querySelector('[data-dp-sous-qte]')!.textContent)).toEqual(['18 Kg', '300 g', '7 Stk']);
     expect(bandes[0].querySelector('[data-dp-bande-entete]')!.textContent).toContain('+5 ↳');
     expect(qa('[data-dp-qte]').every(e => e.className.includes('font-semibold'))).toBe(true);
   });
@@ -53,8 +54,9 @@ describe('p3c-3 : les bandes teintées de la facture 372765', () => {
     expect(screen.getByRole('button', { name: /^Lecture à confirmer, 23 lignes$/ })).toHaveAttribute('title', 'Lecture à confirmer, 23 lignes');
     expect(qa('[data-dp="barre"] i')).toHaveLength(23);
     const compte = q('[data-dp="compte-liens"]');
-    expect(Array.from(compte.querySelectorAll('b')).reduce((n, b) => n + Number(b.textContent), 0)).toBe(23);
-    expect(compte.textContent).toContain('sans stock');
+    // D277 (voie f3) : « à contrôler » et « à remplir » sont des comptes de niveau, hors de la partition des liens.
+    expect(Array.from(compte.querySelectorAll('[data-va]:not([data-dp-niveau]) b')).reduce((n, b) => n + Number(b.textContent), 0)).toBe(23);
+    expect(compte.textContent).not.toContain('sans stock'); // D275 : « hors stock » remplace « sans stock » ; ici Goldings et Hallertauer sont nouveaux d'office, aucun hors stock
   });
   it('T14 : le mot du statut n’a qu’un porteur (nom accessible de la pastille), jamais un texte doublé', async () => {
     await ouvrir('3');
@@ -182,12 +184,15 @@ describe('p3c-3 : le picto du justificatif, les propositions, le changement de b
     expect(q('[data-dp="justificatif"]').className).not.toMatch(/(^|\s)hidden(\s|$)/);
     expect(within(q('[data-dp="justificatif"]')).getByText('Ouvrir le PDF original')).toBeInTheDocument();
   });
-  it('T15 : « n proposées par la lecture, à vérifier » (n = lignes proposées) ; rien si aucune', async () => {
+  // VERDICT-f3-p2, majeur 1 (D277) : HEAD disait « n proposées par la lecture, à vérifier » dans la preuve ; le lien proposé est désormais une pastille jaune « n proposé(s) » à côté de « relié », et la phrase disparaît.
+  it('T15 : « n proposé(s) » jaune au récap (n = lignes proposées) ; plus de phrase « proposée par la lecture »', async () => {
     await ouvrir('3');
-    const p = q('[data-dp="propositions"]');
-    expect(p).not.toBeNull();
-    const n = qa('[data-dp-stock]').filter(s => s.textContent?.includes('proposé')).length;
-    expect(p.textContent).toContain(`${n} proposée${n > 1 ? 's' : ''} par la lecture, à vérifier`);
+    const n = qa('[data-dp-stock]').filter(s => s.textContent?.includes('· proposé')).length;
+    expect(n).toBeGreaterThan(0);
+    const c = q('[data-dp="compte-liens"] [data-va="propose"]');
+    expect(c.getAttribute('data-dp-niveau')).toBe('repris');
+    expect(c.textContent).toMatch(new RegExp(`^${n} proposés?`));
+    expect(document.querySelector('[data-dp="propositions"]')?.textContent ?? '').not.toMatch(/proposée/);
   });
   it('T18 : changer le type d’achat de la ligne 8 la fait passer dans « Autres » ; son plateau reste ouvert', async () => {
     await ouvrir('3');
@@ -199,12 +204,18 @@ describe('p3c-3 : le picto du justificatif, les propositions, le changement de b
     expect(apres.closest('[data-dp-bande]')!.getAttribute('data-dp-bande')).not.toBe('houblon');
     expect((apres.querySelector('details') as HTMLDetailsElement).open).toBe(true);
   });
-  it('T19 : poser l’unité de Sabro règle le point et efface le prix imprimé (« — »), règle de l’enregistrement inchangée', async () => {
+  it('T19 (D275, voie f3) : Sabro « 30 » prend le g de ses voisines (sûr : deux l’impriment) ; taper « g » ne change rien au prix imprimé', async () => {
     await ouvrir('3');
-    expect(ligne('line-20').querySelector('[data-dp-prix]')!.textContent).not.toBe('—');
-    fireEvent.click(within(ligne('line-20')).getByRole('button', { name: 'g' }));
-    expect(ligne('line-20').querySelector('[data-dp-prix]')!.textContent).toBe('—');
-    expect(screen.getByLabelText('Unité ligne 20')).toHaveValue('g');
+    const qte = () => ligne('line-20').querySelector('[data-dp-qte]')!;
+    expect(qte().textContent).toBe('30 g');
+    expect(qte().hasAttribute('data-dp-niveau')).toBe(false);
+    expect(within(ligne('line-20')).queryByRole('button', { name: 'g' })).toBeNull(); // la barre rouge n'est que pour une unité qui ne se déduit pas
+    expect(screen.getByLabelText('Unité ligne 20')).toHaveValue(''); // l'unité déduite n'est jamais écrite dans le champ (D213)
+    const prix = ligne('line-20').querySelector('[data-dp-prix]')!.textContent;
+    expect(prix).not.toBe('—');
+    fireEvent.change(screen.getByLabelText('Unité ligne 20'), { target: { value: 'g' } });
+    expect(qte().hasAttribute('data-dp-niveau')).toBe(false);
+    expect(ligne('line-20').querySelector('[data-dp-prix]')!.textContent).toBe(prix);
   });
 });
 
@@ -263,13 +274,13 @@ describe('p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’
     expect(q('[data-dp="fin"]').textContent).toContain(`Détail ${(brouillon / 100).toFixed(2).replace('.', ',')} / ${(brouillon / 100).toFixed(2).replace('.', ',')}`);
     expect(qa('[data-dp-ligne]').length).toBe(etat === 'port' ? 24 : 23);
   });
-  it('D12 : « Qté × prix » compte les lignes LUES hors port : 23/23 lues avec ou sans la ligne de port', async () => {
+  it('D12 : « Qté × prix » compte les lignes LUES hors port : 23/23 avec ou sans la ligne de port (VERDICT-f3 détail 5 : « ✓ Qté × prix 23/23 » comme la base ; HEAD : « 23/23 lues »)', async () => {
     await ouvrir('3');
-    expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23 lues/);
+    expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23/);
     cleanup();
     await ouvrir('port');
     expect(qa('[data-dp-ligne]')).toHaveLength(24); // 24 lignes dans le brouillon, dont le port
-    expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23 lues/);
+    expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23/);
     expect(q('[data-dp="preuve"]').textContent).not.toMatch(/24/);
   });
 });

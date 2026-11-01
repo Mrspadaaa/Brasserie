@@ -136,7 +136,46 @@ function apercuFamilles(): ApercuDepense {
   };
 }
 
+/**
+ * `commande` (voie f3-rangees, D275, D277) : une commande en ligne SIMULÉE de la forme de sa pièce du 01.11 (aucune valeur ni désignation de sa pièce) : malts
+ * « …, Kg » ou « …, Gramm » avec l'option « Mischung / Schrotung : geschrotet [+CHF …] », colonne d'unité vide ailleurs (levure, houblon, sucre, matériel,
+ * emballage), port à part, date non imprimée. Aucun article ne relie ces lignes : les ingrédients sont « nouvel article » d'office. Aucune écriture, aucun Gemini.
+ */
+function apercuCommande(): ApercuDepense {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const option = (sup: string) => `Mischung: Einzelprodukt, Schrotung: geschrotet [+CHF ${sup}]`;
+  const ligne = (id: number, name: string, kind: string, quantity: number | null, unit: string, price: number | null, amountTTC: number, stockCategory = '', variant = '', reference = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant, stockCategory, evidence: '', ambiguity: '', vatCode: '', alphaPct: null, alphaPctLu: null });
+  const items = [
+    ligne(1, 'Omega OYL-061, Voss Kveik', 'stock', 2, '', 8.9, 17.8, 'yeast', '', 'HE0901'), ligne(2, 'Gärfass 30 Liter mit Deckel', 'equipment', 1, '', 32, 32, '', '', 'GA0101'),
+    ligne(3, 'Hopfensack fein', 'equipment', 4, '', 0.8, 3.2, '', '', 'SA0201'), ligne(4, 'Carafa Spezial I®, Kg', 'stock', 2, 'Kg', 2.4, 4.8, 'malt', option('0.10'), 'MA0301'),
+    ligne(5, 'Candi Sugar Amber 500g', 'stock', 1, '', 5.9, 5.9, 'sugar', '', 'CA0401'), ligne(6, 'Wiener Malz, Kg', 'stock', 5, 'Kg', 1.7, 8.5, 'malt', option('0.10'), 'MA0302'),
+    ligne(7, 'Ekuanot 14.5%', 'stock', 85, '', 0.05, 4.25, 'hop', '', 'HO0501'), ligne(8, 'Melanoidin Malz®, Gramm', 'stock', 100, 'Gramm', 0.0111, 1.11, 'malt', option('0.0001'), 'MA0303'),
+    ligne(9, 'Kronkorken 100 Kapseln schwarz', 'packaging', 1, '', 2.9, 2.9, '', '', 'KR0601'),
+    // VERDICT-f3 défaut 3 : un article relié (Pilsner Malz du stock simulé), un « bis » (Target 11.3% face à Target 11.8%), une unité qui ne se déduit pas (ni prix ni famille).
+    ligne(11, 'Pilsner Malz, Kg', 'stock', 4, 'Kg', 1.5, 6, 'malt', '', 'MA0304'), ligne(12, 'Target 11.3%', 'stock', 40, 'g', 0.04, 1.6, 'hop', '', 'HO0502'),
+    ligne(13, 'Brauzusatz Probe', 'stock', 3, '', null, 4.5, '', '', 'ZU0701'),
+    ligne(10, 'Shipping', 'shipping', null, '', null, 12),
+  ];
+  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  result.items = items as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'BOUTIQUE FICTIVE', date: null, invoiceNumber: '', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    amountTTC: total, printedLineCount: items.length - 1, linesLost: 0, fieldWarnings: [], issues: [], remarques: [], description: 'Commande en ligne',
+    controls: { lines: { checked: items.length - 1, failed: 0, skipped: 1, skippedIds: ['line-10'] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  const point = makePoint('date-absente', 'ecart', 'date', null, { regle: 'le code relève ce que la lecture ne permet pas de tenir pour sûr', message: 'Date absente ou invalide : à saisir.', unite: 'texte', enjeu: 'info' });
+  result.points = [{ ...point, source: 'contrôle', pese: true, signature: signerPoint(point) }];
+  const fichier = { name: 'capture-commande.jpg', size: 120000, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false }, fichier, stocks: stockSimule(), transactions: [], etat: 'commande', drive: 'ok', reseau: true,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: 'commande fictive.pdf', bytes: 120000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
 export function apercuDepense(etat: string): ApercuDepense {
+  if (etat === 'commande') return apercuCommande();
   if (etat === 'familles') return apercuFamilles();
   if (etat === 's6') return apercuS6();
   if (etat.startsWith('qr-')) return apercuQr(etat);

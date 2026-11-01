@@ -121,9 +121,11 @@ describe('D213 unités : la ligne repliée de la feuille', () => {
 
   it('D214 : une ligne sans unité lisible est proposée, son champ « Unité » reste vide, la rangée repliée dit « unité ? » et le plateau « unité à préciser »', async () => {
     const view = await lire([{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 6, unit: '', amountTTC: 10, stockCategory: '' }], [item('MO', 'Maris Otter', 'Malt', 'kg')]);
-    // La rangée REPLIÉE (le seul `summary`) dit « unité ? » (écart annoncé : la phrase entière vit au plateau) ; la proposition est signalée au-dessus de la liste.
-    expect(view.container.querySelector('[data-dp-ligne="line-1"] summary')!.textContent).toContain('unité ?');
-    expect(view.container.querySelector('[data-dp="propositions"]')!.textContent).toMatch(/1 proposée par la lecture, à vérifier/);
+    // D277 (voie f3) : la rangée REPLIÉE dit la quantité « 6 ? » en rouge (niveau inconnu) ; HEAD : « unité ? ». La phrase entière vit au plateau ; la proposition est signalée au-dessus de la liste.
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] summary [data-dp-qte]')!.textContent).toBe('6 ?');
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] summary [data-dp-qte]')!.getAttribute('data-dp-niveau')).toBe('inconnu');
+    // VERDICT-f3-p2, majeur 1 (D277) : HEAD « 1 proposée par la lecture, à vérifier » ; désormais la pastille jaune « 1 proposé » au récap.
+    expect(view.container.querySelector('[data-dp="compte-liens"] [data-va="propose"]')!.textContent).toMatch(/^1 proposé/);
     expect(stock(view, 1)).toContain('proposé');
     expect(stock(view, 1)).toContain('unité à préciser');
     expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('existing');
@@ -132,9 +134,9 @@ describe('D213 unités : la ligne repliée de la feuille', () => {
     expect(state.writes).toEqual([]);
   });
 
-  it('D214 : une unité lisible (« Stk ») face à un malt en kg reste sans proposition', async () => {
+  it('D214, D275 (voie f3) : une unité lisible (« Stk ») face à un malt en kg reste sans proposition ; l’ingrédient non relié est nouvel article d’office (HEAD : none)', async () => {
     const view = await lire([{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 6, unit: 'Stk', amountTTC: 10, stockCategory: '' }], [item('MO', 'Maris Otter', 'Malt', 'kg')]);
     expect(ligneTexte(view, 1)).not.toContain('proposé');
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('none');
+    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('new');
   });
 });

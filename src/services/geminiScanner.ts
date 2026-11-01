@@ -12,7 +12,9 @@ export interface ScannedInvoiceResult {
   vendor:string; date:string; currency:string; invoiceNumber:string;
   amountHT:number|null; tvaRate:number|null; tvaAmount:number|null; amountTTC:number|null;
   category:FinanceCategory; subcategory:string; description:string;
-  items:Array<{ id:string; name:string; kind:ScannedLineKind; reference?:string; variant?:string; quantity:number|null; unit:string; price?:number|null; amountTTC?:number|null; stockCategory?:string; evidence?:string; ambiguity?:string; vatCode?:string; alphaPct?:number|null; alphaPctLu?:number|null }>;
+  items:Array<{ id:string; name:string; kind:ScannedLineKind; reference?:string; variant?:string; quantity:number|null; unit:string; price?:number|null; amountTTC?:number|null; stockCategory?:string; evidence?:string; ambiguity?:string; vatCode?:string; alphaPct?:number|null; alphaPctLu?:number|null;
+    /** D275, voie f5 : la désignation en français (marque et nom propre tels quels, sans option ni unité), seulement si la lecture la rend ; jamais exigée. */
+    nameFr?:string }>;
   issues:string[]; review?:{ status:InvoiceReviewStatus; findings:string[]; readers?:number; correctedFields?:string[] };
   /** l2 : tout est facultatif. `points`/`controls` absents = « non contrôlé » (jamais « aucun point »). */
   points?:InvoicePoint[]; controls?:InvoiceControls; vat?:Array<{code:string;rate:number|null;base:number|null;amount:number|null}>;

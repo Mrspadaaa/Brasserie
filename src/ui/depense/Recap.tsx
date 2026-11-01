@@ -6,6 +6,7 @@ import type { StatutLecture } from '../../domain/finance/invoicePoints';
 import { PictoLien, type LienStock } from './Pictos';
 import { TITRES } from './Verdict';
 import { POINT_FAMILLE, type GroupeCle } from './groupes';
+import type { Niveau } from './confiance';
 import './p3c.css';
 
 const TEINTE: Record<GroupeCle, string> = POINT_FAMILLE;
@@ -15,6 +16,8 @@ export const motStatut = (statut: StatutLecture | null) => (statut ? TITRES[stat
 export interface ItemBarre { id: string; cents: number; groupe: GroupeCle; ouvert: boolean; nom: string }
 export function Bandeau(p: {
   vendor: string; date: string; doutes?: { date?: boolean; vendor?: boolean; devise?: boolean }; totalField: React.ReactNode; sommeDesLignes: boolean;
+  /** D277 : le niveau des champs du bandeau (la date manquante est rouge à sa place ; des lignes à revoir, jaune sur « n lignes »). */
+  niveaux?: { date?: Niveau; lignes?: Niveau; total?: Niveau };
   portCents: string | null; portOuvert: boolean; onPort: () => void; statut: StatutLecture | null; nLignes: number; onLignes: () => void; onDate: () => void;
   barre: ItemBarre[]; onBarre: (id: string) => void; sceau?: React.ReactNode; sousTotal?: React.ReactNode; drive: 'a-connecter' | null; onDrive: () => void;
 }) {
@@ -24,10 +27,13 @@ export function Bandeau(p: {
   return <section data-dp="bandeau" className={`rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px] ${p.sceau ? 'grid grid-cols-[minmax(0,1fr)_auto] gap-x-2.5 gap-y-[3px]' : 'space-y-[3px]'}`}>
     <div className={`flex items-baseline justify-between gap-2 ${p.sceau ? 'col-span-2' : ''}`}>
       <span className={`min-w-0 truncate text-base font-semibold leading-6 ${p.doutes?.vendor ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-50'}`}>{p.vendor || 'Fournisseur'}</span>
-      <button type="button" aria-label={`Achat du ${p.date}`} onClick={p.onDate} className={`shrink-0 border-b border-dashed font-mono text-sm min-h-6 ${p.doutes?.date ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-200 border-cave-600'}`}>{p.date}</button>
+      {p.niveaux?.date === 'inconnu'
+        ? <button type="button" data-dp-niveau="inconnu" aria-label="Date de l’achat à remplir" onClick={p.onDate} className="shrink-0 rounded-control border border-dashed border-alert px-1.5 font-mono text-sm min-h-6 text-alert">{p.date || 'date ?'}</button>
+        : <button type="button" aria-label={`Achat du ${p.date}`} {...(p.niveaux?.date === 'repris' ? { 'data-dp-niveau': 'repris' } : {})} onClick={p.onDate} className={`shrink-0 border-b border-dashed font-mono text-sm min-h-6 ${p.doutes?.date || p.niveaux?.date === 'repris' ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-200 border-cave-600'}`}>{p.date}</button>}
     </div>
-    <div className={`${g} flex min-w-0 items-center gap-2`}>{p.totalField}<span className={`text-xs ${p.doutes?.devise ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-400'}`}>CHF</span>
-      {p.statut ? <button type="button" aria-label={libelle} title={libelle} onClick={p.onLignes} className="ml-auto inline-flex min-h-7 shrink-0 items-center gap-1 rounded-control border border-cave-700 bg-cave-950 px-2 text-sm text-cave-200">{icone}<span className="font-mono">{p.nLignes}</span>&nbsp;lignes</button> : null}</div>
+    <div className={`${g} flex min-w-0 items-center gap-2`}>{/* Toujours le même porteur : le champ du total n'est jamais remonté quand son niveau change (une frappe en cours reste). */}
+      <span data-dp="total-niveau" {...(p.niveaux?.total && p.niveaux.total !== 'sur' ? { 'data-dp-niveau': p.niveaux.total } : {})} className={`inline-flex min-w-0 ${p.niveaux?.total === 'inconnu' ? 'border-b-2 border-dashed border-alert text-alert' : p.niveaux?.total === 'repris' ? 'border-b-2 border-dotted border-attention text-attention' : ''}`}>{p.totalField}</span><span className={`text-xs ${p.doutes?.devise ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-400'}`}>CHF</span>
+      {p.statut ? <button type="button" aria-label={libelle} title={libelle} onClick={p.onLignes} {...(p.niveaux?.lignes && p.niveaux.lignes !== 'sur' ? { 'data-dp-niveau': p.niveaux.lignes } : {})} className={`ml-auto inline-flex min-h-7 shrink-0 items-center gap-1 rounded-control border bg-cave-950 px-2 text-sm text-cave-200 ${p.niveaux?.lignes === 'inconnu' ? 'border-dashed border-alert' : p.niveaux?.lignes === 'repris' ? 'border-dashed border-attention' : 'border-cave-700'}`}>{icone}<span className="font-mono">{p.nLignes}</span>&nbsp;lignes</button> : null}</div>
     {p.sommeDesLignes ? <p className={`${g} text-xs text-cave-400`}>somme des lignes</p> : null}
     {p.portCents !== null ? <button type="button" data-dp="port" aria-expanded={p.portOuvert} onClick={p.onPort} className={`${g} min-h-6 self-start text-left text-xs text-cave-400 underline decoration-dotted underline-offset-2`}>dont port <span className="font-mono text-cave-200">{p.portCents}</span></button> : null}
     {p.drive === 'a-connecter' ? <button type="button" onClick={p.onDrive} className={`${g} min-h-7 inline-flex items-center self-start rounded-control border border-dashed border-attention px-2 text-sm text-attention`}>Drive à connecter</button> : null}
@@ -42,10 +48,10 @@ export function Bandeau(p: {
 export interface Rang { ok: boolean | null; texte: string; valeur: string }
 export function Preuve(p: { rangees: Rang[]; corriges: string[]; remarques: string[]; cached: boolean; visee: boolean; onRangee: () => void; propositions?: string | null; children?: React.ReactNode }) {
   return <section data-dp="preuve" aria-label="Preuve de la lecture" data-dp-visee={p.visee ? '1' : undefined} className={`scroll-mt-12 rounded-panel border border-cave-800 px-2 pb-1 pt-0.5 ${p.visee ? 'dp-p3c-visee' : ''}`}>
-    <div className="grid grid-cols-2 gap-x-2.5">
+    <div className="grid grid-cols-[1.12fr_1fr] gap-x-2">
       {p.rangees.map((r, i) => <button key={i} type="button" onClick={p.onRangee} className="flex min-h-[26px] w-full items-center gap-1 border-b border-cave-800 text-left text-sm">
         {r.ok === true ? <Check size={14} className="shrink-0 text-hop"/> : <span className="w-3.5 shrink-0 text-center text-cave-400">·</span>}
-        <span className="min-w-0 text-left leading-tight text-cave-200">{r.texte}</span><b className="ml-auto whitespace-nowrap pl-1.5 font-mono font-medium text-cave-50">{r.valeur}</b></button>)}
+        <span className="shrink-0 whitespace-nowrap text-left leading-tight text-cave-200">{r.texte}</span><b className="ml-auto min-w-0 truncate whitespace-nowrap pl-1 font-mono font-medium text-cave-50">{r.valeur}</b></button>)}
       {/* Les propositions de la lecture (« 14 proposées par la lecture, à vérifier ») vivent ici, dans la case libre de la grille quand le nombre de rangées est impair (compact), sinon sur une rangée entière. */}
       {p.propositions ? <p data-dp="propositions" className={`flex items-center text-xs leading-[13px] text-attention ${p.rangees.length % 2 === 1 ? '' : 'col-span-2'}`}>{p.propositions}</p> : null}
     </div>
@@ -57,13 +63,14 @@ export function Preuve(p: { rangees: Rang[]; corriges: string[]; remarques: stri
 }
 
 export interface Rond { id: string; numero: number; nom: string; fait: boolean }
-export interface CompteItem { cle: string; n: number; mot: string; lien: LienStock; ronds: Rond[]; fait: boolean; ids: string[]; extra?: string; actif: boolean }
-/** Les comptes de liens : un toucher filtre la liste sur eux. Un point qui pèse y porte son rond numéroté (le même que sa chip). */
+/** `niveau` : un compte de niveau (D277, « n à contrôler » jaune, « n à remplir » rouge), hors de la partition des liens. */
+export interface CompteItem { cle: string; n: number; mot: string; lien: LienStock; ronds: Rond[]; fait: boolean; ids: string[]; extra?: string; actif: boolean; niveau?: Niveau }
+/** Les comptes de liens : un toucher filtre la liste sur eux. Un point qui pèse y porte son rond numéroté (le même que sa chip). Un compte nul ne s'affiche pas (D275). */
 export function Comptes({ items, onCompte }: { items: CompteItem[]; onCompte: (c: CompteItem) => void }) {
   return <div data-dp="compte-liens" className="flex flex-wrap gap-x-1 gap-y-0.5 pt-1">
-    {items.filter(c => c.n > 0 || c.ronds.length > 0).map(c => <button key={c.cle} type="button" data-va={c.cle} aria-pressed={c.actif} onClick={() => onCompte(c)}
-      className={`inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 ${c.ronds.length ? `border-[1.5px] ${c.fait ? 'border-solid border-cave-700 bg-cave-950' : 'border-dashed border-attention bg-attention/5 text-cave-50'}` : ''}`}>
-      <PictoLien lien={c.lien} size={16}/><b className="font-mono font-semibold text-cave-50">{c.n}</b> {c.mot}{c.extra && !c.fait ? <span className="font-mono"> {c.extra}</span> : null}
+    {items.filter(c => c.n > 0).map(c => <button key={c.cle} type="button" data-va={c.cle} {...(c.niveau ? { 'data-dp-niveau': c.niveau } : {})} aria-pressed={c.actif} onClick={() => onCompte(c)}
+      className={`inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 ${c.niveau === 'inconnu' ? 'border-[1.5px] border-dashed border-alert bg-alert/5 text-cave-50' : c.niveau === 'repris' ? 'border-[1.5px] border-dashed border-attention bg-attention/5 text-cave-50' : c.ronds.length ? `border-[1.5px] ${c.fait ? 'border-solid border-cave-700 bg-cave-950' : 'border-dashed border-attention bg-attention/5 text-cave-50'}` : ''}`}>
+      {c.niveau ? <i aria-hidden className={`mx-0.5 size-2 shrink-0 rounded-full ${c.niveau === 'inconnu' ? 'bg-alert' : 'bg-attention'}`}/> : <PictoLien lien={c.lien} size={16}/>}<b className={`font-mono font-semibold ${c.niveau === 'inconnu' ? 'text-alert' : c.niveau === 'repris' ? 'text-attention' : 'text-cave-50'}`}>{c.n}</b> {c.mot}{c.extra && !c.fait ? <span className="font-mono"> {c.extra}</span> : null}
       {c.ronds.map(r => <span key={r.id} role="img" data-dp-rond={r.id} aria-label={`${r.numero} ${r.nom}${r.fait ? ' réglé' : ''}`}
         className={`inline-flex size-4 items-center justify-center rounded-full font-mono text-xs leading-none ${r.fait ? 'bg-hop text-cave-950' : 'border-[1.5px] border-dashed border-attention bg-cave-950 text-attention'}`}>{r.numero}</span>)}
     </button>)}

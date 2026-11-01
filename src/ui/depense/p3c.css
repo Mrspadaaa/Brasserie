@@ -47,3 +47,5 @@
 .dp-p3c-fi-consommable { border-left-color: rgb(var(--dp-fam-consommable)); }
 .dp-p3c-fi-service { border-left-color: rgb(var(--dp-fam-service)); }
 .dp-p3c-t-papier { --dp-p3c-teinte: rgb(var(--cave-400) / .2); }
+/* D275c : le nom d'une rangée tient sur une ligne, deux au plus pour un nom long ; il passe à la ligne entre deux mots, jamais au milieu d'un mot. L'imprimé entier est au plateau. */
+.dp-p3c-nom { overflow-wrap: normal; word-break: normal; hyphens: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }

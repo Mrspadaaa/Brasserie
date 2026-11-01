@@ -2,6 +2,9 @@
 // Règles du plan : R2 (un seul ensemble de lignes affichées), R3 (l'inconnu n'est jamais 0), centimes entiers partout, unités jamais additionnées entre elles.
 
 import { familleDe, NOMS_FAMILLES, ORDRE_FAMILLES, type FamilleCle } from './familles';
+import { linkUnit } from '../../services/stockLineMatching';
+import { Units } from '../../services/units';
+import type { Niveau } from './confiance';
 
 /** Une bande par famille (D262c, D262d) : malts, houblons, levures, sucres, additifs, matériel, emballage, nettoyage, consommables, services, autres. */
 export type GroupeCle = FamilleCle;
@@ -57,26 +60,52 @@ export interface LigneBande {
   mouture: boolean;
   /** Nombre de sachets certain de la ligne (conversion sûre), sinon `undefined`. */
   sachets?: number;
+  /** D277 : le niveau de l'unité de la ligne (`repris` : déduite, à contrôler) ; absent = sûre. */
+  niveau?: Niveau;
+  /** Une ligne hors stock sans quantité (un service, une remise) : sans objet pour les quantités de la bande, jamais un « ? ». */
+  sansQuantite?: boolean;
 }
-export interface QteGroupe { unite: string; n: number; inconnue: boolean }
+/** `niveau` : le pire des lignes additionnées (`repris` : au moins une unité déduite, le sous-total se marque en jaune). */
+export interface QteGroupe { unite: string; n: number; inconnue: boolean; niveau?: Niveau }
 export interface Bande {
   cle: GroupeCle; nom: string; ids: string[]; moutureIds: string[]; qte: QteGroupe[]; eqb?: string; cents: number;
   /** Au moins un montant absent : le sous-total n'est qu'un minimum (suffixe « + ? »). */
   incomplet: boolean;
 }
 
-const normUnite = (u: string) => u.trim().toLowerCase();
+const arrondi = (n: number) => Math.round(n * 1e6) / 1e6;
+/**
+ * Les quantités d'une bande. D277 (« 7 Kg + 100 g » → « 7,1 Kg ») : les unités d'une même grandeur (masse, volume) s'additionnent dans l'unité la plus
+ * présente quand chaque conversion est exacte (au millionième) ; les pièces ne s'additionnent qu'à unité égale (« Stk » et « sachet » restent à part).
+ */
 function quantites(lignes: readonly LigneBande[]): QteGroupe[] {
-  const parUnite = new Map<string, { n: number; formes: Map<string, number> }>();
-  let inconnu = 0;
+  type Forme = { q: number; lignes: number; ordre: number };
+  const parGrandeur = new Map<string, { formes: Map<string, Forme>; niveau: Niveau }>();
+  let inconnu = 0, ordre = 0;
   for (const l of lignes) {
+    if (l.sansQuantite) continue;
     if (!l.uniteLisible || l.quantity === undefined) { inconnu += l.quantity ?? 0; continue; }
-    const cle = normUnite(l.unit), e = parUnite.get(cle) ?? { n: 0, formes: new Map<string, number>() };
-    e.n += l.quantity; e.formes.set(l.unit.trim(), (e.formes.get(l.unit.trim()) ?? 0) + 1); parUnite.set(cle, e);
+    const cle = linkUnit(l.unit), famille = Units.familyOf(cle), g = famille === 'piece' ? `piece:${cle}` : famille;
+    const e = parGrandeur.get(g) ?? { formes: new Map<string, Forme>(), niveau: 'sur' as Niveau };
+    // Une forme par écriture de l'unité (« Kg » et « kg » se lisent ensemble sous l'écriture la plus fréquente).
+    const forme = [...e.formes.keys()].find(f => linkUnit(f) === cle) ?? l.unit.trim();
+    const f = e.formes.get(forme) ?? { q: 0, lignes: 0, ordre: ordre++ };
+    f.q += l.quantity; f.lignes++; e.formes.set(forme, f);
+    if (l.niveau === 'repris' || l.niveau === 'inconnu') e.niveau = e.niveau === 'inconnu' ? 'inconnu' : l.niveau;
+    parGrandeur.set(g, e);
   }
-  const sortie: QteGroupe[] = [...parUnite.values()].map(e => ({ unite: [...e.formes.entries()].sort((a, b) => b[1] - a[1])[0][0], n: Math.round(e.n * 1e6) / 1e6, inconnue: false }));
-  const aPart = lignes.some(l => !l.uniteLisible || l.quantity === undefined);
-  if (aPart) sortie.push({ unite: '?', n: Math.round(inconnu * 1e6) / 1e6, inconnue: true });
+  const sortie: QteGroupe[] = [];
+  for (const e of parGrandeur.values()) {
+    const formes = [...e.formes.entries()].sort((a, b) => b[1].lignes - a[1].lignes || a[1].ordre - b[1].ordre);
+    const cible = formes[0][0];
+    const convertis = formes.map(([forme, f]) => Units.convert(f.q, linkUnit(forme), linkUnit(cible)));
+    const exacts = convertis.every((c, i) => c !== null && Number.isFinite(c) && Math.abs(arrondi(c) - c) < 1e-9 * Math.max(1, formes[i][1].q));
+    const niveau = e.niveau === 'sur' ? {} : { niveau: e.niveau };
+    if (formes.length > 1 && exacts) sortie.push({ unite: cible, n: arrondi(convertis.reduce<number>((s, c) => s + (c as number), 0)), inconnue: false, ...niveau });
+    else for (const [forme, f] of formes) sortie.push({ unite: forme, n: arrondi(f.q), inconnue: false, ...niveau });
+  }
+  const aPart = lignes.some(l => !l.sansQuantite && (!l.uniteLisible || l.quantity === undefined));
+  if (aPart) sortie.push({ unite: '?', n: Math.round(inconnu * 1e6) / 1e6, inconnue: true, niveau: 'inconnu' });
   return sortie;
 }
 /** Les bandes (ordre fixe : malt, houblon, levure, autres) ; une bande sans ligne n'existe pas. L'ordre dans la bande est celui du papier. */
@@ -96,7 +125,7 @@ export function bandes(lignes: readonly LigneBande[]): Bande[] {
   return sortie;
 }
 /** « 18 Kg », « 270 g + 30 ? » : le texte de la colonne des quantités d'un sous-total. */
-export const texteQte = (q: readonly QteGroupe[]): string => q.map(e => (e.inconnue ? `${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?` : `${String(e.n).replace('.', ',')} ${e.unite}`)).join(' + ');
+export const texteQte = (q: readonly QteGroupe[]): string => q.map(e => (e.inconnue ? `${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?` : `${String(e.n).replace('.', ',')} ${e.unite === 'sachet' && e.n > 1 ? 'sachets' : e.unite}`)).join(' + ');
 
 /** Le numéro d'une rangée en ordre Papier : son rang dans le brouillon (un port écarté laisse un trou, comme les libellés « ligne n »). */
 export function numerosPapier(lines: readonly LigneMin[], port: ReadonlySet<string>): Map<string, number> {

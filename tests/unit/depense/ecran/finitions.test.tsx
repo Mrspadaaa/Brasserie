@@ -76,13 +76,11 @@ describe('finitions sur l’écran rendu (372765)', () => {
     }
     expect(conv.some(c => /^= [2-9]\d* sachets$/.test(c.textContent ?? ''))).toBe(true); // « 2 sachets », pas « 2 sachet »
   });
-  it('point 9 : « 30 ? » est un chip pointillé dans le sous-total de la bande Houblons ; les prix au gramme ont trois décimales', async () => {
+  it('point 9 (D275, voie f3) : « 300 g » dans le sous-total de la bande Houblons (Sabro « 30 » prend le g de ses voisines, sûr : deux l’impriment) ; les prix au gramme ont trois décimales', async () => {
     await ouvrir('3');
     const sq = q('[data-dp-bande="houblon"] [data-dp-sous-qte]');
-    expect(sq.textContent).toBe('270 g + 30 ?');
-    const chip = sq.querySelector('i')!;
-    expect(chip.textContent).toBe('30 ?');
-    expect(chip.className).toMatch(/border-dashed/);
+    expect(sq.textContent).toBe('300 g'); // HEAD : « 270 g + 30 ? » ; jamais « ? » quand l'unité se déduit
+    expect(sq.querySelector('[data-dp-niveau]')).toBeNull();
     const prix = qa('[data-dp-bande="houblon"] [data-dp-prix]').map(p => p.textContent!).filter(t => /^0,/.test(t));
     expect(prix.length).toBeGreaterThan(0);
     for (const p of prix) expect(p).toMatch(/^0,\d{3,}$/); // 0,040 · 0,080 · 0,045 : la colonne reste homogène
@@ -105,10 +103,11 @@ describe('finitions sur l’écran rendu (372765)', () => {
     expect(tuile.querySelector(':scope > span.flex')!.textContent).toMatch(/Règlement.*supposée/);
     expect(tuile.querySelector(':scope > span.block')!.textContent).toMatch(/^Payé le \d{2}\.\d{2}\.\d{4}$/);
   });
-  it('point 2 : les propositions de la lecture vivent dans la preuve (case libre de la grille), plus au-dessus des bandes', async () => {
+  // VERDICT-f3-p2, majeur 1 (D277) : HEAD lisait « [data-dp="propositions"] » (la phrase « n proposées… ») dans la preuve ; le signal est désormais la pastille « n proposé » des comptes du récap.
+  it('point 2 : les propositions de la lecture vivent au récap (pastille « proposé » des comptes), plus au-dessus des bandes', async () => {
     await ouvrir('3');
-    const p = q('[data-dp="propositions"]');
-    expect(p.closest('[data-dp="preuve"]')).not.toBeNull();
+    const p = q('[data-dp="compte-liens"] [data-va="propose"]');
+    expect(p).not.toBeNull();
     expect(q('[data-dp="liste"]').parentElement!.contains(p)).toBe(false);
   });
 });

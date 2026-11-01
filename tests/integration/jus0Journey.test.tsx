@@ -205,7 +205,8 @@ describe('JUS-1 : achat déjà enregistré et propositions de stock',()=>{
     expect(view.container.querySelector('[data-dp-ligne="line-2"]')).not.toHaveTextContent('proposé');
     expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
     expect(screen.queryByLabelText('Stock ligne 2')).toBeNull();
-    expect(view.container.querySelector('[data-dp="propositions"]')).toHaveTextContent('proposée par la lecture');
+    // VERDICT-f3-p2, majeur 1 (D277) : HEAD « proposée par la lecture » ; désormais la pastille jaune « 1 proposé » au récap.
+    expect(view.container.querySelector('[data-dp="compte-liens"] [data-va="propose"]')).toHaveTextContent(/^1 proposé/);
     expect(state.writes).toEqual([]);
   });
 });

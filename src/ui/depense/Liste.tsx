@@ -2,7 +2,7 @@
 // Présentation seulement : les `LigneP3c` arrivent construits par `ExpenseSheet` (qui tient le plateau et les gardes) ; les ids retrouvent leur ligne.
 import React from 'react';
 import type { Bande } from './groupes';
-import { fr2 } from './groupes';
+import { fr2, texteQte } from './groupes';
 import { POINT_GROUPE } from './Recap';
 import './p3c.css';
 
@@ -10,7 +10,7 @@ const FOND: Record<string, string> = { malt: 'bg-ebc-gold/20', houblon: 'bg-hop/
 
 export interface FiltreListe { mot: string; ids: readonly string[] }
 export function Liste(p: {
-  ordre: 'cat' | 'papier'; bandes: Bande[]; papier: { ids: string[]; cents: number; incomplet: boolean } | null; lignes: ReadonlyMap<string, React.ReactNode>;
+  ordre: 'cat' | 'papier'; bandes: Bande[]; papier: { ids: string[]; cents: number; incomplet: boolean; /** Le port, hors de l'ordre du papier : « 80,46 + port 12,00 » (VERDICT-f3, détail 7). */ port?: number } | null; lignes: ReadonlyMap<string, React.ReactNode>;
   filtre: FiltreListe | null; visibles: ReadonlySet<string> | null; nAffichees: number; onSansFiltre: () => void; rattacherTous: { n: number; onTous: () => void } | null;
   pied: { ajouterOff: boolean; ajouterTitre?: string; regrouper: boolean; detail: { lignes: string; total: string; ecart: boolean } | null };
   onAjouter: () => void; onRegrouper: () => void; children?: React.ReactNode;
@@ -31,16 +31,17 @@ export function Liste(p: {
           {b.cle === 'malt' && p.rattacherTous ? <button type="button" data-dp-mouture-tous onClick={p.rattacherTous.onTous} className="min-h-6 whitespace-nowrap rounded-control border border-ebc-straw bg-ebc-straw px-1.5 text-xs font-semibold text-cave-950">Rattacher les {p.rattacherTous.n}</button> : null}
           {b.eqb ? <span className="ml-auto whitespace-nowrap rounded-control bg-cave-950 px-1.5 text-xs leading-[18px] text-cave-200">{b.eqb}</span> : null}
           <span data-dp-sous-qte className={`${b.eqb ? '' : 'ml-auto'} mr-[57px] whitespace-nowrap text-right font-mono text-xs font-semibold text-cave-200`}>{b.qte.map((e, i) => <React.Fragment key={i}>{i ? ' + ' : ''}{e.inconnue
-            ? <i className="rounded-control border border-dashed border-attention bg-cave-950 px-1 font-normal not-italic text-attention" title="Unité à préciser sur une ligne">{`${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?`}</i>
-            : `${String(e.n).replace('.', ',')} ${e.unite}`}</React.Fragment>)}</span>
-          <span data-dp-sous-montant className="w-[54px] shrink-0 text-right font-mono text-sm font-semibold text-cave-50">{fr2(b.cents)}{b.incomplet ? <span className="text-attention"> + ?</span> : null}</span>
+            ? <i data-dp-niveau="inconnu" className="rounded-control border border-dashed border-alert bg-cave-950 px-1 font-normal not-italic text-alert" title="Unité à remplir sur une ligne">{`${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?`}</i>
+            : e.niveau === 'repris' ? <i data-dp-niveau="repris" className="not-italic text-attention underline decoration-dotted decoration-attention underline-offset-2" title="Unité déduite sur une ligne : à contrôler">{texteQte([e])}</i>
+            : texteQte([e])}</React.Fragment>)}</span>
+          <span data-dp-sous-montant {...(b.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold ${b.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(b.cents)}{b.incomplet ? ' + ?' : null}</span>
         </div>
         <div>{b.ids.map(id => <React.Fragment key={id}>{p.lignes.get(id)}</React.Fragment>)}</div>
       </div>) : p.papier ? <div data-dp-bande="papier">
         <div data-dp-bande-entete className="dp-p3c-bande-entete flex items-center gap-1.5 dp-p3c-t-papier px-2.5 text-sm">
           <strong className="font-semibold text-cave-50">Ordre du papier</strong>
           <span className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{p.papier.ids.length}</span>
-          <span data-dp-sous-montant className="ml-auto w-[54px] shrink-0 text-right font-mono text-sm font-semibold text-cave-50">{fr2(p.papier.cents)}{p.papier.incomplet ? <span className="text-attention"> + ?</span> : null}</span>
+          <span data-dp-sous-montant {...(p.papier.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`ml-auto min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold ${p.papier.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(p.papier.cents)}{p.papier.incomplet ? ' + ?' : null}{p.papier.port ? <span data-dp-papier-port className="font-normal text-cave-400"> + port {fr2(p.papier.port)}</span> : null}</span>
         </div>
         <div>{p.papier.ids.map(id => <React.Fragment key={id}>{p.lignes.get(id)}</React.Fragment>)}</div>
       </div> : null}

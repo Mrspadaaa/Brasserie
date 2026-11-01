@@ -45,24 +45,24 @@ afterEach(cleanup);
 describe('R2, R3, R4 : le bouton dit le nom qui sera écrit', () => {
   it('R2 : « Target 11.3% » face à « Target 11.8% » : « Créer « Target bis » », ⇄ « Choisir un autre article » (r2b) gardé', async () => {
     const view = await lire();
-    expect(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' })).toBeInTheDocument();
-    expect(within(ligne(view, 8)).getByRole('button', { name: 'Choisir un autre article' })).toBeInTheDocument();
+    expect(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' })).toBeInTheDocument();
+    expect(within(ligne(view, 8)).getAllByRole('button', { name: 'Choisir un autre article' }).length).toBeGreaterThan(0); // D275 (voie f3) : ⇄ de la barre et du plateau
   });
   it('R3 : « Cascade CH » face à « Cascade US » : « Créer « Cascade CH » » et ⇄ (aujourd’hui : aucun bouton, la ligne n’a pas d’α)', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-Cascade', 'Cascade US', 'Houblon', 'g')]);
-    expect(within(ligne(view, 9)).getByRole('button', { name: 'Créer « Cascade CH »' })).toBeInTheDocument();
-    expect(within(ligne(view, 9)).getByRole('button', { name: 'Choisir un autre article' })).toBeInTheDocument();
+    expect(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' })).toBeInTheDocument();
+    expect(within(ligne(view, 9)).getAllByRole('button', { name: 'Choisir un autre article' }).length).toBeGreaterThan(0); // D275 (voie f3) : ⇄ de la barre et du plateau
   });
   it('R4 : Target et Target bis au stock, « Target 12.5% » : « Créer « Target bis 2 » »', async () => {
     const view = await lire({ 7: { name: 'Target 12.5%', alphaPct: 12.5, alphaPctLu: 12.5 } }, [article('MP-Tbis', 'Target bis', 'Houblon', 'g', { alphaPct: 11.3 })]);
-    expect(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis 2 »' })).toBeInTheDocument();
+    expect(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis 2 »' })).toBeInTheDocument();
   });
 });
 
 describe('R9 : un nom tapé n’est jamais écrasé', () => {
   it('« Créer » ouvre le champ « Nom de l’article » pré-rempli ; ce qu’on y tape reste après un changement de libellé, et part dans le brouillon enregistré', async () => {
     const view = await lire();
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
     expect(champ).toHaveValue('Target bis');
     fireEvent.change(champ, { target: { value: 'Target du Banc' } });
@@ -71,7 +71,7 @@ describe('R9 : un nom tapé n’est jamais écrasé', () => {
   });
   it('vider le champ rend la main au nom proposé', async () => {
     const view = await lire();
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
     fireEvent.change(champ, { target: { value: 'Autre' } });
     fireEvent.change(champ, { target: { value: '' } });
@@ -103,9 +103,9 @@ describe('R12, R13 : le menu « Créer un nouvel article »', () => {
     const apercu = { outcome: { ok: true, result: resultat, proofDataUrl: '', fileName: 'f.pdf', mimeType: 'application/pdf' }, fichier: { name: 'f.pdf', size: 1000, type: 'application/pdf' }, stocks, transactions: [], etat: '3', drive: 'ok', reseau: true, enregistrer } as any;
     const view = render(<ExpenseSheet onClose={() => {}} onSaved={() => {}} apercu={apercu}/>);
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Créer « Cascade CH »' }));
+    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
     fireEvent.change(await screen.findByLabelText('Nom de l’article, ligne 9'), { target: { value: 'Cascade du Banc' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'g' })[0]);
+    // D275 (voie f3) : Sabro « 30 » prend l'unité de ses voisines (g, jaune) ; plus de « g » à toucher avant d'enregistrer.
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
     await waitFor(() => expect(enregistrer).toHaveBeenCalledTimes(1), { timeout: 4000 });
     const brouillon = (enregistrer.mock.calls[0] as any[])[0];
@@ -117,11 +117,12 @@ describe('R12, R13 : le menu « Créer un nouvel article »', () => {
 describe('la pastille dit la fiche et sa marque', () => {
   it('une ligne nouvelle sans fiche reste « nouveau » ; Cascade CH : « fiche Cascade US · approchée » ; Target bis : « fiche Target UK » ; le plateau le redit', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-Cascade', 'Cascade US', 'Houblon', 'g')]);
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Créer « Cascade CH »' }));
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
+    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('fiche Cascade US · approchée'), { timeout: 5000 });
     expect(ligne(view, 8).querySelector('[data-dp-pastille]')?.textContent).toBe('fiche Target UK');
-    expect(ligne(view, 9).querySelector('[data-dp-fiche]')?.textContent).toBe('fiche Cascade US · approchée (pas exactement la bonne)');
+    // VERDICT-f3 défaut 1 (voie f3) : la fiche ne se dit qu'une fois, par la pastille ; sa phrase entière est son titre (HEAD : un [data-dp-fiche] en plus).
+    expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.getAttribute('title')).toBe('fiche Cascade US · approchée (pas exactement la bonne)');
     expect(ligne(view, 20).querySelector('[data-dp-pastille]')?.textContent ?? '').not.toMatch(/fiche/);
   });
 });
@@ -131,7 +132,7 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     const view = await lire();
     expect(ligne(view, 8).querySelector('[data-dp-qte]')?.textContent).toMatch(/40 g/); expect(ligne(view, 8).querySelector('[data-dp-alpha]')?.textContent).toMatch(/α.*11,3/);
     expect(ligne(view, 8).textContent).toContain('Target α 11,8');
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     await screen.findByLabelText('Nom de l’article, ligne 8');
     expect(ligne(view, 8).querySelector('[data-dp-valeurs]')?.textContent).toBe('α 11,3');
     expect(ligne(view, 8).querySelector('[data-dp-alpha]')?.textContent).toMatch(/α.*11,3/);
@@ -142,22 +143,22 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     expect(ligne(view, 1).textContent).toContain('Münchner Malz 20 EBC');
     expect(ligne(view, 9).textContent).not.toMatch(/α/);
     expect(ligne(view, 9).textContent).toContain('Cascade US');
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Créer « Cascade CH »' }));
+    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
     await screen.findByLabelText('Nom de l’article, ligne 9');
     expect(ligne(view, 9).querySelector('[data-dp-valeurs]')?.textContent).toBe('origine CH');
   });
   it('n° 6 : le bouton dit « Target bis » ou « Créer CH » (nom complet dans son nom accessible), bouton et ⇄ dans un même groupe', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-C', 'Cascade US', 'Houblon', 'g')]);
-    const target = within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' });
+    const target = within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' });
     expect(target.textContent).toBe('Target bis');
-    const cascade = within(ligne(view, 9)).getByRole('button', { name: 'Créer « Cascade CH »' });
-    expect(cascade.textContent).toBe('Créer CH');
+    const cascade = within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' });
+    expect(cascade.textContent).toBe('Cascade CH'); // D275 (voie f3) : un bis est nouvel article d'office ; le bouton le garde, il ne « crée » plus (HEAD : « Créer CH »)
     expect(cascade.parentElement?.querySelector('button[aria-label="Choisir un autre article"]')).toBeTruthy();
   });
   it('n° 7 : la pastille « approchée » prend la teinte d’attention ; la fiche exacte reste grise', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-C', 'Cascade US', 'Houblon', 'g')]);
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Créer « Cascade CH »' }));
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
+    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('fiche Cascade US · approchée'), { timeout: 5000 });
     expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.className).toMatch(/text-attention/);
     expect(ligne(view, 8).querySelector('[data-dp-pastille]')?.className).not.toMatch(/text-attention/);
@@ -166,12 +167,12 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     const view = await lire();
     expect(within(ligne(view, 8)).getByText('Libellé de la facture')).toBeInTheDocument();
   });
-  it('n° 9 : une ligne d’ingrédient inconnue (Goldings East Kent) a son bouton « Créer « … » » sur la ligne, sans ⇄ ni article grisé ; un clic la crée', async () => {
+  it('n° 9 (D275, voie f3) : une ligne d’ingrédient inconnue (Goldings East Kent) est nouvel article d’office, picto « nouvel article », aucun bouton « Créer »', async () => {
     const view = await lire();
-    const bouton = within(ligne(view, 9)).getByRole('button', { name: 'Créer « Goldings East Kent »' });
+    expect(within(ligne(view, 9)).queryByRole('button', { name: /^Créer/ })).toBeNull();
+    expect(ligne(view, 9).querySelector('[data-dp-creer]')).toBeNull();
     expect(within(ligne(view, 9)).queryByRole('button', { name: /^Relier à/ })).toBeNull();
-    expect(screen.getByLabelText('Stock ligne 9')).toHaveValue('none');
-    fireEvent.click(bouton);
+    expect(ligne(view, 9).querySelector('summary svg[aria-label="nouvel article"]')).not.toBeNull();
     expect(screen.getByLabelText('Stock ligne 9')).toHaveValue('new');
     expect(await screen.findByLabelText('Nom de l’article, ligne 9')).toHaveValue('Goldings East Kent');
   });
@@ -180,7 +181,7 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
 describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, les accords, « origine CH »', () => {
   it('n° 13 : tant que le nom tapé est refusé, la tête de ligne garde le nom proposé ; le nom tapé reste dans son champ avec le message', async () => {
     const view = await lire({}, [], []);
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
     fireEvent.change(champ, { target: { value: 'Galaxy' } });
     expect(ligne(view, 8).querySelector('[data-dp-nom]')?.textContent).toBe('Target bis');
@@ -192,7 +193,7 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
   });
   it('n° 14 : ⇄ « Choisir un autre article » ouvre le plateau sur le choix de l’article et ne relie rien ; l’article se choisit dans le plateau', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-Cascade', 'Cascade US', 'Houblon', 'g')]);
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Choisir un autre article' }));
+    fireEvent.click(within(ligne(view, 9)).getAllByRole('button', { name: 'Choisir un autre article' })[0]); // D275 (voie f3) : le ⇄ de la barre et celui du plateau (« article « … » · nouvel article ⇄ »)
     expect(screen.getByLabelText('Stock ligne 9')).toHaveValue('existing');
     expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('article ?');
     expect(within(ligne(view, 9)).getByLabelText('Article')).toBeInTheDocument();
@@ -210,9 +211,15 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
     const compte = () => view.container.querySelector('[data-dp="compte-liens"]')?.textContent ?? '';
     expect(compte()).toMatch(/\d+ relié/);
     expect(compte()).not.toMatch(/\b0 nouveau/); // verdict p3c-port, point 2 : un compte à zéro n'est pas affiché (HEAD : « 0 nouveau » attendu)
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
-    await waitFor(() => expect(compte()).toMatch(/1 nouveau(?!x)/));
-    fireEvent.click(within(ligne(view, 20)).queryByRole('button', { name: /^Créer «/ }) ?? within(ligne(view, 9)).getByRole('button', { name: /^Créer «/ }));
-    await waitFor(() => expect(compte()).toMatch(/2 nouveaux/));
+    // D275 (voie f3) : les ingrédients sans article sont nouveaux d'office ; un bis compte « bis » tant qu'il n'est pas gardé, puis « nouveau ».
+    const n = () => Number(/(\d+) nouveaux?/.exec(compte())?.[1] ?? 0);
+    const avant = n();
+    expect(avant).toBeGreaterThan(1);
+    expect(compte()).toMatch(new RegExp(`${avant} ${avant > 1 ? 'nouveaux' : 'nouveau(?!x)'}`));
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
+    await waitFor(() => expect(n()).toBe(avant + 1));
+    fireEvent.change(screen.getByLabelText('Stock ligne 9'), { target: { value: 'none' } });
+    await waitFor(() => expect(n()).toBe(avant));
+    expect(compte()).toMatch(/1 hors stock|\d+ hors stock/);
   });
 });

@@ -8,7 +8,11 @@ import type { Contexte } from './donnees';
  * des fermentescibles de a1. Jamais Gemini, jamais le réseau : les catalogues sont passés en argument (le catalogue plein des houblons, ou rien).
  * Une recherche sans réponse sûre rend `undefined` : aucune fiche devinée. Les levures n'ont pas de fiche (T11 : le risque est une fausse fiche de souche).
  */
-export interface Catalogues { houblons?: readonly CatalogueHop[] }
+export interface Catalogues {
+  houblons?: readonly CatalogueHop[];
+  /** Les levures du catalogue (id et nom), pour nommer un lien `levure:<id>` posé par f4 ; absentes, la fiche se dit « liée ». */
+  levures?: readonly { id: string; name: string }[];
+}
 export interface FicheTrouvee { id: string; nom: string; approchee: boolean }
 
 /** Pays du catalogue (en français) d'un code d'origine. `UK` et `GB` sont le même pays. Un code absent de la table n'a pas de pays connu. */
@@ -64,6 +68,9 @@ export function ficheLaPlusProche(nom: string, contexte: Contexte, origine: stri
 
 /** Le nom affiché d'une fiche (« Cascade US »), lu dans le catalogue à partir de son identifiant ; `undefined` si le catalogue n'est pas là. */
 export function nomDeFiche(id: string, cat: Catalogues): string | undefined {
+  // f4 : un lien de levure (`levure:<id>`) se nomme par le catalogue des levures ; une fiche trouvée en ligne (`cle:…`) n'a pas de nom de catalogue.
+  if (id.startsWith('levure:')) return cat.levures?.find(x => x.id === id.slice('levure:'.length))?.name;
+  if (id.startsWith('cle:')) return undefined;
   const h = cat.houblons?.find(x => x.id === id);
   if (h) return nomDeVariete(h);
   return NOMS.find(n => n.slug === id)?.canonique;

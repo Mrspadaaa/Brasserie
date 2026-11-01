@@ -94,6 +94,17 @@ const fold = text => String(text ?? '').normalize('NFD').replace(/[\u0300-\u036f
 const cents = value => Math.round(Number(value) * 100);
 const isoOf = swiss => (/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(swiss ?? '') ?? []).slice(1).reverse().join('-');
 
+/** D281 : base → nameFr d'une sortie réelle de `scripts/banc-noms-fr.ts` (`results.json`, hors Git) ; vide sans `--noms`. */
+function loadNomsRejoues(file) {
+  const noms = new Map();
+  if (!file) return noms;
+  for (const appel of JSON.parse(readFileSync(file, 'utf8')).appels ?? []) {
+    const base = new Map((appel.plan?.entrees ?? []).map(e => [e.i, e.base]));
+    for (const n of Array.isArray(appel.noms) ? appel.noms : []) if (base.has(n.i) && typeof n.nameFr === 'string' && n.nameFr.trim()) noms.set(base.get(n.i), n.nameFr.trim());
+  }
+  return noms;
+}
+
 /** Replay manifest: images and recorded outputs read by path; nothing of them is copied into this file. */
 function loadReplay(file) {
   const manifest = JSON.parse(readFileSync(file, 'utf8'));
@@ -218,7 +229,8 @@ async function outer() {
     }, null, 2));
     const env = { ...process.env, JAVA_HOME, PATH: `${join(JAVA_HOME, 'bin')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}`,
       EMU_OUT: out, EMU_TMP: tmp, EMU_WIDTHS: option('widths', '390,1280'), EMU_CASES: option('cases', ALL_CASES.filter(name => name !== 'doc14' || replayDocs.doc14).join(',')),
-      EMU_PORT: String(port), EMU_RULES_SHA: rules.sha, EMU_REPLAY: resolve(replay), EMU_VITE_CONFIG: viteConfig ?? '' };
+      EMU_PORT: String(port), EMU_RULES_SHA: rules.sha, EMU_REPLAY: resolve(replay), EMU_VITE_CONFIG: viteConfig ?? '',
+      EMU_NOMS: option('noms') ? resolve(option('noms')) : '' };
     for (const secret of ['GEMINI_API_KEY', 'GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY', 'GOOGLE_GENAI_API_KEY', 'GEMINI_KEY'])
       delete env[secret];
     const inner = `"${process.execPath}" "${SELF}" --inner`;
@@ -304,6 +316,14 @@ function callableAnswer(c, request) {
   const ai = c.ai, doc = c.docs[ai.doc];
   const call = { task: data.task, tier: data.tier, file: data.file, mode: ai.mode, doc: ai.doc, at: new Date().toISOString() };
   c.calls.ai.push(call);
+  // f4-enrichir (cas `enrichir` seulement) : la recherche de fiche rejouée ; hors de ce cas, la ligne suivante refuse comme avant.
+  if (c.enrichir && data.task === 'lookupIngredient') return json(enrichirAnswer(c, data.context ?? {}));
+  // D281 (`--noms`) : le français des noms rejoué depuis une passe réelle du banc des noms, par nom de base ; une base inconnue reste sans réponse.
+  if (c.nomsFr.size && data.task === 'traduireNoms') {
+    const noms = (Array.isArray(data.context?.entrees) ? data.context.entrees : []).map(e => ({ i: e?.i, nameFr: c.nomsFr.get(e?.base) })).filter(n => n.nameFr);
+    call.nomsRendus = noms.length;
+    return json({ ok: true, data: { noms }, model: 'rejeu-noms', elapsedMs: 900 });
+  }
   if (data.task !== 'scanInvoice') return fail(400, 'FAILED_PRECONDITION', 'Banc : seule la lecture de justificatif est rejouée.');
   call.expectedFile = doc ? data.file?.sha256 === doc.sha256 : false;
   if (ai.mode === 'refus') return fail(429, 'RESOURCE_EXHAUSTED', 'Budget IA du mois atteint.');
@@ -1320,6 +1340,15 @@ async function caseDoc14(c) {
   const before = await dbSnapshot(c.db);
   const chooser = await openInvoiceEntry(c);
   await scan(c, 'doc14', { chooser, delayMs: 1500 });
+  // D281 : avec `--noms`, le français rejoué se pose sur les rangées après la lecture, sans la retarder.
+  if (c.nomsFr.size) {
+    const valeurs = [...c.nomsFr.values()];
+    await waitFor(async () => c.calls.ai.some(call => call.task === 'traduireNoms'), 'doc14 : appel traduireNoms', 15000);
+    const rendus = c.calls.ai.filter(call => call.task === 'traduireNoms').reduce((n, call) => n + (call.nomsRendus ?? 0), 0);
+    let fr = [];
+    await waitFor(async () => { fr = (await readRows(c)).filter(r => valeurs.some(v => r.shown.includes(v))); return fr.length > 0; }, 'doc14 : noms français posés', 15000).catch(() => {});
+    c.check(rendus > 0 && fr.length > 0, 'doc14 : les noms français rejoués s’affichent sur les rangées (D281)', { rendus, rangeesEnFrancais: fr.length });
+  }
   const read = await readSheet(c);
   c.record('doc14-revue', read);
   await shoot(c, 'doc14-repos');
@@ -1779,8 +1808,103 @@ async function caseDriveFond(c) {
   resetDriveMode(c);
 }
 
+// ───────────────────────────── f4-enrichir : la fiche des articles neufs, en arrière-plan ─────────────────────────────
+
+/** Les réponses rejouées de `lookupIngredient` (format brut d'`aiTask`) : produits synthétiques du banc ; tout autre produit → `found: false`. */
+function enrichirAnswer(c, context) {
+  const name = String(context.name ?? ''), kind = String(context.kind ?? '');
+  c.enrichir.appels.push({ kind, name, manquant: context.manquant, supplier: context.supplier, reference: context.reference });
+  if (kind === 'malt' && /ambre/i.test(name))
+    return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: true, name: 'Ambre 60', source: 'Fiche technique de la Malterie du Banc (banc)', sourceUrl: 'https://malterie-du-banc.test/ambre-60', colorEbc: 60, potentialPpg: 33 } };
+  return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: false } };
+}
+const f4Ligne = (id, description, unit, quantity, more = {}) => ({ id, description, kind: 'ingredient', amount: 10, quantity, unit, stockAction: 'new', equipmentAction: 'none', ...more });
+const f4Saisie = (submissionId, lines) => ({ submissionId, date: '01.11.2026', vendor: 'Fournisseur du Banc', invoiceNumber: submissionId, description: 'Achat du banc f4',
+  category: 'brassage', amount: lines.length * 10, lines, paymentStatus: 'unpaid', paymentMethod: 'bank', paymentDate: '', dueDate: '', sourceCurrency: 'CHF', duplicateConfirmed: true });
+/** « Confirmer » par la fonction de l'App (la feuille fermée : f4 ne tourne qu'ensuite) ; le module est celui que l'App a chargé. */
+async function f4Confirmer(c, draft) {
+  return c.page.evaluate(async value => {
+    try { const m = await import('/src/services/purchaseEntry.ts'); return { ok: true, tx: (await m.savePurchaseWithProofReceipt(value)).transactionId }; }
+    catch (error) { return { ok: false, error: String(error?.message ?? error).slice(0, 400) }; }
+  }, draft);
+}
+/** La file de f4 au repos (plus aucun travail `attend`), lue dans la page. */
+async function f4Repos(c, timeout = 90000) {
+  return waitFor(() => c.page.evaluate(async () => {
+    const f = await import('/src/services/enrichissement.ts');
+    await f.runEnrichissement('banc'); await f.enrichissementAuRepos();
+    const r = await f.resumeEnrichissement();
+    return r.enAttente === 0 ? r : false;
+  }), 'file de f4 au repos', timeout);
+}
+const f4Article = async (c, ref) => (await c.db.doc(`stockItems/${ref}`).get()).data() ?? null;
+
+/**
+ * enrichir (f4, PLAN § 9) : une dépense de cinq articles neufs, la feuille fermée. Windsor → catalogue des levures ; Target → sa variété ; l'ambre →
+ * rempli en ligne (rejoué) ; la levure du Banc → cherchée, introuvable ; le malt générique sans code → aucun appel. 2 appels `lookupIngredient`.
+ * Puis, réseau coupé, la même ambre en « bis » (15 EBC imprimé) : rien n'est écrit hors ligne ; au retour, 0 appel de plus, même `fiche.cle`, son EBC lu.
+ */
+async function caseEnrichir(c) {
+  if (String(process.env.EMU_CASES) !== 'enrichir') throw Error('Le cas enrichir se lance seul (--cases enrichir) : il allume la recherche de fiche simulée.');
+  c.enrichir = { appels: [] };
+  const erreurs = c.entry.errors.length;
+  // Les contrôles de ce cas, comptés pour la ligne « ENRICHIR OK » (un arrêt en route laisse « ENRICHIR » absent : échec).
+  const verifier = c.check, resultats = [];
+  c.check = (ok, label, data) => { resultats.push(!!ok); verifier(ok, label, data); };
+  const pris = new Set(c.plan.seeds.map(seed => fold(seed.name)));
+  const generique = ['Maris Otter', 'Roggenmalz', 'Wiener Malz', 'Melanoidin Malz'].find(n => !pris.has(fold(n)));
+  const sub = `f4-enrichir-${c.width}-1`;
+  const lignes = [
+    f4Ligne('e0', generique, 'kg', 25, { stockCategory: 'Malt' }),
+    f4Ligne('e1', 'LALLEMAND Windsor 11g', 'Stk', 2, { stockCategory: 'Levure' }),
+    f4Ligne('e2', 'Target 11.3%', 'g', 100, { stockCategory: 'Houblon' }),
+    f4Ligne('e3', 'Malterie du Banc Ambre 60', 'kg', 5, { stockCategory: 'Malt', sourceReference: 'MB-A60' }),
+    f4Ligne('e4', 'Levure du Banc 7', 'Stk', 1, { stockCategory: 'Levure' }),
+  ];
+  const premiere = await f4Confirmer(c, f4Saisie(sub, lignes));
+  c.record('enrichir-confirmation-1', premiere);
+  if (!premiere.ok) throw Error(`enrichir : la première dépense est refusée : ${premiere.error}`);
+  const resume1 = await f4Repos(c);
+  const [malt, windsor, target, ambre, banc7] = await Promise.all([0, 1, 2, 3, 4].map(i => f4Article(c, `MP-${sub}-${i}`)));
+  const appels1 = c.enrichir.appels.length;
+  c.record('enrichir-articles-1', { resume1, appels: c.enrichir.appels, malt: malt?.fiche ?? null, windsor: windsor?.fiche ?? null, target: target?.fiche ?? null, ambre: ambre && { fiche: ambre.fiche, colorEbc: ambre.colorEbc, potentialPpg: ambre.potentialPpg }, banc7: banc7?.fiche ?? null });
+  c.check(windsor?.fiche?.id === 'levure:lalbrew-windsor' && windsor.fiche.par === 'catalogue' && !!windsor.yeastLab && windsor.yeastLot === undefined,
+    'enrichir : Windsor lié au catalogue des levures (laboratoire rempli, aucun lot)', { fiche: windsor?.fiche, yeastLab: windsor?.yeastLab });
+  c.check(/target/.test(String(target?.fiche?.id)) && target?.alphaPct === 11.3 && !!target?.fiche?.cle, 'enrichir : Target lié à sa variété, α du lot gardé', { fiche: target?.fiche, alphaPct: target?.alphaPct });
+  c.check(ambre?.fiche?.par === 'en-ligne' && ambre.potentialPpg === 33 && ambre.fiche.remplis?.potentialPpg?.niveau === 'repris' && !!ambre.fiche.remplis.potentialPpg.deduit,
+    'enrichir : l’ambre rempli en ligne (repris, « peut être calculé », source citée)', { fiche: ambre?.fiche, potentialPpg: ambre?.potentialPpg });
+  c.check(!banc7?.fiche && banc7?.yeastLab === undefined, 'enrichir : la levure du Banc introuvable : rien d’inventé', { article: banc7 });
+  c.check(appels1 === 2 && c.enrichir.appels.every(a => !/montant|CHF|adresse/i.test(JSON.stringify(a))), 'enrichir : 2 appels `lookupIngredient` exactement, sans montant ni adresse', { appels: c.enrichir.appels });
+  await click(c.page, 'nav button', 'Stocks');
+  await sleep(1200);
+  await shoot(c, 'enrichir-stock-1');
+
+  // La même ambre en « bis », réseau coupé : rien d'écrit hors ligne ; au retour, la fiche retenue, aucun appel de plus.
+  const sub2 = `f4-enrichir-${c.width}-2`;
+  await c.setOffline(true);
+  const seconde = await f4Confirmer(c, f4Saisie(sub2, [f4Ligne('e0', 'Malterie du Banc Ambre 60 15 EBC', 'kg', 3, { stockCategory: 'Malt', sourceReference: 'MB-A60' })]));
+  c.record('enrichir-confirmation-2', seconde);
+  await sleep(4000);
+  const horsLigne = await f4Article(c, `MP-${sub2}-0`);
+  c.check(!horsLigne?.fiche, 'enrichir : hors ligne, aucune fiche écrite', { article: horsLigne });
+  await c.setOffline(false);
+  const resume2 = await f4Repos(c);
+  const bis = await f4Article(c, `MP-${sub2}-0`);
+  c.record('enrichir-articles-2', { resume2, bis: bis && { name: bis.name, fiche: bis.fiche, colorEbc: bis.colorEbc, potentialPpg: bis.potentialPpg } });
+  c.check(seconde.ok && bis?.fiche?.cle === ambre?.fiche?.cle && bis?.colorEbc === 15 && c.enrichir.appels.length === appels1,
+    'enrichir : le « bis » reprend la fiche de l’ambre (même clé), garde son EBC lu, aucun appel de plus', { seconde, bis, appels: c.enrichir.appels.length });
+  await reloadApp(c);
+  await click(c.page, 'nav button', 'Stocks');
+  await sleep(1200);
+  await shoot(c, 'enrichir-stock-2');
+  const nouvelles = c.entry.errors.slice(erreurs);
+  c.check(!nouvelles.length, 'enrichir : 0 erreur de console', { erreurs: nouvelles });
+  c.check = verifier;
+  console.log(`${resultats.length === 8 && resultats.every(Boolean) ? 'ENRICHIR OK' : 'ENRICHIR KO'} ${c.width} · ${resultats.filter(Boolean).length}/8 · appels ${c.enrichir.appels.length}`);
+}
+
 const CASES = { 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
-  'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules };
+  'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules, enrichir: caseEnrichir };
 
 async function inner() {
   process.on('unhandledRejection', error => console.log(`rejet non attendu (consigné) : ${String(error?.stack ?? error).slice(0, 600)}`));
@@ -1792,6 +1916,7 @@ async function inner() {
   if (process.env.FIREBASE_AUTH_EMULATOR_HOST !== `127.0.0.1:${EMULATOR_PORTS.auth}`) throw Error('Auth émulée requise');
   if (process.env.GEMINI_API_KEY !== undefined) throw Error('Aucune clé Gemini dans ce parcours');
   const docs = loadReplay(process.env.EMU_REPLAY);
+  const nomsFr = loadNomsRejoues(process.env.EMU_NOMS);
   const plan = seedPlan(docs);
   const report = { project: PROJECT, rulesSha: process.env.EMU_RULES_SHA, widths, cases, startedAt: new Date().toISOString(),
     replay: Object.fromEntries(Object.values(docs).map(doc => [doc.id, { fichier: relative(dirname(process.env.EMU_REPLAY), doc.image), sha256: doc.sha256.slice(0, 12) }])),
@@ -1809,7 +1934,9 @@ async function inner() {
     VITE_FIREBASE_MEASUREMENT_ID: '', VITE_RECAPTCHA_SITE_KEY: '', VITE_APPCHECK_DEBUG_TOKEN: '', VITE_AUTHORIZED_ACCOUNTS: USER.email,
     // The process environment wins over a local .env: the emulated App never shows the brewery's real coordinates.
     VITE_COMPANY_NAME: 'Brasserie du Banc', VITE_COMPANY_OWNER: 'Brasseur du Banc', VITE_COMPANY_ADDRESS: 'Rue du Banc 1',
-    VITE_COMPANY_NPA: '1700 Fribourg', VITE_COMPANY_IBAN: '', VITE_COMPANY_UID: '' };
+    VITE_COMPANY_NPA: '1700 Fribourg', VITE_COMPANY_IBAN: '', VITE_COMPANY_UID: '',
+    // f4-enrichir : la recherche de fiche n'est allumée (sur les émulateurs) que pour le cas `enrichir` lancé seul ; les autres cas ne changent pas.
+    ...(cases.join(',') === 'enrichir' ? { VITE_ENRICHISSEMENT_IA: 'emulateur' } : {}) };
   const vite = spawn(process.execPath, [join(ROOT, 'node_modules/vite/bin/vite.js'), '--host', '127.0.0.1', '--port', String(port), '--strictPort',
     ...(process.env.EMU_VITE_CONFIG ? ['--config', process.env.EMU_VITE_CONFIG] : [])],
     { cwd: ROOT, env: viteEnv, stdio: ['ignore', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
@@ -1839,7 +1966,7 @@ async function inner() {
       mkdirSync(downloads, { recursive: true });
       const cdp = await browser.target().createCDPSession();
       await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads, browserContextId: context.id });
-      const c = { width, base, out, db, docs, entry, downloads, shotIndex: 0, plan, page: null,
+      const c = { width, base, out, db, docs, nomsFr, entry, downloads, shotIndex: 0, plan, page: null,
         ai: { mode: 'replay', doc: null, delayMs: 0 }, calls: { ai: [], drive: [] }, driveMode: { delayMs: 0, fail: null }, tokenMode: null,
         drive: { files: new Map(), sessions: new Map(), next: 0, log: [], uploads: [], downloads: [] },
         step: (label, data = {}) => { entry.steps.push({ label, at: new Date().toISOString(), ...data }); console.log(`${width} · ${label}`); write(); },

@@ -32,7 +32,24 @@ export interface PurchaseLineDraft {
    * (voie s6-fiche, T3) : le reste (nom proposé, α, EBC, origine, fiche) est dérivé de la ligne et du stock COURANTS à l'écran et à l'enregistrement.
    */
   articleName?:string;
+  /**
+   * D275 : la désignation telle qu'imprimée (nom et variante lus), quand `description` en est la base (sans options ni suffixe d'unité) : rien ne se perd, le plateau la montre.
+   * Facultatif ; brouillon seulement (la dépense enregistrée garde `description`, l'original reste au justificatif).
+   */
+  imprime?:{nom:string;variante?:string};
+  /**
+   * D280 : la désignation en français de la base de l'imprimé (tâche `traduireNoms`, `src/services/nomsFr.ts`), arrivée après la lecture. Affichage seulement :
+   * le rapprochement, le nom de l'article neuf et la validation lisent `description`. Facultatif ; brouillon seulement.
+   */
+  nameFr?:string;
+  /**
+   * D277 (voie f2) : l'unité DÉDUITE quand `unit` (l'imprimé, jamais réécrit, D213) est illisible ; `sur` ou `repris` seulement (une unité inconnue n'en a pas).
+   * Lue par la validation, le mouvement de stock et l'article neuf (`uniteEffective`) ; le prix unitaire n'est jamais gardé sur elle.
+   */
+  uniteDeduite?:{unite:string;niveau:'sur'|'repris';regle:string;raison:string};
 }
+/** L'unité que le stock lit pour une ligne : l'imprimée (ou tapée) si elle est lisible, sinon l'unité déduite (D277), sinon l'imprimée telle quelle (illisible : refusée). */
+export const uniteEffective=(line:Pick<PurchaseLineDraft,'unit'|'uniteDeduite'>):string=>isReadableUnit(line.unit)?line.unit:line.uniteDeduite&&isReadableUnit(line.uniteDeduite.unite)?line.uniteDeduite.unite:line.unit;
 export interface PurchaseDraft {
   submissionId:string; date:string; vendor:string; invoiceNumber:string; description:string;
   /** `typed` : saisie dans « Pour quoi ? » (jamais remplacée par une lecture) ; `scan` : proposée par le code. Absent : origine inconnue. */
@@ -351,12 +368,12 @@ function newArticleUnit(unit:string):string {
  * Une clé sans valeur n'est pas écrite. L'unité de l'article est celle de la table de l'appariement (D213) ; la ligne de la dépense garde l'unité imprimée.
  */
 export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
-  return {id:ref,ref,name:derive?.name??line.description.trim(),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(line.unit),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+  return {id:ref,ref,name:derive?.name??line.description.trim(),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(uniteEffective(line)),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
     ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
 }
 /** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
 function articleNeufDeLigne(line:PurchaseLineDraft,existants:readonly StockItem[],virtuels:readonly MembreVirtuel[],catalogues:Catalogues={},vendor?:string):ArticleNeuf {
-  return articleNeufDe(ligneDeBrouillon(line,vendor),existants,catalogues,line.articleName,virtuels);
+  return articleNeufDe(ligneDeBrouillon({...line,unit:uniteEffective(line)},vendor),existants,catalogues,line.articleName,virtuels);
 }
 /**
  * Le stock « existant » d'une saisie : sans les articles que CETTE saisie a déjà écrits (ref `MP-<saisie>-<ligne>`). Une saisie refusée puis rejouée retrouve ses articles dans le
@@ -425,14 +442,15 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   for (const line of draft.lines) {
     if (line.stockAction!=='none') {
       if (!['ingredient','cleaning','packaging'].includes(line.kind)) errors.push(`${line.description} : cette nature ne peut pas entrer en stock.`);
-      const quantityOk=Number.isFinite(line.quantity) && (line.quantity as number)>0, unitOk=isReadableUnit(line.unit);
+      // D277 : une unité déduite (sûre, ou reprise : il l'a vue en jaune) s'enregistre ; une unité inconnue, jamais.
+      const unit=uniteEffective(line), quantityOk=Number.isFinite(line.quantity) && (line.quantity as number)>0, unitOk=isReadableUnit(unit);
       if (!quantityOk) errors.push(`${line.description} : indique la quantité reçue et son unité.`);
-      // D214 : une unité illisible ('', '-', 'n/a') n'entre jamais en stock, article existant ou nouveau ; jamais devinée.
+      // D214 : une unité illisible ('', '-', 'n/a') sans unité déduite n'entre jamais en stock, article existant ou nouveau ; jamais devinée.
       if (!unitOk) errors.push(`${line.description} : unité à préciser (illisible ou absente). Rien n’entre en stock tant qu’elle manque.`);
       if (line.stockAction==='existing') {
         const target=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef);
         if (!target) errors.push(`${line.description} : sélectionne l’article de stock.`);
-        else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit:line.unit},target).ok) errors.push(`${line.description} : ${line.unit} ne se convertit pas en ${target.unit}.`);
+        else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit},target).ok) errors.push(`${line.description} : ${unit} ne se convertit pas en ${target.unit}.`);
       } else if (line.stockAction==='new' && ['ingredient','cleaning','packaging'].includes(line.kind)) {
         // S6 (T4) : jamais deux articles du même nom. Un nom tapé vide ou déjà pris (stock, autre ligne neuve de la saisie) est refusé ; un houblon ou un malt que
         // l'appariement relierait à un article existant ne crée pas de « bis » inventé : on relie la ligne.
@@ -619,15 +637,15 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
       stockRef=`MP-${draft.submissionId}-${index}`;
       const type=line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const;
       // L'article neuf prend l'unité de la table de l'appariement (« Kilo » → kg) ; la ligne de la dépense garde l'unité imprimée (D213).
-      const articleUnit=newArticleUnit(line.unit);
+      const articleUnit=newArticleUnit(uniteEffective(line));
       // S6 : le nom et les valeurs lues sont dérivés de la ligne et du stock COURANTS (la même fonction que l'écran) ; le nom tapé prime.
       newStocks.push({ type,item:neufs.get(line.id)!.item });
       receipts.push({ref:stockRef,qty:line.quantity,unit:articleUnit,lineId:line.id,type});
     } else if (line.stockAction==='existing') {
       const item=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef)!;
       // Même fonction que la validation : la quantité écrite est celle qui a été acceptée (inatteignable en erreur après `validatePurchaseCommit`).
-      const converted=stockQuantityFor({description:line.description,quantity:line.quantity!,unit:line.unit},item);
-      if (!converted.ok) throw Error(`${line.description} : ${line.unit||'unité absente'} ne se convertit pas en ${item.unit}.`);
+      const converted=stockQuantityFor({description:line.description,quantity:line.quantity!,unit:uniteEffective(line)},item);
+      if (!converted.ok) throw Error(`${line.description} : ${uniteEffective(line)||'unité absente'} ne se convertit pas en ${item.unit}.`);
       receipts.push({ref:item.ref,qty:converted.quantity,unit:item.unit,lineId:line.id,type:stocks.cleaning.some(s=>s.ref===item.ref)?'cleaning':'rawMaterials'});
     }
     if (line.equipmentAction==='new') {

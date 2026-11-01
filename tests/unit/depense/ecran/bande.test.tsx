@@ -32,6 +32,8 @@ const lire = async (ajout?: (result: any) => void) => {
   return view;
 };
 const chip = (view: { container: HTMLElement }, id: string) => view.container.querySelector<HTMLElement>(`[data-dp-chip="${id}"]`)!;
+/** D277 (voie f3) : la date manquante, rouge à sa place dans le bandeau. */
+const dateRouge = (view: { container: HTMLElement }) => view.container.querySelector<HTMLElement>('[data-dp="bandeau"] button[data-dp-niveau="inconnu"][aria-label="Date de l’achat à remplir"]');
 beforeEach(() => {
   cleanup(); vi.restoreAllMocks(); state.scanned.mockReset(); state.transactions = [];
   vi.spyOn(FirebaseAuthService, 'ensureDriveAccessToken').mockResolvedValue('synthetic-token'); vi.spyOn(FirebaseAuthService, 'hasDriveAccess').mockReturnValue(true); vi.spyOn(FirebaseAuthService, 'prepareGoogleLogin').mockResolvedValue();
@@ -39,30 +41,33 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('D233 : « y aller » va toujours quelque part', () => {
-  it('le banc `date` porte un seul point, `date-absente`, qui pèse, et la chip « Date » apparaît seule', async () => {
+  // D277 (voie f3) : la rangée des points part ; la date manquante est rouge à sa place, dans le bandeau (HEAD : une chip « Date »).
+  it('le banc `date` porte un seul point, `date-absente`, qui pèse : la date du bandeau est rouge, aucune chip', async () => {
     const view = await lire();
     const chips = Array.from(view.container.querySelectorAll('[data-dp="chips"] [data-dp-chip]')).map(c => c.getAttribute('aria-label'));
-    expect(chips).toEqual(['1 Date']);
+    expect(chips).toEqual([]);
+    expect(dateRouge(view)).not.toBeNull();
+    expect(dateRouge(view)!.className).toMatch(/border-alert/);
   });
 
-  it('la chip « Date » ouvre le bloc de la date et y met le focus', async () => {
+  it('la date rouge ouvre le bloc de la date et y met le focus', async () => {
     const view = await lire();
     const bloc = view.container.querySelector<HTMLDetailsElement>('[data-purchase-date]')!;
     bloc.open = false;
-    fireEvent.click(chip(view, 'Date|'));
+    fireEvent.click(dateRouge(view)!);
     expect(bloc.open).toBe(true);
     const champ = bloc.querySelector<HTMLInputElement>('input[type="date"]')!;
     expect(document.activeElement).toBe(champ);
   });
 
-  it('une date posée règle le point : la chip est barrée', async () => {
+  it('une date posée règle le point : la date n’est plus rouge', async () => {
     const view = await lire();
-    expect(chip(view, 'Date|').getAttribute('aria-label')).toBe('1 Date');
+    expect(dateRouge(view)).not.toBeNull();
     const bloc = view.container.querySelector<HTMLDetailsElement>('[data-purchase-date]')!;
     bloc.open = true;
     fireEvent.click(Array.from(bloc.querySelectorAll('button')).find(b => /^Aujourd/.test(b.textContent ?? ''))!);
-    await waitFor(() => expect(chip(view, 'Date|').getAttribute('aria-label')).toBe('1 Date réglé'));
-    expect(view.container.textContent).toMatch(/points revus/);
+    await waitFor(() => expect(dateRouge(view)).toBeNull());
+    expect(view.container.querySelector('[data-dp="bandeau"] button[aria-label^="Achat du "]')).not.toBeNull();
   });
 
   it('une date effacée après coup rouvre le point (jamais réglé sans date valide)', async () => {
@@ -70,9 +75,9 @@ describe('D233 : « y aller » va toujours quelque part', () => {
     const bloc = view.container.querySelector<HTMLDetailsElement>('[data-purchase-date]')!;
     bloc.open = true;
     fireEvent.change(bloc.querySelector('input[type="date"]')!, { target: { value: '2026-04-27' } });
-    await waitFor(() => expect(chip(view, 'Date|').getAttribute('aria-label')).toBe('1 Date réglé'));
+    await waitFor(() => expect(dateRouge(view)).toBeNull());
     fireEvent.change(view.container.querySelector<HTMLDetailsElement>('[data-purchase-date]')!.querySelector('input[type="date"]')!, { target: { value: '' } });
-    await waitFor(() => expect(chip(view, 'Date|').getAttribute('aria-label')).toBe('1 Date'));
+    await waitFor(() => expect(dateRouge(view)).not.toBeNull());
   });
 
   it('une seule date par défaut : la date du paiement n’est pas un champ avant « Autre date » ; le moyen de paiement reste là', async () => {
@@ -88,7 +93,7 @@ describe('D233 : « y aller » va toujours quelque part', () => {
   it('« y aller » sur Date, panneau Règlement ouvert : le focus va dans la date de l’achat, jamais dans le paiement', async () => {
     const view = await lire();
     fireEvent.click(view.container.querySelector('[data-dp="tuile-paye"]')!);
-    fireEvent.click(chip(view, 'Date|'));
+    fireEvent.click(dateRouge(view)!);
     const actif = document.activeElement as HTMLElement;
     expect(actif.closest('[data-purchase-date]')).not.toBeNull();
     expect(actif.closest('[data-purchase-payment]')).toBeNull();
@@ -119,8 +124,9 @@ describe('D233 : « y aller » va toujours quelque part', () => {
     const view = await lire(result => {
       result.points.push({ ...makePoint(code, 'inverifiable', 'items' as any, null, { regle: 'test', message: `Point ${code}.`, unite: 'texte', enjeu: 'info' }), source: 'contrôle', pese: true });
     });
-    const sansLigne = Array.from(view.container.querySelectorAll<HTMLElement>('[data-dp-chip]')).find(c => /^\d+ Lignes$/.test(c.getAttribute('aria-label') ?? '')); // le nom de la chip des trois codes (etat.ts NOMS)
-    expect(sansLigne, 'la chip du point existe').toBeTruthy();
+    // D277 (voie f3) : le point des lignes se dit sur la pastille « n lignes » du bandeau, à son niveau (HEAD : une chip « Lignes »).
+    const sansLigne = Array.from(view.container.querySelectorAll<HTMLElement>('[data-dp="bandeau"] button[data-dp-niveau]')).find(c => /lignes$/.test(c.getAttribute('aria-label') ?? ''));
+    expect(sansLigne, 'la pastille des lignes porte le point').toBeTruthy();
     expect(view.container.querySelector('[data-purchase-lines]')).toBeNull(); // la cible d'avant n'existe plus
     const vise = vi.fn(), avant = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollIntoView');
     (Element.prototype as any).scrollIntoView = vise;
