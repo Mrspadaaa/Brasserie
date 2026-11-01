@@ -70,5 +70,7 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
   qr-app suite 1 rendue (InvoiceScanReview rebranché, contrastes 5,74 et 5,67) ; qr-rejeu lancé (a1d894e8dcd76f5c9).
   Son « Oui » à la CSP (D253) : `'wasm-unsafe-eval'` ajouté à `script-src` de `firebase.json` **après** le retour de qr-rejeu (son
   épreuve lit le fichier tel quel), puis hébergement déployé depuis une copie à `npm ci` réel.
+- fn-relecture : FN-RELECTURE ACCEPTE (aucun bloquant). fn-csv8 commitée (3b3e74ac). **`aiTask` déployé** (D254, révision
+  aitask-00042-tet, aucune erreur au démarrage). À faire : relire les journaux à la première facture lue ; retour arrière = 5970478d.
 
 ## Signature
