@@ -125,11 +125,11 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
-- Erreur : 22.10, le lot 22 attendait quatre questions fermées ; aucune mini maquette, aucune planche publiée.
-- Cause : le pilote a traduit « au brasseur de trancher » (conseil) en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
-- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page (artefact privé). Une page par choix, ses variantes côte à côte avec sa référence (D126).
+- Erreur : 22.10, quatre questions fermées au lot 22, sans mini maquette ni planche. 01.11 : « Vue TVA : à choisir », sans page.
+- Cause : « au brasseur de trancher » (conseil) traduit en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
+- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote la publie (artefact privé) ; sans page : « à dessiner ». Une page par choix, ses variantes côte à côte avec sa référence (D126).
 - Rôles : pilote, conseil
-- Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix ; `controle-page-choix.mjs` (D126)
+- Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
 ### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
 - Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur et le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « trop d'usage de sonnet et hiku ».

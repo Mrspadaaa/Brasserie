@@ -896,3 +896,15 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   pour les changements » (D236).
 - **Nouvelle dépense, passe 3** (01.11, matin, sur sa capture de la passe 2 « r2b · repos à 1280 px », le bandeau et la preuve entourés ;
   `work/missions/2026-10-31-ecran-depense/brasseur/01-11-recap-r2b-1280.jpg`), mot pour mot : « Plusieurs points sur la vue et logistique. rang 7 · r1 · série r Nom d'approche : feuille J'aime beaucoup les pastilles sur les items, ça rend la chose très clair. Aussi un récap en haut comme sur le screen est top, avec la possibilité de clicker et avoir des revois Maintenant pour la lisibilité. Je veux que en un écran je vois le maximum d'items ajouter. Je veux que cette écran d'ajouter de facture prenne vraiment toute la place de l'app. Je veux aussi que ça soit trié par catégorie avec sous total de quantité. Par exemple je sais très bien combien d'houblon j'ai commandé. Mais pas forcément combien items au Total. Aussi bien utilisé les UX UI booster. Finalement, pour la logistique d'envoi sur le drive, c'est invisible, c'est à la fin en arrière plan. Et si ça fail. Grosse notification, renvoie sur la facture pour upload le justificatif ou/et réparé le lien drive » (D235).
+- **Nouvelle dépense, son choix de la passe 3** (01.11, soir, sur la page de la passe 3), mot pour mot : « Les bandes teintées p3a-3
+  j'aime beaucoup ! C'est le top 1 de loin quasiment rien ne doit être changé.  Il faudrait juste le rendre un peu plus compact, pas comme
+  Le tableau à prix p3a-2 mais presque enfin pas copier mais adapté. C'est du 99% bon » (D245).
+- **Contrôle QR, son choix** (01.11, soir, sur la page du contrôle QR), mot pour mot : « Le sceau QR z2 parfait comme telle » (D246).
+- **La vue TVA** (01.11, soir, à « Vue TVA : elle attend aussi ton choix »), mot pour mot : « Vue TVA : elle attend aussi ton choix. Je
+  comprends pas ? Je vois pas l'artefact où j'ai déjà validé ? » (réponse : aucune page TVA n'existe encore ; la phrase du pilote était
+  fausse, un choix sans page ; L24 complétée).
+- **La vision, encore** (01.11, soir), mot pour mot : « Pour la vision, on a pas réussi à faire mieux que ce qui est déjà ? Même avec tout
+  les test, nouvelle implantation, rien ??? Et si on met le Harness skill et autres dans notre méthode actuelle, on gagne encore en
+  qualité ? » (réponse : pas plus juste que la production sur ses 13 pièces, à ±2 points, ce que 13 pièces ne départagent pas ; gagné :
+  même justesse pour ≈ 44 % de moins avec C★v8, plus de lecture coupée, le QR qui certifie sans IA ; les skills ne tournent pas dans
+  l'app ; le levier suivant : plus de pièces, et la bascule en production, à son accord ; `GESTES.md` du banc).
