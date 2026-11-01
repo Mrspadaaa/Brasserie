@@ -92,7 +92,8 @@ export function memeProduit(description: string, unit: string, items: readonly S
   return regle.cas === 'meme' ? regle.article : undefined;
 }
 /** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
-export const nomAffiche = (description: string, article?: StockItem): string => article?.name ?? (readProductLabel(description, { hop: hasHopWord(description), yeast: hasYeastWord(description), side: 'line' }).name || description);
+/** D287 : le deux-points final d'un libellé de facture (« Frais de port : ») tombe, imprimé ou traduit. */
+export const nomAffiche = (description: string, article?: StockItem): string => article?.name ?? (readProductLabel(description, { hop: hasHopWord(description), yeast: hasYeastWord(description), side: 'line' }).name || description).replace(/\s*:\s*$/u, '');
 
 export interface CompteLiens { relie: number; neuf: number; precis: number; mouture: number; autre: number }
 /** Le compte des liens de la preuve : chaque ligne y est une fois, donc la somme vaut le nombre de lignes. */
