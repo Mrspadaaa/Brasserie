@@ -1,8 +1,8 @@
 ---
 name: controles-mecanises
-description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes, M11, M12, M14 sortis le 24.10) ; leur contrôle bloque seul, la ligne garde le pourquoi.
+description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes ; M11, M12, M14 sortis le 24.10, M10 le 01.11) ; leur contrôle bloque seul, la ligne garde le pourquoi.
 type: agents
-maj: 2026-10-24
+maj: 2026-11-01
 sources: cerveau/LECONS.md (section Mécanisées, avant l'élagage du 22.10)
 ---
 
@@ -25,3 +25,4 @@ LECONS.md en leçon active.
 - M12 — Une variante rejetée est relancée ou écartée ; des écrans ne sont finis qu'une fois publiés, chaque version dans un artefact neuf et lisible (22.10 : 6 rejets en plan ; 23.10 : « chaque version devrait en créé des nouveaux »). `systeme.mjs voies` (« ## Pages »), `verifier-page.mjs`.
 - M14 — Un panel v0 vaut le lot 21 avant d'être trié : le 23.10, 56 concepts « minimalistes » (5 tours chacun, un squelette commun) étaient « vraiment moins quali », et 32 pictos sur 48 restaient sur ses exemples. Minimaliste = une idée, pas un écran vide ; la baseline est un vocabulaire, pas un gabarit ; ses exemples, un tiers du panel au plus. `controle-panel.mjs` (PANEL OK), exigé par `systeme.mjs mission` dans chaque tri. Le 24.10 (sept voies) : il ne voit ni les écarts sous 60 au fond ni un bloc commun à une série ; dire le seuil au brief, une masse propre par concept, et le jouer dès le premier concept.
 - M01 (complément, 24.10, fl-tri) — Le brief d'une série v0 cite D97 : `controle-valeurs-brutes` entre dans ses GATES et se rejoue sur le texte rendu, pas sur la NOTE.
+- M10 (sorti de LECONS le 01.11) — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert).

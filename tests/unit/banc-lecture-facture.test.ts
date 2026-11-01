@@ -315,6 +315,14 @@ describe('k1 — le budget : réservé avant, arrêt net, clé jamais écrite', 
     expect(transport.mock.calls.length).toBeLessThanOrEqual(4);
     expect(run.stopped).toMatch(/Trois appels en échec/);
   });
+  it('des réponses coupées (MAX_TOKENS) sont mesurées, elles n’arrêtent pas le banc', async () => {
+    const cut = { candidates: [{ finishReason: 'MAX_TOKENS', content: { role: 'model', parts: [{ text: '{"vendor":"' }] } }], usageMetadata: { promptTokenCount: 100, candidatesTokenCount: 5100, totalTokenCount: 5200 } };
+    const transport = vi.fn(async () => ({ json: cut, ms: 5 }));
+    const run = await runBench({ mode: 'payant', repeat: 2, out: path.join(work, 'coupees'), budgetChf: BUDGET_CAP_CHF, faults: false }, { cases, plan: [], readKey: () => 'k', optIn: () => {}, readFile: () => file, transport, journalPath: path.join(work, 'j-coupees.md'), log: () => {} });
+    expect(transport.mock.calls.length).toBeGreaterThan(4);
+    expect(run.stopped).toBeUndefined();
+    expect(run.records).toHaveLength(2);
+  });
   it('une clé absente refuse tout appel', async () => {
     await expect(runBench({ mode: 'payant', repeat: 1, out: path.join(work, 'sans-cle'), budgetChf: 1, faults: false }, { cases, readKey: () => undefined, optIn: () => {}, readFile: () => file, journalPath: path.join(work, 'j2.md'), log: () => {} })).rejects.toThrow('Aucune clé');
     expect(fetchMock).not.toHaveBeenCalled();

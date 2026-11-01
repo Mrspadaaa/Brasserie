@@ -912,7 +912,9 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
     }
     budget.settle(reserved, read.costMicroChf);
     appendJournal(journalPath, read, budget.spentMicro, simulated, read.costMicroChf ?? reserved);
-    consecutiveFailures = read.ok ? 0 : consecutiveFailures + 1;
+    // Une réponse reçue, même coupée (MAX_TOKENS) ou illisible, est un résultat mesuré ; seul un appel sans réponse (refus, délai) compte
+    // vers l'arrêt net. Le 01.11, trois lectures coupées de doc8 (37 lignes) avaient arrêté la passe et privé le banc de ses six pièces neuves.
+    consecutiveFailures = read.ok || read.finishReason !== null ? 0 : consecutiveFailures + 1;
     if (consecutiveFailures >= 3) halt = 'Trois appels en échec d’affilée : arrêt net (un fournisseur qui refuse en boucle ne se mesure pas).';
     readings.push(read);
     return read;

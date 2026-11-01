@@ -74,7 +74,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ». 01.11 : Dépense testée au bureau ; au téléphone, l'écran sautille.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`).
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`). Une reprise sur événement : rechargement et réseau rendu, joués dans Chrome (01.11 : envoi bloqué 240 s, tests verts).
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
@@ -120,7 +120,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond.
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif (01.11 : `maxItems`).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
@@ -154,6 +154,5 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert).
 - M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.
