@@ -88,7 +88,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
 - Cause : 83 % de ses mots (vin blanc, groseille) sont hors des 12 familles et sortent du dessin ; nul n'a confronté le rendu à sa réputation ([[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (un linalol d'un autre houblon ; 31.10 : EBC au menu, « ? » à côté). Un critère de rang tiré de son attente se teste d'abord sur la donnée (27.10 : radar entier, f8 ; Calypso, 1 % des DIPA).
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (31.10 : EBC au menu, « ? » à côté). Un critère tiré de son attente, et la colonne « aujourd'hui » d'un choix, se testent d'abord sur la donnée et le code (27.10 : radar entier ; 02.11 : Pilsner déjà relié).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100)
 
