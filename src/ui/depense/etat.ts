@@ -5,7 +5,9 @@ import { toCents } from '../../../functions/src/invoiceControls';
 import { hasHopWord, hasYeastWord, readProductLabel } from '../../services/ingredientIdentity';
 import { isMillingSurcharge } from '../../services/purchasePrefill';
 import { millingParentIndex, stockQuantityFor, type PurchaseLineDraft } from '../../services/purchaseEntry';
-import { formatUnitLink, isReadableUnit } from '../../services/stockLineMatching';
+import { contexteDeArticle, donneesDArticle, donneesDeLigne, formatUnitLink, isReadableUnit, regleProduit, type RegleProduit } from '../../services/stockLineMatching';
+import { nomPropre } from '../../domain/stock/donnees';
+import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { StockItem } from '../../types';
 
@@ -79,29 +81,25 @@ export function phraseRelation(d: { relation: string; lu: number | null; calcule
   return `Autre contrôle de la TVA : lu ${cts(d.lu)} · calculé ${cts(d.calcule)}`;
 }
 
-/** R6 : un article du stock est-il CE produit ? Même nom propre (identité du produit) et pas d'α différente (D215 : une autre α n'est jamais fusionnée). */
-export function memeProduit(description: string, unit: string, items: readonly StockItem[]): StockItem | undefined {
-  const hop = hasHopWord(description), yeast = hasYeastWord(description);
-  const L = readProductLabel(description, { unit, hop, yeast, side: 'line' });
-  if (!L.name) return undefined;
-  return items.find(item => {
-    const I = readProductLabel(item.name, { unit: item.unit, hop: hop || item.category === 'Houblon', yeast, side: 'item' });
-    const alpha = item.alphaPct ?? I.alpha?.value;
-    const autreAlpha = L.alpha && alpha !== undefined && Math.abs(alpha - L.alpha.value) >= 0.05;
-    return I.name.toLowerCase() === L.name.toLowerCase() && !autreAlpha;
-  });
+/**
+ * R6 : un article du stock est-il CE produit ? La règle unique de `stockLineMatching.ts` (S6, R9) : « même article » seulement si l'appariement de s1 relie cet
+ * article ; une autre α, une autre origine ou un autre EBC n'est jamais fusionné (D215), une donnée connue d'un seul côté non plus (cas « incertain »).
+ */
+export function memeProduit(description: string, unit: string, items: readonly StockItem[], quantity?: number, vendor?: string): StockItem | undefined {
+  const regle = regleProduit({ description, unit, quantity: quantity !== undefined && quantity > 0 ? quantity : 1, ...(vendor?.trim() ? { vendor: vendor.trim() } : {}) }, items);
+  return regle.cas === 'meme' ? regle.article : undefined;
 }
 /** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
 export const nomAffiche = (description: string, article?: StockItem): string => article?.name ?? (readProductLabel(description, { hop: hasHopWord(description), yeast: hasYeastWord(description), side: 'line' }).name || description);
 
 export interface CompteLiens { relie: number; neuf: number; precis: number; mouture: number; autre: number }
 /** Le compte des liens de la preuve : chaque ligne y est une fois, donc la somme vaut le nombre de lignes. */
-export function compteLiens(lines: readonly Pick<PurchaseLineDraft, 'id' | 'stockAction' | 'kind' | 'description'>[], precis: ReadonlySet<string>): CompteLiens {
+export function compteLiens(lines: readonly Pick<PurchaseLineDraft, 'id' | 'stockAction' | 'stockRef' | 'kind' | 'description'>[], precis: ReadonlySet<string>): CompteLiens {
   const c: CompteLiens = { relie: 0, neuf: 0, precis: 0, mouture: 0, autre: 0 };
   for (const line of lines) {
     if (isMillingSurcharge(line as any)) c.mouture++;
     else if (precis.has(line.id)) c.precis++;
-    else if (line.stockAction === 'existing') c.relie++;
+    else if (line.stockAction === 'existing' && line.stockRef) c.relie++;
     else if (line.stockAction === 'new') c.neuf++;
     else c.autre++;
   }
@@ -135,14 +133,39 @@ export function prixAvecMouture(malt: Pick<PurchaseLineDraft, 'amount' | 'quanti
   return { cents: Math.round(brut), exact: Math.abs(brut - Math.round(brut)) < 1e-9 };
 }
 
-/** Un article du stock au même nom propre que la ligne mais d'une autre α : montré grisé, JAMAIS lié (T3 : lecture seule d'`ingredientIdentity`). */
-export function voisinDe(line: Pick<PurchaseLineDraft, 'description' | 'unit' | 'quantity'>, items: readonly StockItem[]): StockItem | undefined {
-  const hop = hasHopWord(line.description), yeast = hasYeastWord(line.description);
-  const L = readProductLabel(line.description, { unit: line.unit, quantity: line.quantity, hop, yeast, side: 'line' });
-  if (!L.alpha || !L.name) return undefined;
-  return items.find(item => {
-    const I = readProductLabel(item.name, { unit: item.unit, hop: hop || item.category === 'Houblon', yeast, side: 'item' });
-    const alpha = item.alphaPct ?? I.alpha?.value;
-    return I.name.toLowerCase() === L.name.toLowerCase() && alpha !== undefined && Math.abs(alpha - L.alpha!.value) >= 0.05;
-  });
+/**
+ * Un article du stock du même produit que la ligne mais qui n'est pas le même article (autre α, origine, récolte, EBC, poids ; ou donnée connue d'un seul côté) :
+ * montré grisé, JAMAIS lié. La règle unique de `stockLineMatching.ts` (S6, R9) : `neuf`, `incertain` ou `ambigu`.
+ */
+export function voisinDe(line: Pick<PurchaseLineDraft, 'description' | 'unit' | 'quantity'> & Partial<Pick<PurchaseLineDraft, 'kind' | 'stockCategory' | 'sourceReference'>>, items: readonly StockItem[]): StockItem | undefined {
+  const regle = regleProduit(ligneProduit(line), items);
+  return regle.cas === 'neuf' || regle.cas === 'incertain' ? regle.voisin : regle.cas === 'ambigu' ? regle.candidats[0] : undefined;
+}
+export const ligneProduit = ligneDeBrouillon;
+
+/** Le mot court de la chip d'un voisin : la donnée qui diffère (« α », le code d'origine, « EBC »…), « ? » quand rien n'est écarté mais que s1 ne relie pas. */
+export function marqueDeVoisin(regle: RegleProduit, origine?: string): string {
+  if (regle.cas !== 'neuf') return '?';
+  const premier = regle.ecarts[0];
+  return premier === 'alpha' ? 'α' : premier === 'origine' ? (origine ?? 'origine') : premier === 'ebc' ? 'EBC' : premier === 'recolte' ? 'récolte' : 'poids';
+}
+const virgule = (n: number) => String(n).replace('.', ',');
+/**
+ * Ce que l'article grisé dit (r2b : « Target α 11,8 », « Hallertauer Blanc DE ») : son nom propre et la valeur QUI DIFFÈRE, lue dans ses champs ou son nom. Une valeur
+ * inconnue ne s'affiche pas ; sans écart connu (incertain, ambigu), le nom de l'article tel quel.
+ */
+export function etiquetteVoisin(regle: RegleProduit, voisin: StockItem): string {
+  if (regle.cas !== 'neuf') return voisin.name;
+  const propre = nomPropre(voisin.name, contexteDeArticle(voisin), { unit: voisin.unit, side: 'item' });
+  const d = donneesDArticle(voisin).donnees, ecart = regle.ecarts[0];
+  if (ecart === 'alpha' && d.alpha !== undefined) return `${propre} α ${virgule(d.alpha)}`;
+  if (ecart === 'ebc' && d.ebc !== undefined) return `${propre} ${virgule(d.ebc)} EBC`;
+  if (ecart === 'origine' && d.origine) return `${propre} ${d.origine}`;
+  return voisin.name;
+}
+/** Le voisin d'une ligne et le mot de sa chip, d'une seule lecture de la règle. */
+export function voisinEtMarque(line: Parameters<typeof voisinDe>[0], items: readonly StockItem[], vendor?: string): { article: StockItem; marque: string } | undefined {
+  const ligne = ligneProduit(line, vendor), regle = regleProduit(ligne, items);
+  const article = regle.cas === 'neuf' || regle.cas === 'incertain' ? regle.voisin : regle.cas === 'ambigu' ? regle.candidats[0] : undefined;
+  return article ? { article, marque: marqueDeVoisin(regle, donneesDeLigne(ligne).donnees.origine) } : undefined;
 }

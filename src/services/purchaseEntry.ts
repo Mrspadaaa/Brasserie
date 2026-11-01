@@ -8,7 +8,10 @@ import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../d
 import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO } from '../domain/finance/ledger';
 import { normalize } from './search';
-import { canonicalStockCategory, linkUnit, SACHET_MAX_G } from './stockLineMatching';
+import { canonicalStockCategory, linkUnit, nomsPris, pliee, SACHET_MAX_G, type MembreVirtuel } from './stockLineMatching';
+import { articleNeufDe, ligneDeBrouillon, type ArticleNeuf } from '../domain/stock/articleNeuf';
+import { contexteDe } from './stockLineMatching';
+import type { Catalogues } from '../domain/stock/fiche';
 import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
 import { isMillingSurcharge } from './purchasePrefill';
 
@@ -22,6 +25,11 @@ export interface PurchaseLineDraft {
   unitPrice?:number;
   /** Id de la ligne d'ingrédient dont cette ligne de mouture fait partie du prix : posé par le geste du brasseur (`confirmMillingSurcharge`), jamais par la lecture. */
   surchargeOf?:string;
+  /**
+   * Le nom que le brasseur a TAPÉ pour l'article neuf de cette ligne (`stockAction: 'new'`) : jamais écrasé, jamais recalculé. Le seul état gardé de l'article neuf
+   * (voie s6-fiche, T3) : le reste (nom proposé, α, EBC, origine, fiche) est dérivé de la ligne et du stock COURANTS à l'écran et à l'enregistrement.
+   */
+  articleName?:string;
 }
 export interface PurchaseDraft {
   submissionId:string; date:string; vendor:string; invoiceNumber:string; description:string;
@@ -235,6 +243,41 @@ function newArticleUnit(unit:string):string {
   return key!==raw.toLowerCase() && Units.familyOf(key)!=='piece' ? key : raw;
 }
 
+/**
+ * L'article NEUF d'une ligne (la seule création, `stockAction === 'new'`). Sans `derive`, exactement l'article d'avant S6 (`name: description`). Avec `derive` (S6) :
+ * le nom (tapé, sinon proposé), puis seulement ce qui est lu sur la facture et existe dans `StockItem` : `alphaPct` (houblon), `colorEbc` (malt), `origin`, `fiche`.
+ * Une clé sans valeur n'est pas écrite. L'unité de l'article est celle de la table de l'appariement (D213) ; la ligne de la dépense garde l'unité imprimée.
+ */
+export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
+  return {id:ref,ref,name:derive?.name??line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:newArticleUnit(line.unit),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+    ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
+}
+/** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
+function articleNeufDeLigne(line:PurchaseLineDraft,existants:readonly StockItem[],virtuels:readonly MembreVirtuel[],catalogues:Catalogues={},vendor?:string):ArticleNeuf {
+  return articleNeufDe(ligneDeBrouillon(line,vendor),existants,catalogues,line.articleName,virtuels);
+}
+/**
+ * Le stock « existant » d'une saisie : sans les articles que CETTE saisie a déjà écrits (ref `MP-<saisie>-<ligne>`). Une saisie refusée puis rejouée retrouve ses articles dans le
+ * cache local : sans ce tri, « Target bis » deviendrait « bis 2 » ou « cet article existe déjà » au rejeu (tri n° 1). Un article d'une autre saisie compte toujours.
+ */
+export const sansCetteSaisie=(items:readonly StockItem[],submissionId:string):StockItem[]=>items.filter(item=>!item.ref.startsWith(`MP-${submissionId}-`));
+/** Les articles NEUFS d'une saisie, dans l'ordre des lignes : la seule création (S6). `savePurchase` écrit exactement ceci ; le banc de développement l'appelle pour montrer ce qui serait écrit. */
+export function articlesNeufsDe(draft:PurchaseDraft,existants:readonly StockItem[],catalogues?:Catalogues):Array<{lineId:string;index:number;ref:string;type:'rawMaterials'|'cleaning';item:StockItem}> {
+  const virtuels:MembreVirtuel[]=[], autres=sansCetteSaisie(existants,draft.submissionId);
+  return draft.lines.flatMap((line,index)=>{
+    if(line.stockAction!=='new')return [];
+    const ref=`MP-${draft.submissionId}-${index}`, article=articleNeufDeLigne(line,autres,virtuels,catalogues,draft.vendor);
+    virtuels.push({nom:article.name});
+    return [{lineId:line.id,index,ref,type:line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const,item:newStockItem(line,draft,ref,article)}];
+  });
+}
+/** Le chargement du catalogue plein des houblons, seulement quand une ligne de houblon crée un article ; échec ou hors ligne : rien, donc aucune fiche. */
+async function cataloguesPour(draft:PurchaseDraft):Promise<Catalogues|undefined> {
+  if(!draft.lines.some(line=>line.stockAction==='new' && contexteDe(ligneDeBrouillon(line))==='Houblon'))return undefined;
+  try { const data=await import('../domain/hopIndex/v4/data'); return {houblons:await data.chargerCataloguePlein()}; }
+  catch { return undefined; }
+}
+
 /** Checks every mutation first. No stock/equipment is created during matching. */
 export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof StorageService.getStocks>,transactions:FinanceTransaction[]=[]):string[] {
   const errors:string[]=[];
@@ -252,6 +295,7 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   if (draft.dueDate && !purchaseIsoDate(draft.dueDate)) errors.push('L’échéance est invalide.');
   if (draft.sourceVatAmount!==undefined && (!isMoney(draft.sourceVatAmount) || draft.sourceVatAmount<0 || (draft.sourceCurrency==='CHF' && draft.sourceVatAmount>(draft.amount??0)))) errors.push('Vérifie le montant de TVA : il doit être positif ou nul et ne pas dépasser le TTC du document.');
   if (draft.sourceVatRate!==undefined && (!Number.isFinite(draft.sourceVatRate) || draft.sourceVatRate<0 || draft.sourceVatRate>1)) errors.push('Vérifie le taux de TVA du document (entre 0 et 100 %).');
+  const existants=sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId), virtuels:MembreVirtuel[]=[];
   for (const line of draft.lines) {
     if (line.stockAction!=='none') {
       if (!['ingredient','cleaning','packaging'].includes(line.kind)) errors.push(`${line.description} : cette nature ne peut pas entrer en stock.`);
@@ -263,6 +307,14 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
         const target=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef);
         if (!target) errors.push(`${line.description} : sélectionne l’article de stock.`);
         else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit:line.unit},target).ok) errors.push(`${line.description} : ${line.unit} ne se convertit pas en ${target.unit}.`);
+      } else if (line.stockAction==='new' && ['ingredient','cleaning','packaging'].includes(line.kind)) {
+        // S6 (T4) : jamais deux articles du même nom. Un nom tapé vide ou déjà pris (stock, autre ligne neuve de la saisie) est refusé ; un houblon ou un malt que
+        // l'appariement relierait à un article existant ne crée pas de « bis » inventé : on relie la ligne.
+        const article=articleNeufDeLigne(line,existants,virtuels,{},draft.vendor), tape=line.articleName;
+        if (tape!==undefined && !tape.trim()) errors.push(`${line.description} : renseigne le nom de l’article.`);
+        else if (tape!==undefined && nomsPris(existants,virtuels).has(pliee(tape))) errors.push(`${line.description} : Un article porte déjà ce nom : relie-le ou change le nom (« ${tape.trim()} »).`);
+        else if (tape===undefined && article.derive && article.regle.cas==='meme') errors.push(`${line.description} : cet article existe déjà (« ${article.regle.article.name} ») : relie la ligne à cet article.`);
+        virtuels.push({nom:article.name});
       }
     }
     if (line.equipmentAction!=='none' && line.kind!=='equipment' && line.kind!=='maintenance') errors.push(`${line.description} : sélectionne matériel ou entretien pour lier un équipement.`);
@@ -303,6 +355,8 @@ export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<
   const txId=`TX-${draft.submissionId}`;
   if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId)};
   validatePurchaseCommit(draft);
+  // S6 (T8) : le catalogue plein des houblons est attendu AVANT d'écrire ; s'il manque, aucune fiche (jamais une fiche différente selon le moment).
+  const catalogues=await cataloguesPour(draft);
   if(draft.proofDataUrl) {
     // Le nom lisible part à Drive ; le nom d'origine reste dans le brouillon et sur la dépense.
     const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,proofDriveName(draft),draft.proofType||'application/pdf');
@@ -313,7 +367,7 @@ export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<
     }
     confirmedProofs.set(draft,{dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
   }
-  return {transactionId:savePurchase(draft),proof:proofReceipts.get(draft.submissionId)};
+  return {transactionId:savePurchase(draft,{catalogues}),proof:proofReceipts.get(draft.submissionId)};
 }
 export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
   return (await savePurchaseWithProofReceipt(draft)).transactionId;
@@ -386,12 +440,13 @@ export async function confirmPurchase(draft:PurchaseDraft):Promise<void> {
     throw error;
   }
 }
-export function savePurchase(draft:PurchaseDraft):string {
+export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues}={}):string {
   const txId=`TX-${draft.submissionId}`;
   const retry=replayable.has(draft.submissionId);
   if (!retry && (submitted.has(draft.submissionId) || StorageService.getTransactions().some(tx=>tx.id===txId))) return txId;
   const operationId=`purchase-${draft.documentHash&&!draft.duplicateConfirmed?draft.documentHash:draft.submissionId}`;
   const stocks=validatePurchaseCommit(draft);
+  const neufs=new Map(articlesNeufsDe(draft,[...stocks.rawMaterials,...stocks.cleaning],options.catalogues).map(neuf=>[neuf.lineId,neuf]));
   const at=new Date().toISOString(), newStocks:Array<{item:StockItem;type:'rawMaterials'|'cleaning'}>=[], newEquipment:EquipmentItem[]=[], receipts:Array<{ref:string;qty:number;unit:string;lineId:string;type:string}>=[];
   const proof=draft.proofDataUrl?prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf'):undefined;
   const confirmed=confirmedProofs.get(draft);
@@ -403,7 +458,8 @@ export function savePurchase(draft:PurchaseDraft):string {
       const type=line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const;
       // L'article neuf prend l'unité de la table de l'appariement (« Kilo » → kg) ; la ligne de la dépense garde l'unité imprimée (D213).
       const articleUnit=newArticleUnit(line.unit);
-      newStocks.push({ type,item:{id:stockRef,ref:stockRef,name:line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:articleUnit,currentStock:line.quantity,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined} });
+      // S6 : le nom et les valeurs lues sont dérivés de la ligne et du stock COURANTS (la même fonction que l'écran) ; le nom tapé prime.
+      newStocks.push({ type,item:neufs.get(line.id)!.item });
       receipts.push({ref:stockRef,qty:line.quantity,unit:articleUnit,lineId:line.id,type});
     } else if (line.stockAction==='existing') {
       const item=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef)!;

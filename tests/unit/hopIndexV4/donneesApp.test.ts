@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CATALOGUE, STOCK } from '../../../src/domain/hopIndex/v4/data';
-import { alphaDuNom, degustationDeRecette, niveauDePlage, niveauxDegustes, nomDeVariete, relierStock, varieteDe, type ArticleHoublon, type DegustationApp } from '../../../src/domain/hopIndex/v4/donneesApp';
+import { alphaDuNom, degustationDeRecette, niveauDePlage, niveauxDegustes, nomDeVariete, origineDuNom, relierStock, varieteDe, type ArticleHoublon, type DegustationApp } from '../../../src/domain/hopIndex/v4/donneesApp';
 
 const production = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../fixtures/production/houblons-2026-10-17.json'), 'utf8')) as { stockItems: ArticleHoublon[]; hopVarieties: { name: string }[] };
 
@@ -116,5 +116,29 @@ describe('dégustation de la recette', () => {
     expect(degustationDeRecette({ id: 'R3' }, brassins, ds)).toBeNull();
     expect(degustationDeRecette(null, brassins, ds)).toBeNull();
     expect(degustationDeRecette({ id: 'RX', batchRef: 'LOT-1' }, brassins, ds)?.degustation.id).toBe('a');
+  });
+});
+
+// Voie s6-fiche (D215, T6) : un article « X bis » ou « X bis N » (même produit, une autre donnée) est la même variété ; son origine écrite reste lue.
+describe('« bis » : la variété de l\'article d\'un même produit', () => {
+  it('« Target bis », « Target bis 2 », « Cascade CH bis », « Hallertauer Blanc bis » sont reliés à leur variété', () => {
+    expect(varieteDe('Target bis', CATALOGUE)).toMatchObject({ h: { id: 'beermaverick-target' } });
+    expect(varieteDe('Target bis 2', CATALOGUE)).toMatchObject({ h: { id: 'beermaverick-target' } });
+    expect(varieteDe('Cascade CH bis', CATALOGUE)).toMatchObject({ h: { id: 'beermaverick-cascade' } });
+    expect(varieteDe('Hallertauer Blanc bis', CATALOGUE)).toMatchObject({ h: { id: 'beermaverick-hallertau-blanc' } });
+    expect(nomDeVariete('Target bis 2')).toBe('target');
+  });
+  it('l\'origine écrite d\'un article « bis » est toujours lue (astérisque de la fiche)', () => {
+    expect(origineDuNom('Cascade CH bis')).toEqual({ ecrit: 'CH', sansOrigine: 'Cascade' });
+    expect(origineDuNom('Cascade CH')).toEqual({ ecrit: 'CH', sansOrigine: 'Cascade' });
+  });
+  it('un « Target bis » à α 11,3 entre dans le stock du moteur avec « Target » ; l\'α est celle du dernier article trié ayant du stock (comportement d\'avant)', () => {
+    const r = relierStock([{ name: 'Target', currentStock: 100, unit: 'g', alphaPct: 11.8 }, { name: 'Target bis', currentStock: 40, unit: 'g', alphaPct: 11.3 }], CATALOGUE);
+    expect(r.nonRelies).toEqual([]);
+    expect(r.stock).toHaveLength(1);
+    expect(r.stock[0]).toMatchObject({ grams: 140, alpha: 11.3, alphaFrom: 'fiche de stock', items: ['Target', 'Target bis'] });
+  });
+  it('un mot « bis » au milieu d\'un nom n\'est pas retiré', () => {
+    expect(nomDeVariete('Bis Cascade')).toBe('bis cascade');
   });
 });

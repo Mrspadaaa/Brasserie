@@ -1,0 +1,122 @@
+{
+ "documentType": "invoice",
+ "documentTypeLu": "invoice",
+ "documentTypeRetenu": "invoice",
+ "proForma": false,
+ "paymentEvidence": "paid",
+ "fieldWarnings": [],
+ "vendor": "Fournisseur fictif",
+ "date": "09.09.2026",
+ "currency": "CHF",
+ "invoiceNumber": "S6-1",
+ "orderNumber": "",
+ "amountHT": null,
+ "tvaRate": null,
+ "tvaAmount": null,
+ "amountTTC": 7.2,
+ "vat": [],
+ "printedLineCount": null,
+ "linesLost": 0,
+ "category": "brassage",
+ "subcategory": "",
+ "description": "Achat fictif",
+ "items": [
+  {
+   "id": "line-1",
+   "name": "Target 11.3%",
+   "kind": "stock",
+   "quantity": 40,
+   "unit": "g",
+   "price": 0.04,
+   "amountTTC": 1.6,
+   "reference": "HO0102",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO0102 Target 11.3% 40 g",
+   "ambiguity": "",
+   "vatCode": "",
+   "alphaPct": 11.3,
+   "alphaPctLu": 11.3
+  },
+  {
+   "id": "line-2",
+   "name": "Cascade CH",
+   "kind": "stock",
+   "quantity": 30,
+   "unit": "g",
+   "price": 0.05,
+   "amountTTC": 1.5,
+   "reference": "HO0200",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO0200 Cascade CH 30 g",
+   "ambiguity": "",
+   "vatCode": "",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-3",
+   "name": "Münchner Malz 15 EBC",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Kg",
+   "price": 1.6,
+   "amountTTC": 3.2,
+   "reference": "MA0300",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0300 Münchner Malz 15 EBC 2 Kg",
+   "ambiguity": "",
+   "vatCode": "",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-4",
+   "name": "Sabro® 13.4%",
+   "kind": "stock",
+   "quantity": 30,
+   "unit": "g",
+   "price": 0.03,
+   "amountTTC": 0.9,
+   "reference": "HO0400",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO0400 Sabro 13.4% 30 g",
+   "ambiguity": "",
+   "vatCode": "",
+   "alphaPct": 13.4,
+   "alphaPctLu": 13.4
+  }
+ ],
+ "issues": [],
+ "points": [],
+ "controls": {
+  "lines": {
+   "checked": 4,
+   "failed": 0,
+   "skipped": 0,
+   "skippedIds": []
+  },
+  "sum": {
+   "statut": "ok",
+   "base": "TTC"
+  },
+  "vat": {
+   "statut": "non-verifiable",
+   "base": null
+  },
+  "totals": {
+   "statut": "non-verifiable"
+  }
+ },
+ "rejets": [],
+ "review": {
+  "status": "checked",
+  "findings": [],
+  "readers": 2,
+  "correctedFields": []
+ },
+ "remarques": []
+}

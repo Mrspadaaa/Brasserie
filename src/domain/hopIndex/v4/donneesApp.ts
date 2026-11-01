@@ -36,9 +36,11 @@ export const ECRITURES_DU_STOCK: Readonly<Record<string, string>> = {
   nuget: 'nugget',
 };
 
-/** Le nom d'un article sans le bruit de l'étiquette : « Houblon », « Cryo Hops », le pourcentage d'α et ce qui le suit. */
+/** « bis » ou « bis N » final : l'article d'un même produit à une autre donnée (voie s6-fiche, D215). C'est la même variété. */
+const BIS_FINAL = /\s+bis(?:\s+\d+)?\s*$/i;
+/** Le nom d'un article sans le bruit de l'étiquette : « Houblon », « Cryo Hops », le pourcentage d'α et ce qui le suit, « bis » et « bis N » finals. */
 export function nomDeVariete(article: string): string {
-  const n = plier(article.replace(/\s+\d+(?:[.,]\d+)?\s*%.*$/, ''))
+  const n = plier(article.replace(/\s+\d+(?:[.,]\d+)?\s*%.*$/, '').replace(BIS_FINAL, ''))
     .replace(/^houblon /, '').replace(/\bcryo hops\b ?/, '').replace(/\bcryo\b ?/, '').trim();
   return ECRITURES_DU_STOCK[n] ?? n;
 }
@@ -70,7 +72,7 @@ function indexDe(catalogue: CatalogueHop[]): Index {
 // l'article à sa variété (varieteDe) ; sa traduction en pays, et l'astérisque, sont dans ui/hopIndex/fiche/MarquesVue.tsx (chargé à la demande).
 /** Le code d'origine écrit dans un nom, et le nom sans lui ; null si le nom n'en écrit pas. Le pourcentage d'α de l'étiquette est ignoré. */
 export function origineDuNom(nom: string): { ecrit: string; sansOrigine: string } | null {
-  const mots = nom.replace(/\s+\d+(?:[.,]\d+)?\s*%.*$/, '').split(/[\s(),/]+/).filter(Boolean);
+  const mots = nom.replace(/\s+\d+(?:[.,]\d+)?\s*%.*$/, '').replace(BIS_FINAL, '').split(/[\s(),/]+/).filter(Boolean);
   const i = mots.length < 2 ? -1 : /^[A-Z]{2,3}$/.test(mots[mots.length - 1]) ? mots.length - 1 : /^[A-Z]{2,3}$/.test(mots[0]) ? 0 : -1;
   return i < 0 ? null : { ecrit: mots[i], sansOrigine: mots.filter((_, k) => k !== i).join(' ') };
 }
@@ -90,7 +92,7 @@ export function varieteDe(article: string, catalogue: CatalogueHop[]): { h: Cata
   if (debuts.length === 1) return { h: debuts[0].h, lien: 'préfixe' };
   // c7 : « Cascade CHE », « NZ Cascade » : le nom sans le code d'origine, s'il désigne une seule variété (l'origine écrite reste lue par
   // origineDuNom : l'écran met un astérisque quand elle diffère de celle du catalogue).
-  const o = origineDuNom(article);
+  const o = origineDuNom(article.replace(BIS_FINAL, ''));
   if (o) { const r = varieteDe(o.sansOrigine, catalogue); if ('h' in r) return r; }
   return { raison: debuts.length > 1 ? `plusieurs variétés commencent par « ${n} » : ${debuts.slice(0, 4).map((x) => x.h.name).join(', ')}` : 'aucune variété du catalogue du moteur ne porte ce nom ni cet alias' };
 }

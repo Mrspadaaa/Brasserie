@@ -30,7 +30,7 @@ export function Bandeau({ vendor, date, totalField, calcule, statut, lines, preu
   return <section data-dp="bandeau" className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 py-1.5 space-y-1">
     <div className="flex items-baseline justify-between gap-2"><span className="truncate text-base font-semibold text-cave-50">{vendor || 'Fournisseur'}</span><span className="font-mono text-sm text-cave-200">{date}</span></div>
     <div className="flex items-center gap-2">{totalField}<span className="text-xs text-cave-400">CHF{calcule ? ' · somme des lignes' : ''}</span>
-      {statut ? <button type="button" aria-label="Détails de la lecture" aria-expanded={preuveOuverte} onClick={onPreuve} className="ml-auto min-h-7 inline-flex items-center gap-1 rounded-control border border-cave-700 px-2 text-sm text-cave-100">{icone}<span className="font-mono">{lines.length}</span>&nbsp;lignes</button> : null}</div>
+      {statut ? <button type="button" aria-label="Détails de la lecture" aria-expanded={preuveOuverte} onClick={onPreuve} className="ml-auto min-h-7 inline-flex items-center gap-1 rounded-control border border-cave-700 px-2 text-sm text-cave-200">{icone}<span className="font-mono">{lines.length}</span>&nbsp;lignes</button> : null}</div>
     {drive === 'a-connecter' ? <button type="button" onClick={onDrive} className="min-h-7 inline-flex items-center rounded-control border border-dashed border-attention px-2 text-sm text-attention">Drive à connecter</button> : null}
     {lines.length > 1 && statut ? <div data-dp="barre" aria-label={`Les ${lines.length} lignes, à la largeur de leur montant`} className="flex h-2.5 overflow-hidden rounded-full border border-cave-800">{lines.map(l => <i key={l.id} onClick={() => onLigne(l.id)} className={`block h-full border-r border-cave-950 last:border-r-0 ${COULEUR_LIEN[liens[l.id] ?? 'aucun']}`} style={{ flexGrow: Math.max(l.amount ?? 0, 0.01) }}/>)}</div> : null}
   </section>;
@@ -49,10 +49,10 @@ export function Preuve({ ouverte, statut, result, lignes, comptes, remarques, ca
     {lectures ? ((result.points ?? []).some(p => p.origine === 'lecture' && p.pese !== false) ? rang(false, 'Lectures : désaccord sur certains points', `${lectures} lectures`) : rang(true, 'Lectures d’accord', `${lectures}/${lectures}`)) : null}
     {(result.linesLost ?? 0) > 0 ? rang(false, 'Lignes non gardées', String(result.linesLost)) : null}
     <div data-dp="compte-liens" className="flex flex-wrap gap-x-3 gap-y-1 pt-1.5 text-xs text-cave-200">
-      <span className="inline-flex items-center gap-1"><PictoLien lien="relie" size={14}/><b className="font-mono">{comptes.relie}</b> reliés</span>
-      <span className="inline-flex items-center gap-1"><PictoLien lien="neuf" size={14}/><b className="font-mono">{comptes.neuf}</b> nouveaux</span>
+      <span className="inline-flex items-center gap-1"><PictoLien lien="relie" size={14}/><b className="font-mono">{comptes.relie}</b> {comptes.relie > 1 ? 'reliés' : 'relié'}</span>
+      <span className="inline-flex items-center gap-1"><PictoLien lien="neuf" size={14}/><b className="font-mono">{comptes.neuf}</b> {comptes.neuf > 1 ? 'nouveaux' : 'nouveau'}</span>
       {comptes.precis ? <span className="inline-flex items-center gap-1"><PictoLien lien="precis" size={14}/><b className="font-mono">{comptes.precis}</b> unité ?</span> : null}
-      {comptes.mouture ? <span className="inline-flex items-center gap-1"><PictoLien lien="mouture" size={14}/><b className="font-mono">{comptes.mouture}</b> moutures</span> : null}
+      {comptes.mouture ? <span className="inline-flex items-center gap-1"><PictoLien lien="mouture" size={14}/><b className="font-mono">{comptes.mouture}</b> {comptes.mouture > 1 ? 'moutures' : 'mouture'}</span> : null}
       {comptes.autre ? <span className="inline-flex items-center gap-1"><PictoLien lien="aucun" size={14}/><b className="font-mono">{comptes.autre}</b> sans stock</span> : null}
     </div>
     {(result.review?.correctedFields ?? []).length ? <p className="mt-1.5 text-xs text-cave-200">Champs corrigés : {[...new Set((result.review?.correctedFields ?? []).map(champCorrige))].join(' · ')}.</p> : null}
@@ -84,7 +84,7 @@ export function BandeCollante({ cible, racine, chips, reglees, onAller }: { cibl
   }, [cible, racine]);
   const courant = chips.find(c => !reglees.has(c.id));
   if (!visible || !chips.length) return null;
-  return <div data-dp="bande" className="sticky top-0 z-10 lg:hidden flex items-center gap-1.5 border-b border-cave-800 bg-cave-950/95 px-2 py-1 text-sm">
+  return <div data-dp="bande" className="sticky top-0 z-10 lg:hidden flex items-center gap-1.5 border-b border-cave-800 bg-cave-950 px-2 py-1 text-sm">
     {chips.map((c, i) => <span key={c.id} className={`inline-flex size-[22px] items-center justify-center rounded-full font-mono text-xs ${reglees.has(c.id) ? 'bg-hop text-cave-950' : 'border border-dashed border-attention text-attention'}`}>{i + 1}</span>)}
     <span className="min-w-0 flex-1 truncate text-cave-200">{courant ? courant.nom : 'points revus'}</span>
     {courant ? <button type="button" onClick={() => onAller(courant)} className="min-h-7 rounded-control border border-cave-600 px-2 text-cave-50">y aller</button> : null}

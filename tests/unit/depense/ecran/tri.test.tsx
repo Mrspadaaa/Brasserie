@@ -65,8 +65,8 @@ describe('R6 : « Créer un nouvel article » d’un produit déjà au stock dev
     fireEvent.change(screen.getByLabelText('Stock ligne 18'), { target: { value: 'none' } });
     fireEvent.change(screen.getByLabelText('Stock ligne 18'), { target: { value: 'new' } });
     expect(screen.getByLabelText('Stock ligne 18')).toHaveValue('existing');
-    expect(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target 11.3% »' })).toBeInTheDocument();
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Relier à Target 11.8%' }));
+    expect(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' })).toBeInTheDocument();
+    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Choisir un autre article' }));
     expect(screen.getByLabelText('Stock ligne 8')).toHaveValue('existing');
   });
 });

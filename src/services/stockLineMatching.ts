@@ -1,7 +1,8 @@
 import { normalize } from './search';
 import { Units } from './units';
 import type { StockItem } from '../types';
-import { CEREALS, hasHopWord, hasYeastWord, inferNature, isReadableUnit, knownCategoriesOf, pieceUnitsEquivalent, PRODUCT_DESCRIPTORS, readProductLabel, weightKey, type ProductIdentity } from './ingredientIdentity';
+import { CEREALS, hasHopWord, hasYeastWord, inferNature, isReadableUnit, knownCategoriesOf, pieceUnitsEquivalent, PRODUCT_DESCRIPTORS, readProductLabel, weightKey, type Nature, type ProductIdentity } from './ingredientIdentity';
+import { connuesUnSeulCote, ecartsEntre, lireEbc, lireOrigine, nomPropre, sansBis, sansDonneesDeFiche, type Contexte, type DonneesProduit, type Ecart } from '../domain/stock/donnees';
 
 /**
  * Lignes lues sur un justificatif → articles du stock.
@@ -118,6 +119,46 @@ export function formatUnitLink(quantity: number, from: string, to: string, categ
   return undefined;
 }
 
+/** Le nom de la ligne est celui de l'article : 1 = libellés complets, 2 = après retrait des mots du fournisseur (voir `matchStockLine`) ; 0 = autre produit. */
+function nameKinship(L: Pick<ProductIdentity, 'tokens' | 'detail'>, I: Pick<ProductIdentity, 'tokens'>, item: StockItem, vendorWords: Set<string>): 0 | 1 | 2 {
+  if (sameName(L.tokens, I.tokens)) return 1;
+  const supplierWords = new Set(wordsOf(item.supplier ?? ''));
+  // s1b n° 1 : un mot qui décrit le produit (bio, cryo, dunkel, rauch…) n'est jamais retiré, même s'il est aussi dans le nom d'un fournisseur.
+  const lineWords = L.detail.filter(d => !(d.afterLinker && vendorWords.has(d.t) && !PRODUCT_DESCRIPTORS.has(d.t))).map(d => d.t);
+  // s1c n° 2 : un mot du nom de l'article n'est retiré que si le fournisseur de l'ARTICLE le porte ; le fournisseur du justificatif seul ne suffit pas
+  // (« Pilsner » chez « Rye Mühle AG » ≠ « Pilsner Rye » : le mot décrit peut-être le produit, pas son vendeur).
+  const itemWords = I.tokens.filter(w => PRODUCT_DESCRIPTORS.has(w) || !supplierWords.has(w));
+  return sameName(lineWords, itemWords) ? 2 : 0;
+}
+
+/** La nature de la ligne n'écarte pas la catégorie de l'article (même refus que s1 : `KIND_REFUSES`, nature forte, nature faible). */
+function categorieCompatible(line: Pick<StockLineInput, 'kind'>, nature: Nature, item: StockItem): boolean {
+  const category = canonicalStockCategory(item.category);
+  if (!STOCK_CATEGORIES.includes(category)) return true;
+  if (line.kind && KIND_REFUSES[line.kind]?.includes(category)) return false;
+  if (nature.strong && nature.strong !== category) return false;
+  if (nature.weak && nature.weak !== category) return false;
+  return true;
+}
+
+/** Un article qui porte une donnée écrite par S6 : seul celui-là perd son « bis » dans les jetons (T5). Un « Target bis » nu, créé à la main, garde les siens. */
+const porteDonneeS6 = (item: StockItem) => item.alphaPct !== undefined || item.origin !== undefined || item.colorEbc !== undefined || item.fiche !== undefined;
+/**
+ * L'identité d'un article du stock pour l'appariement : celle de son nom ; pour un article écrit par S6, sans son « bis » ou « bis N » final et avec
+ * son origine quand le nom ne l'écrit pas (« Cascade » + origin CH ≡ « Cascade CH »). Aucun autre article ne change.
+ */
+function identiteArticle(item: StockItem, hop: boolean, yeast: boolean): ProductIdentity {
+  const I = readProductLabel(item.name, { unit: linkUnit(item.unit), hop, yeast, side: 'item' });
+  if (!porteDonneeS6(item)) return I;
+  let { tokens, detail } = I;
+  const n = tokens.length;
+  const coupe = tokens[n - 1] === 'bis' ? 1 : n >= 2 && tokens[n - 2] === 'bis' && /^\d+$/.test(tokens[n - 1]) ? 2 : 0;
+  if (coupe && n - coupe >= 1) { tokens = tokens.slice(0, n - coupe); detail = detail.slice(0, n - coupe); }
+  const code = item.origin?.toLowerCase();
+  if (code && !tokens.includes(code)) { tokens = [...tokens, code]; detail = [...detail, { t: code, afterLinker: false }]; }
+  return tokens === I.tokens ? I : { ...I, tokens, detail };
+}
+
 type Link = { alias: boolean };
 const linkUnits = (lineUnit: string, itemUnit: string, category: string): Link | undefined => {
   if (!isReadableUnit(lineUnit) || !isReadableUnit(itemUnit)) return undefined;
@@ -153,17 +194,13 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
   const vendorWords = new Set(wordsOf(line.vendor ?? ''));
   if (!readProductLabel(line.description, { unit: lineUnit, quantity: line.quantity }).tokens.length) return undefined;
 
-  const identityOf = (item: StockItem, hop: boolean, yeast: boolean) => readProductLabel(item.name, { unit: linkUnit(item.unit), hop, yeast, side: 'item' });
+  const identityOf = identiteArticle;
   const contextOf = (item: StockItem) => { const category = canonicalStockCategory(item.category); return { hop: category === 'Houblon' || hasHopWord(item.name), yeast: category === 'Levure' || hasYeastWord(item.name) }; };
 
   const examine = (item: StockItem): StockLineMatch | undefined => {
     const category = canonicalStockCategory(item.category);
     const known = STOCK_CATEGORIES.includes(category);
-    if (known) {
-      if (line.kind && KIND_REFUSES[line.kind]?.includes(category)) return undefined;
-      if (nature.strong && nature.strong !== category) return undefined;
-      if (nature.weak && nature.weak !== category) return undefined;
-    }
+    if (!categorieCompatible(line, nature, item)) return undefined;
     const link = unitReadable ? linkUnits(line.unit, item.unit, category) : isReadableUnit(item.unit) ? { alias: false } : undefined;
     if (!link) return undefined;
     const hop = lineHop || category === 'Houblon' || hasHopWord(item.name), yeast = lineYeast || category === 'Levure' || hasYeastWord(item.name);
@@ -171,17 +208,7 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
     const I = identityOf(item, hop, yeast);
     if (!L.tokens.length) return undefined;
 
-    let pass: 1 | 2 | 0 = 0;
-    if (sameName(L.tokens, I.tokens)) pass = 1;
-    else {
-      const supplierWords = new Set(wordsOf(item.supplier ?? ''));
-      // s1b n° 1 : un mot qui décrit le produit (bio, cryo, dunkel, rauch…) n'est jamais retiré, même s'il est aussi dans le nom d'un fournisseur.
-      const lineWords = L.detail.filter(d => !(d.afterLinker && vendorWords.has(d.t) && !PRODUCT_DESCRIPTORS.has(d.t))).map(d => d.t);
-      // s1c n° 2 : un mot du nom de l'article n'est retiré que si le fournisseur de l'ARTICLE le porte ; le fournisseur du justificatif seul ne suffit pas
-      // (« Pilsner » chez « Rye Mühle AG » ≠ « Pilsner Rye » : le mot décrit peut-être le produit, pas son vendeur).
-      const itemWords = I.tokens.filter(w => PRODUCT_DESCRIPTORS.has(w) || !supplierWords.has(w));
-      if (sameName(lineWords, itemWords)) pass = 2;
-    }
+    const pass = nameKinship(L, I, item, vendorWords);
     if (!pass) return undefined;
 
     // α et récolte : connues des deux côtés et différentes → rien (le brasseur choisit l'article lui-même).
@@ -263,4 +290,143 @@ export function matchStockLine(line: StockLineInput, items: StockItem[]): StockL
 /** Article proposé pour une ligne lue, ou rien (voir `matchStockLine`). */
 export function proposeStockItem(line: StockLineInput, items: StockItem[]): StockItem | undefined {
   return matchStockLine(line, items)?.item;
+}
+
+/* ───────────────────────────── La règle unique « même produit, donnée qui diffère » (voie s6-fiche, D215, D216) ───────────────────────────── */
+
+export type { Contexte, DonneesProduit, Ecart };
+export type LigneProduit = StockLineInput;
+/** Une ligne `new` déjà décidée du même brouillon : son nom compte pour le suffixe (« bis », « bis 2 »), jamais pour « même article ». */
+export interface MembreVirtuel { nom: string }
+export type RegleProduit =
+  | { cas: 'inconnu'; nom: string }
+  | { cas: 'meme'; article: StockItem }
+  | { cas: 'incertain'; voisin: StockItem; nom: string; connuUnSeulCote: Ecart[] }
+  | { cas: 'ambigu'; candidats: StockItem[]; nom: string }
+  | { cas: 'neuf'; nom: string; ecarts: Ecart[]; voisin: StockItem; motif: 'origine' | 'bis' };
+
+const CONTEXTE_DE_CATEGORIE: Record<string, Contexte> = { Houblon: 'Houblon', Malt: 'Malt', Levure: 'Levure' };
+function contexteDeTexte(texte: string, categorie?: string, reference?: string): Contexte {
+  const canonique = categorie ? canonicalStockCategory(categorie) : undefined;
+  const nature = inferNature(texte, reference, canonique && STOCK_CATEGORIES.includes(canonique) ? canonique : undefined);
+  if (nature.strong === 'Houblon' || hasHopWord(texte)) return 'Houblon';
+  if (nature.strong === 'Malt') return 'Malt';
+  if (nature.strong === 'Levure' || hasYeastWord(texte)) return 'Levure';
+  const connus = knownCategoriesOf(readProductLabel(texte).tokens.join(' '));
+  return connus.length === 1 ? CONTEXTE_DE_CATEGORIE[connus[0]] ?? 'autre' : 'autre';
+}
+/** Ce qu'une ligne est : houblon, malt, levure, ou autre chose (emballage, entretien, inconnu). Même lecture que s1. */
+export function contexteDe(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'>): Contexte {
+  if (l.kind === 'packaging' || l.kind === 'cleaning') return 'autre';
+  return contexteDeTexte(l.description, l.stockCategory, l.reference);
+}
+/** Ce qu'un article est : sa catégorie d'abord, sinon les mots de son nom. */
+export function contexteDeArticle(item: Pick<StockItem, 'name' | 'category'>): Contexte {
+  const categorie = canonicalStockCategory(item.category);
+  return CONTEXTE_DE_CATEGORIE[categorie] ?? (STOCK_CATEGORIES.includes(categorie) ? 'autre' : contexteDeTexte(item.name));
+}
+
+const pesee = (w: ProductIdentity['pieceWeight']) => (w ? weightKey(w) : undefined);
+function donneesDe(lu: ProductIdentity, brut: string, contexte: Contexte, fixe: { alpha?: number; origine?: string; ebc?: number }): DonneesProduit {
+  const out: DonneesProduit = {};
+  const alpha = fixe.alpha ?? lu.alpha?.value; if (alpha !== undefined) out.alpha = alpha;
+  const origine = fixe.origine ?? lireOrigine(brut, contexte)?.value ?? lu.origin?.value; if (origine !== undefined) out.origine = origine;
+  if (lu.harvestYear) out.recolte = lu.harvestYear.value;
+  const ebc = fixe.ebc ?? lireEbc(brut)?.value; if (ebc !== undefined) out.ebc = ebc;
+  const poids = pesee(lu.pieceWeight); if (poids !== undefined) out.poids = poids;
+  return out;
+}
+const positif = (n: number | undefined) => (typeof n === 'number' && Number.isFinite(n) && n > 0 ? n : undefined);
+
+/** Ce que le libellé d'une ligne dit : contexte, jetons de la famille (sans EBC, origine, « bis »), données comparables. */
+export function donneesDeLigne(l: StockLineInput, hop?: boolean, yeast?: boolean) {
+  const contexte = contexteDe(l);
+  const lineUnit = isReadableUnit(l.unit) ? linkUnit(l.unit) : undefined;
+  const h = hop ?? contexte === 'Houblon', y = yeast ?? contexte === 'Levure';
+  const lecture = h ? 'Houblon' as Contexte : contexte;
+  const net = sansDonneesDeFiche(l.description, lecture);
+  const lu = readProductLabel(net, { unit: lineUnit, quantity: l.quantity, hop: h, yeast: y, side: 'line' });
+  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, l.description, lecture, {}) };
+}
+/** Ce que le nom et les champs d'un article disent : contexte, jetons de la famille, données comparables (champs de l'article d'abord, sinon son nom). */
+export function donneesDArticle(item: StockItem, hop?: boolean, yeast?: boolean) {
+  const contexte = contexteDeArticle(item);
+  const h = hop ?? (contexte === 'Houblon' || hasHopWord(item.name)), y = yeast ?? (contexte === 'Levure' || hasYeastWord(item.name));
+  const lecture = h ? 'Houblon' as Contexte : contexte;
+  const net = sansDonneesDeFiche(item.name, lecture);
+  const lu = readProductLabel(net, { unit: linkUnit(item.unit), hop: h, yeast: y, side: 'item' });
+  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, item.name, lecture, { alpha: positif(item.alphaPct), origine: item.origin, ebc: positif(item.colorEbc) }) };
+}
+
+export const pliee = (nom: string) => normalize(nom ?? '').replace(/\s+/g, ' ').trim();
+/** Les noms pris : celui de chaque article, et « nom + origine » pour un article écrit par S6 dont le nom ne dit pas son origine. */
+export function nomsPris(stock: readonly StockItem[], brouillon: readonly MembreVirtuel[]): Set<string> {
+  const pris = new Set<string>();
+  for (const item of stock) {
+    pris.add(pliee(item.name));
+    if (item.origin) pris.add(pliee(`${sansBis(item.name)} ${item.origin}`));
+  }
+  for (const membre of brouillon) pris.add(pliee(membre.nom));
+  return pris;
+}
+/** Le premier nom libre : le candidat, puis « … bis », « … bis 2 », « … bis 3 »… */
+function nomLibre(candidat: string, pris: Set<string>): string {
+  let nom = candidat.trim(), tour = 0;
+  while (pris.has(pliee(nom)) && tour++ < 500) {
+    const m = /^(.*?) bis(?: (\d+))?$/.exec(nom);
+    nom = m ? `${m[1]} bis ${(m[2] ? Number(m[2]) : 1) + 1}` : `${nom} bis`;
+  }
+  return nom;
+}
+
+/**
+ * LA règle « même produit, donnée qui diffère » (D215, D216) ; `voisinDe` et `memeProduit` de l'écran n'en sont que des enveloppes.
+ *
+ * - **famille** : les articles du même produit, sur les jetons comme s1 (génériques, fournisseurs, passes 1 et 2), sans le code d'origine, l'EBC ni « bis N » ;
+ * - **écarts** : seulement les données connues des deux côtés (α, origine, récolte, EBC, poids de pièce) ;
+ * - `meme` : s1 relie CE MÊME article (inclusion) ; `neuf` : tous les membres diffèrent par au moins un écart ; `incertain` : un seul membre sans écart que s1 ne relie pas
+ *   (une donnée connue d'un seul côté) ; `ambigu` : plusieurs ; `inconnu` : famille vide. Jamais de lien automatique hors `meme`.
+ * - **nom** : houblon et malt, le nom propre ; « origine » d'abord quand un membre diffère par l'origine connue de la ligne, sinon « bis » ; le premier nom libre
+ *   (stock et lignes `new` du brouillon). Autre produit : le libellé comme avant.
+ */
+export function regleProduit(line: StockLineInput, stock: readonly StockItem[], brouillon: readonly MembreVirtuel[] = []): RegleProduit {
+  const contexte = contexteDe(line);
+  const lineCategory = line.stockCategory ? canonicalStockCategory(line.stockCategory) : undefined;
+  const nature = inferNature(line.description, line.reference, lineCategory && STOCK_CATEGORIES.includes(lineCategory) ? lineCategory : undefined);
+  const items = [...stock];
+  const pris = nomsPris(items, brouillon);
+  const base = contexte === 'Houblon' || contexte === 'Malt'
+    ? nomPropre(line.description, contexte, { unit: isReadableUnit(line.unit) ? linkUnit(line.unit) : undefined, quantity: line.quantity })
+    : line.description.trim();
+  const sansNom = (candidat: string) => nomLibre(candidat || line.description.trim(), pris);
+  const s1 = matchStockLine(line, items);
+  const vendorWords = new Set(wordsOf(line.vendor ?? ''));
+  const propre = donneesDeLigne(line);
+  const code = propre.donnees.origine;
+
+  const membres: Array<{ item: StockItem; ecarts: Ecart[]; seul: Ecart[] }> = [];
+  for (const item of items) {
+    if (!categorieCompatible(line, nature, item)) continue;
+    const category = canonicalStockCategory(item.category);
+    const hop = propre.contexte === 'Houblon' || category === 'Houblon' || hasHopWord(item.name);
+    const yeast = propre.contexte === 'Levure' || category === 'Levure' || hasYeastWord(item.name);
+    const L = donneesDeLigne(line, hop, yeast), I = donneesDArticle(item, hop, yeast);
+    if (!L.jetons.length || !I.jetons.length) continue;
+    if (!nameKinship({ tokens: L.jetons, detail: L.lu.detail }, { tokens: I.jetons }, item, vendorWords)) continue;
+    // Nature inconnue : l'identité de l'article est aussi un nom connu d'une autre catégorie (« Crystal ») → pas le même produit (comme s1).
+    if (!nature.strong && !nature.weak && STOCK_CATEGORIES.includes(category) && knownCategoriesOf(I.jetons.join(' ')).some(autre => autre !== category)) continue;
+    // Malté ≠ non malté pour une céréale qui existe crue (comme s1).
+    if (L.lu.malted !== I.lu.malted && L.jetons.some(t => CEREALS.has(t))) continue;
+    membres.push({ item, ecarts: ecartsEntre(L.donnees, I.donnees), seul: connuesUnSeulCote(L.donnees, I.donnees) });
+  }
+  if (s1) return { cas: 'meme', article: s1.item };
+  if (!membres.length) return { cas: 'inconnu', nom: sansNom(base) };
+  const nomHoublonMalt = contexte === 'Houblon' || contexte === 'Malt';
+  const sansEcart = membres.filter(m => !m.ecarts.length);
+  if (sansEcart.length >= 2) return { cas: 'ambigu', candidats: sansEcart.map(m => m.item), nom: sansNom(nomHoublonMalt && code ? `${base} ${code}` : base) };
+  if (sansEcart.length === 1) return { cas: 'incertain', voisin: sansEcart[0].item, connuUnSeulCote: sansEcart[0].seul, nom: sansNom(nomHoublonMalt && code ? `${base} ${code}` : base) };
+  const voisin = membres.reduce((meilleur, m) => (m.ecarts.length < meilleur.ecarts.length ? m : meilleur));
+  const motif: 'origine' | 'bis' = nomHoublonMalt && code && membres.some(m => m.ecarts.includes('origine')) ? 'origine' : 'bis';
+  const candidat = !nomHoublonMalt ? base : motif === 'origine' ? `${base} ${code}` : `${base} bis`;
+  return { cas: 'neuf', nom: sansNom(candidat), ecarts: voisin.ecarts, voisin: voisin.item, motif };
 }

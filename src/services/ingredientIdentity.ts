@@ -54,7 +54,7 @@ const YEAST_WORDS = new Set(['safale', 'saflager', 'safbrew', 'us05', 's04', 's3
 /** Souches nommées (liste fermée) : un fabricant n'est ignoré que devant un code de souche ou l'une de ces souches. */
 const STRAINS = new Set(['windsor', 'nottingham', 'verdant ipa', 'voss', 'belle saison', 'kveik', 'london ale iii', 'london ale', 'american ale', 'abbaye ale', 'munich classic']);
 const BRANDS = new Set(['fermentis', 'lallemand', 'lalbrew', 'danstar']);
-const ORIGINS = new Set(['CH', 'DE', 'US', 'NZ', 'AU', 'UK', 'GB', 'CZ', 'SI', 'FR', 'PL', 'AT', 'BE']);
+export const ORIGINS = new Set(['CH', 'DE', 'US', 'NZ', 'AU', 'UK', 'GB', 'CZ', 'SI', 'FR', 'PL', 'AT', 'BE']);
 /** Céréales qui existent crues et maltées : « Malt d'avoine » n'est pas « Avoine ». Tout grain hors liste reste une fausse proposition possible. */
 export const CEREALS = new Set(['avoine', 'hafer', 'oat', 'oats', 'froment', 'ble', 'wheat', 'weizen', 'orge', 'gerste', 'barley', 'seigle', 'roggen', 'rye', 'epeautre', 'dinkel', 'spelt', 'sarrasin', 'buchweizen', 'buckwheat',
   'millet', 'hirse', 'sorgho', 'sorghum', 'triticale', 'mais', 'riz', 'reis', 'rice', 'kamut', 'corn']);

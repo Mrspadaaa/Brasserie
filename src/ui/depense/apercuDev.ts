@@ -4,6 +4,9 @@
 // seule l'unité de Sabro est simulée (sa facture imprime « g »). Ni nom ni adresse du brasseur.
 import lecture from './apercu/lecture-372765.reconciliee.json';
 import stock from './apercu/stock-simule.json';
+import lectureS6 from './apercu/lecture-s6.reconciliee.json';
+import stockS6 from './apercu/stock-s6.json';
+import { articlesNeufsDe } from '../../services/purchaseEntry';
 import type { ScanOutcome, ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { ApercuDepense } from './types';
 
@@ -24,7 +27,32 @@ const doublon380001 = () => ({
     lines: (lecture.items as any[]).map(i => ({ id: i.id, description: i.name, kind: 'ingredient', amountCents: Math.round((i.amountTTC ?? 0) * 100), sourceReference: i.reference })) },
 }) as unknown as ApercuDepense['transactions'][number];
 
+/**
+ * L'état « s6 » (voie s6-fiche, T7) : une lecture SIMULÉE de quatre lignes (Target 11.3%, Cascade CH, Münchner Malz 15 EBC, Sabro® 13.4%) et le stock SIMULÉ qui va avec.
+ * Son `enregistrer` n'écrit rien : il appelle la VRAIE création de l'article (`articlesNeufsDe`, ce que `savePurchase` écrit) avec le catalogue plein des houblons, puis
+ * expose sur `window.__s6Banc` les articles écrits et le stock existant avant et après (la preuve que l'article existant n'est pas modifié). Développement seulement.
+ */
+function apercuS6(): ApercuDepense {
+  const result = clone(lectureS6) as unknown as ScannedInvoiceResult;
+  const articles = clone(stockS6.articles) as any[];
+  const avant = JSON.stringify(articles);
+  const fichier = { name: 'capture-facture-s6.jpg', size: 412345, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false },
+    fichier, stocks: { rawMaterials: articles, cleaning: [], equipment: [], kegs: [] } as unknown as ApercuDepense['stocks'], transactions: [], etat: 's6', drive: 'ok', reseau: true,
+    enregistrer: async draft => {
+      const data = await import('../../domain/hopIndex/v4/data');
+      const houblons = await data.chargerCataloguePlein();
+      const ecrits = articlesNeufsDe(draft, articles, { houblons });
+      (window as any).__s6Banc = { ecrits: clone(ecrits), lignes: clone(draft.lines), existantsAvant: JSON.parse(avant), existantsApres: clone(articles) };
+      await pause(300);
+      return { driveFileId: 'simule', fileName: '2026-09-09 Fournisseur fictif S6-1.jpg', bytes: 412345, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' };
+    },
+  };
+}
+
 export function apercuDepense(etat: string): ApercuDepense {
+  if (etat === 's6') return apercuS6();
   const result = clone(lecture) as unknown as ScannedInvoiceResult;
   if (etat === '2') {
     // « lue, sans point » : la facture sans ses points (SIMULÉ).
