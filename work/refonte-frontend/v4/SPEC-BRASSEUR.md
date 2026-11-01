@@ -911,3 +911,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **La bascule de la lecture** (01.11, soir), à « basculer la production sur C★v8 avec la correction automatique et le QR : même
   justesse, moins cher, sans lecture coupée. Ça demande ton accord, car il faut redéployer la lecture en production », mot pour mot :
   « Yes ok » (D247).
+- **Nouvelle dépense, son degré** (01.11, soir, sur sa capture de p3c-3 au repos, « 18 Kg » de la bande Malts et « 6 Kg × 2,30 » de Maris
+  Otter entourés en rouge ; `work/missions/2026-10-31-ecran-depense/brasseur/01-11-p3c-3-quantite-entouree.jpg`), mot pour mot :
+  « p3c-3 le mieux mais mettre plus en avant la quantité, juste mettre en gras, et bien alignées les champs » (D248).
+- **Les frais de port** (01.11, soir), à « Frais de port « Total seulement » : seulement sur les commandes en plusieurs captures, ou aussi
+  quand le port est imprimé comme un article ? », mot pour mot : « Non non aussi quand imprimé article » (D249).
+- **La TVA, son cas** (01.11, soir), à « TVA : es-tu assujetti ? », mot pour mot : « Je fais moins de 100k » (D250).

@@ -1230,6 +1230,22 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D212 (le brasseur, 31.10, nuit) : le plateau de r4d « Toujours visible ». L'état replié (#replie) sort de la passe 5.
 - D213 (le brasseur, 31.10, nuit) : sur le bloquant de la revue s1 (« Crystal » kg relié à « Houblon Crystal » g, 25 000 g), « oui attention au unités ». Portée lue (L01, étroite) : la dépense, partout où une quantité ou un prix a une unité (lecture, rapprochement au stock, enregistrement). Règles du pilote, réversibles : (1) une quantité garde l'unité imprimée, jamais réécrite en silence ; (2) une conversion d'unité (kg ↔ g, l ↔ ml, Stk ↔ sachet) est un fait que le brasseur voit : une proposition au stock dont l'unité diffère de celle de l'article montre la quantité convertie sur la ligne repliée (« 25 kg → 25 000 g ») ; (3) un prix se lit pour son unité (par kg, par 100 g, par pièce), jamais comparé à une autre ; (4) une ligne sans unité lisible n'est proposée à aucun article. Contrôle : tests d'unités de s1 (`tests/unit/depense/stock/unites.test.ts`), qui échouent sur le code d'aujourd'hui.
 - D214 (le brasseur, 31.10, nuit) : sur la règle n° 4 de D213, « Unité illisible : la ligne n'est reliée à aucun article.???? » Règle refusée : elle venait du pilote, pas de ses mots (L01). Lecture du pilote, étroite et réversible : une ligne dont l'unité est illisible reste proposée à son article aux mêmes conditions que toute autre ligne (nom, nature, catégorie, poids de levure, α, récolte) ; aucune unité n'est devinée ni recopiée de l'article ; le champ d'unité reste vide et la ligne repliée porte « unité à préciser » ; rien n'entre en stock tant que l'unité manque (garde à l'enregistrement : voie r1). Une unité lisible mais incompatible avec l'article donne toujours « rien ». Remplace D213 n° 4. Contrôle : `tests/unit/depense/stock/unites.test.ts` (voie s1), qui échoue sur la règle refusée.
+- D250 (le brasseur, 01.11, soir) : « Je fais moins de 100k » (chiffre d'affaires annuel). En Suisse, sous 100 000 CHF, l'entreprise est
+  libérée de l'assujettissement à la TVA, sauf si elle y renonce (assujettissement volontaire) ; non assujettie, elle ne récupère pas la
+  TVA payée sur ses achats. Lecture du pilote : la vue TVA (à dessiner en mini maquettes, L24) part du cas « non assujetti » : la TVA
+  payée est un coût, montrée par taux et par période ; l'assujettissement volontaire n'y est qu'un chiffre « ce que tu récupérerais »,
+  sans conseil, à confirmer avec sa fiduciaire ou l'AFC. Réversible.
+- D249 (le brasseur, 01.11, soir) : frais de port « Total seulement » partout, « Non non aussi quand imprimé article ». Le port n'est
+  jamais une ligne de la dépense ; il compte dans le total et se dit à part (« dont port »), le contrôle « somme = imprimé » en tient
+  compte. Remplace la lecture étroite d'avant (commandes en captures seulement, GESTES ligne 37). Suites : la vérité du banc de ses deux
+  pièces où le port est un article se corrige ; la règle entre dans la production (normalisation de la lecture ou construction de la
+  dépense, à trancher sur le code) dans une voie après fn-csv8 et qr-app ; l'écran p3c-3 la montre. Réversible.
+- D248 (le brasseur, 01.11, soir ; règle n° 1, L01) : **p3c-3 choisie**, « p3c-3 le mieux mais mettre plus en avant la quantité, juste
+  mettre en gras, et bien alignées les champs », sur sa capture (« 18 Kg » de la bande et « 6 Kg × 2,30 » entourés). Portée (étroite) :
+  la quantité en gras (lignes et sous-totaux de bande), rien d'autre de plus en avant (ni taille ni couleur) ; quantité, prix et montant
+  alignés en colonnes, d'une ligne à l'autre et avec le sous-total de la bande, sans en-tête de tableau. Tout le reste de p3c-3 tel quel.
+  Contrôle `v3/p3c-outils/controle-alignement.mjs` (témoin : p3c-3 d'avant → ECHEC). Puis le port de p3c-3 dans l'app, avec z2 (D246),
+  après la voie qr-app (même fichier). Réversible.
 - D247 (l'utilisateur, 01.11, soir) : « Yes ok » à « basculer la production sur C★v8 avec la correction automatique et le QR […] il faut
   redéployer la lecture en production ». Portée (L01) : `aiTask` (lecture de facture seule) passe de A à C★v8+N, déployé seul
   (`--only functions:aiTask`) ; le QR lu dans le téléphone et montré comme z2 sur l'écran en ligne, hébergement redéployé (D236). Bornes
