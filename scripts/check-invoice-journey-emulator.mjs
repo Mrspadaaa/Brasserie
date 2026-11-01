@@ -27,7 +27,7 @@
  *
  * Usage, depuis la racine du dépôt :
  *   node scripts/check-invoice-journey-emulator.mjs --replay <manifeste.json> --out <dossier ignoré>
- *        [--widths 390,1280] [--cases etats,doc5,finances,doc6,autre-numero,rattacher,minuscules,doc1,doc4,hors-ligne,doc3,doc2] [--port 5175]
+ *        [--widths 390,1280] [--cases etats,doc5,finances,doc6,autre-numero,rattacher,minuscules,doc1,doc4,hors-ligne,doc3,doc2,drive-fond] [--port 5175]
  *        [--lock <dossier-verrou>] [--keep-tmp]
  * Le mode `--inner` est lancé par `firebase emulators:exec`, jamais à la main. Chaque largeur repart d'une base
  * émulée vide (mêmes semis), dans un contexte Chrome neuf, largeur réglée avant le chargement.
@@ -54,7 +54,7 @@ const EMULATOR_PORTS = { auth: 9099, firestore: 8080, functions: 5001, hub: 4400
 const JAVA_HOME = process.env.EMU_JAVA_HOME || 'C:\\Program Files\\Microsoft\\jdk-21.0.12.101-hotspot';
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const DOCS = ['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6'];
-const ALL_CASES = ['etats', 'doc5', 'finances', 'doc6', 'autre-numero', 'rattacher', 'minuscules', 'doc1', 'doc4', 'hors-ligne', 'doc3', 'doc2'];
+const ALL_CASES = ['etats', 'doc5', 'finances', 'doc6', 'autre-numero', 'rattacher', 'minuscules', 'doc1', 'doc4', 'hors-ligne', 'doc3', 'doc2', 'drive-fond'];
 /** Synthetic entries typed by the bench (never a value of a real document). */
 const SYNTHETIC = { vendor: 'Malterie du Banc', description: 'Essai hors ligne JUS-0', amount: '12,30' };
 /** Same emulator-only rewrite as the reference bench: the emulator refuses descending key scans. */
@@ -283,6 +283,8 @@ function callableAnswer(c, request) {
   const data = request.body?.json ?? {};
   if (request.kind === 'driveAuthorization') {
     c.calls.drive.push({ action: data.action });
+    // d3c : le renouvellement du jeton est indisponible (functions/unavailable) : la file attend, sans alerte.
+    if (data.action === 'token' && c.tokenMode === 'unavailable') return fail(503, 'UNAVAILABLE', 'Drive simulé : fonction indisponible.');
     if (data.action === 'token') return json({ accessToken: `jus0-drive-factice-${c.width}`, expiresAt: Date.now() + 3600_000, persistent: true });
     if (data.action === 'config') return json({ clientId: `${PROJECT}-drive-factice` });
     return fail(400, 'FAILED_PRECONDITION', 'Drive simulé : action non prise en charge.');
@@ -307,6 +309,12 @@ function driveAnswer(c, request) {
   const meta = file => ({ id: file.id, name: file.name, mimeType: file.mimeType, size: file.size === undefined ? undefined : String(file.size),
     sha256Checksum: file.sha256Checksum, trashed: false, parents: file.parents, appProperties: file.appProperties });
   store.log.push(`${method} ${path}${url.searchParams.has('alt') ? '?alt=media' : ''}`);
+  // d3c : les réglages du Drive factice pour l'envoi en arrière-plan (lent est dans le pont ; ici les refus). Chaque requête est comptée.
+  c.drive.requests = (c.drive.requests ?? 0) + 1;
+  const mode = c.driveMode?.fail;
+  if (mode === 'quota') return json(403, { error: { code: 403, errors: [{ reason: 'storageQuotaExceeded' }] } });
+  if (mode === 'auth') return json(401, { error: { code: 401, errors: [{ reason: 'authError' }] } });
+  if (mode === 'network') return { networkError: true };
   if (path === '/drive/v3/files/generateIds') return json(200, { ids: [`jus0f${String(++store.next).padStart(6, '0')}`] });
   if (path === '/drive/v3/files' && method === 'GET') {
     const q = url.searchParams.get('q') || '';
@@ -782,7 +790,8 @@ async function caseDoc5(c) {
     if (fixes.length) { outcome = await confirmSheet(c, 60000); c.record('doc5-confirmation-2', outcome); }
     if (outcome !== 'fermée') await shoot(c, 'doc5-confirmation-refusee-2');
   }
-  c.check(outcome === 'fermée', 'doc5 : « Confirmer » enregistre et la feuille se ferme (reçu Drive, puis « Terminé »)', { outcome });
+  // d3c : plus de reçu à l'écran ; la feuille se ferme, l'envoi part en arrière-plan et le reçu se lit dans la fiche.
+  c.check(outcome === 'fermée' && c.lastReceipt == null, 'doc5 : « Confirmer » enregistre et la feuille se ferme sans reçu (l’envoi au Drive part en arrière-plan)', { outcome, recu: c.lastReceipt });
   const after = await dbSnapshot(c.db);
   c.record('doc5-ecritures', businessWrites(dbWrites(before, after)));
   const view = await verifyPurchase(c, 'doc5', { stockPlan: plan });
@@ -807,8 +816,14 @@ async function caseDoc5(c) {
 }
 
 /** Admin-side reading of one saved purchase: transaction, payment, original, stock items and movements. */
-async function verifyPurchase(c, docId, { stockPlan = [] } = {}) {
+async function verifyPurchase(c, docId, { stockPlan = [], waitTx = false } = {}) {
   const doc = c.docs[docId], scanned = doc.result;
+  // d3c : l'envoi du justificatif part APRÈS la fermeture de la feuille. Attendre que le lien soit posé (60 s au plus pour la dépense, 120 s pour
+  // le lien) avant de lire l'original ; une dépense sans `proofUpload` (chemin synchrone) n'attend rien.
+  const mine = async () => (await all(c.db, 'transactions')).find(row => row.finance?.sourceDocumentHash === doc.sha256);
+  if (waitTx) await waitFor(mine, `dépense de ${docId} sur le serveur`, 60000).catch(() => null);
+  await waitFor(async () => { const row = await mine(); return !row || !row.finance?.proofUpload || !!row.finance.proofDocumentId; }, `lien du justificatif de ${docId}`, 120000)
+    .catch(error => c.step(`lien du justificatif non posé (${docId})`, { error: String(error).slice(0, 200) }));
   const txs = (await all(c.db, 'transactions')).filter(tx => tx.finance?.sourceDocumentHash === doc.sha256);
   const tx = txs[0];
   const proof = tx?.finance?.proofDocumentId ? (await c.db.doc(`financeDocuments/${tx.finance.proofDocumentId}`).get()).data() : null;
@@ -1156,21 +1171,23 @@ async function caseDoc4(c) {
   const idle = businessWrites(dbWrites(before, await dbSnapshot(c.db)));
   c.check(!idle.length, 'doc4 : aucune écriture avant la confirmation', { writes: idle });
   // Hors ligne au moment du geste (avec justificatif) : Drive et Firestore injoignables.
+  // d3c (T5) : l'écriture de la dépense reste en file locale et la feuille SE FERME sans attendre l'accusé ; rien n'arrive au serveur pendant la coupure ;
+  // au retour du réseau la dépense se synchronise, puis le justificatif part et se lie (le lien arrive, plus tard).
   await c.setOffline(true);
   const offline = await confirmSheet(c, 40000);
   c.record('doc4-hors-ligne', offline);
   await shoot(c, 'doc4-hors-ligne');
+  await sleep(1500);
   const offlineWrites = businessWrites(dbWrites(before, await dbSnapshot(c.db)));
   await c.setOffline(false);
-  await sleep(3000);
-  const online = await confirmSheet(c, 60000);
+  const online = offline === 'fermée' ? 'fermée' : await (async () => { await sleep(3000); return confirmSheet(c, 60000); })();
   c.record('doc4-en-ligne', online);
   if (online !== 'fermée') await shoot(c, 'doc4-en-ligne');
-  const view = await verifyPurchase(c, 'doc4');
+  const view = await verifyPurchase(c, 'doc4', { waitTx: true });
   c.finding('C4', 'bordereau : aucune dépense finale sans confirmation', { ecrituresAvantGeste: idle.length, typeSource: view.typeSource,
     baseDuTotal: view.baseDuTotal, statut: view.statut, depenses: view.transactions, paiementPropose: read.payment, indiceTotal: read.hints.amountTTC?.text ? 'présent' : 'absent' });
-  c.check(/^alerte: Hors connexion/.test(String(offline)) && !/offline|Failed/i.test(String(offline)) && !offlineWrites.length, 'doc4 : hors ligne, message français et aucune écriture serveur', { offline, offlineWrites: offlineWrites.length });
-  c.check(online === 'fermée' && view.transactions === 1 && view.justificatif?.original?.sha256Conforme === true, 'doc4 : au retour du réseau, un seul geste enregistre une seule dépense avec son original', { online, transactions: view.transactions, justificatif: view.justificatif });
+  c.check(offline === 'fermée' && !offlineWrites.length, 'doc4 : hors ligne, la feuille se ferme sans attendre l’accusé et rien n’arrive au serveur pendant la coupure', { offline, offlineWrites: offlineWrites.length });
+  c.check(online === 'fermée' && view.transactions === 1 && view.justificatif?.original?.sha256Conforme === true, 'doc4 : au retour du réseau, une seule dépense est synchronisée et son original part et se lie', { online, transactions: view.transactions, justificatif: view.justificatif });
   c.finding('C8-justificatif', 'hors ligne avec justificatif puis retour du réseau', { messageFrancais: /^alerte: Hors connexion/.test(String(offline)) && !/offline|Failed/i.test(String(offline)), horsLigne: offline, ecrituresServeurHorsLigne: offlineWrites.length, retour: online, depenses: view.transactions });
 }
 
@@ -1240,7 +1257,238 @@ async function caseDoc2(c) {
   await closeSheet(c);
 }
 
-const CASES = { etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
+// ───────────────────────────── d3c : l'envoi du justificatif au Drive en arrière-plan ─────────────────────────────
+
+/** Un PDF synthétique et distinct par essai (l'empreinte du document fait l'identité d'un achat : jamais deux saisies avec le même fichier). */
+function syntheticFile(c, label, extraBytes = 0) {
+  const dir = join(c.out, 'fichiers');
+  mkdirSync(dir, { recursive: true });
+  const body = Buffer.concat([Buffer.from(`%PDF-1.4\n% d3c ${label} largeur ${c.width}\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n`), Buffer.alloc(extraBytes, 0x20)]);
+  const path = join(dir, `${c.width}-${label}.pdf`);
+  writeFileSync(path, body);
+  return { path, sha256: sha(body), bytes: body.length, name: basename(path) };
+}
+/** Saisie manuelle AVEC justificatif : la lecture est refusée par le banc, le brasseur tape le total et le motif. S'arrête avant « Enregistrer ». */
+async function manualWithProof(c, file, description, amount = '12,30') {
+  const chooser = await openInvoiceEntry(c);
+  c.ai = { mode: 'refus', doc: null, delayMs: 0 };
+  const picker = await chooser;
+  if (!picker) throw Error('Pas de sélecteur de fichier à l’ouverture de l’entrée.');
+  await picker.accept([file.path]);
+  await c.page.waitForFunction(() => !document.body.innerText.includes('Lecture et vérification') && document.querySelector('#purchase-total'), { timeout: 60000 });
+  await sleep(600);
+  await typeInto(c.page, '#purchase-total', amount);
+  await typeInto(c.page, '#purchase-description', description);
+}
+/** « Enregistrer » : le temps jusqu'à la fermeture de la feuille, et ce que la feuille dit si elle reste. */
+async function saveAndMeasure(c, timeout = 60000) {
+  const started = Date.now();
+  await click(c.page, `${sheet} footer button`);
+  const closed = await c.page.waitForFunction(() => !document.querySelector('[role="dialog"] footer'), { timeout, polling: 100 }).then(() => true).catch(() => false);
+  const ms = Date.now() - started;
+  const alerts = closed ? [] : await c.page.$$eval('[role="dialog"] [role="alert"]', nodes => nodes.map(e => e.innerText.replace(/\s+/g, ' ').trim()));
+  return { closed, ms, alerts };
+}
+const txOf = async (c, description) => (await all(c.db, 'transactions')).find(row => row.description === description);
+const uploadsOf = (c, file) => c.drive.uploads.filter(row => row.sha256 === file.sha256).length;
+const noticeText = c => c.page.$eval('[data-proof-notice]', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => null);
+const waitNotice = (c, timeout = 90000) => waitFor(() => noticeText(c), 'notification d’échec', timeout);
+const waitLinked = (c, description, timeout = 150000) => waitFor(async () => { const row = await txOf(c, description); return row?.finance?.proofDocumentId ? row : false; }, `lien du justificatif « ${description} »`, timeout);
+const goTab = async (c, label) => { await click(c.page, 'nav button', label); await sleep(900); };
+/** Tab (clavier seul) atteint les boutons de la notification. */
+async function keyboardReachesNotice(c) {
+  await c.page.evaluate(() => { document.activeElement?.blur?.(); window.scrollTo(0, 0); });
+  const reached = new Set();
+  for (let index = 0; index < 120 && reached.size < 2; index++) {
+    await c.page.keyboard.press('Tab');
+    const label = await c.page.evaluate(() => { const e = document.activeElement; return e?.closest?.('[data-proof-notice]') ? (e.getAttribute('aria-label') || e.innerText || '').trim() : null; });
+    if (label) reached.add(label);
+  }
+  return [...reached];
+}
+/** Les lignes de la file locale (IndexedDB de la page, base `laffinee-justificatifs`), telles que la page les garde. */
+const queueRows = c => c.page.evaluate(() => new Promise(resolve => {
+  const open = indexedDB.open('laffinee-justificatifs');
+  open.onerror = () => resolve(null);
+  open.onsuccess = () => {
+    const db = open.result;
+    if (!db.objectStoreNames.contains('envois')) { db.close(); resolve([]); return; }
+    const request = db.transaction('envois').objectStore('envois').getAll();
+    request.onsuccess = () => { db.close(); resolve(request.result.map(row => ({ id: row.submissionId, state: row.state, reason: row.reason ?? null, hasFile: !!row.dataUrl }))); };
+    request.onerror = () => { db.close(); resolve(null); };
+  };
+}));
+const resetDriveMode = c => { c.driveMode = { delayMs: 0, fail: null }; c.tokenMode = null; c.blockFirestore = false; };
+
+/**
+ * d3c (D235, D237 n° 5) : « c'est invisible, c'est à la fin en arrière-plan. Et si ça fail : grosse notification, renvoie sur la facture pour
+ * upload le justificatif ou/et réparé le lien drive ». Drive factice dans la page : lent, quota plein, jeton refusé, réseau coupé, renouvellement
+ * du jeton indisponible. Chaque sous-cas est numéroté comme les cas Chrome 1 à 11 du plan.
+ */
+async function caseDriveFond(c) {
+  resetDriveMode(c);
+  const rowsBefore = (await all(c.db, 'transactions')).length;
+
+  // 1 + 7 : Drive lent (10 s par requête), réseau présent. La feuille se ferme en moins de 2 s ; on recharge la page en plein envoi : la file reprend, un seul fichier.
+  c.driveMode.delayMs = 10000;
+  const f1 = syntheticFile(c, 'lent'), d1 = `Essai Drive lent ${c.width}`;
+  await manualWithProof(c, f1, d1);
+  await shoot(c, 'drive-fond-1-feuille-avant');
+  const s1 = await saveAndMeasure(c);
+  await shoot(c, 'drive-fond-1-feuille-fermee');
+  c.check(s1.closed && s1.ms < 2000, 'drive-fond 1 : Drive lent, la feuille se ferme en moins de 2 s après « Enregistrer »', { fermee: s1.closed, ms: s1.ms, alertes: s1.alerts });
+  c.measure('drive-fond-1-fermeture-ms', s1.ms);
+  const t1 = await waitFor(() => txOf(c, d1), 'dépense « lent » sur le serveur', 30000).catch(() => null);
+  c.check(!!t1 && !t1.finance?.proofDocumentId && t1.finance?.proofUpload?.state === 'queued', 'drive-fond 1 : la dépense est écrite, en file, sans proofDocumentId (l’envoi n’a pas fini)', { etat: t1?.finance?.proofUpload, lien: t1?.finance?.proofDocumentId ?? null });
+  c.check(!(await noticeText(c)), 'drive-fond 1 : aucune notification pendant que ça marche', { notification: await noticeText(c) });
+  await sleep(3000);
+  c.driveMode.delayMs = 0;
+  await c.page.reload({ waitUntil: 'domcontentloaded' });
+  await waitApp(c);
+  c.step('page rechargée en plein envoi');
+  const l1 = await waitLinked(c, d1, 240000).catch(() => null);
+  c.check(!!l1 && uploadsOf(c, f1) === 1, 'drive-fond 7 : rechargement en plein envoi, la file reprend au démarrage, un seul fichier dans le Drive factice', { lien: l1?.finance?.proofDocumentId ?? null, fichiers: uploadsOf(c, f1) });
+  c.check(!(await noticeText(c)), 'drive-fond 7 : aucune notification après la reprise', {});
+
+  // 2 + 3 : Drive plein. La notification paraît (aucune feuille ouverte), reste, se lit au clavier ; « Renvoyer le justificatif » ouvre CETTE dépense ; renvoi réussi.
+  c.driveMode.fail = 'quota';
+  const f2 = syntheticFile(c, 'plein'), d2 = `Essai Drive plein ${c.width}`;
+  await manualWithProof(c, f2, d2);
+  const s2 = await saveAndMeasure(c);
+  c.check(s2.closed, 'drive-fond 2 : Drive plein, la feuille se ferme quand même', { alertes: s2.alerts });
+  const n2 = await waitNotice(c).catch(() => null);
+  c.check(!!n2 && /espace Drive est plein/.test(n2) && /Renvoyer le justificatif/.test(n2), 'drive-fond 2 : la notification d’échec paraît, dit la cause et propose « Renvoyer le justificatif »', { notification: n2 });
+  await shoot(c, 'drive-fond-2-notification-echec');
+  await sleep(10000);
+  c.check(!!(await noticeText(c)), 'drive-fond 2 : elle est toujours là après 10 s (persistante)', {});
+  const reached = await keyboardReachesNotice(c);
+  c.check(reached.includes('Renvoyer le justificatif') && reached.includes('Plus tard'), 'drive-fond 2 : le clavier (Tab) atteint ses boutons', { atteints: reached });
+  await goTab(c, 'Finances');
+  c.check(!!(await noticeText(c)), 'drive-fond 2 : elle est aussi sur Finances', {});
+  await shoot(c, 'drive-fond-2-notification-finances');
+  await goTab(c, 'Bord');
+  c.check(!!(await noticeText(c)), 'drive-fond 2 : elle est aussi sur le tableau de bord', {});
+  const t2 = await txOf(c, d2);
+  c.check(t2?.finance?.proofUpload?.state === 'failed' && t2.finance.proofUpload.reason === 'quota' && !t2.finance.proofDocumentId, 'drive-fond 2 : l’état « failed / quota » est écrit sur la dépense (visible depuis tout appareil)', { etat: t2?.finance?.proofUpload });
+  await click(c.page, '[data-proof-notice] button', 'Renvoyer le justificatif');
+  const fiche = await waitFor(() => c.page.$eval('[role="dialog"]:last-of-type', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => null), 'fiche de la dépense', 30000).catch(() => null);
+  c.check(!!fiche && fiche.includes(d2) && /Justificatif à renvoyer/.test(fiche) && /Renvoyer maintenant/.test(fiche) && /Abandonner/.test(fiche), 'drive-fond 3 : « Renvoyer le justificatif » ouvre la fiche de CETTE dépense, avec la cause, « Renvoyer maintenant » et « Abandonner »', { fiche: fiche?.slice(0, 400) });
+  await shoot(c, 'drive-fond-3-fiche-a-renvoyer');
+  c.driveMode.fail = null;
+  await click(c.page, '[data-proof-panel] button', 'Renvoyer maintenant');
+  const l2 = await waitLinked(c, d2).catch(() => null);
+  c.check(!!l2 && uploadsOf(c, f2) === 1, 'drive-fond 3 : après « Renvoyer maintenant », le justificatif est lié, un seul fichier dans le Drive factice', { lien: l2?.finance?.proofDocumentId ?? null, fichiers: uploadsOf(c, f2) });
+  const shown = await waitFor(() => click(c.page, '[role="dialog"] button', 'Justificatif', 3000).then(() => true).catch(() => false), 'bouton « Justificatif » de la fiche', 30000).catch(() => false);
+  const original = shown ? await c.page.waitForFunction(() => [...document.querySelectorAll('[role="dialog"] iframe, [role="dialog"] img')].length > 0, { timeout: 30000 }).then(() => true).catch(() => false) : false;
+  c.check(shown && original, 'drive-fond 3 : la fiche montre « Justificatif » et il s’ouvre', { bouton: shown, original });
+  await shoot(c, 'drive-fond-3-justificatif-ouvert');
+  c.check(!(await noticeText(c)), 'drive-fond 3 : plus de notification', {});
+  await c.page.keyboard.press('Escape'); await sleep(500); await c.page.keyboard.press('Escape'); await sleep(500);
+
+  // 4 : jeton refusé. « Reconnecter Drive » dans la notification ; après la reconnexion (factice) la file repart, la dépense repasse queued puis liée.
+  c.driveMode.fail = 'auth';
+  const f4 = syntheticFile(c, 'jeton'), d4 = `Essai jeton refusé ${c.width}`;
+  await manualWithProof(c, f4, d4);
+  const s4 = await saveAndMeasure(c);
+  c.check(s4.closed, 'drive-fond 4 : jeton refusé, la feuille se ferme quand même', { alertes: s4.alerts });
+  const n4 = await waitNotice(c).catch(() => null);
+  const reconnect = await c.page.$$eval('[data-proof-notice] button', nodes => nodes.map(b => b.innerText.trim()));
+  c.check(!!n4 && /plus connecté/.test(n4) && reconnect.includes('Reconnecter Drive'), 'drive-fond 4 : motif « auth » : la notification dit que Drive n’est plus connecté et offre « Reconnecter Drive »', { notification: n4, boutons: reconnect });
+  await shoot(c, 'drive-fond-4-reconnecter');
+  c.driveMode.fail = null;
+  const seen = [];
+  const poll = setInterval(async () => { const row = await txOf(c, d4).catch(() => null); const state = row?.finance?.proofDocumentId ? 'lié' : row?.finance?.proofUpload?.state; if (state && seen.at(-1) !== state) seen.push(state); }, 150);
+  // La fenêtre Google ne s'ouvre pas dans le banc : la reconnexion est factice, par le même appel que le bouton (`requeueAfterReconnect`).
+  const requeued = await c.page.evaluate(async () => (await import('/src/services/proofQueue.ts')).requeueAfterReconnect());
+  const l4 = await waitLinked(c, d4).catch(() => null);
+  clearInterval(poll);
+  c.check(requeued === 1 && !!l4 && uploadsOf(c, f4) === 1, 'drive-fond 4 : après la reconnexion factice la file repart et la dépense est liée (un seul fichier)', { relances: requeued, etats: seen, fichiers: uploadsOf(c, f4) });
+  c.record('drive-fond-4-etats', seen);
+  c.check(!(await noticeText(c)), 'drive-fond 4 : plus de notification', {});
+
+  // 5 : réseau coupé AVANT « Enregistrer » (T5) : la feuille se ferme sans attendre l'accusé, aucune notification, rien au serveur pendant la coupure ;
+  // au retour du réseau : une dépense synchronisée, un envoi, un lien.
+  const f5 = syntheticFile(c, 'hors-ligne'), d5 = `Essai hors ligne ${c.width}`;
+  await manualWithProof(c, f5, d5);
+  await c.setOffline(true);
+  const s5 = await saveAndMeasure(c, 40000);
+  await shoot(c, 'drive-fond-5-hors-ligne-fermee');
+  c.check(s5.closed && s5.ms < 5000, 'drive-fond 5 : hors ligne, la feuille se ferme sans attendre l’accusé (moins de 5 s)', { fermee: s5.closed, ms: s5.ms, alertes: s5.alerts });
+  await sleep(4000);
+  c.check(!(await txOf(c, d5)) && !(await noticeText(c)), 'drive-fond 5 : rien au serveur pendant la coupure, aucune notification', { notification: await noticeText(c) });
+  await c.setOffline(false);
+  const l5 = await waitLinked(c, d5, 180000).catch(() => null);
+  const count5 = (await all(c.db, 'transactions')).filter(row => row.description === d5).length;
+  c.check(!!l5 && count5 === 1 && uploadsOf(c, f5) === 1, 'drive-fond 5 : au retour du réseau, une dépense synchronisée, un envoi, un lien', { depenses: count5, fichiers: uploadsOf(c, f5), lien: l5?.finance?.proofDocumentId ?? null });
+
+  // 6 : réseau coupé PENDANT l'envoi (Drive lent), puis rétabli : aucune notification ; l'envoi reprend à `online`.
+  c.driveMode.delayMs = 4000;
+  const f6 = syntheticFile(c, 'coupure'), d6 = `Essai coupure en cours ${c.width}`;
+  await manualWithProof(c, f6, d6);
+  const s6 = await saveAndMeasure(c);
+  c.check(s6.closed, 'drive-fond 6 : la feuille se ferme', { alertes: s6.alerts });
+  await sleep(1500);
+  await c.setOffline(true);
+  await sleep(8000);
+  c.check(!(await noticeText(c)), 'drive-fond 6 : réseau coupé pendant l’envoi, aucune notification', { notification: await noticeText(c) });
+  const failedDuring = (await txOf(c, d6))?.finance?.proofUpload?.state === 'failed';
+  c.driveMode.delayMs = 0;
+  await c.setOffline(false);
+  const l6 = await waitLinked(c, d6, 180000).catch(() => null);
+  c.check(!!l6 && !failedDuring && uploadsOf(c, f6) === 1, 'drive-fond 6 : l’envoi reprend au retour du réseau, jamais « failed », un seul fichier', { lien: l6?.finance?.proofDocumentId ?? null, failedPendantLaCoupure: failedDuring, fichiers: uploadsOf(c, f6) });
+
+  // 8 + 11 : Drive plein, puis un AUTRE fichier (fileNo+1) ; un fichier trop lourd est refusé clairement, rien en file.
+  c.driveMode.fail = 'quota';
+  const f8 = syntheticFile(c, 'premier'), f8b = syntheticFile(c, 'autre'), f8big = syntheticFile(c, 'trop-lourd', 5 * 1024 * 1024), d8 = `Essai autre fichier ${c.width}`;
+  await manualWithProof(c, f8, d8);
+  await saveAndMeasure(c);
+  await waitNotice(c).catch(() => null);
+  await click(c.page, '[data-proof-notice] button', 'Renvoyer le justificatif');
+  await waitFor(() => c.page.$('[role="dialog"] [data-proof-panel]'), 'fiche de la dépense à renvoyer', 30000);
+  c.driveMode.fail = null;
+  const rowsBefore8 = await queueRows(c);
+  const [bigPicker] = await Promise.all([c.page.waitForFileChooser({ timeout: 20000 }), click(c.page, '[data-proof-panel] button', 'Choisir un autre fichier')]);
+  await bigPicker.accept([f8big.path]);
+  const refusal = await waitFor(() => c.page.$eval('[data-proof-panel] [role="alert"]', e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => null), 'refus du fichier trop lourd', 20000).catch(() => null);
+  const rowsAfter8 = await queueRows(c);
+  c.check(!!refusal && /4 Mo/.test(refusal) && JSON.stringify(rowsBefore8) === JSON.stringify(rowsAfter8) && uploadsOf(c, f8big) === 0, 'drive-fond 11 : un fichier de plus de 4 Mo choisi dans la fiche est refusé clairement, rien en file', { refus: refusal, avant: rowsBefore8, apres: rowsAfter8 });
+  await shoot(c, 'drive-fond-11-fichier-refuse');
+  const [okPicker] = await Promise.all([c.page.waitForFileChooser({ timeout: 20000 }), click(c.page, '[data-proof-panel] button', 'Choisir un autre fichier')]);
+  await okPicker.accept([f8b.path]);
+  const l8 = await waitLinked(c, d8).catch(() => null);
+  c.check(!!l8 && /-2$/.test(l8.finance.proofDocumentId) && uploadsOf(c, f8b) === 1 && uploadsOf(c, f8) === 0, 'drive-fond 8 : après un échec, un autre fichier prend un autre identifiant (fileNo+1) : un seul fichier lié, le premier n’est jamais parti', { lien: l8?.finance?.proofDocumentId ?? null, autre: uploadsOf(c, f8b), premier: uploadsOf(c, f8) });
+  await c.page.keyboard.press('Escape'); await sleep(500);
+
+  // 10 + 9 : le renouvellement du jeton est indisponible (functions/unavailable) : pas d'alerte, la file réessaie ; redémarrage avec Firestore injoignable : le job reste.
+  await reloadApp(c);
+  c.tokenMode = 'unavailable';
+  const f10 = syntheticFile(c, 'jeton-indisponible'), d10 = `Essai jeton indisponible ${c.width}`;
+  await manualWithProof(c, f10, d10);
+  const s10 = await saveAndMeasure(c);
+  c.check(s10.closed, 'drive-fond 10 : renouvellement du jeton indisponible, la feuille se ferme', { alertes: s10.alerts });
+  await sleep(12000);
+  const t10 = await txOf(c, d10);
+  c.check(!(await noticeText(c)) && t10?.finance?.proofUpload?.state === 'queued' && !t10.finance.proofDocumentId, 'drive-fond 10 : functions/unavailable : pas d’alerte, la dépense reste « queued » (la file réessaie au réveil suivant)', { notification: await noticeText(c), etat: t10?.finance?.proofUpload });
+  const before9 = await queueRows(c);
+  c.blockFirestore = true;
+  await c.page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
+  await sleep(8000);
+  const after9 = await queueRows(c);
+  c.check(Array.isArray(before9) && before9.some(row => row.hasFile) && JSON.stringify(before9) === JSON.stringify(after9), 'drive-fond 9 : redémarrage avec Firestore injoignable : aucun job effacé (IndexedDB relue)', { avant: before9, apres: after9 });
+  c.record('drive-fond-9-appels-drive-pendant-le-blocage', c.drive.requests ?? 0);
+  c.blockFirestore = false;
+  c.tokenMode = null;
+  await reloadApp(c);
+  await sleep(35000);
+  await c.page.evaluate(() => { window.dispatchEvent(new Event('focus')); });
+  const l10 = await waitLinked(c, d10, 180000).catch(() => null);
+  c.check(!!l10 && uploadsOf(c, f10) === 1, 'drive-fond 10 : le jeton revient, la file repart au réveil suivant : lié, un seul fichier', { lien: l10?.finance?.proofDocumentId ?? null, fichiers: uploadsOf(c, f10) });
+  const rowsAfter = (await all(c.db, 'transactions')).length;
+  c.check(rowsAfter - rowsBefore === 7, 'drive-fond : sept dépenses créées, aucune de trop (pas de doublon)', { avant: rowsBefore, apres: rowsAfter });
+  resetDriveMode(c);
+}
+
+const CASES = { 'drive-fond': caseDriveFond, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
   'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules };
 
 async function inner() {
@@ -1300,7 +1548,7 @@ async function inner() {
       const cdp = await browser.target().createCDPSession();
       await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads, browserContextId: context.id });
       const c = { width, base, out, db, docs, entry, downloads, shotIndex: 0, plan, page: null,
-        ai: { mode: 'replay', doc: null, delayMs: 0 }, calls: { ai: [], drive: [] },
+        ai: { mode: 'replay', doc: null, delayMs: 0 }, calls: { ai: [], drive: [] }, driveMode: { delayMs: 0, fail: null }, tokenMode: null,
         drive: { files: new Map(), sessions: new Map(), next: 0, log: [], uploads: [], downloads: [] },
         step: (label, data = {}) => { entry.steps.push({ label, at: new Date().toISOString(), ...data }); console.log(`${width} · ${label}`); write(); },
         check: (ok, label, data = {}) => { report.checks.push({ width, ok: !!ok, label, ...(ok ? {} : { data }) }); console.log(`${ok ? 'OK ' : 'KO '} ${width} · ${label}`); write(); },
@@ -1323,6 +1571,7 @@ async function inner() {
           if (!(/^(data|blob):/.test(url) || /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(url))) {
             report.blocked.push(`${width} ${request.method()} ${url.slice(0, 120)}`); return request.abort();
           }
+          if (c.blockFirestore && new URL(url).port === String(EMULATOR_PORTS.firestore)) return request.abort();
           const rewrite = url.startsWith(base) ? EMULATOR_REWRITES.find(row => new URL(url).pathname === row.path) : null;
           if (!rewrite) return request.continue();
           try {
@@ -1338,7 +1587,7 @@ async function inner() {
           }
         });
         await page.exposeFunction('__jus0Bridge', async request => {
-          if (request.kind === 'drive') return driveAnswer(c, request);
+          if (request.kind === 'drive') { if (c.driveMode.delayMs) await sleep(c.driveMode.delayMs); return driveAnswer(c, request); }
           if (request.kind === 'aiTask' && c.ai.delayMs) await sleep(c.ai.delayMs);
           return callableAnswer(c, request);
         });

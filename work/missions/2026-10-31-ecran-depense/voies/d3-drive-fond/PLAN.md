@@ -315,3 +315,25 @@ Règle d'ensemble : **jsdom et node n'ont pas `indexedDB`** → `proofQueueAvail
 | Prêt 14 | § 0 (chaîne `data:`) |
 | Prêt 15 | § 4 (`// @vitest-environment jsdom`) |
 | Prêt 16 | § 4 (rien à l'import) |
+
+## 10. Écarts et précisions écrits avant le code (voie d3c-drive-code, 01.11)
+
+Les huit précisions des secondes lectures (REVUE-conception.md et REVUE-pret.md, « Seconde lecture (v2) »), retenues telles quelles. Rien d'autre ne change au § 0 à § 9.
+
+1. **Dépense annulée jamais lue par la notification.** `proofUploadStatus` ignore toute dépense dont `finance.voidedAt` est posé, quel que soit son `proofUpload` ; un job `voided` n'alerte jamais non plus.
+2. **`drive/auth-required` = motif `auth`.** Toute erreur de ce code, qu'elle vienne d'un jeton `null`, d'une session pas encore restaurée avec utilisateur présent ou d'un 401 de Drive, donne `failed` `auth` et « Reconnecter Drive » (file arrêtée). Seul l'absence de session Firebase (`getCurrentUser()` nul) reste une précondition : rien n'est tenté.
+3. **Délai minimal avant `failed network`.** Constante `TRANSIENT_MIN_SPAN_MS = 2 h` : six échecs passagers sur six réveils distincts ne suffisent pas, il faut aussi que le dernier tombe au moins 2 h après le premier (`firstFailureAt` sur le job). Choix du pilote, constante réglable.
+4. **« Abandonner » d'un job sans dépense** : sur la notification « sans dépense » elle-même (bouton « Abandonner » de cette variante), puisque aucune fiche n'existe. Job `voided` `abandoned`, fichier gardé 30 jours.
+5. **Test hors ligne** : accepte `queued` et `pending` comme états de la dépense pendant la coupure (le suivi de l'écriture varie selon l'instant).
+6. **Code nu `unavailable`** de `saveFinanceDocumentConfirmed` (Firestore ou réseau, `financeDocuments.ts:53-58`) : dans la table des échecs, genre **passager** (compté, `failed network` après 6 réveils distincts et 2 h). Hors ligne déclaré (`navigator.onLine===false`) : aucun essai, rien de compté (précondition d'attente). `onLine` ne sert qu'à ne pas tenter ; il ne décide jamais d'un comptage.
+7. **Prédicat « feuille ouverte »** : `document.querySelector('[role="dialog"],[role="alertdialog"]')` (comme `Sheet.tsx:88` et `App.tsx:200`).
+8. **Chemins corrigés** : `tests/integration/taxArchive.test.ts`, `tests/integration/backupTransfer.test.ts`, `tests/integration/taxWorkspace.test.tsx` (et non `tests/unit/`). Témoin `confirmer.test.ts` : avec `saveFinanceDocumentConfirmed` simulé qui ne répond jamais, HEAD ne lève pas `drive/in-progress` à 15 s (le simulé remplace `waitForOriginal`) ; le test est rouge parce que l'appel ne rend jamais (le temps factice avance de 1 s, l'appel attend toujours Drive).
+
+Écarts constatés au code :
+- **`TransactionJournal.tsx:194-195`** : une dépense `queued` ou `failed` n'a pas de `proofDocumentId` ; les filtres « Sans justificatif » et « À compléter » la comptent donc déjà sans justificatif. Le prédicat devient une fonction nommée `sansJustificatif(t)` (même comportement, intention écrite, testée), sans autre changement.
+- **`DriveConnection.tsx`** n'est pas modifiable ici (hors « Possède ») et son libellé est « Connecter Drive ». La notification et la fiche portent donc leur propre bouton « Reconnecter Drive », qui appelle les mêmes `FirebaseAuthService.prepareGoogleLogin` puis `refreshDriveAccess`.
+- **Lecture « serveur » du lien (T8)** : `FirestoreRepo.waitForDocument` (lecture serveur de ce document, `firestoreRepo.ts:277-296`), repli sur le cache ; aucun import direct de `firebase/firestore` dans la file.
+- **Délai de 30 s entre deux essais (§ 2.2), précisé en codant, après le premier essai du banc Chrome** : il ne retient un job que dans la même vie de page (`lastLife`) et seulement si l'essai précédent a atteint un serveur (`waited` faux). Raison : sans minuterie, un rechargement de page ou un retour du réseau moins de 30 s après un essai raté faute de réseau laissait le job attendre un événement qui ne venait pas (banc : « rechargement en plein envoi » restait sans lien après 240 s). Les échecs comptés (5xx, quota, inconnue) restent espacés de 30 s ; le comptage par réveil et le délai de 2 h sont inchangés. Testé (`envoi.test.ts`).
+- **Statut d'écriture accepté pour la fermeture hors ligne** : `pending` et `queued` (`FirestoreRepo` pose `queued` à l'enregistrement dans la file des écritures ; précision n° 5).
+- **Place de la notification** : au-dessus de la barre de navigation (`bottom: var(--main-navigation-height) + 0,5 rem`), pas sur elle (forme provisoire, D237 n° 6).
+- **Banc Chrome** : le cas `drive-fond` saisit à la main (lecture refusée par le banc) avec des PDF synthétiques distincts, parce que l'empreinte d'un document fait l'identité d'un achat (`purchase-<hash>`) : six documents rejoués ne suffisaient pas à sept dépenses. « Reconnecter Drive » : la fenêtre Google ne peut pas s'ouvrir dans le banc (requêtes hors localhost bloquées) ; la reconnexion est factice, par l'appel même du bouton (`requeueAfterReconnect`).

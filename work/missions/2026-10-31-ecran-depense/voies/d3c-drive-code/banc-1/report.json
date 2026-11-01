@@ -1,0 +1,167 @@
+{
+  "project": "demo-jus",
+  "rulesSha": "a29dda39a7999991c19e5be00e1805d342451090658b08d837d91bfbbb41552f",
+  "widths": [
+    390
+  ],
+  "cases": [
+    "drive-fond"
+  ],
+  "startedAt": "2026-11-01T08:48:42.337Z",
+  "replay": {
+    "doc1": {
+      "fichier": "..\\doc1-facture-ecran.jpg",
+      "sha256": "b34c2807eba4"
+    },
+    "doc2": {
+      "fichier": "..\\doc2-facture-papier-2tva.jpg",
+      "sha256": "bc11da61aafa"
+    },
+    "doc3": {
+      "fichier": "..\\doc3-bulletins-qr-tournes.jpg",
+      "sha256": "1f3262d77203"
+    },
+    "doc4": {
+      "fichier": "..\\doc4-bordereau-livraison.jpg",
+      "sha256": "ee741f3f353f"
+    },
+    "doc5": {
+      "fichier": "..\\doc5-facture-fournisseur-3pages-qr.jpg",
+      "sha256": "c8a6241e22a8"
+    },
+    "doc6": {
+      "fichier": "..\\doc6-commande-en-ligne-ecran.jpg",
+      "sha256": "13865170131e"
+    }
+  },
+  "seeds": {
+    "derivesDeLaLecture": [
+      {
+        "id": "jus0-existant-accent",
+        "unit": "kg",
+        "category": "Malt"
+      },
+      {
+        "id": "jus0-existant-houblon",
+        "unit": "g",
+        "category": "Houblon"
+      },
+      {
+        "id": "jus0-existant-levure",
+        "unit": "sachet",
+        "category": "Levure"
+      }
+    ],
+    "accentTrouve": true
+  },
+  "runs": [
+    {
+      "width": 390,
+      "steps": [
+        {
+          "label": "connexion émulée",
+          "at": "2026-11-01T08:49:41.725Z",
+          "uid": "VcyF63vLrYiq8c9lTXr4EXglUprm"
+        },
+        {
+          "label": "semis du stock (dérivés de la lecture rejouée)",
+          "at": "2026-11-01T08:49:41.905Z",
+          "seeds": [
+            "jus0-existant-accent",
+            "jus0-existant-houblon",
+            "jus0-existant-levure"
+          ]
+        },
+        {
+          "label": "cas drive-fond",
+          "at": "2026-11-01T08:49:43.189Z"
+        },
+        {
+          "label": "page rechargée en plein envoi",
+          "at": "2026-11-01T08:49:51.736Z"
+        }
+      ],
+      "captures": [
+        "390-01-drive-fond-1-feuille-avant.png",
+        "390-02-drive-fond-1-feuille-fermee.png"
+      ],
+      "errors": [
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED"
+      ],
+      "records": {},
+      "measures": {
+        "drive-fond-1-fermeture-ms": 541
+      }
+    }
+  ],
+  "checks": [
+    {
+      "width": 390,
+      "ok": true,
+      "label": "banc : réécriture émulateur appliquée telle que prévue"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : Drive lent, la feuille se ferme en moins de 2 s après « Enregistrer »"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : la dépense est écrite, en file, sans proofDocumentId (l’envoi n’a pas fini)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : aucune notification pendant que ça marche"
+    }
+  ],
+  "findings": [],
+  "blocked": [
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 GET https://accounts.google.com/gsi/client",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 GET https://accounts.google.com/gsi/client",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key"
+  ],
+  "rewrites": [
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    }
+  ],
+  "pids": {
+    "vite": 24676,
+    "chrome": 15444
+  }
+}

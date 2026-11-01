@@ -4,6 +4,7 @@ import type { Transaction } from '../../types';
 import type { FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { Sheet } from '../Sheet';
 import { DocumentProofLink } from './DocumentProofLink';
+import { ProofResendPanel } from './ProofUploadNotice';
 import { Field, MoneyInput } from './FinanceForms';
 import { CategoryTag } from './CategoryTag';
 import { longDate } from './financeFormat';
@@ -43,6 +44,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         <div className="finance-actions">{state.remainingCents>0&&<button className="finance-action" onClick={onPay}>{outgoing?'Noter un paiement':'Noter un encaissement'}</button>}<button className="finance-action secondary" onClick={onEdit}>Modifier les informations</button></div>
         {state.state==='unknown'&&<button className="finance-action secondary" onClick={()=>update({paymentStatus:'unpaid'})}>Confirmer que cette pièce reste à régler</button>}
       </>}
+      <ProofResendPanel transaction={tx}/>
       <DocumentProofLink transaction={tx} className="finance-action secondary"/>
       {/* ⚠️ Le détail d'un achat est l'endroit où le brasseur se demande « il
           m'en reste combien ? ». La ligne qui sait de quel article elle parle

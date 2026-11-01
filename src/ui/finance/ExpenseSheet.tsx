@@ -9,9 +9,10 @@ import { DateField,swissToday,toIsoDate } from '../DateField';
 import { Combobox } from '../Combobox';
 import { StorageService } from '../../services/storage';
 import { GeminiScannerService,type ScanOutcome,type ScannedLineKind } from '../../services/geminiScanner';
-import { savePurchaseWithProofReceipt,confirmPurchase,validatePurchase,sansCetteSaisie,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,purchaseSimilarOrders,proposeMillingSurcharges,confirmMillingSurcharge,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
+import { savePurchaseWithProofReceipt,confirmPurchase,canCloseWithoutAck,watchPurchaseConfirmation,validatePurchase,sansCetteSaisie,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,purchaseSimilarOrders,proposeMillingSurcharges,confirmMillingSurcharge,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
 import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit } from '../../services/stockLineMatching';
 import { isConfirmedWriteRejection } from '../../services/firestoreRepo';
+import { proofQueueAvailable } from '../../services/proofQueue';
 import { FirebaseAuthService } from '../../services/firebaseAuth';
 import { normalize } from '../../services/search';
 import type { DriveProofReceipt } from '../../services/financeDocuments';
@@ -96,7 +97,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [attempted,setAttempted]=useState(false);
   const keyboardInset=useKeyboardInset();
   const titleId=useId(),validationId=useId();
-  const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
+  const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),queuedRef=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
   const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null);
   const manuallyClassified=useRef(new Set<string>());
   /* Lignes dont l'article de stock vient de la lecture : une proposition, montrée comme telle jusqu'au choix du brasseur. */
@@ -284,11 +285,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(apercu){proof=await apercu.enregistrer(draft);setReceipt(proof);}
       else{
       /* `proofSent` ne se pose qu'à un signal sûr : le retour du service (original confirmé dans Drive) ou `drive/in-progress` (plus bas). Jamais avant l'appel. */
-      if(!pendingId){const saved=await savePurchaseWithProofReceipt(draft);if(draft.proofDataUrl)proofSent.current=true;pendingRef.current=true;setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;}
-      await confirmPurchase(draft);
+      let acked=false;
+      if(!pendingId){
+        const saved=await savePurchaseWithProofReceipt(draft);if(draft.proofDataUrl)proofSent.current=true;pendingRef.current=true;setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;
+        /* Le fichier part au Drive en arrière-plan (file locale) : aucun reçu à l'écran. Hors ligne, l'écriture en file locale suffit à fermer ; son accusé est attendu hors de la feuille (T5). */
+        if(saved.queued){queuedRef.current=true;if(canCloseWithoutAck(saved.transactionId)){watchPurchaseConfirmation(draft);acked=true;}}
       }
-      /* Le reçu reste affiché jusqu'à « Terminé » ; sans reçu Drive à montrer, la feuille se ferme comme avant. */
-      if(mounted.current){onSaved(proof);if(proof)setDone(proof);else onClose();}
+      if(!acked)await confirmPurchase(draft);
+      }
+      /* Envoi en arrière-plan : la feuille se ferme, le reçu se lit dans la fiche. Chemin synchrone (repli) : le reçu reste affiché jusqu'à « Terminé » ; sans reçu Drive à montrer, la feuille se ferme comme avant. */
+      if(mounted.current){if(queuedRef.current){onSaved();onClose();}else{onSaved(proof);if(proof)setDone(proof);else onClose();}}
     }catch(e:any){if(mounted.current){if(isConfirmedWriteRejection(e)){pendingRef.current=false;setPendingId(null);setReceipt(undefined);}if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress'){proofSent.current=true;setProofSending(e.message);}else setError(e.message||'L’enregistrement reste à confirmer.');}}
     finally{saveLocked.current=false;if(mounted.current)setSaving(false);}
   };
@@ -582,7 +588,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
     {showForm&&!busy?<footer className={'shrink-0 min-h-9 px-3 py-0.5 border-t border-cave-800 flex items-center justify-between gap-2'+(keyboardInset?'':' pb-safe')}>
       {done?<div className="min-w-0 flex-1 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>
-      :<div className="min-w-0 flex-1 text-xs text-cave-200">{saving&&draft.proofDataUrl&&!receipt?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':driveVerifie?'Drive à connecter':''}</span>:null}</div>}
+      :<div className="min-w-0 flex-1 text-xs text-cave-200">{saving&&draft.proofDataUrl&&!receipt&&(!proofQueueAvailable()||apercu)?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':driveVerifie?'Drive à connecter':''}</span>:null}</div>}
       {done?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>
       :attached?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>:sameChosen&&existing?<button type="button" disabled={saving} onClick={()=>{if(attachable)void attachToExisting(existing.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:attachable?<Check size={14}/>:<X size={14}/>} {attachable?saving?'Rattachement…':'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
       :!existing&&similarChoice==='same'&&similar?<button type="button" disabled={saving} onClick={()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center gap-1.5 font-semibold'}>{similarAttachable?<Check size={14}/>:<X size={14}/>}{similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>

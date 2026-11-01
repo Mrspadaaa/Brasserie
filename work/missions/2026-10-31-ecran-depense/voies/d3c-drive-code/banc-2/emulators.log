@@ -1,0 +1,793 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-jus", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-9TPvBS\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8872
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: aiTask, applyBrewerProposal, applyYeastDbCorrection, askBrewer, askBrewerHopAdviceV1, cleanupBreweryTransfers, cleanupFinancialSync, deliverBrewAlarm, dispatchBrewerHopAdviceV1, dispatchBrewerQuestion, driveAuthorization, exportBreweryData, getBrewAlertConfig, getBrewSession, getBrewerActivity, getBrewerAiBudget, getBrewerConversation, getBrewerHopAdviceActivityV1, getBrewerHopAdviceConversationV1, getFermentationResearch, hopReclasserIA, markBrewerHopAdviceReadV1, markBrewerRead, migrateFinanceDocuments, notifyBrewerAnswer, notifyBrewerHopAdviceAnswerV1, processBrewerHopAdviceV1, processBrewerQuestion, proposeYeastDbCorrection, readBrewingCatalogue, readBrewingScenario, recordDataChange, recordFinancialPaymentChange, recordFinancialTransactionChange, registerBrewDevice, registerBrewerNotifications, rescheduleBrewAlarms, resetBrewerConversation, resetBrewerHopAdviceConversationV1, restoreBreweryData, retryBrewerHopAdviceQuestionV1, retryBrewerQuestion, saveBrewSession, setBrewerAiBudget, syncBrewAlarms, syncFinancialLedger, transferBreweryData, writeBrewingCatalogue, writeBrewingScenario.
+[32m[1m+  functions[europe-west6-aiTask]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/aiTask).
+[32m[1m+  functions[europe-west6-applyBrewerProposal]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/applyBrewerProposal).
+[32m[1m+  functions[europe-west6-applyYeastDbCorrection]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/applyYeastDbCorrection).
+[32m[1m+  functions[europe-west6-askBrewer]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/askBrewer).
+[32m[1m+  functions[europe-west6-askBrewerHopAdviceV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/askBrewerHopAdviceV1).
+[36m[1mi  functions[europe-west6-cleanupBreweryTransfers]:[22m[39m function ignored because the pubsub emulator does not exist or is not running.
+[36m[1mi  functions[europe-west6-cleanupFinancialSync]:[22m[39m function ignored because the pubsub emulator does not exist or is not running.
+[32m[1m+  tasks:[22m[39m Created queue with key: queue:demo-jus-europe-west6-deliverBrewAlarm
+[32m[1m+  functions[europe-west6-deliverBrewAlarm]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/deliverBrewAlarm).
+[32m[1m+  functions[europe-west6-dispatchBrewerHopAdviceV1]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-dispatchBrewerQuestion]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-driveAuthorization]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/driveAuthorization).
+[32m[1m+  functions[europe-west6-exportBreweryData]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/exportBreweryData).
+[32m[1m+  functions[europe-west6-getBrewAlertConfig]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewAlertConfig).
+[32m[1m+  functions[europe-west6-getBrewSession]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewSession).
+[32m[1m+  functions[europe-west6-getBrewerActivity]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerActivity).
+[32m[1m+  functions[europe-west6-getBrewerAiBudget]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerAiBudget).
+[32m[1m+  functions[europe-west6-getBrewerConversation]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerConversation).
+[32m[1m+  functions[europe-west6-getBrewerHopAdviceActivityV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerHopAdviceActivityV1).
+[32m[1m+  functions[europe-west6-getBrewerHopAdviceConversationV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getBrewerHopAdviceConversationV1).
+[32m[1m+  functions[europe-west6-getFermentationResearch]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/getFermentationResearch).
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/hopReclasserIA).
+[32m[1m+  functions[europe-west6-markBrewerHopAdviceReadV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/markBrewerHopAdviceReadV1).
+[32m[1m+  functions[europe-west6-markBrewerRead]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/markBrewerRead).
+[32m[1m+  functions[europe-west6-migrateFinanceDocuments]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/migrateFinanceDocuments).
+[32m[1m+  functions[europe-west6-notifyBrewerAnswer]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-notifyBrewerHopAdviceAnswerV1]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  tasks:[22m[39m Created queue with key: queue:demo-jus-europe-west6-processBrewerHopAdviceV1
+[32m[1m+  functions[europe-west6-processBrewerHopAdviceV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/processBrewerHopAdviceV1).
+[32m[1m+  tasks:[22m[39m Created queue with key: queue:demo-jus-europe-west6-processBrewerQuestion
+[32m[1m+  functions[europe-west6-processBrewerQuestion]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/processBrewerQuestion).
+[32m[1m+  functions[europe-west6-proposeYeastDbCorrection]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/proposeYeastDbCorrection).
+[32m[1m+  functions[europe-west6-readBrewingCatalogue]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/readBrewingCatalogue).
+[32m[1m+  functions[europe-west6-readBrewingScenario]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/readBrewingScenario).
+[32m[1m+  functions[europe-west6-recordDataChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-recordFinancialPaymentChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-recordFinancialTransactionChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-registerBrewDevice]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/registerBrewDevice).
+[32m[1m+  functions[europe-west6-registerBrewerNotifications]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/registerBrewerNotifications).
+[32m[1m+  functions[europe-west6-rescheduleBrewAlarms]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[europe-west6-resetBrewerConversation]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/resetBrewerConversation).
+[32m[1m+  functions[europe-west6-resetBrewerHopAdviceConversationV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/resetBrewerHopAdviceConversationV1).
+[32m[1m+  functions[europe-west6-restoreBreweryData]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/restoreBreweryData).
+[32m[1m+  functions[europe-west6-retryBrewerHopAdviceQuestionV1]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/retryBrewerHopAdviceQuestionV1).
+[32m[1m+  functions[europe-west6-retryBrewerQuestion]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/retryBrewerQuestion).
+[32m[1m+  functions[europe-west6-saveBrewSession]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/saveBrewSession).
+[32m[1m+  functions[europe-west6-setBrewerAiBudget]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/setBrewerAiBudget).
+[32m[1m+  functions[europe-west6-syncBrewAlarms]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/syncBrewAlarms).
+[32m[1m+  functions[europe-west6-syncFinancialLedger]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/syncFinancialLedger).
+[32m[1m+  functions[europe-west6-transferBreweryData]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/transferBreweryData).
+[32m[1m+  functions[europe-west6-writeBrewingCatalogue]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/writeBrewingCatalogue).
+[32m[1m+  functions[europe-west6-writeBrewingScenario]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-jus/europe-west6/writeBrewingScenario).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\scripts\check-invoice-journey-emulator.mjs" --inner[22m
+pids : vite 1988, chrome 24188
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 5.1492ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 93.0323ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 15.5986ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.597ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 19.7777ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 12.7349ms
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 58.4161ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 8.1286ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.8642ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.6802ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.9196ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.6544ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.368ms
+390 · connexion émulée
+OK  390 · banc : réécriture émulateur appliquée telle que prévue
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.5084ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.498ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.6125ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 8.1969ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4091ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3135ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1722ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4514ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3266ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1453ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0392ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.9066ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.032ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.077ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1535ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2335ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 20.5057ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+390 · semis du stock (dérivés de la lecture rejouée)
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 16.8414ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4793ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4136ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 13.5786ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1738ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0958ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.125ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.263ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.767ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 13.3635ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 69.1746ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 12.1073ms
+390 · cas drive-fond
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+OK  390 · drive-fond 1 : Drive lent, la feuille se ferme en moins de 2 s après « Enregistrer »
+OK  390 · drive-fond 1 : la dépense est écrite, en file, sans proofDocumentId (l’envoi n’a pas fini)
+OK  390 · drive-fond 1 : aucune notification pendant que ça marche
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 77.1567ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.6208ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.3055ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3313ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.3927ms
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 31.4893ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 76.0429ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.7765ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4429ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5661ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6594ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6026ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6966ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6107ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 28.5513ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2942ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2808ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 13.1615ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 2.08ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 11.8469ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.124ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.3657ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.511ms
+390 · page rechargée en plein envoi
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+OK  390 · drive-fond 7 : rechargement en plein envoi, la file reprend au démarrage, un seul fichier dans le Drive factice
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 28.5163ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 13.9342ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2649ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 2.7279ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.9051ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5844ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.8094ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 34.8154ms
+OK  390 · drive-fond 7 : aucune notification après la reprise
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 25.9353ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.8045ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5118ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.1792ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.237ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 35.9775ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5754ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3977ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.568ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 26.3279ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2169ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.9576ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6474ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4279ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2669ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2964ms
+OK  390 · drive-fond 2 : Drive plein, la feuille se ferme quand même
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 12.0502ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 35.3706ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 17.465ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4167ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 2.6059ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 25.6151ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 2.0417ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3974ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6277ms
+OK  390 · drive-fond 2 : la notification d’échec paraît, dit la cause et propose « Renvoyer le justificatif »
+OK  390 · drive-fond 2 : elle est toujours là après 10 s (persistante)
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.1232ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+OK  390 · drive-fond 2 : le clavier (Tab) atteint ses boutons
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 14.4133ms
+OK  390 · drive-fond 2 : elle est aussi sur Finances
+OK  390 · drive-fond 2 : elle est aussi sur le tableau de bord
+OK  390 · drive-fond 2 : l’état « failed / quota » est écrit sur la dépense (visible depuis tout appareil)
+OK  390 · drive-fond 3 : « Renvoyer le justificatif » ouvre la fiche de CETTE dépense, avec la cause, « Renvoyer maintenant » et « Abandonner »
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 25.1218ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.0405ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3329ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2431ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1548ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5806ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5379ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 19.4574ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.5691ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.7133ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+OK  390 · drive-fond 3 : après « Renvoyer maintenant », le justificatif est lié, un seul fichier dans le Drive factice
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 22.926ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.9105ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3763ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.8619ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 2.4177ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6218ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.629ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 20.4575ms
+OK  390 · drive-fond 3 : la fiche montre « Justificatif » et il s’ouvre
+OK  390 · drive-fond 3 : plus de notification
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 25.2269ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.9927ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5973ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.1896ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.1239ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 38.653ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5487ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2789ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1073ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5478ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 26.186ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5523ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5072ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.249ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2747ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0116ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 9.3248ms
+OK  390 · drive-fond 4 : jeton refusé, la feuille se ferme quand même
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 27.1698ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.6754ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3083ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.7073ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4433ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 23.4282ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2107ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5945ms
+OK  390 · drive-fond 4 : motif « auth » : la notification dit que Drive n’est plus connecté et offre « Reconnecter Drive »
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 23.6865ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.9126ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3772ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.9076ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2603ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3267ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.761ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 26.8444ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.8436ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3555ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 21.3225ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.9722ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4107ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4138ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.8543ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6121ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.7258ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 23.7406ms
+OK  390 · drive-fond 4 : après la reconnexion factice la file repart et la dépense est liée (un seul fichier)
+OK  390 · drive-fond 4 : plus de notification
+390 · réseau coupé
+OK  390 · drive-fond 5 : hors ligne, la feuille se ferme sans attendre l’accusé (moins de 5 s)
+OK  390 · drive-fond 5 : rien au serveur pendant la coupure, aucune notification
+390 · réseau rétabli
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.1981ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 9.2633ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.5656ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 7.792ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 37.1957ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 15.1246ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4919ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 10.3931ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 31.462ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 69.0925ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.405ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2615ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5854ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2717ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6043ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5257ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3357ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3208ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3862ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 22.7312ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 8.7767ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.4525ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4469ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 19.9226ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.0161ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2567ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.9262ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.531ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3463ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 3.7961ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 18.7361ms
+OK  390 · drive-fond 5 : au retour du réseau, une dépense synchronisée, un envoi, un lien
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 31.0331ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.5689ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5508ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.7961ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 37.1618ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5339ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2398ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4684ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 19.5449ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0811ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4308ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2774ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2816ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2062ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0511ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 10.5804ms
+OK  390 · drive-fond 6 : la feuille se ferme
+390 · réseau coupé
+OK  390 · drive-fond 6 : réseau coupé pendant l’envoi, aucune notification
+390 · réseau rétabli
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.2688ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 6.1512ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.8484ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 12.4163ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.5306ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5918ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 23.6155ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 7.7554ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2983ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.279ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 16.8516ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2622ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.189ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1937ms
+OK  390 · drive-fond 6 : l’envoi reprend au retour du réseau, jamais « failed », un seul fichier
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 44.257ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.1532ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3528ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.2213ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 29.8419ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3439ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2512ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 17.7089ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2084ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3765ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0307ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.034ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 0.9718ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4472ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2536ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 11.0888ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 33.9214ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 9.1608ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3819ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4386ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1908ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.27ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 22.0017ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 2.1463ms
+OK  390 · drive-fond 11 : un fichier de plus de 4 Mo choisi dans la fiche est refusé clairement, rien en file
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 20.4865ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.7809ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4363ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.376ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2156ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3527ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.7206ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 16.5935ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.1238ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.338ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 26.3528ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.0071ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3333ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1132ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4716ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5616ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 0.8776ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5994ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 17.6925ms
+OK  390 · drive-fond 8 : après un échec, un autre fichier prend un autre identifiant (fileNo+1) : un seul fichier lié, le premier n’est jamais parti
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 9.4741ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.5547ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 8.7325ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 9.0048ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 10.4511ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 21.2381ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.4847ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.019ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 5.1109ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialPaymentChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialPaymentChange" in 26.702ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1025ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1843ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.3026ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.931ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2635ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2228ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2509ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5175ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 18.3761ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.0815ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 10.6074ms
+OK  390 · drive-fond 10 : renouvellement du jeton indisponible, la feuille se ferme
+OK  390 · drive-fond 10 : functions/unavailable : pas d’alerte, la dépense reste « queued » (la file réessaie au réveil suivant)
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.6907ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 7.56ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.1304ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 6.916ms
+OK  390 · drive-fond 9 : redémarrage avec Firestore injoignable : aucun job effacé (IndexedDB relue)
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.1961ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 10.7225ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 1.1429ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-getBrewerActivity"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-getBrewerActivity" in 15.4196ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 8.7687ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.4353ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5906ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordFinancialTransactionChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordFinancialTransactionChange" in 34.183ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 6.1115ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.5793ms
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.2345ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.1851ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.4256ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-recordDataChange"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 17.7914ms
+[36m[1mi  functions:[22m[39m Finished "europe-west6-recordDataChange" in 1.6193ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 1.2674ms
+OK  390 · drive-fond 10 : le jeton revient, la file repart au réveil suivant : lié, un seul fichier
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-syncFinancialLedger"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+OK  390 · drive-fond : sept dépenses créées, aucune de trop (pas de doublon)
+[36m[1mi  functions:[22m[39m Finished "europe-west6-syncFinancialLedger" in 8.3187ms
+34/34 contrôles du banc OK · 0 constats · 37 requêtes bloquées hors localhost
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator

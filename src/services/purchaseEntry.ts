@@ -2,6 +2,7 @@ import { StorageService } from './storage';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { FinanceService, validateFinancialPayment } from './financeService';
 import { prepareFinanceDocument, saveFinanceDocumentConfirmed, loadDriveProofReceipt, type DriveProofReceipt } from './financeDocuments';
+import { dropQueuedProof, enqueueProof, getProofJob, markQueuedOnTransaction, proofQueueAvailable, runProofQueue, voidProofJob } from './proofQueue';
 import { Units } from './units';
 import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
 import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
@@ -328,6 +329,9 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
 const submitted=new Set<string>();
 const replayable=new Set<string>();
 const confirmedProofs=new WeakMap<PurchaseDraft,{dataUrl:string;fileName?:string;mimeType?:string}>();
+/** Le fichier de cette saisie est durable dans la file locale (IndexedDB) : `savePurchase` accepte alors ce garde à la place de l'original confirmé dans Drive. */
+const queuedProofs=new Map<string,{uid:string;dataUrl:string;fileName?:string;mimeType?:string}>();
+export { setProofFileStore, proofQueueAvailable } from './proofQueue';
 function purchasePayment(draft:PurchaseDraft, at=new Date().toISOString()):FinancialPayment|undefined {
   return draft.paymentStatus==='paid'?{id:`PAY-${draft.submissionId}`,transactionId:`TX-${draft.submissionId}`,date:purchaseIsoDate(draft.paymentDate),amountCents:cents(draft.amount!),direction:'out',method:draft.paymentMethod,recordedAt:at,...(draft.paymentDateBasis==='document_date'?{note:PAYMENT_DATE_ASSUMED_NOTE}:{})}:undefined;
 }
@@ -349,14 +353,45 @@ function validatePurchaseCommit(draft:PurchaseDraft) {
   return stocks;
 }
 /** The original is confirmed on Drive before the atomic purchase/stock/payment batch. */
-export interface PurchaseSaveResult { transactionId:string; proof?:DriveProofReceipt }
+export interface PurchaseSaveResult { transactionId:string; proof?:DriveProofReceipt; /** Le fichier part au Drive plus tard, en arrière-plan : aucun reçu à montrer, la dépense porte `proofUpload`. */ queued?:true }
+/**
+ * Met le fichier de la saisie dans la file locale (durable avant la dépense). `undefined` quand la file est indisponible ou qu'elle refuse
+ * (pas d'IndexedDB, plafond, écriture en échec, pas de session) : l'appelant suit alors le chemin synchrone d'avant, rien n'est perdu.
+ */
+async function queueProof(draft:PurchaseDraft):Promise<boolean> {
+  if(!draft.proofDataUrl || !proofQueueAvailable())return false;
+  const driveName=proofDriveName(draft), proofType=draft.proofType||'application/pdf';
+  // La même validation que l'envoi synchrone : un fichier invalide est refusé tout de suite, pas en arrière-plan.
+  prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,driveName,proofType);
+  try {
+    const uid=(await import('./firebaseAuth')).FirebaseAuthService.getCurrentUser()?.uid;
+    if(!uid)return false;
+    await enqueueProof({submissionId:draft.submissionId,dataUrl:draft.proofDataUrl,mimeType:proofType,driveName,originalName:draft.proofFileName,year:+purchaseIsoDate(draft.date).slice(0,4),uid});
+    // Le nom lisible prévu est celui que `savePurchase` écrit sur la dépense (`proofFileName`) ; Drive le confirmera.
+    driveNames.set(draft.submissionId,driveName);
+    queuedProofs.set(draft.submissionId,{uid,dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
+    return true;
+  } catch { return false; }
+}
 /** Comme `savePurchaseWithProof`, et rend aussi la preuve Drive du justificatif (dossier, nom, octets, empreinte vérifiée, `webViewLink`). */
 export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<PurchaseSaveResult> {
   const txId=`TX-${draft.submissionId}`;
-  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId)};
+  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId),...(queuedProofs.has(draft.submissionId)?{queued:true as const}:{})};
   validatePurchaseCommit(draft);
   // S6 (T8) : le catalogue plein des houblons est attendu AVANT d'écrire ; s'il manque, aucune fiche (jamais une fiche différente selon le moment).
   const catalogues=await cataloguesPour(draft);
+  if(draft.proofDataUrl && await queueProof(draft)) {
+    try {
+      const transactionId=savePurchase(draft,{catalogues});
+      void runProofQueue('save');
+      return {transactionId,queued:true};
+    } catch(error) {
+      // La dépense n'a pas été écrite : le fichier est encore dans la feuille, la ligne de la file n'a plus d'objet.
+      queuedProofs.delete(draft.submissionId);
+      await dropQueuedProof(draft.submissionId);
+      throw error;
+    }
+  }
   if(draft.proofDataUrl) {
     // Le nom lisible part à Drive ; le nom d'origine reste dans le brouillon et sur la dépense.
     const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,proofDriveName(draft),draft.proofType||'application/pdf');
@@ -395,7 +430,8 @@ async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year
     throw Object.assign(Error('Hors connexion : le justificatif n’a pas pu être envoyé sur ton Drive, donc rien n’est enregistré. Ta saisie reste ouverte : réessaie une fois en ligne.'),{code:'unavailable'});
   }
 }
-const acceptsProof=(tx:FinanceTransaction)=>tx.finance?.kind==='expense' && !tx.finance.voidedAt && !tx.finance.proofDocumentId && !tx.proofUrl;
+/** Une dépense qui porte `proofUpload` a un envoi en cours ou à renvoyer : « Rattacher » ne peut pas envoyer sous un second identifiant (d3c). */
+const acceptsProof=(tx:FinanceTransaction)=>tx.finance?.kind==='expense' && !tx.finance.voidedAt && !tx.finance.proofDocumentId && !tx.proofUrl && !tx.finance.proofUpload;
 /** Le justificatif lu peut rejoindre cette dépense : même achat au même total, dépense sans original, pas un avoir et
  * pas une autre facture (numéros différents). */
 export function purchaseProofAttachable(draft:PurchaseDraft,tx:FinanceTransaction):boolean {
@@ -449,8 +485,9 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   const neufs=new Map(articlesNeufsDe(draft,[...stocks.rawMaterials,...stocks.cleaning],options.catalogues).map(neuf=>[neuf.lineId,neuf]));
   const at=new Date().toISOString(), newStocks:Array<{item:StockItem;type:'rawMaterials'|'cleaning'}>=[], newEquipment:EquipmentItem[]=[], receipts:Array<{ref:string;qty:number;unit:string;lineId:string;type:string}>=[];
   const proof=draft.proofDataUrl?prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf'):undefined;
-  const confirmed=confirmedProofs.get(draft);
-  if(proof && (!confirmed || confirmed.dataUrl!==draft.proofDataUrl || confirmed.fileName!==draft.proofFileName || confirmed.mimeType!==draft.proofType))throw Error('Confirme d’abord l’envoi du justificatif sur Drive. Aucun achat n’a été enregistré.');
+  const confirmed=confirmedProofs.get(draft), queued=queuedProofs.get(draft.submissionId);
+  const inQueue=Boolean(proof && queued && queued.dataUrl===draft.proofDataUrl && queued.fileName===draft.proofFileName && queued.mimeType===draft.proofType);
+  if(proof && !inQueue && (!confirmed || confirmed.dataUrl!==draft.proofDataUrl || confirmed.fileName!==draft.proofFileName || confirmed.mimeType!==draft.proofType))throw Error('Confirme d’abord l’envoi du justificatif sur Drive. Aucun achat n’a été enregistré.');
   const lines=draft.lines.map((line,index)=>{
     let stockRef=line.stockRef,equipmentRef=line.equipmentRef;
     if (line.stockAction==='new') {
@@ -481,7 +518,7 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   const amount=draft.amount!,registered=StorageService.getConfig().fiscal.isTvaRegistered;
   const vat=registered && draft.sourceCurrency==='CHF' && Number.isFinite(draft.sourceVatAmount) ? draft.sourceVatAmount : 0;
   const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:storedProofName,proofType:draft.proofType,
-    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:proof?.id,proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
+    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:inQueue?undefined:proof?.id,...(inQueue&&queued?{proofUpload:{state:'queued' as const,uid:queued.uid,at}}:{}),proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
   const payment=purchasePayment(draft,at);
   // All validation and material preparation above precede the first synchronous write.
   if (payment) FinanceService.stageNewTransactionPayment(tx,payment);
@@ -498,4 +535,53 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   submitted.add(draft.submissionId);
   replayable.delete(draft.submissionId);
   return txId;
+}
+
+/** Hors ligne, l'écriture de la dépense est en file locale (durable) : la feuille se ferme sans attendre l'accusé du serveur (T5). */
+export function canCloseWithoutAck(transactionId:string):boolean {
+  if(typeof navigator==='undefined' || navigator.onLine!==false)return false;
+  const status=FirestoreRepo.documentWriteState('transactions',transactionId).status;
+  return status==='pending' || status==='queued';
+}
+/**
+ * L'accusé de la dépense, attendu hors de la feuille. Un refus plus tard met le job en `voided` (le lien ne s'écrit jamais) ; le bandeau d'écriture
+ * existant (`App.tsx`) le dit. Un délai sans réponse ne conclut rien : le travailleur relit l'état de l'écriture à chaque réveil.
+ */
+export function watchPurchaseConfirmation(draft:PurchaseDraft):void {
+  void confirmPurchase(draft).catch(error=>{ if(isConfirmedWriteRejection(error))void voidProofJob(draft.submissionId,'refused'); });
+}
+
+const RESEND_TYPES=['image/jpeg','image/png','image/webp','application/pdf'];
+/**
+ * Renvoyer un justificatif depuis la fiche d'une dépense « sans justificatif » (envoi échoué, ou fichier perdu / autre appareil). Mêmes gardes que
+ * `attach` de la feuille : 4 Mo au plus, JPG, PNG, WebP ou PDF ; refus clair, rien n'est mis en file. Même fichier (même empreinte) = même identifiant
+ * Drive ; un autre fichier prend `fileNo + 1` (lu aussi sur Firestore : valable depuis un autre appareil).
+ */
+export async function resendProof(transactionId:string,file:File):Promise<void> {
+  const tx=StorageService.getTransactions().find(item=>item.id===transactionId);
+  if(!tx?.finance || tx.finance.kind!=='expense')throw Error('Cette dépense est introuvable.');
+  if(tx.finance.voidedAt)throw Error('Cette écriture est annulée : aucun justificatif ne peut lui être joint.');
+  if(tx.finance.proofDocumentId || tx.proofUrl)throw Error('Cette dépense a déjà un justificatif.');
+  const {GeminiScannerService}=await import('./geminiScanner');
+  const mimeType=GeminiScannerService.normalizeMimeType(file);
+  if(file.size>4*1024*1024 || !RESEND_TYPES.includes(mimeType))throw Error('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');
+  if(!proofQueueAvailable())throw Error('L’envoi en arrière-plan n’est pas disponible sur cet appareil. Rouvre l’application depuis un navigateur à jour.');
+  const dataUrl=await GeminiScannerService.fileToDataUrl(file);
+  const submissionId=transactionId.replace(/^TX-/,''), previous=await getProofJob(submissionId);
+  const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer()), sha256=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+  if(previous && (previous.state==='sending'||previous.state==='queued')){
+    if(previous.sha256===sha256)return;
+    throw Error('Un envoi est en cours pour cette dépense. Attends son résultat avant de choisir un autre fichier.');
+  }
+  const uid=(await import('./firebaseAuth')).FirebaseAuthService.getCurrentUser()?.uid;
+  if(!uid)throw Error('Reconnecte-toi à la brasserie avant de renvoyer un justificatif.');
+  const lastNo=Math.max(previous?.fileNo??1,tx.finance.proofUpload?.fileNo??1);
+  const fileNo=previous && previous.sha256===sha256 ? previous.fileNo??1 : previous||tx.finance.proofUpload ? lastNo+1 : 1;
+  // Le nom suit la dépense (sa date, son fournisseur, son numéro), le nom d'origine en repli.
+  const driveName=driveProofFileName({date:tx.date,vendor:tx.finance.vendor??'',invoiceNumber:tx.finance.invoiceNumber??'',mimeType,originalName:file.name});
+  const year=+(isoDate(tx.date)??todayISO()).slice(0,4);
+  prepareFinanceDocument(`proof-${submissionId}`,dataUrl,driveName,mimeType);
+  const job=await enqueueProof({submissionId,dataUrl,mimeType,driveName,originalName:file.name,year,uid,fileNo});
+  if(await markQueuedOnTransaction(job)==='voided'){await dropQueuedProof(submissionId);throw Error('Cette écriture est annulée : aucun justificatif ne peut lui être joint.');}
+  void runProofQueue('resend');
 }

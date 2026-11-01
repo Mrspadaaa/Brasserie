@@ -11,6 +11,12 @@ import { shortDate, signedCHF } from './financeFormat';
 import { compte } from '../../services/plural';
 import './journal.css';
 
+/**
+ * Une dépense sans justificatif RANGÉ : tant que l'envoi au Drive n'a pas abouti (`finance.proofUpload` en attente ou à renvoyer), elle n'a pas de
+ * `proofDocumentId` et reste dans « Sans justificatif » et « À compléter ». Un envoi en cours n'est pas un justificatif.
+ */
+export const sansJustificatif = (t: Transaction): boolean => !t.proofUrl && !t.finance?.proofDocumentId;
+
 export type JournalScope = 'current' | 'archives' | 'all';
 export type JournalFilter = 'all' | 'due' | 'late' | 'payable' | 'receivable' | 'review' | 'proof' | 'undated' | 'unknown' | 'void';
 export interface JournalRequest {
@@ -191,8 +197,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       if (wanted === 'late') { const due = isoDate(t.finance?.dueDate); if (!due || due >= today) return false; }
       if (wanted === 'undated' && date) return false;
       if (wanted === 'unknown' && payment.state !== 'unknown') return false;
-      if (wanted === 'proof' && (t.proofUrl || t.finance?.proofDocumentId)) return false;
-      if (wanted === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && (t.proofUrl || t.finance?.proofDocumentId)) return false;
+      if (wanted === 'proof' && !sansJustificatif(t)) return false;
+      if (wanted === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && !sansJustificatif(t)) return false;
       return true;
     };
   }, [scope]);
