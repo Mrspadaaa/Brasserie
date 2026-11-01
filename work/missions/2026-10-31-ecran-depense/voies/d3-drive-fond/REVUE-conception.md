@@ -140,3 +140,40 @@ je n'ai pas trouvé de chemin plus court. Les allègements possibles sont D2 (pa
 (`functions/src/financeDocumentMigration.ts`) n'est pas un recours : c'est le client qui envoie à Drive, le serveur ne fait que vérifier et lier.
 
 LEÇON PROPOSÉE : une règle « abandonner / effacer » sur une donnée irremplaçable (un fichier) ne se fonde jamais sur un cache non prêt : le plan doit nommer la condition de lecture (`isReady()`) avant de nommer l'effacement.
+
+## Seconde lecture (v2)
+
+Relu : PLAN.md v2 (§ 0 à § 9, T1 à T8) contre le code de HEAD. Vérifié au passage : `documentWriteState` passe de `queued` à `pending` au microtask
+de `flushWrites` (`firestoreRepo.ts:139-144,92-95`), donc le contrôle `status === 'pending'` de T5 tient juste après `savePurchaseWithProofReceipt` ;
+`stripUndefined` est récursif (`:219-232`), donc `proofUpload: undefined` dans `finance` retire bien le champ ; `StorageService.isReady()` existe
+(`storage.ts:415`) ; aucun test ne définit `indexedDB` (grep `tests/` et `vitest.config.ts` vide) : le contrat « IndexedDB absent = synchrone » (PLAN.md:14) tient.
+
+**Bloquants : B1 levé, B2 levé. Aucun bloquant neuf.**
+
+| Constat | Sort | Preuve |
+|---|---|---|
+| **B1** autre fichier, même `documentId` | **Levé** | PLAN.md:20, :66-70 (`fileNo`), :135 (`resendProof` : même empreinte = même id, autre = `fileNo+1`, lu sur Firestore donc valable depuis un autre appareil), :151, test `envoi` + Chrome 8. Cohérent avec `driveFileStore.ts:309-311,315-319` et la regex `financeDocuments.ts:8`. |
+| **B2** « absente » efface | **Levé** | PLAN.md:18, :93 (préconditions `getCurrentUser` + `isReady()`), :95 (d) « absente → aucune action », :144 ; seul `rejected` donne `voided`, et `voided` garde le fichier 30 jours (:19, :152). Test cache non prêt : :174, Chrome 9. |
+| **M1** contradiction annulation / état `voided` | **Levé en partie** | Type unique écrit une fois (:62-70), § 0, § 3 (:145, :152) et tests réécrits. **Reste** : la notification lit aussi Firestore (PLAN.md:122 (1) et (2)) sans exclure `finance.voidedAt`. Une dépense annulée avec `proofUpload.queued` ou `failed` ne peut plus être écrite (`firestore.rules:100`, `storage.ts:535` ; PLAN.md:19, :116-117 le disent eux-mêmes) : son état reste `queued`, et passé 48 h elle déclenche la « grosse notification » ; « Renvoyer » est refusé (`resendProof` exige une dépense non annulée, PLAN.md:132) et « Abandonner » ne peut pas retirer le champ. Le test « annulée : 0 alerte » (:145, :174) ne couvre que le job local. Correction : exclure `finance.voidedAt` des sources (1) et (2) de `proofUploadStatus` ; test : dépense annulée `queued` depuis 3 jours → 0 alerte. |
+| **M2** hors ligne, l'écran ne se ferme pas | **Levé** | PLAN.md:83 (T5), :155, Chrome 5 (:217). Faisable : voir ci-dessus. |
+| **M3** fausses alertes | **Levé en partie** | Préconditions session et cache (:93, :106), `functions/unavailable` et `deadline-exceeded` en attente, `internal` passager, `onLine` ne décide plus (:101, :105-107, :113), tests `echecs` et Chrome 10. **Restent deux trous, sans gravité de blocage** : (a) PLAN.md:108 ne classe `auth` que pour « jeton `null` obtenu ». `drive/auth-required` sort aussi d'un 401 Drive après renouvellement (`driveFileStore.ts:115-117`, `check`) : il tomberait dans « inconnue » (:113), motif `unknown` et pas de bouton « Reconnecter Drive », alors que c'est le cas « réparer le lien Drive » de ses mots. Correction : une fois les préconditions satisfaites (session, `uid`, cache), tout `drive/auth-required` est `auth`. (b) « 6 échecs sur 6 réveils distincts » (:107) avec 30 s d'écart minimum (:92) peut se produire en 3 minutes de bascule `focus`/`visibilitychange` pendant une panne Drive brève : `failed network` écrit dans Firestore et notification sur tous les appareils, ce que l'échelle sur 7 h évitait. Correction : ajouter un délai minimal entre le premier et le dernier échec compté (par exemple 30 min), constante réglable (§ 7.3). |
+| **M4** lien, résurrection, deux appareils, `permission-denied` | **Levé** | PLAN.md:95 (c) (e), :98-99 (relecture serveur, `try`, un nouvel essai sur `permission-denied`), :146, T8 (:286-289) ; `proofDocumentId` déjà posé → `voided`, aucun écrasement. |
+| **M5** renvoi depuis la fiche | **Levé** | `resendProof` neuve (PLAN.md:129-137), mêmes gardes que `attach` (`ExpenseSheet.tsx:249`), `acceptsProof` (`purchaseEntry.ts:398`) refuse si `proofUpload` ; test `renvoi` (:175), Chrome 11. |
+| **M6** inventaire des tests et scripts | **Levé** | § 4.2 (PLAN.md:184-210) : ≥ 35 fichiers, un par un, avec l'attendu, dont `jus0Journey`, `changer-fichier`, `ecran-recu` (:188, :195-196) et les sections du banc Chrome (:205-208). Le contrat synchrone (:14) et son test `contrat-synchrone` expliquent les « VERT ». La ligne App (:204) est marquée « à confirmer sur HEAD » : acceptable. |
+| **D1** Dexie inexact | **Levé** | PLAN.md:12-13 (scénarios, décisions, `hopV55`, IndexedDB brut ; correction de VOIE.md). |
+| **D2** mode patient inutile | **Levé** | T7, PLAN.md:21, :97, :235 ; `financeDocuments.ts` non touché. Boucle sur `drive/in-progress` possible (`financeDocuments.ts:79-80`). |
+| **D3** échelle de minuteries | **Levé** | Réveils sur événements (PLAN.md:92). Voir M3 (b) pour le seuil. |
+| **D4** `persist()` | **Levé** | PLAN.md:77, :152. |
+| **D5** z-index et clavier | **Levé** | T4, PLAN.md:123 : pas de notification tant qu'un `[role="dialog"]` est ouvert (prédicat `ModalShell.tsx:14-15`), donc plus de bouton hors de portée du piège de tabulation (`:104`). `setActiveTab` puis `setFinanceOpenRequest` correspondent à `App.tsx:689-690` et `FinancesTab.tsx:125-134`. |
+| **D6** formes incohérentes | **Levé** | Type `ProofUpload` unique (PLAN.md:62-70), `uid` partout. |
+| **D7** bascule `failed` → `queued` | **Levé** | PLAN.md:117, :126. |
+| **D8** filtre et export | **Levé** | PLAN.md:15, :234 (`TransactionJournal.tsx:194-195`), :237 (limite d'export dite). |
+| **D9** injection du magasin | **Levé** | `setProofFileStore` exporté par `proofQueue.ts`, réexporté par `purchaseEntry.ts` (PLAN.md:161), rien à l'import (:161). |
+| **D10** cas Chrome | **Levé** | Cas 8 à 11 (PLAN.md:220-223). |
+
+**Détail neuf, non bloquant** : PLAN.md:122 (4) et :127 disent que « Abandonner » met un job « sans dépense » en `voided`, mais « Abandonner » est défini « fiche seulement » (:127) et il n'y a pas de fiche pour une dépense absente. Préciser que ce cas-là se règle dans la notification elle-même.
+
+**Verdict de la seconde lecture : CONCEPTION OK sous trois corrections à faire dans PLAN.md avant le code** (aucune ne demande une autre architecture) :
+1. M1 : exclure `finance.voidedAt` de l'état global de la notification, avec son test.
+2. M3 (a) : tout `drive/auth-required` après préconditions = `auth`, bouton « Reconnecter Drive ».
+3. M3 (b) : délai minimal entre le premier et le dernier échec passager avant `failed network`.
