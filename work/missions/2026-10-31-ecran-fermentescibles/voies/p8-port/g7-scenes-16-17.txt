@@ -1,0 +1,92 @@
+Serveur 1/1 : npm run dev -- --port 5615 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-h9M2f2\serveur-1-5615.log)
+Attente du port 5615…
+Serveur prêt sur le port 5615
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-31-ecran-fermentescibles/voies/p8-port/capturer-malts.mjs --sortie=work/missions/2026-10-31-ecran-fermentescibles/voies/p8-port/captures
+
+souris390 17-fiche-ouverte : masse 5,0 · bandeau « Grain8 kgOG—IBU—EBC— » · mots fiche-zone 25 · mots page 166
+pc1280 17-fiche-ouverte : masse 5,0 · bandeau « Grain8 kgOG—IBU—EBC— » · mots fiche-zone 25 · mots page 168
+tactile390 17-fiche-ouverte : masse 5,0 · bandeau « Grain8 kgOG—IBU—EBC— » · mots fiche-zone 25 · mots page 166
+OK    souris390 01-repos : défauts du verdict vérifiés
+OK    pc1280 01-repos : défauts du verdict vérifiés
+OK    tactile390 01-repos : défauts du verdict vérifiés
+OK    souris390 01-repos : app et maquette prises, côte à côte
+OK    pc1280 01-repos : app et maquette prises, côte à côte
+OK    tactile390 01-repos : app et maquette prises, côte à côte
+OK    souris390 02-barre-tiree : défauts du verdict vérifiés
+OK    tactile390 02-barre-tiree : défauts du verdict vérifiés
+OK    pc1280 02-barre-tiree : défauts du verdict vérifiés
+OK    souris390 02-barre-tiree : app et maquette prises, côte à côte
+OK    pc1280 02-barre-tiree : app et maquette prises, côte à côte
+OK    tactile390 02-barre-tiree : app et maquette prises, côte à côte
+OK    souris390 03-moment : app et maquette prises, côte à côte
+OK    pc1280 03-moment : app et maquette prises, côte à côte
+OK    tactile390 03-moment : app et maquette prises, côte à côte
+OK    souris390 04-ouverture : défauts du verdict vérifiés
+OK    pc1280 04-ouverture : défauts du verdict vérifiés
+OK    tactile390 04-ouverture : défauts du verdict vérifiés
+OK    souris390 04-ouverture : app et maquette prises, côte à côte
+OK    pc1280 04-ouverture : app et maquette prises, côte à côte
+OK    tactile390 04-ouverture : app et maquette prises, côte à côte
+OK    souris390 05-mu : app et maquette prises, côte à côte
+OK    pc1280 05-mu : app et maquette prises, côte à côte
+OK    tactile390 05-mu : app et maquette prises, côte à côte
+OK    souris390 06-munich : app et maquette prises, côte à côte
+OK    pc1280 06-munich : app et maquette prises, côte à côte
+OK    tactile390 06-munich : app et maquette prises, côte à côte
+OK    souris390 07-pils : app et maquette prises, côte à côte
+OK    pc1280 07-pils : app et maquette prises, côte à côte
+OK    tactile390 07-pils : app et maquette prises, côte à côte
+OK    souris390 08-abbey-malt : app et maquette prises, côte à côte
+OK    pc1280 08-abbey-malt : app et maquette prises, côte à côte
+OK    tactile390 08-abbey-malt : app et maquette prises, côte à côte
+OK    souris390 09-cara-0-3 : app et maquette prises, côte à côte
+OK    pc1280 09-cara-0-3 : app et maquette prises, côte à côte
+OK    tactile390 09-cara-0-3 : app et maquette prises, côte à côte
+OK    souris390 10-sucre : défauts du verdict vérifiés
+OK    souris390 10-sucre : app et maquette prises, côte à côte
+OK    pc1280 10-sucre : défauts du verdict vérifiés
+OK    tactile390 10-sucre : défauts du verdict vérifiés
+OK    pc1280 10-sucre : app et maquette prises, côte à côte
+OK    souris390 11-fruit-j3 : défauts du verdict vérifiés
+OK    tactile390 10-sucre : app et maquette prises, côte à côte
+OK    souris390 11-fruit-j3 : app et maquette prises, côte à côte
+OK    pc1280 11-fruit-j3 : défauts du verdict vérifiés
+OK    tactile390 11-fruit-j3 : défauts du verdict vérifiés
+OK    pc1280 11-fruit-j3 : app et maquette prises, côte à côte
+OK    tactile390 11-fruit-j3 : app et maquette prises, côte à côte
+OK    souris390 12-retrait : app et maquette prises, côte à côte
+OK    pc1280 12-retrait : app et maquette prises, côte à côte
+OK    tactile390 12-retrait : app et maquette prises, côte à côte
+OK    souris390 13-retrait-annule : app et maquette prises, côte à côte
+OK    pc1280 13-retrait-annule : app et maquette prises, côte à côte
+OK    souris390 14-huit-grains : défauts du verdict vérifiés
+OK    tactile390 13-retrait-annule : app et maquette prises, côte à côte
+OK    souris390 14-huit-grains : app et maquette prises, côte à côte
+OK    pc1280 14-huit-grains : défauts du verdict vérifiés
+OK    pc1280 14-huit-grains : app et maquette prises, côte à côte
+OK    tactile390 14-huit-grains : défauts du verdict vérifiés
+OK    tactile390 14-huit-grains : app et maquette prises, côte à côte
+OK    souris390 15-ajout-reel : défauts du verdict vérifiés
+OK    pc1280 15-ajout-reel : défauts du verdict vérifiés
+OK    souris390 15-ajout-reel : app et maquette prises, côte à côte
+OK    tactile390 15-ajout-reel : défauts du verdict vérifiés
+OK    pc1280 15-ajout-reel : app et maquette prises, côte à côte
+OK    tactile390 15-ajout-reel : app et maquette prises, côte à côte
+OK    souris390 16-plus-moins : app et maquette prises, côte à côte
+OK    pc1280 16-plus-moins : app et maquette prises, côte à côte
+OK    souris390 17-fiche-ouverte : défauts du verdict vérifiés
+OK    tactile390 16-plus-moins : app et maquette prises, côte à côte
+OK    souris390 17-fiche-ouverte : app et maquette prises, côte à côte
+OK    pc1280 17-fiche-ouverte : défauts du verdict vérifiés
+OK    pc1280 17-fiche-ouverte : app et maquette prises, côte à côte
+OK    tactile390 17-fiche-ouverte : défauts du verdict vérifiés
+OK    tactile390 17-fiche-ouverte : app et maquette prises, côte à côte
+OK    controle-choix.mjs --url (masse, moment, recherche, volée, gestes) : CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))
+OK    51 planches côte à côte sur 51
+CHOIX OK
+MALTS OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

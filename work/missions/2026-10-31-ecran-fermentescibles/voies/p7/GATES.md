@@ -182,4 +182,4 @@ Scope: v6/p6-b2 telle quelle (son choix, D220), plus l'affichage de la recherche
 - [x] G36: le registre des choix de l'app est valide (son choix p6-b2, D220)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs --registre --registre=work/refonte-frontend/v4/choix/ecrans-app.json
   EXPECT: REGISTRE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=e6af4d5a8af53626e316498d70882c353ba359b1c1b0f6cdf462b627b42cc7a3; exit=0; EXPECT=matched; output-sha256=7142ebfd23c0af2c605e93f5d2ce7e870bd06dc49d75d27c0320b461356a6c79; output-bytes=24; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=e6af4d5a8af53626e316498d70882c353ba359b1c1b0f6cdf462b627b42cc7a3; exit=0; EXPECT=matched; output-sha256=5fcf82069ba8c6b744b3cf479cfba6c48b452350193888c5f103315f82ed7b65; output-bytes=24; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

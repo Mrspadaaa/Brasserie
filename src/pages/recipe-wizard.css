@@ -157,3 +157,266 @@
 @media (max-width: 639px) {
   .recipe-wizard [data-recipe-section] > summary > span > span:first-child { flex: 0 1 auto; }
 }
+
+/* ==========================================================================================================================
+   Étape Malts/sucres — s1 (choisie : D222, sur p6-b2, D220). Les valeurs de la maquette `v7/s1/etat.html` sont reprises ; ses couleurs
+   lisent les jetons de l'app (themes.css) pour suivre le thème. Classes préfixées `fer-`. Rayons 10 et 16 px, aucun texte sous 12 px.
+   Les règles du wizard (`.recipe-wizard button`, `… input`) fixent des hauteurs minimales : elles sont ramenées ici, bouton par bouton.
+   Les champs répètent le sélecteur du wizard (spécificité) pour reprendre la main sur sa hauteur et son corps de 16 px.
+   ========================================================================================================================== */
+.fer {
+  --f-page: rgb(var(--cave-950)); --f-panel: rgb(var(--cave-900)); --f-haut: rgb(var(--cave-850)); --f-bord: rgb(var(--cave-800));
+  --f-bordm: rgb(var(--cave-700)); --f-trait: rgb(var(--cave-600)); --f-t2: rgb(var(--cave-texte-400)); --f-t1: rgb(var(--cave-texte-200));
+  --f-t0: rgb(var(--cave-texte-50)); --f-att: rgb(var(--attention)); --f-attt: rgb(var(--attention-texte)); --f-or: #E0A02E;
+  --f-hach: repeating-linear-gradient(135deg, #BDBDBD 0 2px, #fff 2px 6px);
+  display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.3; color: var(--f-t1);
+}
+.fer button { min-height: 0; padding-block: 0; font-size: inherit; line-height: inherit; background: none; border: 0; cursor: pointer; color: inherit; }
+.fer ::selection { background: #F2DDA6; color: #111; }
+.fer .fer-m { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; }
+
+/* La composition du grain : une barre fine sous le bandeau. */
+.fer .fer-comp { display: flex; height: 8px; border-radius: 9px; overflow: hidden; background: var(--f-page); border: 1px solid var(--f-bord); }
+.fer .fer-comp i { height: 100%; border-right: 2px solid var(--f-page); min-width: 2px; transition: flex-grow .2s ease-out; }
+.fer .fer-comp i:last-child { border-right: 0; }
+.fer .fer-comp i.fer-inc { background: var(--f-hach); }
+.fer .fer-comp i.fer-sucre { background: radial-gradient(circle, #BDBDBD 1px, transparent 1.4px) 0 0/4px 4px, #F7F7F7; }
+
+/* Le ticket. La ligne sur le plateau se voit sans chercher : cerne noir, fond à sa teinte, encoche vers le plateau. */
+.fer .fer-ticket { list-style: none; margin: 0; padding: 0; }
+.fer .fer-li {
+  position: relative; display: grid; grid-template-columns: 24px 1fr auto 24px; grid-template-rows: auto auto; align-items: center;
+  column-gap: 8px; row-gap: 7px; min-height: 47px; padding: 3px 2px 3px 8px; border-radius: 10px; cursor: pointer;
+}
+.fer.fer-ample .fer-li { min-height: 50px; padding: 4px 2px 4px 8px; }
+.fer .fer-li + .fer-li { margin-top: 1px; }
+.fer.fer-ample .fer-li + .fer-li { margin-top: 2px; }
+.fer .fer-li > .fer-pas, .fer .fer-li > .fer-ebc { grid-row: 1 / 3; }
+.fer .fer-li[aria-current='true'] { box-shadow: inset 0 0 0 2px var(--f-t0); background: var(--fond, var(--f-panel)); }
+.fer .fer-li[aria-current='true']::after {
+  content: ''; position: absolute; right: -1px; top: 50%; width: 0; height: 0; margin-top: -6px;
+  border-right: 7px solid var(--f-t0); border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+}
+.fer .fer-li.fer-neuf { animation: fer-flash .6s ease-out; }
+@keyframes fer-flash { from { background: #FBF1D8; } }
+.fer .fer-nm { grid-column: 2; grid-row: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
+.fer .fer-nm b { font-size: 16px; font-weight: 600; color: var(--f-t0); white-space: nowrap; }
+.fer button.fer-nom { display: inline-flex; align-items: center; height: 24px; margin: -3px 0; padding: 0; border-radius: 10px; text-align: left; min-width: 0; }
+.fer button.fer-nom:focus-visible, .fer button.fer-ret:focus-visible, .fer button.fer-mo:focus-visible, .fer button.fer-pas:focus-visible { outline: 2px solid var(--f-t0); outline-offset: 1px; }
+.fer .fer-tag { font-size: 12px; color: var(--f-t1); background: var(--f-haut); border-radius: 10px; padding: 0 6px; line-height: 16px; white-space: nowrap; }
+.fer button.fer-pas, .fer .fer-pas {
+  width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .18); display: flex; align-items: center; justify-content: center;
+  font-family: theme('fontFamily.mono'); font-size: 12px; font-weight: 600;
+}
+.fer button.fer-pas.fer-inc { border: 1.5px dashed var(--f-trait); color: var(--f-t1); background: var(--f-page); }
+.fer .fer-li .fer-pas-fam svg { width: 6px; height: 14px; flex-shrink: 0; }
+.fer .fer-pas.fer-pas-fam { border-radius: 10px; background: var(--f-page); border: 1px solid var(--f-bordm); color: var(--f-t2); }
+/* La couleur « ? » se tape sur la ligne : la pastille devient un champ, la teinte apparaît pendant la frappe. */
+.recipe-wizard .fer .fer-ebc:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  grid-row: 1 / 3; width: 36px; min-height: 0; height: 30px; margin: 0 -6px; padding: 0; border: 1.5px dashed var(--f-att); border-radius: 10px;
+  text-align: center; font-family: theme('fontFamily.mono'); font-size: 16px; font-weight: 600; background: var(--f-page); color: var(--f-t0);
+  caret-color: currentColor; transition: background-color .15s; line-height: normal;
+}
+.recipe-wizard .fer .fer-ebc.fer-ebc:is(input, textarea)::placeholder { color: var(--f-attt); opacity: 1; font-weight: 400; }
+.recipe-wizard .fer .fer-ebc:is(input, textarea):focus { outline: none; border-style: solid; border-color: var(--f-t0); }
+
+/* La masse, un nombre au repos et un champ au toucher. */
+.fer .fer-kg { grid-column: 3; grid-row: 1; display: flex; align-items: center; justify-content: flex-end; min-height: 24px; height: 24px; margin: -3px 0; cursor: text;
+  font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: var(--f-t0); white-space: nowrap; }
+.fer .fer-kg small { font-size: 12px; color: var(--f-t2); font-weight: 400; margin-left: 2px; }
+.recipe-wizard .fer .fer-kgin:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  height: 24px; min-height: 0; min-width: 2.4ch; padding: 0 1px; border: 0; border-bottom: 1.5px solid transparent; border-radius: 0; background: none; box-shadow: none;
+  text-align: right; font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; line-height: 22px;
+  color: var(--f-t0); caret-color: var(--f-t0);
+}
+.recipe-wizard .fer .fer-kgin:is(input, textarea)::placeholder { color: var(--f-t2); opacity: 1; }
+.recipe-wizard .fer .fer-kgin.fer-zero:is(input, textarea)::placeholder { color: var(--f-attt); }
+.recipe-wizard .fer :is(.fer-kgin, .fer-bin).fer-zero:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) { color: var(--f-attt); }
+.recipe-wizard .fer .fer-frais:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) { color: var(--f-t2); }
+.recipe-wizard .fer .fer-frais.fer-zero:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) { color: var(--f-attt); }
+.recipe-wizard .fer .fer-frais:is(input, textarea)::selection { background: transparent; color: var(--f-t2); }
+.recipe-wizard .fer .fer-frais.fer-zero:is(input, textarea)::selection { background: transparent; color: var(--f-attt); }
+@media (hover: hover) { .recipe-wizard .fer .fer-kg:hover .fer-kgin:is(input, textarea) { border-bottom: 1.5px dotted var(--f-trait); } }
+.recipe-wizard .fer .fer-kg .fer-kgin:is(input, textarea):focus { outline: none; border-bottom: 2px solid var(--f-t0); background: var(--f-page); }
+
+/* Le moment, la part et la barre prennent toute la largeur sous le nom. */
+.fer .fer-l2 { grid-column: 2 / 4; grid-row: 2; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.fer .fer-l2 > .fer-pc { flex-shrink: 0; }
+.fer .fer-pc { font-size: 12px; color: var(--f-t1); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.fer .fer-pn { display: inline-block; min-width: 2ch; text-align: right; font-variant-numeric: tabular-nums; }
+.fer button.fer-mo {
+  display: inline-flex; align-items: center; gap: 3px; height: 24px; margin: -4px 0; padding: 0 4px; border: 1px solid transparent; border-radius: 10px;
+  font-size: 12px; white-space: nowrap; color: var(--f-t2);
+}
+.fer button.fer-mo .fer-tour { color: var(--f-trait); }
+.fer button.fer-mo[data-m='ébullition']::before, .fer .fer-mf[data-m='fermentation']::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.fer button.fer-mo[data-m='ébullition']::before { background: #C8382F; }
+.fer .fer-mf { display: inline-flex; align-items: center; height: 26px; margin: -5px 0; padding-right: 3px; border-radius: 10px; border: 1px solid transparent; font-size: 12px; white-space: nowrap; color: var(--f-t2); }
+.fer .fer-mf::before { background: #567F45; }
+.fer .fer-mf button.fer-mo { margin: 0; padding-right: 1px; min-width: 24px; justify-content: flex-end; }
+.recipe-wizard .fer .fer-jl:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  width: 2.4ch; min-width: 24px; height: 24px; min-height: 0; padding: 0 0 3px; border: 0; border-bottom: 1.5px dotted currentColor; border-radius: 0; background: none;
+  box-shadow: none; text-align: left; font-family: theme('fontFamily.mono'); font-size: 16px; font-weight: 600; color: var(--f-t1); line-height: 1.2;
+}
+.recipe-wizard .fer .fer-jl:is(input, textarea)::placeholder { color: inherit; opacity: .6; }
+.recipe-wizard .fer .fer-jl:is(input, textarea):focus { outline: none; border-bottom-style: solid; }
+.fer button.fer-annm {
+  position: relative; display: inline-flex; align-items: center; height: 24px; margin: -4px 0; padding: 0 8px; border-radius: 10px; overflow: hidden;
+  background: var(--f-t0); color: var(--f-page); font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+.fer .fer-file { position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--f-t2); transform-origin: left; animation: fer-file 6s linear forwards; }
+.fer button.fer-annm .fer-file { background: #BDBDBD; }
+@keyframes fer-file { to { transform: scaleX(0); } }
+
+/* La barre de la ligne porte la masse : tirée, elle pose la part (grain) ou la masse sur sa plage (sucre, fruit). */
+.fer .fer-bw { flex: 1; min-width: 48px; position: relative; display: flex; align-items: center; height: 24px; margin: -4px 0; touch-action: pan-y; cursor: ew-resize; border-radius: 10px; }
+.fer .fer-cur { flex: 1; align-self: stretch; position: relative; display: flex; align-items: center; border-radius: 10px; outline: none; }
+.fer .fer-cur:focus-visible { outline: 2px solid var(--f-t0); outline-offset: 1px; }
+.fer .fer-barre { flex: 1; min-width: 24px; display: block; height: 8px; border-radius: 9px; background: var(--f-page); border: 1px solid var(--f-bordm); overflow: hidden; transition: height .12s ease-out; }
+.fer .fer-barre i { display: block; height: 100%; border-radius: 9px; }
+.fer .fer-barre i.fer-inc { background: var(--f-hach); }
+.fer .fer-barre i.fer-pt { background: radial-gradient(circle, #9E9E9E 1px, transparent 1.4px) 0 0/4px 4px, #E6E6E6; }
+.fer .fer-pouce { position: absolute; top: 50%; width: 3px; height: 14px; margin: -7px 0 0 -1.5px; border-radius: 2px; background: var(--f-t1); pointer-events: none; transition: width .12s, height .12s, margin .12s; }
+.fer .fer-li.fer-tire .fer-barre { height: 14px; }
+.fer .fer-li.fer-tire .fer-pouce { width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--f-t0); border: 3px solid var(--f-page); box-shadow: 0 1px 4px rgba(0, 0, 0, .4); }
+.fer .fer-li.fer-tire .fer-pc { color: var(--f-t0); font-weight: 600; }
+.fer button.fer-ret { grid-column: 4; grid-row: 1 / 3; width: 24px; height: 32px; margin-left: -4px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: #808080; padding: 0; min-width: 0; }
+.fer button.fer-ret:hover { color: var(--f-t0); background: var(--f-haut); }
+.fer button.fer-ret:active { transform: scale(.88); }
+/* Le retrait laisse sa place 6 s : le nom barré, « Annuler » sous le doigt, là où était le ×. */
+.fer .fer-ote { position: relative; display: flex; align-items: center; gap: 8px; min-height: 40px; margin-top: 2px; padding: 0 3px 0 12px; border: 1px dashed var(--f-bordm); border-radius: 10px; font-size: 14px; color: var(--f-t2); overflow: hidden; list-style: none; }
+.fer.fer-ample .fer-ote { min-height: 50px; }
+.fer .fer-ote s { color: var(--f-t1); text-decoration-thickness: 1.5px; white-space: nowrap; flex-shrink: 0; }
+.fer button.fer-ann { margin-left: auto; height: 28px; padding: 0 10px; border-radius: 10px; background: var(--f-t0); color: var(--f-page); font-size: 14px; font-weight: 600; flex-shrink: 0; }
+.fer button.fer-ann:active { transform: scale(.96); }
+.fer .fer-vide { padding: 12px 6px; color: var(--f-t2); list-style: none; }
+
+/* L'ajout, la bascule de famille, et la recherche s1 : des tuiles sur deux colonnes, la pertinence d'abord. */
+.fer .fer-aj { display: flex; flex-direction: column; gap: 6px; background: var(--f-panel); border-radius: 16px; padding: 8px; }
+.fer .fer-champ { display: flex; align-items: center; gap: 6px; height: 36px; border: 1.5px dashed var(--f-bordm); border-radius: 10px; padding: 0 4px; background: var(--f-page); margin: 0; }
+.fer .fer-champ:focus-within { border-style: solid; border-color: var(--f-t0); }
+.fer button.fer-fam { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px; border-radius: 10px; background: var(--f-panel); border: 1px solid var(--f-bordm); font-size: 14px; color: var(--f-t0); font-weight: 600; flex-shrink: 0; }
+.recipe-wizard .fer .fer-in:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  flex: 1; min-width: 0; height: 32px; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; font-size: 16px; color: var(--f-t0); line-height: 32px;
+}
+.recipe-wizard .fer .fer-in:is(input, textarea)::placeholder { color: #767676; }
+.recipe-wizard .fer .fer-in:is(input, textarea):focus { outline: none; box-shadow: none; }
+.fer .fer-ap { display: none; align-items: center; gap: 6px; height: 28px; padding: 0 6px 0 8px; border-radius: 10px; background: var(--f-t0); color: var(--f-page); font-size: 14px; flex-shrink: 0; white-space: nowrap; }
+.fer .fer-ap.fer-vu { display: inline-flex; }
+.fer .fer-ap b { font-family: theme('fontFamily.mono'); font-weight: 600; }
+.fer .fer-puces { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.fer .fer-puces:empty { display: none; }
+.fer .fer-puces:not(.fer-tuiles) { flex-wrap: wrap; overflow: hidden; height: 32px; }
+.fer button.fer-pu[data-hors] { visibility: hidden; }
+.fer .fer-puces.fer-tuiles { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; }
+.fer button.fer-pu { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px 0 4px; border-radius: 10px; border: 1px solid var(--f-bordm); background: var(--f-page); font-size: 14px; color: var(--f-t1); white-space: nowrap; flex-shrink: 0; }
+.fer button.fer-pu:active { transform: scale(.96); }
+.fer .fer-sac { width: 22px; height: 24px; flex-shrink: 0; }
+.fer .fer-sac-cube { display: flex; align-items: center; justify-content: center; color: #666; }
+.fer button.fer-tu {
+  position: relative; display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: 1px; min-width: 0; min-height: 46px; padding: 4px 8px;
+  border: 1px solid var(--f-bordm); border-radius: 10px; background: var(--f-page); text-align: left;
+}
+.fer button.fer-tu:active { transform: scale(.97); }
+.fer button.fer-tu.fer-large { grid-column: 1 / -1; }
+.fer .fer-l1 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.fer .fer-nm2 { min-width: 0; font-size: 14px; font-weight: 600; color: var(--f-t0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fer .fer-nm2 b { font-weight: 600; background: #F2DDA6; color: #111; border-radius: 3px; box-shadow: 0 0 0 1px #F2DDA6; }
+.fer .fer-ebcp { margin-left: auto; flex-shrink: 0; height: 18px; padding: 0 5px; border-radius: 6px; border: 1px solid rgba(0, 0, 0, .18); font-style: normal; font-family: theme('fontFamily.mono'); font-size: 12px; font-weight: 600; line-height: 16px; }
+.fer .fer-l2 > b, .fer button.fer-tu .fer-l2 b { font-weight: 600; color: var(--f-t0); }
+.fer button.fer-tu > .fer-l2 { grid-column: auto; grid-row: auto; display: block; font-size: 12px; color: var(--f-t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 26px; }
+.fer button.fer-tu.fer-epuise > .fer-l2 { color: var(--f-attt); font-weight: 600; }
+.fer button.fer-tu.fer-prem { border: 1.5px solid var(--f-t0); }
+.fer button.fer-tu.fer-cree, .fer button.fer-tu.fer-cree.fer-prem { border-style: dashed; }
+.fer .fer-ent { position: absolute; right: 6px; bottom: 5px; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--f-t0); color: var(--f-t0); }
+.fer .fer-rien { grid-column: 1 / -1; font-size: 14px; color: var(--f-t2); padding: 4px; margin: 0; }
+.fer .fer-et { flex-shrink: 0; vertical-align: -2px; }
+
+/* Les repères : OG attendue et teinte, face au style. */
+.fer .fer-reps { background: var(--f-panel); border-radius: 16px; padding: 6px 10px; display: flex; flex-direction: column; gap: 2px; }
+.fer .fer-reps[hidden] { display: none; }
+.fer .fer-rh { display: flex; align-items: center; gap: 6px; min-height: 28px; }
+.fer .fer-lb { font-size: 14px; color: var(--f-t1); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.fer .fer-lb svg { color: var(--f-t2); }
+.fer .fer-gd { margin-left: auto; font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 24px; font-weight: 600; color: var(--f-t0); line-height: 28px; white-space: nowrap; }
+.fer .fer-gd small { font-size: 14px; color: var(--f-t2); font-weight: 400; margin-left: 2px; }
+.fer .fer-gd.fer-mot { font-family: inherit; font-size: 22px; }
+.fer button.fer-pl { font-size: 12px; color: var(--f-t2); display: inline-flex; align-items: center; gap: 2px; height: 24px; padding: 0 2px; }
+.fer .fer-rep { font-size: 12px; color: var(--f-attt); border: 1px dashed var(--f-att); border-radius: 10px; padding: 0 6px; line-height: 16px; }
+.fer .fer-ech { position: relative; height: 46px; margin: 0 2px; }
+.fer .fer-tr { position: absolute; left: 0; right: 0; top: 12px; height: 10px; border-radius: 9px; border: 1px solid var(--f-bordm); background: var(--f-page); }
+.fer .fer-zone { position: absolute; top: 24px; height: 6px; border: 2px solid var(--f-t0); border-top: 0; }
+.fer .fer-zl { position: absolute; top: 33px; transform: translateX(-50%); font-family: theme('fontFamily.mono'); font-size: 12px; color: var(--f-t1); white-space: nowrap; line-height: 12px; padding: 0 3px; }
+.fer .fer-mk { position: absolute; top: 11px; width: 4px; height: 20px; margin-left: -2px; border-radius: 99px; background: var(--f-t0); box-shadow: 0 0 0 2px var(--f-page); }
+.fer .fer-ebcl { position: absolute; top: 24px; white-space: nowrap; font-family: theme('fontFamily.mono'); font-size: 12px; color: var(--f-t2); line-height: 12px; }
+.fer .fer-ogl { top: -1px; transform: translateX(-50%); font-weight: 600; color: var(--f-t0); background: var(--f-panel); padding: 0 3px; }
+.fer button.fer-arens { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 10px; border: 1px dashed var(--f-att); color: var(--f-attt); font-size: 12px; background: var(--f-page); white-space: nowrap; }
+.fer button.fer-arens-court { margin-left: 2px; min-width: 0; }
+@media (max-width: 440px) { .fer button.fer-arens-court .fer-long { display: none; } }
+.fer .fer-alerte { font-size: 14px; color: var(--f-attt); background: rgb(var(--attention) / 0.14); border-radius: 10px; padding: 6px 10px; margin: 0; }
+.fer .fer-alerte + .fer-alerte { margin-top: 4px; }
+
+/* Le plateau (clair, toujours visible) : le détail de la ligne choisie. */
+.fer .fer-bal { background: var(--f-panel); border: 1.5px solid var(--f-t0); border-radius: 16px; padding: 6px 10px 2px; display: flex; flex-direction: column; gap: 0; }
+.fer .fer-bal[hidden] { display: none; }
+.fer .fer-bh { display: flex; align-items: center; gap: 6px; min-height: 28px; }
+.fer .fer-bh b { font-size: 16px; font-weight: 600; color: var(--f-t0); white-space: nowrap; flex-shrink: 0; }
+.fer .fer-bpas { width: 28px; height: 28px; padding: 0; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: theme('fontFamily.mono'); font-size: 14px; font-weight: 600; color: var(--f-t1); }
+.fer .fer-bpas.fer-inc { border: 1.5px dashed var(--f-att); color: var(--f-attt); background: var(--f-page); }
+.fer .fer-bpas.fer-pas-fam { border-radius: 10px; background: var(--f-panel); border-color: var(--f-bordm); color: var(--f-t2); }
+.recipe-wizard .fer .fer-ebc-p:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) { grid-row: auto; width: 56px; height: 28px; margin: 0; flex-shrink: 0; }
+.fer .fer-mo2 { font-size: 12px; color: var(--f-t2); white-space: nowrap; }
+.fer button.fer-bmo { display: inline-flex; align-items: center; gap: 2px; height: 24px; padding: 0 6px; border-radius: 10px; border: 1px solid var(--f-bord); font-size: 12px; color: var(--f-t1); background: var(--f-page); margin-left: auto; flex-shrink: 0; }
+.fer button.fer-bmo[data-m='ébullition'] { color: #A8291F; border-color: rgba(200, 56, 47, .4); background: #FBEDEC; }
+.fer button.fer-bmo[data-m='fermentation'] { color: #3F6B2E; border-color: rgba(86, 127, 69, .45); background: #EEF4EA; }
+[data-theme='cave'] .fer button.fer-bmo[data-m='ébullition'] { color: #F29289; background: rgba(214, 69, 61, .16); }
+[data-theme='cave'] .fer button.fer-bmo[data-m='fermentation'] { color: #A9D394; background: rgba(86, 127, 69, .2); }
+.fer button.fer-del { width: 28px; height: 28px; padding: 0; min-width: 0; border-radius: 10px; color: var(--f-t2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fer button.fer-del:hover { background: var(--f-haut); }
+.fer .fer-lect { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.fer button.fer-sb { width: 28px; height: 28px; padding: 0; min-width: 0; border-radius: 50%; border: 1px solid var(--f-bordm); color: var(--f-t0); display: flex; align-items: center; justify-content: center; background: var(--f-page); }
+.fer button.fer-sb:active { background: var(--f-haut); }
+.fer .fer-num { display: flex; align-items: baseline; margin: 0; }
+.recipe-wizard .fer .fer-bin:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  width: 4ch; min-height: 0; height: 44px; border: 0; border-bottom: 1.5px dotted var(--f-trait); background: none; padding: 0; text-align: right; box-shadow: none;
+  font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 40px; font-weight: 600; color: var(--f-t0); line-height: 44px; border-radius: 0; caret-color: var(--f-t0);
+}
+.recipe-wizard .fer .fer-bin:is(input, textarea):focus { outline: none; border-bottom: 2px solid var(--f-t0); }
+.recipe-wizard .fer .fer-bin:is(input, textarea)::placeholder { color: var(--f-attt); opacity: 1; }
+.fer .fer-bu { font-family: theme('fontFamily.mono'); font-size: 14px; color: var(--f-t2); margin-left: 4px; }
+.fer .fer-piste { position: relative; height: 30px; margin: 0 14px; touch-action: none; cursor: pointer; }
+.fer .fer-ptr { position: absolute; left: -14px; right: -14px; top: 5px; height: 20px; border-radius: 12px; background: var(--f-page); border: 1px solid var(--f-bordm); overflow: hidden; }
+.fer .fer-pf { position: absolute; left: 0; top: 0; bottom: 0; }
+.fer .fer-pouce2 { position: absolute; top: 0; width: 30px; height: 30px; margin-left: -15px; border-radius: 50%; background: var(--f-t0); border: 3px solid var(--f-page); box-shadow: 0 1px 4px rgba(0, 0, 0, .4); pointer-events: none; }
+.fer .fer-gr { position: relative; height: 24px; margin: 0 14px; }
+.fer .fer-gr i { position: absolute; top: 0; width: 1px; height: 6px; background: var(--f-trait); }
+.fer .fer-gr i.fer-g { height: 10px; width: 2px; background: var(--f-t1); }
+.fer .fer-gr span { position: absolute; top: 11px; transform: translateX(-50%); white-space: nowrap; font-family: theme('fontFamily.mono'); font-size: 12px; color: var(--f-t2); line-height: 12px; }
+.fer .fer-jours { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 8px; border-top: 1px solid var(--f-bord); padding-top: 4px; margin-top: 2px; }
+.fer .fer-jours label { display: flex; align-items: baseline; font-size: 14px; color: var(--f-t1); margin: 0; }
+.recipe-wizard .fer .fer-jin:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']) {
+  width: 2.4ch; min-width: 24px; min-height: 0; height: 28px; padding: 0; border: 0; border-bottom: 1.5px dotted var(--f-trait); background: none; border-radius: 0; box-shadow: none;
+  text-align: center; font-family: theme('fontFamily.mono'); font-size: 16px; font-weight: 600; color: var(--f-t0); line-height: 1.2;
+}
+.fer .fer-jp { position: relative; height: 36px; }
+.fer .fer-jt { position: absolute; left: 0; right: 0; top: 8px; height: 8px; border-radius: 9px; background: linear-gradient(90deg, var(--f-trait) 0 1px, transparent 1px) 0 0/calc(100% / 14) 100% repeat-x, #F0F5EC; border: 1px solid #C9DBBE; }
+.fer .fer-jl-lab, .fer .fer-jp > span { position: absolute; top: 20px; font-family: theme('fontFamily.mono'); font-size: 12px; color: var(--f-t2); transform: translateX(-50%); }
+.fer .fer-jr { position: absolute; left: -12px; right: -12px; top: 0; width: calc(100% + 24px); height: 24px; margin: 0; background: none; -webkit-appearance: none; appearance: none; }
+.fer .fer-jr::-webkit-slider-runnable-track { height: 24px; background: none; }
+.fer .fer-jr::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #3F6B2E; border: 3px solid var(--f-page); box-shadow: 0 1px 3px rgba(0, 0, 0, .35); }
+/* n° 2 : le conteneur de défilement du wizard prend le focus au geste (Chrome rend focalisable un conteneur qui défile) : aucun cadre autour de l'écran. */
+.recipe-wizard main:has(.fer):focus, .recipe-wizard main:has(.fer):focus-visible, .recipe-wizard main:has(.fer) > :focus:not(:focus-visible) { outline: none; }
+/* La fiche technique du malt : une ligne discrète DANS le plateau (D226), « PPG — · fiche › ». */
+.fer .fer-fi { border-top: 1px solid var(--f-bord); margin-top: 2px; }
+.fer button.fer-fi-bt { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 24px; padding: 0 2px; font-size: 12px; color: var(--f-t2); }
+.fer button.fer-fi-bt b { font-family: theme('fontFamily.mono'); font-weight: 600; color: var(--f-t0); }
+.fer button.fer-fi-bt i { font-style: normal; font-size: 14px; color: var(--f-trait); transition: transform .12s; }
+.fer button.fer-fi-bt[aria-expanded='true'] i { transform: rotate(90deg); }
+.fer button.fer-fi-bt:focus-visible { outline: 2px solid var(--f-t0); outline-offset: 1px; }
+.fer .fer-fi-corps { display: flex; flex-direction: column; gap: 6px; padding: 4px 2px 6px; }
+.fer .fer-fi-champs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 13px; color: var(--f-t2); }
+.fer .fer-fi-champs label { display: flex; align-items: center; gap: 4px; margin: 0; }
+.fer .fer-fi-classe { font-size: 12px; color: var(--f-t1); background: var(--f-haut); border-radius: 10px; padding: 0 6px; line-height: 16px; }
+@media (prefers-reduced-motion: reduce) { .fer * { animation: none !important; transition: none !important; } }

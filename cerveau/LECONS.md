@@ -12,7 +12,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 » (tests) appliqué partout (G38). 25.10 : « traits trié » lu « plein » (D147), « le + pas centré » lu bouton (D149). 27.10 : « bannir » lu « reculer » (D194). 31.10 : « modifier à la volée » lu « la masse » (D211).
+- Erreur : 12.10, « seul 3.8 » (tests) appliqué partout (G38). 25.10 : « traits trié » lu « plein » (D147). 27.10 : « bannir » lu « reculer » (D194). 31.10 : « modifier à la volée » lu « la masse » (D211). 01.11 : « sans clavier » lu « sans focus » (D230).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil

@@ -768,11 +768,13 @@ describe('Ajout d’un fermentescible — où va le curseur', () => {
     expect(document.activeElement).toHaveAttribute('aria-label', 'Quantité en kg');
   });
 
-  it('⚠️ sur TÉLÉPHONE, rien ne prend le focus — le clavier ne monte pas', () => {
+  // Réécrit (D230, règle n° 1, `versMasse` de la maquette s1) : l'ancien test (« rien ne prend le focus — le clavier ne monte pas ») est remplacé par
+  // le comportement de s1, au toucher comme à la souris : après « Munich », Entrée, sans masse tapée, le focus va dans la masse de la ligne ajoutée.
+  it('⚠️ sur TÉLÉPHONE, comme sur ORDINATEUR, la quantité prend le focus (s1 : versMasse)', () => {
     pretendTouchDevice(true);
     monterAssistant();
     ajouterUnMalt();
 
-    expect(document.activeElement).not.toHaveAttribute('aria-label', 'Quantité en kg');
+    expect(document.activeElement).toHaveAttribute('aria-label', 'Quantité en kg');
   });
 });

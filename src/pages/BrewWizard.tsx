@@ -1,6 +1,5 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
-import { MaltDetails } from '../ui/MaltDetails';
 import './recipe-wizard.css';
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -105,7 +104,9 @@ import { SegmentedControl } from '../ui/SegmentedControl';
 import { QuantityStepper } from '../ui/QuantityStepper';
 import { CycleTag } from '../ui/CycleTag';
 import { PresetChips } from '../ui/PresetChips';
-import { IngredientPicker } from '../ui/IngredientPicker';
+import { EtapeFermentescibles } from '../ui/fermentescibles/EtapeFermentescibles';
+import { plageEbc } from '../ui/identite/plages';
+import { teinte as teinteEbc } from '../ui/fermentescibles/modele';
 import { applyCatalogueYeast } from '../domain/yeastCatalogue';
 import { completeFromStockReferences } from '../domain/localStockFacts';
 import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
@@ -602,6 +603,34 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
 
   const [step, setStep] = useState<StepId>(restoredDraft?.step ?? seed?.step ?? 'identite');
+
+  // Banc local de l'étape Malts/sucres (p8-port) : `?malts=maquette` (développement seulement, éliminé du bundle de production) pose la recette et le
+  // stock de la maquette s1, SIMULÉS (src/ui/fermentescibles/apercuDev.ts), et passe à l'étape ; `?malts=sucre` (ou fruit, huit, vide, couleurs)
+  // choisit l'état (le hash ferait partir le wizard : popstate de l'app). Le stock simulé ne touche aucune donnée : un article créé là reste ici.
+  const [stockApercu, setStockApercu] = useState<StockItem[] | null>(null);
+  const stockPourEtape = stockApercu ?? stockItems;
+  const [creerApercu, setCreerApercu] = useState<((s: StockItem[], n: string, c: string, u: string) => StockItem) | null>(null);
+  const creerArticleEtape = (name: string, category: string, unit: string): StockItem => {
+    if (!stockApercu || !creerApercu) return onCreateStockItem(name, category, unit);
+    const cree = creerApercu(stockApercu, name, category, unit);
+    setStockApercu([...stockApercu, cree]);
+    return cree;
+  };
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const q = new URLSearchParams(location.search).get('malts');
+      if (q === null) return;
+      const etat = q && q !== 'maquette' ? q : '';
+      import('../ui/fermentescibles/apercuDev').then(({ apercuMalts, articleApercu }) => {
+        const a = apercuMalts(etat);
+        setCreerApercu(() => articleApercu);
+        setStockApercu(a.stock); setFermentables(a.fermentables); setStyle(a.style); setVolumeL(a.volumeL); setStep('fermentescibles');
+        // Les contrôles de la maquette attendent que l'état soit posé : il se dit sur <body>.
+        setTimeout(() => { document.body.dataset.apercu = etat || 'repos'; }, 80);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [validationRequested, setValidationRequested] = useState(false);
   const [focusIssue, setFocusIssue] = useState<RecipeFieldIssue>();
   const [saveError, setSaveError] = useState('');
@@ -681,7 +710,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * re-focaliserait à chaque rendu et l'on ne pourrait plus en sortir.
    */
   const coarse = useCoarsePointer();
-  const [focusFermentable, setFocusFermentable] = useState<number | null>(null);
   const [focusHop, setFocusHop] = useState<number | null>(null);
 
   /*
@@ -690,9 +718,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * remontage ultérieur de ce même rang — un changement de clé, un tri — ne
    * vienne pas reprendre le focus sous les doigts du brasseur.
    */
-  useEffect(() => {
-    if (focusFermentable !== null) setFocusFermentable(null);
-  }, [focusFermentable]);
   useEffect(() => {
     if (focusHop !== null) setFocusHop(null);
   }, [focusHop]);
@@ -1273,43 +1298,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   }, [ferment]);
 
   // --- Actions --------------------------------------------------------------
-  const addFermentable = (ingName: string, item?: StockItem) => {
-    if (!ingName || fermentables.some((f) => f.kind === addKind && (item?.ref ? f.stockItemRef === item.ref : !f.stockItemRef && f.name === ingName))) return;
-    /*
-     * ⚠️ AU CLAVIER, LE CURSEUR SUIT.
-     *
-     * Demandé ainsi : « pour les malts sur PC, je veux juste avoir à taper le
-     * nom et la quantité au clavier ». Le nom se tapait déjà — la liste se
-     * valide à Entrée — mais il fallait ensuite lâcher le clavier et aller
-     * chercher le champ de poids à la souris. On mémorise donc le rang à
-     * ouvrir, et sa quantité prend le focus dès qu’elle est montée.
-     *
-     * ⚠️ Uniquement au pointeur FIN. Sur un téléphone, donner le focus à un
-     * champ fait monter le clavier par-dessus la liste qu’on vient d’utiliser :
-     * ce qui accélère la saisie au clavier la gênerait au doigt.
-     */
-    if (!coarse) setFocusFermentable(fermentables.length);
-    const def = KIND_DEF[addKind];
-    setFermentables([
-      ...fermentables,
-      {
-        name: ingName,
-        stockItemRef: item?.ref,
-        // Zéro, pas une quantité plausible : c'est au brasseur de la poser.
-        weightKg: 0,
-        kind: addKind,
-        use: def.use,
-        fermentabilityPct: def.fermentability,
-        colorEbc: item?.colorEbc ?? (addKind === 'grain' ? undefined : 0),
-        potentialPpg: item?.potentialPpg ?? def.ppg,
-        ...(def.use === 'fermentation' ? { dayOffset: 3 } : {})
-      }
-    ]);
-  };
-
-  const patchFermentable = (index: number, patch: Partial<Fermentable>) =>
-    setFermentables(fermentables.map((f, i) => (i === index ? { ...f, ...patch } : f)));
-
   /**
    * Admission of the water analysis a partial import brings without a reference: decided against what the recipe
    * holds, before any change, and shown in the preview with the same rule.
@@ -2332,7 +2320,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             <span className="flex items-center gap-1">
               {color && (
                 <span
-                  className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700 ${color.swatch}`}
+                  className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700"
+                  style={{ background: teinteEbc(color.ebc) }}
                   aria-hidden
                 />
               )}
@@ -2353,8 +2342,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           setStep(step);
         }} />}
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-        {['fermentescibles', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
-          scope={step === 'fermentescibles' ? 'malt' : undefined}
+        {/* À l'étape Malts/sucres, les données de fiche à compléter passent sous l'écran choisi (il n'y est pas) ; au récapitulatif, elles restent en tête. */}
+        {step === 'recap'&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
           onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
           hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} onAutomatic={applyAutomatic}/></Suspense>}
       {step === 'identite' && (() => {
@@ -2509,172 +2498,37 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       })()}
 
       {/* ---------------------------------------------------- ÉTAPE 2 */}
-      {step === 'fermentescibles' && (
-        <Section
-          title="Fermentescibles"
-          hint="Le lactose ne fermente pas ; le sucre fermente à 100 %."
-        >
-          <div className="space-y-2 sm:space-y-3">
-            {/*
-              ⚠️ Cinq cases en grille pesaient deux cent vingt pixels — le quart
-              d'un écran de téléphone — pour un réglage qu'on touche une fois
-              par recette, et qui vaut « grain » neuf fois sur dix. La pastille
-              rotative tient sur la ligne de son propre texte, et l'explication
-              de la famille courante se lit juste à côté au lieu d'en dessous.
-            */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-cave-400 shrink-0">Ajouter</span>
-              <CycleTag<FermentableKind>
-                name="Famille de fermentescible"
-                value={addKind}
-                options={FERMENTABLE_KINDS}
-                onChange={setAddKind}
-                label={(k) => KIND_DEF[k].label}
-                tone={(k) => KIND_TONE[k]}
-              />
-              {!tight && (
-                <span className="text-sm text-cave-400 leading-snug min-w-0">
-                  {KIND_DEF[addKind].hint}
-                </span>
-              )}
-            </div>
-
-            <IngredientPicker
-              categories={KIND_DEF[addKind].stock}
-              items={stockItems}
-              value=""
-              onChange={addFermentable}
-              onCreate={(n) => {
-                const created = onCreateStockItem(n, KIND_DEF[addKind].newCat, 'kg');
-                addFermentable(created.name, created);
-              }}
-              placeholder={`Ajouter — ${KIND_DEF[addKind].label.toLowerCase()}…`}
-              ariaLabel={`Ajouter un fermentescible de la famille ${KIND_DEF[addKind].label}`}
-            />
-
-            {fermentables.length === 0 ? (
-              <p className="text-sm text-cave-400 py-1">
-                Rien encore.
-              </p>
-            ) : (
-              <ul className="space-y-1 sm:space-y-2">
-                {fermentables.map((f, i) => {
-                  return (
-                    <li
-                      key={`${f.name}-${f.kind}-${i}`}
-                      className="panel p-1.5 sm:p-2.5 flex flex-col gap-1"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <span className="block text-sm font-semibold text-cave-50 truncate">{f.name}</span>
-                          {/*
-                            ⚠️ La famille NE TOURNE PAS. Elle l'a fait un temps,
-                            et c'était une faute : rien n'empêchait de classer un
-                            Maris Otter en « lactose », ce qui le fait passer à
-                            0 % de fermentescibilité et remonte la densité finale
-                            prévue de plusieurs points — sur un malt qui, en
-                            vrai, fermente entièrement. La famille se décide au
-                            moment d'ajouter, où elle choisit le rayon du stock ;
-                            ici elle se lit, et se corrige en retirant la ligne.
-
-                            Ce qui la remplace pour un grain, c'est sa CLASSE DE
-                            COULEUR. C'est l'information qu'on cherche en relisant
-                            une facture de grain : base, ambré, brun ou torréfié
-                            disent en un mot ce que le malt apporte, là où « 120
-                            EBC » demande de connaître l'échelle par cœur.
-
-                            Le MOMENT, lui, tourne — comme l'étape d'un houblon.
-                          */}
-                          <span className="flex items-center gap-1 flex-wrap mt-0.5">
-                            {f.kind !== 'grain' && <span className="text-sm text-cave-200">{KIND_DEF[f.kind].label}</span>}
-                            <CycleTag
-                              name={`Moment de ${f.name}`}
-                              value={f.use}
-                              options={FERMENTABLE_USES}
-                              onChange={(u) => patchFermentable(i, { use: u })}
-                              label={(u) => USE_LABEL[u]}
-                              tone={(u) => USE_TONE[u]}
-                            />
-                            <span className="text-sm text-cave-400 truncate">
-                              {f.kind === 'grain'
-                                ? totalGrist > 0
-                                  ? `${((f.weightKg / totalGrist) * 100).toFixed(0)} % du grain`
-                                  : ''
-                                : details.nolo?.enabled && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : `${f.fermentabilityPct ?? 100} % ferm.`}
-                            </span>
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <div className="w-32 sm:w-36">
-                            <QuantityStepper
-                              id={`wz-fermentable-${i}`}
-                              emptyValue={0}
-                              aria-invalid={!!fieldError(`wz-fermentable-${i}`)}
-                              aria-describedby={fieldError(`wz-fermentable-${i}`) ? 'wz-validation' : undefined}
-                              label=""
-                              value={f.weightKg}
-                              onChange={(v) => patchFermentable(i, { weightKg: v })}
-                              unit="kg"
-                              category="Malt"
-                              compact
-                              autoFocus={!coarse && focusFermentable === i}
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setFermentables(fermentables.filter((_, j) => j !== i))}
-                            aria-label={`Retirer ${f.name}`}
-                            className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {f.use === 'fermentation' && (
-                        <div className="pt-1 border-t border-cave-850">
-                          <Field
-                            label="Jour d’ajout en fermentation"
-                            hint="Le sucre ajouté après le départ de la fermentation ne stresse pas la levure."
-                          >
-                            <NumberInput
-                              min={0}
-                              value={f.dayOffset ?? 0}
-                              onValue={(v) =>
-                                patchFermentable(i, { dayOffset: v })}
-                              integer
-                              pad
-                              className={inputClass}
-                            />
-                          </Field>
-                        </div>
-                      )}
-
-                      {f.kind === 'lactose' && f.weightKg > 0 && (
-                        <p className="text-sm text-ebc-amber leading-snug">
-                          Non fermentescible : il remonte la densité finale et reste en bouche.
-                        </p>
-                      )}
-
-                      {f.kind === 'grain' && <MaltDetails malt={f}
-                        onChange={patch => patchFermentable(i, patch)}
-                        onLearnIngredient={onLearnIngredient} />}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-
-            {gravityWarning?.note && (
-              <p className="flex items-start gap-2 text-sm text-ebc-amber leading-snug">
-                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <span>{gravityWarning.note}</span>
-              </p>
-            )}
-          </div>
-        </Section>
-      )}
+      {/* s1 (D222, sur p6-b2) : l'étape est son écran choisi, `src/ui/fermentescibles/`. Le fil d'étapes dit déjà « Fermentescibles » :
+          pas de titre de section. Les nombres (OG, couleur, rendement, plages du style) sont ceux de l'app, passés tels quels. */}
+      {step === 'fermentescibles' && (() => {
+        const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
+        const ebcPlage = plageEbc(styleRepere?.stats.srm);
+        return (
+          <EtapeFermentescibles
+            fermentables={fermentables}
+            onFermentables={setFermentables}
+            stockItems={stockPourEtape}
+            famille={addKind}
+            onFamille={setAddKind}
+            defs={KIND_DEF}
+            familles={FERMENTABLE_KINDS}
+            onCreateStockItem={creerArticleEtape}
+            onLearnIngredient={onLearnIngredient}
+            nolo={!!details.nolo?.enabled}
+            og={ogPredicted ?? null}
+            teinteBiere={color ? { ebc: color.ebc, label: color.label } : null}
+            rendementPct={efficiency}
+            rendementDeclare={details.efficiencyPct != null || brewhouse?.efficiencyPct != null}
+            ogPlage={styleRepere?.stats.og}
+            ebcPlage={ebcPlage}
+            styleCode={styleRepere?.code ?? null}
+            ebcVise={ebcPlage ? (ebcPlage.min + ebcPlage.max) / 2 : null}
+            ebcMax={ebcPlage?.max ?? null}
+            alerteDensite={gravityWarning?.note ?? null}
+            erreur={fieldError}
+          />
+        );
+      })()}
 
       {/* ---------------------------------------------------- ÉTAPE 3 */}
       {/* Drapeau hopV4 allumé : l'étape est son écran choisi (T12, #170). Le fil d'étapes du wizard dit déjà « Houblons » :

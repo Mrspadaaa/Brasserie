@@ -21,16 +21,32 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
 const require = createRequire(path.join(RACINE, 'package.json'));
 const puppeteer = require('puppeteer-core');
+// p8-port : la cible peut être une adresse servie (controle-choix.mjs --url=… --gabarit=…, lib/cible.mjs). L'app pose son état de banc
+// (recette et stock de la maquette) en tâche asynchrone et le dit dans document.body.dataset.apercu : on l'attend. Réseau externe coupé.
+const SERVI = !!process.env.AFFINEE_CIBLE_URL;
+const attendre = async (p, etat) => {
+  if (!SERVI) return;
+  await p.waitForFunction((e) => document.body.dataset.apercu === (e || 'repos') && document.querySelector('[data-sel]') !== null, { timeout: 90000 }, etat || '');
+  await new Promise((r) => setTimeout(r, 400));
+};
+const etatUrl = (u, h) => (SERVI ? (h ? u.split('malts=maquette').join('malts=' + h) : u) : u + (h ? '#' + h : ''));
+const couper = async (p) => {
+  if (!SERVI) return;
+  await p.setRequestInterception(true);
+  const local = (u) => ['http://localhost', 'http://127.0.0.1', 'ws://localhost', 'ws://127.0.0.1', 'data:', 'blob:', 'about:'].some((d) => u.startsWith(d));
+  p.on('request', (r) => (local(r.url()) ? r.continue() : r.abort('blockedbyclient')));
+};
 const args = process.argv.slice(2);
 const opt = (nom, defaut) => { const a = args.find((x) => x.startsWith(`--${nom}=`)); return a ? a.slice(nom.length + 3) : defaut; };
 const fichier = path.resolve(process.cwd(), args.find((a) => !a.startsWith('--')) ?? 'etat.html');
-if (!fs.existsSync(fichier)) { console.log(`GESTES ECHEC : page absente ${fichier}`); process.exit(2); }
+if (!existe(fichier)) { console.log(`GESTES ECHEC : page absente ${fichier}`); process.exit(2); }
 const etats = opt('etats', '').split(',').map((e) => e.trim());
 const LARGEURS = [{ l: 390, h: 844, tactile: true }, { l: 1280, h: 800, tactile: false }];
 const SOUS_VUES = '[data-role="bal"],[data-role="detail"],[role="dialog"],dialog[open]';
@@ -58,10 +74,11 @@ function lire(SOUS_VUES) {
 
 for (const L of LARGEURS) for (const etat of etats) {
   const p = await navigateur.newPage();
+  await couper(p);
   await p.setViewport({ width: L.l, height: L.h, isMobile: L.tactile, hasTouch: L.tactile, deviceScaleFactor: 1 });
   const erreurs = []; p.on('pageerror', (e) => erreurs.push(e.message));
-  const url = pathToFileURL(fichier).href + (etat ? '#' + etat : '');
-  const ouvrir = async () => { await p.goto(url); await p.evaluate(() => document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 150)))); };
+  const url = etatUrl(versUrl(fichier).href, etat);
+  const ouvrir = async () => { await p.goto(url); await attendre(p, etat); await p.evaluate(() => document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 150)))); };
   const pause = () => p.evaluate(() => new Promise((r) => setTimeout(r, 250)));
   const toucher = async (h) => { if (L.tactile) await h.tap(); else await h.click(); await pause(); };
   const dans = async (i, sel) => { const li = (await p.$$('[data-sel]'))[i]; return li ? li.$(sel) : null; };

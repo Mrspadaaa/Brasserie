@@ -7,13 +7,30 @@
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from '../../refonte-frontend/v4/tournoi/outils/lib/cible.mjs';
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(path.resolve(ICI, '../../../package.json'));
 const puppeteer = require('puppeteer-core');
+// p8-port : la cible peut être une adresse servie (controle-choix.mjs --url=… --gabarit=…, lib/cible.mjs). L'app pose son état de banc
+// (recette et stock de la maquette) en tâche asynchrone et le dit dans document.body.dataset.apercu : on l'attend. Réseau externe coupé.
+const SERVI = !!process.env.AFFINEE_CIBLE_URL;
+const attendre = async (p, etat) => {
+  if (!SERVI) return;
+  await p.waitForFunction((e) => document.body.dataset.apercu === (e || 'repos') && document.querySelector('[data-sel]') !== null, { timeout: 90000 }, etat || '');
+  await new Promise((r) => setTimeout(r, 400));
+};
+const etatUrl = (u, h) => (SERVI ? (h ? u.split('malts=maquette').join('malts=' + h) : u) : u + (h ? '#' + h : ''));
+const couper = async (p) => {
+  if (!SERVI) return;
+  await p.setRequestInterception(true);
+  const local = (u) => ['http://localhost', 'http://127.0.0.1', 'ws://localhost', 'ws://127.0.0.1', 'data:', 'blob:', 'about:'].some((d) => u.startsWith(d));
+  p.on('request', (r) => (local(r.url()) ? r.continue() : r.abort('blockedbyclient')));
+};
 const pages = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 if (!pages.length) { console.log('MASSE ECHEC 1 (aucune maquette)'); process.exit(1); }
 const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const p = await b.newPage();
+await couper(p);
 await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
 const pret = () => p.evaluate(() => document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 150))));
 const lit = (t) => { const v = parseFloat(String(t).replace(',', '.')); return Number.isFinite(v) ? v : NaN; };
@@ -25,12 +42,12 @@ let echecs = 0;
 const ko = (m) => { echecs++; console.log('ECHEC ' + m); };
 for (const f of pages) {
   const nom = path.basename(path.dirname(path.resolve(f))) + '/' + path.basename(f);
-  const url = 'file:///' + path.resolve(f).split(path.sep).join('/');
+  const url = versUrl(path.resolve(f)).href;
   for (const h of ['', 'sucre', 'fruit']) {
-    await p.goto(url + (h ? '#' + h : '')); await pret();
+    await p.goto(etatUrl(url, h)); await attendre(p, h); await pret();
     const n = await p.$$eval('[data-sel]', (l) => l.length);
     for (let i = 0; i < n; i++) {
-      await p.goto(url + (h ? '#' + h : '')); await pret();
+      await p.goto(etatUrl(url, h)); await attendre(p, h); await pret();
       const info = await p.evaluate((i) => {
         const li = document.querySelectorAll('[data-sel]')[i];
         const r = (e) => { if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; };
