@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u4 — La cuve de la rénovation (01.11)</title>
+<style>
+:root{--acc:#C8382F;--page:#fff;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666;--t1:#333;--t0:#111;
+--fin:#1F64A3;--fin-f:#E3EAF1;--prod:#9A4F1E;--stk:#4C6B2A;--att:#7F5B10;--att-f:#FBF3E1;--ok:#3F6B2E;--ok-f:#E6EFE1;--alert:#A8291F;--alert-f:#F8E4E2;
+--hotte:#2F6F8F;--evier:#2B6E60;--sols:#8A6D3B;--armoire:#7A4F8C;--site:#4F5FA8;--neuf:#666}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--t1);font:14px/1.35 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+.renou4-mono{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.renou4-app{max-width:760px;margin:0 auto;padding-bottom:66px}
+.renou4-tete{display:flex;align-items:center;gap:8px;height:44px;padding:0 10px;border-bottom:1px solid var(--bord)}
+.renou4-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.renou4-nom{font-weight:600;font-size:17px;color:var(--t0);flex:1}
+.renou4-ico{width:30px;height:30px;border-radius:10px;border:1px solid var(--bord);display:grid;place-items:center;background:var(--pan)}
+svg.renou4-s{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.renou4-titre{display:flex;align-items:center;gap:6px;padding:8px 10px 2px}
+.renou4-titre h1{margin:0;font-size:18px;color:var(--t0);flex:1}
+.renou4-retour{display:inline-flex;align-items:center;height:28px;padding:0 6px 0 0;border:0;background:none;color:var(--fin);font:14px inherit;font-family:inherit}
+.renou4-ref{display:flex;border:1px solid var(--bordm);border-radius:999px;overflow:hidden}
+.renou4-ref button{height:28px;padding:0 10px;border:0;background:var(--page);font:13px/1 inherit;font-family:inherit;color:var(--t1)}
+.renou4-ref button[aria-pressed=true]{background:#111;color:#fff;font-weight:600}
+.renou4-verdict{margin:6px 10px 8px;font-size:16px;color:var(--t0);line-height:1.3}
+.renou4-verdict b{font-weight:600}
+.renou4-verdict .renou4-att{color:var(--att)}
+.renou4-verdict .renou4-rouge{color:var(--alert)}
+.renou4-verdict .renou4-vert{color:var(--ok)}
+.renou4-scene{display:grid;grid-template-columns:136px minmax(0,1fr);gap:12px;padding:0 10px}
+.renou4-cuve{position:relative;height:430px;border:3px solid #111;border-top:0;border-radius:0 0 24px 24px;background:linear-gradient(#fff,#F5F5F5);overflow:hidden}
+.renou4-bord-haut{position:absolute;left:-8px;right:-8px;top:0;height:3px;background:#111}
+.renou4-bloc{position:absolute;left:0;right:0;color:#fff;font-size:12px;padding:3px 6px;display:flex;flex-direction:column;justify-content:center;border-top:2px solid #fff;overflow:hidden;line-height:1.15}
+.renou4-bloc b{font-size:13px;font-weight:600}
+.renou4-bloc.renou4-sel{box-shadow:inset 0 0 0 3px #F2C14E}
+.renou4-trop{position:absolute;left:0;right:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.55) 0 5px,rgba(255,255,255,0) 5px 10px)}
+.renou4-ligne{position:absolute;left:0;right:0;border-top:2px dashed #111;z-index:2}
+.renou4-ligne span{position:absolute;right:4px;top:-20px;background:#111;color:#fff;font-size:12px;padding:1px 6px;border-radius:999px;white-space:nowrap}
+.renou4-bulle{position:absolute;width:42px;height:42px;letter-spacing:-.3px;border-radius:50%;border:2px dashed var(--bordm);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--t1);line-height:1}
+.renou4-bulle b{font-size:15px;color:var(--t0)}
+.renou4-liste{display:flex;flex-direction:column;gap:0;min-width:0}
+.renou4-liste h2{margin:0 0 4px;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.renou4-rang{display:flex;align-items:center;gap:6px;min-height:44px;border-bottom:1px solid var(--bord);padding:2px 0}
+.renou4-poignee{color:var(--t2);flex:none}
+.renou4-pas{width:12px;height:28px;border-radius:999px;flex:none}
+.renou4-rang div{flex:1;min-width:0}
+.renou4-rang strong{display:block;font-size:14px;color:var(--t0);font-weight:600;line-height:1.15}
+.renou4-rang small{display:block;font-size:12px;color:var(--t2)}
+.renou4-rang small.renou4-att{color:var(--att);font-weight:600}
+.renou4-rang small.renou4-rouge{color:var(--alert);font-weight:600}
+.renou4-rang .renou4-mt{font-size:13px;color:var(--t0);white-space:nowrap}
+.renou4-ensuite{margin:8px 0 0;padding:7px 8px;border-radius:10px;background:#111;color:#fff;font-size:13px}
+.renou4-ensuite em{display:block;font-style:normal;font-size:12px;color:#F2C14E;font-weight:600}
+.renou4-champ{height:34px;width:100%;border-radius:10px;border:1px solid var(--bordm);padding:0 10px;font:16px inherit;font-family:inherit;color:var(--t0);background:var(--page)}
+.renou4-champ.renou4-focus{border:2px solid var(--fin)}
+.renou4-noter{display:flex;gap:6px;margin-top:8px}
+.renou4-btn{height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--bordm);background:var(--page);font:600 13px/1 inherit;font-family:inherit;color:var(--t0);white-space:nowrap}
+.renou4-btn.renou4-p{background:#111;color:#fff;border-color:#111}
+.renou4-dl{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:13px;margin:4px 0}
+.renou4-dl span:nth-child(odd){color:var(--t2)}
+.renou4-dl .renou4-tot{border-top:1px solid var(--bordm);padding-top:3px;color:var(--t0);font-weight:600}
+.renou4-bandeau{margin:4px 10px 4px;padding:6px 10px;border-radius:10px;background:var(--sur);display:flex;gap:6px;align-items:center;font-size:13px}
+.renou4-nav{position:fixed;left:0;right:0;bottom:0;height:56px;background:var(--pan);border-top:1px solid var(--bord);display:flex;z-index:4}
+.renou4-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--t1);text-decoration:none}
+.renou4-nav a.renou4-act{background:var(--fin-f);color:var(--fin);font-weight:600;box-shadow:inset 0 3px 0 var(--fin)}
+.renou4-plus{flex:none !important;width:64px;margin:6px 6px 6px 0;border-radius:999px;background:#111;color:#fff !important}
+@media (min-width:900px){.renou4-scene{grid-template-columns:220px minmax(0,1fr);gap:24px}}
+</style>
+</head>
+<body>
+<div class="renou4-app">
+  <header class="renou4-tete">
+    <span class="renou4-logo"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6h9v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M15 9h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M6 6h9v3H6z" fill="#fff"/></svg></span>
+    <span class="renou4-nom">L'Affinée</span>
+    <span class="renou4-ico" aria-label="Thème"><svg class="renou4-s" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+    <span class="renou4-ico" aria-label="Chercher"><svg class="renou4-s" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+  </header>
+  <div class="renou4-titre">
+    <button class="renou4-retour" aria-label="Retour aux prévisions"><svg class="renou4-s" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <h1>Rénovation</h1>
+    <div class="renou4-ref" role="group" aria-label="Ligne de la cuve" id="renou4-ref"></div>
+  </div>
+  <main id="renou4-zone"></main>
+  <nav class="renou4-nav" aria-label="Navigation principale">
+    <a href="#"><svg class="renou4-s" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Bord</a>
+    <a href="#" class="renou4-act"><svg class="renou4-s" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg>Finances</a>
+    <a href="#" style="color:var(--prod)"><svg class="renou4-s" viewBox="0 0 24 24"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9 11v6M12 11v6"/></svg><span style="color:var(--t1)">Brassins</span></a>
+    <a href="#" style="color:var(--stk)"><svg class="renou4-s" viewBox="0 0 24 24"><path d="M12 3l4 2.5v4.5l-4 2.5-4-2.5V5.5zM8 12.5l4 2.5v4.5l-4 2.5-4-2.5V15zM16 12.5l4 2.5v4.5l-4 2.5-4-2.5V15z"/></svg><span style="color:var(--t1)">Stocks</span></a>
+    <a href="#"><svg class="renou4-s" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>Clients</a>
+    <a href="#" class="renou4-plus" aria-label="Ajouter"><svg class="renou4-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+  </nav>
+</div>
+<script>
+(function () {
+  var etat = new URLSearchParams(location.search).get('etat') || 'encours';
+  var zone = document.getElementById('renou4-zone');
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function n(v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function chf(v) { return n(v) + ' CHF'; }
+  var NUAGE = '<svg class="renou4-s" viewBox="0 0 24 24"><path d="M3 3l18 18M8 8a5 5 0 0 0-1 0 4 4 0 0 0 0 8h9M20 15.5A3.5 3.5 0 0 0 17 10h-1a6 6 0 0 0-5.5-4"/></svg>';
+  var POIGNEE = '<svg class="renou4-s renou4-poignee" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg>';
+  var CHECK = '<svg class="renou4-s" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  // Données fictives. L'ordre est sa priorité : le premier remplit le fond de la cuve.
+  // L'enveloppe (4 000 CHF) est un montant qu'il a saisi ; « Au compte » est la trésorerie renseignée dans Finances.
+  var P = [
+    { id: 'hotte', t: 'Hotte', mt: 3610, sous: 'Sophie · 6 h · déc.' },
+    { id: 'evier', t: '2ᵉ évier', mt: 380, sous: 'Marc · pose ?' },
+    { id: 'sols', t: 'Sols, seconde passe', mt: 460, sous: 'toi · 8 h · janv.' },
+    { id: 'armoire', t: 'Armoire extérieure', mt: null, sous: 'prix ?' },
+    { id: 'site', t: 'Site web vitrine', mt: null, sous: 'toi · 10 h · prix ?' }
+  ];
+  var ref = { nom: 'Enveloppe', mt: 4000 };
+  if (etat === 'depasse') P[0] = { id: 'hotte', t: 'Hotte', mt: 3980, prevu: 3610, sous: 'facturé · prévu 3 610' };
+  if (etat === 'caisse') ref = { nom: 'Au compte', mt: 6200 };
+  if (etat === 'fini') P = [
+    { id: 'hotte', t: 'Hotte', mt: 3980, sous: 'réalisé' }, { id: 'evier', t: '2ᵉ évier', mt: 610, sous: 'réalisé' },
+    { id: 'sols', t: 'Sols, seconde passe', mt: 470, sous: 'réalisé' }, { id: 'armoire', t: 'Armoire extérieure', mt: 1240, sous: 'réalisé' },
+    { id: 'site', t: 'Site web vitrine', mt: 290, sous: 'réalisé' }];
+  if (etat === 'ajout' || etat === 'horsligne') P = P.concat([{ id: 'neuf', t: 'Lampes de la salle', mt: null, sous: etat === 'horsligne' ? 'à envoyer' : 'prix ?' }]);
+  if (etat === 'jour1') P = [];
+
+  var refEl = document.getElementById('renou4-ref');
+  refEl.innerHTML = '<button aria-pressed="' + (ref.nom === 'Enveloppe') + '">Enveloppe</button><button aria-pressed="' + (ref.nom === 'Au compte') + '">Au compte</button>';
+
+  // Calcul : empilement dans l'ordre, ce qui passe au-dessus de la ligne « dépasse ».
+  var cumul = 0, chiffres = P.filter(function (p) { return p.mt != null; });
+  chiffres.forEach(function (p) { p.bas = cumul; cumul += p.mt; p.haut = cumul; p.depasse = Math.max(0, p.haut - Math.max(p.bas, ref.mt)); });
+  var total = cumul, sansPrix = P.filter(function (p) { return p.mt == null; });
+
+  if (etat === 'horsligne') zone.appendChild(el('div', 'renou4-bandeau', NUAGE + 'Hors ligne. Tes notes restent sur ce téléphone.'));
+
+  // La phrase : ce que la cuve répond.
+  var v = el('p', 'renou4-verdict');
+  var dehors = chiffres.filter(function (p) { return p.depasse > 0; });
+  if (etat === 'jour1') v.innerHTML = 'Fixe ton enveloppe, puis note ce qui te manque.';
+  else if (etat === 'fini') v.innerHTML = '<b class="renou4-vert">Rénovation finie.</b> <b class="renou4-mono">' + chf(total) + '</b> facturés pour <span class="renou4-mono">' + chf(ref.mt) + '</span> d\'enveloppe.';
+  else if (!dehors.length) v.innerHTML = '<b class="renou4-vert">Tout rentre.</b> Reste <b class="renou4-mono">' + chf(ref.mt - total) + '</b> ; ' + sansPrix.length + ' sans prix.';
+  else if (etat === 'depasse') v.innerHTML = '<b class="renou4-rouge">Hotte +370 CHF :</b> l\'évier et les sols dépassent.';
+  else v.innerHTML = '<b class="renou4-att">Les sols dépassent de ' + chf(total - ref.mt) + '.</b> L\'ordre décide.';
+  zone.appendChild(v);
+
+  var scene = el('div', 'renou4-scene');
+  var cuve = el('div', 'renou4-cuve');
+  cuve.setAttribute('role', 'img');
+  cuve.setAttribute('aria-label', 'Cuve : ' + chf(total) + ' empilés, ligne ' + ref.nom + ' à ' + chf(ref.mt));
+  cuve.appendChild(el('div', 'renou4-bord-haut'));
+  var H = 430, echelle = (H - 112) / Math.max(ref.mt, total, 1);
+  chiffres.forEach(function (p) {
+    var b = el('div', 'renou4-bloc' + (etat === 'ouvert' && p.id === 'hotte' ? ' renou4-sel' : ''));
+    b.style.bottom = Math.round(p.bas * echelle) + 'px';
+    b.style.height = Math.round(p.mt * echelle) + 'px';
+    b.style.background = 'var(--' + p.id + ')';
+    var h = Math.round(p.mt * echelle);
+    b.innerHTML = (h >= 30 ? '<b data-mots="lignes">' + p.t.replace('Sols, seconde passe', 'Sols') + '</b>' : '') + (h >= 18 ? '<span class="renou4-mono" data-mots="lignes">' + n(p.mt) + '</span>' : '');
+    if (h < 30 && h >= 18) b.style.flexDirection = 'row';
+    cuve.appendChild(b);
+    if (p.prevu) { var r = el('div', 'renou4-trop'); r.style.bottom = Math.round(p.prevu * echelle) + 'px'; r.style.height = Math.round((p.mt - p.prevu) * echelle) + 'px'; r.style.background = 'repeating-linear-gradient(-45deg,#A8291F 0 5px,#F8E4E2 5px 10px)'; cuve.appendChild(r); }
+  });
+  if (total > ref.mt && etat !== 'fini') {
+    var t = el('div', 'renou4-trop'); t.style.bottom = Math.round(ref.mt * echelle) + 'px'; t.style.height = Math.round((total - ref.mt) * echelle) + 'px'; cuve.appendChild(t);
+  }
+  if (etat !== 'jour1') {
+    var ligne = el('div', 'renou4-ligne');
+    ligne.style.bottom = Math.round(ref.mt * echelle) + 'px';
+    ligne.innerHTML = '<span class="renou4-mono">' + n(ref.mt) + '</span>';
+    cuve.appendChild(ligne);
+  } else {
+    cuve.style.borderStyle = 'dashed';
+  }
+  // Les bulles : ce qui n'a pas de prix ne pèse rien, il flotte en haut.
+  sansPrix.forEach(function (p, i) {
+    var bu = el('div', 'renou4-bulle', '<b>?</b><span data-mots="lignes">' + p.t.split(' ')[0] + '</span>');
+    bu.style.top = (8 + Math.floor(i / 3) * 46) + 'px'; bu.style.left = (2 + (i % 3) * 43) + 'px';
+    if (p.id === 'neuf') bu.style.borderColor = etat === 'horsligne' ? 'var(--fin)' : '#111';
+    cuve.appendChild(bu);
+  });
+  scene.appendChild(cuve);
+
+  var liste = el('div', 'renou4-liste');
+  if (etat === 'ouvert') {
+    liste.innerHTML = '<h2>Hotte · devis en cours</h2><div class="renou4-dl"><span>Achat</span><span class="renou4-mono">' + chf(2850) + '</span><span>Livraison</span><span class="renou4-mono">' + chf(120) + '</span><span>Pose, Sophie 6 h</span><span class="renou4-mono">' + chf(640) + '</span><span class="renou4-tot">Prévu</span><span class="renou4-tot renou4-mono">' + chf(3610) + '</span><span>Paiement</span><span>décembre 2026</span></div>' +
+      '<div class="renou4-noter" style="flex-wrap:wrap"><button class="renou4-btn renou4-p">Noter l\'achat</button><button class="renou4-btn">Réalisé</button></div>';
+  } else if (etat === 'jour1') {
+    liste.innerHTML = '<h2>Enveloppe</h2><input class="renou4-champ" inputmode="decimal" placeholder="CHF" aria-label="Enveloppe en CHF"><h2 style="margin-top:12px">Ce qui te manque</h2><input class="renou4-champ renou4-focus" placeholder="Hotte, évier…" aria-label="Ce qui te manque"><div class="renou4-noter"><button class="renou4-btn renou4-p">Noter</button></div>';
+  } else {
+    liste.appendChild(el('h2', null, etat === 'fini' ? 'Réalisés' : 'Ordre · glisse pour changer'));
+    P.forEach(function (p, i) {
+      var r = el('div', 'renou4-rang');
+      var etiquette = '<small data-mots="lignes">' + p.sous + '</small>';
+      if (p.depasse > 0 && etat !== 'fini') etiquette = '<small class="renou4-' + (etat === 'depasse' ? 'rouge' : 'att') + '" data-mots="lignes">dépasse ' + (p.depasse < p.mt ? '+' + n(p.depasse) : 'tout') + '</small>';
+      if (p.prevu) etiquette = '<small class="renou4-rouge" data-mots="lignes">+370 sur le devis</small>';
+      r.innerHTML = (etat === 'fini' ? '<span style="color:var(--ok)">' + CHECK + '</span>' : POIGNEE) +
+        '<span class="renou4-pas" style="background:' + (p.mt == null ? '#fff;border:2px dashed var(--bordm)' : 'var(--' + p.id + ')') + '"></span>' +
+        '<div><strong data-mots="lignes">' + p.t + '</strong>' + etiquette + '</div>' +
+        '<span class="renou4-mt renou4-mono">' + (p.mt == null ? '' : n(p.mt)) + '</span>';
+      liste.appendChild(r);
+    });
+    if (etat === 'ajout') liste.appendChild(el('div', 'renou4-noter', '<input class="renou4-champ renou4-focus" value="Lampes de la salle" aria-label="Ce qui te manque"><button class="renou4-btn renou4-p">Noter</button>'));
+    else if (etat !== 'fini') liste.appendChild(el('div', 'renou4-ensuite', etat === 'depasse' ? '<em>ENSUITE</em>Vérifier la facture de Sophie' : '<em>ENSUITE</em>Signer le devis de la hotte'));
+  }
+  scene.appendChild(liste);
+  zone.appendChild(scene);
+})();
+</script>
+</body>
+</html>

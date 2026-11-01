@@ -36,6 +36,7 @@ neufs sur brief serré (D207), puis une page neuve.
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Rénovation | panel v0 · 01.11 | https://claude.ai/artifact/NomDkNMQMY2GFVki5wFFvY | work/missions/2026-11-01-renovation/choix-renovation/index.html |
 
 ## Boucle de retour
 - Une variante en échec de contrôle se corrige dans sa voie (3 essais).
