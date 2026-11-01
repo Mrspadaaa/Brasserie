@@ -1,6 +1,6 @@
 # Gates: voie p3c-port — l'écran Nouvelle dépense devient p3c-3, avec le sceau QR z2
 
-OWNS: src/ui/finance/ExpenseSheet.tsx, src/ui/finance/InvoiceScanReview.tsx, src/ui/depense/, src/ui/ModalShell.tsx, tests/integration/expenseSheet.test.tsx, tests/unit/depense/ecran/, tests/unit/depense/qr/, work/missions/2026-10-31-ecran-depense/voies/p3c-port/
+OWNS: src/ui/finance/ExpenseSheet.tsx, src/ui/finance/InvoiceScanReview.tsx, src/ui/depense/, src/ui/ModalShell.tsx, tests/integration/expenseSheet.test.tsx, tests/unit/depense/ecran/, tests/unit/depense/qr/, tests/unit/depense/fiche/ecran.test.tsx, tests/unit/depense/stock/ecran.test.ts, tests/integration/jus0Journey.test.tsx, tests/integration/expenseSheetMouture.test.tsx, tests/unit/depense/stock/unites.test.ts, scripts/check-invoice-journey-emulator.mjs, work/missions/2026-10-31-ecran-depense/voies/p3c-port/
 
 Scope: le port de v3/p3c-3 (retouchée) dans ExpenseSheet, plein écran à 390, sceau z2 tel quel, port en « dont port » ; Drive factice, Gemini simulé.
 
@@ -25,7 +25,7 @@ Scope: le port de v3/p3c-3 (retouchée) dans ExpenseSheet, plein écran à 390, 
   EVIDENCE: pending
 
 - [ ] G5: les tests de la dépense, de l'enregistrement, du stock et de l'écran passent
-  CHECK: node work/missions/2026-10-31-ecran-depense/voies/p3c-port/copie.mjs "npx vitest run tests/unit/depense tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/unit/stockLineMatching.test.ts tests/unit/geminiScanner.test.ts tests/integration/expenseSheet.test.tsx tests/integration/expenseSheetMouture.test.tsx tests/integration/jus0Journey.test.tsx tests/integration/driveFileStore.test.ts tests/integration/financeDocumentPersistence.test.ts tests/integration/financeQuickActions.test.tsx --maxWorkers=2 && echo TESTS ECRAN OK"
+  CHECK: node work/missions/2026-10-31-ecran-depense/voies/p3c-port/copie.mjs "npx vitest run tests/unit/depense tests/unit/purchaseEntry.test.ts tests/unit/purchasePrefill.test.ts tests/unit/stockLineMatching.test.ts tests/unit/geminiScanner.test.ts tests/integration/expenseSheet.test.tsx tests/integration/expenseSheetMouture.test.tsx tests/integration/jus0Journey.test.tsx tests/integration/driveFileStore.test.ts tests/integration/financeDocumentPersistence.test.ts tests/integration/financeQuickActions.test.tsx tests/integration/equipmentProjects.test.tsx tests/integration/ModalHandoff.behavior.test.tsx --maxWorkers=2 && echo TESTS ECRAN OK"
   EXPECT: TESTS ECRAN OK
   EVIDENCE: pending
 

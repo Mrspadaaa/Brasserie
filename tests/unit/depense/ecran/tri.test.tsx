@@ -31,7 +31,15 @@ const lire = async (resultat: any = lecture) => {
   await screen.findByRole('region', { name: 'Vérification du justificatif' });
   return view;
 };
-const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelectorAll('[data-purchase-line]')[n - 1]) as HTMLElement;
+const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelector('[data-dp-ligne="line-' + n + '"]')) as HTMLElement; // R1 : par id, jamais par rang
+const prixKg = (view: { container: HTMLElement }, n: number) => ligne(view, n).querySelector('[data-dp-prixkg]')?.getAttribute('aria-label') ?? ''; // la pastille « ✓ 2,40/Kg » et son nom accessible
+/** « Sans prix avec mouture » sur TOUTE la rangée (D3) : ni pastille, ni nom accessible, ni phrase « 2,40/Kg avec mouture » (prixKg() rend '' si absent : il passerait d'office).
+ *  L'en-tête « avec mouture » du tableau du plateau n'est pas un prix : seule la phrase prix + unité compte. */
+const sansPrixMouture = (view: { container: HTMLElement }, n: number) => {
+  expect(ligne(view, n).querySelector('[data-dp-prixkg]')).toBeNull();
+  expect(ligne(view, n).querySelector('[aria-label*="avec mouture"]')).toBeNull();
+  expect(ligne(view, n).textContent).not.toMatch(/[\d,]+\/\S+ avec mouture/);
+};
 beforeEach(() => {
   cleanup(); vi.restoreAllMocks(); state.saved.mockReset(); state.scanned.mockReset(); state.transactions = [];
   vi.spyOn(FirebaseAuthService, 'ensureDriveAccessToken').mockResolvedValue('synthetic-token'); vi.spyOn(FirebaseAuthService, 'hasDriveAccess').mockReturnValue(true); vi.spyOn(FirebaseAuthService, 'prepareGoogleLogin').mockResolvedValue();
@@ -41,15 +49,15 @@ afterEach(cleanup);
 describe('R1 : un prix « avec mouture » n’est montré que si le catalogue l’écrira', () => {
   it('malt relié + mouture de service rattachée : « 2,40/Kg avec mouture » ; malt non relié : rien', async () => {
     const view = await lire();
-    expect(ligne(view, 1).textContent).not.toMatch(/avec mouture/);
+    sansPrixMouture(view, 1);
     fireEvent.click(view.container.querySelector('[data-dp-mouture-tous]')!);
-    expect(ligne(view, 1).textContent).toMatch(/✓ 2,40\/Kg avec mouture/);
+    expect(prixKg(view, 1)).toMatch(/^2,40\/Kg avec mouture$/);
+    expect(ligne(view, 1).querySelector('[data-dp-prixkg]')!.textContent).toMatch(/✓ 2,40\/Kg/);
     fireEvent.click(screen.getByRole('switch', { name: 'Mettre en stock, ligne 1' }));
-    expect(ligne(view, 1).textContent).not.toMatch(/avec mouture/);
+    sansPrixMouture(view, 1);
   });
   it('C16 : le tableau des moutures dit « lu 2,30 → 2,40 /Kg » seulement pour un malt relié, et « Laisser en service » ne lie rien', async () => {
     const view = await lire();
-    fireEvent.click(screen.getByRole('button', { name: 'Tableau des moutures' }));
     const tableau = view.container.querySelector('[data-dp="tableau-moutures"]') as HTMLElement;
     expect(tableau.textContent).toMatch(/2,30.*→.*2,40/);
     fireEvent.click(within(tableau).getByRole('button', { name: 'Laisser en service' }));
@@ -76,8 +84,8 @@ describe('R10, D229 : un geste ne fait jamais monter le statut ; une valeur tap�
     await lire();
     fireEvent.click(document.querySelector('[data-dp="tuile-tva"]')!);
     fireEvent.click(screen.getByText('proposé · HT vide').closest('button')!);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
-    expect(screen.queryByText('Lecture vérifiée')).toBeNull();
+    expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Lecture vérifiée/ })).toBeNull();
   });
   it('une valeur fausse tapée garde sa valeur, crée un point (chip « Total ») et ne vérifie rien', async () => {
     await lire();
@@ -85,7 +93,7 @@ describe('R10, D229 : un geste ne fait jamais monter le statut ; une valeur tap�
     fireEvent.change(total, { target: { value: '70' } }); fireEvent.blur(total);
     expect(total).toHaveValue('70,00');
     expect(Array.from(document.querySelectorAll('[data-dp-chip]')).some(c => /Total/.test(c.textContent ?? ''))).toBe(true);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
   });
 });
 
@@ -112,7 +120,9 @@ describe('C3, C1, C5, C6, C8, C14 : ce qu’il lit', () => {
     const resume = ligne(view, 1).querySelector('summary')!;
     expect(resume.querySelector('b')!.textContent).toBe('Maris Otter');
     expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter, Kg');
-    expect(resume.querySelector('[class*="chevron"]')).not.toBeNull();
+    // Pas de chevron par ligne : aucun pictogramme chevron (lucide pose la classe `lucide-chevron-*`) et le marqueur qui neutralise le chevron global des `summary` est là.
+    expect(resume.querySelector('svg[class*="chevron"]')).toBeNull();
+    expect(resume.querySelector('.dp-no-chevron')).not.toBeNull();
   });
   it('C6 : le compte de la preuve fait 23 (toutes catégories), sans phrase d’aide', async () => {
     const view = await lire();
@@ -185,17 +195,15 @@ describe('Reprise (01.11) : les détails du critique et du relecteur', () => {
     expect(region.textContent).not.toContain('Même fournisseur et même total');
     expect(region.querySelectorAll('p')).toHaveLength(2); // le titre et la ligne de conséquence
   });
-  it('critique R3 : la barre est colorée par lien, trois teintes distinctes, le noir réservé au « sans stock »', async () => {
+  it('p3c-3 : la barre est teintée par catégorie (malt, houblon, levure), hachurée pour un point ouvert ; le lien reste au picto de la rangée', async () => {
     const view = await lire();
     const segments = Array.from(view.container.querySelectorAll('[data-dp="barre"] i')) as HTMLElement[];
     expect(segments).toHaveLength(23);
+    expect(new Set(segments.map(s => s.getAttribute('data-dp-groupe')))).toEqual(new Set(['malt', 'houblon', 'levure']));
     const teintes = new Set(segments.map(s => (s.className.match(/bg-[\w/-]+/) ?? [''])[0]));
-    for (const t of ['bg-attention', 'bg-area-finances', 'bg-hop']) expect(teintes.has(t) || t === 'bg-area-finances').toBe(true);
-    expect(segments[0].className).toContain('bg-attention'); // relié : ocre
-    expect(segments[1].className).toContain('bg-hop'); // mouture (service) : vert
-    expect(segments[0].className).not.toContain('bg-cave-50');
-    const noirs = segments.filter(s => s.className.includes('bg-cave-50'));
-    expect(noirs.length).toBeGreaterThan(0); // les lignes sans stock
+    expect(teintes.size).toBe(3); // trois teintes distinctes
+    const hachures = segments.filter(s => s.className.includes('dp-p3c-hachure'));
+    expect(hachures.length).toBeGreaterThan(0); // les points ouverts (Target, Hallertauer, Sabro, les 5 moutures)
   });
   it('critique R5 : « Envoi au Drive · 0,7 Mo » pendant l’envoi quand la taille est connue', async () => {
     let fin: (r?: any) => void = () => {};
@@ -212,7 +220,7 @@ describe('Reprise (01.11) : les détails du critique et du relecteur', () => {
   });
   it('critique R6 : « Sabro® » s’écrit « Sabro » dans la chip', async () => {
     await lire();
-    const chip = Array.from(document.querySelectorAll('[data-dp-chip]')).map(c => c.getAttribute('aria-label') ?? '').find(t => /unité/.test(t));
+    const chip = Array.from(document.querySelectorAll('[data-dp-chip],[data-dp-rond]')).map(c => c.getAttribute('aria-label') ?? '').find(t => /unité/.test(t));
     expect(chip).toMatch(/^3 Sabro unité$/);
   });
   it('relecteur R6 : le choix « Créer » d’un produit déjà au stock dit « relié à X, nom déjà au stock »', async () => {

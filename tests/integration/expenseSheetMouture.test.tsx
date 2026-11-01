@@ -39,8 +39,9 @@ const ouvrir = async () => {
   await screen.findByRole('region', { name: 'Vérification du justificatif' });
   return view;
 };
-const maltLigne = (view: { container: HTMLElement }) => view.container.querySelectorAll('[data-purchase-line]')[0] as HTMLElement;
-const affiche = (view: { container: HTMLElement }) => /✓ ([\d,]+)\/Kg avec mouture/.exec(maltLigne(view).textContent ?? '')?.[1];
+const maltLigne = (view: { container: HTMLElement }) => view.container.querySelector('[data-dp-ligne="line-1"]') as HTMLElement; // R1 : par id
+// La pastille visible « ✓ 2,40/Kg » porte son nom accessible « 2,40/Kg avec mouture » (un seul porteur, pas de doublon).
+const affiche = (view: { container: HTMLElement }) => /([\d,]+)\/Kg avec mouture/.exec(maltLigne(view).querySelector('[data-dp-prixkg]')?.getAttribute('aria-label') ?? '')?.[1];
 const enregistrer = async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' })); try { await waitFor(() => expect(state.transactions).toHaveLength(1), { timeout: 5000 }); } catch (e) { throw new Error('rien d’écrit (' + state.writes.map(w => w[0]).join(',') + ' écritures ; transactions ' + state.transactions.length + '). Alertes : ' + screen.queryAllByRole('alert').map(a => a.textContent).join(' | ') + ' · pied : ' + document.querySelector('footer')?.textContent, { cause: e }); } };
 
 beforeEach(() => {
@@ -69,6 +70,8 @@ describe('R1 (relecture) : le prix affiché « avec mouture » est celui du cata
     fireEvent.click(screen.getByRole('switch', { name: 'Mettre en stock, ligne 1' }));
     expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('none');
     expect(affiche(view)).toBeUndefined();
+    expect(maltLigne(view).querySelector('[data-dp-prixkg]')).toBeNull();
+    expect(maltLigne(view).querySelector('[aria-label*="avec mouture"]')).toBeNull(); // toute la rangée : un aria-label n'est pas dans textContent
     expect(maltLigne(view).textContent).not.toMatch(/avec mouture/);
     await enregistrer();
     expect(latestBrewPrices(state.transactions)).toEqual({});

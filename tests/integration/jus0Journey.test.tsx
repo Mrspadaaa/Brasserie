@@ -65,8 +65,8 @@ describe('JUS-0 : contrats du parcours justificatif (défauts corrigés en JUS-1
     fireEvent.change(view.container.querySelector('input[type="file"]')!,{target:{files:[file]}});
     await screen.findByRole('region',{name:'Vérification du justificatif'});
     expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
-    expect(view.container.querySelector('[data-purchase-line] summary')).toHaveTextContent('proposé');
-    expect(view.container.querySelector('[data-purchase-line] summary')).toHaveTextContent('Malt fumé du Banc');
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-stock]')).toHaveTextContent('proposé');
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-nom]')).toHaveTextContent('Malt fumé du Banc');
     expect(state.writes).toEqual([]);
   });
 
@@ -199,13 +199,13 @@ describe('JUS-1 : achat déjà enregistré et propositions de stock',()=>{
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode('%PDF-1.4\n').buffer});
     fireEvent.change(view.container.querySelector('input[type="file"]')!,{target:{files:[file]}});
     await screen.findByRole('region',{name:'Vérification du justificatif'});
-    const lines=view.container.querySelectorAll('[data-purchase-line] summary');
+    const lines=view.container.querySelectorAll('[data-purchase-line]');
     expect(lines).toHaveLength(2);
-    expect(lines[0]).toHaveTextContent('proposé');
-    expect(lines[1]).not.toHaveTextContent('proposé');
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-stock]')).toHaveTextContent('proposé');
+    expect(view.container.querySelector('[data-dp-ligne="line-2"]')).not.toHaveTextContent('proposé');
     expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
     expect(screen.queryByLabelText('Stock ligne 2')).toBeNull();
-    expect(view.container.querySelector('[data-purchase-lines] > summary')).toHaveTextContent('proposée par la lecture');
+    expect(view.container.querySelector('[data-dp="propositions"]')).toHaveTextContent('proposée par la lecture');
     expect(state.writes).toEqual([]);
   });
 });

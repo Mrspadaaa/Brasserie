@@ -122,6 +122,17 @@ export function apercuDepense(etat: string): ApercuDepense {
     const point = makePoint('date-absente', 'ecart', 'date', null, { regle: 'le code relève ce que la lecture ne permet pas de tenir pour sûr', message: 'Date absente ou invalide : à saisir.', unite: 'texte', enjeu: 'info' });
     result.points = [{ ...point, source: 'contrôle', pese: true, signature: signerPoint(point) }];
   }
+  if (etat === 'port' || etat === 'port-sans-montant' || etat === 'tout-port') {
+    // p3c-port (P21, D249) : états du port, SIMULÉS, dérivés ici (le JSON épinglé de `fixture.test.ts` ne change pas). Une ligne « Port » `shipping` :
+    // 8,50 (état `port`, total 95,00), sans montant (`port-sans-montant`, la rangée reste visible : l'inconnu n'est jamais 0), ou seule (`tout-port`, 12,50 : une rangée).
+    const base = (montant: number | null) => ({ id: 'line-24', name: 'Versand / Port', kind: 'shipping' as const, quantity: 1, unit: '', price: montant, amountTTC: montant, stockCategory: '', reference: 'VERSAND', evidence: '', ambiguity: '' }) as unknown as ScannedInvoiceResult['items'][number];
+    const ajuste = (items: ScannedInvoiceResult['items'], total: number) => {
+      Object.assign(result, { items, amountTTC: total, printedLineCount: items.length, controls: { ...result.controls!, lines: { ...result.controls!.lines, checked: items.length } } });
+    };
+    if (etat === 'port') { ajuste([...result.items, base(8.5)], 95); }
+    else if (etat === 'port-sans-montant') { ajuste([...result.items, base(null)], 86.5); }
+    else { ajuste([base(12.5)], 12.5); result.points = []; result.fieldWarnings = []; result.issues = []; result.tvaAmount = null; result.vat = []; }
+  }
   const fichier = { name: 'capture-facture.jpg', size: 735721, type: 'application/pdf' };
   const outcome: ScanOutcome = etat === '5'
     ? { ok: false, error: 'Lecture impossible · service IA. Le fichier est gardé, rien n’est perdu.', proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type }

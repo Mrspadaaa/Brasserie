@@ -99,10 +99,37 @@ describe('D233 : « y aller » va toujours quelque part', () => {
       result.points.push({ ...makePoint('lecture-coupee', 'inverifiable', 'documentType' as any, null, { regle: 'test', message: 'Lecture coupée.', unite: 'texte', enjeu: 'info' }), source: 'contrôle', pese: true });
     });
     const preuve = () => view.container.querySelector<HTMLElement>('[data-dp="preuve"]')!;
-    expect(preuve().className).toMatch(/hidden/);
+    expect(preuve().className).not.toMatch(/(^|\s)hidden(\s|$)/); // p3c-3 : la preuve est ouverte d'office, avant le toucher
     const sansCible = Array.from(view.container.querySelectorAll<HTMLElement>('[data-dp-chip]')).find(c => /Lecture coupée/.test(c.getAttribute('aria-label') ?? ''))!;
     expect(sansCible).toBeTruthy();
-    fireEvent.click(sansCible);
-    expect(preuve().className).not.toMatch(/(^|\s)hidden(\s|$)/);
+    const vise = vi.fn(), avant = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollIntoView'); // D5 : restauré, il ne pollue pas les tests suivants
+    (Element.prototype as any).scrollIntoView = vise;
+    try {
+      fireEvent.click(sansCible);
+      // « y aller » va toujours quelque part : la preuve est amenée à l'écran et surlignée un instant.
+      expect(vise.mock.contexts.some(c => c === preuve())).toBe(true);
+      expect(preuve().getAttribute('data-dp-visee')).toBe('1');
+    } finally {
+      if (avant) Object.defineProperty(Element.prototype, 'scrollIntoView', avant); else delete (Element.prototype as any).scrollIntoView;
+    }
+  });
+
+  // D8 : ces trois points parlent des LIGNES de la lecture ; leur chip mène à la liste (`[data-dp="liste"]`), plus à `[data-purchase-lines]` qui n'existe plus dans la disposition lecture.
+  it.each(['lignes-perdues', 'lignes-annoncees', 'lignes-non-rapprochees'])('D8 : la chip du point « %s » amène à la liste des lignes', async code => {
+    const view = await lire(result => {
+      result.points.push({ ...makePoint(code, 'inverifiable', 'items' as any, null, { regle: 'test', message: `Point ${code}.`, unite: 'texte', enjeu: 'info' }), source: 'contrôle', pese: true });
+    });
+    const sansLigne = Array.from(view.container.querySelectorAll<HTMLElement>('[data-dp-chip]')).find(c => /^\d+ Lignes$/.test(c.getAttribute('aria-label') ?? '')); // le nom de la chip des trois codes (etat.ts NOMS)
+    expect(sansLigne, 'la chip du point existe').toBeTruthy();
+    expect(view.container.querySelector('[data-purchase-lines]')).toBeNull(); // la cible d'avant n'existe plus
+    const vise = vi.fn(), avant = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollIntoView');
+    (Element.prototype as any).scrollIntoView = vise;
+    try {
+      fireEvent.click(sansLigne!);
+      expect(vise.mock.contexts.some(c => (c as HTMLElement).getAttribute?.('data-dp') === 'liste')).toBe(true);
+      expect(vise.mock.contexts.some(c => (c as HTMLElement).getAttribute?.('data-dp') === 'preuve')).toBe(false); // pas le repli sur la preuve
+    } finally {
+      if (avant) Object.defineProperty(Element.prototype, 'scrollIntoView', avant); else delete (Element.prototype as any).scrollIntoView;
+    }
   });
 });

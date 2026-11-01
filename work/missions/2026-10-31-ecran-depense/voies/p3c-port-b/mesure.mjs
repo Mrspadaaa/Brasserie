@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+// Voie p3c-port-b : mesure, zone par zone, la hauteur de la tête de l'écran (app servie) face à la maquette p3c-3, à 390 (repos, état 3).
+// Usage : node work/missions/2026-10-31-ecran-depense/voies/p3c-port/copie.mjs "node scripts/with_server.mjs --server \"npm run dev -- --port 3458 --strictPort\" --port 3458 --env VITE_FIREBASE_API_KEY=fake -- node <ce script> --url=http://localhost:3458 [--etat=3] [--l=390]"
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
+const RACINE = path.resolve(import.meta.dirname, '..', '..', '..', '..', '..');
+const puppeteer = createRequire(path.join(RACINE, 'package.json'))('puppeteer-core');
+const argv = process.argv.slice(2);
+const valeur = (n, d) => argv.find((a) => a.startsWith(`--${n}=`))?.slice(n.length + 3) ?? d;
+const ADRESSE = valeur('url', 'http://localhost:3458').replace(/\/$/, '');
+const ETAT = valeur('etat', '3'), L = Number(valeur('l', '390')), H = L > 600 ? 800 : 844;
+const MAQ = pathToFileURL(path.join(RACINE, 'work/missions/2026-10-31-ecran-depense/v3/p3c-3/etat.html')).href + '?etat=repos';
+const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox'] });
+const app = await nav.newPage();
+await app.setViewport({ width: L, height: H, isMobile: L < 600, hasTouch: L < 600 });
+await app.setRequestInterception(true);
+app.on('request', (r) => (/^(http:\/\/localhost|data:|blob:|about:|file:)/.test(r.url()) ? r.continue() : r.abort('blockedbyclient')));
+await app.goto(`${ADRESSE}/?dev-local&depense=${ETAT}`, { waitUntil: 'domcontentloaded' });
+await app.waitForFunction(() => document.querySelectorAll('button').length > 3, { timeout: 150000 });
+await dormir(800);
+await app.click('[aria-label="Actions rapides"]');
+await app.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => /Entrer une facture/.test(b.textContent)), { timeout: 20000 });
+await app.evaluate(() => [...document.querySelectorAll('button')].find((b) => /Entrer une facture/.test(b.textContent)).click());
+await app.waitForFunction((e) => document.body.dataset.apercu === e, { timeout: 45000 }, ETAT);
+await dormir(600);
+const maq = await nav.newPage();
+await maq.setViewport({ width: L, height: H, isMobile: L < 600, hasTouch: L < 600 });
+await maq.goto(MAQ); await dormir(500);
+const zones = (sels) => (p) => p.evaluate((s) => Object.fromEntries(Object.entries(s).map(([k, sel]) => { const e = document.querySelector(sel); if (!e) return [k, null]; const r = e.getBoundingClientRect(); return [k, `${Math.round(r.top)}–${Math.round(r.bottom)} (${Math.round(r.height)}) x${Math.round(r.left)}–${Math.round(r.right)}`]; })), sels);
+const a = await zones({ entete: 'header', bandeau: '[data-dp="bandeau"]', preuve: '[data-dp="preuve"]', tuiles: '[data-dp="tuile-tva"]', panneaux: '[data-dp="panneau-tva"]', propositions: '[data-dp="propositions"]', bande1: '[data-dp-bande]', recapGauche: '[data-dp="bandeau"]' })(app);
+const m = await zones({ entete: '.p3a3-hd', bandeau: '.p3a3-bd', preuve: '.p3a3-preuve', tuiles: '.p3a3-tu', propositions: '.p3a3-xx', bande1: '.p3a3-grp', gauche: '.p3a3-gauche' })(maq);
+const enfants = (sel) => (p) => p.evaluate((s) => [...document.querySelector(s).children].map((e) => { const r = e.getBoundingClientRect(); return `${e.tagName}.${(e.className || '').toString().slice(0, 30)} ${Math.round(r.top)}–${Math.round(r.bottom)} (${Math.round(r.height)})`; }), sel);
+console.log('APP bandeau', JSON.stringify(await enfants('[data-dp="bandeau"]')(app), null, 1));
+console.log('MAQ bandeau', JSON.stringify(await enfants('.p3a3-bd')(maq), null, 1));
+console.log('APP preuve', JSON.stringify(await enfants('[data-dp="preuve"] > div')(app), null, 1));
+console.log('MAQ preuve', JSON.stringify(await enfants('.p3a3-pv')(maq), null, 1));
+console.log('APP', JSON.stringify(a, null, 1));
+console.log('MAQ   ', JSON.stringify(m, null, 1));
+await nav.close();

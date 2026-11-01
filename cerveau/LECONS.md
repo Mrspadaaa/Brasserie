@@ -152,7 +152,13 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, critique, conseil
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
+### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
+- Erreur : 01.11, une commande en ligne : noms doublés, faux écart, 27 s. « en 10s, un seul test, j'ai trouvé tout ça »
+- Cause : pièces fictives, écran jamais jugé contre la pièce.
+- Faire : une vraie pièce par genre dans l'app servie, chaque champ comparé à la pièce, temps compris ; sa pièce au banc le jour même.
+- Rôles : pilote, exécutant, relecteur
+- Contrôle : au banc (D261 à D263)
+
 ## Mécanisées
 
-- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

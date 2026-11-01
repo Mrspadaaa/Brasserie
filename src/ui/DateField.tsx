@@ -62,15 +62,16 @@ interface DateFieldProps {
   onChange: (swissDate: string) => void;
   hint?: string;
   error?: string;
-  /** Raccourcis proposés. Par défaut : aujourd'hui, hier, il y a une semaine. */
-  shortcuts?: Array<{ label: string; offsetDays: number }>;
+  /** Raccourcis proposés. Par défaut : aujourd'hui, hier, il y a une semaine. `offsetMonths` pose le jour d'aujourd'hui dans un autre
+   *  mois, borné au dernier jour (D262b). */
+  shortcuts?: Array<{ label: string; offsetDays: number; offsetMonths?: number }>;
   /** Optional calendar for this usage; other fields keep the device's local day. */
   shortcutDate?: (offsetDays: number) => string;
   monthShortcuts?: boolean;
   disabled?: boolean;
 }
 
-const DEFAULT_SHORTCUTS = [
+const DEFAULT_SHORTCUTS: NonNullable<DateFieldProps['shortcuts']> = [
   { label: "Aujourd'hui", offsetDays: 0 },
   { label: 'Hier', offsetDays: -1 },
   { label: 'Il y a 7 j', offsetDays: -7 }
@@ -118,7 +119,8 @@ export const DateField: React.FC<DateFieldProps> = ({
         </div> : null}
         <div className="flex flex-wrap gap-1">
           {shortcuts.map((s) => {
-            const target = shortcutDate ? shortcutDate(s.offsetDays) : swissToday(s.offsetDays);
+            const day = shortcutDate ? shortcutDate(s.offsetDays) : swissToday(s.offsetDays);
+            const target = s.offsetMonths ? shiftSwissMonth(day, s.offsetMonths) : day;
             const active = value === target;
             return (
               <button

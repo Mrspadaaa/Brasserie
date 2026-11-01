@@ -939,3 +939,46 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   Installation du 2eme évier. Armoire extérieur, seconde passe sur les sols ectt création du site web vitrine.... » (lu : « le roi » =
   le ROI, retour sur investissement ; « panification » = planification ; la partie marron de u3 est le fond vide de la bouteille, elle
   ne représente rien. D259 : ce défaut à contrôler, et la rénovation passe devant, la TVA et les outils de vente « pour après »).
+- **Le quota, l'état stable et le déploiement** (01.11, nuit, après la page Rénovation v0 et le départ de la passe 2), mot pour mot :
+  « À 60 jusqu'à 65 hebdo, stop les nouvelles tâches et met dans un état stable et deploye. Les choix seront fait demain » (lu : à
+  60 % de l'hebdo, aucune tâche neuve ; ce qui est en vol se finit et se vérifie ; l'état stable se déploie avant 65 % ; ses choix de
+  maquettes attendent demain. D260).
+- **Une facture simple, lue fausse et lente** (01.11, nuit, 18 h 49 sur son téléphone, sur l'app en ligne de D255 : une capture de commande
+  Brau- und Rauchshop, 16 articles, port 30,00, total 170,20, sans date ; cinq captures de l'écran et la pièce,
+  `work/missions/2026-10-31-ecran-depense/brasseur/01-11-brau-*.jpg`, hors Git), mot pour mot : « Ça semble pas être super juste ???
+  Et ça a pris vraiment beaucoup de temps pour une "facture" relativement simple ??? » (lu : les noms doublés « … [+CHF 0.10]· Mischung:
+  … [+CHF 0.10] », l'écart d'un centime « Détail : 170,21 / 170,20 » signalé alors que c'est l'arrondi suisse à 5 centimes, le port
+  rangé comme un article, six pastilles sur une pièce simple ; et la lecture : deux lectures en 7 s qui divergent, puis une troisième
+  par 3.8 en 20 s. D261).
+- **Les modèles de lecture, la TVA et la date** (01.11, nuit, après mon diagnostic de la pièce Brau- und Rauchshop), mot pour mot :
+  « SI on perd à ce point en qualité avec 2 Rapid puis 1 lent autant utiliser 2 lents puis 1 lent comme au début. Aussi le ht, TVA
+  semble pas super fonctionné comme illustré dans la capture.
+
+  Pour les date. Il faut en UX UI booster. Aujourd'hui
+
+  Mois passé
+
+  Mois suivant
+
+
+  La date exacte est rarement important. Le mois l'est plus » (lu : une condition, « si on perd » ; les défauts vus sur cette pièce
+  viennent des règles de l'app, pas des modèles, donc la comparaison « 2 lents puis 1 lent » se mesure au banc avec sa pièce avant
+  toute bascule (L20) ; la pastille ④ TVA et « Référence et TVA du document · À vérifier » sur une TVA juste, 0,60 + 8,30 = 8,90 ;
+  les raccourcis de la date deviennent « Aujourd'hui · Mois passé · Mois suivant », le jour d'aujourd'hui dans le mois choisi.
+  D262).
+- **Le classement des lignes** (01.11, nuit, même pièce Brau- und Rauchshop), mot pour mot : « Et aussi ça à pas classé, levure,  malt,
+  outils de brassage, autre ect... Correctement » (lu : chaque ligne doit tomber dans sa famille, levure, malt, houblon, matériel de
+  brassage, autre ; l'écran en ligne de D255 montre toutes les lignes sous la même icône, sans famille. D262c).
+- **Comment ça a pu passer** (01.11, nuit, pendant les correctifs), mot pour mot : « Mais pourtant en 10s, un seul test, j'ai trouvé tout
+  ça, comment ça a pu passer au travers ??? SI des tests avec toutes les preuve ont bien été fait, ça a été fait n'importe comment ?? »
+  (lu : nos tests et le banc n'avaient aucune pièce de ce genre, une commande en ligne avec la mouture dans le nom, un total arrondi à
+  5 centimes, deux taux de TVA et un port non taxé ; les tests en ligne de D210 se sont faits sur des pièces fictives ; personne n'a
+  jugé l'écran champ par champ contre une vraie pièce, comme lui. Leçon L28).
+- **Le banc d'abord** (01.11, nuit), à « Demain au banc, avec ta pièce », mot pour mot : « non non c'est prio 1 ça, même si on dépasse
+  les 65% » (lu : le banc de la pièce Brau- und Rauchshop passe ce soir, en priorité 1, au-delà de la borne de D260. D263).
+- **Le bout en bout, sur la vraie app** (01.11, nuit, pendant le banc), mot pour mot : « Fait bien à la fin les test d'intégration bout en
+  bout. Et les tests sur la VRAI app avec les VRAIS donnés. Est-ce que le stock de met bien à jour ? Les factures aussi, tout suit ... »
+  (lu : avant de clore, un parcours complet facture → dépense → stock joué sur les émulateurs, puis sur l'app en ligne avec ses vraies
+  données ; vérifier que le stock bouge et que la facture suit partout. Une écriture sur un article réel reste à son accord, D217. D264).
+- **Toutes les pièces au banc** (01.11, nuit), mot pour mot : « Il faut testé aussi avec les autres pièces de test btw pas juste
+  celle-ci... » (lu : la comparaison C★v8 contre « 2 × 3.8 puis 3.8 » se fait sur les 14 pièces, la sienne comprise. D263).

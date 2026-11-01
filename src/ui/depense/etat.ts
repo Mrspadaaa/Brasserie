@@ -119,6 +119,32 @@ export function effetStock(line: PurchaseLineDraft, article: StockItem | undefin
   const q = stockQuantityFor({ description: line.description, quantity: line.quantity, unit: line.unit }, article);
   return q.ok ? `+${num(q.quantity)} ${article.unit}` : 'unité ?';
 }
+/**
+ * Le nom d'une rangée SANS le pourcentage d'α que la rangée dit déjà dans son « α 9,6 » (C084 : pas d'info en doublon). Affichage seul : le nom imprimé entier reste au plateau,
+ * et rien d'enregistré ne change. Seul un pourcentage égal à l'α affiché est retiré (« Nelson Sauvin 9.6% » + α 9,6 → « Nelson Sauvin ») ; un autre (« Target 11.8% » face à α 11,3) reste.
+ */
+/** Le libellé d'une ligne lue : `nom · variante`, sauf si la lecture a déjà mis la variante dans le nom (D261a). Comparaison sans casse,
+ *  accents, espaces ni ponctuation ; rien n'est retiré du nom. */
+export function libelleDeLigne(nom: string, variante: string | undefined): string {
+  const plat = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const v = (variante ?? '').trim();
+  if (!v || !nom) return nom || v;
+  return plat(nom).includes(plat(v)) ? nom : `${nom} · ${v}`;
+}
+
+export function sansAlphaDoublon(nom: string, alpha: string | undefined): string {
+  if (!alpha) return nom;
+  const a = Number(alpha.replace(',', '.'));
+  if (!Number.isFinite(a)) return nom;
+  const sans = nom.replace(/\s*\(?\b(\d+(?:[.,]\d+)?)\s*%\)?/g, (tout: string, n: string) => (Math.abs(Number(n.replace(',', '.')) - a) < 1e-9 ? '' : tout)).replace(/\s{2,}/g, ' ').trim();
+  return sans || nom;
+}
+/** La conversion de la pastille d'une rangée : « = 2 sachets » (l'équivalent, au pluriel quand il le faut ; la quantité imprimée est déjà dans la colonne). « 25 kg → 25 000 g » reste entier. */
+export function pastilleConversion(conversion: string): string {
+  const egal = /^.*?=\s*(\d+(?:[.,]\d+)?)\s+sachet\b/.exec(conversion);
+  if (egal) return `= ${egal[1]} sachet${Number(egal[1].replace(',', '.')) > 1 ? 's' : ''}`;
+  return /[=→]/.test(conversion) ? conversion : `= ${conversion}`;
+}
 export const conversionDe = (line: PurchaseLineDraft, article: StockItem | undefined): string | undefined =>
   article && line.quantity !== undefined && isReadableUnit(line.unit) ? formatUnitLink(line.quantity, line.unit, article.unit, article.category) : undefined;
 

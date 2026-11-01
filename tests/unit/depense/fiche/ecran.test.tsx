@@ -35,7 +35,7 @@ const lire = async (items: Record<number, Record<string, unknown>> = {}, stock: 
   await screen.findByRole('region', { name: 'Vérification du justificatif' });
   return view;
 };
-const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelectorAll('[data-purchase-line]')[n - 1]) as HTMLElement;
+const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelector('[data-dp-ligne="line-' + n + '"]')) as HTMLElement; // R1 : par id, jamais par rang (les bandes réordonnent le DOM)
 beforeEach(() => {
   cleanup(); vi.restoreAllMocks(); state.saved.mockReset(); state.scanned.mockReset(); state.transactions = [];
   vi.spyOn(FirebaseAuthService, 'ensureDriveAccessToken').mockResolvedValue('synthetic-token'); vi.spyOn(FirebaseAuthService, 'hasDriveAccess').mockReturnValue(true); vi.spyOn(FirebaseAuthService, 'prepareGoogleLogin').mockResolvedValue();
@@ -129,12 +129,12 @@ describe('la pastille dit la fiche et sa marque', () => {
 describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’attention, le libellé, Sabro', () => {
   it('n° 5 : « 40 g · α 11,3 » sous la ligne, l’article grisé « Target α 11,8 », puis « α 11,3 » à côté de la fiche dans le plateau', async () => {
     const view = await lire();
-    expect(ligne(view, 8).querySelector('.truncate.text-xs')?.textContent).toMatch(/40 g.*α.*11,3/);
+    expect(ligne(view, 8).querySelector('[data-dp-qte]')?.textContent).toMatch(/40 g/); expect(ligne(view, 8).querySelector('[data-dp-alpha]')?.textContent).toMatch(/α.*11,3/);
     expect(ligne(view, 8).textContent).toContain('Target α 11,8');
     fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
     await screen.findByLabelText('Nom de l’article, ligne 8');
     expect(ligne(view, 8).querySelector('[data-dp-valeurs]')?.textContent).toBe('α 11,3');
-    expect(ligne(view, 8).querySelector('.truncate.text-xs')?.textContent).toMatch(/α.*11,3/);
+    expect(ligne(view, 8).querySelector('[data-dp-alpha]')?.textContent).toMatch(/α.*11,3/);
   });
   it('n° 5 : l’origine et l’EBC lus, jamais une valeur inconnue (Cascade CH sans α : pas d’α)', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null }, 0: { name: 'Münchner Malz 15 EBC' } }, [article('MP-C', 'Cascade US', 'Houblon', 'g'), article('MP-M', 'Münchner Malz', 'Malt', 'kg', { colorEbc: 20 })], ['Maris Otter']);
@@ -183,11 +183,11 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
     fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
     fireEvent.change(champ, { target: { value: 'Galaxy' } });
-    expect(ligne(view, 8).querySelector('b')?.textContent).toBe('Target bis');
+    expect(ligne(view, 8).querySelector('[data-dp-nom]')?.textContent).toBe('Target bis');
     expect(ligne(view, 8).querySelector('[role="alert"]')?.textContent).toMatch(/Un article porte déjà ce nom/);
     expect(screen.getByLabelText('Nom de l’article, ligne 8')).toHaveValue('Galaxy');
     fireEvent.change(champ, { target: { value: 'Target du Banc' } });
-    expect(ligne(view, 8).querySelector('b')?.textContent).toBe('Target du Banc');
+    expect(ligne(view, 8).querySelector('[data-dp-nom]')?.textContent).toBe('Target du Banc');
     expect(ligne(view, 8).querySelector('[role="alert"]')).toBeNull();
   });
   it('n° 14 : ⇄ « Choisir un autre article » ouvre le plateau sur le choix de l’article et ne relie rien ; l’article se choisit dans le plateau', async () => {
@@ -203,13 +203,13 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
   });
   it('n° 15 : chaque ligne se cale sous la bande collante (scroll-margin-top)', async () => {
     const view = await lire();
-    for (const l of Array.from(view.container.querySelectorAll('[data-purchase-line]'))) expect(l.className).toMatch(/scroll-mt-12/);
+    for (const l of Array.from(view.container.querySelectorAll('[data-purchase-line]'))) expect(l.className).toMatch(/(^|\s)scroll-mt-9(\s|$)/); // 36 px sous l'en-tête de bande collant (28 px) ; écart de VALEUR annoncé (HEAD : scroll-mt-12 sous une bande de 40 px), la valeur exacte est tenue
   });
   it('n° 16 : le compteur accorde le nombre', async () => {
     const view = await lire();
     const compte = () => view.container.querySelector('[data-dp="compte-liens"]')?.textContent ?? '';
     expect(compte()).toMatch(/\d+ relié/);
-    expect(compte()).toMatch(/\d+ nouveau(?!x)|\d+ nouveaux/);
+    expect(compte()).not.toMatch(/\b0 nouveau/); // verdict p3c-port, point 2 : un compte à zéro n'est pas affiché (HEAD : « 0 nouveau » attendu)
     fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' }));
     await waitFor(() => expect(compte()).toMatch(/1 nouveau(?!x)/));
     fireEvent.click(within(ligne(view, 20)).queryByRole('button', { name: /^Créer «/ }) ?? within(ligne(view, 9)).getByRole('button', { name: /^Créer «/ }));

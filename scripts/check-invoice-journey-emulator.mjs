@@ -412,11 +412,11 @@ async function openDetails(page, selector) {
   await sleep(300);
 }
 
-/** r2b : « Détails de la lecture » (la chip « n lignes » du bandeau) ouvre la preuve ; sur ordinateur elle est déjà ouverte. */
+/** p3c-3 : la pastille « Lecture …, n lignes » du bandeau (nom accessible « Lecture à confirmer, 23 lignes ») amène à la liste ; la preuve est ouverte d'office. */
 async function openPreuve(c) {
-  const button = await c.page.$(`${sheet} button[aria-label="Détails de la lecture"]`);
-  if (!button) throw Error('Bouton « Détails de la lecture » absent (pas de lecture réussie ?)');
-  if ((await button.evaluate(e => e.getAttribute('aria-expanded'))) !== 'true') await click(c.page, `${sheet} button[aria-label="Détails de la lecture"]`);
+  const button = await c.page.$(`${sheet} button[aria-label^="Lecture"]`);
+  if (!button) throw Error('Bouton « Lecture, n lignes » absent (pas de lecture réussie ?)');
+  if (!(await c.page.$eval(`${sheet} section[data-dp="preuve"]`, e => !!e.getClientRects().length))) await click(c.page, `${sheet} button[aria-label^="Lecture"]`);
   await sleep(300);
   await c.page.$eval(`${sheet} section[data-dp="preuve"]`, e => e.scrollIntoView({ block: 'center' }));
   await sleep(200);
@@ -540,11 +540,11 @@ async function readSheet(c) {
     const text = sel => root.querySelector(sel)?.innerText.replace(/\s+/g, ' ').trim() ?? null;
     return {
       review: text('section[aria-label="Vérification du justificatif"]'),
-      // r2b : la preuve (« Détails de la lecture ») est repliée sur téléphone ; textContent lit aussi ce qui est replié.
+      // p3c-3 : la preuve est ouverte d'office (pastille « Lecture, n lignes » = aller à la liste) ; textContent lit aussi ce qui est replié.
       reviewDetails: [...root.querySelectorAll('section[aria-label="Vérification du justificatif"] li')].map(li => li.textContent.replace(/\s+/g, ' ').trim()),
       preuve: root.querySelector('section[data-dp="preuve"]')?.textContent.replace(/\s+/g, ' ').trim() ?? null,
-      preuveOuverte: root.querySelector('button[aria-label="Détails de la lecture"]')?.getAttribute('aria-expanded') ?? null,
-      chips: [...root.querySelectorAll('[data-dp="chips"] [data-dp-chip]')].map(b => b.getAttribute('aria-label')),
+      preuveOuverte: root.querySelector('section[data-dp="preuve"]') ? String(!!root.querySelector('section[data-dp="preuve"]').getClientRects().length) : null,
+      chips: [...root.querySelectorAll('[data-dp-chip],[data-dp-rond]')].map(b => b.getAttribute('aria-label')),
       tuiles: { tva: text('[data-dp="tuile-tva"]'), reglement: text('[data-dp="tuile-paye"]') },
       alerts: [...root.querySelectorAll('[role="alert"]')].map(e => e.innerText.replace(/\s+/g, ' ').trim()),
       hints: Object.fromEntries([...root.querySelectorAll('[id^="scan-hint-"]')].map(e => [e.id.slice(10), { text: e.innerText.replace(/\s+/g, ' ').trim(), visible: !!e.getClientRects().length && !!e.offsetParent }])),
@@ -560,8 +560,9 @@ async function readSheet(c) {
         label: a.querySelector('[aria-label^="Libellé ligne"]')?.value ?? null, kind: a.querySelector('[aria-label^="Nature ligne"]')?.value ?? null,
         amount: a.querySelector('[aria-label^="Montant ligne"]')?.value ?? null, stock: a.querySelector('[aria-label^="Stock ligne"]')?.value ?? null,
         quantity: a.querySelector('[aria-label^="Quantité ligne"]')?.value ?? null, unit: a.querySelector('[aria-label^="Unité ligne"]')?.value ?? null,
-        article: a.querySelector('[role="combobox"]')?.value ?? null, summary: a.querySelector(':scope > details > summary')?.innerText.replace(/\s+/g, ' ').trim() ?? null })),
-      linesSummary: text('details[data-purchase-lines] > summary'),
+        article: a.querySelector('[role="combobox"]')?.value ?? null, summary: a.querySelector(':scope > details > summary')?.innerText.replace(/\s+/g, ' ').trim() ?? null,
+        stockTexte: a.querySelector('[data-dp-stock]')?.textContent.replace(/\s+/g, ' ').trim() ?? null })),
+      linesSummary: text('[data-dp="propositions"]'),
       duplicate: text('#purchase-duplicate'),
       footer: [...root.querySelectorAll('footer button')].map(b => b.innerText.trim()),
       numberInputs: document.querySelectorAll('input[type="number"]').length
@@ -622,7 +623,7 @@ const toggleLine = (article, open) => article.evaluate((a, value) => { const d =
 /** Chooses the stock action of each purchase line; `plan(index)` returns { action, search?, wanted? }. A proposal of
  * the reading (JUS-1) is kept when it names the wanted article, and corrected like a brewer would otherwise. */
 async function setStockLines(c, plan) {
-  await openDetails(c.page, `${sheet} details[data-purchase-lines]`);
+  /* p3c-3 : la liste n'est plus un <details> : rien à ouvrir */
   const lines = await c.page.$$(`${sheet} article[data-purchase-line]`);
   const done = [];
   for (const [index, article] of lines.entries()) {
@@ -630,7 +631,7 @@ async function setStockLines(c, plan) {
     if (!stock) { done.push({ index, action: 'aucune option de stock' }); continue; }
     const decision = plan(index) ?? { action: 'none' };
     const shown = await article.evaluate(a => ({ action: a.querySelector('select[aria-label^="Stock ligne"]')?.value, article: a.querySelector('[role="combobox"]')?.value ?? '',
-      marked: /proposé :/.test(a.querySelector(':scope > details > summary')?.innerText ?? '') }));
+      marked: /proposé/.test(a.querySelector('[data-dp-stock]')?.textContent ?? '') })); /* p3c-3 : « stock : proposé · … » vit au plateau (data-dp-stock), plus dans le summary */
     const right = shown.action === 'existing' && decision.action === 'existing' && fold(shown.article).includes(fold(decision.wanted));
     const row = { index, action: decision.action, proposition: shown.action === 'existing' ? (right ? 'juste' : 'fausse') : 'aucune', marquee: shown.marked };
     if (right) { row.action = 'existing (proposition gardée)'; done.push(row); continue; }
@@ -742,15 +743,15 @@ async function caseDoc5(c) {
   const seeds = Object.fromEntries(c.plan.seeds.map(seed => [seed.line, seed]));
   const afterScan = await dbSnapshot(c.db);
   c.check(!businessWrites(dbWrites(before, afterScan)).length, 'doc5 : la lecture seule n’écrit rien', { writes: businessWrites(dbWrites(before, afterScan)) });
-  await openDetails(c.page, `${sheet} details[data-purchase-lines]`);
+  /* p3c-3 : la liste n'est plus un <details> : rien à ouvrir */
   c.measure('doc5-lignes-compactes', await c.page.$$eval(`${sheet} article[data-purchase-line]`, nodes => {
     const heights = nodes.map(node => Math.round(node.getBoundingClientRect().height));
     return { lignes: heights.length, moyenne: Math.round(heights.reduce((sum, h) => sum + h, 0) / Math.max(1, heights.length)), min: Math.min(...heights), max: Math.max(...heights),
       liste: Math.round((nodes.at(-1)?.getBoundingClientRect().bottom ?? 0) - (nodes[0]?.getBoundingClientRect().top ?? 0)) };
   }));
   c.measure('doc5-lignes-ouvertes', await measureSheet(c));
-  c.record('doc5-propositions', (await readSheet(c)).lines.map((line, index) => ({ index, stock: line.stock, marquee: /proposé :/.test(line.summary ?? '') })));
-  await shoot(c, 'doc5-articles-propositions', `${sheet} details[data-purchase-lines]`);
+  c.record('doc5-propositions', (await readSheet(c)).lines.map((line, index) => ({ index, stock: line.stock, marquee: /proposé/.test(line.stockTexte ?? '') })));
+  await shoot(c, 'doc5-articles-propositions', `${sheet} [data-dp="liste"]`);
   const plan = await setStockLines(c, index => {
     if (!c.plan.stockLines.includes(index)) return { action: 'none' };
     const seed = seeds[index];
@@ -765,7 +766,7 @@ async function caseDoc5(c) {
     propositionsMarquees: plan.filter(row => row.proposition && row.proposition !== 'aucune' && row.marquee).length, propositions: plan.filter(row => row.proposition && row.proposition !== 'aucune').length });
   const filled = await readSheet(c);
   c.record('doc5-lignes', filled.lines);
-  await shoot(c, 'doc5-articles', `${sheet} details[data-purchase-lines]`);
+  await shoot(c, 'doc5-articles', `${sheet} [data-dp="liste"]`);
   const beforeConfirm = await dbSnapshot(c.db);
   c.check(!businessWrites(dbWrites(before, beforeConfirm)).length, 'doc5 : rien n’entre en stock avant la confirmation', { writes: businessWrites(dbWrites(before, beforeConfirm)) });
   let outcome = await confirmSheet(c, 60000);
@@ -776,7 +777,7 @@ async function caseDoc5(c) {
     // A unit the stock does not understand (read « Stk », stock in « sachet ») is corrected by hand, as a brewer would.
     const fixes = [];
     for (const seed of c.plan.seeds.filter(seed => seed.unit === 'sachet')) {
-      const article = (await c.page.$$(`${sheet} article[data-purchase-line]`))[seed.line];
+      const article = await c.page.$(`${sheet} [data-dp-ligne="line-${seed.line + 1}"]`); // R1 : par id, jamais par rang (p3c-3)
       if (article) await toggleLine(article, true); // r2b : les champs de la ligne sont dans son plateau, replié au repos
       const unit = article && await article.$('[aria-label^="Unité ligne"]');
       if (!unit) continue;

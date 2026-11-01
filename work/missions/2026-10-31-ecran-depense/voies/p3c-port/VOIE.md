@@ -19,7 +19,7 @@ défilé, annexe, règle, 1280), avec le sceau QR z2 **tel qu'il est aujourd'hui
 1. **Plein écran à 390** (D235 : « que cette écran d'ajouter de facture prenne vraiment toute la place de l'app ») : la feuille prend toute
    la hauteur, sans marges de feuille ni navigation de l'app.
 2. **Le port « Total seulement »** (D249 ; interface fixée par le pilote, la voie port-total fait l'enregistrement) : les lignes de la
-   lecture dont `kind === 'shipping'` ne vont dans aucune bande ; le bandeau dit « dont port <montant> » sous le total, dans le style du
+   lecture dont `kind === 'shipping'` et le montant valide ne vont dans aucune bande (un port invalide reste une rangée, décision 7) ; le bandeau dit « dont port <montant> » sous le total, dans le style du
    « CHF » de la maquette (le plus petit élément, L02). Absent de la maquette : signale-le dans « ce qui diffère ».
 3. **Rien ne se perd** de l'écran d'aujourd'hui (r2b porté par e-port, puis qr-app et qr-ecart) : points et chips numérotées, statut
    recalculé (`statutDeLecture`, `recomputeInvoicePoints`), valeur tapée jamais écrasée, mouture rattachée au seul geste (« Rattacher les
@@ -49,9 +49,45 @@ isolée `%TEMP%/qr-app-copie`, par `node work/missions/2026-10-31-ecran-depense/
 worktree (resynchronise puis lance). Jamais de serveur dans `C:/Users/mrspa/Documents/Brasserie`, jamais d'installation dans la jonction.
 
 ## Possède
-`src/ui/finance/ExpenseSheet.tsx`, `src/ui/finance/InvoiceScanReview.tsx`, `src/ui/depense/**`, `src/ui/ModalShell.tsx` (une prop
-facultative au plus, à justifier dans le plan), `tests/integration/expenseSheet.test.tsx`, `tests/unit/depense/ecran/**`,
-`tests/unit/depense/qr/**`, `work/missions/2026-10-31-ecran-depense/voies/p3c-port/**`, la copie isolée.
+- `src/ui/finance/ExpenseSheet.tsx`
+- `src/ui/finance/InvoiceScanReview.tsx`
+- `src/ui/depense/**`
+- `src/ui/ModalShell.tsx` (une prop facultative au plus, à justifier dans le plan)
+- `tests/integration/expenseSheet.test.tsx`
+- `tests/unit/depense/ecran/**`
+- `tests/unit/depense/qr/**`
+- `tests/unit/depense/fiche/ecran.test.tsx` (sélecteurs seulement, décision 1)
+- `tests/unit/depense/stock/ecran.test.ts` (sélecteurs seulement, décision 1)
+- `tests/integration/jus0Journey.test.tsx` (sélecteurs seulement, décision 1)
+- `tests/integration/expenseSheetMouture.test.tsx` (sélecteurs seulement, décision 1)
+- `tests/unit/depense/stock/unites.test.ts` (sélecteurs seulement, décision 1 ; revue Prêt 1)
+- `scripts/check-invoice-journey-emulator.mjs` (sélecteurs seulement, mêmes contrôles ; revue Prêt 12)
+- `work/missions/2026-10-31-ecran-depense/voies/p3c-port/**`
+
+Et la copie isolée (`%TEMP%/qr-app-copie`, par `copie.mjs`).
+
+## Décisions du pilote sur le plan (01.11, PLAN § 9)
+1. **(b), pas de formes cachées pour les tests.** Un `sr-only` qui double un texte visible serait lu deux fois par un lecteur d'écran,
+   et n'existerait que pour un test. Tu adaptes les sélecteurs des quatre tests ci-dessus à la nouvelle structure ; **aucune assertion
+   retirée ni affaiblie** (même chose vérifiée, même valeur attendue). Tu listes chaque changement dans RESULTAT.md, avant → après. Un
+   `sr-only` reste permis s'il porte une information absente à l'écran (le nom d'un picto seul, par exemple), jamais en doublon.
+2. **(a)** : les états de Finances (envoi, reçu, échec, pastille, renvoi, rouvert) ne sont pas à toi ; une voie `p3c-finances` suivra.
+3. **La bande collante est retirée** (la maquette n'en a pas) ; ce qu'elle portait vit dans le pied de 52 px, dis où dans le plan.
+4. Possède mis en puces (G1).
+5. **La bande « Autres » est gardée** (rien ne se perd) et annoncée en écart à la maquette.
+6. **Le port n'est une rangée dans aucun ordre, Papier compris.** Ses mots : « Non non aussi quand imprimé article » (D249) : même imprimé
+   en article sur le papier, le port est « Total seulement ». Ton P5 (« en ordre Papier la ligne port reste une rangée ») se corrige.
+7. **Interface du port (une seule forme, D258)** : le port reste une ligne de `draft.lines` ; tu ne l'en sors pas, tu l'écartes à
+   l'affichage (bandes, sous-totaux, barre, comptes, ordre Papier) et tu le dis en « dont port ». `recalculerLecture` reste sur
+   `draft.lines`, donc la somme reste juste. **Le critère vit chez toi, en un seul endroit** (`lignesDePort(lines)` dans
+   `src/ui/depense/`, typé sur une forme minimale `{ id, kind, amount }`) : une ligne est du port si `kind === 'shipping'`, son montant
+   est un nombre valide ≥ 0 (centimes entiers) **et** toutes les lignes ne sont pas du port. Sinon elle reste une rangée ordinaire
+   (bande « Autres »), visible et corrigeable : un port sans montant, négatif ou à trois décimales, et un document réduit à son port.
+   « dont port » = somme en centimes entiers ; un port connu à 0,00 s'écrit « dont port 0,00 » ; aucun port, rien.
+8. **« dont port » se touche** (revues : sans cela, un port mal lu est invisible et incorrigible). Un toucher ouvre les lignes de port
+   dans le plateau de rangée habituel : libellé imprimé, montant (corrigeable), « Type d'achat » (le changer fait sortir la ligne du
+   port et la remet dans sa bande), Retirer. Une chip qui vise une ligne de port ouvre ce plateau. Écart à la maquette annoncé (§ 8).
+
 
 Interdits : `src/services/**` en écriture (dont `purchaseEntry.ts`, à port-total), `src/domain/finance/invoicePoints.ts`, `functions/`,
 `firebase.json`, `.firebaserc`, `firestore.rules`, `firestore.indexes.json`, les tests hors Possède (ils restent verts sans être

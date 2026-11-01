@@ -1230,6 +1230,41 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D212 (le brasseur, 31.10, nuit) : le plateau de r4d « Toujours visible ». L'état replié (#replie) sort de la passe 5.
 - D213 (le brasseur, 31.10, nuit) : sur le bloquant de la revue s1 (« Crystal » kg relié à « Houblon Crystal » g, 25 000 g), « oui attention au unités ». Portée lue (L01, étroite) : la dépense, partout où une quantité ou un prix a une unité (lecture, rapprochement au stock, enregistrement). Règles du pilote, réversibles : (1) une quantité garde l'unité imprimée, jamais réécrite en silence ; (2) une conversion d'unité (kg ↔ g, l ↔ ml, Stk ↔ sachet) est un fait que le brasseur voit : une proposition au stock dont l'unité diffère de celle de l'article montre la quantité convertie sur la ligne repliée (« 25 kg → 25 000 g ») ; (3) un prix se lit pour son unité (par kg, par 100 g, par pièce), jamais comparé à une autre ; (4) une ligne sans unité lisible n'est proposée à aucun article. Contrôle : tests d'unités de s1 (`tests/unit/depense/stock/unites.test.ts`), qui échouent sur le code d'aujourd'hui.
 - D214 (le brasseur, 31.10, nuit) : sur la règle n° 4 de D213, « Unité illisible : la ligne n'est reliée à aucun article.???? » Règle refusée : elle venait du pilote, pas de ses mots (L01). Lecture du pilote, étroite et réversible : une ligne dont l'unité est illisible reste proposée à son article aux mêmes conditions que toute autre ligne (nom, nature, catégorie, poids de levure, α, récolte) ; aucune unité n'est devinée ni recopiée de l'article ; le champ d'unité reste vide et la ligne repliée porte « unité à préciser » ; rien n'entre en stock tant que l'unité manque (garde à l'enregistrement : voie r1). Une unité lisible mais incompatible avec l'article donne toujours « rien ». Remplace D213 n° 4. Contrôle : `tests/unit/depense/stock/unites.test.ts` (voie s1), qui échoue sur la règle refusée.
+- D264 (le brasseur, 01.11, nuit ; D210, D217, D263) : « Fait bien à la fin les test d'intégration bout en bout. Et les tests sur la VRAI
+  app avec les VRAIS donnés. Est-ce que le stock de met bien à jour ? Les factures aussi, tout suit ... » et « Il faut testé aussi avec
+  les autres pièces de test btw pas juste celle-ci... ». Lu : (1) le banc compare A (« 2 × 3.8 puis 3.8 ») et C★v8 sur les 14 pièces ;
+  (2) avant de clore, le parcours facture → dépense → stock → justificatif est joué de bout en bout sur les émulateurs, ses vraies pièces
+  lues ; (3) sur l'app en ligne, ses vraies données sont relues (dépenses récentes, leurs mouvements de stock, leurs justificatifs : tout
+  suit-il ?) en lecture seule. Un mouvement sur un article réel reste interdit (D217) : le jouer en ligne, puis le défaire, attend son accord.
+- D263 (le brasseur, 01.11, nuit ; D260, D262) : « non non c'est prio 1 ça, même si on dépasse les 65% ». Le banc de la pièce
+  Brau- und Rauchshop passe ce soir, avant tout le reste et au-delà de la borne de D260 : vérité écrite, production C★v8 rejouée,
+  « 2 × 3.8 puis 3.8 » mesuré, justesse champ par champ (noms, familles, TVA, port, arrondi) et temps. Lectures Gemini réelles du banc,
+  journalisées, dans son budget (25 CHF, 6,36 dépensés). Rien ne bascule en production sans son choix sur les chiffres.
+- D262 (le brasseur, 01.11, nuit ; D261) : « SI on perd à ce point en qualité avec 2 Rapid puis 1 lent autant utiliser 2 lents puis 1
+  lent comme au début », la TVA « semble pas super fonctionné », et pour la date « Aujourd'hui / Mois passé / Mois suivant. La date
+  exacte est rarement important. Le mois l'est plus ». Décisions du pilote, réversibles : (1) les défauts de la pièce viennent des
+  règles de l'app (noms joints, arrondi, port), pas des modèles ; « 2 × 3.8 puis 3.8 » entre au banc demain contre C★v8 sur sa pièce et
+  le jeu, justesse et temps, et il choisit sur les chiffres ; rien ne change en production ce soir ; (2) la pastille TVA se diagnostique
+  au même banc (D262a) ; (3) la date : raccourcis « Aujourd'hui · Mois passé · Mois suivant » (le jour d'aujourd'hui, borné, dans le
+  mois choisi) à la place de « Hier · Aujourd'hui · Demain » ; la rangée « Changer le mois, garder le jour » reste (L02). Le (3) entre
+  dans le déploiement de ce soir s'il est vert avant 60 % (D260).
+- D261 (le brasseur, 01.11, nuit ; D260) : sur une commande Brau- und Rauchshop lue en ligne, « Ça semble pas être super juste ??? Et
+  ça a pris vraiment beaucoup de temps pour une "facture" relativement simple ??? ». Constats sur ses captures et les journaux de
+  `aiTask` : (a) noms doublés, la variante jointe à un nom qui la contient déjà (`ExpenseSheet.tsx:284`) ; (b) l'arrondi suisse à
+  5 centimes du total (170,21 → 170,20) traité en écart bloquant (`invoiceControls.ts`, `somme-ecart` exact au centime) ; (c) le port
+  rangé comme un article (corrigé par p3c-port, D258, pas encore en ligne) ; (d) 27 s côté serveur, dont 19,6 s pour la troisième
+  lecture 3.8 lancée par le désaccord des deux premières. Décisions du pilote, réversibles, dans la borne de D260 : (a) et (c) entrent
+  dans l'état déployé ce soir (client seul) ; (b) et (d) touchent la fonction de lecture : au banc demain (skill `banc-lecture`, la
+  pièce entre au banc), puis un déploiement de `aiTask` sur son accord. Défauts D261a à D261c.
+- D260 (l'utilisateur, 01.11, nuit) : « À 60 jusqu'à 65 hebdo, stop les nouvelles tâches et met dans un état stable et deploye. Les
+  choix seront fait demain ». Accord de déploiement, pour cet état seul. Lecture étroite du pilote (L01) :
+  (1) à 60 % de l'hebdo (57 % à la consigne), aucune tâche neuve : ni tri ni page de la passe 2 rénovation, ni p3c-finances, ni
+  reprise TVA ;
+  (2) ce qui est en vol se finit et se vérifie : p3c-port-b (rejeu des GATES, diff, captures), la passe 2 rénovation (rendus gardés
+  pour demain, sans tri) ;
+  (3) l'état stable est l'écran Nouvelle dépense p3c-3 avec le port (D248, D249, D258) et ses corrections, commité, puis déployé en
+  **hébergement seul** depuis `%TEMP%/deploy-hosting-qr` (D255), tests visés (D236), avant 65 % ; ni fonctions, ni règles, ni push ;
+  (4) s'il n'est pas stable à temps (GATES rouges, régression), rien n'est déployé et la version en ligne reste celle de D255.
 - D259 (le brasseur, 01.11, nuit ; D250) : sur u3 (la bouteille de TVA), « un peu enfantin j'aime assez bien, après pas convaincu
   vraiment du design. Mais avoir une vrai vu comme ça c'est top », puis « et la partie maron ? Ni vraiment combien je gagne ? » ; les
   outils de prix et de prédiction de vente sont « pour après ». Son besoin d'abord : « outil de prédictions, vu d'ensemble,

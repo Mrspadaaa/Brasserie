@@ -128,6 +128,10 @@ describe('contredit : le désaccord côte à côte, sans rien changer sans lui',
     expect(screen.getByRole('button', { name: 'lu sur la page 110,04' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: 'QR-facture 110,40' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '1 Total' })).toBeInTheDocument();
+    // z2 : « ① Total » est une TUILE de la rangée des tuiles (même rangée que « Règlement »), pas un chip isolé au-dessus (verdict p3c-port, point 8).
+    const rangee = document.querySelector('[data-dp="tuile-paye"]')!.parentElement!;
+    expect(rangee.contains(screen.getByRole('button', { name: '1 Total' }))).toBe(true);
+    expect(screen.getByRole('button', { name: '1 Total' }).className).toMatch(/min-h-\[42px\]/);
   });
   it('sans geste, rien n’a changé tout seul ; « Confirmer » reste actif, et seule la règle de la base (détail des lignes = total) parle : le QR ne bloque rien', async () => {
     await ouvrir();
@@ -164,10 +168,10 @@ describe('contredit : le désaccord côte à côte, sans rien changer sans lui',
   });
   it('la preuve dit l’écart de la somme (« 110,40 ≠ 110,04 ») et le statut n’est pas « vérifiée »', async () => {
     await ouvrir();
-    fireEvent.click(screen.getByRole('button', { name: 'Détails de la lecture' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Lecture à confirmer|^Corrections|^Vérification incomplète/ }));
     const preuve = screen.getByRole('region', { name: 'Preuve de la lecture' });
     expect(preuve.textContent).toContain('110,40 ≠ 110,04');
-    expect(preuve.textContent).not.toContain('Lecture vérifiée');
+    expect(screen.queryByRole('button', { name: /^Lecture vérifiée/ })).toBeNull();
   });
 });
 
@@ -210,7 +214,7 @@ describe('partiel, illisible, sans, non vérifié', () => {
   });
   it('sans sceau, le bandeau de la base est inchangé (pas de grille)', async () => {
     await open({ statut: 'non-verifie', motif: 'x' });
-    expect(document.querySelector('[data-dp="bandeau"]')!.className).toContain('space-y-1');
+    expect(document.querySelector('[data-dp="bandeau"]')!.className).toMatch(/space-y-/); // « space-y-1 » devenu « space-y-[3px] » (tête compacte de la maquette) : la même chose est vérifiée, un bandeau en pile et non en grille
     expect(document.querySelector('[data-dp="bandeau"]')!.className).not.toContain('grid');
   });
 });

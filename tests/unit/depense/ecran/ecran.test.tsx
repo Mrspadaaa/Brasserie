@@ -39,24 +39,30 @@ afterEach(cleanup);
 describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
   it('les chips sont les points typés qui pèsent, l’argent d’abord ; le statut est « à confirmer » ; rien n’est écrit', async () => {
     const view = await lire();
-    const chips = Array.from(view.container.querySelectorAll('[data-dp-chip]')).map(c => c.getAttribute('aria-label') ?? c.textContent ?? '');
+    // Un nom par rôle (D6) : `data-dp-chip` = une chip qu'on touche (tuile, ChipsBar) ; `data-dp-rond` = le rond numéroté d'un compte (non cliquable, même numéro).
+    // Les ronds précèdent les tuiles dans le DOM : les points se lisent triés par leur numéro (l'ordre de risque), et ce numéro doit courir de 1 à n sans trou.
+    const chips = Array.from(view.container.querySelectorAll('[data-dp-chip],[data-dp-rond]')).map(c => c.getAttribute('aria-label') ?? c.textContent ?? '').sort((a, b) => Number.parseInt(a, 10) - Number.parseInt(b, 10));
+    const numeros = Array.from(new Set(chips.map(c => Number.parseInt(c, 10))));
+    expect(numeros).toEqual(numeros.map((_, i) => i + 1));
+    expect(view.container.querySelectorAll('[data-dp-chip][role="img"]')).toHaveLength(0); // aucun rond sous le nom d'une chip
     // C12 : les tuiles TVA et Payé portent les numéros 1 et 2 ; les chips suivantes ont les libellés de la maquette.
     expect(chips[0]).toMatch(/^1\s*TVA/);
     expect(chips[1]).toMatch(/^2\s*Règlement/);
     expect(chips.some(c => /Sabro\S* unité/.test(c))).toBe(true);
     expect(chips.some(c => /mouture ×5 \+1,50/.test(c))).toBe(true);
     expect(chips.some(c => /Target α/.test(c))).toBe(true);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
     expect(view.container.textContent).not.toMatch(/assujetti/i);
     expect(state.saved).not.toHaveBeenCalled();
   });
   it('la pastille-mot dit l’effet au stock (« +6 kg », « unité à préciser ») ; aucune pastille sur la mouture', async () => {
     const view = await lire();
     const lignes = Array.from(view.container.querySelectorAll('[data-purchase-line]')) as HTMLElement[];
+    const ligneId = (id: string) => view.container.querySelector('[data-dp-ligne="' + id + '"]') as HTMLElement; // R1 : par id
     expect(lignes).toHaveLength(23);
-    expect(within(lignes[0]).getByText('+6 kg')).toBeInTheDocument();
-    expect(lignes[1].querySelector('[data-dp-pastille]')).toBeNull();
-    expect(within(lignes[19]).getAllByText(/unité à préciser/).length).toBeGreaterThan(0);
+    expect(within(ligneId('line-1')).getByText('+6 kg')).toBeInTheDocument();
+    expect(ligneId('line-2').querySelector('[data-dp-pastille]')).toBeNull();
+    expect(within(ligneId('line-20')).getAllByText(/unité à préciser/).length).toBeGreaterThan(0);
   });
   it('l’interrupteur « Mettre en stock » écrit none / existing, jamais new, et son état se lit', async () => {
     await lire();

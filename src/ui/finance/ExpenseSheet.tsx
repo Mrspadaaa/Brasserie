@@ -27,15 +27,24 @@ import { lireQrDuFichier,type ResultatQr } from '../../services/qrLecture';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
-import { chipsDeLecture,compteLiens,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { chipsDeLecture,compteLiens,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { millingParentIndex,isMillingSurcharge } from '../../services/purchaseEntry';
+import { contexteDeArticle } from '../../services/stockLineMatching';
 import { vueQr,resumeQr,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
 import { Sceau,SansQr,DuelTotal,TemoinSomme,BoutonPhotoQr,FicheQr } from '../depense/Qr';
 import { articleNeufDe,ligneDeBrouillon,type ArticleNeuf } from '../../domain/stock/articleNeuf';
 import { nomDeFiche,type Catalogues } from '../../domain/stock/fiche';
 import { donneesDeLigne,nomsPris,pliee,type MembreVirtuel } from '../../services/stockLineMatching';
-import { ChipsBar,BandeCollante } from '../depense/Verdict';
+import { ChipsBar,TITRES } from '../depense/Verdict';
 import { InvoiceScanReview } from './InvoiceScanReview';
-import { LigneTicket,Interrupteur } from '../depense/Ticket';
+import { Interrupteur } from '../depense/Ticket';
+import { Entete,Justificatif } from '../depense/Entete';
+import { Pied,type BoutonPied } from '../depense/Pied';
+import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
+import { Liste } from '../depense/Liste';
+import { LigneP3c } from '../depense/Ligne';
+import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
+import { bandes as calculerBandes,groupeDe,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,type GroupeCle,type LigneBande } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
 import type { ApercuDepense } from '../depense/types';
 
@@ -49,7 +58,10 @@ const money=(n:number)=>formatCHF(Math.round(n*100));
 const newLine=(intent='expense'):PurchaseLineDraft=>({id:crypto.randomUUID(),description:'',kind:intent==='equipment'?'equipment':'ingredient',unit:'',stockAction:'none',equipmentAction:intent==='equipment'?'new':'none'});
 const scanKind=(kind:ScannedLineKind):PurchaseLineDraft['kind']=>kind==='stock'?'ingredient':kind==='unknown'?'other':kind;
 const button='min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors';
-const dayShortcuts=[{label:'Hier',offsetDays:-1},{label:"Aujourd’hui",offsetDays:0},{label:'Demain',offsetDays:1}];
+// D262b : « La date exacte est rarement important. Le mois l'est plus. »
+// Le paiement garde « Hier · Aujourd’hui · Demain » (lecture étroite de D262b : sa capture visait la date de l’achat).
+const paymentShortcuts=[{label:'Hier',offsetDays:-1},{label:"Aujourd’hui",offsetDays:0},{label:'Demain',offsetDays:1}];
+const dayShortcuts=[{label:"Aujourd’hui",offsetDays:0},{label:'Mois passé',offsetDays:0,offsetMonths:-1},{label:'Mois suivant',offsetDays:0,offsetMonths:1}];
 /** Une date `JJ.MM.AAAA` qui existe au calendrier (31.02 n'en est pas une). */
 const dateValide=(swiss:string):boolean=>{const iso=toIsoDate(swiss);if(!iso)return false;const t=new Date(`${iso}T00:00:00Z`);return !Number.isNaN(t.getTime())&&t.toISOString().slice(0,10)===iso;};
 const uncertainClass='rounded-control border border-attention/50 bg-attention/5 p-2';
@@ -107,6 +119,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),queuedRef=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
   const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null);
   const manuallyClassified=useRef(new Set<string>());
+  /* p3c-3 : le plateau que le brasseur a ouvert ou fermé (par id) : il survit au changement de bande d'une ligne (la rangée est remontée ailleurs). */
+  const ouvertesRef=useRef(new Map<string,boolean>());
   /* Lignes dont l'article de stock vient de la lecture : une proposition, montrée comme telle jusqu'au choix du brasseur. */
   const proposedStock=useRef(new Set<string>());
   /* L'article proposé par la lecture pour chaque ligne : l'interrupteur « oui » le repose explicitement (jamais l'ancien `stockRef` resté dans la ligne). */
@@ -129,7 +143,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [similarState,setSimilarState]=useState<{id:string;choix:'same'|'other'}|null>(null);
   /* dp-doublon : l'id de la dépense dont ce fichier est l'original (même empreinte) : dit sans lecture ; « Lire quand même » le lève. */
   const [deja,setDeja]=useState<string|null>(null);
-  const [payeForme,setPayeForme]=useState(false),[tableauMoutures,setTableauMoutures]=useState(false),[laissees,setLaissees]=useState(false);
+  const [payeForme,setPayeForme]=useState(false),[laissees,setLaissees]=useState(false);
+  /* p3c-3 : états d'écran seulement (rien n'est écrit) : l'ordre des lignes, le filtre des comptes, les lignes en éclair, le panneau du justificatif, le tiroir du port, la preuve visée. */
+  const [ordre,setOrdre]=useState<'cat'|'papier'>('cat'),[filtre,setFiltre]=useState<{mot:string;ids:string[]}|null>(null),[garde,setGarde]=useState<string[]>([]),[justifOuvert,setJustifOuvert]=useState(false),[portOuvert,setPortOuvert]=useState(false),[viseePreuve,setViseePreuve]=useState(false);
   const [readCount,setReadCount]=useState(0);
   const [driveAuthError,setDriveAuthError]=useState(false);
   const [driveTick,setDriveTick]=useState(0);
@@ -137,7 +153,6 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [driveVerifie,setDriveVerifie]=useState(()=>Boolean(apercu));
   const [reviewedFields,setReviewedFields]=useState<string[]>([]);
   const [panel,setPanel]=useState<'tva'|'paye'|null>(null);
-  const [preuveOuverte,setPreuveOuverte]=useState(false);
   /* z2 (D246) : le QR-facture lu dans le téléphone. `undefined` : aucune lecture lancée ; `null` : elle court ; sinon son résultat. Rien n'est écrit : le contrôle vit dans l'écran. */
   const [qrRes,setQrRes]=useState<ResultatQr|null|undefined>(undefined);
   /* Le choix du brasseur devant un total contredit : `lu` (la page) ou `qr`. Le champ ne change qu'à ce geste. */
@@ -220,8 +235,18 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     else if(message.includes('doublon'))selector='#purchase-duplicate button';
     else if(message.startsWith('Chaque ligne')&&simplePurchase)selector=draft.description.trim()?'#purchase-total':'#purchase-description';
     if(selector)return root.querySelector<HTMLElement>(selector);
-    const index=draft.lines.findIndex(line=>message.startsWith(line.description+' :'));
-    const line=index>=0?root.querySelectorAll<HTMLElement>('[data-purchase-line]')[index]:null;
+    /* p3c-port (R1, P18) : une ligne se retrouve par son id, jamais par son rang dans le DOM (bandes, moutures au plateau du malt, port au tiroir, filtre). */
+    const parId=(id:string)=>root.querySelector<HTMLElement>(`[data-dp-ligne="${id}"]`);
+    const found=draft.lines.find(l=>l.description.trim()&&message.startsWith(l.description+' :'));
+    /* Les messages génériques n'identifient aucune ligne : ils mènent au premier champ « Montant ligne n » (ou « Libellé ligne n ») absent ou invalide, par id. */
+    if(!found&&(message.startsWith('Chaque ligne')||message.startsWith('Une remise')||message.startsWith('Le détail des lignes'))){
+      const faux=(l:PurchaseLineDraft)=>l.amount===undefined||!Number.isFinite(l.amount)||Math.abs(l.amount*100-Math.round(l.amount*100))>1e-6||(l.kind==='discount'?l.amount>0:l.amount<0);
+      const i=draft.lines.findIndex(l=>!l.description.trim()||faux(l));
+      if(i>=0){const l=draft.lines[i];return parId(l.id)?.querySelector<HTMLElement>(`[aria-label="${l.description.trim()?'Montant':'Libellé'} ligne ${i+1}"]`)??null;}
+      return root.querySelector<HTMLElement>('#purchase-total');
+    }
+    const index=found?draft.lines.indexOf(found):-1;
+    const line=found?parId(found.id):null;
     if(line){
       if(message.includes('quantité'))return line.querySelector<HTMLElement>('[aria-label^="Quantité ligne"]');
       if(message.includes('article de stock'))return line.querySelector<HTMLElement>('[role="combobox"]');
@@ -229,13 +254,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(message.includes('convertit')||message.includes('unité à préciser'))return line.querySelector<HTMLElement>('[aria-label^="Unité ligne"]');
       return line.querySelector<HTMLElement>('select');
     }
-    return root.querySelector<HTMLElement>('[data-purchase-lines] summary');
+    return root.querySelector<HTMLElement>('[data-purchase-lines] summary')??root.querySelector<HTMLElement>('[data-dp="liste"]');
   };
   const focusIssue=(message:string)=>{
     let target=issueTarget(message);
     /* D233 : la date du paiement n'est plus un champ par défaut ; une erreur qui la vise la fait apparaître avant d'y mettre le focus. */
     if(!target&&/paiement|échéance/.test(message)){flushSync(()=>{setPanel('paye');setPayeForme(true);});target=issueTarget(message);}
     if(!target){errorBox.current?.focus();return;}
+    /* p3c-port : la cible peut être masquée par le filtre ou rangée dans le tiroir du port : le filtre est levé, le tiroir ouvert, avant le focus. */
+    if(target.closest('[hidden]'))flushSync(()=>setFiltre(null));
+    if(target.closest('[data-dp="port-tiroir"]'))flushSync(()=>setPortOuvert(true));
     for(let ancestor=target.parentElement;ancestor&&ancestor!==form.current;ancestor=ancestor.parentElement){
       if(ancestor instanceof HTMLDetailsElement)ancestor.open=true;
     }
@@ -256,7 +284,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const total=invoiceTotalProposal(result);
     const stockItems=[...stocks.rawMaterials,...stocks.cleaning];
     proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
-    const lines=result.items.map(item=>({id:item.id,description:[item.name,item.variant].filter(Boolean).join(' · '),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',item.evidence].filter(Boolean).join(' · ')})).map(line=>{
+    const lines=result.items.map(item=>({id:item.id,description:libelleDeLigne(item.name,item.variant),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',item.evidence].filter(Boolean).join(' · ')})).map(line=>{
       /* S1 : une proposition, jamais une écriture. Le libellé brut reste la description et l'unité imprimée reste celle de la ligne
          (jamais réécrite, D213) ; ce que l'identité a lu (α, récolte, poids du sachet) va dans l'extrait, avec sa source. */
       const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit:line.unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind},stockItems):undefined;
@@ -465,12 +493,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(chip.source==='paiement'){flushSync(()=>setPanel('paye'));viser(q('[data-dp="panneau-paye"]'));return;}
     const id=chip.source==='mouture'?mouturesPropositions[0]?.lineId:ligneDe(chip);
     const el=id?q(`[data-dp-ligne="${id}"]`):null;
-    if(el){const d=el.querySelector('details');if(d)d.open=true;viser(el);return;}
+    if(el){
+      if(el.closest('[hidden]'))flushSync(()=>setFiltre(null));
+      if(el.closest('[data-dp="port-tiroir"]'))flushSync(()=>setPortOuvert(true));
+      const d=el.querySelector('details');if(d)d.open=true;viser(el);return;
+    }
     if(chip.codes.includes('date-absente')&&viser(q('[data-purchase-date]'),{focus:q('[data-purchase-date] input[type="date"]')}))return;
     if(chip.codes.some(c=>c==='somme-ecart'||c==='somme-incomplete'||c==='total-absent')){const champ=q('#purchase-total');if(viser(champ,{focus:champ,block:'center'}))return;}
-    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-non-rapprochees')&&viser(q('[data-purchase-lines]')))return;
+    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-non-rapprochees')&&viser(q('[data-dp="liste"]')??q('[data-purchase-lines]')))return;
     /* Sans cible propre : la preuve de la lecture, ouverte et amenée à l'écran. */
-    flushSync(()=>setPreuveOuverte(true));viser(q('[data-dp="preuve"]'));
+    flushSync(()=>setViseePreuve(true));viser(q('[data-dp="preuve"]'));setTimeout(()=>{if(mounted.current)setViseePreuve(false);},1600);
   };
   const remarques=result?[...new Set([...result.issues,...(result.review?.findings??[]),...result.items.flatMap(item=>item.ambiguity?[`${item.name||'Article'} : ${item.ambiguity}`]:[])].map(p=>p.trim()).filter(Boolean))].filter(p=>!(points??[]).some(pt=>pt.message===p)):[];
   const driveOk=apercu?apercu.drive==='ok':draft.proofDataUrl?FirebaseAuthService.hasDriveAccess():true;void driveTick;
@@ -499,8 +531,24 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const tailleMo=(()=>{const o=attachment?.size||apercu?.fichier.size;return o?Math.round(o/1e5)/10:0;})();
   const nUnite=shownErrors.filter(m=>m.includes('unité à préciser')).length;
   const enSauvegarde=saving&&!pendingId;
-  const totalField=<NumberInput id="purchase-total" fractionDigits={2} aria-label="Total TTC en CHF" aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder="0,00" className={`${inputClass} !text-[32px] !leading-tight font-mono font-semibold tabular-nums min-h-10 !w-40 !border-0 !border-b !border-dotted !bg-transparent !px-0${qrContredit&&qrChoix===null?' !border-b-2 !border-attention !text-attention':''}`}/>;
-  const ticket=(simple:boolean)=>draft.lines.map((line,index)=>{
+  const totalField=<NumberInput id="purchase-total" fractionDigits={2} aria-label="Total TTC en CHF" aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder="0,00" className={`${inputClass} !text-[32px] !leading-[1.05] font-mono font-semibold tabular-nums !min-h-0 !h-[34px] !py-0 !w-[7ch] min-w-0 !border-0 !border-b !border-dotted !bg-transparent !px-0${qrContredit&&qrChoix===null?' !border-b-2 !border-attention !text-attention':''}`}/>;
+  /* ------- p3c-3 : l'ensemble de lignes affiché (R2), le port (P5), les groupes (P10), le filtre ------- */
+  const port=lignesDePort(draft.lines);
+  const lignesAff=draft.lines.filter(l=>!port.has(l.id));
+  const portTexte=(()=>{const c=portCents(draft.lines,port);return c===null?null:fr2c(c);})();
+  const parentIdxDe=(i:number)=>i>=0&&i<draft.lines.length?millingParentIndex(draft.lines,i):-1;
+  const contexteLigne=(line:PurchaseLineDraft)=>{const a=articleDe(line);return a?contexteDeArticle(a):donneesDeLigne(ligneDeBrouillon(line,draft.vendor)).contexte;};
+  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i);return groupeDe(contexteLigne(draft.lines[p>=0?p:i]));};
+  const numeros=numerosPapier(draft.lines,port);
+  const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
+  const douteuxIds=new Set<string>();
+  const basculeMouture=(id:string,liee:boolean)=>{if(liee)updateLine(id,{surchargeOf:undefined});else patch({lines:confirmMillingSurcharge(draft.lines,id)});};
+  /* Le tableau « lu → avec mouture » (C16, R1) : monté au plateau du malt de la première mouture proposée ; il ne lie rien (« Laisser en service » non plus). */
+  const tableauEl=mouturesPropositions.length&&!laissees?<div data-dp="tableau-moutures" className="w-full rounded-panel border-2 border-cave-50/80 p-2 space-y-1 text-sm">
+      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 gap-y-0.5 text-xs text-cave-400"><span>malt</span><span>lu /kg</span><span/><span>avec mouture</span>
+        {mouturesPropositions.map(p=>{const i=draft.lines.findIndex(l=>l.id===p.parentId),malt=draft.lines[i],lu=malt?.unitPrice,apres=prixMouture(i,false);return <React.Fragment key={p.lineId}><span className="text-cave-200">{nomAffiche(malt.description,articleDe(malt))}</span><span className="font-mono text-cave-200">{lu===undefined?'—':eur(Math.round(lu*100))}</span><span>→</span><span className="font-mono text-cave-50">{apres?`${apres.replace('≈ ','')} /${malt.unit}`.replace(`/${malt.unit} /${malt.unit}`,`/${malt.unit}`):'non relié : pas de prix'}</span></React.Fragment>;})}</div>
+      <div className="flex gap-1.5"><button type="button" onClick={()=>setLaissees(true)} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-200">Laisser en service</button></div></div>:null;
+  const construire=(line:PurchaseLineDraft,index:number,simple:boolean):React.ReactNode=>{
     const mp=mouturesPropositions.find(p=>p.lineId===line.id),parentIdx=parentDeLaMouture(draft.lines,index),neuf=neufParLigne.get(line.id),nomRefuse=line.stockAction==='new'&&Boolean(line.articleName?.trim())&&nomPrisParAutre(line.id,line.articleName!);
     const isMouture=Boolean(mp)||parentIdx>=0;
     const fields=<>
@@ -523,32 +571,43 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       proposedStock.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'existing',stockRef:''});
       requestAnimationFrame(()=>{const el=form.current?.querySelector<HTMLElement>(`[data-dp-ligne="${line.id}"]`),d=el?.querySelector('details');if(d)d.open=true;el?.scrollIntoView?.({block:'start',behavior:'smooth'});el?.querySelector<HTMLElement>('[aria-label="Article"]')?.focus?.();});
     };
-    const tableau=premiereMouture&&tableauMoutures?<div data-dp="tableau-moutures" className="w-full rounded-panel border-2 border-cave-50/80 p-2 space-y-1 text-sm">
-      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-2 gap-y-0.5 text-xs text-cave-400"><span>malt</span><span>lu /kg</span><span/><span>avec mouture</span>
-        {mouturesPropositions.map(p=>{const i=draft.lines.findIndex(l=>l.id===p.parentId),malt=draft.lines[i],lu=malt?.unitPrice,apres=prixMouture(i,false);return <React.Fragment key={p.lineId}><span className="text-cave-200">{nomAffiche(malt.description,articleDe(malt))}</span><span className="font-mono text-cave-200">{lu===undefined?'—':eur(Math.round(lu*100))}</span><span>→</span><span className="font-mono text-cave-50">{apres?`${apres.replace('≈ ','')} /${malt.unit}`.replace(`/${malt.unit} /${malt.unit}`,`/${malt.unit}`):'non relié : pas de prix'}</span></React.Fragment>;})}</div>
-      <div className="flex gap-1.5"><button type="button" onClick={()=>{setTableauMoutures(false);patch({lines:mouturesPropositions.reduce((acc,x)=>confirmMillingSurcharge(acc,x.lineId),draft.lines)});}} className="min-h-7 rounded-control border border-ebc-straw bg-ebc-straw px-2 text-sm font-semibold text-cave-950">Rattacher les {mouturesPropositions.length}</button><button type="button" onClick={()=>{setLaissees(true);setTableauMoutures(false);}} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-200">Laisser en service</button></div></div>:null;
     const correction=precisIds.has(line.id)?<><span className="text-xs text-attention">Unité imprimée illisible :</span>{['g','kg','Stk'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
       :(voisin||existant)&&line.stockAction==='none'?<><span className="inline-flex items-center gap-1 text-xs text-cave-400 opacity-80"><Package size={14}/>{existant?existant.name:etiquetteVoisin(regle!,voisin!)}</span>{existant
         ?<button type="button" onClick={()=>relier(existant.ref)} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">Relier à « {existant.name} »</button>
         :regle?.cas==='ambigu'?<span data-dp-ambigu className="text-xs text-attention">plusieurs articles « {voisin!.name} » : choisis</span>
         :<span data-dp-creer className="inline-flex items-center gap-1.5 whitespace-nowrap"><button type="button" aria-label={`Créer « ${neuf?.name??line.description.trim()} »`} onClick={()=>{proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">{regle?.cas==='neuf'&&regle.motif==='origine'&&neuf?.origin?`Créer ${neuf.origin}`:neuf?.name??line.description.trim()}</button><button type="button" aria-label="Choisir un autre article" title="Choisir un autre article" onClick={choisirAutre} className="min-h-7 min-w-7 rounded-control border border-cave-600 px-2 text-sm text-cave-200">⇄</button></span>}</>
       :line.stockAction==='none'&&regle?.cas==='inconnu'&&neuf?<button type="button" data-dp-creer aria-label={`Créer « ${neuf.name} »`} onClick={()=>{proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">Créer « {neuf.name} »</button>
-      :tableau;
-    return <LigneTicket key={`${readCount}-${line.id}`} id={line.id} index={index} description={line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article)} amount={line.amount} lien={isMouture?'mouture':lienDe(line)} pastille={line.stockAction==='new'&&neuf?.fiche&&neuf.nomFiche?`fiche ${neuf.nomFiche}${neuf.fiche.approchee?' · approchée':''}`:effetStock(line,article)}
-      conversion={article?conversionDe(line,article):undefined} quantite={line.quantity!==undefined?`${String(line.quantity).replace('.',',')} ${line.unit}`.trim():'—'} alpha={alphaLu} ebc={ebcLu} pastilleAttention={line.stockAction==='new'&&Boolean(neuf?.fiche?.approchee)}
-      sr={`${line.description} ${status.meta} ${status.linked?`${status.proposed?'proposé : ':''}${status.linked}`:''}`} prixKg={kgPrix(index)} douteux={precisIds.has(line.id)||Boolean((voisin||existant)&&line.stockAction==='none')||Boolean(mp&&!laissees)} ouverte={Boolean(startsOpen(line))}
-      mouture={isMouture&&parent?{liee:parentIdx>=0,parent:parent.description.split(',')[0],onBascule:()=>{if(parentIdx>=0)updateLine(line.id,{surchargeOf:undefined});else patch({lines:confirmMillingSurcharge(draft.lines,line.id)});},onTableau:premiereMouture?()=>setTableauMoutures(o=>!o):undefined,tous:premiereMouture&&mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:undefined}:undefined}
-      correction={correction}>{fields}</LigneTicket>;
-  });
-  const lignesBloc=<details data-purchase-lines {...(scan?.ok?{open:true}:{'data-purchase-options':true,open:initialIntent==='equipment'})} className="order-2 border-t border-cave-800 py-1 lg:col-start-2 lg:row-start-1">
-    {scan?.ok?<summary className="list-none cursor-pointer min-h-7 flex flex-wrap items-center gap-x-2 text-xs text-cave-200">Lignes de la facture · {draft.lines.length}{proposedCount?<span className="text-attention">{proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}{hints.items?<span className="text-attention">À vérifier</span>:null}</summary>
-    :<summary className="list-none relative pr-6 min-h-7 cursor-pointer text-sm text-cave-200"><ChevronDown size={14} className="absolute right-0 top-1.5"/><span className="block">Articles, stock et matériel · {draft.lines.length}{hints.items?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</span><span className="block text-xs text-cave-400 mt-1">{[...new Set(draft.lines.map(line=>kinds.find(kind=>kind.value===line.kind)?.label))].join(' · ')}</span>{linkedSummary?<span className="block mt-1 text-cave-200">{linkedSummary}{proposedCount?<span className="text-attention"> · {proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}</span>:null}</summary>}
-    <ScanHint field="items" message={hints.items}/>
-    <div className="space-y-2 pt-2">{!scan?.ok?<div className="flex justify-between gap-2 items-center"><h3 className="font-semibold text-cave-50">Ce que tu achètes</h3>{draft.lines.length>1?<button type="button" className="text-xs text-cave-400 min-h-7" onClick={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>Regrouper en une dépense</button>:null}</div>:null}
-      {ticket(simplePurchase)}
-      <div className="flex gap-2"><button type="button" disabled={draft.lines.length>=35} onClick={()=>patch({lines:[...draft.lines,newLine()]})} className={`${button} border-dashed border-cave-600 text-cave-200 flex-1 flex justify-center items-center gap-2`}><Plus size={17}/>Ajouter une ligne</button>{scan?.ok&&draft.lines.length>1?<button type="button" className={`${button} border-dashed border-cave-600 text-cave-200`} onClick={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>Regrouper en une dépense</button>:null}</div>
-      {draft.lines.length>1?<p className={`text-sm text-right ${Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005?'text-attention':'text-cave-400'}`}>Détail : {money(draft.lines.reduce((sum,line)=>sum+(line.amount||0),0))} / {money(draft.amount||0)}</p>:null}
-    </div></details>;
+      :null;
+    /* ------- la rangée p3c-3 : tout arrive calculé à LigneP3c (présentation seulement) ------- */
+    const uniteLisible=isReadableUnit(line.unit);
+    const bis=!isMouture&&line.stockAction==='none'&&Boolean(voisin||existant);
+    const lien:LienStock=isMouture?'mouture':precisIds.has(line.id)?'precis':bis?'bis':lienDe(line);
+    const douteux=precisIds.has(line.id)||Boolean((voisin||existant)&&line.stockAction==='none')||Boolean(mp&&!laissees);
+    if(douteux)douteuxIds.add(line.id);
+    const enfantIdx=!isMouture&&parentIdxDe(index+1)===index?index+1:-1,enfant=enfantIdx>=0?draft.lines[enfantIdx]:undefined;
+    const nomParent=parent?parent.description.split(',')[0]:'';
+    const pk=prixMouture(index,true);
+    const pastille=line.stockAction==='new'&&neuf?.fiche&&neuf.nomFiche?`fiche ${neuf.nomFiche}${neuf.fiche.approchee?' · approchée':''}`:effetStock(line,article);
+    const attention=line.stockAction==='new'&&Boolean(neuf?.fiche?.approchee);
+    const cestMoutureEnPastille=ordre==='cat'&&Boolean(scan?.ok);
+    const pastilleMouture=enfant&&cestMoutureEnPastille?(()=>{const liee=enfant.surchargeOf===line.id;const m=enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100));const nm=line.description.split(',')[0];return {id:enfant.id,montant:m,liee,parent:nm,aria:`Mouture ${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${enfant.unit} × `}${enfant.unitPrice===undefined?'':fr(enfant.unitPrice)} = ${m}${liee?`, rattachée à ${nm} : détacher`:` : rattacher à ${nm}`}`,onBascule:()=>basculeMouture(enfant.id,liee)};})():undefined;
+    const plateauEl=<>
+      <p className="text-xs text-cave-400">imprimé ligne {index+1} · <span className="font-mono">{line.description||'—'}</span>{line.sourceReference?` · ${line.sourceReference}`:''}</p>
+      <p data-dp-stock className="text-xs text-cave-200">stock : {status.proposed?'proposé · ':''}{status.linked||'aucun mouvement de stock'}{pastille?<> <span data-dp-pastille className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span></>:null}</p>
+      {fields}
+      {line.id===mouturesPropositions[0]?.parentId?tableauEl:null}
+    </>;
+    return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
+      nom={isMouture?'mouture':sansAlphaDoublon(line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} groupe={groupeDeLigne(index)}
+      alpha={alphaLu} ebc={ebcLu} conversion={article?conversionDe(line,article):undefined} unitePrecis={precisIds.has(line.id)}
+      qte={{texte:line.quantity!==undefined?`${fr(line.quantity)} ${line.unit.trim()||'?'}`:'?',inconnue:!uniteLisible||line.quantity===undefined}}
+      prix={line.unitPrice!==undefined?prixImprime(line.unitPrice):'—'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
+      prixKg={pk?{texte:`✓ ${pk}`,aria:`${pk} avec mouture`}:undefined} pastilleMouture={pastilleMouture}
+      boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
+      douteux={douteux} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouvertesRef.current.has(line.id)?Boolean(ouvertesRef.current.get(line.id)):Boolean(startsOpen(line))}
+      fix={correction} plateau={plateauEl} moutureArticles={enfant&&cestMoutureEnPastille?construire(enfant,enfantIdx,false):undefined}
+      onToggle={surToggle}/>;
+  };
   const tvaLues=[...new Set((points??[]).filter(p=>p.code==='lectures-divergentes'&&/tva/i.test(p.champ)).flatMap(p=>(p.valeurs??[]).map(v=>v.valeur).filter((v):v is number=>typeof v==='number')))];
   const tvaPoint=(points??[]).find(p=>p.code==='tva-incoherente');
   const tvaDet=tvaPoint?.details??[];
@@ -562,9 +621,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const dateParDefaut=!scan?.ok&&!reviewedFields.includes('date')&&draft.paymentDateBasis!=='typed';
   const court=(date:string)=>date.replace(/^(\d{2}\.\d{2})\.\d{4}$/,(_m,jm)=>jm);
   const rond=(n:number|null,fait:boolean)=>n?<span className={`absolute left-1.5 top-1.5 inline-flex h-[18px] w-[18px] items-center justify-center rounded-full font-mono text-xs ${fait?'bg-hop text-cave-950':'border border-dashed border-attention text-attention bg-cave-950'}`}>{n}</span>:null;
-  const tuiles=<div className="grid grid-cols-2 gap-2">
-    {scan?.ok?<button type="button" data-dp="tuile-tva" data-dp-chip="TVA|" data-dp-fait={tvaRegle?'1':undefined} aria-expanded={panel==='tva'} onClick={()=>setPanel(panel==='tva'?null:'tva')} className={`relative min-h-[52px] rounded-panel border p-1.5 ${nTva?'pl-8':'pl-2'} text-left ${nTva&&!tvaRegle?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nTva,tvaRegle)}<span className="block text-xs text-cave-400">TVA</span><span className="block font-mono text-sm text-cave-50">{tvaLues.length>1?tvaLues.map((v,i)=><React.Fragment key={v}>{i?' · ':''}<b className={`font-semibold ${tvaRegle&&draft.sourceVatAmount!==v?'text-cave-400 line-through':''}`}>{fr2(v)}</b></React.Fragment>):draft.sourceVatAmount!==undefined?fr2(draft.sourceVatAmount):'—'}{tvaRegle?<small className="ml-1 text-xs text-cave-200">{draft.sourceVatAmount===undefined?'vide':'gardée'}</small>:null}</span></button>:<span/>}
-    <button type="button" data-dp="tuile-paye" data-dp-chip={nPaye?'paye':undefined} data-dp-fait={nPaye&&!payeSuppose?'1':undefined} aria-expanded={panel==='paye'} onClick={()=>setPanel(panel==='paye'?null:'paye')} className={`relative min-h-[52px] rounded-panel border p-1.5 ${nPaye?'pl-8':'pl-2'} text-left ${payeSuppose?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nPaye,!payeSuppose)}<span className="block text-xs text-cave-400">Règlement</span><span className="block text-sm text-cave-50">{draft.paymentStatus==='paid'?<span className="font-mono">Payé le {draft.paymentDate||'…'}</span>:draft.dueDate?<span className="font-mono">Échéance : {draft.dueDate}</span>:<span>À payer</span>}{payeSuppose?<small className="ml-1 text-xs text-attention">supposée</small>:null}{dateParDefaut&&draft.paymentStatus==='paid'?<small className="ml-1 text-xs text-cave-400">par défaut</small>:null}</span></button>
+  /* z2 : les chips du QR (« ① Total », « ① Date »…) sont des tuiles de CETTE rangée, avant TVA et Règlement ; flex-wrap : sur un écran étroit la dernière tuile passe dessous. */
+  const tuiles=<div className="flex flex-wrap items-stretch gap-1.5">
+    {chips.some(c=>c.source==='qr')?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={false} cacher={c=>c.source!=='qr'} enTuiles/>:null}
+    {scan?.ok?<button type="button" data-dp="tuile-tva" data-dp-chip="TVA|" data-dp-fait={tvaRegle?'1':undefined} aria-expanded={panel==='tva'} onClick={()=>setPanel(panel==='tva'?null:'tva')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nTva?'pl-8':'pl-2'} min-w-[80px] flex-1 basis-[80px] text-left ${nTva&&!tvaRegle?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nTva,tvaRegle)}<span className="block text-xs text-cave-400">TVA</span><span className="block font-mono text-sm text-cave-50">{tvaLues.length>1?tvaLues.map((v,i)=><React.Fragment key={v}>{i?' · ':''}<b className={`font-semibold ${tvaRegle&&draft.sourceVatAmount!==v?'text-cave-400 line-through':''}`}>{fr2(v)}</b></React.Fragment>):draft.sourceVatAmount!==undefined?fr2(draft.sourceVatAmount):'—'}{tvaRegle?<small className="ml-1 text-xs text-cave-200">{draft.sourceVatAmount===undefined?'vide':'gardée'}</small>:null}</span></button>:null}
+    <button type="button" data-dp="tuile-paye" data-dp-chip={nPaye?'paye':undefined} data-dp-fait={nPaye&&!payeSuppose?'1':undefined} aria-expanded={panel==='paye'} onClick={()=>setPanel(panel==='paye'?null:'paye')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nPaye?'pl-8':'pl-2'} min-w-[156px] flex-1 basis-[156px] text-left ${payeSuppose?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nPaye,!payeSuppose)}<span className="flex items-center justify-between gap-1 whitespace-nowrap text-xs text-cave-400">Règlement{payeSuppose?<small className="text-xs text-attention">supposée</small>:null}{dateParDefaut&&draft.paymentStatus==='paid'?<small className="text-xs text-cave-400">par défaut</small>:null}</span><span className="block whitespace-nowrap text-[13px] text-cave-50">{draft.paymentStatus==='paid'?<span className="font-mono">Payé le {draft.paymentDate||'…'}</span>:draft.dueDate?<span className="font-mono">Échéance : {draft.dueDate}</span>:<span>À payer</span>}</span></button>
   </div>;
   const boutonPlein='min-h-7 rounded-control border border-ebc-straw bg-ebc-straw px-2.5 text-sm font-semibold text-cave-950';
   const panneaux=<div className="space-y-2">
@@ -580,49 +641,99 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <ScanHint field="paymentEvidence" message={hints.paymentEvidence}/>
       {draft.paymentStatus==='paid'?<p className="text-xs text-cave-200">Moyen · {({bank:'Compte bancaire / carte',cash:'Espèces',twint:'TWINT',other:'Autre'} as Record<string,string>)[draft.paymentMethod]??draft.paymentMethod}</p>:null}
       {payeSuppose?<div className="flex flex-wrap gap-1.5"><button type="button" onClick={()=>{patch({paymentDate:draft.paymentDate});setPanel(null);}} className={boutonPlein}>C’est la date</button><button type="button" onClick={()=>setPayeForme(true)} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Autre date</button></div>:null}
-      <div className={`${payeSuppose&&!payeForme?'hidden':'block'} space-y-2 pb-1`}>{draft.paymentStatus==='paid'?<>{dateSeparee?<DateField label="Date du paiement" value={draft.paymentDate} onChange={paymentDate=>patch({paymentDate})} shortcuts={dayShortcuts} monthShortcuts/>
-        :payeSuppose?null:<div data-dp="paye-suit" className="flex items-center gap-2"><span>Payé le <b className="font-mono font-medium text-cave-50">{draft.paymentDate||draft.date||'…'}</b></span><button type="button" onClick={()=>setPayeForme(true)} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Autre date</button></div>}<Field label="Moyen de paiement" htmlFor="purchase-payment-method"><select id="purchase-payment-method" className={inputClass} value={draft.paymentMethod} onChange={e=>patch({paymentMethod:e.target.value as any})}><option value="bank">Compte bancaire / carte</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field></>:<DateField label="Échéance (facultative)" value={draft.dueDate} onChange={dueDate=>patch({dueDate})} shortcuts={dayShortcuts} monthShortcuts/>}</div>
+      <div className={`${payeSuppose&&!payeForme?'hidden':'block'} space-y-2 pb-1`}>{draft.paymentStatus==='paid'?<>{dateSeparee?<DateField label="Date du paiement" value={draft.paymentDate} onChange={paymentDate=>patch({paymentDate})} shortcuts={paymentShortcuts} monthShortcuts/>
+        :payeSuppose?null:<div data-dp="paye-suit" className="flex items-center gap-2"><span>Payé le <b className="font-mono font-medium text-cave-50">{draft.paymentDate||draft.date||'…'}</b></span><button type="button" onClick={()=>setPayeForme(true)} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Autre date</button></div>}<Field label="Moyen de paiement" htmlFor="purchase-payment-method"><select id="purchase-payment-method" className={inputClass} value={draft.paymentMethod} onChange={e=>patch({paymentMethod:e.target.value as any})}><option value="bank">Compte bancaire / carte</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field></>:<DateField label="Échéance (facultative)" value={draft.dueDate} onChange={dueDate=>patch({dueDate})} shortcuts={paymentShortcuts} monthShortcuts/>}</div>
     </div></div>;
   const restantA_revoir=chips.filter(c=>!reglesSet.has(c.id)).map(c=>c.nom==='TVA'?`TVA ${draft.sourceVatAmount===undefined?'vide':`${fr2(draft.sourceVatAmount)} gardée`}`:c.source==='paiement'?'date de paiement supposée gardée':c.source==='mouture'?`${mouturesPropositions.length} moutures en service`:c.source==='voisin'?`${c.nom} non lié au stock`:c.codes.includes('unite-absente')?`${c.nom} : hors stock`:c.nom);
-  return <ModalShell open onClose={()=>{if(!busy&&!saving)onClose();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl">
-    <header className="min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0">
-      <h2 id={titleId} className="text-lg font-semibold text-cave-50 min-w-0 flex-1">{initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'}</h2>
-      {draft.proofDataUrl&&!busy?<button type="button" aria-label="Changer" title="Changer le fichier" disabled={saving||Boolean(pendingId)||Boolean(done)} onClick={()=>fileInput.current?.click()} className="min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-200 disabled:opacity-40"><FileText size={16}/></button>:null}
-      <button type="button" disabled={busy||saving} onClick={onClose} aria-label="Fermer" className="min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"><X size={16}/></button>
-    </header>
-    <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7">
-    {scan?.ok&&statut&&!attached?<BandeCollante cible={bandeauRef} racine={scroller} chips={chips} reglees={reglesSet} onAller={aller}/>:null}
-    {attempted&&shownErrors.length>0?<div id={validationId} role="alert" className="border border-alert-strong/40 rounded-control bg-alert-strong/5 p-2 text-sm text-alert-strong"><p className="font-medium">À corriger</p><ul>{shownErrors.map(message=><li key={message}><button type="button" onClick={()=>focusIssue(message)} className="min-h-7 text-left underline underline-offset-2">{message}</button></li>)}</ul></div>:null}
-    {proofSending?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Loader2 size={16} className="shrink-0 mt-0.5 animate-spin text-hop"/><span>{proofSending}</span></div>:null}
-    {error?<div ref={errorBox} tabIndex={-1} role="alert" className="rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line">{error}</div>:null}
-    {attached?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Check size={16} className="shrink-0 mt-0.5 text-hop"/><span>Justificatif rattaché à « {attached.description} » du {attached.date}. Aucune nouvelle dépense ni entrée en stock.{receipt?<> <ReceiptLine receipt={receipt}/></>:null}</span></div>:null}
-    {draft.proofDataUrl&&!busy&&!attached&&!apercu&&!dejaTx?<DriveConnection always={driveAuthError} onConnected={()=>{setDriveAuthError(false);setError('');setDriveTick(t=>t+1);}}/>:null}
-    <div className="space-y-2 pb-1" ref={form}>
-      <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
-      <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
-      <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)lancerQr(file);e.target.value='';}}/>
-      {!attachment&&!busy?showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:<section
-        aria-label="Justificatif de la dépense"
-        className={`py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors ${dropping?'border-ebc-straw bg-ebc-straw/10':'border-cave-700'}`}
-        onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}}
-        onDragLeave={()=>setDropping(false)}
-        onDrop={e=>{e.preventDefault();setDropping(false);const file=e.dataTransfer.files?.[0];if(file)void attach(file);}}
-      >
-        <button data-primary type="button" onClick={()=>fileInput.current?.click()} className="w-full min-h-8 rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center gap-2 text-[13px] font-semibold"><FileText size={16}/>Choisir le document</button>
-        {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
-        <p className="text-xs text-center text-cave-400">PDF ou image{coarse?'':', ou dépose le fichier ici'} · lecture automatique · 4 Mo max.</p>
-        {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
-      </section>:busy?<div data-dp="lecture" className="border-t border-cave-700 py-2 space-y-2">
-        <div className="flex items-center gap-2"><Loader2 size={18} className="animate-spin text-ebc-straw shrink-0"/><div className="min-w-0 flex-1"><p role="status" className="text-sm font-medium text-cave-50">Lecture et vérification…</p><p className="truncate font-mono text-xs text-cave-400">{attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}{(attachment?.size||apercu?.fichier.size)?` · ${fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo`:''}</p>{resumeQr(qrRes)?<p data-dp="qr-lecture" className="mt-0.5 break-words font-mono text-xs text-cave-200">{resumeQr(qrRes)}</p>:null}</div>{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0">{sceauQr}</div>:null}</div>{ficheQr}
-        <div className="grid grid-cols-2 gap-2 opacity-80"><div className="rounded-panel border border-cave-800 p-1.5"><span className="block text-xs text-cave-400">Règlement</span><span className="block text-sm text-cave-200">verrouillé pendant la lecture</span></div><div className="rounded-panel border border-cave-800 p-1.5"><span className="block text-xs text-cave-400">Pour quoi ?</span><span className="block text-sm text-cave-200">verrouillé pendant la lecture</span></div></div>
-        {[0,1,2,3,4].map(i=><div key={i} aria-hidden className="grid grid-cols-[24px_1fr_40px] items-center gap-2"><span className="h-5 w-5 rounded bg-cave-800"/><span className="space-y-1"><span className="block h-3 w-3/5 rounded-full bg-cave-800"/><span className="block h-2.5 w-1/3 rounded-full bg-cave-800"/></span><span className="h-3 rounded-full bg-cave-800"/></div>)}
-      </div>:dejaTx&&attachment?<PieceDejaSaisie tx={dejaTx} stocks={stocks} payments={FinanceService.getPayments?.()??[]} transactions={transactions} onLire={()=>void attach(attachment,true)}/>
-      :scan&&!scan.ok&&attachment?<div data-dp="erreur-lecture" className="flex flex-wrap items-center gap-1.5 border-t border-cave-700 py-2"><span className="min-w-0 flex-1 truncate text-xs text-cave-400">{attachment.name}</span>
-        <button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>void attach(attachment)} className={boutonPlein}>Relire</button>
-        <button type="button" onClick={()=>{const champ=form.current?.querySelector<HTMLElement>('#purchase-total');champ?.focus();champ?.scrollIntoView?.({block:'center'});}} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Saisir à la main</button></div>:null}
-      {showForm&&!busy&&!attached&&!dejaTx?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 lg:grid lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-x-5 lg:items-start">
-      <div className={`contents lg:col-start-1 lg:row-start-1 lg:block lg:sticky lg:top-0 ${done?'lg:max-h-[calc(100vh-12.5rem)]':'lg:max-h-[calc(100vh-9.5rem)]'} lg:space-y-2 lg:self-start lg:overflow-y-auto`}>
-      <div className="order-1 flex flex-col gap-2">
+  /* ------- p3c-3 : un seul plateau ouvert à la fois (les `details` ne sont pas contrôlés : le DOM les ouvre, ceci ferme les autres) ------- */
+  const surToggle=(id:string,ouvert:boolean)=>{
+    ouvertesRef.current.set(id,ouvert);
+    if(!ouvert)return;
+    const cible=form.current?.querySelector(`[data-dp-ligne="${id}"]`);
+    form.current?.querySelectorAll<HTMLDetailsElement>('details[data-dp-plateau][open]').forEach(d=>{if(d.closest('[data-dp-ligne]')!==cible&&!(cible&&d.contains(cible)))d.open=false;});
+  };
+  const ligneEls=new Map<string,React.ReactNode>();
+  draft.lines.forEach((line,index)=>{ligneEls.set(line.id,construire(line,index,simplePurchase));});
+  /* Les bandes, la barre, les comptes : tous sur le même ensemble de lignes (R2). */
+  const ligneBandes:LigneBande[]=lignesAff.map(l=>{const i=draft.lines.indexOf(l),art=articleDe(l),cv=art?conversionDe(l,art):undefined,m=cv?/=\s*(\d+)\s*sachet/.exec(cv):null;return {id:l.id,groupe:groupeDeLigne(i),amount:l.amount,quantity:l.quantity,unit:l.unit,uniteLisible:isReadableUnit(l.unit),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined};});
+  const bandes=calculerBandes(ligneBandes);
+  const barre:ItemBarre[]=lignesAff.map(l=>({id:l.id,cents:l.amount===undefined?0:Math.round(l.amount*100),groupe:groupeDeLigne(draft.lines.indexOf(l)),ouvert:douteuxIds.has(l.id),nom:l.description}));
+  const centsAff=lignesAff.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
+  const papier=ordre==='papier'?{ids:lignesAff.map(l=>l.id),cents:centsAff,incomplet:lignesAff.some(l=>l.amount===undefined)}:null;
+  const voisinIds=new Set(chips.filter(c=>c.source==='voisin').map(c=>c.cible as string));
+  const categorie=(l:PurchaseLineDraft)=>isMillingSurcharge(l)?'mouture':precisIds.has(l.id)?'precis':l.stockAction==='none'&&voisinIds.has(l.id)?'bis':l.stockAction==='existing'&&l.stockRef?'relie':l.stockAction==='new'?'neuf':'aucun';
+  const rondDe=(c:Chip)=>({id:c.id,numero:chips.indexOf(c)+1,nom:c.nom,fait:reglesSet.has(c.id)});
+  const idsDe=(k:string)=>lignesAff.filter(l=>categorie(l)===k).map(l=>l.id);
+  const compte=(cle:string,mot:(n:number)=>string,lien:LienStock,rondsChips:Chip[],extra?:string):CompteItem=>{const ids=idsDe(cle),ronds=rondsChips.map(rondDe),m=mot(ids.length);return {cle,n:ids.length,mot:m,lien,ronds,fait:ronds.length>0&&ronds.every(r=>r.fait),ids,extra,actif:filtre?.mot===m};};
+  const comptesItems:CompteItem[]=[
+    compte('relie',n=>n>1?'reliés':'relié','relie',[]),
+    compte('neuf',n=>n>1?'nouveaux':'nouveau','neuf',[]),
+    compte('bis',()=>'bis','bis',chips.filter(c=>c.source==='voisin')),
+    compte('precis',()=>'unité ?','precis',chips.filter(c=>c.codes.includes('unite-absente'))),
+    compte('mouture',n=>n>1?'moutures':'mouture','mouture',chips.filter(c=>c.source==='mouture'),sommeMoutures>0?`+${eur(sommeMoutures)}`:undefined),
+    compte('aucun',()=>'sans stock','aucun',[]),
+  ];
+  const surCompte=(c:CompteItem)=>{
+    if(!c.ids.length)return;
+    if(filtre&&filtre.mot===c.mot){setFiltre(null);setGarde([]);return;}
+    setFiltre({mot:c.mot,ids:c.ids});setGarde(c.ids);setTimeout(()=>{if(mounted.current)setGarde([]);},1600);
+    requestAnimationFrame(()=>form.current?.querySelector('[data-dp="liste"]')?.scrollIntoView?.({block:'start'}));
+  };
+  const versListe=()=>{viser(form.current?.querySelector<HTMLElement>('[data-dp="liste"]'));};
+  const versLigne=(id:string)=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id});
+  /* La preuve (rangées chiffrées lues dans `controls` : rien d'affirmé sans contrôle). */
+  const ctl=result?.controls,lectures=result?.review?.readers;
+  const ecartTotalQr=qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined;
+  const rangees:Rang[]=result?[
+    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme des lignes',valeur:'non contrôlée'},
+    ctl?{ok:ctl.lines.failed===0&&ctl.lines.skipped===0&&ctl.lines.checked>0,texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length} lues`}:{ok:null,texte:'Quantité × prix',valeur:'non contrôlé'},
+    ...(lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:'Lectures',valeur:`${lectures} lectures`}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
+    ...((result.linesLost??0)>0?[{ok:false,texte:'Lignes non gardées',valeur:String(result.linesLost)}]:[]),
+  ]:[];
+  const corriges=[...new Set((result?.review?.correctedFields??[]).map(f=>f.startsWith('items')?'Articles':f))];
+  const maison=(c:Chip)=>c.nom==='TVA'||c.source==='paiement'||c.source==='qr'||c.source==='voisin'||c.source==='mouture'||c.codes.includes('unite-absente');
+  const courantIdx=chips.findIndex(c=>!reglesSet.has(c.id));
+  /* ------- le pied : le bouton principal garde tous les états d'aujourd'hui ------- */
+  const bouton:BoutonPied=done||attached?{texte:'Terminé',aria:'Terminé',icone:'check',disabled:false,onClick:onClose}
+    :dejaTx?{texte:onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer',aria:onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer',icone:onOpenExpense?'file':'x',disabled:false,onClick:()=>{onClose();onOpenExpense?.(dejaTx.id);}}
+    :sameChosen&&existing?{texte:attachable?(saving?'Rattachement…':'Rattacher le justificatif'):'Fermer sans rien enregistrer',aria:attachable?(saving?'Rattachement…':'Rattacher le justificatif'):'Fermer sans rien enregistrer',icone:saving?'spin':attachable?'check':'x',disabled:saving,onClick:()=>{if(attachable)void attachToExisting(existing.id);else onClose();}}
+    :!existing&&similarChoice==='same'&&similar?{texte:similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer',aria:similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer',icone:similarAttachable?'check':'x',disabled:saving,onClick:()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}}
+    :{texte:saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer':'Enregistrer',aria:busy?'Lecture en cours':saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer et enregistrer':'Enregistrer la dépense',icone:saving?'spin':'check',disabled:saving||busy,titre:busy?'Lecture en cours':undefined,onClick:()=>void save()};
+  const statutPied=done||attached?null:dejaTx?(onOpenExpense?{texte:'Rien n’est enregistré'}:null)
+    :saving&&draft.proofDataUrl&&!receipt&&(!proofQueueAvailable()||apercu)?{texte:`Envoi au Drive${tailleMo?` · ${fr(tailleMo)} Mo`:''}`}
+    :saving?{texte:pendingId?'Confirmation…':'Enregistrement…'}
+    :nUnite&&attempted?{texte:`${nUnite} unité${nUnite>1?'s':''} à préciser`,attention:true}:null;
+  const surFichier:{nom:string;url:string;type:string}|null=draft.proofDataUrl&&!busy?{nom:draft.proofFileName??'justificatif',url:draft.proofDataUrl,type:draft.proofType??''}:null;
+  const lignesBloc=<details data-purchase-lines {...(scan?.ok?{open:true}:{'data-purchase-options':true,open:initialIntent==='equipment'})} className="order-2 border-t border-cave-800 py-1 lg:col-start-2 lg:row-start-1">
+    {scan?.ok?<summary className="list-none cursor-pointer min-h-7 flex flex-wrap items-center gap-x-2 text-xs text-cave-200">Lignes de la facture · {draft.lines.length}{proposedCount?<span className="text-attention">{proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}{hints.items?<span className="text-attention">À vérifier</span>:null}</summary>
+    :<summary className="list-none relative pr-6 min-h-7 cursor-pointer text-sm text-cave-200"><ChevronDown size={14} className="absolute right-0 top-1.5"/><span className="block">Articles, stock et matériel · {draft.lines.length}{hints.items?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</span><span className="block text-xs text-cave-400 mt-1">{[...new Set(draft.lines.map(line=>kinds.find(kind=>kind.value===line.kind)?.label))].join(' · ')}</span>{linkedSummary?<span className="block mt-1 text-cave-200">{linkedSummary}{proposedCount?<span className="text-attention"> · {proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}</span>:null}</summary>}
+    <ScanHint field="items" message={hints.items}/>
+    <div className="space-y-2 pt-2">{!scan?.ok?<div className="flex justify-between gap-2 items-center"><h3 className="font-semibold text-cave-50">Ce que tu achètes</h3>{draft.lines.length>1?<button type="button" className="text-xs text-cave-400 min-h-7" onClick={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>Regrouper en une dépense</button>:null}</div>:null}
+      {draft.lines.map(l=><React.Fragment key={l.id}>{ligneEls.get(l.id)}</React.Fragment>)}
+      <div className="flex gap-2"><button type="button" disabled={draft.lines.length>=35} onClick={()=>patch({lines:[...draft.lines,newLine()]})} className={`${button} border-dashed border-cave-600 text-cave-200 flex-1 flex justify-center items-center gap-2`}><Plus size={17}/>Ajouter une ligne</button>{scan?.ok&&draft.lines.length>1?<button type="button" className={`${button} border-dashed border-cave-600 text-cave-200`} onClick={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>Regrouper en une dépense</button>:null}</div>
+      {draft.lines.length>1?<p className={`text-sm text-right ${Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005?'text-attention':'text-cave-400'}`}>Détail : {money(draft.lines.reduce((sum,line)=>sum+(line.amount||0),0))} / {money(draft.amount||0)}</p>:null}
+    </div></details>;
+  /* ------- les rubriques (P16) : mêmes champs, mêmes id ------- */
+  const surDate=()=>{const d=form.current?.querySelector<HTMLDetailsElement>('[data-purchase-date]');if(d){d.open=true;viser(d,{focus:d.querySelector<HTMLElement>('input[type="date"]')});}};
+  const descriptionChamp=<TextInput id="purchase-description" aria-label="Pour quoi ?" aria-invalid={attempted&&!draft.description.trim()||undefined} aria-describedby={attempted&&!draft.description.trim()?validationId:undefined} value={draft.description} onChange={description=>{patch({description});if(draft.lines.length===1)updateLine(draft.lines[0].id,{description});}} placeholder={scan&&!scan.ok?'À décrire':scan?.ok?'À décrire':initialIntent==='equipment'?'Fermenteur 30 L, pompe de brassage…':'Malt pour la Pale Ale, entretien de la pompe…'}/>;
+  const itemsRub:ItemRubrique[]=[
+    {cle:'date',titre:'Date de l’achat',valeur:`${draft.date||'…'}${dateParDefaut?' · aujourd’hui, par défaut':''}`,ouvert:Boolean(hints.date),attention:Boolean(hints.date),attrs:{'data-purchase-date':true,'data-purchase-options':true},
+      corps:<><ScanHint field="date" message={hints.date}/><DateField label="Date de l’achat" value={draft.date} onChange={date=>{reviewed('date');patch({date});}} shortcuts={dayShortcuts} monthShortcuts/></>},
+    {cle:'four',titre:'Fournisseur et catégorie',valeur:`${draft.vendor||'Fournisseur facultatif'} · ${categories.find(c=>c.value===draft.category)?.label}`,ouvert:Boolean(hints.vendor||hints.category),attrs:{'data-purchase-options':true},
+      corps:<>
+        <div className={hints.category?uncertainClass:''}><Field label="Catégorie" htmlFor="purchase-category"><select id="purchase-category" value={draft.category} onChange={e=>{reviewed('category');selectCategory(e.target.value as PurchaseCategory);}} className={inputClass}>{categories.map(category=><option key={category.value} value={category.value}>{category.label}</option>)}</select></Field><ScanHint field="category" message={hints.category}/></div>
+        <div className={hints.vendor?uncertainClass:''}><Field label="Fournisseur" htmlFor="purchase-vendor"><TextInput id="purchase-vendor" value={draft.vendor} onChange={vendor=>{reviewed('vendor');patch({vendor});}} placeholder="Nom du fournisseur"/></Field><ScanHint field="vendor" message={hints.vendor}/></div></>},
+    ...(plans.length?[{cle:'prevue',titre:'Lier à une dépense prévue',valeur:selectedPlan?.title??'facultatif',ouvert:Boolean(selectedPlan),
+      corps:<><Field label="Dépense prévue" htmlFor="purchase-plan"><select id="purchase-plan" className={inputClass} value={draft.planId||''} onChange={e=>patch({planId:e.target.value||undefined,occurrenceId:undefined})}><option value="">Aucune prévision liée</option>{plans.map(plan=><option key={plan.id} value={plan.id}>{plan.title}</option>)}</select></Field>{selectedPlan?.recurrence?<Field label="Échéance concernée" htmlFor="purchase-occurrence"><select id="purchase-occurrence" className={inputClass} value={draft.occurrenceId||''} onChange={e=>patch({occurrenceId:e.target.value||undefined})}><option value="">Choisir l’échéance</option>{occurrences.map(occurrence=><option key={occurrence.id} value={occurrence.id}>{occurrence.date}</option>)}</select></Field>:null}<p className="text-xs text-cave-400">L’achat remplacera le montant prévu correspondant.</p></>}]:[]),
+    {cle:'ref',titre:'Référence et TVA du document',valeur:draft.invoiceNumber||'—',attention:Boolean(hints.invoiceNumber||hints.tvaAmount||hints.tvaRate),
+      corps:<>{draft.sourceOrderNumber?<p className="text-sm text-cave-200">Commande n° {draft.sourceOrderNumber}</p>:null}<Field label="N° de facture" htmlFor="purchase-invoice-number"><TextInput id="purchase-invoice-number" value={draft.invoiceNumber} onChange={invoiceNumber=>{reviewed('invoiceNumber');patch({invoiceNumber});}}/></Field><ScanHint field="invoiceNumber" message={hints.invoiceNumber}/><div className="grid grid-cols-2 gap-2"><Field label="TVA source (CHF)" htmlFor="purchase-vat"><NumberInput id="purchase-vat" value={draft.sourceVatAmount} onValue={sourceVatAmount=>{reviewed('tvaAmount');patch({sourceVatAmount});}} emptyValue={undefined} className={inputClass}/></Field><Field label="Taux source (%)" htmlFor="purchase-vat-rate"><NumberInput id="purchase-vat-rate" value={draft.sourceVatRate===undefined?undefined:draft.sourceVatRate*100} onValue={value=>patch({sourceVatRate:value===undefined?undefined:value/100})} emptyValue={undefined} className={inputClass}/></Field></div><ScanHint field="tvaAmount" message={hints.tvaAmount}/><ScanHint field="tvaRate" message={hints.tvaRate}/></>},
+  ];
+  const itemQuoi:ItemRubrique={cle:'quoi',titre:'Pour quoi ?',valeur:draft.description?`${draft.description}${draft.descriptionSource==='scan'?' · proposé':''}`:'à décrire',corps:descriptionChamp,attention:attempted&&!draft.description.trim()};
+  const phraseRecu=draft.proofDataUrl?<p className="px-3 pb-2 text-xs text-cave-400">{receipt?<ReceiptLine receipt={receipt}/>:'Le justificatif sera rangé dans ton Drive privé à l’enregistrement.'}</p>:null;
+  const portIds=draft.lines.filter(l=>port.has(l.id));
+  const tiroirPort=portIds.length?<div data-dp="port-tiroir" className={`${portOuvert?'block':'hidden'} mx-2 mb-2 rounded-panel border border-cave-800 bg-cave-900/40`}><div data-dp-bande-entete className="dp-p3c-bande-entete dp-p3c-t-autres flex items-center gap-1.5 px-2.5 text-sm"><strong className="font-semibold text-cave-50">Port</strong><span className="text-xs text-cave-400">· hors bandes</span>{portTexte?<span className="ml-auto font-mono text-sm font-semibold text-cave-50">{portTexte}</span>:null}</div>{portIds.map(l=><React.Fragment key={l.id}>{ligneEls.get(l.id)}</React.Fragment>)}</div>:null;
+  const surPort=()=>{const ouvrir=!portOuvert;flushSync(()=>setPortOuvert(ouvrir));if(ouvrir)viser(form.current?.querySelector<HTMLElement>('[data-dp="port-tiroir"]'),{block:'center'});};
+  const doublons=<>
       {existing?<section id="purchase-duplicate" aria-label={memeFichier?'Achat déjà enregistré · même fichier':'Achat peut-être déjà enregistré'} className={`${uncertainClass} space-y-1.5 lg:col-start-1`}>
         <p className="text-sm font-medium text-attention flex items-center gap-1.5"><AlertCircle size={14} className="shrink-0"/>{memeFichier?'Achat déjà enregistré · même fichier':'Achat peut-être déjà enregistré'}</p>
         <div className="min-w-0 text-[13px] text-cave-200"><p className="truncate font-medium text-cave-50">{existing.description}</p>
@@ -648,45 +759,107 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
           <button type="button" aria-pressed={similarChoice==='other'} onClick={()=>setSimilarState({id:similar.tx.id,choix:'other'})} className={`${button} ${similarChoice==='other'?'border-area-finances bg-area-finances/10 text-cave-50':'border-cave-700 text-cave-200'}`}>Autre achat</button></div>
         <p className="text-xs text-cave-400">{similarChoice==='same'?(similarAttachable?'Même achat : le justificatif rejoint la dépense existante, sans dépense, stock ni paiement en plus.':'Même achat : rien n’est enregistré, la dépense existante reste telle quelle.'):'Ce n’est qu’un signal : sans choix, l’achat s’enregistre normalement.'}</p>
       </section>:null}
-      {draft.proofDataUrl?<details className="text-sm text-cave-200 min-w-0 lg:col-start-1"><summary className="min-h-7 cursor-pointer flex items-center gap-2"><FileText size={16}/>Voir le justificatif</summary>{draft.proofType?.startsWith('image/')?<img src={draft.proofDataUrl} alt="Justificatif source" className="w-full rounded-panel"/>:<a href={draft.proofDataUrl} download={draft.proofFileName} className="text-ebc-straw min-h-7 flex items-center">Ouvrir le PDF original</a>}</details>:null}
-      {scan?.ok&&result&&statutFinal?<div className="lg:col-start-1"><InvoiceScanReview liens={Object.fromEntries(draft.lines.map((l,i)=>[l.id,mouturesPropositions.some(p=>p.lineId===l.id)||parentDeLaMouture(draft.lines,i)>=0?'mouture':lienDe(l)]))} result={result} cached={scan.cached} statut={statutFinal} vendor={draft.vendor} date={draft.date} calcule={draft.sourceTotalBasis==='line_sum'} lines={draft.lines} comptes={compteLiens(draft.lines,precisIds)} remarques={remarques}
-        preuveOuverte={preuveOuverte} onPreuve={()=>setPreuveOuverte(o=>!o)} drive={driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null} onDrive={()=>setDriveAuthError(true)} onLigne={id=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id})} bandeauRef={bandeauRef}
-        sceau={sceauQr} sousTotal={sousTotalQr} doutes={{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise}} ecartTotal={qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined}
-        totalField={<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>}/></div>
-      :<div className={hints.amountTTC?`${uncertainClass} lg:col-start-1`:'lg:col-start-1'}><Field label="Total TTC en CHF" htmlFor="purchase-total"><NumberInput id="purchase-total" fractionDigits={2} aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder={scan&&!scan.ok?'—':'0,00'} className={`${inputClass} !text-base font-mono font-semibold tabular-nums min-h-8`}/></Field><ScanHint field="amountTTC" message={hints.amountTTC}/></div>}
-      {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm lg:col-start-1">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
-      {chips.some(c=>c.source==='qr')?<div className="lg:col-start-1"><ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={false} cacher={c=>c.source!=='qr'}/></div>:null}
-      {tuiles}{panneaux}
-      {scan?.ok?<div className="lg:col-start-1"><ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={c=>c.nom==='TVA'||c.source==='paiement'||c.source==='qr'}/></div>:null}
-      {ficheQr}
+  </>;
+  const capt=<>
+      {!attachment&&!busy?showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:<section
+        aria-label="Justificatif de la dépense"
+        className={`py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors ${dropping?'border-ebc-straw bg-ebc-straw/10':'border-cave-700'}`}
+        onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}}
+        onDragLeave={()=>setDropping(false)}
+        onDrop={e=>{e.preventDefault();setDropping(false);const file=e.dataTransfer.files?.[0];if(file)void attach(file);}}
+      >
+        <button data-primary type="button" onClick={()=>fileInput.current?.click()} className="w-full min-h-8 rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center gap-2 text-[13px] font-semibold"><FileText size={16}/>Choisir le document</button>
+        {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
+        <p className="text-xs text-center text-cave-400">PDF ou image{coarse?'':', ou dépose le fichier ici'} · lecture automatique · 4 Mo max.</p>
+        {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
+      </section>:busy?<div data-dp="lecture" className="space-y-1.5">
+        {/* p3c-3, état « lecture » : la carte du fichier avec la frise « envoi ✓ · lecture · vérification », le cadre « Les lignes arrivent ici », puis « Pour quoi ? » et « Règlement » (verrouillés tant que la lecture écrit le brouillon). */}
+        <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]">
+          <div className="flex items-baseline justify-between gap-2"><span className="min-w-0 truncate text-base font-semibold leading-6 text-cave-50">{attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}</span>{(attachment?.size||apercu?.fichier.size)?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo</span>:null}{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0 self-center">{sceauQr}</div>:null}</div>
+          {resumeQr(qrRes)?<p data-dp="qr-lecture" className="break-words font-mono text-xs text-cave-200">{resumeQr(qrRes)}</p>:null}
+          <p role="status" className="sr-only">Lecture et vérification…</p>
+          <div data-dp="frise" aria-hidden className="mt-[3px] flex gap-1.5 text-xs text-cave-400">
+            <span className="flex flex-1 flex-col gap-[3px] text-cave-200"><i className="block h-1.5 rounded-control bg-cave-200"/>envoi ✓</span>
+            <span className="flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"><i className="dp-p3c-frise-cours block h-1.5 rounded-control"/>lecture</span>
+            <span className="flex flex-1 flex-col gap-[3px]"><i className="block h-1.5 rounded-control bg-cave-800"/>vérification</span>
+          </div>
+        </div>
+        {ficheQr}
+        <div data-dp="lignes-arrivent" className="flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400">Les lignes arrivent ici</div>
+        <div className="px-1 pb-3 pt-1">{[['Pour quoi ?','après la lecture'],['Règlement','Déjà payé · À payer']].map(([titre,valeur])=><div key={titre} className="flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"><span>{titre}</span><em className="ml-auto truncate text-xs not-italic text-cave-400">{valeur}</em></div>)}</div>
+      </div>:dejaTx&&attachment?<PieceDejaSaisie tx={dejaTx} stocks={stocks} payments={FinanceService.getPayments?.()??[]} transactions={transactions} onLire={()=>void attach(attachment,true)}/>
+      :scan&&!scan.ok&&attachment?<div data-dp="erreur-lecture" className="flex flex-wrap items-center gap-1.5 border-t border-cave-700 py-2"><span className="min-w-0 flex-1 truncate text-xs text-cave-400">{attachment.name}</span>
+        <button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>void attach(attachment)} className={boutonPlein}>Relire</button>
+        <button type="button" onClick={()=>{const champ=form.current?.querySelector<HTMLElement>('#purchase-total');champ?.focus();champ?.scrollIntoView?.({block:'center'});}} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Saisir à la main</button></div>:null}
+  </>;
+  const alertes=<>
+    {attempted&&shownErrors.length>0?<div id={validationId} role="alert" className="border border-alert-strong/40 rounded-control bg-alert-strong/5 p-2 text-sm text-alert-strong"><p className="font-medium">À corriger</p><ul>{shownErrors.map(message=><li key={message}><button type="button" onClick={()=>focusIssue(message)} className="min-h-7 text-left underline underline-offset-2">{message}</button></li>)}</ul></div>:null}
+    {proofSending?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Loader2 size={16} className="shrink-0 mt-0.5 animate-spin text-hop"/><span>{proofSending}</span></div>:null}
+    {error?<div ref={errorBox} tabIndex={-1} role="alert" className="rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line">{error}</div>:null}
+    {attached?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Check size={16} className="shrink-0 mt-0.5 text-hop"/><span>Justificatif rattaché à « {attached.description} » du {attached.date}. Aucune nouvelle dépense ni entrée en stock.{receipt?<> <ReceiptLine receipt={receipt}/></>:null}</span></div>:null}
+    {draft.proofDataUrl&&!busy&&!attached&&!apercu&&!dejaTx?<DriveConnection always={driveAuthError} onConnected={()=>{setDriveAuthError(false);setError('');setDriveTick(t=>t+1);}}/>:null}
+  </>;
+  const recu=done?<div data-dp="recu" role="status" className="min-w-0 rounded-panel border border-hop/40 bg-hop/5 p-2 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>:null;
+  const rubriquesScan=<Rubriques items={[itemQuoi,...itemsRub]}/>;
+  const detailListe={lignes:fr2c(draft.lines.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0)),total:fr2c(Math.round((draft.amount||0)*100)),ecart:Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005};
+  const nPropositions=lignesAff.filter(l=>l.stockAction==='existing'&&proposedStock.current.has(l.id)).length;
+  const scanLayout=scan?.ok&&result&&statutFinal?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0">
+    {/* 1280 : la colonne de gauche (récap, tuiles, rubriques) est COLLANTE comme `.p3a3-gauche` de la maquette (sticky top 0, hauteur du corps, défilement propre) ; sur téléphone
+        l'enveloppe disparaît (`contents`) et `order` garde l'ordre d'avant : récap, liste, rubriques. */}
+    <div className="flex flex-col lg:grid lg:grid-cols-[420px_minmax(0,760px)] lg:items-start lg:justify-center lg:gap-x-4 lg:px-3">
+      <div data-dp="gauche" className="contents lg:sticky lg:top-0 lg:col-start-1 lg:block lg:max-h-[calc(100dvh-92px)] lg:overflow-y-auto lg:pb-2">
+      <div className="order-1 flex flex-col gap-1.5 px-2 pt-1.5 lg:order-none lg:px-0">
+        {doublons}
+        <InvoiceScanReview bandeauRef={bandeauRef}
+          bandeau={{vendor:draft.vendor,date:draft.date,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true)}}
+          preuve={{rangees,corriges,remarques,cached:Boolean(scan.cached),visee:viseePreuve,onRangee:versListe,propositions:nPropositions||hints.items?`${nPropositions?`${nPropositions} proposée${nPropositions>1?'s':''} par la lecture, à vérifier`:'À vérifier'}`:null}}
+          comptes={<Comptes items={comptesItems} onCompte={surCompte}/>}/>
+        {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
+        {tuiles}{panneaux}
+        {chips.some(c=>!maison(c))||tout?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={maison}/>:null}
+        {ficheQr}
       </div>
-      <div className="order-3 space-y-0">
-      {scan?.ok?<details className="border-t border-cave-800 py-1"><summary className="min-h-7 flex items-center justify-between gap-2 text-sm text-cave-200 cursor-pointer"><span>Pour quoi ?{draft.descriptionSource==='scan'?<span className="ml-2 rounded-control border border-cave-600 px-1.5 text-xs text-cave-200">proposé</span>:null}</span></summary><div className="pt-2"><TextInput id="purchase-description" aria-label="Pour quoi ?" aria-invalid={attempted&&!draft.description.trim()||undefined} aria-describedby={attempted&&!draft.description.trim()?validationId:undefined} value={draft.description} onChange={description=>{patch({description});if(draft.lines.length===1)updateLine(draft.lines[0].id,{description});}} placeholder="À décrire"/></div></details>
-      :<Field label="Pour quoi ?" htmlFor="purchase-description"><TextInput id="purchase-description" aria-label="Pour quoi ?" aria-invalid={attempted&&!draft.description.trim()||undefined} aria-describedby={attempted&&!draft.description.trim()?validationId:undefined} value={draft.description} onChange={description=>{patch({description});if(draft.lines.length===1)updateLine(draft.lines[0].id,{description});}} placeholder={scan&&!scan.ok?'À décrire':initialIntent==='equipment'?'Fermenteur 30 L, pompe de brassage…':'Malt pour la Pale Ale, entretien de la pompe…'}/></Field>}
-      <details data-purchase-date data-purchase-options open={Boolean(hints.date)} className={`border-t py-1 ${hints.date?'border-attention/50 bg-attention/5':'border-cave-800'}`}><summary className="min-h-7 cursor-pointer flex items-center gap-2 text-sm text-cave-200"><CalendarDays size={18} className="text-cave-400"/><span className="flex-1">Achat du <strong className="font-medium text-cave-50">{draft.date||'…'}</strong>{dateParDefaut?<span className="ml-1.5 text-xs text-cave-400">aujourd’hui · par défaut</span>:null}</span><ChevronDown size={14}/></summary><ScanHint field="date" message={hints.date}/><div className="pt-2"><DateField label="Date de l’achat" value={draft.date} onChange={date=>{reviewed('date');patch({date});}} shortcuts={dayShortcuts} monthShortcuts/></div></details>
-      <details data-purchase-options open={Boolean(hints.vendor||hints.category)} className="border-t border-cave-800 py-1"><summary className="list-none relative pr-6 min-h-7 cursor-pointer text-sm text-cave-200"><ChevronDown size={14} className="absolute right-0 top-1.5"/><span className="block">Fournisseur et catégorie</span><span className="block text-xs text-cave-400 mt-1 break-words">{draft.vendor||'Fournisseur facultatif'} · {categories.find(c=>c.value===draft.category)?.label}</span></summary><div className="space-y-2 pt-2">
-      <div className={hints.category?uncertainClass:''}><Field label="Catégorie" htmlFor="purchase-category"><select id="purchase-category" value={draft.category} onChange={e=>{reviewed('category');selectCategory(e.target.value as PurchaseCategory);}} className={inputClass}>{categories.map(category=><option key={category.value} value={category.value}>{category.label}</option>)}</select></Field><ScanHint field="category" message={hints.category}/></div>
-      <div className={hints.vendor?uncertainClass:''}><Field label="Fournisseur" htmlFor="purchase-vendor"><TextInput id="purchase-vendor" value={draft.vendor} onChange={vendor=>{reviewed('vendor');patch({vendor});}} placeholder="Nom du fournisseur"/></Field><ScanHint field="vendor" message={hints.vendor}/></div>
-      </div></details>
-      {plans.length?<details className="border-t border-cave-800 py-1" open={Boolean(selectedPlan)}><summary className="min-h-7 flex items-center text-sm text-cave-200 cursor-pointer">Lier à une dépense prévue (facultatif)</summary><div className="space-y-2 pt-2"><Field label="Dépense prévue" htmlFor="purchase-plan"><select id="purchase-plan" className={inputClass} value={draft.planId||''} onChange={e=>patch({planId:e.target.value||undefined,occurrenceId:undefined})}><option value="">Aucune prévision liée</option>{plans.map(plan=><option key={plan.id} value={plan.id}>{plan.title}</option>)}</select></Field>{selectedPlan?.recurrence?<Field label="Échéance concernée" htmlFor="purchase-occurrence"><select id="purchase-occurrence" className={inputClass} value={draft.occurrenceId||''} onChange={e=>patch({occurrenceId:e.target.value||undefined})}><option value="">Choisir l’échéance</option>{occurrences.map(occurrence=><option key={occurrence.id} value={occurrence.id}>{occurrence.date}</option>)}</select></Field>:null}<p className="text-xs text-cave-400">L’achat remplacera le montant prévu correspondant.</p></div></details>:null}
-      <details className="border-t border-cave-800 py-1"><summary className="min-h-7 flex items-center text-sm text-cave-400 cursor-pointer">Référence et TVA du document{hints.invoiceNumber||hints.tvaAmount||hints.tvaRate?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</summary><div className="space-y-2 pt-2">{draft.sourceOrderNumber?<p className="text-sm text-cave-200">Commande n° {draft.sourceOrderNumber}</p>:null}<Field label="N° de facture" htmlFor="purchase-invoice-number"><TextInput id="purchase-invoice-number" value={draft.invoiceNumber} onChange={invoiceNumber=>{reviewed('invoiceNumber');patch({invoiceNumber});}}/></Field><ScanHint field="invoiceNumber" message={hints.invoiceNumber}/><div className="grid grid-cols-2 gap-2"><Field label="TVA source (CHF)" htmlFor="purchase-vat"><NumberInput id="purchase-vat" value={draft.sourceVatAmount} onValue={sourceVatAmount=>{reviewed('tvaAmount');patch({sourceVatAmount});}} emptyValue={undefined} className={inputClass}/></Field><Field label="Taux source (%)" htmlFor="purchase-vat-rate"><NumberInput id="purchase-vat-rate" value={draft.sourceVatRate===undefined?undefined:draft.sourceVatRate*100} onValue={value=>patch({sourceVatRate:value===undefined?undefined:value/100})} emptyValue={undefined} className={inputClass}/></Field></div><ScanHint field="tvaAmount" message={hints.tvaAmount}/><ScanHint field="tvaRate" message={hints.tvaRate}/></div></details>
-      {draft.proofDataUrl?<p className="pt-1 text-xs text-cave-400">{receipt?<ReceiptLine receipt={receipt}/>:'Le justificatif sera rangé dans ton Drive privé à l’enregistrement.'}</p>:null}
+      <div className="order-3 lg:order-none lg:pb-0">{rubriquesScan}{phraseRecu}</div>
       </div>
+      <div className="order-2 lg:order-none lg:col-start-2">
+        <Liste ordre={ordre} bandes={bandes} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
+          rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
+          pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,detail:draft.lines.length>1?detailListe:null}}
+          onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>
+          {tiroirPort}
+        </Liste>
       </div>
-      {lignesBloc}
-      </fieldset>:null}
     </div>
+  </fieldset>:null;
+  /* Sans lecture (R5) : la liste et les champs d'aujourd'hui, dans le cadre p3c-3 (en-tête, pied sans bascule). */
+  const sansLecture=<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 px-2 pt-1.5 pb-2 lg:mx-auto lg:max-w-[760px]">
+    {doublons}
+    <div className={hints.amountTTC?uncertainClass:''}><Field label="Total TTC en CHF" htmlFor="purchase-total"><NumberInput id="purchase-total" fractionDigits={2} aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder={scan&&!scan.ok?'—':'0,00'} className={`${inputClass} !text-base font-mono font-semibold tabular-nums min-h-8`}/></Field><ScanHint field="amountTTC" message={hints.amountTTC}/></div>
+    {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
+    {tuiles}{panneaux}
+    {lignesBloc}
+    <Field label="Pour quoi ?" htmlFor="purchase-description">{descriptionChamp}</Field>
+    <Rubriques items={itemsRub}/>
+    {phraseRecu}
+  </fieldset>;
+  const enteteFichier=surFichier;
+  return <ModalShell open onClose={()=>{if(!busy&&!saving)onClose();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl" plein>
+    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={onClose} onBasculer={()=>setJustifOuvert(o=>!o)}/>
+    <div ref={scroller} className="dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]">
+      <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)} onChanger={()=>fileInput.current?.click()}/></div>
+      <div data-dp="alertes" className="space-y-1.5 px-2 pt-1.5 empty:hidden">{recu}{alertes}</div>
+      <div ref={form} className="pb-2">
+        <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
+        <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
+        <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)lancerQr(file);e.target.value='';}}/>
+        <div className="space-y-2 px-2 pt-1.5 empty:hidden">{capt}</div>
+        {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
+      </div>
     </div>
-    {showForm&&!busy?<footer className={'shrink-0 min-h-9 px-3 py-0.5 border-t border-cave-800 flex items-center justify-between gap-2'+(keyboardInset?'':' pb-safe')}>
-      {done?<div className="min-w-0 flex-1 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>
-      :<div className="min-w-0 flex-1 text-xs text-cave-200">{dejaTx?(onOpenExpense?<span>Rien n’est enregistré</span>:null):saving&&draft.proofDataUrl&&!receipt&&(!proofQueueAvailable()||apercu)?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':driveVerifie?'Drive à connecter':''}</span>:null}</div>}
-      {done?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>
-      :attached?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>
-      :dejaTx?<button type="button" onClick={()=>{onClose();onOpenExpense?.(dejaTx.id);}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}>{onOpenExpense?<FileText size={14}/>:<X size={14}/>}{onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer'}</button>:sameChosen&&existing?<button type="button" disabled={saving} onClick={()=>{if(attachable)void attachToExisting(existing.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:attachable?<Check size={14}/>:<X size={14}/>} {attachable?saving?'Rattachement…':'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
-      :!existing&&similarChoice==='same'&&similar?<button type="button" disabled={saving} onClick={()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center gap-1.5 font-semibold'}>{similarAttachable?<Check size={14}/>:<X size={14}/>}{similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
-      :<button type="button" disabled={saving} aria-label={saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer et enregistrer':'Enregistrer la dépense'} onClick={()=>void save()} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:<Check size={14}/>} {saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer':'Enregistrer'}</button>}
-    </footer>:null}
+    {showForm?<Pied ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
   </ModalShell>;
 }
 const fr2=(n:number)=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
+/** Le prix lu, au moins deux décimales (2,30 et non 2,3), trois sous 0,10 (0,040 · 0,080 · 0,045 : la colonne des prix au gramme reste homogène) : une mise en forme, jamais un chiffre ajouté. */
+const prixImprime=(p:number)=>{const d=(String(p).split('.')[1]??'').length;return p.toFixed(Math.max(Math.abs(p)<0.1?3:2,d)).replace('.',',');};
 function ScanHintTotal({message}:{message?:string}){return message?<span id="scan-hint-amountTTC" className="sr-only">À confirmer · {message}</span>:null;}
