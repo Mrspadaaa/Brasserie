@@ -989,3 +989,12 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   p3a-3/p3c-3, « trié par catégorie avec sous total de quantité » (D235), vaut pour toutes les familles ; la maquette n'en montrait que
   quatre parce que sa facture d'exemple n'avait que celles-là. D262d) ; à « l'annulation de la saisie en double de la commande d'avril
   (TX-6770960b) » : « Ok » (D268).
+- **L'annulation attend** (01.11, nuit), à « À faire par toi : l'annulation de TX-6770960b », mot pour mot : « Pas important pour le
+  moment » (lu : l'annulation de la saisie en double et la relecture du stock attendent ; rien n'est touché. D268 suspendue).
+- **Qui trie par famille** (01.11, nuit), mot pour mot : « L'ai ou code trie correctement les items par famille ? SI il y aune
+  nouvelle levure, nouveau fermenteur ou autre item un peu plus technique ou complexe ? » (lu : « L'ai » = l'IA ; il veut savoir si une
+  levure, un fermenteur ou un article technique inconnus tombent dans la bonne famille. Sondé : non, le code trie par mots. D269).
+- **Quatre langues** (01.11, nuit, à « les mots anglais de la lecture »), mot pour mot : « Langue utilisée pour les factures, allemand,
+  anglais, français, italien. Ça traduits en français et fait le bon lien » (lu : une catégorie, une famille ou un mot de métier lu en
+  allemand, anglais, français ou italien devient la catégorie française de l'app et relie la ligne à la bonne famille et au bon article ;
+  la désignation imprimée reste telle quelle, D261a. D271).

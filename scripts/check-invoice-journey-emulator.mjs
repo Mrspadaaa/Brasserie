@@ -27,7 +27,7 @@
  *
  * Usage, depuis la racine du dépôt :
  *   node scripts/check-invoice-journey-emulator.mjs --replay <manifeste.json> --out <dossier ignoré>
- *        [--widths 390,1280] [--cases etats,doc5,finances,doc6,autre-numero,rattacher,minuscules,doc1,doc4,hors-ligne,doc3,doc2,drive-fond] [--port 5175]
+ *        [--widths 390,1280] [--cases etats,doublon,doc5,finances,doc6,autre-numero,rattacher,minuscules,doc1,doc4,hors-ligne,doc3,doc2,doc14,drive-fond] [--port 5175]
  *        [--lock <dossier-verrou>] [--keep-tmp]
  * Le mode `--inner` est lancé par `firebase emulators:exec`, jamais à la main. Chaque largeur repart d'une base
  * émulée vide (mêmes semis), dans un contexte Chrome neuf, largeur réglée avant le chargement.
@@ -54,13 +54,16 @@ const EMULATOR_PORTS = { auth: 9099, firestore: 8080, functions: 5001, hub: 4400
 const JAVA_HOME = process.env.EMU_JAVA_HOME || 'C:\\Program Files\\Microsoft\\jdk-21.0.12.101-hotspot';
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const DOCS = ['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6'];
-const ALL_CASES = ['etats', 'doc5', 'finances', 'doc6', 'autre-numero', 'rattacher', 'minuscules', 'doc1', 'doc4', 'hors-ligne', 'doc3', 'doc2', 'drive-fond'];
+/** Pièces facultatives du manifeste : doc14 (commande en ligne du 01.11 au soir, D261) ; les cas qui en dépendent exigent qu'elle y soit. */
+const OPTIONAL_DOCS = ['doc14'];
+const ALL_CASES = ['etats', 'doublon', 'doc5', 'finances', 'doc6', 'autre-numero', 'rattacher', 'minuscules', 'doc1', 'doc4', 'hors-ligne', 'doc3', 'doc2', 'doc14', 'drive-fond'];
 /** Synthetic entries typed by the bench (never a value of a real document). */
 const SYNTHETIC = { vendor: 'Malterie du Banc', description: 'Essai hors ligne JUS-0', amount: '12,30' };
 /** Same emulator-only rewrite as the reference bench: the emulator refuses descending key scans. */
 const EMULATOR_REWRITES = [{ path: '/src/services/firestoreRepo.ts', expected: 2,
   pattern: /orderBy\(\s*documentId\(\)\s*,\s*(["'])desc\1\s*\)/g, replacement: 'orderBy(documentId())' }];
-const MEMORY_FLOOR = 3 * 1024 ** 3;
+/** Garde mémoire de la machine partagée : 3 Go libres par défaut ; `--memory-floor <Go>` l'abaisse (jamais sous 1,5) quand les autres sessions laissent 3 à 4 Go. */
+const MEMORY_FLOOR = Math.max(1.5, Number(option('memory-floor', '3')) || 3) * 1024 ** 3;
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 
 function option(name, fallback) {
@@ -95,7 +98,7 @@ const isoOf = swiss => (/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(swiss ?? '') ?? []).s
 function loadReplay(file) {
   const manifest = JSON.parse(readFileSync(file, 'utf8'));
   const docs = {};
-  for (const id of DOCS) {
+  for (const id of [...DOCS, ...OPTIONAL_DOCS.filter(extra => manifest.docs?.[extra])]) {
     const entry = manifest.docs?.[id];
     if (!entry) throw Error(`Manifeste : ${id} absent.`);
     const image = resolve(dirname(file), entry.image), output = resolve(dirname(file), entry.output);
@@ -103,7 +106,10 @@ function loadReplay(file) {
     let result = JSON.parse(readFileSync(output, 'utf8'));
     for (const key of entry.pointer) result = result?.[key];
     if (!result || typeof result !== 'object') throw Error(`Manifeste : sortie de ${id} introuvable (${entry.pointer.join('.')}).`);
-    docs[id] = { id, image, fileName: basename(image), bytes, sha256: sha(bytes), result,
+    // Vérité d'une pièce (facultative) : `expected` du cas du même id dans le fichier `truth` du manifeste (ex. cas-5.json), jamais copiée ici.
+    const truth = entry.truth ? JSON.parse(readFileSync(resolve(dirname(file), entry.truth), 'utf8')).cases?.find(row => row.id === id)?.expected ?? null : null;
+    if (entry.truth && !truth) throw Error(`Manifeste : vérité de ${id} introuvable dans ${entry.truth}.`);
+    docs[id] = { id, image, fileName: basename(image), bytes, sha256: sha(bytes), result, truth,
       mimeType: /\.png$/i.test(image) ? 'image/png' : /\.pdf$/i.test(image) ? 'application/pdf' : 'image/jpeg' };
   }
   return docs;
@@ -170,7 +176,7 @@ async function buildFunctions(tmp, log) {
 async function outer() {
   const replay = option('replay');
   if (!replay) throw Error('--replay <manifeste.json> requis (sorties réelles hors Git).');
-  loadReplay(resolve(replay));
+  const replayDocs = loadReplay(resolve(replay));
   const out = resolve(option('out', ''));
   if (!option('out')) throw Error('--out requis : un dossier ignoré par Git (les captures montrent des valeurs réelles).');
   mkdirSync(out, { recursive: true });
@@ -180,6 +186,12 @@ async function outer() {
   const log = text => { appendFileSync(logFile, `[${new Date().toISOString()}] ${text}\n`); console.log(text); };
   const lock = option('lock');
   const port = Number(option('port', '5175'));
+  // La lecture du QR-facture (src/services/qrLecture.ts) importe zxing-wasm et pdfjs-dist : sans eux dans node_modules, Vite répond 500 sur
+  // QuickActionModal.tsx et la feuille de dépense ne s'ouvre pas. Le banc le dit au lancement au lieu d'un ARRÊT par cas, et prend au besoin
+  // une configuration Vite qui les trouve ailleurs (--vite-config), sans toucher au dépôt.
+  const viteConfig = option('vite-config') ? resolve(option('vite-config')) : null;
+  if (!viteConfig && !existsSync(join(ROOT, 'node_modules/zxing-wasm/package.json')))
+    throw Error('zxing-wasm absent de node_modules (package.json le déclare) : la feuille de dépense ne se charge pas. Installer les dépendances, ou passer --vite-config <fichier> (voir voies/e-bout/vite.banc.config.mjs).');
   const before = protectedState();
   for (const used of [...Object.values(EMULATOR_PORTS), port])
     if (await listening(used)) throw Error(`Port ${used} déjà occupé : un autre émulateur ou serveur tourne. Rien n'est lancé.`);
@@ -188,7 +200,7 @@ async function outer() {
   const guard = setInterval(() => {
     if (freemem() >= MEMORY_FLOOR || !child) return;
     lowMemory = `${(freemem() / 1024 ** 3).toFixed(2)} Go libres`;
-    log(`GARDE MÉMOIRE : ${lowMemory} < 3 Go, arrêt de l'arbre ${child.pid}`);
+    log(`GARDE MÉMOIRE : ${lowMemory} < ${(MEMORY_FLOOR / 1024 ** 3).toFixed(1)} Go, arrêt de l'arbre ${child.pid}`);
     killTree(child.pid);
   }, 5000);
   try {
@@ -205,8 +217,8 @@ async function outer() {
         ui: { enabled: false }, singleProjectMode: true }
     }, null, 2));
     const env = { ...process.env, JAVA_HOME, PATH: `${join(JAVA_HOME, 'bin')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}`,
-      EMU_OUT: out, EMU_TMP: tmp, EMU_WIDTHS: option('widths', '390,1280'), EMU_CASES: option('cases', ALL_CASES.join(',')),
-      EMU_PORT: String(port), EMU_RULES_SHA: rules.sha, EMU_REPLAY: resolve(replay) };
+      EMU_OUT: out, EMU_TMP: tmp, EMU_WIDTHS: option('widths', '390,1280'), EMU_CASES: option('cases', ALL_CASES.filter(name => name !== 'doc14' || replayDocs.doc14).join(',')),
+      EMU_PORT: String(port), EMU_RULES_SHA: rules.sha, EMU_REPLAY: resolve(replay), EMU_VITE_CONFIG: viteConfig ?? '' };
     for (const secret of ['GEMINI_API_KEY', 'GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY', 'GOOGLE_GENAI_API_KEY', 'GEMINI_KEY'])
       delete env[secret];
     const inner = `"${process.execPath}" "${SELF}" --inner`;
@@ -515,10 +527,14 @@ async function scan(c, docId, { mode = 'replay', chooser, delayMs = 0, loadingSh
   if (!picker) {
     // « Choisir le document » before a reading, « Changer » (r2b : une icône dans l'en-tête, nom accessible « Changer ») after one:
     // find the visible one by its accessible name, then arm the chooser.
-    const label = await waitFor(() => c.page.$$eval(`${sheet} button`, buttons => {
+    const pickable = () => c.page.$$eval(`${sheet} button`, buttons => {
       const shown = buttons.filter(b => b.getClientRects().length && !b.disabled).map(b => (b.getAttribute('aria-label') || b.innerText).trim());
       return shown.find(text => text.startsWith('Choisir le document')) ?? shown.find(text => text === 'Changer') ?? false;
-    }), 'bouton pour choisir un justificatif', 20000);
+    });
+    // p3c-3 : « Changer » vit dans le petit panneau du picto du justificatif (en-tête), fermé au repos : le geste du brasseur est de toucher le picto d'abord.
+    if (!(await waitFor(pickable, 'bouton pour choisir un justificatif', 3000).catch(() => false)))
+      await click(c.page, `${sheet} header button[aria-label^="Justificatif"]`, undefined, 5000);
+    const label = await waitFor(pickable, 'bouton pour choisir un justificatif', 20000);
     [picker] = await Promise.all([c.page.waitForFileChooser({ timeout: 20000 }), click(c.page, `${sheet} button`, label)]);
   }
   await picker.accept([doc.image]);
@@ -547,7 +563,10 @@ async function readSheet(c) {
       chips: [...root.querySelectorAll('[data-dp-chip],[data-dp-rond]')].map(b => b.getAttribute('aria-label')),
       tuiles: { tva: text('[data-dp="tuile-tva"]'), reglement: text('[data-dp="tuile-paye"]') },
       alerts: [...root.querySelectorAll('[role="alert"]')].map(e => e.innerText.replace(/\s+/g, ' ').trim()),
-      hints: Object.fromEntries([...root.querySelectorAll('[id^="scan-hint-"]')].map(e => [e.id.slice(10), { text: e.innerText.replace(/\s+/g, ' ').trim(), visible: !!e.getClientRects().length && !!e.offsetParent }])),
+      // textContent : un indice dans une rubrique repliée (TVA, référence) a un innerText vide mais existe.
+      hints: Object.fromEntries([...root.querySelectorAll('[id^="scan-hint-"]')].map(e => [e.id.slice(10), { text: e.textContent.replace(/\s+/g, ' ').trim(), visible: !!e.getClientRects().length && !!e.offsetParent }])),
+      // Le rond numéroté d'une pastille posée sur la tuile TVA n'a pas de crochet : c'est le seul <span> au texte numérique de la tuile.
+      tvaRond: [...(root.querySelector('[data-dp="tuile-tva"]')?.querySelectorAll('span') ?? [])].map(s => s.textContent.trim()).find(t => /^\d+$/.test(t)) ?? null,
       total: value('#purchase-total'), description: value('#purchase-description'), vendor: value('#purchase-vendor'),
       category: value('#purchase-category'), invoiceNumber: value('#purchase-invoice-number'), vat: value('#purchase-vat'), vatRate: value('#purchase-vat-rate'),
       date: text('[data-purchase-date] summary'), dateOpen: root.querySelector('[data-purchase-date]')?.open ?? null,
@@ -595,14 +614,14 @@ async function closeSheet(c) {
 }
 /** Clicks the sheet's main action and waits for the sheet to close or an alert to appear. */
 async function confirmSheet(c, timeout = 45000) {
-  await click(c.page, `${sheet} footer button`);
+  await click(c.page, `${sheet} footer button[data-primary]`);
   const outcome = await (await c.page.waitForFunction(() => {
     const dialog = document.querySelector('[role="dialog"] footer');
     if (!dialog) return 'fermée';
     const alerts = [...document.querySelectorAll('[role="dialog"] [role="alert"]')].map(e => e.innerText.trim()).filter(Boolean);
-    const busy = document.querySelector('[role="dialog"] footer button')?.innerText.includes('Enregistrement');
+    const busy = document.querySelector('[role="dialog"] footer button[data-primary]')?.innerText.includes('Enregistrement');
     // r2b : un justificatif rangé laisse la feuille ouverte sur son reçu Drive jusqu'à « Terminé » (état `done` de la feuille).
-    const first = document.querySelector('[role="dialog"] footer button')?.innerText.trim();
+    const first = document.querySelector('[role="dialog"] footer button[data-primary]')?.innerText.trim();
     if (first === 'Terminé') return 'recu';
     return !busy && alerts.length ? `alerte: ${alerts.join(' | ').replace(/\s+/g, ' ').slice(0, 3000)}` : false;
   }, { timeout, polling: 500 })).jsonValue();
@@ -610,7 +629,7 @@ async function confirmSheet(c, timeout = 45000) {
     // Le reçu tel que le brasseur le lit, puis son geste « Terminé » : la feuille se ferme.
     c.lastReceipt = await c.page.$eval(`${sheet} footer`, e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => null);
     await shoot(c, 'recu-drive');
-    await click(c.page, `${sheet} footer button`, 'Terminé', 5000);
+    await click(c.page, `${sheet} footer button[data-primary]`, 'Terminé', 5000);
     const closed = await c.page.waitForFunction(() => !document.querySelector('[role="dialog"] footer'), { timeout: 10000 }).then(() => true).catch(() => false);
     await sleep(800);
     return closed ? 'fermée' : 'alerte: la feuille reste ouverte après « Terminé »';
@@ -624,9 +643,16 @@ const toggleLine = (article, open) => article.evaluate((a, value) => { const d =
  * the reading (JUS-1) is kept when it names the wanted article, and corrected like a brewer would otherwise. */
 async function setStockLines(c, plan) {
   /* p3c-3 : la liste n'est plus un <details> : rien à ouvrir */
-  const lines = await c.page.$$(`${sheet} article[data-purchase-line]`);
+  // R1 : la liste est groupée en bandes (ordre de l'écran), jamais dans l'ordre du papier : chaque rangée se retrouve par son id `line-N`, N = rang de la lecture.
+  const found = [];
+  for (const article of await c.page.$$(`${sheet} article[data-purchase-line]`)) {
+    const id = await article.evaluate(a => a.getAttribute('data-dp-ligne') ?? '');
+    found.push({ article, index: Number(/^line-(\d+)$/.exec(id)?.[1] ?? NaN) - 1 });
+  }
+  if (found.some(row => !Number.isInteger(row.index))) throw Error('setStockLines : une rangée sans id « line-N ».');
+  found.sort((a, b) => a.index - b.index);
   const done = [];
-  for (const [index, article] of lines.entries()) {
+  for (const { article, index } of found) {
     const stock = await article.$('select[aria-label^="Stock ligne"]');
     if (!stock) { done.push({ index, action: 'aucune option de stock' }); continue; }
     const decision = plan(index) ?? { action: 'none' };
@@ -987,16 +1013,17 @@ async function financeViews(c, docId, { exports = true } = {}) {
 }
 
 /** Finances : la dépense doc5 dans les vues, l'original rouvert, les exports TVA et finances. */
-async function caseFinances(c) {
+async function financeChecks(c, docId, label = docId) {
   c.lastFinance = null;
-  await financeViews(c, 'doc5');
+  await financeViews(c, docId);
   const { view, exportsView } = c.lastFinance ?? {};
-  c.check(view?.ligneTrouvee === true && view.ligneMontreFournisseur === true, 'finances : la dépense doc5 est au journal, avec son fournisseur', { view });
+  c.check(view?.ligneTrouvee === true && view.ligneMontreFournisseur === true, `finances : la dépense ${label} est au journal, avec son fournisseur`, { view });
   c.check(view?.boutonJustificatif === true && view.originalRouvert === 'image affichée' && view.imageAfficheeIdentique === true,
-    'finances : le justificatif de doc5 se rouvre, octets identiques à l’original', { originalRouvert: view?.originalRouvert, identique: view?.imageAfficheeIdentique });
+    `finances : le justificatif de ${label} se rouvre, octets identiques à l’original`, { originalRouvert: view?.originalRouvert, identique: view?.imageAfficheeIdentique });
   c.check(exportsView?.excel?.journal === true && exportsView?.zip?.originalIdentique === true && exportsView?.zip?.indexMentionneLaPiece === true,
-    'finances : la dépense est dans l’Excel annuel et le ZIP avec l’original identique', { exportsView });
+    `finances : la dépense est dans l’Excel annuel et le ZIP avec l’original identique${label === docId ? '' : ` (${label})`}`, { exportsView });
 }
+async function caseFinances(c) { await financeChecks(c, 'doc5'); }
 
 /** doc6 : la même commande vue en ligne (ni date ni numéro) après doc5 ; JUS-1 : panneau en tête, refus sans choix ;
  * correction V3 : n° côte à côte, « Même achat » choisi sans effet, puis le pied « Fermer sans rien enregistrer ». */
@@ -1096,7 +1123,7 @@ async function caseRattacher(c) {
       || [...document.querySelectorAll('[role="dialog"] [role="alert"]')].map(e => e.innerText).join(' | ') || false, { timeout: 45000, polling: 500 })
       .then(handle => handle.jsonValue()).catch(error => `délai: ${String(error).slice(0, 100)}`);
     await shoot(c, 'rattacher-fait');
-    await click(c.page, `${sheet} footer button`, 'Terminé', 5000).catch(() => closeSheet(c));
+    await click(c.page, `${sheet} footer button[data-primary]`, 'Terminé', 5000).catch(() => closeSheet(c));
   } else await closeSheet(c);
   await sleep(1500);
   const writes = businessWrites(dbWrites(before, await dbSnapshot(c.db)));
@@ -1258,6 +1285,227 @@ async function caseDoc2(c) {
   await closeSheet(c);
 }
 
+// ───────────────────────────── e-bout : doc14 (D261 à D264) et le doublon historique (D264a) ─────────────────────────────
+
+/** Comparaison sans casse, accents, espaces ni ponctuation (la même que `libelleDeLigne`, src/ui/depense/etat.ts). */
+const plat = text => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+const occurrences = (text, part) => (part ? text.split(part).length - 1 : 0);
+/** Les rangées de la liste telles que le brasseur les voit : id, bande qui la porte (crochet `data-dp-bande`), libellé affiché et saisi, action de stock. */
+const readRows = c => c.page.evaluate(() => [...document.querySelectorAll('[role="dialog"] article[data-dp-ligne]')].map(a => ({
+  id: a.getAttribute('data-dp-ligne'),
+  band: a.closest('[data-dp-bande]')?.getAttribute('data-dp-bande') ?? (a.closest('[data-dp="port-tiroir"]') ? 'port' : null),
+  shown: (a.querySelector('summary')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+  label: a.querySelector('[aria-label^="Libellé ligne"]')?.value ?? null,
+  stock: a.querySelector('select[aria-label^="Stock ligne"]')?.value ?? null,
+  unit: a.querySelector('[aria-label^="Unité ligne"]')?.value ?? null })));
+
+/** La famille de chaque ligne de la pièce doc14, par son numéro sur le papier (1 à 16), d'après la vérité croisée du 01.11 (notes de cas-5.json) : levure,
+ * malts, sucre, houblon, matériel de fermentation, emballage. Les lignes où deux genres se défendent (6, 15, 16) n'ont qu'une exigence : pas « autres ». */
+const FAMILLES_DOC14 = { levure: [1], malt: [7, 9, 11], sucre: [8], houblon: [10], materiel: [2, 3, 4, 5], emballage: [12, 13, 14] };
+const AMBIGUES_DOC14 = [6, 15, 16];
+/** Les lignes que la vérité dit « stock » sans ambiguïté (levure, malts, sucre, houblon) : chacune doit entrer au stock avec son mouvement. */
+const STOCK_DOC14 = [1, 7, 8, 9, 10, 11];
+
+/**
+ * doc14 (D261, D262, D263, D264) : la commande en ligne du 01.11 au soir, lecture finale de C★v8+N rejouée. Chaque critère se juge sur l'écran servi
+ * contre la vérité `cas-5.json` : (a) aucun nom de ligne ne double sa variante ; (b) aucune pastille « Total » pour un total arrondi à 5 centimes ;
+ * (c) aucune pastille TVA sur une TVA juste par taux ; (d) le port compte dans le total, jamais comme une ligne ; (e) chaque ligne dans la bande de sa
+ * famille ; (f) confirmer : la dépense est au journal, chaque ligne de stock a son mouvement, l'article est à jour, le justificatif se rouvre, l'export annuel.
+ */
+async function caseDoc14(c) {
+  const doc = c.docs.doc14;
+  if (!doc || !doc.truth) throw Error('doc14 (ou sa vérité) absent du manifeste : utiliser rejeu-k6.json.');
+  const scanned = doc.result, truth = doc.truth, items = scanned.items ?? [];
+  const before = await dbSnapshot(c.db);
+  const chooser = await openInvoiceEntry(c);
+  await scan(c, 'doc14', { chooser, delayMs: 1500 });
+  const read = await readSheet(c);
+  c.record('doc14-revue', read);
+  await shoot(c, 'doc14-repos');
+  const rows = await readRows(c);
+  c.record('doc14-rangees', rows);
+  await shoot(c, 'doc14-lignes', `${sheet} [data-dp="liste"]`);
+  c.check(!businessWrites(dbWrites(before, await dbSnapshot(c.db))).length, 'doc14 : la lecture seule n’écrit rien');
+
+  // Le total et le nombre de lignes lus sur l'écran contre la vérité.
+  const totalCents = read.total === null ? NaN : cents(read.total.replace(/\s/g, '').replace(',', '.'));
+  c.check(totalCents === cents(truth.amountTTC), 'doc14 : le total affiché est le total imprimé (vérité)', { affiche: read.total });
+
+  // (a) aucun nom de ligne ne double sa variante (D261a).
+  // La lecture finale met la variante (mouture) dans le nom et laisse `variant` vide : on juge donc le libellé affiché lui-même, pour toute rangée dont le
+  // nom lu est long (mouture, conditionnement) : aucune suite de trois mots ne s'y lit deux fois, que ce soit dans la rangée ou dans le champ du libellé.
+  const repete = text => { const mots = plat(text).split(' '); const vus = new Set(); for (let i = 0; i + 3 <= mots.length; i++) { const suite = mots.slice(i, i + 3).join(' '); if (vus.has(suite)) return true; vus.add(suite); } return false; };
+  const longs = items.map((item, index) => ({ item, index })).filter(({ item }) => plat(item.variant) || plat(item.name).split(' ').length >= 6);
+  const doubled = longs.filter(({ index }) => { const row = rows.find(r => r.id === `line-${index + 1}`); return !row || [row.shown, row.label].some(repete); }).map(({ index }) => index + 1);
+  c.check(longs.length > 0 && !doubled.length, 'doc14 (a) : aucun nom de ligne ne double sa variante (D261a)', { lignesALongNom: longs.length, lignesDoublees: doubled });
+
+  // (b) et (c) : pastilles. Une pastille est un point numéroté du bandeau (`data-dp-chip` ou rond `data-dp-rond`, nom accessible « n Nom »).
+  const pastilles = read.chips.filter(Boolean);
+  const pastilleTotal = pastilles.filter(label => /^\d+ Total/.test(label)), pastilleTva = pastilles.filter(label => /^\d+ TVA/.test(label));
+  // L'indice sous le total peut venir d'un autre contrôle (HT + TVA) : (b) ne juge que ce qui touche la somme des lignes.
+  c.check(!pastilleTotal.length && !/somme|arrondi/i.test(read.hints.amountTTC?.text ?? ''), 'doc14 (b) : aucune pastille « Total » pour un total arrondi à 5 centimes (D261b)', { pastilles: pastilleTotal, indice: read.hints.amountTTC });
+  c.check(!pastilleTva.length && read.tvaRond === null && !read.hints.tvaAmount?.text && !read.hints.tvaRate?.text, 'doc14 (c) : aucune pastille TVA sur une TVA juste par taux (D262a)',
+    { pastilles: pastilleTva, rondSurLaTuileTva: read.tvaRond, indices: { tvaAmount: read.hints.tvaAmount, tvaRate: read.hints.tvaRate }, pointsDeLaLecture: (scanned.points ?? []).filter(p => /tva|vat/i.test(`${p.code} ${p.champ}`)).map(p => `${p.code}${p.pese ? ' (pèse)' : ''}`) });
+  // Où se lève-t-elle ? Le banc rejoue la lecture déjà rendue par le serveur (le correctif serveur n'est pas en jeu) : on dit ce que cette lecture porte encore.
+  c.finding('D262a-cote', 'doc14 : ce que la lecture rejouée porte, contre ce que l’écran en fait', { serveurEnJeu: false,
+    champsAvertisLus: (scanned.fieldWarnings ?? []).map(w => w.field), codesDePointsLus: (scanned.points ?? []).map(p => p.code ?? p), pastillesAffichees: pastilles.map(label => label.replace(/^\d+ /, '')),
+    tvaParTauxLue: Array.isArray(scanned.vat) ? scanned.vat.length : null });
+
+  // (d) le port compte dans le total, jamais comme une ligne (D249).
+  const ports = items.filter(item => item.kind === 'shipping');
+  const bandeau = await c.page.evaluate(() => ({ pastilleLignes: [...document.querySelectorAll('[role="dialog"] [data-dp="bandeau"] button[aria-label]')].map(b => b.getAttribute('aria-label')).find(label => /\d+ lignes?$/.test(label)) ?? null,
+    port: document.querySelector('[role="dialog"] [data-dp="port"]')?.textContent.replace(/\s+/g, ' ').trim() ?? null }));
+  const nLignesAffichees = Number(/(\d+) lignes?$/.exec(bandeau.pastilleLignes ?? '')?.[1] ?? NaN);
+  const dansLesBandes = rows.filter(row => row.band && row.band !== 'port').length;
+  const portCents = ports.reduce((sum, item) => sum + cents(item.amountTTC ?? NaN), 0);
+  c.check(ports.length === 1 && nLignesAffichees === truth.items.length && dansLesBandes === truth.items.length && rows.filter(row => row.band === 'port').length === ports.length
+    && !!bandeau.port && bandeau.port.replace(/\s/g, '').includes(String(portCents / 100).replace('.', ',')),
+    'doc14 (d) : le port est dans « dont port » et le total, jamais une des lignes (16 lignes, port à part)', { lignesLuesDuPapier: truth.items.length, pastille: bandeau.pastilleLignes, dansLesBandes, ports: ports.length, rangeesDePort: rows.filter(row => row.band === 'port').length, port: bandeau.port });
+
+  // (e) chaque ligne dans la bande de sa famille (D262d) ; les bandes se reconnaissent par `data-dp-bande`, jamais par leur texte.
+  const bandOf = n => rows.find(row => row.id === `line-${n}`)?.band ?? null;
+  const bandsOf = Object.fromEntries(Object.entries(FAMILLES_DOC14).map(([famille, numeros]) => [famille, [...new Set(numeros.map(bandOf))]]));
+  const unies = Object.values(bandsOf).every(set => set.length === 1 && !!set[0]);
+  const distinctes = unies && new Set(Object.values(bandsOf).map(set => set[0])).size === Object.keys(bandsOf).length;
+  const nommees = unies && ['levure', 'malt', 'houblon'].every(famille => bandsOf[famille][0] === famille);
+  const enAutres = [...Object.values(FAMILLES_DOC14).flat(), ...AMBIGUES_DOC14].filter(n => !bandOf(n) || bandOf(n) === 'autres');
+  c.check(unies && distinctes && nommees && !enAutres.length, 'doc14 (e) : chaque ligne tombe dans la bande de sa famille, « autres » seulement pour l’inclassable (D262d)',
+    { bandesParFamille: bandsOf, lignesEnAutres: enAutres, ambigues: Object.fromEntries(AMBIGUES_DOC14.map(n => [n, bandOf(n)])) });
+
+  // (f) confirmer. Une ligne de stock sans action prend un nouvel article (le geste du brasseur) ; ce que l'app propose seule est gardé.
+  const posees = [];
+  for (const n of STOCK_DOC14) {
+    const article = await c.page.$(`${sheet} [data-dp-ligne="line-${n}"]`);
+    const stock = article && await article.$('select[aria-label^="Stock ligne"]');
+    if (!stock) { posees.push({ n, action: 'aucune option de stock' }); continue; }
+    const shown = await stock.evaluate(e => e.value);
+    if (shown !== 'none') { posees.push({ n, action: shown, proposee: true }); continue; }
+    await toggleLine(article, true);
+    await stock.evaluate(e => e.scrollIntoView({ block: 'center' }));
+    await stock.select('new'); await sleep(250);
+    await toggleLine(article, false);
+    posees.push({ n, action: 'new', proposee: false });
+  }
+  c.record('doc14-stock-par-defaut', posees);
+  const beforeConfirm = await dbSnapshot(c.db);
+  c.check(!businessWrites(dbWrites(before, beforeConfirm)).length, 'doc14 : rien n’entre en stock avant la confirmation');
+  // Premier geste, tel quel : la pièce n'imprime ni date ni paiement (le brasseur les complète), mais son total arrondi à 5 centimes ne doit pas, lui, bloquer.
+  let outcome = await confirmSheet(c, 60000);
+  c.record('doc14-confirmation', outcome);
+  c.check(!/correspondre exactement au total/.test(String(outcome)), 'doc14 (b) : le total arrondi à 5 centimes n’empêche pas d’enregistrer (D261b)', { reponse: String(outcome).slice(0, 400) });
+  if (outcome !== 'fermée') {
+    await shoot(c, 'doc14-confirmation-refusee');
+    // Les gestes d'un brasseur : une date d'achat (la pièce n'en imprime pas), « À payer » (aucun paiement visible), puis, faute de mieux, le total égal à la somme des lignes.
+    await openDetails(c.page, `${sheet} [data-purchase-date]`);
+    await setDate(c.page, `${sheet} [data-purchase-date] input[type="date"]`, new Date().toISOString().slice(0, 10));
+    await openPayment(c);
+    await click(c.page, `${sheet} [aria-label="État du règlement"] button`, 'À payer');
+    await sleep(300);
+    const sumCents = items.reduce((sum, item) => sum + cents(item.amountTTC ?? 0), 0);
+    if (sumCents !== cents(truth.amountTTC)) {
+      await typeInto(c.page, '#purchase-total', (sumCents / 100).toFixed(2).replace('.', ','));
+      c.record('doc14-total-corrige-a-la-main', { ecartCentimes: sumCents - cents(truth.amountTTC) });
+    }
+    outcome = await confirmSheet(c, 60000);
+    c.record('doc14-confirmation-geste-complet', outcome);
+  }
+  if (outcome !== 'fermée') {
+    await shoot(c, 'doc14-confirmation-refusee-bis');
+    // Une unité que le stock ne comprend pas (non imprimée) : corrigée à la main, comme un brasseur, selon la famille de la ligne.
+    // La ligne 11 s'écrit « … Gramm » : un brasseur y met des grammes, pas des kilos (les autres malts sont écrits « … Kg »).
+    const parFamille = { levure: 'sachet', malt: 'kg', sucre: 'pièce', houblon: 'g' };
+    const unites = new Proxy({}, { get: (_target, famille) => parFamille[famille] });
+    const uniteDe = (n, famille) => (n === 11 ? 'g' : unites[famille]);
+    const corrections = [];
+    for (const [famille, numeros] of Object.entries(FAMILLES_DOC14)) for (const n of numeros) {
+      if (!STOCK_DOC14.includes(n)) continue;
+      const article = await c.page.$(`${sheet} [data-dp-ligne="line-${n}"]`);
+      if (article) await toggleLine(article, true);
+      const unit = article && await article.$('[aria-label^="Unité ligne"]');
+      if (!unit || await unit.evaluate(e => e.value.trim())) continue;
+      await unit.evaluate(e => { e.scrollIntoView({ block: 'center' }); e.focus(); e.select(); });
+      await c.page.keyboard.type(uniteDe(n, famille)); await c.page.keyboard.press('Tab'); await sleep(300);
+      corrections.push({ n, unite: uniteDe(n, famille) });
+    }
+    c.record('doc14-corrections-manuelles', corrections);
+    if (corrections.length) { outcome = await confirmSheet(c, 60000); c.record('doc14-confirmation-2', outcome); }
+    if (outcome !== 'fermée') await shoot(c, 'doc14-confirmation-refusee-2');
+  }
+  c.check(outcome === 'fermée', 'doc14 (f) : « Confirmer » enregistre et la feuille se ferme', { outcome });
+  await shoot(c, 'doc14-apres-confirmation');
+
+  const view = await verifyPurchase(c, 'doc14', { waitTx: true });
+  c.check(view.transactions === 1, 'doc14 (f) : une seule dépense enregistrée', { transactions: view.transactions });
+  const tx = (await all(c.db, 'transactions')).find(row => row.finance?.sourceDocumentHash === doc.sha256);
+  const corrige = !!c.entry.records['doc14-total-corrige-a-la-main'];
+  c.check(!!tx && cents(tx.amountTTC) === (corrige ? items.reduce((sum, item) => sum + cents(item.amountTTC ?? 0), 0) : cents(truth.amountTTC)),
+    corrige ? 'doc14 (f) : le montant enregistré est celui que le brasseur a validé (somme des lignes, faute d’avoir pu enregistrer le total arrondi)' : 'doc14 (f) : le montant enregistré est le total imprimé de la vérité', { enregistre: tx?.amountTTC });
+  const movements = (await all(c.db, 'movements')).filter(move => move.transactionId === tx?.id && move.type === 'receipt');
+  const stockItems = await all(c.db, 'stockItems');
+  const seeds = Object.fromEntries(c.plan.seeds.map(seed => [seed.id, seed.currentStock]));
+  const lines = tx?.finance?.lines ?? [];
+  const parLigne = STOCK_DOC14.map(n => {
+    const line = lines[n - 1], item = items[n - 1], ref = line?.stockItemRef, moved = movements.filter(move => ref && move.stockItemRef === ref);
+    const article = stockItems.find(entry => entry.ref === ref || entry.id === ref);
+    const avant = article ? (seeds[article.id] ?? 0) : null;
+    return { n, mouvements: moved.length, quantiteOk: moved.length === 1 && Number(moved[0].quantity) === Number(item?.quantity),
+      uniteDuMouvement: moved[0]?.unit ?? null, articleExiste: !!article, uniteArticle: article?.unit ?? null, articleAJour: !!article && moved.length === 1 && Math.abs(article.currentStock - (avant + Number(moved[0].quantity))) < 1e-6 };
+  });
+  c.record('doc14-stock-par-ligne', parLigne);
+  c.check(parLigne.every(row => row.mouvements === 1 && row.quantiteOk && row.articleExiste && !!row.uniteArticle), 'doc14 (f) : chaque ligne de stock a son mouvement (quantité, unité, article)',
+    { lignes: parLigne.filter(row => !(row.mouvements === 1 && row.quantiteOk && row.articleExiste && !!row.uniteArticle)) });
+  c.check(parLigne.every(row => row.articleAJour), 'doc14 (f) : l’article est à jour (stock avant + quantité reçue)', { lignes: parLigne.filter(row => !row.articleAJour).map(row => row.n) });
+  const lignePort = lines.find(line => line.kind === 'shipping');
+  // Les articles neufs se rangent sous une catégorie de brasseur (Malt, Houblon, Levure…), pas sous le mot anglais de la lecture (« yeast », « grain »).
+  const categoriesNeuves = [...new Set(STOCK_DOC14.map(n => stockItems.find(entry => entry.ref === lines[n - 1]?.stockItemRef)?.category))];
+  c.check(categoriesNeuves.every(category => category && !/^(yeast|grain|hop|additive)$/i.test(category)), 'doc14 (f) : les articles neufs prennent une catégorie de brasseur, pas le mot anglais de la lecture', { categories: categoriesNeuves });
+  c.check(!lignePort?.stockItemRef &&!movements.some(move => lignePort && move.stockItemRef === lignePort.stockItemRef && lignePort.stockItemRef), 'doc14 (d) : le port n’entre jamais en stock',
+    { lignesEnregistrees: lines.length, portEnregistreCommeLigne: !!lignePort });
+  c.finding('doc14-enregistre', 'doc14 : ce que la dépense porte une fois enregistrée', { lignesEnregistrees: lines.length, genres: lines.map(line => line.kind), mouvements: movements.length,
+    articlesNeufs: stockItems.filter(entry => String(entry.id).startsWith('MP-')).length });
+  await financeChecks(c, 'doc14');
+}
+
+/**
+ * D264a : la même pièce ressaisie après un achat semé sous la forme historique de l'audit (voies/e-reel/AUDIT.md : écritures `B-001`…, sans `finance`,
+ * libellé qui commence par la référence d'article, même date, somme = total à l'arrondi près). Semées à partir de la lecture rejouée de doc5, retirées à la fin.
+ */
+async function caseDoublon(c) {
+  const scanned = c.docs.doc5.result, items = (scanned.items ?? []).filter(item => String(item.reference ?? '').trim() && Number.isFinite(item.amountTTC));
+  if (items.length < 2 || !scanned.date) { c.check(false, 'doublon : doc5 n’a pas assez de références et de montants pour imiter la forme historique', { lignes: items.length }); return; }
+  const ids = items.map((_, index) => `B-${String(index + 1).padStart(3, '0')}`);
+  const sumCents = items.reduce((sum, item) => sum + cents(item.amountTTC), 0), drift = cents(scanned.amountTTC) - sumCents;
+  c.record('doublon-semis', { ecritures: ids.length, ecartRepartiSurLaDerniere: drift });
+  try {
+    for (const [index, item] of items.entries()) {
+      const amount = (cents(item.amountTTC) + (index === items.length - 1 ? drift : 0)) / 100;
+      await c.db.doc(`transactions/${ids[index]}`).set({ id: ids[index], date: scanned.date, description: `${String(item.reference).trim()} ${item.name ?? ''}`.trim(), category: scanned.category,
+        subcategory: '', amountHT: amount, tvaRate: 0, tvaAmount: 0, amountTTC: amount });
+    }
+    await reloadApp(c);
+    const before = await dbSnapshot(c.db);
+    const chooser = await openInvoiceEntry(c);
+    await scan(c, 'doc5', { chooser });
+    const read = await readSheet(c);
+    c.record('doublon-revue', read);
+    await shoot(c, 'doublon-avertissement', read.duplicate ? `${sheet} #purchase-duplicate` : `${sheet} footer`);
+    const titre = await c.page.$eval(`${sheet} #purchase-duplicate`, e => e.getAttribute('aria-label')).catch(() => null);
+    c.check(!!read.duplicate && /déjà enregistré/i.test(`${titre ?? ''} ${read.duplicate}`), 'doublon : la même pièce ressaisie après un achat historique avertit « déjà enregistré » (D264a)', { titre, panneau: read.duplicate?.slice(0, 300) });
+    c.check(/écritures? historiques?/i.test(read.duplicate ?? ''), 'doublon : l’avertissement dit que ce sont des écritures historiques (motif de la règle)', { panneau: read.duplicate?.slice(0, 300) });
+    const refused = await confirmSheet(c, 30000);
+    c.record('doublon-sans-choix', refused);
+    c.finding('D264a-sans-choix', 'doublon historique : « Confirmer » sans choix', { refus: String(refused).startsWith('alerte'), reponse: String(refused).slice(0, 200) });
+    if (refused === 'fermée') await shoot(c, 'doublon-enregistree-malgre');
+    else { await shoot(c, 'doublon-sans-choix'); await closeSheet(c); }
+    const writes = businessWrites(dbWrites(before, await dbSnapshot(c.db)));
+    c.check(!writes.length, 'doublon : rien n’est écrit tant que le brasseur n’a pas tranché', { writes: writes.map(row => `${row.collection}+${row.added.length}~${row.changed.length}`) });
+  } finally {
+    // Retirées même en cas d'échec : elles fausseraient les cas suivants (mêmes références, même date).
+    for (const id of ids) await c.db.doc(`transactions/${id}`).delete().catch(() => {});
+    await reloadApp(c).catch(() => {});
+  }
+}
+
 // ───────────────────────────── d3c : l'envoi du justificatif au Drive en arrière-plan ─────────────────────────────
 
 /** Un PDF synthétique et distinct par essai (l'empreinte du document fait l'identité d'un achat : jamais deux saisies avec le même fichier). */
@@ -1284,7 +1532,7 @@ async function manualWithProof(c, file, description, amount = '12,30') {
 /** « Enregistrer » : le temps jusqu'à la fermeture de la feuille, et ce que la feuille dit si elle reste. */
 async function saveAndMeasure(c, timeout = 60000) {
   const started = Date.now();
-  await click(c.page, `${sheet} footer button`);
+  await click(c.page, `${sheet} footer button[data-primary]`);
   const closed = await c.page.waitForFunction(() => !document.querySelector('[role="dialog"] footer'), { timeout, polling: 100 }).then(() => true).catch(() => false);
   const ms = Date.now() - started;
   const alerts = closed ? [] : await c.page.$$eval('[role="dialog"] [role="alert"]', nodes => nodes.map(e => e.innerText.replace(/\s+/g, ' ').trim()));
@@ -1489,7 +1737,7 @@ async function caseDriveFond(c) {
   resetDriveMode(c);
 }
 
-const CASES = { 'drive-fond': caseDriveFond, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
+const CASES = { 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
   'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules };
 
 async function inner() {
@@ -1520,7 +1768,8 @@ async function inner() {
     // The process environment wins over a local .env: the emulated App never shows the brewery's real coordinates.
     VITE_COMPANY_NAME: 'Brasserie du Banc', VITE_COMPANY_OWNER: 'Brasseur du Banc', VITE_COMPANY_ADDRESS: 'Rue du Banc 1',
     VITE_COMPANY_NPA: '1700 Fribourg', VITE_COMPANY_IBAN: '', VITE_COMPANY_UID: '' };
-  const vite = spawn(process.execPath, [join(ROOT, 'node_modules/vite/bin/vite.js'), '--host', '127.0.0.1', '--port', String(port), '--strictPort'],
+  const vite = spawn(process.execPath, [join(ROOT, 'node_modules/vite/bin/vite.js'), '--host', '127.0.0.1', '--port', String(port), '--strictPort',
+    ...(process.env.EMU_VITE_CONFIG ? ['--config', process.env.EMU_VITE_CONFIG] : [])],
     { cwd: ROOT, env: viteEnv, stdio: ['ignore', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
   report.pids.vite = vite.pid;
   vite.stdout.on('data', chunk => appendFileSync(join(out, 'vite.log'), chunk));
