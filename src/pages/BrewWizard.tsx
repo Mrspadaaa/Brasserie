@@ -1,6 +1,5 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
-import { MaltDetails } from '../ui/MaltDetails';
 import './recipe-wizard.css';
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -28,7 +27,7 @@ import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCan
   tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
   recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
-import { defaultBrewVolume } from '../domain/brewEquipment';
+import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
@@ -36,6 +35,18 @@ import { currentInstallation, snapshotBrewhouse } from '../domain/brewPreference
 import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
 import { normalizeRecipeImport } from '../domain/recipeImport';
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
+// Étape Identité : r4-a, la maquette choisie le 31.10 (D205, D206). Chaque nombre est un curseur, et se tape.
+import '../ui/identite/identite.css';
+import { CarteVolume } from '../ui/identite/CarteVolume';
+import { CarteEbullition } from '../ui/identite/CarteEbullition';
+import { PlagesStyle } from '../ui/identite/PlagesStyle';
+import { TuilesMateriel } from '../ui/identite/TuilesMateriel';
+import { InterrupteurNolo } from '../ui/identite/InterrupteurNolo';
+import { VolumesReplies } from '../ui/identite/VolumesReplies';
+import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume } from '../ui/identite/regles';
+import { aAdopter, alertesDeMateriel, lignePremierPlan, resumeVolumes } from '../ui/identite/alertes';
+import { teinteDuStyle } from '../ui/identite/teinteStyle';
+import { fermenterRecommendation } from '../domain/fermenterPlanning';
 import { computeBeerColor } from '../domain/beerColor';
 import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
@@ -93,7 +104,9 @@ import { SegmentedControl } from '../ui/SegmentedControl';
 import { QuantityStepper } from '../ui/QuantityStepper';
 import { CycleTag } from '../ui/CycleTag';
 import { PresetChips } from '../ui/PresetChips';
-import { IngredientPicker } from '../ui/IngredientPicker';
+import { EtapeFermentescibles } from '../ui/fermentescibles/EtapeFermentescibles';
+import { plageEbc } from '../ui/identite/plages';
+import { teinte as teinteEbc } from '../ui/fermentescibles/modele';
 import { applyCatalogueYeast } from '../domain/yeastCatalogue';
 import { completeFromStockReferences } from '../domain/localStockFacts';
 import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
@@ -109,7 +122,7 @@ import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoCo
 import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
 import { BrewSheetWithCompanion as SyncBrewSheet } from '../ui/BrewSheetWithCompanion';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
-import { evaluateNoloRecipe } from '../domain/nolo';
+import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
   retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
   type WaterProfileMode } from '../domain/wizardSourceValues';
@@ -590,6 +603,34 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
 
   const [step, setStep] = useState<StepId>(restoredDraft?.step ?? seed?.step ?? 'identite');
+
+  // Banc local de l'étape Malts/sucres (p8-port) : `?malts=maquette` (développement seulement, éliminé du bundle de production) pose la recette et le
+  // stock de la maquette s1, SIMULÉS (src/ui/fermentescibles/apercuDev.ts), et passe à l'étape ; `?malts=sucre` (ou fruit, huit, vide, couleurs)
+  // choisit l'état (le hash ferait partir le wizard : popstate de l'app). Le stock simulé ne touche aucune donnée : un article créé là reste ici.
+  const [stockApercu, setStockApercu] = useState<StockItem[] | null>(null);
+  const stockPourEtape = stockApercu ?? stockItems;
+  const [creerApercu, setCreerApercu] = useState<((s: StockItem[], n: string, c: string, u: string) => StockItem) | null>(null);
+  const creerArticleEtape = (name: string, category: string, unit: string): StockItem => {
+    if (!stockApercu || !creerApercu) return onCreateStockItem(name, category, unit);
+    const cree = creerApercu(stockApercu, name, category, unit);
+    setStockApercu([...stockApercu, cree]);
+    return cree;
+  };
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const q = new URLSearchParams(location.search).get('malts');
+      if (q === null) return;
+      const etat = q && q !== 'maquette' ? q : '';
+      import('../ui/fermentescibles/apercuDev').then(({ apercuMalts, articleApercu }) => {
+        const a = apercuMalts(etat);
+        setCreerApercu(() => articleApercu);
+        setStockApercu(a.stock); setFermentables(a.fermentables); setStyle(a.style); setVolumeL(a.volumeL); setStep('fermentescibles');
+        // Les contrôles de la maquette attendent que l'état soit posé : il se dit sur <body>.
+        setTimeout(() => { document.body.dataset.apercu = etat || 'repos'; }, 80);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [validationRequested, setValidationRequested] = useState(false);
   const [focusIssue, setFocusIssue] = useState<RecipeFieldIssue>();
   const [saveError, setSaveError] = useState('');
@@ -669,7 +710,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * re-focaliserait à chaque rendu et l'on ne pourrait plus en sortir.
    */
   const coarse = useCoarsePointer();
-  const [focusFermentable, setFocusFermentable] = useState<number | null>(null);
   const [focusHop, setFocusHop] = useState<number | null>(null);
 
   /*
@@ -678,9 +718,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * remontage ultérieur de ce même rang — un changement de clé, un tri — ne
    * vienne pas reprendre le focus sous les doigts du brasseur.
    */
-  useEffect(() => {
-    if (focusFermentable !== null) setFocusFermentable(null);
-  }, [focusFermentable]);
   useEffect(() => {
     if (focusHop !== null) setFocusHop(null);
   }, [focusHop]);
@@ -1261,43 +1298,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   }, [ferment]);
 
   // --- Actions --------------------------------------------------------------
-  const addFermentable = (ingName: string, item?: StockItem) => {
-    if (!ingName || fermentables.some((f) => f.kind === addKind && (item?.ref ? f.stockItemRef === item.ref : !f.stockItemRef && f.name === ingName))) return;
-    /*
-     * ⚠️ AU CLAVIER, LE CURSEUR SUIT.
-     *
-     * Demandé ainsi : « pour les malts sur PC, je veux juste avoir à taper le
-     * nom et la quantité au clavier ». Le nom se tapait déjà — la liste se
-     * valide à Entrée — mais il fallait ensuite lâcher le clavier et aller
-     * chercher le champ de poids à la souris. On mémorise donc le rang à
-     * ouvrir, et sa quantité prend le focus dès qu’elle est montée.
-     *
-     * ⚠️ Uniquement au pointeur FIN. Sur un téléphone, donner le focus à un
-     * champ fait monter le clavier par-dessus la liste qu’on vient d’utiliser :
-     * ce qui accélère la saisie au clavier la gênerait au doigt.
-     */
-    if (!coarse) setFocusFermentable(fermentables.length);
-    const def = KIND_DEF[addKind];
-    setFermentables([
-      ...fermentables,
-      {
-        name: ingName,
-        stockItemRef: item?.ref,
-        // Zéro, pas une quantité plausible : c'est au brasseur de la poser.
-        weightKg: 0,
-        kind: addKind,
-        use: def.use,
-        fermentabilityPct: def.fermentability,
-        colorEbc: item?.colorEbc ?? (addKind === 'grain' ? undefined : 0),
-        potentialPpg: item?.potentialPpg ?? def.ppg,
-        ...(def.use === 'fermentation' ? { dayOffset: 3 } : {})
-      }
-    ]);
-  };
-
-  const patchFermentable = (index: number, patch: Partial<Fermentable>) =>
-    setFermentables(fermentables.map((f, i) => (i === index ? { ...f, ...patch } : f)));
-
   /**
    * Admission of the water analysis a partial import brings without a reference: decided against what the recipe
    * holds, before any change, and shown in the preview with the same rule.
@@ -1786,12 +1786,25 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * son quart d'heure de plus va lui coûter à la cuve — et c'est justement le
    * chiffre qui, depuis la correction du 04.09, dépend enfin de la durée.
    */
-  const evaporationHint = useMemo(() => {
-    const parHeure = brewhouse?.equipment?.boilOffLPerHour ?? (volumeL * (brewhouse?.boilOffRatePct ?? 10)) / 100;
-    const perdu = Math.round(parHeure * (boilMin / 60) * 10) / 10;
-    if (!(perdu > 0)) return undefined;
-    return `${formatDecimal(perdu)} L évaporés — autant d’eau à prévoir en plus dans la cuve.`;
-  }, [volumeL, boilMin, brewhouse]);
+  // r4-a : la bulle « ~3 L évaporés » (le débit du profil, `boilOffLPerHour`) et la barre de la cuve. Le volume avant
+  // ébullition vient du moteur (pertes de fond, houblons, contraction), pas d'une addition faite ici.
+  const evaporationIdentite = useMemo(
+    () => evaporation({ boilOffLPerHour: brewhouse?.equipment?.boilOffLPerHour, boilOffRatePct: brewhouse?.boilOffRatePct, volumeL, minutes: boilMin }),
+    [volumeL, boilMin, brewhouse]
+  );
+  /** La capacité du fermenteur pour CE brassin se range dans l'installation figée de la recette (`details.brewhouse`). */
+  const setCapaciteFermenteur = (capaciteL: number) => {
+    const source = brewhouse;
+    if (!source?.equipment || !(capaciteL > 0)) return;
+    setDetails(d => ({ ...d, brewhouse: { ...snapshotBrewhouse(source), equipment: { ...source.equipment!, fermenterCapacityL: capaciteL } } }));
+  };
+  const [materielOuvert, setMaterielOuvert] = useState(false);
+  const ouvrirFermenteur = () => {
+    setMaterielOuvert(true);
+    requestAnimationFrame(() => document.getElementById('wz-fermenteur')?.focus());
+  };
+  // r4-a : les deux tuiles du bas sont fermées et côte à côte au repos. Une installation à adopter se dit au premier plan (ligne d'alerte),
+  // avec un bouton qui ouvre « Matériel » ; la notice d'une adaptation se lit sous les tuiles. Rien ne s'ouvre seul.
   const stepIndex = STEPS.findIndex((s) => s.id === step);
   /** Le message de reprise ou de conservation du brouillon : ni erreur ni événement, il ne prend plus de ligne. */
   const messageDeBase = /^(Brouillon (repris|conservé) sur cet appareil|Changement appliqué et brouillon conservé sur cet appareil).$/.test(draftNotice);
@@ -2286,28 +2299,29 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       {hasMetrics && (
         <div
           className={`recipe-metrics panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
-                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' ? 'hidden' : 'flex'}`}
+                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-baseline ${step === 'eau' ? 'hidden' : 'flex'}`}
         >
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">Grain</span>
             <span className="reading text-sm sm:text-base">{Units.format(totalGrist, 'kg')}</span>
           </div>
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">OG</span>
             <span className="reading text-sm sm:text-base text-ebc-straw">
               {(step === 'levure' ? og : ogPredicted) ? (step === 'levure' ? og : ogPredicted)!.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
             </span>
           </div>
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">{!(hopV4Actif && mesuresV4) && hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
             {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>}
           </div>
-          <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
+          <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">EBC</span>
             <span className="flex items-center gap-1">
               {color && (
                 <span
-                  className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700 ${color.swatch}`}
+                  className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700"
+                  style={{ background: teinteEbc(color.ebc) }}
                   aria-hidden
                 />
               )}
@@ -2328,33 +2342,66 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           setStep(step);
         }} />}
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-        {['fermentescibles', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
-          scope={step === 'fermentescibles' ? 'malt' : undefined}
+        {/* À l'étape Malts/sucres, les données de fiche à compléter passent sous l'écran choisi (il n'y est pas) ; au récapitulatif, elles restent en tête. */}
+        {step === 'recap'&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
           onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
           hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} onAutomatic={applyAutomatic}/></Suspense>}
-      {step === 'identite' && (
+      {step === 'identite' && (() => {
+        // r4-a (choisie le 31.10) : chaque nombre est un curseur, et se tape. Les fonctions de l'ancien bloc restent :
+        // nom, style (et son référentiel), repères du style (plages, source, propositions d'empâtage et de conduite),
+        // volume, ébullition, NOLO, choix pour ce brassin, matériel du plan, adaptations, résumé et alertes d'installation.
+        const recette = build();
+        const equipement = brewhouse?.equipment;
+        const reco = fermenterRecommendation(recette, equipement);
+        const cible = installationNeedsAdoption ? configuredBrewhouse : brewhouse;
+        const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
+        // La famille se lit sur le nom saisi, puis sur le nom du style résolu (un code « 16D » ne dit rien, « Foreign Extra Stout » oui).
+        const teinte = teinteDuStyle(style) ?? (styleRepere ? teinteDuStyle(styleRepere.name) : null);
+        const recetteVide = fermentables.length === 0 && hops.length === 0;
+        const noloActif = !!details.nolo?.enabled;
+        const problemesInstallation = recipeInstallationIssues(recette, configuredBrewhouse);
+        const volumeAdapte = defaultBrewVolume(cible);
+        // Le moût d'avant ébullition : UNE source, le preBoilHotL de la recette (plan d'eau du moteur), le même nombre que
+        // « Avant ébullition · à chaud » du bloc « Volumes et matériel ». Sans plan d'eau (pas de malts) : inconnu, la barre dit « — ».
+        const avantMoteur = avantEbullitionDuPlan(recette.preBoilHotL, evaporationIdentite?.litres);
+        // Les alertes d'installation (verdict n° 1) : le dessin dit déjà le fermenteur plein (« +N L de trop » sous le volume) et la
+        // cuve qui déborde (« +N L de trop » sur la barre). Au premier plan, une seule ligne, la seule que rien ne dessine
+        // (le rinçage) ; le reste est dit par le dessin ou dans la tuile Matériel. « À adopter » est le sous-titre de Matériel (n° 7).
+        const phrasesInstallation = (equipement || installationNeedsAdoption && configuredBrewhouse?.equipment) ? problemesInstallation : [];
+        const etatFermenteur = etatVolume(volumeL, equipement?.fermenterCapacityL).genre;
+        const grainEmpatage = (recette.fermentables ?? []).filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage').reduce((s, f) => s + f.weightKg, 0);
+        const controleEquipement = equipement && recette.waterPlan ? equipmentCheck(equipement, {
+          volumeL: recette.volumeL, grainKg: grainEmpatage, mashL: recette.waterPlan.mashWaterL, spargeL: recette.waterPlan.spargeWaterL,
+          preBoilHotL: recette.preBoilHotL, preferences: (recette.brewhouse ?? brewhouse)?.preferences, fermenterHeadspacePct: reco?.headspacePct
+        }) : undefined;
+        const lignePremier = lignePremierPlan(phrasesInstallation,
+          { fermenteur: etatFermenteur === 'plein' || etatFermenteur === 'trop', cuve: !!barreCuve(avantMoteur?.litres, avantMoteur?.evapL, equipement?.kettleWorkingL)?.deborde },
+          { chaudL: controleEquipement?.spargeHotL, maxL: controleEquipement?.spargeMaximumHotL ?? undefined });
+        const alertesInstallation = lignePremier.texte
+          ? <p role="status" className="text-xs text-ebc-amber" data-role="alerte-installation">{lignePremier.texte}{lignePremier.autres > 0 && <> · +{lignePremier.autres} dans Matériel</>}</p>
+          : null;
+        const installationAAdopter = installationNeedsAdoption || aAdopter(phrasesInstallation);
+        const resumeVol = resumeVolumes({ avantL: avantMoteur?.litres, cuveL: equipement?.kettleWorkingL, volumeL, capaciteL: equipement?.fermenterCapacityL });
+        const alertesMat = alertesDeMateriel(phrasesInstallation);
+        return (
         <>
-          {/*
-            Le chemin le plus rapide vers une recette complète : la coller.
-            Ressaisir quatre malts, huit ajouts de houblon avec leur moment, la
-            levure et les paliers prend vingt minutes et se trompe.
-          */}
-          <button
-            type="button"
-            onClick={() => setImporting(true)}
-            className="min-h-touch rounded-control border border-ebc-straw/50 px-3
-                       text-ebc-straw text-sm font-medium flex items-center justify-center gap-2 py-1.5"
-          >
-            <ClipboardPaste className="w-4 h-4 sm:w-5 sm:h-5" />
-            Coller une recette trouvée
-          </button>
+          {/* Le chemin le plus rapide vers une recette complète est de la coller ; dans le corps, seulement quand la recette est vide
+              (l'icône de l'en-tête sert ensuite). */}
+          {recetteVide && (
+            <button type="button" onClick={() => setImporting(true)} className="idn-coller self-start" data-element="r4a-etats">
+              <ClipboardPaste className="w-3.5 h-3.5" aria-hidden />
+              Coller une recette trouvée
+            </button>
+          )}
 
-          <Section title="Identité">
-          <FormNav className="space-y-2.5 sm:space-y-3.5" onSubmit={() => go(1)}>
-            <Field label="Nom de la bière" htmlFor="wz-title" error={fieldError('wz-title')}>
+          <FormNav className="idn-c" onSubmit={() => go(1)}>
+            <div className="idn-id">
               <TextInput
                 id="wz-title"
                 name="recipe_title_label"
+                aria-label="Nom de la bière"
+                className="idn-nom"
+                data-element="r4a-nom"
                 placeholder="Milk Stout #2, NEIPA Tropicale…"
                 value={name}
                 onChange={setName}
@@ -2362,217 +2409,126 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 aria-invalid={!!fieldError('wz-title')}
                 aria-describedby={fieldError('wz-title') ? 'wz-validation' : undefined}
               />
-            </Field>
-
-            <Field label="Style">
-              <Combobox
-                value={style}
-                onChange={changeStyle}
-                options={knownStyles.map((s) => ({ value: s, label: s }))}
-                placeholder="NEIPA, Stout, Saison…"
-                ariaLabel="Style de la bière"
-                allowCreate
-                onCreate={changeStyle}
-                createLabel={(v) => `Nouveau style « ${v} »`}
-              />
-            </Field>
+              <div className={`idn-pas${styleRepere ? ' idn-avec-code' : ''}`} data-element="r4a-style" style={teinte ? ({ '--idn-teinte': teinte } as React.CSSProperties) : undefined}>
+                <i aria-hidden />
+                <div className="idn-combo">
+                  <Combobox
+                    value={style}
+                    onChange={changeStyle}
+                    options={knownStyles.map((s) => ({ value: s, label: s }))}
+                    placeholder="NEIPA, Stout, Saison…"
+                    ariaLabel="Style de la bière"
+                    allowCreate
+                    onCreate={changeStyle}
+                    createLabel={(v) => `Nouveau style « ${v} »`}
+                  />
+                </div>
+                {styleRepere && <small>{styleRepere.code}</small>}
+              </div>
+            </div>
+            {fieldError('wz-title') && <p role="alert" className="text-xs text-alert leading-snug">{fieldError('wz-title')}</p>}
 
             {matchingStyles.length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchingStyles.map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
-            <BrewingStyleDetails recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}/>
-            <div className="border-t border-cave-800 pt-2 space-y-1">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-              <InlineNum id="wz-volume" label="Volume en fermenteur" name="Volume en fermenteur" value={volumeL} onValue={setVolumeL} emptyValue={Number.NaN} required aria-invalid={!!fieldError('wz-volume')} aria-describedby={fieldError('wz-volume') ? 'wz-validation' : undefined} min={1} unit="L" />
-              <InlineNum id="wz-boil" label="Durée d’ébullition" name="Durée d’ébullition" value={boilMin} onValue={setBoilMin} emptyValue={Number.NaN} required aria-invalid={!!fieldError('wz-boil')} aria-describedby={fieldError('wz-boil') ? 'wz-validation' : undefined} min={0} integer unit="min" />
-              </div>
-              <p className="text-xs text-cave-400">{evaporationHint}</p>
-            </div>
-            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
-              <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>applyFermentationRecipe(next)}/></Suspense>}
-
-            {(brewhouse?.equipment || installationNeedsAdoption && configuredBrewhouse?.equipment)&&<div className="space-y-2">
-              <RecipeInstallationChoice recipe={build()} profile={brewhouse} onChange={next=>setDetails(d=>({...d,installation:next.installation}))}/>
-              <p className="text-sm text-cave-200">{installationNeedsAdoption ? 'Installation à adopter' : 'Matériel du plan'} : {(installationNeedsAdoption ? configuredBrewhouse : brewhouse)?.name}</p>
-              {volumeL!==defaultBrewVolume(installationNeedsAdoption ? configuredBrewhouse : brewhouse)&&<button type="button" className="equipment-button" onClick={()=>resizeForEquipment(installationNeedsAdoption ? configuredBrewhouse : brewhouse)}>Adapter la recette à {defaultBrewVolume(installationNeedsAdoption ? configuredBrewhouse : brewhouse)} L</button>}
-              {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="equipment-button" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
-              {equipmentNotice&&<p role="status" className="text-sm text-ebc-straw">{equipmentNotice}</p>}
-              <BrewEquipmentSummary recipe={build()} profile={brewhouse}/>
-              {recipeInstallationIssues(build(), configuredBrewhouse).map(issue=><p key={issue} role="status" className="text-xs text-ebc-amber">{installationNeedsAdoption && configuredBrewhouse?.equipment
-                ? 'Adopte ton installation avec « Adapter à mon matériel actuel » avant de lancer ce brassin.'
-                : issue}</p>)}
-            </div>}
-
-          </FormNav>
-          </Section>
-        </>
-      )}
-
-      {/* ---------------------------------------------------- ÉTAPE 2 */}
-      {step === 'fermentescibles' && (
-        <Section
-          title="Fermentescibles"
-          hint="Le lactose ne fermente pas ; le sucre fermente à 100 %."
-        >
-          <div className="space-y-2 sm:space-y-3">
-            {/*
-              ⚠️ Cinq cases en grille pesaient deux cent vingt pixels — le quart
-              d'un écran de téléphone — pour un réglage qu'on touche une fois
-              par recette, et qui vaut « grain » neuf fois sur dix. La pastille
-              rotative tient sur la ligne de son propre texte, et l'explication
-              de la famille courante se lit juste à côté au lieu d'en dessous.
-            */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-cave-400 shrink-0">Ajouter</span>
-              <CycleTag<FermentableKind>
-                name="Famille de fermentescible"
-                value={addKind}
-                options={FERMENTABLE_KINDS}
-                onChange={setAddKind}
-                label={(k) => KIND_DEF[k].label}
-                tone={(k) => KIND_TONE[k]}
-              />
-              {!tight && (
-                <span className="text-sm text-cave-400 leading-snug min-w-0">
-                  {KIND_DEF[addKind].hint}
-                </span>
-              )}
-            </div>
-
-            <IngredientPicker
-              categories={KIND_DEF[addKind].stock}
-              items={stockItems}
-              value=""
-              onChange={addFermentable}
-              onCreate={(n) => {
-                const created = onCreateStockItem(n, KIND_DEF[addKind].newCat, 'kg');
-                addFermentable(created.name, created);
-              }}
-              placeholder={`Ajouter — ${KIND_DEF[addKind].label.toLowerCase()}…`}
-              ariaLabel={`Ajouter un fermentescible de la famille ${KIND_DEF[addKind].label}`}
+            <PlagesStyle
+              recipe={recette}
+              style={styleRepere}
+              styles={styles}
+              valeurs={{ og: ogPredicted, ibu, fg: fgPredicted, abv: abvPredicted, ebc: color?.ebc }}
+              onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}
             />
 
-            {fermentables.length === 0 ? (
-              <p className="text-sm text-cave-400 py-1">
-                Rien encore.
-              </p>
-            ) : (
-              <ul className="space-y-1 sm:space-y-2">
-                {fermentables.map((f, i) => {
-                  return (
-                    <li
-                      key={`${f.name}-${f.kind}-${i}`}
-                      className="panel p-1.5 sm:p-2.5 flex flex-col gap-1"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <span className="block text-sm font-semibold text-cave-50 truncate">{f.name}</span>
-                          {/*
-                            ⚠️ La famille NE TOURNE PAS. Elle l'a fait un temps,
-                            et c'était une faute : rien n'empêchait de classer un
-                            Maris Otter en « lactose », ce qui le fait passer à
-                            0 % de fermentescibilité et remonte la densité finale
-                            prévue de plusieurs points — sur un malt qui, en
-                            vrai, fermente entièrement. La famille se décide au
-                            moment d'ajouter, où elle choisit le rayon du stock ;
-                            ici elle se lit, et se corrige en retirant la ligne.
+            <CarteVolume
+              volumeL={volumeL}
+              onVolume={setVolumeL}
+              capaciteL={equipement?.fermenterCapacityL}
+              profilL={configuredBrewhouse?.equipment?.fermenterCapacityL}
+              conseilL={reco?.recommendedFillL}
+              cuveL={equipement?.kettleWorkingL}
+              avantEbullition={avantMoteur}
+              onOuvrirFermenteur={ouvrirFermenteur}
+              invalide={!!fieldError('wz-volume')}
+              decrit={fieldError('wz-volume') ? 'wz-validation' : undefined}
+            />
+            {alertesInstallation}
+            <CarteEbullition
+              minutes={boilMin}
+              onMinutes={setBoilMin}
+              evaporation={evaporationIdentite}
+              invalide={!!fieldError('wz-boil')}
+              decrit={fieldError('wz-boil') ? 'wz-validation' : undefined}
+            />
 
-                            Ce qui la remplace pour un grain, c'est sa CLASSE DE
-                            COULEUR. C'est l'information qu'on cherche en relisant
-                            une facture de grain : base, ambré, brun ou torréfié
-                            disent en un mot ce que le malt apporte, là où « 120
-                            EBC » demande de connaître l'échelle par cœur.
+            <InterrupteurNolo actif={noloActif} onBascule={on => applyFermentationRecipe({ ...recette, nolo: { ...(details.nolo ?? newNoloConfig()), enabled: on } })} />
+            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
+              <Suspense fallback={noloActif ? <p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p> : null}><NoloPanel recipe={recette} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}
 
-                            Le MOMENT, lui, tourne — comme l'étape d'un houblon.
-                          */}
-                          <span className="flex items-center gap-1 flex-wrap mt-0.5">
-                            {f.kind !== 'grain' && <span className="text-sm text-cave-200">{KIND_DEF[f.kind].label}</span>}
-                            <CycleTag
-                              name={`Moment de ${f.name}`}
-                              value={f.use}
-                              options={FERMENTABLE_USES}
-                              onChange={(u) => patchFermentable(i, { use: u })}
-                              label={(u) => USE_LABEL[u]}
-                              tone={(u) => USE_TONE[u]}
-                            />
-                            <span className="text-sm text-cave-400 truncate">
-                              {f.kind === 'grain'
-                                ? totalGrist > 0
-                                  ? `${((f.weightKg / totalGrist) * 100).toFixed(0)} % du grain`
-                                  : ''
-                                : details.nolo?.enabled && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : `${f.fermentabilityPct ?? 100} % ferm.`}
-                            </span>
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <div className="w-32 sm:w-36">
-                            <QuantityStepper
-                              id={`wz-fermentable-${i}`}
-                              emptyValue={0}
-                              aria-invalid={!!fieldError(`wz-fermentable-${i}`)}
-                              aria-describedby={fieldError(`wz-fermentable-${i}`) ? 'wz-validation' : undefined}
-                              label=""
-                              value={f.weightKg}
-                              onChange={(v) => patchFermentable(i, { weightKg: v })}
-                              unit="kg"
-                              category="Malt"
-                              compact
-                              autoFocus={!coarse && focusFermentable === i}
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setFermentables(fermentables.filter((_, j) => j !== i))}
-                            aria-label={`Retirer ${f.name}`}
-                            className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {f.use === 'fermentation' && (
-                        <div className="pt-1 border-t border-cave-850">
-                          <Field
-                            label="Jour d’ajout en fermentation"
-                            hint="Le sucre ajouté après le départ de la fermentation ne stresse pas la levure."
-                          >
-                            <NumberInput
-                              min={0}
-                              value={f.dayOffset ?? 0}
-                              onValue={(v) =>
-                                patchFermentable(i, { dayOffset: v })}
-                              integer
-                              pad
-                              className={inputClass}
-                            />
-                          </Field>
-                        </div>
-                      )}
-
-                      {f.kind === 'lactose' && f.weightKg > 0 && (
-                        <p className="text-sm text-ebc-amber leading-snug">
-                          Non fermentescible : il remonte la densité finale et reste en bouche.
-                        </p>
-                      )}
-
-                      {f.kind === 'grain' && <MaltDetails malt={f}
-                        onChange={patch => patchFermentable(i, patch)}
-                        onLearnIngredient={onLearnIngredient} />}
-                    </li>
-                  );
-                })}
-              </ul>
+            {(equipement || installationNeedsAdoption && configuredBrewhouse?.equipment) && (
+              <TuilesMateriel
+                espaceLibrePct={reco?.headspacePct ?? equipement?.fermenterHeadspacePct}
+                baseEspaceLibre={reco?.basis}
+                contenuEspace={<RecipeInstallationChoice recipe={recette} profile={brewhouse} onChange={next=>setDetails(d=>({...d,installation:next.installation}))}/>}
+                materielNom={cible?.name}
+                aAdopter={installationAAdopter}
+                capaciteL={equipement?.fermenterCapacityL}
+                profilL={configuredBrewhouse?.equipment?.fermenterCapacityL}
+                onCapacite={setCapaciteFermenteur}
+                onRaz={() => { const c = configuredBrewhouse?.equipment?.fermenterCapacityL; if (c) setCapaciteFermenteur(c); }}
+                ouvertMateriel={materielOuvert}
+                onOuvertMateriel={setMaterielOuvert}
+                contenuMateriel={<>
+                  {/* r4-a à son dépli : « Fermenteur [N] L » et « ↺ profil ». Le nom du matériel est déjà le sous-titre de la tuile.
+                      Les deux adaptations tiennent sur une ligne de liens ; le résumé des volumes, avec ses alertes, est replié sur une ligne. */}
+                  {((volumeL!==volumeAdapte) || ((equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption)) && (
+                    <div className="idn-liens" data-role="adapter">
+                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {volumeAdapte} L</button>}
+                      {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
+                    </div>
+                  )}
+                  <VolumesReplies resume={resumeVol}>
+                    <BrewEquipmentSummary recipe={recette} profile={brewhouse}/>
+                    {alertesMat.length > 0 && <ul className="idn-alertes-mat" data-role="alertes-materiel">{alertesMat.map(a => <li key={a}>{a}</li>)}</ul>}
+                  </VolumesReplies>
+                </>}
+              />
             )}
+            {equipmentNotice&&<p role="status" className="text-sm text-ebc-straw">{equipmentNotice}</p>}
+          </FormNav>
+        </>
+        );
+      })()}
 
-            {gravityWarning?.note && (
-              <p className="flex items-start gap-2 text-sm text-ebc-amber leading-snug">
-                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <span>{gravityWarning.note}</span>
-              </p>
-            )}
-          </div>
-        </Section>
-      )}
+      {/* ---------------------------------------------------- ÉTAPE 2 */}
+      {/* s1 (D222, sur p6-b2) : l'étape est son écran choisi, `src/ui/fermentescibles/`. Le fil d'étapes dit déjà « Fermentescibles » :
+          pas de titre de section. Les nombres (OG, couleur, rendement, plages du style) sont ceux de l'app, passés tels quels. */}
+      {step === 'fermentescibles' && (() => {
+        const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
+        const ebcPlage = plageEbc(styleRepere?.stats.srm);
+        return (
+          <EtapeFermentescibles
+            fermentables={fermentables}
+            onFermentables={setFermentables}
+            stockItems={stockPourEtape}
+            famille={addKind}
+            onFamille={setAddKind}
+            defs={KIND_DEF}
+            familles={FERMENTABLE_KINDS}
+            onCreateStockItem={creerArticleEtape}
+            onLearnIngredient={onLearnIngredient}
+            nolo={!!details.nolo?.enabled}
+            og={ogPredicted ?? null}
+            teinteBiere={color ? { ebc: color.ebc, label: color.label } : null}
+            rendementPct={efficiency}
+            rendementDeclare={details.efficiencyPct != null || brewhouse?.efficiencyPct != null}
+            ogPlage={styleRepere?.stats.og}
+            ebcPlage={ebcPlage}
+            styleCode={styleRepere?.code ?? null}
+            ebcVise={ebcPlage ? (ebcPlage.min + ebcPlage.max) / 2 : null}
+            ebcMax={ebcPlage?.max ?? null}
+            alerteDensite={gravityWarning?.note ?? null}
+            erreur={fieldError}
+          />
+        );
+      })()}
 
       {/* ---------------------------------------------------- ÉTAPE 3 */}
       {/* Drapeau hopV4 allumé : l'étape est son écran choisi (T12, #170). Le fil d'étapes du wizard dit déjà « Houblons » :

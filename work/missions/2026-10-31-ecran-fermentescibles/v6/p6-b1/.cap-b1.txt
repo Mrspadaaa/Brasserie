@@ -1,0 +1,64 @@
+// D219 — − et + sur la masse de chaque ligne.
+const bouton = (i, d) => `[data-sel="${i}"] [data-role~="masse-${d > 0 ? 'plus' : 'moins'}"]`;
+const etiq = (i, d) => p.evaluate((s) => document.querySelector(s).getAttribute('aria-label'), bouton(i, d));
+const plat = () => p.evaluate(() => { const e = document.querySelector('[data-role="bal"]'); return Math.round(e.getBoundingClientRect().top) + ' ' + e.querySelector('[data-role="bh"] b').textContent; });
+const centre = (s) => p.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }, s);
+await p.goto(url); await pret();
+for (const [i, d] of [[0, 1], [0, -1], [1, 1]]) { const c = await centre(bouton(i, d)); if (c.w < 24 || c.h < 24) err.push(`cible ${i} ${d} : ${c.w} × ${c.h}`); }
+console.log('cible + :', JSON.stringify(await centre(bouton(0, 1))));
+if ((await etiq(0, 1)) !== 'Ajouter 100 g de Pilsner Malz' || (await etiq(0, -1)) !== 'Retirer 100 g de Pilsner Malz') err.push('noms : ' + (await etiq(0, 1)) + ' / ' + (await etiq(0, -1)));
+// Pilsner +, tenu 1,2 s : la masse défile (pendant), puis s'arrête au relâcher.
+const p0 = await plat(); const b0 = await bandeau();
+const c0p = await centre(bouton(0, 1));
+await p.touchscreen.touchStart(c0p.x, c0p.y); await new Promise((r) => setTimeout(r, 1200));
+await p.screenshot({ path: out('plus-pendant') });
+L = await lignes(); console.log('+ tenu, pendant :', L[0], '|', await bandeau());
+const kgP = parseFloat(L[0].split(' ').pop().replace(',', '.'));
+if (!(kgP >= 5.4 && kgP <= 6.0)) err.push('+ tenu : ' + L[0]);
+await p.touchscreen.touchEnd(); await pret();
+const kgR = (await lignes())[0]; await new Promise((r) => setTimeout(r, 500));
+if ((await lignes())[0] !== kgR) err.push('+ tenu : la masse défile encore après le relâcher');
+L = await lignes(); console.log('+ tenu, relâché :', L[0]);
+if (L[1] !== 'Weizenmalz hell 1,5' || L[2] !== 'Haferflocken 1,5') err.push('+ tenu : une autre masse a bougé ' + L.join(' | '));
+if ((await plat()) !== p0) err.push('+ tenu : le plateau a bougé');
+// Après : depuis le repos, un toucher sur + de Pilsner → 5,1 kg ; grain 8,1 ; parts 63 / 19 / 19 ; plateau 5,1.
+await p.goto(url); await pret();
+await tap(bouton(0, 1));
+await p.screenshot({ path: out('plus-apres') });
+L = await lignes(); const bd1 = await bandeau(), P1 = await parts();
+console.log('+ après :', L.join(' | '), '|', bd1, '|', P1.join('/'));
+if (L[0] !== 'Pilsner Malz 5,1' || !/Grain 8,1 kg/.test(bd1) || P1.join('/') !== '63/19/19') err.push('+ après : ' + L.join(' | ') + ' ' + bd1 + ' ' + P1.join('/'));
+if ((await p.evaluate(() => document.querySelector('[data-role="bin"]').value)) !== '5,1') err.push('+ après : le plateau ne suit pas');
+if ((await plat()) !== p0) err.push('+ après : le plateau a bougé');
+if (b0 === bd1) err.push('+ après : le bandeau ne suit pas');
+await tap(bouton(0, -1)); L = await lignes(); if (L[0] !== 'Pilsner Malz 5,0') err.push('− : ' + L[0]);
+// Une masse hors grille se pose sur la grille : 1,04 tapée, + → 1,1 ; − → 1,0 ; puis 0,95 (50 g à 1 kg et dessous).
+await tap('[data-kl="1"]'); await p.keyboard.type('1,04'); await p.keyboard.press('Enter'); await pret();
+await tap(bouton(1, 1)); L = await lignes(); if (L[1] !== 'Weizenmalz hell 1,1') err.push('grille + : ' + L[1]);
+await tap(bouton(1, -1)); await tap(bouton(1, -1)); L = await lignes(); if (L[1] !== 'Weizenmalz hell 0,95') err.push('grille − : ' + L[1]);
+if ((await etiq(1, 1)) !== 'Ajouter 50 g de Weizenmalz hell') err.push('pas réel sous 1 kg : ' + (await etiq(1, 1)));
+// À 0 kg, − ne descend plus : l'ajout « Cara » arrive à 0, − ne change rien, + donne 0,05.
+await p.goto(url); await pret();
+await p.focus('[data-role="ajout"]'); await p.keyboard.type('Cara'); await p.keyboard.press('Enter'); await pret();
+await p.evaluate(() => document.activeElement.blur()); await pret();
+await tap(bouton(3, -1)); L = await lignes(); if (L[3] !== 'Carapils ') err.push('− à 0 : « ' + L[3] + ' »');
+if ((await p.evaluate((s) => document.querySelector(s).getAttribute('aria-disabled'), bouton(3, -1))) !== 'true') err.push('− à 0 : pas marqué inactif');
+await tap(bouton(3, 1)); L = await lignes(); if (L[3] !== 'Carapils 0,05') err.push('+ depuis 0 : ' + L[3]);
+// Dextrose (#sucre), après + : 0,45 kg ; « Ajouter 50 g de Dextrose » ; les grains ne bougent pas.
+await p.goto(url + '#sucre'); await pret();
+if ((await etiq(3, 1)) !== 'Ajouter 50 g de Dextrose') err.push('Dextrose : ' + (await etiq(3, 1)));
+await tap(bouton(3, 1));
+await p.screenshot({ path: out('sucre-apres') });
+L = await lignes(); console.log('Dextrose + :', L.join(' | '));
+if (L[3] !== 'Dextrose 0,45' || L[0] !== 'Pilsner Malz 5,0') err.push('Dextrose + : ' + L.join(' | '));
+if ((await p.evaluate(() => document.querySelector('[data-role="bin"]').value)) !== '0,45') err.push('Dextrose : le plateau ne suit pas');
+// Purée de mangue (#fruit), après − : 0,95 kg.
+await p.goto(url + '#fruit'); await pret();
+await tap(bouton(3, -1));
+await p.screenshot({ path: out('fruit-apres') });
+L = await lignes(); console.log('Mangue − :', L.join(' | '));
+if (L[3] !== 'Purée de mangue 0,95') err.push('Mangue − : ' + L[3]);
+// Tab va de masse en masse (les boutons ne cassent pas le parcours au clavier).
+await p.goto(url); await pret();
+await p.focus('[data-kl="0"]'); await p.keyboard.press('Tab'); const ta = await actif(); if (ta.role !== 'kg-ligne' || !/Weizenmalz/.test(ta.l || '')) err.push('Tab : ' + JSON.stringify(ta));
+const tr2 = await tronque(); if (tr2.length) err.push('± : tronqué ' + tr2.join(', '));

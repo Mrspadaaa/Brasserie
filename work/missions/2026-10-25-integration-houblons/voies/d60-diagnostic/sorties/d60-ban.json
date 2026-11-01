@@ -1,0 +1,174 @@
+[
+ {
+  "recette": "stout S1 (16D)",
+  "stock": "sans stock",
+  "demande": "bannir résineux",
+  "gardeesParLeMoteur": 6,
+  "typesGardes": 4,
+  "retireesParExclue": 0,
+  "montrees": 4,
+  "retireesParType": {},
+  "montreesParType": {
+   "remplacer à IBU égal@b60": 4
+  }
+ },
+ {
+  "recette": "stout S1 (16D)",
+  "stock": "sans stock",
+  "demande": "tropicaux + bannir résineux",
+  "gardeesParLeMoteur": 6,
+  "typesGardes": 4,
+  "retireesParExclue": 0,
+  "montrees": 4,
+  "retireesParType": {},
+  "montreesParType": {
+   "remplacer à IBU égal@b60": 1,
+   "ajouter@b10": 3
+  }
+ },
+ {
+  "recette": "stout S1 (16D)",
+  "stock": "stock fixture",
+  "demande": "bannir résineux",
+  "gardeesParLeMoteur": 11,
+  "typesGardes": 9,
+  "retireesParExclue": 1,
+  "montrees": 8,
+  "retireesParType": {
+   "remplacer à IBU égal@b60": 1
+  },
+  "montreesParType": {
+   "remplacer à IBU égal@b60": 8
+  }
+ },
+ {
+  "recette": "stout S1 (16D)",
+  "stock": "stock fixture",
+  "demande": "tropicaux + bannir résineux",
+  "gardeesParLeMoteur": 14,
+  "typesGardes": 14,
+  "retireesParExclue": 0,
+  "montrees": 14,
+  "retireesParType": {},
+  "montreesParType": {
+   "remplacer à IBU égal@b60": 5,
+   "ajouter@b10": 7,
+   "assemblage@b10": 2
+  }
+ },
+ {
+  "recette": "21C hazy",
+  "stock": "sans stock",
+  "demande": "bannir résineux",
+  "gardeesParLeMoteur": 8,
+  "typesGardes": 4,
+  "retireesParExclue": 1,
+  "montrees": 3,
+  "retireesParType": {
+   "remplacer à IBU égal@b60": 1
+  },
+  "montreesParType": {
+   "remplacer à masse égale@dryActive": 3
+  }
+ },
+ {
+  "recette": "21C hazy",
+  "stock": "sans stock",
+  "demande": "tropicaux + bannir résineux",
+  "gardeesParLeMoteur": 8,
+  "typesGardes": 4,
+  "retireesParExclue": 0,
+  "montrees": 4,
+  "retireesParType": {},
+  "montreesParType": {
+   "ajouter@b10": 4
+  }
+ },
+ {
+  "recette": "21C hazy",
+  "stock": "stock fixture",
+  "demande": "bannir résineux",
+  "gardeesParLeMoteur": 14,
+  "typesGardes": 13,
+  "retireesParExclue": 2,
+  "montrees": 11,
+  "retireesParType": {
+   "remplacer à IBU égal@b60": 2
+  },
+  "montreesParType": {
+   "remplacer à masse égale@dryActive": 7,
+   "remplacer à IBU égal@b60": 4
+  }
+ },
+ {
+  "recette": "21C hazy",
+  "stock": "stock fixture",
+  "demande": "tropicaux + bannir résineux",
+  "gardeesParLeMoteur": 14,
+  "typesGardes": 14,
+  "retireesParExclue": 0,
+  "montrees": 14,
+  "retireesParType": {},
+  "montreesParType": {
+   "assemblage@dryPost": 2,
+   "ajouter@dryPost": 3,
+   "ajouter@dryActive": 4,
+   "ajouter@b10": 5
+  }
+ },
+ {
+  "recette": "pale ale 18B",
+  "stock": "sans stock",
+  "demande": "bannir résineux",
+  "gardeesParLeMoteur": 6,
+  "typesGardes": 4,
+  "retireesParExclue": 0,
+  "montrees": 4,
+  "retireesParType": {},
+  "montreesParType": {
+   "remplacer à masse égale@dryActive": 4
+  }
+ },
+ {
+  "recette": "pale ale 18B",
+  "stock": "sans stock",
+  "demande": "tropicaux + bannir résineux",
+  "gardeesParLeMoteur": 6,
+  "typesGardes": 4,
+  "retireesParExclue": 0,
+  "montrees": 4,
+  "retireesParType": {},
+  "montreesParType": {
+   "ajouter@b10": 4
+  }
+ },
+ {
+  "recette": "pale ale 18B",
+  "stock": "stock fixture",
+  "demande": "bannir résineux",
+  "gardeesParLeMoteur": 14,
+  "typesGardes": 12,
+  "retireesParExclue": 0,
+  "montrees": 12,
+  "retireesParType": {},
+  "montreesParType": {
+   "remplacer à masse égale@dryActive": 8,
+   "remplacer à masse égale@b10": 4
+  }
+ },
+ {
+  "recette": "pale ale 18B",
+  "stock": "stock fixture",
+  "demande": "tropicaux + bannir résineux",
+  "gardeesParLeMoteur": 14,
+  "typesGardes": 14,
+  "retireesParExclue": 0,
+  "montrees": 14,
+  "retireesParType": {},
+  "montreesParType": {
+   "ajouter@b10": 8,
+   "assemblage@b10": 2,
+   "ajouter@wp": 4
+  }
+ }
+]

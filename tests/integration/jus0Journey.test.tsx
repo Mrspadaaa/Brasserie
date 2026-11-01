@@ -50,9 +50,10 @@ describe('JUS-0 : contrats du parcours justificatif (défauts corrigés en JUS-1
     expect(created).toEqual(['Houblon','Malt']);
   });
 
-  // Décision 117 (PR MVP) : la feuille ne propose plus d'article de stock (B-V3-4, B-V3-5 ouverts) ; le brasseur
-  // choisit ou crée l'article, comme sur `main`.
-  it('C3 — une ligne lue qui existe déjà au stock n’est pas rattachée d’office à cet article, sans écriture avant confirmation',async()=>{
+  // Décision 117 (17.10, PR MVP) : la feuille ne proposait plus d'article de stock (B-V3-4, B-V3-5 ouverts). Levée le 31.10 par la voie
+  // s1-stock (chasse du 17.10 rejouée à 0 fausse proposition) : la ligne est PROPOSÉE à son article, marquée « proposé », et rien n'est
+  // écrit avant « Confirmer ».
+  it('C3 — une ligne lue qui existe déjà au stock est proposée (marque « proposé »), sans écriture avant confirmation',async()=>{
     Object.defineProperty(crypto,'subtle',{configurable:true,value:webcrypto.subtle});
     state.stocks={rawMaterials:[{id:'banc-fume',ref:'banc-fume',name:'Malt fumé du Banc',category:'Malt',unit:'kg',currentStock:2,minStock:0,reorder:false}],cleaning:[],equipment:[]};
     state.scanned.mockResolvedValueOnce({ok:true,model:'rejeu',result:{documentType:'invoice',paymentEvidence:'paid',vendor:'Malterie du Banc SA',date:'12.03.2026',currency:'CHF',invoiceNumber:'MB-1002',
@@ -63,8 +64,9 @@ describe('JUS-0 : contrats du parcours justificatif (défauts corrigés en JUS-1
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode('%PDF-1.4\n').buffer});
     fireEvent.change(view.container.querySelector('input[type="file"]')!,{target:{files:[file]}});
     await screen.findByRole('region',{name:'Vérification du justificatif'});
-    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('none');
-    expect(screen.queryByRole('combobox',{name:'Article'})).toBeNull();
+    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
+    expect(view.container.querySelector('[data-purchase-line] summary')).toHaveTextContent('proposé');
+    expect(view.container.querySelector('[data-purchase-line] summary')).toHaveTextContent('Malt fumé du Banc');
     expect(state.writes).toEqual([]);
   });
 
@@ -183,8 +185,9 @@ describe('JUS-1 : achat déjà enregistré et propositions de stock',()=>{
     expect(state.writes.map(([kind,tx])=>[kind,tx.id])).toEqual([['update','TX-facture-banc-0001']]);
   });
 
-  // Décision 117 (PR MVP) : plus de proposition de stock, donc ni marque « proposé : » ni compte au résumé.
-  it('ne propose aucun article de stock, ni sur la ligne compacte ni dans le résumé, sans écriture',async()=>{
+  // Décision 117 (17.10) coupait les propositions de stock ; levée le 31.10 (voie s1-stock) : la marque « proposé : » et le compte au
+  // résumé reviennent, une ligne de service (mouture) n'en reçoit jamais, et rien n'est écrit avant « Confirmer ».
+  it('propose l’article de stock sur la ligne de stock (marque « proposé », compte au résumé), jamais sur la ligne de service, sans écriture',async()=>{
     state.transactions=[];
     state.stocks={rawMaterials:[],cleaning:[],equipment:[]};
     Object.defineProperty(crypto,'subtle',{configurable:true,value:webcrypto.subtle});
@@ -198,10 +201,11 @@ describe('JUS-1 : achat déjà enregistré et propositions de stock',()=>{
     await screen.findByRole('region',{name:'Vérification du justificatif'});
     const lines=view.container.querySelectorAll('[data-purchase-line] summary');
     expect(lines).toHaveLength(2);
-    expect(lines[0]).not.toHaveTextContent('proposé');
+    expect(lines[0]).toHaveTextContent('proposé');
     expect(lines[1]).not.toHaveTextContent('proposé');
-    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('none');
-    expect(view.container.querySelector('[data-purchase-lines] > summary')).not.toHaveTextContent('proposée par la lecture');
+    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
+    expect(screen.queryByLabelText('Stock ligne 2')).toBeNull();
+    expect(view.container.querySelector('[data-purchase-lines] > summary')).toHaveTextContent('proposée par la lecture');
     expect(state.writes).toEqual([]);
   });
 });

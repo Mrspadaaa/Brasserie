@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>u5 — L'affiche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{width:390px;min-height:844px;margin:0 auto;font-family:"Source Sans 3",system-ui,sans-serif;color:#111;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+.u5-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.u5-top{display:flex;align-items:center;gap:6px;height:50px;padding:0 8px 0 6px}
+.u5-ico{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;color:#333}
+.u5-titre{font-size:20px;font-weight:700;margin-left:2px}
+.u5-titre span{font-weight:400;color:#666;font-size:16px;margin-left:4px}
+.u5-aband{margin-left:auto;font-size:16px;text-decoration:underline;text-underline-offset:3px;padding:4px 6px}
+.u5-fil{display:flex;justify-content:space-between;padding:0 12px;border-bottom:1px solid #DDD}
+.u5-fil a{font-size:14px;color:#666;text-decoration:none;padding:4px 0 8px;position:relative;white-space:nowrap}
+.u5-fil a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:4px;border-radius:2px;background:#DDD}
+.u5-fil a[aria-current]{color:#111;font-weight:600}
+.u5-fil a[aria-current]::after{background:#111}
+.u5-band{margin:8px 8px 0;height:36px;border:1px solid #DDD;background:#F5F5F5;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:14px;color:#666}
+.u5-band b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600;color:#111;margin-left:3px}
+.u5-ibu{display:inline-flex;align-items:center;gap:4px}
+.u5-ibu i{display:inline-block;width:40px;height:8px;border-radius:4px;background:#DDD;position:relative}
+.u5-ibu i::before{content:"";position:absolute;left:18px;width:12px;top:0;bottom:0;background:#9E9E9E;border-radius:4px}
+.u5-ibu i::after{content:"";position:absolute;left:28px;top:-3px;width:2px;height:14px;background:#111}
+.u5-ebc{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;margin:0 2px 0 4px}
+
+.u5-aff{margin:10px 8px 12px;border-radius:8px;background:#fff;border:2px solid #111;overflow:hidden;display:flex;flex-direction:column}
+.u5-ban{height:16px;background:linear-gradient(90deg,#F2C14E,#E0A02E)}
+.u5-in{padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px}
+.u5-nom{display:flex;align-items:center;gap:6px;color:#666}
+.u5-nom input{border:0;background:none;font-size:20px;font-style:italic;font-weight:600;color:#333;width:160px;height:32px;padding:0}
+.u5-sty{display:flex;align-items:flex-end;justify-content:space-between;text-align:left;gap:8px}
+.u5-sty b{font-size:72px;line-height:.92;font-weight:700;letter-spacing:-1px;color:#111}
+.u5-sty span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1px solid #BFBFBF;margin-bottom:4px;flex:0 0 32px}
+.u5-cod{font-size:12px;color:#666;letter-spacing:.5px}
+.u5-nums{display:grid;grid-template-columns:1fr 1fr;border-top:2px solid #111;border-bottom:2px solid #111;margin:6px -14px 0}
+.u5-num{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
+.u5-num + .u5-num{border-left:2px solid #111}
+.u5-num output{font-size:64px;font-weight:600;line-height:1;letter-spacing:-2px}
+.u5-num output small{font-size:20px;letter-spacing:0;margin-left:2px;font-weight:500}
+.u5-num .u5-k{font-size:12px;color:#666}
+.u5-pm{display:flex;gap:6px}
+.u5-pm button{width:48px;height:40px;border-radius:20px;border:1px solid #111;display:grid;place-items:center}
+.u5-pm button:active{background:#111;color:#fff}
+.u5-ferm{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.u5-fh{display:flex;justify-content:space-between;font-size:12px;color:#666}
+.u5-bar{height:56px;border:2px solid #111;border-radius:8px;display:flex;overflow:hidden;background:repeating-linear-gradient(135deg,#fff 0 6px,#EBEBEB 6px 12px);position:relative}
+.u5-bar i{display:flex;align-items:center;padding-left:10px;background:#111;color:#fff;font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;transition:width .2s;white-space:nowrap}
+.u5-bar em{position:absolute;right:10px;top:0;bottom:0;display:flex;align-items:center;font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;color:#111}
+.u5-bar u{position:absolute;top:0;bottom:0;border-left:2px dashed #9C7020}
+.u5-bas{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.u5-ev{font-size:14px;color:#333;line-height:1.35}
+.u5-ev b{font-family:"IBM Plex Mono",monospace;font-weight:600}
+.u5-ev small{display:block;font-size:12px;color:#666}
+.u5-tamp{width:120px;height:120px;border-radius:50%;border:2px dashed #9E9E9E;color:#666;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-8deg);transition:all .2s;flex:0 0 120px}
+.u5-tamp b{font-size:20px;font-weight:700;letter-spacing:1px}
+.u5-tamp small{font-family:"IBM Plex Mono",monospace;font-size:12px}
+.u5-tamp[aria-checked="true"]{border:3px solid #3F6B2E;color:#3F6B2E;background:#EEF4EA;transform:rotate(-8deg) scale(1.04)}
+.u5-trop .u5-bar i{background:#C8382F}
+.u5-esp{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:#333;margin-top:2px}
+.u5-seg{display:flex;border:2px solid #111;border-radius:18px;overflow:hidden}
+.u5-seg button{height:32px;padding:0 10px;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;border-left:2px solid #111}
+.u5-seg button:first-child{border-left:0}
+.u5-seg button[aria-checked="true"]{background:#111;color:#fff}
+@media (prefers-reduced-motion: reduce){.u5-tamp,.u5-bar i{transition:none}}
+</style></head>
+<body data-variante="u5">
+
+<header class="u5-top" data-commun="entete">
+  <button class="u5-ico" aria-label="Retour"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <h1 class="u5-titre">Identité<span>1/7</span></h1>
+  <button class="u5-aband">Abandonner</button>
+  <button class="u5-ico" aria-label="Importer une recette"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2a1.5 1.5 0 0 1 1.5 1.5v3"/><path d="M9 5.5H7A1.5 1.5 0 0 0 5.5 7v12A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5v-2"/><path d="M11 13.5h9.5M17.5 10.5l3 3-3 3"/></svg></button>
+  <button class="u5-ico" aria-label="Thème"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></button>
+</header>
+<nav class="u5-fil" data-commun="etapes" aria-label="Étapes">
+  <a href="#" aria-current="step">Identité</a><a href="#">Malts/sucres</a><a href="#">Houblons</a><a href="#">Levure</a><a href="#">Paliers</a><a href="#">Eau</a><a href="#">Récap.</a>
+</nav>
+<div class="u5-band" data-commun="bandeau">
+  <span>Grain<b>8,6 kg</b></span><span>OG<b>1,080</b></span><span class="u5-ibu">IBU<b>~93</b><i></i></span><span>EBC<span class="u5-ebc"></span><b>9,5</b></span>
+</div>
+
+<main>
+  <article class="u5-aff">
+    <div class="u5-ban" title="Teinte estimée · EBC 9,5" aria-hidden="true"></div>
+    <div class="u5-in">
+      <label class="u5-nom"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><input type="text" value="neipa v3" aria-label="Nom de la bière" autocomplete="off"></label>
+      <button class="u5-sty" data-booster="style"><b>Double<br>IPA</b><span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>
+      <span class="u5-cod">22A · BJCP 2021 · OG <span class="u5-mono">1,065–1,085</span></span>
+      <div class="u5-nums">
+        <div class="u5-num" data-booster="volume"><span class="u5-k">en fermenteur</span><output class="u5-mono" id="u5-vol">24<small>L</small></output><span class="u5-pm"><button aria-label="Moins 1 litre" data-d="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><button aria-label="Plus 1 litre" data-d="1"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></span></div>
+        <div class="u5-num" data-booster="ebullition"><span class="u5-k">ébullition</span><output class="u5-mono" id="u5-min">60<small>min</small></output><span class="u5-pm"><button aria-label="Moins 5 minutes" data-e="-5"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><button aria-label="Plus 5 minutes" data-e="5"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></span></div>
+      </div>
+      <div class="u5-ferm" id="u5-ferm">
+        <div class="u5-fh"><span>Fermenteur 30 L</span><span id="u5-repl">repère 24 L · estimé</span></div>
+        <div class="u5-bar"><i id="u5-fill" style="width:80%">24 L</i><u id="u5-rep" style="left:80%"></u><em id="u5-lib">6 L</em></div>
+      </div>
+      <div class="u5-esp" data-booster="espace-libre"><span>Espace libre</span><span class="u5-seg" role="radiogroup" aria-label="Espace libre"><button role="radio" data-p="15" aria-checked="false">15 %</button><button role="radio" data-p="20" aria-checked="true">20 %</button><button role="radio" data-p="25" aria-checked="false">25 %</button></span></div>
+      <div class="u5-bas">
+        <p class="u5-ev">≈ <b id="u5-evap">3 L</b> évaporés<small>repli 10 %/h · estimé</small>cuve 45 L · ≈ <b id="u5-cuve">27 L</b><small>Royal Catering</small></p>
+        <button class="u5-tamp" role="switch" aria-checked="false" aria-label="Objectif NOLO" data-booster="nolo"><b>NOLO</b><small>≤ 0,5 %</small></button>
+      </div>
+    </div>
+  </article>
+</main>
+<script>(function(){
+  var FERM = 30;
+  function evap(vol, min){ var k = 0.10 * min / 60; return vol / (1 - k) - vol; }
+  function fmt(n){ return String(Math.round(n * 10) / 10).replace('.', ','); }
+  function fmtE(n){ return String(Math.round(n)); }
+
+  var vol = 24, min = 60, pc = 20, $ = function(i){ return document.getElementById(i); };
+  document.querySelectorAll('.u5-seg button').forEach(function(b){ b.onclick = function(){ pc = +b.dataset.p; document.querySelectorAll('.u5-seg button').forEach(function(x){ x.setAttribute('aria-checked', x === b); }); rendre(); }; });
+  function rendre(){
+    var cons = Math.floor(FERM * (100 - pc) / 100); $('u5-rep').style.left = (cons / FERM * 100) + '%'; $('u5-repl').textContent = 'repère ' + cons + ' L · estimé';
+    $('u5-vol').innerHTML = vol + '<small>L</small>';
+    $('u5-min').innerHTML = min + '<small>min</small>';
+    $('u5-evap').textContent = fmtE(evap(vol, min)) + ' L'; $('u5-cuve').textContent = fmtE(vol + evap(vol, min)) + ' L';
+    var lib = FERM - vol;
+    $('u5-fill').style.width = Math.min(100, vol / FERM * 100) + '%';
+    $('u5-fill').textContent = vol + ' L';
+    $('u5-lib').textContent = lib >= 0 ? lib + ' L' : '+' + (-lib) + ' L';
+    $('u5-ferm').classList.toggle('u5-trop', lib < 0);
+  }
+  document.querySelectorAll('[data-d]').forEach(function(b){ b.onclick = function(){ vol = Math.max(1, vol + +b.dataset.d); rendre(); }; });
+  document.querySelectorAll('[data-e]').forEach(function(b){ b.onclick = function(){ min = Math.max(0, Math.min(180, min + +b.dataset.e)); rendre(); }; });
+  document.querySelector('.u5-tamp').onclick = function(){ this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true'); };
+  rendre();
+})();</script>
+</body></html>

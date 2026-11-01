@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v5 · Identité · carte des styles</title>
+<!-- Lot v0 Identité · série v · v5 · page statique, fabriquée par fabrique.mjs (données : neipa v3, style 22A BJCP 2021). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  *{box-sizing:border-box} [hidden]{display:none!important} html,body{margin:0;background:#FFFFFF}
+  body{font-family:'Source Sans 3',system-ui,sans-serif;color:#111111;font-size:14px;line-height:1.35;-webkit-font-smoothing:antialiased}
+  .v5{max-width:390px;margin:0 auto;min-height:844px;position:relative;padding-bottom:72px}
+  .v5 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  .v5 .v5-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .v5-hd{padding:0 8px;background:#FFFFFF}
+  .v5-tb{display:flex;align-items:center;gap:6px;min-height:36px;padding-block:2px}
+  .v5 .v5-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#666666;flex:none}
+  .v5-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;margin:0}
+  .v5-tt b{font-size:16px;font-weight:600;color:#111111} .v5-tt span{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#666666}
+  .v5 .v5-ab{height:28px;padding:0 6px;font-size:12px;color:#333333;text-decoration:underline;text-underline-offset:2px;flex:none}
+  .v5-rail{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .v5 .v5-rail button{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:28px;padding:0 4px;flex:none}
+  .v5-rail span{font-size:12px;color:#666666;white-space:nowrap}
+  .v5-rail i{display:block;height:6px;border-radius:9px;background:#DDDDDD}
+  .v5-rail [aria-current] span{color:#111111;font-weight:600} .v5-rail [aria-current] i{background:#111111}
+  .v5-bd{margin:6px 8px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:5px 10px;border:1px solid #DDDDDD;background:#F5F5F5;border-radius:16px}
+  .v5-bd>div{display:flex;align-items:baseline;gap:4px}
+  .v5-bd .v5-bl{font-size:13px;color:#666666} .v5-bd .v5-bv{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap}
+  .v5-bp{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:#DDDDDD}
+  .v5-bp i{position:absolute;top:0;bottom:0;border-radius:9px;background:#9E9E9E} .v5-bp b{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:#111111}
+  .v5-pt{width:10px;height:10px;border-radius:50%;border:1px solid #BFBFBF;background:#E0A02E;align-self:center}
+  .v5 .v5-fab{position:fixed;right:max(12px,calc(50% - 183px));bottom:16px;width:48px;height:48px;border-radius:50%;background:#111111;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:5}
+  .v5-pied{display:flex;gap:8px;padding:8px 68px 8px 0;margin-top:auto}
+  .v5 .v5-pied button{height:32px;padding:0 10px;border-radius:10px;font-size:13px}
+  .v5 .v5-pied .v5-ret{border:1px solid #DDDDDD;color:#666666} .v5 .v5-pied .v5-sui{background:#111111;color:#fff;font-weight:600}
+  .v5-ds2{display:flex;align-items:center;gap:6px;font-size:12px;color:#666666}
+  .v5 .v5-ds2 button{height:28px;padding:0 10px;border:1.5px dashed #9E9E9E;border-radius:999px;font-size:13px;color:#333333}
+  .v5 .v5-ds2 button::after{content:" ›";color:#666666}
+  .v5 .v5-ds2 button:active{background:#EBEBEB}
+  .v5 .v5-lgb{width:24px;height:24px;border-radius:50%;border:1px solid #BFBFBF;font-size:13px;font-weight:600;color:#333333;flex:none;display:inline-flex;align-items:center;justify-content:center}
+  .v5-lg{background:#FFFFFF;border:1px solid #DDDDDD;border-radius:10px;padding:6px 8px;font-size:13px;color:#333333} .v5-lg p{margin:2px 0}
+  .v5 :focus-visible{outline:2px solid #4F7E9B;outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.v5 *{transition:none!important;animation:none!important}}
+
+  .v5-m{padding:8px 8px 0} .v5-e1{min-height:728px;display:flex;flex-direction:column}
+  .v5-pn{position:relative;background:#F5F5F5;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+  .v5-lgw{position:absolute;right:10px;top:6px;z-index:1}
+  .v5-yl{position:absolute;left:12px;top:6px;font-size:12px;color:#666666}
+  .v5-sv{display:block;overflow:visible;color:#111111}
+  .v5-ax{font:400 12px 'IBM Plex Mono',monospace;fill:#666666}
+  .v5-at{font:400 12px 'Source Sans 3',sans-serif;fill:#666666}
+  .v5-bx rect{fill:rgba(17,17,17,.08);stroke:#9E9E9E;stroke-width:1}
+  .v5-bx-a rect{fill:rgba(86,127,69,.22);stroke:#3F6B2E;stroke-width:1.5}
+  .v5-bx-c rect{fill:rgba(17,17,17,.28);stroke:#111111;stroke-width:2.5}
+  .v5-bx:not(.v5-bx-c) .v5-nmx{display:none}
+  .v5-bx{cursor:pointer} .v5-bx:focus-visible rect{stroke:#4F7E9B;stroke-width:3}
+  .v5-bl{font:600 13px 'Source Sans 3',sans-serif;fill:#111111}
+  .v5-cd{font:400 12px 'IBM Plex Mono',monospace;fill:#333333}
+  .v5-bx-a .v5-cd{fill:#3F6B2E;font-weight:600}
+  .v5-nm{font:600 14px 'Source Sans 3',sans-serif;fill:#fff}
+  .v5-nu{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:8px;padding:0 4px}
+  .v5-nl{font-size:12px;color:#666666}
+  .v5-ng{position:relative;height:14px;border-radius:9px;background:linear-gradient(90deg,#F8E08A 0%,#F2C14E 12%,#E0A02E 25%,#C87A2C 42%,#A0522D 60%,#6B3A1E 80%,#3B1F14 100%)}
+  .v5-nb{position:absolute;top:-4px;bottom:-4px;border:2px solid #111111;border-radius:6px}
+  .v5-ng b{position:absolute;top:-6px;bottom:-6px;width:4px;margin-left:-2px;border-radius:2px;background:#9C7020;box-shadow:0 0 0 1.5px #fff}
+  .v5-nx{font-size:12px;color:#666666} .v5-np{font-size:12px;font-weight:600;color:#7F5B10}
+  .v5 .v5-au{display:flex;align-items:center;gap:4px;min-height:28px;font-size:13px;color:#333333;align-self:flex-start;padding:0 4px}
+  .v5-au svg,.v5-dp svg{color:#666666}
+  .v5-br{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+  .v5-ln{display:flex;align-items:center;gap:6px}
+  .v5-au2{display:flex;align-items:center;justify-content:space-between}
+  .v5-cl{display:flex;align-items:baseline;gap:3px;height:44px;padding:0 10px;border-radius:999px;background:#111111;color:#fff}
+  .v5-cl input{width:34px;border:0;background:transparent;color:#fff;font-size:20px;font-weight:600;text-align:right;padding:0;height:38px}
+  .v5-cl span{font-size:13px;color:#ddd}
+  .v5-ev{font-size:12px;color:#2F5F7D;line-height:1.2;flex:1}
+  .v5 .v5-sw{display:flex;align-items:center;gap:6px;height:40px;padding:0 10px;border-radius:999px;border:1.5px dashed #9E9E9E;font-size:14px;font-weight:600}
+  .v5-sw i{width:30px;height:18px;border-radius:9px;background:#BFBFBF;position:relative}
+  .v5-sw i::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+  .v5-sw[aria-checked=true]{border-style:solid;border-color:#111111} .v5-sw[aria-checked=true] i{background:#111111} .v5-sw[aria-checked=true] i::after{transform:translateX(12px)}
+  .v5-fr{display:flex;align-items:center;gap:10px;background:#F5F5F5;border-radius:16px;padding:8px}
+  .v5-fc{position:relative;width:26px;height:40px;border:2px solid #333333;border-radius:6px 6px 8px 8px;overflow:hidden;flex:none}
+  .v5-fc i{position:absolute;left:0;right:0;bottom:0;background:#E0A02E}
+  .v5-fc b{position:absolute;left:-2px;right:-2px;bottom:80%;border-top:2px dashed #111111}
+  .v5-ft{display:flex;flex-direction:column;line-height:1.2} .v5-ft b{font-size:17px} .v5-ft span{font-size:12px;color:#666666}
+  .v5 .v5-dp{margin-left:auto;display:flex;align-items:center;gap:4px;min-height:28px;font-size:13px;color:#333333}
+  .v5-et{margin-top:24px;border-top:1px dashed #BFBFBF;padding-top:8px;display:flex;flex-direction:column;gap:6px}
+  .v5-et h2{margin:4px 0 0;font-size:13px;color:#666666;font-weight:600}
+</style>
+</head>
+<body>
+<div class="v5" data-variante="v5">
+<header class="v5-hd" data-commun="en-tete">
+    <div class="v5-tb">
+      <button type="button" class="v5-ic" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <p class="v5-tt"><b>Identité</b><span>1/7</span></p>
+      <button type="button" class="v5-ab">Abandonner</button>
+      <button type="button" class="v5-ic" aria-label="Coller une recette"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button type="button" class="v5-ic" aria-label="Thème"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="v5-rail" aria-label="Étapes" data-commun="fil"><button type="button" aria-current="step" aria-label="Identité"><span>Identité</span><i></i></button><button type="button" aria-label="Malts/sucres"><span>Malts/sucres</span><i></i></button><button type="button" aria-label="Houblons"><span>Houblons</span><i></i></button><button type="button" aria-label="Levure"><span>Levure</span><i></i></button><button type="button" aria-label="Paliers"><span>Paliers</span><i></i></button><button type="button" aria-label="Eau"><span>Eau</span><i></i></button><button type="button" aria-label="Récap."><span>Récap.</span><i></i></button></nav>
+  </header><div class="v5-bd" data-commun="bandeau" aria-label="Mesures de la recette">
+    <div><span class="v5-bl">Grain</span><span class="v5-bv">8,6 kg</span></div>
+    <div><span class="v5-bl">OG</span><span class="v5-bv">1,080</span></div>
+    <div><span class="v5-bl">IBU</span><span class="v5-bv">~93</span><span class="v5-bp" role="img" aria-label="style 60–100 IBU"><i style="left:42.9%;width:28.6%"></i><b style="left:66.4%"></b></span></div>
+    <div><span class="v5-bl">EBC</span><span class="v5-pt"></span><span class="v5-bv">9,5</span></div>
+  </div>
+<main class="v5-m">
+  <div class="v5-e1">
+  <section class="v5-pn" aria-label="Ta bière parmi les styles">
+    <div class="v5-yl">IBU</div><span class="v5-lgw"><button type="button" class="v5-lgb" data-role="legende-bouton" aria-expanded="false" aria-controls="v5-lg" aria-label="Légende">?</button></span>
+    <svg viewBox="0 0 374 440" width="358" class="v5-sv" role="radiogroup" aria-label="Carte des styles, OG et IBU"><line x1="34" y1="30" x2="34" y2="400" stroke="#EBEBEB"/><text x="34" y="416" class="v5-ax" text-anchor="start">1,040</text><line x1="117" y1="30" x2="117" y2="400" stroke="#EBEBEB"/><text x="117" y="416" class="v5-ax" text-anchor="middle">1,060</text><line x1="200" y1="30" x2="200" y2="400" stroke="#EBEBEB"/><text x="200" y="416" class="v5-ax" text-anchor="middle">1,080</text><line x1="283" y1="30" x2="283" y2="400" stroke="#EBEBEB"/><text x="283" y="416" class="v5-ax" text-anchor="middle">1,100</text><line x1="366" y1="30" x2="366" y2="400" stroke="#EBEBEB"/><text x="366" y="416" class="v5-ax" text-anchor="end">1,120</text><line x1="34" y1="400" x2="366" y2="400" stroke="#EBEBEB"/><text x="30" y="404" class="v5-ax" text-anchor="end">0</text><line x1="34" y1="315.9090909090909" x2="366" y2="315.9090909090909" stroke="#EBEBEB"/><text x="30" y="319.9090909090909" class="v5-ax" text-anchor="end">25</text><line x1="34" y1="231.8181818181818" x2="366" y2="231.8181818181818" stroke="#EBEBEB"/><text x="30" y="235.8181818181818" class="v5-ax" text-anchor="end">50</text><line x1="34" y1="147.72727272727275" x2="366" y2="147.72727272727275" stroke="#EBEBEB"/><text x="30" y="151.72727272727275" class="v5-ax" text-anchor="end">75</text><line x1="34" y1="63.636363636363626" x2="366" y2="63.636363636363626" stroke="#EBEBEB"/><text x="30" y="67.63636363636363" class="v5-ax" text-anchor="end">100</text><text x="366" y="430" class="v5-at" text-anchor="end">OG</text><text x="30" y="28" class="v5-at" text-anchor="end" dy="-2"></text><g class="v5-bx" data-booster="style-18B" role="radio" aria-checked="false" tabindex="0" aria-label="American Pale Ale"><rect x="54.74999999999954" y="231.8181818181818" width="62.25000000000046" height="67.27272727272731" rx="6"/><text x="59.74999999999954" y="293.0909090909091" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">American Pale Ale </tspan><tspan class="v5-cd">18B</tspan></text></g><g class="v5-bx" data-booster="style-12C" role="radio" aria-checked="false" tabindex="0" aria-label="English IPA"><rect x="75.5" y="198.1818181818182" width="83" height="67.27272727272725" rx="6"/><text x="80.5" y="213.1818181818182" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">English IPA </tspan><tspan class="v5-cd">12C</tspan></text></g><g class="v5-bx" data-booster="style-21A" role="radio" aria-checked="false" tabindex="0" aria-label="American IPA"><rect x="100.4" y="164.54545454545456" width="58.099999999999994" height="100.90909090909088" rx="6"/><text x="105.4" y="179.54545454545456" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">American IPA </tspan><tspan class="v5-cd">21A</tspan></text></g><g class="v5-bx" data-booster="style-21C" role="radio" aria-checked="false" tabindex="0" aria-label="Hazy IPA"><rect x="117" y="198.1818181818182" width="103.74999999999955" height="117.72727272727269" rx="6"/><text x="122" y="309.9090909090909" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">Hazy IPA </tspan><tspan class="v5-cd">21C</tspan></text></g><g class="v5-bx v5-bx-a" data-booster="style-22B" role="radio" aria-checked="false" tabindex="0" aria-label="American Strong Ale"><rect x="125.30000000000001" y="63.636363636363626" width="116.19999999999999" height="168.1818181818182" rx="6"/><text x="236.5" y="225.8181818181818" text-anchor="end" class="v5-bl"><tspan class="v5-nmx">American Strong Ale </tspan><tspan class="v5-cd">22B</tspan></text></g><g class="v5-bx v5-bx-a" data-booster="style-22C" role="radio" aria-checked="false" tabindex="0" aria-label="American Barleywine"><rect x="200" y="63.636363636363626" width="166" height="168.1818181818182" rx="6"/><text x="361" y="78.63636363636363" text-anchor="end" class="v5-bl"><tspan class="v5-nmx">American Barleywine </tspan><tspan class="v5-cd">22C</tspan></text></g><g class="v5-bx v5-bx-a v5-bx-c" data-booster="style-22A" role="radio" aria-checked="true" tabindex="0" aria-label="Double IPA"><rect x="137.74999999999955" y="63.636363636363626" width="83" height="134.54545454545456" rx="6"/><text x="142.74999999999955" y="57.636363636363626" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">Double IPA </tspan><tspan class="v5-cd">22A</tspan></text></g><line x1="200" y1="87.18181818181819" x2="200" y2="400" stroke="#111111" stroke-dasharray="2 4"/><line x1="34" y1="87.18181818181819" x2="200" y2="87.18181818181819" stroke="#111111" stroke-dasharray="2 4"/><g data-booster="nom" role="button" tabindex="0" aria-label="Nom : neipa v3"><circle cx="200" cy="87.18181818181819" r="10" fill="#E0A02E" stroke="#111111" stroke-width="2.5"/><rect x="214" y="85.18181818181819" width="78" height="24" rx="10" fill="#111111"/><text x="222" y="102.18181818181819" class="v5-nm">neipa v3</text></g></svg>
+    <div class="v5-nu" data-booster="couleur" role="img" aria-label="Couleur : style 12 à 28 EBC, recette 9,5, plus pâle">
+    <span class="v5-nl">EBC</span>
+    <span class="v5-ng"><i class="v5-nb" style="left:30%;width:40%"></i><b style="left:23.75%"></b></span>
+    <span class="v5-nx v5-mono">12–28</span><span class="v5-np">pâle</span>
+  </div>
+    <div id="v5-lg" class="v5-lg" data-role="legende" hidden><p>Rectangle : les plages OG et IBU d’un style, BJCP 2021 ; vert, il contient ta recette.</p><p>Point : ta recette, teinté de sa couleur EBC.</p><p>Nuancier : la plage de couleur du style, cadre noir.</p><p>~ : estimé ou simulé, jamais mesuré.</p></div>
+    <div class="v5-au2"><button type="button" class="v5-au">Autres styles <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="v5-ds2" data-booster="du-style"><span>Du style</span><button type="button">Empâtage</button><button type="button">Fermentation</button></div></div>
+  </section>
+  <section class="v5-br" aria-label="Le brassin">
+    <div class="v5-ln">
+      <label class="v5-cl" data-booster="volume"><input class="v5-mono" inputmode="decimal" value="24" aria-label="Volume en fermenteur"><span>L</span></label>
+      <label class="v5-cl" data-booster="ebullition"><input class="v5-mono" inputmode="numeric" value="60" aria-label="Durée d’ébullition"><span>min</span></label>
+      <span class="v5-ev"><span class="v5-mono">~3 L</span> évaporés</span>
+      <button type="button" class="v5-sw" role="switch" aria-checked="false" data-booster="nolo">NOLO<i></i></button>
+    </div>
+    <div class="v5-fr" data-booster="fermenteur">
+      <span class="v5-fc" role="img" aria-label="Fermenteur 24 litres sur 30"><i style="height:80%"></i><b></b></span>
+      <span class="v5-ft"><b class="v5-mono">24/30 L</b> <span>6 L libres</span></span>
+      <button type="button" class="v5-dp">Espace libre · cuve 45 L <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+  </section>
+  <footer class="v5-pied" data-commun="pied"><button type="button" class="v5-ret" disabled>Retour</button><button type="button" class="v5-sui">Suivant — Malts/sucres</button></footer>
+  <button type="button" class="v5-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+  </div>
+  <section class="v5-et" aria-label="Autres états">
+    <h2>Recette neuve : la carte sans point, le nom à saisir</h2>
+    <section class="v5-pn"><svg viewBox="0 0 374 440" width="358" class="v5-sv" role="radiogroup" aria-label="Carte des styles, OG et IBU"><line x1="34" y1="30" x2="34" y2="400" stroke="#EBEBEB"/><text x="34" y="416" class="v5-ax" text-anchor="start">1,040</text><line x1="117" y1="30" x2="117" y2="400" stroke="#EBEBEB"/><text x="117" y="416" class="v5-ax" text-anchor="middle">1,060</text><line x1="200" y1="30" x2="200" y2="400" stroke="#EBEBEB"/><text x="200" y="416" class="v5-ax" text-anchor="middle">1,080</text><line x1="283" y1="30" x2="283" y2="400" stroke="#EBEBEB"/><text x="283" y="416" class="v5-ax" text-anchor="middle">1,100</text><line x1="366" y1="30" x2="366" y2="400" stroke="#EBEBEB"/><text x="366" y="416" class="v5-ax" text-anchor="end">1,120</text><line x1="34" y1="400" x2="366" y2="400" stroke="#EBEBEB"/><text x="30" y="404" class="v5-ax" text-anchor="end">0</text><line x1="34" y1="315.9090909090909" x2="366" y2="315.9090909090909" stroke="#EBEBEB"/><text x="30" y="319.9090909090909" class="v5-ax" text-anchor="end">25</text><line x1="34" y1="231.8181818181818" x2="366" y2="231.8181818181818" stroke="#EBEBEB"/><text x="30" y="235.8181818181818" class="v5-ax" text-anchor="end">50</text><line x1="34" y1="147.72727272727275" x2="366" y2="147.72727272727275" stroke="#EBEBEB"/><text x="30" y="151.72727272727275" class="v5-ax" text-anchor="end">75</text><line x1="34" y1="63.636363636363626" x2="366" y2="63.636363636363626" stroke="#EBEBEB"/><text x="30" y="67.63636363636363" class="v5-ax" text-anchor="end">100</text><text x="366" y="430" class="v5-at" text-anchor="end">OG</text><text x="30" y="28" class="v5-at" text-anchor="end" dy="-2"></text><g class="v5-bx" data-booster="style-18B" role="radio" aria-checked="false" tabindex="0" aria-label="American Pale Ale"><rect x="54.74999999999954" y="231.8181818181818" width="62.25000000000046" height="67.27272727272731" rx="6"/><text x="59.74999999999954" y="293.0909090909091" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">American Pale Ale </tspan><tspan class="v5-cd">18B</tspan></text></g><g class="v5-bx" data-booster="style-12C" role="radio" aria-checked="false" tabindex="0" aria-label="English IPA"><rect x="75.5" y="198.1818181818182" width="83" height="67.27272727272725" rx="6"/><text x="80.5" y="213.1818181818182" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">English IPA </tspan><tspan class="v5-cd">12C</tspan></text></g><g class="v5-bx" data-booster="style-21A" role="radio" aria-checked="false" tabindex="0" aria-label="American IPA"><rect x="100.4" y="164.54545454545456" width="58.099999999999994" height="100.90909090909088" rx="6"/><text x="105.4" y="179.54545454545456" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">American IPA </tspan><tspan class="v5-cd">21A</tspan></text></g><g class="v5-bx" data-booster="style-21C" role="radio" aria-checked="false" tabindex="0" aria-label="Hazy IPA"><rect x="117" y="198.1818181818182" width="103.74999999999955" height="117.72727272727269" rx="6"/><text x="122" y="309.9090909090909" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">Hazy IPA </tspan><tspan class="v5-cd">21C</tspan></text></g><g class="v5-bx" data-booster="style-22B" role="radio" aria-checked="false" tabindex="0" aria-label="American Strong Ale"><rect x="125.30000000000001" y="63.636363636363626" width="116.19999999999999" height="168.1818181818182" rx="6"/><text x="236.5" y="225.8181818181818" text-anchor="end" class="v5-bl"><tspan class="v5-nmx">American Strong Ale </tspan><tspan class="v5-cd">22B</tspan></text></g><g class="v5-bx" data-booster="style-22C" role="radio" aria-checked="false" tabindex="0" aria-label="American Barleywine"><rect x="200" y="63.636363636363626" width="166" height="168.1818181818182" rx="6"/><text x="361" y="78.63636363636363" text-anchor="end" class="v5-bl"><tspan class="v5-nmx">American Barleywine </tspan><tspan class="v5-cd">22C</tspan></text></g><g class="v5-bx v5-bx-c" data-booster="style-22A" role="radio" aria-checked="true" tabindex="0" aria-label="Double IPA"><rect x="137.74999999999955" y="63.636363636363626" width="83" height="134.54545454545456" rx="6"/><text x="142.74999999999955" y="57.636363636363626" text-anchor="start" class="v5-bl"><tspan class="v5-nmx">Double IPA </tspan><tspan class="v5-cd">22A</tspan></text></g></svg><div class="v5-nu" data-booster="couleur" role="img" aria-label="Couleur : style 12 à 28 EBC">
+    <span class="v5-nl">EBC</span>
+    <span class="v5-ng"><i class="v5-nb" style="left:30%;width:40%"></i></span>
+    <span class="v5-nx v5-mono">12–28</span>
+  </div></section>
+  </section>
+</main>
+</div>
+<script>(function(){
+  var bx=document.querySelectorAll('.v5-e1 .v5-bx');
+  bx.forEach(function(g){g.addEventListener('click',function(){bx.forEach(function(o){o.classList.toggle('v5-bx-c',o===g);o.setAttribute('aria-checked',String(o===g));});});});
+  var sw=document.querySelector('.v5-sw');sw.addEventListener('click',function(){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');});
+  var lb=document.querySelector('.v5-lgb'),lg=document.getElementById('v5-lg');
+  if(lb&&lg){lb.addEventListener('click',function(){lg.hidden=!lg.hidden;lb.setAttribute('aria-expanded',String(!lg.hidden));});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!lg.hidden){lg.hidden=true;lb.setAttribute('aria-expanded','false');lb.focus();}});}
+})();</script>
+</body>
+</html>

@@ -134,7 +134,15 @@ lisait environ 29 000 jetons avant de juger. Des copies restées en arrière con
 | Irréversible ou externe | push, PR, merge, déploiement, données réelles, Gemini facturé, suppression, comptes, réglages | l'**utilisateur**, groupé, sans bloquer le reste | registre, « en attente » |
 
 Sans réponse, on applique la lecture étroite et réversible (L01) et on continue. On ne pose aucune
-question bloquante.
+question bloquante. Une question de cadrage va au jury (skill `jury`, D198), jamais au brasseur.
+
+**Filtre des lignes D-n** (31.10, adapté des ADR de mattpocock). Une décision technique reçoit sa ligne dans `decisions.md` seulement si
+elle remplit au moins un de ces critères :
+- elle est dure à inverser ;
+- elle surprendrait un lecteur sans contexte ;
+- c'est un vrai arbitrage, une option écartée qui avait ses raisons.
+Sinon, une ligne de reprise dans MISSION.md suffit. Les paroles du brasseur, les accords de l'utilisateur et les choix de goût gardent
+toujours leur trace.
 
 ### Quand le conseil intervient
 Il n'est jamais réuni par habitude. Le pilote décide seul tout le reste. Le niveau (avis croisé,
@@ -158,6 +166,9 @@ lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas 
 2. **Contrats** : `voies/<id>/VOIE.md` (objectif, entrées vérifiées, « Possède », exigences
    transversales recopiées) et `voies/<id>/GATES.md` (critères au format unlazy : CHECK, EXPECT).
    La voie ne modifie jamais ses critères.
+   **Relire sans mémoire** (`.claude/skills/voies/references/sans-memoire.md`) : un test de compréhension avant de lancer une voie
+   sensible, une revue du plan avant le code de l'argent, du stock, de Firestore, du Drive ou du moteur, un rapport d'écart entre
+   la doc et le code au début et à la fin d'une mission sur un domaine. Chacun par un agent neuf.
 3. **Essaim** : toutes les voies prêtes partent dans un seul message, en arrière-plan. Le prompt pointe
    VOIE.md sans le recopier.
 4. **Plafonds** : `maxTurns` par agent, comme plafond dur. Budget de mission noté dans MISSION.md.
@@ -186,8 +197,8 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
   jugée « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans
   amélioration).
 - **v0** : des concepts minimalistes (une idée sur un écran plein, sa propre composition ; M14), en séries de 4 à 12,
-  un concepteur par série, 48 au moins en 6 séries
-  au moins (« Et plus de diversité et de nombre de mini proto »). La chaleur varie dans chaque série : froide, tiède
+  un concepteur par série, 12 à 16 en 3 ou 4 séries (D204 : « il faudra pas autant de mini maquettes et
+  série, c'est trop demandant en quotas » ; avant, 48 en 6 séries). La chaleur varie dans chaque série : froide, tiède
   ou chaude (D22).
   - Une série Fable « créative à fond », et une série libre au brief minimal.
   - Obligatoires : la baseline (toujours suivie, `controle-commun --sans=mots`), l'honnêteté, le doigt, les interdits
@@ -202,8 +213,8 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
   satisfaisant, il n'y a plus de gain, ou quatre passes ont été faites.
 - **Montrer** : la dernière passe, puis toutes les v0 dans l'ordre du classement. Le brasseur choisit ; ensuite,
   `reprise` de la variante choisie avec les éléments qu'il a notés (D104).
-- Le coût est voisin de celui du lot 22, pour trois fois plus de choix. Le plafond (L18) porte sur les agents et les
-  tours, pas sur les variantes.
+- Le plafond (L18) porte sur les agents et les tours ; le nombre de variantes suit D204 (12 à 16, « trop demandant en
+  quotas »).
 
 ## Corriger : trois boucles
 
@@ -232,6 +243,9 @@ de revenir.
 | `node scripts/agents/systeme.mjs appels <script> [--rejouer]` | avant de commiter un contrôle partagé : les critères des GATES qui l'appellent, rejoués (le hook cerveau le rappelle ; M15) |
 | `node scripts/agents/verifier-page.mjs <page.html> [--page-lot] --captures <préfixe>` | une maquette (`etat.html`, GATES des voies) : rendu Chrome à 390 px, sans erreur de script ni défilement, images chargées. Avec `--page-lot` (ou une source sous `outils/pages/`), une page de version avant publication (un artefact neuf, 23.10) : en plus, lisible à 390 et 1280 px (date au titre, `#a-choisir` au premier écran, captures ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots) |
 | `node scripts/agents/systeme.mjs echoue "<JETON> ECHEC" -- node <contrôle> <args…>` | témoin négatif dans un GATES : tient si le contrôle échoue (code non nul) en imprimant son jeton ; un plantage ne compte pas |
+| `node scripts/agents/systeme.mjs comprendre <voie>` | test de compréhension : COMPRIS.md a ses cinq parties, et ses chemins sont sous le « Possède » de VOIE.md (`references/sans-memoire.md` § 1) |
+| `node scripts/agents/systeme.mjs revue <REVUE-PLAN.md>` | revue du plan : deux sections, un sort par ligne, aucun bloquant accepté (§ 2) |
+| `node scripts/agents/systeme.mjs ecarts <doc…>` | rapport d'écart : chaque chemin, `fichier:ligne` et identifiant cité existe (§ 3) ; le sens est jugé par un relecteur neuf |
 
 Les contrôles d'interface vivent dans `work/refonte-frontend/v4/tournoi/outils/` (les `.mjs` y sont
 versionnés), leurs pages témoins dans `tournoi/outils/temoins/` (versionnées par exception dans

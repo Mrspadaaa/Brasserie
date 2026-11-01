@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r4 — Nouvelle dépense · l'étagère : ce qui entre au stock (v0, chaude, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F2F2F2;--haut:#E6E6E6;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#7F5B10;--attf:#FBF4E4;--ok:#2F6B45;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+--malt:#D9A441;--houb:#5E9A52;--lev:#5C7FB8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--panel);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+input{font:inherit;color:inherit}
+svg path,svg circle{vector-effect:non-scaling-stroke;stroke-width:1.5}
+[hidden]{display:none!important}
+.r4-dot{font-style:normal}.r4-dot::before{content:"·"}
+.r4-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.r4-app{max-width:560px;margin:0 auto;padding-bottom:60px}
+.r4-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;height:40px;padding:0 6px 0 12px;gap:4px;border-bottom:1px solid var(--bord)}
+.r4-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.r4-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+/* Le ruban d'argent : un ticket de caisse, dentelé, avec ses deux doutes. */
+.r4-rub{background:var(--page);padding:8px 12px 14px;position:relative;display:flex;flex-direction:column;gap:6px}
+.r4-rub::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;background:radial-gradient(circle at 6px 0,var(--page) 5px,transparent 5.5px) 0 0/12px 6px repeat-x}
+.r4-r1{display:flex;align-items:baseline;gap:8px}
+.r4-r1 b{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--t0);line-height:1}
+.r4-r1 small{font-size:12px;color:var(--t2)}
+.r4-r1 .r4-q{margin-left:auto;font-size:14px;color:var(--t1);text-align:right;line-height:1.2}
+.r4-r1 .r4-q span{display:block;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.r4-r2{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.r4-c{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;font-size:14px;border:1px solid var(--bord);background:#fff}
+.r4-c svg{color:var(--ok)}
+.r4-c.r4-d{border:1.5px dashed var(--attt);background:var(--attf);color:var(--attt)}
+.r4-c.r4-d b{font-family:var(--mono);font-weight:600}
+.r4-c.r4-n{margin-left:auto;font-weight:600;border:1.5px dashed var(--attt);color:var(--attt)}
+.r4-c.r4-n.r4-fini{border:1px solid var(--ok);color:var(--ok)}
+.r4-pan{background:#fff;border:2px solid var(--t0);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.r4-calc{font-size:12px;color:var(--t1)}
+.r4-calc b{font-family:var(--mono);font-weight:600}
+.r4-ch{display:flex;gap:6px;flex-wrap:wrap}
+.r4-ch button{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r4-ch button.r4-pri{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.r4-ch button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--t0);font-weight:600}
+/* L'étagère : une tuile par article, rangée par famille. */
+.r4-et{padding:12px 10px 0;display:flex;flex-direction:column;gap:6px}
+.r4-fh{display:flex;align-items:baseline;gap:6px;padding:0 2px}
+.r4-fh i{width:10px;height:10px;border-radius:50%;align-self:center}
+.r4-fh h2{font-size:14px;font-weight:600;color:var(--t0)}
+.r4-fh .r4-qm{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 4px;background:#fff}
+.r4-fh b{margin-left:auto;font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t1)}
+.r4-gr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.r4-t{position:relative;background:#fff;border-radius:10px;padding:6px 6px 6px 8px;min-height:96px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--bord);border-top:4px solid var(--fam)}
+.r4-t:active{transform:scale(.98)}
+.r4-t[aria-selected="true"]{box-shadow:0 0 0 2px var(--t0)}
+.r4-t .r4-ic{position:absolute;right:4px;top:4px;color:var(--t1)}
+.r4-t .r4-qt{display:flex;align-items:baseline;gap:3px}
+.r4-t .r4-qt b{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--t0)}
+.r4-t .r4-qt span{font-size:12px;color:var(--t2)}
+.r4-t .r4-nm{font-size:14px;font-weight:600;color:var(--t0);line-height:1.15;padding-right:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.r4-t .r4-pr{margin-top:auto;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.r4-t.r4-dt{border:1.5px dashed var(--attt);border-top:4px solid var(--fam);background:var(--attf)}
+.r4-t.r4-bis{box-shadow:3px 3px 0 -1px #fff,3px 3px 0 0 var(--attt)}
+.r4-t.r4-bis[aria-selected="true"]{box-shadow:0 0 0 2px var(--t0),3px 3px 0 0 var(--attt)}
+.r4-t .r4-al{font-family:var(--mono);font-size:12px;color:var(--t1)}
+.r4-t .r4-cv{font-size:12px;color:var(--t1);background:var(--haut);border-radius:10px;padding:0 4px;align-self:flex-start}
+.r4-t .r4-qm{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 4px;background:#fff}
+/* La mouture : une étiquette en pointillé sur le malt ; le toucher l'y attache. */
+.r4-mo{display:inline-flex;align-items:center;gap:3px;min-height:24px;padding:0 6px;border-radius:10px;border:1.5px dashed var(--attt);color:var(--attt);background:#fff;font-size:12px;font-weight:600;align-self:flex-start;margin-top:2px}
+.r4-mo::before{content:"+"}
+.r4-mo.r4-on{border:1px solid var(--t1);color:var(--t1);font-weight:400}
+.r4-mo.r4-on::before{content:"✓"}
+.r4-plat{grid-column:1/-1}
+.r4-big{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.r4-big .r4-n{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--t0);border-bottom:1px dotted var(--t2);cursor:text}
+.r4-big .r4-u{font-size:14px;color:var(--t2)}
+.r4-lab{font-size:12px;color:var(--t2);min-width:52px}
+.r4-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.r4-in{height:32px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;font-size:16px;background:#fff}
+.r4-lk{font-size:12px;text-decoration:underline;text-underline-offset:2px;min-height:24px;color:var(--t1)}
+.r4-more{margin:12px 10px 0;background:#fff;border-radius:16px;padding:0 8px}
+.r4-more details+details{border-top:1px solid var(--bord)}
+.r4-more summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px;cursor:pointer}
+.r4-more summary::-webkit-details-marker{display:none}
+.r4-more summary span{font-size:14px;color:var(--t0)}
+.r4-more summary em{font-style:normal;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r4-more .r4-dd{padding:0 0 8px;display:flex;flex-direction:column;gap:6px}
+.r4-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--page);border-top:1px solid var(--bord)}
+.r4-pi{max-width:560px;margin:0 auto;height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px}
+.r4-drv{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1);min-height:28px}
+.r4-drv .r4-ok{color:var(--ok)}
+.r4-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px}
+.r4-prog{height:3px;background:var(--haut)}.r4-prog i{display:block;height:100%;width:0;background:var(--t0);transition:width .2s}
+.r4-recu{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px}
+.r4-recu span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r4-recu a{color:var(--t0);font-weight:600;font-size:14px;white-space:nowrap}
+.r4-recu svg{flex-shrink:0}
+.r4-fl{animation:r4-fl .7s ease-out}
+@keyframes r4-fl{from{background:#F2DDA6}}
+@media (prefers-reduced-motion:reduce){.r4-fl{animation:none}.r4-t:active{transform:none}}
+/* Annexe */
+.r4-ann{max-width:1240px;margin:0 auto;padding:24px 10px 80px}
+.r4-ann>h2{font-size:16px;color:var(--t0);margin-bottom:8px}
+.r4-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.r4-grid>*{min-width:0}
+.r4-st{background:#fff;border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.r4-st h3{font-size:12px;color:var(--t2);font-weight:600}
+.r4-sk{background:var(--haut);border-radius:10px;min-height:82px}
+@media (min-width:900px){
+  .r4-app{max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:16px;padding:0 16px 60px}
+  .r4-hd{grid-column:1/3}
+  .r4-rub{grid-column:2;grid-row:2;border-radius:16px;margin-top:12px;align-self:start}
+  .r4-et{grid-column:1;grid-row:2/5}
+  .r4-more{grid-column:2;grid-row:3;align-self:start}
+  .r4-gr{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .r4-pi{max-width:1180px}
+  .r4-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style></head>
+<body>
+<div class="r4-app">
+  <header class="r4-hd"><h1>Nouvelle dépense</h1>
+    <button class="r4-ib" aria-label="Voir le justificatif" data-booster="justificatif" id="r4-jb"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg></button>
+    <button class="r4-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.667"><path d="M5 5l10 10M15 5 5 15"/></svg></button></header>
+  <section class="r4-rub" aria-label="L'argent">
+    <div class="r4-r1"><b data-booster="total">86,50</b><small>CHF</small><span class="r4-q">Brau- und Rauchshop<span>27.04.2026</span></span></div>
+    <div class="r4-r2">
+      <button class="r4-c" id="r4-pr" data-booster="preuve"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="r4-m">23</span>&nbsp;lignes</button>
+      <button class="r4-c r4-d" id="r4-cp" data-booster="paye" data-pt="p2">Payé <b>27.04</b></button>
+      <button class="r4-c r4-d" id="r4-ct" data-booster="tva" data-pt="p1">TVA <b>2,80</b><i class="r4-dot"></i><b>4,15</b></button>
+      <button class="r4-c r4-n" id="r4-nb" data-booster="compteur"><span class="r4-m">6</span>&nbsp;à régler</button>
+    </div>
+    <div class="r4-pan" id="r4-pj" hidden><div class="r4-row"><span class="r4-lab">Justificatif</span><span class="r4-m" style="font-size:12px">capture-facture.jpg · 1 page vue</span></div><div class="r4-ch"><button>Voir l'original</button><button>Changer</button></div></div>
+    <div class="r4-pan" id="r4-ppr" hidden><span class="r4-calc">23 lignes = <b>86,50</b> imprimé · quantité × prix juste au centime · deux lectures d'accord · page 2 coupée, rien ne manque dans la page vue.</span></div>
+    <div class="r4-pan" id="r4-ppay" hidden>
+      <div class="r4-ch"><button aria-pressed="true" data-reg="p">Déjà payé</button><button aria-pressed="false" data-reg="a">À payer</button></div>
+      <div class="r4-row" id="r4-rp"><span class="r4-lab">Payé le</span><input class="r4-in r4-m" inputmode="numeric" value="27.04.2026" style="width:130px"><span class="r4-calc">supposée : date de la facture, non imprimée</span></div>
+      <div class="r4-row" id="r4-rm"><span class="r4-lab">Moyen</span><span>E-Finance <span class="r4-calc">(lu)</span></span></div>
+      <div class="r4-row" id="r4-re" hidden><span class="r4-lab">Échéance</span><input class="r4-in r4-m" inputmode="numeric" value="07.05.2026" style="width:130px"><span class="r4-calc">déduite · 10 Tage netto</span></div>
+      <div class="r4-ch"><button class="r4-pri" data-ok="p2">C'est la bonne date</button></div>
+    </div>
+    <div class="r4-pan" id="r4-ptva" hidden>
+      <span class="r4-calc">imprimé <b>2,80</b> · par taux <b>1,95 + 2,20 = 4,15</b> · bases <b>26,20 + 84,20 = 110,40</b> ≠ <b>86,50</b> · HT non imprimé : vide</span>
+      <div class="r4-ch"><button data-tva="2,80">Garder 2,80</button><button data-tva="4,15">Garder 4,15</button><button data-tva="vide" class="r4-pri">Laisser vide</button></div>
+    </div>
+  </section>
+  <section class="r4-et" id="r4-et" data-booster="etagere" aria-label="Ce qui entre au stock"></section>
+  <section class="r4-more" aria-label="Le reste de la dépense">
+    <details><summary><span>Pour quoi ?</span><em>Brau- und Rauchshop · 372765 · malts…</em></summary><div class="r4-dd"><input class="r4-in" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div></details>
+    <details><summary><span>Achat du</span><em class="r4-m">27.04.2026</em></summary><div class="r4-dd"><input class="r4-in r4-m" inputmode="numeric" value="27.04.2026" style="width:140px"></div></details>
+    <details><summary><span>Fournisseur et catégorie</span><em>Brau- und Rauchshop GmbH · Brassage</em></summary><div class="r4-dd"><input class="r4-in" value="Brau- und Rauchshop GmbH"><div class="r4-ch"><button aria-pressed="true">Brassage</button><button>Matériel</button><button>Autre</button></div></div></details>
+    <details><summary><span>Lier à une dépense prévue</span><em>facultatif</em></summary><div class="r4-dd"><div class="r4-ch"><button>Brassin NEIPA · malts · 90,00</button><button>Aucune</button></div></div></details>
+    <details><summary><span>Référence et TVA</span><em>372765 · pro-forma payée</em></summary><div class="r4-dd">
+      <div class="r4-row"><span class="r4-lab">N° facture</span><span class="r4-m">372765</span></div>
+      <div class="r4-row"><span class="r4-lab">Commande</span><span class="r4-m" style="font-size:12px">Onlinebestellung-686863</span></div>
+      <div class="r4-row"><span class="r4-lab">TVA</span><span class="r4-m" id="r4-tvr">2,80 · 4,15 à régler</span></div>
+      <div class="r4-row"><span class="r4-lab">Taux</span><span class="r4-m">N 8,1 % · R 2,6 %</span><span class="r4-lab">HT</span><span class="r4-m">—</span></div></div></details>
+    <details><summary><span>Lignes</span><em>ajouter · regrouper · détail</em></summary><div class="r4-dd"><div class="r4-ch"><button>+ Ajouter une ligne</button><button>Regrouper en une dépense</button></div><span class="r4-calc">Détail <b id="r4-dv">86,50</b> / <b>86,50</b></span></div></details>
+  </section>
+</div>
+<div class="r4-pied"><div class="r4-prog"><i id="r4-pg"></i></div><div class="r4-pi" id="r4-pi">
+  <span class="r4-drv" data-booster="drive"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M6 15.5h8.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 5.3 8 3.8 3.8 0 0 0 6 15.5z"/></svg>Drive <svg class="r4-ok" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg></span>
+  <button class="r4-go" id="r4-go" data-booster="confirmer">Confirmer et enregistrer</button>
+</div></div>
+
+<section class="r4-ann" id="r4-annexe" aria-label="Annexe : les états">
+  <h2>Annexe · les neuf états (r4, l'étagère)</h2>
+  <div class="r4-grid">
+    <div class="r4-st"><h3>1 · Lecture en cours</h3>
+      <div class="r4-r2"><span class="r4-c">✓ Envoi</span><span class="r4-c r4-d">◌ Lecture <b>7 s</b></span><span class="r4-c" style="color:var(--t2)">Vérification</span></div>
+      <div class="r4-gr"><div class="r4-sk"></div><div class="r4-sk"></div><div class="r4-sk"></div></div>
+      <span class="r4-calc">Les tuiles se posent au fil de la lecture, sans être comptées vérifiées.</span></div>
+    <div class="r4-st"><h3>2 · Lue, sans point</h3>
+      <div class="r4-r1"><b>86,50</b><small>CHF</small><span class="r4-q">Brau- und Rauchshop<span>27.04.2026</span></span></div>
+      <div class="r4-r2"><span class="r4-c">✓ 23 lignes</span><span class="r4-c r4-n r4-fini">✓ rien à régler</span></div></div>
+    <div class="r4-st"><h3>3 · Lue avec ses points</h3><span class="r4-calc">L'écran du haut : 2 points d'argent sur le ruban, 4 sur l'étagère (5 moutures, Target bis, Hallertauer Blanc CH, unité de Sabro).</span></div>
+    <div class="r4-st"><h3>4 · Un point réglé, puis tous</h3>
+      <div class="r4-r2"><span class="r4-c">Payé <b class="r4-m">27.04</b></span><span class="r4-c r4-d">TVA <b>2,80</b>·<b>4,15</b></span><span class="r4-c r4-n"><span class="r4-m">5</span>&nbsp;à régler</span></div>
+      <div class="r4-r2"><span class="r4-c">Payé <b class="r4-m">27.04</b></span><span class="r4-c">TVA —</span><span class="r4-c r4-n r4-fini">✓ tout réglé</span></div></div>
+    <div class="r4-st"><h3>5 · Erreur de lecture</h3>
+      <div class="r4-r1"><b>—</b><small>CHF</small><span class="r4-q">Lecture impossible<span>capture-facture.jpg gardé</span></span></div>
+      <div class="r4-ch"><button class="r4-pri">Relire</button><button>Saisir à la main</button></div></div>
+    <div class="r4-st"><h3>6 · Drive pas connecté</h3>
+      <div class="r4-pi" style="padding:0;height:auto"><span class="r4-drv" style="color:var(--attt)">Drive à connecter</span><button class="r4-c">Connecter</button></div>
+      <span class="r4-calc">« Confirmer » ouvre d'abord la connexion ; le brouillon reste.</span></div>
+    <div class="r4-st"><h3>7 · Enregistrement, puis le reçu</h3>
+      <div class="r4-prog"><i style="width:60%"></i></div>
+      <div class="r4-pi" style="padding:0;height:auto"><span class="r4-drv">Envoi au Drive · <span class="r4-m">0,4 / 0,7 Mo</span></span><button class="r4-c">Fermer</button></div>
+      <div class="r4-recu"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r4-annexe">Ouvrir dans Drive</a></div></div>
+    <div class="r4-st"><h3>8 · Peut-être déjà enregistré</h3>
+      <div class="r4-pan" style="border:1.5px dashed var(--attt)"><span class="r4-calc">Commande <b>686863</b> · <b>86,50</b> : déjà au registre sous <b>380001</b> du <b>30.04.2026</b> ; ce document : <b>372765</b> du <b>27.04.2026</b></span>
+      <div class="r4-ch"><button class="r4-pri">Même achat</button><button>Autre achat</button></div></div></div>
+    <div class="r4-st"><h3>9 · Hors ligne</h3>
+      <div class="r4-pi" style="padding:0;height:auto"><span class="r4-drv" style="color:var(--attt)">Hors ligne · brouillon gardé</span><span class="r4-go" style="background:var(--haut);color:var(--t1)">Au retour du réseau</span></div></div>
+  </div>
+</section>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  // Sa facture 372765 : les 18 articles et leurs 5 moutures. [n, nom, quantité, unité imprimée, prix, montant, famille, stock, extra]
+  var A=[
+   [1,'Maris Otter',6,'Kg','2,30',1380,'malt','relie',{m:2}],[3,'Gerstenflocken',1,'Kg','2,40',240,'malt','relie',{}],[4,'Röstgerste',1,'Kg','1,80',180,'malt','relie',{m:5}],
+   [6,'Caramünch Typ 2',1,'Kg','1,75',175,'malt','relie',{m:7}],[13,'Pilsner Malz',5,'Kg','1,50',750,'malt','relie',{m:14}],[15,'Weizenmalz hell',2,'Kg','1,55',310,'malt','relie',{m:16}],[17,'Haferflocken',2,'Kg','2,50',500,'malt','relie',{}],
+   [8,'Target',40,'g','0,040',160,'houb','bis',{al:'11,3',pt:'p4',st:'α 11,8 en stock',bis:'Target bis'}],[9,'Goldings East Kent',20,'g','0,040',80,'houb','neuf',{al:'5,5'}],[18,'Galaxy',60,'g','0,080',480,'houb','relie',{al:'17,2'}],
+   [19,'Nelson Sauvin',100,'g','0,080',800,'houb','relie',{al:'9,6'}],[20,'Sabro',30,null,'0,070',210,'houb','precis',{al:'13,4',pt:'p6'}],[22,'Hallertauer Blanc',30,'g','0,045',135,'houb','bis',{al:'9,5',pt:'p5',st:'DE en stock',bis:'Hallertauer Blanc CH'}],[23,'Motueka',20,'g','0,070',140,'houb','relie',{al:'8,1'}],
+   [10,'LALLEMAND Windsor',2,'Stk','4,50',900,'lev','relie',{cv:'2 sachets'}],[11,'Safale BE-256',1,'Stk','4,40',440,'lev','relie',{cv:'1 sachet'}],[12,'Safale US-05',2,'Stk','3,40',680,'lev','relie',{cv:'2 sachets'}],[21,'Verdant IPA',2,'Stk','4,70',940,'lev','neuf',{cv:'2 sachets'}]
+  ];
+  var MO={2:60,5:10,7:10,14:50,16:20};
+  var FAM={malt:['Malts','var(--malt)'],houb:['Houblons','var(--houb)'],lev:['Levures','var(--lev)']};
+  var P={p1:0,p2:0,p3:0,p4:0,p5:0,p6:0},att={},unite=null,sel=null;
+  var chf=function(c){return (c/100).toFixed(2).replace('.',',')};
+  var cube='<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+  function ico(st){var b='';
+    if(st==='relie')b='<circle cx="15" cy="15" r="4.6" fill="#333" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>';
+    if(st==='neuf')b='<circle cx="15" cy="15" r="4.6" fill="#2F6FB3" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/>';
+    if(st==='bis')b='<circle cx="15" cy="15" r="4.6" fill="#7F5B10" stroke="none"/><path d="M13.4 13.9a1.7 1.7 0 1 1 2.9 1.2L13.4 17.3h3.3" stroke="#fff"/>';
+    if(st==='precis')b='<circle cx="15" cy="15" r="4.6" fill="#fff" stroke="#7F5B10" stroke-dasharray="2 1.4"/><path d="M13.6 13.9a1.5 1.5 0 1 1 2.2 1.3c-.6.3-.8.6-.8 1.1M15 17.5v.2" stroke="#7F5B10"/>';
+    var d=(st==='precis'||st==='neuf')?' stroke-dasharray="2.4 1.6"':'';
+    return '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667"><g'+d+'>'+cube+'</g>'+b+'</svg>';}
+  function doute(a){var x=a[8];return (x.pt&&!P[x.pt])}
+  function tuile(a){
+    var x=a[8],dt=doute(a),st=a[7];if(st==='precis'&&P.p6)st='relie';
+    var u=a[3]||unite,nom=(x.bis&&P[x.pt])?x.bis:a[1];
+    var h='<button class="r4-t'+(dt?' r4-dt':'')+(st==='bis'?' r4-bis':'')+'" style="--fam:'+FAM[a[6]][1]+'" data-n="'+a[0]+'" aria-selected="'+(sel===a[0])+'" data-booster="tuile">'
+      +'<span class="r4-ic">'+ico(st)+'</span><span class="r4-qt"><b>'+a[2]+'</b>'+(u?'<span>'+u+'</span>':'<span class="r4-qm">?</span>')+'</span>'
+      +'<span class="r4-nm">'+nom+'</span>';
+    if(x.al)h+='<span class="r4-al">α '+x.al+'</span>';
+    if(x.cv)h+='<span class="r4-cv">= '+x.cv+'</span>';
+    if(x.m){var k=x.m,on=att[k];h+='<span class="r4-mo'+(on?' r4-on':'')+'" data-mout="'+k+'" role="button" aria-label="'+(on?'Mouture rattachée à ':'Rattacher la mouture à ')+a[1]+'">'+(on?chf((a[5]+MO[k])/a[2])+'/kg':'mouture')+'</span>'}
+
+    return h+'</button>';
+  }
+  function plateau(a){
+    var x=a[8],u=a[3]||unite||'?',calc=Math.round(a[2]*parseFloat(a[4].replace(',','.'))*100);
+    var h='<div class="r4-pan r4-plat" id="r4-plat">';
+    if(x.pt==='p4'||x.pt==='p5')h+='<div class="r4-row"><span class="r4-calc">'+x.st+'</span></div><div class="r4-ch"><button class="r4-pri" data-ok="'+x.pt+'">Créer '+x.bis+'</button><button>Autre article ⇄</button></div>';
+    if(x.pt==='p6'&&!P.p6)h+='<div class="r4-row"><span class="r4-calc">unité illisible · reliée à Sabro · rien en stock sans elle</span></div><div class="r4-ch"><button data-u="g">g</button><button data-u="kg">kg</button><button data-u="Stk">Stk</button></div>';
+    h+='<div class="r4-big"><span class="r4-n" data-edit="q">'+a[2]+'</span><span class="r4-u">'+u+' ×</span><span class="r4-n" style="font-size:16px">'+a[4]+'</span><span class="r4-u">=</span><span class="r4-n" data-edit="m">'+chf(a[5])+'</span></div>'
+      +'<span class="r4-calc"><b>'+a[2]+' × '+a[4]+' = '+chf(calc)+'</b> '+(calc===a[5]?'✓':'· écart '+chf(a[5]-calc))+'</span>';
+    if(x.m)h+='<span class="r4-calc">mouture <b>'+a[2]+' '+a[3]+' × 0,10 = '+chf(MO[x.m])+'</b> · '+(att[x.m]?'rattachée : <b>'+chf((a[5]+MO[x.m])/a[2])+'/kg</b>':'pas encore rattachée')+'</span>';
+    if(x.cv)h+='<span class="r4-calc"><b>'+a[2]+' Stk = '+x.cv+'</b> (unité du stock)</span>';
+    h+='<div class="r4-row"><span class="r4-lab">Article</span><button class="r4-c">'+ico(a[7]==='precis'&&P.p6?'relie':a[7])+((x.bis&&P[x.pt])?x.bis:a[1])+' ⇄</button></div>';
+    h+='<div class="r4-ch"><button aria-pressed="true">Ingrédient</button><button>Service</button><button>Matériel</button></div>'
+      +'<div class="r4-row" style="justify-content:space-between"><button class="r4-lk">Aucun mouvement de stock</button><button class="r4-lk" data-ret="'+a[0]+'">Retirer la ligne</button></div></div>';
+    return h;
+  }
+  function render(){
+    P.p3=Object.keys(MO).every(function(k){return att[k]});
+    var h='';
+    ['malt','houb','lev'].forEach(function(f){
+      var as=A.filter(function(a){return a[6]===f});
+      // La somme d'une famille ne compte une mouture qu'une fois rattachée ; les autres restent à part, en pointillé.
+      var s=as.reduce(function(t,a){return t+a[5]+(a[8].m&&att[a[8].m]?MO[a[8].m]:0)},0);
+      var libre=as.reduce(function(t,a){return t+(a[8].m&&!att[a[8].m]?MO[a[8].m]:0)},0);
+      h+='<div class="r4-fh"><i style="background:'+FAM[f][1]+'"></i><h2>'+FAM[f][0]+'</h2><b>'+chf(s)+(libre?' <span class="r4-qm">+'+chf(libre)+'</span>':'')+'</b></div><div class="r4-gr">';
+      as.forEach(function(a,i){h+=tuile(a);if(sel===a[0])h+=plateau(a)});
+      h+='</div>';
+    });
+    $('#r4-et').innerHTML=h;
+    var nb=Object.keys(P).filter(function(k){return !P[k]}).length,c=$('#r4-nb');
+    c.classList.toggle('r4-fini',!nb);c.innerHTML=nb?'<span class="r4-m">'+nb+'</span>&nbsp;à régler':'✓ tout réglé';
+    $('#r4-cp').classList.toggle('r4-d',!P.p2);$('#r4-ct').classList.toggle('r4-d',!P.p1);
+    var tot=A.reduce(function(t,a){return t+a[5]},0)+150;$('#r4-dv').textContent=chf(tot);
+  }
+  function montre(id){['r4-pj','r4-ppr','r4-ppay','r4-ptva'].forEach(function(p){var e=document.getElementById(p);e.hidden=p!==id||!e.hidden})}
+  function prochain(){
+    if(!P.p1){montre('r4-ptva');return}
+    if(!P.p2){montre('r4-ppay');return}
+    var el;if(!P.p3)el=$('.r4-mo:not(.r4-on)');else{var a=A.find(function(a){return doute(a)});if(a)el=$('.r4-t[data-n="'+a[0]+'"]')}
+    if(el){el.classList.remove('r4-fl');void el.offsetWidth;el.classList.add('r4-fl');el.scrollIntoView({block:'center',behavior:'smooth'})}
+  }
+  document.addEventListener('click',function(e){
+    var m=e.target.closest('[data-mout]');if(m){att[m.dataset.mout]=!att[m.dataset.mout];render();return}
+    var t=e.target.closest('button,[data-edit]');if(!t)return;
+    if(t.id==='r4-jb'){montre('r4-pj');return}
+    if(t.id==='r4-pr'){montre('r4-ppr');return}
+    if(t.id==='r4-cp'){montre('r4-ppay');return}
+    if(t.id==='r4-ct'){montre('r4-ptva');return}
+    if(t.id==='r4-nb'){prochain();return}
+    if(t.dataset.reg){$$('[data-reg]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});var ap=t.dataset.reg==='a';$('#r4-rp').hidden=ap;$('#r4-rm').hidden=ap;$('#r4-re').hidden=!ap;return}
+    if(t.dataset.ok){P[t.dataset.ok]=1;if(t.dataset.ok==='p2'){$('#r4-cp').innerHTML='Payé <b class="r4-m">27.04</b>';$('#r4-ppay').hidden=true}render();return}
+    if(t.dataset.tva){P.p1=1;var v=t.dataset.tva;$('#r4-ct').innerHTML=v==='vide'?'TVA —':'TVA <b class="r4-m">'+v+'</b>';$('#r4-tvr').textContent=v==='vide'?'— (laissée vide)':v+' (gardée)';$('#r4-ptva').hidden=true;render();return}
+    if(t.dataset.u){unite=t.dataset.u;P.p6=1;render();return}
+    if(t.dataset.ret){A=A.filter(function(a){return a[0]!==+t.dataset.ret});sel=null;render();return}
+    if(t.dataset.edit){var inp=document.createElement('input');inp.className='r4-in r4-m';inp.setAttribute('inputmode','decimal');inp.value=t.textContent;inp.style.width='84px';t.replaceWith(inp);inp.focus();inp.select();
+      inp.addEventListener('blur',function(){var a=A.find(function(r){return r[0]===sel}),x=parseFloat(inp.value.replace(',','.'));if(a&&!isNaN(x)){if(t.dataset.edit==='q')a[2]=x;else a[5]=Math.round(x*100)}render()});return}
+    if(t.classList.contains('r4-t')){var n=+t.dataset.n;sel=sel===n?null:n;render();return}
+    if(t.id==='r4-go'){var nb=Object.keys(P).filter(function(k){return !P[k]}).length;if(nb){prochain();return}enregistrer();return}
+  });
+  function enregistrer(){var pi=$('#r4-pi'),g=$('#r4-pg'),x=0;
+    pi.innerHTML='<span class="r4-drv">Envoi au Drive · <span class="r4-m" id="r4-mo">0,0 / 0,7 Mo</span></span><button class="r4-c">Fermer</button>';
+    var tm=setInterval(function(){x+=0.1;if(x>=0.7){clearInterval(tm);g.style.width='100%';pi.innerHTML='<span class="r4-recu"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r4-annexe">Ouvrir dans Drive</a></span>';return}
+      g.style.width=(x/0.7*100)+'%';$('#r4-mo').textContent=x.toFixed(1).replace('.',',')+' / 0,7 Mo'},180)}
+  window.r4Ouvrir=function(n){sel=n;render()};
+  window.r4Regler=function(){Object.keys(P).forEach(function(k){P[k]=1});Object.keys(MO).forEach(function(k){att[k]=1});unite='g';$('#r4-cp').innerHTML='Payé <b class="r4-m">27.04</b>';$('#r4-ct').innerHTML='TVA —';render()};
+  render();
+})();
+</script>
+</body></html>

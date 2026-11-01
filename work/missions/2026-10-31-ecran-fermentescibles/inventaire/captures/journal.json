@@ -1,0 +1,123 @@
+{
+  "base": "http://127.0.0.1:5631",
+  "erreurs": [],
+  "bloques": [],
+  "captures": [
+    {
+      "id": "fermentescibles-pleine-390",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-ecran-fermentescibles\\inventaire\\captures\\fermentescibles-pleine-390.png",
+      "plein": true,
+      "entete": "Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresHoublonsLevurePaliersEauRécap.",
+      "bandeau": "Grain0 kgOG—IBU60EBC—",
+      "lignes": [
+        "Aucune option"
+      ],
+      "boutons": [
+        "Tous",
+        "Voir",
+        "Ouvrir les finances",
+        "Gérer",
+        "Identité",
+        "Fermentescibles",
+        "Houblons",
+        "Levure",
+        "Paliers",
+        "Eau et sels",
+        "Récapitulatif",
+        "Famille de fermentescible : Sucre — appuyer pour passer à Lactose",
+        "Fermer la liste",
+        "Retour",
+        "Suivant — Houblons"
+      ]
+    },
+    {
+      "id": "fermentescibles-ajout-390",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-ecran-fermentescibles\\inventaire\\captures\\fermentescibles-ajout-390.png",
+      "plein": true,
+      "entete": "Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresHoublonsLevurePaliersEauRécap.",
+      "bandeau": "Grain0 kgOG—IBU60EBC—",
+      "lignes": [
+        "Aucune option"
+      ],
+      "boutons": [
+        "Tous",
+        "Voir",
+        "Ouvrir les finances",
+        "Gérer",
+        "Identité",
+        "Fermentescibles",
+        "Houblons",
+        "Levure",
+        "Paliers",
+        "Eau et sels",
+        "Récapitulatif",
+        "Famille de fermentescible : Sucre — appuyer pour passer à Lactose",
+        "Fermer la liste",
+        "Retour",
+        "Suivant — Houblons"
+      ]
+    },
+    {
+      "id": "fermentescibles-vide-390",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-ecran-fermentescibles\\inventaire\\captures\\fermentescibles-vide-390.png",
+      "plein": true,
+      "entete": "Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresHoublonsLevurePaliersEauRécap.",
+      "bandeau": "",
+      "lignes": [],
+      "boutons": [
+        "Tous",
+        "Voir",
+        "Ouvrir les finances",
+        "Gérer",
+        "Identité",
+        "Fermentescibles",
+        "Houblons",
+        "Levure",
+        "Paliers",
+        "Eau et sels",
+        "Récapitulatif",
+        "Famille de fermentescible : Grain — appuyer pour passer à Sucre",
+        "Ouvrir la liste",
+        "Retour",
+        "Suivant — Houblons"
+      ]
+    },
+    {
+      "id": "fermentescibles-pleine-1280",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-ecran-fermentescibles\\inventaire\\captures\\fermentescibles-pleine-1280.png",
+      "plein": true,
+      "entete": "Fermentescibles2/7Fermentescibles — étape 2 sur 7IdentitéMalts/sucresHoublonsLevurePaliersEauRécap.",
+      "bandeau": "Grain0 kgOG—IBU60EBC—",
+      "lignes": [
+        "Aucune option"
+      ],
+      "boutons": [
+        "Tous",
+        "Voir",
+        "Ouvrir les finances",
+        "Gérer",
+        "Identité",
+        "Fermentescibles",
+        "Houblons",
+        "Levure",
+        "Paliers",
+        "Eau et sels",
+        "Récapitulatif",
+        "Famille de fermentescible : Sucre — appuyer pour passer à Lactose",
+        "Fermer la liste",
+        "Retour",
+        "Suivant — Houblons"
+      ]
+    }
+  ],
+  "notes": [
+    "grain 0 : aucune option du stock, rien ajouté",
+    "grain 1 : picker absent, rien ajouté",
+    "grain 2 : picker absent, rien ajouté",
+    "sucre 3 : picker absent, rien ajouté",
+    "grain 0 : aucune option du stock, rien ajouté",
+    "grain 1 : picker absent, rien ajouté",
+    "grain 2 : picker absent, rien ajouté",
+    "sucre 3 : picker absent, rien ajouté"
+  ]
+}

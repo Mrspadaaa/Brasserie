@@ -426,7 +426,7 @@ cibles à taille de texte normale, à laisser grandir avec les préférences uti
 | Lecture mise en avant (`reading`) | 16 px | Nombre et unité sur une même ligne |
 | Libellé compact (`label`) | 12 px | Métadonnée, légende, badge ; 13 px si plus lisible |
 | Commande | 12–13 px | Mot d'action court et explicite |
-| Texte saisi | 16 px | Conserver la protection de saisie mobile de `index.css` |
+| Texte saisi | 16 px | Conserver la protection de saisie mobile de `src/index.css` |
 
 Le 12/13 px n'est plus réservé au « chrome expérimental » ou aux mentions
 légales. L'utiliser selon le rôle ci-dessus, avec contraste et zoom conservés.

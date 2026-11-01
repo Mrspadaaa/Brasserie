@@ -1,0 +1,1854 @@
+{
+ "commit": "ae7c7a8d",
+ "populaires": [
+  {
+   "original": "nugget",
+   "style": "16D",
+   "a60": {
+    "original": "nugget",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 5,
+    "montresSansAucuneVariableDAmertume": 5,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Bru 100 [amertume inconnue]",
+     "Cluster fugget 100 [amertume inconnue]",
+     "Extra styrian dana 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Styrian Eureka 99",
+     "Trident 99",
+     "Yeoman 99",
+     "Helios 97",
+     "Centennial 96"
+    ],
+    "rangDesPhares": {
+     "columbus": 49,
+     "magnum-us": 53,
+     "warrior": 25,
+     "chinook": 33,
+     "zeus": 70,
+     "cluster": 170
+    },
+    "top30AmertumeInconnue": 12
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Centennial 64",
+     "Loral 64",
+     "Warrior 64",
+     "Falconer's Flight 63",
+     "Bravo 62"
+    ]
+   }
+  },
+  {
+   "original": "magnum-us",
+   "style": "18B",
+   "a60": {
+    "original": "magnum-us",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 0,
+    "montresSansAucuneVariableDAmertume": 0,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Magnum (GR) 96",
+     "Buzz Bullets 93",
+     "Hallertau Taurus 93",
+     "Boomerang 91",
+     "Yeoman 91"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Magnum (GR) 96",
+     "Buzz Bullets 93",
+     "Hallertau Taurus 93",
+     "Boomerang 91",
+     "Yeoman 91"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 0
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Magnum (GR) 65",
+     "Pacific Jade 63",
+     "Boomerang 62",
+     "Santiam 62",
+     "Agnus 59"
+    ]
+   }
+  },
+  {
+   "original": "warrior",
+   "style": "18B",
+   "a60": {
+    "original": "warrior",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 1,
+    "montresSansAucuneVariableDAmertume": 1,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Cluster fugget 100 [amertume inconnue]",
+     "Summit 94",
+     "Yeoman 94",
+     "Magnat 93",
+     "Zenia 93"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Summit 94",
+     "Yeoman 94",
+     "Magnat 93",
+     "Zenia 93",
+     "Apollo 92"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 1
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Millennium 66",
+     "Nugget 63",
+     "Simcoe 63",
+     "Southern Cross 62",
+     "Apollo 61"
+    ]
+   }
+  },
+  {
+   "original": "columbus",
+   "style": "22A",
+   "a60": {
+    "original": "columbus",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 4,
+    "montresSansAucuneVariableDAmertume": 4,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Tomahawk 100",
+     "Bru 100 [amertume inconnue]",
+     "Cluster fugget 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Tomahawk 100",
+     "CTZ 99",
+     "Zeus 99",
+     "Sun 97",
+     "Experimental D5 055 95"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 8
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "CTZ 84",
+     "Tomahawk 83",
+     "Zeus 81",
+     "Summit 70",
+     "Southern Sublime 61"
+    ]
+   }
+  },
+  {
+   "original": "chinook",
+   "style": "18B",
+   "a60": {
+    "original": "chinook",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 4,
+    "montresSansAucuneVariableDAmertume": 4,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Bru 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Krpan 100",
+     "Limequat 100 [amertume inconnue]",
+     "Mapuche 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Krpan 100",
+     "Helios 95",
+     "Pulawski 95",
+     "Superdelic 95",
+     "Hbc 638 94"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 8
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Apollo 67",
+     "Idaho 7 66",
+     "Krpan 65",
+     "Azacca 62",
+     "Bravo 62"
+    ]
+   }
+  },
+  {
+   "original": "perle-us",
+   "style": "3B",
+   "a60": {
+    "original": "perle-us",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 0,
+    "montresSansAucuneVariableDAmertume": 0,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Huell Classic 93",
+     "Northern Brewer (US) 93",
+     "Orion 92",
+     "Pulawski 92",
+     "Opal 91"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Huell Classic 93",
+     "Northern Brewer (US) 93",
+     "Orion 92",
+     "Pulawski 92",
+     "Opal 91"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 0
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Perle (GR) 74",
+     "Hallertau (US) 71",
+     "Tettnang (US) 69",
+     "Bohemie 64",
+     "Saaz (US) 61"
+    ]
+   }
+  },
+  {
+   "original": "saaz-cz",
+   "style": "3B",
+   "a60": {
+    "original": "saaz-cz",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 2,
+    "montresSansAucuneVariableDAmertume": 2,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Cluster fugget 100 [amertume inconnue]",
+     "Ycr 1 100 [amertume inconnue]",
+     "Wild Loyalist 99",
+     "Saaz Late 96",
+     "Amethyst 95"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Wild Loyalist 99",
+     "Saaz Late 96",
+     "Amethyst 95",
+     "Crystal 94",
+     "Sylva 94"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 2
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Spalter Select 66",
+     "Tettnanger 65",
+     "Tettnang (US) 64",
+     "Aurum 61",
+     "Pacific Crest 61"
+    ]
+   }
+  },
+  {
+   "original": "east-kent-goldings",
+   "style": "11C",
+   "a60": {
+    "original": "east-kent-goldings",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 0,
+    "montresSansAucuneVariableDAmertume": 0,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Perle (US) 79",
+     "Opal 78",
+     "Bramling Cross 76",
+     "Northern Brewer (GR) 75",
+     "Whitbread Golding Variety (WGV) 75"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Perle (US) 79",
+     "Opal 78",
+     "Bramling Cross 76",
+     "Northern Brewer (GR) 75",
+     "Whitbread Golding Variety (WGV) 75"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 2
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Golding 71",
+     "Styrian Golding 64",
+     "Hallertau Tradition 60",
+     "Lubelska 60",
+     "Saaz (US) 59"
+    ]
+   }
+  },
+  {
+   "original": "target",
+   "style": "11C",
+   "a60": {
+    "original": "target",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 1,
+    "montresSansAucuneVariableDAmertume": 1,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Peacharine 100 [amertume inconnue]",
+     "Herald 97",
+     "Sun 97",
+     "Zenia 97",
+     "Admiral 96"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Herald 97",
+     "Sun 97",
+     "Zenia 97",
+     "Admiral 96",
+     "Marco Polo 96"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 1
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Pilgrim 63",
+     "Cascade 62",
+     "Pilot 62",
+     "Cluster 61",
+     "Talus 61"
+    ]
+   }
+  },
+  {
+   "original": "fuggle",
+   "style": "11C",
+   "a60": {
+    "original": "fuggle",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 2,
+    "montresSansAucuneVariableDAmertume": 2,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Bru 100 [amertume inconnue]",
+     "Cluster fugget 100 [amertume inconnue]",
+     "East Kent Goldings 95",
+     "Styrian Golding 95",
+     "Lubelska 93"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "East Kent Goldings 95",
+     "Styrian Golding 95",
+     "Lubelska 93",
+     "Saaz (US) 92",
+     "Sonnet 92"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 2
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Sussex 62",
+     "Pacific Crest 61",
+     "Spalt 61",
+     "Styrian Golding 61",
+     "Golding 60"
+    ]
+   }
+  },
+  {
+   "original": "cascade",
+   "style": "18B",
+   "a60": {
+    "original": "cascade",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 3,
+    "montresSansAucuneVariableDAmertume": 3,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Petoskey 100",
+     "Vienna Gold 100",
+     "Bru 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Petoskey 100",
+     "Vienna Gold 100",
+     "Tolar 100",
+     "Aloha Blend 99",
+     "Solero 99"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 10
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Taiheke 68",
+     "Cluster 66",
+     "Centennial 64",
+     "KARMA 64",
+     "Mandarina Bavaria 63"
+    ]
+   }
+  },
+  {
+   "original": "centennial",
+   "style": "18B",
+   "a60": {
+    "original": "centennial",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 5,
+    "montresSansAucuneVariableDAmertume": 5,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]",
+     "Peacharine 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]",
+     "Turkeys pick 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Trident 99",
+     "Nugget 97",
+     "Yeoman 97",
+     "Zenia 97",
+     "Hbc 1134 96"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 5
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Falconer's Flight 66",
+     "Nugget 65",
+     "Cascade 64",
+     "Bravo 63",
+     "Comet 63"
+    ]
+   }
+  },
+  {
+   "original": "citra",
+   "style": "21C",
+   "a60": {
+    "original": "citra",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 5,
+    "montresSansAucuneVariableDAmertume": 5,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]",
+     "Mapuche 100 [amertume inconnue]",
+     "Peacharine 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Anchovy 99",
+     "Hbc 1134 98",
+     "HBC 1134 c.v. EXPERIMENTAL HOP 98",
+     "Trident 97",
+     "Bravo 96"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 6
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Mosaic 70",
+     "YQH-1380 68",
+     "Nectaron 67",
+     "Styrian Cardinal 67",
+     "Zamba Blend 67"
+    ]
+   }
+  },
+  {
+   "original": "simcoe",
+   "style": "21C",
+   "a60": {
+    "original": "simcoe",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 3,
+    "montresSansAucuneVariableDAmertume": 3,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Mapuche 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]",
+     "Zenia 94",
+     "Aloha Blend 93"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Zenia 94",
+     "Aloha Blend 93",
+     "Styrian Eureka 92",
+     "Thora 92",
+     "Trident 92"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 6
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Mosaic 73",
+     "Rakau 69",
+     "Falconer's Flight 68",
+     "Idaho 7 67",
+     "Moutere 65"
+    ]
+   }
+  },
+  {
+   "original": "mosaic",
+   "style": "21C",
+   "a60": {
+    "original": "mosaic",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 5,
+    "montresSansAucuneVariableDAmertume": 5,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Bru 100 [amertume inconnue]",
+     "Cluster fugget 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]",
+     "machops 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "TNT Blend 98",
+     "Citra 96",
+     "Styrian Eureka 95",
+     "Hbc 1134 94",
+     "HBC 1134 c.v. EXPERIMENTAL HOP 94"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 10
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Simcoe 73",
+     "Citra 70",
+     "Nectaron 67",
+     "Azacca 66",
+     "Galaxy 63"
+    ]
+   }
+  },
+  {
+   "original": "lotus",
+   "style": "22A",
+   "a60": {
+    "original": "lotus",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 4,
+    "montresSansAucuneVariableDAmertume": 4,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]",
+     "Turkeys pick 100 [amertume inconnue]",
+     "Experimental D5 055 97"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Experimental D5 055 97",
+     "Petoskey 93",
+     "Buzz Bullets 92",
+     "Solero 92",
+     "Aloha Blend 90"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 5
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Solero 68",
+     "Calypso 65",
+     "Trident 64",
+     "Ariana 63",
+     "Admiral 62"
+    ]
+   }
+  },
+  {
+   "original": "galaxy",
+   "style": "21C",
+   "a60": {
+    "original": "galaxy",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 3,
+    "montresSansAucuneVariableDAmertume": 3,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Mapuche 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]",
+     "Experimental D5 055 94",
+     "Eclipse 93"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Experimental D5 055 94",
+     "Eclipse 93",
+     "Ahhhroma 91",
+     "Krush 91",
+     "Junga 89"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 6
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Harlequin 69",
+     "Mosaic 63",
+     "Azacca 62",
+     "Citra 62",
+     "Nectaron 62"
+    ]
+   }
+  },
+  {
+   "original": "motueka",
+   "style": "21C",
+   "a60": {
+    "original": "motueka",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 4,
+    "montresSansAucuneVariableDAmertume": 4,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Vienna Gold 100",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]",
+     "Turkeys pick 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Vienna Gold 100",
+     "Buzz Bullets 99",
+     "Sun 98",
+     "Experimental D5 055 98",
+     "Zula 97"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 4
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Taiheke 63",
+     "Zythos 62",
+     "Cascade 61",
+     "Wakatu 60",
+     "Turkey's Pick 60"
+    ]
+   }
+  },
+  {
+   "original": "nelson-sauvin",
+   "style": "21C",
+   "a60": {
+    "original": "nelson-sauvin",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 4,
+    "montresSansAucuneVariableDAmertume": 4,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Bru 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Mega Motueka 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]",
+     "Southern Passion 98"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "Southern Passion 98",
+     "TNT Blend 98",
+     "Pink 97",
+     "Experimental D5 055 96",
+     "Lumberjack 95"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 4
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Hallertau Blanc 66",
+     "Trident 63",
+     "Sládek 62",
+     "Cashmere 61",
+     "Pink 61"
+    ]
+   }
+  },
+  {
+   "original": "hallertau-blanc",
+   "style": "21C",
+   "a60": {
+    "original": "hallertau-blanc",
+    "moment": "b60",
+    "contexte": "amertume",
+    "candidats": 504,
+    "montres": 5,
+    "montresAmertumeInconnue": 5,
+    "montresSansAucuneVariableDAmertume": 5,
+    "candidatsAmertumeInconnue": 76,
+    "tete": [
+     "Bru 100 [amertume inconnue]",
+     "Kohia Nelson 100 [amertume inconnue]",
+     "Limequat 100 [amertume inconnue]",
+     "Mega Motueka 100 [amertume inconnue]",
+     "Tropical Fusion 100 [amertume inconnue]"
+    ],
+    "teteSiAmertumeConnueDAbord": [
+     "TNT Blend 99",
+     "Zula 99",
+     "Experimental D5 055 99",
+     "Buzz Bullets 98",
+     "Sun 98"
+    ],
+    "rangDesPhares": {},
+    "top30AmertumeInconnue": 6
+   },
+   "a10": {
+    "montresAmertumeInconnue": 0,
+    "tete": [
+     "Comet 66",
+     "Nelson Sauvin 66",
+     "Mandarina Bavaria 64",
+     "Nectaron 62",
+     "Trident 62"
+    ]
+   }
+  }
+ ],
+ "styles": {
+  "15B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "15C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "16A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "16B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "16C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "16D": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "20B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 34,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "20C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "20A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 34,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "13C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "9C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "1A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "3A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "3B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "4A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "5B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "5D": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "7B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "10A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "24A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "23A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 48,
+    "magnum-us": 52,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 67,
+    "cluster": 152
+   }
+  },
+  "23G": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 48,
+    "magnum-us": 52,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 67,
+    "cluster": 152
+   }
+  },
+  "21A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 169
+   }
+  },
+  "21C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 169
+   }
+  },
+  "22A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 169
+   }
+  },
+  "12C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 34,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "18B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 169
+   }
+  },
+  "11B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 34,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "25B": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "26C": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  },
+  "25A": {
+   "montres": 5,
+   "montresAmertumeInconnue": 5,
+   "tete": [
+    "Bru 100 [amertume inconnue]",
+    "Cluster fugget 100 [amertume inconnue]",
+    "Extra styrian dana 100 [amertume inconnue]",
+    "Kohia Nelson 100 [amertume inconnue]",
+    "Limequat 100 [amertume inconnue]"
+   ],
+   "siConnueDAbord": [
+    "Styrian Eureka 99",
+    "Trident 99",
+    "Yeoman 99",
+    "Helios 97",
+    "Centennial 96"
+   ],
+   "phares": {
+    "columbus": 49,
+    "magnum-us": 53,
+    "warrior": 25,
+    "chinook": 33,
+    "zeus": 70,
+    "cluster": 170
+   }
+  }
+ },
+ "aAro": [],
+ "syntheseStyles": {
+  "styles": 31,
+  "avecUnMontreAmertumeInconnue": 31,
+  "avecTousLesMontresAmertumeInconnue": 31,
+  "montresMin": 5
+ },
+ "avecStockNuggetStout": {
+  "original": "nugget",
+  "moment": "b60",
+  "contexte": "amertume",
+  "candidats": 505,
+  "montres": 6,
+  "montresAmertumeInconnue": 5,
+  "montresSansAucuneVariableDAmertume": 5,
+  "candidatsAmertumeInconnue": 76,
+  "tete": [
+   "Bru 100 [amertume inconnue]",
+   "Cluster fugget 100 [amertume inconnue]",
+   "Extra styrian dana 100 [amertume inconnue]",
+   "Kohia Nelson 100 [amertume inconnue]",
+   "Limequat 100 [amertume inconnue]"
+  ],
+  "teteSiAmertumeConnueDAbord": [
+   "Motueka 80",
+   "Styrian Eureka 99",
+   "Trident 99",
+   "Yeoman 99",
+   "Helios 97"
+  ],
+  "rangDesPhares": {
+   "columbus": 50,
+   "magnum-us": 54,
+   "warrior": 26,
+   "chinook": 34,
+   "zeus": 71,
+   "cluster": 170
+  },
+  "top30AmertumeInconnue": 12
+ },
+ "recettes": {
+  "neipa v3 (22A)": {
+   "sans stock": [
+    {
+     "ajout": "lotus @b30",
+     "montres": 5,
+     "montresAmertumeInconnue": 4,
+     "tete": [
+      "Kohia Nelson 100 [amertume inconnue]",
+      "Limequat 100 [amertume inconnue]",
+      "Tropical Fusion 100 [amertume inconnue]",
+      "Turkeys pick 100 [amertume inconnue]",
+      "Experimental D5 055 97"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "lotus @b30",
+     "montres": 7,
+     "montresAmertumeInconnue": 4,
+     "tete": [
+      "Kohia Nelson 100 [amertume inconnue]",
+      "Limequat 100 [amertume inconnue]",
+      "Tropical Fusion 100 [amertume inconnue]",
+      "Turkeys pick 100 [amertume inconnue]",
+      "Target 82"
+     ]
+    }
+   ]
+  },
+  "stout S1 (16D)": {
+   "sans stock": [
+    {
+     "ajout": "nugget @b60",
+     "montres": 5,
+     "montresAmertumeInconnue": 5,
+     "tete": [
+      "Bru 100 [amertume inconnue]",
+      "Cluster fugget 100 [amertume inconnue]",
+      "Extra styrian dana 100 [amertume inconnue]",
+      "Kohia Nelson 100 [amertume inconnue]",
+      "Limequat 100 [amertume inconnue]"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "nugget @b60",
+     "montres": 6,
+     "montresAmertumeInconnue": 5,
+     "tete": [
+      "Bru 100 [amertume inconnue]",
+      "Cluster fugget 100 [amertume inconnue]",
+      "Extra styrian dana 100 [amertume inconnue]",
+      "Kohia Nelson 100 [amertume inconnue]",
+      "Limequat 100 [amertume inconnue]"
+     ]
+    }
+   ]
+  },
+  "21C hazy": {
+   "sans stock": [
+    {
+     "ajout": "nugget @b60",
+     "montres": 5,
+     "montresAmertumeInconnue": 5,
+     "tete": [
+      "Bru 100 [amertume inconnue]",
+      "Cluster fugget 100 [amertume inconnue]",
+      "Extra styrian dana 100 [amertume inconnue]",
+      "Kohia Nelson 100 [amertume inconnue]",
+      "Limequat 100 [amertume inconnue]"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Mandarina Bavaria 63",
+      "Centennial 62",
+      "Sorachi Ace 62"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "nugget @b60",
+     "montres": 6,
+     "montresAmertumeInconnue": 5,
+     "tete": [
+      "Bru 100 [amertume inconnue]",
+      "Cluster fugget 100 [amertume inconnue]",
+      "Extra styrian dana 100 [amertume inconnue]",
+      "Kohia Nelson 100 [amertume inconnue]",
+      "Limequat 100 [amertume inconnue]"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Nelson Sauvin 51",
+      "Target 61",
+      "Hallertau Blanc 58"
+     ]
+    }
+   ]
+  },
+  "pale ale 18B": {
+   "sans stock": [
+    {
+     "ajout": "magnum-us @b60",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Magnum (GR) 96",
+      "Buzz Bullets 93",
+      "Hallertau Taurus 93",
+      "Boomerang 91",
+      "Yeoman 91"
+     ]
+    },
+    {
+     "ajout": "cascade @b10",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Taiheke 68",
+      "Cluster 66",
+      "Centennial 64",
+      "KARMA 64",
+      "Mandarina Bavaria 63"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Mandarina Bavaria 63",
+      "Centennial 62",
+      "Bravo 61"
+     ]
+    }
+   ],
+   "stock fixture": [
+    {
+     "ajout": "magnum-us @b60",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Magnum (GR) 96",
+      "Buzz Bullets 93",
+      "Hallertau Taurus 93",
+      "Boomerang 91",
+      "Yeoman 91"
+     ]
+    },
+    {
+     "ajout": "cascade @b10",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Taiheke 68",
+      "Cluster 66",
+      "Motueka 61",
+      "Hallertau Blanc 57",
+      "Idaho 7 57"
+     ]
+    },
+    {
+     "ajout": "cascade @dryActive",
+     "montres": 5,
+     "montresAmertumeInconnue": 0,
+     "tete": [
+      "Taiheke 65",
+      "Cluster 63",
+      "Citra cryo 54",
+      "Nelson Sauvin 50",
+      "Target 61"
+     ]
+    }
+   ]
+  }
+ }
+}

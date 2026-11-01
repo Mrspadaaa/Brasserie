@@ -51,7 +51,18 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     expect(reconcileInvoiceVision([read(), read({ date: '2026-09-09' })]).review.status).toBe('checked');
   });
 
-  it.each(['vendor', 'date', 'currency', 'invoiceNumber', 'amountHT', 'amountTTC', 'tvaAmount', 'tvaRate', 'category'])('demande une correction du champ %s divergent', field => {
+  // l2 (P5, N2) : tvaAmount et tvaRate ne déclenchent plus de troisième lecture (la TVA n'entre pas dans la dépense et le bloc imprimé est
+  // contrôlé par taux) ; leur désaccord reste un point, avec les deux valeurs.
+  it.each(['tvaAmount', 'tvaRate'])('ne paie pas de troisième lecture pour le champ %s divergent, mais garde le point de désaccord et ses deux valeurs', field => {
+    const changed: Record<string, unknown> = { tvaAmount: 1, tvaRate: .081 };
+    const result = reconcileInvoiceVision([read(), read({ [field]: changed[field] })]);
+    expect(result.review.status).toBe('disputed');
+    expect(result.needsCorrection).toBe(false);
+    const point = (result.result as any).points.find((p: any) => p.code === 'lectures-divergentes' && p.champ === field);
+    expect(point.valeurs.map((v: any) => v.valeur)).toEqual([read()[field as keyof ReturnType<typeof read>], changed[field]]);
+  });
+
+  it.each(['vendor', 'date', 'currency', 'invoiceNumber', 'amountHT', 'amountTTC', 'category'])('demande une correction du champ %s divergent', field => {
     const changed: Record<string, unknown> = { vendor: 'Autre SA', date: '10.09.2026', currency: 'EUR', invoiceNumber: 'F-71', amountHT: 9, amountTTC: 11, tvaAmount: 1, tvaRate: .081, category: 'materiel', subcategory: 'Malt' };
     const result = reconcileInvoiceVision([read(), read({ [field]: changed[field] })]);
     expect(result.review.status).toBe('disputed');
@@ -84,10 +95,12 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     expect(result.needsCorrection).toBe(true);
   });
 
-  it.each(['kind', 'quantity', 'unit', 'price', 'amountTTC', 'stockCategory'])('contrôle aussi %s sur chaque ligne', field => {
+  // l2 (LE1, P5) : seuls nature, quantité, unité, montant (et nom, référence) achètent une troisième lecture ; `price` et `stockCategory`
+  // divergents restent un point visible (le prix est recoupé par quantité × prix sur la lecture retenue), sans troisième lecture.
+  it.each(['kind', 'quantity', 'unit', 'amountTTC', 'price', 'stockCategory'])('contrôle aussi %s sur chaque ligne', field => {
     const changed: Record<string, unknown> = { kind: 'equipment', quantity: 3, unit: 'kg', price: 4, amountTTC: 8, stockCategory: 'Malt' };
     const result = reconcileInvoiceVision([read(), read({ items: [item({ [field]: changed[field] })] })]);
-    expect(result.needsCorrection).toBe(true);
+    expect(result.needsCorrection).toBe(!['price', 'stockCategory'].includes(field));
     expect(result.review.findings.join(' ')).toContain('Cascade 100 g');
   });
 
@@ -177,7 +190,7 @@ describe('Deux visions indépendantes et correction par majorité', () => {
   });
 
   it('accepte deux transcriptions intégralement identiques de lignes aux libellés dupliqués', () => {
-    const a = read({ amountHT: 20, amountTTC: 20, items: [item(), item({ quantity: 5 })] });
+    const a = read({ amountHT: 20, amountTTC: 20, items: [item(), item({ quantity: 2 })] });
     expect(reconcileInvoiceVision([a, structuredClone(a)]).review.status).toBe('checked');
   });
 

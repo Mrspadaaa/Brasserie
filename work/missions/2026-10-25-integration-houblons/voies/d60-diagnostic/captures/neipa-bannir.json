@@ -1,0 +1,22 @@
+{
+ "cas": "neipa-bannir",
+ "visee": {
+  "resin": 0
+ },
+ "lecture": {
+  "groupes": [
+   {
+    "id": "levure",
+    "titre": "Changer de levurelevureestimé",
+    "nbLignes": 2,
+    "texte": "Changer de levurelevureestiméLalBrew Pomonaelle : pêche, POF négativeSafAle US-05 (Fermentis)elle : ?"
+   }
+  ],
+  "cartes": [
+   "Sans résineuxAucunevoie houblonHors houblon"
+  ],
+  "dir": "{\"resin\":-1}",
+  "apercu": "IBU80OG1,081EBC10Au styleAbsolu?Carte : le verdict de la meilleure voie qui reste au style ; Atteint, la visée ; Approche, la moitié du chemin.Barres : à droite de l’axe, ce qui monte ; à gauche, ce qui baisse ; tirets, la visée ; trait fin, jusqu’au haut du style 22A ; orangé, hors du style ; hachures, effet non établi.Sous un picto : un trait par cran du style, puis, en creux, les crans qui manquent jusqu’au plus grand du groupe ; toucher le picto dit sa famille et sa valeur. Cerclés : tes objectifs.Usage : amer, arôme ou mixte ; souligné en pointillé, déduit de l’α. Appui long sur une voie : sa fiche.BarresRadarSans résineuxAucunevoie houblonHors houblonChanger de levurelevureestiméLalBre"
+ },
+ "erreurs": []
+}

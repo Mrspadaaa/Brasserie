@@ -1,0 +1,36 @@
+<section class="PX-id" aria-label="Identité">
+ <div class="PX-r"><label class="PX-k" for="PX-nom">Nom</label><input id="PX-nom" class="PX-f" value="neipa v3" placeholder="Milk Stout #2…" autocomplete="off"></div>
+ <div class="PX-r"><label class="PX-k" for="PX-style">Style</label><div class="PX-combo"><input id="PX-style" class="PX-f" value="Double IPA" placeholder="NEIPA, Stout…" autocomplete="off"><span class="PX-ref" id="PX-ref">22A</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></div></div>
+ <div class="PX-r PX-r2">
+  <label class="PX-k" for="PX-vol">Volume</label><span class="PX-fn"><input id="PX-vol" class="PX-f PX-n PX-m" inputmode="decimal" value="24" data-booster="volume-champ"><span class="PX-u">L</span></span>
+  <label class="PX-k PX-k2" for="PX-boil">Ébullition</label><span class="PX-fn"><input id="PX-boil" class="PX-f PX-n PX-m" inputmode="numeric" value="60" data-booster="ebullition-champ"><span class="PX-u">min</span></span>
+ </div>
+</section>
+
+<section class="PX-mat" aria-label="Matériel à l'échelle">
+ <div class="PX-mh"><b>Royal Catering</b><span class="PX-mh2"></span><button class="PX-q" data-role="legende-bouton" aria-expanded="false" aria-label="légende">?</button></div>
+ <i class="PX-grid" aria-hidden="true"></i>
+ <div class="PX-lane" aria-label="Cuve 45 L">
+  <span class="PX-ln">Cuve</span>
+  <div class="PX-bar PX-bc" style="width:100%">
+   <i class="PX-liq PX-lc" id="PX-lc"></i><i class="PX-ev" id="PX-ev"></i><i class="PX-lim" style="left:77.78%"></i>
+  </div>
+  <span class="PX-lv"><b class="PX-m" id="PX-pre">~27 L</b><span class="PX-sub" id="PX-evt">−3 L à 60′</span></span>
+ </div>
+ <div class="PX-lane" aria-label="Fermenteur 30 L">
+  <span class="PX-ln">Ferm.</span>
+  <div class="PX-bar PX-bf" id="PX-bf" style="width:66.67%" data-booster="volume-glisser" role="slider" aria-label="Volume en fermenteur" aria-valuemin="1" aria-valuemax="30" aria-valuenow="24" tabindex="0">
+   <i class="PX-liq" id="PX-lf"></i><i class="PX-tick" id="PX-tk"></i><i class="PX-poi" id="PX-poi"></i>
+  </div>
+  <span class="PX-lv"><b class="PX-m" id="PX-vf">24 L</b><span class="PX-sub" id="PX-lib">6 L libres</span></span>
+ </div>
+ <div class="PX-axe" aria-hidden="true"><i></i><div class="PX-ax"><span style="left:0%">0</span><span style="left:22.2%">10</span><span style="left:44.4%">20</span><span style="left:66.7%">30</span><span style="left:77.8%" class="PX-a35">35</span><span style="left:100%">45 L</span></div><i></i></div>
+ <p class="PX-alerte" id="PX-al" role="alert" hidden></p>
+ <button class="PX-more" data-booster="materiel" aria-expanded="false">Espace libre et rinçage<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></button>
+ <div class="PX-matd" data-role="materiel" hidden><span>Espace libre visé</span><b class="PX-m">20 %</b><span>Rinçage à chaud habituel</span><b class="PX-m">18 L</b></div>
+</section>
+
+<label class="PX-nolo" data-booster="nolo"><input type="checkbox" id="PX-nl"><span class="PX-cb"></span><span>NOLO <span class="PX-m">≤ 0,5 %</span></span><span class="PX-nolop" id="PX-np" hidden>atelier ouvert ⌄</span></label>
+<button class="PX-reps" data-booster="reperes" aria-expanded="true"><span>Repères du style</span><span>BJCP 2021</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.40"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="PX-repd" data-role="reperes"><span>OG <b class="PX-m">1,065–1,085</b></span><span>IBU <b class="PX-m">60–100</b></span><span>EBC <b class="PX-m">12–28</b></span></div>
+<div class="PX-leg" data-role="legende" hidden style="top:300px"><p>Les deux barres partagent la même règle en litres : le fermenteur de 30 L est plus court que la cuve de 45 L.</p><p><b>~</b> estimé : l'évaporation suit un taux de repli de 10 % par heure, pas une mesure. Pointillé vert : le conseil de 20 % d'espace libre, provisoire. Trait à 35 L : limite utile de la cuve, à vérifier.</p></div>

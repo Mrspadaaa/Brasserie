@@ -1,0 +1,8 @@
+// Captures de p6-b1 (copie de v5/m1/b.html, r4e-b forme m1 ; D219 : − et + sur la masse de chaque ligne). À 390 : repos ; Pilsner +
+// tenu (pendant, la masse défile) et après un toucher ; Dextrose (#sucre) après + ; Purée de mangue (#fruit) après − ; 8 grains (#huit)
+// au repos ; à 1280, le repos. Gestes D219 vérifiés ici : un toucher = un cran de la piste (50 g sous 1 kg, 100 g au-dessus), sur la
+// grille ; les autres masses ne bougent pas ; le plateau ne bouge pas ; total, part, bandeau et plateau suivent ; à 0 kg, − ne descend
+// plus ; l'appui tenu défile et s'arrête au relâcher ; le pas réel est dans le nom du bouton ; Tab va de masse en masse.
+// Contrôles hérités de r4e-b (rejoués) : rien de tronqué, annexe hors du premier écran, « 0,40 », masse tapée, Échap, Tab, part
+// tirée, moment qui tourne et « Annuler », couleur sur la ligne, retrait et « Annuler », détail, ajout à 0, doublon, « Créer », piste.
+// Imprime les mesures, puis CAPTURES OK ou CAPTURES ECHEC n.

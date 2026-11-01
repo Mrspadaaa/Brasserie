@@ -492,9 +492,11 @@ export const PageShell: React.FC<PageShellProps> = ({
       // permet au navigateur de lui rendre le focus à la fermeture.
       setIsFieldFocused(!!isTextField && !field?.closest('dialog[open], [role="dialog"]'));
     };
+    let pending: ReturnType<typeof setTimeout> | undefined;
     const onFocusIn = () => refreshFocus();
     const onFocusOut = () => {
-      setTimeout(() => {
+      clearTimeout(pending);
+      pending = setTimeout(() => {
         refreshFocus();
       }, 60);
     };
@@ -502,6 +504,7 @@ export const PageShell: React.FC<PageShellProps> = ({
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('focusout', onFocusOut);
     return () => {
+      clearTimeout(pending);
       document.removeEventListener('focusin', onFocusIn);
       document.removeEventListener('focusout', onFocusOut);
     };

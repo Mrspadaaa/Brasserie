@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u4 — Nouvelle dépense · le pont facture ↔ stock (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--sto:#4C6B2A;--stof:#EEF4E6;--fin:#1F64A3;--finf:#E8F0F9;--att:#7F5B10;--atta:#9C7020;--attf:#FBF3E1;--alerte:#A8291F;--lev:#6A4FB0;--levf:#F0ECF9;--malt:#E0A02E;--paille:#F2C14E;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+::selection{background:#F2C14E66}
+:focus-visible{outline:2px solid var(--fin);outline-offset:1px}
+[hidden]{display:none!important}
+.u4-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.u4-ic{display:inline-flex;width:16px;height:16px;flex-shrink:0}
+.u4-sep::before{content:"·";margin:0 4px}
+.u4-wrap{max-width:900px;margin:0 auto;padding-bottom:60px}
+/* bandeau sombre : le ticket */
+.u4-tk{background:var(--t0);color:#fff;padding:0 10px 8px;border-radius:0 0 16px 16px}
+.u4-hd{display:flex;align-items:center;height:36px}
+.u4-hd h1{font-size:14px;font-weight:700}
+.u4-x{margin-left:auto;width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff}
+.u4-vr{display:flex;align-items:flex-end;gap:8px}
+.u4-tot{font-family:var(--mono);font-size:28px;font-weight:600;line-height:1;border-bottom:1.5px dotted #888;color:#fff}
+.u4-tot small{font-size:12px;color:#ccc;font-weight:500}
+.u4-who{font-size:12px;color:#ddd;display:grid}
+.u4-who b{color:#fff;font-weight:600}
+.u4-cpt{margin-left:auto;min-height:28px;padding:0 10px;border-radius:999px;background:var(--paille);color:var(--t0);font-weight:700;display:flex;align-items:center;gap:4px}
+.u4-cpt.u4-fini{background:#A9C98A}
+.u4-rc{margin-top:6px;display:flex;align-items:center;gap:4px;font-size:12px;color:#C7E0AE}
+.u4-doc{width:28px;height:36px;border-radius:10px;border:1px solid #555;overflow:hidden;background:#fff;flex-shrink:0;padding:0}
+.u4-doc img{display:block;width:100%;height:100%}
+/* l'argent */
+.u4-ar{display:flex;gap:6px;padding:8px 10px 0;flex-wrap:wrap}
+.u4-ch{min-height:32px;padding:2px 10px 2px 4px;border-radius:999px;border:1.5px dashed var(--atta);background:var(--attf);color:var(--att);display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
+.u4-ch .u4-n{width:22px;height:22px;border-radius:50%;background:var(--fin);color:#fff;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+.u4-ch.u4-ok{border:1.5px solid var(--sto);background:var(--stof);color:var(--sto)}
+.u4-ch.u4-ok .u4-n{background:var(--sto)}
+.u4-ch[aria-expanded="true"]{border-style:solid;border-color:var(--t0);color:var(--t0)}
+.u4-ard{margin:6px 10px 0;padding:8px 10px;border-radius:16px;background:var(--attf);display:grid;gap:6px}
+.u4-calc{font-size:12px;color:var(--t1)}
+.u4-ko{color:var(--alerte);font-weight:600}
+.u4-acts{display:flex;flex-wrap:wrap;gap:6px}
+.u4-b{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t0)}
+.u4-b.u4-k{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.u4-in{font-family:var(--mono);font-size:16px;height:28px;width:7em;border:1px solid var(--bordm);border-radius:10px;padding:0 6px;background:#fff}
+/* le pont */
+.u4-pont{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);margin:10px 10px 0}
+.u4-col{display:grid;align-content:start;gap:2px;position:relative;z-index:1}
+.u4-cap{display:flex;align-items:center;justify-content:space-between;height:20px;font-size:12px;color:var(--t2);font-weight:600}
+.u4-l,.u4-r{display:flex;align-items:center;gap:4px;height:30px;padding:0 6px;border-radius:10px;font-size:14px;color:var(--t0);text-align:left;width:100%;white-space:nowrap;overflow:hidden}
+.u4-l{background:var(--panel);justify-content:space-between}
+.u4-l>span:first-child{overflow:hidden;text-overflow:ellipsis}
+.u4-l.u4-sel,.u4-r.u4-sel{outline:2px solid var(--t0);outline-offset:-2px}
+.u4-l .u4-chn{color:var(--att);display:flex}
+.u4-l .u4-chn.u4-on{color:var(--sto)}
+.u4-r{border:1px solid var(--bord);background:#fff;font-size:13px;padding:0 4px}
+.u4-r>span{overflow:hidden;text-overflow:ellipsis}
+.u4-r.u4-ex{border-style:dashed;color:var(--t2);background:transparent}
+.u4-r.u4-bis{border:1.5px dashed var(--lev);background:var(--levf)}
+.u4-r.u4-nv{border:1.5px dashed var(--fin);background:var(--finf)}
+.u4-r.u4-un{border:1.5px dashed var(--atta);background:var(--attf)}
+.u4-r.u4-bis.u4-ok,.u4-r.u4-nv.u4-ok,.u4-r.u4-un.u4-ok{border-style:solid}
+.u4-r .u4-a{font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:2px}
+.u4-g{height:18px;font-size:12px;color:var(--t2);display:flex;align-items:end;gap:4px;padding-left:2px}
+.u4-g i{width:8px;height:8px;border-radius:50%}
+.u4-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+.u4-mtb{grid-column:1/-1;display:flex;align-items:center;gap:6px;margin:0 0 4px}
+/* l'inspecteur */
+.u4-insp{margin:8px 10px 0;border:1.5px solid var(--t0);border-radius:16px;padding:8px 10px;display:grid;gap:6px;background:#fff}
+.u4-insp h3{font-size:14px;color:var(--t0);display:flex;align-items:center;gap:6px}
+.u4-insp h3 .u4-x2{margin-left:auto;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.u4-insp select{height:28px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 6px;font-size:16px}
+.u4-ev{font-size:12px;color:var(--t2)}
+/* fiche */
+.u4-fi{margin:10px 10px 0;border-radius:16px;background:var(--panel);overflow:hidden}
+.u4-fr{display:flex;align-items:center;gap:8px;min-height:32px;padding:4px 10px;border-top:1px solid #fff}
+.u4-fr:first-child{border-top:0}
+.u4-fr>span:first-child{width:84px;flex-shrink:0;font-size:12px;color:var(--t2)}
+.u4-fr input,.u4-fr select{height:28px;border:1px solid var(--bord);border-radius:10px;background:#fff;padding:0 6px;font-size:16px;min-width:0}
+.u4-seg{display:flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.u4-seg button{min-height:28px;padding:0 10px;background:#fff}
+.u4-seg [aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.u4-tag{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;border:1.5px dashed var(--atta);background:var(--attf);color:var(--att);font-size:12px;font-weight:600}
+.u4-tag.u4-ok{border:1.5px solid var(--sto);background:var(--stof);color:var(--sto)}
+/* pied */
+.u4-pied{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--bord)}
+.u4-pin{max-width:900px;margin:0 auto;height:48px;display:flex;align-items:center;gap:8px;padding:0 10px;position:relative}
+.u4-drv{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sto)}
+.u4-conf{margin-left:auto;min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:flex;align-items:center;gap:6px}
+.u4-prog{position:absolute;left:0;top:-3px;height:3px;width:0;background:var(--fin);transition:width .8s ease-out}
+.u4-recu{margin:8px 10px;padding:8px 10px;border-radius:16px;border:1.5px solid var(--sto);background:var(--stof);display:grid;gap:4px}
+.u4-recu b{color:var(--sto)}.u4-recu a{color:var(--fin);font-weight:600}
+/* annexe */
+.u4-ax{max-width:900px;margin:24px auto 0;padding:10px 10px 80px;border-top:6px solid var(--panel)}
+.u4-ax h2{font-size:14px;color:var(--t0);margin-bottom:8px}
+.u4-sx{border:1px solid var(--bord);border-radius:16px;padding:8px 10px;margin-bottom:8px;display:grid;gap:6px}
+.u4-sx>p{font-size:12px;color:var(--t2)}.u4-sx>p b{color:var(--t0)}
+.u4-mini{display:grid;grid-template-columns:1fr 40px 1fr;align-items:center;gap:2px 0;font-size:12px}
+.u4-mini span{height:22px;display:flex;align-items:center;padding:0 6px;border-radius:10px;background:var(--panel)}
+.u4-mini i{height:0;border-top:2px solid var(--sto)}
+.u4-mini i.u4-d{border-top:2px dashed var(--fin)}
+.u4-mini i.u4-q{border-top:2px dashed var(--bordm)}
+@media (min-width:900px){ .u4-pont{grid-template-columns:minmax(0,1fr) 200px minmax(0,1fr)} .u4-tk{border-radius:0 0 24px 24px} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<div class="u4-wrap" role="dialog" aria-label="Nouvelle dépense">
+  <div class="u4-tk">
+    <header class="u4-hd"><h1>Nouvelle dépense</h1><button class="u4-x" aria-label="Fermer" data-u4-ic="x"></button></header>
+    <div class="u4-vr">
+      <button class="u4-doc" aria-label="Voir le justificatif" data-booster="justificatif"><img alt="Justificatif 372765" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 36'%3E%3Crect width='28' height='36' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='3' fill='%23333'/%3E%3Cg fill='%23bbb'%3E%3Crect x='3' y='10' width='22' height='1.5'/%3E%3Crect x='3' y='13' width='19' height='1.5'/%3E%3Crect x='3' y='16' width='22' height='1.5'/%3E%3Crect x='3' y='19' width='18' height='1.5'/%3E%3Crect x='3' y='22' width='22' height='1.5'/%3E%3C/g%3E%3Crect x='15' y='28' width='10' height='3' fill='%23333'/%3E%3C/svg%3E"></button>
+      <button class="u4-tot" data-u4-num="tot" aria-label="Total TTC, toucher pour corriger"><span id="u4-tot">86,50</span> <small>CHF</small></button>
+      <div class="u4-who"><b>Brau- und Rauchshop</b><span class="u4-m">27.04.2026</span></div>
+      <button class="u4-cpt" id="u4-cpt" data-booster="compteur"><span class="u4-m" id="u4-cptn">6</span>&nbsp;à régler</button>
+    </div>
+    <div class="u4-rc" id="u4-rc"><span data-u4-ic="check"></span><span id="u4-rct">23 lignes recoupées</span></div>
+  </div>
+
+  <div class="u4-ar" data-booster="argent">
+    <button class="u4-ch" data-u4-arg="tva" aria-expanded="false"><span class="u4-n">1</span>TVA <span class="u4-m">2,80</span><span class="u4-sep"></span><span class="u4-m">4,15</span></button>
+    <button class="u4-ch" data-u4-arg="paye" aria-expanded="false"><span class="u4-n">2</span>Payé <span class="u4-m">27.04</span> supposée</button>
+  </div>
+  <div class="u4-ard" id="u4-ard" hidden></div>
+
+  <section class="u4-pont" id="u4-pont" data-booster="pont-stock" aria-label="Chaque ligne de la facture, reliée à son article du stock">
+    <svg class="u4-svg" id="u4-svg" aria-hidden="true"></svg>
+    <div class="u4-col" id="u4-gauche"></div>
+    <div></div>
+    <div class="u4-col" id="u4-droite"></div>
+  </section>
+  <section class="u4-insp" id="u4-insp" hidden aria-live="polite"></section>
+
+  <div class="u4-fi" aria-label="La fiche" style="margin-top:18px">
+    <div class="u4-fr"><span>Pour quoi ?</span><input style="flex:1" aria-label="Pour quoi ?" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div>
+    <div class="u4-fr"><span>Achat du</span><input class="u4-m" inputmode="numeric" style="width:8em" aria-label="Date de l'achat" value="27.04.2026"></div>
+    <div class="u4-fr"><span>Règlement</span><div class="u4-seg" role="group" aria-label="Règlement"><button aria-pressed="true" data-u4-pay="1">Déjà payé</button><button aria-pressed="false" data-u4-pay="0">À payer</button></div></div>
+    <div class="u4-fr" id="u4-payrow"><span>Payé le</span><span class="u4-tag" id="u4-paytag"><span class="u4-m">27.04.2026</span>&nbsp;supposée</span><select aria-label="Moyen de paiement"><option>Virement · E-Finance, déduit</option><option>Carte</option><option>TWINT</option></select></div>
+    <div class="u4-fr" id="u4-echrow" hidden><span>Échéance</span><span class="u4-tag"><span class="u4-m">07.05.2026</span>&nbsp;déduite, 10 jours net</span></div>
+    <div class="u4-fr"><span>Fournisseur</span><input style="flex:1" aria-label="Fournisseur" value="Brau- und Rauchshop GmbH"><select aria-label="Catégorie"><option>Brassage</option><option>Matériel</option></select></div>
+    <div class="u4-fr"><span>Prévue</span><select style="flex:1" aria-label="Lier à une dépense prévue"><option>Lier à une dépense prévue : aucune</option><option>Ingrédients de novembre · 90,00</option></select></div>
+    <div class="u4-fr" style="flex-wrap:wrap"><span>Lignes</span><button class="u4-b" id="u4-add">+ Ajouter une ligne</button><button class="u4-b">Regrouper en une dépense</button><span id="u4-det" style="font-size:12px;color:var(--sto)"></span></div>
+    <div class="u4-fr"><span>Référence</span><span class="u4-m">372765 · commande 686863</span></div>
+    <div class="u4-fr"><span>Document</span><span>Pro-forma payée · taux lus <span class="u4-m">N 8,1 % · R 2,6 %</span></span></div>
+    <div class="u4-fr"><span>TVA · HT</span><span id="u4-tvar" style="color:var(--t2)">TVA à régler (1) · HT non imprimé</span></div>
+  </div>
+  <div class="u4-recu" id="u4-recu" hidden></div>
+</div>
+<div class="u4-pied"><div class="u4-pin"><span class="u4-prog" id="u4-prog"></span>
+  <span class="u4-drv" id="u4-drv" data-booster="drive-pret"><span data-u4-ic="cloud"></span>Drive prêt</span>
+  <button class="u4-conf" id="u4-conf"><span data-u4-ic="check"></span>Confirmer et enregistrer</button>
+</div></div>
+
+<section class="u4-ax" id="annexe" aria-label="Annexe des états">
+  <h2>Annexe · les états de u4, sur le pont</h2>
+  <div class="u4-sx"><p><b>1 · Lecture en cours</b> — le stock est déjà là, à droite ; les lignes arrivent à gauche.</p>
+    <div style="display:flex;gap:6px;font-size:12px"><span style="color:var(--sto)">✓ Envoi <span class="u4-m">1,2 s</span></span><span style="color:var(--fin);font-weight:600">Lecture…</span><span style="color:var(--t2)">Vérification</span></div>
+    <div class="u4-mini"><span style="background:repeating-linear-gradient(90deg,var(--panel) 0 40%,#fff 40% 60%)">…</span><i class="u4-q"></i><span>Maris Otter</span><span>…</span><i class="u4-q"></i><span>Pilsner Malz</span></div></div>
+  <div class="u4-sx"><p><b>2 · Lue, sans point</b> — illustration : tous les câbles pleins, aucun pointillé.</p>
+    <div class="u4-mini"><span>Maris Otter</span><i></i><span>Maris Otter</span><span>Galaxy</span><i></i><span>Galaxy</span></div><span style="font-size:12px;color:var(--sto)">0 à régler</span></div>
+  <div class="u4-sx"><p><b>3 · Lue avec ses points</b> — le premier écran ci-dessus : 2 points d'argent, 4 câbles en pointillé.</p></div>
+  <div class="u4-sx"><p><b>4 · Un point réglé, puis tous</b> — le câble pointillé devient plein ; le compteur passe à « tout réglé ».</p>
+    <div class="u4-mini"><span>Target</span><i class="u4-d" style="border-top-color:var(--lev)"></i><span>Target bis <span class="u4-m">α 11,3</span></span><span>Target</span><i style="border-top-color:var(--lev)"></i><span>Target bis <span class="u4-m">α 11,3</span> ✓</span></div></div>
+  <div class="u4-sx"><p><b>5 · Erreur de lecture</b></p>
+    <div class="u4-calc u4-ko">Lecture impossible · le fichier est gardé</div><div class="u4-acts"><button class="u4-b u4-k">Saisir à la main</button><button class="u4-b">Relire</button></div></div>
+  <div class="u4-sx"><p><b>6 · Drive pas connecté</b></p>
+    <div class="u4-pin" style="border:1px solid var(--bord);border-radius:10px"><span class="u4-drv" style="color:var(--att)"><span data-u4-ic="cloud"></span>Drive à connecter</span><button class="u4-b">Connecter</button><button class="u4-conf">Confirmer et enregistrer</button></div></div>
+  <div class="u4-sx"><p><b>7 · Enregistrement, puis le reçu</b></p>
+    <div class="u4-pin" style="border:1px solid var(--bord);border-radius:10px"><span class="u4-prog" style="width:60%;top:0"></span><span class="u4-drv" style="color:var(--fin)"><span data-u4-ic="cloud"></span>Envoi au Drive en cours… sans bloquer</span></div>
+    <div class="u4-recu" style="margin:0"><b>Enregistré · rangé dans Drive</b><span class="u4-m" style="font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#drive">Ouvrir dans Drive</a></div></div>
+  <div class="u4-sx"><p><b>8 · Achat peut-être déjà enregistré</b> — le pont montre l'autre dépense en face.</p>
+    <div class="u4-mini"><span>ce document <span class="u4-m">&nbsp;372765</span></span><i style="border-top-color:var(--alerte)"></i><span>déjà : <span class="u4-m">&nbsp;380001</span></span><span>commande <span class="u4-m">&nbsp;686863</span></span><i style="border-top-color:var(--alerte)"></i><span>commande <span class="u4-m">&nbsp;686863</span></span><span>total <span class="u4-m">&nbsp;86,50</span></span><i style="border-top-color:var(--alerte)"></i><span>total <span class="u4-m">&nbsp;86,50</span></span></div>
+    <div class="u4-acts"><button class="u4-b u4-k">Même achat</button><button class="u4-b">Autre achat</button></div></div>
+  <div class="u4-sx"><p><b>9 · Hors ligne</b></p><div class="u4-calc">Hors ligne · brouillon gardé · le pont et le Drive attendent le réseau</div></div>
+</section>
+
+<script>
+(() => {
+  const IC = { x: '<path d="M4 4l8 8M12 4l-8 8"/>', check: '<path d="M3 8.5l3 3 7-7"/>', cloud: '<path d="M4.5 12.5h7a2.8 2.8 0 00.2-5.6A4 4 0 004.3 6 3.3 3.3 0 004.5 12.5z"/>',
+    relie: '<path d="M8 2l5.5 3v6L8 14 2.5 11V5z M2.5 5L8 8l5.5-3 M8 8v6"/>', nouveau: '<path d="M6.5 4L11 6.5v5L6.5 14 2 11.5v-5z M2 6.5L6.5 9 11 6.5 M6.5 9v5 M13 1v4 M11 3h4"/>',
+    bis: '<path d="M5.5 5L9 7v4l-3.5 2L2 11V7z M10.5 3L14 5v4l-3.5 2 M9 3.8L10.5 3"/>', mout: '<path d="M6.5 9.5l3-3 M7.2 4.6l1-1a2.6 2.6 0 013.7 3.7l-1 1 M8.8 11.4l-1 1a2.6 2.6 0 01-3.7-3.7l1-1"/>',
+    unite: '<path d="M8 1.8a6.2 6.2 0 110 12.4A6.2 6.2 0 018 1.8z M6.2 6.3a1.8 1.8 0 113.4.8c-.5.6-1.6.9-1.6 2 M8 11v.5"/>' };
+  const ic = (n) => '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[n] + '</svg>';
+  const f2 = (x) => (Math.round(x * 100) / 100).toFixed(2).replace('.', ',');
+  const fp = (x) => { const d = Math.max(2, (String(x).split('.')[1] || '').length); return x.toFixed(d).replace('.', ','); };
+  const pz = (s) => parseFloat(String(s).replace(',', '.'));
+  // ses lignes, dans l'ordre de la facture ; les 5 moutures suivent leur malt (ligne + 1)
+  const L = [[1,'Maris Otter',6,'Kg',2.30,13.80,'Maris Otter, Kg'],[3,'Gerstenflocken',1,'Kg',2.40,2.40,'Gerstenflocken, 1 Kg'],[4,'Röstgerste',1,'Kg',1.80,1.80,'Röstgerste, Kg'],[6,'Caramünch Typ 2',1,'Kg',1.75,1.75,'CARAMÜNCH® Typ 2 Kg'],[8,'Target',40,'g',0.040,1.60,'Target 11.3%'],[9,'Goldings East Kent',20,'g',0.040,0.80,'Goldings East Kent 5.5%'],[10,'Windsor',2,'Stk',4.50,9.00,'LALLEMAND Windsor 11g'],[11,'Safale BE-256',1,'Stk',4.40,4.40,'Safale BE-256 (Abbaye) 11.5 g'],[12,'Safale US-05',2,'Stk',3.40,6.80,'Safale US-05 11,5g'],[13,'Pilsner Malz',5,'Kg',1.50,7.50,'Pilsner Malz, Kg'],[15,'Weizenmalz hell',2,'Kg',1.55,3.10,'Weizenmalz hell, Kg'],[17,'Haferflocken',2,'Kg',2.50,5.00,'Haferflocken, 1 Kg'],[18,'Galaxy',60,'g',0.080,4.80,'Galaxy 17.2%'],[19,'Nelson Sauvin',100,'g',0.080,8.00,'Nelson Sauvin ™ 9.6%'],[20,'Sabro',30,'',0.070,2.10,'Sabro® 13.4%'],[21,'Verdant IPA',2,'Stk',4.70,9.40,'LALLEMAND Verdant IPA 11g'],[22,'Hallertauer Blanc',30,'g',0.045,1.35,'Hallertauer Blanc 9.5% CH'],[23,'Motueka',20,'g',0.070,1.40,'Motueka ™ 8.1%']]
+    .map(([n, nom, q, u, p, m, lib]) => ({ n, nom, q, u, p, m, lib }));
+  const MOUT = { 1: [2, 0.60], 4: [5, 0.10], 6: [7, 0.10], 13: [14, 0.50], 15: [16, 0.20] };
+  // le stock d'essai, rangé par famille ; deux articles existants d'autres données (α, origine) restent à part
+  const R = [['g', 'Malts', 'var(--malt)'], ['r', 'Maris Otter', 1], ['r', 'Gerstenflocken', 3], ['r', 'Röstgerste', 4], ['r', 'Caramünch Typ 2', 6], ['r', 'Pilsner Malz', 13], ['r', 'Weizenmalz hell', 15], ['r', 'Haferflocken', 17],
+    ['g', 'Houblons', '#5E8F45'], ['x', 'Target', 0, 'α 11,8'], ['bis', 'Target bis', 8, 'α 11,3'], ['nv', 'Goldings East Kent', 9], ['r', 'Galaxy', 18], ['r', 'Nelson Sauvin', 19], ['un', 'Sabro', 20], ['x', 'Hallertauer Blanc', 0, 'DE'], ['bis', 'Hallertauer Blanc CH', 22], ['r', 'Motueka', 23],
+    ['g', 'Levures', 'var(--lev)'], ['r', 'Windsor', 10], ['nv', 'Safale BE-256', 11], ['r', 'Safale US-05', 12], ['r', 'Verdant IPA', 21]];
+  const PT = { 8: 'target', 22: 'hall', 20: 'sabro' };
+  const fait = {}; let selN = null; let arg = null;
+  const G = document.getElementById('u4-gauche'), D = document.getElementById('u4-droite'), S = document.getElementById('u4-svg'), pont = document.getElementById('u4-pont');
+  const MALTS = [1, 3, 4, 6, 13, 15, 17]; let maltsOuverts = false;
+  function render() {
+    const vusG = maltsOuverts ? L : [{ n: 'malts', nom: 'Malts 7', bundle: 1 }, ...L.filter((l) => !MALTS.includes(l.n))];
+    G.innerHTML = '<div class="u4-cap"><span>Facture</span></div>' +
+      '<div class="u4-g" style="visibility:hidden">·</div>' +
+      vusG.map((l) => l.bundle ? '<button class="u4-l" data-u4-malts aria-expanded="false" style="height:34px;background:#FBEFD5"><span><b style="font-weight:600">Malts</b> <span class="u4-m" style="color:var(--t2)">7</span></span><span class="u4-chn' + (fait.mout ? ' u4-on' : '') + '" role="img" aria-label="moutures">' + ic('mout') + '</span></button>' : '<button class="u4-l' + (selN === l.n ? ' u4-sel' : '') + '" data-u4-row="' + l.n + '"><span>' + l.nom + '</span>' + (MOUT[l.n] ? '<span class="u4-chn' + (fait.mout ? ' u4-on' : '') + '" role="img" aria-label="mouture">' + ic('mout') + '</span>' : '') + '</button>').join('');
+    D.innerHTML = '<div class="u4-cap"><span>Stock</span><button class="u4-b" style="min-height:24px;padding:0 6px;font-size:12px" data-u4-row="mout">' + '<span style="display:inline-flex;align-items:center;gap:2px;color:' + (fait.mout ? 'var(--sto)' : 'var(--att)') + '" aria-label="5 moutures à rattacher">' + ic('mout') + '<span class="u4-m">5</span>' + (fait.mout ? '' : '?') + '</span>' + '</button></div>' +
+      R.filter(([k, , n]) => maltsOuverts || !(k === 'r' && MALTS.includes(n))).map(([k, nom, n, a]) => {
+        if (k === 'g') return (nom === 'Malts' && !maltsOuverts ? '<div class="u4-g"></div>' : '<div class="u4-g"><i style="background:' + n + '"></i>' + nom + '</div>') + (nom === 'Malts' && !maltsOuverts ? '<button class="u4-r" data-u4-rr="malts" data-u4-malts style="height:34px"><span style="color:var(--sto);display:flex">' + ic('relie') + '</span><span><span class="u4-m">7</span> reliés</span></button>' : '');
+        const pt = PT[n]; const ok = pt && fait[pt];
+        const cls = { r: '', x: ' u4-ex', bis: ' u4-bis', nv: ' u4-nv', un: ' u4-un' }[k] + (ok ? ' u4-ok' : '');
+        const icn = { r: 'relie', x: 'relie', bis: 'bis', nv: 'nouveau', un: ok ? 'relie' : 'unite' }[k];
+        const col = { r: 'var(--sto)', x: 'var(--t2)', bis: 'var(--lev)', nv: 'var(--fin)', un: ok ? 'var(--sto)' : 'var(--att)' }[k];
+        return '<button class="u4-r' + cls + (selN === n && n ? ' u4-sel' : '') + '" data-u4-rr="' + (n || '') + '"' + (n ? ' data-u4-row="' + n + '"' : '') + '><span style="color:' + col + ';display:flex">' + ic(icn) + '</span><span>' + nom + (a ? '<span class="u4-a">' + a + '</span>' : '') + '</span></button>';
+      }).join('');
+    requestAnimationFrame(cables);
+    const n = ['tva', 'paye', 'mout', 'sabro', 'target', 'hall'].filter((p) => !fait[p]).length;
+    const c = document.getElementById('u4-cpt'); c.classList.toggle('u4-fini', !n); c.innerHTML = n ? '<span class="u4-m">' + n + '</span>&nbsp;à régler' : 'tout réglé';
+    document.querySelectorAll('[data-u4-arg]').forEach((b) => { b.classList.toggle('u4-ok', !!fait[b.dataset.u4Arg]); b.setAttribute('aria-expanded', String(arg === b.dataset.u4Arg)); });
+    const som = L.reduce((t, l) => t + l.m + (MOUT[l.n] ? MOUT[l.n][1] : 0), 0), imp = pz(document.getElementById('u4-tot').textContent);
+    const eq = Math.abs(som - imp) < 0.005;
+    document.getElementById('u4-rct').textContent = eq ? '23 lignes recoupées' : '23 lignes ' + f2(som) + ' ≠ ' + f2(imp) + ', écart ' + f2(Math.abs(som - imp));
+    document.getElementById('u4-rc').style.color = eq ? '#C7E0AE' : '#F29289';
+    document.getElementById('u4-det').textContent = 'Détail ' + f2(som) + ' / ' + f2(imp);
+  }
+  function cables() {
+    const P = pont.getBoundingClientRect(); let h = '';
+    const gx = G.getBoundingClientRect().right - P.left, dx = D.getBoundingClientRect().left - P.left;
+    const ma = G.querySelector('[data-u4-malts]'), mb = D.querySelector('[data-u4-rr="malts"]');
+    if (ma && mb) { const ya = ma.getBoundingClientRect().top + 17 - P.top, yb = mb.getBoundingClientRect().top + 17 - P.top, mx = (gx + dx) / 2;
+      h += '<path d="M' + gx + ' ' + ya + ' C' + mx + ' ' + ya + ' ' + mx + ' ' + yb + ' ' + dx + ' ' + yb + '" fill="none" stroke="#4C6B2A" stroke-width="7" stroke-linecap="round" opacity=".85"/>'; }
+    L.forEach((l) => {
+      const a = G.querySelector('[data-u4-row="' + l.n + '"]'), b = D.querySelector('[data-u4-rr="' + l.n + '"]'); if (!a || !b) return;
+      const ya = a.getBoundingClientRect().top + 15 - P.top, yb = b.getBoundingClientRect().top + 15 - P.top;
+      const kind = b.className.match(/u4-(bis|nv|un)/); const pt = PT[l.n]; const ok = pt ? fait[pt] : true;
+      const col = !kind ? '#4C6B2A' : kind[1] === 'bis' ? '#6A4FB0' : kind[1] === 'nv' ? '#1F64A3' : (ok ? '#4C6B2A' : '#9C7020');
+      const dash = (!ok || (kind && kind[1] === 'nv')) ? ' stroke-dasharray="4 3"' : '';
+      const w = selN === l.n ? 3 : 1.6; const mx = (gx + dx) / 2;
+      h += '<path d="M' + gx + ' ' + ya + ' C' + mx + ' ' + ya + ' ' + mx + ' ' + yb + ' ' + dx + ' ' + yb + '" fill="none" stroke="' + col + '" stroke-width="' + w + '"' + dash + '/>';
+      h += '<circle cx="' + gx + '" cy="' + ya + '" r="2.5" fill="' + col + '"/><circle cx="' + dx + '" cy="' + yb + '" r="2.5" fill="' + col + '"/>';
+      if (kind && kind[1] === 'un' && !ok) h += '<circle cx="' + mx + '" cy="' + (ya + yb) / 2 + '" r="8" fill="#FBF3E1" stroke="#9C7020" stroke-width="1.5"/><text x="' + mx + '" y="' + ((ya + yb) / 2 + 4) + '" text-anchor="middle" font-size="12" font-weight="700" fill="#7F5B10" font-family="IBM Plex Mono">?</text>';
+    });
+    S.innerHTML = h;
+  }
+  function inspecter(n) {
+    const box = document.getElementById('u4-insp');
+    if (n === null) { box.hidden = true; return; }
+    box.hidden = false;
+    if (n === 'mout') {
+      box.innerHTML = '<h3>' + ic('mout') + '5 moutures « Zuschlag Schrotung »<button class="u4-x2" data-u4-close aria-label="Fermer le détail">' + ic('x') + '</button></h3>' +
+        '<div class="u4-calc">Même quantité que le malt du dessus : ' + Object.entries(MOUT).map(([m, [s, v]]) => { const l = L.find((x) => x.n === +m); return l.nom + ' <span class="u4-m">' + f2(l.p) + ' → ' + f2((l.m + v) / l.q) + '</span>'; }).join(' · ') + ' CHF/kg</div>' +
+        '<div class="u4-acts"><button class="u4-b u4-k" data-u4-act="mout-oui">Rattacher les 5</button><button class="u4-b" data-u4-act="mout-non">Laisser en service</button></div>';
+      return;
+    }
+    const l = L.find((x) => x.n === n); const calc = l.q * l.p; const ok = Math.abs(calc - l.m) < 0.005; const pt = PT[n];
+    let lien = '';
+    if (pt === 'target') lien = '<div class="u4-calc">« Target 11.3% » : nom Target, α 11,3 à part. Au stock : Target <span class="u4-m">α 11,8</span>, jamais fusionné.</div><div class="u4-acts"><button class="u4-b u4-k" data-u4-act="bis-8">Créer Target bis · α 11,3</button><button class="u4-b" data-u4-act="autre">Autre article…</button></div>';
+    else if (pt === 'hall') lien = '<div class="u4-calc">Origine CH ; au stock, Hallertauer Blanc DE.</div><div class="u4-acts"><button class="u4-b u4-k" data-u4-act="bis-22">Créer Hallertauer Blanc CH</button><button class="u4-b" data-u4-act="autre">Autre article…</button></div>';
+    else if (pt === 'sabro') lien = '<div class="u4-calc">Unité illisible : reliée à Sabro, rien en stock tant qu\'elle manque.</div><div class="u4-acts">' + ['g', 'kg', 'Stk'].map((u) => '<button class="u4-b" data-u4-act="sabro-' + u + '"><span class="u4-m">30 ' + u + '</span></button>').join('') + '</div>';
+    else lien = '<div class="u4-acts"><select aria-label="Réception en stock"><option>Stock : ' + l.nom + ' + ' + l.q + ' ' + (l.u === 'Stk' ? 'sachets' : l.u.toLowerCase()) + '</option><option>Choisir un autre article…</option><option>Nouvel article</option><option>Aucun mouvement de stock</option><option>Matériel</option></select></div>';
+    box.innerHTML = '<h3><span class="u4-m" style="color:var(--t2)">' + l.n + '</span>' + l.nom + '<button class="u4-x2" data-u4-close aria-label="Fermer le détail">' + ic('x') + '</button></h3>' +
+      '<div class="u4-calc"><button class="u4-m" data-u4-q="' + l.n + '" style="border-bottom:1.5px dotted var(--trait)">' + String(l.q).replace('.', ',') + '</button> ' + (l.u || '<span class="u4-tag">unité à préciser</span>') + (l.u === 'Stk' ? ' <span style="color:var(--t2)">(= ' + l.q + ' sachets)</span>' : '') + ' × <button class="u4-m" data-u4-p="' + l.n + '" style="border-bottom:1.5px dotted var(--trait)">' + fp(l.p) + '</button> = <span class="u4-m">' + f2(calc) + '</span> ' + (ok ? '<span style="color:var(--sto)">✓ au centime</span>' : '<span class="u4-ko">≠ ' + f2(l.m) + ', écart ' + f2(Math.abs(calc - l.m)) + '</span>') + '</div>' +
+      lien + '<div class="u4-acts"><select aria-label="Type d\'achat"><option>Ingrédients</option><option>Service</option><option>Matériel</option></select><button class="u4-b">Retirer la ligne</button></div>' +
+      '<div class="u4-ev">Imprimé : « ' + l.lib + ' » <span class="u4-m">' + l.q + ' ' + (l.u || '?') + ' · ' + f2(l.m) + '</span></div>';
+  }
+  const ARG = {
+    tva: () => '<div class="u4-calc">par taux <span class="u4-m">1,95 + 2,20 = 4,15</span> <span class="u4-ko u4-m">≠ 2,80</span> colonne · bases <span class="u4-m">26,20 + 84,20 = 110,40</span> <span class="u4-ko u4-m">≠ 86,50</span></div><div class="u4-acts"><button class="u4-b u4-k" data-u4-act="tva-vide">Laisser vide</button><button class="u4-b" data-u4-act="tva-2,80"><span class="u4-m">2,80</span></button><button class="u4-b" data-u4-act="tva-4,15"><span class="u4-m">4,15</span></button></div>',
+    paye: () => '<div class="u4-calc">Aucune date de paiement imprimée ; « Betrag erhalten ».</div><div class="u4-acts"><button class="u4-b u4-k" data-u4-act="paye-garder">Garder <span class="u4-m">27.04.2026</span></button><input class="u4-in" inputmode="numeric" placeholder="jj.mm.aaaa" aria-label="Autre date" id="u4-pd"><button class="u4-b" data-u4-act="paye-autre">Prendre</button></div>'
+  };
+  function regler(p) { fait[p] = 1; render(); }
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button'); if (!t) return;
+    const a = t.dataset.u4Act;
+    if (a) {
+      if (a.startsWith('tva-')) { const v = a.slice(4); document.getElementById('u4-tvar').textContent = (v === 'vide' ? 'TVA vide' : 'TVA ' + v) + ' · HT non imprimé'; arg = null; document.getElementById('u4-ard').hidden = true; regler('tva'); }
+      if (a === 'paye-garder' || a === 'paye-autre') { const v = a === 'paye-autre' ? document.getElementById('u4-pd').value.trim() : '27.04.2026'; if (!v) return; const g = document.getElementById('u4-paytag'); g.className = 'u4-tag u4-ok'; g.innerHTML = '<span class="u4-m">' + v + '</span>&nbsp;' + (a === 'paye-autre' ? 'tapée' : 'gardée'); arg = null; document.getElementById('u4-ard').hidden = true; regler('paye'); }
+      if (a === 'mout-oui' || a === 'mout-non') { regler('mout'); inspecter(null); selN = null; render(); }
+      if (a === 'bis-8') { regler('target'); inspecter(8); }
+      if (a === 'bis-22') { regler('hall'); inspecter(22); }
+      if (a.startsWith('sabro-')) { L.find((x) => x.n === 20).u = a.slice(6); regler('sabro'); inspecter(20); }
+      if (a === 'autre') t.textContent = 'Liste du stock…';
+      return;
+    }
+    if (t.dataset.u4Arg) { const id = t.dataset.u4Arg; arg = arg === id ? null : id; const d = document.getElementById('u4-ard'); d.hidden = !arg; if (arg) d.innerHTML = ARG[arg](); render(); return; }
+    if (t.hasAttribute('data-u4-malts')) { maltsOuverts = true; render(); return; }
+    if (t.hasAttribute('data-u4-close')) { selN = null; inspecter(null); render(); return; }
+    if (t.dataset.u4Row) { const v = t.dataset.u4Row === 'mout' ? 'mout' : +t.dataset.u4Row; selN = selN === v ? null : v; inspecter(selN); render(); if (selN !== null) document.getElementById('u4-insp').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    if (t.id === 'u4-cpt') { const ordre = [['tva', () => document.querySelector('[data-u4-arg="tva"]').click()], ['paye', () => document.querySelector('[data-u4-arg="paye"]').click()], ['mout', () => D.querySelector('[data-u4-row="mout"]').click()], ['sabro', () => G.querySelector('[data-u4-row="20"]').click()], ['target', () => G.querySelector('[data-u4-row="8"]').click()], ['hall', () => G.querySelector('[data-u4-row="22"]').click()]];
+      const nx = ordre.find(([p]) => !fait[p]); if (nx) nx[1](); return; }
+    if (t.dataset.u4Pay) { document.querySelectorAll('[data-u4-pay]').forEach((b) => b.setAttribute('aria-pressed', String(b === t))); const p = t.dataset.u4Pay === '1'; document.getElementById('u4-payrow').hidden = !p; document.getElementById('u4-echrow').hidden = p; if (!p) regler('paye'); return; }
+    if (t.id === 'u4-add') { L.push({ n: 24, nom: 'Nouvelle ligne', q: 1, u: 'Kg', p: 0, m: 0, lib: '(ajoutée à la main)' }); render(); return; }
+    if (t.id === 'u4-conf') return enregistrer();
+  });
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-u4-num],[data-u4-q],[data-u4-p]'); if (!t || t.querySelector('input')) return;
+    e.stopPropagation(); const sp = t.dataset.u4Num ? document.getElementById('u4-tot') : t; const av = sp.textContent;
+    const i = document.createElement('input'); i.className = 'u4-in'; i.setAttribute('inputmode', 'decimal'); i.value = av; sp.textContent = ''; sp.appendChild(i); i.focus(); i.select();
+    const fin = (ok) => { const v = pz(i.value); i.remove(); if (!ok || isNaN(v)) { sp.textContent = av; return; }
+      if (t.dataset.u4Q) L.find((x) => x.n === +t.dataset.u4Q).q = v; else if (t.dataset.u4P) L.find((x) => x.n === +t.dataset.u4P).p = v; else sp.textContent = f2(v);
+      if (!t.dataset.u4Num) inspecter(selN); render(); };
+    i.addEventListener('keydown', (k) => { if (k.key === 'Enter') fin(true); if (k.key === 'Escape') fin(false); });
+    i.addEventListener('blur', () => fin(true), { once: true });
+  }, true);
+  function enregistrer() {
+    const d = document.getElementById('u4-drv'); d.style.color = 'var(--fin)'; d.innerHTML = ic('cloud') + 'Envoi au Drive en cours…';
+    document.getElementById('u4-conf').hidden = true; document.getElementById('u4-prog').style.width = '70%';
+    setTimeout(() => { document.getElementById('u4-prog').style.width = '100%'; d.style.color = 'var(--sto)'; d.innerHTML = ic('check') + 'Enregistré';
+      const r = document.getElementById('u4-recu'); r.hidden = false; r.innerHTML = '<b>Enregistré · rangé dans Drive</b><span class="u4-m" style="font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#drive">Ouvrir dans Drive</a>'; r.scrollIntoView({ block: 'center' }); }, 1200);
+  }
+  document.querySelectorAll('[data-u4-ic]').forEach((e) => { e.classList.add('u4-ic'); e.innerHTML = ic(e.dataset.u4Ic); });
+  render(); addEventListener('resize', () => requestAnimationFrame(cables));
+  document.fonts && document.fonts.ready.then(() => requestAnimationFrame(cables));
+})();
+</script>
+</body></html>

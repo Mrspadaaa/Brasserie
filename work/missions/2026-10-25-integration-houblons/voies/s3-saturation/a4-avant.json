@@ -1,0 +1,2465 @@
+{
+ "bilan": {
+  "listes": 62,
+  "contradictionAujourdhui": 10,
+  "contradictionNeutreExclu": 4
+ },
+ "lignes": [
+  {
+   "style": "15B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1.5,
+   "phares": 2,
+   "tete": [
+    "target",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "15B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 2,
+   "phares": 2,
+   "tete": [
+    "target",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "15B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "15B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3,
+   "phares": 3,
+   "tete": [
+    "target",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "15B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "target",
+    "willamette",
+    "nugget",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "15B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "15C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 2,
+   "phares": 2,
+   "tete": [
+    "target",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "15C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 2,
+   "phares": 2,
+   "tete": [
+    "target",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "15C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "15C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "target",
+    "willamette",
+    "nugget",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "15C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "target",
+    "willamette",
+    "nugget",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "15C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 7,
+   "mediane": 28.5,
+   "phares": 2,
+   "tete": [
+    "columbus",
+    "nugget",
+    "sabro",
+    "galena"
+   ]
+  },
+  {
+   "style": "16A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 6.5,
+   "phares": 2,
+   "tete": [
+    "willamette",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "16A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 31,
+   "phares": 3,
+   "tete": [
+    "nugget",
+    "columbus",
+    "target",
+    "mount-hood"
+   ]
+  },
+  {
+   "style": "16A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 5,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "16A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 7,
+   "mediane": 28.5,
+   "phares": 2,
+   "tete": [
+    "columbus",
+    "nugget",
+    "sabro",
+    "galena"
+   ]
+  },
+  {
+   "style": "16B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 6.5,
+   "phares": 2,
+   "tete": [
+    "willamette",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "16B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 31,
+   "phares": 3,
+   "tete": [
+    "nugget",
+    "columbus",
+    "target",
+    "glacier"
+   ]
+  },
+  {
+   "style": "16B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 5,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "16B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "willamette",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "16C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "willamette",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "16C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 15.5,
+   "phares": 2,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "16C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 15.5,
+   "phares": 2,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "16C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16D",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 2,
+   "phares": 2,
+   "tete": [
+    "target",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "16D",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 2,
+   "phares": 2,
+   "tete": [
+    "target",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "16D",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "16D",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "target",
+    "willamette",
+    "nugget",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "16D",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "target",
+    "willamette",
+    "nugget",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "16D",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "20B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 27,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "20B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 27,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "east-kent-goldings",
+    "columbus",
+    "nugget"
+   ]
+  },
+  {
+   "style": "20B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "20B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 4,
+   "mediane": 37,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "20B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 4,
+   "mediane": 37,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "20B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "20C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 3.5,
+   "phares": 2,
+   "tete": [
+    "warrior",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "20C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 3.5,
+   "phares": 2,
+   "tete": [
+    "warrior",
+    "willamette",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "20C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "20C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "20C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 4,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "east-kent-goldings",
+    "columbus"
+   ]
+  },
+  {
+   "style": "20C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "20A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 20,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "galena",
+    "glacier"
+   ]
+  },
+  {
+   "style": "20A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 20,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "galena",
+    "glacier"
+   ]
+  },
+  {
+   "style": "20A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "20A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 33,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "glacier",
+    "strisselspalt"
+   ]
+  },
+  {
+   "style": "20A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 33,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "nugget",
+    "glacier",
+    "strisselspalt"
+   ]
+  },
+  {
+   "style": "20A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "13C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 27,
+   "mediane": 27.5,
+   "phares": 2,
+   "tete": [
+    "willamette",
+    "bramling-cross",
+    "first-gold",
+    "citra"
+   ]
+  },
+  {
+   "style": "13C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 27,
+   "mediane": 27.5,
+   "phares": 2,
+   "tete": [
+    "willamette",
+    "bramling-cross",
+    "first-gold",
+    "citra"
+   ]
+  },
+  {
+   "style": "13C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "13C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 5,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "fuggle",
+    "first-gold",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "13C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 5,
+   "phares": 3,
+   "tete": [
+    "willamette",
+    "fuggle",
+    "first-gold",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "13C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "9C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 66,
+   "mediane": 66,
+   "phares": 1,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "mandarina-bavaria"
+   ]
+  },
+  {
+   "style": "9C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 40,
+   "mediane": 40,
+   "phares": 1,
+   "tete": [
+    "marynka",
+    "lublin",
+    "citra",
+    "centennial"
+   ]
+  },
+  {
+   "style": "9C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "9C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 60,
+   "mediane": 60,
+   "phares": 1,
+   "tete": [
+    "ahtanum",
+    "target",
+    "mount-hood",
+    "saphir"
+   ]
+  },
+  {
+   "style": "9C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 15,
+   "mediane": 15,
+   "phares": 1,
+   "tete": [
+    "marynka",
+    "lublin",
+    "ahtanum",
+    "target"
+   ]
+  },
+  {
+   "style": "9C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "1A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 40,
+   "mediane": 55,
+   "phares": 2,
+   "tete": [
+    "kazbek",
+    "citra",
+    "mandarina-bavaria",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "1A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 12,
+   "mediane": 21,
+   "phares": 2,
+   "tete": [
+    "sorachi-ace",
+    "kazbek",
+    "liberty",
+    "mount-hood"
+   ]
+  },
+  {
+   "style": "1A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "1A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 24,
+   "mediane": 44.5,
+   "phares": 2,
+   "tete": [
+    "huell-melon",
+    "mosaic",
+    "golding",
+    "citra"
+   ]
+  },
+  {
+   "style": "1A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 9,
+   "mediane": 9.5,
+   "phares": 2,
+   "tete": [
+    "mount-hood",
+    "liberty",
+    "ahtanum",
+    "target"
+   ]
+  },
+  {
+   "style": "1A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "3A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 3,
+   "phares": 1,
+   "tete": [
+    "sterling",
+    "sladek",
+    "premiant",
+    "citra"
+   ]
+  },
+  {
+   "style": "3A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 3,
+   "phares": 1,
+   "tete": [
+    "sterling",
+    "sladek",
+    "premiant",
+    "citra"
+   ]
+  },
+  {
+   "style": "3A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "3A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "sladek",
+    "premiant",
+    "sterling",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "3A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "sladek",
+    "premiant",
+    "sterling",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "3A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "3B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "sladek",
+    "premiant",
+    "citra",
+    "centennial"
+   ]
+  },
+  {
+   "style": "3B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "sladek",
+    "premiant",
+    "citra",
+    "centennial"
+   ]
+  },
+  {
+   "style": "3B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "3B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "sladek",
+    "premiant",
+    "ahtanum",
+    "target"
+   ]
+  },
+  {
+   "style": "3B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "sladek",
+    "premiant",
+    "ahtanum",
+    "target"
+   ]
+  },
+  {
+   "style": "3B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "4A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 54,
+   "mediane": 54,
+   "phares": 1,
+   "tete": [
+    "hersbrucker",
+    "citra",
+    "mandarina-bavaria",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "4A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 38,
+   "mediane": 38,
+   "phares": 1,
+   "tete": [
+    "hersbrucker",
+    "wakatu",
+    "saphir",
+    "citra"
+   ]
+  },
+  {
+   "style": "4A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "4A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 29,
+   "mediane": 29,
+   "phares": 1,
+   "tete": [
+    "hersbrucker",
+    "target",
+    "mount-hood",
+    "nugget"
+   ]
+  },
+  {
+   "style": "4A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 15,
+   "mediane": 15,
+   "phares": 1,
+   "tete": [
+    "hersbrucker",
+    "saphir",
+    "wakatu",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "4A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "5B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1.5,
+   "phares": 2,
+   "tete": [
+    "hersbrucker",
+    "tettnanger",
+    "spalter-select",
+    "vanguard"
+   ]
+  },
+  {
+   "style": "5B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1.5,
+   "phares": 2,
+   "tete": [
+    "hersbrucker",
+    "tettnanger",
+    "spalter-select",
+    "vanguard"
+   ]
+  },
+  {
+   "style": "5B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "5B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1.5,
+   "phares": 2,
+   "tete": [
+    "tettnanger",
+    "hersbrucker",
+    "saphir",
+    "spalter-select"
+   ]
+  },
+  {
+   "style": "5B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1.5,
+   "phares": 2,
+   "tete": [
+    "tettnanger",
+    "hersbrucker",
+    "saphir",
+    "spalter-select"
+   ]
+  },
+  {
+   "style": "5B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "5D",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1,
+   "phares": 1,
+   "tete": [
+    "tettnanger",
+    "motueka",
+    "wakatu",
+    "spalter-select"
+   ]
+  },
+  {
+   "style": "5D",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1,
+   "phares": 1,
+   "tete": [
+    "tettnanger",
+    "motueka",
+    "wakatu",
+    "spalter-select"
+   ]
+  },
+  {
+   "style": "5D",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "5D",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1,
+   "phares": 1,
+   "tete": [
+    "tettnanger",
+    "saphir",
+    "spalter-select",
+    "wakatu"
+   ]
+  },
+  {
+   "style": "5D",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 1,
+   "phares": 1,
+   "tete": [
+    "tettnanger",
+    "saphir",
+    "spalter-select",
+    "wakatu"
+   ]
+  },
+  {
+   "style": "5D",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "7B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "spalter-select",
+    "tettnanger",
+    "mount-hood",
+    "citra"
+   ]
+  },
+  {
+   "style": "7B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "spalter-select",
+    "tettnanger",
+    "mount-hood",
+    "citra"
+   ]
+  },
+  {
+   "style": "7B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "7B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "spalter-select",
+    "tettnanger",
+    "mount-hood",
+    "hallertau"
+   ]
+  },
+  {
+   "style": "7B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2,
+   "phares": 1,
+   "tete": [
+    "spalter-select",
+    "tettnanger",
+    "mount-hood",
+    "hallertau"
+   ]
+  },
+  {
+   "style": "7B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "10A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 25,
+   "mediane": 44,
+   "phares": 2,
+   "tete": [
+    "mandarina-bavaria",
+    "citra",
+    "simcoe",
+    "galaxy"
+   ]
+  },
+  {
+   "style": "10A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 19.5,
+   "phares": 2,
+   "tete": [
+    "hersbrucker",
+    "mandarina-bavaria",
+    "wakatu",
+    "saphir"
+   ]
+  },
+  {
+   "style": "10A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "10A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 13,
+   "mediane": 34.5,
+   "phares": 2,
+   "tete": [
+    "huell-melon",
+    "mosaic",
+    "golding",
+    "citra"
+   ]
+  },
+  {
+   "style": "10A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 8.5,
+   "phares": 2,
+   "tete": [
+    "hersbrucker",
+    "hallertau",
+    "saphir",
+    "wakatu"
+   ]
+  },
+  {
+   "style": "10A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "24A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 72,
+   "mediane": 75,
+   "phares": 2,
+   "tete": [
+    "mandarina-bavaria",
+    "citra",
+    "centennial",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "24A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 17,
+   "mediane": 27.5,
+   "phares": 2,
+   "tete": [
+    "mandarina-bavaria",
+    "crystal",
+    "citra",
+    "centennial"
+   ]
+  },
+  {
+   "style": "24A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "24A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 72,
+   "mediane": 75,
+   "phares": 2,
+   "tete": [
+    "ahtanum",
+    "centennial",
+    "cascade",
+    "huell-melon"
+   ]
+  },
+  {
+   "style": "24A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 13,
+   "mediane": 14,
+   "phares": 2,
+   "tete": [
+    "crystal",
+    "hallertau",
+    "ahtanum",
+    "target"
+   ]
+  },
+  {
+   "style": "24A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "23A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 0
+   }
+  },
+  {
+   "style": "23A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 0
+   }
+  },
+  {
+   "style": "23G",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23G",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23G",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 0
+   }
+  },
+  {
+   "style": "23G",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23G",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 1,
+   "meilleur": null,
+   "mediane": null,
+   "phares": 0,
+   "tete": [
+    "golding"
+   ]
+  },
+  {
+   "style": "23G",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 0
+   }
+  },
+  {
+   "style": "21A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3.5,
+   "phares": 6,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "21A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3.5,
+   "phares": 6,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "21A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 2,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "21A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3,
+   "phares": 5,
+   "tete": [
+    "centennial",
+    "cascade",
+    "mosaic",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "21A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3,
+   "phares": 5,
+   "tete": [
+    "centennial",
+    "cascade",
+    "mosaic",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "21A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 2,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "21C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 10,
+   "phares": 7,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "21C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 33,
+   "phares": 7,
+   "tete": [
+    "citra",
+    "nectaron",
+    "denali",
+    "galaxy"
+   ]
+  },
+  {
+   "style": "21C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 2,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "21C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 3,
+   "mediane": 4,
+   "phares": 2,
+   "tete": [
+    "centennial",
+    "cascade",
+    "mosaic",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "21C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 21.5,
+   "phares": 2,
+   "tete": [
+    "citra",
+    "horizon",
+    "southern-passion",
+    "green-bullet"
+   ]
+  },
+  {
+   "style": "21C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "22A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3.5,
+   "phares": 6,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "22A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3.5,
+   "phares": 6,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "22A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 2,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "22A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 5,
+   "phares": 5,
+   "tete": [
+    "centennial",
+    "cascade",
+    "nugget",
+    "mosaic"
+   ]
+  },
+  {
+   "style": "22A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 5,
+   "phares": 5,
+   "tete": [
+    "centennial",
+    "cascade",
+    "nugget",
+    "mosaic"
+   ]
+  },
+  {
+   "style": "22A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 1,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "12C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 15.5,
+   "phares": 2,
+   "tete": [
+    "target",
+    "bramling-cross",
+    "ahtanum",
+    "first-gold"
+   ]
+  },
+  {
+   "style": "12C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 15.5,
+   "phares": 2,
+   "tete": [
+    "target",
+    "bramling-cross",
+    "ahtanum",
+    "first-gold"
+   ]
+  },
+  {
+   "style": "12C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "12C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 13.5,
+   "phares": 4,
+   "tete": [
+    "target",
+    "ahtanum",
+    "first-gold",
+    "northdown"
+   ]
+  },
+  {
+   "style": "12C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 13.5,
+   "phares": 4,
+   "tete": [
+    "target",
+    "ahtanum",
+    "first-gold",
+    "northdown"
+   ]
+  },
+  {
+   "style": "12C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 0,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "18B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3.5,
+   "phares": 6,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "18B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3.5,
+   "phares": 6,
+   "tete": [
+    "citra",
+    "centennial",
+    "amarillo",
+    "simcoe"
+   ]
+  },
+  {
+   "style": "18B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 2,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "18B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3,
+   "phares": 5,
+   "tete": [
+    "centennial",
+    "cascade",
+    "mosaic",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "18B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 3,
+   "phares": 5,
+   "tete": [
+    "centennial",
+    "cascade",
+    "mosaic",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "18B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 2,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "11B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2.5,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "target",
+    "east-kent-goldings",
+    "golding"
+   ]
+  },
+  {
+   "style": "11B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 2,
+   "mediane": 2.5,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "target",
+    "east-kent-goldings",
+    "golding"
+   ]
+  },
+  {
+   "style": "11B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "11B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4.5,
+   "phares": 4,
+   "tete": [
+    "target",
+    "styrian-golding",
+    "golding",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "11B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 4.5,
+   "phares": 4,
+   "tete": [
+    "target",
+    "styrian-golding",
+    "golding",
+    "east-kent-goldings"
+   ]
+  },
+  {
+   "style": "11B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "25B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 31,
+   "phares": 3,
+   "tete": [
+    "styrian-golding",
+    "mandarina-bavaria",
+    "motueka",
+    "lemondrop"
+   ]
+  },
+  {
+   "style": "25B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 31,
+   "phares": 3,
+   "tete": [
+    "styrian-golding",
+    "mandarina-bavaria",
+    "motueka",
+    "lemondrop"
+   ]
+  },
+  {
+   "style": "25B",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "25B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 16,
+   "phares": 3,
+   "tete": [
+    "styrian-golding",
+    "strisselspalt",
+    "sterling",
+    "celeia"
+   ]
+  },
+  {
+   "style": "25B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 16,
+   "phares": 3,
+   "tete": [
+    "styrian-golding",
+    "strisselspalt",
+    "sterling",
+    "celeia"
+   ]
+  },
+  {
+   "style": "25B",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "26C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 20,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "celeia",
+    "strisselspalt",
+    "citra"
+   ]
+  },
+  {
+   "style": "26C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 20,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "celeia",
+    "strisselspalt",
+    "citra"
+   ]
+  },
+  {
+   "style": "26C",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "26C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 7.5,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "strisselspalt",
+    "celeia",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "26C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 7.5,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "strisselspalt",
+    "celeia",
+    "ahtanum"
+   ]
+  },
+  {
+   "style": "26C",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "25A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 78,
+   "mediane": 78.5,
+   "phares": 2,
+   "tete": [
+    "celeia",
+    "citra",
+    "centennial",
+    "amarillo"
+   ]
+  },
+  {
+   "style": "25A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 15,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "celeia",
+    "citra",
+    "centennial"
+   ]
+  },
+  {
+   "style": "25A",
+   "demande": "plus d’agrumes",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  },
+  {
+   "style": "25A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "houblons": 80,
+   "meilleur": 78,
+   "mediane": 78.5,
+   "phares": 2,
+   "tete": [
+    "celeia",
+    "ahtanum",
+    "target",
+    "mount-hood"
+   ]
+  },
+  {
+   "style": "25A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "houblons": 80,
+   "meilleur": 1,
+   "mediane": 12,
+   "phares": 2,
+   "tete": [
+    "styrian-golding",
+    "celeia",
+    "ahtanum",
+    "target"
+   ]
+  },
+  {
+   "style": "25A",
+   "demande": "plus floral",
+   "carte": {
+    "voiesMontrees": 4,
+    "avecEffet": 4,
+    "sansHorsStyleAujourdhui": 4,
+    "sansHorsStyleNeutreExclu": 4
+   }
+  }
+ ]
+}

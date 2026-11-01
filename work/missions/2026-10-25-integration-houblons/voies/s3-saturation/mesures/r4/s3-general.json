@@ -1,0 +1,4088 @@
+{
+ "synthese": {
+  "contradictions": {
+   "avant": 4,
+   "r3": 0,
+   "apres": 0,
+   "sur": 62
+  },
+  "meilleurPhare": {
+   "avant": 2,
+   "r3": 1,
+   "apres": 1
+  },
+  "phareMedian": {
+   "avant": 5,
+   "r3": 5,
+   "apres": 5
+  },
+  "reculsDePlusDe20PlacesDepuisR3": [],
+  "reculsDePlusDe20PlacesDepuisAvant": [
+   "16A · plus floral · dry hop actif : médiane 31 → 76 (nugget, columbus, target, mount-hood → willamette, nugget, columbus, target)"
+  ],
+  "cartesEnContradiction": {
+   "avant": [
+    "23A · plus d’agrumes",
+    "23A · plus floral",
+    "23G · plus d’agrumes",
+    "23G · plus floral"
+   ],
+   "r3": [],
+   "apres": []
+  }
+ },
+ "res": {
+  "avant": {
+   "bilan": {
+    "listes": 62,
+    "contradictions": 4
+   },
+   "lignes": [
+    {
+     "cle": "15B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "target",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "15B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "target",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "16A · plus d’agrumes · dry hop actif",
+     "meilleur": 7,
+     "mediane": 28.5,
+     "tete": [
+      "columbus",
+      "nugget",
+      "sabro",
+      "galena"
+     ]
+    },
+    {
+     "cle": "16A · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16A · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 31,
+     "tete": [
+      "nugget",
+      "columbus",
+      "target",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "16A · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16B · plus d’agrumes · dry hop actif",
+     "meilleur": 7,
+     "mediane": 28.5,
+     "tete": [
+      "columbus",
+      "nugget",
+      "sabro",
+      "galena"
+     ]
+    },
+    {
+     "cle": "16B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16B · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 31,
+     "tete": [
+      "nugget",
+      "columbus",
+      "target",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "16B · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16C · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16C · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 15.5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16C · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 15.5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "16D · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "20B · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 27,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "20B · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 27,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "20B · plus floral · dry hop actif",
+     "meilleur": 4,
+     "mediane": 37,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20B · plus floral · 10′",
+     "meilleur": 4,
+     "mediane": 37,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 3.5,
+     "tete": [
+      "warrior",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 3.5,
+     "tete": [
+      "warrior",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "willamette",
+      "nugget",
+      "galena",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "20A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "willamette",
+      "nugget",
+      "galena",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "20A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "willamette",
+      "nugget",
+      "glacier",
+      "strisselspalt"
+     ]
+    },
+    {
+     "cle": "20A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "willamette",
+      "nugget",
+      "glacier",
+      "strisselspalt"
+     ]
+    },
+    {
+     "cle": "13C · plus d’agrumes · dry hop actif",
+     "meilleur": 27,
+     "mediane": 27.5,
+     "tete": [
+      "willamette",
+      "bramling-cross",
+      "first-gold",
+      "citra"
+     ]
+    },
+    {
+     "cle": "13C · plus d’agrumes · 10′",
+     "meilleur": 27,
+     "mediane": 27.5,
+     "tete": [
+      "willamette",
+      "bramling-cross",
+      "first-gold",
+      "citra"
+     ]
+    },
+    {
+     "cle": "13C · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "fuggle",
+      "first-gold",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "13C · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "fuggle",
+      "first-gold",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "9C · plus d’agrumes · dry hop actif",
+     "meilleur": 66,
+     "mediane": 66,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "mandarina-bavaria"
+     ]
+    },
+    {
+     "cle": "9C · plus d’agrumes · 10′",
+     "meilleur": 40,
+     "mediane": 40,
+     "tete": [
+      "marynka",
+      "lublin",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "9C · plus floral · dry hop actif",
+     "meilleur": 60,
+     "mediane": 60,
+     "tete": [
+      "ahtanum",
+      "target",
+      "mount-hood",
+      "saphir"
+     ]
+    },
+    {
+     "cle": "9C · plus floral · 10′",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "marynka",
+      "lublin",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "1A · plus d’agrumes · dry hop actif",
+     "meilleur": 40,
+     "mediane": 55,
+     "tete": [
+      "kazbek",
+      "citra",
+      "mandarina-bavaria",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "1A · plus d’agrumes · 10′",
+     "meilleur": 12,
+     "mediane": 21,
+     "tete": [
+      "sorachi-ace",
+      "kazbek",
+      "liberty",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "1A · plus floral · dry hop actif",
+     "meilleur": 24,
+     "mediane": 44.5,
+     "tete": [
+      "huell-melon",
+      "mosaic",
+      "golding",
+      "citra"
+     ]
+    },
+    {
+     "cle": "1A · plus floral · 10′",
+     "meilleur": 9,
+     "mediane": 9.5,
+     "tete": [
+      "mount-hood",
+      "liberty",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "3A · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 3,
+     "tete": [
+      "sterling",
+      "sladek",
+      "premiant",
+      "citra"
+     ]
+    },
+    {
+     "cle": "3A · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 3,
+     "tete": [
+      "sterling",
+      "sladek",
+      "premiant",
+      "citra"
+     ]
+    },
+    {
+     "cle": "3A · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "sterling",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "3A · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "sterling",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "3B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "3B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "3B · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "3B · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "4A · plus d’agrumes · dry hop actif",
+     "meilleur": 54,
+     "mediane": 54,
+     "tete": [
+      "hersbrucker",
+      "citra",
+      "mandarina-bavaria",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "4A · plus d’agrumes · 10′",
+     "meilleur": 38,
+     "mediane": 38,
+     "tete": [
+      "hersbrucker",
+      "wakatu",
+      "saphir",
+      "citra"
+     ]
+    },
+    {
+     "cle": "4A · plus floral · dry hop actif",
+     "meilleur": 29,
+     "mediane": 29,
+     "tete": [
+      "hersbrucker",
+      "target",
+      "mount-hood",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "4A · plus floral · 10′",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "5B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "hersbrucker",
+      "tettnanger",
+      "spalter-select",
+      "vanguard"
+     ]
+    },
+    {
+     "cle": "5B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "hersbrucker",
+      "tettnanger",
+      "spalter-select",
+      "vanguard"
+     ]
+    },
+    {
+     "cle": "5B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "tettnanger",
+      "hersbrucker",
+      "saphir",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "tettnanger",
+      "hersbrucker",
+      "saphir",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "motueka",
+      "wakatu",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "motueka",
+      "wakatu",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "saphir",
+      "spalter-select",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "5D · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "saphir",
+      "spalter-select",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "7B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "7B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "7B · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "hallertau"
+     ]
+    },
+    {
+     "cle": "7B · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "hallertau"
+     ]
+    },
+    {
+     "cle": "10A · plus d’agrumes · dry hop actif",
+     "meilleur": 25,
+     "mediane": 44,
+     "tete": [
+      "mandarina-bavaria",
+      "citra",
+      "simcoe",
+      "galaxy"
+     ]
+    },
+    {
+     "cle": "10A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 19.5,
+     "tete": [
+      "hersbrucker",
+      "mandarina-bavaria",
+      "wakatu",
+      "saphir"
+     ]
+    },
+    {
+     "cle": "10A · plus floral · dry hop actif",
+     "meilleur": 13,
+     "mediane": 34.5,
+     "tete": [
+      "huell-melon",
+      "mosaic",
+      "golding",
+      "citra"
+     ]
+    },
+    {
+     "cle": "10A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 8.5,
+     "tete": [
+      "hersbrucker",
+      "hallertau",
+      "saphir",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "24A · plus d’agrumes · dry hop actif",
+     "meilleur": 72,
+     "mediane": 75,
+     "tete": [
+      "mandarina-bavaria",
+      "citra",
+      "centennial",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "24A · plus d’agrumes · 10′",
+     "meilleur": 17,
+     "mediane": 27.5,
+     "tete": [
+      "mandarina-bavaria",
+      "crystal",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "24A · plus floral · dry hop actif",
+     "meilleur": 72,
+     "mediane": 75,
+     "tete": [
+      "ahtanum",
+      "centennial",
+      "cascade",
+      "huell-melon"
+     ]
+    },
+    {
+     "cle": "24A · plus floral · 10′",
+     "meilleur": 13,
+     "mediane": 14,
+     "tete": [
+      "crystal",
+      "hallertau",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "23A · plus d’agrumes · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus d’agrumes · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus floral · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus floral · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus d’agrumes · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus d’agrumes · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus floral · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus floral · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "21A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 10,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "citra",
+      "nectaron",
+      "denali",
+      "galaxy"
+     ]
+    },
+    {
+     "cle": "21C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 21.5,
+     "tete": [
+      "citra",
+      "horizon",
+      "southern-passion",
+      "green-bullet"
+     ]
+    },
+    {
+     "cle": "22A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "22A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "22A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 5,
+     "tete": [
+      "centennial",
+      "cascade",
+      "nugget",
+      "mosaic"
+     ]
+    },
+    {
+     "cle": "22A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 5,
+     "tete": [
+      "centennial",
+      "cascade",
+      "nugget",
+      "mosaic"
+     ]
+    },
+    {
+     "cle": "12C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 15.5,
+     "tete": [
+      "target",
+      "bramling-cross",
+      "ahtanum",
+      "first-gold"
+     ]
+    },
+    {
+     "cle": "12C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 15.5,
+     "tete": [
+      "target",
+      "bramling-cross",
+      "ahtanum",
+      "first-gold"
+     ]
+    },
+    {
+     "cle": "12C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 13.5,
+     "tete": [
+      "target",
+      "ahtanum",
+      "first-gold",
+      "northdown"
+     ]
+    },
+    {
+     "cle": "12C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 13.5,
+     "tete": [
+      "target",
+      "ahtanum",
+      "first-gold",
+      "northdown"
+     ]
+    },
+    {
+     "cle": "18B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "18B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "18B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "18B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "11B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2.5,
+     "tete": [
+      "styrian-golding",
+      "target",
+      "east-kent-goldings",
+      "golding"
+     ]
+    },
+    {
+     "cle": "11B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2.5,
+     "tete": [
+      "styrian-golding",
+      "target",
+      "east-kent-goldings",
+      "golding"
+     ]
+    },
+    {
+     "cle": "11B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4.5,
+     "tete": [
+      "target",
+      "styrian-golding",
+      "golding",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "11B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4.5,
+     "tete": [
+      "target",
+      "styrian-golding",
+      "golding",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "25B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 31,
+     "tete": [
+      "styrian-golding",
+      "mandarina-bavaria",
+      "motueka",
+      "lemondrop"
+     ]
+    },
+    {
+     "cle": "25B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 31,
+     "tete": [
+      "styrian-golding",
+      "mandarina-bavaria",
+      "motueka",
+      "lemondrop"
+     ]
+    },
+    {
+     "cle": "25B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 16,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "sterling",
+      "celeia"
+     ]
+    },
+    {
+     "cle": "25B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 16,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "sterling",
+      "celeia"
+     ]
+    },
+    {
+     "cle": "26C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "strisselspalt",
+      "citra"
+     ]
+    },
+    {
+     "cle": "26C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "strisselspalt",
+      "citra"
+     ]
+    },
+    {
+     "cle": "26C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 7.5,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "celeia",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "26C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 7.5,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "celeia",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "25A · plus d’agrumes · dry hop actif",
+     "meilleur": 78,
+     "mediane": 78.5,
+     "tete": [
+      "celeia",
+      "citra",
+      "centennial",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "25A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 15,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "25A · plus floral · dry hop actif",
+     "meilleur": 78,
+     "mediane": 78.5,
+     "tete": [
+      "celeia",
+      "ahtanum",
+      "target",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "25A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 12,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "ahtanum",
+      "target"
+     ]
+    }
+   ],
+   "cartes": [
+    "23A · plus d’agrumes",
+    "23A · plus floral",
+    "23G · plus d’agrumes",
+    "23G · plus floral"
+   ]
+  },
+  "r3": {
+   "bilan": {
+    "listes": 62,
+    "contradictions": 0
+   },
+   "lignes": [
+    {
+     "cle": "15B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "target",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "15B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "16A · plus d’agrumes · dry hop actif",
+     "meilleur": 7,
+     "mediane": 28.5,
+     "tete": [
+      "columbus",
+      "nugget",
+      "sabro",
+      "galena"
+     ]
+    },
+    {
+     "cle": "16A · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16A · plus floral · dry hop actif",
+     "meilleur": 4,
+     "mediane": 76,
+     "tete": [
+      "willamette",
+      "nugget",
+      "columbus",
+      "target"
+     ]
+    },
+    {
+     "cle": "16A · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16B · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16B · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16C · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16C · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 15.5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16C · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 15.5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "16D · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "20B · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 27,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "20B · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 27,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "20B · plus floral · dry hop actif",
+     "meilleur": 4,
+     "mediane": 37,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20B · plus floral · 10′",
+     "meilleur": 4,
+     "mediane": 37,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 3.5,
+     "tete": [
+      "warrior",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 3.5,
+     "tete": [
+      "warrior",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "willamette",
+      "nugget",
+      "galena",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "20A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "willamette",
+      "nugget",
+      "galena",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "20A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "willamette",
+      "nugget",
+      "glacier",
+      "strisselspalt"
+     ]
+    },
+    {
+     "cle": "20A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "willamette",
+      "nugget",
+      "glacier",
+      "strisselspalt"
+     ]
+    },
+    {
+     "cle": "13C · plus d’agrumes · dry hop actif",
+     "meilleur": 27,
+     "mediane": 27.5,
+     "tete": [
+      "willamette",
+      "bramling-cross",
+      "first-gold",
+      "citra"
+     ]
+    },
+    {
+     "cle": "13C · plus d’agrumes · 10′",
+     "meilleur": 27,
+     "mediane": 27.5,
+     "tete": [
+      "willamette",
+      "bramling-cross",
+      "first-gold",
+      "citra"
+     ]
+    },
+    {
+     "cle": "13C · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "fuggle",
+      "first-gold",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "13C · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "fuggle",
+      "first-gold",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "9C · plus d’agrumes · dry hop actif",
+     "meilleur": 40,
+     "mediane": 40,
+     "tete": [
+      "marynka",
+      "lublin",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "9C · plus d’agrumes · 10′",
+     "meilleur": 40,
+     "mediane": 40,
+     "tete": [
+      "marynka",
+      "lublin",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "9C · plus floral · dry hop actif",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "marynka",
+      "lublin",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "9C · plus floral · 10′",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "marynka",
+      "lublin",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "1A · plus d’agrumes · dry hop actif",
+     "meilleur": 40,
+     "mediane": 56,
+     "tete": [
+      "sorachi-ace",
+      "kazbek",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "1A · plus d’agrumes · 10′",
+     "meilleur": 12,
+     "mediane": 21,
+     "tete": [
+      "sorachi-ace",
+      "kazbek",
+      "liberty",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "1A · plus floral · dry hop actif",
+     "meilleur": 6,
+     "mediane": 30.5,
+     "tete": [
+      "mount-hood",
+      "ahtanum",
+      "target",
+      "saphir"
+     ]
+    },
+    {
+     "cle": "1A · plus floral · 10′",
+     "meilleur": 9,
+     "mediane": 9.5,
+     "tete": [
+      "mount-hood",
+      "liberty",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "3A · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 3,
+     "tete": [
+      "sterling",
+      "sladek",
+      "premiant",
+      "citra"
+     ]
+    },
+    {
+     "cle": "3A · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 3,
+     "tete": [
+      "sterling",
+      "sladek",
+      "premiant",
+      "citra"
+     ]
+    },
+    {
+     "cle": "3A · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "sterling",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "3A · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "sterling",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "3B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "3B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "3B · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "3B · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "4A · plus d’agrumes · dry hop actif",
+     "meilleur": 38,
+     "mediane": 38,
+     "tete": [
+      "hersbrucker",
+      "wakatu",
+      "saphir",
+      "citra"
+     ]
+    },
+    {
+     "cle": "4A · plus d’agrumes · 10′",
+     "meilleur": 38,
+     "mediane": 38,
+     "tete": [
+      "hersbrucker",
+      "wakatu",
+      "saphir",
+      "citra"
+     ]
+    },
+    {
+     "cle": "4A · plus floral · dry hop actif",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "4A · plus floral · 10′",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "5B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "hersbrucker",
+      "tettnanger",
+      "spalter-select",
+      "vanguard"
+     ]
+    },
+    {
+     "cle": "5B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "hersbrucker",
+      "tettnanger",
+      "spalter-select",
+      "vanguard"
+     ]
+    },
+    {
+     "cle": "5B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "tettnanger",
+      "hersbrucker",
+      "saphir",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "tettnanger",
+      "hersbrucker",
+      "saphir",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "motueka",
+      "wakatu",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "motueka",
+      "wakatu",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "saphir",
+      "spalter-select",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "5D · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "saphir",
+      "spalter-select",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "7B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "7B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "7B · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "hallertau"
+     ]
+    },
+    {
+     "cle": "7B · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "hallertau"
+     ]
+    },
+    {
+     "cle": "10A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 27.5,
+     "tete": [
+      "hersbrucker",
+      "mandarina-bavaria",
+      "citra",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "10A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 19.5,
+     "tete": [
+      "hersbrucker",
+      "mandarina-bavaria",
+      "wakatu",
+      "saphir"
+     ]
+    },
+    {
+     "cle": "10A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 30,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "10A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 8.5,
+     "tete": [
+      "hersbrucker",
+      "hallertau",
+      "saphir",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "24A · plus d’agrumes · dry hop actif",
+     "meilleur": 65,
+     "mediane": 71.5,
+     "tete": [
+      "mandarina-bavaria",
+      "crystal",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "24A · plus d’agrumes · 10′",
+     "meilleur": 17,
+     "mediane": 27.5,
+     "tete": [
+      "mandarina-bavaria",
+      "crystal",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "24A · plus floral · dry hop actif",
+     "meilleur": 56,
+     "mediane": 67,
+     "tete": [
+      "crystal",
+      "ahtanum",
+      "target",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "24A · plus floral · 10′",
+     "meilleur": 13,
+     "mediane": 14,
+     "tete": [
+      "crystal",
+      "hallertau",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "23A · plus d’agrumes · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus d’agrumes · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus floral · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus floral · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus d’agrumes · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus d’agrumes · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus floral · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus floral · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "21A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 10,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "citra",
+      "nectaron",
+      "denali",
+      "galaxy"
+     ]
+    },
+    {
+     "cle": "21C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 21.5,
+     "tete": [
+      "citra",
+      "horizon",
+      "southern-passion",
+      "green-bullet"
+     ]
+    },
+    {
+     "cle": "22A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "22A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "22A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 5,
+     "tete": [
+      "centennial",
+      "cascade",
+      "nugget",
+      "mosaic"
+     ]
+    },
+    {
+     "cle": "22A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 5,
+     "tete": [
+      "centennial",
+      "cascade",
+      "nugget",
+      "mosaic"
+     ]
+    },
+    {
+     "cle": "12C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 15.5,
+     "tete": [
+      "target",
+      "bramling-cross",
+      "ahtanum",
+      "first-gold"
+     ]
+    },
+    {
+     "cle": "12C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 15.5,
+     "tete": [
+      "target",
+      "bramling-cross",
+      "ahtanum",
+      "first-gold"
+     ]
+    },
+    {
+     "cle": "12C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 13.5,
+     "tete": [
+      "target",
+      "ahtanum",
+      "first-gold",
+      "northdown"
+     ]
+    },
+    {
+     "cle": "12C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 13.5,
+     "tete": [
+      "target",
+      "ahtanum",
+      "first-gold",
+      "northdown"
+     ]
+    },
+    {
+     "cle": "18B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "18B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "18B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "18B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "11B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2.5,
+     "tete": [
+      "styrian-golding",
+      "target",
+      "east-kent-goldings",
+      "golding"
+     ]
+    },
+    {
+     "cle": "11B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2.5,
+     "tete": [
+      "styrian-golding",
+      "target",
+      "east-kent-goldings",
+      "golding"
+     ]
+    },
+    {
+     "cle": "11B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4.5,
+     "tete": [
+      "target",
+      "styrian-golding",
+      "golding",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "11B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4.5,
+     "tete": [
+      "target",
+      "styrian-golding",
+      "golding",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "25B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 31,
+     "tete": [
+      "styrian-golding",
+      "mandarina-bavaria",
+      "motueka",
+      "lemondrop"
+     ]
+    },
+    {
+     "cle": "25B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 31,
+     "tete": [
+      "styrian-golding",
+      "mandarina-bavaria",
+      "motueka",
+      "lemondrop"
+     ]
+    },
+    {
+     "cle": "25B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 16,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "sterling",
+      "celeia"
+     ]
+    },
+    {
+     "cle": "25B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 16,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "sterling",
+      "celeia"
+     ]
+    },
+    {
+     "cle": "26C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "strisselspalt",
+      "citra"
+     ]
+    },
+    {
+     "cle": "26C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "strisselspalt",
+      "citra"
+     ]
+    },
+    {
+     "cle": "26C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 7.5,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "celeia",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "26C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 7.5,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "celeia",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "25A · plus d’agrumes · dry hop actif",
+     "meilleur": 78,
+     "mediane": 78.5,
+     "tete": [
+      "celeia",
+      "citra",
+      "centennial",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "25A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 15,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "25A · plus floral · dry hop actif",
+     "meilleur": 78,
+     "mediane": 78.5,
+     "tete": [
+      "celeia",
+      "ahtanum",
+      "target",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "25A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 12,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "ahtanum",
+      "target"
+     ]
+    }
+   ],
+   "cartes": []
+  },
+  "apres": {
+   "bilan": {
+    "listes": 62,
+    "contradictions": 0
+   },
+   "lignes": [
+    {
+     "cle": "15B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "target",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "15B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "15C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "15C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "16A · plus d’agrumes · dry hop actif",
+     "meilleur": 7,
+     "mediane": 28.5,
+     "tete": [
+      "columbus",
+      "nugget",
+      "sabro",
+      "galena"
+     ]
+    },
+    {
+     "cle": "16A · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16A · plus floral · dry hop actif",
+     "meilleur": 4,
+     "mediane": 76,
+     "tete": [
+      "willamette",
+      "nugget",
+      "columbus",
+      "target"
+     ]
+    },
+    {
+     "cle": "16A · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 6.5,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16B · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16B · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16C · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16C · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "16C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 15.5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16C · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 15.5,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 2,
+     "tete": [
+      "target",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "16D · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "16D · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4,
+     "tete": [
+      "target",
+      "willamette",
+      "nugget",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "20B · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 27,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "20B · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 27,
+     "tete": [
+      "willamette",
+      "east-kent-goldings",
+      "columbus",
+      "nugget"
+     ]
+    },
+    {
+     "cle": "20B · plus floral · dry hop actif",
+     "meilleur": 4,
+     "mediane": 37,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20B · plus floral · 10′",
+     "meilleur": 4,
+     "mediane": 37,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 3.5,
+     "tete": [
+      "warrior",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 3.5,
+     "tete": [
+      "warrior",
+      "willamette",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20C · plus floral · 10′",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "willamette",
+      "nugget",
+      "east-kent-goldings",
+      "columbus"
+     ]
+    },
+    {
+     "cle": "20A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "willamette",
+      "nugget",
+      "galena",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "20A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "willamette",
+      "nugget",
+      "galena",
+      "glacier"
+     ]
+    },
+    {
+     "cle": "20A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "willamette",
+      "nugget",
+      "glacier",
+      "strisselspalt"
+     ]
+    },
+    {
+     "cle": "20A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "willamette",
+      "nugget",
+      "glacier",
+      "strisselspalt"
+     ]
+    },
+    {
+     "cle": "13C · plus d’agrumes · dry hop actif",
+     "meilleur": 27,
+     "mediane": 27.5,
+     "tete": [
+      "willamette",
+      "bramling-cross",
+      "first-gold",
+      "citra"
+     ]
+    },
+    {
+     "cle": "13C · plus d’agrumes · 10′",
+     "meilleur": 27,
+     "mediane": 27.5,
+     "tete": [
+      "willamette",
+      "bramling-cross",
+      "first-gold",
+      "citra"
+     ]
+    },
+    {
+     "cle": "13C · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "fuggle",
+      "first-gold",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "13C · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 5,
+     "tete": [
+      "willamette",
+      "fuggle",
+      "first-gold",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "9C · plus d’agrumes · dry hop actif",
+     "meilleur": 40,
+     "mediane": 40,
+     "tete": [
+      "marynka",
+      "lublin",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "9C · plus d’agrumes · 10′",
+     "meilleur": 40,
+     "mediane": 40,
+     "tete": [
+      "marynka",
+      "lublin",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "9C · plus floral · dry hop actif",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "marynka",
+      "lublin",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "9C · plus floral · 10′",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "marynka",
+      "lublin",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "1A · plus d’agrumes · dry hop actif",
+     "meilleur": 40,
+     "mediane": 56,
+     "tete": [
+      "sorachi-ace",
+      "kazbek",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "1A · plus d’agrumes · 10′",
+     "meilleur": 12,
+     "mediane": 21,
+     "tete": [
+      "sorachi-ace",
+      "kazbek",
+      "liberty",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "1A · plus floral · dry hop actif",
+     "meilleur": 6,
+     "mediane": 30.5,
+     "tete": [
+      "mount-hood",
+      "ahtanum",
+      "target",
+      "saphir"
+     ]
+    },
+    {
+     "cle": "1A · plus floral · 10′",
+     "meilleur": 9,
+     "mediane": 9.5,
+     "tete": [
+      "mount-hood",
+      "liberty",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "3A · plus d’agrumes · dry hop actif",
+     "meilleur": 3,
+     "mediane": 3,
+     "tete": [
+      "sterling",
+      "sladek",
+      "premiant",
+      "citra"
+     ]
+    },
+    {
+     "cle": "3A · plus d’agrumes · 10′",
+     "meilleur": 3,
+     "mediane": 3,
+     "tete": [
+      "sterling",
+      "sladek",
+      "premiant",
+      "citra"
+     ]
+    },
+    {
+     "cle": "3A · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "sterling",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "3A · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "sterling",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "3B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "3B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "3B · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "3B · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "sladek",
+      "premiant",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "4A · plus d’agrumes · dry hop actif",
+     "meilleur": 38,
+     "mediane": 38,
+     "tete": [
+      "hersbrucker",
+      "wakatu",
+      "saphir",
+      "citra"
+     ]
+    },
+    {
+     "cle": "4A · plus d’agrumes · 10′",
+     "meilleur": 38,
+     "mediane": 38,
+     "tete": [
+      "hersbrucker",
+      "wakatu",
+      "saphir",
+      "citra"
+     ]
+    },
+    {
+     "cle": "4A · plus floral · dry hop actif",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "4A · plus floral · 10′",
+     "meilleur": 15,
+     "mediane": 15,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "5B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "hersbrucker",
+      "tettnanger",
+      "spalter-select",
+      "vanguard"
+     ]
+    },
+    {
+     "cle": "5B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "hersbrucker",
+      "tettnanger",
+      "spalter-select",
+      "vanguard"
+     ]
+    },
+    {
+     "cle": "5B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "tettnanger",
+      "hersbrucker",
+      "saphir",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 1.5,
+     "tete": [
+      "tettnanger",
+      "hersbrucker",
+      "saphir",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "motueka",
+      "wakatu",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "motueka",
+      "wakatu",
+      "spalter-select"
+     ]
+    },
+    {
+     "cle": "5D · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "saphir",
+      "spalter-select",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "5D · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 1,
+     "tete": [
+      "tettnanger",
+      "saphir",
+      "spalter-select",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "7B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "7B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "citra"
+     ]
+    },
+    {
+     "cle": "7B · plus floral · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "hallertau"
+     ]
+    },
+    {
+     "cle": "7B · plus floral · 10′",
+     "meilleur": 2,
+     "mediane": 2,
+     "tete": [
+      "spalter-select",
+      "tettnanger",
+      "mount-hood",
+      "hallertau"
+     ]
+    },
+    {
+     "cle": "10A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 27.5,
+     "tete": [
+      "hersbrucker",
+      "mandarina-bavaria",
+      "citra",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "10A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 19.5,
+     "tete": [
+      "hersbrucker",
+      "mandarina-bavaria",
+      "wakatu",
+      "saphir"
+     ]
+    },
+    {
+     "cle": "10A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 30,
+     "tete": [
+      "hersbrucker",
+      "saphir",
+      "wakatu",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "10A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 8.5,
+     "tete": [
+      "hersbrucker",
+      "hallertau",
+      "saphir",
+      "wakatu"
+     ]
+    },
+    {
+     "cle": "24A · plus d’agrumes · dry hop actif",
+     "meilleur": 65,
+     "mediane": 71.5,
+     "tete": [
+      "mandarina-bavaria",
+      "crystal",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "24A · plus d’agrumes · 10′",
+     "meilleur": 17,
+     "mediane": 27.5,
+     "tete": [
+      "mandarina-bavaria",
+      "crystal",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "24A · plus floral · dry hop actif",
+     "meilleur": 56,
+     "mediane": 67,
+     "tete": [
+      "crystal",
+      "ahtanum",
+      "target",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "24A · plus floral · 10′",
+     "meilleur": 13,
+     "mediane": 14,
+     "tete": [
+      "crystal",
+      "hallertau",
+      "ahtanum",
+      "target"
+     ]
+    },
+    {
+     "cle": "23A · plus d’agrumes · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus d’agrumes · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus floral · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23A · plus floral · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus d’agrumes · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus d’agrumes · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus floral · dry hop actif",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "23G · plus floral · 10′",
+     "meilleur": null,
+     "mediane": null,
+     "tete": [
+      "golding"
+     ]
+    },
+    {
+     "cle": "21A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 10,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "21C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 33,
+     "tete": [
+      "citra",
+      "nectaron",
+      "denali",
+      "galaxy"
+     ]
+    },
+    {
+     "cle": "21C · plus floral · dry hop actif",
+     "meilleur": 3,
+     "mediane": 4,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "21C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 21.5,
+     "tete": [
+      "citra",
+      "horizon",
+      "southern-passion",
+      "green-bullet"
+     ]
+    },
+    {
+     "cle": "22A · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "22A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "22A · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 5,
+     "tete": [
+      "centennial",
+      "cascade",
+      "nugget",
+      "mosaic"
+     ]
+    },
+    {
+     "cle": "22A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 5,
+     "tete": [
+      "centennial",
+      "cascade",
+      "nugget",
+      "mosaic"
+     ]
+    },
+    {
+     "cle": "12C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 15.5,
+     "tete": [
+      "target",
+      "bramling-cross",
+      "ahtanum",
+      "first-gold"
+     ]
+    },
+    {
+     "cle": "12C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 15.5,
+     "tete": [
+      "target",
+      "bramling-cross",
+      "ahtanum",
+      "first-gold"
+     ]
+    },
+    {
+     "cle": "12C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 13.5,
+     "tete": [
+      "target",
+      "ahtanum",
+      "first-gold",
+      "northdown"
+     ]
+    },
+    {
+     "cle": "12C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 13.5,
+     "tete": [
+      "target",
+      "ahtanum",
+      "first-gold",
+      "northdown"
+     ]
+    },
+    {
+     "cle": "18B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "18B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 3.5,
+     "tete": [
+      "citra",
+      "centennial",
+      "amarillo",
+      "simcoe"
+     ]
+    },
+    {
+     "cle": "18B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "18B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 3,
+     "tete": [
+      "centennial",
+      "cascade",
+      "mosaic",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "11B · plus d’agrumes · dry hop actif",
+     "meilleur": 2,
+     "mediane": 2.5,
+     "tete": [
+      "styrian-golding",
+      "target",
+      "east-kent-goldings",
+      "golding"
+     ]
+    },
+    {
+     "cle": "11B · plus d’agrumes · 10′",
+     "meilleur": 2,
+     "mediane": 2.5,
+     "tete": [
+      "styrian-golding",
+      "target",
+      "east-kent-goldings",
+      "golding"
+     ]
+    },
+    {
+     "cle": "11B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 4.5,
+     "tete": [
+      "target",
+      "styrian-golding",
+      "golding",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "11B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 4.5,
+     "tete": [
+      "target",
+      "styrian-golding",
+      "golding",
+      "east-kent-goldings"
+     ]
+    },
+    {
+     "cle": "25B · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 31,
+     "tete": [
+      "styrian-golding",
+      "mandarina-bavaria",
+      "motueka",
+      "lemondrop"
+     ]
+    },
+    {
+     "cle": "25B · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 31,
+     "tete": [
+      "styrian-golding",
+      "mandarina-bavaria",
+      "motueka",
+      "lemondrop"
+     ]
+    },
+    {
+     "cle": "25B · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 16,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "sterling",
+      "celeia"
+     ]
+    },
+    {
+     "cle": "25B · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 16,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "sterling",
+      "celeia"
+     ]
+    },
+    {
+     "cle": "26C · plus d’agrumes · dry hop actif",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "strisselspalt",
+      "citra"
+     ]
+    },
+    {
+     "cle": "26C · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 20,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "strisselspalt",
+      "citra"
+     ]
+    },
+    {
+     "cle": "26C · plus floral · dry hop actif",
+     "meilleur": 1,
+     "mediane": 7.5,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "celeia",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "26C · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 7.5,
+     "tete": [
+      "styrian-golding",
+      "strisselspalt",
+      "celeia",
+      "ahtanum"
+     ]
+    },
+    {
+     "cle": "25A · plus d’agrumes · dry hop actif",
+     "meilleur": 78,
+     "mediane": 78.5,
+     "tete": [
+      "celeia",
+      "citra",
+      "centennial",
+      "amarillo"
+     ]
+    },
+    {
+     "cle": "25A · plus d’agrumes · 10′",
+     "meilleur": 1,
+     "mediane": 15,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "citra",
+      "centennial"
+     ]
+    },
+    {
+     "cle": "25A · plus floral · dry hop actif",
+     "meilleur": 78,
+     "mediane": 78.5,
+     "tete": [
+      "celeia",
+      "ahtanum",
+      "target",
+      "mount-hood"
+     ]
+    },
+    {
+     "cle": "25A · plus floral · 10′",
+     "meilleur": 1,
+     "mediane": 12,
+     "tete": [
+      "styrian-golding",
+      "celeia",
+      "ahtanum",
+      "target"
+     ]
+    }
+   ],
+   "cartes": []
+  }
+ }
+}

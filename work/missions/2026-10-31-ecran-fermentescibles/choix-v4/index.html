@@ -1,0 +1,174 @@
+<title>Malts/sucres · passe 5 · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La passe 5 de Malts/sucres : r4e-a et r4e-b, tes besoins à la volée sur la ligne (D211), plateau toujours visible (D212). Une rangée par geste,
+   le nom à gauche ; ta r4d d'abord, puis a et b ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). Polices système seules. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --reserve: #8a6a10;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --reserve: #e3c26a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --reserve: #e3c26a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 4px; align-content: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+figcaption i { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-ref { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--reserve); }
+.large { grid-column: span 2; }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Malts/sucres 2/7</p>
+    <h1>Malts/sucres · passe 5 · 31.10</h1>
+    <div id="a-choisir">
+      <p>Tes besoins à la volée, tous sur la ligne, plateau toujours visible : la masse de tout ingrédient, la part, le moment et son jour, la couleur « ? ».</p>
+      <p>Deux façons. a : tu tapes le %, le moment s'ouvre en menu sous la ligne. b : tu tires la barre, le moment tourne d'un toucher.</p>
+      <p>Choisis a, b, ou un mélange (la barre de b en plus de la frappe de a). Le reste de r4d ne change pas. Touche une capture pour la voir en grand.</p>
+    </div>
+    <p class="sur-titre">Version d'avant : <a href="https://claude.ai/artifact/9TYpaMsGrfuBYYMPUf8XeU">la passe 4 (r4c et r4d)</a></p>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-repos">
+    <div class="tete"><h2 id="t-repos">Au repos</h2><p>Ta r4d d'abord, puis a et b. Seuls changent un chevron ou un ⇄ après le moment.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-repos.png" data-titre="Référence · r4d, plateau toujours visible, au repos"><img src="img/r4d-repos.png" alt="r4d au repos"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Plateau visible</b> · r4d</span><i>La part et le moment passent par le plateau.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-repos.png" data-titre="a · la part se tape, le moment s'ouvre en menu, au repos"><img src="img/r4e-a-repos.png" alt="a au repos"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Tu tapes</b> · r4e-a</span><i>La part en gros chiffre, un chevron après le moment.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-repos.png" data-titre="b · la barre se tire, le moment tourne, au repos"><img src="img/r4e-b-repos.png" alt="b au repos"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Tu tires</b> · r4e-b</span><i>La part en petit, une encoche au bout de la barre.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-masse">
+    <div class="tete"><h2 id="t-masse">Changer une masse</h2><p>Tout ingrédient, malt, flocons, sucre ou fruit : un toucher sur le chiffre, tu tapes, Entrée. Pareil dans a et b, comme r4d.</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-masse-sucre-pendant.png" data-titre="a · masse pendant : « 0,6 » tapé sur la ligne Dextrose"><img src="img/r4e-a-masse-sucre-pendant.png" alt="a, masse du sucre pendant"></button><figcaption><span><b>a, pendant</b></span><i>« 0,6 » tapé sur Dextrose : le plateau suit.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-masse-sucre-apres.png" data-titre="a · masse après Entrée : Dextrose 0,60 kg"><img src="img/r4e-a-masse-sucre-apres.png" alt="a, masse du sucre après"></button><figcaption><span><b>a, après</b></span><i>Dextrose 0,60 kg.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-masse-sucre-pendant.png" data-titre="b · masse pendant : « 0,6 » tapé sur la ligne Dextrose"><img src="img/r4e-b-masse-sucre-pendant.png" alt="b, masse du sucre pendant"></button><figcaption><span><b>b, pendant</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-masse-sucre-apres.png" data-titre="b · masse après Entrée : Dextrose 0,60 kg"><img src="img/r4e-b-masse-sucre-apres.png" alt="b, masse du sucre après"></button><figcaption><span><b>b, après</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-part">
+    <div class="tete"><h2 id="t-part">Changer la part</h2><p>Weizenmalz hell de 19 à 30 % du grain. La masse suit, au cran de la piste.</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-part-pendant.png" data-titre="a · part pendant : « 30 » tapé sur la ligne"><img src="img/r4e-a-part-pendant.png" alt="a, part pendant"></button><figcaption><span><b>a, pendant</b></span><i>« 30 » tapé : 2,8 kg, grain 9,3 kg.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-part-apres.png" data-titre="a · part après Entrée"><img src="img/r4e-a-part-apres.png" alt="a, part après"></button><figcaption><span><b>a, après</b></span><i>Pilsner 54 %, Hafer 16 %, leurs masses inchangées.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-part-pendant.png" data-titre="b · part pendant : le doigt tire la barre"><img src="img/r4e-b-part-pendant.png" alt="b, part pendant"></button><figcaption><span><b>b, pendant</b></span><i>La barre s'épaissit, le % se lit sous le doigt.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-part-apres.png" data-titre="b · part après : encoche à 30 %"><img src="img/r4e-b-part-apres.png" alt="b, part après"></button><figcaption><span><b>b, après</b></span><i>Coût : la barre fait 84 px, un % précis se pose mieux en tapant.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-moment">
+    <div class="tete"><h2 id="t-moment">Changer le moment</h2><p>Weizenmalz hell de l'empâtage à l'ébullition. En fermentation, le jour se tape : « J+3 ».</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-moment-pendant.png" data-titre="a · moment pendant : les trois moments sous la ligne"><img src="img/r4e-a-moment-pendant.png" alt="a, moment pendant"></button><figcaption><span><b>a, pendant</b></span><i>Un toucher sur « empâtage » : les trois moments, sous la ligne.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-moment-apres.png" data-titre="a · moment après : ébullition"><img src="img/r4e-a-moment-apres.png" alt="a, moment après"></button><figcaption><span><b>a, après</b></span><i>Un toucher sur « ébullition ».</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-moment-pendant.png" data-titre="b · moment pendant : ébullition, Annuler 6 s à côté"><img src="img/r4e-b-moment-pendant.png" alt="b, moment pendant"></button><figcaption><span><b>b, pendant</b></span><i>Un toucher : ébullition. « Annuler » 6 s, la part reste.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-moment-apres.png" data-titre="b · moment après les 6 s"><img src="img/r4e-b-moment-apres.png" alt="b, moment après"></button><figcaption><span><b>b, après</b></span><i>Coût : retour à l'empâtage en deux touchers.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-couleur">
+    <div class="tete"><h2 id="t-couleur">Renseigner une couleur</h2><p>Un toucher sur « ? », « 8 », Entrée. Pareil dans a et b.</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-couleur-pendant.png" data-titre="a · couleur pendant : « 8 » tapé dans la pastille"><img src="img/r4e-a-couleur-pendant.png" alt="a, couleur pendant"></button><figcaption><span><b>a, pendant</b></span><i>Le champ prend la place de la pastille, la ligne ne bouge pas.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-couleur-apres.png" data-titre="a · couleur après : 8 EBC"><img src="img/r4e-a-couleur-apres.png" alt="a, couleur après"></button><figcaption><span><b>a, après</b></span><i>Pastille dorée, « 2 couleurs à renseigner ».</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-couleur-pendant.png" data-titre="b · couleur pendant"><img src="img/r4e-b-couleur-pendant.png" alt="b, couleur pendant"></button><figcaption><span><b>b, pendant</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-couleur-apres.png" data-titre="b · couleur après"><img src="img/r4e-b-couleur-apres.png" alt="b, couleur après"></button><figcaption><span><b>b, après</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-retrait">
+    <div class="tete"><h2 id="t-retrait">Retirer</h2><p>Comme r4d : la croix retire sans question, « Annuler » 6 secondes. La liste ne saute plus.</p></div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-retrait-apres.png" data-titre="a · Weizenmalz hell retiré"><img src="img/r4e-a-retrait-apres.png" alt="a, retrait"></button><figcaption><span><b>a, retiré</b></span><i>Grain 6,5 kg, parts 77 / 23.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-retrait-apres.png" data-titre="b · Weizenmalz hell retiré"><img src="img/r4e-b-retrait-apres.png" alt="b, retrait"></button><figcaption><span><b>b, retiré</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-ordi">
+    <div class="tete"><h2 id="t-ordi">Ordinateur</h2><p>1280 px. Un toucher sur le nom porte le plateau sur l'ingrédient.</p></div>
+    <div class="planche">
+      <figure class="vue ref large" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4d-1280.png" data-titre="Référence · r4d à 1280 px"><img src="img/r4d-1280.png" alt="r4d à 1280 px"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Plateau visible</b> · r4d</span></figcaption></figure>
+      <figure class="vue large" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-a-1280.png" data-titre="a à 1280 px"><img src="img/r4e-a-1280.png" alt="a à 1280 px"></button><figcaption><span><b>Tu tapes</b> · r4e-a</span></figcaption></figure>
+      <figure class="vue large" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4e-b-1280.png" data-titre="b à 1280 px"><img src="img/r4e-b-1280.png" alt="b à 1280 px"></button><figcaption><span><b>Tu tires</b> · r4e-b</span></figcaption></figure>
+    </div>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

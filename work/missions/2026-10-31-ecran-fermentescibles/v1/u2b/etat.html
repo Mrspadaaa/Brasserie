@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u2b — Malts/sucres 2/7 · nom et masse d'un trait, passe 2 (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;--stock:#4C6B2A;
+--hach:repeating-linear-gradient(135deg,#C9C9C9 0 2px,#fff 2px 5px);
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+::selection{background:#F2C14E;color:#111}
+/* Éléments communs (J12), tels quels */
+.u2b-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.u2b-tb{display:flex;align-items:center;gap:6px;height:36px}
+.u2b-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.u2b-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.u2b-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.u2b-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.u2b-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.u2b-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.u2b-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.u2b-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.u2b-rail .u2b-fait i{background:var(--t2)}
+.u2b-rail [aria-current] span{color:var(--t0);font-weight:600}
+.u2b-rail [aria-current] i{background:var(--t0)}
+.u2b-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.u2b-bd[hidden]{display:none}
+.u2b-bd>div{display:flex;align-items:baseline;gap:4px}
+.u2b-l{font-size:14px;color:var(--t2)}
+.u2b-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.u2b-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.u2b-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.u2b-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.u2b-bsw{width:10px;height:10px;border-radius:50%;align-self:center;border:1px solid var(--bordm)}
+.u2b-bsw.u2b-inc{background:#fff;border:1px dashed var(--t2)}
+.u2b-pied{display:flex;justify-content:space-between;gap:8px;padding:10px 66px 8px 0}
+.u2b-ret{min-height:28px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t1);font-size:14px}
+.u2b-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.u2b-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+
+.u2b-c{padding:8px 10px 0;min-height:760px;display:flex;flex-direction:column;gap:8px}
+/* Greffe r2 : la composition en teintes, sous le bandeau ; hachurée où la couleur manque, le sucre en pointillé */
+.u2b-comp{display:flex;align-items:center;gap:8px;min-height:28px}
+.u2b-barre{flex:1;display:flex;gap:2px;height:12px;border-radius:10px;overflow:hidden;background:var(--panel)}
+.u2b-seg{height:100%;min-width:3px;border:0;padding:0}
+.u2b-seg.u2b-inc{background:var(--hach);box-shadow:inset 0 0 0 1px #BFBFBF}
+.u2b-seg.u2b-sucre{background:#F3EEE2;box-shadow:inset 0 0 0 1.5px #A89A78;border-radius:0}
+.u2b-ar{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;border-radius:10px;border:1px dashed var(--att);background:#FBF4E4;color:var(--attt);font-size:12px;font-weight:600}
+.u2b-ar[hidden]{display:none}
+.u2b-ar b{font-family:var(--mono)}
+/* La ligne de saisie de u2 : un trait, nom et masse */
+.u2b-cmd{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;height:48px;padding:0 6px 0 12px;border:1.5px solid var(--t0);border-radius:16px;background:#fff}
+.u2b-cmd:focus-within{box-shadow:0 0 0 3px #F2C14E}
+.u2b-q{height:40px;border:0;background:none;font-family:var(--mono);font-size:18px;font-weight:500;color:var(--t0);min-width:0}
+.u2b-q::placeholder{color:#767676;font-weight:400;font-family:var(--sans);font-size:16px}
+.u2b-q:focus{outline:none}
+.u2b-ent{display:flex;align-items:center;justify-content:center;width:40px;height:34px;border-radius:10px;border:1px solid var(--bordm);color:var(--t1)}
+.u2b-ent.u2b-pret{background:var(--t0);color:#fff;border-color:var(--t0)}
+.u2b-ap{display:flex;flex-direction:column;gap:4px;margin-top:-4px}
+.u2b-ap[hidden]{display:none}
+.u2b-prev{display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:8px;min-height:40px;padding:0 12px 0 10px;border-radius:16px;background:#FDF3D6;border:1px dashed var(--att);text-align:left;width:100%}
+.u2b-prev b{font-size:16px;color:var(--t0)}
+.u2b-prev small{font-size:12px;color:var(--attt)}
+.u2b-prev .u2b-kg{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0)}
+.u2b-prev.u2b-attend{background:#fff;border-color:var(--bordm)}
+.u2b-alt{display:flex;gap:6px;flex-wrap:wrap}
+.u2b-alt button{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);font-size:12px;color:var(--t1);display:inline-flex;align-items:center;gap:6px}
+.u2b-alt [aria-selected="true"]{border-color:var(--t0);color:var(--t0);font-weight:600}
+/* Greffe r1/z1 : les 5 familles en segments, le choix se voit */
+.u2b-fams{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.u2b-fams button{min-height:30px;font-size:14px;color:var(--t1);border-left:1px solid var(--bord)}
+.u2b-fams button:first-child{border-left:0}
+.u2b-fams [aria-checked="true"]{background:var(--t0);color:#fff;font-weight:600}
+/* Greffe u4 : l'étagère de sacs colorés, posés sur leur planche */
+.u2b-planche{display:flex;gap:2px;align-items:flex-start;overflow-x:auto;padding:2px 0 0;border-bottom:3px solid var(--bordm);scrollbar-width:none;min-height:52px}
+.u2b-planche[hidden]{display:none}
+.u2b-planche>svg{flex-shrink:0;margin:8px 4px 0}
+.u2b-pris{flex-shrink:0;width:68px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0 4px;border-radius:10px}
+.u2b-pris:active{background:var(--panel)}
+.u2b-pris span{font-size:12px;line-height:1.15;color:var(--t1);text-align:center}
+.u2b-pv{font-size:12px;color:var(--t2);align-self:center;padding:0 8px}
+/* La facture : alignée, sans points ; la masse en grand, la part en barre sous le nom */
+.u2b-fac{display:flex;flex-direction:column}
+.u2b-li{display:grid;grid-template-columns:24px 1fr auto;column-gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--bord);min-height:58px}
+.u2b-li:first-child{border-top:1px solid var(--bord)}
+.u2b-sw{width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,.18);font-size:12px;font-weight:700;color:var(--t1);display:flex;align-items:center;justify-content:center}
+.u2b-sw.u2b-inc{background:#fff;border:1.5px dashed var(--t2)}
+.u2b-nmb{min-width:0;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.u2b-l1{display:flex;align-items:center;gap:8px;min-width:0}
+.u2b-l1 .u2b-mom{flex-shrink:0;margin:0}
+.u2b-nm{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;max-width:100%}
+.u2b-l2{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);white-space:nowrap}
+.u2b-pb{width:112px;height:8px;border-radius:10px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--bord);overflow:hidden;flex-shrink:0}
+.u2b-pb i{display:block;height:100%;border-radius:10px}
+.u2b-pb i.u2b-inc{background:var(--hach);box-shadow:inset 0 0 0 1px #BFBFBF}
+.u2b-pt{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--t1);min-width:3.5ch}
+.u2b-mom{min-height:24px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;margin:-4px 0}
+.u2b-mom i{width:8px;height:8px;border-radius:50%;display:block}
+.u2b-m-empatage{color:#2F5F7D}.u2b-m-empatage i{background:#4F7E9B}
+.u2b-m-ebullition{color:#A8291F}.u2b-m-ebullition i{background:#C8382F}
+.u2b-m-fermentation{color:#5A3FA0}.u2b-m-fermentation i{background:#6A4FB0}
+.u2b-fl{border:1px solid var(--bordm);border-radius:10px;padding:0 6px;line-height:16px;color:var(--t1)}
+.u2b-ms{display:flex;align-items:baseline;gap:2px}
+.u2b-in{width:4.2ch;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:26px;font-weight:600;color:var(--t0);height:36px;border-radius:0;caret-color:var(--t0)}
+.u2b-in:focus{outline:none;border-bottom:2px solid var(--t0);background:#fff}
+.u2b-in.u2b-zero{color:var(--t2)}
+.u2b-u{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.u2b-ebc{grid-column:2/-1;display:flex;align-items:center;gap:6px;padding:4px 0 2px;font-size:14px}
+.u2b-fin{width:5ch;height:32px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 6px;text-align:right;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--t0)}
+.u2b-fin:focus{outline:2px solid #4F7E9B;outline-offset:1px}
+.u2b-det{grid-column:2/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 0 2px}
+.u2b-segm{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.u2b-segm button{min-height:28px;padding:0 8px;font-size:12px;color:var(--t1)}
+.u2b-segm [aria-pressed="true"]{background:var(--t0);color:#fff}
+.u2b-det label{display:inline-flex;align-items:center;gap:4px;font-size:14px}
+.u2b-del{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);font-size:12px;color:var(--alertet);margin-left:auto}
+.u2b-warn{grid-column:2/-1;padding:2px 0 2px;font-size:12px;color:var(--attt)}
+.u2b-vide{min-height:44px;display:flex;align-items:center;color:var(--t2);font-size:14px;border-top:1px solid var(--bord);border-bottom:1px solid var(--bord)}
+.u2b-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.u2b-annexe h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.u2b-etats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.u2b-etats button{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);font-size:12px}
+.u2b-etats [aria-pressed="true"]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.u2b-carte{background:var(--panel);border-radius:16px;padding:8px 10px;margin-bottom:8px;font-size:14px}
+.u2b-carte p{font-size:12px;color:var(--t1);margin-top:4px}
+.u2b-carte code{font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--bord);border-radius:10px;padding:0 4px}
+/* Ample : jusqu'à 5 lignes, la facture prend la place libre (masse plus grande, part sur toute la ligne) ; au-delà, elle se compacte (8 grains : 1,05 écran au plus). */
+.u2b-ample .u2b-li{min-height:76px;padding:8px 0}
+.u2b-ample .u2b-in{font-size:36px;height:46px;width:4ch}
+.u2b-ample .u2b-u{font-size:14px}
+.u2b-ample .u2b-l2{gap:10px}
+.u2b-ample .u2b-pb{width:auto;flex:1;max-width:180px;height:12px}
+.u2b-ample .u2b-sw{width:28px;height:28px}
+.u2b-ample.u2b-fac .u2b-li{grid-template-columns:30px 1fr auto}
+
+.u2b-c.u2b-large .u2b-planche{min-height:64px}
+@media (min-width:700px){.u2b-hd,.u2b-c,.u2b-annexe{max-width:560px;margin-left:auto;margin-right:auto}.u2b-bd{max-width:540px;margin:8px auto 0}.u2b-fab{right:calc(50% - 280px)}}
+</style></head>
+<body data-concept="u2b">
+<header class="u2b-hd">
+  <div class="u2b-tb">
+    <button class="u2b-ic" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="u2b-tt"><span class="u2b-tn">Fermentescibles</span><span class="u2b-tp">2/7</span></p>
+    <button class="u2b-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="u2b-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="u2b-rail" aria-label="Étapes"><button class="u2b-fait"><span>Identité</span><i></i></button><button aria-current="step"><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="u2b-bd" data-commun="bandeau" data-role="bd">
+  <div><span class="u2b-l">Grain</span><span class="u2b-v" data-role="bgrain">8 kg</span></div>
+  <div><span class="u2b-l">OG</span><span class="u2b-v">—</span></div>
+  <div><span class="u2b-l">IBU</span><span class="u2b-v">24</span><span class="u2b-pst" role="img" aria-label="style 15–60 IBU"><b style="left:10.7%;width:32.2%"></b><em style="left:17.1%"></em></span></div>
+  <div><span class="u2b-l">EBC</span><span class="u2b-bsw" data-role="bsw"></span><span class="u2b-v" data-role="bebc">—</span></div>
+</div>
+<main class="u2b-c">
+  <div class="u2b-comp" data-role="comp">
+    <div class="u2b-barre" data-role="barre" data-booster="composition" role="img" aria-label="Composition de la recette"></div>
+    <button class="u2b-ar" data-role="ar" data-booster="a-renseigner"><span class="u2b-sw u2b-inc" style="width:14px;height:14px;font-size:12px;border-width:1px"></span><b data-role="arn">3</b><span data-role="art"> couleurs à renseigner</span></button>
+  </div>
+  <div class="u2b-cmd" data-booster="ligne-de-saisie">
+    <input class="u2b-q" data-role="q" placeholder="Nom, puis Entrée" aria-label="Ajouter : le nom, puis Entrée ; ou le nom et la masse, par exemple pils 5" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+    <button class="u2b-ent" data-role="ent" aria-label="Ajouter la ligne"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5v7a3 3 0 0 1-3 3H5M9 11l-4 4 4 4"/></svg></button>
+  </div>
+  <div class="u2b-ap" data-role="ap" hidden>
+    <button class="u2b-prev" data-role="prev" data-booster="apercu-entree"></button>
+    <div class="u2b-alt" data-role="alt" role="listbox" aria-label="Autres noms"></div>
+  </div>
+  <div class="u2b-fams" role="radiogroup" aria-label="Famille de l'ajout" data-role="fams" data-booster="familles"></div>
+  <div class="u2b-planche" data-role="planche" data-booster="etagere-sacs" aria-label="Étagère : un toucher prend le sac"></div>
+  <section class="u2b-fac" data-role="rows" aria-label="Malts et sucres de la recette"></section>
+  <nav class="u2b-pied" data-commun="pied"><button class="u2b-ret">Retour</button><button class="u2b-suiv">Suivant — Houblons</button></nav>
+</main>
+<section class="u2b-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="u2b-etats" data-role="etats">
+    <button data-etat="recette">Sa recette, couleurs inconnues</button>
+    <button data-etat="couleurs">Couleurs saisies</button>
+    <button data-etat="sucre">+ dextrose à l'ébullition</button>
+    <button data-etat="lactose">Lactose et fruit en fermentation</button>
+    <button data-etat="huit">8 grains</button>
+    <button data-etat="vide">Recette vide</button>
+  </div>
+  <div class="u2b-carte"><b>Ce que la ligne comprend</b><p><code>pils</code> → Pilsner Malz à 0 kg, le curseur passe à la masse · <code>pils 5</code> → 5 kg · <code>dextrose 400g</code> → 0,4 kg · un nom absent : « Créer », stock à zéro, dans la famille choisie dessous. Le texte du champ vide alterne « Nom, puis Entrée » et « Nom 5 kg ».</p></div>
+  <div class="u2b-carte"><b>Densité (si l'OG est connue)</b><p style="color:var(--attt)">À 1,066, le moût sature : vise un volume plus grand ou moins de grain.</p></div>
+  <div class="u2b-carte"><b>Stock fictif de la maquette</b><p>Pale Ale Malz, Münchner Malz, Carahell, Dextrose, Lactose, Framboise : aucun stock réel lu.</p></div>
+</section>
+<button class="u2b-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s,r){return (r||document).querySelector(s)}, qa=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var FAM={grain:{nom:'Grain',mom:'empatage'},sucre:{nom:'Sucre',mom:'ebullition'},lactose:{nom:'Lactose',mom:'ebullition'},fruit:{nom:'Fruit',mom:'fermentation'},extrait:{nom:'Extrait',mom:'ebullition'}};
+var FAMS=['grain','sucre','lactose','fruit','extrait'];
+var MOM={empatage:'empâtage',ebullition:'ébullition',fermentation:'fermentation'};
+var VOL=30;
+var STOCK=[
+ {nom:'Pilsner Malz',marque:'Weyermann',fam:'grain',ebc:null,stock:true,cle:'pils pilsner'},
+ {nom:'Weizenmalz hell',marque:'Weyermann',fam:'grain',ebc:null,stock:true,cle:'weizen ble froment'},
+ {nom:'Haferflocken',marque:'',fam:'grain',ebc:null,stock:true,cle:'hafer avoine flocons'},
+ {nom:'Pale Ale Malz',marque:'Weyermann',fam:'grain',ebc:6.5,stock:true,cle:'pale'},
+ {nom:'Münchner Malz',marque:'Weyermann',fam:'grain',ebc:15,stock:true,cle:'munich munchner'},
+ {nom:'Carahell',marque:'Weyermann',fam:'grain',ebc:25,stock:true,cle:'cara'},
+ {nom:'Dextrose',marque:'',fam:'sucre',ebc:null,stock:true,cle:'dextrose glucose sucre'},
+ {nom:'Lactose',marque:'',fam:'lactose',ebc:null,stock:true,cle:'lactose'},
+ {nom:'Framboise',marque:'',fam:'fruit',ebc:null,stock:false,cle:'framboise'}
+];
+function L(nom,marque,fam,kg,ebc,mom,jour){return {nom:nom,marque:marque,fam:fam,kg:kg,ebc:ebc,mom:mom||FAM[fam].mom,jour:jour||null};}
+function sa(c){return [L('Pilsner Malz','Weyermann','grain',5,c?3.5:null),L('Weizenmalz hell','Weyermann','grain',1.5,c?4:null),L('Haferflocken','','grain',1.5,c?2:null)];}
+var ETATS={
+ recette:function(){return sa(false);},
+ couleurs:function(){return sa(true);},
+ sucre:function(){return sa(true).concat([L('Dextrose','','sucre',0.4,null,'ebullition')]);},
+ lactose:function(){return sa(true).concat([L('Lactose','','lactose',0.5,null,'ebullition'),L('Framboise','','fruit',1,null,'fermentation',3)]);},
+ huit:function(){return [L('Pilsner Malz','Weyermann','grain',4,null),L('Weizenmalz hell','Weyermann','grain',1.2,null),L('Haferflocken','','grain',1,null),L('Pale Ale Malz','Weyermann','grain',0.8,6.5),L('Münchner Malz','Weyermann','grain',0.4,15),L('Carahell','Weyermann','grain',0.3,25),L('Weizenflocken','','grain',0.2,null),L('Sauermalz','Weyermann','grain',0.1,null)];},
+ vide:function(){return [];}
+};
+var st={lignes:[],fam:'grain',ouvert:-1,coul:-1,etat:'recette',alt:0};
+var SRM=['#FFE699','#FFD878','#FFCA5A','#FFBF42','#FBB123','#F8A600','#F39C00','#EA8F00','#E58500','#DE7C00','#D77200','#CF6900','#CB6200','#C35900','#BB5100','#B54C00','#B04500','#A63E00','#A13700','#9B3200','#952D00','#8E2900','#882300','#821E00','#7B1A00','#771900','#701400','#6A0E00','#660D00','#5E0B00'];
+function hex(ebc){var s=Math.round(ebc/1.97);return SRM[Math.max(0,Math.min(SRM.length-1,s-1))];}
+function bande(e){return e<=8?'#F2C14E':e<=14?'#E0A02E':e<=26?'#C87A2C':e<=40?'#A0522D':e<=60?'#6B3A1E':'#3B1F14';}
+function fr(x,d){return String(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).replace('.',',');}
+function fk(x){if(!x)return '0';return x>=1?x.toFixed(1).replace('.',','):fr(x,2);}
+function lit(s){var v=parseFloat(String(s).replace(',','.').replace(/[^0-9.]/g,''));return isFinite(v)?v:null;}
+function grain(){return st.lignes.filter(function(l){return l.fam==='grain';}).reduce(function(a,l){return a+l.kg;},0);}
+function part(l){var g=grain();return g>0?Math.round(l.kg/g*100):0;}
+// Équation de Morey, celle de l'app (src/domain/beerColor.ts) : null dès qu'une couleur de grain manque.
+function ebcBiere(){var gs=st.lignes.filter(function(l){return l.fam==='grain';});if(!gs.length||gs.some(function(l){return l.ebc==null;}))return null;
+ var mcu=gs.reduce(function(a,l){return a+(l.ebc/1.97)*(l.kg*2.2046226)/(VOL*0.26417205);},0);return Math.round(1.4922*Math.pow(mcu,0.6859)*1.97*10)/10;}
+function inconnues(){return st.lignes.filter(function(l){return l.fam==='grain'&&l.ebc==null;}).length;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+var ICO_DEL='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+var STK='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#4C6B2A" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Du stock"><path d="M3 21V8l9-5 9 5v13M7 21v-8h10v8M7 17h10"/></svg>';
+// Le sac de u4 : noué, à la couleur du malt ; hachuré de gris si elle est inconnue ; crème pour un sucre.
+var SAC='M8 3h8l-1.6 3.2C19 8 21 12.5 21 18c0 5-3.6 8-9 8s-9-3-9-8c0-5.5 2-10 6.6-11.8Z',nsac=0;
+function sac(s,w,h){var id='u2bs'+(nsac++),inc=s.fam==='grain'&&s.ebc==null,sw=(1.6*24/w).toFixed(2),fond=inc?'url(#'+id+'h)':(s.fam!=='grain'?'#E6DCC3':hex(s.ebc)),tr=inc?'#666':'#7A5A1E';
+ return '<svg viewBox="0 0 24 28" width="'+w+'" height="'+h+'" aria-hidden="true"><defs><pattern id="'+id+'h" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#fff"/><rect width="1.6" height="5" fill="#C9C9C9"/></pattern></defs>'
+ +'<path d="'+SAC+'" fill="'+fond+'"/><path d="'+SAC+'" fill="none" stroke="'+tr+'" stroke-width="'+sw+'"'+(inc?' stroke-dasharray="3 2"':'')+'/><path d="M9 6.2h6" stroke="'+tr+'" stroke-width="'+sw+'" stroke-linecap="round"/></svg>';}
+function teinte(l){return l.fam!=='grain'?'':(l.ebc==null?'':hex(l.ebc));}
+function dot(s){return s.fam!=='grain'?'<span class="u2b-sw" style="width:14px;height:14px;background:#F3EEE2"></span>':(s.ebc==null?'<span class="u2b-sw u2b-inc" style="width:14px;height:14px;border-width:1px"></span>':'<span class="u2b-sw" style="width:14px;height:14px;background:'+hex(s.ebc)+'"></span>');}
+function pbar(l){var p=Math.min(100,part(l));return l.fam==='grain'&&l.ebc==null?'<i class="u2b-inc" style="width:'+p+'%"></i>':'<i style="width:'+p+'%;background:'+(l.fam==='grain'?hex(l.ebc):'#D8CCAA')+'"></i>';}
+function ligne(l,i){
+ var sw=l.fam!=='grain'?'<span class="u2b-sw" style="background:#F3EEE2" aria-hidden="true"></span>':(l.ebc==null?'<button class="u2b-sw u2b-inc" data-act="couleur" data-booster="teinte" aria-label="Couleur de '+esc(l.nom)+' : à renseigner">?</button>':'<button class="u2b-sw" data-act="couleur" data-booster="teinte" style="background:'+hex(l.ebc)+'" aria-label="Couleur de '+esc(l.nom)+' : '+fr(l.ebc,1)+' EBC"></button>');
+ var h='<div class="u2b-li" data-i="'+i+'">'+sw+'<div class="u2b-nmb"><span class="u2b-l1"><button class="u2b-nm" data-act="detail">'+esc(l.nom)+'</button>'
+ +'<button class="u2b-mom u2b-m-'+l.mom+'" data-act="detail" data-booster="moment"><i></i>'+MOM[l.mom]+(l.mom==='fermentation'&&l.jour?' J+'+l.jour:'')+'</button></span>'
+ +'<span class="u2b-l2"><span class="u2b-pb" data-role="pb" data-booster="part">'+pbar(l)+'</span><span class="u2b-pt" data-role="pt">'+part(l)+' %</span>'
+ +(l.fam!=='grain'?'<span class="u2b-fl">'+FAM[l.fam].nom.toLowerCase()+'</span>':'')+'</span></div>'
+ +'<label class="u2b-ms"><input class="u2b-in'+(l.kg?'':' u2b-zero')+'" data-role="kg" data-booster="masse" inputmode="decimal" enterkeyhint="done" value="'+fk(l.kg)+'" aria-label="Masse de '+esc(l.nom)+', en kg" autocomplete="off"><span class="u2b-u">kg</span></label>';
+ if(st.coul===i)h+='<label class="u2b-ebc">Couleur <input class="u2b-fin" data-role="ebc" inputmode="decimal" enterkeyhint="next" value="'+(l.ebc==null?'':fr(l.ebc,1))+'" placeholder="?" aria-label="Couleur de '+esc(l.nom)+', en EBC" autocomplete="off"> EBC</label>';
+ if(st.ouvert===i){
+  h+='<div class="u2b-det"><span class="u2b-segm" role="group" aria-label="Moment">'+['empatage','ebullition','fermentation'].map(function(m){return '<button data-act="mom" data-m="'+m+'" aria-pressed="'+(l.mom===m)+'">'+MOM[m]+'</button>';}).join('')+'</span>';
+  if(l.mom==='fermentation')h+='<label>J+ <input class="u2b-fin" data-role="jour" inputmode="numeric" value="'+(l.jour||3)+'" aria-label="Jour d\'ajout en fermentation" autocomplete="off"></label>';
+  h+='<span class="u2b-fl">'+FAM[l.fam].nom+'</span>'+(l.marque?'<span style="font-size:12px;color:var(--t2)">'+esc(l.marque)+'</span>':'')+'<button class="u2b-del" data-act="del">'+ICO_DEL+'Retirer</button></div>';
+ }
+ if(l.fam==='lactose'&&l.kg>0)h+='<p class="u2b-warn" role="note">Lactose : ne fermente pas, il remonte la densité finale.</p>';
+ return h+'</div>';
+}
+var rows=q('[data-role="rows"]');
+function rendre(){var am=st.lignes.length>0&&st.lignes.length<=5;rows.classList.toggle('u2b-ample',am);q('.u2b-c').classList.toggle('u2b-large',am);rows.innerHTML=st.lignes.length?st.lignes.map(ligne).join(''):'<div class="u2b-vide">Rien encore.</div>';chiffres();planche();}
+function composition(){
+ var tot=st.lignes.reduce(function(a,l){return a+l.kg;},0),b=q('[data-role="barre"]');
+ q('[data-role="comp"]').style.display=tot>0?'':'none';
+ b.innerHTML=st.lignes.map(function(l,i){if(!(l.kg>0))return '';var w=(l.kg/tot*100).toFixed(2)+'%';
+  var cl='u2b-seg'+(l.fam!=='grain'?' u2b-sucre':(l.ebc==null?' u2b-inc':''));
+  return '<button class="'+cl+'" data-i="'+i+'" style="width:'+w+(l.fam==='grain'&&l.ebc!=null?';background:'+hex(l.ebc):'')+'" aria-label="'+esc(l.nom)+'"></button>';}).join('');
+}
+function chiffres(){
+ var g=grain(),e=ebcBiere(),n=inconnues();
+ q('[data-role="bd"]').hidden=st.etat==='vide'&&!st.lignes.length;
+ q('[data-role="bgrain"]').textContent=fr(g,1)+' kg';
+ var bs=q('[data-role="bsw"]');bs.className='u2b-bsw'+(e==null?' u2b-inc':'');bs.style.background=e==null?'':bande(e);
+ q('[data-role="bebc"]').textContent=e==null?'—':fr(e,1);
+ var ar=q('[data-role="ar"]');ar.hidden=!(e==null&&n>0);q('[data-role="arn"]').textContent=n;q('[data-role="art"]').textContent=n>1?' couleurs à renseigner':' couleur à renseigner';
+ qa('.u2b-li').forEach(function(r){var l=st.lignes[+r.dataset.i];q('[data-role="pt"]',r).textContent=part(l)+' %';q('[data-role="pb"]',r).innerHTML=pbar(l);});
+ composition();
+}
+function familles(){q('[data-role="fams"]').innerHTML=FAMS.map(function(f){return '<button role="radio" data-f="'+f+'" aria-checked="'+(st.fam===f)+'">'+FAM[f].nom+'</button>';}).join('');}
+function planche(){
+ var deja=st.lignes.map(function(l){return l.nom;}),ps=STOCK.filter(function(s){return s.fam===st.fam&&deja.indexOf(s.nom)<0;}).sort(function(a,b){return b.stock-a.stock;});
+ q('[data-role="planche"]').innerHTML=STK+(ps.length?ps.map(function(s){return '<button class="u2b-pris" data-nom="'+esc(s.nom)+'">'+(st.lignes.length&&st.lignes.length<=5?sac(s,32,37):sac(s,24,28))+'<span>'+esc(s.nom)+'</span></button>';}).join(''):'<span class="u2b-pv">—</span>');
+}
+// La ligne : « nom [masse][kg|g] ». Sans masse, la ligne entre à 0 kg et le curseur passe à la masse (l'acquis).
+function analyser(t){
+ var m=/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(kg|g)?$/i.exec(t.trim()),nom=t.trim(),kg=null;
+ if(m){nom=m[1];kg=lit(m[2]);if(m[3]&&m[3].toLowerCase()==='g')kg=kg/1000;}
+ var n=norm(nom),ms=n?STOCK.filter(function(s){return norm(s.nom).indexOf(n)>=0||s.cle.split(' ').some(function(c){return c.indexOf(n)===0;});}):[];
+ return {nom:nom,kg:kg,ms:ms.slice(0,4)};
+}
+var qq=q('[data-role="q"]');
+// Au repos, le texte du champ montre les deux grammaires, à tour de rôle.
+var PH=['Nom, puis Entrée','Nom 5 kg'],ph=0;setInterval(function(){if(!qq.value){ph=1-ph;qq.placeholder=PH[ph];}},2400);
+function apercu(){
+ var t=qq.value,ap=q('[data-role="ap"]'),pl=q('[data-role="planche"]');
+ q('[data-role="ent"]').classList.toggle('u2b-pret',!!t.trim());
+ if(!t.trim()){ap.hidden=true;pl.hidden=false;return null;}
+ var a=analyser(t);st.alt=Math.min(st.alt,Math.max(0,a.ms.length-1));
+ var c=a.ms[st.alt],deja=c&&st.lignes.some(function(l){return l.nom===c.nom;});
+ var nomv=c?c.nom:(a.nom.charAt(0).toUpperCase()+a.nom.slice(1)),fam=c?c.fam:st.fam,court=!c&&a.nom.length<2;
+ var lx=c&&st.lignes.filter(function(l){return l.nom===c.nom;})[0];var sous=c?(deja?(a.kg!=null?'déjà dans la recette, la masse change':'déjà dans la recette : Entrée, puis la masse'):FAM[fam].nom.toLowerCase()+' · '+MOM[FAM[fam].mom]+(c.marque?' · '+c.marque:'')):(court?'encore une lettre pour créer':'Créer · '+FAM[fam].nom.toLowerCase()+' : '+MOM[FAM[fam].mom]+', stock à zéro');
+ var pv=q('[data-role="prev"]');pv.classList.toggle('u2b-attend',court);
+ pv.innerHTML=dot(c||{fam:fam,ebc:null})+'<span><b>'+esc(nomv||'…')+'</b><br><small>'+sous+'</small></span><span class="u2b-kg">'+(a.kg!=null?fk(a.kg):(lx?fk(lx.kg):'0'))+' kg</span>';
+ q('[data-role="alt"]').innerHTML=a.ms.length>1?a.ms.map(function(s,k){return '<button role="option" data-k="'+k+'" aria-selected="'+(k===st.alt)+'">'+dot(s)+esc(s.nom)+'</button>';}).join(''):'';
+ ap.hidden=false;pl.hidden=true;
+ return {c:c,nom:nomv,fam:fam,kg:a.kg,court:court};
+}
+function valider(){
+ var r=apercu();if(!r||r.court)return;
+ var k=-1;st.lignes.forEach(function(l,i){if(l.nom===r.nom&&l.fam===r.fam)k=i;});
+ if(k<0){st.lignes.push(L(r.nom,r.c?r.c.marque:'',r.fam,0,r.c?r.c.ebc:null,null,FAM[r.fam].mom==='fermentation'?3:null));k=st.lignes.length-1;
+  if(!r.c)STOCK.push({nom:r.nom,marque:'',fam:r.fam,ebc:null,stock:true,cle:norm(r.nom)});}
+ if(r.kg!=null)st.lignes[k].kg=r.kg;
+ qq.value='';st.alt=0;st.ouvert=-1;st.coul=-1;apercu();rendre();
+ if(r.kg==null){var inp=q('.u2b-li[data-i="'+k+'"] [data-role="kg"]');inp.focus();inp.select();}else qq.focus();
+}
+qq.addEventListener('input',function(){st.alt=0;apercu();});
+qq.addEventListener('keydown',function(e){var n=analyser(qq.value).ms.length;
+ if(e.key==='Enter'){e.preventDefault();valider();}
+ else if(e.key==='ArrowDown'&&n>1){e.preventDefault();st.alt=(st.alt+1)%n;apercu();}
+ else if(e.key==='ArrowUp'&&n>1){e.preventDefault();st.alt=(st.alt-1+n)%n;apercu();}
+ else if(e.key==='Escape'){qq.value='';apercu();}});
+q('[data-role="ent"]').addEventListener('click',valider);
+q('[data-role="prev"]').addEventListener('click',valider);
+q('[data-role="alt"]').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(!b)return;st.alt=+b.dataset.k;apercu();qq.focus();});
+q('[data-role="planche"]').addEventListener('click',function(e){var b=e.target.closest('.u2b-pris');if(!b)return;qq.value=b.dataset.nom;st.alt=0;valider();});
+q('[data-role="fams"]').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;st.fam=b.dataset.f;familles();planche();apercu();});
+q('[data-role="barre"]').addEventListener('click',function(e){var b=e.target.closest('[data-i]');if(!b)return;var inp=q('.u2b-li[data-i="'+b.dataset.i+'"] [data-role="kg"]');if(inp){inp.focus();inp.select();}});
+rows.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var r=b.closest('.u2b-li'),i=+r.dataset.i,l=st.lignes[i],a=b.dataset.act;
+ if(a==='detail'){st.ouvert=st.ouvert===i?-1:i;rendre();}
+ else if(a==='couleur'){st.coul=st.coul===i?-1:i;rendre();var f=q('[data-role="ebc"]');if(f)f.focus();}
+ else if(a==='mom'){l.mom=b.dataset.m;if(l.mom==='fermentation'&&!l.jour)l.jour=3;rendre();}
+ else if(a==='del'){st.lignes.splice(i,1);st.ouvert=-1;rendre();qq.focus();}});
+var avant=null;
+rows.addEventListener('focusin',function(e){var t=e.target,r=t.closest('.u2b-li');if(!r||!t.dataset.role||t.tagName!=='INPUT')return;var l=st.lignes[+r.dataset.i];avant=t.dataset.role==='kg'?l.kg:l.ebc;t.select();});
+rows.addEventListener('input',function(e){var t=e.target,r=t.closest('.u2b-li');if(!r)return;var l=st.lignes[+r.dataset.i],v=lit(t.value);
+ if(t.dataset.role==='kg'){l.kg=v!=null&&v>=0?v:0;t.classList.toggle('u2b-zero',!l.kg);chiffres();}
+ else if(t.dataset.role==='ebc'){l.ebc=v!=null&&t.value.trim()?v:null;var s=q('.u2b-sw',r);s.className='u2b-sw'+(l.ebc==null?' u2b-inc':'');s.style.background=l.ebc==null?'':hex(l.ebc);s.textContent=l.ebc==null?'?':'';chiffres();}
+ else if(t.dataset.role==='jour'){l.jour=Math.max(0,Math.round(v||0));}});
+function suivante(i){var nx=-1;st.lignes.forEach(function(x,k){if(nx<0&&k!==i&&x.fam==='grain'&&x.ebc==null)nx=k;});return nx;}
+rows.addEventListener('keydown',function(e){var t=e.target,r=t.closest('.u2b-li');if(!r||!t.dataset.role||t.tagName!=='INPUT')return;var i=+r.dataset.i,l=st.lignes[i];
+ if(t.dataset.role==='kg'&&(e.key==='ArrowUp'||e.key==='ArrowDown')){e.preventDefault();var up=e.key==='ArrowUp',p=(up?l.kg:l.kg-0.001)<1?0.05:0.1;l.kg=Math.max(0,Math.round((l.kg+(up?p:-p))*100)/100);t.value=fk(l.kg);chiffres();}
+ else if(e.key==='Escape'){e.preventDefault();if(t.dataset.role==='kg')l.kg=avant;else if(t.dataset.role==='ebc')l.ebc=avant;st.coul=-1;rendre();}
+ else if(e.key==='Enter'){e.preventDefault();
+  if(t.dataset.role==='ebc'){var nx=suivante(i);st.coul=nx;rendre();if(nx>=0)q('[data-role="ebc"]').focus();else qq.focus();}
+  else{rendre();qq.focus();}}});
+rows.addEventListener('focusout',function(e){var t=e.target,r=t.closest&&t.closest('.u2b-li');if(r&&t.dataset.role==='kg'&&document.contains(t)){var l=st.lignes[+r.dataset.i];if(l)t.value=fk(l.kg);}});
+q('[data-role="ar"]').addEventListener('click',function(){var k=suivante(-1);if(k<0)return;st.coul=k;rendre();q('[data-role="ebc"]').focus();});
+function charger(n){st.etat=n;st.lignes=ETATS[n]();st.ouvert=-1;st.coul=-1;qa('[data-etat]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.etat===n);});familles();rendre();apercu();}
+q('[data-role="etats"]').addEventListener('click',function(e){var b=e.target.closest('[data-etat]');if(!b)return;charger(b.dataset.etat);scrollTo(0,0);});
+var m=/[?&]etat=(\w+)/.exec(location.search);charger(m&&ETATS[m[1]]?m[1]:'recette');
+})();</script>
+</body></html>

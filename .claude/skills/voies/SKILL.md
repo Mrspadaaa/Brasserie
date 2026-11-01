@@ -46,14 +46,19 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    d'écrire les voies. Sinon, pas de conseil (§ « Quand le conseil intervient »).
 5. Vérifier les entrées partagées avant l'éventail (L08) : une voie Haiku « entrées » passe en
    premier quand moteur, JSON ou constantes sont en jeu.
+   **Cadrer par le jury** (skill `jury`, D198) avant le premier VOIE.md d'un lot montré au brasseur ou d'un écran refait. Le jury
+   rend une fiche de cadrage : les réponses sourcées, les goûts devenus axes de variantes, et l'irréversible aux accords. Il ne
+   bloque jamais. Juste avant de le lancer, relance un grep de SPEC-BRASSEUR : ses derniers mots comptent. Un élément commun déjà
+   refusé à part ne sert jamais de référence. Chaque concepteur et le critique chargent `boosters-ux` avec impeccable et
+   ui-design-system.
 5 bis. **Ce que le brasseur verra (lot de maquettes, planche de pictos) suit l'entonnoir** :
    `references/entonnoir.md`. Il comprend :
-   - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 48 au moins en
-     6 séries au moins, avec trois chaleurs (froide, tiède, chaude) et la baseline suivie partout ;
-   - un tri par le critique, qui garde 5 candidates pour leur diversité, avec leurs greffes ;
+   - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 12 à 16 en
+     3 ou 4 séries (D204 : « trop demandant en quotas »), avec trois chaleurs (froide, tiède, chaude) et la baseline suivie partout ;
+   - un tri par le critique, qui garde 3 candidates pour leur diversité, avec leurs greffes ;
    - une passe 2 par les mêmes agents, avec tous les contrôles ;
    - puis tout est montré.
-   Le plafond (L18) porte sur les agents et les tours, jamais sur le nombre de variantes. Colonne « Étape »
+   Le plafond (L18) porte sur les agents et les tours ; les variantes, 12 à 16 (D204). Colonne « Étape »
    de MISSION.md ; M13.
 6. Vérifier : `node scripts/agents/systeme.mjs mission work/missions/<id>/MISSION.md` → MISSION OK.
 
@@ -65,6 +70,13 @@ gabarit `gabarits/GATES.md`). Chaque critère a une commande qui peut échouer ;
 Contrôler le format : `node .claude/skills/unlazy/scripts/gate-lint.mjs voies/<id>/GATES.md` → LINT OK.
 L'approbation des commandes (écrites par le pilote lui-même) se fait au premier
 `systeme.mjs voies … --approuver`.
+
+**Relire sans mémoire** (`references/sans-memoire.md`, 31.10) : un agent neuf ne lit que le document.
+- Le **test de compréhension** passe avant de lancer une voie dont le brasseur verra le livrable, une relance après une consigne mal
+  lue, ou une voie qui touche l'argent, le stock, les données réelles ou le moteur (`systeme.mjs comprendre`).
+- La **revue du plan** passe avant le code des finances, du stock, de Firestore, du Drive ou du moteur (`systeme.mjs revue`).
+- Le **rapport d'écart** entre la doc et le code se fait au début d'une mission sur un domaine, et avant de la signer
+  (`systeme.mjs ecarts`, puis un relecteur neuf).
 
 ## 3. Lancer l'essaim
 - Toutes les voies prêtes partent dans **un seul message**, en arrière-plan :
@@ -78,6 +90,17 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
   ne mange pas le budget des autres. Budget de mission : noter dans MISSION.md l'usage avant et après
   (`get_usage`) ; s'arrêter vers 95 % de la fenêtre de 5 h.
 - Pendant l'essaim, le pilote ne lit pas les sorties brutes : il attend les notifications.
+- **Économie (D207, 31.10 : « On est un peu trop gourmand en quota »)**. Mesuré ce soir-là :
+  - le contexte du pilote (Opus, 530 k) est relu à chaque tour, et chaque notification d'agent en réveille un ;
+  - un concepteur coûte 250 à 300 k en v0 ;
+  - un agent repris par `SendMessage` recharge tout son contexte (300 k, puis 340 k).
+  D'où les règles :
+  1. **une session par écran**, avec seulement son état de reprise ;
+  2. une passe ou une relance part chez un **agent neuf**, sur un brief serré (son etat.html, la section de SYNTHESE ou les défauts) : on ne
+     reprend pas l'agent au long contexte (L18) ;
+  3. un **dossier de conception** de 3 000 mots au plus, que les concepteurs lisent à la place des sources ; skills et règles sont lus une
+     fois par le pilote et résumés dans ce dossier ;
+  4. en v0, on capture le repos et un seul état ; les autres états viennent en passe 2.
 
 ## 4. Vérifier (pilote)
 À chaque retour, une ligne arrive. Puis :

@@ -462,6 +462,10 @@ export const App: React.FC = () => {
       if (q.get('etape') !== 'houblons') return;
       apercuOuvert.current = true;
       if (q.get('recette') === 'vide') { openWizard({ step: 'houblons' }); return; }
+      if (q.get('recette') === 'identite') {
+        import('./ui/identite/apercuDev').then(({ recetteApercuIdentite }) => openWizard({ recipe: recetteApercuIdentite(), step: 'houblons' }));
+        return;
+      }
       import('./ui/hopIndex/maBiere/apercuDev').then(({ recetteApercuEtapeHoublons }) =>
         openWizard({ recipe: recetteApercuEtapeHoublons(), step: 'houblons' }));
     }

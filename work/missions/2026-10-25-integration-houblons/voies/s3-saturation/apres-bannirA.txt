@@ -1,0 +1,52 @@
+Serveur 1/1 : npm run dev -- --port 5620 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-n36k00\serveur-1-5620.log)
+Attente du port 5620…
+Serveur prêt sur le port 5620
+
+Tous les serveurs sont prêts. Lancement : node C:/Users/mrspa/AppData/Local/Temp/claude/C--Users-mrspa--codex-worktrees-openai-clean-start-Brasserie/16fc09ec-4e69-48a9-9744-5912b6ef6552/scratchpad/bannir2.mjs A
+
+{
+ "cas": "A",
+ "avant": {
+  "dir": "{\"tropical\":1}",
+  "groupes": [
+   "même effet sur tes objectifs48 gdry hop  : Strata, Citra, BRU-1, Idaho 7"
+  ]
+ },
+ "apres": {
+  "dir": "{\"tropical\":1,\"resin\":-1}",
+  "cartes": [
+   "Sans résineuxAtteint",
+   "Plus tropicauxApproche"
+  ],
+  "groupes": [
+   {
+    "id": "meme-0",
+    "titre": "même effet sur tes objectifs48 gdry hop ",
+    "houblons": [
+     {
+      "nom": "Strata",
+      "resine": "non décrit"
+     },
+     {
+      "nom": "BRU-1",
+      "resine": "non décrit"
+     },
+     {
+      "nom": "Nectaron",
+      "resine": "non décrit"
+     },
+     {
+      "nom": "El Dorado",
+      "resine": "non décrit"
+     }
+    ]
+   }
+  ]
+ }
+}
+fautifs : aucun ; remplaçants fautifs : aucun ; Remplacer Columbus : false ; carte tenue : true
+BANNIR A OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

@@ -1,14 +1,19 @@
 import { StorageService } from './storage';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { FinanceService, validateFinancialPayment } from './financeService';
-import { prepareFinanceDocument, saveFinanceDocumentConfirmed } from './financeDocuments';
+import { prepareFinanceDocument, saveFinanceDocumentConfirmed, loadDriveProofReceipt, type DriveProofReceipt } from './financeDocuments';
 import { Units } from './units';
 import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
 import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
 import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO } from '../domain/finance/ledger';
 import { normalize } from './search';
-import { canonicalStockCategory } from './stockLineMatching';
+import { canonicalStockCategory, linkUnit, nomsPris, pliee, SACHET_MAX_G, type MembreVirtuel } from './stockLineMatching';
+import { articleNeufDe, ligneDeBrouillon, type ArticleNeuf } from '../domain/stock/articleNeuf';
+import { contexteDe } from './stockLineMatching';
+import type { Catalogues } from '../domain/stock/fiche';
+import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
+import { isMillingSurcharge } from './purchasePrefill';
 
 export interface PurchaseLineDraft {
   id:string; description:string; kind:FinanceLineKind|'maintenance'; amount?:number;
@@ -16,11 +21,24 @@ export interface PurchaseLineDraft {
   stockAction:'none'|'new'|'existing'; stockRef?:string; stockCategory?:string;
   equipmentAction:'none'|'new'|'existing'; equipmentRef?:string; equipmentCategory?:string;
   evidence?:string; sourceReference?:string;
+  /** Prix unitaire lu sur le document, en CHF par `unit`. Gardé sur la dépense (`unitPriceCents`) seulement s'il est exact en centimes et cohérent avec le montant. */
+  unitPrice?:number;
+  /** Id de la ligne d'ingrédient dont cette ligne de mouture fait partie du prix : posé par le geste du brasseur (`confirmMillingSurcharge`), jamais par la lecture. */
+  surchargeOf?:string;
+  /**
+   * Le nom que le brasseur a TAPÉ pour l'article neuf de cette ligne (`stockAction: 'new'`) : jamais écrasé, jamais recalculé. Le seul état gardé de l'article neuf
+   * (voie s6-fiche, T3) : le reste (nom proposé, α, EBC, origine, fiche) est dérivé de la ligne et du stock COURANTS à l'écran et à l'enregistrement.
+   */
+  articleName?:string;
 }
 export interface PurchaseDraft {
   submissionId:string; date:string; vendor:string; invoiceNumber:string; description:string;
+  /** `typed` : saisie dans « Pour quoi ? » (jamais remplacée par une lecture) ; `scan` : proposée par le code. Absent : origine inconnue. */
+  descriptionSource?:'typed'|'scan';
   category:FinanceCategory; amount?:number; lines:PurchaseLineDraft[];
   paymentStatus:'unknown'|'unpaid'|'paid'; paymentMethod:FinancialPayment['method']; paymentDate:string; dueDate:string;
+  /** `document_date` : la date de paiement n'est pas imprimée, elle est supposée égale à la date du document ; `typed` : saisie. Absent : inconnue. */
+  paymentDateBasis?:'document_date'|'typed';
   proofDataUrl?:string; proofFileName?:string; proofType?:string; documentHash?:string;
   sourceCurrency?:string; sourceAmount?:number; sourceVatRate?:number; sourceVatAmount?:number; sourceNetAmount?:number;
   scanModel?:string; duplicateConfirmed?:boolean;
@@ -88,6 +106,178 @@ export function purchaseDuplicates(draft:PurchaseDraft,transactions:FinanceTrans
   return transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];})
     .sort((a,b)=>a.match.rank-b.match.rank||a.match.gap-b.match.gap).map(entry=>entry.tx);
 }
+/** Règle écrite sur le paiement quand sa date est supposée : la date de paiement n'est pas imprimée sur le document. */
+export const PAYMENT_DATE_ASSUMED_NOTE='Date de paiement supposée = date du document (non imprimée).';
+
+export interface SimilarOrder { tx:FinanceTransaction; reasons:string[]; days?:number }
+/**
+ * Une même commande facturée deux fois sous deux numéros (pro-forma puis facture finale) : signal, jamais un blocage.
+ * Même fournisseur, même total au centime, un autre n° de facture, et une corroboration : le même n° de commande (60 jours
+ * au plus : la facture finale n'a pas de délai naturel) ou des références d'articles en commun (7 jours : une facture finale
+ * suit la pro-forma de quelques jours, une commande répétée arrive des semaines plus tard). Sans corroboration, rien.
+ * Les cas que `purchaseDuplicates` signale déjà et la saisie courante sont écartés. Sans date, l'âge de la dépense borne le signal.
+ */
+export function purchaseSimilarOrders(draft:PurchaseDraft,transactions:FinanceTransaction[]):SimilarOrder[] {
+  if (draft.sourceDocumentType==='credit_note' || !isMoney(draft.amount) || draft.amount<=0) return [];
+  const key=purchaseVendorKey(draft.vendor), order=invoiceKey(draft.sourceOrderNumber);
+  if (!key) return [];
+  let day='';
+  const today=()=>day||(day=todayISO());
+  const mine=lineReferences(draft.lines);
+  return transactions.flatMap(tx=>{
+    const finance=tx.finance;
+    if (!finance || finance.kind!=='expense' || finance.voidedAt || tx.id===`TX-${draft.submissionId}`) return [];
+    if (cents(tx.amountTTC)!==cents(draft.amount!) || purchaseVendorKey(finance.vendor??'')!==key || !otherInvoice(draft,tx) || duplicateMatch(draft,tx,today)) return [];
+    const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
+    const since=(finance.recordedAt??'').slice(0,10)||to, gap=days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
+    const sameOrder=Boolean(order) && invoiceKey(finance.sourceOrderNumber)===order;
+    const theirs=lineReferences(finance.lines??[]), shared=[...mine].filter(ref=>theirs.has(ref)).length;
+    const sameItems=shared>0 && shared*2>=Math.min(mine.size,theirs.size);
+    if (gap>(sameOrder?60:sameItems?7:-1)) return [];
+    const reasons=[sameOrder?`Même commande n° ${draft.sourceOrderNumber!.trim()}`:`${shared} référence${shared>1?'s':''} d’article en commun`,'Même fournisseur et même total',
+      `Autre n° de facture : ${draft.invoiceNumber.trim()} (déjà ${(finance.invoiceNumber??'').trim()})`,days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`];
+    return [{tx,reasons,days,gap}];
+  }).sort((a,b)=>a.gap-b.gap).map(({tx,reasons,days})=>({tx,reasons,days}));
+}
+
+export { isMillingSurcharge };
+/** Index de la ligne d'ingrédient dont `lines[index]` est la mouture : la ligne juste au-dessus, même quantité positive et même unité. Sinon -1. */
+export function millingParentIndex(lines:PurchaseLineDraft[],index:number):number {
+  const line=lines[index], parent=lines[index-1], unit=(value:string)=>(value??'').trim().toLowerCase();
+  if (!line || !parent || !isMillingSurcharge(line) || parent.kind!=='ingredient' || isMillingSurcharge(parent)) return -1;
+  const quantity=line.quantity;
+  if (typeof quantity!=='number' || !Number.isFinite(quantity) || quantity<=0 || parent.quantity!==quantity) return -1;
+  return unit(line.unit) && unit(line.unit)===unit(parent.unit) ? index-1 : -1;
+}
+/** Propositions seulement : rien n'est lié, le prix du malt ne change pas. Le brasseur confirme par `confirmMillingSurcharge`. */
+export function proposeMillingSurcharges(lines:PurchaseLineDraft[]):Array<{lineId:string;parentId:string}> {
+  return lines.flatMap((line,index)=>{const parent=millingParentIndex(lines,index);return parent>=0&&line.surchargeOf!==lines[parent].id?[{lineId:line.id,parentId:lines[parent].id}]:[];});
+}
+/** Le geste du brasseur : « mouture comprise ». Sans proposition valable pour cette ligne, les lignes sont rendues telles quelles. */
+export function confirmMillingSurcharge(lines:PurchaseLineDraft[],lineId:string):PurchaseLineDraft[] {
+  const index=lines.findIndex(line=>line.id===lineId), parent=millingParentIndex(lines,index);
+  return parent<0 ? lines : lines.map((line,at)=>at===index?{...line,surchargeOf:lines[parent].id}:line);
+}
+
+const FILE_FORBIDDEN=/[\\/:*?"<>|\u0000-\u001f\u007f]/g;
+const cleanFilePart=(value:string|undefined)=>(value??'').replace(FILE_FORBIDDEN,'').replace(/\s+/g,' ').trim();
+const FILE_EXTENSIONS:Record<string,string>={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+/**
+ * Nom du justificatif dans Drive : `AAAA-MM-JJ Fournisseur Numéro.ext`, tel que lu (forme juridique comprise), sans les caractères
+ * interdits, 120 caractères au plus, coupé avant l'extension. L'extension vient du type du contenu. Le numéro ou le fournisseur
+ * absent est omis ; sans date lisible, le nom d'origine nettoyé est gardé (aucune date inventée).
+ */
+export function driveProofFileName(input:{date:string;vendor:string;invoiceNumber:string;mimeType:string;originalName?:string}):string {
+  const extension=FILE_EXTENSIONS[input.mimeType]?`.${FILE_EXTENSIONS[input.mimeType]}`:'';
+  const iso=purchaseIsoDate(input.date)||isoDate(input.date)||'';
+  if (!iso) return (cleanFilePart(input.originalName)||`Justificatif${extension}`).slice(0,120);
+  const vendor=cleanFilePart(input.vendor), invoice=cleanFilePart(input.invoiceNumber);
+  const base=[iso,vendor||invoice?vendor:'Justificatif',invoice].filter(Boolean).join(' ');
+  return `${base.slice(0,120-extension.length).trimEnd()}${extension}`;
+}
+const driveNames=new Map<string,string>();
+/**
+ * Le nom que Drive a rendu pour ce reçu, mémorisé par saisie une fois l'envoi réellement abouti (un reçu existe). Un échec avant tout
+ * envoi (hors ligne, jeton expiré) ne mémorise rien : la tentative suivante nomme avec la saisie corrigée. Le nom d'un fichier déjà
+ * rangé, lui, se lit sur Drive (`getDriveProofDetails`), jamais dans la saisie.
+ */
+const proofDriveName=(draft:PurchaseDraft)=>driveNames.get(draft.submissionId)??driveProofFileName({date:draft.date,vendor:draft.vendor,invoiceNumber:draft.invoiceNumber,mimeType:draft.proofType||'application/pdf',originalName:draft.proofFileName});
+const proofReceipts=new Map<string,DriveProofReceipt>();
+/** Prix unitaire gardé seulement s'il est exact en centimes entiers et cohérent avec le montant de la ligne (0,045 CHF/g ne l'est pas). */
+function exactUnitPriceCents(line:PurchaseLineDraft):number|undefined {
+  const price=line.unitPrice, quantity=line.quantity;
+  // D213 : un prix se lit pour l'unité imprimée de sa ligne, gardée avec lui ; sans unité lisible, il n'est rattaché à rien.
+  if (line.kind==='discount' || !isReadableUnit(line.unit) || !isMoney(price) || price<=0 || !isMoney(line.amount) || typeof quantity!=='number' || !Number.isFinite(quantity) || quantity<=0) return undefined;
+  return Math.round(quantity*cents(price))===cents(line.amount) ? cents(price) : undefined;
+}
+
+/** Un nombre suivi d'une unité de mesure dans un libellé : « 11,5 g », « 0,5 kg », « 1l ». */
+const MEASURE=/\d+(?:[.,]\d+)?\s*(?:kg|mg|gr?|ml|cl|dl|l)(?![a-z])/gi;
+/** Un nombre collé à un « x » ou « × » de multiplication : « 10 x … », « … x10 ». */
+const MULTIPLIER=/\d\s*[x×](?![a-z])|(?<![a-z])[x×]\s*\d/i;
+/** Ce que l'enregistrement écrit en stock pour une ligne : la quantité dans l'unité de l'article, ou le motif du refus. */
+export type StockQuantity = { ok:true; quantity:number; via:'same'|'conversion'|'piece' } | { ok:false; reason:'unreadable'|'incompatible' };
+/**
+ * La règle commune de la validation et de l'écriture d'un mouvement de stock (r1, R5 à R7). Même table d'unités que l'appariement
+ * (`linkUnit` : « Kilo », « Kg. », « Liter », « litres ») sans élargir `Units` ; même pièce (Stk ↔ sachet pour une levure) quantité 1 pour 1,
+ * jamais en grammes. Au doute, refus : unité illisible (D214, jamais devinée), autre famille, poids de sachet au-delà de `SACHET_MAX_G`
+ * (une levure en vrac), ou différent de celui de l'article.
+ */
+export function stockQuantityFor(line:{description:string;quantity:number;unit:string},target:{name:string;unit:string;category?:string}):StockQuantity {
+  if (!isReadableUnit(line.unit)) return {ok:false,reason:'unreadable'};
+  if (!isReadableUnit(target.unit) || !Number.isFinite(line.quantity) || line.quantity<=0) return {ok:false,reason:'incompatible'};
+  const from=linkUnit(line.unit), to=linkUnit(target.unit);
+  if (from===to) return {ok:true,quantity:line.quantity,via:'same'};
+  if (Units.areCompatible(from,to)) {
+    const converted=Units.convert(line.quantity,from,to);
+    // Purge du bruit flottant (1,15 kg × 1000), sans arrondir une vraie quantité ; une quantité positive ne tombe jamais à zéro.
+    const exact=converted===null?NaN:Number(converted.toPrecision(12));
+    return Number.isFinite(exact) && exact>0 ? {ok:true,quantity:exact,via:'conversion'} : {ok:false,reason:'incompatible'};
+  }
+  const category=canonicalStockCategory(target.category);
+  if (pieceUnitsEquivalent(line.unit,target.unit,category)) {
+    if (category==='Levure') {
+      const lineWeight=readProductLabel(line.description,{unit:from,quantity:line.quantity,yeast:true,side:'line'}).pieceWeight;
+      const itemWeight=readProductLabel(target.name,{unit:to,yeast:true,side:'item'}).pieceWeight;
+      const label=line.description.normalize('NFC');
+      // Dans le doute, rien : une mesure du libellé (kg, g, mg, ml, l…) qui n'est pas lue comme LE poids du sachet, ou un multiplicateur
+      // (« 10 x 11,5 g », « 11,5 g x10 »), ne dit pas qu'une pièce vaut un sachet.
+      const measures=(label.match(MEASURE)??[]).length;
+      if (MULTIPLIER.test(label) || measures>(lineWeight?1:0)) return {ok:false,reason:'incompatible'};
+      // Mêmes règles que l'appariement (`stockLineMatching.ts:193-201`) : poids des deux côtés identiques ; ligne sans poids face à un article
+      // au poids connu : rien ; ligne avec poids face à un article sans poids : seulement un vrai sachet (≤ SACHET_MAX_G).
+      if (lineWeight && itemWeight) { if (weightKey(lineWeight)!==weightKey(itemWeight)) return {ok:false,reason:'incompatible'}; }
+      else if (!lineWeight && itemWeight) return {ok:false,reason:'incompatible'};
+      else if (lineWeight) {
+        const grams=lineWeight.unit==='mg'?lineWeight.value/1000:lineWeight.value;
+        if (grams>SACHET_MAX_G) return {ok:false,reason:'incompatible'};
+      }
+    }
+    return {ok:true,quantity:line.quantity,via:'piece'};
+  }
+  return {ok:false,reason:'incompatible'};
+}
+/** Unité d'un article NEUF : l'écriture de la table de l'appariement (« Kilo » → kg, « Liter » → l, « Kg. » → kg), sinon l'unité lisible telle quelle. */
+function newArticleUnit(unit:string):string {
+  const raw=unit.trim(), key=linkUnit(raw);
+  return key!==raw.toLowerCase() && Units.familyOf(key)!=='piece' ? key : raw;
+}
+
+/**
+ * L'article NEUF d'une ligne (la seule création, `stockAction === 'new'`). Sans `derive`, exactement l'article d'avant S6 (`name: description`). Avec `derive` (S6) :
+ * le nom (tapé, sinon proposé), puis seulement ce qui est lu sur la facture et existe dans `StockItem` : `alphaPct` (houblon), `colorEbc` (malt), `origin`, `fiche`.
+ * Une clé sans valeur n'est pas écrite. L'unité de l'article est celle de la table de l'appariement (D213) ; la ligne de la dépense garde l'unité imprimée.
+ */
+export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
+  return {id:ref,ref,name:derive?.name??line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:newArticleUnit(line.unit),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+    ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
+}
+/** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
+function articleNeufDeLigne(line:PurchaseLineDraft,existants:readonly StockItem[],virtuels:readonly MembreVirtuel[],catalogues:Catalogues={},vendor?:string):ArticleNeuf {
+  return articleNeufDe(ligneDeBrouillon(line,vendor),existants,catalogues,line.articleName,virtuels);
+}
+/**
+ * Le stock « existant » d'une saisie : sans les articles que CETTE saisie a déjà écrits (ref `MP-<saisie>-<ligne>`). Une saisie refusée puis rejouée retrouve ses articles dans le
+ * cache local : sans ce tri, « Target bis » deviendrait « bis 2 » ou « cet article existe déjà » au rejeu (tri n° 1). Un article d'une autre saisie compte toujours.
+ */
+export const sansCetteSaisie=(items:readonly StockItem[],submissionId:string):StockItem[]=>items.filter(item=>!item.ref.startsWith(`MP-${submissionId}-`));
+/** Les articles NEUFS d'une saisie, dans l'ordre des lignes : la seule création (S6). `savePurchase` écrit exactement ceci ; le banc de développement l'appelle pour montrer ce qui serait écrit. */
+export function articlesNeufsDe(draft:PurchaseDraft,existants:readonly StockItem[],catalogues?:Catalogues):Array<{lineId:string;index:number;ref:string;type:'rawMaterials'|'cleaning';item:StockItem}> {
+  const virtuels:MembreVirtuel[]=[], autres=sansCetteSaisie(existants,draft.submissionId);
+  return draft.lines.flatMap((line,index)=>{
+    if(line.stockAction!=='new')return [];
+    const ref=`MP-${draft.submissionId}-${index}`, article=articleNeufDeLigne(line,autres,virtuels,catalogues,draft.vendor);
+    virtuels.push({nom:article.name});
+    return [{lineId:line.id,index,ref,type:line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const,item:newStockItem(line,draft,ref,article)}];
+  });
+}
+/** Le chargement du catalogue plein des houblons, seulement quand une ligne de houblon crée un article ; échec ou hors ligne : rien, donc aucune fiche. */
+async function cataloguesPour(draft:PurchaseDraft):Promise<Catalogues|undefined> {
+  if(!draft.lines.some(line=>line.stockAction==='new' && contexteDe(ligneDeBrouillon(line))==='Houblon'))return undefined;
+  try { const data=await import('../domain/hopIndex/v4/data'); return {houblons:await data.chargerCataloguePlein()}; }
+  catch { return undefined; }
+}
+
 /** Checks every mutation first. No stock/equipment is created during matching. */
 export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof StorageService.getStocks>,transactions:FinanceTransaction[]=[]):string[] {
   const errors:string[]=[];
@@ -105,14 +295,26 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   if (draft.dueDate && !purchaseIsoDate(draft.dueDate)) errors.push('L’échéance est invalide.');
   if (draft.sourceVatAmount!==undefined && (!isMoney(draft.sourceVatAmount) || draft.sourceVatAmount<0 || (draft.sourceCurrency==='CHF' && draft.sourceVatAmount>(draft.amount??0)))) errors.push('Vérifie le montant de TVA : il doit être positif ou nul et ne pas dépasser le TTC du document.');
   if (draft.sourceVatRate!==undefined && (!Number.isFinite(draft.sourceVatRate) || draft.sourceVatRate<0 || draft.sourceVatRate>1)) errors.push('Vérifie le taux de TVA du document (entre 0 et 100 %).');
+  const existants=sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId), virtuels:MembreVirtuel[]=[];
   for (const line of draft.lines) {
     if (line.stockAction!=='none') {
       if (!['ingredient','cleaning','packaging'].includes(line.kind)) errors.push(`${line.description} : cette nature ne peut pas entrer en stock.`);
-      if (!Number.isFinite(line.quantity) || line.quantity<=0 || !line.unit.trim()) errors.push(`${line.description} : indique la quantité reçue et son unité.`);
+      const quantityOk=Number.isFinite(line.quantity) && (line.quantity as number)>0, unitOk=isReadableUnit(line.unit);
+      if (!quantityOk) errors.push(`${line.description} : indique la quantité reçue et son unité.`);
+      // D214 : une unité illisible ('', '-', 'n/a') n'entre jamais en stock, article existant ou nouveau ; jamais devinée.
+      if (!unitOk) errors.push(`${line.description} : unité à préciser (illisible ou absente). Rien n’entre en stock tant qu’elle manque.`);
       if (line.stockAction==='existing') {
         const target=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef);
         if (!target) errors.push(`${line.description} : sélectionne l’article de stock.`);
-        else if (!Units.areCompatible(line.unit,target.unit)) errors.push(`${line.description} : ${line.unit||'unité absente'} ne se convertit pas en ${target.unit}.`);
+        else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit:line.unit},target).ok) errors.push(`${line.description} : ${line.unit} ne se convertit pas en ${target.unit}.`);
+      } else if (line.stockAction==='new' && ['ingredient','cleaning','packaging'].includes(line.kind)) {
+        // S6 (T4) : jamais deux articles du même nom. Un nom tapé vide ou déjà pris (stock, autre ligne neuve de la saisie) est refusé ; un houblon ou un malt que
+        // l'appariement relierait à un article existant ne crée pas de « bis » inventé : on relie la ligne.
+        const article=articleNeufDeLigne(line,existants,virtuels,{},draft.vendor), tape=line.articleName;
+        if (tape!==undefined && !tape.trim()) errors.push(`${line.description} : renseigne le nom de l’article.`);
+        else if (tape!==undefined && nomsPris(existants,virtuels).has(pliee(tape))) errors.push(`${line.description} : Un article porte déjà ce nom : relie-le ou change le nom (« ${tape.trim()} »).`);
+        else if (tape===undefined && article.derive && article.regle.cas==='meme') errors.push(`${line.description} : cet article existe déjà (« ${article.regle.article.name} ») : relie la ligne à cet article.`);
+        virtuels.push({nom:article.name});
       }
     }
     if (line.equipmentAction!=='none' && line.kind!=='equipment' && line.kind!=='maintenance') errors.push(`${line.description} : sélectionne matériel ou entretien pour lier un équipement.`);
@@ -127,7 +329,7 @@ const submitted=new Set<string>();
 const replayable=new Set<string>();
 const confirmedProofs=new WeakMap<PurchaseDraft,{dataUrl:string;fileName?:string;mimeType?:string}>();
 function purchasePayment(draft:PurchaseDraft, at=new Date().toISOString()):FinancialPayment|undefined {
-  return draft.paymentStatus==='paid'?{id:`PAY-${draft.submissionId}`,transactionId:`TX-${draft.submissionId}`,date:purchaseIsoDate(draft.paymentDate),amountCents:cents(draft.amount!),direction:'out',method:draft.paymentMethod,recordedAt:at}:undefined;
+  return draft.paymentStatus==='paid'?{id:`PAY-${draft.submissionId}`,transactionId:`TX-${draft.submissionId}`,date:purchaseIsoDate(draft.paymentDate),amountCents:cents(draft.amount!),direction:'out',method:draft.paymentMethod,recordedAt:at,...(draft.paymentDateBasis==='document_date'?{note:PAYMENT_DATE_ASSUMED_NOTE}:{})}:undefined;
 }
 /** The same preflight runs before Drive and immediately before local mutations. */
 function validatePurchaseCommit(draft:PurchaseDraft) {
@@ -147,21 +349,47 @@ function validatePurchaseCommit(draft:PurchaseDraft) {
   return stocks;
 }
 /** The original is confirmed on Drive before the atomic purchase/stock/payment batch. */
-export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
+export interface PurchaseSaveResult { transactionId:string; proof?:DriveProofReceipt }
+/** Comme `savePurchaseWithProof`, et rend aussi la preuve Drive du justificatif (dossier, nom, octets, empreinte vérifiée, `webViewLink`). */
+export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<PurchaseSaveResult> {
   const txId=`TX-${draft.submissionId}`;
-  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return txId;
+  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId)};
   validatePurchaseCommit(draft);
+  // S6 (T8) : le catalogue plein des houblons est attendu AVANT d'écrire ; s'il manque, aucune fiche (jamais une fiche différente selon le moment).
+  const catalogues=await cataloguesPour(draft);
   if(draft.proofDataUrl) {
-    const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf');
-    await confirmProof(proof,+purchaseIsoDate(draft.date).slice(0,4));
+    // Le nom lisible part à Drive ; le nom d'origine reste dans le brouillon et sur la dépense.
+    const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,proofDriveName(draft),draft.proofType||'application/pdf');
+    const receipt=await confirmProof(proof,+purchaseIsoDate(draft.date).slice(0,4));
+    if(receipt){
+      proofReceipts.set(draft.submissionId,{...receipt,originalFileName:draft.proofFileName});
+      if(receipt.fileName)driveNames.set(draft.submissionId,receipt.fileName);
+    }
     confirmedProofs.set(draft,{dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
   }
-  return savePurchase(draft);
+  return {transactionId:savePurchase(draft,{catalogues}),proof:proofReceipts.get(draft.submissionId)};
 }
+export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
+  return (await savePurchaseWithProofReceipt(draft)).transactionId;
+}
+/** La preuve d'un justificatif déjà rangé : la mémoire de la session, sinon relue dans l'original et sur Drive. Sans jeton ou hors ligne : `undefined`. */
+export async function purchaseProofReceipt(submissionId:string):Promise<DriveProofReceipt|undefined> {
+  const known=proofReceipts.get(submissionId);
+  if(known)return known;
+  const receipt=await loadDriveProofReceipt(`proof-${submissionId}`);
+  if(!receipt)return undefined;
+  const original=StorageService.getTransactions().find(tx=>tx.id===`TX-${submissionId}`)?.finance?.proofOriginalFileName;
+  return original?{...receipt,originalFileName:original}:receipt;
+}
+const PROOF_IN_PROGRESS='Envoi du justificatif en cours sur ton Drive : il peut encore aboutir. Rien n’est enregistré pour l’instant. Touche de nouveau « Confirmer et enregistrer » dans un instant : le fichier ne sera pas envoyé deux fois, et si l’envoi a échoué tu verras l’erreur à ce moment-là.';
+/** Le même état au rattachement : le bouton à retoucher est « Rattacher le justificatif », et rien n'est rattaché tant que l'envoi n'a pas abouti. */
+const PROOF_IN_PROGRESS_ATTACH='Envoi du justificatif en cours sur ton Drive : il peut encore aboutir. Rien n’a encore été rattaché. Touche de nouveau « Rattacher le justificatif » dans un instant : le fichier ne sera pas envoyé deux fois, et si l’envoi a échoué tu verras l’erreur à ce moment-là.';
 /** Sans réseau, le SDK répond en anglais (« client is offline ») : le brasseur doit lire ce qui s'est passé et quoi faire. */
-async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number) {
-  try { await saveFinanceDocumentConfirmed(proof,year); }
+async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number,inProgress=PROOF_IN_PROGRESS):Promise<DriveProofReceipt|undefined> {
+  try { return await saveFinanceDocumentConfirmed(proof,year); }
   catch(error) {
+    // Au-delà de 15 s l'envoi continue : ce n'est pas une erreur, et le texte « achat » est posé ici (le message de `financeDocuments` est neutre).
+    if((error as {code?:string})?.code==='drive/in-progress') throw Object.assign(Error(inProgress),{code:'drive/in-progress'});
     // `financeDocuments` marque déjà ainsi l'échec réseau de Drive ; le SDK, lui, répond « unavailable ».
     if((error as {code?:string})?.code!=='unavailable') throw error;
     throw Object.assign(Error('Hors connexion : le justificatif n’a pas pu être envoyé sur ton Drive, donc rien n’est enregistré. Ta saisie reste ouverte : réessaie une fois en ligne.'),{code:'unavailable'});
@@ -177,16 +405,24 @@ export function purchaseProofAttachable(draft:PurchaseDraft,tx:FinanceTransactio
  * Le même achat est déjà enregistré sans original : le justificatif lu lui est joint. Aucune nouvelle dépense, aucun
  * stock, aucun paiement. L'original est confirmé sur Drive avant le lien, comme pour un nouvel achat.
  */
-export async function attachProofToPurchase(draft:PurchaseDraft,transactionId:string):Promise<void> {
+export async function attachProofToPurchase(draft:PurchaseDraft,transactionId:string):Promise<DriveProofReceipt|undefined> {
   const tx=StorageService.getTransactions().find(item=>item.id===transactionId);
   if(!tx || !purchaseProofAttachable(draft,tx)) throw Error('Ce justificatif ne peut pas rejoindre cette dépense (original déjà joint, autre total ou avoir). Rien n’a été rattaché.');
-  const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl!,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf');
-  await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4));
+  // Le nom suit la dépense qui reçoit le fichier (sa date, son fournisseur, son numéro), le brouillon en repli.
+  const driveName=driveNames.get(draft.submissionId)??driveProofFileName({date:tx.date||draft.date,vendor:tx.finance?.vendor||draft.vendor,invoiceNumber:tx.finance?.invoiceNumber||draft.invoiceNumber,mimeType:draft.proofType||'application/pdf',originalName:draft.proofFileName});
+  const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl!,driveName,draft.proofType||'application/pdf');
+  const receipt=await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4),PROOF_IN_PROGRESS_ATTACH);
+  const proved=receipt?{...receipt,originalFileName:draft.proofFileName}:undefined;
+  if(proved){
+    proofReceipts.set(draft.submissionId,proved);
+    if(proved.fileName)driveNames.set(draft.submissionId,proved.fileName);
+  }
   // L'envoi prend du temps : la dépense relue est celle qu'on complète, jamais l'instantané d'avant l'envoi.
   const current=StorageService.getTransactions().find(item=>item.id===transactionId);
   if(!current?.finance || !purchaseProofAttachable(draft,current)) throw Error('Cette dépense a changé pendant l’envoi. Rien n’a été rattaché ; rouvre-la pour vérifier.');
-  StorageService.updateTransaction({...current,proofFileName:proof.fileName,proofType:proof.mimeType,finance:{...current.finance,proofDocumentId:proof.id,sourceDocumentHash:current.finance.sourceDocumentHash??draft.documentHash}});
+  StorageService.updateTransaction({...current,proofFileName:proved?.fileName??(draft.proofFileName||undefined),proofType:proof.mimeType,finance:{...current.finance,proofDocumentId:proof.id,proofOriginalFileName:draft.proofFileName||undefined,sourceDocumentHash:current.finance.sourceDocumentHash??draft.documentHash}});
   await FirestoreRepo.waitForDocument<FinanceTransaction>('transactions',current.id,15000,saved=>saved.finance?.proofDocumentId===proof.id);
+  return proved;
 }
 /** A timeout only resumes readback. Replay is released by a proven rejection + absent server document. */
 export async function confirmPurchase(draft:PurchaseDraft):Promise<void> {
@@ -204,12 +440,13 @@ export async function confirmPurchase(draft:PurchaseDraft):Promise<void> {
     throw error;
   }
 }
-export function savePurchase(draft:PurchaseDraft):string {
+export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues}={}):string {
   const txId=`TX-${draft.submissionId}`;
   const retry=replayable.has(draft.submissionId);
   if (!retry && (submitted.has(draft.submissionId) || StorageService.getTransactions().some(tx=>tx.id===txId))) return txId;
   const operationId=`purchase-${draft.documentHash&&!draft.duplicateConfirmed?draft.documentHash:draft.submissionId}`;
   const stocks=validatePurchaseCommit(draft);
+  const neufs=new Map(articlesNeufsDe(draft,[...stocks.rawMaterials,...stocks.cleaning],options.catalogues).map(neuf=>[neuf.lineId,neuf]));
   const at=new Date().toISOString(), newStocks:Array<{item:StockItem;type:'rawMaterials'|'cleaning'}>=[], newEquipment:EquipmentItem[]=[], receipts:Array<{ref:string;qty:number;unit:string;lineId:string;type:string}>=[];
   const proof=draft.proofDataUrl?prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf'):undefined;
   const confirmed=confirmedProofs.get(draft);
@@ -219,22 +456,32 @@ export function savePurchase(draft:PurchaseDraft):string {
     if (line.stockAction==='new') {
       stockRef=`MP-${draft.submissionId}-${index}`;
       const type=line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const;
-      newStocks.push({ type,item:{id:stockRef,ref:stockRef,name:line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:line.unit.trim(),currentStock:line.quantity,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined} });
-      receipts.push({ref:stockRef,qty:line.quantity,unit:line.unit,lineId:line.id,type});
+      // L'article neuf prend l'unité de la table de l'appariement (« Kilo » → kg) ; la ligne de la dépense garde l'unité imprimée (D213).
+      const articleUnit=newArticleUnit(line.unit);
+      // S6 : le nom et les valeurs lues sont dérivés de la ligne et du stock COURANTS (la même fonction que l'écran) ; le nom tapé prime.
+      newStocks.push({ type,item:neufs.get(line.id)!.item });
+      receipts.push({ref:stockRef,qty:line.quantity,unit:articleUnit,lineId:line.id,type});
     } else if (line.stockAction==='existing') {
       const item=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef)!;
-      receipts.push({ref:item.ref,qty:Units.convert(line.quantity,line.unit,item.unit)!,unit:item.unit,lineId:line.id,type:stocks.cleaning.some(s=>s.ref===item.ref)?'cleaning':'rawMaterials'});
+      // Même fonction que la validation : la quantité écrite est celle qui a été acceptée (inatteignable en erreur après `validatePurchaseCommit`).
+      const converted=stockQuantityFor({description:line.description,quantity:line.quantity!,unit:line.unit},item);
+      if (!converted.ok) throw Error(`${line.description} : ${line.unit||'unité absente'} ne se convertit pas en ${item.unit}.`);
+      receipts.push({ref:item.ref,qty:converted.quantity,unit:item.unit,lineId:line.id,type:stocks.cleaning.some(s=>s.ref===item.ref)?'cleaning':'rawMaterials'});
     }
     if (line.equipmentAction==='new') {
       equipmentRef=`EQ-${draft.submissionId}-${index}`;
       newEquipment.push({id:equipmentRef,ref:equipmentRef,name:line.description.trim(),category:line.equipmentCategory||'Brassage',state:'Neuf',purchaseDate:draft.date,purchasePrice:line.amount});
     }
-    return {id:line.id,description:line.description.trim(),kind:(line.kind==='maintenance'?'service':line.kind) as FinanceLineKind,amountCents:cents(line.amount),quantity:line.quantity,unit:line.unit||undefined,sourceReference:line.sourceReference?.slice(0,70)||undefined,stockItemRef:line.stockAction==='none'?undefined:stockRef,equipmentRef:line.equipmentAction==='none'?undefined:equipmentRef};
+    // Le lien « mouture comprise » n'est écrit que s'il a été confirmé et tient encore : parent juste au-dessus, même quantité, même unité.
+    const parent=millingParentIndex(draft.lines,index), surchargeOfLineId=line.surchargeOf&&parent>=0&&draft.lines[parent].id===line.surchargeOf?line.surchargeOf:undefined;
+    return {id:line.id,description:line.description.trim(),kind:(line.kind==='maintenance'?'service':line.kind) as FinanceLineKind,amountCents:cents(line.amount),quantity:line.quantity,unit:line.unit||undefined,unitPriceCents:exactUnitPriceCents(line),surchargeOfLineId,sourceReference:line.sourceReference?.slice(0,70)||undefined,stockItemRef:line.stockAction==='none'?undefined:stockRef,equipmentRef:line.equipmentAction==='none'?undefined:equipmentRef};
   });
+  // Nom lisible rangé dans Drive (reçu, sinon nom mémorisé à l'envoi) ; le nom d'origine reste à part.
+  const storedProofName=proof?(proofReceipts.get(draft.submissionId)?.fileName??driveNames.get(draft.submissionId)??draft.proofFileName):draft.proofFileName;
   const amount=draft.amount!,registered=StorageService.getConfig().fiscal.isTvaRegistered;
   const vat=registered && draft.sourceCurrency==='CHF' && Number.isFinite(draft.sourceVatAmount) ? draft.sourceVatAmount : 0;
-  const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:draft.proofFileName,proofType:draft.proofType,
-    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:proof?.id,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v4'}:undefined}}
+  const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:storedProofName,proofType:draft.proofType,
+    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:proof?.id,proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
   const payment=purchasePayment(draft,at);
   // All validation and material preparation above precede the first synchronous write.
   if (payment) FinanceService.stageNewTransactionPayment(tx,payment);

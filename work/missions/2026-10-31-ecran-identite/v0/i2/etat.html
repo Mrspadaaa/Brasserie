@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>i2 · Identité · posé ou proposé, après le collage (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--i2-page:#fff;--i2-pan:#F5F5F5;--i2-sur:#EBEBEB;--i2-bd:#DDDDDD;--i2-bdm:#BFBFBF;--i2-t0:#111;--i2-t2:#333;--i2-t4:#666;
+    --i2-hop:#567F45;--i2-hopt:#3F6B2E;--i2-eau:#4F7E9B;--i2-eaut:#2F5F7D;--i2-att:#9C7020;--i2-attt:#7F5B10;--i2-prop:#F7EAD0}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--i2-page);color:var(--i2-t2);font:400 14px/18px "Source Sans 3",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#111;color:#fff}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #111;outline-offset:2px}
+  .i2-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--i2-t0)}
+  .i2-ecran{width:390px;min-height:844px}
+  .i2-hd{padding:0 8px;border-bottom:1px solid var(--i2-bd)}
+  .i2-tb{display:flex;align-items:center;gap:6px;height:36px}
+  .i2-ic{width:28px;height:28px;border:0;background:none;color:var(--i2-t4);display:grid;place-items:center;border-radius:8px;padding:0}
+  .i2-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i2-t{margin:0;flex:1;font:600 18px/22px "Source Sans 3",system-ui,sans-serif;color:var(--i2-t0)}
+  .i2-t span{font-weight:400;color:var(--i2-t4)}
+  .i2-ab{border:0;background:none;color:var(--i2-t2);text-decoration:underline;text-underline-offset:2px;font-size:13px;height:28px;padding:0 6px;border-radius:8px}
+  .i2-rail{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+  .i2-st{flex:1 0 auto;border:0;background:none;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:16px;color:var(--i2-t4);min-height:24px}
+  .i2-st i{display:block;height:4px;border-radius:2px;background:var(--i2-bd)}
+  .i2-st.i2-on{color:var(--i2-t0);font-weight:600}
+  .i2-st.i2-on i{background:#111}
+  .i2-mt{margin:8px 8px 0;height:30px;border:1px solid var(--i2-bd);border-radius:15px;background:var(--i2-pan);display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:13px;color:var(--i2-t4)}
+  .i2-mt .i2-m{font-size:14px;margin-left:3px}
+  .i2-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;border:1px solid #BFBFBF;vertical-align:-1px;margin-left:3px}
+  .i2-corps{padding:8px;display:flex;flex-direction:column;gap:10px}
+  /* La bière : nom et style en tête, édités sur place */
+  .i2-biere{display:flex;flex-direction:column;gap:6px;padding:6px 8px 8px;border-radius:8px;border:1px solid #B7CCAD;background:#E6EFE1}
+  .i2-nom{display:flex;align-items:center;gap:6px}
+  .i2-nom input{flex:1;min-width:0;height:32px;border:0;border-bottom:1px solid #8FB07F;background:none;padding:0 2px;font:600 18px/30px "Source Sans 3",system-ui,sans-serif;color:var(--i2-t0)}
+  .i2-src{display:inline-grid;place-items:center;width:20px;height:20px;flex:none;color:var(--i2-t4)}
+  .i2-src svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i2-style{display:flex;align-items:center;gap:6px;height:32px;border:1px solid var(--i2-bdm);border-radius:8px;padding:0 8px;background:var(--i2-page);font-size:14px;color:var(--i2-t0);text-align:left;width:100%}
+  .i2-style b{font-weight:600}
+  .i2-tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;background:#D5EFEC;color:#115E59;font-size:13px;font-weight:600}
+  .i2-chev{width:16px;height:16px;fill:none;stroke:#333;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;margin-left:auto;flex:none}
+  /* Le compte : ce qui est posé, ce qui reste proposé */
+  .i2-cpt{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--i2-t4)}
+  .i2-pl{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:12px;border:1px solid #B7CCAD;background:#E6EFE1;color:var(--i2-hopt)}
+  .i2-pp{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:12px;border:1.5px dashed var(--i2-att);background:var(--i2-prop);color:var(--i2-attt)}
+  .i2-pl .i2-m,.i2-pp .i2-m{font-size:13px;color:inherit}
+  .i2-garder{margin-left:auto;height:28px;border-radius:8px;border:1px solid var(--i2-bdm);background:var(--i2-page);padding:0 10px;font-size:13px;font-weight:600;color:var(--i2-t0)}
+  .i2-q{width:24px;height:24px;border-radius:12px;border:1px solid var(--i2-bdm);background:var(--i2-page);font-size:13px;font-weight:600;color:var(--i2-t2);padding:0;flex:none}
+  .i2-leg{margin:0;padding:8px;border-radius:8px;border:1px solid var(--i2-bd);font-size:13px;color:var(--i2-t2)}
+  .i2-leg[hidden]{display:none}
+  /* Les tuiles */
+  .i2-grille{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .i2-tu{position:relative;display:flex;flex-direction:column;gap:2px;padding:6px 8px;border-radius:8px;border:1px solid #B7CCAD;background:#E6EFE1;min-height:66px;text-align:left;justify-content:space-between}
+  .i2-tu .i2-lb{font-size:13px;color:var(--i2-t4);display:flex;align-items:center;gap:4px}
+  .i2-tu .i2-lb .i2-src{width:16px;height:16px;margin-left:auto}
+  .i2-v{display:flex;align-items:baseline;gap:4px}
+  .i2-v .i2-m{font-size:20px}
+  .i2-v input{width:48px;border:0;border-bottom:1px solid var(--i2-bdm);background:none;padding:0;font:600 20px/24px "IBM Plex Mono",monospace;color:var(--i2-t0);font-variant-numeric:tabular-nums}
+  .i2-u{font-size:13px;color:var(--i2-t4)}
+  .i2-tu.i2-prop{border:1.5px dashed var(--i2-att);background:var(--i2-prop)}
+  .i2-tu.i2-prop .i2-lb{color:var(--i2-attt)}
+  .i2-tu.i2-prop .i2-m{color:var(--i2-attt)}
+  .i2-tu.i2-prop::after{content:"";position:absolute;right:8px;bottom:8px;width:16px;height:16px;border-radius:8px;border:1.5px solid var(--i2-att)}
+  .i2-v input{background:none}
+  .i2-tu.i2-pose-anim{animation:i2-pose .2s ease-out}
+  @keyframes i2-pose{from{transform:scale(.97)}to{transform:none}}
+  @media (prefers-reduced-motion:reduce){.i2-v input{background:none}
+  .i2-tu.i2-pose-anim{animation:none}}
+  .i2-large{grid-column:1 / -1}
+  .i2-g3{grid-template-columns:1fr 1fr}
+  .i2-g3 .i2-tu{min-height:56px}
+  .i2-evap{display:inline-flex;align-items:center;gap:4px;margin-left:auto;color:var(--i2-eaut);font-size:13px}
+  .i2-evap svg{width:16px;height:16px;fill:none;stroke:var(--i2-eau);stroke-width:1.75}
+  .i2-evap .i2-m{font-size:13px;color:var(--i2-eaut)}
+  .i2-nolo{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .i2-sw{position:relative;width:36px;height:20px;border-radius:10px;background:var(--i2-bdm);border:0;padding:0;flex:none}
+  .i2-sw::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:8px;background:#fff;transition:transform .15s}
+  .i2-sw[aria-checked="true"]{background:#111}
+  .i2-sw[aria-checked="true"]::after{transform:translateX(16px)}
+  /* Fermenteur : le volume posé contre le remplissage proposé */
+  .i2-ferm{display:flex;flex-direction:column;gap:8px;padding:10px 8px;border-radius:8px;background:var(--i2-pan)}
+  .i2-fl{display:flex;align-items:baseline;gap:6px}
+  .i2-fl .i2-lb{font-size:13px;color:var(--i2-t4)}
+  .i2-libre{font-size:13px;color:var(--i2-hopt)}
+  .i2-svg{display:block;width:100%;height:30px}
+  .i2-mini{height:20px;font-size:13px;margin-left:auto}
+  .i2-aussi{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .i2-aussi .i2-lb{font-size:13px;color:var(--i2-t4)}
+  .i2-ch{height:28px;border-radius:14px;border:1px solid var(--i2-bdm);background:var(--i2-page);padding:0 10px;font-size:13px;color:var(--i2-t0);display:inline-flex;align-items:center;gap:4px}
+  .i2-ch .i2-m{font-size:13px}
+  .i2-ech{display:flex;justify-content:space-between;font-size:13px;color:var(--i2-t4)}
+  .i2-mat{display:flex;align-items:center;gap:6px;height:44px;padding:0 8px;border-radius:8px;background:#E6EFE1;border:1px solid #B7CCAD;font-size:14px;color:var(--i2-t0);border:0;width:100%;text-align:left}
+  .i2-mat b{font-weight:600}
+  .i2-pied{display:flex;justify-content:space-between;gap:8px;padding-top:4px}
+  .i2-btn{height:32px;border-radius:8px;padding:0 12px;font-size:14px;border:1px solid var(--i2-bdm);background:var(--i2-page);color:var(--i2-t4)}
+  .i2-btn-p{background:#111;color:#fff;border-color:#111;font-weight:600}
+  .i2-sep::before{content:"·";margin:0 4px}
+  .i2-tir::before{content:"—";margin:0 4px}
+</style>
+</head>
+<body>
+<div class="i2-ecran" data-etat="recette-collee">
+  <header class="i2-hd">
+    <div class="i2-tb">
+      <button class="i2-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i2-t">Identité <span>1/7</span></h1>
+      <button class="i2-ab">Abandonner</button>
+      <button class="i2-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i2-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i2-rail" aria-label="Étapes">
+      <button class="i2-st i2-on" aria-current="step">Identité<i></i></button>
+      <button class="i2-st">Malts/sucres<i></i></button>
+      <button class="i2-st">Houblons<i></i></button>
+      <button class="i2-st">Levure<i></i></button>
+      <button class="i2-st">Paliers<i></i></button>
+      <button class="i2-st">Eau<i></i></button>
+      <button class="i2-st">Récap.<i></i></button>
+    </nav>
+  </header>
+  <div class="i2-mt" aria-label="Bandeau de la recette">
+    <span>Grain<span class="i2-m">8,6 kg</span></span>
+    <span>OG<span class="i2-m">1,080</span></span>
+    <span>IBU<span class="i2-m">~93</span><svg width="44" height="10" viewBox="0 0 44 10" style="margin-left:4px;vertical-align:-1px"><rect x="0" y="2" width="44" height="6" rx="3" fill="#DDDDDD"/><rect x="22" y="2" width="15" height="6" rx="3" fill="#9E9E9E"/><rect x="34" y="0" width="2" height="10" fill="#111"/></svg></span>
+    <span>EBC<span class="i2-dot"></span><span class="i2-m">9,5</span></span>
+  </div>
+
+  <main class="i2-corps">
+    <section class="i2-biere" aria-label="La bière">
+      <div class="i2-nom">
+        <input value="neipa v3" aria-label="Nom de la bière">
+        <span class="i2-src" aria-label="lu dans la recette collée"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span>
+      </div>
+      <button class="i2-style" aria-label="Style : Double IPA, repères du style 22A BJCP 2021"><b>Double IPA</b><span class="i2-tag">22A</span><svg class="i2-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+    </section>
+
+    <!-- L'idée : chaque valeur dit si elle est posée (par le texte collé ou ton profil) ou seulement proposée par l'app ; un toucher la pose. -->
+    <div class="i2-cpt" data-booster="compte-pose">
+      <span class="i2-pl"><span class="i2-m" id="i2-npose">8</span> posées</span>
+      <span class="i2-pp"><span class="i2-m" id="i2-nprop">3</span> proposées</span>
+      <button class="i2-garder" id="i2-garder" data-booster="garder-tout">Garder</button>
+      <button class="i2-q" data-role="legende-bouton" aria-expanded="false" aria-controls="i2-leg" aria-label="Légende">?</button>
+    </div>
+    <p class="i2-leg" id="i2-leg" data-role="legende" hidden>Trait plein : valeur posée, lue dans la recette collée ou dans ton profil Royal Catering. Tireté : proposée par l'app (repère provisoire, conseil, profil d'eau tiré du style), à garder d'un toucher ou à changer.</p>
+
+    <div class="i2-grille">
+      <label class="i2-tu"><span class="i2-lb">Volume <span class="i2-src"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span></span><span class="i2-v"><input inputmode="decimal" value="24" aria-label="Volume en fermenteur"><span class="i2-u">L</span></span></label>
+      <label class="i2-tu"><span class="i2-lb">Ébullition <span class="i2-src"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span></span>
+        <span class="i2-v"><input inputmode="numeric" value="60" aria-label="Durée d'ébullition"><span class="i2-u">min</span>
+          <span class="i2-evap" data-booster="evaporation"><svg viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span class="i2-m">−3 L</span></span></span></label>
+      <button class="i2-tu i2-prop" data-booster="poser" data-prop><span class="i2-lb">Espace libre</span><span class="i2-v"><span class="i2-m">~20</span><span class="i2-u">%</span></span></button>
+      <button class="i2-tu i2-prop" data-booster="poser" data-prop><span class="i2-lb">Conseil</span><span class="i2-v"><span class="i2-m">24</span><span class="i2-u">L</span></span></button>
+      <div class="i2-tu i2-large" style="min-height:44px;justify-content:center"><div class="i2-nolo"><span><span class="i2-lb" style="display:inline">NOLO</span> <span class="i2-m" style="font-size:14px">≤ 0,5 %</span></span><button class="i2-sw" role="switch" aria-checked="false" aria-label="NOLO" data-booster="nolo"></button></div></div>
+    </div>
+
+    <section class="i2-ferm" aria-label="Cuve et fermenteur" data-booster="jauge-fermenteur">
+      <div class="i2-fl"><span class="i2-lb">Cuve à chaud</span><span class="i2-m">30,2 / 35 L</span><span class="i2-pp i2-mini">provisoire</span></div>
+      <svg class="i2-svg" viewBox="0 0 374 22" preserveAspectRatio="none" role="img" aria-label="30,2 litres à chaud ; limite utile provisoire 35 litres sur une cuve de 45">
+        <rect x="0.5" y="1.5" width="373" height="19" rx="9.5" fill="#EBEBEB" stroke="#BFBFBF"/>
+        <rect x="1" y="2" width="250" height="18" rx="9" fill="#8FB07F"/>
+        <rect x="291" y="2" width="82" height="18" fill="#F7EAD0"/>
+        <line x1="291" y1="0" x2="291" y2="22" stroke="#9C7020" stroke-width="2" stroke-dasharray="3 2"/>
+      </svg>
+      <div class="i2-fl"><span class="i2-lb">Fermenteur</span><span class="i2-m">24 / 30 L</span><span class="i2-libre">6 L libres</span></div>
+      <svg class="i2-svg" viewBox="0 0 374 22" preserveAspectRatio="none" role="img" aria-label="24 litres sur 30 ; remplissage conseillé 24 litres">
+        <rect x="0.5" y="1.5" width="373" height="19" rx="9.5" fill="#EBEBEB" stroke="#BFBFBF"/>
+        <rect x="1" y="2" width="298" height="18" rx="9" fill="#8FB07F"/>
+        <line x1="299" y1="0" x2="299" y2="22" stroke="#9C7020" stroke-width="2" stroke-dasharray="3 2"/>
+      </svg>
+    </section>
+
+    <section class="i2-grille i2-g3" aria-label="Lu aussi pour les étapes suivantes" data-booster="etapes-remplies">
+      <button class="i2-tu"><span class="i2-lb">Malts <span class="i2-src"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span></span><span class="i2-v"><span class="i2-m">8,6</span><span class="i2-u">kg</span></span></button>
+      <button class="i2-tu"><span class="i2-lb">Houblons <span class="i2-src"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span></span><span class="i2-v"><span class="i2-m">84</span><span class="i2-u">g</span></span></button>
+      <button class="i2-tu i2-prop" data-booster="poser" data-prop><span class="i2-lb">Eau</span><span class="i2-v" style="font-size:14px;color:#7F5B10">profil <span class="i2-m" style="font-size:14px">22A</span></span></button>
+      <button class="i2-tu"><span class="i2-lb">Levure <span class="i2-src"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span></span><span class="i2-v" style="font-size:14px;color:#111">Verdant IPA</span></button>
+    </section>
+
+    <button class="i2-mat"><span><b>Royal Catering</b></span><span class="i2-src" style="margin-left:4px"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/></svg></span><svg class="i2-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+
+    <div class="i2-pied">
+      <button class="i2-btn" disabled>Retour</button>
+      <button class="i2-btn i2-btn-p">Suivant<span class="i2-tir" aria-hidden="true"></span>Malts/sucres</button>
+    </div>
+  </main>
+</div>
+<script>
+(function(){
+  var b=document.querySelector('[data-role="legende-bouton"]'),l=document.getElementById('i2-leg');
+  function ouvrir(o){l.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');}
+  b.addEventListener('click',function(){ouvrir(l.hidden);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')ouvrir(false);});
+  var g=document.getElementById('i2-garder'),np=document.getElementById('i2-npose'),nq=document.getElementById('i2-nprop');
+  function compter(){var r=document.querySelectorAll('[data-prop].i2-prop').length;nq.textContent=r;np.textContent=document.querySelectorAll('.i2-tu:not(.i2-prop),.i2-biere,.i2-mat').length;g.textContent=r?'Garder':'Tout posé';g.disabled=!r;}
+  function poser(t){t.classList.remove('i2-prop');t.classList.add('i2-pose-anim');compter();}
+  document.querySelectorAll('[data-prop]').forEach(function(t){t.addEventListener('click',function(){poser(t);});});
+  g.addEventListener('click',function(){document.querySelectorAll('[data-prop].i2-prop').forEach(poser);});
+  var sw=document.querySelector('.i2-sw');sw.addEventListener('click',function(){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');});
+})();
+</script>
+</body>
+</html>

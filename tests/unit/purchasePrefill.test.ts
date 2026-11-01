@@ -15,9 +15,9 @@ const scan = (patch: Partial<ScannedInvoiceResult> = {}): ScannedInvoiceResult =
 const draft = { date: '31.08.2026', paymentDate: '31.08.2026', paymentStatus: 'paid' } as PurchaseDraft;
 
 describe('Propositions de saisie, sans inventer les valeurs imprimées', () => {
-  it('garde le libellé centré sur les achats et conserve les descriptions déjà précises', () => {
-    expect(invoicePurchaseDescription(scan({ description: 'Facture Fournisseur fictif pour malt et houblon' }))).toBe('Malt et houblon');
-    expect(invoicePurchaseDescription(scan({ description: 'Pompe pour le circuit de nettoyage' }))).toBe('Pompe pour le circuit de nettoyage');
+  it('propose le libellé par le code (fournisseur, n°, familles) et ne reprend plus la prose du modèle (A12, voie s2)', () => {
+    expect(invoicePurchaseDescription(scan({ description: 'Facture Fournisseur fictif pour malt et houblon' }))).toBe('Fournisseur fictif');
+    expect(invoicePurchaseDescription(scan({ description: 'Pompe pour le circuit de nettoyage', invoiceNumber: 'F-12' }))).toBe('Fournisseur fictif · F-12');
   });
   it('propose la somme au centime et distingue cette proposition du total source absent', () => {
     const result = scan();
@@ -49,7 +49,8 @@ describe('Propositions de saisie, sans inventer les valeurs imprimées', () => {
 
 describe('Date de l’achat et paiement quotidien', () => {
   it('propose payé à la date du document, sauf indication contraire ou achat futur', () => {
-    expect(scannedPayment(scan(), '09.09.2026')).toEqual({ paymentStatus: 'paid', paymentDate: '31.08.2026' });
+    // A7 (voie s2) : la date de paiement n'est pas imprimée ; elle est proposée et marquée « supposée = date du document ».
+    expect(scannedPayment(scan(), '09.09.2026')).toEqual({ paymentStatus: 'paid', paymentDate: '31.08.2026', paymentDateBasis: 'document_date' });
     expect(scannedPayment(scan({ paymentEvidence: 'unpaid' }), '09.09.2026').paymentStatus).toBe('unpaid');
     expect(scannedPayment(scan({ date: '10.09.2026' }), '09.09.2026').paymentStatus).toBe('unpaid');
     expect(scannedPayment(scan({ documentType: 'quote' }), '09.09.2026').paymentStatus).toBe('unpaid');
@@ -65,5 +66,31 @@ describe('Date de l’achat et paiement quotidien', () => {
     expect(changeSwissMonth('31.01.2024', '2024-02')).toBe('29.02.2024');
     expect(shiftSwissMonth('31.12.2026', 1)).toBe('31.01.2027');
     expect(shiftSwissMonth('18.01.2026', -1)).toBe('18.12.2025');
+  });
+});
+
+// R3 (voie l2-rapprochement) — scannedPayment lit le type RETENU : une pro-forma payée lue « devis » est une facture réglée.
+describe('scannedPayment — documentTypeRetenu', () => {
+  const lu = (patch: Partial<ScannedInvoiceResult>) => scan({ date: '31.08.2026', ...patch });
+  it('pro-forma payée lue « quote », type retenu facture → Déjà payé', () => {
+    expect(scannedPayment(lu({ documentType: 'quote', documentTypeRetenu: 'invoice', paymentEvidence: 'paid', proForma: true }), '09.09.2026').paymentStatus).toBe('paid');
+  });
+  it('le même résultat sans documentTypeRetenu (ancien résultat) → À payer, comme avant', () => {
+    expect(scannedPayment(lu({ documentType: 'quote', paymentEvidence: 'paid', proForma: true }), '09.09.2026').paymentStatus).toBe('unpaid');
+  });
+  it('pro-forma lue « quote » sans paiement imprimé → À payer', () => {
+    expect(scannedPayment(lu({ documentType: 'quote', documentTypeRetenu: 'quote', paymentEvidence: 'unknown', proForma: true }), '09.09.2026').paymentStatus).toBe('unpaid');
+  });
+  // Relecture l2, point 7 (décision du pilote) : ce test figeait « Déjà payé » ; une demande de paiement (pro-forma sans preuve de paiement)
+  // n'est jamais préremplie comme payée. Une pro-forma payée (preuve imprimée) reste « Déjà payé » (premier test de ce bloc).
+  it('pro-forma lue « invoice » sans preuve de paiement → À payer, jamais préremplie comme payée', () => {
+    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRetenu: 'invoice', paymentEvidence: 'unknown', proForma: true }), '09.09.2026').paymentStatus).toBe('unpaid');
+    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRetenu: 'invoice', paymentEvidence: 'unpaid', proForma: true }), '09.09.2026').paymentStatus).toBe('unpaid');
+    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRetenu: 'invoice', paymentEvidence: 'paid', proForma: true }), '09.09.2026').paymentStatus).toBe('paid');
+    expect(scannedPayment(lu({ documentType: 'invoice', documentTypeRetenu: 'invoice', paymentEvidence: 'unknown' }), '09.09.2026').paymentStatus).toBe('paid');
+  });
+  it('avoir et date future → À payer', () => {
+    expect(scannedPayment(lu({ documentType: 'credit_note', documentTypeRetenu: 'credit_note' }), '09.09.2026').paymentStatus).toBe('unpaid');
+    expect(scannedPayment(lu({ date: '10.09.2026', documentTypeRetenu: 'invoice' }), '09.09.2026').paymentStatus).toBe('unpaid');
   });
 });

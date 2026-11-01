@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r1 — Nouvelle dépense · la feuille d'aujourd'hui, ses doutes à leur place (v0, froide, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F4F4F4;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#6E4E0B;--attf:#F3E2BC;--ok:#2F6B45;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg path,svg circle,svg rect{vector-effect:non-scaling-stroke;stroke-width:1.5}
+[hidden]{display:none!important}
+.r1-ligne>.r1-go{color:#fff}
+.r1-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* La feuille de l'app : en-tête, corps qui défile, pied fixe. */
+.r1-f{max-width:560px;margin:0 auto;background:var(--panel);min-height:100vh;border-radius:24px 24px 0 0;padding-bottom:60px}
+.r1-hd{position:sticky;top:0;z-index:5;background:var(--panel);display:flex;align-items:center;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord);border-radius:24px 24px 0 0}
+.r1-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.r1-x{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.r1-b{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+/* La carte de lecture : la même place que « Facture · 2 articles · Lecture à confirmer », devenue le verdict. */
+.r1-lu{background:#fff;border:1px solid var(--bord);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.r1-lu1{display:flex;align-items:center;gap:8px}
+.r1-lu1 svg{flex-shrink:0;color:var(--t1)}
+.r1-lu1 b{font-size:16px;color:var(--t0);font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r1-lu2{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.r1-pill{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);background:#fff;font-size:14px;color:var(--t1)}
+.r1-pill svg{color:var(--ok)}
+.r1-pts{border:1.5px dashed var(--attt);color:var(--attt);font-weight:600;margin-left:auto}
+.r1-pts.r1-fini{border:1px solid var(--ok);color:var(--ok)}
+.r1-liste{display:none;flex-direction:column;gap:2px;border-top:1px solid var(--bord);padding-top:6px}
+.r1-liste.r1-on{display:flex}
+.r1-liste button{display:flex;align-items:center;justify-content:space-between;min-height:28px;padding:0 4px;border-radius:10px;font-size:14px;text-align:left}
+.r1-liste button em{font-style:normal;font-size:12px;color:var(--t2)}
+.r1-liste button.r1-fait{color:var(--t2);text-decoration:line-through}
+.r1-proof{display:none;font-size:12px;color:var(--t1);line-height:1.45}
+.r1-proof.r1-on{display:block}
+.r1-proof b{font-family:var(--mono)}
+.r1-ligne{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px}
+.r1-ligne>span{font-size:14px;color:var(--t1)}
+.r1-lk{font-size:14px;color:var(--t0);min-height:28px;padding:0 4px}
+.r1-fld{display:flex;flex-direction:column;gap:3px}
+.r1-fld label{font-size:12px;color:var(--t2)}
+.r1-in{height:32px;border:1px solid var(--bordm);border-radius:10px;padding:0 10px;font-size:16px;background:#fff;width:100%}
+.r1-in.r1-m{font-family:var(--mono)}
+.r1-tot{display:flex;align-items:center;gap:8px}
+.r1-tot .r1-in{width:150px;font-weight:600;height:40px;font-size:24px}
+.r1-hint{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:4px}
+.r1-hint svg{color:var(--ok)}
+.r1-sep{background:#fff;border:1px solid var(--bord);border-radius:10px;padding:0 8px}
+.r1-sum{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px;cursor:pointer}
+.r1-sum::-webkit-details-marker{display:none}
+.r1-sum span{font-size:14px;color:var(--t0);display:flex;align-items:center;gap:6px;min-width:0}
+.r1-sum em{font-style:normal;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r1-chev{transition:transform .2s ease-out;flex-shrink:0;color:var(--t1)}
+details[open]>.r1-sum .r1-chev{transform:rotate(180deg)}
+.r1-det{padding:0 0 8px;display:flex;flex-direction:column;gap:6px}
+.r1-seg{display:inline-flex;gap:6px}
+.r1-seg button{min-height:32px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;display:inline-flex;align-items:center;gap:4px}
+.r1-seg button[aria-pressed="true"]{border-color:#3C6E99;background:#E6EEF6;color:#1E3F5C;font-weight:600}
+/* Le doute, sur le champ même : pointillé, et le geste qui le règle à côté. */
+.r1-dt{border:1.5px dashed var(--attt);background:var(--attf);border-radius:10px;padding:4px 6px}
+.r1-sup{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 5px;line-height:18px;background:#fff;white-space:nowrap}
+.r1-ch{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.r1-ch button{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r1-ch button.r1-p{border:1.5px dashed var(--attt);color:var(--attt);font-weight:600}
+.r1-ch button[aria-pressed="true"]{border:1px solid var(--t0);box-shadow:inset 0 0 0 1px var(--t0);color:var(--t0);font-weight:600}
+.r1-v2 b{font-family:var(--mono);font-weight:600;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 5px;background:#fff;margin-right:4px}
+.r1-calc{font-size:12px;color:var(--t1)}
+.r1-calc b{font-family:var(--mono);font-weight:600}
+.r1-stk{display:flex;gap:4px;flex-wrap:wrap}
+.r1-stk span{display:inline-flex;align-items:center;gap:2px;font-family:var(--mono);font-size:12px;color:var(--t1);background:#fff;border:1px solid var(--bord);border-radius:10px;padding:0 5px 0 2px;min-height:22px}
+.r1-stk span.r1-q{border:1px dashed var(--attt);color:var(--attt)}
+/* Les lignes : la ligne détaillée d'aujourd'hui (n°, libellé, total, type), avec l'icône du lien au stock. */
+.r1-ls{list-style:none;display:flex;flex-direction:column}
+.r1-l{cursor:pointer;display:grid;grid-template-columns:22px 22px 1fr auto;column-gap:6px;align-items:center;padding:4px 0;border-top:1px solid var(--bord)}
+.r1-l .r1-n{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.r1-l b{font-size:14px;color:var(--t0);font-weight:600}
+.r1-l .r1-s{font-size:12px;color:var(--t2)}
+.r1-l .r1-a{font-family:var(--mono);font-size:14px;color:var(--t0);text-align:right}
+.r1-l .r1-fx{grid-column:3/5;padding-top:3px}
+.r1-l.r1-lq{background:var(--attf)}.r1-l.r1-lq .r1-s,.r1-l.r1-lq .r1-n,.r1-dt .r1-calc{color:#3D3D3D}
+.r1-l.r1-mo{padding-left:0}
+.r1-conv{color:var(--t1);background:var(--haut);border-radius:10px;padding:0 4px}
+.r1-dts{display:flex;flex-direction:column;gap:4px;margin-top:-4px}
+.r1-dr{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:6px;min-height:36px;padding:2px 6px;border:1.5px dashed var(--attt);background:var(--attf);border-radius:10px;color:var(--attt)}
+.r1-dr button{min-height:28px;padding:0 10px;border-radius:10px;border:1.5px dashed var(--attt);background:#fff;font-weight:600;color:var(--attt);font-size:14px}
+.r1-dr .r1-ch button{border:1px solid var(--bordm);color:var(--t1);font-weight:400}
+.r1-dr>span{color:var(--t1);font-size:14px;min-width:0}
+.r1-add{min-height:32px;border:1.5px dashed var(--bordm);border-radius:10px;font-size:14px;flex:1}
+.r1-detail{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.r1-detail b{font-family:var(--mono);color:var(--t0)}
+.r1-pied{position:fixed;left:0;right:0;bottom:0;z-index:6}
+.r1-pi{max-width:560px;margin:0 auto;background:var(--panel);border-top:1px solid var(--bord);height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px}
+.r1-drive{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1);min-height:28px}
+.r1-drive .r1-ok{color:var(--ok)}
+.r1-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.r1-bar{height:3px;background:var(--haut)}.r1-bar i{display:block;height:100%;width:0;background:var(--t0);transition:width .2s ease-out}
+.r1-recu{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px}
+.r1-recu span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r1-recu a{color:var(--t0);font-weight:600;font-size:14px;white-space:nowrap}
+.r1-recu svg{flex-shrink:0}
+.r1-flash{animation:r1-fl .7s ease-out}
+@keyframes r1-fl{from{background:#F2DDA6}}
+@media (prefers-reduced-motion:reduce){.r1-flash{animation:none}.r1-chev{transition:none}}
+/* Annexe */
+.r1-ann{max-width:1240px;margin:0 auto;padding:24px 10px 80px;background:#fff}
+.r1-ann>h2{font-size:16px;color:var(--t0);margin-bottom:8px}
+.r1-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.r1-grid>*{min-width:0}
+.r1-et{background:var(--panel);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.r1-et h3{font-size:12px;color:var(--t2);font-weight:600}
+.r1-st{display:flex;flex-direction:column;gap:4px}
+.r1-st span{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t2)}
+.r1-st .r1-f1{color:var(--t1)}.r1-st .r1-f2{color:var(--t0);font-weight:600}
+.r1-sk{display:inline-block;height:12px;border-radius:10px;background:var(--haut)}
+@media (min-width:900px){.r1-grid{grid-template-columns:repeat(3,minmax(0,1fr))}body{padding-top:24px}}
+</style></head>
+<body>
+<div class="r1-f">
+  <header class="r1-hd"><h1>Nouvelle dépense</h1><button class="r1-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.667"><path d="M5 5l10 10M15 5 5 15"/></svg></button></header>
+  <div class="r1-b">
+    <section class="r1-lu" aria-label="Lecture du justificatif">
+      <div class="r1-lu1"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg><b>Brau- und Rauchshop</b><span class="r1-m" style="font-size:14px;color:var(--t1)">27.04.2026</span></div>
+      <div class="r1-lu2">
+        <button class="r1-pill" id="r1-pbtn" data-booster="preuve" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="r1-m">23</span>&nbsp;lignes</button>
+        <button class="r1-pill r1-pts" id="r1-pts" data-booster="points" aria-expanded="false"><span class="r1-m" id="r1-nb">6</span>&nbsp;à régler</button>
+      </div>
+      <div class="r1-proof" id="r1-proof">23 lignes = <b>86,50</b>, le total imprimé · quantité × prix juste au centime · deux lectures d'accord · page 2 coupée, rien ne manque dans la page vue.</div>
+      <div class="r1-liste" id="r1-liste"></div>
+    </section>
+    <div class="r1-ligne"><button class="r1-lk" id="r1-voir" data-booster="justificatif">Voir le justificatif <svg class="r1-chev" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14" style="vertical-align:-2px"><path d="M5 8l5 5 5-5"/></svg></button><button class="r1-lk">Changer</button></div>
+    <div class="r1-fld"><label for="r1-ttc">Total TTC en CHF</label>
+      <div class="r1-tot"><input class="r1-in r1-m" id="r1-ttc" inputmode="decimal" value="86,50" data-booster="total"></div></div>
+    <div class="r1-fld"><label for="r1-pq">Pour quoi ?</label><input class="r1-in" id="r1-pq" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div>
+    <details class="r1-sep"><summary class="r1-sum"><span>Achat du <b class="r1-m">27.04.2026</b></span><svg class="r1-chev" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M5 8l5 5 5-5"/></svg></summary>
+      <div class="r1-det"><input class="r1-in r1-m" inputmode="numeric" value="27.04.2026" style="width:160px"><div class="r1-ch"><button>Hier</button><button>Aujourd'hui</button></div></div></details>
+    <div class="r1-seg" data-booster="reglement"><button aria-pressed="true" data-reg="paye"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg>Déjà payé</button><button aria-pressed="false" data-reg="apayer">À payer</button></div>
+    <div class="r1-dt" id="r1-p2" data-pt="p2" data-booster="date-supposee">
+      <div class="r1-ligne"><span>Payé le <b class="r1-m">27.04.2026</b> <span class="r1-sup" id="r1-sup2">supposée</span></span><span class="r1-ch"><button class="r1-p" data-choix="p2">Confirmer</button><button data-ouvre="r1-p2d" aria-label="Changer la date du paiement">⇄</button></span></div>
+      <div class="r1-det" id="r1-p2d" hidden><span class="r1-calc">non imprimée : reprise de la date de la facture</span><input class="r1-in r1-m" inputmode="numeric" value="27.04.2026" style="width:160px"><div class="r1-fld"><label>Moyen de paiement</label><input class="r1-in" value="E-Finance (lu)"></div></div>
+    </div>
+    <div class="r1-fld" id="r1-ech" hidden><label>Échéance (facultative)</label><div class="r1-tot"><input class="r1-in r1-m" inputmode="numeric" value="07.05.2026"><span class="r1-sup">déduite · 10 Tage netto</span></div></div>
+    <details class="r1-sep"><summary class="r1-sum"><span>Fournisseur et catégorie</span><em>Brau- und Rauchshop GmbH · Brassage</em></summary>
+      <div class="r1-det"><input class="r1-in" value="Brau- und Rauchshop GmbH"><div class="r1-ch"><button aria-pressed="true">Brassage</button><button>Emballage</button><button>Matériel</button><button>Autre</button></div></div></details>
+    <details class="r1-sep"><summary class="r1-sum"><span>Lier à une dépense prévue</span></summary>
+      <div class="r1-det"><div class="r1-ch"><button>Brassin NEIPA · malts · 90,00</button><button>Aucune</button></div></div></details>
+    <details class="r1-sep" id="r1-art" data-booster="articles"><summary class="r1-sum"><span>Articles et stock <span class="r1-m">23</span></span><span class="r1-stk" id="r1-stk"></span></summary>
+      <div class="r1-det">
+        <ul class="r1-ls" id="r1-ls"></ul>
+        <div class="r1-ch"><button class="r1-add">+ Ajouter une ligne</button><button class="r1-add" style="flex:0 0 auto;padding:0 10px">Regrouper en une dépense</button></div>
+        <div class="r1-detail" id="r1-detail"><span>Détail</span><span><b id="r1-dv">86,50</b> / <b>86,50</b></span></div>
+      </div></details>
+    <div class="r1-dts" id="r1-doutes" data-booster="doutes-stock"></div>
+    <details class="r1-sep" id="r1-ref"><summary class="r1-sum"><span>Référence et TVA</span><em id="r1-refem">372765</em><span id="r1-refsup" hidden></span></summary>
+      <div class="r1-det">
+        <div class="r1-ligne"><span>N° de facture <b class="r1-m">372765</b> <span class="r1-calc">pro-forma payée</span></span></div>
+        <div class="r1-ligne"><span>N° de commande <b class="r1-m" style="font-size:12px">Onlinebestellung-686863</b></span></div>
+        <div class="r1-dt" id="r1-p1" data-pt="p1" data-booster="tva">
+          <div class="r1-ligne"><span>TVA source <span class="r1-v2" id="r1-tv"><b>2,80</b><b>4,15</b></span></span></div>
+          <div class="r1-calc">imprimé <b>2,80</b> · par taux <b>1,95 + 2,20 = 4,15</b> · bases <b>26,20 + 84,20 = 110,40</b> ≠ <b>86,50</b></div>
+          <div class="r1-ch"><button data-choix="p1" data-tva="2,80">2,80</button><button data-choix="p1" data-tva="4,15">4,15</button><button data-choix="p1" data-tva="vide">Laisser vide</button></div>
+        </div>
+        <div class="r1-ligne"><span>Taux source <b class="r1-m">N 8,1 % · R 2,6 %</b></span></div>
+        <div class="r1-ligne"><span>Total HT <b class="r1-m">—</b></span></div>
+      </div></details>
+    <div class="r1-dts" id="r1-tvad"><div class="r1-dr"><span></span><span>TVA <span class="r1-v2"><b>2,80</b><b>4,15</b></span></span><button data-va="p1">Choisir</button></div></div>
+  </div>
+</div>
+<div class="r1-pied"><div class="r1-pi" id="r1-pi">
+  <span class="r1-drive" data-booster="drive"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M6 15.5h8.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 5.3 8 3.8 3.8 0 0 0 6 15.5z"/></svg>Drive <svg class="r1-ok" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg></span>
+  <button class="r1-go" id="r1-go" data-booster="confirmer"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg>Confirmer et enregistrer</button>
+</div><div class="r1-bar" style="max-width:560px;margin:0 auto"><i id="r1-bari"></i></div></div>
+
+<section class="r1-ann" id="r1-annexe" aria-label="Annexe : les états">
+  <h2>Annexe · les neuf états (r1, la feuille)</h2>
+  <div class="r1-grid">
+    <div class="r1-et"><h3>1 · Lecture en cours</h3>
+      <div class="r1-lu"><div class="r1-lu1"><b>capture-facture.jpg · 1 page</b></div>
+        <div class="r1-st"><span class="r1-f1">✓ Envoi</span><span class="r1-f2">◌ Lecture · <span class="r1-m">7 s</span></span><span>○ Vérification</span></div></div>
+      <div class="r1-fld"><label>Pour quoi ?</label><input class="r1-in" placeholder="tu peux déjà écrire"></div>
+      <div class="r1-fld"><label>Total TTC en CHF</label><span class="r1-sk" style="width:140px;height:32px"></span></div>
+    </div>
+    <div class="r1-et"><h3>2 · Lue, sans point</h3>
+      <div class="r1-lu"><div class="r1-lu1"><b>Facture · Brau- und Rauchshop</b></div><div class="r1-lu2"><span class="r1-pill">✓ 23 lignes</span><span class="r1-pill r1-pts r1-fini">✓ rien à régler</span></div></div>
+      <div class="r1-ligne"><span>Payé le <b class="r1-m">27.04.2026</b> <span class="r1-calc">lue</span></span></div>
+    </div>
+    <div class="r1-et"><h3>3 · Lue avec ses points</h3><p class="r1-calc">L'écran du haut : 6 points, chacun sur son champ ; la liste « 6 à régler » les trie argent, puis stock, et saute à leur place.</p></div>
+    <div class="r1-et"><h3>4 · Un point réglé, puis tous</h3>
+      <div class="r1-ligne"><span>Payé le <b class="r1-m">27.04.2026</b> <span class="r1-sup" style="border-style:solid;color:var(--t2)">confirmée</span></span><span class="r1-pill r1-pts"><span class="r1-m">5</span>&nbsp;à régler</span></div>
+      <div class="r1-ligne"><span class="r1-pill r1-pts r1-fini" style="margin-left:0">✓ tout réglé</span><span class="r1-go">Confirmer et enregistrer</span></div>
+    </div>
+    <div class="r1-et"><h3>5 · Erreur de lecture</h3>
+      <div class="r1-lu" style="border:1.5px dashed var(--attt)"><div class="r1-lu1"><b>Lecture impossible</b></div><span class="r1-calc">capture-facture.jpg gardé · les champs restent à remplir</span><div class="r1-ch"><button>Relire</button><button>Saisir à la main</button></div></div>
+      <div class="r1-fld"><label>Total TTC en CHF</label><input class="r1-in r1-m" inputmode="decimal" placeholder="0,00" style="width:140px"></div>
+    </div>
+    <div class="r1-et"><h3>6 · Drive pas connecté</h3>
+      <div class="r1-pi" style="border-radius:10px;height:auto;padding:6px 8px"><span class="r1-drive" style="color:var(--attt)">Drive à connecter</span><button class="r1-pill">Connecter</button></div>
+      <span class="r1-calc">Confirmer reste possible : il ouvre la connexion, le brouillon est gardé.</span>
+    </div>
+    <div class="r1-et"><h3>7 · Enregistrement, puis le reçu</h3>
+      <div class="r1-bar"><i style="width:60%"></i></div>
+      <div class="r1-ligne"><span class="r1-drive">Envoi au Drive · <span class="r1-m">0,4 / 0,7 Mo</span></span><button class="r1-lk">Fermer</button></div>
+      <div class="r1-recu" style="background:#fff;border-radius:10px;padding:6px 8px"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>Justificatifs / 2026 / 2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r1-annexe">Ouvrir dans Drive</a></div>
+    </div>
+    <div class="r1-et"><h3>8 · Achat peut-être déjà enregistré</h3>
+      <div class="r1-dt"><div class="r1-calc">Même commande <b>686863</b>, même total <b>86,50</b> · autre n° : <b>380001</b> du <b>30.04.2026</b> contre <b>372765</b> du <b>27.04.2026</b></div>
+      <div class="r1-ch" style="margin-top:4px"><button class="r1-p">Même achat</button><button>Autre achat</button></div></div>
+    </div>
+    <div class="r1-et"><h3>9 · Hors ligne</h3>
+      <div class="r1-pi" style="border-radius:10px;height:auto;padding:6px 8px"><span class="r1-drive" style="color:var(--attt)">Hors ligne · brouillon gardé</span><span class="r1-go" style="background:var(--haut);color:var(--t1)">Enregistrer au retour</span></div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  // Sa facture 372765. [n, libellé imprimé, nom, quantité, unité imprimée, prix, montant en centimes, nature, stock]
+  var L=[
+   [1,'Maris Otter, Kg','Maris Otter',6,'Kg','2,30',1380,'Ingrédient','relie'],
+   [2,'Zuschlag Schrotung','Mouture',6,'Kg','0,10',60,'Service','mout',1],
+   [3,'Gerstenflocken, 1 Kg','Gerstenflocken',1,'Kg','2,40',240,'Ingrédient','relie'],
+   [4,'Röstgerste, Kg','Röstgerste',1,'Kg','1,80',180,'Ingrédient','relie'],
+   [5,'Zuschlag Schrotung','Mouture',1,'Kg','0,10',10,'Service','mout',4],
+   [6,'CARAMÜNCH® Typ 2 Kg','Caramünch Typ 2',1,'Kg','1,75',175,'Ingrédient','relie'],
+   [7,'Zuschlag Schrotung','Mouture',1,'Kg','0,10',10,'Service','mout',6],
+   [8,'Target 11.3%','Target · α 11,3',40,'g','0,040',160,'Ingrédient','bis'],
+   [9,'Goldings East Kent 5.5%','Goldings East Kent · α 5,5',20,'g','0,040',80,'Ingrédient','neuf'],
+   [10,'LALLEMAND Windsor 11g','LALLEMAND Windsor',2,'Stk','4,50',900,'Ingrédient','relie','2 sachets'],
+   [11,'Safale BE-256 (Abbaye) 11.5 g','Safale BE-256',1,'Stk','4,40',440,'Ingrédient','relie','1 sachet'],
+   [12,'Safale US-05 11,5g','Safale US-05',2,'Stk','3,40',680,'Ingrédient','relie','2 sachets'],
+   [13,'Pilsner Malz, Kg','Pilsner Malz',5,'Kg','1,50',750,'Ingrédient','relie'],
+   [14,'Zuschlag Schrotung','Mouture',5,'Kg','0,10',50,'Service','mout',13],
+   [15,'Weizenmalz hell, Kg','Weizenmalz hell',2,'Kg','1,55',310,'Ingrédient','relie'],
+   [16,'Zuschlag Schrotung','Mouture',2,'Kg','0,10',20,'Service','mout',15],
+   [17,'Haferflocken, 1 Kg','Haferflocken',2,'Kg','2,50',500,'Ingrédient','relie'],
+   [18,'Galaxy 17.2%','Galaxy · α 17,2',60,'g','0,080',480,'Ingrédient','relie'],
+   [19,'Nelson Sauvin ™ 9.6%','Nelson Sauvin · α 9,6',100,'g','0,080',800,'Ingrédient','relie'],
+   [20,'Sabro® 13.4%','Sabro · α 13,4',30,null,'0,070',210,'Ingrédient','precis'],
+   [21,'LALLEMAND Verdant IPA 11g','LALLEMAND Verdant IPA',2,'Stk','4,70',940,'Ingrédient','neuf','2 sachets'],
+   [22,'Hallertauer Blanc 9.5% CH','Hallertauer Blanc · α 9,5',30,'g','0,045',135,'Ingrédient','bis'],
+   [23,'Motueka ™ 8.1%','Motueka · α 8,1',20,'g','0,070',140,'Ingrédient','relie']
+  ];
+  var P={p1:0,p2:0,p3:0,p4:0,p5:0,p6:0}, att={}, unite={}, sel=null;
+  var NOMS={p1:['TVA imprimée incohérente','argent'],p2:['Payé le : date supposée','argent'],p3:['5 moutures à rattacher','stock'],p4:['Target : α 11,3 ≠ 11,8 en stock','stock'],p5:['Hallertauer Blanc : CH ≠ DE en stock','stock'],p6:['Sabro : unité à préciser','stock']};
+  var chf=function(c){return (c/100).toFixed(2).replace('.',',')};
+  var cube='<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+  function ico(st,sz){sz=sz||18;var b='';
+    if(st==='relie')b='<circle cx="15" cy="15" r="4.6" fill="#333" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>';
+    if(st==='neuf')b='<circle cx="15" cy="15" r="4.6" fill="#fff" stroke="currentColor"/><path d="M15 12.6v4.8M12.6 15h4.8"/>';
+    if(st==='bis')b='<circle cx="15" cy="15" r="4.6" fill="#7F5B10" stroke="none"/><path d="M13.4 13.9a1.7 1.7 0 1 1 2.9 1.2L13.4 17.3h3.3" stroke="#fff"/>';
+    if(st==='precis')b='<circle cx="15" cy="15" r="4.6" fill="#fff" stroke="#7F5B10" stroke-dasharray="2 1.4"/><path d="M13.6 13.9a1.5 1.5 0 1 1 2.2 1.3c-.6.3-.8.6-.8 1.1M15 17.5v.2" stroke="#7F5B10"/>';
+    if(st==='mout')return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="'+(30/sz).toFixed(3)+'"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg>';
+    var d=(st==='precis'||st==='neuf')?' stroke-dasharray="2.4 1.6"':'';
+    return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="'+(30/sz).toFixed(3)+'"><g'+d+'>'+cube+'</g>'+b+'</svg>';}
+  function render(){
+    P.p3=L.filter(function(l){return l[8]==='mout'&&!att[l[0]]}).length===0;
+    var h='';
+    L.forEach(function(l){
+      var n=l[0],st=l[8],q='';
+      var pt=n===8?'p4':n===22?'p5':n===20?'p6':st==='mout'?'p3':null;
+      var dt=pt&&!P[pt]&&!(st==='mout'&&att[n]);
+      var u=l[4]||unite[n];
+      var sub=l[7]+' · <span class="r1-m">'+l[3]+'</span> '+(u?'<span class="r1-m">'+u+'</span>':'<span class="r1-sup">unité à préciser</span>')+(l[9]&&typeof l[9]==='string'?' <span class="r1-conv">= '+l[9]+'</span>':'');
+      var fx='';
+      if(dt&&st==='mout')fx='<div class="r1-ch r1-fx"><button class="r1-p" data-att="'+n+'">Rattacher à '+L[l[9]-1][2]+'</button></div>';
+      if(dt&&n===8)fx='<div class="r1-ch r1-fx"><span class="r1-calc">stock : Target α <b>11,8</b></span><button class="r1-p" data-choix="p4">Créer Target bis</button><button aria-label="Choisir un autre article">⇄</button></div>';
+      if(dt&&n===22)fx='<div class="r1-ch r1-fx"><span class="r1-calc">stock : Hallertauer Blanc DE</span><button class="r1-p" data-choix="p5">Créer Hallertauer Blanc CH</button><button aria-label="Choisir un autre article">⇄</button></div>';
+      if(dt&&n===20)fx='<div class="r1-ch r1-fx"><span class="r1-calc">illisible, rien en stock sans elle</span><button data-u="g">g</button><button data-u="kg">kg</button><button data-u="Stk">Stk</button></div>';
+      var nom=(n===8&&P.p4)?'Target bis · α 11,3':(n===22&&P.p5)?'Hallertauer Blanc CH · α 9,5':l[2];
+      if(st==='mout'&&att[n])sub+=' · <b class="r1-m">'+L[l[9]-1][2]+' '+chf((L[l[9]-1][6]+l[6])/l[3])+'/kg</b>';
+      var stI=(st==='precis'&&P.p6)?'relie':(st==='bis'&&P[pt])?'bis':st;
+      h+='<li class="r1-l'+(dt?' r1-lq':'')+'" data-n="'+n+'"><span class="r1-n">'+n+'</span><span style="color:'+(dt?'#7F5B10':'#333')+'">'+ico(stI)+'</span><span style="min-width:0"><b>'+nom+'</b><div class="r1-s">'+sub+'</div></span><span class="r1-a" data-edit="'+n+'">'+chf(l[6])+'</span>'+fx+(sel===n?'<div class="r1-ch r1-fx"><button aria-pressed="'+(st!=='mout')+'">Ingrédient</button><button aria-pressed="'+(st==='mout')+'">Service</button><button>Matériel</button><button>'+(st==='mout'?'Mouture':'Article : '+nom.split(' · ')[0])+' ⇄</button><button>Aucun mouvement de stock</button><button data-ret="'+n+'">Retirer la ligne</button></div>':'')+'</li>';
+    });
+    $('#r1-ls').innerHTML=h;
+    var c={relie:0,neuf:0,bis:0,precis:0,mout:0};L.forEach(function(l){c[(l[8]==='precis'&&P.p6)?'relie':l[8]]++});
+    $('#r1-stk').innerHTML='<span>'+ico('relie',14)+c.relie+'</span><span>'+ico('neuf',14)+c.neuf+'</span><span'+(P.p4&&P.p5?'':' class="r1-q"')+'>'+ico('bis',14)+c.bis+'</span>'+(c.precis?'<span class="r1-q">'+ico('precis',14)+c.precis+'</span>':'')+'<span'+(P.p3?'':' class="r1-q"')+'>'+ico('mout',14)+c.mout+'</span>';
+    var tot=L.reduce(function(a,l){return a+l[6]},0);$('#r1-dv').textContent=chf(tot);
+    $('#r1-detail').firstChild.textContent=tot===8650?'Détail':'Détail · écart '+chf(tot-8650);
+    var nb=Object.keys(P).filter(function(k){return !P[k]}).length;
+    var b=$('#r1-pts');b.classList.toggle('r1-fini',!nb);b.innerHTML=nb?'<span class="r1-m">'+nb+'</span>&nbsp;à régler':'✓ tout réglé';
+    $('#r1-liste').innerHTML=Object.keys(NOMS).map(function(k){return '<button data-va="'+k+'" class="'+(P[k]?'r1-fait':'')+'">'+NOMS[k][0]+'<em>'+NOMS[k][1]+'</em></button>'}).join('');
+    $('#r1-p2').classList.toggle('r1-dt',!P.p2);$('#r1-p1').classList.toggle('r1-dt',!P.p1);
+    $('#r1-refsup').hidden=!!P.p1;
+    // Les doutes du stock, sous la rubrique repliée : on règle sans ouvrir les 23 lignes.
+    var dh='';
+    if(!P.p3)dh+='<div class="r1-dr">'+ico('mout')+'<span><b class="r1-m">5</b> moutures</span><button class="r1-p" data-tout="1">Rattacher à leur malt</button></div>';
+    if(!P.p4)dh+='<div class="r1-dr">'+ico('bis')+'<span>Target α <b class="r1-m">11,3</b> ≠ <b class="r1-m">11,8</b></span><button class="r1-p" data-choix="p4">Target bis</button></div>';
+    if(!P.p5)dh+='<div class="r1-dr">'+ico('bis')+'<span>Hallertauer Blanc CH ≠ DE</span><button class="r1-p" data-choix="p5">Créer CH</button></div>';
+    if(!P.p6)dh+='<div class="r1-dr">'+ico('precis')+'<span>Sabro <b class="r1-m">30</b> <span class="r1-sup">unité ?</span></span><span class="r1-ch"><button data-u="g">g</button><button data-u="kg">kg</button><button data-u="Stk">Stk</button></span></div>';
+    $('#r1-doutes').innerHTML=dh;
+    $('#r1-doutes').hidden=$('#r1-art').open||!dh;
+    document.getElementById("r1-tvad").hidden=!!P.p1||document.getElementById("r1-ref").open;
+  }
+  function aller(k){
+    var el=k==='p1'?$('#r1-p1'):k==='p2'?$('#r1-p2'):null;
+    if(k==='p1')$('#r1-ref').open=true;
+    if(!el){$('#r1-art').open=true;var n=k==='p4'?8:k==='p5'?22:k==='p6'?20:L.find(function(l){return l[8]==='mout'&&!att[l[0]]})[0];el=$('.r1-l[data-n="'+n+'"]')}
+    el.classList.remove('r1-flash');void el.offsetWidth;el.classList.add('r1-flash');el.scrollIntoView({block:'center',behavior:'smooth'});
+  }
+  document.addEventListener('click',function(e){
+    var li=e.target.closest('.r1-l');if(li&&!e.target.closest('button,[data-edit]')){var nn=+li.dataset.n;sel=sel===nn?null:nn;render();return}
+    var t=e.target.closest('button,[data-edit]');if(!t)return;
+    if(t.dataset.ret){L=L.filter(function(l){return l[0]!==+t.dataset.ret});sel=null;render();return}
+    if(t.id==='r1-pbtn'){$('#r1-proof').classList.toggle('r1-on');return}
+    if(t.id==='r1-pts'){$('#r1-liste').classList.toggle('r1-on');return}
+    if(t.dataset.va){aller(t.dataset.va);return}
+    if(t.dataset.ouvre){var d=document.getElementById(t.dataset.ouvre);d.hidden=!d.hidden;return}
+    if(t.dataset.reg){$$('[data-reg]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});var ap=t.dataset.reg==='apayer';$('#r1-p2').hidden=ap;$('#r1-ech').hidden=!ap;return}
+    if(t.dataset.choix){var k=t.dataset.choix;P[k]=1;
+      if(k==='p2'){$('#r1-sup2').textContent='confirmée';$('#r1-sup2').style.borderStyle='solid'}
+      if(k==='p1'){var v=t.dataset.tva;$$('[data-tva]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});$('#r1-tv').innerHTML=v==='vide'?'<b class="r1-m" style="color:#333;border-style:solid">—</b>':'<b style="color:#333;border-style:solid">'+v+'</b>'}
+      render();return}
+    if(t.dataset.att){att[+t.dataset.att]=1;render();return}
+    if(t.dataset.tout){L.forEach(function(l){if(l[8]==='mout')att[l[0]]=1});render();return}
+    if(t.dataset.tout){L.forEach(function(l){if(l[8]==='mout')att[l[0]]=1});render();return}
+    if(t.dataset.u){unite[20]=t.dataset.u;P.p6=1;render();return}
+    if(t.dataset.edit){editer(t);return}
+    if(t.id==='r1-go'){enregistrer();return}
+  });
+  function editer(el){var n=+el.dataset.edit,inp=document.createElement('input');inp.className='r1-in r1-m';inp.setAttribute('inputmode','decimal');inp.value=el.textContent;inp.style.width='84px';el.replaceWith(inp);inp.focus();inp.select();
+    inp.addEventListener('blur',function(){var x=parseFloat(inp.value.replace(',','.'));if(!isNaN(x)){L.find(function(l){return l[0]===n})[6]=Math.round(x*100)}render()})}
+  function enregistrer(){
+    var nb=Object.keys(P).filter(function(k){return !P[k]});if(nb.length){aller(nb[0]);return}
+    var pi=$('#r1-pi'),b=$('#r1-bari'),x=0;
+    pi.innerHTML='<span class="r1-drive">Envoi au Drive · <span class="r1-m" id="r1-mo">0,0 / 0,7 Mo</span></span><button class="r1-lk">Fermer</button>';
+    var tm=setInterval(function(){x+=0.1;if(x>=0.7){clearInterval(tm);b.style.width='100%';pi.innerHTML='<span class="r1-recu"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span>2026-04-27 Brau- und Rauchshop 372765.jpg</span><a href="#r1-annexe">Ouvrir dans Drive</a></span>';return}
+      b.style.width=(x/0.7*100)+'%';$('#r1-mo').textContent=x.toFixed(1).replace('.',',')+' / 0,7 Mo'},180);
+  }
+  window.r1Regler=function(){Object.keys(P).forEach(function(k){P[k]=1});L.forEach(function(l){if(l[8]==='mout')att[l[0]]=1});unite[20]='g';$('#r1-sup2').textContent='confirmée';$('#r1-sup2').style.borderStyle='solid';$('#r1-tv').innerHTML='<b style="color:#333;border-style:solid">—</b>';render()};
+  $('#r1-art').addEventListener('toggle',render);
+  document.getElementById("r1-art").addEventListener("toggle",render);
+  document.getElementById("r1-ref").addEventListener("toggle",render);
+  render();
+})();
+</script>
+</body></html>

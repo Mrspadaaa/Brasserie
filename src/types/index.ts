@@ -57,6 +57,14 @@ export interface StockItem {
   favorite?: boolean;
   alphaPct?: number; // for hops e.g. 11.3%
   pricePerUnit?: number;
+  /** Houblon ou malt : code pays lu sur la facture à la création de l'article (« CH »), en capitales. Facultatif ; absent = inconnu (voie s6-fiche, D215). */
+  origin?: string;
+  /**
+   * La fiche des catalogues du dépôt la plus proche, posée à la création de l'article depuis une dépense (voie s6-fiche, D215). `id` : identifiant du catalogue
+   * (`beermaverick-cascade`, `munich-malt`) ; `approchee` : ce n'est pas exactement la bonne fiche (l'origine ou l'α lus sortent de la sienne), jugé à la création
+   * (toutes les valeurs lues ne sont pas gardées sur l'article). Facultatif ; absent = aucune fiche cherchée ou trouvée.
+   */
+  fiche?: { id: string; approchee: boolean };
 
   /*
    * Caractéristiques techniques de l'article, recopiées UNE FOIS depuis la

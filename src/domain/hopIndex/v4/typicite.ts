@@ -2,9 +2,9 @@
 // du style, lues chez Beer Analytics (src/data/hopV4/typicite-styles.json, générée par scripts/collecte-hop/typicite-styles.mjs ; CC BY-SA 4.0). Un terme du classement de Suggérer (option `typicite`),
 // jamais un filtre : un houblon sans donnée reste proposé, après ceux dont la typicité est connue ; l'inconnu n'est jamais 0.
 // Ce module et la table sont chargés à la demande (`chargerTypicite`, typicite-acces.ts) : ils ne sont pas dans le chunk du moteur (budget B5). Il s'enregistre dans le registre à son évaluation.
-import { enregistrerTypicite, type TableTypicite, type Typicite } from './typicite-acces';
+import { enregistrerTypicite, type TableTypicite, type Typicite, type UsageAuFrais } from './typicite-acces';
 
-export { chargerTypicite, type TableTypicite, type Typicite } from './typicite-acces';
+export { chargerTypicite, type TableTypicite, type Typicite, type UsageAuFrais } from './typicite-acces';
 export { type FacteurIntensite, PENTE_INTENSITE, RADAR_NEUTRE, facteurIntensite } from './intensite';
 
 let table: TableTypicite | null = null;
@@ -71,5 +71,11 @@ export function typiciteDeVoie(positifs: { varietyId: string; poids: number }[],
   return { palier: palier as Typicite['palier'], part, origine: 'style', code: styleCode, concentration: null, auPlus: null, raison: null };
 }
 
+/** t3 (R4) : l'emploi au frais d'un houblon, lu dans la table (`auFrais`, Beer Analytics, CC BY-SA 4.0). Inconnu (null) sans table ou sans part pour ce houblon : jamais 0. */
+export function usageAuFrais(varietyId: string, t: TableTypicite | null = table): UsageAuFrais | null {
+  const a = t?.auFrais, part = a?.parts[varietyId.replace(/^beermaverick-/, '')];
+  return !a || part === undefined ? null : { part, mediane: a.mediane };
+}
+
 // Pas d'effet à l'évaluation du module (D120, t2) : le worker de l'app l'importe pour `poserTypicite`, et la page ne doit pas l'embarquer par un import qu'elle n'appelle pas. Le registre est posé par `poserTypicite`.
-const MOTEUR = { typiciteDe: (v: string, s: string) => typiciteDe(v, s), typiciteDeVoie, table: () => table };
+const MOTEUR = { typiciteDe: (v: string, s: string) => typiciteDe(v, s), typiciteDeVoie, table: () => table, auFrais: (v: string) => usageAuFrais(v) };

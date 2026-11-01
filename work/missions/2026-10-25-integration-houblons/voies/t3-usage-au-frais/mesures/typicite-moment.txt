@@ -1,0 +1,24 @@
+--- 22A (double IPA)
+houblon              part style  palier actuel   frais   part×frais  palier au frais   écart
+citra                34.7 %     3              60 %    20.87 %     3                 
+mosaic               22.0 %     3              66 %    14.57 %     3                 
+centennial           32.5 %     3              41 %    13.47 %     3                 
+cascade              31.4 %     3              38 %    11.87 %     3                 
+amarillo             29.2 %     3              52 %    15.04 %     3                 
+simcoe               34.1 %     3              52 %    17.73 %     3                 
+cashmere             0.9 %      3              60 %    0.52 %      1                 3 → 1
+columbus             29.4 %     3              27 %    7.83 %      3                 
+nugget               6.5 %      3              11 %    0.69 %      1                 3 → 1
+warrior              11.6 %     3              7 %     0.82 %      1                 3 → 1
+chinook              —          ?              31 %    —           ?                 
+target               —          1              10 %    —           ?                 
+--- 15B (stout sec irlandais)
+houblon              part style  palier actuel   frais   part×frais  palier au frais   écart
+east-kent-goldings   36.5 %     3              19 %    7.00 %      3                 
+fuggle               —          ?              15 %    —           ?                 
+target               5.7 %      3              10 %    0.57 %      1                 3 → 1
+willamette           7.3 %      3              16 %    1.20 %      2                 3 → 2
+nugget               5.4 %      3              11 %    0.57 %      1                 3 → 1
+columbus             7.3 %      3              27 %    1.94 %      2                 3 → 2
+challenger           6.1 %      3              14 %    0.84 %      1                 3 → 1
+northdown            1.1 %      2              12 %    0.13 %      1                 2 → 1

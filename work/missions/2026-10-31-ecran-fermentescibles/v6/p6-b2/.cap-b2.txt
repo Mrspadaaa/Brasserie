@@ -1,0 +1,56 @@
+// D219 — la barre de chaque ligne porte la masse.
+const cur = (i) => `[data-sel="${i}"] [data-role~="masse-curseur"]`;
+const aria = (i) => p.evaluate((s) => { const e = document.querySelector(s); return [e.getAttribute('role'), e.getAttribute('aria-label'), e.getAttribute('aria-valuetext'), e.getAttribute('aria-valuenow')].join(' | '); }, cur(i));
+const plat = () => p.evaluate(() => { const e = document.querySelector('[data-role="bal"]'); return Math.round(e.getBoundingClientRect().top) + ' ' + e.querySelector('[data-role="bh"] b').textContent; });
+const boiteC = (i) => p.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.left, y: r.top + r.height / 2, w: r.width, h: r.height }; }, cur(i));
+const glisser = async (i, a, z, garder) => { const c = await boiteC(i); await p.touchscreen.touchStart(c.x + c.w * a, c.y);
+  for (let k = 1; k <= 8; k++) await p.touchscreen.touchMove(c.x + c.w * (a + (z - a) * k / 8), c.y); await pret(); if (!garder) { await p.touchscreen.touchEnd(); await pret(); } };
+await p.goto(url); await pret();
+let A = await aria(0); console.log('slider Pilsner :', A);
+if (A !== 'slider | Masse de Pilsner Malz | 5,0 kg | 5') err.push('slider : ' + A);
+let cb = await boiteC(0); console.log('cible barre :', Math.round(cb.w), '×', Math.round(cb.h), 'px');
+if (cb.h < 24 || cb.w < 24) err.push('cible barre : ' + cb.w + ' × ' + cb.h);
+const p0 = await plat(), b0 = await bandeau();
+// Pilsner, pendant : le doigt tire de 63 % à 70 % de la barre et la tient.
+await glisser(0, 0.6, 0.7, true);
+await p.screenshot({ path: out('barre-pendant') });
+L = await lignes(); console.log('Pilsner pendant :', L.join(' | '), '|', await bandeau());
+if (L[0] !== 'Pilsner Malz 7,0' || L[1] !== 'Weizenmalz hell 1,5' || L[2] !== 'Haferflocken 1,5') err.push('Pilsner pendant : ' + L.join(' | '));
+if (!(await p.$('[data-sel="0"].r4e-tire'))) err.push('Pilsner pendant : la barre tenue ne se voit pas');
+await p.touchscreen.touchEnd(); await pret();
+await p.screenshot({ path: out('barre-apres') });
+L = await lignes(); const P2 = await parts(), b1 = await bandeau(); A = await aria(0);
+console.log('Pilsner après :', L.join(' | '), '|', b1, '|', P2.join('/'), '|', A);
+if (L[0] !== 'Pilsner Malz 7,0' || P2.join('/') !== '70/15/15' || !/Grain 10,0 kg/.test(b1) || !/7,0 kg/.test(A)) err.push('Pilsner après : ' + L[0] + ' ' + P2.join('/') + ' ' + b1 + ' ' + A);
+if ((await p.evaluate(() => document.querySelector('[data-role="bin"]').value)) !== '7,0') err.push('Pilsner après : le plateau ne suit pas');
+if ((await plat()) !== p0) err.push('Pilsner : le plateau a bougé');
+if (b1 === b0) err.push('Pilsner : le bandeau ne suit pas');
+// Dextrose (#sucre), après : sa barre (0–2 kg) tirée de 20 % à 50 % → 1,0 kg ; le plateau, sur Dextrose, suit ; les grains restent.
+await p.goto(url + '#sucre'); await pret();
+A = await aria(3); console.log('slider Dextrose :', A); if (!/^slider \| Masse de Dextrose \| 0,40 kg/.test(A)) err.push('Dextrose slider : ' + A);
+await glisser(3, 0.2, 0.5);
+await p.screenshot({ path: out('sucre-apres') });
+L = await lignes(); console.log('Dextrose après :', L.join(' | '));
+if (L[3] !== 'Dextrose 1,0' || L[0] !== 'Pilsner Malz 5,0' || L[1] !== 'Weizenmalz hell 1,5') err.push('Dextrose après : ' + L.join(' | '));
+if ((await p.evaluate(() => document.querySelector('[data-role="bin"]').value)) !== '1,0') err.push('Dextrose : le plateau ne suit pas');
+// La plage reste : la barre de Dextrose est à moitié (1,0 sur 2 kg), elle ne saute pas au relâcher.
+const wd = await p.evaluate(() => document.querySelector('[data-bar="3"]').style.width); if (wd !== '50%') err.push('Dextrose : la barre saute (' + wd + ')');
+// Au clavier : → d'un cran (1,0 → 1,1), Maj+← dix crans, puis ← à 0 ne descend plus.
+await p.focus(cur(3)); await p.keyboard.press('ArrowRight'); await pret();
+L = await lignes(); if (L[3] !== 'Dextrose 1,1') err.push('→ Dextrose : ' + L[3]);
+for (let k = 0; k < 3; k++) { await p.keyboard.down('Shift'); await p.keyboard.press('ArrowLeft'); await p.keyboard.up('Shift'); }
+await p.keyboard.press('ArrowLeft'); await pret();
+L = await lignes(); if (L[3] !== 'Dextrose ') err.push('← jusqu’à 0 : « ' + L[3] + ' »');
+// Purée de mangue (#fruit), après : sa barre (0–2 kg) tirée de 50 % à 25 % → 0,5 kg.
+await p.goto(url + '#fruit'); await pret();
+await glisser(3, 0.5, 0.25);
+await p.screenshot({ path: out('fruit-apres') });
+L = await lignes(); console.log('Mangue après :', L.join(' | '));
+if (L[3] !== 'Purée de mangue 0,50' || L[0] !== 'Pilsner Malz 5,0') err.push('Mangue après : ' + L.join(' | '));
+// Un grain seul (les deux autres retirés) n'a pas de part à régler : sa barre se tire sur sa plage (0–8 kg), à moitié → 4,0 kg.
+await p.goto(url); await pret();
+await tap('[data-ret="2"]'); await tap('[data-ret="1"]');
+await glisser(0, 0.62, 0.5);
+L = await lignes(); console.log('grain seul :', L.join(' | '));
+if (L[0] !== 'Pilsner Malz 4,0') err.push('grain seul : ' + L.join(' | '));
+const tr2 = await tronque(); if (tr2.length) err.push('barre : tronqué ' + tr2.join(', '));

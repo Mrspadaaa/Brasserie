@@ -1,0 +1,402 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/depense/stock/relecture.test.ts [2m([22m[2m148 tests[22m[2m | [22m[31m39 failed[39m[2m)[22m[32m 28[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Pilsner » chez « Bio Malz AG » face à « Bio Pilsner » → rien[32m 2[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Cascade » chez « Cryo Hops AG » face à « Cascade Cryo » → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Cascade » chez « Yakima Chief Hopunion Cryo » face à « Cascade Cryo » → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Citra » chez « Cryo » face à « Citra Cryo » → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Pilsner » chez « Dunkel Mühle » face à « Pilsner Dunkel » → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « bio » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « bio » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « organic » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « organic » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « öko » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « öko » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « oeko » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « oeko » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « cryo » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « cryo » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « lupomax » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « lupomax » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « t45 » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « t45 » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dunkel » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dunkel » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « hell » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « hell » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « light » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « light » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « smoked » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « smoked » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « rauch » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « rauch » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « extra » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « extra » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « pale » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « pale » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dark » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dark » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « crystal » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « crystal » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « caramel » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « caramel » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « wheat » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « wheat » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « weizen » du fournisseur du justificatif n’est jamais retiré du nom de l’article[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « weizen » du fournisseur de l’article n’est jamais retiré de son nom[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Munich » chez Rauch AG face à « Malt Munich Rauch » → rien (« rauch » décrit un malt fumé ; Conception n° 10 retournée par la sûreté)[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : « Pilsner Malz » = « Malt Pilsner »[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : un Weyermann ordinaire — « Pilsner » chez Weyermann GmbH face à « Pilsner Weyermann »[39m[32m 6[2mms[22m[39m
+[31m     → expected 'W' to be undefined[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : « Cascade du Banc » chez la Malterie du Banc reste proposée[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« n/a » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« N/A » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« k.A. » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« K.A. » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« na » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« x » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« — » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« - » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mune unité illisible n’assouplit rien : nom différent → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kg. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kg. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« KG. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m«  kg.  » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kilo » est reconnu comme kg dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kilo » est reconnu comme kg dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kilogramm » est reconnu comme kg dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kilogramm » est reconnu comme kg dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Liter » est reconnu comme L dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« litre » est reconnu comme L dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« litres » est reconnu comme L dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Litres » est reconnu comme L dans l’appariement[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mun kilo ne se relie pas à un article en pièces, ni un litre à un malt en kg[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mla conversion reste visible avec l’unité imprimée : « 25 Kilo → 25 000 g »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mUnits global ne change pas : « Kilo » et « Kg. » n’y sont toujours pas des kg[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22m« Acide lactique 80% » cleaning face à l’article Additif → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22m« Acide lactique 80% » packaging face à l’article Additif → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22mtémoin : un ingrédient peut toujours être un Additif[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22mtémoin : Consommable reste permis pour un emballage et pour un produit d’entretien[32m 1[2mms[22m[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22m« Safale US-05 500 g » × 1 Stk face à « Safale US-05 » en sachet sans poids → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22m« Safale US-05 0,5 kg » n’est pas lu comme un poids de sachet et reste refusé (nom différent)[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22mtémoin : « Safale US-05 11,5 g » face à l’article sans poids → proposé, poids non confirmé[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22mtémoin : 50 g exactement reste un sachet[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 5 : la quantité de départ n’est pas arrondie à 3 décimales[2m > [22m0,0004 kg → 0,4 g[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 5 : la quantité de départ n’est pas arrondie à 3 décimales[2m > [22mtémoins inchangés[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22m« Pride Of Ringwood » et « Falconers Flight 7cs » sont des noms de houblons[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Malt → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Sucre → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Levure → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Additif → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Malt → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Sucre → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Levure → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Additif → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mtémoin : « Pride Of Ringwood » face à un article Houblon → proposé[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 1 kg face à Carafa Special 1, 2, 3 → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 2 kg face à Carafa Special 1, 2, 3 → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 5 kg face à Carafa Special 1, 2, 3 → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mle même nom sans numéro d’un côté et numéroté de l’autre : rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mtémoin : avec « Typ » devant, le nombre reste de l’identité : « Carafa Special Typ 2 Kg » → Typ 2[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mtémoin : le seul article numéroté, sans voisin, reste proposé[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mtémoin : un article d’un autre nom n’est pas un voisin[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité «  », × 1 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité «  », × 2 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité «  », × 5 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « - », × 1 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « - », × 2 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « - », × 5 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « n/a », × 1 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « n/a », × 2 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « n/a », × 5 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « x », × 1 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « x », × 2 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « x », × 5 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « k.A. », × 1 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « k.A. », × 2 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « k.A. », × 5 face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special, 2 Kg » (virgule), unité vide, × 2 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+   [32m✓[39m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 25kg » (collé), unité vide ou « n/a » → rien[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Sirop 500 g » et « Sirop 1 L », unité vide, face à Sirop 1 / 2 / 500 → rien (masse et volume)[39m[32m 0[2mms[22m[39m
+[31m     → expected 'S500' to be undefined[39m
+[31m   [31m×[31m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg » unité vide face à Carafa Special + Carafa Special 2 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+   [32m✓[39m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22mtémoin : « Carafa Special 2 Kg » unité vide, article numéroté unique sans voisin → proposé, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22mtémoin : « Carafa Special Typ 2 Kg » unité vide face à Typ 1/2/3 → Typ 2 (le nombre reste de l’identité)[32m 1[2mms[22m[39m
+   [32m✓[39m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22mtémoin : un libellé sans nombre ni unité, unité vide → proposé[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22mtémoin : unité lisible (kg) inchangée → rien[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Rye Mühle AG » face à « Pilsner Rye » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'R' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'L' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Rye Mühle AG » face à « Pilsner Rye » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Roggen Mühle AG » face à « Pilsner Roggen » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Munich Mühle AG » face à « Pilsner Munich » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Vienna Mühle AG » face à « Pilsner Vienna » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Cara Mühle AG » face à « Pilsner Cara » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Chocolate Mühle AG » face à « Pilsner Chocolate » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Biscuit Mühle AG » face à « Pilsner Biscuit » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Honey Mühle AG » face à « Pilsner Honey » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Melanoidin Mühle AG » face à « Pilsner Melanoidin » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Spelt Mühle AG » face à « Pilsner Spelt » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Whole Hops AG » face à « Cascade Whole » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Cone Hops AG » face à « Cascade Cone » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Fresh Hops AG » face à « Cascade Fresh » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Wet Hops AG » face à « Cascade Wet » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Dried Hops AG » face à « Cascade Dried » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Extract Hops AG » face à « Cascade Extract » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Oil Hops AG » face à « Cascade Oil » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+   [32m✓[39m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22mle mot du fournisseur de l’article seul (justificatif sans fournisseur) continue d’être retiré[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22mtémoin positif : article « Weyermann Pilsner » de fournisseur « Weyermann », ligne « Pilsner » chez « Weyermann Malzfabrik » → proposé[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22mun mot protégé reste conservé même s’il est dans les deux fournisseurs[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 3 : la garde côté ligne (mot qui décrit le produit après une liaison) est testée[2m > [22m« Cascade du Cryo » chez « Cryo Hops AG » face à « Cascade » → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 3 : la garde côté ligne (mot qui décrit le produit après une liaison) est testée[2m > [22m« Pilsner du Bio » chez « Bio Malz AG » face à « Pilsner » → rien[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 3 : la garde côté ligne (mot qui décrit le produit après une liaison) est testée[2m > [22m« Pilsner de Rauch » chez « Rauch AG » face à « Pilsner » → rien (la garde côté ligne, mot « rauch »)[32m 0[2mms[22m[39m
+   [32m✓[39m s1c n° 3 : la garde côté ligne (mot qui décrit le produit après une liaison) est testée[2m > [22mtémoin : « Cascade du Banc » chez la Malterie du Banc reste proposé[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 39 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : un Weyermann ordinaire — « Pilsner » chez Weyermann GmbH face à « Pilsner Weyermann »
+[31m[1mAssertionError[22m: expected 'W' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"W"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m56:108[22m[39m
+    [90m 54| [39m    // s1c n° 2 (ASSERTION CHANGÉE, déclarée dans RESULTAT.md) : « pro…
+    [90m 55| [39m    // retirer un mot du nom de l'article : l'article doit avoir ce fo…
+    [90m 56| [39m    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Weyermann GmbH' })…
+    [90m   | [39m                                                                                                           [31m^[39m
+    [90m 57| [39m    expect(ref(line('Pilsner', 'kg', 25), [item('W', 'Malt Pilsner Wey…
+    [90m 58| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité «  », × 1 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité «  », × 2 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité «  », × 5 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « - », × 1 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « - », × 2 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « - », × 5 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « n/a », × 1 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « n/a », × 2 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « n/a », × 5 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « x », × 1 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « x », × 2 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « x », × 5 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « k.A. », × 1 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « k.A. », × 2 face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg », unité « k.A. », × 5 face à Carafa Special 1, 2, 3 → rien
+[31m[1mAssertionError[22m: expected 'C2' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C2"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m200:74[22m[39m
+    [90m198| [39m    [35mfor[39m ([35mconst[39m quantity [35mof[39m [[34m1[39m[33m,[39m [34m2[39m[33m,[39m [34m5[39m]) {
+    [90m199| [39m      it(`« Carafa Special 2 Kg », unité « ${unit} », × ${quantity} fa…
+    [90m200| [39m        expect(ref(line('Carafa Special 2 Kg', unit, quantity), carafa…
+    [90m   | [39m                                                                         [31m^[39m
+    [90m201| [39m      })[33m;[39m
+    [90m202| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special, 2 Kg » (virgule), unité vide, × 2 → rien
+[31m[1mAssertionError[22m: expected 'C2' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C2"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m205:62[22m[39m
+    [90m203| [39m  }
+    [90m204| [39m  it('« Carafa Special, 2 Kg » (virgule), unité vide, × 2 → rien', () …
+    [90m205| [39m    expect(ref(line('Carafa Special, 2 Kg', '', 2), carafa)).toBeUndef…
+    [90m   | [39m                                                             [31m^[39m
+    [90m206| [39m  })[33m;[39m
+    [90m207| [39m  it('« Carafa Special 25kg » (collé), unité vide ou « n/a » → rien', …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Sirop 500 g » et « Sirop 1 L », unité vide, face à Sirop 1 / 2 / 500 → rien (masse et volume)
+[31m[1mAssertionError[22m: expected 'S500' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"S500"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m213:53[22m[39m
+    [90m211| [39m  it('« Sirop 500 g » et « Sirop 1 L », unité vide, face à Sirop 1 / 2…
+    [90m212| [39m    const sirops = [item('S1', 'Sirop 1', 'Sucre', 'L'), item('S2', 'S…
+    [90m213| [39m    [34mexpect[39m([34mref[39m([34mline[39m([32m'Sirop 500 g'[39m[33m,[39m [32m''[39m[33m,[39m [34m1[39m)[33m,[39m sirops))[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m   | [39m                                                    [31m^[39m
+    [90m214| [39m    [34mexpect[39m([34mref[39m([34mline[39m([32m'Sirop 1 L'[39m[33m,[39m [32m''[39m[33m,[39m [34m1[39m)[33m,[39m sirops))[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m215| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 1 : un nombre suivi d’une unité de masse ou de volume dans le libellé est une taille d’emballage, quelle que soit la colonne d’unité[2m > [22m« Carafa Special 2 Kg » unité vide face à Carafa Special + Carafa Special 2 → rien
+[31m[1mAssertionError[22m: expected 'C2' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C2"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m217:116[22m[39m
+    [90m215| [39m  })[33m;[39m
+    [90m216| [39m  it('« Carafa Special 2 Kg » unité vide face à Carafa Special + Caraf…
+    [90m217| [39m    expect(ref(line('Carafa Special 2 Kg', '', 2), [item('C', 'Carafa …
+    [90m   | [39m                                                                                                                   [31m^[39m
+    [90m218| [39m  })[33m;[39m
+    [90m219| [39m  [90m// Témoins : ce qui était proposé le reste.[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Rye Mühle AG » face à « Pilsner Rye » → rien
+[31m[1mAssertionError[22m: expected 'R' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"R"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m239:100[22m[39m
+    [90m237| [39mdescribe('s1c n° 2 : un mot du fournisseur du justificatif n’est retir…
+    [90m238| [39m  it('« Pilsner » chez « Rye Mühle AG » face à « Pilsner Rye » → rien'…
+    [90m239| [39m    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Rye Mühle AG' }), …
+    [90m   | [39m                                                                                                   [31m^[39m
+    [90m240| [39m  })[33m;[39m
+    [90m241| [39m  it('« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien
+[31m[1mAssertionError[22m: expected 'L' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"L"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m242:100[22m[39m
+    [90m240| [39m  })[33m;[39m
+    [90m241| [39m  it('« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien…
+    [90m242| [39m    expect(ref(line('Cascade', 'g', 100, { vendor: 'Leaf Hops AG' }), …
+    [90m   | [39m                                                                                                   [31m^[39m
+    [90m243| [39m  })[33m;[39m
+    [90m244| [39m  for (const mot of ['Rye', 'Roggen', 'Munich', 'Vienna', 'Cara', 'Cho…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Rye Mühle AG » face à « Pilsner Rye » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Roggen Mühle AG » face à « Pilsner Roggen » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Munich Mühle AG » face à « Pilsner Munich » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Vienna Mühle AG » face à « Pilsner Vienna » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Cara Mühle AG » face à « Pilsner Cara » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Chocolate Mühle AG » face à « Pilsner Chocolate » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Biscuit Mühle AG » face à « Pilsner Biscuit » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Honey Mühle AG » face à « Pilsner Honey » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Melanoidin Mühle AG » face à « Pilsner Melanoidin » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Pilsner » chez « Spelt Mühle AG » face à « Pilsner Spelt » → rien
+[31m[1mAssertionError[22m: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m246:108[22m[39m
+    [90m244| [39m  for (const mot of ['Rye', 'Roggen', 'Munich', 'Vienna', 'Cara', 'Cho…
+    [90m245| [39m    it(`« Pilsner » chez « ${mot} Mühle AG » face à « Pilsner ${mot} »…
+    [90m246| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                           [31m^[39m
+    [90m247| [39m    })[33m;[39m
+    [90m248| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/39]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Leaf Hops AG » face à « Cascade Leaf » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Whole Hops AG » face à « Cascade Whole » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Cone Hops AG » face à « Cascade Cone » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Fresh Hops AG » face à « Cascade Fresh » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Wet Hops AG » face à « Cascade Wet » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Dried Hops AG » face à « Cascade Dried » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Extract Hops AG » face à « Cascade Extract » → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1c n° 2 : un mot du fournisseur du justificatif n’est retiré du nom de l’article que s’il est aussi dans le fournisseur de l’article[2m > [22m« Cascade » chez « Oil Hops AG » face à « Cascade Oil » → rien
+[31m[1mAssertionError[22m: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m251:106[22m[39m
+    [90m249| [39m  for (const mot of ['Leaf', 'Whole', 'Cone', 'Fresh', 'Wet', 'Dried',…
+    [90m250| [39m    it(`« Cascade » chez « ${mot} Hops AG » face à « Cascade ${mot} » …
+    [90m251| [39m      expect(ref(line('Cascade', 'g', 100, { vendor: `${mot} Hops AG` …
+    [90m   | [39m                                                                                                         [31m^[39m
+    [90m252| [39m    })[33m;[39m
+    [90m253| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/39]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m39 failed[39m[22m[2m | [22m[1m[32m109 passed[39m[22m[90m (148)[39m
+[2m   Start at [22m 20:15:16
+[2m   Duration [22m 350ms[2m (transform 61ms, setup 100ms, collect 53ms, tests 28ms, environment 0ms, prepare 54ms)[22m
+

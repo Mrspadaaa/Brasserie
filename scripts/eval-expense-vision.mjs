@@ -139,7 +139,7 @@ if (args.has('--describe')) {
     const [{ scanInvoiceSafely }, core, { DEFAULT_BREWER_LIMITS }, costs, { reconcileInvoiceVision }] = await Promise.all([
       import('../functions/lib/ai.js'), import('../functions/lib/invoiceScanCore.js'), import('../functions/lib/brewerLimits.js'), import('../functions/lib/geminiCosts.js'), import('../functions/lib/invoiceVisionReview.js')
     ]);
-    if (core.SCAN_MAX_CALLS !== MAX_CALLS || core.INVOICE_SCAN_VERSION !== 'invoice-v4')
+    if (core.SCAN_MAX_CALLS !== MAX_CALLS || core.INVOICE_SCAN_VERSION !== 'invoice-v5')
       throw Object.assign(new Error('La version compilée ne correspond pas à la vision à trois lectures attendue.'), { code: 'eval-pipeline-version' });
     report.scanVersion = core.INVOICE_SCAN_VERSION;
     const file = await makeSyntheticDocument(), documentHash = core.invoiceDocumentHash(file);

@@ -1,0 +1,951 @@
+{
+ "etiquette": "sans",
+ "stylesAvecUnPhareDansLes10": 18,
+ "stylesAvecUnPhareDansLes5": 12,
+ "medianeDesMedianes": 37.5,
+ "mosaic21AAchats": 4,
+ "citraSimple21AAchats": 6,
+ "tetes21A": [
+  "Chinook",
+  "Amarillo",
+  "Cashmere",
+  "Mosaic",
+  "Comet"
+ ],
+ "styles": [
+  {
+   "style": "15B",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 56.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 104
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 182
+    }
+   ]
+  },
+  {
+   "style": "15C",
+   "total": 497,
+   "meilleur": 5,
+   "mediane": 18.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 5
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 13
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 121
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 24
+    }
+   ]
+  },
+  {
+   "style": "16A",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 56.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 104
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 182
+    }
+   ]
+  },
+  {
+   "style": "16B",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 56.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 104
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 182
+    }
+   ]
+  },
+  {
+   "style": "16C",
+   "total": 497,
+   "meilleur": 238,
+   "mediane": 320,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 238
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 320
+    },
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 332
+    }
+   ]
+  },
+  {
+   "style": "16D",
+   "total": 497,
+   "meilleur": 5,
+   "mediane": 29.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 12
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 5
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 47
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 85
+    }
+   ]
+  },
+  {
+   "style": "20B",
+   "total": 497,
+   "meilleur": 47,
+   "mediane": 58.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-cascade",
+     "nom": "Cascade",
+     "rang": 57
+    },
+    {
+     "id": "beermaverick-centennial",
+     "nom": "Centennial",
+     "rang": 47
+    },
+    {
+     "id": "beermaverick-columbus",
+     "nom": "Columbus",
+     "rang": 104
+    },
+    {
+     "id": "beermaverick-chinook",
+     "nom": "Chinook",
+     "rang": 60
+    }
+   ]
+  },
+  {
+   "style": "20C",
+   "total": 497,
+   "meilleur": 237,
+   "mediane": 305,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-columbus",
+     "nom": "Columbus",
+     "rang": 318
+    },
+    {
+     "id": "beermaverick-northern-brewer-gr",
+     "nom": "Northern Brewer (GR)",
+     "rang": 305
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 237
+    },
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 238
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 320
+    }
+   ]
+  },
+  {
+   "style": "20A",
+   "total": 497,
+   "meilleur": 8,
+   "mediane": 46,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-cascade",
+     "nom": "Cascade",
+     "rang": 54
+    },
+    {
+     "id": "beermaverick-centennial",
+     "nom": "Centennial",
+     "rang": 46
+    },
+    {
+     "id": "beermaverick-willamette",
+     "nom": "Willamette",
+     "rang": 8
+    }
+   ]
+  },
+  {
+   "style": "13C",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 56.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 182
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 104
+    }
+   ]
+  },
+  {
+   "style": "9C",
+   "total": 497,
+   "meilleur": 72,
+   "mediane": 101,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 102
+    },
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 101
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 72
+    }
+   ]
+  },
+  {
+   "style": "1A",
+   "total": 497,
+   "meilleur": 22,
+   "mediane": 24,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 23
+    },
+    {
+     "id": "beermaverick-cascade",
+     "nom": "Cascade",
+     "rang": 25
+    },
+    {
+     "id": "beermaverick-willamette",
+     "nom": "Willamette",
+     "rang": 46
+    }
+   ]
+  },
+  {
+   "style": "3A",
+   "total": 497,
+   "meilleur": 45,
+   "mediane": 125,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 45
+    },
+    {
+     "id": "beermaverick-premiant",
+     "nom": "Premiant",
+     "rang": 205
+    }
+   ]
+  },
+  {
+   "style": "3B",
+   "total": 497,
+   "meilleur": 23,
+   "mediane": 73.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 23
+    },
+    {
+     "id": "beermaverick-premiant",
+     "nom": "Premiant",
+     "rang": 124
+    }
+   ]
+  },
+  {
+   "style": "4A",
+   "total": 497,
+   "meilleur": 10,
+   "mediane": 22,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 10
+    },
+    {
+     "id": "beermaverick-spalt",
+     "nom": "Spalt",
+     "rang": 33
+    },
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 23
+    },
+    {
+     "id": "beermaverick-perle-gr",
+     "nom": "Perle (GR)",
+     "rang": 17
+    }
+   ]
+  },
+  {
+   "style": "5B",
+   "total": 497,
+   "meilleur": 10,
+   "mediane": 27.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 10
+    },
+    {
+     "id": "beermaverick-spalt",
+     "nom": "Spalt",
+     "rang": 33
+    },
+    {
+     "id": "beermaverick-hersbrucker",
+     "nom": "Hersbrucker",
+     "rang": 41
+    }
+   ]
+  },
+  {
+   "style": "5D",
+   "total": 497,
+   "meilleur": 10,
+   "mediane": 22,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 10
+    },
+    {
+     "id": "beermaverick-spalt",
+     "nom": "Spalt",
+     "rang": 33
+    },
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 23
+    },
+    {
+     "id": "beermaverick-perle-gr",
+     "nom": "Perle (GR)",
+     "rang": 17
+    }
+   ]
+  },
+  {
+   "style": "7B",
+   "total": 497,
+   "meilleur": 24,
+   "mediane": 37.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-spalt",
+     "nom": "Spalt",
+     "rang": 61
+    },
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 41
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 24
+    },
+    {
+     "id": "beermaverick-perle-gr",
+     "nom": "Perle (GR)",
+     "rang": 34
+    }
+   ]
+  },
+  {
+   "style": "10A",
+   "total": 497,
+   "meilleur": 10,
+   "mediane": 27.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 10
+    },
+    {
+     "id": "beermaverick-hersbrucker",
+     "nom": "Hersbrucker",
+     "rang": 41
+    },
+    {
+     "id": "beermaverick-spalt",
+     "nom": "Spalt",
+     "rang": 33
+    }
+   ]
+  },
+  {
+   "style": "24A",
+   "total": 497,
+   "meilleur": 9,
+   "mediane": 14,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-styrian-golding",
+     "nom": "Styrian Golding",
+     "rang": 10
+    },
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 28
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 18
+    }
+   ]
+  },
+  {
+   "style": "23A",
+   "total": 497,
+   "meilleur": 433,
+   "mediane": 484,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 484
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 433
+    },
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 487
+    }
+   ]
+  },
+  {
+   "style": "23G",
+   "total": 497,
+   "meilleur": 433,
+   "mediane": 484,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 484
+    },
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 487
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 433
+    }
+   ]
+  },
+  {
+   "style": "21A",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 7.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-mosaic",
+     "nom": "Mosaic",
+     "rang": 5
+    },
+    {
+     "id": "beermaverick-citra",
+     "nom": "Citra",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-simcoe",
+     "nom": "Simcoe",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-centennial",
+     "nom": "Centennial",
+     "rang": 23
+    },
+    {
+     "id": "beermaverick-cascade",
+     "nom": "Cascade",
+     "rang": 6
+    },
+    {
+     "id": "beermaverick-amarillo",
+     "nom": "Amarillo",
+     "rang": 3
+    }
+   ]
+  },
+  {
+   "style": "21C",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 22,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-citra",
+     "nom": "Citra",
+     "rang": 5
+    },
+    {
+     "id": "beermaverick-mosaic",
+     "nom": "Mosaic",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-galaxy",
+     "nom": "Galaxy",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-simcoe",
+     "nom": "Simcoe",
+     "rang": 24
+    },
+    {
+     "id": "beermaverick-azacca",
+     "nom": "Azacca",
+     "rang": 36
+    },
+    {
+     "id": "beermaverick-el-dorado",
+     "nom": "El Dorado",
+     "rang": 20
+    },
+    {
+     "id": "beermaverick-nelson-sauvin",
+     "nom": "Nelson Sauvin",
+     "rang": 23
+    }
+   ]
+  },
+  {
+   "style": "22A",
+   "total": 497,
+   "meilleur": 1,
+   "mediane": 9,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-citra",
+     "nom": "Citra",
+     "rang": 9
+    },
+    {
+     "id": "beermaverick-simcoe",
+     "nom": "Simcoe",
+     "rang": 22
+    },
+    {
+     "id": "beermaverick-mosaic",
+     "nom": "Mosaic",
+     "rang": 5
+    },
+    {
+     "id": "beermaverick-columbus",
+     "nom": "Columbus",
+     "rang": 31
+    },
+    {
+     "id": "beermaverick-amarillo",
+     "nom": "Amarillo",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-centennial",
+     "nom": "Centennial",
+     "rang": 23
+    },
+    {
+     "id": "beermaverick-chinook",
+     "nom": "Chinook",
+     "rang": 1
+    }
+   ]
+  },
+  {
+   "style": "12C",
+   "total": 497,
+   "meilleur": 1,
+   "mediane": 7,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 1
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 7
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 11
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 2
+    },
+    {
+     "id": "beermaverick-northdown",
+     "nom": "Northdown",
+     "rang": 98
+    }
+   ]
+  },
+  {
+   "style": "18B",
+   "total": 497,
+   "meilleur": 3,
+   "mediane": 9.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-cascade",
+     "nom": "Cascade",
+     "rang": 7
+    },
+    {
+     "id": "beermaverick-centennial",
+     "nom": "Centennial",
+     "rang": 36
+    },
+    {
+     "id": "beermaverick-citra",
+     "nom": "Citra",
+     "rang": 12
+    },
+    {
+     "id": "beermaverick-amarillo",
+     "nom": "Amarillo",
+     "rang": 3
+    },
+    {
+     "id": "beermaverick-simcoe",
+     "nom": "Simcoe",
+     "rang": 35
+    },
+    {
+     "id": "beermaverick-mosaic",
+     "nom": "Mosaic",
+     "rang": 6
+    }
+   ]
+  },
+  {
+   "style": "11B",
+   "total": 497,
+   "meilleur": 30,
+   "mediane": 54,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 84
+    },
+    {
+     "id": "beermaverick-fuggle",
+     "nom": "Fuggle",
+     "rang": 30
+    },
+    {
+     "id": "beermaverick-challenger",
+     "nom": "Challenger",
+     "rang": 151
+    },
+    {
+     "id": "beermaverick-target",
+     "nom": "Target",
+     "rang": 54
+    },
+    {
+     "id": "beermaverick-northdown",
+     "nom": "Northdown",
+     "rang": 41
+    }
+   ]
+  },
+  {
+   "style": "25B",
+   "total": 497,
+   "meilleur": 17,
+   "mediane": 37,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 39
+    },
+    {
+     "id": "beermaverick-styrian-golding",
+     "nom": "Styrian Golding",
+     "rang": 17
+    },
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 25
+    },
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 37
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 53
+    }
+   ]
+  },
+  {
+   "style": "26C",
+   "total": 497,
+   "meilleur": 24,
+   "mediane": 41.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 42
+    },
+    {
+     "id": "beermaverick-styrian-golding",
+     "nom": "Styrian Golding",
+     "rang": 43
+    },
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 41
+    },
+    {
+     "id": "beermaverick-tettnanger",
+     "nom": "Tettnanger",
+     "rang": 24
+    }
+   ]
+  },
+  {
+   "style": "25A",
+   "total": 497,
+   "meilleur": 5,
+   "mediane": 14.5,
+   "absents": [],
+   "rangs": [
+    {
+     "id": "beermaverick-saaz-cz",
+     "nom": "Saaz (CZ)",
+     "rang": 14
+    },
+    {
+     "id": "beermaverick-styrian-golding",
+     "nom": "Styrian Golding",
+     "rang": 15
+    },
+    {
+     "id": "beermaverick-hallertau-mittelfruh",
+     "nom": "Hallertau Mittelfrüh",
+     "rang": 41
+    },
+    {
+     "id": "beermaverick-east-kent-goldings",
+     "nom": "East Kent Goldings",
+     "rang": 5
+    }
+   ]
+  }
+ ]
+}

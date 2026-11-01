@@ -14,7 +14,7 @@ import { PaymentSheet } from '../../src/ui/finance/FinanceForms';
 import { TransactionDetails } from '../../src/ui/finance/TransactionDetails';
 import { todayISO, summarizeLedger } from '../../src/domain/finance/ledger';
 import type { Transaction } from '../../src/types';
-const tx=(patch:Partial<Transaction>={}):Transaction=>({id:'T1',description:'Achat mixte',date:todayISO(),category:'divers',subcategory:'',amountHT:150,amountTTC:150,tvaAmount:0,tvaRate:0,finance:{version:1,kind:'expense',amountCents:15000,paymentStatus:'unpaid',lines:[{id:'tool',kind:'equipment',description:'Pompe',amountCents:10000},{id:'malt',kind:'ingredient',description:'Malt',amountCents:5000}]},...patch});
+const tx=(patch:Partial<Transaction>={}):Transaction=>({id:'T1',description:'Achat mixte',date:todayISO(),category:'divers',subcategory:'',amountHT:150,amountTTC:150,tvaAmount:0,tvaRate:0,finance:{version:1,kind:'expense',amountCents:15000,paymentStatus:'unpaid',dueDate:todayISO(),lines:[{id:'tool',kind:'equipment',description:'Pompe',amountCents:10000},{id:'malt',kind:'ingredient',description:'Malt',amountCents:5000}]},...patch});
 const read=()=>StorageService.getTransactions();
 function Workspace(){const transactions=useStorageValue(read);return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" onOpenQuickAction={()=>{}}/>;}
 beforeEach(()=>{window.history.replaceState({},'', '/?dev-local');FirestoreRepo.startSync();StorageService.setUiState('finances_workspace','costs');});

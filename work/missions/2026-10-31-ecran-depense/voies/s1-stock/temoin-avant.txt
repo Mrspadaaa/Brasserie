@@ -1,0 +1,89 @@
+TEMOIN AVANT — npx vitest run tests/unit/depense/stock (code d'aujourd'hui + garde levée seule), 31.10.2026 19:32
+⎯⎯⎯⎯⎯⎯ Failed Tests 127 ⎯⎯⎯⎯⎯⎯
+ Test Files  5 failed (5)
+      Tests  127 failed | 73 passed (200)
+
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E1 : « Carafa 3 Kg » 3 kg → rien 4ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E2 : « Carafa 3 Kg » 6 kg → rien 0ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E3c : « Haferflocken, 3 Kg » 2 Kg → rien 0ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E4 : « Carafa, 2 Kg » 2 kg → rien 0ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E4b : « CARAMÜNCH® Typ 2 Kg » 1 Kg → T2 0ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E4c : « CARAMÜNCH® Typ 1 Kg » 1 Kg → rien 0ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E4d : « CARAMÜNCH® Typ 3 Kg » 1 Kg → rien 0ms
+   × R1 / R2 : un nombre n’est conditionnement que séparé du nom par une virgule ou un point médian ET s’il divise la quantité > E27b : « Malt Blond 25 kg » 25 kg → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E5 : « Crystal » 25 kg → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E6 : « Crystal » 25 kg → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E5b : « Houblon Crystal » 100 g → HC 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E5c : « Hop Pellets Cascade » 100 g → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E5d : « Cascade » 100 g → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E7 : « Acide lactique » 1 L → rien 1ms
+   × R3 : la catégorie tranche, jamais l’unité > E8 : « Sel » 1 kg → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E8c : « Sucre candi » 1 kg → rien 0ms
+   × R3 : la catégorie tranche, jamais l’unité > E8d : « Cartons » 10 pièce → rien 0ms
+   × R4 : l’α et la récolte sortent de l’identité ; différentes des deux côtés → rien > E10c : « Target 11.3% » 40 g → T 0ms
+   × R4 : l’α et la récolte sortent de l’identité ; différentes des deux côtés → rien > E10d : « Target » 40 g → T 0ms
+   × R4 : l’α et la récolte sortent de l’identité ; différentes des deux côtés → rien > E10e : « Target 11.3% » 40 g → T 0ms
+   × R4 : l’α et la récolte sortent de l’identité ; différentes des deux côtés → rien > E11b : « Cascade 2024 » 100 g → H 0ms
+   × R4 : l’α et la récolte sortent de l’identité ; différentes des deux côtés → rien > E12 : « Goldings East Kent 5.5% » 20 g → G 0ms
+   × R5 : unités de pièce et poids du sachet (levure) > E13 : « Safale US-05 11,5g » 2 Stk → U 0ms
+   × R5 : unités de pièce et poids du sachet (levure) > E16 : « Safale US-05 11,5 g » 2 Stk → U 0ms
+   × R5 : unités de pièce et poids du sachet (levure) > E18 : « Bouchons » 100 Stk → B 0ms
+   × R6 : le fournisseur du justificatif n’est pas une variante > E20b : « Munich Rauch » 25 kg → rien 0ms
+   × R6 : le fournisseur du justificatif n’est pas une variante > E20c : « Munich Rauch » 25 kg → MR 0ms
+   × R7 / R9 / R10 : lovibond, annotation, fabricant > E25 : « Crystal 60L » 25 kg → rien 0ms
+   × R7 / R9 / R10 : lovibond, annotation, fabricant > E23 : « Safale BE-256 (Abbaye) 11.5 g » 1 Stk → B 0ms
+   × R7 / R9 / R10 : lovibond, annotation, fabricant > E24 : « LALLEMAND Verdant IPA 11g » 2 Stk → V 0ms
+   × R7 / R9 / R10 : lovibond, annotation, fabricant > E24c : « LALLEMAND Windsor 11g » 2 Stk → W 0ms
+   × R7 / R9 / R10 : lovibond, annotation, fabricant > E24d : « Fermentis Windsor 11g » 2 Stk → W 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > A1 : « Munich Type 2 Kg » → rien (jamais une fausse) 4ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > A2 : « Munich Type 2 Kg » → MT2 (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > A3 : « Caramunich Type 3 Kg » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > A4 : « Carafa Special Type 2 kg » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > A5 : « Crystal 150 Kg » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > A6 : « Carafa 2 Kg » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > B1 : « Crystal T90 Pellets » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > B2 : « Houblon Crystal » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > B3 : « Malt Crystal 25 kg » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > B4 : « Levure Abbaye » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > B5 : « Levure Kölsch » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > B6 : « Hefe Weizen » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > C1 : « Munich Rauch » chez Rauch AG → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > C2 : « Hallertau Blanc » chez Blanc SA → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > C3 : « Sucre candi roux » chez Roux & Fils SA → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > C4 : « Pilsner bio » chez Bio Malz AG → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > D2 : « Crystal 60L » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > D4 : « Malt d’avoine » → rien (jamais une fausse) 0ms
+   × chasse du 17.10 rejouée : aucune fausse proposition > bilan : 0 fausse proposition ; les manquées sont comptées à part 3ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 6 « CARAMÜNCH® Typ 2 Kg » 1 Kg → Caramünch Typ 2 4ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 8 « Target 11.3% » 40 g → Target 1ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 10 « LALLEMAND Windsor 11g » 2 Stk → LALLEMAND Windsor 0ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 11 « Safale BE-256 (Abbaye) 11.5 g » 1 Stk → Safale BE-256 0ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 12 « Safale US-05 11,5g » 2 Stk → SafAle US-05 0ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 18 « Galaxy 17.2% » 60 g → Galaxy 0ms
+   × facture 372765 contre le stock simulé de d1 (SIMULÉ) > ligne 21 « LALLEMAND Verdant IPA 11g » 2 Stk → Verdant IPA 0ms
+   × D213 unités : l’appariement > « Crystal » en kg face au seul « Houblon Crystal » en g → rien (g et kg sont compatibles, ce n’est pas une preuve) 7ms
+   × D213 unités : l’appariement > la conversion s’écrit « 25 kg → 25 000 g » et jamais en silence ; l’inconvertible s’écrit à part 0ms
+   × D213 unités : la ligne repliée de la feuille > une proposition d’unité différente de l’article montre la quantité convertie, l’unité imprimée n’est pas réécrite 200ms
+   × D213 unités : la ligne repliée de la feuille > l’unité imprimée est là quand la proposition est écartée, et la conversion disparaît 81ms
+   × D213 unités : la ligne repliée de la feuille > « Stk » face à un sachet de levure : proposé, « Stk » reste imprimé, l’équivalence est dite 55ms
+   × S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ) > Caramünch, Target, Galaxy et les quatre levures sont proposées sur leur article 280ms
+   × S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ) > la description reste le libellé brut ; l’α, la récolte et le poids sont déduits en clair dans l’extrait, avec leur source 286ms
+(+ 62 cas R8 « malté ≠ non malté », tous rouges, non listés)
+
+TEMOIN AVANT D214 (règle refusée D213 n° 4) :
+   ↓ D213 unités : l’appariement > « Crystal » en kg face au seul « Houblon Crystal » en g → rien (g et kg sont compatibles, ce n’est pas une preuve)
+   × D213 unités : l’appariement > D214 : une ligne à l’unité illisible reste proposée à son article, aux mêmes conditions 4ms
+     → unité «  »: expected undefined to be 'MO' // Object.is equality
+   × D213 unités : l’appariement > D214 : l’unité absente n’assouplit aucune autre règle (nom, catégorie, α, poids de levure, homonyme) 1ms
+     → expected undefined to be 'U' // Object.is equality
+   ↓ D213 unités : l’appariement > la conversion s’écrit « 25 kg → 25 000 g » et jamais en silence ; l’inconvertible s’écrit à part
+   × D213 unités : la ligne repliée de la feuille > D214 : une ligne sans unité lisible est proposée, son champ « Unité » reste vide, la ligne repliée dit « unité à préciser » 130ms
+     → expected '1Maris OtterIngrédients · 610,00 CHF' to contain 'proposé'
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  3 failed | 2 passed | 7 skipped (12)
+
+TEMOIN jus0Journey (garde levée sur HEAD) :
+   × JUS-0 : contrats du parcours justificatif (défauts corrigés en JUS-1) > C3 — une ligne lue qui existe déjà au stock n’est pas rattachée d’office à cet article, sans écriture avant confirmation 147ms
+   × JUS-1 : achat déjà enregistré et propositions de stock > ne propose aucun article de stock, ni sur la ligne compacte ni dans le résumé, sans écriture 31ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  2 failed | 116 passed (118)

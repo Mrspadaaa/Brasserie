@@ -3,6 +3,7 @@ node_modules/
 dist/
 functions/lib/
 functions/node_modules/
+tools/design-lint/node_modules/
 
 # Firebase
 .firebase/

@@ -1,0 +1,77 @@
+{
+ "recette": "stout S1 (Nugget 46 g à 60′)",
+ "demandes": {
+  "plus d’agrumes": {
+   "pool80": {
+    "remplacementsApresProgres": 51,
+    "parUsage": {
+     "bittering": 5,
+     "dual": 19,
+     "aroma": 27,
+     "inconnu": 0
+    },
+    "alphaAu_moins_8": 17,
+    "grammesMedians": 87
+   },
+   "poolTout": {
+    "remplacementsApresProgres": 182,
+    "parUsage": {
+     "bittering": 11,
+     "dual": 63,
+     "aroma": 87,
+     "inconnu": 21
+    },
+    "alphaAu_moins_8": 80,
+    "grammesMedians": 78
+   }
+  },
+  "plus de tropicaux": {
+   "pool80": {
+    "remplacementsApresProgres": 46,
+    "parUsage": {
+     "bittering": 0,
+     "dual": 22,
+     "aroma": 24,
+     "inconnu": 0
+    },
+    "alphaAu_moins_8": 24,
+    "grammesMedians": 73
+   },
+   "poolTout": {
+    "remplacementsApresProgres": 86,
+    "parUsage": {
+     "bittering": 0,
+     "dual": 34,
+     "aroma": 44,
+     "inconnu": 8
+    },
+    "alphaAu_moins_8": 52,
+    "grammesMedians": 67
+   }
+  },
+  "bannir résineux": {
+   "pool80": {
+    "remplacementsApresProgres": 52,
+    "parUsage": {
+     "bittering": 7,
+     "dual": 22,
+     "aroma": 23,
+     "inconnu": 0
+    },
+    "alphaAu_moins_8": 29,
+    "grammesMedians": 67
+   },
+   "poolTout": {
+    "remplacementsApresProgres": 297,
+    "parUsage": {
+     "bittering": 31,
+     "dual": 76,
+     "aroma": 88,
+     "inconnu": 102
+    },
+    "alphaAu_moins_8": 149,
+    "grammesMedians": 73
+   }
+  }
+ }
+}

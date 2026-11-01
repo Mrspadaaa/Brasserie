@@ -1,0 +1,19 @@
+ ✓ tests/unit/hopIndexV4/saturationD195.test.ts (11 tests) 13851ms
+   ✓ D195 R1 : la demande prime sur la bande > bière saturée en agrumes, « plus d’agrumes » : l’excès d’agrumes est dit mais voulu ; aucun noble da
+   ✓ D195 R1 : la demande prime sur la bande > sans l’option, l’ordre d’avant : les nobles passent devant et l’agrume est « hors du style »  893ms
+   ✓ D195 R1 : la demande prime sur la bande > une famille qu’il demande de baisser n’est pas non plus un défaut  1362ms
+   ✓ D195 R2 : sous un quart de cran, ce n’est pas « hors du style » > un excès sous un quart de cran est marqué minuscule, pas hors du style, et ne com
+   ✓ D195 R4 : au whirlpool et au dry hop, l’emploi au frais range à rang égal > un houblon peu employé au frais porte sa raison écrite (sa part, la mé
+   ✓ D195 R4 : au whirlpool et au dry hop, l’emploi au frais range à rang égal > sans l’option, aucune clé ni raison  1601ms
+   ✓ D195 R4 : au whirlpool et au dry hop, l’emploi au frais range à rang égal > un houblon sans usage connu ne recule pas, et un ajout au 10′ non plus 
+ ✓ tests/unit/hopIndexV4/fraisT3.test.ts (12 tests) 22946ms
+   ✓ t3 : R4 range par l’emploi au frais, en continu > la clé d’un ajout au dry hop = médiane − part au frais ; absente (neutre) sans donnée ; absent
+   ✓ t3 : R4 range par l’emploi au frais, en continu > plus d’ajouts différents : la clé prend de nombreuses valeurs (continue), pas deux  1530ms
+   ✓ t3 : R4 range par l’emploi au frais, en continu > un assemblage : la clé est la moyenne pondérée par la dose  1964ms
+   ✓ t3 : R4 range par l’emploi au frais, en continu > à rang égal (famille citée et typicité), le plus employé au frais passe devant ; R4 ne réordonn
+   ✓ t3 : R4 range par l’emploi au frais, en continu > Warrior (7 % au frais) passe après Cascade, Centennial (38 et 41 %) à rang égal : c’est la part,
+   ✓ t3 : R4 range par l’emploi au frais, en continu > jamais une exclusion : mêmes voies avec et sans R4 ; la raison écrite de celles qui reculent  2824m
+   ✓ t3 : R4 range par l’emploi au frais, en continu > aucune étiquette : l’usage Beer Maverick (aroma, dual, bittering) ne change pas l’ordre  3020ms
+   ✓ t3 : R4 range par l’emploi au frais, en continu > sans la part au frais dans la table (ancienne table, ou houblon hors Beer Analytics) : rien ne bouge 
+   ✓ t3 : R4 range par l’emploi au frais, en continu > au 60′ et pour diminuer ou augmenter : pas de clé (R4 ne lit que les ajouts au whirlpool et au dry
+      Tests  23 passed (23)

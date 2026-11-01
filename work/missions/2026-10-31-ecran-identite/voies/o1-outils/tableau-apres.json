@@ -1,0 +1,1793 @@
+{
+ "profil": "sans-houblons",
+ "outils": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\refonte-frontend\\v4\\tournoi\\outils",
+ "concepts": {
+  "e1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e4/etat.html : S3, rayons hors échelle : 8px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e2/etat.html : S3, rayons hors échelle : 8px×2 4px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/e5/etat.html : S3, rayons hors échelle : 4px×2"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/g1/etat.html : S3, rayons hors échelle : 8px×6"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "e6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/g2/etat.html : S3, rayons hors échelle : 8px×7"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "ECHEC",
+    "detail": [
+     "CONTRASTE ECHEC 1 problème(s)",
+     "g5 etat.html : « plein » à 4.11:1 (4.5 au moins) sur le fond peint"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/g5/etat.html : S3, rayons hors échelle : 12px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "g6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/i1/etat.html : S3, rayons hors échelle : 8px×16"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/i3/etat.html : S3, rayons hors échelle : 8px×26"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/i2/etat.html : S3, rayons hors échelle : 8px×16"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/i4/etat.html : S3, rayons hors échelle : 8px×9 4px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/i5/etat.html : S3, rayons hors échelle : 8px×6"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "i6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/i6/etat.html : S3, rayons hors échelle : 4px×8 8px×3"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/r6/etat.html : S3, rayons hors échelle : 4px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "ECHEC",
+    "detail": [
+     "CONTRASTE ECHEC 7 problème(s)",
+     "r3 etat.html : « 0 » à 2.77:1 (4.5 au moins) sur le fond peint",
+     "r3 etat.html : « 5 » à 2.77:1 (4.5 au moins) sur le fond peint",
+     "r3 etat.html : « 10 » à 2.79:1 (4.5 au moins) sur le fond peint",
+     "r3 etat.html : « 15 » à 2.79:1 (4.5 au moins) sur le fond peint",
+     "r3 etat.html : « 20 » à 2.8:1 (4.5 au moins) sur le fond peint",
+     "r3 etat.html : « 25 » à 4.31:1 (4.5 au moins) sur le fond peint",
+     "r3 etat.html : « 30 » à 3.29:1 (4.5 au moins) sur le fond peint"
+    ]
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u1 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/u1/etat.html : S3, rayons hors échelle : 8px×9"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u2 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/u2/etat.html : S3, rayons hors échelle : 8px×11"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u3 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/u3/etat.html : S3, rayons hors échelle : 8px×17"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "r5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u4 : 2 teinte(s) franche(s) au premier écran hors alerte (4°, 38°), 3 au moins : trop retenu"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/u4/etat.html : S3, rayons hors échelle : 8px×6"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u5 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/u5/etat.html : S3, rayons hors échelle : 8px×2"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "u6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "ECHEC",
+    "detail": [
+     "COULEURS ECHEC 1 problème(s)",
+     "u6 : 1 teinte(s) franche(s) au premier écran hors alerte (38°), 3 au moins : trop retenu"
+    ]
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/u6/etat.html : S3, rayons hors échelle : 8px×6"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "OK",
+    "detail": []
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/v2/etat.html : S3, rayons hors échelle : 8px×7"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "ECHEC",
+    "detail": [
+     "CONTRASTE ECHEC 4 problème(s)",
+     "v3 etat.html : « 10 » à 3.72:1 (4.5 au moins) sur le fond peint",
+     "v3 etat.html : « 60 » à 4.11:1 (4.5 au moins) sur le fond peint",
+     "v3 etat.html : « 10 » à 3.72:1 (4.5 au moins) sur le fond peint",
+     "v3 etat.html : « 60 » à 4.11:1 (4.5 au moins) sur le fond peint"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/v3/etat.html : S3, rayons hors échelle : 8px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/v4/etat.html : S3, rayons hors échelle : 2px×5"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "ECHEC",
+    "detail": [
+     "CONTRASTE ECHEC 2 problème(s)",
+     "v5 etat.html : « 21A » à 3.39:1 (4.5 au moins) sur le fond peint",
+     "v5 etat.html : « 22C » à 4.4:1 (4.5 au moins) sur le fond peint"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/v5/etat.html : S3, rayons hors échelle : 6px×3"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "v6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "ECHEC",
+    "detail": [
+     "CONTRASTE ECHEC 1 problème(s)",
+     "v6 etat.html : « 100 » à 1.98:1 (4.5 au moins) sur le fond peint"
+    ]
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/v6/etat.html : S3, rayons hors échelle : 9px×2"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/w1/etat.html : S3, rayons hors échelle : 8px×10"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/w2/etat.html : S3, rayons hors échelle : 8px×13"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/w3/etat.html : S3, rayons hors échelle : 8px×10"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/w4/etat.html : S3, rayons hors échelle : 8px×8"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/w5/etat.html : S3, rayons hors échelle : 8px×3 4px×1"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z2": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/z2/etat.html : S3, rayons hors échelle : 8px×1 4px×5"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "w6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/w6/etat.html : S3, rayons hors échelle : 8px×4"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z1": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/z1/etat.html : S3, rayons hors échelle : 4px×6 8px×4"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z4": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/z4/etat.html : S3, rayons hors échelle : 4px×4 8px×6"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z5": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/z5/etat.html : S3, rayons hors échelle : 4px×2"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z6": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/z6/etat.html : S3, rayons hors échelle : 4px×2"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  },
+  "z3": {
+   "mots": {
+    "etat": "OK",
+    "detail": []
+   },
+   "couleurs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "survol": {
+    "etat": "OK",
+    "detail": []
+   },
+   "blocs": {
+    "etat": "OK",
+    "detail": []
+   },
+   "contraste": {
+    "etat": "OK",
+    "detail": []
+   },
+   "standard": {
+    "etat": "ECHEC",
+    "detail": [
+     "STANDARD ECHEC 1 problème(s)",
+     "../../v0/z3/etat.html : S3, rayons hors échelle : 8px×7 2px×16 4px×2"
+    ]
+   },
+   "parlant": {
+    "etat": "OK",
+    "detail": []
+   },
+   "brutes": {
+    "etat": "OK",
+    "detail": []
+   }
+  }
+ },
+ "panel": {
+  "sortie": "48 captures · remplissage médian 0,58, 5 sous 0,50 · ressemblance moyenne 0,83 · paires presque identiques 0/1128 (0 %)\nPANEL OK\n",
+  "code": 0
+ }
+}

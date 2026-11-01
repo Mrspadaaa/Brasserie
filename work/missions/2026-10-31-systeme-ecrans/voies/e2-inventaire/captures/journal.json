@@ -1,0 +1,99 @@
+{
+  "base": "http://127.0.0.1:5631",
+  "ids": [
+    "finances-synthese",
+    "onglet-bord",
+    "brassins-volumes"
+  ],
+  "erreurs": [
+    "chargement non terminé : finances-synthese",
+    "chargement non terminé : onglet-bord",
+    "chargement non terminé : brassins-volumes",
+    "toast encore là : etape-identite"
+  ],
+  "bloques": [],
+  "captures": [
+    {
+      "id": "finances-synthese",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-systeme-ecrans\\voies\\e2-inventaire\\captures\\finances-synthese-390.png",
+      "titres": [
+        "Situation financière",
+        "Pour une situation fiable",
+        "Règlements à suivre"
+      ],
+      "boutons": [
+        "Synthèse",
+        "Opérations",
+        "Prévisions",
+        "Annuel",
+        "Situation",
+        "Coûts",
+        "Solde et paramètres financiers",
+        "Renseigner le solde de trésorerie",
+        "Vérifier le solde de départLa trésorerie ne peut pas encore être confirmée.",
+        "Tout voir",
+        "Comprendre mes dépensesCompagnon brasseur"
+      ]
+    },
+    {
+      "id": "onglet-bord",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-systeme-ecrans\\voies\\e2-inventaire\\captures\\onglet-bord-390.png",
+      "titres": [
+        "À la brasserie",
+        "Brassins",
+        "Stocks",
+        "Agenda"
+      ],
+      "boutons": [
+        "Tous",
+        "Voir",
+        "Ouvrir les finances",
+        "Gérer"
+      ]
+    },
+    {
+      "id": "brassins-volumes",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-systeme-ecrans\\voies\\e2-inventaire\\captures\\brassins-volumes-390.png",
+      "titres": [
+        "Aucune recette à adapter"
+      ],
+      "boutons": [
+        "Brassins (0)",
+        "Recettes (0)",
+        "Atelier R&D",
+        "Adapter les volumes",
+        "Atelier Houblons V5.5"
+      ]
+    },
+    {
+      "id": "etape-identite",
+      "fichier": "C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\Brasserie\\work\\missions\\2026-10-31-systeme-ecrans\\voies\\e2-inventaire\\captures\\etape-identite-390.png",
+      "entete": "Identité1/7Identité — étape 1 sur 7",
+      "libelles": [
+        "Fermer",
+        "Coller une recette",
+        "Thème sombre (cave)",
+        "Identité",
+        "Fermentescibles",
+        "Houblons",
+        "Levure",
+        "Paliers",
+        "Eau et sels",
+        "Récapitulatif",
+        "Coller une recette trouvée",
+        "Identité",
+        "Nom de la bière",
+        "Style",
+        "Ouvrir la liste",
+        "Volume en fermenteur30L",
+        "Durée d’ébullition60min",
+        "Objectif NOLO · ≤ 0,5 %",
+        "Choix pour ce brassin",
+        "Espace libre choisi (%)20",
+        "Repères et osmosée",
+        "Retour",
+        "Suivant — Fermentescibles"
+      ]
+    }
+  ]
+}

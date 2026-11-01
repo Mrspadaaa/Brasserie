@@ -1,0 +1,13 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "compilerOptions": { "noEmit": true },
+  "include": [],
+  "files": [
+    "../../../../../src/domain/finance/ledger.ts",
+    "../../../../../src/domain/finance/forecast.ts",
+    "../../../../../src/ui/finance/FinanceForecastSummary.tsx",
+    "../../../../../tests/unit/depense/onglets/ta3-a-payer.test.ts",
+    "../../../../../tests/unit/depense/onglets/ta4-sans-echeance.test.ts",
+    "../../../../../tests/unit/depense/onglets/ta6-tendance.test.ts"
+  ]
+}

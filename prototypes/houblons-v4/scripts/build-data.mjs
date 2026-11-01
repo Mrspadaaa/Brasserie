@@ -9,7 +9,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 // c6 (26.10) : la décision de rattachement d'une fiche à une variété (alias, origine non répertoriée, variétés ajoutées) est celle de fusion.mjs.
-import { analyser, lireSources, lireTable, verifierTable, SOURCES_NOMS, cleFiche } from '../../../src/data/hopV4/rattachement.mjs';
+import { analyser, lireSources, lireTable, verifierTable, SOURCES_NOMS, cleFiche, strip, cle } from '../../../src/data/hopV4/rattachement.mjs';
+import { appliquerC9 } from '../../../scripts/collecte-hop/c9-ajouts.mjs';
 
 const here = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const repo = path.resolve(here, '../..');
@@ -45,6 +46,7 @@ const origin = (o) => ORIGIN.find(([re]) => re.test(o || ''))?.[1] || o || null;
 const ORIGIN_FIX = { 'hallertau-taurus': 'Allemagne', northdown: 'Royaume-Uni' };
 // c6 : Equinox est Ekuanot (un seul identifiant) ; ses noms deviennent des alias d'Ekuanot. Table : src/data/hopV4/alias-noms.json.
 const table = lireTable();
+const clesC9 = new Set(Object.keys(table.preuvesC9 ?? {})); // c9 : les noms de doublons fondus (voir plus bas, `remplir`)
 const bmBase = bm.filter((v) => !table.idsFusionnes[v.id]);
 const aliasFusionnes = new Map();
 for (const v of bm) { const cible = table.idsFusionnes[v.id]; if (cible) aliasFusionnes.set(cible, [...(aliasFusionnes.get(cible) ?? []), v.name, ...(v.aliases || [])]); }
@@ -135,9 +137,11 @@ for (const s of [...SOURCES_MOTS, ...SOURCES_COMMUNAUTAIRES]) {
     if (!mots.length && !biere.length) continue;
     const par = lues.get(f.varietyId) ?? new Map();
     lues.set(f.varietyId, par);
-    const cur = par.get(s.id) ?? { mots: [], biere: [], url: null, annee: null, nom: f.nom };
+    const cur = par.get(s.id) ?? { mots: [], c9mots: [], biere: [], url: null, annee: null, nom: f.nom };
     par.set(s.id, cur);
-    for (const [liste, vers] of [[mots, cur.mots], [biere, cur.biere]]) for (const v of liste) { const t = motNet(v); if (t && !vers.some((x) => x.toLowerCase() === t.toLowerCase())) vers.push(t); }
+    // c9 : les mots d'une fiche de doublon fondu (preuvesC9) sont gardés à part ; ils entrent après les mots de base, et leurs mots nouveaux en fin de dictionnaire.
+    const routee = dec.via !== 'collecte' && clesC9.has(strip(cle(f.nom)).k);
+    for (const [liste, vers] of [[mots, routee ? cur.c9mots : cur.mots], [biere, cur.biere]]) for (const v of liste) { const t = motNet(v); if (t && !vers.some((x) => x.toLowerCase() === t.toLowerCase())) vers.push(t); }
     if (mots.length && !cur.url) { cur.url = f.url ?? null; cur.annee = anneeDe(f); }
     if (!mots.length && !cur.url && cur.biere.length) { cur.urlBiere ??= f.url ?? null; cur.anneeBiere ??= anneeDe(f); }
   }
@@ -157,6 +161,12 @@ const sourceIdx = (cle, author, kind, ctx, reference) => {
   return i;
 };
 const motIdx = (m) => { let i = indexMot.get(m); if (i === undefined) { i = dicoMots.length; dicoMots.push(m); indexMot.set(m, i); } return i; };
+// c9 (D199) : les fiches des doublons fondus (alias-noms.json, preuvesC9) mettent leurs mots dans le dictionnaire APRÈS tous les autres. Un mot nouveau y est
+// ajouté en fin de dictionnaire au lieu de décaler les index de toutes les fiches qui le suivent : les autres variétés restent identiques octet pour octet.
+const differes = [];
+const remplir = (fiche, mots, extras = []) => { fiche.push(...mots.map(motIdx)); if (extras.length) differes.push(() => fiche.push(...extras.map(motIdx))); };
+/** Les mots d'une fiche de doublon fondu qui ne sont pas déjà dans les mots de base de la même source. */
+const motsC9 = (x) => (x.c9mots ?? []).filter((m) => !x.mots.some((y) => y.toLowerCase() === m.toLowerCase()));
 const stats = { varietesAvecFiche: 0, fiches: 0, communautairesGardees: 0, communautairesEcartees: 0, parSource: {} };
 /** Les descriptions de sources d'une variété ; `hopsteiner` : ses descriptions déjà lues (primaires aussi). */
 function descriptionsSources(varietyId, hopsteiner) {
@@ -167,23 +177,32 @@ function descriptionsSources(varietyId, hopsteiner) {
   for (const s of SOURCES_MOTS) {
     const x = par.get(s.id);
     if (!x) continue;
-    if (x.mots.length) {
-      out.push([sourceIdx(s.id, s.author, s.kind, s.ctx ?? 'unspecified', `https://${hotes.get(s.id)}`), x.annee ?? 0, ...x.mots.map(motIdx)]);
-      primaires.push(...x.mots);
+    const extras = motsC9(x);
+    if (x.mots.length || extras.length) {
+      const fiche = [sourceIdx(s.id, s.author, s.kind, s.ctx ?? 'unspecified', `https://${hotes.get(s.id)}`), x.annee ?? 0];
+      out.push(fiche);
+      remplir(fiche, x.mots, extras);
+      primaires.push(...x.mots, ...extras);
     }
-    stats.parSource[s.id] = (stats.parSource[s.id] ?? 0) + (x.mots.length ? 1 : 0);
+    stats.parSource[s.id] = (stats.parSource[s.id] ?? 0) + (x.mots.length || extras.length ? 1 : 0);
   }
   // Agrégats : une seule fiche communautaire (HopDatabase puis hops-json, mots réunis), si elle n'est pas une recopie.
-  const com = SOURCES_COMMUNAUTAIRES.map((s) => ({ s, x: par.get(s.id) })).filter((c) => c.x?.mots.length);
+  const com = SOURCES_COMMUNAUTAIRES.map((s) => ({ s, x: par.get(s.id) })).filter((c) => c.x?.mots.length || motsC9(c.x ?? { mots: [] }).length);
   if (com.length) {
-    const mots = [];
+    const mots = [], extras = [];
     // Mots seuls : une entrée de plus de quatre mots est une phrase du texte libre de hops-json (« Very mild with pleasant hoppy notes »), pas un descripteur.
-    for (const { x } of com) for (const m of x.mots) if (m.split(' ').length <= 4 && !mots.some((y) => y.toLowerCase() === m.toLowerCase())) mots.push(m);
-    const part = primaires.length ? mots.filter((m) => recopie(m, primaires)).length / mots.length : 0;
-    if (!mots.length || part >= 0.5) stats.communautairesEcartees++;
+    const sur = (m) => m.split(' ').length <= 4;
+    for (const { x } of com) for (const m of x.mots) if (sur(m) && !mots.some((y) => y.toLowerCase() === m.toLowerCase())) mots.push(m);
+    for (const { x } of com) for (const m of motsC9(x)) if (sur(m) && ![...mots, ...extras].some((y) => y.toLowerCase() === m.toLowerCase())) extras.push(m);
+    // La décision « recopie d'une source primaire » porte sur les mots de base quand il y en a (comme avant c9), sinon sur ceux des doublons fondus.
+    const ref = mots.length ? mots : extras;
+    const part = primaires.length ? ref.filter((m) => recopie(m, primaires)).length / ref.length : 0;
+    if (!ref.length || part >= 0.5) stats.communautairesEcartees++;
     else {
       stats.communautairesGardees++;
-      out.push([sourceIdx('communaute', 'HopDatabase / hops-json', 'community', 'unspecified', `https://${hotes.get('hopdatabase')}`), 0, ...mots.map(motIdx)]);
+      const fiche = [sourceIdx('communaute', 'HopDatabase / hops-json', 'community', 'unspecified', `https://${hotes.get('hopdatabase')}`), 0];
+      out.push(fiche);
+      remplir(fiche, mots, extras);
     }
   }
   if (out.length) { stats.varietesAvecFiche++; stats.fiches += out.length; }
@@ -305,9 +324,12 @@ const ajoutComplet = ({ n, nbSources, alpha, peuDeDonnees }) => ({
 const TIER1 = process.env.C6_TIER1 ?? 'aucune';
 const bases = decision.nouvelles.map(ajoutBase);
 const tier1 = bases.filter((b) => (TIER1 === 'toutes' ? true : TIER1 === 'aucune' ? false : !b.peuDeDonnees)).map(ajoutComplet);
+const resoudreDifferes = () => { while (differes.length) differes.shift()(); };
+resoudreDifferes();
 // Les dictionnaires du catalogue de démarrage s'arrêtent ici ; le fichier des ajouts à la demande a ses propres mots.
 const descMotsDemarrage = dicoMots.slice();
 const tier2Brut = bases.filter((b) => !(TIER1 === 'toutes' ? true : TIER1 === 'aucune' ? false : !b.peuDeDonnees)).map(ajoutComplet);
+resoudreDifferes();
 const motsAjouts = [], indexAjouts = new Map();
 const versAjouts = (v) => (v.fiches ? { ...v, fiches: v.fiches.map(([s, an, ...mots]) => [s, an, ...mots.map((i) => { const m = dicoMots[i]; if (!indexAjouts.has(m)) { indexAjouts.set(m, motsAjouts.length); motsAjouts.push(m); } return indexAjouts.get(m); })]) } : v);
 const tier2 = tier2Brut.map(versAjouts);
@@ -330,11 +352,13 @@ const out = {
 };
 fs.mkdirSync(path.join(here, '..', '..', 'src', 'data', 'hopV4'), { recursive: true });
 fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'proto-data.json'), JSON.stringify(out));
-fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'catalogue-ajouts.json'), JSON.stringify({
+// c9 (31.10, D199) : les sources croisées (fiches, recettes), les natures et les doublons prouvés s'appliquent aux ajouts avant l'écriture : scripts/collecte-hop/c9-ajouts.mjs.
+const ajoutsC6 = {
   version: 1,
-  note: 'c6 (26.10, D98) : variétés citées par les sources et absentes de Beer Maverick, à peu de données (une seule source, ou pas d\'α). Chargé à la demande, jamais au démarrage. Même forme que proto-data.json (descSources, descMots, varieties).',
+  note: 'c6 (26.10, D98) : variétés citées par les sources et absentes de Beer Maverick, à peu de données (une seule source, ou pas d\'α). Chargé à la demande, jamais au démarrage. Même forme que proto-data.json (descSources, descMots, varieties). c9 (31.10, D199) : plages croisées des sources (`croise`), valeurs déclarées par les recettes (`declare`), nature des produits (`nature`).',
   descSources: tableSources.map((t) => t.slice(0, 4)), descMots: motsAjouts, varieties: tier2,
-}));
+};
+fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'catalogue-ajouts.json'), JSON.stringify(appliquerC9(ajoutsC6, { decision, sources: sourcesNoms, complements, table })));
 console.log(`AJOUTS c6 ${decision.nouvelles.length} variétés des sources : ${tier1.length} au démarrage, ${tier2.length} à la demande (dont ${tier2.filter((v) => v.peuDeDonnees).length} peuDeDonnees) ; C6_TIER1=${TIER1}`);
 const inStock = stock.filter((s) => s.grams > 0);
 console.log(`DATA-V4 ${varieties.length} variétés (${varieties.filter((v) => v.tags.length).length} avec descripteurs, ${varieties.filter((v) => v.hopsteinerId).length} reliées à Hopsteiner), ${styles.length} styles, ${inStock.length} houblons en stock (${inStock.reduce((t, s) => t + s.grams, 0)} g), ${stock.length - inStock.length} épuisés` + (unlinked.length ? ` ; non reliés : ${unlinked.join(', ')}` : ''));

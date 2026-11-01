@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v6 · Identité · les instruments</title>
+<!-- Lot v0 Identité · série v · v6 · page statique, fabriquée par fabrique.mjs (données : neipa v3, style 22A BJCP 2021). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  *{box-sizing:border-box} [hidden]{display:none!important} html,body{margin:0;background:#FFFFFF}
+  body{font-family:'Source Sans 3',system-ui,sans-serif;color:#111111;font-size:14px;line-height:1.35;-webkit-font-smoothing:antialiased}
+  .v6{max-width:390px;margin:0 auto;min-height:844px;position:relative;padding-bottom:72px}
+  .v6 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  .v6 .v6-mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .v6-hd{padding:0 8px;background:#FFFFFF}
+  .v6-tb{display:flex;align-items:center;gap:6px;min-height:36px;padding-block:2px}
+  .v6 .v6-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#666666;flex:none}
+  .v6-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;margin:0}
+  .v6-tt b{font-size:16px;font-weight:600;color:#111111} .v6-tt span{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#666666}
+  .v6 .v6-ab{height:28px;padding:0 6px;font-size:12px;color:#333333;text-decoration:underline;text-underline-offset:2px;flex:none}
+  .v6-rail{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .v6 .v6-rail button{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:28px;padding:0 4px;flex:none}
+  .v6-rail span{font-size:12px;color:#666666;white-space:nowrap}
+  .v6-rail i{display:block;height:6px;border-radius:9px;background:#DDDDDD}
+  .v6-rail [aria-current] span{color:#111111;font-weight:600} .v6-rail [aria-current] i{background:#111111}
+  .v6-bd{margin:6px 8px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:5px 10px;border:1px solid #DDDDDD;background:#F5F5F5;border-radius:16px}
+  .v6-bd>div{display:flex;align-items:baseline;gap:4px}
+  .v6-bd .v6-bl{font-size:13px;color:#666666} .v6-bd .v6-bv{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap}
+  .v6-bp{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:#DDDDDD}
+  .v6-bp i{position:absolute;top:0;bottom:0;border-radius:9px;background:#9E9E9E} .v6-bp b{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:#111111}
+  .v6-pt{width:10px;height:10px;border-radius:50%;border:1px solid #BFBFBF;background:#E0A02E;align-self:center}
+  .v6 .v6-fab{position:fixed;right:max(12px,calc(50% - 183px));bottom:16px;width:48px;height:48px;border-radius:50%;background:#111111;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:5}
+  .v6-pied{display:flex;gap:8px;padding:8px 68px 8px 0;margin-top:auto}
+  .v6 .v6-pied button{height:32px;padding:0 10px;border-radius:10px;font-size:13px}
+  .v6 .v6-pied .v6-ret{border:1px solid #DDDDDD;color:#666666} .v6 .v6-pied .v6-sui{background:#111111;color:#fff;font-weight:600}
+  .v6-ds2{display:flex;align-items:center;gap:6px;font-size:12px;color:#666666}
+  .v6 .v6-ds2 button{height:28px;padding:0 10px;border:1.5px dashed #9E9E9E;border-radius:999px;font-size:13px;color:#333333}
+  .v6 .v6-ds2 button::after{content:" ›";color:#666666}
+  .v6 .v6-ds2 button:active{background:#EBEBEB}
+  .v6 .v6-lgb{width:24px;height:24px;border-radius:50%;border:1px solid #BFBFBF;font-size:13px;font-weight:600;color:#333333;flex:none;display:inline-flex;align-items:center;justify-content:center}
+  .v6-lg{background:#FFFFFF;border:1px solid #DDDDDD;border-radius:10px;padding:6px 8px;font-size:13px;color:#333333} .v6-lg p{margin:2px 0}
+  .v6 :focus-visible{outline:2px solid #4F7E9B;outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.v6 *{transition:none!important;animation:none!important}}
+
+  .v6-m{padding:8px 8px 0} .v6-e1{min-height:728px;display:flex;flex-direction:column;gap:8px}
+  .v6-et1{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 2px}
+  .v6-id{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+  .v6 .v6-nm{font-size:22px;font-weight:700;display:flex;align-items:center;gap:6px;min-height:32px}
+  .v6-cr{color:#666666;display:flex}
+  .v6 .v6-sy{display:flex;align-items:center;gap:6px;min-height:28px;font-size:15px;color:#333333}
+  .v6-sy .v6-mono{font-size:13px;color:#666666} .v6-sy svg{color:#666666}
+  .v6 .v6-ps{display:flex;align-items:center;gap:8px}
+  .v6-an{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:conic-gradient(from 200deg,#E0A02E 0deg 40deg,#C87A2C 40deg 110deg,#A0522D 110deg 180deg,#ffffff00 180deg 360deg);border:1px solid #DDDDDD}
+  .v6-dq{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F6D27A,#E9B13E 60%,#D99A28);border:2px solid #fff;box-shadow:0 0 0 1px #BFBFBF}
+  .v6-pl{display:flex;flex-direction:column;font-size:12px;color:#666666;line-height:1.1}
+  .v6-pl b{font-size:20px;color:#111111} .v6-pl em{font-style:normal;font-weight:600;color:#7F5B10}
+  .v6-pn{background:#F5F5F5;border-radius:16px;padding:8px}
+  .v6-ds{display:block} .v6-dn{position:relative} .v6-lgw{position:absolute;right:10px;top:8px} .v6-dn .v6-lg{margin-top:6px}
+  .v6-nuit{color:#F5F0EA}
+  .v6-tk{font:400 12px 'IBM Plex Mono',monospace;fill:#666666}
+  .v6-fgl{font:600 16px 'IBM Plex Mono',monospace;fill:#666666}
+  .v6-lb{font:600 12px 'Source Sans 3',sans-serif;fill:#666666}
+  .v6-ab{font:600 15px 'IBM Plex Mono',monospace;fill:#111111}
+  .v6-og{font:600 16px 'IBM Plex Mono',monospace;fill:#111111}
+  .v6-cv{font:600 22px 'IBM Plex Mono',monospace;fill:#111111}
+  .v6-dx{display:grid;grid-template-columns:196px 1fr;gap:8px}
+  .v6-pc{display:flex;align-items:center;justify-content:center;padding:4px;background:#1A1613}
+  .v6-nuit .v6-tk{fill:#9A8A7E} .v6-nuit .v6-cv{fill:#F5F0EA} .v6-nuit .v6-lb{fill:#9A8A7E}
+  .v6-bs{display:flex;flex-direction:column;gap:6px}
+  .v6-ch{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#666666}
+  .v6-ch input{width:50px;height:36px;border:1px solid #DDDDDD;border-radius:10px;background:#FFFFFF;text-align:center;font-size:16px;font-weight:600;color:#111111}
+  .v6-ev{font-size:12px;color:#2F5F7D}
+  .v6 .v6-sw{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:32px;font-size:14px;font-weight:600;border-top:1px solid #DDDDDD;padding-top:4px}
+  .v6-sw i{width:34px;height:20px;border-radius:12px;background:#BFBFBF;position:relative;flex:none}
+  .v6-sw i::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+  .v6-sw[aria-checked=true] i{background:#111111} .v6-sw[aria-checked=true] i::after{transform:translateX(14px)}
+  .v6 .v6-fm{display:flex;align-items:center;gap:8px;min-height:56px;background:#F5F5F5;border-radius:16px;padding:0 10px}
+  .v6-fl{font-size:14px;font-weight:600}
+  .v6-fj{flex:1;position:relative;height:22px;border-radius:9px;background:#EBEBEB;border:1px solid #DDDDDD}
+  .v6-fj i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:#3F6B2E}
+  .v6-fj b{position:absolute;left:80%;top:-4px;bottom:-4px;border-left:2px dashed #111111}
+  .v6-fv{font-size:15px;font-weight:600} .v6-fs{font-size:12px;color:#666666}
+  .v6 .v6-dp{display:flex;align-items:center;justify-content:space-between;min-height:32px;font-size:13px;color:#333333;padding:0 10px;margin-top:-4px} .v6-dp svg{color:#666666}
+  .v6-etx{margin-top:24px;border-top:1px dashed #BFBFBF;padding-top:8px;display:flex;flex-direction:column;gap:6px}
+  .v6-etx h2{margin:4px 0 0;font-size:13px;color:#666666;font-weight:600}
+</style>
+</head>
+<body>
+<div class="v6" data-variante="v6">
+<header class="v6-hd" data-commun="en-tete">
+    <div class="v6-tb">
+      <button type="button" class="v6-ic" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <p class="v6-tt"><b>Identité</b><span>1/7</span></p>
+      <button type="button" class="v6-ab">Abandonner</button>
+      <button type="button" class="v6-ic" aria-label="Coller une recette"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button type="button" class="v6-ic" aria-label="Thème"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="v6-rail" aria-label="Étapes" data-commun="fil"><button type="button" aria-current="step" aria-label="Identité"><span>Identité</span><i></i></button><button type="button" aria-label="Malts/sucres"><span>Malts/sucres</span><i></i></button><button type="button" aria-label="Houblons"><span>Houblons</span><i></i></button><button type="button" aria-label="Levure"><span>Levure</span><i></i></button><button type="button" aria-label="Paliers"><span>Paliers</span><i></i></button><button type="button" aria-label="Eau"><span>Eau</span><i></i></button><button type="button" aria-label="Récap."><span>Récap.</span><i></i></button></nav>
+  </header><div class="v6-bd" data-commun="bandeau" aria-label="Mesures de la recette">
+    <div><span class="v6-bl">Grain</span><span class="v6-bv">8,6 kg</span></div>
+    <div><span class="v6-bl">OG</span><span class="v6-bv">1,080</span></div>
+    <div><span class="v6-bl">IBU</span><span class="v6-bv">~93</span><span class="v6-bp" role="img" aria-label="style 60–100 IBU"><i style="left:42.9%;width:28.6%"></i><b style="left:66.4%"></b></span></div>
+    <div><span class="v6-bl">EBC</span><span class="v6-pt"></span><span class="v6-bv">9,5</span></div>
+  </div>
+<main class="v6-m">
+  <div class="v6-e1">
+  <section class="v6-et1" aria-label="La bière">
+    <div class="v6-id">
+      <button type="button" class="v6-nm" data-booster="nom">neipa v3 <span class="v6-cr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></span></button>
+      <button type="button" class="v6-sy" data-booster="style">Double IPA <span class="v6-mono">22A</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+    <button type="button" class="v6-ps" data-booster="couleur" aria-label="Couleur : 9,5 EBC, plus pâle que le style 12 à 28">
+  <span class="v6-an"><span class="v6-dq"></span></span>
+  <span class="v6-pl"><b class="v6-mono">9,5</b> EBC<em>pâle</em></span></button>
+  </section>
+  <section class="v6-pn v6-dn" aria-label="Densité et alcool" data-booster="densimetre"><span class="v6-lgw"><button type="button" class="v6-lgb" data-role="legende-bouton" aria-expanded="false" aria-controls="v6-lg" aria-label="Légende">?</button></span><svg viewBox="0 0 358 178" width="358" class="v6-ds" role="img" aria-label="Densimètre : OG 1,080 dans la plage 1,065–1,085 ; FG à la levure ; alcool ~8,1 à 9,5 % si la FG tombe dans le style">
+    <defs><pattern id="v6-h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#FFFFFF"/><line x1="0" y1="0" x2="0" y2="6" stroke="#DDDDDD" stroke-width="3"/></pattern>
+    <marker id="v6-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111111"/></marker></defs><path d="M46 99 H332 a13 13 0 0 1 0 26 H46 Z" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/><ellipse cx="24" cy="112" rx="22" ry="18" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/><ellipse cx="18" cy="112" rx="8" ry="7" fill="#EBEBEB"/><line x1="50" y1="125" x2="50" y2="115" stroke="#666666" stroke-width="1"/><line x1="63.9999999999997" y1="125" x2="63.9999999999997" y2="120" stroke="#666666" stroke-width="1"/><line x1="77.9999999999994" y1="125" x2="77.9999999999994" y2="115" stroke="#666666" stroke-width="1"/><line x1="91.9999999999991" y1="125" x2="91.9999999999991" y2="120" stroke="#666666" stroke-width="1"/><line x1="105.9999999999988" y1="125" x2="105.9999999999988" y2="115" stroke="#666666" stroke-width="1"/><line x1="119.99999999999851" y1="125" x2="119.99999999999851" y2="120" stroke="#666666" stroke-width="1"/><line x1="133.9999999999982" y1="125" x2="133.9999999999982" y2="115" stroke="#666666" stroke-width="1"/><line x1="147.9999999999979" y1="125" x2="147.9999999999979" y2="120" stroke="#666666" stroke-width="1"/><line x1="161.9999999999976" y1="125" x2="161.9999999999976" y2="115" stroke="#666666" stroke-width="1"/><line x1="175.99999999999733" y1="125" x2="175.99999999999733" y2="120" stroke="#666666" stroke-width="1"/><line x1="189.99999999999702" y1="125" x2="189.99999999999702" y2="115" stroke="#666666" stroke-width="1"/><line x1="203.9999999999967" y1="125" x2="203.9999999999967" y2="120" stroke="#666666" stroke-width="1"/><line x1="217.99999999999642" y1="125" x2="217.99999999999642" y2="115" stroke="#666666" stroke-width="1"/><line x1="231.99999999999613" y1="125" x2="231.99999999999613" y2="120" stroke="#666666" stroke-width="1"/><line x1="245.99999999999582" y1="125" x2="245.99999999999582" y2="115" stroke="#666666" stroke-width="1"/><line x1="259.9999999999955" y1="125" x2="259.9999999999955" y2="120" stroke="#666666" stroke-width="1"/><line x1="273.9999999999952" y1="125" x2="273.9999999999952" y2="115" stroke="#666666" stroke-width="1"/><line x1="287.99999999999494" y1="125" x2="287.99999999999494" y2="120" stroke="#666666" stroke-width="1"/><line x1="301.99999999999466" y1="125" x2="301.99999999999466" y2="115" stroke="#666666" stroke-width="1"/><line x1="315.9999999999943" y1="125" x2="315.9999999999943" y2="120" stroke="#666666" stroke-width="1"/><line x1="329.99999999999403" y1="125" x2="329.99999999999403" y2="115" stroke="#666666" stroke-width="1"/><text x="50" y="142" class="v6-tk" text-anchor="middle">1,000</text><text x="190.0000000000001" y="142" class="v6-tk" text-anchor="middle">1,050</text><text x="330.0000000000002" y="142" class="v6-tk" text-anchor="middle">1,100</text><rect x="72.40000000000002" y="101" width="28.00000000000003" height="22" rx="4" fill="url(#v6-h)" stroke="#9E9E9E" stroke-dasharray="3 3"/><rect x="231.99999999999986" y="101" width="56.00000000000003" height="22" rx="4" fill="#BFBFBF"/><text x="86.40000000000003" y="164" class="v6-fgl" text-anchor="middle">FG —</text><path d="M274.0000000000002 99 C 274.0000000000002 42, 86.40000000000003 42, 86.40000000000003 94" fill="none" stroke="#111111" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#v6-fl)"/><text x="192.20000000000013" y="46" class="v6-ab" text-anchor="middle">alc. ~8,1–9,5 %</text><line x1="274.0000000000002" y1="96" x2="274.0000000000002" y2="128" stroke="#111111" stroke-width="4" stroke-linecap="round"/><text x="274.0000000000002" y="166" class="v6-og" text-anchor="middle">OG 1,080</text></svg><div class="v6-ds2" data-booster="du-style"><span>Du style</span><button type="button">Empâtage</button><button type="button">Fermentation</button></div><div id="v6-lg" class="v6-lg" data-role="legende" hidden><p>Densimètre : la plage OG du style en gris plein, la plage FG hachurée.</p><p>La FG vient de la levure, étape 4 ; l’alcool ~ suppose une FG dans la plage du style.</p><p>Cadran : la plage IBU du style ; aiguille, ta recette.</p><p>Anneau de la pastille : les teintes du style, 12–28 EBC.</p></div></section>
+  <section class="v6-dx">
+    <div class="v6-pn v6-pc"><svg viewBox="0 0 180 172" width="180" class="v6-cd v6-nuit" role="img" aria-label="Amertume : ~93 IBU, style 60 à 100" data-booster="amertume"><path d="M16.0 118.0 A74 74 0 0 1 164.0 118.0" fill="none" stroke="#3D342E" stroke-width="18" stroke-linecap="round"/><path d="M90.0 44.0 A74 74 0 0 1 154.1 81.0" fill="none" stroke="#9A8A7E" stroke-width="18"/><text x="40.0" y="122.0" class="v6-tk" text-anchor="middle">0</text><text x="90.0" y="72.0" class="v6-tk" text-anchor="middle">60</text><text x="133.3" y="97.0" class="v6-tk" text-anchor="middle">100</text><text x="140.0" y="122.0" class="v6-tk" text-anchor="middle">120</text><line x1="90" y1="118" x2="143.2" y2="72.5" stroke="#F2C14E" stroke-width="4" stroke-linecap="round"/><circle cx="90" cy="118" r="6" fill="#F2C14E"/><text x="90" y="148" class="v6-cv" text-anchor="middle">~93</text><text x="90" y="166" class="v6-lb" text-anchor="middle">IBU</text></svg></div>
+    <div class="v6-pn v6-bs" aria-label="Le brassin">
+      <label class="v6-ch" data-booster="volume"><span>Volume</span><span><input class="v6-mono" inputmode="decimal" value="24"> L</span></label>
+      <label class="v6-ch" data-booster="ebullition"><span>Ébullition</span><span><input class="v6-mono" inputmode="numeric" value="60"> min</span></label>
+      <span class="v6-ev"><span class="v6-mono">~3 L</span> évaporés</span>
+      <button type="button" class="v6-sw" role="switch" aria-checked="false" data-booster="nolo">NOLO <span class="v6-mono">≤ 0,5 %</span><i></i></button>
+    </div>
+  </section>
+  <button type="button" class="v6-fm" data-booster="fermenteur"><span class="v6-fl">Fermenteur</span>
+    <span class="v6-fj"><i style="width:80%"></i><b></b></span><span class="v6-mono v6-fv">24/30 L</span><span class="v6-fs">6 L libres</span></button>
+  <button type="button" class="v6-dp"><span>Espace libre <span class="v6-mono">~20 %</span> · cuve 45 L</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+  <footer class="v6-pied" data-commun="pied"><button type="button" class="v6-ret" disabled>Retour</button><button type="button" class="v6-sui">Suivant — Malts/sucres</button></footer>
+  <button type="button" class="v6-fab" aria-label="Actions rapides" data-commun="lanceur"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+  </div>
+  <section class="v6-etx" aria-label="Autres états">
+    <h2>Recette neuve : les instruments à vide, plages du style seules</h2>
+    <section class="v6-et1"><button type="button" class="v6-ps" data-booster="couleur" aria-label="Couleur : 9,5 EBC, plus pâle que le style 12 à 28">
+  <span class="v6-an"><span class="v6-dq" style="background:transparent;border:1.5px dashed #9E9E9E"></span></span>
+  <span class="v6-pl"><b class="v6-mono">—</b> EBC</span></button></section>
+    <section class="v6-pn"><svg viewBox="0 0 358 178" width="358" class="v6-ds" role="img" aria-label="Densimètre : OG 1,080 dans la plage 1,065–1,085 ; FG à la levure ; alcool ~8,1 à 9,5 % si la FG tombe dans le style">
+    <defs><pattern id="v6-hn" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#FFFFFF"/><line x1="0" y1="0" x2="0" y2="6" stroke="#DDDDDD" stroke-width="3"/></pattern>
+    <marker id="v6-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#111111"/></marker></defs><path d="M46 99 H332 a13 13 0 0 1 0 26 H46 Z" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/><ellipse cx="24" cy="112" rx="22" ry="18" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/><ellipse cx="18" cy="112" rx="8" ry="7" fill="#EBEBEB"/><line x1="50" y1="125" x2="50" y2="115" stroke="#666666" stroke-width="1"/><line x1="63.9999999999997" y1="125" x2="63.9999999999997" y2="120" stroke="#666666" stroke-width="1"/><line x1="77.9999999999994" y1="125" x2="77.9999999999994" y2="115" stroke="#666666" stroke-width="1"/><line x1="91.9999999999991" y1="125" x2="91.9999999999991" y2="120" stroke="#666666" stroke-width="1"/><line x1="105.9999999999988" y1="125" x2="105.9999999999988" y2="115" stroke="#666666" stroke-width="1"/><line x1="119.99999999999851" y1="125" x2="119.99999999999851" y2="120" stroke="#666666" stroke-width="1"/><line x1="133.9999999999982" y1="125" x2="133.9999999999982" y2="115" stroke="#666666" stroke-width="1"/><line x1="147.9999999999979" y1="125" x2="147.9999999999979" y2="120" stroke="#666666" stroke-width="1"/><line x1="161.9999999999976" y1="125" x2="161.9999999999976" y2="115" stroke="#666666" stroke-width="1"/><line x1="175.99999999999733" y1="125" x2="175.99999999999733" y2="120" stroke="#666666" stroke-width="1"/><line x1="189.99999999999702" y1="125" x2="189.99999999999702" y2="115" stroke="#666666" stroke-width="1"/><line x1="203.9999999999967" y1="125" x2="203.9999999999967" y2="120" stroke="#666666" stroke-width="1"/><line x1="217.99999999999642" y1="125" x2="217.99999999999642" y2="115" stroke="#666666" stroke-width="1"/><line x1="231.99999999999613" y1="125" x2="231.99999999999613" y2="120" stroke="#666666" stroke-width="1"/><line x1="245.99999999999582" y1="125" x2="245.99999999999582" y2="115" stroke="#666666" stroke-width="1"/><line x1="259.9999999999955" y1="125" x2="259.9999999999955" y2="120" stroke="#666666" stroke-width="1"/><line x1="273.9999999999952" y1="125" x2="273.9999999999952" y2="115" stroke="#666666" stroke-width="1"/><line x1="287.99999999999494" y1="125" x2="287.99999999999494" y2="120" stroke="#666666" stroke-width="1"/><line x1="301.99999999999466" y1="125" x2="301.99999999999466" y2="115" stroke="#666666" stroke-width="1"/><line x1="315.9999999999943" y1="125" x2="315.9999999999943" y2="120" stroke="#666666" stroke-width="1"/><line x1="329.99999999999403" y1="125" x2="329.99999999999403" y2="115" stroke="#666666" stroke-width="1"/><text x="50" y="142" class="v6-tk" text-anchor="middle">1,000</text><text x="190.0000000000001" y="142" class="v6-tk" text-anchor="middle">1,050</text><text x="330.0000000000002" y="142" class="v6-tk" text-anchor="middle">1,100</text><rect x="72.40000000000002" y="101" width="28.00000000000003" height="22" rx="4" fill="url(#v6-hn)" stroke="#9E9E9E" stroke-dasharray="3 3"/><rect x="231.99999999999986" y="101" width="56.00000000000003" height="22" rx="4" fill="#BFBFBF"/><text x="86.40000000000003" y="164" class="v6-fgl" text-anchor="middle">FG —</text><text x="259.9999999999999" y="162" class="v6-lb" text-anchor="middle">OG —</text></svg></section>
+    <div class="v6-pn v6-pc"><svg viewBox="0 0 180 172" width="180" class="v6-cd v6-nuit" role="img" aria-label="Amertume : ~93 IBU, style 60 à 100" data-booster="amertume"><path d="M16.0 118.0 A74 74 0 0 1 164.0 118.0" fill="none" stroke="#3D342E" stroke-width="18" stroke-linecap="round"/><path d="M90.0 44.0 A74 74 0 0 1 154.1 81.0" fill="none" stroke="#9A8A7E" stroke-width="18"/><text x="40.0" y="122.0" class="v6-tk" text-anchor="middle">0</text><text x="90.0" y="72.0" class="v6-tk" text-anchor="middle">60</text><text x="133.3" y="97.0" class="v6-tk" text-anchor="middle">100</text><text x="140.0" y="122.0" class="v6-tk" text-anchor="middle">120</text><text x="90" y="148" class="v6-cv" text-anchor="middle">—</text><text x="90" y="166" class="v6-lb" text-anchor="middle">IBU</text></svg></div>
+  </section>
+</main>
+</div>
+<script>(function(){
+  var sw=document.querySelector('.v6-sw');sw.addEventListener('click',function(){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');});
+  var lb=document.querySelector('.v6-lgb'),lg=document.getElementById('v6-lg');
+  if(lb&&lg){lb.addEventListener('click',function(){lg.hidden=!lg.hidden;lb.setAttribute('aria-expanded',String(!lg.hidden));});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!lg.hidden){lg.hidden=true;lb.setAttribute('aria-expanded','false');lb.focus();}});}
+})();</script>
+</body>
+</html>

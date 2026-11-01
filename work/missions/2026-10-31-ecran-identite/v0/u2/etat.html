@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>u2 — Les trois questions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{width:390px;min-height:844px;margin:0 auto;font-family:"Source Sans 3",system-ui,sans-serif;color:#111;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+.u2-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.u2-top{display:flex;align-items:center;gap:6px;height:50px;padding:0 8px 0 6px}
+.u2-ico{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;color:#333}
+.u2-titre{font-size:20px;font-weight:700;margin-left:2px}
+.u2-titre span{font-weight:400;color:#666;font-size:16px;margin-left:4px}
+.u2-aband{margin-left:auto;font-size:16px;text-decoration:underline;text-underline-offset:3px;padding:4px 6px}
+.u2-fil{display:flex;justify-content:space-between;padding:0 12px;border-bottom:1px solid #DDD}
+.u2-fil a{font-size:14px;color:#666;text-decoration:none;padding:4px 0 8px;position:relative;white-space:nowrap}
+.u2-fil a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:4px;border-radius:2px;background:#DDD}
+.u2-fil a[aria-current]{color:#111;font-weight:600}
+.u2-fil a[aria-current]::after{background:#111}
+.u2-band{margin:8px 8px 0;height:36px;border:1px solid #DDD;background:#F5F5F5;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:14px;color:#666}
+.u2-band b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600;color:#111;margin-left:3px}
+.u2-ibu{display:inline-flex;align-items:center;gap:4px}
+.u2-ibu i{display:inline-block;width:40px;height:8px;border-radius:4px;background:#DDD;position:relative}
+.u2-ibu i::before{content:"";position:absolute;left:18px;width:12px;top:0;bottom:0;background:#9E9E9E;border-radius:4px}
+.u2-ibu i::after{content:"";position:absolute;left:28px;top:-3px;width:2px;height:14px;background:#111}
+.u2-ebc{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;margin:0 2px 0 4px}
+
+.u2-main{padding:6px 12px 12px 8px}
+.u2-q{display:grid;grid-template-columns:32px 1fr;column-gap:8px;position:relative;padding-bottom:12px}
+.u2-q::before{content:"";position:absolute;left:15px;top:30px;bottom:0;width:2px;background:#DDD}
+.u2-q:last-child::before{display:none}
+.u2-n{width:32px;height:32px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;position:relative;z-index:1}
+.u2-h{font-size:20px;font-weight:700;line-height:32px}
+.u2-c{grid-column:2;display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.u2-style{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 10px 0 12px;border:1px solid #BFBFBF;border-radius:8px;background:#fff;font-size:20px;font-weight:700}
+.u2-style em{font-style:normal;font-size:12px;font-weight:400;color:#666;margin-left:6px}
+.u2-chips{display:flex;flex-wrap:wrap;gap:4px}
+.u2-chip{height:28px;padding:0 8px;border-radius:14px;background:#F5F5F5;border:1px solid #DDD;font-size:15px;color:#333;display:inline-flex;align-items:center;gap:4px}
+.u2-chip b{font-weight:600;color:#111}
+.u2-nom{display:flex;align-items:center;gap:8px;height:36px;border-bottom:1px dashed #BFBFBF}
+.u2-nom label{font-size:12px;color:#666}
+.u2-nom input{flex:1;border:0;background:none;font-size:18px;font-weight:600;height:32px;outline-offset:2px}
+.u2-big{display:flex;align-items:center;justify-content:space-between;background:#F5F5F5;border-radius:8px;padding:8px}
+.u2-big button{width:64px;height:72px;border-radius:8px;background:#fff;border:1px solid #DDD;display:grid;place-items:center}
+.u2-big button:active{background:#EBEBEB}
+.u2-big output{font-size:64px;font-weight:600;text-align:center;line-height:1}
+.u2-big output small{display:block;font-family:"Source Sans 3",sans-serif;font-size:14px;font-weight:400;color:#666;margin-top:2px}
+.u2-ferm{display:flex;flex-direction:column;gap:4px;font-size:15px;color:#333}
+.u2-ferm .u2-fh{display:flex;justify-content:space-between;align-items:baseline}
+.u2-ferm .u2-fh small{font-size:13px;color:#666}
+.u2-ferm .u2-bar{height:36px;border-radius:8px;background:repeating-linear-gradient(135deg,#fff 0 4px,#DDD 4px 8px);border:1px solid #BFBFBF;position:relative;overflow:hidden}
+.u2-ferm .u2-bar i{position:absolute;left:0;top:0;bottom:0;background:#111;transition:width .2s}
+.u2-ferm b{font-weight:600}
+.u2-ferm.u2-trop .u2-bar i{background:#C8382F}
+.u2-ferm.u2-trop b{color:#A8291F}
+.u2-pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.u2-evap{font-size:13px;color:#666;text-align:center;margin-top:4px}
+.u2-nolo{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;background:#F5F5F5;border-radius:8px;padding:12px;height:100%;min-height:96px;gap:6px}
+.u2-nolo span{font-size:16px;font-weight:600}
+.u2-nolo span small{display:block;font-size:12px;font-weight:400;color:#666}
+.u2-sw{width:48px;height:28px;border-radius:14px;background:#BFBFBF;position:relative;flex:0 0 auto}
+.u2-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .18s}
+.u2-sw[aria-checked="true"]{background:#3F6B2E}
+.u2-sw[aria-checked="true"]::after{transform:translateX(20px)}
+.u2-small{grid-template-columns:1fr}
+.u2-esp{display:flex;align-items:center;gap:8px;font-size:15px;color:#333}
+.u2-esp b{margin-left:auto;font-weight:600;font-size:15px;white-space:nowrap}
+.u2-esp > span:first-child{white-space:nowrap}
+.u2-pc{font-family:"IBM Plex Mono",monospace;font-size:14px;color:#666;margin-left:-4px}
+.u2-seg{display:flex;border:1px solid #BFBFBF;border-radius:8px;overflow:hidden}
+.u2-seg button{height:32px;min-width:36px;padding:0 6px;white-space:nowrap;font-family:"IBM Plex Mono",monospace;font-size:14px;border-left:1px solid #DDD}
+.u2-seg button:first-child{border-left:0}
+.u2-seg button[aria-checked="true"]{background:#111;color:#fff}
+.u2-ferm.u2-haut .u2-bar i{background:#7F5B10}
+.u2-cv{height:28px !important}
+.u2-cv i{background:#666 !important}
+.u2-mat{display:flex;align-items:center;gap:8px;height:48px;padding:0 10px 0 12px;border:1px solid #DDD;border-radius:8px;font-size:15px;color:#666;margin-top:4px}
+.u2-mat b{margin-left:auto;font-weight:600;color:#111}
+.u2-small .u2-big{padding:16px 8px}.u2-small .u2-big button{width:40px;height:40px}
+.u2-small .u2-big output{font-size:40px}
+@media (prefers-reduced-motion: reduce){.u2-sw::after,.u2-ferm i{transition:none}}
+</style></head>
+<body data-variante="u2">
+
+<header class="u2-top" data-commun="entete">
+  <button class="u2-ico" aria-label="Retour"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <h1 class="u2-titre">Identité<span>1/7</span></h1>
+  <button class="u2-aband">Abandonner</button>
+  <button class="u2-ico" aria-label="Importer une recette"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2a1.5 1.5 0 0 1 1.5 1.5v3"/><path d="M9 5.5H7A1.5 1.5 0 0 0 5.5 7v12A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5v-2"/><path d="M11 13.5h9.5M17.5 10.5l3 3-3 3"/></svg></button>
+  <button class="u2-ico" aria-label="Thème"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></button>
+</header>
+<nav class="u2-fil" data-commun="etapes" aria-label="Étapes">
+  <a href="#" aria-current="step">Identité</a><a href="#">Malts/sucres</a><a href="#">Houblons</a><a href="#">Levure</a><a href="#">Paliers</a><a href="#">Eau</a><a href="#">Récap.</a>
+</nav>
+<div class="u2-band" data-commun="bandeau">
+  <span>Grain<b>8,6 kg</b></span><span>OG<b>1,080</b></span><span class="u2-ibu">IBU<b>~93</b><i></i></span><span>EBC<span class="u2-ebc"></span><b>9,5</b></span>
+</div>
+
+<main class="u2-main">
+  <section class="u2-q" aria-labelledby="u2-h1"><span class="u2-n">1</span><h2 class="u2-h" id="u2-h1">Quelle bière ?</h2>
+    <div class="u2-c">
+      <button class="u2-style" data-booster="style"><span>Double IPA<em>22A, BJCP 2021</em></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="u2-chips" data-booster="reperes"><span class="u2-chip">OG <b class="u2-mono">1,065–1,085</b></span><span class="u2-chip">IBU <b class="u2-mono">60–100</b></span></div>
+      <div class="u2-nom"><label for="u2-nom">Nom</label><input id="u2-nom" type="text" value="neipa v3" autocomplete="off"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></div>
+    </div>
+  </section>
+  <section class="u2-q" aria-labelledby="u2-h2"><span class="u2-n">2</span><h2 class="u2-h" id="u2-h2">Combien ?</h2>
+    <div class="u2-c">
+      <div class="u2-big" data-booster="volume"><button aria-label="Moins 1 litre" data-d="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><output class="u2-mono" id="u2-vol">24 L</output><button aria-label="Plus 1 litre" data-d="1"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+      <div class="u2-ferm" id="u2-ferm"><span class="u2-fh"><span>Fermenteur 30 L</span><b id="u2-lib"><span class="u2-mono">6 L</span> libres</b></span><span class="u2-bar"><i id="u2-fill" style="width:80%"></i><u id="u2-rep" style="position:absolute;top:0;bottom:0;left:80%;border-left:2px dashed #9C7020"></u></span><span class="u2-fh"><small>repère, estimé</small><small id="u2-cuve"></small></span></div>
+      <div class="u2-esp" data-booster="espace-libre"><span>Espace libre</span><span class="u2-seg" role="radiogroup" aria-label="Espace libre en %"><button role="radio" data-p="15" aria-checked="false">15</button><button role="radio" data-p="20" aria-checked="true">20</button><button role="radio" data-p="25" aria-checked="false">25</button></span><span class="u2-pc">%</span><b id="u2-cons"><span class="u2-mono">24 L</span> conseillés</b></div>
+    </div>
+  </section>
+  <section class="u2-q" aria-labelledby="u2-h3"><span class="u2-n">3</span><h2 class="u2-h" id="u2-h3">Comment ?</h2>
+    <div class="u2-c">
+      <div class="u2-pair">
+        <div class="u2-small"><div class="u2-big" data-booster="ebullition"><button aria-label="Moins 5 minutes" data-e="-5"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><output class="u2-mono" id="u2-min">60<small>min d’ébullition</small></output><button aria-label="Plus 5 minutes" data-e="5"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div><p class="u2-evap" id="u2-evap">≈ 3 L évaporés, estimé</p></div>
+        <div class="u2-nolo"><span>NOLO<small>≤ 0,5 %</small></span><button class="u2-sw" role="switch" aria-checked="false" aria-label="Objectif NOLO" data-booster="nolo"></button></div>
+      </div>
+      <div class="u2-ferm"><span class="u2-fh"><span>Cuve 45 L, avant ébullition</span><b><span class="u2-mono" id="u2-cvv">≈ 27 L</span> estimé</b></span><span class="u2-bar u2-cv"><i id="u2-cvj" style="width:60%"></i></span></div>
+    </div>
+  </section>
+</main>
+<script>(function(){
+  var FERM = 30;
+  function evap(vol, min){ var k = 0.10 * min / 60; return vol / (1 - k) - vol; }
+  function fmt(n){ return String(Math.round(n * 10) / 10).replace('.', ','); }
+  function fmtE(n){ return String(Math.round(n)); }
+
+  var vol = 24, min = 60, pc = 20, $ = function(i){ return document.getElementById(i); };
+  document.querySelectorAll('.u2-seg button').forEach(function(b){ b.onclick = function(){ pc = +b.dataset.p; document.querySelectorAll('.u2-seg button').forEach(function(x){ x.setAttribute('aria-checked', x === b); }); rendre(); }; });
+  function rendre(){
+    var cons = Math.floor(FERM * (100 - pc) / 100);
+    $('u2-cons').innerHTML = '<span class="u2-mono">' + cons + ' L</span> conseillés';
+    $('u2-rep').style.left = (cons / FERM * 100) + '%';
+    $('u2-ferm').classList.toggle('u2-haut', vol > cons && vol <= FERM);
+    $('u2-vol').innerHTML = vol + ' L';
+    $('u2-min').innerHTML = min + '<small>min d’ébullition</small>';
+    $('u2-evap').textContent = '≈ ' + fmtE(evap(vol, min)) + ' L évaporés, estimé';
+    var lib = FERM - vol;
+    $('u2-fill').style.width = Math.min(100, vol / FERM * 100) + '%';
+    $('u2-lib').innerHTML = '<span class="u2-mono">' + Math.abs(lib) + ' L</span> ' + (lib >= 0 ? 'libres' : 'de trop'); $('u2-cuve').textContent = ''; var cv = vol + evap(vol, min); $('u2-cvv').textContent = '≈ ' + fmtE(cv) + ' L'; $('u2-cvj').style.width = Math.min(100, cv / 45 * 100) + '%';
+    $('u2-ferm').classList.toggle('u2-trop', lib < 0);
+  }
+  document.querySelectorAll('[data-d]').forEach(function(b){ b.onclick = function(){ vol = Math.max(1, vol + +b.dataset.d); rendre(); }; });
+  document.querySelectorAll('[data-e]').forEach(function(b){ b.onclick = function(){ min = Math.max(0, Math.min(180, min + +b.dataset.e)); rendre(); }; });
+  document.querySelector('.u2-sw').onclick = function(){ this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true'); };
+  rendre();
+})();</script>
+</body></html>

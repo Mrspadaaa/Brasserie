@@ -1,0 +1,271 @@
+{
+ "maj": "2026-10-31",
+ "source": "r4-a (passe 1 de r4, 31.10), capture r4-et-r4a-repos.png. Son choix : « 7 · r4 · Chaque nombre est un curseur … Quelques adaptations mais si non c'est bien ! » ; sur r4-a : « ça semble vraiment bien ». Les 24 éléments de NOTE.md, chacun avec son marqueur data-element dans la maquette (etat.html) et dans l'app (l'étape Identité de BrewWizard).",
+ "contrat": "L'étape Identité de l'app reprend chacun de ces éléments à l'écran (marqueur data-element) ou l'écarte avec sa raison écrite dans la NOTE (un quart au plus) : D105, D206, controle-reprise.mjs --inventaire=<ce fichier>. L'en-tête, le fil, le bandeau et le pied (1, 2, 3, 23) sont communs aux sept étapes : ils sont marqués dans la maquette ; dans l'app ils restent ceux de l'assistant, inchangés.",
+ "elements": [
+  {
+   "id": "r4a-entete",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "L'en-tête commun : ‹, « Identité 1/7 », Abandonner, l'import (coller une recette) et le thème.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "r4a-fil",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Le fil des sept étapes, Identité en cours.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "r4a-bandeau",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Le bandeau commun Grain · OG · IBU · EBC : les valeurs de la recette y restent, un chiffre, une fois.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "r4a-nom",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Le nom de la bière en 20 px, souligné en pointillé : la convention « ça se tape ».",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-style",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La pastille du style, teintée de sa famille, avec le code du style (« Double IPA 22A ⌄ ») ; elle ouvre la liste des styles.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-plages",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Les pastilles OG 1,065–1,085 et IBU 60–100 sous le style, puis « Repères ⌄ » (greffe u2).",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-puce-fermenteur",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La puce tiretée « fermenteur 30 L » : elle ouvre la tuile Matériel sur le champ du fermenteur ; le trait devient plein quand la capacité s'écarte du profil.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g2-fermenteur-apres.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-volume-champ",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "Aussi il faut que 7 · r4 · Chaque nombre est un curseur soit accessible en mode ordinateur, donc pouvoir modifier aussi les chiffre directement",
+   "quoi": "La grande lecture du volume (48 px), pointillée au repos : un champ sur place, inputmode décimal, ↑ ↓ ±1 L, Entrée valide, Échap annule.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/ordinateur-1280-ebullition-120.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-libres",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "« 6 L libres » ; au-delà du fermenteur « +1 L de trop » en rouge (role=alert) ; à égalité « 0 L libre, plein » (greffe g2).",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g3-volume-apres.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-piste-volume",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La piste du volume : doré, hachuré libre, zone rouge au-delà du fermenteur, trait rouge, dépassement en rouge foncé ; la règle suit le fermenteur, la cuve et le volume.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-conseil",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Le repère « conseil ~24 » en tireté sur la piste ; il suit le fermenteur (~48 pour 60 L).",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g2-fermenteur-apres.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-regle-volume",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La règle par 1 L, chiffres tous les 10, pointe ▶ et « › » au dernier chiffre : elle s'ouvre.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-plein-retire",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La phrase « Fermenteur plein : réduis le volume. » de r4, remplacée par « +1 L de trop » et la zone rouge.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g3-volume-apres.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-cuve",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La barre de la cuve sur la même règle : moût d'avant ébullition, part évaporée en bleu, « ~27 L avant ébullition » (greffe e2) ; dans l'app, mesurée à la limite utile de la cuve, avec « +N L de trop » en rouge et une zone rouge quand elle déborde (D205).",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-ebullition-champ",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "Aussi il faut que 7 · r4 · Chaque nombre est un curseur soit accessible en mode ordinateur, donc pouvoir modifier aussi les chiffre directement",
+   "quoi": "La lecture « 60 min » (48 px), pointillée au repos : un champ sur place, inputmode numérique, arrondi à 5′, ↑ ↓ ±5′.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/ordinateur-1280-ebullition-120.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-curseur-ebullition",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Le curseur d'ébullition par 5′ : la règle s'étend toujours d'une demi-heure au-delà de la valeur, au relâché ou à la saisie ; elle ne bouge pas pendant le glisser.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g1-ebullition-apres.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-evaporation",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La bulle « ~3 L évaporés » sur la piste, d'après le débit du profil.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g1-ebullition-apres.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-regle-ebullition",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La règle par 5′, chiffres tous les 30, pointe ▶ et « 120 › » au dernier chiffre.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-nolo",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "L'interrupteur NOLO ≤ 0,5 % ; le panneau de l'objectif NOLO s'ouvre dessous quand il est allumé.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-espace-libre",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La demi-tuile « Espace libre ~20 % repère » ; elle se déplie sur le choix pour ce brassin (réserve, rinçage).",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-reperes",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "« Repères ⌄ » déplie sur place FG, alcool, EBC (« sous ↓ » quand la recette manque la plage), la source du style (« 22A · BJCP 2021 ») et les propositions d'empâtage et de conduite.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/reperes-ouverts.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-materiel",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "La demi-tuile « Matériel · Royal Catering » ; dépliée : « Fermenteur [30] L » (champ), « ↺ profil » quand la capacité change, les adaptations de la recette au matériel et le résumé des volumes.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/g2-fermenteur-pendant.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "r4a-pied",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Le pied commun « Retour · Suivant — Fermentescibles » et le lanceur + qui ne recouvre rien au repos.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "r4a-etats",
+   "variante": "r4-a",
+   "lot": "31",
+   "date": "2026-10-31",
+   "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+   "quoi": "Les états : l'import « Coller une recette » seulement dans le corps d'une recette vide, volume effacé (« à renseigner », curseur sans pouce), évaporation au repli de 10 %/h dite estimée.",
+   "reserve": "",
+   "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4a-page.png",
+   "facteur": "variété"
+  }
+ ]
+}

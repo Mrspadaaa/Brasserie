@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Identité · panel v0 · 31.10</title>
+<style>
+/* Disposition du 24.10 : une rangée par série, le nom à gauche (au téléphone : au-dessus) ; la référence puis les six
+   concepts en vignettes serrées, trois au téléphone. Chaque vignette s'ouvre en grand au toucher. Rien ne défile en
+   largeur. Polices système seules : aucune ressource externe. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.2rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 8px; }
+.sur-titre, .note, .legende, .id, .serie, .pastille { font-size: 0.875rem; }
+.sur-titre { letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.legende, .note { color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; }
+#a-choisir p { font-size: 1.05rem; font-weight: 700; }
+.pastille { display: inline-block; padding: 0 8px; border-radius: 999px; background: var(--discret); color: #fff; font-weight: 700; line-height: 1.5; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.serie-nom { font-style: italic; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.vue[data-reference] { grid-column: 1 / -1; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.vue[data-reference] .ecran { border: 3px solid #2f6b1f; }
+.vue figcaption { font-size: 0.875rem; line-height: 1.35; }
+.vue figcaption em { display: block; font-style: italic; }
+.id { font-family: ui-monospace, Consolas, monospace; color: var(--discret); overflow-wrap: anywhere; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 14px; }
+  .vue[data-reference] { grid-column: auto; }
+}
+@media (min-width: 1200px) {
+  .planche { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 960px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 80vh; object-fit: contain; background: #fff; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Identité 1/7</p>
+    <h1>Identité · panel v0 · 31.10</h1>
+    <section id="a-choisir" aria-label="À choisir">
+      <p>Écran Identité : 48 concepts en 8 séries. Le classement du critique viendra ensuite ; tout est montré.</p>
+    </section>
+    <p class="legende">Une vignette s'ouvre en grand au toucher. Pastille « à choisir » : rien n'est tranché à ce stade. La référence, en premier, est l'écran d'aujourd'hui, en production.</p>
+  </header>
+
+  <section class="rangee" data-voies="e" aria-labelledby="t-e">
+    <div class="nom">
+      <h2 id="t-e">Série e</h2>
+      <p class="serie-nom">l'échelle du matériel</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/e1.png" data-titre="e1 · froide · Le champ est le contenant"><img src="img/e1.png" alt="Capture e1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">e1</span> · froide · <span class="serie">série e · l'échelle du matériel</span><em>Le champ est le contenant : le volume se saisit dans son contenant.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/e2.png" data-titre="e2 · froide · Une seule règle en litres"><img src="img/e2.png" alt="Capture e2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">e2</span> · froide · <span class="serie">série e · l'échelle du matériel</span><em>Une seule règle en litres : fermenteur et cuve en barres, conseil marqué.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/e3.png" data-titre="e3 · tiède · Deux cuves à la même échelle"><img src="img/e3.png" alt="Capture e3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">e3</span> · tiède · <span class="serie">série e · l'échelle du matériel</span><em>Deux cuves à la même échelle : le moût descend au fermenteur.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/e4.png" data-titre="e4 · tiède · Le fermenteur debout à droite"><img src="img/e4.png" alt="Capture e4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">e4</span> · tiède · <span class="serie">série e · l'échelle du matériel</span><em>Le fermenteur debout à droite ; un trait relie « 24 L » au moût.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/e5.png" data-titre="e5 · chaude · Ébullition en cadran"><img src="img/e5.png" alt="Capture e5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">e5</span> · chaude · <span class="serie">série e · l'échelle du matériel</span><em>Ébullition en cadran, comme un minuteur ; la coupe montre la vapeur.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/e6.png" data-titre="e6 · chaude · Le fermenteur est la carte"><img src="img/e6.png" alt="Capture e6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">e6</span> · chaude · <span class="serie">série e · l'échelle du matériel</span><em>Le fermenteur est la carte : on glisse le niveau du moût.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="g" aria-labelledby="t-g">
+    <div class="nom">
+      <h2 id="t-g">Série g</h2>
+      <p class="serie-nom">le geste d'abord</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/g1.png" data-titre="g1 · froide · Rangées au pouce"><img src="img/g1.png" alt="Capture g1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">g1</span> · froide · <span class="serie">série g · le geste d'abord</span><em>Rangées au pouce : chaque valeur se règle là où elle se lit.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/g2.png" data-titre="g2 · froide · L'œil en haut, le pouce en bas"><img src="img/g2.png" alt="Capture g2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">g2</span> · froide · <span class="serie">série g · le geste d'abord</span><em>En haut ce qu'on lit, en bas ce qu'on règle, au pouce.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/g3.png" data-titre="g3 · tiède · Trois questions, trois rails"><img src="img/g3.png" alt="Capture g3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">g3</span> · tiède · <span class="serie">série g · le geste d'abord</span><em>Trois questions, trois rails : quelle bière, combien, comment.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/g4.png" data-titre="g4 · tiède · Les molettes"><img src="img/g4.png" alt="Capture g4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">g4</span> · tiède · <span class="serie">série g · le geste d'abord</span><em>Les molettes : volume et ébullition côte à côte, qu'on fait défiler.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/g5.png" data-titre="g5 · chaude · Une réglette pour tout"><img src="img/g5.png" alt="Capture g5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">g5</span> · chaude · <span class="serie">série g · le geste d'abord</span><em>Une réglette pour tout : un ruban gradué qu'on fait glisser.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/g6.png" data-titre="g6 · chaude · L'anneau du pouce"><img src="img/g6.png" alt="Capture g6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">g6</span> · chaude · <span class="serie">série g · le geste d'abord</span><em>L'anneau du pouce : le fermenteur est l'anneau extérieur, qu'on tourne.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="i" aria-labelledby="t-i">
+    <div class="nom">
+      <h2 id="t-i">Série i</h2>
+      <p class="serie-nom">l'entrée</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/i1.png" data-titre="i1 · froide · Deux départs, puis plus rien"><img src="img/i1.png" alt="Capture i1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">i1</span> · froide · <span class="serie">série i · l'entrée</span><em>Deux départs sur recette vide, puis plus rien.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/i2.png" data-titre="i2 · froide · Posé ou proposé"><img src="img/i2.png" alt="Capture i2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">i2</span> · froide · <span class="serie">série i · l'entrée</span><em>Posé ou proposé : vert lu dans le texte, ambre proposé par l'app.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/i3.png" data-titre="i3 · tiède · Coller d'abord, sinon un style"><img src="img/i3.png" alt="Capture i3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">i3</span> · tiède · <span class="serie">série i · l'entrée</span><em>Coller d'abord, sinon un style pris dans un nuancier à sa couleur.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/i4.png" data-titre="i4 · tiède · Reprendre v3 vers v4"><img src="img/i4.png" alt="Capture i4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">i4</span> · tiède · <span class="serie">série i · l'entrée</span><em>Reprendre v3 vers v4 : une gouttière lit ce qui a changé.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/i5.png" data-titre="i5 · chaude · La roue des styles"><img src="img/i5.png" alt="Capture i5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">i5</span> · chaude · <span class="serie">série i · l'entrée</span><em>La roue des styles : douze secteurs, du plus pâle au plus sombre.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/i6.png" data-titre="i6 · chaude · Le texte collé devient l'écran"><img src="img/i6.png" alt="Capture i6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">i6</span> · chaude · <span class="serie">série i · l'entrée</span><em>Le texte collé devient l'écran : ce que l'app a lu est surligné.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="r" aria-labelledby="t-r">
+    <div class="nom">
+      <h2 id="t-r">Série r</h2>
+      <p class="serie-nom">des représentations distinctes</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/r1.png" data-titre="r1 · froide · La jauge à la place de la phrase"><img src="img/r1.png" alt="Capture r1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">r1</span> · froide · <span class="serie">série r · des représentations distinctes</span><em>La jauge à la place de la phrase, sous le volume.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/r2.png" data-titre="r2 · froide · Des puces, sans clavier"><img src="img/r2.png" alt="Capture r2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">r2</span> · froide · <span class="serie">série r · des représentations distinctes</span><em>Des puces, sans clavier : chaque choix se pose au pouce.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/r3.png" data-titre="r3 · tiède · Le fermenteur qu'on remplit au pouce"><img src="img/r3.png" alt="Capture r3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">r3</span> · tiède · <span class="serie">série r · des représentations distinctes</span><em>Le fermenteur qu'on remplit au pouce : le volume se glisse.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/r4.png" data-titre="r4 · tiède · Chaque nombre est un curseur"><img src="img/r4.png" alt="Capture r4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">r4</span> · tiède · <span class="serie">série r · des représentations distinctes</span><em>Chaque nombre est un curseur : le volume porte le fermenteur.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/r5.png" data-titre="r5 · chaude · Deux anneaux qu'on tourne"><img src="img/r5.png" alt="Capture r5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">r5</span> · chaude · <span class="serie">série r · des représentations distinctes</span><em>Deux anneaux qu'on tourne : fermenteur à l'extérieur, ébullition à l'intérieur.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/r6.png" data-titre="r6 · chaude · Un centre de contrôle"><img src="img/r6.png" alt="Capture r6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">r6</span> · chaude · <span class="serie">série r · des représentations distinctes</span><em>Un centre de contrôle : chaque tuile est la commande et sa réponse.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="u" aria-labelledby="t-u">
+    <div class="nom">
+      <h2 id="t-u">Série u</h2>
+      <p class="serie-nom">libre, brief minimal</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/u1.png" data-titre="u1 · froide · Une ligne par réglage"><img src="img/u1.png" alt="Capture u1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">u1</span> · froide · <span class="serie">série u · libre, brief minimal</span><em>Une ligne par réglage : le nom à gauche, la valeur à droite.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/u2.png" data-titre="u2 · froide · Les trois questions"><img src="img/u2.png" alt="Capture u2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">u2</span> · froide · <span class="serie">série u · libre, brief minimal</span><em>Les trois questions : 1 Quelle bière ? 2 Combien ? 3 Comment ?</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/u3.png" data-titre="u3 · tiède · Six tuiles"><img src="img/u3.png" alt="Capture u3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">u3</span> · tiède · <span class="serie">série u · libre, brief minimal</span><em>Six tuiles : une tuile par réponse, la tuile est le contrôle.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/u4.png" data-titre="u4 · tiède · Lire en haut, régler en bas"><img src="img/u4.png" alt="Capture u4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">u4</span> · tiède · <span class="serie">série u · libre, brief minimal</span><em>Lire en haut, régler en bas : un pupitre sombre sous le pouce.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/u5.png" data-titre="u5 · chaude · L'affiche"><img src="img/u5.png" alt="Capture u5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">u5</span> · chaude · <span class="serie">série u · libre, brief minimal</span><em>L'affiche : la bière en typographie, NOLO en tampon.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/u6.png" data-titre="u6 · chaude · Les molettes"><img src="img/u6.png" alt="Capture u6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">u6</span> · chaude · <span class="serie">série u · libre, brief minimal</span><em>Les molettes : style, litres et minutes, sur une bande dorée.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="v" aria-labelledby="t-v">
+    <div class="nom">
+      <h2 id="t-v">Série v</h2>
+      <p class="serie-nom">vraies valeurs d'abord</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/v1.png" data-titre="v1 · froide · Les repères du style ouverts"><img src="img/v1.png" alt="Capture v1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">v1</span> · froide · <span class="serie">série v · vraies valeurs d'abord</span><em>Les repères du style ouverts en cinq pistes, la recette posée dessus.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/v2.png" data-titre="v2 · froide · Chiffre contre chiffre"><img src="img/v2.png" alt="Capture v2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">v2</span> · froide · <span class="serie">série v · vraies valeurs d'abord</span><em>Chiffre contre chiffre : une fiche du style en vraies valeurs.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/v3.png" data-titre="v3 · tiède · Le profil au style"><img src="img/v3.png" alt="Capture v3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">v3</span> · tiède · <span class="serie">série v · vraies valeurs d'abord</span><em>Le profil au style : cinq axes, la recette en une ligne.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/v4.png" data-titre="v4 · tiède · Le style se choisit sur tes chiffres"><img src="img/v4.png" alt="Capture v4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">v4</span> · tiède · <span class="serie">série v · vraies valeurs d'abord</span><em>Le style se choisit sur tes chiffres : six styles voisins en liste.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/v5.png" data-titre="v5 · chaude · La carte des styles"><img src="img/v5.png" alt="Capture v5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">v5</span> · chaude · <span class="serie">série v · vraies valeurs d'abord</span><em>Une carte OG-IBU : chaque style est son rectangle.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/v6.png" data-titre="v6 · chaude · Les instruments du brasseur"><img src="img/v6.png" alt="Capture v6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">v6</span> · chaude · <span class="serie">série v · vraies valeurs d'abord</span><em>Les instruments du brasseur : densimètre, cadran d'amertume, pastille.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="w" aria-labelledby="t-w">
+    <div class="nom">
+      <h2 id="t-w">Série w</h2>
+      <p class="serie-nom">la réponse d'abord</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/w1.png" data-titre="w1 · froide · Chaque champ montre sa conséquence"><img src="img/w1.png" alt="Capture w1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">w1</span> · froide · <span class="serie">série w · la réponse d'abord</span><em>Chaque champ montre sa conséquence : la valeur se lit en grand.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/w2.png" data-titre="w2 · froide · Le récap, éditable ligne par ligne"><img src="img/w2.png" alt="Capture w2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">w2</span> · froide · <span class="serie">série w · la réponse d'abord</span><em>Le récap, éditable ligne par ligne : une ligne par réponse.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/w3.png" data-titre="w3 · tiède · La bière en carte"><img src="img/w3.png" alt="Capture w3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">w3</span> · tiède · <span class="serie">série w · la réponse d'abord</span><em>La bière en carte, de la même famille que la carte houblon.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/w4.png" data-titre="w4 · tiède · La phrase-bière"><img src="img/w4.png" alt="Capture w4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">w4</span> · tiède · <span class="serie">série w · la réponse d'abord</span><em>La phrase-bière : chaque mot se touche, sur place.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/w5.png" data-titre="w5 · chaude · L'étiquette de la bière"><img src="img/w5.png" alt="Capture w5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">w5</span> · chaude · <span class="serie">série w · la réponse d'abord</span><em>L'étiquette de la bière : le nom en grand, deux sceaux, un tampon.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/w6.png" data-titre="w6 · chaude · Trois réponses géantes"><img src="img/w6.png" alt="Capture w6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">w6</span> · chaude · <span class="serie">série w · la réponse d'abord</span><em>Trois réponses géantes : quoi, combien, comment, en trois bandes.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" data-voies="z" aria-labelledby="t-z">
+    <div class="nom">
+      <h2 id="t-z">Série z</h2>
+      <p class="serie-nom">créative à fond</p>
+      <p class="note">Deux froides, deux tièdes, deux chaudes.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette data-reference>
+        <button class="ecran" type="button" data-agrandir data-src="img/ref-avant.jpg" data-titre="Référence · Identité 1/7 aujourd'hui"><img src="img/ref-avant.jpg" alt="Référence : l'écran Identité d'aujourd'hui, en production"></button>
+        <figcaption><span class="pastille p-ref">référence</span> <span class="id">prod</span> · <span class="serie">aujourd'hui, en production</span><em>Ce que l'app montre aujourd'hui.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/z1.png" data-titre="z1 · froide · La langue de Houblons"><img src="img/z1.png" alt="Capture z1, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">z1</span> · froide · <span class="serie">série z · créative à fond</span><em>La langue de Houblons : chaque nombre a sa piste, comme l'IBU.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/z2.png" data-titre="z2 · froide · Je décide, ça donne"><img src="img/z2.png" alt="Capture z2, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">z2</span> · froide · <span class="serie">série z · créative à fond</span><em>Je décide, ça donne : chaque décision a sa conséquence en face.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/z3.png" data-titre="z3 · tiède · Bento"><img src="img/z3.png" alt="Capture z3, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">z3</span> · tiède · <span class="serie">série z · créative à fond</span><em>Bento : chaque décision est une tuile colorée, avec son grand chiffre.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/z4.png" data-titre="z4 · tiède · Le verre"><img src="img/z4.png" alt="Capture z4, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">z4</span> · tiède · <span class="serie">série z · créative à fond</span><em>Le verre : la bière dans son verre, à la couleur EBC réelle.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/z5.png" data-titre="z5 · chaude · Le dialogue"><img src="img/z5.png" alt="Capture z5, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">z5</span> · chaude · <span class="serie">série z · créative à fond</span><em>Le dialogue : quatre questions, les réponses en bulles éditables.</em></figcaption>
+      </figure>
+      <figure class="vue" data-vignette>
+        <button class="ecran" type="button" data-agrandir data-src="img/z6.png" data-titre="z6 · chaude · La ligne"><img src="img/z6.png" alt="Capture z6, premier écran"></button>
+        <figcaption><span class="pastille">à choisir</span> <span class="id">z6</span> · chaude · <span class="serie">série z · créative à fond</span><em>La ligne : les décisions sont des stations sur une ligne verte.</em></figcaption>
+      </figure>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>

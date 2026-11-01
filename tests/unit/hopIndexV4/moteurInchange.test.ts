@@ -17,10 +17,13 @@ const ATTENDU = {
   // c6 (26.10, catalogue-complet) : Equinox est Ekuanot (317 variétés, alias « Equinox »), et la table d'alias rattache 26 variétés à des fiches de plus (ou en retire
   // une : la fiche Freestyle Hops Nouvelle-Zélande de Cascade, origine non répertoriée). Anciennes empreintes : donneesMoteur 2266af7e…, sansDescriptions 35969e33…,
   // descriptionsHorsD4 bfa3b563…, profils 12ada130…, substituts 3a8bf578… Aucune formule du moteur n'a changé.
-  donneesMoteur: 'd8794ef561bc7744c0a62992dcba03fbca09373b64e81cf9342af8a3f68ca8b1',
+  // D199 (c9, 31.10) : donneesMoteur d8794ef5… → 28fe2870…, profils 85e2bdc5… → cb4bd848…, substituts 5f7703d6… → 65ace4af…. Huit doublons prouvés sont fondus (alias-noms.json, preuvesC9) :
+  // seules BRU-1 (fiche HPA : « Spicy pineapple », « tropical fruit ») et Cluster Fugget Blend (fiche HopDatabase de Yakima Chief : earthy, grassy, spicy, woody) gagnent une fiche ;
+  // `sansDescriptions` et `descriptionsHorsD4` n'ont pas bougé (aucun champ chiffré ne change), et le dictionnaire de mots n'a qu'un mot de plus, en dernier : aucun autre index ne bouge.
+  donneesMoteur: '28fe28700c5dd3d1c03adf5338ee130179f2fac99485f1842be580c459778eda',
   sansDescriptions: 'f1c74cbc12a1b2087a49e8ddb7dc50f29fe95540421613fd14193bd0f1a28741',
   descriptionsHorsD4: '17b11983ff827b2934f94632d933c6c1129b627cf0016e0c41a2264a31748629', // c6 : seule l'entrée Equinox (sans descripteur) disparaît du tableau
-  profils: '85e2bdc558f8b3d59a21c92b1b165ac37c6b77a4b6e2f6d1200a34304099b3ac',
+  profils: 'cb4bd8484c6c2bb58cfaf66fbb8592a92d09b62ac04f4cbe45d55caac457a99f',
   // Substituer seul (e2-moteur-substitution, #181, D80, 26.10) : le moteur v2 change le classement et les scores de substitutes() ; ancienne
   // empreinte (v1) f3754c80744a017e8da8239476ba5e06c105f9a49bb226550e97cd4a85d61b66. Preuve : les deux autres empreintes (données du
   // moteur, profil des 318 houblons) n'avaient pas bougé, et substitutionV2.test.ts compare ce moteur à la formule mesurée hors ligne.
@@ -31,7 +34,10 @@ const ATTENDU = {
   // D90, g2c (26.10) : ea61f2e1… → 3a8bf578… Seule la phrase de la règle de classement change (« le remplaçant marque une famille indésirable… la moitié au moins
   // de ses fiches la citent », substitution.ts, RANKING) : sans le champ `regle`, l'empreinte reste 97779b94… avant et après (même scores, mêmes rangs, mêmes doses).
   // Aucun style n'est donné ici : le conflit de style, seul changé par D90, n'entre pas dans ces 12 classements ; il est testé dans exclusionStyle.test.ts.
-  substituts: '9e1a3a6d4560d06fd08c2a93bfa321934eabc620c86308b2fbd13b0024040ce1',
+  // D196 (k1-substituer-60, 31.10) : 9e1a3a6d… → 5f7703d6… Seule la phrase de la règle de classement change (RANKING : « à un moment d’amertume, amertume inconnue derrière »,
+  // champ `regle`). Sans `regle`, l'empreinte reste cda1c421… avant et après (contexte par défaut, hors moment d'amertume : mêmes scores, rangs, doses, raisons).
+  // Mesurée avec scripts/eval-hop/k1-mesure.ts (moteurInchange.sansRegle).
+  substituts: '65ace4af16269b1f84e15c92f38c3c5d136bb938e66e4a0b2b3a16c80997254e',
   // D99 (26.10, voie d99-apport-c-defaut) : l'option c de g2d devient le défaut au dry hop (voies.ts : overflowRang). Ces cinq empreintes lisent les données et
   // substitutes(), jamais proposeVoies : AUCUNE ne bouge (rejouées, vertes). Le classement de Suggérer a son contrôle dans apportCDefaut.test.ts.
 };

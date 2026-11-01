@@ -1,10 +1,10 @@
 # L'entonnoir : un lot que le brasseur verra
 
 Un lot de maquettes, de fils de fer ou de pictos s'ouvre large, puis se resserre :
-- un vaste panel de concepts minimalistes, plus nombreux et plus divers : 48 au moins (60 visés) en 6 séries, dans
-  trois chaleurs, la baseline toujours suivie ;
+- un panel de concepts minimalistes et divers : 12 à 16 en 3 ou 4 séries (D204 : « c'est trop demandant en quotas »),
+  dans trois chaleurs, la baseline toujours suivie ;
 - un classement ;
-- 5 candidates, enrichies de greffes prises partout, même dans les variantes les plus extravagantes ;
+- 3 candidates, enrichies de greffes prises partout, même dans les variantes les plus extravagantes ;
 - des passes v2, v3… jusqu'à un résultat satisfaisant ;
 - puis tout est montré.
 
@@ -42,7 +42,7 @@ Contrôlé par `systeme.mjs mission` (M13).
   la NOTE (`--sans=x`). Jamais une page qui « suit rien du tout » (D26, D93).
 - Le brief part de la question du brasseur et du geste. La grille du moteur est une matière, pas un cadre.
 
-## 1. v0 — l'éventail : 60 concepts minimalistes visés, 48 au moins, en 6 séries au moins, un concepteur par série
+## 1. v0 — l'éventail : 12 à 16 concepts minimalistes, en 3 ou 4 séries, un concepteur par série (D204)
 - **Des concepts minimalistes** (« plus minimaliste des les concepts de base mais plus nombreux et diverse ») :
   - **minimaliste veut dire une seule idée, pas un écran vide.** Le 23.10, « réduit à l'essentiel, environ 5 tours » a
     donné 56 pages à moitié vides, toutes sur le même squelette (remplissage médian 0,41 contre 0,62 au lot 21 ;
@@ -163,7 +163,7 @@ Contrôlé par `systeme.mjs mission` (M13).
 
 ## Planche de picto
 - Même entonnoir :
-  - v0 : 6 séries au moins, de 8 propositions ou plus (48 au moins), chacune avec ses genres (par exemple l'objet
+  - v0 : 3 ou 4 séries de 4 propositions ou plus (12 à 16, D204), chacune avec ses genres (par exemple l'objet
     vu autrement, la sensation, le signe, la métaphore, une série en Fable, une série libre), dans les trois
     chaleurs ;
   - tri : un classement, puis des candidates venant d'au moins 3 séries, et des greffes ;
@@ -173,9 +173,9 @@ Contrôlé par `systeme.mjs mission` (M13).
 ## Coût
 - **Lot 22** : 12 agents Opus pour 12 variantes, sans passe d'amélioration.
 - **Entonnoir** :
-  - 6 à 8 agents de série pour 48 à 60 concepts minimalistes ;
+  - 3 ou 4 agents de série pour 12 à 16 concepts minimalistes (D204 ; Identité, 31.10 : 48 concepts en 8 séries, « trop demandant en quotas ») ;
   - un seul critique, repris à chaque série ;
-  - 5 reprises par `SendMessage`, dont le contexte est en cache.
+  - 3 reprises par `SendMessage`, dont le contexte est en cache ; s'il choisit déjà sur le tri, seule sa variante est reprise (D205).
 - Les deux coûtent à peu près pareil, mais l'entonnoir donne trois fois plus de choix, et une amélioration.
 - Ce qui coûte sans servir : un agent par variante, des briefs qui recopient tout, un pilote qui lit les sorties
   brutes.
@@ -191,5 +191,5 @@ La table des voies a une colonne **Étape**, avec ces valeurs : `v0 ×N (a tièd
 - une série porte de 4 à 12 concepts, déclare sa chaleur et nomme sa baseline dans ses contrôles ;
 - chaque tri a les trois chaleurs, avec au moins 30 % de chaudes ;
 - chaque série dépend d'une voie `tri`, confiée au critique ;
-- chaque tri porte sur 48 variantes au moins, en 6 séries au moins, et une `passe 2` en dépend ;
+- chaque tri porte sur 12 à 16 variantes, en 3 ou 4 séries (D204), et une `passe 2` en dépend ;
 - une `reprise` suppose une ligne « <id> choisie : ».

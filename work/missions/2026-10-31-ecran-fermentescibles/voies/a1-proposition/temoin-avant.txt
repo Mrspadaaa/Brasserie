@@ -1,0 +1,86 @@
+Règle provisoire du pilote (git show HEAD:src/domain/fermentables/proposition.ts) contre les tests de la voie, avant le code. Reporter verbose.
+
+× tests/unit/fermentables/proposition.test.ts > la règle est écrite > dit la typicité, le stock, l'épinglé et le nom, dans cet ordre, et que la teinte n'est pas une clé 6ms
+→ expected false to be true // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > écarte ce qui est déjà dans la recette, par référence ou par nom entier (accents et casse ignorés) 7ms
+→ expected [ 'Münchner Malz', 'Weizenmalz hell' ] to deeply equal [ 'Weizenmalz hell' ]
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > un nom courant tapé n'écarte rien : « Cara » ne cache pas Carapils, « Munich » ne cache pas Münchner Malz 0ms
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > German Pils : le malt de base avant le caramel, même si le caramel est épinglé 1ms
+→ expected 'Caramünch II' to be 'Pilsner Malz' // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > stout : un malt torréfié avant Carapils 0ms
+→ expected 2 to be less than 0
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > une stout lit ses voisines, à moitié : le malt chocolat de la 16A compte pour la 15B 0ms
+→ expected 'Carapils' to be 'Schokoladenmalz' // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > un article sans donnée passe après ceux qui en ont une, et n'est jamais écarté 1ms
+→ expected 'Pilsner Malz' to be 'Malt de la maison' // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > l'inconnu n'est jamais 0 : une borne ne passe pas derrière un rare connu, ni devant un présent 0ms
+→ expected [ 'Carafa III', 'Carahell', …(1) ] to deeply equal [ 'Caramünch II', 'Carahell', …(1) ]
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > les inconnus bornés se départagent par leur borne, la plus haute d'abord, quels que soient l'épingle et le nom 0ms
+→ expected [ 'Lactose', 'Carahell', …(1) ] to deeply equal [ 'Pale Ale Malz', 'Carahell', …(1) ]
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > un épuisé passe après un disponible de même rang 0ms
+→ expected [ 'Münchner Malz', 'Carapils' ] to deeply equal [ 'Carapils', 'Münchner Malz' ]
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > l'épinglé départage deux articles que rien d'autre ne sépare, il ne fait pas passer devant la typicité 0ms
+→ expected [ 'Münchner Malz', 'Carapils', …(1) ] to deeply equal [ 'Pilsner Malz', …(2) ]
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > la teinte n'est pas une clé : ebcVise ne change pas l'ordre, et la couleur d'un malt n'est pas celle de la bière 0ms
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > sans style ou sans table : disponible, épinglé, nom ; un épinglé épuisé recule ; rien n'est écarté 0ms
+→ expected [ 'Münchner Malz', …(2) ] to deeply equal [ 'Münchner Malz', 'Carapils', …(1) ]
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > un style sans correspondance chez Beer Analytics ne classe rien de plus 0ms
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > au plus `max` tuiles (6 par défaut) 0ms
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : le style d'abord > chaque tuile porte ses clés de rang 1ms
+→ expected [ 'épinglé', 'disponible', …(1) ] to have a length of 4 but got 3
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les témoins sur la table de Beer Analytics > German Pils (5D) : Pilsner Malz avant Caramünch II 0ms
+→ expected 6 to be less than 0
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les témoins sur la table de Beer Analytics > German Pils : les bornes hautes (Pale Ale, Münchner) avant les bornes basses (Lactose, Sucre candi) 0ms
+→ Münchner Malz / Lactose: expected 6 to be less than 5
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : les témoins sur la table de Beer Analytics > American IPA (21A) : Carapils (connu) devant Pilsner Malz, et Pilsner Malz (au plus 78 %) devant Weizenmalz hell (au plus 47 %) 0ms
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les témoins sur la table de Beer Analytics > Hazy IPA (21C) : Haferflocken en tête, Weizenflocken dans les 4 premiers 0ms
+→ expected 'Carapils' to be 'Haferflocken' // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les témoins sur la table de Beer Analytics > stouts (15B, 16A, 16B, 20C), jeu complet de 6 tuiles : le torréfié et le malt chocolat avant les malts de base et Carapils 0ms
+→ 15B : Röstgerste est dans les 6 tuiles: expected -1 to be greater than or equal to 0
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les témoins sur la table de Beer Analytics > stout : Gerstenflocken, Schokoladenmalz et Röstgerste font partie des 6 tuiles de la 15B et de la 16B 1ms
+→ expected [ 'Carapils', 'Pale Ale Malz', …(4) ] to deeply equal ArrayContaining{…}
+AssertionError: expected false to be true // Object.is equality
+- Expected
++ Received
+AssertionError: expected [ 'Münchner Malz', 'Weizenmalz hell' ] to deeply equal [ 'Weizenmalz hell' ]
+- Expected
++ Received
+AssertionError: expected 'Caramünch II' to be 'Pilsner Malz' // Object.is equality
+Expected: "Pilsner Malz"
+Received: "Caramünch II"
+AssertionError: expected 2 to be less than 0
+AssertionError: expected 'Carapils' to be 'Schokoladenmalz' // Object.is equality
+Expected: "Schokoladenmalz"
+Received: "Carapils"
+AssertionError: expected 'Pilsner Malz' to be 'Malt de la maison' // Object.is equality
+Expected: "Malt de la maison"
+Received: "Pilsner Malz"
+AssertionError: expected [ 'Carafa III', 'Carahell', …(1) ] to deeply equal [ 'Caramünch II', 'Carahell', …(1) ]
+- Expected
++ Received
+AssertionError: expected [ 'Lactose', 'Carahell', …(1) ] to deeply equal [ 'Pale Ale Malz', 'Carahell', …(1) ]
+- Expected
++ Received
+AssertionError: expected [ 'Münchner Malz', 'Carapils' ] to deeply equal [ 'Carapils', 'Münchner Malz' ]
+- Expected
++ Received
+AssertionError: expected [ 'Münchner Malz', 'Carapils', …(1) ] to deeply equal [ 'Pilsner Malz', …(2) ]
+- Expected
++ Received
+AssertionError: expected [ 'Münchner Malz', …(2) ] to deeply equal [ 'Münchner Malz', 'Carapils', …(1) ]
+- Expected
++ Received
+AssertionError: expected [ 'épinglé', 'disponible', …(1) ] to have a length of 4 but got 3
+- Expected
++ Received
+AssertionError: expected 6 to be less than 0
+AssertionError: Münchner Malz / Lactose: expected 6 to be less than 5
+AssertionError: expected 'Carapils' to be 'Haferflocken' // Object.is equality
+Expected: "Haferflocken"
+Received: "Carapils"
+AssertionError: 15B : Röstgerste est dans les 6 tuiles: expected -1 to be greater than or equal to 0
+AssertionError: expected [ 'Carapils', 'Pale Ale Malz', …(4) ] to deeply equal ArrayContaining{…}
+- Expected
++ Received
+Test Files  1 failed (1)
+Tests  17 failed | 5 passed (22)

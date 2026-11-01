@@ -1,0 +1,43 @@
+e1 76 mots
+e2 72 mots
+e3 54 mots
+e4 72 mots
+e5 55 mots
+e6 62 mots
+MOTS OK
+6 captures · remplissage médian 0,61, 1 sous 0,50 · ressemblance moyenne 0,89 · paires presque identiques 0/15 (0 %)
+PANEL OK
+mots       sauté (--sans)
+couleurs   OK
+au-style   sauté (--sans)
+survol     OK
+blocs      OK
+contraste  OK
+fiche      sauté (--sans)
+standard   ECHEC
+    STANDARD ECHEC 6 problème(s)
+    work/missions/2026-10-31-ecran-identite/v0/e1/etat.html : S3, rayons hors échelle : 10px×13 16px×1
+    work/missions/2026-10-31-ecran-identite/v0/e2/etat.html : S3, rayons hors échelle : 10px×6 16px×2
+    work/missions/2026-10-31-ecran-identite/v0/e3/etat.html : S3, rayons hors échelle : 10px×8
+    work/missions/2026-10-31-ecran-identite/v0/e4/etat.html : S3, rayons hors échelle : 10px×10
+    work/missions/2026-10-31-ecran-identite/v0/e5/etat.html : S3, rayons hors échelle : 10px×6 16px×2
+    work/missions/2026-10-31-ecran-identite/v0/e6/etat.html : S3, rayons hors échelle : 10px×9 16px×1
+trait      sauté (--sans)
+legende    OK
+parlant    OK
+brutes     OK
+COMMUN ECHEC 1 contrôle(s)
+e1-haut.png 248,248,248 0.483 
+e2-haut.png 248,248,248 0.501 
+e3-haut.png 248,248,248 0.508 
+e4-haut.png 248,248,248 0.643 
+e5-haut.png 248,248,248 0.607 
+e6-haut.png 248,248,248 0.759 
+type=number: 0
+e1 : états 4 capturés ; geste change (2 7 28 31) ; retour pendant : oui ; sans erreur
+e2 : états 4 capturés ; geste change (~31 2 7) ; retour pendant : oui ; sans erreur
+e3 : états 4 capturés ; geste change (~32 1 29) ; retour pendant : oui ; sans erreur
+e4 : états 4 capturés ; geste change (27 3 10 ~30) ; retour pendant : oui ; sans erreur
+e5 : états 4 capturés ; geste change (90min ~4 ~28) ; retour pendant : oui ; sans erreur
+e6 : états 4 capturés ; geste change (3 10 27 ~30) ; retour pendant : oui ; sans erreur
+ETATS OK

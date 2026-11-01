@@ -38,7 +38,8 @@ try{
   await page.evaluateOnNewDocument(()=>{if(!localStorage.getItem('laffinee_ui_state'))localStorage.setItem('laffinee_ui_state',JSON.stringify({app_active_tab:'production',production_subtab:'recipes'}));});
   await page.goto(base,{waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());
   await button(page,'Recettes',true);await page.click(".floating-actions button[aria-haspopup='menu']");await button(page,'Créer une recette',true);await page.locator('#wz-title').fill('QA NOLO création '+width);
-  const toggle=await page.$('[aria-label="Objectif NOLO"] input[type=checkbox]');await toggle.click();
+  // r4-a (D205) : l'objectif NOLO est un interrupteur (role=switch) ; l'ancienne case reste lue pour les copies d'avant.
+  const toggle=(await page.$('[role="switch"][aria-label^="Objectif NOLO"]'))??(await page.$('[aria-label="Objectif NOLO"] input[type=checkbox]'));await toggle.click();
   await page.waitForSelector('[data-nolo-status="indeterminate"]');
   assert.equal(await page.$$eval('[aria-label="Objectif NOLO"] details[open]',es=>es.length),0);
   assert.equal(await page.$('[data-nolo-band]'),null);

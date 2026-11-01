@@ -1,0 +1,395 @@
+{
+ "champs": {
+  "alpha": {
+   "baseAvecValeurBM": 317,
+   "baseValeurBMseule": 71,
+   "baseBMplusUneAutre": 80,
+   "ajoutsAvecValeur": 112,
+   "ajoutsValeurUneSeuleSource": 95
+  },
+  "beta": {
+   "baseAvecValeurBM": 310,
+   "baseValeurBMseule": 68,
+   "baseBMplusUneAutre": 80,
+   "ajoutsAvecValeur": 107,
+   "ajoutsValeurUneSeuleSource": 92
+  },
+  "cohumulone": {
+   "baseAvecValeurBM": 286,
+   "baseValeurBMseule": 56,
+   "baseBMplusUneAutre": 81,
+   "ajoutsAvecValeur": 94,
+   "ajoutsValeurUneSeuleSource": 82
+  },
+  "huile": {
+   "baseAvecValeurBM": 300,
+   "baseValeurBMseule": 71,
+   "baseBMplusUneAutre": 81,
+   "ajoutsAvecValeur": 92,
+   "ajoutsValeurUneSeuleSource": 79
+  },
+  "myrcene": {
+   "baseAvecValeurBM": 257,
+   "baseValeurBMseule": 55,
+   "baseBMplusUneAutre": 63,
+   "ajoutsAvecValeur": 77,
+   "ajoutsValeurUneSeuleSource": 68
+  },
+  "linalol": {
+   "baseAvecValeurBM": 0,
+   "baseValeurBMseule": 0,
+   "baseBMplusUneAutre": 0,
+   "ajoutsAvecValeur": 15,
+   "ajoutsValeurUneSeuleSource": 7
+  }
+ },
+ "exemples": {
+  "alpha": [
+   {
+    "id": "beermaverick-triskel",
+    "bm": "3–9",
+    "médianeAutres": 4,
+    "autres": "barthhaas:3.9 charlesfaram:4.0 hopsteiner:4.0 johnihaas:4.0 yakimavalleyhops:4.0",
+    "écart": 2,
+    "rel": 50
+   },
+   {
+    "id": "beermaverick-dana",
+    "bm": "7.2–13",
+    "médianeAutres": 13.5,
+    "autres": "barthhaas:15.7 charlesfaram:11.0 hopslist:13.5",
+    "écart": 3.4,
+    "rel": 25
+   },
+   {
+    "id": "beermaverick-opal",
+    "bm": "5–14",
+    "médianeAutres": 7.75,
+    "autres": "barthhaas:7.8 hopslist:13.5 hopsteiner:6.5",
+    "écart": 1.75,
+    "rel": 23
+   },
+   {
+    "id": "beermaverick-bobek",
+    "bm": "3.5–9.3",
+    "médianeAutres": 5.3,
+    "autres": "barthhaas:5.6 charlesfaram:3.5 hopslist:6.4 hopsteiner:5.0",
+    "écart": 1.1,
+    "rel": 21
+   },
+   {
+    "id": "beermaverick-barbe-rouge",
+    "bm": "3.8–10",
+    "médianeAutres": 8.5,
+    "autres": "charlesfaram:8.5 johnihaas:8.5 yakimavalleyhops:8.5",
+    "écart": 1.6,
+    "rel": 19
+   },
+   {
+    "id": "beermaverick-hersbrucker",
+    "bm": "1.5–5",
+    "médianeAutres": 2.75,
+    "autres": "barthhaas:3.6 bsg:2.8 charlesfaram:3.0 crosbyhops:3.2 hopslist:3.5 hopsteiner:2.8 hpa:2.8 johnihaas:2.8 yakimavalleyhops:2.7",
+    "écart": 0.5,
+    "rel": 18
+   }
+  ],
+  "beta": [
+   {
+    "id": "beermaverick-sladek",
+    "bm": "4–11",
+    "médianeAutres": 5.5,
+    "autres": "barthhaas:4.8 charlesfaram:5.5 hopslist:5.5 hopsteiner:6.8",
+    "écart": 2,
+    "rel": 36
+   },
+   {
+    "id": "beermaverick-styrian-wolf",
+    "bm": "2.1–6",
+    "médianeAutres": 5.5,
+    "autres": "charlesfaram:5.5 hopslist:5.5 hopsteiner:5.5 yakimavalleyhops:5.5",
+    "écart": 1.45,
+    "rel": 26
+   },
+   {
+    "id": "beermaverick-loral",
+    "bm": "1.5–6.5",
+    "médianeAutres": 5.25,
+    "autres": "barthhaas:5.3 bsg:5.5 charlesfaram:5.3 johnihaas:5.0 yakimavalleyhops:5.0",
+    "écart": 1.25,
+    "rel": 24
+   },
+   {
+    "id": "beermaverick-rakau",
+    "bm": "5–6",
+    "médianeAutres": 4.5,
+    "autres": "bsg:5.5 charlesfaram:3.7 crosbyhops:4.7 hopslist:3.7 nzhops:4.5",
+    "écart": 1,
+    "rel": 22
+   },
+   {
+    "id": "beermaverick-premiant",
+    "bm": "3.5–6.5",
+    "médianeAutres": 6.25,
+    "autres": "barthhaas:4.0 charlesfaram:6.3 hopslist:6.3 hopsteiner:6.3",
+    "écart": 1.25,
+    "rel": 20
+   },
+   {
+    "id": "beermaverick-saaz-cz",
+    "bm": "4–8",
+    "médianeAutres": 5,
+    "autres": "barthhaas:4.1 bsg:6.3 crosbyhops:5.0 hopslist:5.0 hopsteiner:4.0 hpa:6.3",
+    "écart": 1,
+    "rel": 20
+   }
+  ],
+  "cohumulone": [
+   {
+    "id": "beermaverick-aramis",
+    "bm": "20–42",
+    "médianeAutres": 21.5,
+    "autres": "charlesfaram:21.5 hopsteiner:24.5 johnihaas:21.0",
+    "écart": 9.5,
+    "rel": 44
+   },
+   {
+    "id": "beermaverick-sladek",
+    "bm": "23–40",
+    "médianeAutres": 25,
+    "autres": "charlesfaram:25.0 hopslist:26.5 hopsteiner:24.5",
+    "écart": 6.5,
+    "rel": 26
+   },
+   {
+    "id": "beermaverick-golding",
+    "bm": "20–20",
+    "médianeAutres": 26.5,
+    "autres": "charlesfaram:29.0 crosbyhops:26.5 johnihaas:26.5",
+    "écart": 6.5,
+    "rel": 25
+   },
+   {
+    "id": "beermaverick-citra",
+    "bm": "20–35",
+    "médianeAutres": 23,
+    "autres": "bsg:22.5 charlesfaram:23.0 crosbyhops:22.0 hopslist:27.5 hpa:23.0 johnihaas:23.0 yakimavalleyhops:23.0",
+    "écart": 4.5,
+    "rel": 20
+   },
+   {
+    "id": "beermaverick-hallertau-blanc",
+    "bm": "22–35",
+    "médianeAutres": 24,
+    "autres": "charlesfaram:24.0 crosbyhops:24.0 hopslist:24.0 hopsteiner:24.0 johnihaas:24.0 yakimavalleyhops:24.0",
+    "écart": 4.5,
+    "rel": 19
+   },
+   {
+    "id": "beermaverick-progress",
+    "bm": "25–27",
+    "médianeAutres": 30.5,
+    "autres": "britishhops:33.0 bsg:26.0 charlesfaram:31.5 hopslist:29.5 hopsteiner:28.0 yakimavalleyhops:33.0",
+    "écart": 4.5,
+    "rel": 15
+   }
+  ],
+  "huile": [
+   {
+    "id": "beermaverick-kohatu",
+    "bm": "1–2",
+    "médianeAutres": 0.77,
+    "autres": "bsg:1.3 crosbyhops:0.6 hopslist:0.6 nzhops:1.0",
+    "écart": 0.73,
+    "rel": 95
+   },
+   {
+    "id": "beermaverick-styrian-golding",
+    "bm": "0.5–1",
+    "médianeAutres": 1.55,
+    "autres": "barthhaas:1.0 bsg:2.1 crosbyhops:2.1 hopslist:0.8 hopsteiner:0.6 yakimavalleyhops:2.5",
+    "écart": 0.8,
+    "rel": 52
+   },
+   {
+    "id": "beermaverick-perle-gr",
+    "bm": "0.5–2.5",
+    "médianeAutres": 1,
+    "autres": "barthhaas:1.4 bsg:1.0 crosbyhops:1.0 hopslist:0.9",
+    "écart": 0.5,
+    "rel": 50
+   },
+   {
+    "id": "beermaverick-hallertau-tradition",
+    "bm": "0.5–1.9",
+    "médianeAutres": 0.85,
+    "autres": "barthhaas:0.9 charlesfaram:1.3 crosbyhops:1.0 hopslist:1.4 hopsteiner:0.5 johnihaas:0.8 yakimavalleyhops:0.8",
+    "écart": 0.35,
+    "rel": 41
+   },
+   {
+    "id": "beermaverick-cascade",
+    "bm": "0.7–2.5",
+    "médianeAutres": 1.15,
+    "autres": "barthhaas:1.4 bsg:1.9 charlesfaram:1.0 crosbyhops:1.0 hopslist:1.1 hopsteiner:1.1 hpa:1.3 indiehops:1.1 johnihaas:1.0 usda:1.3",
+    "écart": 0.45,
+    "rel": 39
+   },
+   {
+    "id": "beermaverick-galena",
+    "bm": "0.9–2.1",
+    "médianeAutres": 1.1,
+    "autres": "barthhaas:1.5 bsg:1.1 hopslist:1.1 hopsteiner:1.1 johnihaas:1.1 yakimavalleyhops:1.1",
+    "écart": 0.4,
+    "rel": 36
+   }
+  ],
+  "myrcene": [
+   {
+    "id": "beermaverick-wai-iti",
+    "bm": "2–4",
+    "médianeAutres": 22.5,
+    "autres": "crosbyhops:12.5 hopslist:30.0 nzhops:22.5",
+    "écart": 19.5,
+    "rel": 87
+   },
+   {
+    "id": "beermaverick-hallertau-mittelfruh",
+    "bm": "15–16",
+    "médianeAutres": 35.55,
+    "autres": "barthhaas:50.1 charlesfaram:38.0 crosbyhops:35.5 hpa:24.0 johnihaas:24.0",
+    "écart": 20.05,
+    "rel": 56
+   },
+   {
+    "id": "beermaverick-aurora",
+    "bm": "20–25",
+    "médianeAutres": 47.5,
+    "autres": "barthhaas:55.0 charlesfaram:22.5 hopslist:51.0 yakimavalleyhops:44.0",
+    "écart": 25,
+    "rel": 53
+   },
+   {
+    "id": "beermaverick-pekko",
+    "bm": "20–30",
+    "médianeAutres": 50.5,
+    "autres": "charlesfaram:50.5 crosbyhops:50.5 johnihaas:50.5",
+    "écart": 25.5,
+    "rel": 50
+   },
+   {
+    "id": "beermaverick-tettnanger",
+    "bm": "40–41",
+    "médianeAutres": 27.5,
+    "autres": "barthhaas:0.9 crosbyhops:15.4 hopslist:40.6 hpa:27.5 johnihaas:27.5",
+    "écart": 13,
+    "rel": 47
+   },
+   {
+    "id": "beermaverick-loral",
+    "bm": "52–58",
+    "médianeAutres": 38,
+    "autres": "barthhaas:37.5 charlesfaram:48.5 johnihaas:38.0 yakimavalleyhops:38.0",
+    "écart": 17,
+    "rel": 45
+   }
+  ],
+  "linalol": []
+ },
+ "aConfirmer": [
+  "brewer s gold [brewersfriend,hopslist,usahops] → beermaverick-brewers-gold|beermaverick-brewers-gold-us",
+  "brewers gold [barthhaas,brewersfriend,charlesfaram,hopdatabase,hopsteiner,yakimavalleyhops] → beermaverick-brewers-gold|beermaverick-brewers-gold-us",
+  "cerera [hopslist,ihps] → beermaverick-celeia",
+  "fuggle h [hopslist] → beermaverick-fuggle",
+  "fuggle n [hopslist] → beermaverick-fuggle",
+  "goldings [brewersfriend,britishhops,hopslist,yakimavalleyhops] → beermaverick-east-kent-goldings|beermaverick-golding",
+  "hallertauer [usahops] → beermaverick-hallertau|beermaverick-hallertau-mittelfruh",
+  "hbc 522 [brewersfriend,hpa,johnihaas,yakimavalleyhops] → ",
+  "hersbrucker e [hopslist] → beermaverick-hersbrucker",
+  "hs 09326 [brewersfriend,hopdatabase,hopsteiner] → ",
+  "magnum [brewersfriend,charlesfaram,crosbyhops,usahops,yakimavalleyhops] → beermaverick-magnum-gr|beermaverick-magnum-us",
+  "northern brew [brewersfriend] → beermaverick-northern-brewer-gr|beermaverick-northern-brewer-us",
+  "northern brewer [brewersfriend,charlesfaram,hopslist,hopsteiner,johnihaas,usahops,yakimavalleyhops] → beermaverick-northern-brewer-gr|beermaverick-northern-brewer-us",
+  "perle [brewersfriend,charlesfaram,crosbyhops,hopsteiner,hpa,johnihaas,yakimavalleyhops] → beermaverick-perle-gr|beermaverick-perle-us",
+  "saaz [brewersfriend,charlesfaram,johnihaas,usahops,yakimavalleyhops] → beermaverick-saaz-cz|beermaverick-saaz-us",
+  "styrian gold [brewersfriend,hopdatabase,hopslist,hopsteiner,ihps] → ",
+  "tettnanger a [hopslist] → beermaverick-tettnanger",
+  "tettnanger b [hopslist] → beermaverick-tettnanger"
+ ],
+ "nombreDAliasManuels": 51,
+ "nombreDeSynonymes": 5,
+ "baseSansAutreSource": [
+  "Aloha Blend",
+  "Arcadian",
+  "Astra",
+  "Aurum",
+  "Bohemie",
+  "Boomerang",
+  "Brooklyn",
+  "Diamond Springs",
+  "Evergreen Blend",
+  "Fantasia Blend",
+  "Gaia",
+  "Grungeist",
+  "Hartwick",
+  "HBC 586",
+  "HBC 692",
+  "HPA-016",
+  "Independence",
+  "Lambic",
+  "Lawton",
+  "Limbus",
+  "Lumberjack",
+  "Marco Polo",
+  "Mimosa",
+  "Nobility Blend",
+  "NZH-107",
+  "Old Mission",
+  "Petit Blanc",
+  "Petoskey",
+  "Prussian",
+  "Samba",
+  "Saugatuck",
+  "Sequoia Blend",
+  "Shaddock",
+  "Sitiva Blend",
+  "Sticky Fingers Blend",
+  "Stirling",
+  "TNT Blend",
+  "Vienna Gold",
+  "Walhalla",
+  "Wild Loyalist",
+  "Wild Wolf",
+  "Wurttemberg",
+  "X13459",
+  "XJA2/436",
+  "Yellow Sub",
+  "YQH-1380",
+  "Zagrava",
+  "Zamba Blend",
+  "Zenia",
+  "Zula"
+ ],
+ "ajoutsUneSourceEchantillon": [
+  "Usda 200010 008 [yakimavalleyhops]",
+  "Aged Hops [brewersfriend]",
+  "Alliance [hopslist]",
+  "AlphAroma [usahops]",
+  "Amallia [hopslist]",
+  "Amarillo BBC [brewersfriend]",
+  "Amira [bsg]",
+  "Anchovy [yakimavalleyhops]",
+  "Audacia [indiehops]",
+  "B. C. Goldings [brewersfriend]",
+  "Backa [hopslist]",
+  "Bate’s Brewer [hopslist]"
+ ],
+ "ajoutsPeuDeDonnees": {
+  "drapeau": 163,
+  "sans": 25
+ },
+ "bmFichesRelevées": 318,
+ "bmAnnee": {
+  "2023": 317
+ }
+}

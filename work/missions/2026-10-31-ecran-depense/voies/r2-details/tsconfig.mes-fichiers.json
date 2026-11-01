@@ -1,0 +1,11 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "compilerOptions": { "noEmit": true },
+  "include": [],
+  "files": [
+    "../../../../../src/ui/finance/ExpenseSheet.tsx",
+    "../../../../../src/services/purchaseEntry.ts",
+    "../../../../../tests/unit/depense/raccord/changer-fichier.test.tsx",
+    "../../../../../tests/unit/depense/raccord/autre-original.test.ts"
+  ]
+}

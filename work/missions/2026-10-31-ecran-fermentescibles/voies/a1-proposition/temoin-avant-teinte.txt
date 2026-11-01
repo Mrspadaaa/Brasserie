@@ -1,0 +1,20 @@
+Témoin rouge, plausibilité de la teinte (31.10) : les nouveaux tests contre proposition.ts SANS la règle (version précédente de la voie). Reporter verbose.
+
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > la constante est nommée et vaut 10 3ms
+→ expected undefined to be 10 // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > German Pils (5 EBC visés, 7,9 au plus) : ni Schokoladenmalz ni Röstgerste ni Schwarzmalz, même avec du stock ; Münchner et Wiener restent possibles 2ms
+→ Schokoladenmalz {"ebcVise":5.9}: expected [ 'Pilsner Malz', 'Carapils', …(8) ] to not include 'Schokoladenmalz'
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > stout (15B) : le chocolat et le torréfié restent (cités par le style ou ses voisines) 0ms
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > un fermentescible cité n'est jamais écarté par la teinte 0ms
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > une couleur inconnue reste : un non cité sans couleur n'est pas écarté 0ms
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > sans teinte visée, rien n'est écarté ; la borne haute passée prime sur la teinte visée ; le seuil est strict (10 ×) 0ms
+→ expected [ 'Pilsner Malz', 'Carapils', …(8) ] to not include 'Schokoladenmalz'
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > sans table chargée, rien n'est écarté (on ne sait pas encore ce qui est cité) 0ms
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > la teinte ne redevient pas une clé : l'ordre des tuiles restantes ne dépend pas d'ebcVise 0ms
+FAIL  tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > la constante est nommée et vaut 10
+AssertionError: expected undefined to be 10 // Object.is equality
+FAIL  tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > German Pils (5 EBC visés, 7,9 au plus) : ni Schokoladenmalz ni Röstgerste ni Schwarzmalz, même avec du stock ; Münchner et Wiener restent possibles
+AssertionError: Schokoladenmalz {"ebcVise":5.9}: expected [ 'Pilsner Malz', 'Carapils', …(8) ] to not include 'Schokoladenmalz'
+FAIL  tests/unit/fermentables/proposition.test.ts > proposerFermentables : plausibilité de la teinte pour un non cité > sans teinte visée, rien n'est écarté ; la borne haute passée prime sur la teinte visée ; le seuil est strict (10 ×)
+AssertionError: expected [ 'Pilsner Malz', 'Carapils', …(8) ] to not include 'Schokoladenmalz'
+Tests  3 failed | 28 passed (31)

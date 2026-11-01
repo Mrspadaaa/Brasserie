@@ -16,12 +16,12 @@ import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 import { DEPARTAGE_DEFAUT, cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
-  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe,
+  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe, MOMENTS_AMERISANT_RECULE,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
 } from './palier';
 import { produitDArome } from './substitution';
 import { facteurIntensite, type FacteurIntensite } from './intensite';
-import { palierDansLaCle, typiciteDe, typiciteDeVoie, type Typicite } from './typicite-acces';
+import { medianeAuFrais, palierDansLaCle, typiciteDe, typiciteDeVoie, usageAuFraisDe, type Typicite } from './typicite-acces';
 
 /** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
 export const POOL_BORNE = 80;
@@ -33,6 +33,20 @@ export const TYPICITE_DEFAUT = true;
 /** a4 (D125), biais 1 : une famille NEUTRE du style (il n'en dit rien : ni attendue, ni rejetée ; sa bande 0–30 est une hypothèse [H] sans citation, `from: []`) ne punit plus comme une famille hors du style.
  * Son dépassement reste dit (`styleOverflow`) et reste compté, plus loin dans le rang, par les effets de bord (`sideTotal`). `true` : l'ordre d'avant. */
 export const DEBORDEMENT_NEUTRE_DEFAUT = false;
+/** h1 (D197), « trop herbal » : un excès d'herbacé (`herbal`) ou de végétal (`green`) au-dessus de la bande est un DÉFAUT, même quand le style n'en dit rien (famille neutre) : le BJCP range l'herbe coupée et le végétal parmi les défauts,
+ * et c'est ce qui arrive avec une grosse dose de dry hop ou du houblon frais (panel OSU, E04 : les agrumes plafonnent dès 8 g/L, l'herbacé monte encore). Ces deux familles comptent donc au rang et en « hors du style » (`StyleOverflow.defaut`),
+ * malgré a4 (`DEBORDEMENT_NEUTRE_DEFAUT`, qui ne vaut que pour les AUTRES familles neutres : la poire d'El Dorado). Exceptions, celles de s3 : la demande du brasseur prime (`voulu`, un excès minuscule n'en est pas un), et un style qui
+ * attend la famille (`attendue`) garde sa bande, la règle ne la touche pas. `false` : l'ordre d'avant (3eb61530). */
+export const DEFAUT_VEGETAL_DEFAUT = true;
+export const FAMILLES_VEGETALES: readonly FamilyId[] = ['herbal', 'green'];
+/** s3 (D195) : `true` : la demande prime sur la bande (famille de la direction : pas de débordement au rang) et un excès sous `SATURATION_MINUSCULE` cran n'en est pas un. `saturation: false` : l'ordre d'avant (ae7c7a8d). */
+export const SATURATION_DEFAUT = true;
+/** Un cran est le pas du style (la largeur d'un palier de sa bande) : sous un quart de cran ajouté, on ne dit pas « hors du style ». */
+export const SATURATION_MINUSCULE = 0.25;
+/** s3 (D195) : par domaine (stock, à acheter), les remplacements qui font baisser une famille à baisser, gardés en plus des places de `limit` et `buyLimit`. */
+export const REMPLACEMENTS_RESERVES = 4;
+/** s3, R4 (D195) : au whirlpool et au dry hop, un amérisant (usage Beer Maverick) passe après les houblons d'arôme ou de double usage de même rang ; `usageAuFrais: false` : l'ordre d'avant (8e17aa00). */
+export const USAGE_AU_FRAIS_DEFAUT = true;
 /** a4 (D125), biais 2 : la présélection du pool « à acheter » (la borne de coût `POOL_BORNE`) met d'abord la typicité du style, le terme que le rang lit à distance égale (departage.ts : un houblon typé ou courant
  * avant un inconnu, avant un rare), puis seulement la documentation des fiches, qui écartait Calypso (courant en 22A, peu documenté) avant tout classement. Sans table de typicité, tous sont égaux
  * et l'ordre est celui d'avant. `'documentation'` : l'ordre d'avant, toujours. */
@@ -110,8 +124,21 @@ export interface Voie {
   enStock?: number | null;
   /** g2b : points à relire (dry hop cumulé au-dessus du repère de revue) ; jamais une exclusion. */
   drapeaux?: string[];
+  /** s3, R4 (D195) ; t3 : la clé de l'emploi au frais d'un ajout au whirlpool ou au dry hop = médiane du catalogue − part au frais du houblon (Beer Analytics ; moyenne pondérée par la dose si l'ajout compte plusieurs houblons).
+   * Positive : moins employé au frais que la médiane, la voie passe après ; négative : davantage, elle passe devant ; absente : 0, neutre (donnée manquante ou autre moment). Continue : ni seuil, ni étiquette. */
+  cleFrais?: number;
+  /** t3 : la raison, quand la voie passe après (clé positive), avec la part du houblon. Absent : aucun recul. */
+  reculeUsage?: string;
 }
-export interface StyleOverflow { family: FamilyId; status: string; band: [number, number]; crans: number; why: string }
+export interface StyleOverflow {
+  family: FamilyId; status: string; band: [number, number]; crans: number; why: string;
+  /** s3 (D195) : la famille est dans la direction du brasseur (il la monte, la baisse ou la bannit) : sortir de la bande est sa demande, pas un défaut de la voie. Dit, mais ni compté au rang ni « hors du style » à l'écran. */
+  voulu?: true;
+  /** s3 (D195) : moins d'un quart de cran ajouté (`SATURATION_MINUSCULE`) : un cran est le pas du style, un quart de pas n'est pas « hors du style ». */
+  minuscule?: true;
+  /** h1 (D197) : l'herbacé ou le végétal d'un style qui n'en dit rien (famille neutre) au-dessus de sa bande : un défaut (BJCP : herbe coupée), compté au rang et « hors du style » comme une famille hors du style. Absent : ni neutre, ni herbacé/végétal, ou règle éteinte. */
+  defaut?: true;
+}
 export interface VoieResult {
   recipe: Recipe; style: StyleScale; yeast: YeastInfo; matrix: MatrixContext;
   before: RecipeProfile; ibu: number; direction: DirectedTarget[];
@@ -138,6 +165,12 @@ export interface VoieOptions {
   typicite?: boolean;
   /** a4 (D125) : le dépassement d'une famille neutre du style compte dans le rang comme celui d'une famille hors du style (`true`) ou seulement par les effets de bord (`false`). Défaut : `DEBORDEMENT_NEUTRE_DEFAUT`. */
   debordementNeutre?: boolean;
+  /** s3 (D195) : la demande prime sur la bande, et un excès minuscule n'est pas hors du style. Défaut : `SATURATION_DEFAUT`. */
+  saturation?: boolean;
+  /** h1 (D197) : l'excès d'herbacé ou de végétal d'un style qui n'en dit rien compte au rang et « hors du style » (défaut du BJCP). Défaut : `DEFAUT_VEGETAL_DEFAUT`. `false` : l'ordre d'avant. */
+  defautVegetal?: boolean;
+  /** s3, R4 (D195) ; t3 : au whirlpool et au dry hop, plus un houblon est employé au frais (Beer Analytics), plus il passe devant à rang égal (jamais écarté). Défaut : `USAGE_AU_FRAIS_DEFAUT`. */
+  usageAuFrais?: boolean;
   /** a4 (D125) : l'ordre de la présélection du pool (voir `SELECTION_DEFAUT`). */
   selection?: SelectionPool;
   /** Apport minoritaire (g2d, D99) : ABSENT (défaut) = 'c' sur les voies au dry hop actif ou après seulement (le débordement d'une famille non marquée ne compte plus dans leur rang ; aucune barre ne change),
@@ -253,7 +286,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const departageMode: Departage = (options.typicite ?? TYPICITE_DEFAUT) && departageBase === 'k3k1' ? 'k3k1t' : departageBase;
   const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
   const a3 = options.intensite ?? INTENSITE_DEFAUT, typ = options.typicite ?? TYPICITE_DEFAUT; // f9 : A3 et typicité
-  const neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
+  const usageAuFrais = options.usageAuFrais ?? USAGE_AU_FRAIS_DEFAUT, saturation = options.saturation ?? SATURATION_DEFAUT, neutreCompte = options.debordementNeutre ?? DEBORDEMENT_NEUTRE_DEFAUT, defautVegetal = options.defautVegetal ?? DEFAUT_VEGETAL_DEFAUT, selectionRang = (options.selection ?? SELECTION_DEFAUT) === 'rang'; // a4 (D125) : biais 1 et 2
   // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
   const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
@@ -379,9 +412,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const up = Math.max(0, excess(after) - excess(ref));
       const down = fs.status === 'attendue' ? Math.max(0, deficit(after) - deficit(ref)) : 0;
       const baseText = base === undefined ? 'aucune présence établie avant' : `repère ${round(base)} avant`;
-      if (up > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(up / fs.cran, 2),
+      // h1 (D197) : l'herbacé et le végétal d'une famille neutre sont un défaut, marqué ici ; la demande (`voulu`) et l'excès minuscule les excluent ensuite du rang, comme toute famille.
+      const defaut: Pick<StyleOverflow, 'defaut'> = defautVegetal && fs.status === 'neutre' && FAMILLES_VEGETALES.includes(f) ? { defaut: true } : {};
+      const marques = (x: number): Pick<StyleOverflow, 'voulu' | 'minuscule' | 'defaut'> => ({ ...defaut, ...(saturation ? { ...(directed.includes(f) ? { voulu: true as const } : {}), ...(x / fs.cran < SATURATION_MINUSCULE ? { minuscule: true as const } : {}) } : {}) });
+      if (up > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(up / fs.cran, 2), ...marques(up),
         why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (+${round(e.central)}), au-dessus de la bande ${lo}–${hi} (${fs.status}).` });
-      if (down > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(down / fs.cran, 2),
+      if (down > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(down / fs.cran, 2), ...marques(down),
         why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (${round(e.central)}), sous la bande attendue ${lo}–${hi}.` });
       if (fs.status !== 'attendue' && !directed.includes(f) && e.central > 0) sideEffects.push({ family: f, status: fs.status, crans: round(e.central / fs.cran, 2) });
     }
@@ -390,11 +426,13 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     // D99 : option absente = c sur les voies dont tous les ajouts sont au dry hop (actif ou après) ; 'c' explicite = tous les moments ; 'aucun', 'm', 'w' : jamais.
     const rangC = options.apportMinoritaire === 'c' || (options.apportMinoritaire === undefined && changes.length > 0 && changes.every((c) => MOMENTS_APPORT_C_DEFAUT.includes(c.addition.moment)));
     // a4 (D125, biais 1) : le rang ne compte pas non plus le dépassement d'une famille neutre du style (voir DEBORDEMENT_NEUTRE_DEFAUT) ; il reste dans `styleOverflow` et dans `sideTotal`.
-    const overflowRang = rangC || !neutreCompte
-      ? round(styleOverflow.filter((o) => (neutreCompte || o.status !== 'neutre') && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
+    const auRang = (o: StyleOverflow) => !o.voulu && !o.minuscule; // s3 (D195)
+    const horsNeutre = (o: StyleOverflow) => neutreCompte || o.status !== 'neutre' || !!o.defaut; // a4 (D125) ; h1 (D197) : l'herbacé et le végétal neutres sont un défaut, ils restent au rang
+    const overflowRang = rangC || !neutreCompte || saturation
+      ? round(styleOverflow.filter((o) => auRang(o) && horsNeutre(o) && (!rangC || !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family)))).reduce((s, o) => s + o.crans, 0), 2)
       : null;
     // a4 (D125) : le même débordement sans les familles neutres, que lit aussi le choix de la dose d'un houblon (`compareVoies(…, false)`) : sinon la dose qui évite le dépassement d'une famille neutre l'emportait sur la distance.
-    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => o.status !== 'neutre').reduce((s, o) => s + o.crans, 0), 2);
+    const overflowStyle = neutreCompte ? null : round(styleOverflow.filter((o) => auRang(o) && horsNeutre(o)).reduce((s, o) => s + o.crans, 0), 2);
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
@@ -404,6 +442,16 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const positifs = reduction || aAmertume ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 }));
     const departage = departageMode !== 'aucun' && plus.length ? cleDeVoie(departageMode, positifs, plus, recipe.styleCode) : null;
     const typicite = typ && plus.length ? typiciteDeVoie(positifs, recipe.styleCode) : typ ? null : undefined; // f9 : la typicité du houblon qui monte, pour le style de la recette
+    // s3, R4 (D195) ; t3 : au whirlpool et au dry hop, plus un houblon est employé au frais, plus il passe devant (une clé du rang, continue, jamais une exclusion). La mesure : sa part au frais chez Beer Analytics
+    // (recettes Aroma + Dry Hop sur les cinq moments), comparée à la médiane du catalogue lu. Aucune étiquette (usage Beer Maverick, catégorie du site), aucun seuil. Une part manquante (table non chargée, houblon
+    // hors Beer Analytics, sous 1 000 recettes) vaut la médiane : neutre, elle ne recule pas.
+    const mediane = usageAuFrais ? medianeAuFrais() : null;
+    const frais = mediane !== null && (type === 'ajouter' || type === 'assemblage' || type.startsWith('remplacer'))
+      ? changes.filter((c) => c.sign > 0 && MOMENTS_AMERISANT_RECULE.includes(c.addition.moment)).map((c) => ({ c, f: usageAuFraisDe(hopRef(c.addition.hopKey)?.varietyId ?? ''), w: c.share ?? 1 })) : [];
+    const poidsFrais = frais.reduce((s, x) => s + x.w, 0);
+    const cleFrais = frais.length && poidsFrais > 0 ? round(frais.reduce((s, x) => s + x.w * (x.f ? mediane! - x.f.part : 0), 0) / poidsFrais, 4) : 0;
+    const pct = (x: number) => `${Math.round(x * 100)} %`;
+    const reculeUsage = cleFrais > 0 ? frais.filter((x) => x.f && x.f.part < x.f.mediane).map((x) => `${nameOf(x.c.addition.hopKey)} : ${pct(x.f!.part)} de ses recettes l'emploient à l'arôme ou au dry hop (médiane du catalogue ${pct(x.f!.mediane)} ; Beer Analytics, CC BY-SA 4.0) ; ajouté ${MOMENTS[x.c.addition.moment].label}, il passe après les houblons plus employés au frais à effet égal (jamais écarté).`).join(' ') : undefined;
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -418,6 +466,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       ...(departage ? { departage } : {}),
       ...(typicite !== undefined ? { typicite } : {}),
       ...(a3 ? { a3: true as const } : {}),
+      ...(cleFrais !== 0 ? { cleFrais } : {}),
+      ...(reculeUsage ? { reculeUsage } : {}),
     };
   };
   const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
@@ -532,15 +582,23 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const withoutProgress = all.filter((v) => !progress(v)).length;
   if (withoutProgress) notes.push(`${withoutProgress} voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.`);
   for (const v of all) ORDRE_POOL.set(v, poolDe(v));
+  // s3 (D195) : la demande prime sur la bande, donc des ajouts qu'elle ne punit plus passent devant. Un remplacement qui fait baisser une famille à baisser (ou bannie) garde sa place à part (REMPLACEMENTS_RESERVES par domaine),
+  // sinon des ajouts que l'écran écarte ensuite (houblon qui cite la famille bannie, D194) occupent seuls les places et « Remplacer Columbus » disparaît.
+  const enleveFamille = (v: Voie) => minus.length > 0 && v.type.startsWith('remplacer') && minus.some((f) => v.effect[f].established && (v.effect[f].central ?? 0) < 0);
+  const reserves = { stock: 0, 'à acheter': 0 };
   for (const v of all.filter(progress).sort(compareVoies)) {
-    if (perDomain[v.domain] >= (v.domain === 'stock' ? limit : buyLimit)) continue;
+    let reserve = false;
+    if (perDomain[v.domain] >= (v.domain === 'stock' ? limit : buyLimit)) {
+      if (!(saturation && enleveFamille(v)) || reserves[v.domain] >= REMPLACEMENTS_RESERVES) continue;
+      reserve = true;
+    }
     const key = v.actions.map((a) => a.hopKey).sort().join('+');
     if ((perHopCount.get(key) ?? 0) >= perHop) continue;
     // Deux assemblages au plus : ils restent estimés et ne doivent pas masquer les voies simples.
     if (v.type === 'assemblage' && blends >= 2) continue;
     if (v.type === 'assemblage') blends++;
     perHopCount.set(key, (perHopCount.get(key) ?? 0) + 1);
-    perDomain[v.domain]++;
+    if (reserve) reserves[v.domain]++; else perDomain[v.domain]++;
     kept.push(v);
   }
   // Leviers levure, évalués par le moteur et montrés même sans progrès établi (classés avec les autres).
@@ -672,6 +730,15 @@ const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
 const ORDRE_POOL = new WeakMap<Voie, number>();
 /** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
 const grammesDe = (v: Voie) => v.actions.reduce((s, x) => s + (x.op === 'retirer' ? 0 : x.grams), 0);
+/** s3, R4 (D195) ; t3 : où la clé de l'emploi au frais entre dans la clé de départage (mesuré, voir t3-usage-au-frais/RESULTAT.md). Index de l'étape « radar Beer Maverick » : la famille citée (et la typicité du style en k3k1t) d'abord,
+ * puis le houblon le plus employé au frais, puis le radar et la cascade des fiches. Un mode absent d'ici : la clé de l'emploi au frais passe après toute la clé de départage (la plus basse des positions, quasi inerte).
+ * Plus haut (juste après la distance) : refusé, les phares de styles traditionnels reculent jusqu'à 72 places ; `{}` : tout à la fin. */
+export const COUPURE_FRAIS: Partial<Record<Departage, number>> = { k3k1: 1, k3k1t: 2 };
+function comparerClesFrais(a: Voie, b: Voie): number {
+  const frais = (a.cleFrais ?? 0) - (b.cleFrais ?? 0), n = a.departage && b.departage && a.departage.mode === b.departage.mode ? COUPURE_FRAIS[a.departage.mode] : undefined;
+  if (n === undefined || !a.departage || !b.departage) return comparerCles(a.departage?.cle, b.departage?.cle) || frais;
+  return comparerCles(a.departage.cle.slice(0, n), b.departage.cle.slice(0, n)) || frais || comparerCles(a.departage.cle.slice(n), b.departage.cle.slice(n));
+}
 export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): number {
   const da = a.distance.total, db = b.distance.total;
   // D118 (f8) : dans les groupes du VRAI DRY HOP (option `dryHop` de g2b : une liste d'ajouts d'arôme seulement, où tout le monde porte une clé), la clé k3k1 (l'intensité de la famille visée, radar Beer Maverick)
@@ -681,12 +748,12 @@ export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): n
   const intensiteD = (a.departage?.mode === 'k3k1' || a.departage?.mode === 'k3k1t') && a.departage.mode === b.departage?.mode && !!a.dose && !!b.dose;
   return a.conflicts.length - b.conflicts.length
     || comparerUsagePalier(a.palier, b.palier) // g2b (D88 B) : à 60′ l'usage passe d'abord ; sans l'option `palier60`, aucune voie n'a de palier : égalité
-    || (intensiteD ? comparerCles(a.departage?.cle, b.departage?.cle) : 0)
+    || (intensiteD ? comparerClesFrais(a, b) : 0)
     || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : (a.overflowStyle ?? a.overflowTotal) - (b.overflowStyle ?? b.overflowTotal)) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
     || (a.a3 && b.a3 ? grammesDe(a) - grammesDe(b) : 0) // f9 A3 : à distance égale, la variété qui atteint la visée à la dose la plus basse
-    || (intensiteD ? 0 : comparerCles(a.departage?.cle, b.departage?.cle))
+    || (intensiteD ? 0 : comparerClesFrais(a, b))
     || (ORDRE_POOL.get(a) ?? 0) - (ORDRE_POOL.get(b) ?? 0) // D105 : le style départage avant les effets de bord (listes principales ; 0 ailleurs)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]

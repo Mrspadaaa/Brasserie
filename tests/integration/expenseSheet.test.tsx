@@ -7,7 +7,7 @@ vi.mock('../../src/services/storage',()=>({StorageService:{getStocks:()=>({rawMa
 vi.mock('../../src/services/financeService',()=>({FinanceService:{getPlans:()=>[]}}));
 vi.mock('../../src/services/firestoreRepo',()=>({isConfirmedWriteRejection:(error:any)=>error?.status==='rejected'}));
 vi.mock('../../src/services/geminiScanner',()=>({GeminiScannerService:{scanDocument:(...args:any[])=>state.scanned(...args),fileToDataUrl:async()=>'data:application/pdf;base64,JVBERi0xLjQK',normalizeMimeType:()=>'application/pdf'}}));
-vi.mock('../../src/services/purchaseEntry',async importOriginal=>({...await importOriginal<any>(),savePurchaseWithProof:async(draft:any)=>{await state.saved(draft);return 'TX-test';},confirmPurchase:()=>state.confirmed(),purchaseDuplicates:()=>[]}));
+vi.mock('../../src/services/purchaseEntry',async importOriginal=>({...await importOriginal<any>(),savePurchaseWithProofReceipt:async(draft:any)=>{await state.saved(draft);return {transactionId:'TX-test'};},confirmPurchase:()=>state.confirmed(),purchaseDuplicates:()=>[]}));
 import {ExpenseSheet} from '../../src/ui/finance/ExpenseSheet';
 import {FirebaseAuthService} from '../../src/services/firebaseAuth';
 beforeEach(()=>{cleanup();vi.restoreAllMocks();state.saved.mockReset();state.scanned.mockReset().mockResolvedValue({ok:false,error:'Lecture indisponible. Saisie manuelle possible.'});vi.spyOn(FirebaseAuthService,'ensureDriveAccessToken').mockResolvedValue('synthetic-token');vi.spyOn(FirebaseAuthService,'prepareGoogleLogin').mockResolvedValue();state.confirmed.mockReset().mockResolvedValue(undefined);});
@@ -31,7 +31,7 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     Object.assign(result,{documentType:'delivery_note',date:'31.08.2020',amountTTC:null,amountHT:null,tvaAmount:null,tvaRate:null,category:'divers',invoiceNumber:'',orderNumber:'COMMANDE-TEST',fieldWarnings:[{field:'amountTTC',message:'Total non imprimé.'}]});
     result.items=result.items.map((item,index)=>({...item,name:`Article fictif ${index+1}`,kind:'other',amountTTC:index?20:40,reference:`REF-TEST-${index+1}`,variant:'Taille test'}));
     const view=await openScannedInvoice(result);
-    expect(screen.getByLabelText('Total TTC en CHF')).toHaveValue('60');
+    expect(screen.getByLabelText('Total TTC en CHF')).toHaveValue('60,00');
     expect(screen.getByLabelText('Total TTC en CHF')).toHaveAccessibleDescription(expect.stringContaining('Somme des 2 lignes'));
     fireEvent.focus(screen.getByLabelText('Total TTC en CHF'));fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     expect(screen.getByLabelText('Total TTC en CHF')).toHaveAccessibleDescription(expect.stringContaining('Somme des 2 lignes'));
@@ -83,8 +83,10 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     expect(screen.getByLabelText('Pour quoi ?')).toHaveValue('');
     expect(state.saved).not.toHaveBeenCalled();
   });
+  /* T1 : une lecture SANS `points` (ancien format, cache d'avant le déploiement) n'est jamais « vérifiée » : c'est le plancher de l2, « à confirmer ».
+     Seul le nouveau format (points + controls) peut dire « Lecture vérifiée » ou « Corrections proposées » (cas ci-dessous). */
   it.each([
-    ['checked','Lecture vérifiée'],['corrected','Corrections proposées'],['disputed','Lecture à confirmer'],['unavailable','Vérification incomplète'],[undefined,'Vérification incomplète']
+    ['checked','Lecture à confirmer'],['corrected','Lecture à confirmer'],['disputed','Lecture à confirmer'],['unavailable','Vérification incomplète'],[undefined,'Vérification incomplète']
   ])('présente honnêtement le statut %s sans créer d’achat, de stock ni de matériel',async(status,title)=>{
     await openScannedInvoice(scannedInvoice(status?{status,readers:status==='corrected'?3:2,findings:[],correctedFields:status==='corrected'?['amountTTC','items[1].kind']:[]}:undefined));
     expect(screen.getByText(title!)).toBeInTheDocument();
@@ -94,6 +96,16 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     expect(screen.getByLabelText('Matériel ligne 2')).toHaveValue('none');
     expect(state.saved).not.toHaveBeenCalled();
     if(status==='corrected')expect(screen.getByLabelText('Total TTC en CHF')).toHaveAccessibleDescription(expect.stringContaining('Valeur corrigée'));
+  });
+  const controls={lines:{checked:2,failed:0,skipped:0,skippedIds:[] as string[]},sum:{statut:'ok',base:'TTC'},vat:{statut:'ok',base:null},totals:{statut:'ok'}};
+  it('nouveau format : aucun point qui pèse donne « Lecture vérifiée » ; un point qui pèse donne « Lecture à confirmer » (T1)',async()=>{
+    await openScannedInvoice(Object.assign(scannedInvoice({status:'checked',findings:[],readers:2}),{points:[],controls}) as any);
+    expect(screen.getByText('Lecture vérifiée')).toBeInTheDocument();
+    cleanup();
+    const point={code:'tva-incoherente',gravite:'ecart',origine:'controle',enjeu:'info',bloque:false,champ:'vat',champs:[],ligne:null,cle:'tva-incoherente:-:vat',regle:'',lu:null,calcule:null,ecart:null,unite:'texte',message:'TVA incohérente'};
+    await openScannedInvoice(Object.assign(scannedInvoice({status:'checked',findings:[],readers:2}),{points:[point],controls}) as any);
+    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:/^1\s*TVA/})).toBeInTheDocument();
   });
   it('conserve les divergences et ambiguïtés dans la revue, sans répéter les avertissements',async()=>{
     const result=scannedInvoice({status:'disputed',findings:['Le montant de la deuxième ligne reste illisible.'],readers:3});

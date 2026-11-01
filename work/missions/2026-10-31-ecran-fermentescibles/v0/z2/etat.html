@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z2 — Malts/sucres 2/7 · le verre : chaque malt est une couche, la bière prend sa teinte (v0 tiède, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--hop:#567F45;--hopt:#3F6B2E;--eau:#4F7E9B;--eaut:#2F5F7D;--alerte:#C8382F;--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+::selection{background:#D5E3EC;color:var(--t0)}
+.z2-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+/* chrome commun (J12), repris de r4-a */
+.z2-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.z2-tb{display:flex;align-items:center;gap:6px;height:36px}
+.z2-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.z2-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.z2-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.z2-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.z2-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.z2-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.z2-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.z2-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.z2-rail [aria-current] span{color:var(--t0);font-weight:600}
+.z2-rail [aria-current] i{background:var(--t0)}
+.z2-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.z2-bd>div{display:flex;align-items:baseline;gap:4px}
+.z2-bd .z2-l{font-size:14px;color:var(--t2)}
+.z2-bd .z2-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.z2-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.z2-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.z2-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.z2-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 10px}
+.z2-ret{min-height:24px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);font-size:14px}
+.z2-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.z2-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+.z2-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.z2-annexe>h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.z2-sw{width:10px;height:10px;border-radius:50%;border:1px solid var(--bordm);align-self:center;background:#fff}
+.z2-sw.z2-inc{border-style:dashed;border-color:var(--trait)}
+/* corps */
+.z2-c{padding:10px 10px 0;min-height:764px;display:flex;flex-direction:column;gap:8px}
+.z2-ajout{display:flex;align-items:center;gap:6px;height:34px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 4px 0 10px}
+.z2-ajout:focus-within{border-color:var(--t0)}
+.z2-ajout svg{color:var(--t2);flex-shrink:0}
+.z2-nom{flex:1;min-width:0;height:32px;border:0;background:none;font-size:16px;color:var(--t0);padding:0}
+.z2-nom::placeholder{color:var(--t2)}
+.z2-nom:focus{outline:none}
+.z2-fam{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 6px 0 9px;border-radius:10px;border:1px solid var(--bordm);background:var(--panel);font-size:14px;color:var(--t0);font-weight:600;flex-shrink:0}
+.z2-fam svg{color:var(--t2)}
+.z2-creer{display:none;align-items:center;gap:8px;min-height:32px;margin-top:-4px;padding:0 10px;border:1px dashed var(--bordm);border-radius:10px;font-size:14px;color:var(--t1)}
+.z2-creer.z2-on{display:flex}
+.z2-creer b{color:var(--t0)}
+.z2-creer kbd{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--t2);border:1px solid var(--bord);border-radius:10px;padding:0 5px;line-height:18px}
+/* Le verre : les couches à la part de chaque malt ; une couche inconnue est hachurée et marquée « ? » (J7). */
+.z2-fig{position:relative;display:grid;grid-template-columns:124px 1fr;gap:10px;padding:8px 8px 8px 6px;background:var(--panel);border-radius:16px}
+.z2-verre{position:relative;width:118px;height:450px}
+.z2-verre svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.z2-rows{list-style:none;display:flex;flex-direction:column;justify-content:space-around;gap:6px;min-width:0;overflow:hidden}
+.z2-lg{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;row-gap:1px;padding:5px 8px 6px;background:#fff;border:1px solid var(--bord);border-radius:10px;min-height:48px;min-width:0}
+.z2-lg[data-sel="1"]{border-color:var(--t0)}
+.z2-n{grid-column:1;grid-row:1;display:flex;align-items:baseline;gap:5px;min-width:0}
+.z2-n b{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z2-mt{grid-column:1;grid-row:2;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);white-space:nowrap;min-width:0;overflow:hidden}
+.z2-mt small{font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis}
+.z2-mom{height:18px;padding:0 6px;border-radius:9px;border:1px solid var(--bord);font-size:12px;color:var(--t1);background:var(--panel);display:inline-flex;align-items:center}
+.z2-pc{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;color:var(--t0);font-weight:600}
+.z2-kg{grid-column:2;grid-row:1/3;display:flex;align-items:center;gap:1px}
+.z2-in{width:3.4ch;height:32px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0);padding:0;border-radius:0;caret-color:var(--t0)}
+.z2-in:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z2-u{font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:2px}
+.z2-pm{width:24px;height:28px;border-radius:10px;color:var(--t2);display:flex;align-items:center;justify-content:center}
+.z2-pm:active{background:var(--haut)}
+.z2-jour{grid-column:1/3;grid-row:3;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.z2-jour .z2-in{width:2.4ch;height:26px;font-size:14px}
+.z2-avert{grid-column:1/3;grid-row:3;font-size:12px;color:var(--attt);line-height:1.25}
+.z2-hors{list-style:none;display:flex;flex-direction:column;gap:6px}
+.z2-hors .z2-lg{grid-template-columns:20px 1fr auto}
+.z2-hors .z2-n{grid-column:2}.z2-hors .z2-mt{grid-column:2}.z2-hors .z2-kg{grid-column:3}.z2-hors .z2-jour,.z2-hors .z2-avert{grid-column:2/4}
+.z2-cube{grid-column:1;grid-row:1/3;align-self:center;color:var(--t2)}
+.z2-leaders{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.z2-vide{padding:8px;font-size:14px;color:var(--t2)}
+.z2-marq{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 10px;border-radius:10px;background:#F6EBD3;border:1px solid #E8D3A6;color:var(--attt);font-size:14px;width:100%;text-align:left}
+.z2-marq b{font-family:var(--mono);color:var(--attt)}
+.z2-marq svg{margin-left:auto;flex-shrink:0}
+.z2-marq[aria-expanded="true"] svg{transform:rotate(180deg)}
+.z2-coul{display:none;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.z2-coul.z2-on{display:grid}
+.z2-ce{display:flex;flex-direction:column;gap:2px;padding:6px 8px;border:1px solid var(--bord);border-radius:10px}
+.z2-ce span{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z2-ce label{display:flex;align-items:baseline;gap:3px}
+.z2-plis{display:grid;grid-template-columns:1.25fr .75fr;gap:6px}
+.z2-pli{display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid var(--bord);border-radius:16px;text-align:left;min-height:36px;width:100%;font-size:12px;color:var(--t2)}
+.z2-pli b{font-family:var(--mono);font-size:14px;color:var(--t0)}
+.z2-pli svg{margin-left:auto;color:var(--t2)}
+.z2-tagr{font-family:var(--sans);font-size:12px;font-weight:400;color:var(--attt);border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:16px}
+.z2-dens{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:#F6EBD3;border:1px solid #E8D3A6;color:var(--attt);font-size:14px}
+.z2-dens b{font-family:var(--mono)}
+.z2-ax{margin-bottom:8px;border:1px solid var(--bord);border-radius:16px;padding:8px 10px}
+.z2-ax>h3{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px}
+@media (min-width:700px){.z2-hd,.z2-c,.z2-annexe{max-width:560px;margin-left:auto;margin-right:auto}.z2-bd{max-width:540px;margin:8px auto 0}.z2-fab{right:calc(50% - 280px)}}
+</style></head>
+<body data-concept="z2">
+<header class="z2-hd" data-commun="en-tete">
+  <div class="z2-tb">
+    <button class="z2-ic" aria-label="Retour"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="z2-tt"><span class="z2-tn">Fermentescibles</span><span class="z2-tp">2/7</span></p>
+    <button class="z2-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="z2-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="z2-rail" aria-label="Étapes"><button><span>Identité</span><i></i></button><button aria-current="step"><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="z2-bd" data-commun="bandeau">
+  <div><span class="z2-l">Grain</span><span class="z2-v"><span data-role="grain">8</span> kg</span></div>
+  <div><span class="z2-l">OG</span><span class="z2-v">—</span></div>
+  <div><span class="z2-l">IBU</span><span class="z2-v">24</span><span class="z2-pst" role="img" aria-label="style 25–60 IBU"><b style="left:31%;width:44%"></b><em style="left:30%"></em></span></div>
+  <div><span class="z2-l">EBC</span><span class="z2-sw z2-inc" data-role="bsw"></span><span class="z2-v" data-role="bebc">—</span></div>
+</div>
+<main class="z2-c">
+  <div class="z2-ajout" data-booster="champ-toujours-pret">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    <input class="z2-nom" data-role="nom" placeholder="Ajouter un malt, un sucre…" aria-label="Nom du fermentescible" autocomplete="off" enterkeyhint="next">
+    <button class="z2-fam" data-role="fam" aria-label="Famille : grain. Toucher pour changer" data-booster="famille-qui-tourne"><span data-role="famt">Grain</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2"/><path d="M21 3v6h-6M3 21v-6h6"/></svg></button>
+  </div>
+  <div class="z2-creer" data-role="creer" aria-live="polite"></div>
+
+  <!-- L'idée : la facture de grain se lit dans un verre. Chaque couche a la hauteur de sa part ; sa teinte est celle du malt, ou hachurée « ? ». -->
+  <section class="z2-fig" aria-label="La facture de grain dans le verre" data-booster="verre-en-couches">
+    <div class="z2-verre"><svg viewBox="0 0 118 450" data-role="svg" aria-hidden="true"></svg></div>
+    <ul class="z2-rows" data-role="liste"></ul>
+    <svg class="z2-leaders" data-role="leaders" aria-hidden="true"></svg>
+  </section>
+  <ul class="z2-hors" data-role="hors" aria-label="Hors du grain : sucres, lactose, fruits, extraits"></ul>
+
+  <button class="z2-marq" data-role="marq" aria-expanded="false" aria-controls="z2-coul" data-booster="couleurs-a-renseigner"><span class="z2-sw z2-inc" style="width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--t2)">?</span><span><b data-role="nbinc">3</b> couleurs à renseigner</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="z2-coul" id="z2-coul" data-role="coul"></div>
+
+  <div class="z2-plis">
+    <button class="z2-pli" aria-expanded="false">Rendement <b>75 %</b><span class="z2-tagr">repère</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    <button class="z2-pli" aria-expanded="false">Volume <b>30 L</b><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+  </div>
+  <nav class="z2-pied" data-commun="pied"><button class="z2-ret">Retour</button><button class="z2-suiv">Suivant — Houblons</button></nav>
+</main>
+
+<section class="z2-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="z2-ax"><h3>Recette vide : le verre reste, vide et sans teinte ; ni bandeau ni marque</h3>
+    <div class="z2-fig" style="grid-template-columns:124px 1fr"><div class="z2-verre" style="height:150px"><svg viewBox="0 0 118 150" aria-hidden="true"><path d="M8 4h102l-8 134a8 8 0 0 1-8 8H24a8 8 0 0 1-8-8Z" fill="#fff" stroke="#9E9E9E" stroke-width="1.5"/></svg></div><ul class="z2-rows"><li class="z2-vide">Rien encore.</li></ul></div>
+  </div>
+  <div class="z2-ax"><h3>Lactose 0,5 kg à l'ébullition, puis un fruit en fermentation, hors du verre</h3>
+    <ul class="z2-hors">
+      <li class="z2-lg"><svg class="z2-cube" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg><div class="z2-n"><b>Lactose</b></div><div class="z2-kg"><button class="z2-pm" aria-label="Moins">−</button><input class="z2-in" value="0,5" inputmode="decimal" aria-label="Masse de lactose"><span class="z2-u">kg</span><button class="z2-pm" aria-label="Plus">+</button></div><div class="z2-mt"><span class="z2-mom">ébullition</span><span class="z2-pc">6 %</span> ferm.</div><p class="z2-avert">Non fermentescible : remonte la densité finale.</p></li>
+      <li class="z2-lg"><svg class="z2-cube" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg><div class="z2-n"><b>Purée de mangue</b></div><div class="z2-kg"><button class="z2-pm" aria-label="Moins">−</button><input class="z2-in" value="1,0" inputmode="decimal" aria-label="Masse de purée de mangue"><span class="z2-u">kg</span><button class="z2-pm" aria-label="Plus">+</button></div><div class="z2-mt"><span class="z2-mom">fermentation</span><span class="z2-pc">11 %</span> ferm.</div><div class="z2-jour">jour <input class="z2-in" value="3" inputmode="numeric" aria-label="Jour d'ajout"></div></li>
+    </ul>
+  </div>
+  <div class="z2-ax"><h3>Densité trop haute (OG calculée)</h3>
+    <div class="z2-dens"><b>1,066</b><span>le moût sature au rendement repère de 75 %. Plus de volume, ou moins de grain.</span></div>
+  </div>
+</section>
+<button class="z2-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s,r){return (r||document).querySelector(s)};
+var FAM={grain:{mom:'empâtage'},sucre:{mom:'ébullition'},lactose:{mom:'ébullition'},fruit:{mom:'fermentation'},extrait:{mom:'ébullition'}};
+var L=[{nom:'Pilsner Malz',marque:'Weyermann',fam:'grain',mom:'empâtage',kg:5,ebc:null},
+       {nom:'Weizenmalz hell',marque:'Weyermann',fam:'grain',mom:'empâtage',kg:1.5,ebc:null},
+       {nom:'Haferflocken',marque:'flocons d’avoine',fam:'grain',mom:'empâtage',kg:1.5,ebc:null}];
+var VOL=30, fam='grain';
+function fr(x,d){return x.toFixed(d==null?1:d).replace('.',',');}
+function lit(s){var v=parseFloat(String(s).replace(',','.').replace(/[^0-9.]/g,''));return isFinite(v)?v:null;}
+function mix(a,b,t){var p=function(h){return [1,3,5].map(function(i){return parseInt(h.slice(i,i+2),16)})};var x=p(a),y=p(b);return '#'+x.map(function(c,i){return Math.round(c+(y[i]-c)*t).toString(16).padStart(2,'0')}).join('');}
+function teinte(e){var s=[[0,'#F8E9B8'],[8,'#F2C14E'],[14,'#E0A02E'],[26,'#C77A2C'],[40,'#A0522D'],[60,'#6B3A1E'],[80,'#2B1A12']];
+  for(var i=1;i<s.length;i++){if(e<=s[i][0]){var a=s[i-1],b=s[i],t=(e-a[0])/(b[0]-a[0]);return mix(a[1],b[1],t);}} return s[s.length-1][1];}
+function ebcTotal(){var g=L.filter(function(l){return l.fam==='grain'}); if(!g.length||g.some(function(l){return l.ebc==null})) return null;
+  var gal=VOL*0.26417205, mcu=0; g.forEach(function(l){var lov=(l.ebc/1.97+0.76)/1.3546; mcu+=lov*l.kg*2.2046226;}); mcu/=gal; return 1.4922*Math.pow(mcu,0.6859)*1.97;}
+// Le verre : contour, puis une couche par grain, de haut en bas dans l'ordre de la recette.
+var GX=function(y){return [8+ (y/450)*8, 110-(y/450)*8];}; // bords gauche et droit à la hauteur y (le verre se resserre vers le bas)
+function verre(){
+  var svg=q('[data-role="svg"]'), g=L.filter(function(l){return l.fam==='grain'}), tot=g.reduce(function(s,l){return s+l.kg},0);
+  var top=26, bot=442, H=bot-top, y=top, h='';
+  h+='<defs><clipPath id="z2clip"><path d="M8 4h102l-8 430a8 8 0 0 1-8 8H24a8 8 0 0 1-8-8Z"/></clipPath>'
+    +'<pattern id="z2hach" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><rect width="3" height="7" fill="#D4D4D4"/></pattern></defs>';
+  h+='<g clip-path="url(#z2clip)">';
+  g.forEach(function(l,i){var hh=tot?l.kg/tot*H:0; l._y0=y; l._y1=y+hh;
+    h+='<rect x="0" y="'+y+'" width="118" height="'+hh+'" fill="'+(l.ebc==null?'url(#z2hach)':teinte(l.ebc))+'"/>';
+    if(i>0) h+='<line x1="0" x2="118" y1="'+y+'" y2="'+y+'" stroke="#fff" stroke-width="1.5"/>';
+    if(l.ebc==null&&hh>=18) h+='<text x="59" y="'+(y+hh/2+4)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="12" font-weight="600" fill="#333333">?</text>';
+    y+=hh;});
+  h+='</g>';
+  // la mousse : le signe que c'est une bière, sans chiffre
+  h+='<path d="M8 4h102l-8 430a8 8 0 0 1-8 8H24a8 8 0 0 1-8-8Z" fill="none" stroke="#9E9E9E" stroke-width="1.5"/>';
+  h+='<path d="M9 22c10-8 22-2 30 0s16-10 30-2 20 4 30 0" fill="none" stroke="#BFBFBF" stroke-width="1.2"/>';
+  svg.innerHTML=h;
+}
+function leaders(){var sv=q('[data-role="leaders"]'), fig=q('.z2-fig'), fr0=fig.getBoundingClientRect(), vr=q('.z2-verre').getBoundingClientRect();
+  sv.setAttribute('viewBox','0 0 '+fr0.width+' '+fr0.height); var h='';
+  L.filter(function(l){return l.fam==='grain'}).forEach(function(l){ var li=l._li; if(!li||l._y0==null)return; var r=li.getBoundingClientRect();
+    var ym=(l._y0+l._y1)/2, sy=vr.top-fr0.top+ym*(vr.height/450), sx=vr.left-fr0.left+GX(ym)[1]*(vr.width/118), ex=r.left-fr0.left, ey=r.top-fr0.top+r.height/2;
+    h+='<path d="M'+sx+' '+sy+' C'+(sx+10)+' '+sy+' '+(ex-10)+' '+ey+' '+ex+' '+ey+'" fill="none" stroke="#9E9E9E" stroke-width="1" stroke-dasharray="3 2"/>';
+    h+='<circle cx="'+sx+'" cy="'+sy+'" r="2" fill="#666"/>'; });
+  sv.innerHTML=h;}
+function ligne(l,i,tg,tt){var li=document.createElement('li'); li.className='z2-lg';
+  var part=l.fam==='grain'?(tg?l.kg/tg*100:0):(tt?l.kg/tt*100:0);
+  li.innerHTML=(l.fam!=='grain'?'<svg class="z2-cube" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>':'')
+    +'<div class="z2-n"><b>'+l.nom+'</b></div>'
+    +'<div class="z2-kg"><input class="z2-in" data-role="kg" inputmode="decimal" enterkeyhint="done" value="'+fr(l.kg)+'" aria-label="Masse de '+l.nom+', en kilogrammes" autocomplete="off"><span class="z2-u">kg</span></div>'
+    +'<div class="z2-mt"><span class="z2-mom">'+l.mom+'</span><span class="z2-pc">'+Math.round(part)+' %</span>'+(l.fam!=='grain'?'ferm.':'')+'</div>'
+    +(l.mom==='fermentation'?'<div class="z2-jour">jour <input class="z2-in" inputmode="numeric" value="'+(l.jour||3)+'" aria-label="Jour d’ajout de '+l.nom+'"></div>':'')
+    +(l.fam==='lactose'&&l.kg>0?'<p class="z2-avert">Non fermentescible : remonte la densité finale.</p>':'');
+  champ(q('[data-role="kg"]',li),function(v){l.kg=v;rendu();},function(){return l.kg});
+  li.querySelectorAll('.z2-pm').forEach(function(b){b.addEventListener('click',function(){var p=l.kg<1?0.05:0.1;l.kg=Math.max(0,Math.round((l.kg+p*Number(b.dataset.d))*100)/100);rendu();});});
+  l._li=li; return li;}
+function rendu(){
+  var ul=q('[data-role="liste"]'), hors=q('[data-role="hors"]'); ul.innerHTML=''; hors.innerHTML='';
+  var tg=L.filter(function(l){return l.fam==='grain'}).reduce(function(s,l){return s+l.kg},0), tt=L.reduce(function(s,l){return s+l.kg},0);
+  L.forEach(function(l,i){(l.fam==='grain'?ul:hors).appendChild(ligne(l,i,tg,tt));});
+  if(!L.some(function(l){return l.fam==='grain'})) ul.innerHTML='<li class="z2-vide">Rien encore.</li>';
+  q('[data-role="grain"]').textContent=fr(tg,tg%1?1:0);
+  var inc=L.filter(function(l){return l.fam==='grain'&&l.ebc==null}).length, e=ebcTotal();
+  q('[data-role="nbinc"]').textContent=inc; q('[data-role="marq"]').style.display=inc?'':'none';
+  q('[data-role="bebc"]').textContent=e==null?'—':'~'+fr(e); var bs=q('[data-role="bsw"]'); bs.className='z2-sw'+(e==null?' z2-inc':''); bs.style.background=e==null?'#fff':teinte(e);
+  var c=q('[data-role="coul"]'); c.innerHTML=''; L.forEach(function(l){ if(l.fam!=='grain')return; var d=document.createElement('div'); d.className='z2-ce';
+    d.innerHTML='<span>'+l.nom+'</span><label><input class="z2-in" inputmode="decimal" enterkeyhint="next" value="'+(l.ebc==null?'':fr(l.ebc))+'" aria-label="Couleur de '+l.nom+', en EBC" style="width:3.4ch"><span class="z2-u">EBC</span></label>';
+    var ci=q('input',d); ci.addEventListener('change',function(){l.ebc=lit(ci.value);rendu();q('[data-role="coul"]').classList.add('z2-on');});
+    ci.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();var all=[].slice.call(c.querySelectorAll('input'));var i=all.indexOf(ci);ci.blur();var n=c.querySelectorAll('input')[i+1];if(n)n.focus();}});
+    c.appendChild(d); });
+  verre(); leaders();
+}
+function champ(el,set,get){var avant;
+  el.addEventListener('focus',function(){avant=get();el.select();});
+  el.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();el.blur();}
+    else if(e.key==='Escape'){e.preventDefault();el.value=fr(avant);el.blur();}
+    else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();var v=get(),p=v<1?0.05:0.1;set(Math.max(0,Math.round((v+(e.key==='ArrowUp'?p:-p))*100)/100));}});
+  el.addEventListener('blur',function(){var v=lit(el.value);set(v==null?avant:v);});}
+var nom=q('[data-role="nom"]'), creer=q('[data-role="creer"]'), FAMS=['grain','sucre','lactose','fruit','extrait'];
+q('[data-role="fam"]').addEventListener('click',function(){fam=FAMS[(FAMS.indexOf(fam)+1)%FAMS.length];q('[data-role="famt"]').textContent=fam.charAt(0).toUpperCase()+fam.slice(1);q('[data-role="fam"]').setAttribute('aria-label','Famille : '+fam+'. Toucher pour changer');aide();});
+function aide(){var t=nom.value.trim();creer.classList.toggle('z2-on',t.length>=2);if(t.length>=2)creer.innerHTML='Créer <b>« '+t+' »</b> · '+fam+' · '+(fam==='fruit'?'en fermentation':fam==='grain'?'à l’empâtage':'à l’ébullition')+'<kbd>↵</kbd>';}
+nom.addEventListener('input',aide);
+nom.addEventListener('keydown',function(e){ if(e.key!=='Enter')return; e.preventDefault(); var t=nom.value.trim(); if(t.length<2)return;
+  var l={nom:t.charAt(0).toUpperCase()+t.slice(1),marque:'',fam:fam,mom:FAM[fam].mom,kg:0,ebc:null,jour:3}; L.push(l); nom.value=''; aide(); rendu();
+  var inp=q('[data-role="kg"]',l._li); if(inp)inp.focus(); });
+q('[data-role="marq"]').addEventListener('click',function(){var o=q('[data-role="coul"]').classList.toggle('z2-on');q('[data-role="marq"]').setAttribute('aria-expanded',o);if(o){var f=q('[data-role="coul"] input');if(f)f.focus();}});
+window.addEventListener('resize',leaders); document.fonts&&document.fonts.ready.then(leaders);
+rendu();
+})();</script>
+</body></html>

@@ -1,0 +1,107 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/depense/rapprochement/recalcul.test.ts [2m([22m[2m14 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 10[2mms[22m[39m
+   [32m✓[39m R4 — même source de règles que le serveur[2m > [22mlineMathCheck et sumCheck du client sont les fonctions du serveur[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22m60 Kg lus pour 6 : ligne-montant ; corrigé en 6 : le point disparaît et plus rien ne pèse[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mun total tapé faux donne somme-ecart au centime ; le bon total la fait disparaître[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mun prix par 100 g n'est jamais un écart ; une fraction de centime n'est pas vérifiée[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mlinesLost > 0 : la somme est incomplète[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mune ligne supprimée : son point part, les rangs des autres ne bougent pas (rang par id)[32m 1[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mune ligne déplacée garde ses cles[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22m« revu » ne vaut que pour la même signature[32m 0[2mms[22m[39m
+   [32m✓[39m R4 — corriger une valeur recalcule les points[2m > [22mles autres points (TVA, désaccord) sont gardés tels quels[32m 0[2mms[22m[39m
+   [32m✓[39m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mun ancien résultat (sans points ni controls) : statut jamais checked tant que le recalcul n'a pas tourné[32m 0[2mms[22m[39m
+[31m   [31m×[31m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mplancher (relecture, point 2) : un serveur qui dit disputed avec points et controls vides n'est jamais checked tant que le recalcul n'a pas posé ses points[39m[32m 4[2mms[22m[39m
+[31m     → expected 'checked' to be 'disputed' // Object.is equality[39m
+[31m   [31m×[31m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mC : sans tvaAmount, le point ht-tva-ttc du serveur est gardé ; avec tvaAmount (même null), la règle est refaite[39m[32m 2[2mms[22m[39m
+[31m     → expected [] to include 'ht-tva-ttc'[39m
+   [32m✓[39m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mtotal saisi (relecture, point 5) : total-absent et ht-tva-ttc sont refaits depuis le total courant[32m 0[2mms[22m[39m
+   [32m✓[39m P9 — non contrôlé n'est jamais « vérifié »[2m > [22mune lecture indisponible reste indisponible[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/invoiceScanBudget.test.ts [2m([22m[2m24 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 133[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mréserve avant génération, partage le quota global, conserve les jobs du compagnon[32m 13[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22msert le cache sans nouvel appel même après pause[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrefuse pause et budget zéro sans appel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mborne le document à trois générations sans quatrième appel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun échec réseau ne réessaie pas et conserve la réservation[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun document simultané est refusé avant un second appel[32m 51[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mréserve deux lectures parallèles et comptabilise leur usage réel sans mise à jour perdue[32m 51[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun signal déjà expiré empêche toute réservation payante[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrevérifie le signal immédiatement après la réservation quotidienne[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrevérifie le signal avant le fournisseur même si la réservation mensuelle a commencé[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens quotidiens après un rejet certain 429 en conservant le compteur de tentative[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens quotidiens si la pause refuse la réservation mensuelle[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mune pause reste prioritaire quand le travail avale l’erreur de la lecture complémentaire[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens lorsque le fournisseur confirme explicitement une consommation nulle[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mpréserve la réservation si la mise à jour de consommation échoue après le fournisseur[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mest marqué dégradé, relu une seule fois, puis servi tel quel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mla relecture qui réussit remplace le résultat dégradé[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mun résultat complet n'est jamais marqué dégradé[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mrelecture en échec : le résultat dégradé reste servi, statut « degraded », jamais « completed », pas de troisième passe[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mrelecture bloquée par un plafond : résultat dégradé servi, retried:true gardé à travers « blocked »[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mpause globale sur un résultat dégradé : servi sans erreur, sans consommer la relecture permise[32m 1[2mms[22m[39m
+[31m   [31m×[31m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mun « running » plus ancien que le délai, avec previousResult, sert le résultat dégradé et laisse la relecture possible[39m[32m 4[2mms[22m[39m
+[31m     → Ce justificatif est déjà en cours d’analyse. Patiente avant de le rouvrir.[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mun « running » récent répond toujours « déjà en cours »[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mdeux envois simultanés sur un résultat dégradé : une seule relecture, un seul appel[32m 1[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/source-unique.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 6[2mms[22m[39m
+[31m   [31m×[31m C — pointsDesIssues passe par totalAbsentPoint[2m > [22mle point total-absent vient de la fonction partagée, pas d'une copie de la condition[39m[32m 6[2mms[22m[39m
+[31m     → expected 'Total TTC absent ou non positif : à s…' to be 'SOURCE UNIQUE' // Object.is equality[39m
+   [32m✓[39m C — pointsDesIssues passe par totalAbsentPoint[2m > [22mun total présent ne pose aucun point[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceScanBudget.test.ts[2m > [22mBudget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mun « running » plus ancien que le délai, avec previousResult, sert le résultat dégradé et laisse la relecture possible
+[31m[1mError[22m: Ce justificatif est déjà en cours d’analyse. Patiente avant de le rouvrir.[39m
+[36m [2m❯[22m functions/src/invoiceScanBudget.ts:[2m43:58[22m[39m
+
+[90m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m8:256[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/recalcul.test.ts[2m > [22mP9 — non contrôlé n'est jamais « vérifié »[2m > [22mplancher (relecture, point 2) : un serveur qui dit disputed avec points et controls vides n'est jamais checked tant que le recalcul n'a pas posé ses points
+[31m[1mAssertionError[22m: expected 'checked' to be 'disputed' // Object.is equality[39m
+
+Expected: [32m"[7mdisput[27med"[39m
+Received: [31m"[7mcheck[27med"[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/recalcul.test.ts:[2m94:54[22m[39m
+    [90m 92| [39m    [34mexpect[39m([34mstatutDeLecture[39m(serveurDit))[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m 93| [39m    // A (contre-vérification) : le plancher ne se lève ni sur un bool…
+    [90m 94| [39m    [34mexpect[39m([34mstatutDeLecture[39m(serveurDit[33m,[39m [35mtrue[39m [35mas[39m any))[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m   | [39m                                                     [31m^[39m
+    [90m 95| [39m    expect(statutDeLecture(serveurDit, { points: [], controls: serveur…
+    [90m 96| [39m    const reel = recomputeInvoicePoints(scan({ items: [l(1)], amountTT…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/recalcul.test.ts[2m > [22mP9 — non contrôlé n'est jamais « vérifié »[2m > [22mC : sans tvaAmount, le point ht-tva-ttc du serveur est gardé ; avec tvaAmount (même null), la règle est refaite
+[31m[1mAssertionError[22m: expected [] to include 'ht-tva-ttc'[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/recalcul.test.ts:[2m106:49[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/source-unique.test.ts[2m > [22mC — pointsDesIssues passe par totalAbsentPoint[2m > [22mle point total-absent vient de la fonction partagée, pas d'une copie de la condition
+[31m[1mAssertionError[22m: expected 'Total TTC absent ou non positif : à s…' to be 'SOURCE UNIQUE' // Object.is equality[39m
+
+Expected: [32m"SOURCE UNIQUE"[39m
+Received: [31m"Total TTC absent ou non positif : à saisir."[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/source-unique.test.ts:[2m13:66[22m[39m
+    [90m 11| [39m  it('le point total-absent vient de la fonction partagée, pas d\'une …
+    [90m 12| [39m    [35mconst[39m points [33m=[39m [34mpointsDesIssues[39m([34mlire[39m([34mpropre[39m({ amountTTC[33m:[39m [35mnull[39m })))[33m;[39m
+    [90m 13| [39m    expect(points.find(p => p.code === 'total-absent')?.message).toBe(…
+    [90m   | [39m                                                                 [31m^[39m
+    [90m 14| [39m  })[33m;[39m
+    [90m 15| [39m  [34mit[39m([32m'un total présent ne pose aucun point'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m36 passed[39m[22m[90m (40)[39m
+[2m   Start at [22m 23:56:40
+[2m   Duration [22m 807ms[2m (transform 128ms, setup 278ms, collect 172ms, tests 150ms, environment 0ms, prepare 160ms)[22m
+

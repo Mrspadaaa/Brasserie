@@ -54,8 +54,12 @@ export const cle = (nom) => {
   const s = String(nom);
   const i = s.lastIndexOf(' - ');
   if (i < 0 || RE_FORME.test(s.slice(0, i))) return s;
+  // c9 (D199) : « Motueka - machops » est la variété suivie de sa marque de commerce (« trade brand machops NZ » dans l'URL de la fiche), pas un fournisseur.
+  if (MARQUES.has(norm(s.slice(i + 3)))) return s.slice(0, i);
   return s.slice(i + 3);
 };
+/** Marques de commerce écrites après le nom de la variété (HopDatabase : « Nelson sauvin - machops »). */
+const MARQUES = new Set(['machops']);
 
 /** { k, pays } : la clé normée d'un nom (sans parenthèses, bruit ni codes d'origine) et les pays que son écriture annonce. */
 export function strip(nom) {

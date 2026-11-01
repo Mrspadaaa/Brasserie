@@ -34,7 +34,8 @@ describe('Copie, import et relecture de la conduite levure', () => {
     expect(copied.yeast.hopIndexId).toBe('wyeast-3068');
     view.unmount();
     const save = vi.fn(); mount({ ...initial, name: 'Autre brouillon', yeastDesign: undefined, yeast: { name: 'Autre souche', form: 'sèche', qty: 99, unit: 'sachet' } }, save);
-    fireEvent.click(screen.getByRole('button', { name: 'Coller une recette trouvée' }));
+    // r4-a (D205) : sur une recette remplie, l'import passe par l'icône de l'en-tête ; le bouton du corps ne reste que sur une recette vide.
+    fireEvent.click(screen.getByRole('button', { name: 'Coller une recette' }));
     fireEvent.change(screen.getByLabelText('Texte de la recette'), { target: { value: text } });
     fireEvent.click(screen.getByRole('button', { name: 'Lire la recette' }));
     await screen.findByRole('button', { name: 'Reprendre' }); fireEvent.click(screen.getByRole('button', { name: 'Reprendre' }));
@@ -67,7 +68,8 @@ describe('Copie, import et relecture de la conduite levure', () => {
     const copy = vi.fn().mockResolvedValue(undefined), save = vi.fn();
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: copy } });
     mount({ ...yeastFlowRecipe(), yeastDesign: undefined, yeast: { name: 'Ancienne levure', form: 'sèche', qty: 99, unit: 'sachet' } }, save);
-    fireEvent.click(screen.getByRole('button', { name: 'Coller une recette trouvée' }));
+    // r4-a (D205) : sur une recette remplie, l'import passe par l'icône de l'en-tête ; le bouton du corps ne reste que sur une recette vide.
+    fireEvent.click(screen.getByRole('button', { name: 'Coller une recette' }));
     fireEvent.change(screen.getByLabelText('Texte de la recette'), { target: { value: writeRecipeText(unknown) } });
     fireEvent.click(screen.getByRole('button', { name: 'Lire la recette' }));
     const apply = await screen.findByRole('button', { name: 'Reprendre' });

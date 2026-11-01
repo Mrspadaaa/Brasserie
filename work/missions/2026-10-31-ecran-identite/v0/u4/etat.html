@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>u4 — Lire en haut, régler en bas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{width:390px;min-height:844px;margin:0 auto;font-family:"Source Sans 3",system-ui,sans-serif;color:#111;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+.u4-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.u4-top{display:flex;align-items:center;gap:6px;height:50px;padding:0 8px 0 6px}
+.u4-ico{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;color:#333}
+.u4-titre{font-size:20px;font-weight:700;margin-left:2px}
+.u4-titre span{font-weight:400;color:#666;font-size:16px;margin-left:4px}
+.u4-aband{margin-left:auto;font-size:16px;text-decoration:underline;text-underline-offset:3px;padding:4px 6px}
+.u4-fil{display:flex;justify-content:space-between;padding:0 12px;border-bottom:1px solid #DDD}
+.u4-fil a{font-size:14px;color:#666;text-decoration:none;padding:4px 0 8px;position:relative;white-space:nowrap}
+.u4-fil a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:4px;border-radius:2px;background:#DDD}
+.u4-fil a[aria-current]{color:#111;font-weight:600}
+.u4-fil a[aria-current]::after{background:#111}
+.u4-band{margin:8px 8px 0;height:36px;border:1px solid #DDD;background:#F5F5F5;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:14px;color:#666}
+.u4-band b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600;color:#111;margin-left:3px}
+.u4-ibu{display:inline-flex;align-items:center;gap:4px}
+.u4-ibu i{display:inline-block;width:40px;height:8px;border-radius:4px;background:#DDD;position:relative}
+.u4-ibu i::before{content:"";position:absolute;left:18px;width:12px;top:0;bottom:0;background:#9E9E9E;border-radius:4px}
+.u4-ibu i::after{content:"";position:absolute;left:28px;top:-3px;width:2px;height:14px;background:#111}
+.u4-ebc{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;margin:0 2px 0 4px}
+
+.u4-main{display:flex;flex-direction:column;gap:10px;min-height:calc(844px - 146px);padding:8px 8px 8px}
+.u4-lus{display:flex;flex-direction:column;gap:2px}
+.u4-fl{display:flex;align-items:center;gap:8px;padding:0 16px 6px;min-height:24px}
+.u4-fl span{font-size:14px;color:#666}
+.u4-fl i{flex:1;height:20px;border-radius:8px;border:1px solid #BFBFBF;background:repeating-linear-gradient(135deg,#fff 0 4px,#DDD 4px 8px);position:relative;overflow:hidden}
+.u4-fl i b{position:absolute;left:0;top:0;bottom:0;background:#111}
+.u4-fl{background:none}
+.u4-fl.u4-trop i b{background:#C8382F}
+.u4-l{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:64px;padding:4px 12px;border-radius:8px;text-align:left;border-left:4px solid transparent}
+.u4-l .u4-v{font-size:36px;font-weight:600;line-height:1}
+.u4-l .u4-k{font-size:12px;color:#666;order:-1}
+.u4-ln2{display:flex;align-items:baseline;gap:8px;width:100%}
+.u4-ln2 em{font-style:normal;margin-left:auto;font-size:14px;color:#333}
+.u4-l[aria-pressed="true"]{background:#F5F5F5;border-left-color:#111}
+.u4-l:active{background:#EBEBEB}
+.u4-sty{font-family:"Source Sans 3",sans-serif !important;font-weight:700 !important}
+.u4-off{color:#666}
+.u4-on{color:#3F6B2E}
+.u4-deck{margin-top:auto;background:#111;color:#F5F0EA;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.u4-dh{display:flex;align-items:baseline;justify-content:space-between}
+.u4-dh span{font-size:14px;color:#D8CEC5}
+.u4-dh output{font-size:40px;font-weight:600;line-height:1}
+.u4-reg{position:relative;height:80px;touch-action:none;cursor:pointer;user-select:none}
+.u4-reg svg{position:absolute;inset:0}
+.u4-row{display:flex;align-items:center;gap:8px}
+.u4-row button{width:48px;height:48px;border-radius:8px;background:#2C2521;border:1px solid #574A42;color:#F5F0EA;display:grid;place-items:center}
+.u4-row button:active{background:#3D342E}
+.u4-row .u4-reg{flex:1}
+.u4-cuve{display:flex;align-items:center;gap:8px;font-size:14px;color:#D8CEC5}
+.u4-cuve span{width:104px}
+.u4-cuve > b{width:72px;white-space:nowrap;text-align:right;font-size:16px;color:#F5F0EA;font-weight:600}
+.u4-fi{height:24px !important;background:repeating-linear-gradient(135deg,#1A1613 0 4px,#3D342E 4px 8px) !important}
+.u4-fi b{background:#F2C14E !important}
+.u4-cuve i{flex:1;height:20px;border-radius:8px;border:1px solid #574A42;background:#1A1613;overflow:hidden}
+.u4-cuve i b{display:block;height:100%;background:#9A8A7E}
+.u4-pied{display:flex;justify-content:space-between;font-size:12px;color:#9A8A7E}
+.u4-pied b{color:#F5F0EA;font-weight:600;font-size:14px}
+.u4-pied .u4-trop{color:#DC5F58}
+.u4-chips{display:flex;flex-wrap:wrap;gap:6px}
+.u4-chips button{height:36px;padding:0 12px;border-radius:18px;background:#2C2521;border:1px solid #574A42;color:#F5F0EA;font-size:14px}
+.u4-chips button[aria-pressed="true"]{background:#F2C14E;color:#12100E;border-color:#F2C14E}
+.u4-nomin{height:40px;border:1px solid #574A42;border-radius:8px;background:#221D19;color:#F5F0EA;padding:0 12px;font-size:16px}
+</style></head>
+<body data-variante="u4">
+
+<header class="u4-top" data-commun="entete">
+  <button class="u4-ico" aria-label="Retour"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <h1 class="u4-titre">Identité<span>1/7</span></h1>
+  <button class="u4-aband">Abandonner</button>
+  <button class="u4-ico" aria-label="Importer une recette"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2a1.5 1.5 0 0 1 1.5 1.5v3"/><path d="M9 5.5H7A1.5 1.5 0 0 0 5.5 7v12A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5v-2"/><path d="M11 13.5h9.5M17.5 10.5l3 3-3 3"/></svg></button>
+  <button class="u4-ico" aria-label="Thème"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.64" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></button>
+</header>
+<nav class="u4-fil" data-commun="etapes" aria-label="Étapes">
+  <a href="#" aria-current="step">Identité</a><a href="#">Malts/sucres</a><a href="#">Houblons</a><a href="#">Levure</a><a href="#">Paliers</a><a href="#">Eau</a><a href="#">Récap.</a>
+</nav>
+<div class="u4-band" data-commun="bandeau">
+  <span>Grain<b>8,6 kg</b></span><span>OG<b>1,080</b></span><span class="u4-ibu">IBU<b>~93</b><i></i></span><span>EBC<span class="u4-ebc"></span><b>9,5</b></span>
+</div>
+
+<main class="u4-main">
+  <div class="u4-lus" role="group" aria-label="Réponses">
+    <button class="u4-l" data-f="style" aria-pressed="false" data-booster="lire-style"><span class="u4-ln2"><span class="u4-v u4-sty" id="u4-l-style">Double IPA</span></span><span class="u4-k" id="u4-l-code">22A, BJCP 2021</span></button>
+    <button class="u4-l" data-f="vol" aria-pressed="true" data-booster="lire-volume"><span class="u4-v u4-mono" id="u4-l-vol">24 L</span><span class="u4-k">Volume en fermenteur</span></button>
+    <button class="u4-l" data-f="min" aria-pressed="false" data-booster="lire-ebullition"><span class="u4-ln2"><span class="u4-v u4-mono" id="u4-l-min">60 min</span><em id="u4-ev">≈ 3 L évaporés, estimé</em></span><span class="u4-k">Ébullition</span></button>
+    <button class="u4-l" data-f="pc" aria-pressed="false" data-booster="lire-espace"><span class="u4-ln2"><span class="u4-v u4-mono" id="u4-l-pc">20 %</span><em id="u4-l-cons">24 L conseillés</em></span><span class="u4-k">Espace libre</span></button>
+    <button class="u4-l" data-f="nolo" aria-pressed="false" data-booster="nolo"><span class="u4-v u4-sty u4-off" id="u4-l-nolo">NOLO non</span><span class="u4-k">Objectif ≤ 0,5 %</span></button>
+    <button class="u4-l" data-f="nom" aria-pressed="false" data-booster="lire-nom"><span class="u4-v u4-sty" id="u4-l-nom" style="font-weight:600 !important">neipa v3</span><span class="u4-k">Nom</span></button>
+  </div>
+  <section class="u4-deck" id="u4-deck" aria-live="polite"></section>
+</main>
+<script>(function(){
+  var FERM = 30;
+  function evap(vol, min){ var k = 0.10 * min / 60; return vol / (1 - k) - vol; }
+  function fmt(n){ return String(Math.round(n * 10) / 10).replace('.', ','); }
+  function fmtE(n){ return String(Math.round(n)); }
+
+  var st = { vol: 24, min: 60, pc: 20, nolo: false, style: 'Double IPA', nom: 'neipa v3', champ: 'vol' };
+  var STYLES = [['21A','American IPA'],['21B','Specialty IPA'],['21C','Hazy IPA'],['22A','Double IPA'],['22B','American Strong Ale']];
+  var $ = function(i){ return document.getElementById(i); };
+  var deck = $('u4-deck');
+  function regle(min, max, val, pas, marque){
+    var W = 270, H = 56, x = function(v){ return 12 + (v - min) / (max - min) * (W - 24); };
+    var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="72" aria-hidden="true">';
+    if (marque && marque.trop != null) s += '<rect x="'+x(marque.trop)+'" y="14" width="'+(x(max)-x(marque.trop))+'" height="18" fill="#4A2320"/>';
+    for (var v = min; v <= max; v += pas){ var g = (v % (pas*5) === 0); s += '<line x1="'+x(v)+'" x2="'+x(v)+'" y1="'+(g?14:20)+'" y2="32" stroke="'+(g?'#D8CEC5':'#574A42')+'" stroke-width="1"/>'; if (g) s += '<text x="'+x(v)+'" y="48" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#D8CEC5">'+v+'</text>'; }
+    if (marque && marque.rep != null) s += '<line x1="'+x(marque.rep)+'" x2="'+x(marque.rep)+'" y1="8" y2="36" stroke="#E3B55D" stroke-width="2" stroke-dasharray="3 2"/>';
+    s += '<rect x="12" y="22" width="'+(x(val)-12)+'" height="4" rx="2" fill="#F2C14E"/>';
+    s += '<circle cx="'+x(val)+'" cy="24" r="11" fill="#F2C14E"/><circle cx="'+x(val)+'" cy="24" r="4" fill="#12100E"/></svg>';
+    return s;
+  }
+  function pied(){
+    var lib = 30 - st.vol;
+    return '<div class="u4-cuve"><span>Fermenteur 30 L</span><i class="u4-fi"><b style="width:'+Math.min(100, st.vol/30*100)+'%"></b></i><b class="u4-mono">'+Math.abs(30-st.vol)+' L</b></div><div class="u4-cuve"><span>Cuve 45 L</span><i><b style="width:'+Math.min(100,(st.vol + evap(st.vol, st.min))/45*100)+'%"></b></i><b class="u4-mono">≈ '+fmtE(st.vol + evap(st.vol, st.min))+' L</b></div><div class="u4-pied"><span>'+(30-st.vol >= 0 ? 'libres' : 'de trop')+' · avant ébullition</span><span>estimé</span></div>';
+  }
+  function rendre(){
+    $('u4-l-vol').textContent = st.vol + ' L'; 
+    $('u4-l-min').textContent = st.min + ' min'; $('u4-ev').textContent = '≈ ' + fmtE(evap(st.vol, st.min)) + ' L évaporés, estimé'; $('u4-l-pc').textContent = st.pc + ' %'; $('u4-l-cons').textContent = Math.floor(30 * (100 - st.pc) / 100) + ' L conseillés';
+    $('u4-l-nolo').textContent = st.nolo ? 'NOLO oui' : 'NOLO non';
+    $('u4-l-nolo').className = 'u4-v u4-sty ' + (st.nolo ? 'u4-on' : 'u4-off');
+    $('u4-l-style').textContent = st.style;
+    $('u4-l-code').textContent = STYLES.filter(function(s){ return s[1] === st.style; })[0][0] + ', BJCP 2021';
+    $('u4-l-nom').textContent = st.nom;
+    document.querySelectorAll('.u4-l').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.f === st.champ); });
+    var h = '';
+    if (st.champ === 'vol') {
+      h = '<div class="u4-dh"><span>Volume</span><output class="u4-mono">'+st.vol+' L</output></div>'
+        + '<div class="u4-row"><button data-pas="-1" aria-label="Moins 1 litre">'+MOINS+'</button><div class="u4-reg" data-booster="regle-volume" data-min="10" data-max="35" data-pas="1">'+regle(10,35,st.vol,1,{trop:30,rep:Math.floor(30 * (100 - st.pc) / 100)})+'</div><button data-pas="1" aria-label="Plus 1 litre">'+PLUS+'</button></div>' + pied();
+    } else if (st.champ === 'min') {
+      h = '<div class="u4-dh"><span>Ébullition</span><output class="u4-mono">'+st.min+' min</output></div>'
+        + '<div class="u4-row"><button data-pas="-5" aria-label="Moins 5 minutes">'+MOINS+'</button><div class="u4-reg" data-booster="regle-ebullition" data-min="0" data-max="120" data-pas="5">'+regle(0,120,st.min,5,null)+'</div><button data-pas="5" aria-label="Plus 5 minutes">'+PLUS+'</button></div>'
+        + '<div class="u4-pied"><span>≈ <b class="u4-mono">'+fmtE(evap(st.vol, st.min))+' L</b> évaporés</span><span>repli 10 %/h · estimé</span></div>';
+    } else if (st.champ === 'pc') {
+      h = '<div class="u4-dh"><span>Espace libre choisi</span><output class="u4-mono">'+st.pc+' %</output></div>'
+        + '<div class="u4-row"><button data-pas="-5" aria-label="Moins 5 %">'+MOINS+'</button><div class="u4-reg" data-booster="regle-espace" data-min="0" data-max="50" data-pas="5">'+regle(0,50,st.pc,5,{rep:20})+'</div><button data-pas="5" aria-label="Plus 5 %">'+PLUS+'</button></div>'
+        + '<div class="u4-pied"><span>Remplissage conseillé <b class="u4-mono">'+Math.floor(30 * (100 - st.pc) / 100)+' L</b></span><span>repère 20 % · estimé</span></div>';
+    } else if (st.champ === 'style') {
+      h = '<div class="u4-dh"><span>Style · BJCP 2021</span></div><div class="u4-chips">' + STYLES.map(function(s){ return '<button data-style="'+s[1]+'" aria-pressed="'+(s[1]===st.style)+'">'+s[1]+'</button>'; }).join('') + '</div>';
+    } else if (st.champ === 'mat') {
+      h = '<div class="u4-dh"><span>Matériel du plan</span></div><div class="u4-chips"><button aria-pressed="true">Royal Catering · 45 L</button></div>';
+    } else if (st.champ === 'nom') {
+      h = '<div class="u4-dh"><span>Nom de la bière</span></div><input class="u4-nomin" id="u4-nomin" type="text" value="'+st.nom+'" aria-label="Nom de la bière" autocomplete="off">';
+    }
+    deck.innerHTML = h;
+    var r = deck.querySelector('.u4-reg');
+    if (r) {
+      var mn = +r.dataset.min, mx = +r.dataset.max, ps = +r.dataset.pas, k = st.champ;
+      var poser = function(e){ var b = r.getBoundingClientRect(); var f = Math.max(0, Math.min(1, (e.clientX - b.left - 12 * b.width / 270) / (b.width * 246 / 270))); st[k] = Math.round((mn + f * (mx - mn)) / ps) * ps; rendre(); };
+      r.onpointerdown = function(e){ poser(e); var mv = function(ev){ poser(ev); }; var up = function(){ window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); }; window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); };
+    }
+    deck.querySelectorAll('[data-pas]').forEach(function(b){ if (b.tagName !== 'BUTTON') return; b.onclick = function(){ var k = st.champ; st[k] = Math.max(k === 'vol' ? 1 : 0, Math.min(k === 'vol' ? 60 : k === 'pc' ? 50 : 180, st[k] + +b.dataset.pas)); rendre(); }; });
+    deck.querySelectorAll('[data-style]').forEach(function(b){ b.onclick = function(){ st.style = b.dataset.style; rendre(); }; });
+    var ni = $('u4-nomin'); if (ni) ni.oninput = function(){ st.nom = ni.value; $('u4-l-nom').textContent = st.nom; };
+  }
+  var MOINS = "<svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M5 12h14\"/></svg>", PLUS = "<svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>";
+  document.querySelectorAll('.u4-l').forEach(function(b){ b.onclick = function(){ if (b.dataset.f === 'nolo') { st.nolo = !st.nolo; } else { st.champ = b.dataset.f; } rendre(); }; });
+  rendre();
+})();</script>
+</body></html>

@@ -205,6 +205,37 @@ export interface HopRef {
   /** Alpha retenu : celui du lot (fiche de stock ou article) sinon la plage variétale. */
   alpha: { value: number; min: number; max: number; from: string } | null;
 }
+// ---------- b1 (31.10, D201) : de quelles sources vient la plage d'une variété ----------
+/** La plage vient-elle de la page Beer Maverick ? Les 317 variétés de base (id `beermaverick-*`) : oui. Les ajouts (id `sources-*`, c6) : non, leur plage
+ * est l'enveloppe des valeurs des sources qui les citent. Aucune étiquette « Beer Maverick » ne se pose sur un ajout. */
+export const estBeerMaverick = (c: Pick<CatalogueHop, 'id'>): boolean => c.id.startsWith('beermaverick-');
+/** Hôte (ou début d'adresse) → nom de la source, avec les noms que portent les descripteurs (descSources). */
+const SOURCES_PAR_ADRESSE: readonly (readonly [string, string])[] = [
+  ['hopslist.com', 'Hopslist'], ['brewersfriend.com', 'Brewer’s Friend'], ['yakimavalleyhops.com', 'Yakima Valley Hops'], ['yakimachief.com', 'Yakima Chief'],
+  ['hopsteiner.', 'Hopsteiner'], ['crosbyhops.com', 'Crosby Hops'], ['barthhaas.com', 'BarthHaas'], ['charlesfaram.com', 'Charles Faram'],
+  ['johnihaas.com', 'John I. Haas'], ['hops.com.au', 'Hop Products Australia'], ['britishhops.org.uk', 'British Hop Association'], ['freestylehops.com', 'Freestyle Hops'],
+  ['indiehops.com', 'Indie Hops'], ['rahrbsg.com', 'BSG'], ['usahops.org', 'USA Hops'], ['nzhops.co.nz', 'NZ Hops'], ['hopsdirect.com', 'Hops Direct'],
+  ['github.com/kasperg3', 'HopDatabase'], ['github.com/stuartraetaylor', 'hops-json'], ['beermaverick.com', 'Beer Maverick'],
+];
+/** Le nom de la source qui tient cette adresse, ou null si elle est inconnue (jamais un nom inventé). */
+export function sourceDeLAdresse(url: string | null | undefined): string | null {
+  const m = url?.match(/^https?:\/\/(?:www\.)?(.+)$/i);
+  const reste = m ? m[1].toLowerCase() : null;
+  return reste ? SOURCES_PAR_ADRESSE.find(([debut]) => reste.startsWith(debut))?.[1] ?? null : null;
+}
+/** Ce qui s'écrit à côté des plages (α, β, huile…) d'une variété : le nom de la source quand elle est seule, « enveloppe de n sources » sinon.
+ * `url` : la page de la source seule, null pour une enveloppe (aucune de ses pages ne la porte à elle seule). `n` : le nombre de sources
+ * de la variété hors Brewer’s Friend (`nbSources`) ; 0 ou 1 : une source, celle de l'adresse `url` du catalogue. */
+export interface SourceDesPlages { nom: string; url: string | null; enveloppe: boolean }
+export function sourceDesPlages(c: Pick<CatalogueHop, 'id' | 'url' | 'nbSources'>): SourceDesPlages {
+  if (estBeerMaverick(c)) return { nom: 'Beer Maverick', url: c.url, enveloppe: false };
+  const n = c.nbSources ?? 0;
+  if (n >= 2) return { nom: `enveloppe de ${n} sources`, url: null, enveloppe: true };
+  return { nom: sourceDeLAdresse(c.url) ?? 'source citée', url: c.url, enveloppe: false };
+}
+/** L'étiquette de l'α retenu quand il n'y a pas de lot : « plage variétale (Beer Maverick) », « plage variétale (Hopslist) », « plage variétale (enveloppe de 4 sources) ». */
+export const etiquettePlageVarietale = (c: Pick<CatalogueHop, 'id' | 'url' | 'nbSources'>): string => `plage variétale (${sourceDesPlages(c).nom})`;
+
 /** Un houblon du stock (clé « id » ou « id:cryo ») ou du catalogue (« id »). */
 export function hopRef(key: string): HopRef | null {
   const c = courant();
@@ -214,6 +245,6 @@ export function hopRef(key: string): HopRef | null {
   const catalogue = c.catalogueById.get(varietyId);
   if (!catalogue) return null;
   const alpha = stock?.alpha != null ? { value: stock.alpha, min: stock.alpha, max: stock.alpha, from: stock.alphaFrom ?? 'stock' }
-    : catalogue.alpha ? { value: (catalogue.alpha[0] + catalogue.alpha[1]) / 2, min: catalogue.alpha[0], max: catalogue.alpha[1], from: 'plage variétale (Beer Maverick)' } : null;
+    : catalogue.alpha ? { value: (catalogue.alpha[0] + catalogue.alpha[1]) / 2, min: catalogue.alpha[0], max: catalogue.alpha[1], from: etiquettePlageVarietale(catalogue) } : null;
   return { key, varietyId, name: catalogue.name + (stock?.form === 'cryo' ? ' cryo' : ''), stock, catalogue, lotId: stock ? `stock:${stock.key}` : null, alpha };
 }

@@ -13,6 +13,7 @@ import { creerMoteur } from '../../../src/domain/hopIndex/v4/moteur';
 import type { Recipe } from '../../../src/domain/hopIndex/v4/recipe';
 import { getStyleScale } from '../../../src/domain/hopIndex/v4/style/scale';
 import type { Voie, VoieResult } from '../../../src/domain/hopIndex/v4';
+import { REMPLACEMENTS_RESERVES } from '../../../src/domain/hopIndex/v4/voies';
 
 vi.setConfig({ testTimeout: 180_000 });
 const m = creerMoteur(); // les fixtures du prototype : le stock contient Citra cryo
@@ -52,8 +53,10 @@ describe('D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggé
 
   it.each(VISEES)('$nom : à nombres d’affichage par défaut, la liste principale ne perd pas le stock pour autant', ({ r, dir }) => {
     const res = m.proposeVoies(r, dir, { assemblages: true });
-    expect(res.voies.filter((v) => v.domain === 'stock').length).toBeLessThanOrEqual(10);
-    expect(res.voies.filter((v) => v.domain === 'à acheter').length).toBeLessThanOrEqual(4);
+    // D195 (s3) : une visée « moins de » garde en plus, par domaine, jusqu'à REMPLACEMENTS_RESERVES remplacements qui font baisser la famille.
+    const reserve = Object.values(dir).some((n) => (n ?? 0) < 0) ? REMPLACEMENTS_RESERVES : 0;
+    expect(res.voies.filter((v) => v.domain === 'stock').length).toBeLessThanOrEqual(10 + reserve);
+    expect(res.voies.filter((v) => v.domain === 'à acheter').length).toBeLessThanOrEqual(4 + reserve);
   });
 
   it.each(VISEES.slice(0, 2))('$nom, 60′ : Citra cryo n’est plus 1er, et il passe après Citra simple (produit d’arôme)', ({ r, dir }) => {
@@ -135,8 +138,9 @@ describe('D175 : aucun phare coupé avant le rang final, sauf par une exclusion 
     expect(JSON.stringify(m.proposeVoies(r, dir, { assemblages: true, maxBuy: 80 }))).toBe(JSON.stringify(defaut));
     expect(m.proposeVoies(r, dir, { assemblages: true, maxBuy: 400 }).evaluated).toBeGreaterThanOrEqual(defaut.evaluated);
     // Le nombre de rangées montrées ne change pas : au plus 10 du stock et 4 à acheter.
-    expect(defaut.voies.filter((v) => v.domain === 'stock').length).toBeLessThanOrEqual(10);
-    expect(defaut.voies.filter((v) => v.domain === 'à acheter').length).toBeLessThanOrEqual(4);
+    const reserve = Object.values(dir).some((n) => (n ?? 0) < 0) ? REMPLACEMENTS_RESERVES : 0; // D195 (s3), voir plus haut
+    expect(defaut.voies.filter((v) => v.domain === 'stock').length).toBeLessThanOrEqual(10 + reserve);
+    expect(defaut.voies.filter((v) => v.domain === 'à acheter').length).toBeLessThanOrEqual(4 + reserve);
     // La coupe vient après le rang : les voies « à acheter » montrées sont, dans le même ordre, un sous-ensemble du classement entier.
     const tout = m.proposeVoies(r, dir, { ...OUVERT, maxBuy: 400, assemblages: true }).voies.filter((v) => v.domain === 'à acheter').map((v) => v.id);
     const montrees = defaut.voies.filter((v) => v.domain === 'à acheter').map((v) => v.id);

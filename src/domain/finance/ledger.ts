@@ -90,7 +90,15 @@ export interface LedgerSummary {
   receivablesCents: number; payablesCents: number; missingProofCount: number;
   outstanding: OutstandingEntry[]; warnings: string[];
 }
-export function summarizeLedger(transactions: FinanceTransaction[], payments: FinancialPayment[], profile: FinancialProfile, asOf = todayISO()): LedgerSummary {
+export interface LedgerOptions {
+  /**
+   * Compte aussi, dans `payablesCents`, `receivablesCents` et `outstanding`, le reste à payer ou à encaisser des pièces
+   * datées après `asOf` (la règle des Prévisions). La trésorerie, les totaux de période et les avertissements ne changent pas.
+   * Faux par défaut : le bilan annuel, la clôture fiscale et l'assistant parlent d'une date, pas de l'avenir.
+   */
+  includeScheduled?: boolean;
+}
+export function summarizeLedger(transactions: FinanceTransaction[], payments: FinancialPayment[], profile: FinancialProfile, asOf = todayISO(), options: LedgerOptions = {}): LedgerSummary {
   const warnings: string[] = [];
   const result: LedgerSummary = { incomeCents: 0, expenseCents: 0, contributionCents: 0, withdrawalCents: 0,
     cashCents: null, cashComplete: false, unknownPaymentCount: 0, receivablesCents: 0, payablesCents: 0, missingProofCount: 0, outstanding: [], warnings };
@@ -100,6 +108,19 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
       .reduce((sum, p) => sum + (p.direction === 'in' ? p.amountCents : -p.amountCents), 0);
     result.cashComplete = true;
   } else warnings.push('Solde de trésorerie initial à confirmer.');
+  /** Pièce datée après `asOf` : seul son reste à payer ou à encaisser est compté, aux mêmes contrôles qu'une pièce du jour. */
+  const addScheduled = (tx: FinanceTransaction, date: string) => {
+    const amount = transactionAmount(tx);
+    if (!Number.isSafeInteger(amount) || amount < 0) { warnings.push(`Montant à vérifier : ${tx.id}.`); return; }
+    const refundIssue = refundLinkIssue(tx, transactions);
+    if (refundIssue) { warnings.push(refundIssue); return; }
+    const state = paymentState(tx, payments, transactions, asOf);
+    if (state.state !== 'unpaid' && state.state !== 'partial' || state.remainingCents <= 0) return;
+    const direction = transactionDirection(tx, transactions);
+    result.outstanding.push({ id: tx.id, description: tx.description, date, dueDate: isoDate(tx.finance?.dueDate),
+      amountCents: amount, paidCents: state.paidCents, remainingCents: state.remainingCents, direction, state: state.state });
+    if (direction === 'in') result.receivablesCents += state.remainingCents; else result.payablesCents += state.remainingCents;
+  };
   transactions.filter(isActiveTransaction).forEach(tx => {
     if (tx.settlementBalanceCents !== undefined && tx.settlementBalanceCents !== paidForTransaction(tx, payments, transactions)) {
       warnings.push(`${tx.id} : registre de paiements en cours de synchronisation ou restauration.`);
@@ -107,7 +128,10 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
     }
     const date = isoDate(tx.date);
     if (!date) { warnings.push(`Date à corriger : ${tx.description || tx.id}.`); return; }
-    if (date > asOf) return;
+    if (date > asOf) {
+      if (options.includeScheduled) addScheduled(tx, date);
+      return;
+    }
     const amount = transactionAmount(tx);
     if (!Number.isSafeInteger(amount) || amount < 0) { warnings.push(`Montant à vérifier : ${tx.id}.`); return; }
     const kind = transactionKind(tx), direction = transactionDirection(tx, transactions);

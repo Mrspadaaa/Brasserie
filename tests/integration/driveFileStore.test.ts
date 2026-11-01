@@ -21,7 +21,7 @@ function fakeDrive() {
   const files = new Map<string, Stored>();
   const uploads = new Map<string, Upload>();
   const sent: { url: URL; init: RequestInit; owner: string }[] = [];
-  const behavior = { loseFinal: false, failChunkAt: -1, forbiddenReason: '', forbiddenStatus: 0, unsafeLocation: false, omitChecksum: false, downloadOverride: undefined as Uint8Array | undefined };
+  const behavior = { loseFinal: false, failChunkAt: -1, forbiddenReason: '', forbiddenStatus: 0, unsafeLocation: false, omitChecksum: false, downloadOverride: undefined as Uint8Array | undefined, withLink: false, linkOverride: '' };
   let nextId = 0;
   const fetcher = vi.fn(async (urlInput: string, init: RequestInit = {}) => {
     const url = new URL(urlInput);
@@ -67,7 +67,8 @@ function fakeDrive() {
     const file = files.get(id);
     if (!file || file.owner !== identity.uid) return failure(404);
     if (url.searchParams.get('alt') === 'media') return new Response(behavior.downloadOverride || file.content);
-    return json(file);
+    // Option éteinte par défaut : les assertions `toEqual` d'origine ne voient aucun champ en plus.
+    return json(behavior.withLink ? { ...file, webViewLink: behavior.linkOverride || `https://drive.google.com/file/d/${file.id}/view` } : file);
   });
   return { files, uploads, sent, behavior, fetcher };
 }
@@ -239,5 +240,62 @@ describe('Drive originals: private storage, bounded transfers and integrity', ()
     behavior.unsafeLocation = true;
     await expect(store.uploadDriveOriginal(input)).rejects.toMatchObject({ code: 'drive/invalid-response' });
     expect(sent.every(({ url }) => url.hostname === 'www.googleapis.com')).toBe(true);
+  });
+});
+
+describe('DR1 : la preuve Drive est lue sur Drive (dossier, lien), jamais déduite', () => {
+  it('rend le dossier réel de l’année, le lien webViewLink et l’empreinte Drive', async () => {
+    const { store, input, behavior } = await setup();
+    behavior.withLink = true;
+    const ref = await store.uploadDriveOriginal(input);
+    expect(ref).not.toHaveProperty('webViewLink');
+    const details = await store.getDriveProofDetails(ref);
+    expect(details).toEqual({ fileName: 'facture.pdf', folder: 'L’Affinée / Justificatifs / 2026', webViewLink: `https://drive.google.com/file/d/${ref.driveFileId}/view`, checksumVerified: true });
+    expect(store.driveOriginalFolderPath(2025)).toBe('L’Affinée / Justificatifs / 2025');
+  });
+  it('le nom du reçu est celui du fichier sur Drive : un fichier déjà rangé sous le nom A, renvoyé sous le nom B, reste « A »', async () => {
+    const { store, input } = await setup();
+    const first = await store.uploadDriveOriginal({ ...input, fileName: '2026-04-27 Fournisseur A 111.pdf' });
+    expect((await store.getDriveProofDetails(first)).fileName).toBe('2026-04-27 Fournisseur A 111.pdf');
+    // Nouvelle tentative après un rechargement : la saisie dit « 222 », Drive garde « 111 ».
+    const second = await store.uploadDriveOriginal({ ...input, fileName: '2026-04-27 Fournisseur A 222.pdf' });
+    expect(second.driveFileId).toBe(first.driveFileId);
+    expect((await store.getDriveProofDetails(second)).fileName).toBe('2026-04-27 Fournisseur A 111.pdf');
+  });
+  it('Drive qui ne rend pas de nom : le nom est absent, jamais celui de la saisie', async () => {
+    const { store, input, files } = await setup();
+    const ref = await store.uploadDriveOriginal(input);
+    delete (files.get(ref.driveFileId) as { name?: string }).name;
+    expect(await store.getDriveProofDetails({ ...ref, fileName: 'nom-de-la-saisie.pdf' })).not.toHaveProperty('fileName');
+  });
+  it('un fichier envoyé en 2026 reste « 2026 » même si une nouvelle tentative demande 2025', async () => {
+    const { store, input, behavior } = await setup();
+    behavior.withLink = true;
+    const ref = await store.uploadDriveOriginal(input);
+    expect(await store.uploadDriveOriginal({ ...input, year: 2025 })).toEqual(ref);
+    expect((await store.getDriveProofDetails(ref)).folder).toBe('L’Affinée / Justificatifs / 2026');
+  });
+  it('sans lien dans la réponse, ou avec une adresse hors drive.google.com : pas de lien', async () => {
+    const { store, input, behavior } = await setup();
+    const ref = await store.uploadDriveOriginal(input);
+    expect(await store.getDriveProofDetails(ref)).not.toHaveProperty('webViewLink');
+    behavior.withLink = true; behavior.linkOverride = 'https://evil.example/steal';
+    expect(await store.getDriveProofDetails(ref)).not.toHaveProperty('webViewLink');
+  });
+  it('dossier parent qui n’est pas celui d’une année de l’app : dossier absent, pas inventé ; sans empreinte Drive : non vérifié', async () => {
+    const { store, input, files, behavior } = await setup();
+    const ref = await store.uploadDriveOriginal(input);
+    const parent = files.get(ref.driveFileId)!.parents![0];
+    files.get(parent)!.appProperties = { ...files.get(parent)!.appProperties, laffineeFolder: 'autre' };
+    expect(await store.getDriveProofDetails(ref)).not.toHaveProperty('folder');
+    delete files.get(ref.driveFileId)!.sha256Checksum;
+    expect((await store.getDriveProofDetails(ref)).checksumVerified).toBe(false);
+    expect(behavior.omitChecksum).toBe(false);
+  });
+  it('sans jeton ou fichier introuvable : l’erreur est rendue, jamais un faux détail', async () => {
+    const { store, input } = await setup();
+    const ref = await store.uploadDriveOriginal(input);
+    identity.token = null;
+    await expect(store.getDriveProofDetails(ref)).rejects.toMatchObject({ code: 'drive/auth-required' });
   });
 });

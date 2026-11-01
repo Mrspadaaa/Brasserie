@@ -52,14 +52,40 @@
     "nelson": "beermaverick-nelson-sauvin",
     "strata an indie hops variety": "beermaverick-strata",
     "brewer gold|États-Unis": "beermaverick-brewers-gold-us",
-    "hbc 366": "beermaverick-ekuanot"
+    "hbc 366": "beermaverick-ekuanot",
+    "bru": "beermaverick-bru-1",
+    "extra styrian dana": "beermaverick-dana",
+    "cluster fugget": "beermaverick-cluster-fugget",
+    "hbc 438": "beermaverick-sabro",
+    "ycr 1": "beermaverick-ahtanum",
+    "mighty axe tropica": "beermaverick-tropica"
   },
   "synonymes": {
     "hbc 586": "krush",
     "hcb 586": "krush",
     "hbc 1019": "dolcita",
     "hbc 682": "terraflux",
-    "hbc 1325": "terrasurge"
+    "hbc 1325": "terrasurge",
+    "mighty axe julius": "julius"
+  },
+  "preuvesC9": {
+    "bru": "D199. HPA « Bru-Data-Sheet.pdf » (fiche appariée à la fiche John I. Haas de Bru-1) : α 13–15, β 8–10, huile 1,5–2, myrcène 50–55 ; la fiche de BRU-1 au catalogue a exactement ces plages (α 13–15, β 8–10, huile 1,5–2) et ses pages BarthHaas (bru-1tm), Yakima Chief (bru-1-trade) et la fiche Haas (Haas_HopSpecSheets-Bru-1_2019.pdf) donnent α 12,7–15,7. Même origine (États-Unis, dossier « america »).",
+    "extra styrian dana": "D199. La fiche BarthHaas https://www.barthhaas.com/hops-and-products/hops/extra-styrian-dana est déjà celle que le catalogue attache à Dana (collecte, α 12,5–18,8) ; la copie HopDatabase de la même page était lue comme une variété à part. Même origine (Slovénie).",
+    "cluster fugget": "D199. Yakima Chief https://www.yakimachief.com/commercial/hop-varieties/cluster-fugget.html (copie HopDatabase) : α 8,1, β 4,1, huile 0,9, cohumulone 30,5–36,5 ; « Cluster Fugget Blend » du catalogue : α 8–8,2, β 4–4,2, huile 0,9–1, cohumulone 30–37 ; Beer Analytics « Cluster Fugget » : α 8,1 (7,2 < 8,1 < 8,2). Même origine (États-Unis), même profil.",
+    "hbc 438": "D199. Le catalogue porte déjà « HBC-438 » comme alias de Sabro (Beer Maverick) ; Brewer's Friend écrit « sabro - HBC-438 » (l'adresse de la fiche : sabro-hbc-438). L'index d'alias du catalogue ignorait les noms qui contiennent un chiffre.",
+    "ycr 1": "D199. La fiche HopDatabase « Ycr 1 » est la page Yakima Chief https://www.yakimachief.com/commercial/hop-varieties/ahtanum.html (α 4–6, β 5–6,5, huile 0,5–2, cohumulone 30–35) ; Ahtanum au catalogue a l'alias « YCR 1 CV » et α 3,5–6,5, β 4–6,5, huile 0,5–1,7, cohumulone 30–35.",
+    "mighty axe tropica": "D199. Brewer's Friend écrit « Mighty Axe - Tropica » (fournisseur Mighty Axe) et « Northern Brewer - Mighty Axe Tropica » (revendeur) : Mighty Axe est le fournisseur de Tropica, déjà au catalogue (Beer Maverick, Beer Analytics « Tropica » 6,0 < 8,8 < 12,7 %).",
+    "mighty axe julius": "D199. Brewer's Friend écrit « Mighty Axe - Julius » (fournisseur Mighty Axe) et « Northern Brewer - Mighty Axe Julius » (revendeur) ; Beer Analytics « Julius » (α 5,6 < 6,6 < 11,8 %, États-Unis) : les trois noms désignent Julius, que les deux entrées d'ajout se partageaient."
+  },
+  "natures": {
+    "sources-kohia-nelson": { "nature": "produit", "raison": "mélange de marque Freestyle Hops", "preuve": "La fiche Freestyle Hops https://www.freestylehops.com/hop-varieties/kohia-nelson/ porte nature « mélange », marque ™ et composition « Nelson Sauvin, Rakau »." },
+    "sources-limequat": { "nature": "produit", "raison": "mélange de marque Freestyle Hops", "preuve": "Freestyle Hops, nature « mélange », marque ™ (Limequat™) ; l'adresse de la fiche est maui-nelson-2." },
+    "sources-maui-nelson": { "nature": "produit", "raison": "produit (infusion de fruit) de Freestyle Hops", "preuve": "La fiche https://www.freestylehops.com/hop-varieties/maui-nelson/ porte nature « produit (infusion de fruit) » et la marque ™." },
+    "sources-mega-motueka": { "nature": "produit", "raison": "mélange de Freestyle Hops", "preuve": "La fiche https://www.freestylehops.com/hop-varieties/mega-motueka/ porte nature « mélange » et la composition « Motueka, Phantasm »." },
+    "sources-super-sauvin": { "nature": "produit", "raison": "mélange de Freestyle Hops", "preuve": "La fiche https://www.freestylehops.com/hop-varieties/super-sauvin/ porte nature « mélange » et la composition « Nelson Sauvin, Phantasm »." },
+    "sources-tropical-fusion": { "nature": "produit", "raison": "mélange de marque Freestyle Hops", "preuve": "La fiche https://www.freestylehops.com/hop-varieties/tropical-fusion/ porte nature « mélange », marque ™ et composition « Motueka, Riwaka, Southern Cross »." },
+    "sources-hopsi-2018": { "nature": "produit", "raison": "lot d'un revendeur (Hopsi, récolte 2018), pas une variété", "preuve": "Brewer's Friend liste neuf houblons différents sous ce nom (Hopsi - Ahtanum USA, Amarillo USA, Centennial USA, Citra USA, Hallertau Blanc D, Styrian Aurora, Bobek, Dana, Wolf - Hopsi 2018) : « Hopsi 2018 » est le lot, la variété est le milieu du nom." },
+    "sources-aged": { "nature": "produit", "raison": "catégorie de revendeur (houblons vieillis), pas une variété", "preuve": "Brewer's Friend https://www.brewersfriend.com/hops/the-malt-miller-aged-hops/ : « the malt miller - Aged Hops », une catégorie de The Malt Miller. Déjà notée comme telle à l'exclusion « aged hops » de cette table, que la normalisation du nom (« hops » retiré) n'atteignait pas." }
   },
   "exclus": {
     "search": "texte d'interface collecté avec les noms (« Search... »), pas une variété",
@@ -67,6 +93,31 @@
     "estate grown": "mention commerciale seule, pas une variété",
     "the singles collection": "assortiment de houblons, pas une variété",
     "aged hops": "catégorie (houblons vieillis), pas une variété"
+  },
+  "procheNonProuve": {
+    "note": "D199. Noms d'ajouts très proches d'une variété du catalogue, SANS preuve suffisante pour les fondre (une seule source, aucune plage à comparer, ou le nom seul). Ils restent des variétés, montrées avec ce qu'on a ; ce tableau est une piste pour le pilote, il ne change rien aux données.",
+    "sources-el-doredo": "beermaverick-el-dorado (une lettre échangée ; Brewer's Friend seul, fournisseur HPA)",
+    "sources-millenium": "beermaverick-millennium (une lettre en moins ; Brewer's Friend seul)",
+    "sources-simco": "beermaverick-simcoe (une lettre en moins ; Brewer's Friend seul, Yakima Valley Hops)",
+    "sources-haaz": "beermaverick-saaz-cz (« Czech haaz » chez Hops Direct ; Brewer's Friend seul)",
+    "sources-zuper-saazer": "beermaverick-saaz-cz (« Zuper saazer » ; Brewer's Friend seul)",
+    "sources-huli-melon": "beermaverick-huell-melon (Hüll Melon ; Brewer's Friend seul, Finest Co)",
+    "sources-minstral": "beermaverick-mistral ou beermaverick-minstrel (Yakima Valley Hops « FR Minstral », origine France : Mistral est français ; aucune plage)",
+    "sources-tahieke": "beermaverick-taiheke (« NZ Tahieke », origine Nouvelle-Zélande ; Brewer's Friend seul)",
+    "sources-mandarina": "beermaverick-mandarina-bavaria (« German Mandarina », origine Allemagne ; Brewer's Friend seul)",
+    "sources-select": "beermaverick-spalter-select (« German select », origine Allemagne ; Brewer's Friend seul)",
+    "sources-blanc": "beermaverick-hallertau-blanc (« German Blanc » de Yakima Chief ; Brewer's Friend seul)",
+    "sources-wye-challenger": "beermaverick-challenger (Wye = le collège de sélection ; Brewer's Friend seul)",
+    "sources-wye-target": "beermaverick-target (Wye = le collège de sélection ; Brewer's Friend seul)",
+    "sources-amarillo-bbc": "beermaverick-amarillo (suffixe BBC non documenté par un producteur)",
+    "sources-citra-bbc": "beermaverick-citra (suffixe BBC non documenté par un producteur)",
+    "sources-domestic-hallertau": "beermaverick-hallertau (Hallertau américain ? la fiche ne le dit pas)",
+    "sources-sl-styrian-goldings": "beermaverick-styrian-golding (« SL » = Slovénie ?)",
+    "sources-quebec-golding": "beermaverick-golding (revendeur Hop Union)",
+    "sources-yamhill-goldings": "beermaverick-golding (Yamhill = région de l'Oregon)",
+    "sources-b-c-goldings": "beermaverick-golding (B.C. = Colombie-Britannique ?)",
+    "sources-experimental-lemonaughty": "Lemonaughty de Beer Analytics (19 recettes, α 10,3) : « Experimental » est le préfixe de Yakima Valley Hops",
+    "sources-experimental-tangerine": "Tangerine de Beer Analytics (97 recettes, α 6) : « Experimental » est le préfixe de Yakima Valley Hops"
   },
   "aConfirmer": {
     "styrian gold": { "raison": "Styrian Gold → Styrian Wolf (distance 2) : probablement faux, deux variétés slovènes différentes ; décision du pilote" },

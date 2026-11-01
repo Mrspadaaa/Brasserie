@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+/* Une page plus haute que l'écran : un pied fixe sombre à texte blanc, et, bien sous le pli, une bande sombre frère du texte
+   clair. Le fond peint se lit à la même place que le texte, défilement compris (31.10 : le défilement du sondage décalait
+   les boîtes suivantes, d'où de faux 1:1 sur les boutons sombres des 48 concepts). */
+body{margin:0;background:#fff;color:#111;font:16px/1.3 sans-serif}
+p{margin:0;padding:14px 16px}
+.cale{height:1300px}
+.pied{position:fixed;left:0;right:0;bottom:0;padding:14px 16px;background:#111827;color:#fff}
+.rang{position:relative;margin:12px;padding:10px 14px}
+.bande{position:absolute;inset:0;background:#1f2937;border-radius:10px;pointer-events:none}
+.txt{position:relative;color:#fff}
+</style></head>
+<body>
+<p>Premier écran : du texte sombre sur blanc.</p>
+<p>Un deuxième paragraphe, tout aussi lisible.</p>
+<div class="cale"></div>
+<div class="rang"><span class="bande"></span><span class="txt">Volume 30 L</span></div>
+<p>Dernier paragraphe, sombre sur blanc.</p>
+<div class="pied">Suivant</div>
+</body></html>

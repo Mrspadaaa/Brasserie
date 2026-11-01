@@ -25,7 +25,25 @@ const opt = (k, d) => (val(k) === null ? d : Number(val(k)));
 const MEDIANE = opt('mediane', 0.55), PLANCHER = opt('plancher', 0.5), PART_VIDES = opt('part-vides', 0.2);
 const SIM = opt('sim', 0.9), DOUBLE = opt('double', 0.95), PART = opt('part', 0.01);
 
+// L'identifiant d'une capture (o1, 31.10 : six `capture-haut.png` de dossiers différents donnaient une ressemblance
+// de 1,00 et 100 % de doubles, un faux échec). Le nom de fichier seul suffit tant qu'il est unique dans la liste
+// (comportement d'avant, mesures figées comprises). Sinon : « dossier/nom », et si deux dossiers portent encore le
+// même nom, le chemin relatif complet. Deux fichiers identiques passés deux fois restent un vrai doublon.
+function identifiants(fichiers, base = process.cwd()) {
+  const nom = (f) => path.basename(f, '.png').replace(/-390$/, '');
+  const unique = [...new Set(fichiers)];
+  const compte = (cle) => { const m = new Map(); for (const f of unique) m.set(cle(f), (m.get(cle(f)) || 0) + 1); return m; };
+  const parNom = compte(nom);
+  const dossierNom = (f) => `${path.basename(path.dirname(f))}/${nom(f)}`;
+  const parDossier = compte(dossierNom);
+  const relatif = (f) => path.relative(base, f).replace(/\\/g, '/').replace(/\.png$/, '');
+  const ids = new Map();
+  for (const f of unique) ids.set(f, parNom.get(nom(f)) === 1 ? nom(f) : parDossier.get(dossierNom(f)) === 1 ? dossierNom(f) : relatif(f));
+  return ids;
+}
+
 async function mesurer(fichiers) {
+  const ids = identifiants(fichiers);
   const { default: puppeteer } = await import('puppeteer-core');
   const navigateur = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
   const page = await navigateur.newPage();
@@ -56,7 +74,7 @@ async function mesurer(fichiers) {
       const gris = []; for (let i = 0; i < g.length; i += 4) gris.push(Math.round(0.299 * g[i] + 0.587 * g[i + 1] + 0.114 * g[i + 2]));
       return { remplissage: Math.round((1000 * pleines) / H) / 1000, gris };
     }, `data:image/png;base64,${fs.readFileSync(f).toString('base64')}`);
-    mesures.push({ id: path.basename(f, '.png').replace(/-390$/, ''), remplissage: m.remplissage, gris: Buffer.from(m.gris).toString('base64') });
+    mesures.push({ id: ids.get(f), remplissage: m.remplissage, gris: Buffer.from(m.gris).toString('base64') });
   }
   await navigateur.close();
   return mesures;

@@ -73,6 +73,8 @@ interface AiAssistProps {
   missing: string[];
   onApply: (facts: IngredientFacts) => void;
   className?: string;
+  /** Sans la phrase « Manque : … » (elle répète les champs vides à côté) ; défaut : faux, le texte reste. */
+  sansExplication?: boolean;
 }
 
 export const AiAssist: React.FC<AiAssistProps> = ({
@@ -80,7 +82,8 @@ export const AiAssist: React.FC<AiAssistProps> = ({
   name,
   missing,
   onApply,
-  className = ''
+  className = '',
+  sansExplication = false
 }) => {
   const [busy, setBusy] = useState(false);
   const [facts, setFacts] = useState<IngredientFacts | null>(null);
@@ -162,7 +165,7 @@ export const AiAssist: React.FC<AiAssistProps> = ({
         </button>
       )}
 
-      {missing.length > 0 && !facts && !busy && (
+      {!sansExplication && missing.length > 0 && !facts && !busy && (
         <p className="text-sm text-cave-400 leading-snug">
           Manque : {missing.join(', ')}. Ces valeurs sont publiées par le fabricant.
         </p>

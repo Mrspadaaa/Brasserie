@@ -1,0 +1,3325 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/depense/raccord/ecran-lecture.test.tsx [2m([22m[2m7 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 3967[2mms[22m[39m
+[31m   [31m×[31m R1 : le prix unitaire lu est gardé[2m > [22mchaque ligne scannée porte son prix lu, la ligne sans prix lu n’en reçoit pas[39m[33m 1184[2mms[22m[39m
+[31m     → L’enregistrement n’est pas parti. Alertes : [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[31m   [31m×[31m R1 : le prix unitaire lu est gardé[2m > [22mR1b : retaper l’unité de la ligne retire le prix lu (il valait pour l’unité imprimée)[39m[33m 1138[2mms[22m[39m
+[31m     → L’enregistrement n’est pas parti. Alertes : [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[31m   [31m×[31m R2 : une description tapée n’est jamais écrasée par un scan[2m > [22mscan 1, saisie « Pour quoi ? », scan 2 : la saisie reste, la source est « typed », le fournisseur change[39m[32m 131[2mms[22m[39m
+[31m     → expected 'Autre Malterie SA · MB-2 · ingrédients' to be 'Malt pour la Pale Ale' // Object.is equality[39m
+   [32m✓[39m R2 : une description tapée n’est jamais écrasée par un scan[2m > [22mtémoin : sans saisie, le second scan remplace la description lue par la sienne[32m 111[2mms[22m[39m
+[31m   [31m×[31m R2 : une description tapée n’est jamais écrasée par un scan[2m > [22mun second scan en échec garde la saisie, qui devient aussi le libellé de la ligne : l’enregistrement part[39m[32m 117[2mms[22m[39m
+[31m     → expected '' to be 'Malt pour la Pale Ale' // Object.is equality[39m
+[31m   [31m×[31m R3 : une date de paiement tapée n’est jamais écrasée par un scan[2m > [22mscan 1, date de paiement tapée (« Hier »), scan 2 : la date reste, sa base est « typed », la date du document suit le scan[39m[32m 141[2mms[22m[39m
+[31m     → Unable to find an element with the text: Payé le 30.10.2026. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_14_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_14_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mMalterie du Banc SA[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"14"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"14"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>...[39m
+[31m   [31m×[31m R3 : une date de paiement tapée n’est jamais écrasée par un scan[2m > [22mtémoin : une date supposée (celle du document) est remplacée par celle du second scan[39m[33m 1144[2mms[22m[39m
+[31m     → L’enregistrement n’est pas parti. Alertes : [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+ [31m❯[39m tests/unit/depense/raccord/unites-enregistrement.test.ts [2m([22m[2m27 tests[22m[2m | [22m[31m21 failed[39m[2m)[22m[32m 18[2mms[22m[39m
+[31m   [31m×[31m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mla facture 372765 : ses 4 lignes « Stk » (Windsor, BE-256, US-05, Verdant) s’enregistrent en sachets, jamais en grammes[39m[32m 6[2mms[22m[39m
+[31m     → expected [ …(4) ] to deeply equal [][39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mStk face à un malt en kg, un houblon en g ou un malt en sachets : refus[32m 0[2mms[22m[39m
+[31m   [31m×[31m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22m« Sachets » face à « sachet », et « Stk » face à « pce »[39m[32m 1[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mune levure en grammes face à un article en sachets : refus comme aujourd’hui, jamais convertie[32m 0[2mms[22m[39m
+   [32m✓[39m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mun article sans catégorie : Stk face à un sachet refusé[32m 0[2mms[22m[39m
+[31m   [31m×[31m R5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mpoids du libellé : « Safale US-05 500 g » 2 Stk refusé, « 11,5 g » accepté, un poids différent de celui de l’article refusé[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMaris Otter (Malt, article en g) : Kilo × 6 → 6000[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mCascade (Houblon, article en kg) : Kg. × 2 → 2[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mGerstenflocken (Malt, article en g) : Kilogramm × 1 → 1000[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mSirop (Sucre, article en ml) : Liter × 3 → 3000[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mAcide (Additif, article en L) : litres × 2 → 2[39m[32m 1[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mAcide (Additif, article en L) : Litre × 2 → 2[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'quantity')[39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en g) : Kilo × 1.15 → 1150[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en g) : Kilo × 0.001 → 1[39m[32m 0[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en kg) : g × 1 → 0.001[39m[32m 0[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'quantity')[39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mune autre famille reste refusée : litre face à un grain en g, Stk face à un houblon en g, kg face à un sachet[32m 0[2mms[22m[39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mun nouvel article « 6 Kilo » prend l’unité kg ; la ligne de la dépense garde « Kilo » (D213)[39m[32m 1[2mms[22m[39m
+[31m     → expected [ 'Kilo', 6 ] to deeply equal [ 'kg', 6 ][39m
+   [32m✓[39m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mun nouvel article garde une unité lisible telle quelle (« Kg », « L », « Stk », « sachet »)[32m 0[2mms[22m[39m
+[31m   [31m×[31m R6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mparité : l’écran dit (formatUnitLink) la quantité que l’enregistrement écrit (stockQuantityFor)[39m[32m 0[2mms[22m[39m
+[31m     → stockQuantityFor is not a function[39m
+[31m   [31m×[31m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité «  » : « unité à préciser », le nom de la ligne, aucune écriture[39m[32m 2[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [31m×[31m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité « - » : « unité à préciser », le nom de la ligne, aucune écriture[39m[32m 0[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [31m×[31m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité « n/a » : « unité à préciser », le nom de la ligne, aucune écriture[39m[32m 0[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [31m×[31m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mun nouvel article à l’unité illisible est refusé aussi (son unité serait « - »)[39m[32m 1[2mms[22m[39m
+[31m     → «  »: expected 'Produit : indique la quantité reçue e…' to contain 'unité à préciser'[39m
+   [32m✓[39m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune quantité absente garde son message d’aujourd’hui[32m 0[2mms[22m[39m
+[31m   [31m×[31m R7 : D214, une unité illisible n’entre jamais en stock[2m > [22mle prix unitaire n’est rattaché à aucune unité illisible ; un prix à l’unité lisible est écrit en centimes[39m[32m 0[2mms[22m[39m
+[31m     → expected [ 230, 230 ] to deeply equal [ 230, undefined ][39m
+[31m   [31m×[31m stockQuantityFor : la règle commune[2m > [22mmême unité : aucune conversion ; conversion exacte ; pièce 1 pour 1 ; illisible ; incompatible[39m[32m 0[2mms[22m[39m
+[31m     → stockQuantityFor is not a function[39m
+[31m   [31m×[31m stockQuantityFor : la règle commune[2m > [22mune quantité positive ne tombe jamais à zéro (1 mg → 0,000001 kg, 1 g → 0,001 kg)[39m[32m 0[2mms[22m[39m
+[31m     → stockQuantityFor is not a function[39m
+[90mstderr[2m | tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22m[2mDR4 : un envoi long est un état, pas une erreur[2m > [22m[2mdeux clics rapides pendant l’envoi : un seul appel
+[22m[39mAn update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [31m❯[39m tests/unit/depense/raccord/ecran-recu.test.tsx [2m([22m[2m19 tests[22m[2m | [22m[31m19 failed[39m[2m)[22m[33m 5015[2mms[22m[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mdossier + nom + vérifié + lien[39m[32m 3[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mvérifié seul (le cas réel de financeDocuments)[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mdossier seul[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mnom seul[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mrien[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mverified absent[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « http://drive.google.com/file/d/abc » n’est pas gardé[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « https://drive.google.com.exemple.test/x » n’est pas gardé[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « https://exemple.test/x » n’est pas gardé[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « javascript:alert(1) » n’est pas gardé[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m receiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « pas une adresse » n’est pas gardé[39m[32m 0[2mms[22m[39m
+[31m     → receiptSentence is not a function[39m
+[31m   [31m×[31m R4 : le reçu arrive à l’écran[2m > [22mau premier clic : onSaved reçoit le reçu de Drive, la feuille se ferme[39m[33m 1171[2mms[22m[39m
+[31m     → expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body[31m
+    [33mstyle[31m=[32m"overflow: hidden;"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"_r_0_"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<header[31m
+            [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+              [33mid[31m=[32m"_r_0_"[31m
+            [36m>[31m
+              [0mNouvelle dépense[0m
+            [36m</h2>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Fermer"[31m
+              [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-x"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"16"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"16"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M18 6 6 18"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m6 6 12 12"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+          [36m</header>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+              [33mrole[31m=[32m"alert"[31m
+              [33mtabindex[31m=[32m"-1"[31m
+            [36m>[31m
+              [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 pb-1"[31m
+            [36m>[31m
+              [36m<input[31m
+                [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+                [33maria-label[31m=[32m"Importer un justificatif"[31m
+                [33mclass[31m=[32m"hidden"[31m
+                [33mhidden[31m=[32m""[31m
+                [33mtype[31m=[32m"file"[31m
+              [36m/>[31m
+              [36m<input[31m
+                [33maccept[31m=[32m"image/*"[31m
+                [33maria-label[31m=[32m"Photographier un justificatif"[31m
+                [33mcapture[31m=[32m"environment"[31m
+                [33mclass[31m=[32m"hidden"[31m
+                [33mhidden[31m=[32m""[31m
+                [33mtype[31m=[32m"file"[31m
+              [36m/>[31m
+              [36m<fieldset[31m
+                [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+              [36m>[31m
+                [36m<section[31m
+                  [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                  [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+                [36m>[31m
+                  [36m<details>[31m
+                    [36m<summary[31m
+                      [33maria-label[31m=[32m"Détails de la lecture"[31m
+                      [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                    [36m>[31m
+                      [36m<svg[31m
+                        [33maria-hidden[31m=[32m"true"[31m
+                        [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                        [33mfill[31m=[32m"none"[31m
+                        [33mheight[31m=[32m"17"[31m
+                        [33mstroke[31m=[32m"currentColor"[31m
+                        [33mstroke-linecap[31m=[32m"round"[31m
+                        [33mstroke-linejoin[31m=[32m"round"[31m
+                        [33mstroke-width[31m=[32m"2"[31m
+                        [33mviewBox[31m=[32m"0 0 24 24"[31m
+                        [33mwidth[31m=[32m"17"[31m
+                        [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                      [36m>[31m
+                        [36m<path[31m
+                          [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                        [36m/>[31m
+                      [36m</svg>[31m
+                      [36m<div[31m
+                        [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                      [36m>[31m
+                        [36m<p[31m
+                          [33mclass[31m=[32m"font-medium text-sm"[31m
+                        [36m>[31m
+                          [0mFacture[0m
+                          [0m · [0m
+                          [0m1[0m
+                          [0m article[0m
+                        [36m</p>[31m
+                        [36m<p[31m
+                          [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                        [36m>[31m
+                          [36m<span[31m
+                            [33mclass[31m=[32m"capitalize"[31m
+                          [36m>[31m
+                            [0mFournisseur A[0m
+                          [36m</span>[31m
+                          [0m · [0m
+                          [36m<span>[31m
+                            [0mLecture vérifiée[0m
+                          [36m</...[39m
+[31m   [31m×[31m R4 : le reçu arrive à l’écran[2m > [22mDrive confirmé puis confirmation en attente : la ligne du pied dit le reçu et son lien ; la reprise ne renvoie rien et rend le même reçu[39m[33m 1066[2mms[22m[39m
+[31m     → Unable to find an element with the text: Justificatif rangé dans « L’Affinée / Justificatifs / 2026 » sous « 2026-04-27 Brau- und Rauchshop GmbH 372765.jpg », empreinte vérifiée.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_6_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_6_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+            [33mrole[31m=[32m"alert"[31m
+            [33mtabindex[31m=[32m"-1"[31m
+          [36m>[31m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mFournisseur A[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill...
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_6_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_6_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+            [33mrole[31m=[32m"alert"[31m
+            [33mtabindex[31m=[32m"-1"[31m
+          [36m>[31m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mFournisseur A[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill...[39m
+[31m   [31m×[31m R4 : le reçu arrive à l’écran[2m > [22mDrive qui ne rend ni dossier ni nom : rien d’inventé[39m[33m 1109[2mms[22m[39m
+[31m     → Unable to find an element with the text: Justificatif rangé sur ton Drive, empreinte vérifiée.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_c_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_c_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+            [33mrole[31m=[32m"alert"[31m
+            [33mtabindex[31m=[32m"-1"[31m
+          [36m>[31m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mFournisseur A[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill...
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_c_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_c_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+            [33mrole[31m=[32m"alert"[31m
+            [33mtabindex[31m=[32m"-1"[31m
+          [36m>[31m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mFournisseur A[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill...[39m
+[31m   [31m×[31m R4 : le reçu arrive à l’écran[2m > [22mrattachement à une dépense existante : la ligne « Justificatif rattaché… » dit le reçu[39m[32m 174[2mms[22m[39m
+[31m     → [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  Justificatif rangé dans « L’Affinée / Justificatifs / 2026 » sous « 2026-04-27 Brau- und Rauchshop GmbH 372765.jpg », empreinte vérifiée.[31m
+Received:
+[31m  Justificatif rattaché à « Achat » du 12.03.2026. Aucune nouvelle dépense ni entrée en stock.[31m[39m
+[31m   [31m×[31m DR4 : un envoi long est un état, pas une erreur[2m > [22mplus de 15 s à l’enregistrement : role="status", aucune alerte ; le second clic réussit[39m[33m 1100[2mms[22m[39m
+[31m     → Unable to find an element with the text: /Envoi du justificatif en cours/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_o_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_o_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+            [33mrole[31m=[32m"alert"[31m
+            [33mtabindex[31m=[32m"-1"[31m
+          [36m>[31m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mFournisseur A[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill...
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_o_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[31m
+        [36m>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[31m
+            [33mid[31m=[32m"_r_o_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"16"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"16"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+            [33mrole[31m=[32m"alert"[31m
+            [33mtabindex[31m=[32m"-1"[31m
+          [36m>[31m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2 pb-1"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<fieldset[31m
+              [33mclass[31m=[32m"space-y-2 min-w-0"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Vérification du justificatif"[31m
+                [33mclass[31m=[32m"rounded-panel border border-hop/30 bg-hop/5"[31m
+              [36m>[31m
+                [36m<details>[31m
+                  [36m<summary[31m
+                    [33maria-label[31m=[32m"Détails de la lecture"[31m
+                    [33mclass[31m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-check shrink-0"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"17"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"17"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"flex-1 min-w-0"[31m
+                    [36m>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"font-medium text-sm"[31m
+                      [36m>[31m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[31m
+                      [36m<p[31m
+                        [33mclass[31m=[32m"text-xs text-cave-200 mt-1"[31m
+                      [36m>[31m
+                        [36m<span[31m
+                          [33mclass[31m=[32m"capitalize"[31m
+                        [36m>[31m
+                          [0mFournisseur A[0m
+                        [36m</span>[31m
+                        [0m · [0m
+                        [36m<span>[31m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[31m
+                      [36m</p>[31m
+                    [36m</div>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-down shrink-0"[31m
+                      [33mfill...[39m
+[31m   [31m×[31m DR4 : un envoi long est un état, pas une erreur[2m > [22mplus de 15 s au rattachement : même état, texte vrai pour ce bouton ; le second clic réussit[39m[32m 183[2mms[22m[39m
+[31m     → expected null not to be null[39m
+[31m   [31m×[31m DR4 : un envoi long est un état, pas une erreur[2m > [22mhors ligne : une erreur (role="alert"), ni état « en cours » ni reçu[39m[32m 112[2mms[22m[39m
+[31m     → [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  Hors connexion[31m
+Received:
+[31m  [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"? If you need to partially mock a module, you can use "importOriginal" helper inside:[31m[39m
+[31m   [31m×[31m DR4 : un envoi long est un état, pas une erreur[2m > [22mdeux clics rapides pendant l’envoi : un seul appel[39m[32m 94[2mms[22m[39m
+[31m     → expected "spy" to be called 1 times, but got 0 times[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 46 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22mR1 : le prix unitaire lu est gardé[2m > [22mchaque ligne scannée porte son prix lu, la ligne sans prix lu n’en reçoit pas
+[31m[1mError[22m: L’enregistrement n’est pas parti. Alertes : [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[36m [2m❯[22m save tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m46:25[22m[39m
+    [90m 44| [39m  fireEvent[33m.[39m[34mclick[39m(screen[33m.[39m[34mgetByRole[39m([32m'button'[39m[33m,[39m { name[33m:[39m label }))[33m;[39m
+    [90m 45| [39m  [35mtry[39m { [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(state[33m.[39msaved)[33m.[39m[34mtoHaveBeenCalled[39m())[33m;[39m }
+    [90m 46| [39m  catch (error) { throw new Error('L’enregistrement n’est pas parti. A…
+    [90m   | [39m                        [31m^[39m
+    [90m 47| [39m  [35mreturn[39m state[33m.[39msaved[33m.[39mmock[33m.[39mcalls[33m.[39m[34mat[39m([33m-[39m[34m1[39m)[33m![39m[[34m0[39m][33m;[39m
+    [90m 48| [39m}[33m;[39m
+[90m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m65:18[22m[39m
+
+[31m[1mCaused by: AssertionError[22m[39m: expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_0_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+              [33mid[39m=[32m"_r_0_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+              [33mrole[39m=[32m"alert"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 pb-1"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+                [33maria-label[39m=[32m"Importer un justificatif"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Photographier un justificatif"[39m
+                [33mcapture[39m=[32m"environment"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+              [36m>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                  [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+                [36m>[39m
+                  [36m<details>[39m
+                    [36m<summary[39m
+                      [33maria-label[39m=[32m"Détails de la lecture"[39m
+                      [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"17"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"17"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                      [36m>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"font-medium text-sm"[39m
+                        [36m>[39m
+                          [0mFacture[0m
+                          [0m · [0m
+                          [0m3[0m
+                          [0m article[0m
+                          [0ms[0m
+                        [36m</p>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"capitalize"[39m
+                          [36m>[39m
+                            [0mMalterie du Banc SA[0m
+                          [36m</span>[39m
+                          [0m · [0m
+                          [36m<span>[39m
+                            [0mLecture véri...
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m45:49[22m[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22mR1 : le prix unitaire lu est gardé[2m > [22mR1b : retaper l’unité de la ligne retire le prix lu (il valait pour l’unité imprimée)
+[31m[1mError[22m: L’enregistrement n’est pas parti. Alertes : [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[36m [2m❯[22m save tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m46:25[22m[39m
+    [90m 44| [39m  fireEvent[33m.[39m[34mclick[39m(screen[33m.[39m[34mgetByRole[39m([32m'button'[39m[33m,[39m { name[33m:[39m label }))[33m;[39m
+    [90m 45| [39m  [35mtry[39m { [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(state[33m.[39msaved)[33m.[39m[34mtoHaveBeenCalled[39m())[33m;[39m }
+    [90m 46| [39m  catch (error) { throw new Error('L’enregistrement n’est pas parti. A…
+    [90m   | [39m                        [31m^[39m
+    [90m 47| [39m  [35mreturn[39m state[33m.[39msaved[33m.[39mmock[33m.[39mcalls[33m.[39m[34mat[39m([33m-[39m[34m1[39m)[33m![39m[[34m0[39m][33m;[39m
+    [90m 48| [39m}[33m;[39m
+[90m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m72:18[22m[39m
+
+[31m[1mCaused by: AssertionError[22m[39m: expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_6_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+              [33mid[39m=[32m"_r_6_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+              [33mrole[39m=[32m"alert"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 pb-1"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+                [33maria-label[39m=[32m"Importer un justificatif"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Photographier un justificatif"[39m
+                [33mcapture[39m=[32m"environment"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+              [36m>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                  [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+                [36m>[39m
+                  [36m<details>[39m
+                    [36m<summary[39m
+                      [33maria-label[39m=[32m"Détails de la lecture"[39m
+                      [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"17"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"17"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                      [36m>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"font-medium text-sm"[39m
+                        [36m>[39m
+                          [0mFacture[0m
+                          [0m · [0m
+                          [0m3[0m
+                          [0m article[0m
+                          [0ms[0m
+                        [36m</p>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"capitalize"[39m
+                          [36m>[39m
+                            [0mMalterie du Banc SA[0m
+                          [36m</span>[39m
+                          [0m · [0m
+                          [36m<span>[39m
+                            [0mLecture véri...
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m45:49[22m[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22mR2 : une description tapée n’est jamais écrasée par un scan[2m > [22mscan 1, saisie « Pour quoi ? », scan 2 : la saisie reste, la source est « typed », le fournisseur change
+[31m[1mAssertionError[22m: expected 'Autre Malterie SA · MB-2 · ingrédients' to be 'Malt pour la Pale Ale' // Object.is equality[39m
+
+Expected: [32m"Malt pour la Pale Ale"[39m
+Received: [31m"Autre Malterie SA · MB-2 · ingrédients"[39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m84:40[22m[39m
+    [90m 82| [39m    fireEvent.change(field('Pour quoi ?'), { target: { value: 'Malt po…
+    [90m 83| [39m    await rescan(view, { ok: true, model: 'rejeu', result: result({ ve…
+    [90m 84| [39m    [34mexpect[39m([34mfield[39m([32m'Pour quoi ?'[39m)[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'Malt pour la Pale Ale'[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m 85| [39m    [35mconst[39m sent [33m=[39m [35mawait[39m [34msave[39m()[33m;[39m
+    [90m 86| [39m    [34mexpect[39m(sent[33m.[39mdescription)[33m.[39m[34mtoBe[39m([32m'Malt pour la Pale Ale'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22mR2 : une description tapée n’est jamais écrasée par un scan[2m > [22mun second scan en échec garde la saisie, qui devient aussi le libellé de la ligne : l’enregistrement part
+[31m[1mAssertionError[22m: expected '' to be 'Malt pour la Pale Ale' // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Malt pour la Pale Ale[39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m101:40[22m[39m
+    [90m 99| [39m    fireEvent.change(field('Pour quoi ?'), { target: { value: 'Malt po…
+    [90m100| [39m    await rescan(view, { ok: false, error: 'Lecture indisponible.' }, …
+    [90m101| [39m    [34mexpect[39m([34mfield[39m([32m'Pour quoi ?'[39m)[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'Malt pour la Pale Ale'[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m102| [39m    fireEvent.change(field('Total TTC en CHF'), { target: { value: '10…
+    [90m103| [39m    [35mconst[39m sent [33m=[39m [35mawait[39m [34msave[39m([32m'Enregistrer la dépense'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22mR3 : une date de paiement tapée n’est jamais écrasée par un scan[2m > [22mscan 1, date de paiement tapée (« Hier »), scan 2 : la date reste, sa base est « typed », la date du document suit le scan
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Payé le 30.10.2026. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_14_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_14_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mMalterie du Banc SA[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"14"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"14"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>...
+[90m [2m❯[22m Object.getElementError ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m118:19[22m[39m
+    [90m116| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m`Payé le [39m[36m${[39mtyped[36m}[39m[32m`[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m117| [39m    await rescan(view, { ok: true, model: 'rejeu', result: result({ da…
+    [90m118| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m`Payé le [39m[36m${[39mtyped[36m}[39m[32m`[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m119| [39m    [35mconst[39m sent [33m=[39m [35mawait[39m [34msave[39m()[33m;[39m
+    [90m120| [39m    [34mexpect[39m(sent[33m.[39mpaymentDate)[33m.[39m[34mtoBe[39m(typed)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22mR3 : une date de paiement tapée n’est jamais écrasée par un scan[2m > [22mtémoin : une date supposée (celle du document) est remplacée par celle du second scan
+[31m[1mError[22m: L’enregistrement n’est pas parti. Alertes : [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[36m [2m❯[22m save tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m46:25[22m[39m
+    [90m 44| [39m  fireEvent[33m.[39m[34mclick[39m(screen[33m.[39m[34mgetByRole[39m([32m'button'[39m[33m,[39m { name[33m:[39m label }))[33m;[39m
+    [90m 45| [39m  [35mtry[39m { [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(state[33m.[39msaved)[33m.[39m[34mtoHaveBeenCalled[39m())[33m;[39m }
+    [90m 46| [39m  catch (error) { throw new Error('L’enregistrement n’est pas parti. A…
+    [90m   | [39m                        [31m^[39m
+    [90m 47| [39m  [35mreturn[39m state[33m.[39msaved[33m.[39mmock[33m.[39mcalls[33m.[39m[34mat[39m([33m-[39m[34m1[39m)[33m![39m[[34m0[39m][33m;[39m
+    [90m 48| [39m}[33m;[39m
+[90m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m127:18[22m[39m
+
+[31m[1mCaused by: AssertionError[22m[39m: expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_1c_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+              [33mid[39m=[32m"_r_1c_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+              [33mrole[39m=[32m"alert"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 pb-1"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+                [33maria-label[39m=[32m"Importer un justificatif"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Photographier un justificatif"[39m
+                [33mcapture[39m=[32m"environment"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+              [36m>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                  [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+                [36m>[39m
+                  [36m<details>[39m
+                    [36m<summary[39m
+                      [33maria-label[39m=[32m"Détails de la lecture"[39m
+                      [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"17"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"17"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                      [36m>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"font-medium text-sm"[39m
+                        [36m>[39m
+                          [0mFacture[0m
+                          [0m · [0m
+                          [0m1[0m
+                          [0m article[0m
+                        [36m</p>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"capitalize"[39m
+                          [36m>[39m
+                            [0mMalterie du Banc SA[0m
+                          [36m</span>[39m
+                          [0m · [0m
+                          [36m<span>[39m
+                            [0mLecture vérifiée[0m
+                         ...
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-lecture.test.tsx:[2m45:49[22m[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mdossier + nom + vérifié + lien
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mvérifié seul (le cas réel de financeDocuments)
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mdossier seul
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mnom seul
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mrien
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mverified absent
+[31m[1mTypeError[22m: receiptSentence is not a function[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m58:12[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « http://drive.google.com/file/d/abc » n’est pas gardé
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « https://drive.google.com.exemple.test/x » n’est pas gardé
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « https://exemple.test/x » n’est pas gardé
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « javascript:alert(1) » n’est pas gardé
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mreceiptSentence : chaque morceau vient du reçu, rien d’autre[2m > [22mle lien « pas une adresse » n’est pas gardé
+[31m[1mTypeError[22m: receiptSentence is not a function[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m61:12[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mR4 : le reçu arrive à l’écran[2m > [22mau premier clic : onSaved reçoit le reçu de Drive, la feuille se ferme
+[31m[1mAssertionError[22m[39m: expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_0_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+              [33mid[39m=[32m"_r_0_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+              [33mrole[39m=[32m"alert"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 pb-1"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+                [33maria-label[39m=[32m"Importer un justificatif"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Photographier un justificatif"[39m
+                [33mcapture[39m=[32m"environment"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<fieldset[39m
+                [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+              [36m>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                  [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+                [36m>[39m
+                  [36m<details>[39m
+                    [36m<summary[39m
+                      [33maria-label[39m=[32m"Détails de la lecture"[39m
+                      [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                    [36m>[39m
+                      [36m<svg[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                        [33mfill[39m=[32m"none"[39m
+                        [33mheight[39m=[32m"17"[39m
+                        [33mstroke[39m=[32m"currentColor"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                        [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [33mwidth[39m=[32m"17"[39m
+                        [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                      [36m>[39m
+                        [36m<path[39m
+                          [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                        [36m/>[39m
+                      [36m</svg>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                      [36m>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"font-medium text-sm"[39m
+                        [36m>[39m
+                          [0mFacture[0m
+                          [0m · [0m
+                          [0m1[0m
+                          [0m article[0m
+                        [36m</p>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"capitalize"[39m
+                          [36m>[39m
+                            [0mFournisseur A[0m
+                          [36m</span>[39m
+                          [0m · [0m
+                          [36m<span>[39m
+                            [0mLecture vérifiée[0m
+                          [36m</...
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m70:47[22m[39m
+    [90m 68| [39m    [35mawait[39m [34mopen[39m()[33m;[39m
+    [90m 69| [39m    [34mclick[39m([33mCONFIRM[39m)[33m;[39m
+    [90m 70| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(state[33m.[39monSaved)[33m.[39m[34mtoHaveBeenCalled[39m())[33m;[39m
+    [90m   | [39m                                              [31m^[39m
+    [90m 71| [39m    expect(state.onSaved).toHaveBeenCalledWith(expect.objectContaining…
+    [90m 72| [39m    [34mexpect[39m(state[33m.[39monClose)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mR4 : le reçu arrive à l’écran[2m > [22mDrive confirmé puis confirmation en attente : la ligne du pied dit le reçu et son lien ; la reprise ne renvoie rien et rend le même reçu
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Justificatif rangé dans « L’Affinée / Justificatifs / 2026 » sous « 2026-04-27 Brau- und Rauchshop GmbH 372765.jpg », empreinte vérifiée.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_6_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_6_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+            [33mrole[39m=[32m"alert"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mFournisseur A[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill...
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_6_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_6_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+            [33mrole[39m=[32m"alert"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mFournisseur A[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill...
+[90m [2m❯[22m waitForWrapper ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m79:18[22m[39m
+    [90m 77| [39m    [35mawait[39m [34mopen[39m()[33m;[39m
+    [90m 78| [39m    [34mclick[39m([33mCONFIRM[39m)[33m;[39m
+    [90m 79| [39m    [35mawait[39m screen[33m.[39m[34mfindByText[39m([33mSENTENCE[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m 80| [39m    expect(screen.getByRole('link', { name: /Ouvrir dans Drive/ })).to…
+    [90m 81| [39m    expect(screen.queryByText(/sera rangé dans ton Drive privé/)).toBe…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mR4 : le reçu arrive à l’écran[2m > [22mDrive qui ne rend ni dossier ni nom : rien d’inventé
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Justificatif rangé sur ton Drive, empreinte vérifiée.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_c_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_c_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+            [33mrole[39m=[32m"alert"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mFournisseur A[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill...
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_c_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_c_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+            [33mrole[39m=[32m"alert"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mFournisseur A[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill...
+[90m [2m❯[22m waitForWrapper ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m94:18[22m[39m
+    [90m 92| [39m    [35mawait[39m [34mopen[39m()[33m;[39m
+    [90m 93| [39m    [34mclick[39m([33mCONFIRM[39m)[33m;[39m
+    [90m 94| [39m    await screen.findByText('Justificatif rangé sur ton Drive, emprein…
+    [90m   | [39m                 [31m^[39m
+    [90m 95| [39m    [34mexpect[39m(screen[33m.[39m[34mqueryByRole[39m([32m'link'[39m[33m,[39m { name[33m:[39m [36m/Drive/[39m }))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 96| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mR4 : le reçu arrive à l’écran[2m > [22mrattachement à une dépense existante : la ligne « Justificatif rattaché… » dit le reçu
+[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  Justificatif rangé dans « L’Affinée / Justificatifs / 2026 » sous « 2026-04-27 Brau- und Rauchshop GmbH 372765.jpg », empreinte vérifiée.[31m
+Received:
+[31m  Justificatif rattaché à « Achat » du 12.03.2026. Aucune nouvelle dépense ni entrée en stock.[31m[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m104:45[22m[39m
+    [90m102| [39m    [34mclick[39m([32m'Rattacher le justificatif'[39m)[33m;[39m
+    [90m103| [39m    [35mconst[39m line [33m=[39m [35mawait[39m screen[33m.[39m[34mfindByText[39m([36m/Justificatif rattaché à/[39m)[33m;[39m
+    [90m104| [39m    expect(line.closest('[role="status"]')).toHaveTextContent(SENTENCE…
+    [90m   | [39m                                            [31m^[39m
+    [90m105| [39m    expect(screen.getByRole('link', { name: /Ouvrir dans Drive/ })).to…
+    [90m106| [39m    [34mexpect[39m(state[33m.[39msave)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mDR4 : un envoi long est un état, pas une erreur[2m > [22mplus de 15 s à l’enregistrement : role="status", aucune alerte ; le second clic réussit
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /Envoi du justificatif en cours/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_o_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_o_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+            [33mrole[39m=[32m"alert"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mFournisseur A[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill...
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-center p-3 sm:p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_o_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full sm:max-w-lg flex flex-col overflow-hidden
+                    bg-cave-900 border border-cave-800 shadow-2xl
+                    rounded-3xl max-h-[92dvh]"[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"min-h-9 px-3 py-0.5 border-b border-cave-800 flex items-center gap-2 shrink-0"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-lg font-semibold text-cave-50 min-w-0 flex-1"[39m
+            [33mid[39m=[32m"_r_o_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"16"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"16"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+            [33mrole[39m=[32m"alert"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+          [36m>[39m
+            [0m[vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2 pb-1"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<fieldset[39m
+              [33mclass[39m=[32m"space-y-2 min-w-0"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Vérification du justificatif"[39m
+                [33mclass[39m=[32m"rounded-panel border border-hop/30 bg-hop/5"[39m
+              [36m>[39m
+                [36m<details>[39m
+                  [36m<summary[39m
+                    [33maria-label[39m=[32m"Détails de la lecture"[39m
+                    [33mclass[39m=[32m"min-h-14 flex items-center gap-2 p-3 cursor-pointer text-hop"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-check shrink-0"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"17"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"17"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-1 min-w-0"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"font-medium text-sm"[39m
+                      [36m>[39m
+                        [0mFacture[0m
+                        [0m · [0m
+                        [0m1[0m
+                        [0m article[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-xs text-cave-200 mt-1"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"capitalize"[39m
+                        [36m>[39m
+                          [0mFournisseur A[0m
+                        [36m</span>[39m
+                        [0m · [0m
+                        [36m<span>[39m
+                          [0mLecture vérifiée[0m
+                        [36m</span>[39m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-down shrink-0"[39m
+                      [33mfill...
+[90m [2m❯[22m waitForWrapper ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m116:34[22m[39m
+    [90m114| [39m    [35mawait[39m [34mopen[39m()[33m;[39m
+    [90m115| [39m    [34mclick[39m([33mCONFIRM[39m)[33m;[39m
+    [90m116| [39m    const message = await screen.findByText(/Envoi du justificatif en …
+    [90m   | [39m                                 [31m^[39m
+    [90m117| [39m    [34mexpect[39m(message[33m.[39m[34mclosest[39m([32m'[role="status"]'[39m))[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m118| [39m    [34mexpect[39m(screen[33m.[39m[34mqueryByRole[39m([32m'alert'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mDR4 : un envoi long est un état, pas une erreur[2m > [22mplus de 15 s au rattachement : même état, texte vrai pour ce bouton ; le second clic réussit
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m131:52[22m[39m
+    [90m129| [39m    [34mclick[39m([32m'Rattacher le justificatif'[39m)[33m;[39m
+    [90m130| [39m    const message = await screen.findByText(/Envoi du justificatif en …
+    [90m131| [39m    [34mexpect[39m(message[33m.[39m[34mclosest[39m([32m'[role="status"]'[39m))[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                                                   [31m^[39m
+    [90m132| [39m    [34mexpect[39m(screen[33m.[39m[34mqueryByRole[39m([32m'alert'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m133| [39m    expect(message.textContent).not.toContain('Confirmer et enregistre…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mDR4 : un envoi long est un état, pas une erreur[2m > [22mhors ligne : une erreur (role="alert"), ni état « en cours » ni reçu
+[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  Hors connexion[31m
+Received:
+[31m  [vitest] No "FirestoreRepo" export is defined on the "../../../../src/services/firestoreRepo" mock. Did you forget to return it from "vi.mock"? If you need to partially mock a module, you can use "importOriginal" helper inside:[31m[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m142:46[22m[39m
+    [90m140| [39m    [35mawait[39m [34mopen[39m()[33m;[39m
+    [90m141| [39m    [34mclick[39m([33mCONFIRM[39m)[33m;[39m
+    [90m142| [39m    expect(await screen.findByRole('alert')).toHaveTextContent('Hors c…
+    [90m   | [39m                                             [31m^[39m
+    [90m143| [39m    expect(screen.queryByText(/Envoi du justificatif en cours/)).toBeN…
+    [90m144| [39m    [34mexpect[39m(screen[33m.[39m[34mqueryByText[39m([36m/Justificatif rangé/[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22mDR4 : un envoi long est un état, pas une erreur[2m > [22mdeux clics rapides pendant l’envoi : un seul appel
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/depense/raccord/ecran-recu.test.tsx:[2m152:24[22m[39m
+    [90m150| [39m    [35mconst[39m bouton [33m=[39m screen[33m.[39m[34mgetByRole[39m([32m'button'[39m[33m,[39m { name[33m:[39m [33mCONFIRM[39m })[33m;[39m
+    [90m151| [39m    fireEvent[33m.[39m[34mclick[39m(bouton)[33m;[39m fireEvent[33m.[39m[34mclick[39m(bouton)[33m;[39m
+    [90m152| [39m    [34mexpect[39m(state[33m.[39msave)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m153| [39m    [34mfinish[39m({ transactionId[33m:[39m [32m'TX-test'[39m[33m,[39m proof[33m:[39m [33mRECEIPT[39m })[33m;[39m
+    [90m154| [39m    await waitFor(() => expect(state.onSaved).toHaveBeenCalledTimes(1)…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mla facture 372765 : ses 4 lignes « Stk » (Windsor, BE-256, US-05, Verdant) s’enregistrent en sachets, jamais en grammes
+[31m[1mAssertionError[22m: expected [ …(4) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "LALLEMAND Windsor 11g : Stk ne se convertit pas en sachet.",[39m
+[31m+   "Safale BE-256 (Abbaye) 11.5 g : Stk ne se convertit pas en sachet.",[39m
+[31m+   "Safale US-05 11,5g : Stk ne se convertit pas en sachet.",[39m
+[31m+   "LALLEMAND Verdant IPA 11g : Stk ne se convertit pas en sachet.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m34:63[22m[39m
+    [90m 32| [39m    const lines=stk.map((l:any,i:number)=>line(`s${i}`,{description:l.…
+    [90m 33| [39m    [35mconst[39m value[33m=[39m[34mdraft[39m(lines)[33m;[39m
+    [90m 34| [39m    expect(entry.validatePurchase(value,state.stocks as any)).toEqual(…
+    [90m   | [39m                                                              [31m^[39m
+    [90m 35| [39m    entry[33m.[39m[34msavePurchase[39m(value)[33m;[39m
+    [90m 36| [39m    expect(receipts().map(r=>[r.quantity,r.unit])).toEqual(stk.map((l:…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5 : Stk face à un sachet de levure, 1 pour 1[2m > [22m« Sachets » face à « sachet », et « Stk » face à « pce »
+[31m[1mAssertionError[22m: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Levure : Sachets ne se convertit pas en sachet.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m46:156[22m[39m
+    [90m 44| [39m  [34mit[39m([32m'« Sachets » face à « sachet », et « Stk » face à « pce »'[39m[33m,[39m()[33m=>[39m{
+    [90m 45| [39m    withStock(item('Y','Levure','Levure','sachet'),item('P','Etiquette…
+    [90m 46| [39m    expect(entry.validatePurchase(draft([line('a',{description:'Levure…
+    [90m   | [39m                                                                                                                                                           [31m^[39m
+    [90m 47| [39m    expect(entry.validatePurchase(draft([line('b',{description:'Etique…
+    [90m 48| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR5 : Stk face à un sachet de levure, 1 pour 1[2m > [22mpoids du libellé : « Safale US-05 500 g » 2 Stk refusé, « 11,5 g » accepté, un poids différent de celui de l’article refusé
+[31m[1mAssertionError[22m: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Safale US-05 11,5 g : Stk ne se convertit pas en sachet.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m61:47[22m[39m
+    [90m 59| [39m    const errors=(description:string,ref:string)=>entry.validatePurcha…
+    [90m 60| [39m    expect(errors('Safale US-05 500 g','Y').join(' ')).toContain('ne s…
+    [90m 61| [39m    [34mexpect[39m([34merrors[39m([32m'Safale US-05 11,5 g'[39m[33m,[39m[32m'Y'[39m))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m   | [39m                                              [31m^[39m
+    [90m 62| [39m    expect(errors('Safale US-05 11,5 g','Z').join(' ')).toContain('ne …
+    [90m 63| [39m    [34mexpect[39m([34merrors[39m([32m'Safale US-05 11 g'[39m[33m,[39m[32m'Z'[39m))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMaris Otter (Malt, article en g) : Kilo × 6 → 6000
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mCascade (Houblon, article en kg) : Kg. × 2 → 2
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mGerstenflocken (Malt, article en g) : Kilogramm × 1 → 1000
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mSirop (Sucre, article en ml) : Liter × 3 → 3000
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mAcide (Additif, article en L) : litres × 2 → 2
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en g) : Kilo × 1.15 → 1150
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en g) : Kilo × 0.001 → 1
+[31m[1mAssertionError[22m: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Maris Otter : Kilo ne se convertit pas en g.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m83:63[22m[39m
+    [90m 81| [39m    [34mwithStock[39m([34mitem[39m([32m'A'[39m[33m,[39mname[33m,[39mcategory[33m,[39mitemUnit))[33m;[39m
+    [90m 82| [39m    const value=draft([line('a',{description:name,unit:lineUnit,quanti…
+    [90m 83| [39m    expect(entry.validatePurchase(value,state.stocks as any)).toEqual(…
+    [90m   | [39m                                                              [31m^[39m
+    [90m 84| [39m    entry[33m.[39m[34msavePurchase[39m(value)[33m;[39m
+    [90m 85| [39m    expect(receipts()[0].quantity).toBe(expected);expect(receipts()[0]…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mAcide (Additif, article en L) : Litre × 2 → 2
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mMalt (Malt, article en kg) : g × 1 → 0.001
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'quantity')[39m
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m85:24[22m[39m
+    [90m 83| [39m    expect(entry.validatePurchase(value,state.stocks as any)).toEqual(…
+    [90m 84| [39m    entry[33m.[39m[34msavePurchase[39m(value)[33m;[39m
+    [90m 85| [39m    expect(receipts()[0].quantity).toBe(expected);expect(receipts()[0]…
+    [90m   | [39m                       [31m^[39m
+    [90m 86| [39m    [34mexpect[39m([34madjusts[39m()[[34m0[39m][[34m4[39m])[33m.[39m[34mtoBe[39m(expected)[33m;[39m
+    [90m 87| [39m    expect(savedLines()[0].unit).toBe(lineUnit);expect(savedLines()[0]…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mun nouvel article « 6 Kilo » prend l’unité kg ; la ligne de la dépense garde « Kilo » (D213)
+[31m[1mAssertionError[22m: expected [ 'Kilo', 6 ] to deeply equal [ 'kg', 6 ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "kg",[39m
+[31m+   "Kilo",[39m
+[2m    6,[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m101:49[22m[39m
+    [90m 99| [39m    entry[33m.[39m[34msavePurchase[39m(value)[33m;[39m
+    [90m100| [39m    [35mconst[39m created[33m=[39mstate[33m.[39mwrites[33m.[39m[34mfind[39m(w[33m=>[39mw[[34m0[39m][33m===[39m[32m'stock'[39m)[33m![39m[[34m2[39m][33m;[39m
+    [90m101| [39m    [34mexpect[39m([created[33m.[39munit[33m,[39mcreated[33m.[39mcurrentStock])[33m.[39m[34mtoEqual[39m([[32m'kg'[39m[33m,[39m[34m6[39m])[33m;[39m
+    [90m   | [39m                                                [31m^[39m
+    [90m102| [39m    [34mexpect[39m([34msavedLines[39m()[[34m0[39m][33m.[39munit)[33m.[39m[34mtoBe[39m([32m'Kilo'[39m)[33m;[39m
+    [90m103| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR6 : les écritures d’unité de s1 (linkUnit) s’enregistrent, la quantité convertie est exacte[2m > [22mparité : l’écran dit (formatUnitLink) la quantité que l’enregistrement écrit (stockQuantityFor)
+[31m[1mTypeError[22m: stockQuantityFor is not a function[39m
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m114:26[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité «  » : « unité à préciser », le nom de la ligne, aucune écriture
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité « - » : « unité à préciser », le nom de la ligne, aucune écriture
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR7 : D214, une unité illisible n’entre jamais en stock[2m > [22mune ligne proposée par matchStockLine avec l’unité « n/a » : « unité à préciser », le nom de la ligne, aucune écriture
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m132:105[22m[39m
+    [90m130| [39m    const value=draft([line('a',{description:'Maris Otter',unit,quanti…
+    [90m131| [39m    [35mconst[39m errors[33m=[39mentry[33m.[39m[34mvalidatePurchase[39m(value[33m,[39mstate[33m.[39mstocks [35mas[39m any)[33m;[39m
+    [90m132| [39m    expect(errors.some(message=>message.includes('Maris Otter')&&messa…
+    [90m   | [39m                                                                                                        [31m^[39m
+    [90m133| [39m    [34mexpect[39m(errors[33m.[39m[34mjoin[39m([32m' '[39m))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'ne se convertit pas'[39m)[33m;[39m
+    [90m134| [39m    expect(errors.filter(message=>message.includes('Maris Otter'))).to…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR7 : D214, une unité illisible n’entre jamais en stock[2m > [22mun nouvel article à l’unité illisible est refusé aussi (son unité serait « - »)
+[31m[1mAssertionError[22m: «  »: expected 'Produit : indique la quantité reçue e…' to contain 'unité à préciser'[39m
+
+Expected: [32m"unité à préciser"[39m
+Received: [31m"Produit : indique la quantité reçue et son unité."[39m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m141:46[22m[39m
+    [90m139| [39m    [35mfor[39m([35mconst[39m unit [35mof[39m [[32m''[39m[33m,[39m[32m'-'[39m[33m,[39m[32m'n/a'[39m[33m,[39m[32m'?'[39m]){
+    [90m140| [39m      const errors=entry.validatePurchase(draft([line('a',{description…
+    [90m141| [39m      expect(errors.join(' '),`« ${unit} »`).toContain('unité à précis…
+    [90m   | [39m                                             [31m^[39m
+    [90m142| [39m    }
+    [90m143| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mR7 : D214, une unité illisible n’entre jamais en stock[2m > [22mle prix unitaire n’est rattaché à aucune unité illisible ; un prix à l’unité lisible est écrit en centimes
+[31m[1mAssertionError[22m: expected [ 230, 230 ] to deeply equal [ 230, undefined ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    230,[22m
+[32m-   undefined,[39m
+[31m+   230,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m150:57[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mstockQuantityFor : la règle commune[2m > [22mmême unité : aucune conversion ; conversion exacte ; pièce 1 pour 1 ; illisible ; incompatible
+[31m[1mTypeError[22m: stockQuantityFor is not a function[39m
+[36m [2m❯[22m q tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m155:121[22m[39m
+
+[90m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m157:12[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/46]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/raccord/unites-enregistrement.test.ts[2m > [22mstockQuantityFor : la règle commune[2m > [22mune quantité positive ne tombe jamais à zéro (1 mg → 0,000001 kg, 1 g → 0,001 kg)
+[31m[1mTypeError[22m: stockQuantityFor is not a function[39m
+[36m [2m❯[22m q tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m155:121[22m[39m
+
+[90m [2m❯[22m tests/unit/depense/raccord/unites-enregistrement.test.ts:[2m164:12[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/46]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m46 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (53)[39m
+[2m   Start at [22m 21:11:16
+[2m   Duration [22m 6.33s[2m (transform 329ms, setup 299ms, collect 989ms, tests 9.00s, environment 1.17s, prepare 166ms)[22m
+

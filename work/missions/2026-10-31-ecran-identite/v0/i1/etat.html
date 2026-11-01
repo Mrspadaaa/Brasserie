@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>i1 · Identité · deux départs, puis plus rien (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--i1-page:#fff;--i1-pan:#F5F5F5;--i1-sur:#EBEBEB;--i1-bd:#DDDDDD;--i1-bdm:#BFBFBF;--i1-t0:#111;--i1-t2:#333;--i1-t4:#666;
+    --i1-hop:#567F45;--i1-hopt:#3F6B2E;--i1-eau:#4F7E9B;--i1-eaut:#2F5F7D;--i1-att:#9C7020;--i1-attt:#7F5B10}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--i1-page);color:var(--i1-t2);font:400 14px/18px "Source Sans 3",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#111;color:#fff}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #111;outline-offset:2px}
+  .i1-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--i1-t0)}
+  .i1-ecran{width:390px;background:var(--i1-page)}
+  .i1-ecran[data-etat="recette-neuve"]{min-height:844px}
+  /* En-tête commun, tel quel */
+  .i1-hd{padding:0 8px;border-bottom:1px solid var(--i1-bd)}
+  .i1-tb{display:flex;align-items:center;gap:6px;height:36px}
+  .i1-ic{width:28px;height:28px;border:0;background:none;color:var(--i1-t4);display:grid;place-items:center;border-radius:8px;padding:0}
+  .i1-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i1-t{margin:0;flex:1;font:600 18px/22px "Source Sans 3",system-ui,sans-serif;color:var(--i1-t0)}
+  .i1-t span{font-weight:400;color:var(--i1-t4)}
+  .i1-ab{border:0;background:none;color:var(--i1-t2);text-decoration:underline;text-underline-offset:2px;font-size:13px;height:28px;padding:0 6px;border-radius:8px}
+  .i1-rail{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+  .i1-st{flex:1 0 auto;border:0;background:none;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:16px;color:var(--i1-t4);min-height:24px}
+  .i1-st i{display:block;height:4px;border-radius:2px;background:var(--i1-bd)}
+  .i1-st.i1-on{color:var(--i1-t0);font-weight:600}
+  .i1-st.i1-on i{background:#111}
+  .i1-mt{margin:8px 8px 0;height:30px;border:1px solid var(--i1-bd);border-radius:15px;background:var(--i1-pan);display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:13px;color:var(--i1-t4)}
+  .i1-mt .i1-m{font-size:14px;margin-left:3px}
+  .i1-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0A02E;border:1px solid #BFBFBF;vertical-align:-1px;margin-left:3px}
+  /* Corps */
+  .i1-corps{padding:8px}
+  .i1-dep{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+  .i1-tuile{border:1px solid var(--i1-bdm);background:var(--i1-page);border-radius:8px;padding:8px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;min-height:64px}
+  .i1-tuile svg{width:16px;height:16px;fill:none;stroke:#111;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .i1-tuile b{font-weight:600;color:var(--i1-t0);font-size:14px}
+  .i1-tuile small{font-size:13px;color:var(--i1-t4)}
+  .i1-tuile:active{background:var(--i1-sur)}
+  .i1-pts{display:flex;gap:3px}
+  .i1-pts span{width:14px;height:8px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+  .i1-pan{background:var(--i1-pan);border-radius:8px;padding:2px 8px 4px}
+  .i1-f{display:flex;flex-direction:column;gap:4px;padding:6px 0}
+  .i1-lb{font-size:13px;color:var(--i1-t4)}
+  .i1-champ{width:100%;height:32px;border:1px solid var(--i1-bdm);border-radius:8px;background:var(--i1-page);padding:0 8px;font:400 16px/30px "Source Sans 3",system-ui,sans-serif;color:var(--i1-t0)}
+  .i1-champ::placeholder{color:var(--i1-t4)}
+  .i1-sel{width:100%;height:32px;border:1px solid var(--i1-bdm);border-radius:8px;background:var(--i1-page);display:flex;align-items:center;gap:6px;padding:0 8px;color:var(--i1-t4);font-size:14px;text-align:left}
+  .i1-sel svg,.i1-chev{width:16px;height:16px;fill:none;stroke:#333;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none;margin-left:auto}
+  .i1-num{width:52px;height:32px;border:1px solid var(--i1-bdm);border-radius:8px;background:var(--i1-page);text-align:center;font:600 16px/30px "IBM Plex Mono",monospace;color:var(--i1-t0);font-variant-numeric:tabular-nums}
+  .i1-u{font-size:13px;color:var(--i1-t4)}
+  .i1-duo{display:flex;align-items:center;gap:6px}
+  .i1-deux{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;border-top:1px solid var(--i1-bd);margin-top:2px}
+  .i1-evap{margin-left:auto;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:12px;background:#E3EDF3;color:var(--i1-eaut);font-size:13px}
+  .i1-evap svg{width:16px;height:16px;fill:none;stroke:var(--i1-eau);stroke-width:1.75}
+  .i1-evap .i1-m{color:var(--i1-eaut);font-size:13px}
+  .i1-case{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--i1-t0);min-height:40px;border-top:1px solid var(--i1-bd)}
+  .i1-case input{width:20px;height:20px;margin:0;accent-color:#111}
+  .i1-case b{font-weight:600}
+  .i1-ferm{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--i1-bd);padding:8px 0 8px}
+  .i1-fl{display:flex;align-items:center;gap:6px}
+  .i1-libre{color:var(--i1-hopt);font-size:13px}
+  .i1-fin{margin-left:auto;display:inline-flex;align-items:center;gap:4px}
+  .i1-pc{font-size:13px}
+  .i1-bar{position:relative;height:12px;border-radius:6px;background:var(--i1-sur);border:1px solid var(--i1-bdm);overflow:hidden}
+  .i1-bar b{position:absolute;left:0;top:0;bottom:0;width:80%;background:#8FB07F}
+  .i1-bar i{position:absolute;top:-1px;bottom:-1px;left:80%;border-left:2px dashed #111}
+  .i1-rep{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:10px;border:1px dashed var(--i1-att);color:var(--i1-attt);font-size:13px}
+  .i1-q{width:24px;height:24px;border-radius:12px;border:1px solid var(--i1-bdm);background:var(--i1-page);font-size:13px;font-weight:600;color:var(--i1-t2);padding:0;flex:none}
+  .i1-leg{margin:0 0 8px;padding:8px;border-radius:8px;background:var(--i1-page);border:1px solid var(--i1-bd);font-size:13px;color:var(--i1-t2)}
+  .i1-leg[hidden]{display:none}
+  .i1-vol{margin-top:8px;padding:0 8px 8px}
+  .i1-mat{width:100%;display:flex;align-items:center;gap:6px;font-size:14px;color:var(--i1-t0);border:0;background:none;padding:0;min-height:36px;text-align:left}
+  .i1-mat b{font-weight:600}
+  .i1-dl{margin:0;display:grid}
+  .i1-dl div{display:flex;justify-content:space-between;align-items:center;min-height:26px;border-top:1px solid var(--i1-bd)}
+  .i1-dl dt{font-size:13px;color:var(--i1-t4)}
+  .i1-dl dd{margin:0}
+  .i1-dl .i1-m{font-size:14px;font-weight:500;color:var(--i1-t2)}
+  .i1-apres{margin:4px 0 0;font-size:13px;color:var(--i1-t4);text-align:right}
+  .i1-lien{color:var(--i1-t0);text-underline-offset:2px}
+  .i1-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 0 0}
+  .i1-btn{height:32px;border-radius:8px;padding:0 12px;font-size:14px;border:1px solid var(--i1-bdm);background:var(--i1-page);color:var(--i1-t4)}
+  .i1-btn-p{background:#111;color:#fff;border-color:#111;font-weight:600}
+  .i1-etat{margin-top:24px;padding:8px;background:#F0F0F0;border-top:1px solid var(--i1-bd);border-bottom:1px solid var(--i1-bd);font-size:13px;color:var(--i1-t4)}
+  .i1-tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;background:#D5EFEC;color:#115E59;font-size:13px;font-weight:600}
+  .i1-sep::before{content:"·";margin:0 4px}
+  .i1-tir::before{content:"—";margin:0 4px}
+</style>
+</head>
+<body>
+<!-- ÉTAT 1 : recette neuve. Bandeau absent, comme dans l'app ; pas d'« Abandonner » tant qu'aucun brouillon n'est repris. -->
+<div class="i1-ecran" data-etat="recette-neuve">
+  <header class="i1-hd">
+    <div class="i1-tb">
+      <button class="i1-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i1-t">Identité <span>1/7</span></h1>
+      <button class="i1-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i1-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i1-rail" aria-label="Étapes">
+      <button class="i1-st i1-on" aria-current="step">Identité<i></i></button>
+      <button class="i1-st">Malts/sucres<i></i></button>
+      <button class="i1-st">Houblons<i></i></button>
+      <button class="i1-st">Levure<i></i></button>
+      <button class="i1-st">Paliers<i></i></button>
+      <button class="i1-st">Eau<i></i></button>
+      <button class="i1-st">Récap.<i></i></button>
+    </nav>
+  </header>
+
+  <main class="i1-corps">
+    <!-- L'idée : sur une recette vide, deux départs côte à côte ; ils disparaissent dès qu'elle est remplie (l'icône d'en-tête reste). -->
+    <div class="i1-dep">
+      <button class="i1-tuile" data-booster="depart-coller" aria-label="Coller une recette, texte ou photo">
+        <svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg>
+        <b>Coller une recette</b><small>texte ou photo</small>
+      </button>
+      <button class="i1-tuile" data-booster="depart-style" aria-label="Partir d'un style">
+        <svg viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8h12"/><path d="M6 8a3 3 0 0 1 5-3 3 3 0 0 1 5 3"/></svg>
+        <b>Partir d'un style</b>
+        <span class="i1-pts" aria-hidden="true"><span style="background:#FFCA5A"></span><span style="background:#F39C00"></span><span style="background:#C35900"></span><span style="background:#3A070B"></span></span>
+      </button>
+    </div>
+
+    <section class="i1-pan" aria-label="Identité de la recette">
+      <label class="i1-f"><span class="i1-lb">Nom</span><input class="i1-champ" placeholder="Milk Stout #2, NEIPA…" autocomplete="off"></label>
+      <div class="i1-f"><span class="i1-lb">Style</span><button class="i1-sel" aria-haspopup="listbox">NEIPA, Stout, Saison…<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+      <div class="i1-deux">
+        <label class="i1-f"><span class="i1-lb">Volume en fermenteur</span><span class="i1-duo"><input class="i1-num" inputmode="decimal" value="24"><span class="i1-u">L</span></span></label>
+        <label class="i1-f"><span class="i1-lb">Ébullition</span><span class="i1-duo"><input class="i1-num" inputmode="numeric" value="60"><span class="i1-u">min</span>
+          <span class="i1-evap" data-booster="evaporation"><svg viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span class="i1-m">−3 L</span></span></span></label>
+      </div>
+      <label class="i1-case" data-booster="nolo"><input type="checkbox"><b>NOLO</b> ≤ 0,5 %</label>
+      <div class="i1-ferm" data-booster="jauge-fermenteur">
+        <div class="i1-fl"><span class="i1-lb">Fermenteur</span><span class="i1-m">24 / 30 L</span><span class="i1-libre">6 L libres</span>
+          <span class="i1-fin"><span class="i1-m i1-pc">20 %</span><span class="i1-rep">repère</span>
+          <button class="i1-q" data-role="legende-bouton" aria-expanded="false" aria-controls="i1-leg" aria-label="Légende">?</button></span></div>
+        <div class="i1-bar" role="meter" aria-valuemin="0" aria-valuemax="30" aria-valuenow="24" aria-label="Remplissage du fermenteur"><b></b><i></i></div>
+      </div>
+      <p class="i1-leg" id="i1-leg" data-role="legende" hidden>Repère provisoire : 20 % d'espace libre, à ajuster selon la recette et la levure. Le trait tireté de la jauge est le remplissage conseillé (24 L) ; l'évaporation, 3 L/h, vient du profil Royal Catering. Un tiret : pas encore calculable.</p>
+    </section>
+
+    <section class="i1-pan i1-vol" aria-label="Volumes et matériel">
+      <button class="i1-mat"><span><b>Royal Catering</b><span class="i1-sep" aria-hidden="true"></span>cuve 45 L</span><svg class="i1-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+      <dl class="i1-dl" data-booster="volumes-inconnus">
+        <div><dt>Grains<span class="i1-sep" aria-hidden="true"></span>à chaud</dt><dd><span class="i1-m">— / 35 L</span></dd></div>
+        <div><dt>Rinçage<span class="i1-sep" aria-hidden="true"></span>à chaud</dt><dd><span class="i1-m">— / 18 L</span></dd></div>
+        <div><dt>Avant ébullition</dt><dd><span class="i1-m">—</span></dd></div>
+      </dl>
+      <p class="i1-apres">après <a href="#" class="i1-lien">Malts/sucres</a></p>
+    </section>
+
+    <div class="i1-pied">
+      <button class="i1-btn" disabled>Retour</button>
+      <button class="i1-btn i1-btn-p">Suivant<span class="i1-tir" aria-hidden="true"></span>Malts/sucres</button>
+    </div>
+  </main>
+</div>
+
+<!-- ÉTAT 2 : après « Coller » (neipa v3). Les deux départs ont disparu ; l'icône d'en-tête reste. -->
+<div class="i1-etat">État suivant : recette collée, neipa v3</div>
+<div class="i1-ecran" data-etat="recette-collee">
+  <header class="i1-hd">
+    <div class="i1-tb">
+      <button class="i1-ic" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h1 class="i1-t">Identité <span>1/7</span></h1>
+      <button class="i1-ab">Abandonner</button>
+      <button class="i1-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+      <button class="i1-ic" aria-label="Thème cave"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    </div>
+    <nav class="i1-rail" aria-label="Étapes">
+      <button class="i1-st i1-on" aria-current="step">Identité<i></i></button>
+      <button class="i1-st">Malts/sucres<i></i></button>
+      <button class="i1-st">Houblons<i></i></button>
+      <button class="i1-st">Levure<i></i></button>
+      <button class="i1-st">Paliers<i></i></button>
+      <button class="i1-st">Eau<i></i></button>
+      <button class="i1-st">Récap.<i></i></button>
+    </nav>
+  </header>
+  <div class="i1-mt" aria-label="Bandeau de la recette">
+    <span>Grain<span class="i1-m">8,6 kg</span></span>
+    <span>OG<span class="i1-m">1,080</span></span>
+    <span>IBU<span class="i1-m">~93</span><svg width="44" height="10" viewBox="0 0 44 10" style="margin-left:4px;vertical-align:-1px"><rect x="0" y="2" width="44" height="6" rx="3" fill="#DDDDDD"/><rect x="22" y="2" width="15" height="6" rx="3" fill="#9E9E9E"/><rect x="34" y="0" width="2" height="10" fill="#111"/></svg></span>
+    <span>EBC<span class="i1-dot"></span><span class="i1-m">9,5</span></span>
+  </div>
+  <main class="i1-corps">
+    <section class="i1-pan" aria-label="Identité de la recette">
+      <label class="i1-f"><span class="i1-lb">Nom de la bière</span><input class="i1-champ" value="neipa v3"></label>
+      <div class="i1-f"><span class="i1-lb">Style</span><button class="i1-sel" style="color:#111">Double IPA <span class="i1-tag">22A<span class="i1-sep" aria-hidden="true"></span>BJCP 2021</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+      <div class="i1-deux">
+        <label class="i1-f"><span class="i1-lb">Volume en fermenteur</span><span class="i1-duo"><input class="i1-num" inputmode="decimal" value="24"><span class="i1-u">L</span></span></label>
+        <label class="i1-f"><span class="i1-lb">Ébullition</span><span class="i1-duo"><input class="i1-num" inputmode="numeric" value="60"><span class="i1-u">min</span><span class="i1-evap"><svg viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span class="i1-m">−3 L</span></span></span></label>
+      </div>
+      <label class="i1-case"><input type="checkbox"><b>NOLO</b> ≤ 0,5 %</label>
+      <div class="i1-ferm"><div class="i1-fl"><span class="i1-lb">Fermenteur</span><span class="i1-m">24 / 30 L</span><span class="i1-libre">6 L libres</span><span class="i1-fin"><span class="i1-m i1-pc">20 %</span><span class="i1-rep">repère</span></span></div><div class="i1-bar"><b></b><i></i></div></div>
+    </section>
+    <section class="i1-pan i1-vol" aria-label="Volumes et matériel">
+      <button class="i1-mat"><span><b>Royal Catering</b><span class="i1-sep" aria-hidden="true"></span>cuve 45 L</span><svg class="i1-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+      <dl class="i1-dl">
+        <div><dt>Avant ébullition<span class="i1-sep" aria-hidden="true"></span>à chaud</dt><dd><span class="i1-m">30,2 / 35 L</span></dd></div>
+        <div><dt>Rinçage<span class="i1-sep" aria-hidden="true"></span>à chaud</dt><dd><span class="i1-m">— / 18 L</span></dd></div>
+      </dl>
+    </section>
+  </main>
+</div>
+<script>
+(function(){
+  var b=document.querySelector('[data-role="legende-bouton"]'),l=document.getElementById('i1-leg');
+  function ouvrir(o){l.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');}
+  b.addEventListener('click',function(){ouvrir(l.hidden);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')ouvrir(false);});
+})();
+</script>
+</body>
+</html>

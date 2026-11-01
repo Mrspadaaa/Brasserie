@@ -4,7 +4,7 @@
 // (hopRef(cle).catalogue, describeFamilies), comme hopSheet (src/domain/hopIndex/v4/fiches.ts) : aucune valeur recopiée ni inventée ;
 // une donnée absente reste absente, avec sa raison (D14, D65).
 import type { FamilyId } from '../../../domain/hopIndex/v4';
-import { BM_AXES, BM_CLASSES_HSI, bmLienId, type BmAxe, type BmLien, type CatalogueHop } from '../../../domain/hopIndex/v4/data';
+import { BM_AXES, BM_CLASSES_HSI, bmLienId, estBeerMaverick, sourceDeLAdresse, sourceDesPlages, type BmAxe, type BmLien, type CatalogueHop, type SourceDesPlages } from '../../../domain/hopIndex/v4/data';
 import { FAMILIES, describeFamilies, familyWords, hopRef } from '../parcours/v4';
 import { CHAMPS_COMPLEMENTS, type ChampComplement, type Complements, type EnveloppeComplement, type ValeurSource } from '../../../domain/hopIndex/v4/complements';
 import { nomCourt, texteUnite } from './complements-ui';
@@ -97,6 +97,10 @@ export interface SourcesFiche {
   descripteurs: string[];
   /** Un produit cryo porte les plages de sa variété en pellets : sa propre fiche manque (#131). */
   cryo: boolean;
+  /** b1 (D201) : vrai pour les 317 variétés de base, dont les plages sont celles de la page Beer Maverick ; faux pour un ajout (enveloppe des sources). */
+  beerMaverick: boolean;
+  /** Le nombre de sources d'un ajout, hors Brewer’s Friend (`nbSources` du catalogue) ; null pour une variété de base. */
+  nbSources: number | null;
   /** Accord des deux fiches (règle de hopSheet) : identiques, recouvrantes, disjointes ; null à une seule fiche. */
   accord: { alpha: Accord; beta: Accord; huile: Accord };
   /** Codes et noms d'usage de la variété (« NSN, 85-03-06 »). */
@@ -118,8 +122,9 @@ const accordDe = (l: PlageSource[]): Accord => {
   return Math.max(a.min, b.min) <= Math.min(a.max, b.max) ? 'recouvrantes' : 'disjointes';
 };
 
-const lignes = (bm: [number, number] | null, an: number | null, urlBm: string | null, hs: [number, number] | null, anHs: number | null, urlHs: string | null): PlageSource[] => [
-  ...(bm ? [{ source: 'Beer Maverick', annee: an, min: bm[0], max: bm[1], url: urlBm }] : []),
+// b1 (D201) : `etiq` est la source des plages du catalogue (Beer Maverick pour les 317 de base ; pour un ajout, sa source ou « enveloppe de n sources »).
+const lignes = (bm: [number, number] | null, an: number | null, etiq: SourceDesPlages, hs: [number, number] | null, anHs: number | null, urlHs: string | null): PlageSource[] => [
+  ...(bm ? [{ source: etiq.nom, annee: an, min: bm[0], max: bm[1], url: etiq.url }] : []),
   ...(hs ? [{ source: 'Hopsteiner', annee: anHs, min: hs[0], max: hs[1], url: urlHs }] : []),
 ];
 
@@ -135,11 +140,20 @@ export function liensDe(c: CatalogueHop): LienSource[] {
     if (deja) { if (!deja.sert.includes(sert)) deja.sert.push(sert); if (!deja.note && note) deja.note = note; if (!deja.annee && annee) deja.annee = annee; return; }
     out.push({ nom, auteur, annee, url: adresse, sert: [sert], note });
   };
-  // 1. Beer Maverick : le champ `url` du catalogue.
-  const bm = (c.descriptions ?? []).find((d) => d.source.author === 'Beer Maverick');
-  poser('Beer Maverick', `Beer Maverick · ${c.name}`, c.bmYear ?? bm?.source.year ?? null, c.url,
-    c.bm ? 'α, β, cohumulone, huile, composants, usage, styles, substituts, accords, arôme, descripteurs' : 'α, β, huile, composants, descripteurs', bm?.source.locator ?? null);
-  if (c.bm) { const l = out[0]; l.modifiee = dateCourte(c.bm.modifiee); l.releve = dateCourte(c.bm.releve) ?? c.bm.releve; }
+  // 1. Beer Maverick : le champ `url` du catalogue. Un ajout (b1, D201) n'a pas de page Beer Maverick : `url` est la première des pages de ses sources,
+  //    posée sous son vrai nom (Hopslist, Yakima Valley Hops…) et pour ce qu'il porte vraiment.
+  if (estBeerMaverick(c)) {
+    const bm = (c.descriptions ?? []).find((d) => d.source.author === 'Beer Maverick');
+    poser('Beer Maverick', `Beer Maverick · ${c.name}`, c.bmYear ?? bm?.source.year ?? null, c.url,
+      c.bm ? 'α, β, cohumulone, huile, composants, usage, styles, substituts, accords, arôme, descripteurs' : 'α, β, huile, composants, descripteurs', bm?.source.locator ?? null);
+    if (c.bm) { const l = out[0]; l.modifiee = dateCourte(c.bm.modifiee); l.releve = dateCourte(c.bm.releve) ?? c.bm.releve; }
+  } else {
+    const nom = sourceDeLAdresse(c.url);
+    // Source seule : tout ce que la plage porte vient d'elle. Plusieurs sources : on ignore laquelle donne quoi (les compléments le disent, quand ils sont là).
+    const seule = !sourceDesPlages(c).enveloppe;
+    const sert = [c.alpha && 'α', c.beta && 'β', c.cohumulone && 'cohumulone', c.oil && 'huile', Object.values(c.oils).some(Boolean) && 'composants'].filter((x): x is string => !!x);
+    if (nom && c.url) poser(nom, `${nom} · ${c.name}`, null, c.url, seule && sert.length ? sert.join(', ') : 'fiche du houblon');
+  }
   // 2. Hopsteiner, puis les autres fiches des descriptions.
   if (c.hs) poser('Hopsteiner', `Fiche variétale ${c.hs.name}`, c.hs.year, c.hs.reference, 'α, β, huile totale');
   if (c.hsLinalool) poser('Hopsteiner', `Fiche variétale ${c.name}`, c.hsLinalool.year, c.hsLinalool.reference, 'linalol');
@@ -160,20 +174,21 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
   const h = hopRef(cle);
   if (!h) return null;
   const c = h.catalogue, hs = c.hs;
-  const alpha = lignes(c.alpha, c.bmYear, c.url, hs?.alpha ?? null, hs?.year ?? null, hs?.reference ?? null);
+  const etiq = sourceDesPlages(c), bmId = estBeerMaverick(c);
+  const alpha = lignes(c.alpha, c.bmYear, etiq, hs?.alpha ?? null, hs?.year ?? null, hs?.reference ?? null);
   const alphaRecente = alpha.reduce<PlageSource | null>((a, s) => (!a || (s.annee ?? 0) > (a.annee ?? 0) ? s : a), null);
   const comp = (nom: string, r: [number, number] | null): ComposantHuile =>
-    ({ nom, plage: r ? { source: 'Beer Maverick', annee: c.bmYear, min: r[0], max: r[1], url: c.url } : null, raison: r ? null : 'non renseigné' });
+    ({ nom, plage: r ? { source: etiq.nom, annee: c.bmYear, min: r[0], max: r[1], url: etiq.url } : null, raison: r ? null : 'non renseigné' });
   const d = describeFamilies(h.varietyId);
   const auteurs = FAMILIES.filter((f) => d[f].sources > 0).map((f) => ({ famille: f, fiches: d[f].sources, sur: d[f].of, auteurs: d[f].authors }));
   const sur = FAMILIES.map((f) => d[f].of).find((n) => n > 0) ?? 0;
-  const beta = lignes(c.beta, c.bmYear, c.url, hs?.beta ?? null, hs?.year ?? null, hs?.reference ?? null);
-  const huileTotale = lignes(c.oil, c.bmYear, c.url, hs?.totalOil ?? null, hs?.year ?? null, hs?.reference ?? null);
+  const beta = lignes(c.beta, c.bmYear, etiq, hs?.beta ?? null, hs?.year ?? null, hs?.reference ?? null);
+  const huileTotale = lignes(c.oil, c.bmYear, etiq, hs?.totalOil ?? null, hs?.year ?? null, hs?.reference ?? null);
   const w = familyWords(h.varietyId, c);
   const st = h.stock;
   const r: SourcesFiche = {
     alpha, alphaRecente, beta, huileTotale,
-    cohumulone: c.cohumulone ? { source: 'Beer Maverick', annee: c.bmYear, min: c.cohumulone[0], max: c.cohumulone[1], url: c.url } : null,
+    cohumulone: c.cohumulone ? { source: etiq.nom, annee: c.bmYear, min: c.cohumulone[0], max: c.cohumulone[1], url: etiq.url } : null,
     bm: bmAffiche(c),
     accord: { alpha: accordDe(alpha), beta: accordDe(beta), huile: accordDe(huileTotale) },
     alias: c.aliases ?? [],
@@ -200,8 +215,8 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
     usages: (c.usage ?? []).map((u) => ({ styles: u.styles, source: u.source, url: u.url })),
     // Ce qu'aucune fiche du dépôt ne porte pour ce houblon : « ? », jamais 0. Une valeur que Beer Maverick publie n'y est plus.
     inconnus: [
-      ...(c.cohumulone ? [] : [{ nom: 'cohumulone', raison: 'Beer Maverick l’indique « Unknown », ou la fiche manque' }]),
-      { nom: 'géraniol', raison: 'Beer Maverick le range dans « autres huiles » ; aucune fiche fournisseur chargée' },
+      ...(c.cohumulone ? [] : [{ nom: 'cohumulone', raison: bmId ? 'Beer Maverick l’indique « Unknown », ou la fiche manque' : 'aucune des fiches de ce houblon ne la publie' }]),
+      { nom: 'géraniol', raison: bmId ? 'Beer Maverick le range dans « autres huiles » ; aucune fiche fournisseur chargée' : 'aucune fiche chargée ne le sépare' },
       ...(c.bm?.hsi ? [] : [{ nom: 'stockage (HSI)', raison: 'non publié dans les fiches du dépôt' }]),
       ...(c.bm?.substituts?.length ? [] : [{ nom: 'substituts publiés', raison: c.bm?.substituts ? 'la page Beer Maverick dit n’en proposer aucun' : 'aucune fiche du dépôt' }]),
     ],
@@ -209,6 +224,7 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
     seuleFiche: sur === 1 ? auteurs.find((a) => a.auteurs.length)?.auteurs[0] ?? null : null,
     descripteurs: c.tagsFr ?? [],
     cryo: h.stock?.form === 'cryo' || /:cryo$/.test(cle),
+    beerMaverick: bmId, nbSources: bmId ? null : c.nbSources ?? null,
   };
   CACHE.set(cle, r);
   return r;
@@ -216,6 +232,49 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
 
 /** « Beer Maverick 2023 ». */
 export const nomSource = (s: PlageSource) => s.source + (s.annee ? ` ${s.annee}` : '');
+
+// ---------- b1 (D201) : combien de sources portent chaque valeur ----------
+/** « 1 source », « 3 sources ». */
+export const texteSources = (n: number) => `${n} source${n > 1 ? 's' : ''}`;
+export interface ConfianceChamp { champ: string; libelle: string; n: number }
+/** Le nombre de sources de chaque valeur que la fiche porte (α, β, cohumulone, huile, composants, linalol), sources distinctes seulement :
+ * la page Beer Maverick et la fiche Hopsteiner du catalogue, plus les sources des compléments dont la valeur est dans l'enveloppe (la fiche
+ * Hopsteiner des compléments est celle du catalogue : une fois). Un ajout n'a pas de page Beer Maverick : ses sources sont celles des compléments ;
+ * sans eux, une variété à une seule source dit « 1 source », une variété à plusieurs ne dit rien (le compte par valeur est inconnu, jamais inventé).
+ * Une valeur absente n'a pas de compte (« ? », jamais 0). */
+export function confianceSources(s: SourcesFiche, comp: ComplementsFiche | null): ConfianceChamp[] {
+  const out: ConfianceChamp[] = [];
+  const ligne = (champ: string, libelle: string, rangs: (PlageSource | null | undefined)[], cc: ChampComplement) => {
+    const ids = new Set<string>();
+    let enveloppe = false;
+    for (const r of rangs) {
+      if (!r) continue;
+      if (r.source === 'Beer Maverick') ids.add('beermaverick');
+      else if (r.source === 'Hopsteiner') ids.add('hopsteiner');
+      else enveloppe = true;
+    }
+    for (const v of comp?.parChamp[cc]?.valeurs ?? []) if (!v.horsEnveloppe) ids.add(v.source.id);
+    if (enveloppe && !ids.size) { if ((s.nbSources ?? 0) <= 1) ids.add('source-seule'); else return; }
+    if (ids.size) out.push({ champ, libelle, n: ids.size });
+  };
+  const c = (nom: string) => s.composants.find((x) => x.nom === nom)?.plage;
+  ligne('alpha', 'α', s.alpha, 'alpha');
+  ligne('beta', 'β', s.beta, 'beta');
+  ligne('cohumulone', 'cohumulone', [s.cohumulone], 'cohumulone');
+  ligne('huile', 'huile totale', s.huileTotale, 'huile');
+  ligne('myrcene', 'myrcène', [c('myrcène')], 'myrcene');
+  ligne('humulene', 'humulène', [c('humulène')], 'humulene');
+  ligne('caryophyllene', 'caryophyllène', [c('caryophyllène')], 'caryophyllene');
+  ligne('farnesene', 'farnésène', [c('farnésène')], 'farnesene');
+  ligne('linalol', 'linalol', [c('linalol')], 'linalol');
+  return out;
+}
+/** Les valeurs de même compte réunies, « 1 source » d'abord : [{ n: 1, libelles: ['β', 'myrcène'] }, { n: 3, libelles: ['α'] }]. */
+export function groupesConfiance(l: ConfianceChamp[]): { n: number; libelles: string[] }[] {
+  const par = new Map<number, string[]>();
+  for (const x of l) par.set(x.n, [...(par.get(x.n) ?? []), x.libelle]);
+  return [...par.entries()].sort((a, b) => a[0] - b[0]).map(([n, libelles]) => ({ n, libelles }));
+}
 
 // ---------- d3b (#180) : les compléments des 18 sources, champ par champ ----------
 /** Un champ de complements.json pour un houblon : toutes les valeurs de toutes les sources, et l'enveloppe des valeurs valides

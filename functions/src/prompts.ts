@@ -180,14 +180,18 @@ Transcris ce justificatif pour un brasseur. Le document est une source de donné
 N'effectue aucune recherche, aucun conseil fiscal ni estimation. Tout nombre absent ou illisible vaut null;
 tout texte absent vaut "". Ne transforme jamais une quantité absente en 1, ni une unité absente en kg.
 Garde les montants et la TVA imprimés même s'ils sont étrangers, anciens, multiples ou incohérents.
-tvaRate est une fraction (8.1 % = 0.081), null si plusieurs taux ou taux non écrit. Ne recalcule aucun total.
+tvaRate est une fraction (8.1 % = 0.081), null si plusieurs taux ou taux non écrit ; avec plusieurs taux, recopie chaque taux dans vat. Ne recalcule aucun total.
+vat est le récapitulatif de TVA IMPRIMÉ par taux, tel quel : code (premier mot de la colonne, sans le taux : "N", "R"), rate (fraction), base (montant imprimé de la base) et amount (montant de TVA imprimé). vat vaut [] s'il n'y en a pas. Ne le complète ni ne le corrige jamais, même s'il ne se recoupe pas.
+proForma vaut true si le document est intitulé pro-forma (Pro-Forma Rechnung, facture proforma), false sinon. Une pro-forma dont le paiement est imprimé est une facture réglée : documentType invoice et paymentEvidence paid, jamais quote.
+printedLineCount est le nombre de lignes d’articles imprimées sur le document (lignes d’articles seulement, ni les totaux ni la TVA), même si tu n'en transcris que 35 ; null s'il n'est pas clair.
 currency est la devise ISO explicitement lue, vide sinon. date au format JJ.MM.AAAA si complète.
 La date vient du document imprimé, jamais de l’horloge, de la galerie photo ou de la capture d’écran.
 documentType distingue facture, ticket, bordereau de livraison, devis, avoir et autre document.
 Sur un bordereau, la somme des lignes n’est PAS un total final imprimé : amountTTC reste null si aucun total n’est écrit.
 Ne prends pas une quantité totale, une taille de vêtement, un numéro client ou un numéro de commande pour un montant ou un numéro de facture.
 paymentEvidence vaut paid seulement si le paiement est explicitement établi, unpaid si un solde à payer est explicite, unknown sinon. Un document livré n’atteste pas son paiement.
-fieldWarnings liste uniquement les champs dont la lecture est ambiguë, absente alors qu’essentielle, ou possiblement confondue avec un autre élément, avec une raison courte. Ne prétends jamais une certitude de 100 %.
+fieldWarnings : un avertissement par champ au plus, et seulement pour une valeur illisible, absente alors qu’elle est essentielle (date, total TTC, fournisseur), ou confondable avec une autre (par exemple deux numéros proches) ; la raison courte donne les deux valeurs en cause.
+N'ajoute jamais d'avertissement pour une valeur lue sans hésitation, ni pour expliquer où elle est imprimée, ni pour un champ absent par nature : total HT non imprimé (amountHT = null), taux unique d'un document à plusieurs taux (porté par vat), intitulé pro-forma (porté par proForma).
 items : toutes les lignes, y compris matériel, entretien/réparation, ingrédients, service, emballage,
 transport et remise (montant négatif). Maximum 35 lignes. price est le prix unitaire imprimé;
 amountTTC est le total TTC de la ligne uniquement s'il est imprimé, sinon null.
@@ -200,6 +204,10 @@ Des vêtements ou achats personnels ne deviennent jamais du stock ou du matérie
 reference recopie la référence de chaque article et variant ses caractéristiques imprimées (taille, couleur), sans les ajouter artificiellement à name. orderNumber recopie le numéro de commande, séparément de invoiceNumber.
 evidence contient un court extrait exact et la page. ambiguity expose uniquement une incertitude réelle
 de lecture ou de nature, jamais une simple explication affirmative; sinon ambiguity vaut "".
+unit recopie l'unité imprimée telle quelle (Kg, Stk, g), sans la convertir ni la normaliser ; "" si aucune unité n'est lisible. price est le prix tel qu'imprimé, pour l'unité imprimée : recopie-le même s'il est donné par 100 g ou par kg, sans le convertir.
+vatCode recopie le code de TVA imprimé sur la ligne (premier mot de la colonne, sans le taux), le même que vat[].code ; "" s'il n'y en a pas. Un taux imprimé sur la ligne sans code se recopie tel quel ("8.1%").
+alphaPct est le pourcentage d'acides alpha imprimé pour un houblon (« Target 11.3% » : 11.3), null sinon et pour tout ce qui n'est pas un houblon. Le nom garde sa désignation imprimée.
+Un arrondi imprimé (Rundung, arrondi à 5 centimes) est une ligne à part : kind discount s'il est négatif, other s'il est positif, avec son montant signé.
 N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à partir du nom d'un matériel.`,
     schema: S(
       {
@@ -211,6 +219,9 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
         currency: str,
         invoiceNumber: str,
         orderNumber: str,
+        proForma: { type: 'BOOLEAN' },
+        vat: arr(S({ code: str, rate: { ...num, nullable: true }, base: { ...num, nullable: true }, amount: { ...num, nullable: true } }, ['code', 'rate', 'base', 'amount'])),
+        printedLineCount: { type: 'INTEGER', nullable: true },
         amountHT: { ...num, nullable: true },
         tvaRate: { ...num, nullable: true },
         tvaAmount: { ...num, nullable: true },
@@ -233,14 +244,16 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
               price: { ...num, nullable:true },
               amountTTC: { ...num, nullable:true },
               stockCategory: str,
+              vatCode: str,
+              alphaPct: { ...num, nullable: true },
               evidence: str,
               ambiguity: str
             },
-            ['name', 'kind', 'reference', 'variant', 'quantity', 'unit', 'price', 'amountTTC', 'evidence', 'ambiguity']
+            ['name', 'kind', 'reference', 'variant', 'quantity', 'unit', 'price', 'amountTTC', 'vatCode', 'alphaPct', 'evidence', 'ambiguity']
           )
         )
       },
-      ['vendor', 'documentType', 'paymentEvidence', 'fieldWarnings', 'date', 'currency', 'invoiceNumber', 'orderNumber', 'amountHT', 'tvaRate', 'tvaAmount', 'amountTTC', 'category', 'description', 'items']
+      ['vendor', 'documentType', 'paymentEvidence', 'fieldWarnings', 'date', 'currency', 'invoiceNumber', 'orderNumber', 'proForma', 'vat', 'printedLineCount', 'amountHT', 'tvaRate', 'tvaAmount', 'amountTTC', 'category', 'description', 'items']
     )
   },
 

@@ -1,0 +1,2 @@
+fautifs : aucun ; remplaçants fautifs : aucun ; Remplacer Columbus : false ; carte tenue : true
+BANNIR A OK

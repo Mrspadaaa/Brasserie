@@ -1,0 +1,27 @@
+mots       ECHEC
+    MOTS ECHEC 4/8 au-dessus de 98 (seuil 70 + 40 %)
+couleurs   OK
+au-style   OK
+survol     OK
+blocs      OK
+contraste  OK
+fiche      ECHEC
+    FICHE ECHEC 3 problème(s)
+    biere : D25 etat.html : aucun houblon marqué data-houblon visible
+    fiche : D25 etat.html : un toucher court ouvre la fiche (il doit garder son action)
+    fiche : D49 etat.html : aucune zone de carte libre (hors nom et commandes) pour l'appui long
+standard   ECHEC
+    STANDARD ECHEC 4 problème(s)
+    prototypes/houblons-v4/maquettes/parcours/comparer/etat.html : S3, rayons hors échelle : 10px×1
+    prototypes/houblons-v4/maquettes/parcours/substituer/etat.html : S1, Galaxy en #009e73, en #00796b sur prototypes/houblons-v4/maquettes/parcours/comparer/etat.html
+    prototypes/houblons-v4/maquettes/parcours/substituer/etat.html : S1, Nugget en #4d4d4d, en #3d3d47 sur prototypes/houblons-v4/maquettes/parcours/fiche/etat.html
+    S4, 2 épaisseurs de trait d'icône : 1.2/1.3/1.4 px (161), 1.5 px (1)
+trait      OK
+legende    ECHEC
+    LEGENDE ECHEC 2 problème(s)
+    fiche etat.html : le bouton n'ouvre pas la légende
+    fiche etat.html : aria-expanded ouvert : false
+parlant    OK
+brutes     OK
+COMMUN ECHEC 4 contrôle(s)
+exit 1

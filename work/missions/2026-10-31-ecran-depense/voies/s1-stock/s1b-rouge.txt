@@ -1,0 +1,1286 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/depense/stock/relecture.test.ts [2m([22m[2m98 tests[22m[2m | [22m[31m79 failed[39m[2m)[22m[32m 26[2mms[22m[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Pilsner » chez « Bio Malz AG » face à « Bio Pilsner » → rien[39m[32m 5[2mms[22m[39m
+[31m     → expected 'B' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Cascade » chez « Cryo Hops AG » face à « Cascade Cryo » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Cascade » chez « Yakima Chief Hopunion Cryo » face à « Cascade Cryo » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Citra » chez « Cryo » face à « Citra Cryo » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Pilsner » chez « Dunkel Mühle » face à « Pilsner Dunkel » → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'D' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « bio » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → bio: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « bio » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → bio: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « organic » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → organic: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « organic » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → organic: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « öko » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → öko: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « öko » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → öko: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « oeko » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → oeko: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « oeko » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → oeko: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « cryo » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → cryo: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « cryo » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → cryo: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « lupomax » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → lupomax: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « lupomax » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → lupomax: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « t45 » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → t45: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « t45 » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → t45: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dunkel » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 1[2mms[22m[39m
+[31m     → dunkel: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dunkel » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → dunkel: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « hell » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → hell: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « hell » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → hell: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « light » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → light: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « light » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → light: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « smoked » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → smoked: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « smoked » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → smoked: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « rauch » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → rauch: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « rauch » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → rauch: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « extra » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → extra: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « extra » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → extra: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « pale » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → pale: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « pale » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → pale: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dark » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → dark: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dark » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → dark: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « crystal » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → crystal: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « crystal » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → crystal: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « caramel » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → caramel: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « caramel » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → caramel: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « wheat » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → wheat: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « wheat » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → wheat: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « weizen » du fournisseur du justificatif n’est jamais retiré du nom de l’article[39m[32m 0[2mms[22m[39m
+[31m     → weizen: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « weizen » du fournisseur de l’article n’est jamais retiré de son nom[39m[32m 0[2mms[22m[39m
+[31m     → weizen: expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Munich » chez Rauch AG face à « Malt Munich Rauch » → rien (« rauch » décrit un malt fumé ; Conception n° 10 retournée par la sûreté)[39m[32m 0[2mms[22m[39m
+[31m     → expected 'MR' to be undefined[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : « Pilsner Malz » = « Malt Pilsner »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : un Weyermann ordinaire — « Pilsner » chez Weyermann GmbH face à « Pilsner Weyermann »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mtémoin : « Cascade du Banc » chez la Malterie du Banc reste proposée[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« n/a » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« N/A » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« k.A. » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« K.A. » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« na » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« x » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« — » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« - » est une unité illisible : ligne proposée, unité vide, « unité à préciser »[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mune unité illisible n’assouplit rien : nom différent → rien[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kg. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kg. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« KG. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m«  kg.  » : le point final est normalisé, la ligne est reliée sans « unité à préciser »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kilo » est reconnu comme kg dans l’appariement[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kilo » est reconnu comme kg dans l’appariement[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kilogramm » est reconnu comme kg dans l’appariement[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kilogramm » est reconnu comme kg dans l’appariement[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'MO' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Liter » est reconnu comme L dans l’appariement[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'A' // Object.is equality[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« litre » est reconnu comme L dans l’appariement[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« litres » est reconnu comme L dans l’appariement[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'A' // Object.is equality[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Litres » est reconnu comme L dans l’appariement[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'A' // Object.is equality[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mun kilo ne se relie pas à un article en pièces, ni un litre à un malt en kg[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mla conversion reste visible avec l’unité imprimée : « 25 Kilo → 25 000 g »[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be '25 Kilo → 25 000 g' // Object.is equality[39m
+   [32m✓[39m s1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mUnits global ne change pas : « Kilo » et « Kg. » n’y sont toujours pas des kg[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22m« Acide lactique 80% » cleaning face à l’article Additif → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'AL' to be undefined[39m
+[31m   [31m×[31m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22m« Acide lactique 80% » packaging face à l’article Additif → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'AL' to be undefined[39m
+   [32m✓[39m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22mtémoin : un ingrédient peut toujours être un Additif[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22mtémoin : Consommable reste permis pour un emballage et pour un produit d’entretien[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22m« Safale US-05 500 g » × 1 Stk face à « Safale US-05 » en sachet sans poids → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'U' to be undefined[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22m« Safale US-05 0,5 kg » n’est pas lu comme un poids de sachet et reste refusé (nom différent)[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22mtémoin : « Safale US-05 11,5 g » face à l’article sans poids → proposé, poids non confirmé[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22mtémoin : 50 g exactement reste un sachet[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 5 : la quantité de départ n’est pas arrondie à 3 décimales[2m > [22m0,0004 kg → 0,4 g[39m[32m 1[2mms[22m[39m
+[31m     → expected '0 kg → 0,4 g' to be '0,0004 kg → 0,4 g' // Object.is equality[39m
+   [32m✓[39m s1b n° 5 : la quantité de départ n’est pas arrondie à 3 décimales[2m > [22mtémoins inchangés[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22m« Pride Of Ringwood » et « Falconers Flight 7cs » sont des noms de houblons[39m[32m 1[2mms[22m[39m
+[31m     → expected [] to include 'Houblon'[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Malt → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Sucre → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Levure → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Additif → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Malt → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Sucre → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Levure → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+[31m   [31m×[31m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Additif → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'X' to be undefined[39m
+   [32m✓[39m s1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mtémoin : « Pride Of Ringwood » face à un article Houblon → proposé[32m 0[2mms[22m[39m
+[31m   [31m×[31m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 1 kg face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 2 kg face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 5 kg face à Carafa Special 1, 2, 3 → rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+[31m   [31m×[31m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mle même nom sans numéro d’un côté et numéroté de l’autre : rien[39m[32m 0[2mms[22m[39m
+[31m     → expected 'C2' to be undefined[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mtémoin : avec « Typ » devant, le nombre reste de l’identité : « Carafa Special Typ 2 Kg » → Typ 2[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mtémoin : le seul article numéroté, sans voisin, reste proposé[32m 0[2mms[22m[39m
+   [32m✓[39m s1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mtémoin : un article d’un autre nom n’est pas un voisin[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 79 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Pilsner » chez « Bio Malz AG » face à « Bio Pilsner » → rien
+[31m[1mAssertionError[22m: expected 'B' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"B"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m21:99[22m[39m
+    [90m 19| [39mdescribe('s1b n° 1 : un mot du fournisseur qui décrit le produit n’est…
+    [90m 20| [39m  it('« Pilsner » chez « Bio Malz AG » face à « Bio Pilsner » → rien',…
+    [90m 21| [39m    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Bio Malz AG' }), […
+    [90m   | [39m                                                                                                  [31m^[39m
+    [90m 22| [39m  })[33m;[39m
+    [90m 23| [39m  it('« Cascade » chez « Cryo Hops AG » face à « Cascade Cryo » → rien…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Cascade » chez « Cryo Hops AG » face à « Cascade Cryo » → rien
+[31m[1mAssertionError[22m: expected 'C' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m24:100[22m[39m
+    [90m 22| [39m  })[33m;[39m
+    [90m 23| [39m  it('« Cascade » chez « Cryo Hops AG » face à « Cascade Cryo » → rien…
+    [90m 24| [39m    expect(ref(line('Cascade', 'g', 100, { vendor: 'Cryo Hops AG' }), …
+    [90m   | [39m                                                                                                   [31m^[39m
+    [90m 25| [39m  })[33m;[39m
+    [90m 26| [39m  it('« Cascade » chez « Yakima Chief Hopunion Cryo » face à « Cascade…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Cascade » chez « Yakima Chief Hopunion Cryo » face à « Cascade Cryo » → rien
+[31m[1mAssertionError[22m: expected 'C' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m27:114[22m[39m
+    [90m 25| [39m  })[33m;[39m
+    [90m 26| [39m  it('« Cascade » chez « Yakima Chief Hopunion Cryo » face à « Cascade…
+    [90m 27| [39m    expect(ref(line('Cascade', 'g', 100, { vendor: 'Yakima Chief Hopun…
+    [90m   | [39m                                                                                                                 [31m^[39m
+    [90m 28| [39m  })[33m;[39m
+    [90m 29| [39m  [34mit[39m([32m'« Citra » chez « Cryo » face à « Citra Cryo » → rien'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Citra » chez « Cryo » face à « Citra Cryo » → rien
+[31m[1mAssertionError[22m: expected 'C' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m30:88[22m[39m
+    [90m 28| [39m  })[33m;[39m
+    [90m 29| [39m  [34mit[39m([32m'« Citra » chez « Cryo » face à « Citra Cryo » → rien'[39m[33m,[39m () [33m=>[39m {
+    [90m 30| [39m    expect(ref(line('Citra', 'g', 100, { vendor: 'Cryo' }), [hop('C', …
+    [90m   | [39m                                                                                       [31m^[39m
+    [90m 31| [39m  })[33m;[39m
+    [90m 32| [39m  it('« Pilsner » chez « Dunkel Mühle » face à « Pilsner Dunkel » → ri…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Pilsner » chez « Dunkel Mühle » face à « Pilsner Dunkel » → rien
+[31m[1mAssertionError[22m: expected 'D' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"D"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m33:103[22m[39m
+    [90m 31| [39m  })[33m;[39m
+    [90m 32| [39m  it('« Pilsner » chez « Dunkel Mühle » face à « Pilsner Dunkel » → ri…
+    [90m 33| [39m    expect(ref(line('Pilsner', 'kg', 25, { vendor: 'Dunkel Mühle' }), …
+    [90m   | [39m                                                                                                      [31m^[39m
+    [90m 34| [39m  })[33m;[39m
+    [90m 35| [39m  // « t90 » est dans la liste du code mais pas ici : c'est une forme …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « bio » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: bio: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « bio » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: bio: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « organic » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: organic: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « organic » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: organic: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « öko » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: öko: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « öko » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: öko: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « oeko » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: oeko: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « oeko » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: oeko: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « cryo » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: cryo: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « cryo » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: cryo: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « lupomax » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: lupomax: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « lupomax » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: lupomax: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « t45 » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: t45: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « t45 » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: t45: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dunkel » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: dunkel: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dunkel » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: dunkel: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « hell » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: hell: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « hell » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: hell: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « light » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: light: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « light » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: light: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « smoked » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: smoked: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « smoked » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: smoked: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « rauch » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: rauch: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « rauch » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: rauch: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « extra » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: extra: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « extra » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: extra: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « pale » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: pale: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « pale » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: pale: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dark » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: dark: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « dark » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: dark: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « crystal » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: crystal: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « crystal » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: crystal: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « caramel » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: caramel: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « caramel » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: caramel: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « wheat » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: wheat: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « wheat » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: wheat: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « weizen » du fournisseur du justificatif n’est jamais retiré du nom de l’article
+[31m[1mAssertionError[22m: weizen: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m40:113[22m[39m
+    [90m 38| [39m  [35mfor[39m ([35mconst[39m mot [35mof[39m [33mDESCRIPTEURS[39m) {
+    [90m 39| [39m    it(`la liste fermée : « ${mot} » du fournisseur du justificatif n’…
+    [90m 40| [39m      expect(ref(line('Pilsner', 'kg', 25, { vendor: `${mot} Mühle AG`…
+    [90m   | [39m                                                                                                                [31m^[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22mla liste fermée : « weizen » du fournisseur de l’article n’est jamais retiré de son nom
+[31m[1mAssertionError[22m: weizen: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m43:129[22m[39m
+    [90m 41| [39m    })[33m;[39m
+    [90m 42| [39m    it(`la liste fermée : « ${mot} » du fournisseur de l’article n’est…
+    [90m 43| [39m      expect(ref(line('Pilsner', 'kg', 25), [item('X', `Pilsner ${mot}…
+    [90m   | [39m                                                                                                                                [31m^[39m
+    [90m 44| [39m    })[33m;[39m
+    [90m 45| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 1 : un mot du fournisseur qui décrit le produit n’est jamais retiré du nom de l’article[2m > [22m« Munich » chez Rauch AG face à « Malt Munich Rauch » → rien (« rauch » décrit un malt fumé ; Conception n° 10 retournée par la sûreté)
+[31m[1mAssertionError[22m: expected 'MR' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"MR"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m47:102[22m[39m
+    [90m 45| [39m  }
+    [90m 46| [39m  it('« Munich » chez Rauch AG face à « Malt Munich Rauch » → rien (« …
+    [90m 47| [39m    expect(ref(line('Munich', 'kg', 25, { vendor: 'Rauch AG' }), [item…
+    [90m   | [39m                                                                                                     [31m^[39m
+    [90m 48| [39m  })[33m;[39m
+    [90m 49| [39m  // Témoins : le mot du fournisseur qui n’est qu’un nom d’entreprise …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« n/a » est une unité illisible : ligne proposée, unité vide, « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« N/A » est une unité illisible : ligne proposée, unité vide, « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« k.A. » est une unité illisible : ligne proposée, unité vide, « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« K.A. » est une unité illisible : ligne proposée, unité vide, « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« na » est une unité illisible : ligne proposée, unité vide, « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« x » est une unité illisible : ligne proposée, unité vide, « unité à préciser »
+[31m[1mAssertionError[22m: expected undefined to be 'MO' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"MO"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m67:27[22m[39m
+    [90m 65| [39m    it(`« ${unit} » est une unité illisible : ligne proposée, unité vi…
+    [90m 66| [39m      [35mconst[39m m [33m=[39m [34mmatchStockLine[39m([34mline[39m([32m'Maris Otter'[39m[33m,[39m unit[33m,[39m [34m25[39m)[33m,[39m stock)[33m;[39m
+    [90m 67| [39m      [34mexpect[39m(m[33m?.[39mitem[33m.[39mref)[33m.[39m[34mtoBe[39m([32m'MO'[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 68| [39m      [34mexpect[39m(m[33m?.[39munitMissing)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m 69| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kg. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kg. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« KG. » : le point final est normalisé, la ligne est reliée sans « unité à préciser »
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m«  kg.  » : le point final est normalisé, la ligne est reliée sans « unité à préciser »
+[31m[1mAssertionError[22m: expected undefined to be 'MO' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"MO"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m77:27[22m[39m
+    [90m 75| [39m    it(`« ${unit} » : le point final est normalisé, la ligne est relié…
+    [90m 76| [39m      [35mconst[39m m [33m=[39m [34mmatchStockLine[39m([34mline[39m([32m'Maris Otter'[39m[33m,[39m unit[33m,[39m [34m25[39m)[33m,[39m stock)[33m;[39m
+    [90m 77| [39m      [34mexpect[39m(m[33m?.[39mitem[33m.[39mref)[33m.[39m[34mtoBe[39m([32m'MO'[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 78| [39m      [34mexpect[39m(m[33m?.[39munitMissing)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m 79| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kilo » est reconnu comme kg dans l’appariement
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kilo » est reconnu comme kg dans l’appariement
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Kilogramm » est reconnu comme kg dans l’appariement
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« kilogramm » est reconnu comme kg dans l’appariement
+[31m[1mAssertionError[22m: expected undefined to be 'MO' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"MO"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m84:57[22m[39m
+    [90m 82| [39m    [34mit[39m([32m`« [39m[36m${[39munit[36m}[39m[32m » est reconnu comme kg dans l’appariement`[39m[33m,[39m () [33m=>[39m {
+    [90m 83| [39m      expect(matchStockLine(line('Maris Otter', unit, 25), stock)?.uni…
+    [90m 84| [39m      [34mexpect[39m([34mref[39m([34mline[39m([32m'Maris Otter'[39m[33m,[39m unit[33m,[39m [34m25[39m)[33m,[39m stock))[33m.[39m[34mtoBe[39m([32m'MO'[39m)[33m;[39m
+    [90m   | [39m                                                        [31m^[39m
+    [90m 85| [39m    })[33m;[39m
+    [90m 86| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Liter » est reconnu comme L dans l’appariement
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« litres » est reconnu comme L dans l’appariement
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22m« Litres » est reconnu comme L dans l’appariement
+[31m[1mAssertionError[22m: expected undefined to be 'A' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"A"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m90:81[22m[39m
+    [90m 88| [39m  [35mfor[39m ([35mconst[39m unit [35mof[39m [[32m'Liter'[39m[33m,[39m [32m'litre'[39m[33m,[39m [32m'litres'[39m[33m,[39m [32m'Litres'[39m]) {
+    [90m 89| [39m    [34mit[39m([32m`« [39m[36m${[39munit[36m}[39m[32m » est reconnu comme L dans l’appariement`[39m[33m,[39m () [33m=>[39m {
+    [90m 90| [39m      expect(ref(line('Acide lactique', unit, 5, { kind: 'cleaning' })…
+    [90m   | [39m                                                                                [31m^[39m
+    [90m 91| [39m    })[33m;[39m
+    [90m 92| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 2 (D214) : unités illisibles et unités écrites autrement[2m > [22mla conversion reste visible avec l’unité imprimée : « 25 Kilo → 25 000 g »
+[31m[1mAssertionError[22m: expected undefined to be '25 Kilo → 25 000 g' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"25 Kilo → 25 000 g"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m98:56[22m[39m
+    [90m 96| [39m  })[33m;[39m
+    [90m 97| [39m  it('la conversion reste visible avec l’unité imprimée : « 25 Kilo → …
+    [90m 98| [39m    expect(formatUnitLink(25, 'Kilo', 'g', 'Houblon')).toBe('25 Kilo →…
+    [90m   | [39m                                                       [31m^[39m
+    [90m 99| [39m    expect(formatUnitLink(5, 'Liter', 'ml', 'CIP acide')).toBe('5 Lite…
+    [90m100| [39m    expect(formatUnitLink(2, 'Kg.', 'g', 'Houblon')).toBe('2 Kg. → 2 0…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22m« Acide lactique 80% » cleaning face à l’article Additif → rien
+[31m[1mAssertionError[22m: expected 'AL' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"AL"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m112:86[22m[39m
+    [90m110| [39m  [35mconst[39m lactique [33m=[39m [[34mitem[39m([32m'AL'[39m[33m,[39m [32m'Acide lactique 80%'[39m[33m,[39m [32m'Additif'[39m[33m,[39m [32m'kg'[39m)][33m;[39m
+    [90m111| [39m  it('« Acide lactique 80% » cleaning face à l’article Additif → rien'…
+    [90m112| [39m    expect(ref(line('Acide lactique 80%', 'kg', 1, { kind: 'cleaning' …
+    [90m   | [39m                                                                                     [31m^[39m
+    [90m113| [39m  })[33m;[39m
+    [90m114| [39m  it('« Acide lactique 80% » packaging face à l’article Additif → rien…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 3 : un produit d’entretien ou un emballage n’est jamais un additif[2m > [22m« Acide lactique 80% » packaging face à l’article Additif → rien
+[31m[1mAssertionError[22m: expected 'AL' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"AL"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m115:87[22m[39m
+    [90m113| [39m  })[33m;[39m
+    [90m114| [39m  it('« Acide lactique 80% » packaging face à l’article Additif → rien…
+    [90m115| [39m    expect(ref(line('Acide lactique 80%', 'kg', 1, { kind: 'packaging'…
+    [90m   | [39m                                                                                      [31m^[39m
+    [90m116| [39m  })[33m;[39m
+    [90m117| [39m  [34mit[39m([32m'témoin : un ingrédient peut toujours être un Additif'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 4 : le poids d’une ligne de levure dépasse celui d’un sachet[2m > [22m« Safale US-05 500 g » × 1 Stk face à « Safale US-05 » en sachet sans poids → rien
+[31m[1mAssertionError[22m: expected 'U' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"U"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m128:85[22m[39m
+    [90m126| [39mdescribe('s1b n° 4 : le poids d’une ligne de levure dépasse celui d’un…
+    [90m127| [39m  it('« Safale US-05 500 g » × 1 Stk face à « Safale US-05 » en sachet…
+    [90m128| [39m    expect(ref(line('Safale US-05 500 g', 'Stk', 1), [yeast('U', 'Safa…
+    [90m   | [39m                                                                                    [31m^[39m
+    [90m129| [39m  })[33m;[39m
+    [90m130| [39m  it('« Safale US-05 0,5 kg » n’est pas lu comme un poids de sachet et…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 5 : la quantité de départ n’est pas arrondie à 3 décimales[2m > [22m0,0004 kg → 0,4 g
+[31m[1mAssertionError[22m: expected '0 kg → 0,4 g' to be '0,0004 kg → 0,4 g' // Object.is equality[39m
+
+Expected: [32m"0[7m,0004[27m kg → 0,4 g"[39m
+Received: [31m"0 kg → 0,4 g"[39m
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m145:58[22m[39m
+    [90m143| [39mdescribe('s1b n° 5 : la quantité de départ n’est pas arrondie à 3 déci…
+    [90m144| [39m  [34mit[39m([32m'0,0004 kg → 0,4 g'[39m[33m,[39m () [33m=>[39m {
+    [90m145| [39m    expect(formatUnitLink(0.0004, 'kg', 'g', 'Houblon')).toBe('0,0004 …
+    [90m   | [39m                                                         [31m^[39m
+    [90m146| [39m  })[33m;[39m
+    [90m147| [39m  [34mit[39m([32m'témoins inchangés'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22m« Pride Of Ringwood » et « Falconers Flight 7cs » sont des noms de houblons
+[31m[1mAssertionError[22m: expected [] to include 'Houblon'[39m
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m156:49[22m[39m
+    [90m154| [39mdescribe('s1b n° 6 : les homonymes du catalogue sont lus comme la comp…
+    [90m155| [39m  it('« Pride Of Ringwood » et « Falconers Flight 7cs » sont des noms …
+    [90m156| [39m    [34mexpect[39m([34mknownCategoriesOf[39m([32m'pride ringwood'[39m))[33m.[39m[34mtoContain[39m([32m'Houblon'[39m)[33m;[39m
+    [90m   | [39m                                                [31m^[39m
+    [90m157| [39m    expect(knownCategoriesOf('falconers flight 7 cs')).toContain('Houb…
+    [90m158| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Malt → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Sucre → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Levure → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Pride Of Ringwood » face à un article « Pride Of Ringwood » en Additif → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Malt → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Sucre → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Levure → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 6 : les homonymes du catalogue sont lus comme la comparaison les lit[2m > [22mligne sans nature « Falconers Flight 7cs » face à un article « Falconers Flight 7cs » en Additif → rien
+[31m[1mAssertionError[22m: expected 'X' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"X"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m162:117[22m[39m
+    [90m160| [39m    ['Falconers Flight 7cs', 'Malt', 'kg'], ['Falconers Flight 7cs', '…
+    [90m161| [39m    it(`ligne sans nature « ${nom} » face à un article « ${nom} » en $…
+    [90m162| [39m      expect(ref({ description: nom, unit: unite, quantity: 100, vendo…
+    [90m   | [39m                                                                                                                    [31m^[39m
+    [90m163| [39m    })[33m;[39m
+    [90m164| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 1 kg face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 2 kg face à Carafa Special 1, 2, 3 → rien
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22m« Carafa Special 2 Kg » × 5 kg face à Carafa Special 1, 2, 3 → rien
+[31m[1mAssertionError[22m: expected 'C2' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C2"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m174:72[22m[39m
+    [90m172| [39m  [35mfor[39m ([35mconst[39m quantity [35mof[39m [[34m1[39m[33m,[39m [34m2[39m[33m,[39m [34m5[39m]) {
+    [90m173| [39m    it(`« Carafa Special 2 Kg » × ${quantity} kg face à Carafa Special…
+    [90m174| [39m      expect(ref(line('Carafa Special 2 Kg', 'kg', quantity), carafa))…
+    [90m   | [39m                                                                       [31m^[39m
+    [90m175| [39m    })[33m;[39m
+    [90m176| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/relecture.test.ts[2m > [22ms1b n° 7 : un nombre collé à l’unité de la ligne est une taille d’emballage, jamais un numéro d’identité[2m > [22mle même nom sans numéro d’un côté et numéroté de l’autre : rien
+[31m[1mAssertionError[22m: expected 'C2' to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"C2"
+
+[36m [2m❯[22m tests/unit/depense/stock/relecture.test.ts:[2m178:118[22m[39m
+    [90m176| [39m  }
+    [90m177| [39m  it('le même nom sans numéro d’un côté et numéroté de l’autre : rien'…
+    [90m178| [39m    expect(ref(line('Carafa Special 2 Kg', 'kg', 2), [item('C', 'Caraf…
+    [90m   | [39m                                                                                                                     [31m^[39m
+    [90m179| [39m  })[33m;[39m
+    [90m180| [39m  it('témoin : avec « Typ » devant, le nombre reste de l’identité : « …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[57/79]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m79 failed[39m[22m[2m | [22m[1m[32m19 passed[39m[22m[90m (98)[39m
+[2m   Start at [22m 19:52:21
+[2m   Duration [22m 538ms[2m (transform 55ms, setup 98ms, collect 49ms, tests 26ms, environment 0ms, prepare 54ms)[22m
+

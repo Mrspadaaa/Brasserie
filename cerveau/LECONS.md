@@ -12,7 +12,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 », pour des tests, appliqué partout (G38 perdu). 25.10 : « traits trié » lu « plein » pour « tiretés » (D147) ; « le + pas centré » lu bouton (D149). 26.10 : plages de Lotus lues « source à chaque mot » (D168). 27.10 : « bannir » lu « reculer », c'était « exclure » (D194).
+- Erreur : 12.10, « seul 3.8 » (tests) appliqué partout (G38). 25.10 : « traits trié » lu « plein » (D147). 27.10 : « bannir » lu « reculer » (D194). 31.10 : « modifier à la volée » lu « la masse » (D211). 01.11 : « sans clavier » lu « sans focus » (D230).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil
@@ -81,30 +81,30 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit) ; 20.10, « épicé » critiqué une deuxième fois (lots 15 et 21), la première plainte n'étant pas un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD avant la voie (r14).
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD et sur la version voulue avant la voie (r14 ; GESTES, 31.10).
 - Rôles : pilote, auteur
-- Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 », portée inconnue)
+- Contrôle : `systeme.mjs mission` (portée), cablage (« OK 0/0 »)
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
 - Cause : 83 % de ses mots (vin blanc, groseille) sont hors des 12 familles et sortent du dessin ; nul n'a confronté le rendu à sa réputation ([[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (un linalol d'un autre houblon). Un critère de rang tiré de son attente se teste d'abord sur la donnée (27.10 : radar entier, f8 ; Calypso, 1 % des DIPA).
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (un linalol d'un autre houblon ; 31.10 : EBC au menu, « ? » à côté). Un critère de rang tiré de son attente se teste d'abord sur la donnée (27.10 : radar entier, f8 ; Calypso, 1 % des DIPA).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100)
 
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs.
+- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Déménagement, format, chargement changé : `grep` des lecteurs, même au niveau du module, tests rejoués (D79, c8). Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10 : 1 fichier, 404).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports dans l'app compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Plafond sur agents et tours, jamais sur les variantes (M13). Petite suite : Haiku neuf, pas l'agent au long contexte (300 k, 26.10).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Plafond de voie ≤ maxTurns ; un long livrable s'écrit section par section.
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
@@ -162,5 +162,5 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Mécanisées
 
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert).
-- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes) a perdu face au lot 21 (44 v0 : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
+- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

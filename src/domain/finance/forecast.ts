@@ -1,10 +1,19 @@
 import type { FinanceTransaction, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
-import { isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
+import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
 import { isUpgradePlan, upgradeReadiness } from './upgrades';
 
 export interface ForecastItem { id: string; date: string; label: string; amountCents: number; direction: 'in' | 'out'; source: 'invoice' | 'plan' | 'recurring' | 'brew' | 'trend' | 'equipment'; category: string; planId?: string; occurrenceId?: string }
 export interface ForecastMonth { month: string; incomeCents: number; expenseCents: number; committedCents: number; projectedCents: number; balanceCents: number | null; items: ForecastItem[] }
-export interface FinanceForecast { months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null }
+/** Pièce à payer ou à encaisser dont l'échéance manque : jamais placée dans un mois, comptée à part (aucune date inventée). */
+export interface UndatedForecastItem { id: string; label: string; amountCents: number; direction: 'in' | 'out'; category: string; pieceDate: string | null; planId?: string; occurrenceId?: string; unconfirmed?: boolean }
+export interface FinanceForecast {
+  months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null;
+  undated: UndatedForecastItem[]; undatedInCents: number; undatedOutCents: number;
+}
+/** Seules les catégories de dépenses récurrentes nourrissent la tendance : l'achat de malt, de houblon ou de levure est irrégulier. */
+export const TREND_CATEGORIES: readonly string[] = ['chargesFixes'];
+/** Les mêmes mots que `CATEGORY_LABELS` (FinanceForms), en phrase : « Achats de brassage non projetés », jamais la clé brute (`chargesFixes`, `renovation`). */
+const CATEGORY_PHRASE: Record<string, string> = { brassage: 'de brassage', materiel: 'de matériel', nettoyage: 'de nettoyage', chargesFixes: 'de charges fixes', renovation: 'de local et travaux', divers: 'divers' };
 const monthKey = (date: string) => date.slice(0, 7);
 function shiftMonth(month: string, offset: number): string {
   const date = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + offset, 1));
@@ -53,13 +62,27 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
   const end = anchoredDate(`${monthKeys[count - 1]}-31`, 0);
   const ledger = summarizeLedger(transactions, payments, profile, asOf), warnings = [...ledger.warnings], items: ForecastItem[] = [];
   const active = transactions.filter(isActiveTransaction);
+  const undated: UndatedForecastItem[] = [];
+  const linkedPlanOf = (tx: FinanceTransaction) => plans.find(p => p.id === tx.finance?.planId && (p.status === 'active' || isUpgradePlan(p)));
+  /** Reste à payer ou à encaisser, sans échéance valide : la pièce va dans `undated`, et ne remplace pas l'occurrence de son plan. */
+  const isUndatedPending = (tx: FinanceTransaction): boolean => {
+    if (isoDate(tx.finance?.dueDate)) return false;
+    const state = paymentState(tx, payments, transactions, asOf);
+    return state.remainingCents > 0 && (state.state !== 'unknown' || !!linkedPlanOf(tx));
+  };
   for (const tx of active) {
     const state = paymentState(tx, payments, transactions, asOf);
-    const linkedPlan = plans.find(p => p.id === tx.finance?.planId && (p.status === 'active' || isUpgradePlan(p)));
+    const linkedPlan = linkedPlanOf(tx);
     if (!state.remainingCents || state.state === 'unknown' && !linkedPlan) continue;
     if (state.state === 'unknown') warnings.push(`Paiement à confirmer : ${tx.description}. Le montant lié à la prévision reste réservé.`);
     const due = isoDate(tx.finance?.dueDate), date = due && due > asOf ? due : asOf;
-    if (!due) warnings.push(`Échéance à préciser : ${tx.description}. Montant placé aujourd’hui.`);
+    const direction = transactionDirection(tx, transactions);
+    if (!due) {
+      undated.push({ id: `invoice:${tx.id}`, label: tx.description, amountCents: state.remainingCents, direction, category: tx.category, pieceDate: isoDate(tx.date),
+        planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId, ...(state.state === 'unknown' ? { unconfirmed: true } : {}) });
+      warnings.push(`Échéance à préciser : ${tx.description} (${formatCHF(state.remainingCents)}). Montant hors des mois prévus.`);
+      continue;
+    }
     if (date <= end) items.push({ id: `invoice:${tx.id}`, date, label: state.state === 'unknown' ? `${tx.description} · paiement à confirmer` : tx.description, amountCents: state.remainingCents, direction: transactionDirection(tx, transactions), source: 'invoice', category: tx.category, planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId });
   }
   for (const plan of plans) {
@@ -73,7 +96,9 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
     }
     for (const occurrence of planOccurrences(plan, plan.recurrence ? `${currentMonth}-01` : asOf, end)) {
       // A documented invoice replaces the intention, whether paid or still payable.
-      const invoiced = linked.filter(t => !plan.recurrence || t.finance?.occurrenceId === occurrence.id || !t.finance?.occurrenceId && monthKey(isoDate(t.finance?.dueDate) ?? isoDate(t.date) ?? '') === monthKey(occurrence.date)).reduce((sum, t) => {
+      const undatedLinked = linked.filter(isUndatedPending);
+      if (undatedLinked.length) warnings.push(`Facture sans échéance liée à « ${plan.title} » : la prévision reste réservée, la facture est comptée à part.`);
+      const invoiced = linked.filter(t => !undatedLinked.includes(t)).filter(t => !plan.recurrence || t.finance?.occurrenceId === occurrence.id || !t.finance?.occurrenceId && monthKey(isoDate(t.finance?.dueDate) ?? isoDate(t.date) ?? '') === monthKey(occurrence.date)).reduce((sum, t) => {
         const allocation = planInvoiceAllocation(t);
         if (allocation.issue === 'allocation') {
           warnings.push(`Montant lié à corriger : ${t.description}. La prévision reste réservée.`); return sum;
@@ -97,7 +122,9 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
   const residual = active.filter(isResidualExpense).filter(tx => !recurringVendors.has(txVendor(tx)));
   if (trendMonths.length < 3) warnings.push('Tendance non calculée : confirmer au moins trois mois complets d’historique. Les engagements restent affichés.');
   else {
-    const categories = [...new Set(residual.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(tx => tx.category))];
+    const seen = [...new Set(residual.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(tx => tx.category))];
+    const categories = seen.filter(category => TREND_CATEGORIES.includes(category));
+    for (const category of seen.filter(category => !TREND_CATEGORIES.includes(category))) warnings.push(`Achats ${CATEGORY_PHRASE[category] ?? `de ${category}`} non projetés (irréguliers).`);
     for (const category of categories) {
       const relevant = residual.filter(tx => tx.category === category);
       const historicalVendors = new Set(relevant.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(txVendor));
@@ -132,5 +159,7 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
       committedCents: rows.filter(i => i.direction === 'out' && i.source !== 'trend').reduce((sum, i) => sum + i.amountCents, 0),
       projectedCents: rows.filter(i => i.source === 'trend').reduce((sum, i) => sum + i.amountCents, 0), items: rows };
   });
-  return { months, items, warnings: [...new Set(warnings)], cashComplete: ledger.cashComplete, trendMonths, openingCashCents: ledger.cashCents };
+  const undatedTotal = (direction: 'in' | 'out') => undated.filter(u => u.direction === direction).reduce((sum, u) => sum + u.amountCents, 0);
+  return { months, items, warnings: [...new Set(warnings)], cashComplete: ledger.cashComplete, trendMonths, openingCashCents: ledger.cashCents,
+    undated, undatedInCents: undatedTotal('in'), undatedOutCents: undatedTotal('out') };
 }

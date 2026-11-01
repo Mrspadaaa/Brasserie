@@ -1,0 +1,6 @@
+4 captures · remplissage médian 0,46, 3 sous 0,50 · ressemblance moyenne 0,96 · paires presque identiques 3/6 (50 %)
+  - REMPLISSAGE : médiane 0,46 < 0,55 (lot 21 : 0,62) ; les plus vides : cap-couleurs 0,42, cap-recette 0,42, cap-sucre 0,46
+  - REMPLISSAGE : 75 % des premiers écrans sous 0,50, 20 % au plus
+  - DIVERSITÉ : ressemblance moyenne 0,96 ≥ 0,90 (lot 21 : 0,88) : le panel partage un même squelette
+  - DIVERSITÉ : 50 % de paires presque identiques (≥ 0,95), 1 % au plus ; par exemple cap-recette~cap-couleurs, cap-recette~cap-sucre, cap-couleurs~cap-sucre
+PANEL ECHEC

@@ -135,7 +135,8 @@ describe('#97 navigation sans modification', () => {
  */
 const wait = (ms: number) => act(async () => { await new Promise(resolve => setTimeout(resolve, ms)); });
 const malt = () => document.getElementById('wz-fermentable-0') as HTMLInputElement | null;
-const maltPlus = () => within(malt()!.closest('.space-y-1') as HTMLElement).getAllByRole('button', { name: /^Ajouter .* kg$/ })[0];
+// D228 : s1 n'a plus de QuantityStepper ni d'appui long ; le « + » du plateau fait un cran par toucher (barre et « + » remplacent l'appui long).
+const maltPlus = () => within(document.querySelector('[data-role="bal"]') as HTMLElement).getByRole('button', { name: 'Ajouter un cran' });
 const hold = async (button: HTMLElement) => {
   fireEvent.pointerDown(button, { button: 0 });
   await wait(1000);
@@ -179,7 +180,8 @@ describe('#97 V3 n°1 — tout geste réel du brasseur crée le brouillon (B1)',
     allerEtape(/Fermentescibles/);
     await waitFor(() => expect(malt()).toBeTruthy());
     const before = malt()!.value;
-    await hold(maltPlus());
+    // Trois touchers répétés remplacent l'appui long ; la fraîcheur du brouillon se vérifie comme avant.
+    for (let k = 0; k < 3; k++) fireEvent.click(maltPlus());
     const after = malt()!.value;
     view.unmount();
     expect(after).not.toBe(before);
@@ -518,23 +520,14 @@ describe('#97 ARB-97 — attribution sans horloge', () => {
     await waitFor(() => expect(malt()).toBeTruthy());
     const plus = maltPlus();
     const before = malt()!.value;
+    // D228 : plus d'appui long ni de minuterie de tic. Un toucher sur « + » du plateau, puis le fil bloqué 300 ms : la mise à jour affichée
+    // doit être dans le brouillon, comme avant (mêmes assertions sur la fraîcheur du brouillon).
     let released = false;
-    // Premier tic de `QuantityStepper` (setInterval de 90 ms après 400 ms) : relâcher dans la même tâche, puis bloquer
-    // le fil 300 ms. La mise à jour du tic, planifiée par une minuterie, est rendue après.
-    const originalSetInterval = window.setInterval;
-    window.setInterval = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) => originalSetInterval(() => {
-      if (typeof handler === 'function') handler(...args);
-      if (!released) { released = true; pointer(plus, 'pointerup'); busy(300); }
-    }, timeout)) as typeof window.setInterval;
-    try {
-      await withoutAct(async () => {
-        pointer(plus, 'pointerdown');
-        for (let waited = 0; !released && waited < 3000; waited += 50) await pause(50);
-        // Two more timers: an overdue timer runs before React's render task, the next one after it.
-        await pause(50);
-        await pause(50);
-      });
-    } finally { window.setInterval = originalSetInterval; }
+    fireEvent.click(plus);
+    released = true;
+    busy(300);
+    await pause(50);
+    await pause(50);
     const after = malt()!.value;
     view.unmount();
     expect(released).toBe(true);

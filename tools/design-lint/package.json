@@ -1,0 +1,9 @@
+{
+  "name": "affinee-design-lint",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Lint de DESIGN.md (outil isolé, hors du node_modules partagé)",
+  "dependencies": {
+    "@google/design.md": "0.4.0"
+  }
+}

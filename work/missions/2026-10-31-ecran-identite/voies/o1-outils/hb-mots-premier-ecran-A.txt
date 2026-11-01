@@ -1,0 +1,9 @@
+biere 66 mots
+comparer 102 mots (> 70)
+dryhopper 113 mots (> 70)
+fiche 186 mots (> 70)
+levure 71 mots (alerte : > 70, modéré)
+ma-biere 98 mots (alerte : > 70, modéré)
+substituer 86 mots (alerte : > 70, modéré)
+suggerer 111 mots (> 70)
+MOTS ECHEC 4/8 au-dessus de 98 (seuil 70 + 40 %)

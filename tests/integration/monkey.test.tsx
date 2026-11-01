@@ -36,6 +36,13 @@ vi.setConfig({ testTimeout: 120_000 });
 
 afterEach(cleanup);
 
+/**
+ * Une séquence est synchrone de bout en bout (8 à 20 s) : sans tour de boucle entre deux graines, le worker ne répond plus au
+ * processus de Vitest, et « Timeout calling "onTaskUpdate" » (60 s) tombe en erreur non gérée alors que les six tests sont verts
+ * (31.10, 80 s de calcul d'affilée). On rend la main une fois avant chaque graine ; la séquence, elle, n'est pas touchée.
+ */
+const rendreLaMain = () => new Promise<void>((fin) => setTimeout(fin, 0));
+
 /** Générateur déterministe — même graine, même séquence, toujours. */
 function alea(graine: number) {
   let a = graine >>> 0;
@@ -347,7 +354,8 @@ describe('Monkey — l’atelier de l’eau', () => {
    * suffisent à couvrir les enchaînements courants sans allonger la suite.
    */
   [1, 7, 42].forEach((graine) => {
-    it(`survit à 250 gestes au hasard — graine ${graine}`, () => {
+    it(`survit à 250 gestes au hasard — graine ${graine}`, async () => {
+      await rendreLaMain();
       const journal = lacherLeSinge(atelier, graine, 250);
       expect(journal.length).toBe(251);
       // Les 250 interactions et leurs assertions sont conservées : ce parcours
@@ -358,7 +366,8 @@ describe('Monkey — l’atelier de l’eau', () => {
 
 describe('Monkey — l’assistant de recette', () => {
   [3, 11, 99].forEach((graine) => {
-    it(`survit à 250 gestes au hasard — graine ${graine}`, () => {
+    it(`survit à 250 gestes au hasard — graine ${graine}`, async () => {
+      await rendreLaMain();
       const journal = lacherLeSinge(assistant, graine, 250);
       expect(journal.length).toBe(251);
     });

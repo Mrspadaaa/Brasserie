@@ -4,8 +4,8 @@ import { logger } from 'firebase-functions';
 import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
-import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
-import { reconcileInvoiceVision, type InvoiceScanResult } from './invoiceVisionReview.js';
+import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
+import { reconcileInvoiceVision, finirUneLecture, ScanReadCutError, ligneJournalLecture, phraseCoupure, pointLectureCoupee, ajouterCoupure, type CauseCoupure, type InvoiceScanResult } from './invoiceVisionReview.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
@@ -97,8 +97,8 @@ interface AiTaskResult {
 /** A separate, fixed-cost path: no model chain, no client tier/context/instruction. */
 export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
   const started = Date.now();
-  const maxOutputTokens=evaluationOptions?.maxOutputTokens??4500;
-  if(!Number.isSafeInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>4500)throw new Error('Plafond de sortie invalide.');
+  const maxOutputTokens=evaluationOptions?.maxOutputTokens??SCAN_MAX_OUTPUT;
+  if(!Number.isSafeInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>SCAN_MAX_OUTPUT)throw new Error('Plafond de sortie invalide.');
   const file: InvoiceFile = validateInvoiceFile(suppliedFile), model = SCAN_MODEL;
   assertGeminiModel(model);
   const provider = async (body: Record<string, unknown>, signal: AbortSignal) => {
@@ -110,7 +110,7 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
   };
   const parse = (response: any) => {
     const candidate = response?.candidates?.[0];
-    if (candidate?.finishReason !== 'STOP') throw new Error('Lecture incomplète. Complète le justificatif manuellement.');
+    if (candidate?.finishReason !== 'STOP') throw new ScanReadCutError(candidate?.finishReason ?? null);
     const raw = candidate.content?.parts?.filter((part: any) => part.thought !== true && typeof part.text === 'string').map((part: any) => part.text).join('');
     if (!raw || raw.length > 45000) throw new Error('Lecture non exploitable.');
     const decoded = JSON.parse(raw);
@@ -125,34 +125,44 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
   });
   const reviewed = await runBudgetedInvoiceScan(uid, file, async generate => {
     const deadline = AbortSignal.timeout(100_000);
-    const read = (prompt: string) => generate(body(TASKS.scanInvoice.system, prompt, TASKS.scanInvoice.schema),
-      AbortSignal.any([deadline, AbortSignal.timeout(45_000)])).then(parse).then(normalizeInvoiceScan);
+    // LE4 : une ligne de journal par lecture (durée, jetons, finishReason, coupée ou non), écrite AVANT le parsing ; aucun contenu de facture.
+    const cause = (reason: any): CauseCoupure | null => reason instanceof ScanReadCutError ? 'sortie' : reason?.name === 'AbortError' || reason?.name === 'TimeoutError' ? 'delai' : null;
+    const read = (prompt: string, lecture: number, etape: 'parallele' | 'troisieme') => {
+      const started = Date.now();
+      return generate(body(TASKS.scanInvoice.system, prompt, TASKS.scanInvoice.schema), AbortSignal.any([deadline, AbortSignal.timeout(45_000)])).then(
+        response => { logger.info('Lecture de facture', ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response })); return normalizeInvoiceScan(parse(response)); },
+        error => { logger.warn('Lecture de facture en échec', { lecture, etape, elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
+    };
     // Both see only the original. Await every in-flight call before closing the budget ledger.
     const attempts = await Promise.allSettled([
-      read('Transcris tout le justificatif joint, en-tête, totaux et chaque ligne, dans l’ordre du document. Contrôle les chiffres et les signes des remises.'),
-      read('Effectue une lecture indépendante complète du justificatif joint. Vérifie en priorité fournisseur, date, référence, devise, HT, TVA, TTC puis chaque article dans l’ordre imprimé. Distingue achat durable, réparation et consommable. Ne paraphrase pas les désignations.')
+      read('Transcris tout le justificatif joint, en-tête, totaux et chaque ligne, dans l’ordre du document. Contrôle les chiffres et les signes des remises.', 1, 'parallele'),
+      read('Effectue une lecture indépendante complète du justificatif joint. Vérifie en priorité fournisseur, date, référence, devise, HT, TVA, TTC puis chaque article dans l’ordre imprimé. Distingue achat durable, réparation et consommable. Ne paraphrase pas les désignations.', 2, 'parallele')
     ]);
     const readings = attempts.flatMap(attempt => attempt.status === 'fulfilled' ? [attempt.value] : []);
     if (!readings.length) throw (attempts[0] as PromiseRejectedResult).reason;
     if (readings.length === 1) {
-      const finding = 'La double lecture n’a pas abouti. Vérifie les informations et les montants sur le justificatif.';
-      return { ...readings[0], review:{ status:'unavailable', readers:1, correctedFields:[], findings:[finding] },
-        issues:[...readings[0].issues, finding] };
+      // Une lecture coupée se dit telle quelle (limite de sortie ou délai) : jamais une facture vérifiée.
+      const failed = attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult | undefined, why = cause(failed?.reason);
+      const finding = why ? phraseCoupure(why) : 'La double lecture n’a pas abouti. Vérifie les informations et les montants sur le justificatif.';
+      const single = finirUneLecture(readings[0]);
+      return { ...single, review:{ status:'unavailable', readers:1, correctedFields:[], findings:[finding] },
+        ...(why ? { points:[...single.points, pointLectureCoupee(why, finding)] } : {}), issues:[...single.issues, finding] };
     }
     let reconciled = reconcileInvoiceVision(readings);
-    if (reconciled.needsCorrection && !deadline.aborted) {
-      try {
+    if (reconciled.needsCorrection) {
+      const abouti = 'Le contrôle complémentaire n’a pas abouti. Les divergences restent à vérifier sur le justificatif.';
+      if (deadline.aborted) ajouterCoupure(reconciled.result as any, 'delai-saute', abouti);
+      else try {
         // No competing amounts or classifications are disclosed: a third independent vote.
-        const correction: InvoiceScanResult = await read('Troisième contrôle attentif du document original : relis les petites lignes, séparateurs décimaux, signes, totaux, quantités, unités et la nature achat durable/réparation/consommable. Transcris de nouveau TOUS les champs et lignes dans leur ordre imprimé, avec les désignations exactes. Ne calcule aucune valeur absente.');
+        const correction: InvoiceScanResult = await read('Troisième contrôle attentif du document original : relis les petites lignes, séparateurs décimaux, signes, totaux, quantités, unités et la nature achat durable/réparation/consommable. Transcris de nouveau TOUS les champs et lignes dans leur ordre imprimé, avec les désignations exactes. Ne calcule aucune valeur absente.', 3, 'troisieme');
         reconciled = reconcileInvoiceVision([...readings, correction]);
-      } catch {
-        const finding = 'Le contrôle complémentaire n’a pas abouti. Les divergences restent à vérifier sur le justificatif.';
-        reconciled.review.findings.push(finding);
+      } catch (error) {
+        ajouterCoupure(reconciled.result as any, cause(error) ?? 'delai-saute', abouti);
       }
     }
     return { ...reconciled.result, review:reconciled.review,
       issues:[...new Set([...reconciled.result.issues, ...reconciled.review.findings])] };
-  }, provider);
+  }, provider, { degraded: (result: any) => result?.review?.status === 'unavailable' && Array.isArray(result?.points) && result.points.some((p: any) => p.code === 'lecture-coupee') });
   return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash };
 }
 

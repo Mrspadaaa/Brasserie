@@ -1,0 +1,31 @@
+{
+ "cas": "hazy-agrumes",
+ "visee": {
+  "citrus": 66.66666666666667,
+  "cran": 33.33333333333333,
+  "kInitial": 2,
+  "kFinal": 1
+ },
+ "lecture": {
+  "groupes": [
+   {
+    "id": "meme-0",
+    "titre": "même effet sur tes objectifs20 gwhirlpoolclasser par l’IA",
+    "nbLignes": 4,
+    "texte": "même effet sur tes objectifs20 gwhirlpoolclasser par l’IA+1 cranarômeCitra 12,5%◇lui seul : fruit sucré◇arômeNectaron 10,8%◇lui seul : nectar◇mixteSultana (Dena"
+   },
+   {
+    "id": "levure",
+    "titre": "Changer de levurelevureestimé",
+    "nbLignes": 2,
+    "texte": "Changer de levurelevureestiméLalBrew Pomonaelle : pêche, POF négativeLalBrew Verdant IPAelle : abricot dominant, POF négative"
+   }
+  ],
+  "cartes": [
+   "Plus agrumesApproche"
+  ],
+  "dir": "{\"citrus\":1}",
+  "apercu": "IBU26OG1,058EBC8Au styleAbsolu?Carte : le verdict de la meilleure voie qui reste au style ; Atteint, la visée ; Approche, la moitié du chemin.Barres : à droite de l’axe, ce qui monte ; à gauche, ce qui baisse ; tirets, la visée ; trait fin, jusqu’au haut du style 21C ; orangé, hors du style ; hachures, effet non établi.Sous un picto : un trait par cran du style, puis, en creux, les crans qui manquent jusqu’au plus grand du groupe ; toucher le picto dit sa famille et sa valeur. Cerclés : tes objectifs.Usage : amer, arôme ou mixte ; souligné en pointillé, déduit de l’α. Appui long sur une voie : sa fiche.BarresRadarPlus agrumesApprochemême effet sur tes objectifs20 gwhirlpoolclasser par l’IA+1"
+ },
+ "erreurs": []
+}

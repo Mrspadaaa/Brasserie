@@ -1,0 +1,644 @@
+{
+ "documentType": "invoice",
+ "documentTypeLu": "invoice",
+ "documentTypeRetenu": "invoice",
+ "proForma": true,
+ "paymentEvidence": "paid",
+ "fieldWarnings": [
+  {
+   "field": "tvaAmount",
+   "message": "Les lectures ne concordent pas (2,80 / 4,15). Vérifie cette valeur sur le document."
+  },
+  {
+   "field": "documentType",
+   "message": "Intitulé 'Pro-Forma Rechnung (Online Payment)'"
+  },
+  {
+   "field": "tvaRate",
+   "message": "Multiples taux de TVA appliqués (N 8.1% et R 2.6%)"
+  },
+  {
+   "field": "amountHT",
+   "message": "Montant HT non spécifié explicitement hors taxes cumulé"
+  },
+  {
+   "field": "invoiceNumber",
+   "message": "Le numéro 372765 est imprimé sous le titre 'Pro-Forma Rechnung (Online Payment)'."
+  }
+ ],
+ "vendor": "Brau- und Rauchshop GmbH",
+ "date": "27.04.2026",
+ "currency": "CHF",
+ "invoiceNumber": "372765",
+ "orderNumber": "Onlinebestellung-686863",
+ "amountHT": null,
+ "tvaRate": null,
+ "tvaAmount": 2.8,
+ "amountTTC": 86.5,
+ "vat": [
+  {
+   "code": "N",
+   "rate": 0.081,
+   "base": 26.2,
+   "amount": 1.95
+  },
+  {
+   "code": "R",
+   "rate": 0.026,
+   "base": 84.2,
+   "amount": 2.2
+  }
+ ],
+ "printedLineCount": 23,
+ "linesLost": 0,
+ "category": "brassage",
+ "subcategory": "",
+ "description": "Achat de malts, houblons, levures et suppléments de mouture",
+ "items": [
+  {
+   "id": "line-1",
+   "name": "Maris Otter, Kg",
+   "kind": "stock",
+   "quantity": 6,
+   "unit": "Kg",
+   "price": 2.3,
+   "amountTTC": 13.8,
+   "reference": "MA0221",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0221 Maris Otter, Kg 6 Kg R 2.30 13.80 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-2",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 6,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.6,
+   "reference": "ISHOP-SCHROT",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "ISHOP-SCHROT Zuschlag Schrotung 6 Kg R 0.10 0.60 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-3",
+   "name": "Gerstenflocken, 1 Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 2.4,
+   "amountTTC": 2.4,
+   "reference": "MA0027",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0027 Gerstenflocken, 1 Kg 1 Kg R 2.40 2.40 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-4",
+   "name": "Röstgerste, Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 1.8,
+   "amountTTC": 1.8,
+   "reference": "MA0055",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0055 Röstgerste, Kg 1 Kg R 1.80 1.80 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-5",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.1,
+   "reference": "ISHOP-SCHROT",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "ISHOP-SCHROT Zuschlag Schrotung 1 Kg R 0.10 0.10 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-6",
+   "name": "CARAMÜNCH® Typ 2 Kg",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 1.75,
+   "amountTTC": 1.75,
+   "reference": "MA0333",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0333 CARAMÜNCH® Typ 2 Kg 1 Kg R 1.75 1.75 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-7",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 1,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.1,
+   "reference": "ISHOP-SCHROT",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "ISHOP-SCHROT Zuschlag Schrotung 1 Kg R 0.10 0.10 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-8",
+   "name": "Target 11.3%",
+   "kind": "stock",
+   "quantity": 40,
+   "unit": "g",
+   "price": 0.04,
+   "amountTTC": 1.6,
+   "reference": "HO0102",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO0102 Target 11.3% 40 g R 0.040 1.60 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 11.3,
+   "alphaPctLu": 11.3
+  },
+  {
+   "id": "line-9",
+   "name": "Goldings East Kent 5.5%",
+   "kind": "stock",
+   "quantity": 20,
+   "unit": "g",
+   "price": 0.04,
+   "amountTTC": 0.8,
+   "reference": "HO0017",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO0017 Goldings East Kent 5.5% 20 g R 0.040 0.80 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 5.5,
+   "alphaPctLu": 5.5
+  },
+  {
+   "id": "line-10",
+   "name": "LALLEMAND Windsor 11g",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Stk",
+   "price": 4.5,
+   "amountTTC": 9,
+   "reference": "HE0211",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HE0211 LALLEMAND Windsor 11g 2 Stk R 4.50 9.00 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-11",
+   "name": "Safale BE-256 (Abbaye) 11.5 g",
+   "kind": "stock",
+   "quantity": 1,
+   "unit": "Stk",
+   "price": 4.4,
+   "amountTTC": 4.4,
+   "reference": "HE0203",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HE0203 Safale BE-256 (Abbaye) 11.5 g 1 Stk N 4.40 4.40 (page 1)",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-12",
+   "name": "Safale US-05 11,5g",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Stk",
+   "price": 3.4,
+   "amountTTC": 6.8,
+   "reference": "HE0102",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HE0102 Safale US-05 11,5g 2 Stk N 3.40 6.80 (page 1)",
+   "ambiguity": "",
+   "vatCode": "N",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-13",
+   "name": "Pilsner Malz, Kg",
+   "kind": "stock",
+   "quantity": 5,
+   "unit": "Kg",
+   "price": 1.5,
+   "amountTTC": 7.5,
+   "reference": "MA0007",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0007 Pilsner Malz, Kg 5 Kg R 1.50 7.50 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-14",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 5,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.5,
+   "reference": "ISHOP-SCHROT",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "ISHOP-SCHROT Zuschlag Schrotung 5 Kg R 0.10 0.50 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-15",
+   "name": "Weizenmalz hell, Kg",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Kg",
+   "price": 1.55,
+   "amountTTC": 3.1,
+   "reference": "MA0010",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0010 Weizenmalz hell, Kg 2 Kg R 1.55 3.10 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-16",
+   "name": "Zuschlag Schrotung",
+   "kind": "service",
+   "quantity": 2,
+   "unit": "Kg",
+   "price": 0.1,
+   "amountTTC": 0.2,
+   "reference": "ISHOP-SCHROT",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "ISHOP-SCHROT Zuschlag Schrotung 2 Kg R 0.10 0.20 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-17",
+   "name": "Haferflocken, 1 Kg",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Kg",
+   "price": 2.5,
+   "amountTTC": 5,
+   "reference": "MA0034",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "MA0034 Haferflocken, 1 Kg 2 Kg R 2.50 5.00 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-18",
+   "name": "Galaxy 17.2%",
+   "kind": "stock",
+   "quantity": 60,
+   "unit": "g",
+   "price": 0.08,
+   "amountTTC": 4.8,
+   "reference": "HO0046",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO0046 Galaxy 17.2% 60 g R 0.080 4.80 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 17.2,
+   "alphaPctLu": 17.2
+  },
+  {
+   "id": "line-19",
+   "name": "Nelson Sauvin ™ 9.6%",
+   "kind": "stock",
+   "quantity": 100,
+   "unit": "g",
+   "price": 0.08,
+   "amountTTC": 8,
+   "reference": "HO1907",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO1907 Nelson Sauvin ™ 9.6% 100 g R 0.080 8.00 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 9.6,
+   "alphaPctLu": 9.6
+  },
+  {
+   "id": "line-20",
+   "name": "Sabro® 13.4%",
+   "kind": "stock",
+   "quantity": 30,
+   "unit": "",
+   "price": 0.07,
+   "amountTTC": 2.1,
+   "reference": "HO2026",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO2026 Sabro® 13.4% 30 g R 0.070 2.10 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 13.4,
+   "alphaPctLu": 13.4
+  },
+  {
+   "id": "line-21",
+   "name": "LALLEMAND Verdant IPA 11g",
+   "kind": "stock",
+   "quantity": 2,
+   "unit": "Stk",
+   "price": 4.7,
+   "amountTTC": 9.4,
+   "reference": "HE2036",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HE2036 LALLEMAND Verdant IPA 11g 2 Stk R 4.70 9.40 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-22",
+   "name": "Hallertauer Blanc 9.5% CH",
+   "kind": "stock",
+   "quantity": 30,
+   "unit": "g",
+   "price": 0.045,
+   "amountTTC": 1.35,
+   "reference": "HO17041",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO17041 Hallertauer Blanc 9.5% CH 30 g R 0.045 1.35 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 9.5,
+   "alphaPctLu": 9.5
+  },
+  {
+   "id": "line-23",
+   "name": "Motueka ™ 8.1%",
+   "kind": "stock",
+   "quantity": 20,
+   "unit": "g",
+   "price": 0.07,
+   "amountTTC": 1.4,
+   "reference": "HO2022",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "HO2022 Motueka ™ 8.1% 20 g R 0.070 1.40 (page 1)",
+   "ambiguity": "",
+   "vatCode": "R",
+   "alphaPct": 8.1,
+   "alphaPctLu": 8.1
+  }
+ ],
+ "issues": [
+  "TVA imprimée incohérente : 4 contrôle(s) par taux ne se recoupent pas (somme-bases lu 110,40 pour 86,50 ; base-par-code:N lu 26,20 pour 11,20). Rien n'est corrigé, le HT n'est pas déduit.",
+  "Sabro® 13.4% : quantité ou unité manquante; aucun stock automatique."
+ ],
+ "points": [
+  {
+   "code": "tva-incoherente",
+   "gravite": "ecart",
+   "origine": "controle",
+   "enjeu": "info",
+   "bloque": false,
+   "champ": "vat",
+   "champs": [
+    "vat",
+    "tvaAmount",
+    "amountTTC"
+   ],
+   "ligne": null,
+   "cle": "tva-incoherente:-:vat",
+   "regle": "TVA imprimée : taux, bases, montants et lignes se recoupent",
+   "lu": 11040,
+   "calcule": 8650,
+   "ecart": 2390,
+   "unite": "centimes",
+   "message": "TVA imprimée incohérente : 4 contrôle(s) par taux ne se recoupent pas (somme-bases lu 110,40 pour 86,50 ; base-par-code:N lu 26,20 pour 11,20). Rien n'est corrigé, le HT n'est pas déduit.",
+   "details": [
+    {
+     "relation": "somme-bases",
+     "lu": 11040,
+     "calcule": 8650,
+     "ecart": 2390
+    },
+    {
+     "relation": "base-par-code:N",
+     "lu": 2620,
+     "calcule": 1120,
+     "ecart": 1500,
+     "code": "N"
+    },
+    {
+     "relation": "base-par-code:R",
+     "lu": 8420,
+     "calcule": 7530,
+     "ecart": 890,
+     "code": "R"
+    },
+    {
+     "relation": "somme-tva",
+     "lu": 280,
+     "calcule": 415,
+     "ecart": -135
+    },
+    {
+     "relation": "tva-du-taux:R",
+     "lu": 220,
+     "calcule": 213,
+     "ecart": 7,
+     "code": "R",
+     "arrondiPossible": true
+    },
+    {
+     "relation": "tva-du-taux:N",
+     "lu": 195,
+     "calcule": 196,
+     "ecart": -1,
+     "code": "N",
+     "arrondiPossible": true
+    }
+   ],
+   "source": "contrôle",
+   "pese": true,
+   "signature": "11040|8650||"
+  },
+  {
+   "code": "unite-absente",
+   "gravite": "inverifiable",
+   "origine": "controle",
+   "enjeu": "stock",
+   "bloque": false,
+   "champ": "items",
+   "champs": [
+    "items.20.quantity",
+    "items.20.unit"
+   ],
+   "ligne": 20,
+   "cle": "unite-absente:20:items",
+   "regle": "une quantité garde l’unité imprimée ; sans unité lisible, l’unité est à préciser par le brasseur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "luTexte": "",
+   "message": "Sabro® 13.4% : quantité ou unité manquante; aucun stock automatique.",
+   "source": "contrôle",
+   "pese": true,
+   "signature": "|||"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "info",
+   "bloque": false,
+   "champ": "tvaAmount",
+   "champs": [
+    "tvaAmount"
+   ],
+   "ligne": null,
+   "cle": "lectures-divergentes:-:tvaAmount",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "nombre",
+   "message": "Montant TVA : lectures divergentes (2,80 / 4,15), vérifier le justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": 2.8,
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": 4.15,
+     "retenue": false
+    }
+   ],
+   "pese": true,
+   "signature": "|||1:2.8,2:4.15"
+  }
+ ],
+ "controls": {
+  "lines": {
+   "checked": 23,
+   "failed": 0,
+   "skipped": 0,
+   "skippedIds": []
+  },
+  "sum": {
+   "statut": "ok",
+   "base": "TTC"
+  },
+  "vat": {
+   "statut": "ecart",
+   "base": "TTC"
+  },
+  "totals": {
+   "statut": "non-verifiable"
+  }
+ },
+ "rejets": [],
+ "review": {
+  "status": "disputed",
+  "findings": [
+   "Montant TVA : lectures divergentes (2,80 / 4,15), vérifier le justificatif.",
+   "TVA imprimée incohérente : 4 contrôle(s) par taux ne se recoupent pas (somme-bases lu 110,40 pour 86,50 ; base-par-code:N lu 26,20 pour 11,20). Rien n'est corrigé, le HT n'est pas déduit.",
+   "Sabro® 13.4% : quantité ou unité manquante; aucun stock automatique."
+  ],
+  "readers": 2,
+  "correctedFields": []
+ },
+ "remarques": [
+  {
+   "champ": "documentType",
+   "lectures": [
+    1
+   ],
+   "message": "Intitulé 'Pro-Forma Rechnung (Online Payment)'"
+  },
+  {
+   "champ": "tvaRate",
+   "lectures": [
+    1,
+    2
+   ],
+   "message": "Multiples taux de TVA appliqués (N 8.1% et R 2.6%)"
+  },
+  {
+   "champ": "amountHT",
+   "lectures": [
+    1
+   ],
+   "message": "Montant HT non spécifié explicitement hors taxes cumulé"
+  },
+  {
+   "champ": "invoiceNumber",
+   "lectures": [
+    1,
+    2
+   ],
+   "message": "Le numéro 372765 est imprimé sous le titre 'Pro-Forma Rechnung (Online Payment)'."
+  }
+ ]
+}

@@ -105,11 +105,17 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
     fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
     const due = within(screen.getByRole('heading', { name: 'Échéances et estimations à venir' }).closest('section')!);
-    expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*400/ })).toBeVisible();
+    // TA4 : la facture « à payer » saisie sans échéance ne remplace plus la prévision (qui reste entière) et se dit sur la ligne « Échéance à préciser ».
+    if (paymentStatus === 'paid') expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*400/ })).toBeVisible();
+    else {
+      expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*1[\s'’]?200/ })).toBeVisible();
+      expect(screen.getByText(/Échéance à préciser : 1 pièce/)).toHaveTextContent(/800,00.*à payer/);
+    }
     expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/2[\s'’]?800,00/);
     fireEvent.click(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ }));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent(paymentStatus === 'paid' ? '0,00' : '800,00');
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/3[\s'’]?200,00/);
+    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('0,00');
+    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(paymentStatus === 'paid' ? /3[\s'’]?200,00/ : /4[\s'’]?000,00/);
+    if (paymentStatus === 'unpaid') expect(screen.getByText(/Échéance à préciser : 1 pièce/)).toHaveTextContent(/800,00.*à payer/);
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
     fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
     fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
@@ -121,7 +127,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
 
   it('retire un projet des prévisions et garde sa facture dans les analyses et les échéances', async () => {
     const plan = hotte(); FinanceService.savePlan(plan);
-    StorageService.addTransaction({ id: 'BILL', description: 'Acompte facturé pour la hotte', date: todayISO(), category: 'materiel', subcategory: '', amountHT: 300, amountTTC: 300, tvaRate: 0, tvaAmount: 0, finance: { version: 1, kind: 'expense', amountCents: 30000, paymentStatus: 'unpaid', planId: plan.id, lines: [] } });
+    StorageService.addTransaction({ id: 'BILL', description: 'Acompte facturé pour la hotte', date: todayISO(), category: 'materiel', subcategory: '', amountHT: 300, amountTTC: 300, tvaRate: 0, tvaAmount: 0, finance: { version: 1, kind: 'expense', amountCents: 30000, paymentStatus: 'unpaid', dueDate: todayISO(), planId: plan.id, lines: [] } });
     render(<Finances/>);
     fireEvent.click(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' }));
     await waitFor(() => expect(FinanceService.getPlans()[0].status).toBe('draft'));

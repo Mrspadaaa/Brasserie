@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u4b — Nouvelle dépense · le pont en rangées (passe 2, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--sto:#4C6B2A;--stof:#EEF4E6;--fin:#1F64A3;--finf:#E8F0F9;--att:#7F5B10;--atta:#9C7020;--attf:#FBF0D8;--alerte:#A8291F;--alertef:#F9E1DF;--lev:#6A4FB0;--levf:#F0ECF9;--malt:#E0A02E;--hop:#5E8F45;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;text-align:left}
+a{color:var(--fin)}
+::selection{background:#F2C14E66}
+:focus-visible{outline:2px solid var(--fin);outline-offset:1px}
+[hidden]{display:none!important}
+.u4b-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.u4b-ic{display:inline-flex;width:16px;height:16px;flex-shrink:0}
+.u4b-sep::before{content:"·";margin:0 4px}
+.u4b-ko{color:var(--alerte);font-weight:600}
+.u4b-okt{color:var(--sto);font-weight:600}
+.u4b-wrap{max-width:480px;margin:0 auto;padding-bottom:64px;min-height:100vh}
+.u4b-main{min-width:0}
+
+/* l'en-tête de la feuille : gris, le total, le compteur, la barre des 23 montants, le tampon */
+.u4b-hd{background:var(--panel);padding:0 10px 8px;border-radius:0 0 16px 16px}
+.u4b-t{display:flex;align-items:center;height:36px}
+.u4b-t h1{font-size:14px;font-weight:700;color:var(--t0)}
+.u4b-x{margin-left:auto;width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t0)}
+.u4b-x:hover{background:var(--haut)}
+.u4b-v{display:flex;align-items:center;gap:8px}
+.u4b-doc{width:30px;height:38px;border-radius:10px;border:1px solid var(--bordm);overflow:hidden;background:#fff;flex-shrink:0;padding:0}
+.u4b-doc img{display:block;width:100%;height:100%}
+.u4b-tw{display:grid;gap:2px;min-width:0}
+.u4b-tot{font-family:var(--mono);font-size:28px;font-weight:600;line-height:1;color:var(--t0);border-bottom:1.5px dotted var(--trait);justify-self:start}
+.u4b-tot small{font-size:12px;color:var(--t2);font-weight:500;margin-left:4px}
+.u4b-tot .u4b-in{font-size:16px;width:6em}
+.u4b-who{font-size:12px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u4b-who b{font-weight:600;color:var(--t0)}
+.u4b-cpt{margin-left:auto;display:grid;justify-items:end;gap:4px;padding:4px 8px;border-radius:10px;background:#fff;border:1px solid var(--bord);flex-shrink:0}
+.u4b-cpt>span:first-child{font-weight:700;color:var(--t0);white-space:nowrap}
+.u4b-cpt:hover{border-color:var(--trait)}
+.u4b-dots{display:flex;gap:3px}
+.u4b-dots i{width:9px;height:9px;border-radius:50%;background:var(--atta)}
+.u4b-dots i.u4b-a{background:var(--fin)}
+.u4b-dots i.u4b-f{background:#A9C98A}
+.u4b-cpt.u4b-fini>span:first-child{color:var(--sto)}
+.u4b-barw{margin-top:8px;padding:6px 0;cursor:pointer}
+.u4b-bar{position:relative;height:10px;border-radius:999px;overflow:hidden;outline:1.5px solid var(--t1);outline-offset:1px;display:flex;overflow:visible;background:#fff}
+.u4b-bar span{height:100%;border-right:1px solid #fff;flex-shrink:0}
+.u4b-bar span.u4b-d{background-image:repeating-linear-gradient(135deg,transparent 0 2px,rgba(255,255,255,.75) 2px 4px)!important}
+.u4b-bar span.u4b-on{box-shadow:0 0 0 2px var(--t0)}
+.u4b-bar .u4b-over{position:absolute;top:-3px;bottom:-3px;background:repeating-linear-gradient(135deg,var(--alerte) 0 2px,transparent 2px 4px)}
+.u4b-tam{display:inline-flex;align-items:center;gap:4px;min-height:26px;padding:0 8px;border:1.5px solid var(--sto);border-radius:10px;color:var(--sto);font-weight:600;font-size:14px;transform:rotate(-1.2deg);background:#fff}
+.u4b-tam.u4b-bad{border-color:var(--alerte);color:var(--alerte)}
+.u4b-tam .u4b-chv{transition:transform .15s}
+.u4b-tam[aria-expanded="true"] .u4b-chv{transform:rotate(180deg)}
+.u4b-ill{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:var(--haut);font-size:12px;color:var(--t1);margin-left:8px}
+.u4b-steps{display:flex;gap:8px;margin-top:8px;font-size:12px}
+.u4b-steps span{display:flex;align-items:center;gap:4px}
+.u4b-err{margin-top:8px;padding:6px 8px;border-radius:10px;background:var(--alertef);color:var(--alerte);font-weight:600;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+
+/* l'argent : deux pastilles, leur calcul au toucher */
+.u4b-ar{display:flex;gap:6px;padding:8px 10px 0;flex-wrap:wrap}
+.u4b-ch{min-height:32px;padding:2px 10px 2px 6px;border-radius:999px;border:1.5px dashed var(--atta);background:var(--attf);color:var(--att);display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600}
+.u4b-ch i{width:10px;height:10px;border-radius:50%;background:var(--fin)}
+.u4b-ch.u4b-ok{border:1.5px solid var(--sto);background:var(--stof);color:var(--sto)}
+.u4b-ch.u4b-ok i{background:var(--sto)}
+.u4b-ch[aria-expanded="true"]{border-style:solid;border-color:var(--t0);color:var(--t0)}
+.u4b-ard{margin:6px 10px 0;padding:8px 10px;border-radius:16px;background:var(--attf);display:grid;gap:8px}
+.u4b-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.u4b-tl{display:grid;gap:2px;align-content:start;padding:6px;border-radius:10px;border:1.5px solid var(--atta);background:#fff;min-height:56px}
+.u4b-tl b{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--t0)}
+.u4b-tl span{font-size:12px;color:var(--t1)}
+.u4b-tl.u4b-prop{border:1.5px dashed var(--sto);background:var(--stof)}
+.u4b-tl.u4b-prop span{color:var(--sto);font-weight:600}
+.u4b-tl.u4b-ro{border:1px solid var(--bord);background:var(--panel);cursor:default}
+.u4b-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.u4b-two div{padding:6px 8px;border-radius:10px;background:#fff;display:grid;gap:2px}
+.u4b-two span{font-size:12px;color:var(--t2)}
+.u4b-two b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.u4b-two .u4b-sup{border:1.5px dashed var(--atta)}
+.u4b-calc{font-size:12px;color:var(--t1)}
+.u4b-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.u4b-b{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t0)}
+.u4b-b.u4b-k{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.u4b-b.u4b-pp{border:1.5px dashed var(--sto);color:var(--sto);font-weight:600;background:var(--stof)}
+.u4b-in{font-family:var(--mono);font-size:16px;height:28px;width:7em;border:1px solid var(--bordm);border-radius:10px;padding:0 6px;background:#fff;color:var(--t0)}
+.u4b-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.u4b-seg button{min-height:28px;padding:0 10px;background:#fff;font-size:14px}
+.u4b-seg [aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+
+/* le pont, en rangées : facture | lien | effet au stock */
+.u4b-pont{position:relative;margin:10px 10px 0;padding:6px 4px 6px;background:var(--panel);border-radius:16px}
+.u4b-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+.u4b-g3{display:grid;grid-template-columns:minmax(0,1fr) 20px 132px;align-items:center}
+.u4b-cap{height:20px;font-size:12px;font-weight:600;color:var(--t2);padding:0 6px}
+.u4b-cap span:last-child{display:flex;align-items:center;gap:4px;color:var(--sto)}
+.u4b-fam{display:flex;align-items:center;gap:6px;width:100%;min-height:24px;margin-top:4px;padding:0 6px;font-size:12px;font-weight:600;color:var(--t2);border-radius:10px}
+.u4b-fam i{width:8px;height:8px;border-radius:50%}
+.u4b-fam b{font-family:var(--mono);font-weight:600;color:var(--t0);margin-left:auto}
+.u4b-fam .u4b-chv{color:var(--t2)}
+.u4b-fam[aria-expanded="true"] .u4b-chv{transform:rotate(180deg)}
+.u4b-fam:hover{background:#fff}
+.u4b-r{min-height:32px;margin-top:2px}
+.u4b-fl{position:relative;z-index:3;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:4px;height:30px;padding:0 6px;border-radius:10px;background:#fff;font-size:14px;color:var(--t0);width:100%}
+.u4b-fl:hover{box-shadow:inset 0 0 0 1px var(--trait)}
+.u4b-r.u4b-pt .u4b-fl{background:var(--attf);box-shadow:inset 0 0 0 1.5px var(--atta)}
+.u4b-r.u4b-sel .u4b-fl,.u4b-r.u4b-sel .u4b-st{outline:2px solid var(--t0);outline-offset:-2px}
+.u4b-q{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;white-space:nowrap}
+.u4b-q small{font-size:12px;color:var(--t2);margin-left:2px}
+.u4b-q .u4b-qu{color:var(--alerte);font-weight:700;margin-left:2px}
+.u4b-nm{display:flex;align-items:baseline;min-width:0;white-space:nowrap}
+.u4b-nm>span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.u4b-nm em{flex-shrink:0;font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2);margin-left:4px}
+.u4b-nm em.u4b-emok{color:var(--sto);font-family:var(--sans);font-weight:600}
+.u4b-mt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;text-align:right;min-width:38px}
+.u4b-sub .u4b-fl{height:26px;margin-left:14px;width:calc(100% - 14px);background:transparent;box-shadow:inset 0 0 0 1.5px var(--atta);font-size:14px}
+.u4b-r.u4b-sub{min-height:28px}
+.u4b-st{position:relative;z-index:3;display:flex;align-items:center;gap:4px;height:30px;padding:0 6px;border-radius:10px;border:1px solid #CFDDBE;background:var(--stof);font-size:12px;color:var(--t0);white-space:nowrap;overflow:hidden;width:100%}
+.u4b-st>span{overflow:hidden;text-overflow:ellipsis}
+.u4b-2l{display:grid;line-height:1.1}
+.u4b-2l .u4b-nv{font-size:12px}
+.u4b-st b{font-family:var(--mono);font-weight:600;color:var(--sto)}
+.u4b-st em{font-style:normal;font-family:var(--mono);color:var(--t2)}
+.u4b-st .u4b-nv{color:var(--fin);font-weight:600}
+.u4b-st.u4b-k-nv{border:1.5px dashed var(--fin);background:var(--finf)}
+.u4b-st.u4b-k-nv b{color:var(--fin)}
+.u4b-st.u4b-k-bis{border:1.5px dashed var(--lev);background:var(--levf);color:var(--lev);font-weight:600}
+.u4b-st.u4b-k-bis.u4b-ok{border-style:solid}
+.u4b-st.u4b-k-ex{border:1.5px dashed var(--bordm);background:transparent;color:var(--t2);height:26px}
+.u4b-st.u4b-k-ex.u4b-ok{border:1.5px solid var(--sto);background:var(--stof);color:var(--t0)}
+.u4b-st.u4b-k-un{border:1.5px dashed var(--atta);background:var(--attf)}
+.u4b-st.u4b-k-un b{color:var(--att)}
+.u4b-st.u4b-k-sv{border:1px dashed var(--bordm);background:transparent;color:var(--t2)}
+.u4b-r.u4b-pre{min-height:28px}
+.u4b-pf{display:flex;align-items:center;gap:6px;padding:6px 2px 0}
+.u4b-pf .u4b-b{min-height:26px;font-size:12px;border-style:dashed}
+.u4b-pf .u4b-det{margin-left:auto;font-family:var(--mono);font-weight:600;color:var(--t0);padding-right:4px}
+.u4b-pf .u4b-det.u4b-bad{color:var(--alerte)}
+.u4b-sk{height:30px;border-radius:10px;background:linear-gradient(90deg,#fff 0 40%,#EDEDED 40% 60%,#fff 60%);background-size:200% 100%;animation:u4b-sk 1.2s linear infinite}
+@keyframes u4b-sk{to{background-position:-200% 0}}
+.u4b-sim{margin:6px 12px 0;font-size:12px;color:var(--t2)}
+
+/* le plateau d'une ligne, sous la ligne */
+.u4b-insp{position:relative;z-index:3;margin:4px 0 6px;border:1.5px solid var(--t0);border-radius:16px;padding:8px 10px;display:grid;gap:8px;background:#fff}
+.u4b-ih{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1)}
+.u4b-ih .u4b-x{width:28px;height:28px}
+.u4b-ih b{font-size:14px;color:var(--t0)}
+.u4b-edit{border-bottom:1.5px dotted var(--trait);font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--t0);min-height:24px;padding:0 2px}
+.u4b-big{font-size:14px;color:var(--t0)}
+.u4b-mtab{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 10px;font-size:14px;align-items:center}
+.u4b-mtab span{color:var(--t1)}
+.u4b-mtab b{font-family:var(--mono);font-weight:500;color:var(--t2);text-align:right}
+.u4b-mtab strong{font-family:var(--mono);font-weight:600;color:var(--sto);text-align:right}
+.u4b-row-sel{height:28px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 6px;font-size:16px;max-width:100%}
+
+/* la fiche */
+.u4b-fi{margin:12px 10px 0;border-radius:16px;background:var(--panel);overflow:hidden}
+.u4b-fs{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;cursor:pointer;list-style:none;font-weight:600;color:var(--t0)}
+.u4b-fs::-webkit-details-marker{display:none}
+.u4b-fsv{margin-left:auto;font-size:12px;font-weight:400;color:var(--t1)}
+.u4b-fi[open] .u4b-fs .u4b-chv{transform:rotate(180deg)}
+.u4b-fi[open] .u4b-fs{border-bottom:1px solid #fff}
+.u4b-fr{display:flex;align-items:center;gap:8px;min-height:34px;padding:4px 10px;border-top:1px solid #fff;flex-wrap:wrap}
+.u4b-fr:first-child{border-top:0}
+.u4b-fr>span:first-child{width:84px;flex-shrink:0;font-size:12px;color:var(--t2)}
+.u4b-fr input,.u4b-fr select{height:28px;border:1px solid var(--bord);border-radius:10px;background:#fff;padding:0 6px;font-size:16px;min-width:0}
+.u4b-tag{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;border:1.5px dashed var(--atta);background:var(--attf);color:var(--att);font-size:12px;font-weight:600;white-space:nowrap}
+.u4b-tag.u4b-ok{border:1.5px solid var(--sto);background:var(--stof);color:var(--sto)}
+.u4b-tag.u4b-gr{border:1px solid var(--bord);background:#fff;color:var(--t1);font-weight:400}
+.u4b-lnk{color:var(--fin);font-weight:600;min-height:24px;padding:0 4px}
+
+/* la colonne de droite à 1280 : les 6 points, la preuve, la référence ; au téléphone, la preuve seule, au toucher */
+.u4b-side{display:grid;gap:8px;padding:0 10px}
+.u4b-pts,.u4b-ref{display:none}
+.u4b-pv{margin-top:8px;border:1.5px solid var(--sto);border-radius:16px;padding:8px 10px;display:grid;gap:6px;background:#fff}
+.u4b-pv h2,.u4b-pts h2,.u4b-ref h2{font-size:12px;font-weight:600;color:var(--t2)}
+.u4b-pvr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;align-items:start;font-size:14px}
+.u4b-pvr b{font-family:var(--mono);font-weight:600;color:var(--sto);min-width:52px}
+.u4b-pvr.u4b-gris b{color:var(--t2)}
+.u4b-pt-b{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;min-height:32px;padding:4px 8px;border-radius:10px;font-size:14px}
+.u4b-pt-b:hover{background:var(--panel)}
+.u4b-pt-b i{width:10px;height:10px;border-radius:50%;background:var(--atta)}
+.u4b-pt-b i.u4b-a{background:var(--fin)}
+.u4b-pt-b.u4b-fait{color:var(--t2)}
+.u4b-pt-b.u4b-fait i{background:#A9C98A}
+.u4b-pt-b.u4b-fait span:nth-child(2){text-decoration:line-through}
+.u4b-pt-b em{font-style:normal;font-variant-numeric:tabular-nums;font-size:12px;color:var(--t1)}
+.u4b-refl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 8px;font-size:14px}
+.u4b-refl span{color:var(--t2);font-size:12px;align-self:center}
+
+/* cartes d'état (doublon, reçu) */
+.u4b-card{margin:8px 10px 0;padding:8px 10px;border-radius:16px;display:grid;gap:6px}
+.u4b-card.u4b-dbl{border:1.5px solid var(--alerte);background:#fff}
+.u4b-card.u4b-recu{border:1.5px solid var(--sto);background:var(--stof)}
+.u4b-card h3{font-size:14px;color:var(--t0)}
+.u4b-dt{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 10px;font-size:14px}
+.u4b-dt span{font-size:12px;color:var(--t2)}
+.u4b-dt b{font-family:var(--mono);font-weight:500}
+.u4b-dt b.u4b-same{color:var(--alerte);font-weight:600}
+
+/* le pied, toujours actif */
+.u4b-pied{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--bord)}
+.u4b-pin{max-width:1120px;margin:0 auto;height:48px;display:flex;align-items:center;gap:8px;padding:0 10px;position:relative}
+.u4b-drv{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sto);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u4b-drv.u4b-off{color:var(--att)}
+.u4b-conf{margin-left:auto;min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.u4b-conf:active{transform:scale(.97)}
+.u4b-prog{position:absolute;left:0;top:-3px;height:3px;width:0;background:var(--fin);transition:width .8s ease-out}
+
+/* annexe */
+.u4b-ax{max-width:1120px;margin:24px auto 0;padding:10px 10px 80px;border-top:6px solid var(--panel)}
+.u4b-ax h2{font-size:14px;color:var(--t0);margin-bottom:6px}
+.u4b-ax ol{display:grid;gap:4px;padding-left:20px;font-size:14px}
+.u4b-ax a{font-weight:600}
+.u4b-flash{animation:u4b-fl .9s ease-out}
+@keyframes u4b-fl{from{box-shadow:0 0 0 3px var(--atta)}}
+
+@media (min-width:900px){
+  .u4b-wrap{max-width:1120px;display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:16px;align-items:start}
+  .u4b-hd{grid-column:1/-1;border-radius:0 0 24px 24px;padding:0 16px 10px}
+  .u4b-main{grid-column:1;grid-row:2}
+  .u4b-side{grid-column:2;grid-row:2;position:sticky;top:8px;padding:8px 10px 0 0}
+  .u4b-pts,.u4b-ref{display:grid;gap:4px;border:1px solid var(--bord);border-radius:16px;padding:8px 10px;background:#fff}
+  .u4b-pv{margin-top:0}
+  .u4b-pv[hidden]{display:grid!important}
+  .u4b-g3{grid-template-columns:minmax(0,1fr) 96px 200px}
+  .u4b-fref{display:none!important}
+  .u4b-tiles{grid-template-columns:repeat(4,minmax(0,140px))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head>
+<body>
+<div class="u4b-wrap" role="dialog" aria-label="Nouvelle dépense">
+  <header class="u4b-hd" id="u4b-hd">
+    <div class="u4b-t"><h1>Nouvelle dépense</h1><span class="u4b-ill" id="u4b-ill" hidden></span><button class="u4b-x" aria-label="Fermer" data-u4b-ic="x"></button></div>
+    <div class="u4b-v">
+      <button class="u4b-doc" aria-label="Voir le justificatif" data-booster="justificatif"><img alt="Justificatif 372765" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 38'%3E%3Crect width='30' height='38' fill='%23fff'/%3E%3Crect x='3' y='3' width='11' height='3' fill='%23333'/%3E%3Cg fill='%23bbb'%3E%3Crect x='3' y='10' width='24' height='1.5'/%3E%3Crect x='3' y='13' width='20' height='1.5'/%3E%3Crect x='3' y='16' width='24' height='1.5'/%3E%3Crect x='3' y='19' width='19' height='1.5'/%3E%3Crect x='3' y='22' width='24' height='1.5'/%3E%3Crect x='3' y='25' width='21' height='1.5'/%3E%3C/g%3E%3Crect x='16' y='30' width='11' height='3' fill='%23333'/%3E%3C/svg%3E"></button>
+      <div class="u4b-tw">
+        <button class="u4b-tot" data-u4b-num="tot" aria-label="Total TTC, toucher pour corriger"><span id="u4b-tot">86,50</span><small>CHF</small></button>
+        <div class="u4b-who" id="u4b-who"><b>Brau- und Rauchshop</b><span class="u4b-sep"></span><span class="u4b-m">27.04.2026</span></div>
+      </div>
+      <button class="u4b-cpt" id="u4b-cpt" data-booster="compteur-risque" aria-label="Aller au prochain point, par risque"><span><span class="u4b-m" id="u4b-cptn">6</span> à régler</span><span class="u4b-dots" id="u4b-dots"></span></button>
+    </div>
+    <div class="u4b-barw" id="u4b-barw" data-booster="barre-montants" title="Les 23 montants à l'échelle, dans le cadre du total imprimé"><div class="u4b-bar" id="u4b-bar" role="img" aria-label="Les 23 montants à l'échelle du total"></div></div>
+    <button class="u4b-tam" id="u4b-tam" data-booster="tampon-preuve" aria-expanded="false" aria-controls="u4b-pv"><span data-u4b-ic="check"></span><span id="u4b-tamt">23 lignes recoupées</span><span class="u4b-chv" data-u4b-ic="chev"></span></button>
+    <div class="u4b-steps" id="u4b-steps" hidden></div>
+    <div class="u4b-err" id="u4b-err" hidden></div>
+  </header>
+
+  <aside class="u4b-side" id="u4b-side">
+    <section class="u4b-pts" aria-label="Les 6 points, par risque"><h2>Les 6 points, par risque · argent puis stock</h2><div id="u4b-ptl"></div></section>
+    <section class="u4b-pv" id="u4b-pv" hidden aria-label="La preuve">
+      <h2>Recoupé</h2>
+      <div class="u4b-pvr"><b id="u4b-pv1">86,50</b><span id="u4b-pv1t">somme des 23 lignes = total imprimé <span class="u4b-m">86,50</span></span></div>
+      <div class="u4b-pvr"><b>23/23</b><span>quantité × prix = montant, au centime</span></div>
+      <div class="u4b-pvr"><b>2/2</b><span>lectures d'accord sur le reste</span></div>
+      <div class="u4b-pvr u4b-gris"><b>p. 2</b><span>coupée : seul son en-tête est visible ; l'argent vu sur la page 1 se recoupe en entier</span></div>
+    </section>
+    <section class="u4b-ref" aria-label="Référence et TVA"><h2>Référence et TVA</h2>
+      <div class="u4b-refl"><span>Facture</span><span class="u4b-m">372765</span><span>Commande</span><span class="u4b-m">Onlinebestellung-686863</span><span>Document</span><span>Pro-forma payée en ligne</span><span>Taux lus</span><span class="u4b-m">N 8,1 % · R 2,6 %</span><span>Bases lues</span><span class="u4b-m">26,20 · 84,20</span><span>TVA retenue</span><span id="u4b-tvar2">à régler (point 1)</span><span>HT</span><span>non imprimé</span><span>N° TVA</span><span class="u4b-m">CHE-114.012.211 MWST</span></div>
+    </section>
+  </aside>
+
+  <div class="u4b-main">
+    <div id="u4b-top"></div>
+    <div class="u4b-ar" id="u4b-ar" data-booster="argent">
+      <button class="u4b-ch" data-u4b-arg="tva" aria-expanded="false"><i></i><span id="u4b-cht">TVA <span class="u4b-m">2,80</span><span class="u4b-sep"></span><span class="u4b-m">4,15</span></span></button>
+      <button class="u4b-ch" data-u4b-arg="paye" aria-expanded="false"><i></i><span id="u4b-chp">Payé <span class="u4b-m">27.04</span> supposée</span></button>
+    </div>
+    <div class="u4b-ard" id="u4b-ard" hidden></div>
+
+    <section class="u4b-pont" id="u4b-pont" data-booster="pont-rangees" aria-label="Chaque ligne de la facture, et ce qu'elle fait au stock">
+      <svg class="u4b-svg" id="u4b-svg" aria-hidden="true"></svg>
+      <div class="u4b-cap u4b-g3"><span>Facture</span><span></span><span><span data-u4b-ic="cube"></span>Stock<span class="u4b-tag u4b-gr" style="margin-left:4px">simulé</span></span></div>
+      <div id="u4b-rows"></div>
+      <div class="u4b-pf"><button class="u4b-b" id="u4b-add">+ ligne</button><button class="u4b-b" id="u4b-grp">regrouper</button><span class="u4b-det" id="u4b-det">86,50 / 86,50</span></div>
+    </section>
+    <details class="u4b-fi" id="u4b-fi" aria-label="La fiche">
+      <summary class="u4b-fs"><span>Fiche</span><span class="u4b-fsv" id="u4b-fsv">Brassage<span class="u4b-sep"></span>Déjà payé</span><span class="u4b-chv" data-u4b-ic="chev"></span></summary>
+      <div class="u4b-fr"><span>Pour quoi ?</span><input style="flex:1" aria-label="Pour quoi ?" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"><span class="u4b-tag u4b-gr">proposé</span></div>
+      <div class="u4b-fr"><span>Achat du</span><input class="u4b-m" inputmode="numeric" style="width:8em" aria-label="Date de l'achat" value="27.04.2026"><span class="u4b-tag u4b-gr">lue</span></div>
+      <div class="u4b-fr"><span>Règlement</span><div class="u4b-seg" role="group" aria-label="Règlement" data-booster="reglement"><button aria-pressed="true" data-u4b-pay="1">Déjà payé</button><button aria-pressed="false" data-u4b-pay="0">À payer</button></div></div>
+      <div class="u4b-fr" id="u4b-payrow"><span>Payé le</span><span class="u4b-tag" id="u4b-paytag"><span class="u4b-m">27.04.2026</span>&nbsp;supposée</span><select aria-label="Moyen de paiement"><option>Virement · E-Finance, déduit</option><option>Carte</option><option>TWINT</option><option>Espèces</option></select></div>
+      <div class="u4b-fr" id="u4b-echrow" hidden><span>Échéance</span><input class="u4b-m" inputmode="numeric" style="width:8em" aria-label="Échéance" value="07.05.2026"><span class="u4b-tag">déduite · 10 Tage netto</span></div>
+      <div class="u4b-fr"><span>Fournisseur</span><input style="flex:1" aria-label="Fournisseur" value="Brau- und Rauchshop GmbH"><select aria-label="Catégorie"><option>Brassage</option><option>Matériel</option><option>Autre</option></select></div>
+      <div class="u4b-fr"><span>Prévue</span><select style="flex:1" aria-label="Lier à une dépense prévue"><option>Lier à une dépense prévue : aucune</option><option>Ingrédients de novembre · 90,00 (simulée)</option></select></div>
+      <div class="u4b-fr u4b-fref"><span>Référence</span><span class="u4b-m">372765 · commande 686863</span></div>
+      <div class="u4b-fr u4b-fref"><span>TVA · HT</span><span id="u4b-tvar">TVA à régler (point 1) · HT non imprimé · taux <span class="u4b-m">N 8,1 % · R 2,6 %</span></span></div>
+      <div class="u4b-fr"><span>Justificatif</span><span class="u4b-m" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg · 0,7 Mo</span><button class="u4b-lnk">Voir</button><button class="u4b-lnk">Changer</button></div>
+      <div class="u4b-fr"><span>Simulé</span><span class="u4b-calc" style="flex:1">le stock d'essai (Target α 11,8, Hallertauer Blanc DE) ; l'unité de Sabro, que sa facture imprime « g ».</span></div>
+    </details>
+    <div id="u4b-bottom"></div>
+  </div>
+</div>
+<div class="u4b-pied"><div class="u4b-pin"><span class="u4b-prog" id="u4b-prog"></span>
+  <span class="u4b-drv" id="u4b-drv" data-booster="drive-pret"><span data-u4b-ic="cloud"></span>Drive prêt</span>
+  <button class="u4b-b" id="u4b-cnx" hidden>Connecter</button>
+  <button class="u4b-conf" id="u4b-conf"><span data-u4b-ic="check"></span><span id="u4b-conft">Confirmer et enregistrer</span></button>
+</div></div>
+
+<section class="u4b-ax" id="annexe" aria-label="Annexe des états">
+  <h2>Les 9 états de u4b, sur le vrai écran</h2>
+  <p class="u4b-sim" style="margin:0 0 8px">Simulé, et dit : le stock d'essai (Target α 11,8 et Hallertauer Blanc DE au stock), l'unité illisible de Sabro (sa facture imprime « g »), la prévision de 90,00, la dépense 380001 du doublon, la lecture elle-même. Tout le reste vient de sa facture 372765.</p>
+  <ol>
+    <li><a href="?etat=1">Lecture en cours</a> : trois étapes ; le stock et la fiche sont déjà là ; Confirmer reste actif.</li>
+    <li><a href="?etat=2">Lue, sans point</a> : illustration, sa facture une fois tout réglé ; tous les câbles pleins.</li>
+    <li><a href="?etat=3">Lue avec ses points</a> : le premier écran, 6 points par risque.</li>
+    <li><a href="?etat=4">Un point réglé</a> (TVA laissée vide), puis <a href="?etat=4t">tous réglés</a>.</li>
+    <li><a href="?etat=5">Erreur de lecture</a> : le fichier est gardé, saisie à la main.</li>
+    <li><a href="?etat=6">Drive pas connecté</a> : vu au pied, avant Confirmer, qui reste actif.</li>
+    <li><a href="?etat=7">Envoi au Drive</a> sans bloquer, puis <a href="?etat=7r">le reçu</a>.</li>
+    <li><a href="?etat=8">Achat peut-être déjà enregistré</a> : les deux dépenses côte à côte.</li>
+    <li><a href="?etat=9">Hors ligne</a> : brouillon gardé, enregistrement au retour du réseau.</li>
+  </ol>
+</section>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const IC = { x: '<path d="M4 4l8 8M12 4l-8 8"/>', check: '<path d="M3 8.5l3 3 7-7"/>', chev: '<path d="M4 6l4 4 4-4"/>',
+    cloud: '<path d="M4.5 12.5h7a2.8 2.8 0 00.2-5.6A4 4 0 004.3 6 3.3 3.3 0 004.5 12.5z"/>', cloudx: '<path d="M4.5 12.5h7a2.8 2.8 0 00.2-5.6A4 4 0 004.3 6 3.3 3.3 0 004.5 12.5z M6 8l4 3 M10 8l-4 3"/>',
+    cube: '<path d="M8 2l5.5 3v6L8 14 2.5 11V5z M2.5 5L8 8l5.5-3 M8 8v6"/>', nouveau: '<path d="M6.5 4L11 6.5v5L6.5 14 2 11.5v-5z M2 6.5L6.5 9 11 6.5 M6.5 9v5 M13 1v4 M11 3h4"/>',
+    bis: '<path d="M5.5 5L9 7v4l-3.5 2L2 11V7z M10.5 3L14 5v4l-3.5 2 M9 3.8L10.5 3"/>', unite: '<path d="M8 1.8a6.2 6.2 0 110 12.4A6.2 6.2 0 018 1.8z M6.2 6.3a1.8 1.8 0 113.4.8c-.5.6-1.6.9-1.6 2 M8 11v.5"/>',
+    sv: '<path d="M3 8h10 M8 3v10"/>', up: '<path d="M8 13V3 M4 7l4-4 4 4"/>' };
+  const ic = (n) => '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[n] + '</svg>';
+  const f2 = (x) => (Math.round(x * 100) / 100).toFixed(2).replace('.', ',');
+  const pz = (s) => parseFloat(String(s).replace(/\s/g, '').replace(',', '.'));
+  const etat = new URLSearchParams(location.search).get('etat') || '3';
+
+  // Sa facture 372765, ligne par ligne : n, code, nom, quantité, unité imprimée, prix imprimé (tel quel), montant, libellé imprimé.
+  const LN = {};
+  [[1,'MA0221','Maris Otter',6,'Kg','2,30',13.80,'Maris Otter, Kg'],[2,'ISHOP-SCHROT','mouture',6,'Kg','0,10',0.60,'Zuschlag Schrotung'],[3,'MA0027','Gerstenflocken',1,'Kg','2,40',2.40,'Gerstenflocken, 1 Kg'],
+   [4,'MA0055','Röstgerste',1,'Kg','1,80',1.80,'Röstgerste, Kg'],[5,'ISHOP-SCHROT','mouture',1,'Kg','0,10',0.10,'Zuschlag Schrotung'],[6,'MA0333','Caramünch Typ 2',1,'Kg','1,75',1.75,'CARAMÜNCH® Typ 2 Kg'],
+   [7,'ISHOP-SCHROT','mouture',1,'Kg','0,10',0.10,'Zuschlag Schrotung'],[8,'HO0102','Target',40,'g','0,040',1.60,'Target 11.3%','α 11,3'],[9,'HO0017','Goldings East Kent',20,'g','0,040',0.80,'Goldings East Kent 5.5%','α 5,5'],
+   [10,'HE0211','Windsor',2,'Stk','4,50',9.00,'LALLEMAND Windsor 11g'],[11,'HE0203','Safale BE-256',1,'Stk','4,40',4.40,'Safale BE-256 (Abbaye) 11.5 g'],[12,'HE0102','Safale US-05',2,'Stk','3,40',6.80,'Safale US-05 11,5g'],
+   [13,'MA0007','Pilsner Malz',5,'Kg','1,50',7.50,'Pilsner Malz, Kg'],[14,'ISHOP-SCHROT','mouture',5,'Kg','0,10',0.50,'Zuschlag Schrotung'],[15,'MA0010','Weizenmalz hell',2,'Kg','1,55',3.10,'Weizenmalz hell, Kg'],
+   [16,'ISHOP-SCHROT','mouture',2,'Kg','0,10',0.20,'Zuschlag Schrotung'],[17,'MA0034','Haferflocken',2,'Kg','2,50',5.00,'Haferflocken, 1 Kg'],[18,'HO0046','Galaxy',60,'g','0,0800',4.80,'Galaxy 17.2%','α 17,2'],
+   [19,'HO1907','Nelson Sauvin',100,'g','0,080',8.00,'Nelson Sauvin ™ 9.6%','α 9,6'],[20,'HO2026','Sabro',30,'','0,070',2.10,'Sabro® 13.4%','α 13,4'],[21,'HE2036','Verdant IPA',2,'Stk','4,70',9.40,'LALLEMAND Verdant IPA 11g'],
+   [22,'HO17041','Hallertauer Blanc',30,'g','0,045',1.35,'Hallertauer Blanc 9.5% CH','α 9,5'],[23,'HO2022','Motueka',20,'g','0,070',1.40,'Motueka ™ 8.1%','α 8,1']]
+    .forEach(([n, code, nom, q, u, p, m, lib, a]) => { LN[n] = { n, code, nom, q, u, p, m, lib, a }; });
+  const ORDRE = Object.keys(LN).map(Number);
+  const FAM = { 1: 'm', 2: 'mo', 3: 'm', 4: 'm', 5: 'mo', 6: 'm', 7: 'mo', 8: 'h', 9: 'h', 10: 'l', 11: 'l', 12: 'l', 13: 'm', 14: 'mo', 15: 'm', 16: 'mo', 17: 'm', 18: 'h', 19: 'h', 20: 'h', 21: 'l', 22: 'h', 23: 'h' };
+  const COUL = { m: '#E0A02E', mo: '#C9A15A', h: '#5E8F45', l: '#6A4FB0' };
+  const MALTS = [1, 3, 4, 6, 13, 15, 17], HOPS = [8, 9, 18, 19, 20, 22, 23], LEVS = [10, 11, 12, 21];
+  const MOUT = { 1: 2, 4: 5, 6: 7, 13: 14, 15: 16 };
+  // le stock d'essai (simulé) : r = relié, nv = nouvel article proposé, bis = un « bis » à côté d'un article existant, un = unité à préciser
+  const STK = { 9: 'nv', 11: 'nv', 8: 'bis', 22: 'bis', 20: 'un' };
+  const EX = { 8: ['Target', 'α 11,8'], 22: ['Hallertauer', 'DE'] };
+  // les 6 points, par risque : l'argent, puis le stock
+  const PTS = [['tva', 'TVA imprimée', '2,80 · 4,15', 1], ['paye', 'Payé le', '27.04 supposée', 1], ['mout', 'Moutures ×5', '1,50', 0], ['sabro', 'Sabro, unité', '30 ?', 0], ['target', 'Target α', '11,3 · 11,8', 0], ['hall', 'Hallertauer', 'CH · DE', 0]];
+  const PT_N = { mout: 'mout', sabro: 20, target: 8, hall: 22 };
+  const fait = {}; let sel = null; let arg = null; const open = { m: false, h: false, l: false }; let CAB = [];
+  const unitS = (u) => u === 'Stk' ? 'sachets' : u === 'Kg' ? 'kg' : u;
+
+  // ---------- les rangées ----------
+  function rowH(o) {
+    const cls = 'u4b-r u4b-g3' + (o.sub ? ' u4b-sub' : '') + (o.pt ? ' u4b-pt' : '') + (sel === o.key ? ' u4b-sel' : '');
+    const q = o.q === '' ? '' : '<span class="u4b-q">' + o.q + (o.u === '?' ? '<span class="u4b-qu">?</span>' : o.u ? '<small>' + o.u + '</small>' : '') + '</span>';
+    const left = '<button class="u4b-fl" data-fl="' + o.key + '"' + (o.fold ? ' data-u4b-fold="' + o.fold + '"' : ' data-u4b-open="' + o.key + '"') + '>' + (q || '<span></span>') + '<span class="u4b-nm"><span>' + o.nm + '</span>' + (o.em ? '<em' + (o.emok ? ' class="u4b-emok"' : '') + '>' + o.em + '</em>' : '') + '</span><span class="u4b-mt">' + f2(o.mt) + '</span></button>';
+    const t = o.tile;
+    const right = t ? '<button class="u4b-st u4b-k-' + t.k + (t.ok ? ' u4b-ok' : '') + '" data-t="' + o.key + '"' + (o.fold ? ' data-u4b-fold="' + o.fold + '"' : ' data-u4b-open="' + o.key + '"') + '>' + ic(t.ic) + '<span>' + t.h + '</span></button>' : '<span></span>';
+    return '<div class="' + cls + '" data-r="' + o.key + '">' + left + '<span></span>' + right + '</div>' + (sel === o.key ? '<div class="u4b-insp" id="u4b-insp">' + inspH(o.key) + '</div>' : '');
+  }
+  function preH(n) {
+    const [nom, a] = EX[n]; const pt = n === 8 ? 'target' : 'hall'; const ok = fait[pt] === 'ex';
+    return '<div class="u4b-r u4b-g3 u4b-pre" data-r="ex' + n + '"><span></span><span></span><button class="u4b-st u4b-k-ex' + (ok ? ' u4b-ok' : '') + '" data-t="ex' + n + '" data-u4b-open="' + n + '" aria-label="Article existant au stock">' + ic('cube') + '<span>' + nom + ' <em>' + a + '</em>' + (ok ? ' <b>+' + LN[n].q + ' g</b>' : '') + '</span></button></div>';
+  }
+  function tileFor(n) {
+    const l = LN[n]; const k = STK[n] || 'r';
+    if (k === 'nv') return { k: 'nv', ic: 'nouveau', h: '<span class="u4b-nv">nouveau</span> <b>+' + l.q + ' ' + unitS(l.u) + '</b>' };
+    if (k === 'un') return fait.sabro ? { k: 'r', ic: 'cube', h: '<b>+' + l.q + ' ' + fait.sabro + '</b>' } : { k: 'un', ic: 'unite', h: '<b>+' + l.q + ' ?</b>' };
+    if (k === 'bis') { const pt = n === 8 ? 'target' : 'hall'; if (fait[pt] === 'ex') return null;
+      return { k: 'bis', ic: 'bis', ok: fait[pt] === 'bis', h: (n === 8 ? 'Target bis' : 'Hallertauer CH') + (fait[pt] === 'bis' ? ' ✓' : '') }; }
+    return { k: 'r', ic: 'cube', h: '<b>+' + l.q + ' ' + unitS(l.u) + '</b>' };
+  }
+  function lineRow(n, extra) {
+    const l = LN[n]; const pt = n === 20 ? 'sabro' : n === 8 ? 'target' : n === 22 ? 'hall' : null;
+    const u = n === 20 ? (fait.sabro || '?') : l.u;
+    return rowH(Object.assign({ key: n, q: l.q, u, nm: l.nom, em: n === 22 ? 'CH' : (n === 8 || open.h) && l.a ? l.a : '', mt: l.m, pt: pt && !fait[pt], tile: tileFor(n) }, extra || {}));
+  }
+  function render() {
+    let h = ''; CAB = [];
+    const err = etat === '5', lect = etat === '1';
+    if (err) { h = '<div class="u4b-r u4b-g3"><button class="u4b-fl" id="u4b-man"><span class="u4b-q">—</span><span class="u4b-nm" style="color:var(--t2)">première ligne, à la main</span><span class="u4b-mt">—</span></button><span></span><button class="u4b-st u4b-k-sv">' + ic('cube') + '<span>article ⌄</span></button></div>'; }
+    else if (lect) { h = '<div class="u4b-fam" style="color:var(--t2)">Lignes en lecture…</div>' + Array.from({ length: 9 }, () => '<div class="u4b-r u4b-g3"><div class="u4b-sk"></div><span></span><div class="u4b-sk" style="opacity:.6"></div></div>').join(''); }
+    else {
+      const att = fait.mout === 'oui';
+      const sm = (a) => a.reduce((t, n) => t + LN[n].m, 0);
+      const mS = sm(MALTS) + (att ? 1.5 : 0);
+      h += famH('m', 'Malts', COUL.m, mS, MALTS.length + (att ? '' : ' + 5 moutures'));
+      if (!open.m) {
+        h += rowH({ key: 'malts', fold: 'm', q: MALTS.length, u: '', nm: 'malts', em: att ? '✓ mouture' : '', emok: 1, mt: mS, tile: { k: 'r', ic: 'cube', h: '<b>+18 kg</b>' } }); CAB.push(['malts', 'malts', 'r']);
+        if (!att) { h += rowH({ key: 'mout', sub: 1, q: '5×', u: '', nm: 'mouture', mt: 1.5, pt: !fait.mout, tile: fait.mout === 'non' ? { k: 'sv', ic: 'sv', h: 'service' } : null }); if (fait.mout !== 'non') CAB.push(['mout', 'malts', 'mout']); }
+      } else MALTS.forEach((n) => {
+        const l = LN[n], c = MOUT[n], a2 = att && c;
+        h += rowH({ key: n, q: l.q, u: l.u, nm: l.nom, em: a2 ? '✓ ' + f2((l.m + LN[c].m) / l.q) + '/kg' : '', emok: 1, mt: l.m + (a2 ? LN[c].m : 0), tile: tileFor(n) }); CAB.push([n, n, 'r']);
+        if (c && !att) { h += rowH({ key: c, sub: 1, q: '', u: '', nm: 'mouture', mt: LN[c].m, pt: !fait.mout, tile: fait.mout === 'non' ? { k: 'sv', ic: 'sv', h: 'service' } : null }); if (fait.mout !== 'non') CAB.push([c, n, 'mout']); }
+      });
+      h += famH('h', 'Houblons', COUL.h, sm(HOPS), HOPS.length);
+      const hv = open.h ? HOPS : [8, 20, 22];
+      hv.forEach((n) => { if (EX[n]) h += preH(n); h += lineRow(n); pushCab(n); });
+      if (!open.h) { const au = [9, 18, 19, 23]; h += rowH({ key: 'hops', fold: 'h', q: au.length, u: '', nm: 'autres', mt: sm(au), tile: { k: 'r', ic: 'cube', h: '<span class="u4b-2l"><b>+200 g</b><span class="u4b-nv">1 nouveau</span></span>' } }); CAB.push(['hops', 'hops', 'r']); }
+      h += famH('l', 'Levures', COUL.l, sm(LEVS), LEVS.length);
+      if (!open.l) { h += rowH({ key: 'levs', fold: 'l', q: 7, u: 'Stk', nm: 'levures', mt: sm(LEVS), tile: { k: 'r', ic: 'cube', h: '<span class="u4b-2l"><b>+7 sachets</b><span class="u4b-nv">1 nouveau</span></span>' } }); CAB.push(['levs', 'levs', 'r']); }
+      else LEVS.forEach((n) => { h += lineRow(n); pushCab(n); });
+    }
+    $('u4b-rows').innerHTML = h;
+    if (!err && !lect) majTete(); else { $('u4b-bar').innerHTML = ''; $('u4b-det').textContent = '— / —'; }
+    requestAnimationFrame(cables);
+  }
+  function famH(f, nom, c, s, nb) { return '<button class="u4b-fam" data-u4b-fold="' + f + '" aria-expanded="' + open[f] + '"><i style="background:' + c + '"></i>' + nom + '<b>' + (open[f] ? f2(s) : '') + '</b><span class="u4b-chv u4b-ic">' + ic('chev') + '</span></button>'; }
+  function pushCab(n) {
+    const k = STK[n] || 'r';
+    if (k === 'bis') { const pt = n === 8 ? 'target' : 'hall';
+      if (fait[pt] !== 'ex') CAB.push([n, n, fait[pt] === 'bis' ? 'bisok' : 'bis']);
+      if (fait[pt] !== 'bis') CAB.push([n, 'ex' + n, fait[pt] === 'ex' ? 'r' : 'ex']);
+    } else CAB.push([n, n, k === 'un' && fait.sabro ? 'r' : k]);
+  }
+  // les câbles : droits dans leur rangée ; un coude vers la rangée du dessus pour un bis (l'existant) et une mouture (son malt)
+  function cables() {
+    const S = $('u4b-svg'), P = $('u4b-pont').getBoundingClientRect(); let h = '';
+    const STY = { r: ['#4C6B2A', ''], nv: ['#1F64A3', '4 3'], bis: ['#6A4FB0', '4 3'], bisok: ['#6A4FB0', ''], ex: ['#9E9E9E', '2 3'], un: ['#9C7020', '4 3'], mout: ['#9C7020', '4 3'] };
+    CAB.forEach(([from, to, k]) => {
+      const a = document.querySelector('[data-fl="' + from + '"]'), b = document.querySelector('[data-t="' + to + '"]'); if (!a || !b) return;
+      const A = a.getBoundingClientRect(), B = b.getBoundingClientRect();
+      const x1 = A.right - P.left, y1 = A.top + A.height / 2 - P.top, x2 = B.left - P.left, y2 = B.top + B.height / 2 - P.top;
+      const [col, dash] = k === 'mout' && fait.mout === 'oui' ? STY.r : STY[k];
+      const w = sel === from ? 3 : 1.8; const d = dash ? ' stroke-dasharray="' + dash + '"' : '';
+      if (Math.abs(y1 - y2) < 2) h += '<path d="M' + x1 + ' ' + y1 + ' H' + x2 + '" stroke="' + col + '" stroke-width="' + w + '"' + d + ' fill="none"/>';
+      else { const mx = x1 + (x2 - x1) * (k === 'mout' ? .62 : .5), r = 6, up = y2 < y1 ? -1 : 1;
+        h += '<path d="M' + x1 + ' ' + y1 + ' H' + (mx - r) + ' Q' + mx + ' ' + y1 + ' ' + mx + ' ' + (y1 + up * r) + ' V' + (y2 - up * r) + ' Q' + mx + ' ' + y2 + ' ' + (mx + r) + ' ' + y2 + ' H' + x2 + '" stroke="' + col + '" stroke-width="' + w + '"' + d + ' fill="none"/>';
+        if (k === 'mout' && fait.mout !== 'oui') h += '<path d="M' + (mx - 4) + ' ' + (y1 + y2) / 2 + ' l4 -5 l4 5" stroke="' + col + '" stroke-width="1.8" fill="none"/>'; }
+      h += '<circle cx="' + x1 + '" cy="' + y1 + '" r="2.5" fill="' + col + '"/><circle cx="' + x2 + '" cy="' + y2 + '" r="2.5" fill="' + col + '"/>';
+      if (k === 'un') { const mx = (x1 + x2) / 2; h += '<circle cx="' + mx + '" cy="' + y1 + '" r="8" fill="#FBF0D8" stroke="#9C7020" stroke-width="1.5"/><text x="' + mx + '" y="' + (y1 + 4) + '" text-anchor="middle" font-size="12" font-weight="700" fill="#7F5B10" font-family="IBM Plex Mono">?</text>'; }
+    });
+    S.innerHTML = h;
+  }
+
+  // ---------- l'en-tête : compteur, barre, tampon ----------
+  function majTete() {
+    const reste = PTS.filter(([p]) => !fait[p]);
+    const c = $('u4b-cpt'); c.classList.toggle('u4b-fini', !reste.length);
+    c.firstElementChild.innerHTML = reste.length ? '<span class="u4b-m">' + reste.length + '</span> à régler' : 'tout réglé';
+    $('u4b-dots').innerHTML = PTS.map(([p, , , a]) => '<i class="' + (fait[p] ? 'u4b-f' : a ? 'u4b-a' : '') + '"></i>').join('');
+    const som = ORDRE.reduce((t, n) => t + LN[n].m, 0), imp = pz($('u4b-tot').textContent) || 0, eq = Math.abs(som - imp) < 0.005;
+    const doute = (n) => (FAM[n] === 'mo' && !fait.mout) || (n === 8 && !fait.target) || (n === 20 && !fait.sabro) || (n === 22 && !fait.hall);
+    const base = Math.max(som, imp) || 1;
+    $('u4b-bar').innerHTML = ORDRE.map((n) => '<span data-bn="' + n + '" class="' + (doute(n) ? 'u4b-d' : '') + (sel === n ? ' u4b-on' : '') + '" style="width:' + (LN[n].m / (imp || base) * 100) + '%;background:' + COUL[FAM[n]] + '" title="' + n + ' · ' + LN[n].nom + ' ' + f2(LN[n].m) + '"></span>').join('') +
+      (som > imp + 0.005 && imp ? '<span class="u4b-over" style="left:100%;width:' + ((som - imp) / imp * 100) + '%"></span>' : '');
+    $('u4b-tamt').textContent = eq ? '23 lignes recoupées' : '23 lignes ' + f2(som) + ' ≠ ' + f2(imp) + ' · écart ' + f2(Math.abs(som - imp));
+    $('u4b-tam').classList.toggle('u4b-bad', !eq);
+    $('u4b-pv1').textContent = f2(som); $('u4b-pv1').style.color = eq ? '' : 'var(--alerte)';
+    $('u4b-pv1t').innerHTML = 'somme des 23 lignes ' + (eq ? '=' : '≠') + ' total imprimé <span class="u4b-m">' + f2(imp) + '</span>';
+    $('u4b-det').textContent = f2(som) + ' / ' + f2(imp); $('u4b-det').classList.toggle('u4b-bad', !eq);
+    document.querySelectorAll('[data-u4b-arg]').forEach((b) => { b.classList.toggle('u4b-ok', !!fait[b.dataset.u4bArg]); b.setAttribute('aria-expanded', String(arg === b.dataset.u4bArg)); });
+    $('u4b-ptl').innerHTML = PTS.map(([p, nom, v, a]) => '<button class="u4b-pt-b' + (fait[p] ? ' u4b-fait' : '') + '" data-u4b-go="' + p + '"><i class="' + (a ? 'u4b-a' : '') + '"></i><span>' + nom + '</span><em>' + (fait[p] ? valFait(p) : v) + '</em></button>').join('');
+  }
+  function valFait(p) {
+    const v = fait[p];
+    return { tva: v === 'vide' ? 'vide ✓' : v + ' ✓', paye: v + ' ✓', mout: v === 'oui' ? 'rattachées ✓' : 'en service ✓', sabro: '30 ' + v + ' ✓', target: v === 'bis' ? 'Target bis ✓' : 'au α 11,8 ✓', hall: v === 'bis' ? 'CH créé ✓' : 'au DE ✓' }[p];
+  }
+
+  // ---------- le plateau d'une ligne (greffe r2) ----------
+  function inspH(key) {
+    const close = '<button class="u4b-x" data-u4b-close aria-label="Fermer le détail">' + ic('x') + '</button>';
+    if (key === 'mout' || FAM[key] === 'mo') {
+      return '<div class="u4b-ih"><b>5 moutures</b><span>imprimé 5 fois « Zuschlag Schrotung » · <span class="u4b-m">ISHOP-SCHROT · 0,10 /Kg</span></span>' + close + '</div>' +
+        '<div class="u4b-mtab">' + MALTS.filter((n) => MOUT[n]).map((n) => { const l = LN[n], c = LN[MOUT[n]]; return '<span>' + l.nom + ' <span class="u4b-m" style="color:var(--t2)">' + l.q + ' Kg</span></span><b>' + l.p + '</b><strong>→ ' + f2((l.m + c.m) / l.q) + ' /kg</strong>'; }).join('') + '</div>' +
+        '<div class="u4b-calc">Même quantité que le malt du dessus ; <span class="u4b-m">1,50</span> au total. Proposé : rattacher, le prix au kilo du malt l\'inclut.</div>' +
+        '<div class="u4b-acts"><button class="u4b-b u4b-pp" data-u4b-act="mout-oui">Rattacher les 5</button><button class="u4b-b" data-u4b-act="mout-non">Laisser en service</button></div>';
+    }
+    const n = +key, l = LN[n]; if (!l) return '';
+    const calc = l.q * pz(l.p), ok = Math.abs(calc - l.m) < 0.005;
+    const u = n === 20 ? (fait.sabro ? fait.sabro : '<span class="u4b-tag">unité ?</span>') : l.u;
+    let pt = '';
+    if (n === 8) pt = '<div class="u4b-calc">La variété est Target ; l\'α <span class="u4b-m">11,3</span> va au lot. Au stock : Target <span class="u4b-m">α 11,8</span>. Jamais fusionné sans toi.</div><div class="u4b-acts"><button class="u4b-b u4b-pp" data-u4b-act="target-bis">Créer Target bis · α 11,3</button><button class="u4b-b" data-u4b-act="target-ex">Ajouter au Target α 11,8</button></div>';
+    else if (n === 22) pt = '<div class="u4b-calc">Origine imprimée CH ; au stock, Hallertauer Blanc DE.</div><div class="u4b-acts"><button class="u4b-b u4b-pp" data-u4b-act="hall-bis">Créer Hallertauer Blanc CH</button><button class="u4b-b" data-u4b-act="hall-ex">Ajouter au DE</button></div>';
+    else if (n === 20) pt = '<div class="u4b-calc">Unité illisible : rien n\'entre en stock tant qu\'elle manque.</div><div class="u4b-acts">' + ['g', 'kg', 'Stk'].map((x) => '<button class="u4b-b" data-u4b-act="sabro-' + x + '"><span class="u4b-m">30 ' + x + '</span></button>').join('') + '</div>';
+    else if (STK[n] === 'nv') pt = '<div class="u4b-calc">Pas au stock : un nouvel article est proposé, rien n\'est deviné.</div>';
+    const stock = STK[n] === 'bis' ? '' : '<select class="u4b-row-sel" aria-label="Réception en stock"><option>' + (STK[n] === 'nv' ? 'Nouvel article : ' + l.nom : 'Stock : ' + l.nom) + '</option><option>Choisir un autre article…</option><option>' + (STK[n] === 'nv' ? 'Article existant…' : 'Nouvel article') + '</option><option>Aucun mouvement de stock</option></select>';
+    return '<div class="u4b-ih"><span class="u4b-m">' + l.code + '</span><span>imprimé « ' + l.lib + ' »</span>' + close + '</div>' +
+      '<div class="u4b-big"><button class="u4b-edit" data-u4b-q="' + n + '">' + String(l.q) + '</button> ' + u + (l.u === 'Stk' ? ' <span class="u4b-tag u4b-gr">= ' + l.q + ' sachet' + (l.q > 1 ? 's' : '') + '</span>' : '') + ' × <button class="u4b-edit" data-u4b-p="' + n + '">' + l.p + '</button> = <button class="u4b-edit" data-u4b-mm="' + n + '">' + f2(l.m) + '</button> ' + (ok ? '<span class="u4b-okt">✓ au centime</span>' : '<span class="u4b-ko">≠ ' + f2(calc) + ' · écart ' + f2(Math.abs(calc - l.m)) + '</span>') + '</div>' +
+      pt + '<div class="u4b-acts"><div class="u4b-seg" role="group" aria-label="Type d\'achat"><button aria-pressed="true">Ingrédient</button><button aria-pressed="false">Service</button><button aria-pressed="false">Matériel</button></div>' + stock + '<button class="u4b-b" data-u4b-act="retirer">Retirer</button></div>';
+  }
+
+  // ---------- l'argent ----------
+  const ARG = {
+    tva: () => '<div class="u4b-tiles" data-booster="tuiles-tva"><button class="u4b-tl" data-u4b-act="tva-2,80"><b>2,80</b><span>lu · colonne MWST</span></button><button class="u4b-tl" data-u4b-act="tva-4,15"><b>4,15</b><span>1,95 + 2,20 lus</span></button><button class="u4b-tl u4b-prop" data-u4b-act="tva-vide"><b>–</b><span>vide · proposé</span></button><div class="u4b-tl u4b-ro"><b>–</b><span>HT non imprimé</span></div></div>' +
+      '<div class="u4b-calc">bases <span class="u4b-m">26,20 + 84,20 = 110,40</span> <span class="u4b-ko u4b-m">≠ 86,50</span> · écart <span class="u4b-m">23,90</span> · taux lus <span class="u4b-m">N 8,1 % · R 2,6 %</span></div>',
+    paye: () => '<div class="u4b-two"><div class="u4b-sup"><span>payé le, supposée</span><b>27.04.2026</b></div><div><span>date de la facture</span><b>27.04.2026</b></div></div>' +
+      '<div class="u4b-calc">Date de paiement non imprimée · « Betrag per E-Finance dankend erhalten »</div>' +
+      '<div class="u4b-acts"><button class="u4b-b u4b-pp" data-u4b-act="paye-garder">C\'est la date</button><input class="u4b-in" inputmode="numeric" placeholder="jj.mm.aaaa" aria-label="Autre date" id="u4b-pd"><button class="u4b-b" data-u4b-act="paye-autre">Autre date</button></div>'
+  };
+  function ouvrirArg(id) { arg = id; const d = $('u4b-ard'); d.hidden = !arg; if (arg) d.innerHTML = ARG[arg](); majTete(); requestAnimationFrame(cables); }
+  function regler(p, v) { fait[p] = v; render(); }
+  function ouvrirLigne(key) {
+    if (FAM[key] === 'mo' && !open.m) key = 'mout';
+    if (typeof key === 'number') { const f = FAM[key]; const fk = f === 'mo' ? 'm' : f; if (!open[fk] && !(fk === 'h' && [8, 20, 22].includes(key))) open[fk] = true; }
+    sel = sel === key ? null : key; render();
+    const box = $('u4b-insp'); if (box) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  function aller(p) {
+    if (p === 'tva' || p === 'paye') { ouvrirArg(p); $('u4b-ar').scrollIntoView({ block: 'nearest' }); return; }
+    sel = null; ouvrirLigne(PT_N[p]);
+  }
+
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button,[data-bn],#u4b-barw'); if (!t) return;
+    const a = t.dataset && t.dataset.u4bAct;
+    if (a) {
+      if (a.startsWith('tva-')) { const v = a.slice(4); $('u4b-cht').innerHTML = 'TVA ' + (v === 'vide' ? 'vide' : '<span class="u4b-m">' + v + '</span>') + ' ✓'; const txt = (v === 'vide' ? 'TVA laissée vide' : 'TVA ' + v + ' (lue)') + ' · HT non imprimé'; $('u4b-tvar').textContent = txt; $('u4b-tvar2').textContent = v === 'vide' ? 'vide' : v; fait.tva = v; ouvrirArg(null); return; }
+      if (a === 'paye-garder' || a === 'paye-autre') { const v = a === 'paye-autre' ? $('u4b-pd').value.trim() : '27.04.2026'; if (!v) { $('u4b-pd').focus(); return; } const g = $('u4b-paytag'); g.className = 'u4b-tag u4b-ok'; g.innerHTML = '<span class="u4b-m">' + v + '</span>&nbsp;' + (a === 'paye-autre' ? 'tapée' : 'confirmée'); $('u4b-chp').innerHTML = 'Payé <span class="u4b-m">' + v.slice(0, 5) + '</span> ✓'; fait.paye = v.slice(0, 5); ouvrirArg(null); return; }
+      if (a === 'mout-oui' || a === 'mout-non') { sel = null; regler('mout', a === 'mout-oui' ? 'oui' : 'non'); return; }
+      if (a.startsWith('target-')) { regler('target', a.slice(7)); return; }
+      if (a.startsWith('hall-')) { regler('hall', a.slice(5)); return; }
+      if (a.startsWith('sabro-')) { regler('sabro', a.slice(6)); return; }
+      if (a === 'retirer') { t.textContent = 'Retirer ? Toucher encore'; t.dataset.u4bAct = 'retirer2'; return; }
+      return;
+    }
+    if (t.dataset.u4bArg) { ouvrirArg(arg === t.dataset.u4bArg ? null : t.dataset.u4bArg); return; }
+    if (t.dataset.u4bGo) { aller(t.dataset.u4bGo); return; }
+    if (t.dataset.u4bFold) { const f = t.dataset.u4bFold; open[f] = !open[f]; if (!open[f]) sel = null; render(); return; }
+    if (t.hasAttribute('data-u4b-close')) { sel = null; render(); return; }
+    if (t.dataset.u4bOpen) { const k = t.dataset.u4bOpen; ouvrirLigne(isNaN(+k) ? k : +k); return; }
+    if (t.dataset.bn || t.id === 'u4b-barw') {
+      let n = t.dataset.bn ? +t.dataset.bn : null;
+      if (!n) { const B = $('u4b-bar').getBoundingClientRect(); const x = e.clientX; let best = null, bd = 1e9; document.querySelectorAll('[data-bn]').forEach((s) => { const R = s.getBoundingClientRect(); const dd = x < R.left ? R.left - x : x > R.right ? x - R.right : 0; if (dd < bd) { bd = dd; best = +s.dataset.bn; } }); n = best; if (B.width === 0) return; }
+      if (n) { sel = null; ouvrirLigne(n); } return;
+    }
+    if (t.id === 'u4b-cpt') { const nx = PTS.find(([p]) => !fait[p]); if (nx) aller(nx[0]); return; }
+    if (t.id === 'u4b-tam') { const pv = $('u4b-pv'); const o = t.getAttribute('aria-expanded') !== 'true'; t.setAttribute('aria-expanded', String(o)); pv.hidden = !o; if (o) { pv.classList.remove('u4b-flash'); void pv.offsetWidth; pv.classList.add('u4b-flash'); } requestAnimationFrame(cables); return; }
+    if (t.dataset.u4bPay) { document.querySelectorAll('[data-u4b-pay]').forEach((b) => b.setAttribute('aria-pressed', String(b === t))); const p = t.dataset.u4bPay === '1'; $('u4b-payrow').hidden = !p; $('u4b-echrow').hidden = p; requestAnimationFrame(cables); return; }
+    if (t.id === 'u4b-add' || t.id === 'u4b-man') { LN[24] = { n: 24, code: '—', nom: 'Nouvelle ligne', q: 1, u: 'Kg', p: '0,00', m: 0, lib: '(ajoutée à la main)' }; ORDRE.includes(24) || ORDRE.push(24); FAM[24] = 'm'; MALTS.includes(24) || MALTS.push(24); open.m = true; sel = 24; render(); return; }
+    if (t.id === 'u4b-conf') { enregistrer(); return; }
+  });
+  // chaque nombre se tape : total, quantité, prix, montant
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-u4b-num],[data-u4b-q],[data-u4b-p],[data-u4b-mm]'); if (!t || t.querySelector('input')) return;
+    e.stopPropagation(); const sp = t.dataset.u4bNum ? $('u4b-tot') : t; const av = sp.textContent;
+    const i = document.createElement('input'); i.className = 'u4b-in'; i.setAttribute('inputmode', 'decimal'); i.value = av; sp.textContent = ''; sp.appendChild(i); i.focus(); i.select();
+    const fin = (ok) => { const v = pz(i.value); i.remove(); if (!ok || isNaN(v)) { sp.textContent = av; return; }
+      if (t.dataset.u4bQ) LN[+t.dataset.u4bQ].q = v; else if (t.dataset.u4bP) LN[+t.dataset.u4bP].p = i.value.trim(); else if (t.dataset.u4bMm) LN[+t.dataset.u4bMm].m = v; else sp.textContent = f2(v);
+      render(); };
+    i.addEventListener('keydown', (k) => { if (k.key === 'Enter') fin(true); if (k.key === 'Escape') fin(false); });
+    i.addEventListener('blur', () => fin(true), { once: true });
+  }, true);
+
+  // ---------- l'enregistrement : jamais bloqué par un point ----------
+  function recuH() { return '<div class="u4b-card u4b-recu" id="u4b-recu"><h3>Enregistré · rangé dans Drive</h3><span class="u4b-calc">L\'Affinée / Justificatifs / 2026</span><span class="u4b-m" style="font-size:12px;color:var(--t0)">2026-04-27 Brau- und Rauchshop 372765.jpg</span><span class="u4b-calc"><span class="u4b-m">735 721</span> octets · taille vérifiée</span><a href="#drive" style="font-weight:600">Ouvrir dans Drive</a></div>'; }
+  function envoi(pct) { const d = $('u4b-drv'); d.style.color = 'var(--fin)'; d.innerHTML = ic('cloud') + 'Envoi au Drive <span class="u4b-m">&nbsp;0,4 / 0,7 Mo&nbsp;</span> · tu peux fermer'; $('u4b-prog').style.width = pct + '%'; $('u4b-conft').textContent = 'Fermer'; }
+  function recu() { $('u4b-prog').style.width = '100%'; const d = $('u4b-drv'); d.style.color = 'var(--sto)'; d.innerHTML = ic('check') + 'Rangé dans Drive'; $('u4b-conft').textContent = 'Fermer'; $('u4b-top').innerHTML = recuH(); }
+  let envoye = false;
+  function enregistrer() {
+    if (etat === '9') { $('u4b-drv').innerHTML = ic('cloudx') + 'Hors ligne · enregistré au retour du réseau'; $('u4b-conft').textContent = 'Fermer'; return; }
+    if (envoye) return; envoye = true; envoi(55); setTimeout(() => { recu(); $('u4b-recu').scrollIntoView({ block: 'center' }); }, 1200);
+  }
+
+  // ---------- les états (?etat=) ----------
+  const tous = () => { fait.tva = 'vide'; fait.paye = '27.04'; fait.mout = 'oui'; fait.sabro = 'g'; fait.target = 'bis'; fait.hall = 'bis'; $('u4b-cht').innerHTML = 'TVA vide ✓'; $('u4b-chp').innerHTML = 'Payé <span class="u4b-m">27.04</span> ✓'; $('u4b-tvar').textContent = 'TVA laissée vide · HT non imprimé'; $('u4b-tvar2').textContent = 'vide'; const g = $('u4b-paytag'); g.className = 'u4b-tag u4b-ok'; g.innerHTML = '<span class="u4b-m">27.04.2026</span>&nbsp;confirmée'; };
+  if (etat === '2') { tous(); $('u4b-ill').hidden = false; $('u4b-ill').textContent = 'illustration · sans point'; $('u4b-ar').hidden = true; }
+  if (etat === '4') { fait.tva = 'vide'; $('u4b-cht').innerHTML = 'TVA vide ✓'; $('u4b-tvar').textContent = 'TVA laissée vide · HT non imprimé'; $('u4b-tvar2').textContent = 'vide'; }
+  if (etat === '4t') tous();
+  if (etat === '1') { $('u4b-fsv').textContent = 'en lecture'; $('u4b-side').hidden = true; document.querySelectorAll('#u4b-fi input').forEach((i) => { i.value = ''; i.placeholder = 'en lecture'; }); document.querySelectorAll('.u4b-fref').forEach((r) => { r.hidden = true; }); $('u4b-paytag').className = 'u4b-tag u4b-gr'; $('u4b-paytag').textContent = 'en lecture'; $('u4b-tot').textContent = '…'; $('u4b-who').innerHTML = '<span style="color:var(--t2)">fournisseur et date en lecture</span>'; $('u4b-cpt').hidden = true; $('u4b-tam').hidden = true; $('u4b-barw').hidden = true; $('u4b-ar').hidden = true;
+    $('u4b-steps').hidden = false; $('u4b-steps').innerHTML = '<span style="color:var(--sto)">' + ic('check') + 'Envoi</span><span style="color:var(--fin);font-weight:600">' + ic('cloud') + 'Lecture…</span><span style="color:var(--t2)">Vérification</span><button class="u4b-lnk" id="u4b-man2" style="margin-left:auto">Saisir à la main</button>'; }
+  if (etat === '5') { $('u4b-fi').open = true; $('u4b-side').hidden = true; $('u4b-fsv').textContent = 'à remplir'; document.querySelectorAll('#u4b-fi input').forEach((i) => { i.value = ''; }); document.querySelectorAll('.u4b-fref').forEach((r) => { r.hidden = true; }); $('u4b-paytag').className = 'u4b-tag u4b-gr'; $('u4b-paytag').textContent = 'à saisir'; $('u4b-tot').textContent = '—'; $('u4b-who').innerHTML = '<span style="color:var(--t2)">fournisseur à saisir</span>'; $('u4b-cpt').hidden = true; $('u4b-tam').hidden = true; $('u4b-barw').hidden = true; $('u4b-ar').hidden = true;
+    $('u4b-err').hidden = false; $('u4b-err').innerHTML = 'Lecture impossible · le fichier est gardé<button class="u4b-b" style="margin-left:auto">Relire</button><button class="u4b-b u4b-k" id="u4b-man3">Saisir à la main</button>'; }
+  if (etat === '6') { const d = $('u4b-drv'); d.classList.add('u4b-off'); d.innerHTML = ic('cloudx') + '<button class="u4b-lnk" style="padding:0">Connecter Drive</button>'; }
+  if (etat === '7') { envoye = true; setTimeout(() => envoi(55), 0); }
+  if (etat === '7r') { envoye = true; tous(); setTimeout(recu, 0); }
+  if (etat === '8') $('u4b-top').innerHTML = '<div class="u4b-card u4b-dbl"><h3>Achat peut-être déjà enregistré</h3><div class="u4b-dt"><span></span><span>ce document</span><span>déjà enregistré (simulé)</span><span>n°</span><b>372765</b><b>380001</b><span>commande</span><b class="u4b-same">686863</b><b class="u4b-same">686863</b><span>total</span><b class="u4b-same">86,50</b><b class="u4b-same">86,50</b></div><div class="u4b-acts"><button class="u4b-b u4b-k">Même achat · ne pas doubler</button><button class="u4b-b">Autre achat</button><button class="u4b-lnk">Voir 380001</button></div></div>';
+  if (etat === '9') { const d = $('u4b-drv'); d.classList.add('u4b-off'); d.innerHTML = ic('cloudx') + 'Hors ligne · brouillon gardé'; }
+  document.addEventListener('click', (e) => { if (e.target.closest('#u4b-man2,#u4b-man3')) { $('u4b-rows').scrollIntoView({ block: 'center' }); } });
+
+  document.querySelectorAll('[data-u4b-ic]').forEach((el) => { el.classList.add('u4b-ic'); el.innerHTML = ic(el.dataset.u4bIc); });
+  if (matchMedia('(min-width: 900px)').matches) $('u4b-fi').open = true;
+  $('u4b-fi').addEventListener('toggle', () => requestAnimationFrame(cables));
+  render();
+  addEventListener('resize', () => requestAnimationFrame(cables));
+  document.fonts && document.fonts.ready.then(() => requestAnimationFrame(cables));
+})();
+</script>
+</body></html>

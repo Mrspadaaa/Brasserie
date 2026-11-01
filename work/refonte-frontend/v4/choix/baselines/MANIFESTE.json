@@ -1,0 +1,244 @@
+{
+ "avertissement": "Références de la PRODUCTION (copie au commit indiqué), prises par scripts/agents/baseline-visuelle.mjs --prendre. Un écart se signale, puis se regarde (L12) : ces images ne remplacent ni les contrôles ni le regard.",
+ "commit": "ae7c7a8d",
+ "copie": "C:/Users/mrspa/AppData/Local/Temp/atelier-ecrans",
+ "date": "2026-10-31T12:38:44.865Z",
+ "viewport": {
+  "largeur": 390,
+  "hauteur": 844,
+  "echelle": 2
+ },
+ "tolerance": {
+  "pixel": 12,
+  "image": 0.0005,
+  "bloc": 0.25,
+  "blocCss": 16
+ },
+ "polices": "les polices externes sont coupées (réseau hors localhost bloqué) : les repli du système rendent le texte ; même poste, même rendu",
+ "etats": {
+  "comparer/absolu": {
+   "fichier": "comparer/absolu.png",
+   "quoi": "bascule Absolu (radar à l'échelle brute)",
+   "empreinte": "546605e5df6c7d4e",
+   "octets": 238672,
+   "masques": [],
+   "pris": "2026-10-31T12:40:51.414Z"
+  },
+  "comparer/bas": {
+   "fichier": "comparer/bas.png",
+   "quoi": "Comparer défilé jusqu'en bas (colonne retenue, mots)",
+   "empreinte": "e738823ee24cb2f6",
+   "octets": 170307,
+   "masques": [],
+   "pris": "2026-10-31T12:40:58.949Z"
+  },
+  "comparer/repos": {
+   "fichier": "comparer/repos.png",
+   "quoi": "Comparer cmc2k : Cascade, Idaho 7, Galaxy contre la recette",
+   "empreinte": "8659187af59398c3",
+   "octets": 244041,
+   "masques": [],
+   "pris": "2026-10-31T12:40:42.557Z"
+  },
+  "dryhopper/absolu": {
+   "fichier": "dryhopper/absolu.png",
+   "quoi": "bascule Absolu de l'échelle et des barres",
+   "empreinte": "129fbb52ba09b3ca",
+   "octets": 192235,
+   "masques": [],
+   "pris": "2026-10-31T12:41:38.140Z"
+  },
+  "dryhopper/ebullition": {
+   "fichier": "dryhopper/ebullition.png",
+   "quoi": "moment d'ébullition choisi (premier onglet de la frise)",
+   "empreinte": "4597d0c79ccbaf0d",
+   "octets": 176541,
+   "masques": [],
+   "pris": "2026-10-31T12:42:04.145Z"
+  },
+  "dryhopper/froid-limite": {
+   "fichier": "dryhopper/froid-limite.png",
+   "quoi": "la cellule « limite » ouverte (p5, D : trois mini graphes)",
+   "empreinte": "f6bd8e64fabe610f",
+   "octets": 194856,
+   "masques": [],
+   "pris": "2026-10-31T12:42:17.026Z"
+  },
+  "dryhopper/jour-1": {
+   "fichier": "dryhopper/jour-1.png",
+   "quoi": "contact du dry hop à 1 j (puce « 1 j »)",
+   "empreinte": "2a7acf0eb1374bdb",
+   "octets": 195533,
+   "masques": [],
+   "pris": "2026-10-31T12:41:51.111Z"
+  },
+  "dryhopper/repos": {
+   "fichier": "dryhopper/repos.png",
+   "quoi": "Dryhopper p4b2f : Cascade 80 g au dry hop, après · 3 j (recette de m5)",
+   "empreinte": "dc5ff4d95d9b483c",
+   "octets": 192392,
+   "masques": [],
+   "pris": "2026-10-31T12:41:25.129Z"
+  },
+  "etape-houblons/absolu": {
+   "fichier": "etape-houblons/absolu.png",
+   "quoi": "bascule Absolu des barres de familles",
+   "empreinte": "8a90a7fb7c1d07e0",
+   "octets": 162561,
+   "masques": [],
+   "pris": "2026-10-31T12:39:02.929Z"
+  },
+  "etape-houblons/legende-ouverte": {
+   "fichier": "etape-houblons/legende-ouverte.png",
+   "quoi": "la carte de Nugget ouverte : légende en lignes (leg3-v2a, D140)",
+   "empreinte": "fe31971ebaf40119",
+   "octets": 186102,
+   "masques": [],
+   "pris": "2026-10-31T12:38:58.141Z"
+  },
+  "etape-houblons/liste-vide": {
+   "fichier": "etape-houblons/liste-vide.png",
+   "quoi": "aucun houblon dans la recette",
+   "empreinte": "7377fbb657eee5f0",
+   "octets": 104841,
+   "masques": [],
+   "pris": "2026-10-31T12:38:53.463Z"
+  },
+  "etape-houblons/repos": {
+   "fichier": "etape-houblons/repos.png",
+   "quoi": "étape Houblons de la fixture (Stout export 16D, Nugget 46 g à 60′), Au style",
+   "empreinte": "937d32ccd921c5cc",
+   "octets": 164429,
+   "masques": [],
+   "pris": "2026-10-31T12:38:49.241Z"
+  },
+  "fiche/bas": {
+   "fichier": "fiche/bas.png",
+   "quoi": "la liste sous le radar (flb5b), défilée",
+   "empreinte": "720946d554138cbc",
+   "octets": 143217,
+   "masques": [],
+   "pris": "2026-10-31T12:41:13.522Z"
+  },
+  "fiche/repos": {
+   "fichier": "fiche/repos.png",
+   "quoi": "fiche g1 de Nugget (appui long sur la carte), premier écran : radar et phrase noire",
+   "empreinte": "6f32730dd39af743",
+   "octets": 152099,
+   "masques": [],
+   "pris": "2026-10-31T12:41:06.079Z"
+  },
+  "ma-biere/absolu": {
+   "fichier": "ma-biere/absolu.png",
+   "quoi": "Absolu : faible · moyen · marqué en tête",
+   "empreinte": "ed1759baeffb30f7",
+   "octets": 130155,
+   "masques": [],
+   "pris": "2026-10-31T12:39:53.975Z"
+  },
+  "ma-biere/bannie": {
+   "fichier": "ma-biere/bannie.png",
+   "quoi": "tropicaux bannie : famille barrée",
+   "empreinte": "b7a10f2df7547eb2",
+   "octets": 142059,
+   "masques": [],
+   "pris": "2026-10-31T12:39:37.598Z"
+  },
+  "ma-biere/bas": {
+   "fichier": "ma-biere/bas.png",
+   "quoi": "pied de Ma bière : « + viser une famille », « Prévu avec SafAle US-05, caractérisée »",
+   "empreinte": "58994541c6fbb48f",
+   "octets": 136142,
+   "masques": [],
+   "pris": "2026-10-31T12:39:15.707Z"
+  },
+  "ma-biere/famille-ouverte": {
+   "fichier": "ma-biere/famille-ouverte.png",
+   "quoi": "tropicaux touchée : bannir · − · sans visée · +",
+   "empreinte": "093fbce1b282536d",
+   "octets": 140748,
+   "masques": [],
+   "pris": "2026-10-31T12:39:22.188Z"
+  },
+  "ma-biere/radar": {
+   "fichier": "ma-biere/radar.png",
+   "quoi": "vue Radar : grand radar et grille de dégustation",
+   "empreinte": "350f3d4f0e2b498e",
+   "octets": 170975,
+   "masques": [],
+   "pris": "2026-10-31T12:40:01.784Z"
+  },
+  "ma-biere/radar-notes": {
+   "fichier": "ma-biere/radar-notes.png",
+   "quoi": "vue Radar, notes de dégustation posées (agrumes 2, tropicaux 3, noyau 1, résineux 2, floral 0), comme controle-trou-du-0",
+   "empreinte": "77326c17566cc742",
+   "octets": 178000,
+   "masques": [],
+   "pris": "2026-10-31T12:39:47.045Z"
+  },
+  "ma-biere/repos": {
+   "fichier": "ma-biere/repos.png",
+   "quoi": "Ma bière, barres Au style (onglet Ma bière)",
+   "empreinte": "7dc3e7016b604e2c",
+   "octets": 137906,
+   "masques": [],
+   "pris": "2026-10-31T12:39:09.152Z"
+  },
+  "ma-biere/visee-posee": {
+   "fichier": "ma-biere/visee-posee.png",
+   "quoi": "« + » posé sur tropicaux : losange, trait sur la piste, × pour retirer",
+   "empreinte": "382eb338d5142a6e",
+   "octets": 142533,
+   "masques": [],
+   "pris": "2026-10-31T12:39:29.814Z"
+  },
+  "substituer/deux-compares": {
+   "fichier": "substituer/deux-compares.png",
+   "quoi": "dry hop, deux remplaçants choisis : le radar de comparaison, contour de l'original (D156)",
+   "empreinte": "9b20dc03d3b4d8de",
+   "octets": 188084,
+   "masques": [],
+   "pris": "2026-10-31T12:42:52.698Z"
+  },
+  "substituer/dry-hop": {
+   "fichier": "substituer/dry-hop.png",
+   "quoi": "le moment « dry hop » choisi (le cas du brasseur, 26.10)",
+   "empreinte": "2af03e06da79013c",
+   "octets": 156931,
+   "masques": [],
+   "pris": "2026-10-31T12:42:37.107Z"
+  },
+  "substituer/repos": {
+   "fichier": "substituer/repos.png",
+   "quoi": "Substituer Galaxy (ajouté à la fixture, comme controle-contour-original) au moment de la recette",
+   "empreinte": "743d1a572a35ec63",
+   "octets": 133509,
+   "masques": [],
+   "pris": "2026-10-31T12:42:25.772Z"
+  },
+  "suggerer/bannie-tropicaux": {
+   "fichier": "suggerer/bannie-tropicaux.png",
+   "quoi": "Suggérer avec tropicaux bannie (D194) : « Sans … » et remplacements",
+   "empreinte": "88cbcccdc14209dc",
+   "octets": 223161,
+   "masques": [],
+   "pris": "2026-10-31T12:40:35.311Z"
+  },
+  "suggerer/sans-visee": {
+   "fichier": "suggerer/sans-visee.png",
+   "quoi": "Suggérer sans visée : « Aucune visée. Rien n'est visé dans Ma bière… »",
+   "empreinte": "a7e702eb623a93a9",
+   "octets": 67794,
+   "masques": [],
+   "pris": "2026-10-31T12:40:10.646Z"
+  },
+  "suggerer/visee-tropicaux": {
+   "fichier": "suggerer/visee-tropicaux.png",
+   "quoi": "Suggérer avec la visée « + » sur tropicaux posée dans Ma bière (q2b : groupes de voies)",
+   "empreinte": "088cf750f7c6162f",
+   "octets": 220336,
+   "masques": [],
+   "pris": "2026-10-31T12:40:22.820Z"
+  }
+ }
+}

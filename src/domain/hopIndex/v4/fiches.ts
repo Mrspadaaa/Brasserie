@@ -1,6 +1,6 @@
 // Fiche détaillée d'un houblon (appui long, survol long) : uniquement des données du dépôt, sourcées ;
 // null avec une raison quand la donnée manque. Aucune valeur inventée.
-import { stock as stockDuMoteur, hopRef } from './data';
+import { stock as stockDuMoteur, hopRef, estBeerMaverick, sourceDesPlages } from './data';
 import { nombreFr } from './nombres';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies, familyWords } from './hops';
@@ -17,8 +17,9 @@ const overlap = (rows: SourcedRange[]): 'identiques' | 'recouvrantes' | 'disjoin
   if (a.min === b.min && a.max === b.max) return 'identiques';
   return Math.max(a.min, b.min) <= Math.min(a.max, b.max) ? 'recouvrantes' : 'disjointes';
 };
-const rows = (bm: Span, bmYear: number | null, bmUrl: string | null, hs: Span, hsYear: number | null, hsUrl: string | null): SourcedRange[] => [
-  ...(bm ? [{ source: 'Beer Maverick', min: bm[0], max: bm[1], annee: bmYear, url: bmUrl }] : []),
+// b1 (D201) : `etiq` dit d'où vient la plage du catalogue : Beer Maverick pour les 317 de base, la source (ou « enveloppe de n sources ») pour un ajout.
+const rows = (bm: Span, bmYear: number | null, bmUrl: string | null, hs: Span, hsYear: number | null, hsUrl: string | null, etiq: string): SourcedRange[] => [
+  ...(bm ? [{ source: etiq, min: bm[0], max: bm[1], annee: bmYear, url: bmUrl }] : []),
   ...(hs ? [{ source: 'Hopsteiner', min: hs[0], max: hs[1], annee: hsYear, url: hsUrl }] : []),
 ];
 
@@ -28,10 +29,11 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
   const h = hopRef(key);
   if (!h) throw Error(`Houblon inconnu : ${key}`);
   const c = h.catalogue, hs = c.hs;
-  const alphaRows = rows(c.alpha, c.bmYear, c.url, hs?.alpha ?? null, hs?.year ?? null, hs?.reference ?? null);
-  const betaRows = rows(c.beta, c.bmYear, c.url, hs?.beta ?? null, hs?.year ?? null, hs?.reference ?? null);
-  const oilRows = rows(c.oil, c.bmYear, c.url, hs?.totalOil ?? null, hs?.year ?? null, hs?.reference ?? null);
-  const comp = (r: Span) => (r ? { min: r[0], max: r[1], unite: '% de l’huile', source: 'Beer Maverick', annee: c.bmYear, url: c.url } : null);
+  const etiq = sourceDesPlages(c);
+  const alphaRows = rows(c.alpha, c.bmYear, etiq.url, hs?.alpha ?? null, hs?.year ?? null, hs?.reference ?? null, etiq.nom);
+  const betaRows = rows(c.beta, c.bmYear, etiq.url, hs?.beta ?? null, hs?.year ?? null, hs?.reference ?? null, etiq.nom);
+  const oilRows = rows(c.oil, c.bmYear, etiq.url, hs?.totalOil ?? null, hs?.year ?? null, hs?.reference ?? null, etiq.nom);
+  const comp = (r: Span) => (r ? { min: r[0], max: r[1], unite: '% de l’huile', source: etiq.nom, annee: c.bmYear, url: etiq.url } : null);
   const desc = describeFamilies(h.varietyId);
   const mots = familyWords(h.varietyId, c);
   const s = h.stock;
@@ -47,7 +49,7 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
       composants: {
         myrcene: comp(c.oils.myrcene), humulene: comp(c.oils.humulene), caryophyllene: comp(c.oils.caryophyllene),
         farnesene: comp(c.oils.farnesene ?? null),
-        ...(c.oils.farnesene ? {} : { farneseneRaison: 'Beer Maverick ne publie pas de farnésène pour ce houblon (« Unknown » ou fiche absente).' }),
+        ...(c.oils.farnesene ? {} : { farneseneRaison: estBeerMaverick(c) ? 'Beer Maverick ne publie pas de farnésène pour ce houblon (« Unknown » ou fiche absente).' : 'Aucune des sources de ce houblon ne publie de farnésène.' }),
         linalool: c.hsLinalool ? { min: c.hsLinalool.range[0], max: c.hsLinalool.range[1], unite: '% de l’huile', source: 'Hopsteiner', annee: c.hsLinalool.year, url: c.hsLinalool.reference } : null,
       },
     },

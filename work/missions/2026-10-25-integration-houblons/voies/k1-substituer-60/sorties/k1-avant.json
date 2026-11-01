@@ -1,0 +1,481 @@
+{
+ "etat": "avant",
+ "moteurInchange": {
+  "avecRegle": "9e1a3a6d4560d06fd08c2a93bfa321934eabc620c86308b2fbd13b0024040ce1",
+  "sansRegle": "cda1c42129336ae17f1534230787164fce96f57a8dffd0c37ec9125aaca42802"
+ },
+ "nuggetStoutSansStock": {
+  "candidats": 504,
+  "teteMontree": [
+   "Bru 100 très proche [amertume inconnue]",
+   "Cluster fugget 100 très proche [amertume inconnue]",
+   "Extra styrian dana 100 très proche [amertume inconnue]",
+   "Kohia Nelson 100 très proche [amertume inconnue]",
+   "Limequat 100 très proche [amertume inconnue]"
+  ],
+  "top5": [
+   "Bru 100 très proche amertume=null",
+   "Cluster fugget 100 très proche amertume=null",
+   "Extra styrian dana 100 très proche amertume=null",
+   "Kohia Nelson 100 très proche amertume=null",
+   "Limequat 100 très proche amertume=null"
+  ],
+  "inconnusDansTop5": 5,
+  "inconnusDansTop30": 12,
+  "montresAmertumeInconnue": 5,
+  "candidatsAmertumeInconnue": 76,
+  "rangDesPhares": {
+   "columbus": 49,
+   "magnum-us": 53,
+   "warrior": 25,
+   "chinook": 33,
+   "zeus": 70,
+   "cluster": 170
+  },
+  "_m8": 5
+ },
+ "nuggetStoutAvecStock": {
+  "candidats": 505,
+  "teteMontree": [
+   "Bru 100 très proche [amertume inconnue]",
+   "Cluster fugget 100 très proche [amertume inconnue]",
+   "Extra styrian dana 100 très proche [amertume inconnue]",
+   "Kohia Nelson 100 très proche [amertume inconnue]",
+   "Limequat 100 très proche [amertume inconnue]",
+   "Motueka 80 très proche",
+   "Galaxy 77 proche",
+   "Citra cryo 95 très proche"
+  ],
+  "top5": [
+   "Motueka 80 très proche amertume=87",
+   "Bru 100 très proche amertume=null",
+   "Cluster fugget 100 très proche amertume=null",
+   "Extra styrian dana 100 très proche amertume=null",
+   "Kohia Nelson 100 très proche amertume=null"
+  ],
+  "inconnusDansTop5": 4,
+  "inconnusDansTop30": 12,
+  "montresAmertumeInconnue": 5,
+  "candidatsAmertumeInconnue": 76,
+  "rangDesPhares": {
+   "columbus": 50,
+   "magnum-us": 54,
+   "warrior": 26,
+   "chinook": 34,
+   "zeus": 71,
+   "cluster": 170
+  },
+  "_m8": 6
+ },
+ "populaires": [
+  {
+   "original": "nugget",
+   "style": "16D",
+   "montres": 5,
+   "inconnus": 5,
+   "tete": [
+    "Bru 100 très proche [inconnue]",
+    "Cluster fugget 100 très proche [inconnue]",
+    "Extra styrian dana 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "magnum-us",
+   "style": "18B",
+   "montres": 5,
+   "inconnus": 0,
+   "tete": [
+    "Magnum (GR) 96 très proche",
+    "Buzz Bullets 93 très proche",
+    "Hallertau Taurus 93 très proche",
+    "Boomerang 91 très proche",
+    "Yeoman 91 très proche"
+   ]
+  },
+  {
+   "original": "warrior",
+   "style": "18B",
+   "montres": 5,
+   "inconnus": 1,
+   "tete": [
+    "Cluster fugget 100 très proche [inconnue]",
+    "Summit 94 très proche",
+    "Yeoman 94 très proche",
+    "Magnat 93 très proche",
+    "Zenia 93 très proche"
+   ]
+  },
+  {
+   "original": "columbus",
+   "style": "22A",
+   "montres": 5,
+   "inconnus": 4,
+   "tete": [
+    "Tomahawk 100 très proche",
+    "Bru 100 très proche [inconnue]",
+    "Cluster fugget 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "chinook",
+   "style": "18B",
+   "montres": 5,
+   "inconnus": 4,
+   "tete": [
+    "Bru 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Krpan 100 très proche",
+    "Limequat 100 très proche [inconnue]",
+    "Mapuche 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "perle-us",
+   "style": "3B",
+   "montres": 5,
+   "inconnus": 0,
+   "tete": [
+    "Huell Classic 93 très proche",
+    "Northern Brewer (US) 93 très proche",
+    "Orion 92 très proche",
+    "Pulawski 92 très proche",
+    "Opal 91 très proche"
+   ]
+  },
+  {
+   "original": "saaz-cz",
+   "style": "3B",
+   "montres": 5,
+   "inconnus": 2,
+   "tete": [
+    "Cluster fugget 100 très proche [inconnue]",
+    "Ycr 1 100 très proche [inconnue]",
+    "Wild Loyalist 99 très proche",
+    "Saaz Late 96 très proche",
+    "Amethyst 95 très proche"
+   ]
+  },
+  {
+   "original": "east-kent-goldings",
+   "style": "11C",
+   "montres": 5,
+   "inconnus": 0,
+   "tete": [
+    "Perle (US) 79 proche",
+    "Opal 78 proche",
+    "Bramling Cross 76 proche",
+    "Northern Brewer (GR) 75 proche",
+    "Whitbread Golding Variety (WGV) 75 proche"
+   ]
+  },
+  {
+   "original": "target",
+   "style": "11C",
+   "montres": 5,
+   "inconnus": 1,
+   "tete": [
+    "Peacharine 100 très proche [inconnue]",
+    "Herald 97 très proche",
+    "Sun 97 très proche",
+    "Zenia 97 très proche",
+    "Admiral 96 très proche"
+   ]
+  },
+  {
+   "original": "fuggle",
+   "style": "11C",
+   "montres": 5,
+   "inconnus": 2,
+   "tete": [
+    "Bru 100 très proche [inconnue]",
+    "Cluster fugget 100 très proche [inconnue]",
+    "East Kent Goldings 95 très proche",
+    "Styrian Golding 95 très proche",
+    "Lubelska 93 très proche"
+   ]
+  },
+  {
+   "original": "cascade",
+   "style": "18B",
+   "montres": 5,
+   "inconnus": 3,
+   "tete": [
+    "Petoskey 100 très proche",
+    "Vienna Gold 100 très proche",
+    "Bru 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "centennial",
+   "style": "18B",
+   "montres": 5,
+   "inconnus": 5,
+   "tete": [
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]",
+    "Peacharine 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]",
+    "Turkeys pick 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "citra",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 5,
+   "tete": [
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]",
+    "Mapuche 100 très proche [inconnue]",
+    "Peacharine 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "simcoe",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 3,
+   "tete": [
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Mapuche 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]",
+    "Zenia 94 très proche",
+    "Aloha Blend 93 très proche"
+   ]
+  },
+  {
+   "original": "mosaic",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 5,
+   "tete": [
+    "Bru 100 très proche [inconnue]",
+    "Cluster fugget 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]",
+    "machops 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "lotus",
+   "style": "22A",
+   "montres": 5,
+   "inconnus": 4,
+   "tete": [
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]",
+    "Turkeys pick 100 très proche [inconnue]",
+    "Experimental D5 055 97 très proche"
+   ]
+  },
+  {
+   "original": "galaxy",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 3,
+   "tete": [
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Mapuche 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]",
+    "Experimental D5 055 94 très proche",
+    "Eclipse 93 très proche"
+   ]
+  },
+  {
+   "original": "motueka",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 4,
+   "tete": [
+    "Vienna Gold 100 très proche",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]",
+    "Turkeys pick 100 très proche [inconnue]"
+   ]
+  },
+  {
+   "original": "nelson-sauvin",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 4,
+   "tete": [
+    "Bru 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Mega Motueka 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]",
+    "Southern Passion 98 très proche"
+   ]
+  },
+  {
+   "original": "hallertau-blanc",
+   "style": "21C",
+   "montres": 5,
+   "inconnus": 5,
+   "tete": [
+    "Bru 100 très proche [inconnue]",
+    "Kohia Nelson 100 très proche [inconnue]",
+    "Limequat 100 très proche [inconnue]",
+    "Mega Motueka 100 très proche [inconnue]",
+    "Tropical Fusion 100 très proche [inconnue]"
+   ]
+  }
+ ],
+ "catalogue": {
+  "moitiePaire": {
+   "n": 253,
+   "avec": 120,
+   "sans": 133,
+   "moins5": 69,
+   "tresProcheInconnu": 312
+  },
+  "moitieImpaire": {
+   "n": 252,
+   "avec": 118,
+   "sans": 134,
+   "moins5": 77,
+   "tresProcheInconnu": 348
+  },
+  "exemplesAvecInconnu": [
+   "beermaverick-african-queen (1/5, 7 candidats à amertume connue)",
+   "beermaverick-ahhhroma (3/5, 5 candidats à amertume connue)",
+   "beermaverick-ahtanum (2/5, 6 candidats à amertume connue)",
+   "beermaverick-amarillo (5/5, 0 candidats à amertume connue)",
+   "beermaverick-archer (1/5, 7 candidats à amertume connue)",
+   "beermaverick-ariana (5/5, 1 candidats à amertume connue)",
+   "beermaverick-astra (3/5, 5 candidats à amertume connue)",
+   "beermaverick-azacca (5/5, 3 candidats à amertume connue)",
+   "beermaverick-belma (3/5, 5 candidats à amertume connue)",
+   "beermaverick-bergamot (5/5, 2 candidats à amertume connue)",
+   "beermaverick-bitter-gold (5/5, 0 candidats à amertume connue)",
+   "beermaverick-bobek (1/5, 7 candidats à amertume connue)"
+  ]
+ },
+ "paliersInconnus": {
+  "b60": {
+   "très proche": 13,
+   "éloigné": 63
+  },
+  "b10": {
+   "éloigné": 76
+  },
+  "dryActive": {
+   "éloigné": 76
+  }
+ },
+ "empreintes": {
+  "nugget@b10": "62d8098747af6417a3e61258cfe69c4bc25964972a9a2a1f426ec46e7f6b93d6",
+  "nugget@wp": "b07a0793428b5d45cd546c46b29b73584881404920120b8f90f421d07f703fc8",
+  "nugget@dryActive": "6e6f4cd011d249345346671ac412bf5178658f41b4b865cd2bb890dfe853a3b4",
+  "nugget@dryPost": "78b4d8ed212129c6510c678cedd3295c9e668fb8aa0393d7e24d97a0382ec6eb",
+  "magnum-us@b10": "91ea0c86c7e28b0e8f351a01871685a71f0beff7d0d4ea93c6c2c53853bd84f6",
+  "magnum-us@wp": "e377aaf3da0518f07b7683d72bebcb9df370ed742656990ec70b478f88e179cc",
+  "magnum-us@dryActive": "a19ff6442492bc336c240599722274d4ea473743d8da539c6963273beb6f6c40",
+  "magnum-us@dryPost": "127ebc3e07947b6749eda597f9f63447de574c882306f915afcf9e8df35afcaa",
+  "warrior@b10": "e09d23deaba2edda32e0a79f85973fa3198a558a838759f8ab76d0cd9e5b044c",
+  "warrior@wp": "43d7c0d0bc9ad4162a28cd52b86b98ca6a698a45f32d03c8b03314cabad38efe",
+  "warrior@dryActive": "20fe02286183485cccd6b3e89a7b78389a8483f453583c262abdefc05cc3b8bd",
+  "warrior@dryPost": "62b61b3e57ca628c514dbb6583d66054fed21480e668201ebadb49d5931211b9",
+  "columbus@b10": "0296e31d5d1e26047e11032a85b4300f9a1771d4921f0990f8b457097cc8185c",
+  "columbus@wp": "dbebe7aa044db808b019ac882944e520a6a49801427858cdc22e07874be8c995",
+  "columbus@dryActive": "dea8fa74f7379339adbaf61ebbcda5f070ef1b7e055cb4a47fc67208597c8990",
+  "columbus@dryPost": "6bb2ce6723053aabf7babab5bdd6731ee70379092bd9e96c36da4ec9649c49c6",
+  "chinook@b10": "ffcb2f36caf0449cf8dc2990d50687e08ecd6ab33d5d0e330db6d5a8b06a19ae",
+  "chinook@wp": "8304b39819823797ac6d3692710277d57254746f062f525cf5540751e7cd64c8",
+  "chinook@dryActive": "fa88eda89081d03bcb73a9a21c0bf946b11285515b87d4a38b6e93003670be65",
+  "chinook@dryPost": "34ddc4e681dfabff36edefa350458910336c69eb60479d99889ef660523e2ddf",
+  "perle-us@b10": "e61c97eb27d9d83f7c11396df34722c97c072e27dce10234cbb1b77b45bb4f12",
+  "perle-us@wp": "d60d6a124fc206f57b7f0dcc7e28dd3d1c43e40e0e3d6cc5318667aecdac5180",
+  "perle-us@dryActive": "b1e3c50ae63bf532e11cc8a78ea348ed89d178782eb94222ae7ac952366e2102",
+  "perle-us@dryPost": "92379c40055227f42b9c5af552251c538df4333c7ef5ebaebe8e4f64880e8a43",
+  "saaz-cz@b10": "2e897582b0d4026bb306e7ca2f0bb0d93d981f14047d1edf7679bb9f81298845",
+  "saaz-cz@wp": "684e527b94d7a96ccf8b3cc3f15ec6cdabcc3c4f29bee293576d997c05b70421",
+  "saaz-cz@dryActive": "4801a6ae7f0a50f8e76c0bd0e823393e5978c8cfc4915b1b8aa62665c7cbb39d",
+  "saaz-cz@dryPost": "a94afcd44df2c489d11b0d6099105bdd38f8abf23482701a7b36e5adba000fe4",
+  "east-kent-goldings@b10": "6111ae966c7f0c5e968af1caea1d555a9fc418ba2bedc8496b6350ccb77f2b7e",
+  "east-kent-goldings@wp": "9f99da862c41fc4b2dcc62dacb6b99d34c0805f8113a0878c895756b10986025",
+  "east-kent-goldings@dryActive": "5d2b2216ba3eb34abd8ee112732408c2e84a09dbb0bd92746560cdb74935f4a6",
+  "east-kent-goldings@dryPost": "2754b7f65652cb888d235dafbcf6dc4e177ae2c11b65e1ed0843f14a011ddcdc",
+  "target@b10": "7dfd9fa384801b61fe5bde56c779d46fb975a1b73f5ed964150e3b43531eeac7",
+  "target@wp": "40b177283eb3ccfa6156d1552a4bd2470e4f0504132833446c0ecf7af6a15f16",
+  "target@dryActive": "1e3321a36fbf32be201b8444cf22782bc954f350555d2de597309a4bacf357da",
+  "target@dryPost": "6feb8eabe068c970fa769394f948c35e7f8d568ac90943a581401f3ed207774e",
+  "fuggle@b10": "24fac9165893d43a145655600741088a7398f1b961f8365a1b8ee82fb5712948",
+  "fuggle@wp": "ba28cac898c2fa097cfe56ca3e8303f9fa37bce74a9b2a2ece8ddc1ed2837d16",
+  "fuggle@dryActive": "e639e16cd11504c1dfd2c442a7e175d3b439b0088342975d8d85fbf3b2335a98",
+  "fuggle@dryPost": "b0c413581d79cf0ef79f1b886967e2431b09c8188461e2c1e19ae933d9094f86",
+  "cascade@b10": "e3db268b76c2a513c1dca68d4036e2315706df75897146265bd26cabca9c48fc",
+  "cascade@wp": "d3d7aa1664b150376efda405fc581b1cd7f4fcc41a8cabb765c64088e04e440f",
+  "cascade@dryActive": "0e5ffe329913edd4b6091891e84d24c421639bb04c99a0a1a04d77988680a006",
+  "cascade@dryPost": "fd3c299ca8dc92232b13a1dc9817c9da52ba126507fea94e1feaffcb56f1c14d",
+  "centennial@b10": "eb5d6e06836d2ddf7805d5ba7db3ba914217e27bdcefa136cc15122ac2be69cf",
+  "centennial@wp": "41c546e85b486c74ff3aed879ad7d25a65c59f5053e675b5768bf76bbf0849b9",
+  "centennial@dryActive": "876bd493a4422e49d3f6900d960cd9e60afe6575680f3c162f89595711a94c94",
+  "centennial@dryPost": "6755d2fc30cef8f3e41220d32fc0f4d41504eccf6c993694fe320b69281b9860",
+  "citra@b10": "eb81eaedc8233198eff69091db69d2d61e6e926c3400acbfe23a1e4443d93627",
+  "citra@wp": "544cac549acaac3eada5df04d2ad4bfa549af521cde646d8bcd6c24d8bfab6e8",
+  "citra@dryActive": "1731bca2c4cd923f9089cad00fac39126ca3d2c7a37df95ce9986f40d77f93b9",
+  "citra@dryPost": "fd1cfcd80bdb3bd584c9510210203393ab04c56029a4b5329c0938d2f8d7e8e8",
+  "simcoe@b10": "3a8341626db75d441a940aef6b44abba07dd93e5cfb3455c0ff72809927b193f",
+  "simcoe@wp": "beaeb8a425783fa2d63e3c12b2bf762eeef41b5dff8025a870d1954104edf0d5",
+  "simcoe@dryActive": "a3a9995d4d1b16afbf98e05b0dd0ff43dc77a6e06e23bb5775f993a213d7be64",
+  "simcoe@dryPost": "914c6eca13ff5c3bd9b63daae54e63da07c173b5f1ca3cd9be75f7191b6249f5",
+  "mosaic@b10": "c26d2c19d2b1182e7c8a71d9b6b9c736e376bb600f088e55205aceca0dd10b3c",
+  "mosaic@wp": "c86a27466c5a8f43fb884272944f76b3808da5512fb169d75fbaef4a89b3cbd2",
+  "mosaic@dryActive": "bebe0f479ad18d5550caf39967ae66acb6e9e3c5146d0194c381e53a26e6f4b6",
+  "mosaic@dryPost": "4bd2764a403b412d35bb28888ca773fca7667f36873f61f442ecfdb101f7c269",
+  "lotus@b10": "f66ee5c6aaa5378cb2fa262f9c716a2ab15055e657c173ab91347c410e169ee7",
+  "lotus@wp": "e0202e9c084dfda9febc75330c4c9ebe01adf03b942ba1700215d9266a57ae3d",
+  "lotus@dryActive": "4a131ba4952447a8c9a02d5a0cba144de6739ce6745ed578d0234958b3740ac8",
+  "lotus@dryPost": "b98d14d7f1dcc96ae51710d38c320d275986eeea429fd28cc5fad0e982869fbf",
+  "galaxy@b10": "cdbd9009a6e18b1502c90a6bf126d84e7e602f62752390ba4e9ffcadfe1c15bd",
+  "galaxy@wp": "c7ec09b69db69ebb7045872af105a68a0522ea60d4919606ddbf089e15ec67b4",
+  "galaxy@dryActive": "69395e20b38dd3069a9185f66fd82cf4bc69ce4ef5569c659ecf95ad0384bcd4",
+  "galaxy@dryPost": "51e1d5c92530a369f07988ec7ea87e752852e46ab48b8246473eba6c127c5bff",
+  "motueka@b10": "e8575cbdf1fbdff384318dc92f80758b50005bc7bf5fcb74b710feeac14cf5f2",
+  "motueka@wp": "dfc685b6a3725ec2cb3289a86b3b46278e3486476b76d0f43441b7821cd791a7",
+  "motueka@dryActive": "ed5ac7c85f4d17eed49009d5c087b84772f087ab5e24a7725cde48e31e4a7333",
+  "motueka@dryPost": "039fbce026bfaa56a755685d9e103e64080f544af1c91749edb5752ce15e0321",
+  "nelson-sauvin@b10": "97a025db0b4c140385c8d99b1fcee8cd287c955cfbba062b21ecab30b52345b7",
+  "nelson-sauvin@wp": "1af0e4f4166db9742cf925ed7ac097400b8eb33e142eb238e8294837399992cd",
+  "nelson-sauvin@dryActive": "3d08e30ebad680a840c720dc40f0443166cf34bd245a838c80f4057ab5169d4e",
+  "nelson-sauvin@dryPost": "ae944a6f209efb45d0d1fb4dc54b513f2925281d949a4bc4b6777fbdc1d75d1d",
+  "hallertau-blanc@b10": "d1611c5bed8eb4eff216768141510c5877a4903fde19e5c62538cf0b38efa0f9",
+  "hallertau-blanc@wp": "13fa270cf11ccf611a3e2e92a57e9ad8cae51ce5d0675a772010657ee951be64",
+  "hallertau-blanc@dryActive": "780d0557c7d3b833a54e9ce2059675144bd3d69583b08db6b050a23a6da1c0cd",
+  "hallertau-blanc@dryPost": "49122e4d85a87d20b1dd4d0c0c78c216df21e33e449844c61028f8c19b4437cf",
+  "nugget@defaut": "450956665746ee7cbd9a75761a117ab801e7ed746572aec24a7da4235a4d0352",
+  "magnum-us@defaut": "c7498ff8c566e9fa3718b16555cf81c715562d277d2d266ddb6e88e5999445ea",
+  "warrior@defaut": "be8a0539684d59350afe3cd6d628d10ab1bb18b3d95564f0b88e56e0d2f4d180",
+  "columbus@defaut": "4f304e92d7a19875e88988e87655a299ce48a2f2229ffeaef55d62c0fd38d37a",
+  "chinook@defaut": "c28bfa695789d272e6d0c1881bca19a4dabbc8dc717315abc1720214d015f9b6",
+  "perle-us@defaut": "cc16cad1167e7a3b67b5898f261c22a9cecb089400f059fc80cff95dd6d52936",
+  "saaz-cz@defaut": "e77ffc9a7d146001f4bd227e858ec6ff9d2756a3697ae04af0ba508dd7bc0a7f",
+  "east-kent-goldings@defaut": "2694a748c4fd8e9a521a738320f35fa8f8befd086197c52f772a7c519253b284",
+  "target@defaut": "b29530b554c1c935bfec5ac412bf3d4c8d040d3b2c47b2bcf2ae254d41336475",
+  "fuggle@defaut": "9aa5cfe36f7c244e2e2ab2f07bde9d4d1a70617badbda37537fb7b4e7c5b6eb1",
+  "cascade@defaut": "18500b9e811dd217ef59ee25cb413bd03c013d8d32f956ad39f16fd6a8f451c7",
+  "centennial@defaut": "6a7d7925649ada3ed31111efe93697dfd33bcb14480761b578dfd906b16b2d1b",
+  "citra@defaut": "b1847d10852bca888c30a1ce1aa0ed4aeda6b69529dd9092db906cc31da0cf7e",
+  "simcoe@defaut": "ba3c111dab097bc146dba116e7c1c9c05f75fd5d2bac17dea3dbf89eff2e22b8",
+  "mosaic@defaut": "2555ad5feca5f401b5222f63fbd36067ce458b535e4923edc81117ac4722ed68",
+  "lotus@defaut": "14be483ce5e56ceea2b904353286db4ea14366af9060fa60c4518d051d732ba3",
+  "galaxy@defaut": "d22df8d20bc13bb4fef50247c5c6b498a998fadf4b80cf6b989a0e9c1a067177",
+  "motueka@defaut": "b338664a2fbd43c8af553e5fd1e18c5ad5d283b34bc30982df265ce244db56a3",
+  "nelson-sauvin@defaut": "3ce9b69e1aaba9f83102320a243301dfdbf799171249fea82de06b975abd5391",
+  "hallertau-blanc@defaut": "d14a2ba3e26d01e9d2cdabdbd85f03bd976a33d4f856e5e364b75ba3b38f8624"
+ },
+ "synthese": {
+  "populairesAvecInconnu": 17,
+  "populaires": 20,
+  "moyenneInconnusMontres": 3
+ }
+}

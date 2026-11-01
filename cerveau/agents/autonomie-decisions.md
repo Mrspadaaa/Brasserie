@@ -2,7 +2,7 @@
 name: autonomie-decisions
 description: L'utilisateur veut le moins d'intervention possible ; les décisions courantes sont tranchées par le pilote, les lourdes par le skill conseil ; le goût revient au brasseur, en variantes.
 type: agents
-maj: 2026-10-22
+maj: 2026-10-31
 sources: mémoire locale affinee-autonomie-decisions.md
 ---
 
@@ -15,3 +15,7 @@ L'utilisateur, 2026-10-08 : « Ça va pas du tout, si je dois répondre à chaqu
 Quota : il veut qu'on l'optimise, sans perte de qualité ni plafond de contexte (refusé le 2026-10-08 : « un grand contexte peut être utile »). Économies acceptées : aucun sondage, Haiku pour le travail de masse, pas de journal brut entier, pas de travail en double, et des pauses aux paliers.
 
 Voir (leçon L11) et [[agents-sans-openai]].
+
+**Tests sur l'app déployée** (31.10) : « une fois implémente, jouer et faire des test sur la vrai application déployer. Tu peux modifier les données de recette, c'est pas trop gênant mais ne génère pas des quantités de données inutile ». Un écran porté se joue donc aussi sur l'app en ligne, après le déploiement de hosting.
+- On peut modifier une recette existante, de préférence un brouillon de test.
+- On ne crée pas de série de recettes : une seule recette de test, réutilisée, et rien d'autre (ni brassins, ni stock, ni comptes, ni réglages).

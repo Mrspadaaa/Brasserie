@@ -42,7 +42,7 @@ describe('après l\'arrivée du catalogue plein', () => {
 
   it('configurerDonnees rejouée à l\'arrivée : les 505 variétés sont dans les données courantes, un même tableau à chaque lecture', () => {
     const plein = cataloguePleinCharge()!;
-    expect(plein).toHaveLength(317 + 188);
+    expect(plein).toHaveLength(317 + 180); // D199 (c9) : huit doublons fondus dans leur variété (188 avant)
     expect(cataloguePleinCharge()).toBe(plein);                       // identité stable : les moteurs et leurs caches la reconnaissent
     configurerDonnees({ stock: [] });
     expect(donnees().catalogue).toBe(plein);

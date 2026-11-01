@@ -1,0 +1,1450 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/depense/rapprochement/troisieme-lecture.test.ts [2m([22m[2m48 tests[22m[2m | [22m[31m17 failed[39m[2m)[22m[32m 29[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22midentiques[32m 4[2mms[22m[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mstockCategory seule (ligne 1)[39m[32m 5[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mMalz au lieu de Malt, même référence[39m[32m 1[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mlignes « Zuschlag Schrotung » dans un autre ordre[39m[32m 1[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mlignes répétées dont une catégorie de stock diffère[39m[32m 1[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mprix seul différent[39m[32m 1[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mtotal imprimé 5 centimes au-dessus des lignes[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mligne de 10 centimes hors prix × quantité[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mbloc TVA incohérent lu deux fois (372765 telle quelle)[32m 1[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mquantité 60 lue pour 6 (autre lecture : 6)[32m 0[2mms[22m[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mTVA 2,80 contre 4,15 (P5 : ne déclenche plus)[39m[32m 1[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mligne de 3 centimes hors prix × quantité, lue deux fois[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mquantité 60 lue deux fois pour 6 (124,20 CHF, lectures identiques)[32m 1[2mms[22m[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mtotal faux (5 pour 1) lu deux fois à l'identique[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22mprix divergent, seule la lecture 2 tient quantité × prix[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mautre produit, même référence (Cascade / Hallertau)[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mambiguïté d'une seule lecture (P3)[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mdate différente[32m 1[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mmontant de ligne différent[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — le jeu de 20 paires simulées[2m > [22mligne manquante dans une lecture[32m 0[2mms[22m[39m
+[31m   [31m×[31m LE1 — le jeu de 20 paires simulées[2m > [22m6 troisièmes lectures sur 20 après l2 (15 sur 20 avant, mesuré sur HEAD)[39m[32m 6[2mms[22m[39m
+[31m     → expected 15 to be 6 // Object.is equality[39m
+[31m   [31m×[31m LE1 — champs qui ne déclenchent pas[2m > [22mdeux lectures qui ne diffèrent que par stockCategory : needsCorrection=false[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — champs qui ne déclenchent pas[2m > [22mvariant seul[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m LE1 — champs qui ne déclenchent pas[2m > [22mvatCode seul[32m 0[2mms[22m[39m
+[31m   [31m×[31m LE1 — champs qui ne déclenchent pas[2m > [22mprice seul[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — champs qui ne déclenchent pas[2m > [22mtvaAmount seul, tvaRate seul, vat[] seul[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — champs qui ne déclenchent pas[2m > [22mle nom : une coquille ou les mêmes mots dans un autre ordre ne déclenchent pas[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m LE1 — champs qui ne déclenchent pas[2m > [22msans référence : mêmes chiffres, ancre unique → les noms différents se rapprochent sans troisième lecture[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m LE1 — champs qui ne déclenchent pas[2m > [22mtrois lectures : jamais de quatrième[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui ne déclenchent pas[2m > [22mtva-incoherente, lignes-perdues, lignes-annoncees, prix par 100 g lus à l'identique[32m 1[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : vendor[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : date[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : currency[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : invoiceNumber[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : amountTTC[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : amountHT[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22men-tête : category[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mligne : quantity[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mligne : unit[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mligne : amountTTC[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mligne : kind[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mligne : reference[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mune ligne manquante ou en plus[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mun autre mot (pas une coquille) sur une ligne rapprochée par la référence[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mécart ligne-montant dont le prix diverge et que la lecture retenue ne tient pas[32m 0[2mms[22m[39m
+   [32m✓[39m LE1 — champs qui déclenchent[2m > [22mune ambiguïté d'une seule lecture[32m 0[2mms[22m[39m
+[31m   [31m×[31m P4 — jamais de rapprochement par la seule position[2m > [22mdeux « Fermenteur » aux quantités échangées : non rapprochés, 3e lecture, phrase « rapprochées »[39m[32m 0[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+   [32m✓[39m P4 — jamais de rapprochement par la seule position[2m > [22mcinq lignes identiques sur les cinq champs se rapprochent dans l'ordre[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/invoiceScanBudget.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 133[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mréserve avant génération, partage le quota global, conserve les jobs du compagnon[32m 13[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22msert le cache sans nouvel appel même après pause[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrefuse pause et budget zéro sans appel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mborne le document à trois générations sans quatrième appel[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun échec réseau ne réessaie pas et conserve la réservation[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun document simultané est refusé avant un second appel[32m 52[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mréserve deux lectures parallèles et comptabilise leur usage réel sans mise à jour perdue[32m 51[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mun signal déjà expiré empêche toute réservation payante[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrevérifie le signal immédiatement après la réservation quotidienne[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrevérifie le signal avant le fournisseur même si la réservation mensuelle a commencé[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens quotidiens après un rejet certain 429 en conservant le compteur de tentative[32m 1[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens quotidiens si la pause refuse la réservation mensuelle[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mune pause reste prioritaire quand le travail avale l’erreur de la lecture complémentaire[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mlibère les tokens lorsque le fournisseur confirme explicitement une consommation nulle[32m 0[2mms[22m[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mpréserve la réservation si la mise à jour de consommation échoue après le fournisseur[32m 1[2mms[22m[39m
+[31m   [31m×[31m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mest marqué dégradé, relu une seule fois, puis servi tel quel[39m[32m 4[2mms[22m[39m
+[31m     → expected 'completed' to be 'degraded' // Object.is equality[39m
+[31m   [31m×[31m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mla relecture qui réussit remplace le résultat dégradé[39m[32m 3[2mms[22m[39m
+[31m     → expected { result: { coupee: true }, …(2) } to match object { cached: false, …(1) }
+(2 matching properties omitted from actual)[39m
+   [32m✓[39m Budget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mun résultat complet n'est jamais marqué dégradé[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/lecture/corrections.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+   [32m✓[39m relecture n° 1 — countPdfPages ne se fige pas sur une entrée pathologique[2m > [22m280 Ko de « stream\n » sans « obj » ni « endstream » : refusé en moins d’une seconde[32m 2[2mms[22m[39m
+   [32m✓[39m relecture n° 1 — countPdfPages ne se fige pas sur une entrée pathologique[2m > [22m1 Mo de « /Type /Pages » : refusé (on ne sait pas compter), en moins d’une seconde[32m 5[2mms[22m[39m
+   [32m✓[39m relecture n° 1 — countPdfPages ne se fige pas sur une entrée pathologique[2m > [22m1 Mo de « /Type /ObjStm » sans flux : refusé en moins d’une seconde[32m 3[2mms[22m[39m
+   [32m✓[39m relecture n° 1 — countPdfPages ne se fige pas sur une entrée pathologique[2m > [22m1 Mo de « << » sans « >> » autour de quelques pages : refusé ou compté, mais en moins d’une seconde[32m 1[2mms[22m[39m
+   [32m✓[39m relecture n° 1 — countPdfPages ne se fige pas sur une entrée pathologique[2m > [22mun PDF ordinaire à deux pages reste compté[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mle résultat ne porte que le point lignes-annoncees (le cas de la sonde)[32m 1[2mms[22m[39m
+   [32m✓[39m relecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mdans le déclencheur réel de invoiceVisionReview.ts, aucune troisième lecture n’est demandée[32m 1[2mms[22m[39m
+   [32m✓[39m relecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mla phrase ne contient aucun des mots du déclencheur, et ne se range pas sous le total de l’écran[32m 1[2mms[22m[39m
+[31m   [31m×[31m relecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mun vrai écart de somme lu à l’identique : le point somme-ecart pèse, statut disputed, pas de troisième lecture[39m[32m 4[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m relecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mun vrai écart de somme dont une valeur diverge entre les lectures déclenche la troisième lecture[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mgarde : une annonce de lignes avec une somme fausse reste « lignes-perdues », sans troisième lecture[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 3 — une ligne sans code de TVA ne fabrique pas de tva-incoherente[2m > [22msonde H : Malt R 100,00 + Port sans code 10,00, base R 110,00, TVA 2,78, TTC 110,00 → aucun point[32m 1[2mms[22m[39m
+   [32m✓[39m relecture n° 3 — une ligne sans code de TVA ne fabrique pas de tva-incoherente[2m > [22msonde I : Malt R 100,00 + Remise sans code −10,00, base R 90,00, TVA 2,28, TTC 90,00 → aucun point[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 3 — une ligne sans code de TVA ne fabrique pas de tva-incoherente[2m > [22mtémoin : avec le même port sans code, une TVA du taux fausse reste un écart[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 3 — une ligne sans code de TVA ne fabrique pas de tva-incoherente[2m > [22mtémoin : avec le même port sans code, une somme des TVA fausse reste un écart[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 3 — une ligne sans code de TVA ne fabrique pas de tva-incoherente[2m > [22mtémoin : sans aucune ligne sans code, une base qui ne recoupe pas les lignes reste un écart[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 4 — la ligne d’arrondi est tolérée dans somme-bases[2m > [22msonde C : la somme des lignes est ok, et la base imprimée avant arrondi (100,02) ne donne pas de point[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 4 — la ligne d’arrondi est tolérée dans somme-bases[2m > [22ml’autre sens : la base imprimée après arrondi (100,00) ne donne pas de point non plus[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 4 — la ligne d’arrondi est tolérée dans somme-bases[2m > [22mmême chose avec « Arrondi » et un arrondi positif[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 4 — la ligne d’arrondi est tolérée dans somme-bases[2m > [22mtémoin : un écart plus grand que l’arrondi reste un écart (base 100,50 pour un TTC de 100,00)[32m 0[2mms[22m[39m
+   [32m✓[39m relecture n° 4 — la ligne d’arrondi est tolérée dans somme-bases[2m > [22mtémoin : une ligne « Rundung » de 0,50 n’est pas un arrondi (plus de 5 centimes) : l’écart de 0,02 reste un écart[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/statut.test.ts [2m([22m[2m30 tests[22m[2m | [22m[31m26 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+   [32m✓[39m A2 — un test par code : pèse ou non[2m > [22mla table couvre tous les codes de SCAN_POINT_CODES[32m 1[2mms[22m[39m
+   [32m✓[39m A2 — un test par code : pèse ou non[2m > [22mle témoin : une lecture propre lue deux fois est « checked », sans point[32m 2[2mms[22m[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mligne-montant[39m[32m 4[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mligne-prix-par-lot[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22msomme-ecart[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22msomme-incomplete[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mtva-incoherente[39m[32m 2[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mht-tva-ttc[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mlignes-perdues[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mlignes-annoncees[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mpro-forma-non-payee[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mtype-deduit[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be false // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mdevis[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22malpha-libelle[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22munite-absente[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mforme-rejetee[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be true // Object.is equality[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mdate-absente[39m[32m 0[2mms[22m[39m
+[31m     → point date-absente: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mdevise-non-chf[39m[32m 0[2mms[22m[39m
+[31m     → point devise-non-chf: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mtotal-absent[39m[32m 0[2mms[22m[39m
+[31m     → point total-absent: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mtaux-tva-hors-plage[39m[32m 0[2mms[22m[39m
+[31m     → point taux-tva-hors-plage: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mdocument-livraison[39m[32m 0[2mms[22m[39m
+[31m     → point document-livraison: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mavoir[39m[32m 0[2mms[22m[39m
+[31m     → point avoir: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mnature-a-preciser[39m[32m 0[2mms[22m[39m
+[31m     → point nature-a-preciser: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mambiguite-ligne[39m[32m 0[2mms[22m[39m
+[31m     → point ambiguite-ligne: expected undefined to be truthy[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mtype-deduit reste un point visible, valeur marquée « déduite »[39m[32m 3[2mms[22m[39m
+[31m     → expected { code: 'type-deduit', …(15) } to match object { luTexte: 'quote', pese: false }
+(15 matching properties omitted from actual)[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mtrois lectures concordantes, une remarque libre et des chiffres recoupés : checked, review à quatre clés[39m[32m 1[2mms[22m[39m
+[31m     → expected { status: 'disputed', …(3) } to deeply equal { status: 'checked', …(3) }[39m
+   [32m✓[39m A2 — un test par code : pèse ou non[2m > [22mun désaccord sans majorité pèse : disputed[32m 0[2mms[22m[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22m2 contre 1 sur un champ d'argent : point présent, ne pèse pas, ni dans findings ni dans issues (N1)[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to match object { pese: false, source: 'désaccord' }[39m
+[31m   [31m×[31m A2 — un test par code : pèse ou non[2m > [22mune ambiguïté de ligne lue dans une lecture sur deux pèse (P3)[39m[32m 0[2mms[22m[39m
+[31m     → expected '' to contain 'Quantité illisible'[39m
+   [32m✓[39m A2 — un test par code : pèse ou non[2m > [22m372765 (A et B) : disputed — désaccord TVA et bloc TVA incohérent[32m 1[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/points-uniques.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m   [31m×[31m A1 — un seul avertissement par champ[2m > [22msur les trois lectures simulées de 372765 : au plus une entrée de fieldWarnings par champ[39m[32m 9[2mms[22m[39m
+[31m     → {"documentType":1,"tvaRate":3,"amountHT":1,"invoiceNumber":2}: expected false to be true // Object.is equality[39m
+[31m   [31m×[31m A1 — un seul avertissement par champ[2m > [22mau plus une remarque par (champ, ligne) ; invoiceNumber levée par A et B = une remarque, lectures [1, 2][39m[32m 2[2mms[22m[39m
+[31m     → liste is not iterable[39m
+[31m   [31m×[31m A1 — un seul avertissement par champ[2m > [22mune remarque d'une seule lecture reste dans la liste, avec la lecture qui l'a levée[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'find')[39m
+[31m   [31m×[31m A1 — un seul avertissement par champ[2m > [22mune remarque ne pèse jamais et n'est pas un point[39m[32m 1[2mms[22m[39m
+[31m     → expected 'disputed' to be 'checked' // Object.is equality[39m
+   [32m✓[39m A1 — un seul avertissement par champ[2m > [22mun champ en désaccord n'a que la phrase de désaccord dans fieldWarnings[32m 2[2mms[22m[39m
+   [32m✓[39m A1 — un seul avertissement par champ[2m > [22mtrois lectures identiques de 372765 : les points sont ceux de la lecture (le test de l1 reste vrai)[32m 2[2mms[22m[39m
+   [32m✓[39m A1 — un seul avertissement par champ[2m > [22maucun doublon de cle dans les points[32m 1[2mms[22m[39m
+[31m   [31m×[31m A1 — un seul avertissement par champ[2m > [22mle chemin à une seule lecture applique le même tri[39m[32m 0[2mms[22m[39m
+[31m     → (0 , finirUneLecture) is not a function[39m
+[31m   [31m×[31m A1 — chaque phrase tombe sous son champ dans invoiceFieldHints[2m > [22mdésaccord d'en-tête, désaccord de ligne et lecture coupée ne tombent pas sous un mauvais champ[39m[32m 2[2mms[22m[39m
+[31m     → expected 'Les lectures ne concordent pas. Vérif…' to match /Fournisseur/[39m
+ [31m❯[39m tests/unit/invoiceVisionReview.test.ts [2m([22m[2m44 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 18[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mpréserve un total absent et ses alertes sans acheter une troisième lecture inutile[32m 3[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne confirme pas des références ou tailles divergentes sous un même libellé[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mconfirme deux lectures concordantes sans modifier leurs données ni leurs preuves[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22maccepte les accents, espaces, casse et synonymes de pièces sans convertir la quantité[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mcompare les dates après normalisation calendaire[32m 0[2mms[22m[39m
+[31m   [31m×[31m Deux visions indépendantes et correction par majorité[2m > [22mne paie pas de troisième lecture pour le champ tvaAmount divergent, mais garde le point de désaccord et ses deux valeurs[39m[32m 4[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m Deux visions indépendantes et correction par majorité[2m > [22mne paie pas de troisième lecture pour le champ tvaRate divergent, mais garde le point de désaccord et ses deux valeurs[39m[32m 1[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ vendor divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ date divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ currency divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ invoiceNumber divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ amountHT divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ amountTTC divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mdemande une correction du champ category divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mlaisse une sous-catégorie éditoriale divergente au choix humain sans arbitrage payant[32m 1[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mconserve la sous-catégorie seulement si deux lecteurs partagent cette suggestion[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mune divergence de classification principale exige toujours une relecture[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi kind sur chaque ligne[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi quantity sur chaque ligne[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi unit sur chaque ligne[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi amountTTC sur chaque ligne[32m 0[2mms[22m[39m
+[31m   [31m×[31m Deux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi price sur chaque ligne[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [31m×[31m Deux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi stockCategory sur chaque ligne[39m[32m 0[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne convertit pas grammes en kilos pour créer artificiellement un accord[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne complète aucune valeur absente à partir d’une seule lecture[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22maccepte le vote de deux relecteurs pour corriger un total source, sans modifier l’original[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mune majorité qui confirme la première lecture résout le désaccord sans inventer de correction[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mgarde le champ initial si les trois lectures divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne comble pas null quand deux lecteurs ne voient pas la valeur[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne laisse pas une lecture tardive seule écraser deux lectures concordantes[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mrapproche les noms uniques malgré un ordre différent sans échanger les quantités[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne mélange pas les lignes de noms OCR proches, même à la même position[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mcorrige la structure seulement si deux relevés complets concordent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne joint jamais des lignes dupliquées par leur position quand leurs quantités divergent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22maccepte deux transcriptions intégralement identiques de lignes aux libellés dupliqués[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mconserve une ambiguïté explicite même si les valeurs numériques concordent[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mrecalcule les contrôles et ne confirme pas des totaux incohérents même si les lecteurs sont d’accord[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mignore uniquement le bruit binaire et ne masque pas un vrai écart inférieur au centime[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mconserve la limite de lignes visible après une seconde normalisation[32m 1[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne dépense pas une correction pour une devise étrangère lue à l’identique[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mne répète pas l’OCR pour des montants absents à l’identique[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mrejette 0 lectures pour maintenir la borne explicite[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mrejette 1 lectures pour maintenir la borne explicite[32m 0[2mms[22m[39m
+   [32m✓[39m Deux visions indépendantes et correction par majorité[2m > [22mrejette 4 lectures pour maintenir la borne explicite[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/desaccords.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m8 failed[39m[2m)[22m[32m 17[2mms[22m[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mtvaAmount 2,80 / 4,15 → un point de désaccord qui porte les deux valeurs[39m[32m 9[2mms[22m[39m
+[31m     → expected undefined to match object { source: 'désaccord', …(6) }[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mtrois valeurs différentes → trois entrées, la première lecture reste retenue[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'valeurs')[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mune valeur absente est null, jamais 0 ; une chaîne vide devient null[39m[32m 0[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'valeurs')[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mgabarit des phrases : en-tête et ligne[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to match object { champ: 'items', ligne: 1, …(3) }[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mprix divergent où seule la lecture 2 tient quantité × prix : la valeur retenue est celle de la lecture 2 (recoupée)[39m[32m 1[2mms[22m[39m
+[31m     → expected 2.4 to be 2.5 // Object.is equality[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mnom, unité, taille, catégorie de stock en désaccord : enjeu stock et pas de liaison automatique[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to match object { enjeu: 'stock', …(3) }[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mune ligne manquante : 22 lignes votées, la 23e nommée dans lignes-non-rapprochees[39m[32m 2[2mms[22m[39m
+[31m     → expected undefined to match object { code: 'lectures-divergentes', …(1) }[39m
+[31m   [31m×[31m U1 — les valeurs concurrentes sont gardées[2m > [22mN3 : la ligne orpheline de la seule lecture minoritaire ne pèse pas (deux lectures sur trois s'accordent)[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to match object { pese: false, source: 'désaccord' }[39m
+   [32m✓[39m U1 — les valeurs concurrentes sont gardées[2m > [22mles points sont du JSON pur et les lectures ne sont pas mutées[32m 1[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/rapprochement/relais.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 16[2mms[22m[39m
+[31m   [31m×[31m R2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22mlignes retenues de la lecture 2 : vat et linesLost sont ceux de la lecture 2, pas ceux de la lecture 1[39m[32m 9[2mms[22m[39m
+[31m     → expected [] to have a length of 2 but got +0[39m
+   [32m✓[39m R2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22mune pro-forma payée lue « quote » : documentType reste quote, documentTypeRetenu = invoice, paiement payé[32m 1[2mms[22m[39m
+   [32m✓[39m R2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22malphaPct, vatCode et rejets de la base sont conservés[32m 1[2mms[22m[39m
+[31m   [31m×[31m R2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22m372765 (A+B) : 23 lignes, vat de deux rangées, bloc TVA incohérent ET désaccord TVA[39m[32m 2[2mms[22m[39m
+[31m     → expected [ 'tva-incoherente' ] to include 'lectures-divergentes'[39m
+   [32m✓[39m R2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22mvat[] comparé trié par taux : le même bloc dans un autre ordre n'est pas un désaccord[32m 2[2mms[22m[39m
+[31m   [31m×[31m R2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22mvat[] différent : un point de désaccord, sans troisième lecture[39m[32m 1[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+ [31m❯[39m tests/unit/geminiScanner.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 13[2mms[22m[39m
+[31m   [31m×[31m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun résultat serveur complet traverse sans perte[39m[32m 9[2mms[22m[39m
+[31m     → expected undefined to deeply equal [ { code: 'tva-incoherente', …(15) } ][39m
+   [32m✓[39m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mles unités restent telles qu'imprimées (Kg, g, Stk) : aucune conversion[32m 1[2mms[22m[39m
+   [32m✓[39m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun ancien résultat sort sans aucune des nouvelles clés[32m 1[2mms[22m[39m
+[31m   [31m×[31m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun point mal formé est assaini : texte coupé, nombre non fini → null, « » → null, valeurs bornées[39m[32m 1[2mms[22m[39m
+[31m     → Target cannot be null or undefined.[39m
+[31m   [31m×[31m R1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun documentTypeRetenu inconnu retombe sur documentType[39m[32m 0[2mms[22m[39m
+[31m     → expected undefined to be 'quote' // Object.is equality[39m
+ [31m❯[39m tests/unit/purchasePrefill.test.ts [2m([22m[2m14 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 8[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mpropose le libellé par le code (fournisseur, n°, familles) et ne reprend plus la prose du modèle (A12, voie s2)[32m 1[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mpropose la somme au centime et distingue cette proposition du total source absent[32m 1[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mpréserve un total imprimé divergent et demande de le confirmer[32m 0[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22mne convertit pas une devise étrangère et ne somme pas un détail incomplet[32m 0[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22minclut la remise et ne transforme pas un avoir en dépense positive[32m 0[2mms[22m[39m
+   [32m✓[39m Propositions de saisie, sans inventer les valeurs imprimées[2m > [22msignale les champs corrigés, absents et les vérifications indisponibles[32m 0[2mms[22m[39m
+   [32m✓[39m Date de l’achat et paiement quotidien[2m > [22mpropose payé à la date du document, sauf indication contraire ou achat futur[32m 0[2mms[22m[39m
+   [32m✓[39m Date de l’achat et paiement quotidien[2m > [22mdéplace ensemble achat et paiement, et préserve une date de paiement distincte[32m 0[2mms[22m[39m
+   [32m✓[39m Date de l’achat et paiement quotidien[2m > [22mchange le mois sans perdre le jour, avec fins de mois et changements d’année[32m 0[2mms[22m[39m
+[31m   [31m×[31m scannedPayment — documentTypeRetenu[2m > [22mpro-forma payée lue « quote », type retenu facture → Déjà payé[39m[32m 4[2mms[22m[39m
+[31m     → expected 'unpaid' to be 'paid' // Object.is equality[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mle même résultat sans documentTypeRetenu (ancien résultat) → À payer, comme avant[32m 0[2mms[22m[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mpro-forma lue « quote » sans paiement imprimé → À payer[32m 0[2mms[22m[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mpro-forma lue « invoice » sans preuve de paiement → Déjà payé (comportement actuel, noté tel quel)[32m 0[2mms[22m[39m
+   [32m✓[39m scannedPayment — documentTypeRetenu[2m > [22mavoir et date future → À payer[32m 0[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/rapprochement/lecture-coupee.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [31m❯[39m tests/unit/depense/rapprochement/lecture-coupee.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[32m 16[2mms[22m[39m
+[31m   [31m×[31m LE4 — le journal d'une lecture[2m > [22mligneJournalLecture : durée, jetons, finishReason, coupée ou non ; null quand une valeur manque[39m[32m 3[2mms[22m[39m
+[31m     → ligneJournalLecture is not a function[39m
+[31m   [31m×[31m LE4 — le journal d'une lecture[2m > [22mscanInvoiceSafely journalise une ligne par lecture (deux, puis trois)[39m[32m 6[2mms[22m[39m
+[31m     → expected [] to deeply equal [ 1, 2 ][39m
+[31m   [31m×[31m LE4 — une lecture coupée est dite telle quelle[2m > [22mune lecture sur deux coupée (limite de sortie) : unavailable, readers 1, phrase et point lecture-coupee[39m[32m 1[2mms[22m[39m
+[31m     → expected 'La double lecture n’a pas abouti. Vér…' to match /coupée/[39m
+[31m   [31m×[31m LE4 — une lecture coupée est dite telle quelle[2m > [22mune lecture arrêtée par le délai (AbortError) : cause « delai »[39m[32m 2[2mms[22m[39m
+[31m     → expected undefined to match object { luTexte: 'delai' }[39m
+   [32m✓[39m LE4 — une lecture coupée est dite telle quelle[2m > [22mles deux lectures coupées : l'erreur existante remonte[32m 1[2mms[22m[39m
+[31m   [31m×[31m LE4 — une lecture coupée est dite telle quelle[2m > [22mla troisième lecture coupée : disputed, phrase existante conservée, point lecture-coupee[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to match object { luTexte: 'sortie' }[39m
+[31m   [31m×[31m LE4 — une lecture coupée est dite telle quelle[2m > [22mdélai global atteint : la troisième lecture est sautée AVEC phrase et point, statut disputed[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to match object { luTexte: 'delai-saute' }[39m
+[31m   [31m×[31m LE4 — une lecture coupée est dite telle quelle[2m > [22mScanReadCutError garde le message d'avant et le finishReason[39m[32m 0[2mms[22m[39m
+[31m     → ScanReadCutError is not a constructor[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/recalcul.test.ts[2m [ tests/unit/depense/rapprochement/recalcul.test.ts ][22m
+[31m[1mError[22m: Cannot find module '../../../../src/domain/finance/invoicePoints' imported from 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/tests/unit/depense/rapprochement/recalcul.test.ts'[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/recalcul.test.ts:[2m4:1[22m[39m
+    [90m  2| [39m[35mimport[39m { describe[33m,[39m expect[33m,[39m it } [35mfrom[39m [32m'vitest'[39m[33m;[39m
+    [90m  3| [39m[35mimport[39m [33m*[39m [35mas[39m serveur [35mfrom[39m [32m'../../../../functions/src/invoiceScanCore'[39m[33m;[39m
+    [90m  4| [39m[35mimport[39m [33m*[39m [35mas[39m client [35mfrom[39m [32m'../../../../src/domain/finance/invoicePoints'[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m  5| [39mimport { recomputeInvoicePoints, statutDeLecture } from '../../../../s…
+    [90m  6| [39m
+
+[31m[1mCaused by: Error[22m: Failed to load url ../../../../src/domain/finance/invoicePoints (resolved id: ../../../../src/domain/finance/invoicePoints) in C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/tests/unit/depense/rapprochement/recalcul.test.ts. Does the file exist?[39m
+[90m [2m❯[22m loadAndTransform ../../../../Documents/Brasserie/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:[2m35835:17[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/79]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 78 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/geminiScanner.test.ts[2m > [22mR1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun résultat serveur complet traverse sans perte
+[31m[1mAssertionError[22m: expected undefined to deeply equal [ { code: 'tva-incoherente', …(15) } ][39m
+
+[32m- Expected:[39m 
+[
+  {
+    "bloque": false,
+    "calcule": 8650,
+    "champ": "vat",
+    "champs": [
+      "vat",
+      "tvaAmount",
+      "amountTTC",
+    ],
+    "cle": "tva-incoherente:-:vat",
+    "code": "tva-incoherente",
+    "details": [
+      {
+        "calcule": 8650,
+        "ecart": 2390,
+        "lu": 11040,
+        "relation": "somme-bases",
+      },
+      {
+        "calcule": 1120,
+        "code": "N",
+        "ecart": 1500,
+        "lu": 2620,
+        "relation": "base-par-code:N",
+      },
+      {
+        "calcule": 7530,
+        "code": "R",
+        "ecart": 890,
+        "lu": 8420,
+        "relation": "base-par-code:R",
+      },
+      {
+        "calcule": 415,
+        "ecart": -135,
+        "lu": 280,
+        "relation": "somme-tva",
+      },
+      {
+        "arrondiPossible": true,
+        "calcule": 213,
+        "code": "R",
+        "ecart": 7,
+        "lu": 220,
+        "relation": "tva-du-taux:R",
+      },
+      {
+        "arrondiPossible": true,
+        "calcule": 196,
+        "code": "N",
+        "ecart": -1,
+        "lu": 195,
+        "relation": "tva-du-taux:N",
+      },
+    ],
+    "ecart": 2390,
+    "enjeu": "info",
+    "gravite": "ecart",
+    "ligne": null,
+    "lu": 11040,
+    "message": "TVA imprimée incohérente : 4 contrôle(s) par taux ne se recoupent pas (somme-bases lu 110,40 pour 86,50 ; base-par-code:N lu 26,20 pour 11,20). Rien n'est corrigé, le HT n'est pas déduit.",
+    "origine": "controle",
+    "regle": "TVA imprimée : taux, bases, montants et lignes se recoupent",
+    "unite": "centimes",
+  },
+]
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/geminiScanner.test.ts:[2m14:22[22m[39m
+    [90m 12| [39m    [35mconst[39m brut [33m=[39m [34mserveur[39m()[33m;[39m
+    [90m 13| [39m    [35mconst[39m r [33m=[39m [33mGeminiScannerService[39m[33m.[39m[34mnormalizeResult[39m(brut) [35mas[39m any[33m;[39m
+    [90m 14| [39m    [34mexpect[39m(r[33m.[39mpoints)[33m.[39m[34mtoEqual[39m(brut[33m.[39mpoints)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 15| [39m    expect(r.points.find((p: any) => p.code === 'lectures-divergentes'…
+    [90m 16| [39m    [34mexpect[39m(r[33m.[39mcontrols)[33m.[39m[34mtoEqual[39m(brut[33m.[39mcontrols)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/geminiScanner.test.ts[2m > [22mR1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun point mal formé est assaini : texte coupé, nombre non fini → null, « » → null, valeurs bornées
+[31m[1mAssertionError[22m: Target cannot be null or undefined.[39m
+[36m [2m❯[22m tests/unit/geminiScanner.test.ts:[2m44:22[22m[39m
+    [90m 42| [39m      [32m'nimporte quoi'[39m[33m,[39m [35mnull[39m[33m,[39m
+    [90m 43| [39m    ] }) [35mas[39m any[33m;[39m
+    [90m 44| [39m    [34mexpect[39m(r[33m.[39mpoints)[33m.[39m[34mtoHaveLength[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 45| [39m    [34mexpect[39m(r[33m.[39mpoints[[34m0[39m][33m.[39mmessage[33m.[39mlength)[33m.[39m[34mtoBeLessThanOrEqual[39m([34m250[39m)[33m;[39m
+    [90m 46| [39m    [34mexpect[39m(r[33m.[39mpoints[[34m0[39m][33m.[39mlu)[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/geminiScanner.test.ts[2m > [22mR1 — normalizeResult ne jette plus ce que le serveur a calculé[2m > [22mun documentTypeRetenu inconnu retombe sur documentType
+[31m[1mAssertionError[22m: expected undefined to be 'quote' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"quote"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/geminiScanner.test.ts:[2m54:34[22m[39m
+    [90m 52| [39m  [34mit[39m([32m'un documentTypeRetenu inconnu retombe sur documentType'[39m[33m,[39m () [33m=>[39m {
+    [90m 53| [39m    const r = GeminiScannerService.normalizeResult({ items: [], docume…
+    [90m 54| [39m    [34mexpect[39m(r[33m.[39mdocumentTypeRetenu)[33m.[39m[34mtoBe[39m([32m'quote'[39m)[33m;[39m
+    [90m   | [39m                                 [31m^[39m
+    [90m 55| [39m  })[33m;[39m
+    [90m 56| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceScanBudget.test.ts[2m > [22mBudget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mest marqué dégradé, relu une seule fois, puis servi tel quel
+[31m[1mAssertionError[22m: expected 'completed' to be 'degraded' // Object.is equality[39m
+
+Expected: [32m"[7mdegrad[27med"[39m
+Received: [31m"[7mcomplet[27med"[39m
+
+[36m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m143:66[22m[39m
+    [90m141| [39m      const coupe=async(gen:any)=>{await gen(request,signal());return …
+    [90m142| [39m      const first=await runBudgetedInvoiceScan('u',file,coupe,p,option…
+    [90m143| [39m      expect(first.cached).toBe(false);expect(ledgerOf().status).toBe(…
+    [90m   | [39m                                                                 [31m^[39m
+    [90m144| [39m      const second=await runBudgetedInvoiceScan('u',file,coupe,p,optio…
+    [90m145| [39m      expect(second.cached).toBe(false);expect(p).toHaveBeenCalledTime…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceScanBudget.test.ts[2m > [22mBudget scan isolé, fournisseur simulé[2m > [22mrésultat dégradé (lecture coupée)[2m > [22mla relecture qui réussit remplace le résultat dégradé
+[31m[1mAssertionError[22m: expected { result: { coupee: true }, …(2) } to match object { cached: false, …(1) }
+(2 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "cached": false,[39m
+[31m+   "cached": true,[39m
+[2m    "result": {[22m
+[32m-     "amount": 42,[39m
+[31m+     "coupee": true,[39m
+[2m    },[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/invoiceScanBudget.test.ts:[2m153:19[22m[39m
+    [90m151| [39m      await runBudgetedInvoiceScan('u',file,async gen=>{await gen(requ…
+    [90m152| [39m      const bon=await runBudgetedInvoiceScan('u',file,async gen=>{awai…
+    [90m153| [39m      expect(bon).toMatchObject({cached:false,result:{amount:42}});exp…
+    [90m   | [39m                  [31m^[39m
+    [90m154| [39m      expect(await runBudgetedInvoiceScan('u',file,async gen=>{await g…
+    [90m155| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceVisionReview.test.ts[2m > [22mDeux visions indépendantes et correction par majorité[2m > [22mne paie pas de troisième lecture pour le champ tvaAmount divergent, mais garde le point de désaccord et ses deux valeurs
+[41m[1m FAIL [22m[49m tests/unit/invoiceVisionReview.test.ts[2m > [22mDeux visions indépendantes et correction par majorité[2m > [22mne paie pas de troisième lecture pour le champ tvaRate divergent, mais garde le point de désaccord et ses deux valeurs
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/invoiceVisionReview.test.ts:[2m60:36[22m[39m
+    [90m 58| [39m    const result = reconcileInvoiceVision([read(), read({ [field]: cha…
+    [90m 59| [39m    [34mexpect[39m(result[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m 60| [39m    [34mexpect[39m(result[33m.[39mneedsCorrection)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 61| [39m    const point = (result.result as any).points.find((p: any) => p.cod…
+    [90m 62| [39m    expect(point.valeurs.map((v: any) => v.valeur)).toEqual([read()[fi…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/invoiceVisionReview.test.ts[2m > [22mDeux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi price sur chaque ligne
+[41m[1m FAIL [22m[49m tests/unit/invoiceVisionReview.test.ts[2m > [22mDeux visions indépendantes et correction par majorité[2m > [22mcontrôle aussi stockCategory sur chaque ligne
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/invoiceVisionReview.test.ts:[2m103:36[22m[39m
+    [90m101| [39m    const changed: Record<string, unknown> = { kind: 'equipment', quan…
+    [90m102| [39m    const result = reconcileInvoiceVision([read(), read({ items: [item…
+    [90m103| [39m    expect(result.needsCorrection).toBe(!['price', 'stockCategory'].in…
+    [90m   | [39m                                   [31m^[39m
+    [90m104| [39m    expect(result.review.findings.join(' ')).toContain('Cascade 100 g'…
+    [90m105| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/purchasePrefill.test.ts[2m > [22mscannedPayment — documentTypeRetenu[2m > [22mpro-forma payée lue « quote », type retenu facture → Déjà payé
+[31m[1mAssertionError[22m: expected 'unpaid' to be 'paid' // Object.is equality[39m
+
+Expected: [32m"paid"[39m
+Received: [31m"[7mun[27mpaid"[39m
+
+[36m [2m❯[22m tests/unit/purchasePrefill.test.ts:[2m76:159[22m[39m
+    [90m 74| [39m  const lu = (patch: Partial<ScannedInvoiceResult>) => scan({ date: '3…
+    [90m 75| [39m  it('pro-forma payée lue « quote », type retenu facture → Déjà payé',…
+    [90m 76| [39m    expect(scannedPayment(lu({ documentType: 'quote', documentTypeRete…
+    [90m   | [39m                                                                                                                                                              [31m^[39m
+    [90m 77| [39m  })[33m;[39m
+    [90m 78| [39m  it('le même résultat sans documentTypeRetenu (ancien résultat) → À p…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture/corrections.test.ts[2m > [22mrelecture n° 2 — lignes-annoncees n’achète pas de troisième lecture[2m > [22mun vrai écart de somme lu à l’identique : le point somme-ecart pèse, statut disputed, pas de troisième lecture
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture/corrections.test.ts:[2m79:29[22m[39m
+    [90m 77| [39m    const faux = () => lire(entete({ amountTTC: 5, items: [ligne({ pri…
+    [90m 78| [39m    const { needsCorrection, result, review } = reconcileInvoiceVision…
+    [90m 79| [39m    [34mexpect[39m(needsCorrection)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 80| [39m    [34mexpect[39m(review[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m 81| [39m    expect((result as any).points.find((p: any) => p.code === 'somme-e…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mtvaAmount 2,80 / 4,15 → un point de désaccord qui porte les deux valeurs
+[31m[1mAssertionError[22m: expected undefined to match object { source: 'désaccord', …(6) }[39m
+
+[32m- Expected:[39m 
+{
+  "calcule": null,
+  "ecart": null,
+  "ligne": null,
+  "lu": null,
+  "origine": "lecture",
+  "pese": true,
+  "source": "désaccord",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m11:15[22m[39m
+    [90m  9| [39m  it('tvaAmount 2,80 / 4,15 → un point de désaccord qui porte les deux…
+    [90m 10| [39m    const p = points([lectureA(), lectureB()]).find(x => x.code === 'l…
+    [90m 11| [39m    expect(p).toMatchObject({ source: 'désaccord', pese: true, ligne: …
+    [90m   | [39m              [31m^[39m
+    [90m 12| [39m    expect(p.valeurs).toEqual([{ lecture: 1, valeur: 2.8, retenue: tru…
+    [90m 13| [39m    [34mexpect[39m(p[33m.[39mcle)[33m.[39m[34mtoBe[39m([32m'lectures-divergentes:-:tvaAmount'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mtrois valeurs différentes → trois entrées, la première lecture reste retenue
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'valeurs')[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m20:14[22m[39m
+    [90m 18| [39m    const r = reconcileInvoiceVision([propre({ tvaAmount: 1 }), propre…
+    [90m 19| [39m    const p = (r.result as any).points.find((x: any) => x.champ === 't…
+    [90m 20| [39m    expect(p.valeurs.map((v: any) => [v.lecture, v.valeur, v.retenue])…
+    [90m   | [39m             [31m^[39m
+    [90m 21| [39m    [34mexpect[39m(r[33m.[39mresult[33m.[39mtvaAmount)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m 22| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mune valeur absente est null, jamais 0 ; une chaîne vide devient null
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'valeurs')[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m26:14[22m[39m
+    [90m 24| [39m  it("une valeur absente est null, jamais 0 ; une chaîne vide devient …
+    [90m 25| [39m    const a = points([propre({ tvaAmount: null }), propre({ tvaAmount:…
+    [90m 26| [39m    [34mexpect[39m(a[33m.[39mvaleurs[33m.[39m[34mmap[39m((v[33m:[39m any) [33m=>[39m v[33m.[39mvaleur))[33m.[39m[34mtoEqual[39m([[35mnull[39m[33m,[39m [34m1[39m])[33m;[39m
+    [90m   | [39m             [31m^[39m
+    [90m 27| [39m    const b = points([propre({ invoiceNumber: '' }), propre({ invoiceN…
+    [90m 28| [39m    [34mexpect[39m(b[33m.[39mvaleurs[33m.[39m[34mmap[39m((v[33m:[39m any) [33m=>[39m v[33m.[39mvaleur))[33m.[39m[34mtoEqual[39m([[35mnull[39m[33m,[39m [32m'F-9'[39m])[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mgabarit des phrases : en-tête et ligne
+[31m[1mAssertionError[22m: expected undefined to match object { champ: 'items', ligne: 1, …(3) }[39m
+
+[32m- Expected:[39m 
+{
+  "champ": "items",
+  "cle": "lectures-divergentes:1:quantity",
+  "enjeu": "argent",
+  "ligne": 1,
+  "unite": "nombre",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m37:15[22m[39m
+    [90m 35| [39m    expect(l.review.findings.join(' ')).toContain('Malt fictif — quant…
+    [90m 36| [39m    const p = (l.result as any).points.find((x: any) => x.code === 'le…
+    [90m 37| [39m    expect(p).toMatchObject({ champ: 'items', ligne: 1, enjeu: 'argent…
+    [90m   | [39m              [31m^[39m
+    [90m 38| [39m  })[33m;[39m
+    [90m 39| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mprix divergent où seule la lecture 2 tient quantité × prix : la valeur retenue est celle de la lecture 2 (recoupée)
+[31m[1mAssertionError[22m: expected 2.4 to be 2.5 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2.5[39m
+[31m+ 2.4[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m42:37[22m[39m
+    [90m 40| [39m  it("prix divergent où seule la lecture 2 tient quantité × prix : la …
+    [90m 41| [39m    const r = reconcileInvoiceVision([lire(simple({}, [malt({ price: 2…
+    [90m 42| [39m    [34mexpect[39m(r[33m.[39mresult[33m.[39mitems[[34m0[39m][33m.[39mprice)[33m.[39m[34mtoBe[39m([34m2.5[39m)[33m;[39m
+    [90m   | [39m                                    [31m^[39m
+    [90m 43| [39m    const p = (r.result as any).points.find((x: any) => x.champs?.[0] …
+    [90m 44| [39m    expect(p.valeurs).toEqual([{ lecture: 1, valeur: 2.4, retenue: fal…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mnom, unité, taille, catégorie de stock en désaccord : enjeu stock et pas de liaison automatique
+[31m[1mAssertionError[22m: expected undefined to match object { enjeu: 'stock', …(3) }[39m
+
+[32m- Expected:[39m 
+{
+  "bloqueLiaison": true,
+  "enjeu": "stock",
+  "luTexte": "Malt",
+  "unite": "texte",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m50:15[22m[39m
+    [90m 48| [39m  it('nom, unité, taille, catégorie de stock en désaccord : enjeu stoc…
+    [90m 49| [39m    const p = points([simple({}, [malt({ stockCategory: 'Malt' })]), s…
+    [90m 50| [39m    expect(p).toMatchObject({ enjeu: 'stock', bloqueLiaison: true, uni…
+    [90m   | [39m              [31m^[39m
+    [90m 51| [39m    const n = points([simple({}, [malt({ name: 'Malt Pils' })]), simpl…
+    [90m 52| [39m    [34mexpect[39m(n)[33m.[39m[34mtoMatchObject[39m({ enjeu[33m:[39m [32m'stock'[39m[33m,[39m bloqueLiaison[33m:[39m [35mtrue[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mune ligne manquante : 22 lignes votées, la 23e nommée dans lignes-non-rapprochees
+[31m[1mAssertionError[22m: expected undefined to match object { code: 'lectures-divergentes', …(1) }[39m
+
+[32m- Expected:[39m 
+{
+  "code": "lectures-divergentes",
+  "pese": true,
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m59:65[22m[39m
+    [90m 57| [39m    const b = { ...avec(a, 2, { quantity: 2 }), items: avec(a, 2, { qu…
+    [90m 58| [39m    [35mconst[39m pts [33m=[39m [34mpoints[39m([a[33m,[39m b])[33m;[39m
+    [90m 59| [39m    expect(pts.find(x => x.champs?.[0] === 'items.3.quantity')).toMatc…
+    [90m   | [39m                                                                [31m^[39m
+    [90m 60| [39m    const orphelin = pts.find(x => x.code === 'lignes-non-rapprochees'…
+    [90m 61| [39m    expect(orphelin).toMatchObject({ pese: true, source: 'désaccord', …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/desaccords.test.ts[2m > [22mU1 — les valeurs concurrentes sont gardées[2m > [22mN3 : la ligne orpheline de la seule lecture minoritaire ne pèse pas (deux lectures sur trois s'accordent)
+[31m[1mAssertionError[22m: expected undefined to match object { pese: false, source: 'désaccord' }[39m
+
+[32m- Expected:[39m 
+{
+  "pese": false,
+  "source": "désaccord",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/desaccords.test.ts:[2m74:92[22m[39m
+    [90m 72| [39m    [35mconst[39m pts [33m=[39m (r[33m.[39mresult [35mas[39m any)[33m.[39mpoints[33m;[39m
+    [90m 73| [39m    expect(pts.some((p: any) => p.code === 'lignes-non-rapprochees')).…
+    [90m 74| [39m    expect(pts.find((p: any) => p.code === 'lectures-divergentes' && p…
+    [90m   | [39m                                                                                           [31m^[39m
+    [90m 75| [39m    [34mexpect[39m(r[33m.[39mreview[33m.[39mfindings)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m 76| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — le journal d'une lecture[2m > [22mligneJournalLecture : durée, jetons, finishReason, coupée ou non ; null quand une valeur manque
+[31m[1mTypeError[22m: ligneJournalLecture is not a function[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m22:12[22m[39m
+    [90m 20| [39m  it('ligneJournalLecture : durée, jetons, finishReason, coupée ou non…
+    [90m 21| [39m    const response = { candidates: [{ finishReason: 'MAX_TOKENS' }], u…
+    [90m 22| [39m    expect(ligneJournalLecture({ lecture: 2, etape: 'parallele', elaps…
+    [90m   | [39m           [31m^[39m
+    [90m 23| [39m      lecture: 2, etape: 'parallele', elapsedMs: 8123, promptTokens: 1…
+    [90m 24| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — le journal d'une lecture[2m > [22mscanInvoiceSafely journalise une ligne par lecture (deux, puis trois)
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 1, 2 ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   1,[39m
+[32m-   2,[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m33:54[22m[39m
+    [90m 31| [39m    [35mawait[39m [34mscanInvoiceSafely[39m([32m'u'[39m[33m,[39m file[33m,[39m [32m'fake-test-key'[39m)[33m;[39m
+    [90m 32| [39m    const lignes = info.mock.calls.filter((c: any[]) => c[0] === 'Lect…
+    [90m 33| [39m    [34mexpect[39m(lignes[33m.[39m[34mmap[39m((l[33m:[39m any) [33m=>[39m l[33m.[39mlecture)[33m.[39m[34msort[39m())[33m.[39m[34mtoEqual[39m([[34m1[39m[33m,[39m [34m2[39m])[33m;[39m
+    [90m   | [39m                                                     [31m^[39m
+    [90m 34| [39m    expect(lignes[0]).toMatchObject({ finishReason: 'STOP', coupee: fa…
+    [90m 35| [39m    fetchMock[33m.[39m[34mmockReset[39m()[33m;[39m info[33m.[39m[34mmockClear[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — une lecture coupée est dite telle quelle[2m > [22mune lecture sur deux coupée (limite de sortie) : unavailable, readers 1, phrase et point lecture-coupee
+[31m[1mAssertionError[22m: expected 'La double lecture n’a pas abouti. Vér…' to match /coupée/[39m
+
+[32m- Expected:[39m 
+/coupée/
+
+[31m+ Received:[39m 
+"La double lecture n’a pas abouti. Vérifie les informations et les montants sur le justificatif."
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m50:35[22m[39m
+    [90m 48| [39m    [34mexpect[39m(data[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'unavailable'[39m)[33m;[39m
+    [90m 49| [39m    [34mexpect[39m(data[33m.[39mreview[33m.[39mreaders)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m 50| [39m    [34mexpect[39m(data[33m.[39missues[33m.[39m[34mjoin[39m([32m' '[39m))[33m.[39m[34mtoMatch[39m([36m/coupée/[39m)[33m;[39m
+    [90m   | [39m                                  [31m^[39m
+    [90m 51| [39m    expect(data.points.find((p: any) => p.code === 'lecture-coupee')).…
+    [90m 52| [39m    expect(info.mock.calls.some((c: any[]) => c[1]?.coupee === true &&…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — une lecture coupée est dite telle quelle[2m > [22mune lecture arrêtée par le délai (AbortError) : cause « delai »
+[31m[1mAssertionError[22m: expected undefined to match object { luTexte: 'delai' }[39m
+
+[32m- Expected:[39m 
+{
+  "luTexte": "delai",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m59:71[22m[39m
+    [90m 57| [39m    const { data } = await scanInvoiceSafely('u', file, 'fake-test-key…
+    [90m 58| [39m    [34mexpect[39m(data[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'unavailable'[39m)[33m;[39m
+    [90m 59| [39m    expect(data.points.find((p: any) => p.code === 'lecture-coupee')).…
+    [90m   | [39m                                                                      [31m^[39m
+    [90m 60| [39m    [34mexpect[39m(data[33m.[39missues[33m.[39m[34mjoin[39m([32m' '[39m))[33m.[39m[34mtoMatch[39m([36m/délai/[39m)[33m;[39m
+    [90m 61| [39m    expect(warn.mock.calls.some((c: any[]) => c[0] === 'Lecture de fac…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — une lecture coupée est dite telle quelle[2m > [22mla troisième lecture coupée : disputed, phrase existante conservée, point lecture-coupee
+[31m[1mAssertionError[22m: expected undefined to match object { luTexte: 'sortie' }[39m
+
+[32m- Expected:[39m 
+{
+  "luTexte": "sortie",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m74:71[22m[39m
+    [90m 72| [39m    [34mexpect[39m(data[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m 73| [39m    expect(data.issues.join(' ')).toContain('contrôle complémentaire n…
+    [90m 74| [39m    expect(data.points.find((p: any) => p.code === 'lecture-coupee')).…
+    [90m   | [39m                                                                      [31m^[39m
+    [90m 75| [39m  })[33m;[39m
+    [90m 76| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — une lecture coupée est dite telle quelle[2m > [22mdélai global atteint : la troisième lecture est sautée AVEC phrase et point, statut disputed
+[31m[1mAssertionError[22m: expected undefined to match object { luTexte: 'delai-saute' }[39m
+
+[32m- Expected:[39m 
+{
+  "luTexte": "delai-saute",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m84:71[22m[39m
+    [90m 82| [39m    [34mexpect[39m(fetchMock)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m2[39m)[33m;[39m
+    [90m 83| [39m    [34mexpect[39m(data[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m 84| [39m    expect(data.points.find((p: any) => p.code === 'lecture-coupee')).…
+    [90m   | [39m                                                                      [31m^[39m
+    [90m 85| [39m    expect(data.issues.join(' ')).toContain('contrôle complémentaire n…
+    [90m 86| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/lecture-coupee.test.ts[2m > [22mLE4 — une lecture coupée est dite telle quelle[2m > [22mScanReadCutError garde le message d'avant et le finishReason
+[31m[1mTypeError[22m: ScanReadCutError is not a constructor[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/lecture-coupee.test.ts:[2m89:15[22m[39m
+    [90m 87| [39m
+    [90m 88| [39m  it('ScanReadCutError garde le message d\'avant et le finishReason', …
+    [90m 89| [39m    [35mconst[39m e [33m=[39m [35mnew[39m [33mScanReadCutError[39m([32m'MAX_TOKENS'[39m)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 90| [39m    expect(e.message).toBe('Lecture incomplète. Complète le justificat…
+    [90m 91| [39m    [34mexpect[39m(e[33m.[39mfinishReason)[33m.[39m[34mtoBe[39m([32m'MAX_TOKENS'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/points-uniques.test.ts[2m > [22mA1 — un seul avertissement par champ[2m > [22msur les trois lectures simulées de 372765 : au plus une entrée de fieldWarnings par champ
+[31m[1mAssertionError[22m: {"documentType":1,"tvaRate":3,"amountHT":1,"invoiceNumber":2}: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/points-uniques.test.ts:[2m18:68[22m[39m
+    [90m 16| [39m    [35mconst[39m r [33m=[39m [34mtrois[39m()[33m;[39m
+    [90m 17| [39m    [35mconst[39m n [33m=[39m [34mparChamp[39m(r[33m.[39mfieldWarnings)[33m;[39m
+    [90m 18| [39m    expect(Object.values(n).every(c => c <= 1), JSON.stringify(n)).toB…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m 19| [39m  })[33m;[39m
+    [90m 20| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/points-uniques.test.ts[2m > [22mA1 — un seul avertissement par champ[2m > [22mau plus une remarque par (champ, ligne) ; invoiceNumber levée par A et B = une remarque, lectures [1, 2]
+[31m[1mTypeError[22m: liste is not iterable[39m
+[36m [2m❯[22m parChamp tests/unit/depense/rapprochement/points-uniques.test.ts:[2m10:19[22m[39m
+    [90m  8| [39mconst parChamp = (liste: Array<{ field?: string; champ?: string }>) =>…
+    [90m  9| [39m  [35mconst[39m n[33m:[39m [33mRecord[39m[33m<[39mstring[33m,[39m number[33m>[39m [33m=[39m {}[33m;[39m
+    [90m 10| [39m  for (const e of liste) { const k = (e.field ?? e.champ)!; n[k] = (n[…
+    [90m   | [39m                  [31m^[39m
+    [90m 11| [39m  [35mreturn[39m n[33m;[39m
+    [90m 12| [39m}[33m;[39m
+[90m [2m❯[22m tests/unit/depense/rapprochement/points-uniques.test.ts:[2m23:26[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/points-uniques.test.ts[2m > [22mA1 — un seul avertissement par champ[2m > [22mune remarque d'une seule lecture reste dans la liste, avec la lecture qui l'a levée
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'find')[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/points-uniques.test.ts:[2m30:24[22m[39m
+    [90m 28| [39m  it("une remarque d'une seule lecture reste dans la liste, avec la le…
+    [90m 29| [39m    [35mconst[39m r [33m=[39m [34mtrois[39m()[33m;[39m
+    [90m 30| [39m    expect(r.remarques.find((x: any) => x.champ === 'documentType')).t…
+    [90m   | [39m                       [31m^[39m
+    [90m 31| [39m    expect(r.remarques.find((x: any) => x.champ === 'amountHT')).toMat…
+    [90m 32| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/points-uniques.test.ts[2m > [22mA1 — un seul avertissement par champ[2m > [22mune remarque ne pèse jamais et n'est pas un point
+[31m[1mAssertionError[22m: expected 'disputed' to be 'checked' // Object.is equality[39m
+
+Expected: [32m"[7mcheck[27med"[39m
+Received: [31m"[7mdisput[27med"[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/points-uniques.test.ts:[2m36:27[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/points-uniques.test.ts[2m > [22mA1 — un seul avertissement par champ[2m > [22mle chemin à une seule lecture applique le même tri
+[31m[1mTypeError[22m: (0 , finirUneLecture) is not a function[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/points-uniques.test.ts:[2m60:15[22m[39m
+    [90m 58| [39m  [34mit[39m([32m'le chemin à une seule lecture applique le même tri'[39m[33m,[39m () [33m=>[39m {
+    [90m 59| [39m    const une = lire(propre({ fieldWarnings: [{ field: 'date', message…
+    [90m 60| [39m    [35mconst[39m r [33m=[39m [34mfinirUneLecture[39m(une) [35mas[39m any[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 61| [39m    [34mexpect[39m([34mparChamp[39m(r[33m.[39mfieldWarnings))[33m.[39m[34mtoEqual[39m({ date[33m:[39m [34m1[39m[33m,[39m vendor[33m:[39m [34m1[39m })[33m;[39m
+    [90m 62| [39m    expect(r.remarques.map((x: any) => x.champ).sort()).toEqual(['date…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/points-uniques.test.ts[2m > [22mA1 — chaque phrase tombe sous son champ dans invoiceFieldHints[2m > [22mdésaccord d'en-tête, désaccord de ligne et lecture coupée ne tombent pas sous un mauvais champ
+[31m[1mAssertionError[22m: expected 'Les lectures ne concordent pas. Vérif…' to match /Fournisseur/[39m
+
+[32m- Expected:[39m 
+/Fournisseur/
+
+[31m+ Received:[39m 
+"Les lectures ne concordent pas. Vérifie cette valeur sur le document."
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/points-uniques.test.ts:[2m70:26[22m[39m
+    [90m 68| [39m    const r = reconcileInvoiceVision([lire(simple({ vendor: 'Brasserie…
+    [90m 69| [39m    [35mconst[39m hints [33m=[39m [34minvoiceFieldHints[39m({ [33m...[39mr[33m,[39m items[33m:[39m r[33m.[39mitems })[33m;[39m
+    [90m 70| [39m    [34mexpect[39m(hints[33m.[39mvendor)[33m.[39m[34mtoMatch[39m([36m/Fournisseur/[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m 71| [39m    // le désaccord de quantité d'une ligne se range sous « items », j…
+    [90m 72| [39m    [34mexpect[39m(hints[33m.[39mitems)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/relais.test.ts[2m > [22mR2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22mlignes retenues de la lecture 2 : vat et linesLost sont ceux de la lecture 2, pas ceux de la lecture 1
+[31m[1mAssertionError[22m: expected [] to have a length of 2 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/relais.test.ts:[2m13:21[22m[39m
+    [90m 11| [39m    [35mconst[39m res [33m=[39m r[33m.[39mresult [35mas[39m any[33m;[39m
+    [90m 12| [39m    [34mexpect[39m(res[33m.[39mitems)[33m.[39m[34mtoHaveLength[39m([34m23[39m)[33m;[39m
+    [90m 13| [39m    [34mexpect[39m(res[33m.[39mvat)[33m.[39m[34mtoHaveLength[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m 14| [39m    [34mexpect[39m(res[33m.[39mlinesLost)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 15| [39m    [34mexpect[39m(r[33m.[39mreview[33m.[39mcorrectedFields)[33m.[39m[34mtoContain[39m([32m'items'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/relais.test.ts[2m > [22mR2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22m372765 (A+B) : 23 lignes, vat de deux rangées, bloc TVA incohérent ET désaccord TVA
+[31m[1mAssertionError[22m: expected [ 'tva-incoherente' ] to include 'lectures-divergentes'[39m
+[36m [2m❯[22m tests/unit/depense/rapprochement/relais.test.ts:[2m39:19[22m[39m
+    [90m 37| [39m    [35mconst[39m codes [33m=[39m res[33m.[39mpoints[33m.[39m[34mmap[39m((p[33m:[39m any) [33m=>[39m p[33m.[39mcode)[33m;[39m
+    [90m 38| [39m    [34mexpect[39m(codes)[33m.[39m[34mtoContain[39m([32m'tva-incoherente'[39m)[33m;[39m
+    [90m 39| [39m    [34mexpect[39m(codes)[33m.[39m[34mtoContain[39m([32m'lectures-divergentes'[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 40| [39m  })[33m;[39m
+    [90m 41| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/relais.test.ts[2m > [22mR2 — les champs de l1 viennent de la lecture dont les lignes sont retenues[2m > [22mvat[] différent : un point de désaccord, sans troisième lecture
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/relais.test.ts:[2m52:111[22m[39m
+    [90m 50| [39m    autre[33m.[39mvat[[34m0[39m][33m.[39mamount [33m=[39m [34m1.9[39m[33m;[39m
+    [90m 51| [39m    [35mconst[39m r [33m=[39m [34mreconcileInvoiceVision[39m([[34mlire[39m([34mlectureA[39m())[33m,[39m [34mlire[39m(autre)])[33m;[39m
+    [90m 52| [39m    expect((r.result as any).points.some((p: any) => p.code === 'lectu…
+    [90m   | [39m                                                                                                              [31m^[39m
+    [90m 53| [39m    [34mexpect[39m(r[33m.[39mneedsCorrection)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 54| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mligne-montant
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mligne-prix-par-lot
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22msomme-ecart
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22msomme-incomplete
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mtva-incoherente
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mht-tva-ttc
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mlignes-perdues
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mlignes-annoncees
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mpro-forma-non-payee
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mdevis
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22malpha-libelle
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22munite-absente
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mforme-rejetee
+[31m[1mAssertionError[22m: expected undefined to be true // Object.is equality[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m50:24[22m[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+    [90m 52| [39m    [34mexpect[39m(r[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m(pese [33m?[39m [32m'disputed'[39m [33m:[39m [32m'checked'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mtype-deduit
+[31m[1mAssertionError[22m: expected undefined to be false // Object.is equality[39m
+
+[32m- Expected:[39m 
+false
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m50:24[22m[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+    [90m 52| [39m    [34mexpect[39m(r[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m(pese [33m?[39m [32m'disputed'[39m [33m:[39m [32m'checked'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mdate-absente
+[31m[1mAssertionError[22m: point date-absente: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mdevise-non-chf
+[31m[1mAssertionError[22m: point devise-non-chf: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mtotal-absent
+[31m[1mAssertionError[22m: point total-absent: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mtaux-tva-hors-plage
+[31m[1mAssertionError[22m: point taux-tva-hors-plage: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mdocument-livraison
+[31m[1mAssertionError[22m: point document-livraison: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mavoir
+[31m[1mAssertionError[22m: point avoir: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mnature-a-preciser
+[31m[1mAssertionError[22m: point nature-a-preciser: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mambiguite-ligne
+[31m[1mAssertionError[22m: point ambiguite-ligne: expected undefined to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m49:36[22m[39m
+    [90m 47| [39m    [35mconst[39m r [33m=[39m [34mdeux[39m([34mfabrique[39m())[33m;[39m
+    [90m 48| [39m    const point = (r.result as any).points.find((p: any) => p.code ===…
+    [90m 49| [39m    [34mexpect[39m(point[33m,[39m [32m`point [39m[36m${[39mcode[36m}[39m[32m`[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m   | [39m                                   [31m^[39m
+    [90m 50| [39m    [34mexpect[39m(point[33m.[39mpese)[33m.[39m[34mtoBe[39m(pese)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(point[33m.[39msource [33m??[39m [32m'contrôle'[39m)[33m.[39m[34mtoMatch[39m([36m/contrôle|modèle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mtype-deduit reste un point visible, valeur marquée « déduite »
+[31m[1mAssertionError[22m: expected { code: 'type-deduit', …(15) } to match object { luTexte: 'quote', pese: false }
+(15 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "luTexte": "quote",[22m
+[32m-   "pese": false,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m59:15[22m[39m
+    [90m 57| [39m  it('type-deduit reste un point visible, valeur marquée « déduite »',…
+    [90m 58| [39m    const p = (deux(parCode['type-deduit'][0]()).result as any).points…
+    [90m 59| [39m    [34mexpect[39m(p)[33m.[39m[34mtoMatchObject[39m({ luTexte[33m:[39m [32m'quote'[39m[33m,[39m pese[33m:[39m [35mfalse[39m })[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 60| [39m    [34mexpect[39m(p[33m.[39mregle)[33m.[39m[34mtoMatch[39m([36m/pro-forma/[39m)[33m;[39m
+    [90m 61| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mtrois lectures concordantes, une remarque libre et des chiffres recoupés : checked, review à quatre clés
+[31m[1mAssertionError[22m: expected { status: 'disputed', …(3) } to deeply equal { status: 'checked', …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "correctedFields": [],[22m
+[32m-   "findings": [],[39m
+[31m+   "findings": [[39m
+[31m+     "Numéro de facture : Numéro proche du titre.",[39m
+[31m+   ],[39m
+[2m    "readers": 3,[22m
+[32m-   "status": "checked",[39m
+[31m+   "status": "disputed",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m66:22[22m[39m
+    [90m 64| [39m    const avecRemarque = propre({ fieldWarnings: [{ field: 'invoiceNum…
+    [90m 65| [39m    const r = reconcileInvoiceVision([lire(avecRemarque), lire(propre(…
+    [90m 66| [39m    expect(r.review).toEqual({ status: 'checked', findings: [], reader…
+    [90m   | [39m                     [31m^[39m
+    [90m 67| [39m  })[33m;[39m
+    [90m 68| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22m2 contre 1 sur un champ d'argent : point présent, ne pèse pas, ni dans findings ni dans issues (N1)
+[31m[1mAssertionError[22m: expected undefined to match object { pese: false, source: 'désaccord' }[39m
+
+[32m- Expected:[39m 
+{
+  "pese": false,
+  "source": "désaccord",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m76:15[22m[39m
+    [90m 74| [39m    const { result, review } = reconcileInvoiceVision([lire(propre({ a…
+    [90m 75| [39m    const p = (result as any).points.find((x: any) => x.code === 'lect…
+    [90m 76| [39m    [34mexpect[39m(p)[33m.[39m[34mtoMatchObject[39m({ pese[33m:[39m [35mfalse[39m[33m,[39m source[33m:[39m [32m'désaccord'[39m })[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 77| [39m    expect(p.valeurs).toEqual([{ lecture: 1, valeur: 9, retenue: false…
+    [90m 78| [39m    [34mexpect[39m(review[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'corrected'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/statut.test.ts[2m > [22mA2 — un test par code : pèse ou non[2m > [22mune ambiguïté de ligne lue dans une lecture sur deux pèse (P3)
+[31m[1mAssertionError[22m: expected '' to contain 'Quantité illisible'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Quantité illisible[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/statut.test.ts:[2m87:48[22m[39m
+    [90m 85| [39m    [34mexpect[39m(r[33m.[39mreview[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'disputed'[39m)[33m;[39m
+    [90m 86| [39m    [34mexpect[39m(r[33m.[39mneedsCorrection)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m 87| [39m    expect((r.result as any).issues.join(' ')).toContain('Quantité ill…
+    [90m   | [39m                                               [31m^[39m
+    [90m 88| [39m  })[33m;[39m
+    [90m 89| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mstockCategory seule (ligne 1)
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mMalz au lieu de Malt, même référence
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mlignes « Zuschlag Schrotung » dans un autre ordre
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mlignes répétées dont une catégorie de stock diffère
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mprix seul différent
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mtotal imprimé 5 centimes au-dessus des lignes
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mTVA 2,80 contre 4,15 (P5 : ne déclenche plus)
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mtotal faux (5 pour 1) lu deux fois à l'identique
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22mprix divergent, seule la lecture 2 tient quantité × prix
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m10:73[22m[39m
+    [90m  8| [39m
+    [90m  9| [39m[34mdescribe[39m([32m'LE1 — le jeu de 20 paires simulées'[39m[33m,[39m () [33m=>[39m {
+    [90m 10| [39m  it.each(corpus())('%s', (_nom, a, b, attendu) => { expect(part(a, b)…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m 11| [39m  it('6 troisièmes lectures sur 20 après l2 (15 sur 20 avant, mesuré s…
+    [90m 12| [39m    [35mconst[39m departs [33m=[39m [34mcorpus[39m()[33m.[39m[34mfilter[39m(([[33m,[39m a[33m,[39m b]) [33m=>[39m [34mpart[39m(a[33m,[39m b))[33m.[39mlength[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — le jeu de 20 paires simulées[2m > [22m6 troisièmes lectures sur 20 après l2 (15 sur 20 avant, mesuré sur HEAD)
+[31m[1mAssertionError[22m: expected 15 to be 6 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 6[39m
+[31m+ 15[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m13:21[22m[39m
+    [90m 11| [39m  it('6 troisièmes lectures sur 20 après l2 (15 sur 20 avant, mesuré s…
+    [90m 12| [39m    [35mconst[39m departs [33m=[39m [34mcorpus[39m()[33m.[39m[34mfilter[39m(([[33m,[39m a[33m,[39m b]) [33m=>[39m [34mpart[39m(a[33m,[39m b))[33m.[39mlength[33m;[39m
+    [90m 13| [39m    [34mexpect[39m(departs)[33m.[39m[34mtoBe[39m([34m6[39m)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m 14| [39m  })[33m;[39m
+    [90m 15| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — champs qui ne déclenchent pas[2m > [22mdeux lectures qui ne diffèrent que par stockCategory : needsCorrection=false
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m19:115[22m[39m
+    [90m 17| [39m[34mdescribe[39m([32m'LE1 — champs qui ne déclenchent pas'[39m[33m,[39m () [33m=>[39m {
+    [90m 18| [39m  it('deux lectures qui ne diffèrent que par stockCategory : needsCorr…
+    [90m 19| [39m    expect(part(simple({}, [malt({ stockCategory: 'Malt' })]), simple(…
+    [90m   | [39m                                                                                                                  [31m^[39m
+    [90m 20| [39m  })[33m;[39m
+    [90m 21| [39m  it.each([['variant', '30 L', '50 L'], ['vatCode', 'R', 'N'], ['price…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — champs qui ne déclenchent pas[2m > [22mvariant seul
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — champs qui ne déclenchent pas[2m > [22mprice seul
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m22:90[22m[39m
+    [90m 20| [39m  })[33m;[39m
+    [90m 21| [39m  it.each([['variant', '30 L', '50 L'], ['vatCode', 'R', 'N'], ['price…
+    [90m 22| [39m    expect(part(simple({}, [malt({ [champ]: x })]), simple({}, [malt({…
+    [90m   | [39m                                                                                         [31m^[39m
+    [90m 23| [39m  })[33m;[39m
+    [90m 24| [39m  [34mit[39m([32m'tvaAmount seul, tvaRate seul, vat[] seul'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — champs qui ne déclenchent pas[2m > [22mtvaAmount seul, tvaRate seul, vat[] seul
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m25:70[22m[39m
+    [90m 23| [39m  })[33m;[39m
+    [90m 24| [39m  [34mit[39m([32m'tvaAmount seul, tvaRate seul, vat[] seul'[39m[33m,[39m () [33m=>[39m {
+    [90m 25| [39m    expect(part(simple({ tvaAmount: 1 }), simple({ tvaAmount: 2 }))).t…
+    [90m   | [39m                                                                     [31m^[39m
+    [90m 26| [39m    expect(part(simple({ tvaRate: 0.081 }), simple({ tvaRate: 0.026 })…
+    [90m 27| [39m    const rangee = (amount: number) => ({ vat: [{ code: 'R', rate: 0.0…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — champs qui ne déclenchent pas[2m > [22mle nom : une coquille ou les mêmes mots dans un autre ordre ne déclenchent pas
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m31:110[22m[39m
+    [90m 29| [39m  })[33m;[39m
+    [90m 30| [39m  it('le nom : une coquille ou les mêmes mots dans un autre ordre ne d…
+    [90m 31| [39m    expect(part(simple({}, [malt({ name: 'Pilsner Malz' })]), simple({…
+    [90m   | [39m                                                                                                             [31m^[39m
+    [90m 32| [39m    expect(part(simple({}, [malt({ name: 'Malt Pils fictif' })]), simp…
+    [90m 33| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mLE1 — champs qui ne déclenchent pas[2m > [22msans référence : mêmes chiffres, ancre unique → les noms différents se rapprochent sans troisième lecture
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m35:134[22m[39m
+    [90m 33| [39m  })[33m;[39m
+    [90m 34| [39m  it('sans référence : mêmes chiffres, ancre unique → les noms différe…
+    [90m 35| [39m    expect(part(simple({}, [malt({ reference: '', name: 'Pils Malz' })…
+    [90m   | [39m                                                                                                                                     [31m^[39m
+    [90m 36| [39m  })[33m;[39m
+    [90m 37| [39m  [34mit[39m([32m'trois lectures : jamais de quatrième'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/79]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/rapprochement/troisieme-lecture.test.ts[2m > [22mP4 — jamais de rapprochement par la seule position[2m > [22mdeux « Fermenteur » aux quantités échangées : non rapprochés, 3e lecture, phrase « rapprochées »
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/rapprochement/troisieme-lecture.test.ts:[2m77:92[22m[39m
+    [90m 75| [39m    [34mexpect[39m(r[33m.[39mneedsCorrection)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m 76| [39m    [34mexpect[39m(r[33m.[39mreview[33m.[39mfindings[33m.[39m[34mjoin[39m([32m' '[39m))[33m.[39m[34mtoContain[39m([32m'rapprochées'[39m)[33m;[39m
+    [90m 77| [39m    expect((r.result as any).points.some((p: any) => p.code === 'ligne…
+    [90m   | [39m                                                                                           [31m^[39m
+    [90m 78| [39m  })[33m;[39m
+    [90m 79| [39m  it('cinq lignes identiques sur les cinq champs se rapprochent dans l…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/79]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m12 failed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[31m78 failed[39m[22m[2m | [22m[1m[32m134 passed[39m[22m[90m (212)[39m
+[2m   Start at [22m 23:27:43
+[2m   Duration [22m 2.70s[2m (transform 256ms, setup 1.04s, collect 1.11s, tests 318ms, environment 1ms, prepare 645ms)[22m
+
+TROISIEMES LECTURES : 15 sur 20 paires

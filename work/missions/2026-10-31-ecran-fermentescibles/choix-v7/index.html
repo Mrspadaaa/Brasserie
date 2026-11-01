@@ -1,0 +1,173 @@
+<title>Malts/sucres · passe 7 · 31.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La passe 7 de Malts/sucres : la recherche du champ d'ajout, ouverte sur le stock (D220, D221), en trois formes sur son choix p6-b2.
+   Une rangée par moment de la recherche ; p6-b2 d'abord, puis s1, s2, s3 ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 4px; align-content: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+figcaption i { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-ref { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .planche.trois { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · création de recette · Malts/sucres 2/7</p>
+    <h1>Malts/sucres · passe 7 · 31.10</h1>
+    <div id="a-choisir">
+      <p>La recherche, ouverte sur ton stock comme dans l'app : un toucher sur le champ montre ce que tu as, « 12,5 kg en stock » ou « stock épuisé ».</p>
+      <p>Trois formes. s1 : des tuiles sous le champ. s2 : dans la liste, en lignes pointillées à la place où la ligne viendra. s3 : le menu de l'app, collé au champ.</p>
+      <p>Dans les trois, « Munich » trouve Münchner Malz, et un malt déjà là renvoie à sa ligne. Choisis s1, s2, s3 ou un mélange ; le reste de ta p6-b2 ne change pas. Touche une capture pour la voir en grand.</p>
+    </div>
+    <p class="sur-titre">Base : ton choix p6-b2, la barre qui porte la masse</p>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-ouverture">
+    <div class="tete"><h2 id="t-ouverture">Le champ touché</h2><p>Rien tapé. Ta p6-b2 montrait trois sacs sans leur stock. La bande hachurée est le clavier.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p6b2-vide.png" data-titre="Avant · p6-b2, le champ touché : trois sacs, sans stock"><img src="img/p6b2-vide.png" alt="p6-b2, le champ touché"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Avant</b> · p6-b2</span><i>Trois sacs habituels, rien sur le stock.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-ouverture.png" data-titre="s1 · sous le champ : tuiles avec teinte et stock"><img src="img/s1-ouverture.png" alt="s1, le champ touché"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Sous le champ</b> · s1</span><i>Tuiles sur deux colonnes : étoile si épinglé, teinte en EBC, stock.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-ouverture.png" data-titre="s2 · dans la liste : trois lignes pointillées sous ton ticket"><img src="img/s2-ouverture.png" alt="s2, le champ touché"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Dans la liste</b> · s2</span><i>Trois lignes pointillées sous tes malts, stock, EBC et fournisseur. Le champ descend d'autant.</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-ouverture.png" data-titre="s3 · menu ancré : la liste de l'app, au-dessus du champ"><img src="img/s3-ouverture.png" alt="s3, le champ touché"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Menu</b> · s3</span><i>La liste de l'app, épinglés en tête, « déjà 5,0 kg ». Elle s'ouvre sous le champ : tes malts restent visibles.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-mu">
+    <div class="tete"><h2 id="t-mu">« mu »</h2><p>Deux lettres : Münchner Malz se voit au-dessus du clavier, un toucher l'ajoute.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p6b2-mu.png" data-titre="Avant · p6-b2, « mu »"><img src="img/p6b2-mu.png" alt="p6-b2, mu"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Avant</b> · p6-b2</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-mu.png" data-titre="s1 · « mu »"><img src="img/s1-mu.png" alt="s1, mu"></button><figcaption><span><b>s1</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-mu.png" data-titre="s2 · « mu »"><img src="img/s2-mu.png" alt="s2, mu"></button><figcaption><span><b>s2</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-mu.png" data-titre="s3 · « mu »"><img src="img/s3-mu.png" alt="s3, mu"></button><figcaption><span><b>s3</b></span><i>Les lettres tapées en gras.</i></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-munich">
+    <div class="tete"><h2 id="t-munich">« Munich »</h2><p>Le nom courant. Avant, Entrée créait une ligne « Munich » ; maintenant, Münchner Malz, et le champ le dit avant.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p6b2-munich.png" data-titre="Avant · p6-b2, « Munich » : Créer « Munich »"><img src="img/p6b2-munich.png" alt="p6-b2, Munich"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Avant</b> · p6-b2</span><i>« Créer « Munich » ».</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-munich.png" data-titre="s1 · « Munich » → Münchner Malz"><img src="img/s1-munich.png" alt="s1, Munich"></button><figcaption><span><b>s1</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-munich.png" data-titre="s2 · « Munich » → Münchner Malz"><img src="img/s2-munich.png" alt="s2, Munich"></button><figcaption><span><b>s2</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-munich.png" data-titre="s3 · « Munich » → Münchner Malz"><img src="img/s3-munich.png" alt="s3, Munich"></button><figcaption><span><b>s3</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-pils">
+    <div class="tete"><h2 id="t-pils">« pils », déjà là</h2><p>Pilsner Malz est déjà à 5,0 kg : Entrée n'ajoute pas de seconde ligne.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p6b2-pils.png" data-titre="Avant · p6-b2, « pils » : déjà 5,0 kg"><img src="img/p6b2-pils.png" alt="p6-b2, pils"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Avant</b> · p6-b2</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-pils.png" data-titre="s1 · « pils » : déjà 5,0 kg"><img src="img/s1-pils.png" alt="s1, pils"></button><figcaption><span><b>s1</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-pils.png" data-titre="s2 · « pils » : la ligne Pilsner s'éclaire"><img src="img/s2-pils.png" alt="s2, pils"></button><figcaption><span><b>s2</b></span><i>Ta ligne Pilsner s'éclaire, « déjà 5,0 kg ».</i></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-pils.png" data-titre="s3 · « pils » : déjà 5,0 kg"><img src="img/s3-pils.png" alt="s3, pils"></button><figcaption><span><b>s3</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-abbey">
+    <div class="tete"><h2 id="t-abbey">« Abbey Malt », inconnu</h2><p>Pas au stock : « Créer », à stock zéro, comme l'app. Entrée l'ajoute.</p></div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p6b2-inconnu.png" data-titre="Avant · p6-b2, un nom inconnu"><img src="img/p6b2-inconnu.png" alt="p6-b2, nom inconnu"></button><figcaption><span class="pastille p-ref">ton choix</span><span><b>Avant</b> · p6-b2</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-abbey.png" data-titre="s1 · « Abbey Malt » : Créer"><img src="img/s1-abbey.png" alt="s1, Abbey Malt"></button><figcaption><span><b>s1</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-abbey.png" data-titre="s2 · « Abbey Malt » : Créer"><img src="img/s2-abbey.png" alt="s2, Abbey Malt"></button><figcaption><span><b>s2</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-abbey.png" data-titre="s3 · « Abbey Malt » : Créer (stock à zéro)"><img src="img/s3-abbey.png" alt="s3, Abbey Malt"></button><figcaption><span><b>s3</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-apres">
+    <div class="tete"><h2 id="t-apres">Après le toucher</h2><p>Münchner Malz ajouté à 0, le curseur dans sa masse, sa teinte de 15 EBC posée.</p></div>
+    <div class="planche trois">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-apres.png" data-titre="s1 · Münchner Malz ajouté"><img src="img/s1-apres.png" alt="s1, après"></button><figcaption><span><b>s1</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-apres.png" data-titre="s2 · Münchner Malz ajouté"><img src="img/s2-apres.png" alt="s2, après"></button><figcaption><span><b>s2</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-apres.png" data-titre="s3 · Münchner Malz ajouté"><img src="img/s3-apres.png" alt="s3, après"></button><figcaption><span><b>s3</b></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-ordi">
+    <div class="tete"><h2 id="t-ordi">Ordinateur</h2><p>1280 px, « mu » tapé, sans clavier.</p></div>
+    <div class="planche trois">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s1-1280.png" data-titre="s1 à 1280 px, « mu »"><img src="img/s1-1280.png" alt="s1 à 1280 px"></button><figcaption><span><b>s1</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s2-1280.png" data-titre="s2 à 1280 px, « mu »"><img src="img/s2-1280.png" alt="s2 à 1280 px"></button><figcaption><span><b>s2</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/s3-1280.png" data-titre="s3 à 1280 px, « mu »"><img src="img/s3-1280.png" alt="s3 à 1280 px"></button><figcaption><span><b>s3</b></span></figcaption></figure>
+    </div>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

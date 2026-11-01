@@ -456,3 +456,66 @@ documentaires d'après.
   - le bouton d'ajout direct (D188).
   Quota hebdomadaire 97 %.
 - 27.10, vers 19 h : **D193 corrigé** : bannir une famille que la bière n'a pas ne faisait rien. Déployé (721b8909, index-BbqDDFp3.js) ; PR #194.
+- 27.10, vers 20 h : **D194** (bannir = objectif, exclusion et retrait) déployé (ae7c7a8d, index-DK9swfoN.js) ; PR #195. Reste ouvert : la carte « Plus … — Aucune voie houblon » quand la bière déborde déjà du style (cas B : Columbus 100 g ; `styleOverflow` compte le débordement d'avant la voie). C'est la même classe que la saturation.
+- 27.10, vers 20 h 30 : à « Corrige jusqu'à finir même si 100% », **voie s3** lancée (la saturation). Hypothèses du pilote, à vérifier :
+  1. la famille demandée qui dépasse la bande compte comme débordement, et c'est ce qui fait passer les nobles devant ;
+  2. un excès minuscule suffit à marquer une voie « hors du style ».
+  Reproductions : `scratchpad/saturation.mjs` et `bannir2.mjs B`. Ensuite : rejeu, déploiement, PR.
+- 31.10 : le quota hebdomadaire est remis à zéro. Le brasseur : « tout fonctionne plutôt bien sauf pour les algo, surtout sur la partie 60', il y a souvent pas de propostion du tout » (D196). En vol :
+  - **d60**, un diagnostic dans la copie propre au commit de production ae7c7a8d, sans rien dans src/ ;
+  - **s3**, qui finit R4 dans l'arbre principal.
+  Ensuite : la correction de d60, un rejeu, le déploiement, la PR.
+- 31.10 : **s3 R4 commitée** (4a752523). Elle est sans effet sur la neipa saturée : Beer Maverick classe Warrior, Columbus et Nugget en « mixte ». **En vol** :
+  - **k1**, Substituer à 60′ ;
+  - **t3**, R4 qui lit l'usage au frais de Beer Analytics (Warrior : Boil 29 885, Aroma 741) ;
+  - la **recherche** sur les méthodes (`work/missions/2026-10-31-methodes/`).
+  Ensuite : k2 (Suggérer à 60′, M1 + M2), puis la critique, le rejeu, le déploiement et la PR.
+- 31.10 : « trop herbal » (D197) : **h1** est écrite. Elle partira après t3, qui tient voies.ts ; l'ordre est t3 → h1 → k2. Le rôle d'un houblon est un continuum (note role-continu) : t3 et k2 lisent l'usage mesuré, jamais une étiquette. Le rapport sur les méthodes est fait (f84eb498).
+- 31.10 : **k1 commitée** (b04b9f3b). Les 7 tests rouges qu'elle a vus viennent de t3, en cours (empreinte `proposer`, `saturationD195`) : ils sont à rejouer après t3. Chrome sur Substituer, au rejeu final. Suite : t3 → h1 → k2.
+
+## Reprise (31.10, vers 15 h) : ÉTAT COURANT (remplace les précédentes)
+Quota hebdomadaire : 4 % (remis à zéro le 31.10). La production est à **ae7c7a8d** (D194). Ce qui est commité depuis, et pas encore déployé :
+- s3, R1 à R4 (D195 : 8e17aa00, 4a752523) ;
+- k1, Substituer à 60′ (b04b9f3b) ;
+- ia4 et ia5 sont déjà en ligne (d661f266 et les suivants).
+
+**En vol, à intégrer à leur retour** (le pilote commite par chemins, L17) :
+- t3, agent ac9c68a25dab7cabd. La part d'usage au frais, continue, lue sur Beer Analytics (`usage-types`) ; une typicité par moment si c'est
+  simple. Possède voies.ts (R4), `typicite*` et `typicite-styles.json`.
+- c9, agent a0c935f11fbb116cb. Les 76 ajouts sans α. Il croise les sources ; une seule source se montre, marquée « 1 source » ; il ne
+  change pas les ids. Possède `catalogue-ajouts.json` et `alias-noms.json`.
+
+**Ensuite, dans cet ordre :**
+1. **h1**, « trop herbacé » (D197, VOIE écrite) : l'excès d'herbacé ou de végétal compte au rang même quand le style le dit neutre ; la
+   courbe est confrontée à E04/OSU. À lancer après t3.
+2. **k2**, Suggérer à 60′ (VOIE écrite) : M1 + M2 choisis, rangées D165, K4, K5 lus sur l'usage continu ; puis la critique (Fable).
+3. **Le conseil sur la vérité croisée** (v2 commitée, f3e10c33). Options A, B (recommandée) et C ; cinq décisions dans son RESULTAT.md.
+   L'option A est faisable tout de suite : l'étiquette fausse « Beer Maverick » sur les 188 ajouts et la marque « 1 source ».
+4. **Le rejeu complet**, dans `deploy-63130965`, puis le déploiement (hébergement ; la fonction seulement si elle a changé), la PR et la
+   fusion.
+
+Issue #196 : Rust ou WebAssembly. Le verdict : profiler d'abord.
+- 31.10 : le brasseur choisit **B** (D201). **b1** est en vol : les étiquettes et « 1 source », sans changer un chiffre. B2, le panel des valeurs, viendra après c9 ; B3, l'usage continu, après h1 et k2. Le conseil n'est plus nécessaire sur le choix de l'option ; il reste peut-être utile pour les poids par type de source, qui seront de toute façon réglés sur une moitié des variétés et jugés sur l'autre.
+- 31.10 : **c9 commitée**. Suites :
+  - le moteur doit lire `nature` (`substitution.ts`, `quickAdd.ts`) pour qu'un produit ne sorte plus comme remplaçant ;
+  - le libellé « usage arôme (Beer Maverick) » de `substitution.ts:350` est à corriger (b1 ou B3) ;
+  - 66 houblons de Beer Analytics manquent (`voies/c9-ajouts-amertume/ba-manquants.md`), une voie dédiée en B2.
+  Identité : la série r est rendue (6 concepts, PANEL OK). `controle-commun` échoue sur les rayons 10/16 de DESIGN.md et sur le trait de 2 px du + commun : il faut un profil « sans houblons » pour les écrans hors houblons.
+- 31.10 : **t3 commitée** (137d3d17 ; R4 lit la part au frais, Warrior à 7 % contre une médiane de 30 %) et **b1 commitée** (étiquettes honnêtes). Restent à mettre à jour, avec leur raison, les 5 empreintes `client-async` (×4) et `worker-calculs` (×1), à faire par h1. La marque « peu de données » est gardée jusqu'à B2. Prochaine voie : **h1** (VOIE prête), puis k2.
+- 31.10, avant la compaction (**état courant**) : commités : t3 (137d3d17), b1 (59415a5a), c9 (c41d8c8d), k1, s3. **h1 est en vol** (agent acda61415135e9f5b : herbacé, et les 5 empreintes à mettre à jour). Ensuite :
+  1. k2 (VOIE prête) ;
+  2. B2, le panel des valeurs, et les 66 houblons de Beer Analytics ;
+  3. le moteur qui lit `nature`, et le libellé de `substitution.ts:350` ;
+  4. le rejeu, le déploiement, la PR.
+  La production reste à ae7c7a8d.
+- 31.10, soir : **h1** (acda61415135e9f5b) a été arrêté par une interruption.
+  - Son RESULTAT est un brouillon : la règle de principe est écrite (l'herbacé et le végétal `neutre` comptent au rang et en hors du style), mais rien n'est mesuré.
+  - `src/domain/hopIndex/v4/voies.ts` est modifié et non commité. À relire avant de relancer.
+  Un agent neuf ne part que sur sa demande.
+- 31.10 : h1 est relancé sur sa demande, avec un auteur neuf (a22f813b3666e0456). Il repart du brouillon et du diff de `voies.ts`.
+- 31.10 : **h1 est intégré** (D197). L'herbacé et le végétal neutres comptent au rang, et `estHorsDuStyle` (écran) lit `defaut`. Les 5 empreintes client-async et worker-calculs sont mises à jour (t3 R4, 137d3d17, qui les avait laissées rouges). Vitest : 1146 sur 1146 ; tsc sans sortie.
+  Restent ouverts :
+  - la marque « herbacé non établi » sur une rangée (h1, décision 2), en mini maquettes ;
+  - le K des agrumes (E04), à ne pas toucher sans seconde source ;
+  - le houblon frais, que le moteur ne connaît pas ;
+  - la DEMANDE EXECUTANT de h1 (Chrome), au rejeu final.

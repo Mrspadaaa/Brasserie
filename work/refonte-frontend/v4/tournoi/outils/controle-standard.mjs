@@ -24,6 +24,14 @@ import puppeteer from 'puppeteer-core';
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const JETONS = JSON.parse(fs.readFileSync(path.join(ici, '../../ecran-1/fils17-standard/jetons-familles.json'), 'utf8'));
 const ALERTE = '#c2410c';
+// Profil (o1, 31.10, D202) : `--profil=sans-houblons` pour les écrans hors de l'outil houblons. S3 prend alors
+// l'échelle de DESIGN.md (10, 16 et 24 px, plus la pilule et le rond) à la place de 2, 4 et 8 : DESIGN.md prime
+// (décision du pilote). S4 laisse de côté le + commun (data-commun, ou « Actions rapides »), dont le trait de 2 px
+// est repris de l'app. S1 et S2 ne sont pas touchés (sans houblon ni famille, ils n'ont rien à mesurer).
+// Le profil houblons (défaut) ne change pas.
+const profil = (process.argv.slice(2).find((a) => a.startsWith('--profil=')) || '--profil=houblons').slice(9);
+if (!['houblons', 'sans-houblons'].includes(profil)) { console.log('Profil inconnu : ' + profil + ' (houblons ou sans-houblons)'); process.exit(2); }
+const ECHELLE = profil === 'sans-houblons' ? ['10px', '16px', '24px', 'pilule', 'rond', 'feuille 24px'] : ['2px', '4px', '8px', 'pilule', 'rond', 'feuille 24px'];
 const pages = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
@@ -35,7 +43,7 @@ for (const f of pages) {
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await page.goto(pathToFileURL(path.resolve(f)).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise((r) => setTimeout(r, 300));
-  const r = await page.evaluate(() => {
+  const r = await page.evaluate((profil) => {
     const vis = (e) => { const b = e.getBoundingClientRect(); const cs = getComputedStyle(e); return b.width > 0 && b.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
     const hex = (c) => { const m = String(c).match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/); if (!m || (m[4] !== undefined && +m[4] < 0.3)) return null;
       const [R, G, B] = [m[1], m[2], m[3]].map(Number); return Math.max(R, G, B) - Math.min(R, G, B) > 40 ? '#' + [R, G, B].map((x) => Math.round(x).toString(16).padStart(2, '0')).join('') : null; };
@@ -46,13 +54,13 @@ for (const f of pages) {
     const rayons = [...document.querySelectorAll('body *')].filter(vis).map((e) => { const cs = getComputedStyle(e), b = e.getBoundingClientRect();
       return { r: cs.borderTopLeftRadius, h: b.height, w: b.width, feuille: e.matches('[role="dialog"]') || !!e.parentElement?.matches('[role="dialog"]'), peint: cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.borderTopWidth !== '0px' }; })
       .filter((x) => x.r !== '0px' && x.peint).map((x) => (x.feuille && x.r === '24px' ? 'feuille 24px' : x.r.endsWith('%') ? (parseFloat(x.r) >= 50 ? 'rond' : x.r) : parseFloat(x.r) >= Math.min(x.h, x.w) / 2 - 0.5 ? 'pilule' : parseFloat(x.r) + 'px'));
-    const traits = [...document.querySelectorAll('svg')].filter((s) => vis(s) && s.getBoundingClientRect().width <= 32 && !s.closest('[data-famille]') && !s.querySelector('[data-famille]'))
+    const traits = [...document.querySelectorAll('svg')].filter((s) => vis(s) && s.getBoundingClientRect().width <= 32 && !s.closest('[data-famille]') && !s.querySelector('[data-famille]') && !(profil === 'sans-houblons' && s.closest('[data-commun], [aria-label="Actions rapides"]')))
       .map((s) => { const u = s.querySelector('use'), src = u ? document.querySelector(u.getAttribute('href') || u.getAttribute('xlink:href')) : s; if (!src) return null;
         const vb = (src.getAttribute('viewBox') || s.getAttribute('viewBox') || '0 0 24 24').split(/[\s,]+/).map(Number), k = s.getBoundingClientRect().width / (vb[2] || 24);
         const sw = [...src.querySelectorAll('[stroke]:not([stroke="none"])'), ...(src.getAttribute('stroke') && src.getAttribute('stroke') !== 'none' ? [src] : [])].map((x) => parseFloat(x.getAttribute('stroke-width') || src.getAttribute('stroke-width') || '1')).filter((x) => x > 0);
         return { nom: (s.getAttribute('aria-label') || s.closest('[aria-label]')?.getAttribute('aria-label') || '?').slice(0, 30), traits: [...new Set(sw.map((x) => Math.round(x * k * 10) / 10))] }; }).filter(Boolean);
     return { familles, houblons, rayons, traits };
-  });
+  }, profil);
   await page.close();
   const p = (m) => problems.push(pg + ' : ' + m);
   // S1
@@ -70,7 +78,7 @@ for (const f of pages) {
   }
   for (const [k, n] of horsTon) p('S2, famille ' + k + ' (' + n + ' élément(s)) hors de ses tons');
   // S3
-  const hors = {}; for (const x of r.rayons) if (!['2px', '4px', '8px', 'pilule', 'rond', 'feuille 24px'].includes(x)) hors[x] = (hors[x] || 0) + 1;
+  const hors = {}; for (const x of r.rayons) if (!ECHELLE.includes(x)) hors[x] = (hors[x] || 0) + 1;
   if (Object.keys(hors).length) p('S3, rayons hors échelle : ' + Object.entries(hors).map(([x, n]) => x + '×' + n).join(' '));
   // S4 (cumulé sur toutes les pages)
   for (const t of r.traits) for (const w of t.traits) traits.set(w, [...(traits.get(w) || []), pg + ' ' + t.nom]);

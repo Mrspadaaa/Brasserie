@@ -1,0 +1,30 @@
+<div class="PX-tete">
+ <input id="PX-nom" class="PX-nom" value="neipa v3" placeholder="Nom de la bière" aria-label="Nom de la bière" autocomplete="off">
+ <div class="PX-pills">
+  <button class="PX-pill PX-sty" data-booster="style" aria-label="Style"><span id="PX-style">Double IPA</span><span class="PX-m PX-ref" id="PX-ref">22A</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.74"><path d="M6 9l6 6 6-6"/></svg></button>
+  <button class="PX-pill PX-nolo" data-booster="nolo" role="switch" aria-checked="false" id="PX-nl"><i></i>NOLO</button>
+ </div>
+</div>
+<section class="PX-cad" aria-label="Ébullition">
+ <svg id="PX-dial" viewBox="0 0 280 280" width="280" height="280" data-booster="ebullition-cadran" role="slider" aria-label="Durée d'ébullition, tourner" aria-valuemin="0" aria-valuemax="120" aria-valuenow="60" tabindex="0"></svg>
+ <div class="PX-cadc">
+  <button class="PX-pm" data-booster="ebullition-moins" aria-label="Moins 5 min">−</button>
+  <button class="PX-pm" data-booster="ebullition-plus" aria-label="Plus 5 min">+</button>
+ </div>
+ <button class="PX-q PX-qp" data-role="legende-bouton" aria-expanded="false" aria-label="légende">?</button>
+</section>
+<div class="PX-mt"><span>Royal Catering</span></div>
+<div class="PX-tiles">
+ <div class="PX-tile" aria-label="Cuve 45 L">
+  <div class="PX-mg"><i class="PX-mgl PX-mgs" id="PX-cg"></i><i class="PX-mge" id="PX-ce"></i><i class="PX-mlim" style="bottom:77.8%"></i></div>
+  <div class="PX-tv"><span class="PX-tk">Cuve</span><b class="PX-m" id="PX-pre">~27 L</b><span class="PX-ts">sur <span class="PX-m">45 L</span></span></div>
+ </div>
+ <div class="PX-tile PX-tf" aria-label="Fermenteur 30 L">
+  <div class="PX-mg PX-mgf" id="PX-fg" data-booster="volume-jauge" role="slider" aria-label="Volume en fermenteur" aria-valuemin="1" aria-valuemax="30" aria-valuenow="24" tabindex="0"><i class="PX-mgl" id="PX-fl"></i><i class="PX-mtk" id="PX-tk"></i></div>
+  <div class="PX-tv"><span class="PX-tk">Fermenteur</span><b class="PX-m" id="PX-v">24 L</b><span class="PX-ts" id="PX-lib"></span></div>
+  <div class="PX-vst"><button class="PX-pm" data-booster="volume-plus" aria-label="Plus 0,5 L">+</button><button class="PX-pm" data-booster="volume-moins" aria-label="Moins 0,5 L">−</button></div>
+ </div>
+</div>
+<p class="PX-alerte" id="PX-al" role="alert" hidden></p>
+<p class="PX-nolop" id="PX-np" hidden>Atelier NOLO ouvert ⌄</p>
+<div class="PX-leg" data-role="legende" hidden style="top:190px"><p>On tourne le cadran : la durée d'ébullition, par 5 minutes. Dans la cuve, la bande bleue est ce qui part en vapeur.</p><p><b>~</b> estimé : taux de repli de 10 % par heure, pas une mesure. Pointillé vert : conseil provisoire de 20 % d'espace libre. Trait de la cuve : limite utile de 35 L, à vérifier.</p></div>

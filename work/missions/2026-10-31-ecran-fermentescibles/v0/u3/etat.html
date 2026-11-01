@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u3 — Malts/sucres 2/7 · le verre se compose (v0, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--alertet:#A8291F;--att:#9C7020;--attt:#7F5B10;--stock:#4C6B2A;--hopt:#3F6B2E;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+::selection{background:#F2C14E;color:#111}
+.u3-hd{position:sticky;top:0;z-index:5;background:var(--page);padding:0 8px;border-bottom:1px solid var(--bord)}
+.u3-tb{display:flex;align-items:center;gap:6px;height:36px}
+.u3-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex-shrink:0}
+.u3-tt{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.u3-tn{font-size:16px;font-weight:600;color:var(--t0)}
+.u3-tp{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.u3-rail{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.u3-rail button{flex-shrink:0;padding:0 4px;min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.u3-rail span{font-size:12px;color:var(--t2);white-space:nowrap}
+.u3-rail i{display:block;height:6px;border-radius:9px;background:var(--bord)}
+.u3-rail .u3-fait i{background:var(--t2)}
+.u3-rail [aria-current] span{color:var(--t0);font-weight:600}
+.u3-rail [aria-current] i{background:var(--t0)}
+.u3-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px}
+.u3-bd[hidden]{display:none}
+.u3-bd>div{display:flex;align-items:baseline;gap:4px}
+.u3-l{font-size:14px;color:var(--t2)}
+.u3-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.u3-pst{position:relative;align-self:center;width:48px;height:8px;border-radius:9px;background:var(--bord)}
+.u3-pst b{position:absolute;top:0;bottom:0;border-radius:9px;background:var(--trait)}
+.u3-pst em{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:2px;background:var(--t0)}
+.u3-bsw{width:10px;height:10px;border-radius:50%;align-self:center;border:1px solid var(--bordm)}
+.u3-bsw.u3-inc{background:#fff;border:1px dashed var(--t2)}
+.u3-pied{display:flex;justify-content:space-between;gap:8px;padding:12px 66px 8px 0}
+.u3-ret{min-height:28px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t1);font-size:14px}
+.u3-suiv{min-height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600}
+.u3-fab{position:fixed;right:10px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);z-index:6}
+
+/* L'idée : le verre de la recette se teinte à mesure que chaque malt reçoit sa couleur. */
+.u3-c{padding:10px 10px 0;min-height:760px;display:flex;flex-direction:column;gap:10px}
+.u3-scene{display:grid;grid-template-columns:104px 30px 1fr;align-items:end;gap:8px;padding:12px 12px 10px;border-radius:24px;background:var(--panel);border:1px solid var(--bord)}
+.u3-verre{position:relative;width:104px;height:168px}
+.u3-verre svg{display:block}
+.u3-liq{transition:fill .25s ease-out,y .25s ease-out}
+.u3-q{position:absolute;left:0;right:0;top:66px;text-align:center;font-size:24px;font-weight:700;color:var(--t1)}
+.u3-ech{position:relative;width:30px;height:160px;border-radius:10px;overflow:visible}
+.u3-bandes{position:absolute;inset:0;border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,.15);display:flex;flex-direction:column-reverse}
+.u3-bandes i{display:block}
+.u3-sty{position:absolute;left:-5px;width:3px;border-radius:2px;background:var(--t0)}
+.u3-mk{position:absolute;left:-6px;right:-6px;height:4px;border-radius:2px;background:var(--t0);box-shadow:0 0 0 2px #fff;transition:bottom .25s ease-out}
+.u3-mk[hidden]{display:none}
+.u3-lect{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding-bottom:4px;min-width:0}
+.u3-mot{font-size:24px;font-weight:700;color:var(--t0);line-height:1}
+.u3-mot.u3-inc{color:var(--t2)}
+.u3-tag{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 8px;border-radius:10px;font-size:12px}
+.u3-dans{background:#E4F0DC;color:var(--hopt)}
+.u3-hors{background:#FBE9D2;color:#8A4B0C}
+.u3-tag[hidden]{display:none}
+.u3-ar{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;border-radius:10px;border:1px dashed var(--att);background:#FBF4E4;color:var(--attt);font-size:12px;text-align:left}
+.u3-ar[hidden]{display:none}
+.u3-ar b{font-family:var(--mono)}
+.u3-styl{font-size:12px;color:var(--t2)}
+/* Les gouttes : une par malt, à sa couleur */
+.u3-rows{display:flex;flex-direction:column}
+.u3-row{display:grid;grid-template-columns:28px 1fr auto;align-items:center;column-gap:8px;min-height:52px;padding:4px 0;border-bottom:1px solid var(--bord)}
+.u3-goutte{width:22px;height:22px;margin-left:2px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:1px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center}
+.u3-goutte span{transform:rotate(45deg);font-size:12px;font-weight:700;color:var(--t1)}
+.u3-goutte.u3-inc{background:#fff;border:1.5px dashed var(--t2)}
+.u3-goutte.u3-sucre{background:#fff;border:1px solid var(--bordm);border-radius:6px;transform:none;width:18px;height:18px;margin-left:4px}
+.u3-nmb{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.u3-nm{font-size:16px;font-weight:600;color:var(--t0);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.u3-sub{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);white-space:nowrap}
+.u3-mom{font-size:12px;font-weight:600;min-height:24px;display:inline-flex;align-items:center;margin:-4px 0}
+.u3-m-empatage{color:#2F5F7D}.u3-m-ebullition{color:#A8291F}.u3-m-fermentation{color:#5A3FA0}
+.u3-pt{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--t1)}
+.u3-fl{border:1px solid var(--bordm);border-radius:10px;padding:0 6px;line-height:18px;color:var(--t1)}
+.u3-ms{display:flex;align-items:baseline;gap:2px}
+.u3-in{width:4.4ch;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:20px;font-weight:600;color:var(--t0);height:30px;border-radius:0}
+.u3-in:focus{outline:none;border-bottom:2px solid var(--t0)}
+.u3-in.u3-zero{color:var(--t2)}
+.u3-u{font-family:var(--mono);font-size:12px;color:var(--t2)}
+/* La règle des teintes : toucher la couleur, ou la taper */
+.u3-regle{grid-column:1/-1;padding:8px 0 6px}
+.u3-bande{position:relative;height:32px;border-radius:10px;border:1px solid rgba(0,0,0,.2);cursor:pointer;touch-action:none}
+.u3-cur{position:absolute;top:-4px;bottom:-4px;width:6px;margin-left:-3px;border-radius:3px;background:#fff;border:2px solid var(--t0)}
+.u3-cur[hidden]{display:none}
+.u3-gr{position:relative;height:16px;font-family:var(--mono);font-size:12px;color:var(--t2);margin-top:2px}
+.u3-gr span{position:absolute;transform:translateX(-50%)}
+.u3-rl{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:14px}
+.u3-fin{width:5ch;height:32px;border:1px solid var(--bordm);border-radius:10px;background:#fff;padding:0 6px;text-align:right;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--t0)}
+.u3-fin:focus{outline:2px solid #4F7E9B;outline-offset:1px}
+.u3-det{grid-column:2/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 0 4px}
+.u3-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.u3-seg button{min-height:28px;padding:0 8px;font-size:12px;color:var(--t1)}
+.u3-seg [aria-pressed="true"]{background:var(--t0);color:#fff}
+.u3-det label{display:inline-flex;align-items:center;gap:4px;font-size:14px}
+.u3-del{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);font-size:12px;color:var(--alertet);margin-left:auto}
+.u3-warn{grid-column:2/-1;font-size:12px;color:var(--attt);padding-bottom:4px}
+.u3-add{display:flex;flex-direction:column;gap:6px}
+.u3-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.u3-chip{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t0)}
+.u3-dot{width:12px;height:12px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:1px solid rgba(0,0,0,.2);flex-shrink:0}
+.u3-dot.u3-inc{background:#fff;border:1px dashed var(--t2)}
+.u3-champ{display:flex;align-items:center;gap:8px;height:40px;padding:0 10px;border-radius:16px;border:1px solid var(--bordm);background:#fff}
+.u3-champ:focus-within{border-color:var(--t0);box-shadow:0 0 0 2px #F2C14E}
+.u3-champ svg{color:var(--t2);flex-shrink:0}
+.u3-qi{flex:1;min-width:0;height:36px;border:0;background:none;font-size:16px;color:var(--t0)}
+.u3-qi:focus{outline:none}
+.u3-qi::placeholder{color:#767676}
+.u3-cyc{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 6px;border-radius:10px;background:var(--panel);font-size:12px;font-weight:600;color:var(--t0)}
+.u3-sugg{display:flex;flex-direction:column}
+.u3-sugg[hidden]{display:none}
+.u3-sg{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 8px;border-radius:10px;font-size:14px;color:var(--t0);text-align:left}
+.u3-sg[aria-selected="true"]{background:var(--panel)}
+.u3-sg small{font-size:12px;color:var(--t2)}
+.u3-vide{min-height:40px;display:flex;align-items:center;color:var(--t2)}
+.u3-annexe{margin:28px 10px 80px;padding-top:10px;border-top:1px dashed var(--bordm)}
+.u3-annexe h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.u3-etats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.u3-etats button{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);font-size:12px}
+.u3-etats [aria-pressed="true"]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.u3-carte{background:var(--panel);border-radius:16px;padding:8px 10px;margin-bottom:8px;font-size:14px}
+.u3-carte p{font-size:12px;color:var(--t1);margin-top:4px}
+@media (prefers-reduced-motion:reduce){.u3-liq,.u3-mk{transition:none}}
+@media (min-width:700px){.u3-hd,.u3-c,.u3-annexe{max-width:560px;margin-left:auto;margin-right:auto}.u3-bd{max-width:540px;margin:8px auto 0}.u3-fab{right:calc(50% - 280px)}}
+</style></head>
+<body data-concept="u3">
+<header class="u3-hd">
+  <div class="u3-tb">
+    <button class="u3-ic" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <p class="u3-tt"><span class="u3-tn">Fermentescibles</span><span class="u3-tp">2/7</span></p>
+    <button class="u3-ic" aria-label="Coller une recette"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10"/><path d="m17 10 4 4-4 4"/></svg></button>
+    <button class="u3-ic" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+  </div>
+  <nav class="u3-rail" aria-label="Étapes"><button class="u3-fait"><span>Identité</span><i></i></button><button aria-current="step"><span>Malts/sucres</span><i></i></button><button><span>Houblons</span><i></i></button><button><span>Levure</span><i></i></button><button><span>Paliers</span><i></i></button><button><span>Eau</span><i></i></button><button><span>Récap.</span><i></i></button></nav>
+</header>
+<div class="u3-bd" data-commun="bandeau" data-role="bd">
+  <div><span class="u3-l">Grain</span><span class="u3-v" data-role="bgrain">8 kg</span></div>
+  <div><span class="u3-l">OG</span><span class="u3-v">—</span></div>
+  <div><span class="u3-l">IBU</span><span class="u3-v">24</span><span class="u3-pst" role="img" aria-label="style 15–60 IBU"><b style="left:10.7%;width:32.2%"></b><em style="left:17.1%"></em></span></div>
+  <div><span class="u3-l">EBC</span><span class="u3-bsw" data-role="bsw"></span><span class="u3-v" data-role="bebc">—</span></div>
+</div>
+<main class="u3-c">
+  <section class="u3-scene" aria-label="La teinte de la bière" data-booster="verre">
+    <div class="u3-verre">
+      <svg viewBox="0 0 104 168" width="104" height="168" aria-hidden="true">
+        <defs><clipPath id="u3-clip"><path d="M18 14 C14 50 16 84 34 104 C42 113 46 120 46 132 L46 150 L58 150 L58 132 C58 120 62 113 70 104 C88 84 90 50 86 14 Z"/></clipPath>
+        <pattern id="u3-hach" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><rect width="2" height="7" fill="#E3E3E3"/></pattern></defs>
+        <g clip-path="url(#u3-clip)">
+          <rect x="0" y="0" width="104" height="168" fill="#fff"/>
+          <rect class="u3-liq" data-role="liq" x="0" y="30" width="104" height="140" fill="url(#u3-hach)"/>
+          <ellipse data-role="mousse" cx="52" cy="30" rx="40" ry="9" fill="#FFFDF5" stroke="#E6E0CC" stroke-width="1"/>
+        </g>
+        <path d="M18 14 C14 50 16 84 34 104 C42 113 46 120 46 132 L46 150 L58 150 L58 132 C58 120 62 113 70 104 C88 84 90 50 86 14 Z" fill="none" stroke="#333" stroke-width="1.5" data-role="contour"/>
+        <path d="M30 158 L74 158" stroke="#333" stroke-width="1.5" stroke-linecap="round"/><path d="M52 150 L52 158" stroke="#333" stroke-width="1.5"/>
+      </svg>
+      <span class="u3-q" data-role="vq">?</span>
+    </div>
+    <div class="u3-ech" role="img" aria-label="Échelle des teintes de bière, de 0 à 40 EBC, et la plage du style">
+      <div class="u3-bandes"><i style="height:20%;background:#F2C14E"></i><i style="height:15%;background:#E0A02E"></i><i style="height:30%;background:#C87A2C"></i><i style="height:35%;background:#A0522D"></i></div>
+      <span class="u3-sty" style="bottom:15%;height:20%"></span>
+      <span class="u3-mk" data-role="mk" hidden></span>
+    </div>
+    <div class="u3-lect">
+      <span class="u3-mot u3-inc" data-role="mot">—</span>
+      <span class="u3-tag" data-role="tag" hidden></span>
+      <span class="u3-styl">style <span class="u3-pt">6–14</span></span>
+      <button class="u3-ar" data-role="ar" data-booster="a-renseigner"><span class="u3-dot u3-inc"></span><span><b data-role="arn">3</b><span data-role="art"> couleurs à renseigner</span></span></button>
+    </div>
+  </section>
+  <section class="u3-rows" data-role="rows" aria-label="Malts et sucres de la recette"></section>
+  <div class="u3-add">
+    <div class="u3-chips" data-role="chips" data-booster="puces-habituelles" aria-label="Habituels, un toucher ajoute"></div>
+    <label class="u3-champ" data-booster="ajout-clavier"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><input class="u3-qi" data-role="q" placeholder="Ajouter un malt, un sucre" aria-label="Ajouter un fermentescible : son nom, puis Entrée" autocomplete="off" enterkeyhint="next"><button class="u3-cyc" data-role="fam" data-booster="famille-ajout" aria-label="Famille si le nom est nouveau">Grain</button></label>
+    <div class="u3-sugg" data-role="sugg" role="listbox" aria-label="Propositions" hidden></div>
+  </div>
+  <nav class="u3-pied" data-commun="pied"><button class="u3-ret">Retour</button><button class="u3-suiv">Suivant — Houblons</button></nav>
+</main>
+<section class="u3-annexe" aria-label="États de la maquette">
+  <h2>États (annexe de la maquette)</h2>
+  <div class="u3-etats" data-role="etats">
+    <button data-etat="recette">Sa recette, couleurs inconnues</button>
+    <button data-etat="couleurs">Couleurs saisies</button>
+    <button data-etat="sucre">+ dextrose à l'ébullition</button>
+    <button data-etat="lactose">Lactose et fruit en fermentation</button>
+    <button data-etat="huit">8 grains</button>
+    <button data-etat="vide">Recette vide</button>
+  </div>
+  <div class="u3-carte"><b>La teinte</b><p>Équation de Morey, celle de l'app, sur le grain seul et 30 L ; un seul malt sans couleur et le verre reste hachuré, l'EBC « — ». Plage du style : 21C Hazy IPA, BJCP 2021, SRM 3–7 (EBC 6–14).</p></div>
+  <div class="u3-carte"><b>Densité (si l'OG est connue)</b><p style="color:var(--attt)">À 1,066, le moût sature : vise un volume plus grand ou moins de grain.</p></div>
+  <div class="u3-carte"><b>Stock fictif de la maquette</b><p>Pale Ale Malz, Münchner Malz, Carahell, Dextrose, Lactose, Framboise : aucun stock réel lu.</p></div>
+</section>
+<button class="u3-fab" aria-label="Actions rapides" data-commun="lanceur"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<script>(function(){
+var q=function(s,r){return (r||document).querySelector(s)}, qa=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var FAM={grain:{nom:'Grain',mom:'empatage'},sucre:{nom:'Sucre',mom:'ebullition'},lactose:{nom:'Lactose',mom:'ebullition'},fruit:{nom:'Fruit',mom:'fermentation'},extrait:{nom:'Extrait',mom:'ebullition'}};
+var FAMS=['grain','sucre','lactose','fruit','extrait'];
+var MOM={empatage:'empâtage',ebullition:'ébullition',fermentation:'fermentation'};
+var VOL=30,STYLE=[6,14];
+var STOCK=[
+ {nom:'Pilsner Malz',marque:'Weyermann',fam:'grain',ebc:null,stock:true},
+ {nom:'Weizenmalz hell',marque:'Weyermann',fam:'grain',ebc:null,stock:true},
+ {nom:'Haferflocken',marque:'',fam:'grain',ebc:null,stock:true},
+ {nom:'Pale Ale Malz',marque:'Weyermann',fam:'grain',ebc:6.5,stock:true},
+ {nom:'Münchner Malz',marque:'Weyermann',fam:'grain',ebc:15,stock:true},
+ {nom:'Carahell',marque:'Weyermann',fam:'grain',ebc:25,stock:true},
+ {nom:'Dextrose',marque:'',fam:'sucre',ebc:null,stock:true},
+ {nom:'Lactose',marque:'',fam:'lactose',ebc:null,stock:true},
+ {nom:'Framboise',marque:'',fam:'fruit',ebc:null,stock:false}
+];
+function L(nom,marque,fam,kg,ebc,mom,jour){return {nom:nom,marque:marque,fam:fam,kg:kg,ebc:ebc,mom:mom||FAM[fam].mom,jour:jour||null};}
+function sa(c){return [L('Pilsner Malz','Weyermann','grain',5,c?3.5:null),L('Weizenmalz hell','Weyermann','grain',1.5,c?4:null),L('Haferflocken','','grain',1.5,c?2:null)];}
+var ETATS={
+ recette:function(){return sa(false);},
+ couleurs:function(){return sa(true);},
+ sucre:function(){return sa(true).concat([L('Dextrose','','sucre',0.4,null,'ebullition')]);},
+ lactose:function(){return sa(true).concat([L('Lactose','','lactose',0.5,null,'ebullition'),L('Framboise','','fruit',1,null,'fermentation',3)]);},
+ huit:function(){return [L('Pilsner Malz','Weyermann','grain',4,null),L('Weizenmalz hell','Weyermann','grain',1.2,null),L('Haferflocken','','grain',1,null),L('Pale Ale Malz','Weyermann','grain',0.8,6.5),L('Münchner Malz','Weyermann','grain',0.4,15),L('Carahell','Weyermann','grain',0.3,25),L('Weizenflocken','','grain',0.2,null),L('Sauermalz','Weyermann','grain',0.1,null)];},
+ vide:function(){return [];}
+};
+var st={lignes:[],fam:'grain',ouvert:-1,coul:-1,etat:'recette'};
+var SRM=['#FFE699','#FFD878','#FFCA5A','#FFBF42','#FBB123','#F8A600','#F39C00','#EA8F00','#E58500','#DE7C00','#D77200','#CF6900','#CB6200','#C35900','#BB5100','#B54C00','#B04500','#A63E00','#A13700','#9B3200','#952D00','#8E2900','#882300','#821E00','#7B1A00','#771900','#701400','#6A0E00','#660D00','#5E0B00','#5A0A02','#600903','#520907','#4C0505','#470606','#440607','#3F0708','#3B0607','#3A070B','#36080A'];
+function hex(ebc){var s=Math.round(ebc/1.97);return SRM[Math.max(0,Math.min(SRM.length-1,s-1))];}
+function bande(e){return e<=8?['#F2C14E','Paille']:e<=14?['#E0A02E','Dorée']:e<=26?['#C87A2C','Ambrée']:e<=40?['#A0522D','Cuivrée']:e<=60?['#6B3A1E','Brune']:['#3B1F14','Noire'];}
+function fr(x,d){return String(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).replace('.',',');}
+function fk(x){if(!x)return '0';return x>=1?x.toFixed(1).replace('.',','):fr(x,2);}
+function lit(s){var v=parseFloat(String(s).replace(',','.').replace(/[^0-9.]/g,''));return isFinite(v)?v:null;}
+function grain(){return st.lignes.filter(function(l){return l.fam==='grain';}).reduce(function(a,l){return a+l.kg;},0);}
+function part(l){var g=grain();return g>0?Math.round(l.kg/g*100):0;}
+function ebcBiere(){var gs=st.lignes.filter(function(l){return l.fam==='grain';});if(!gs.length||gs.some(function(l){return l.ebc==null;}))return null;
+ var mcu=gs.reduce(function(a,l){return a+(l.ebc/1.97)*(l.kg*2.2046226)/(VOL*0.26417205);},0);return Math.round(1.4922*Math.pow(mcu,0.6859)*1.97*10)/10;}
+function inconnues(){return st.lignes.filter(function(l){return l.fam==='grain'&&l.ebc==null;}).length;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+// Règle des teintes de malt, logarithmique : 1 à 1500 EBC, du pilsner au black.
+var LMIN=Math.log(1),LMAX=Math.log(1500);
+function posE(e){return (Math.log(Math.max(1,e))-LMIN)/(LMAX-LMIN)*100;}
+function eDePos(p){var e=Math.exp(LMIN+p/100*(LMAX-LMIN));return e<10?Math.round(e*2)/2:e<100?Math.round(e):Math.round(e/10)*10;}
+var GRAD=(function(){var pts=[];for(var k=0;k<=20;k++){var e=Math.exp(LMIN+k/20*(LMAX-LMIN));pts.push(hex(Math.min(e,78))+' '+(k*5)+'%');}return 'linear-gradient(90deg,'+pts.join(',')+')';})();
+var ICO_DEL='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+var STK='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#4C6B2A" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Du stock" style="flex-shrink:0;align-self:center"><path d="M3 21V8l9-5 9 5v13M7 21v-8h10v8M7 17h10"/></svg>';
+function goutte(l){if(l.fam!=='grain')return '<span class="u3-goutte u3-sucre" aria-hidden="true"></span>';
+ return l.ebc==null?'<button class="u3-goutte u3-inc" data-act="couleur" data-booster="teinte" aria-label="Couleur de '+esc(l.nom)+' : à renseigner"><span>?</span></button>':'<button class="u3-goutte" data-act="couleur" data-booster="teinte" style="background:'+hex(l.ebc)+'" aria-label="Couleur de '+esc(l.nom)+' : '+fr(l.ebc,1)+' EBC"></button>';}
+function regle(l){var p=l.ebc==null?null:posE(l.ebc);
+ return '<div class="u3-regle" data-booster="regle-teintes"><div class="u3-bande" data-role="bande" style="background:'+GRAD+'" role="slider" aria-label="Couleur de '+esc(l.nom)+'" aria-valuemin="1" aria-valuemax="1500" aria-valuenow="'+(l.ebc==null?'':l.ebc)+'"><span class="u3-cur" data-role="cur" style="left:'+(p==null?0:p)+'%"'+(p==null?' hidden':'')+'></span></div>'
+ +'<div class="u3-gr">'+[2,5,10,30,100,300,1000].map(function(e){return '<span style="left:'+posE(e)+'%">'+e+'</span>';}).join('')+'</div>'
+ +'<div class="u3-rl"><label style="display:inline-flex;align-items:center;gap:6px">Couleur <input class="u3-fin" data-role="ebc" inputmode="decimal" enterkeyhint="next" value="'+(l.ebc==null?'':fr(l.ebc,1))+'" placeholder="?" aria-label="Couleur de '+esc(l.nom)+', en EBC" autocomplete="off"> EBC</label></div></div>';}
+function ligne(l,i){
+ var h='<div class="u3-row" data-i="'+i+'">'+goutte(l)+'<div class="u3-nmb"><button class="u3-nm" data-act="detail">'+esc(l.nom)+'</button><span class="u3-sub"><button class="u3-mom u3-m-'+l.mom+'" data-act="detail" data-booster="moment">'+MOM[l.mom]+(l.mom==='fermentation'&&l.jour?' J+'+l.jour:'')+'</button><span class="u3-pt" data-role="pt">'+part(l)+' %</span>'+(l.fam!=='grain'?'<span class="u3-fl">'+FAM[l.fam].nom.toLowerCase()+'</span>':'')+(l.marque?'<span>'+esc(l.marque)+'</span>':'')+'</span></div>'
+ +'<label class="u3-ms"><input class="u3-in'+(l.kg?'':' u3-zero')+'" data-role="kg" data-booster="masse" inputmode="decimal" enterkeyhint="next" value="'+fk(l.kg)+'" aria-label="Masse de '+esc(l.nom)+', en kg" autocomplete="off"><span class="u3-u">kg</span></label>';
+ if(st.coul===i)h+=regle(l);
+ if(st.ouvert===i){h+='<div class="u3-det"><span class="u3-seg" role="group" aria-label="Moment">'+['empatage','ebullition','fermentation'].map(function(m){return '<button data-act="mom" data-m="'+m+'" aria-pressed="'+(l.mom===m)+'">'+MOM[m]+'</button>';}).join('')+'</span>';
+  if(l.mom==='fermentation')h+='<label>J+ <input class="u3-fin" data-role="jour" inputmode="numeric" value="'+(l.jour||3)+'" aria-label="Jour d\'ajout en fermentation" autocomplete="off"></label>';
+  h+='<span class="u3-fl">'+FAM[l.fam].nom+'</span><button class="u3-del" data-act="del">'+ICO_DEL+'Retirer</button></div>';}
+ if(l.fam==='lactose'&&l.kg>0)h+='<p class="u3-warn" role="note">Lactose : ne fermente pas, il remonte la densité finale.</p>';
+ return h+'</div>';
+}
+var rows=q('[data-role="rows"]');
+function rendre(){rows.innerHTML=st.lignes.length?st.lignes.map(ligne).join(''):'<div class="u3-vide">Rien encore.</div>';chiffres();puces();}
+function chiffres(){
+ var g=grain(),e=ebcBiere(),n=inconnues();
+ q('[data-role="bd"]').hidden=st.etat==='vide'&&!st.lignes.length;
+ q('[data-role="bgrain"]').textContent=fr(g,1)+' kg';
+ var bs=q('[data-role="bsw"]');bs.className='u3-bsw'+(e==null?' u3-inc':'');bs.style.background=e==null?'':bande(e)[0];
+ q('[data-role="bebc"]').textContent=e==null?'—':fr(e,1);
+ // Le verre : plein dès qu'il y a du grain (sa hauteur ne dit rien) ; hachuré tant qu'une couleur manque.
+ var liq=q('[data-role="liq"]'),haut=g>0?1:0,y=g>0?30:150;
+ liq.setAttribute('y',y);q('[data-role="mousse"]').setAttribute('cy',y);q('[data-role="mousse"]').style.display=g>0?'':'none';
+ liq.setAttribute('fill',e==null?'url(#u3-hach)':hex(e));
+ q('[data-role="vq"]').style.display=e==null&&g>0?'':'none';q('[data-role="vq"]').style.top=(y+30)+'px';
+ var mk=q('[data-role="mk"]'),mot=q('[data-role="mot"]'),tag=q('[data-role="tag"]');
+ if(e==null){mk.hidden=true;mot.textContent=g>0?'?':'—';mot.className='u3-mot u3-inc';tag.hidden=true;}
+ else{mk.hidden=false;mk.style.bottom='calc('+Math.min(100,e/40*100)+'% - 2px)';mot.textContent=bande(e)[1];mot.className='u3-mot';tag.hidden=false;
+  var dans=e>=STYLE[0]&&e<=STYLE[1];tag.className='u3-tag '+(dans?'u3-dans':'u3-hors');tag.textContent=dans?'dans le style':(e<STYLE[0]?'plus pâle que le style':'plus foncée que le style');}
+ var ar=q('[data-role="ar"]');ar.hidden=!(e==null&&n>0);q('[data-role="arn"]').textContent=n;q('[data-role="art"]').textContent=n>1?' couleurs à renseigner':' couleur à renseigner';
+ qa('.u3-row').forEach(function(r){var l=st.lignes[+r.dataset.i];q('[data-role="pt"]',r).textContent=part(l)+' %';});
+}
+function dot(s){return s.fam!=='grain'?'':(s.ebc==null?'<span class="u3-dot u3-inc"></span>':'<span class="u3-dot" style="background:'+hex(s.ebc)+'"></span>');}
+function puces(){var deja=st.lignes.map(function(l){return l.nom;});
+ q('[data-role="chips"]').innerHTML=STK+STOCK.filter(function(s){return deja.indexOf(s.nom)<0;}).sort(function(a,b){return b.stock-a.stock;}).slice(0,6).map(function(s){return '<button class="u3-chip" data-nom="'+esc(s.nom)+'">'+dot(s)+esc(s.nom)+'</button>';}).join('');}
+var qq=q('[data-role="q"]'),sel=0;
+function chercher(t){var n=norm(t);return STOCK.filter(function(s){return norm(s.nom).indexOf(n)>=0;}).slice(0,4);}
+function propositions(){var t=qq.value.trim(),box=q('[data-role="sugg"]');if(!t){box.hidden=true;box._items=[];return;}
+ var ms=chercher(t),exact=ms.some(function(s){return norm(s.nom)===norm(t);});
+ var items=ms.map(function(s){return {s:s,h:dot(s)+esc(s.nom)+' <small>'+FAM[s.fam].nom.toLowerCase()+'</small>'};});
+ if(!exact&&t.length>=2)items.push({cree:t,h:'<span class="u3-dot u3-inc"></span>Créer « '+esc(t)+' » <small>'+FAM[st.fam].nom.toLowerCase()+', stock à zéro</small>'});
+ sel=Math.max(0,Math.min(sel,items.length-1));box._items=items;
+ box.innerHTML=items.map(function(it,k){return '<button class="u3-sg" role="option" data-k="'+k+'" aria-selected="'+(k===sel)+'">'+it.h+'</button>';}).join('');box.hidden=!items.length;}
+function ajouter(s){var k=-1;st.lignes.forEach(function(l,i){if(l.nom===s.nom&&l.fam===s.fam)k=i;});
+ if(k<0){st.lignes.push(L(s.nom,s.marque||'',s.fam,0,s.ebc==null?null:s.ebc,null,FAM[s.fam].mom==='fermentation'?3:null));k=st.lignes.length-1;
+  if(!STOCK.some(function(x){return x.nom===s.nom;}))STOCK.push({nom:s.nom,marque:'',fam:s.fam,ebc:null,stock:true});}
+ st.ouvert=-1;st.coul=-1;qq.value='';propositions();rendre();var inp=q('.u3-row[data-i="'+k+'"] [data-role="kg"]');inp.focus();inp.select();}
+qq.addEventListener('input',function(){sel=0;propositions();});
+qq.addEventListener('keydown',function(e){var box=q('[data-role="sugg"]'),it=box._items||[];
+ if(e.key==='ArrowDown'&&it.length){e.preventDefault();sel=Math.min(sel+1,it.length-1);propositions();}
+ else if(e.key==='ArrowUp'&&it.length){e.preventDefault();sel=Math.max(sel-1,0);propositions();}
+ else if(e.key==='Escape'){qq.value='';propositions();}
+ else if(e.key==='Enter'){e.preventDefault();var t=qq.value.trim();if(!t)return;var c=it[sel];if(c&&c.s)ajouter(c.s);else ajouter({nom:t.charAt(0).toUpperCase()+t.slice(1),fam:st.fam,ebc:null});}});
+q('[data-role="sugg"]').addEventListener('click',function(e){var b=e.target.closest('.u3-sg');if(!b)return;var c=this._items[+b.dataset.k];ajouter(c.s?c.s:{nom:c.cree,fam:st.fam,ebc:null});});
+q('[data-role="chips"]').addEventListener('click',function(e){var b=e.target.closest('.u3-chip');if(!b)return;ajouter(STOCK.filter(function(s){return s.nom===b.dataset.nom;})[0]);});
+var fb=q('[data-role="fam"]');fb.addEventListener('click',function(e){e.preventDefault();st.fam=FAMS[(FAMS.indexOf(st.fam)+1)%FAMS.length];fb.textContent=FAM[st.fam].nom;propositions();});
+function suivante(i){var nx=-1;st.lignes.forEach(function(x,k){if(nx<0&&k!==i&&x.fam==='grain'&&x.ebc==null)nx=k;});return nx;}
+function ouvrirCouleur(i){st.coul=i;st.ouvert=-1;rendre();if(i>=0)q('[data-role="ebc"]').focus();else qq.focus();}
+rows.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var r=b.closest('.u3-row'),i=+r.dataset.i,l=st.lignes[i],a=b.dataset.act;
+ if(a==='detail'){st.ouvert=st.ouvert===i?-1:i;st.coul=-1;rendre();}
+ else if(a==='couleur'){ouvrirCouleur(st.coul===i?-1:i);}
+ else if(a==='mom'){l.mom=b.dataset.m;if(l.mom==='fermentation'&&!l.jour)l.jour=3;rendre();}
+ else if(a==='del'){st.lignes.splice(i,1);st.ouvert=-1;rendre();qq.focus();}});
+// Toucher ou glisser sur la règle des teintes pose la couleur, sous le doigt.
+function poser(ev,bd){var r=bd.closest('.u3-row'),l=st.lignes[+r.dataset.i],b=bd.getBoundingClientRect(),p=Math.max(0,Math.min(100,(ev.clientX-b.left)/b.width*100));
+ l.ebc=eDePos(p);var c=q('[data-role="cur"]',r);c.hidden=false;c.style.left=posE(l.ebc)+'%';q('[data-role="ebc"]',r).value=fr(l.ebc,1);bd.setAttribute('aria-valuenow',l.ebc);majGoutte(r,l);chiffres();}
+function majGoutte(r,l){var g=q('.u3-goutte',r);g.className='u3-goutte'+(l.ebc==null?' u3-inc':'');g.style.background=l.ebc==null?'':hex(l.ebc);g.innerHTML=l.ebc==null?'<span>?</span>':'';}
+rows.addEventListener('pointerdown',function(e){var bd=e.target.closest('[data-role="bande"]');if(!bd)return;e.preventDefault();bd.setPointerCapture(e.pointerId);poser(e,bd);
+ var mv=function(ev){poser(ev,bd);},up=function(){bd.removeEventListener('pointermove',mv);bd.removeEventListener('pointerup',up);};bd.addEventListener('pointermove',mv);bd.addEventListener('pointerup',up);});
+var avant=null;
+rows.addEventListener('focusin',function(e){var t=e.target,r=t.closest('.u3-row');if(!r||!t.dataset.role)return;var l=st.lignes[+r.dataset.i];avant=t.dataset.role==='kg'?l.kg:l.ebc;if(t.select)t.select();});
+rows.addEventListener('input',function(e){var t=e.target,r=t.closest('.u3-row');if(!r)return;var l=st.lignes[+r.dataset.i],v=lit(t.value);
+ if(t.dataset.role==='kg'){l.kg=v!=null&&v>=0?v:0;t.classList.toggle('u3-zero',!l.kg);chiffres();}
+ else if(t.dataset.role==='ebc'){l.ebc=v!=null&&t.value.trim()?v:null;var c=q('[data-role="cur"]',r);c.hidden=l.ebc==null;if(l.ebc!=null)c.style.left=posE(l.ebc)+'%';majGoutte(r,l);chiffres();}
+ else if(t.dataset.role==='jour'){l.jour=Math.max(0,Math.round(v||0));}});
+rows.addEventListener('keydown',function(e){var t=e.target,r=t.closest('.u3-row');if(!r||!t.dataset.role)return;var i=+r.dataset.i,l=st.lignes[i];
+ if(t.dataset.role==='kg'&&(e.key==='ArrowUp'||e.key==='ArrowDown')){e.preventDefault();var up=e.key==='ArrowUp',p=(up?l.kg:l.kg-0.001)<1?0.05:0.1;l.kg=Math.max(0,Math.round((l.kg+(up?p:-p))*100)/100);t.value=fk(l.kg);chiffres();}
+ else if(e.key==='Escape'){e.preventDefault();if(t.dataset.role==='kg')l.kg=avant;else if(t.dataset.role==='ebc')l.ebc=avant;st.coul=-1;rendre();}
+ else if(e.key==='Enter'){e.preventDefault();if(t.dataset.role==='ebc')ouvrirCouleur(suivante(i));else{rendre();qq.focus();}}});
+rows.addEventListener('focusout',function(e){var t=e.target,r=t.closest&&t.closest('.u3-row');if(r&&t.dataset.role==='kg'&&document.contains(t)){var l=st.lignes[+r.dataset.i];if(l)t.value=fk(l.kg);}});
+q('[data-role="ar"]').addEventListener('click',function(){ouvrirCouleur(suivante(-1));});
+function charger(n){st.etat=n;st.lignes=ETATS[n]();st.ouvert=-1;st.coul=-1;qa('[data-etat]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.etat===n);});rendre();}
+q('[data-role="etats"]').addEventListener('click',function(e){var b=e.target.closest('[data-etat]');if(!b)return;charger(b.dataset.etat);scrollTo(0,0);});
+var m=/[?&]etat=(\w+)/.exec(location.search);charger(m&&ETATS[m[1]]?m[1]:'recette');
+})();</script>
+</body></html>

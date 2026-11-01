@@ -87,7 +87,8 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     allerEtape('Identité');
     fireEvent.click(screen.getByRole('button', { name: 'Adapter à mon matériel actuel · Autre installation', exact: true }));
     expect(screen.getByText(/Ce volume ne tient pas dans le matériel/)).toBeInTheDocument();
-    expect(screen.getByText('Matériel du plan : Royal Catering · cuve 45 L')).toBeInTheDocument();
+    // Identité n° 3 : le matériel du plan se lit dans le sous-titre de la tuile Matériel, plus dans une phrase.
+    expect(screen.getByRole('button', { name: /^Matériel\s*Royal Catering/ })).toBeInTheDocument();
     // The preserved imported split requires 24.2 L hot, above the new 24 L
     // maximum. Resolve that choice explicitly before retrying the adaptation.
     allerEtape('Eau et sels');

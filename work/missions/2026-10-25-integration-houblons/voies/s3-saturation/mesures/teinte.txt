@@ -1,0 +1,8 @@
+etape-houblons · fond #FCFCFC (choisi #FCFCFC) · encre #101010 (choisi #101010) · teinte 0 (choisi 0)
+ma-biere · fond #FCFCFC (choisi #FCFCFC) · encre #101010 (choisi #101010) · teinte 0 (choisi 0)
+suggerer · fond #FCFCFC (choisi #FCFCFC) · encre #101010 (choisi #141418) · teinte 0 (choisi 4)
+comparer · fond #FCFCFC (choisi #FCFCFC) · encre #101010 (choisi #101010) · teinte 16 (choisi 16)
+fiche · fond #F4F4F4 (choisi #FCFCFC) · encre #101010 (choisi #101010) · teinte 0 (choisi 0)
+dryhopper · fond #FCFCFC (choisi #FCFCFC) · encre #101010 (choisi #141418) · teinte 12 (choisi 8)
+substituer · fond #FCFCFC (choisi #FCFCFC) · encre #101010 (choisi #101010) · teinte 0 (choisi 0)
+TEINTE OK 7/7

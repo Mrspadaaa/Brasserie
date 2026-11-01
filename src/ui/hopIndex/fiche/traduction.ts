@@ -15,6 +15,8 @@
 import { fiches } from '../parcours/v4';
 
 const COMPLEMENT: Record<string, string> = {
+  // c9 (31.10, D199) : le mot de la fiche HPA de « Bru », fondue dans BRU-1 (hors Possède de la voie : une ligne, comme c6 pour D160).
+  'spicy pineapple': 'ananas épicé',
   // c6 (26.10) : les mots des fiches que la table d'alias rattache à une variété (Hallertauer Mittelfrüh, Mt. Rainier, Northern Brewer…).
   celery: 'céleri', 'classic herbs': 'herbes classiques', 'mixed berry': 'baies variées', 'peach tea': 'thé à la pêche', 'sugar like': 'sucré', 'morello cherry': 'griotte',
   'orange syrup': "sirop d'orange", 'excellent floral': 'floral', 'noble aromas': 'arômes nobles', 'with citrus': 'agrumes', 'licorice tones': 'réglisse', 'wild fruit': 'fruits sauvages',

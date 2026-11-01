@@ -1,0 +1,12 @@
+Témoin rouge, disponibles avant épuisés (D226) : les nouveaux tests contre proposition.ts SANS la règle (typicité avant stock). Reporter verbose.
+
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les disponibles d'abord, les épuisés ensuite > German Pils : Münchner Malz et Pilsner Malz épuisés, Carapils et Carahell disponibles : aucun épuisé avant un disponible 4ms
+→ un disponible après un épuisé : Pilsner Malz | Carapils | Münchner Malz | Carahell | Caramünch II: expected false to be true // Object.is equality
+× tests/unit/fermentables/proposition.test.ts > proposerFermentables : les disponibles d'abord, les épuisés ensuite > la typicité ordonne à l'intérieur de chaque groupe 1ms
+→ expected [ 'Pilsner Malz', 'Carapils', …(3) ] to deeply equal [ 'Carapils', 'Caramünch II', …(3) ]
+✓ tests/unit/fermentables/proposition.test.ts > proposerFermentables : les disponibles d'abord, les épuisés ensuite > sans style, le groupe des disponibles passe de même avant celui des épuisés 0ms
+FAIL  tests/unit/fermentables/proposition.test.ts > proposerFermentables : les disponibles d'abord, les épuisés ensuite > German Pils : Münchner Malz et Pilsner Malz épuisés, Carapils et Carahell disponibles : aucun épuisé avant un disponible
+AssertionError: un disponible après un épuisé : Pilsner Malz | Carapils | Münchner Malz | Carahell | Caramünch II: expected false to be true // Object.is equality
+FAIL  tests/unit/fermentables/proposition.test.ts > proposerFermentables : les disponibles d'abord, les épuisés ensuite > la typicité ordonne à l'intérieur de chaque groupe
+AssertionError: expected [ 'Pilsner Malz', 'Carapils', …(3) ] to deeply equal [ 'Carapils', 'Caramünch II', …(3) ]
+Tests  2 failed | 32 passed (34)

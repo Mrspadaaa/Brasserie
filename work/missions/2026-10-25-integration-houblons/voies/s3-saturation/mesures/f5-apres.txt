@@ -1,0 +1,32 @@
+15B meilleur   3 médiane    57/505  East Kent Goldings 3 · Fuggle 9 · Target 105 · Challenger 185
+15C meilleur   4 médiane  18.5/505  East Kent Goldings 4 · Fuggle 12 · Target 122 · Challenger 25
+16A meilleur   3 médiane    57/505  East Kent Goldings 3 · Fuggle 9 · Target 105 · Challenger 185
+16B meilleur   3 médiane    57/505  East Kent Goldings 3 · Fuggle 9 · Target 105 · Challenger 185
+16C meilleur 243 médiane   325/505  East Kent Goldings 243 · Fuggle 325 · Saaz (CZ) 337
+16D meilleur   5 médiane  29.5/505  East Kent Goldings 12 · Fuggle 5 · Target 47 · Challenger 85
+20B meilleur  47 médiane  58.5/505  Cascade 57 · Centennial 47 · Columbus 105 · Chinook 60
+20C meilleur 242 médiane   310/505  Columbus 323 · Northern Brewer (GR) 310 · Challenger 242 · East Kent Goldings 243 · Fuggle 325
+20A meilleur   8 médiane    45/505  Cascade 53 · Centennial 45 · Willamette 8
+13C meilleur   3 médiane    57/505  East Kent Goldings 3 · Fuggle 9 · Challenger 185 · Target 105
+9C meilleur  71 médiane   100/505  Saaz (CZ) 101 · Hallertau Mittelfrüh 100 · Tettnanger 71
+1A meilleur  22 médiane    24/505  Hallertau Mittelfrüh 22 · Saaz (CZ) 23 · Cascade 25 · Willamette 46
+3A meilleur  45 médiane 126.5/505  Saaz (CZ) 45 · Premiant 208
+3B meilleur  23 médiane    73/505  Saaz (CZ) 23 · Premiant 123
+4A meilleur  10 médiane    22/505  Hallertau Mittelfrüh 22 · Tettnanger 10 · Spalt 33 · Saaz (CZ) 23 · Perle (GR) 17
+5B meilleur  10 médiane  27.5/505  Hallertau Mittelfrüh 22 · Tettnanger 10 · Spalt 33 · Hersbrucker 41
+5D meilleur  10 médiane    22/505  Hallertau Mittelfrüh 22 · Tettnanger 10 · Spalt 33 · Saaz (CZ) 23 · Perle (GR) 17
+7B meilleur  24 médiane  37.5/505  Spalt 60 · Hallertau Mittelfrüh 41 · Tettnanger 24 · Perle (GR) 34
+10A meilleur  10 médiane  27.5/505  Hallertau Mittelfrüh 22 · Tettnanger 10 · Hersbrucker 41 · Spalt 33
+24A meilleur   9 médiane    14/505  Saaz (CZ) 9 · Styrian Golding 10 · Hallertau Mittelfrüh 28 · Tettnanger 18
+23A meilleur 441 médiane   492/505  Hallertau Mittelfrüh 492 · Tettnanger 441 · Saaz (CZ) 495
+23G meilleur 441 médiane   492/505  Hallertau Mittelfrüh 492 · Saaz (CZ) 495 · Tettnanger 441
+21A meilleur   3 médiane   7.5/505  Mosaic 5 · Citra 9 · Simcoe 22 · Centennial 23 · Cascade 6 · Amarillo 3
+21C meilleur   3 médiane    23/505  Citra 5 · Mosaic 23 · Galaxy 3 · Simcoe 25 · Azacca 36 · El Dorado 21 · Nelson Sauvin 24
+22A meilleur   1 médiane     9/505  Citra 9 · Simcoe 22 · Mosaic 5 · Columbus 31 · Amarillo 3 · Centennial 23 · Chinook 1
+12C meilleur   1 médiane     7/505  East Kent Goldings 1 · Fuggle 7 · Challenger 11 · Target 2 · Northdown 98
+18B meilleur   3 médiane   9.5/505  Cascade 7 · Centennial 36 · Citra 12 · Amarillo 3 · Simcoe 35 · Mosaic 6
+11B meilleur  30 médiane    54/505  East Kent Goldings 83 · Fuggle 30 · Challenger 154 · Target 54 · Northdown 41
+25B meilleur  17 médiane    37/505  Saaz (CZ) 39 · Styrian Golding 17 · East Kent Goldings 25 · Hallertau Mittelfrüh 37 · Tettnanger 53
+26C meilleur  24 médiane  41.5/505  Saaz (CZ) 42 · Styrian Golding 43 · Hallertau Mittelfrüh 41 · Tettnanger 24
+25A meilleur   4 médiane  13.5/505  Saaz (CZ) 13 · Styrian Golding 14 · Hallertau Mittelfrüh 42 · East Kent Goldings 4
+PHARES apres : 18/31 styles avec un phare dans les 10, 12/31 dans les 5 ; médiane des médianes 37.5 ; Mosaic, achat n° 4 en 21A ; Citra simple, achat n° 6 (0 = absente) ; tête 21A : Chinook, Amarillo, Cashmere, Mosaic, Comet

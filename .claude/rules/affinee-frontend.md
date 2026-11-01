@@ -33,6 +33,7 @@ Pour une création, modification ou revue d'interface, sélectionne les skills p
 | Travail concerné | Skills à utiliser lorsqu'ils correspondent |
 | --- | --- |
 | UX, hiérarchie visuelle, formulaires, navigation, responsive, finition | `impeccable` ; `frontend-design` si disponible et complémentaire |
+| Boosters UX/UI (comprendre et agir autrement que par le texte) et check-list d'écran : hiérarchie, premier plan, rythme, états, gestes, saisie, cohérence | `boosters-ux`, avec `impeccable` et `ui-design-system` ; au port, avec `a11y-audit` et `senior-frontend` |
 | Composants React/TypeScript, interactions, architecture ou performances frontend | `senior-frontend` |
 | Couleurs, typographie, espacements, tokens et cohérence des composants | `ui-design-system` |
 | Accessibilité, contrastes, clavier, focus, libellés ou cibles tactiles | `a11y-audit` |

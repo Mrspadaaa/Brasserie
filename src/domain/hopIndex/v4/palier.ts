@@ -9,6 +9,10 @@ export type Usage = 'bittering' | 'dual' | 'aroma';
 export const USAGE_RANG: Record<Usage, number> = { bittering: 0, dual: 0, aroma: 1 };
 export const rangUsage = (u: Usage | null | undefined): number => (u ? USAGE_RANG[u] : 2);
 export const USAGE_FR: Record<Usage, string> = { bittering: 'amérisant', dual: 'double usage', aroma: 'arôme' };
+/** s3, R4 (D195), symétrique de la règle d'usage à 60′ : au whirlpool et au dry hop (actif ou après), un houblon d'usage « amérisant » (Beer Maverick) passe APRÈS les houblons d'arôme ou
+ * de double usage de même rang (à distance égale) : son α sert à amérisante, son arôme y est mince. Jamais une exclusion ; un usage inconnu ne recule pas. */
+export const MOMENTS_AMERISANT_RECULE: readonly string[] = ['wp', 'dryActive', 'dryPost'];
+export const raisonAmerisant = (nom: string, moment: string): string => `${nom} : houblon d'usage amérisant (Beer Maverick) ajouté ${moment} : il passe après les houblons d'arôme ou de double usage à effet égal (jamais écarté).`;
 /** D102 (A) : à 60′, un PRODUIT d'arôme (cryo, lupuline, poudre : substitution.ts, produitDArome) passe après les amérisants et doubles usages, comme dans Substituer
  * (« un brasseur n'amérise pas avec un produit d'arôme : usage et coût »), quel que soit l'usage de sa variété : il tombe dans le palier des arômes (1), jamais au-dessus.
  * Un usage inconnu (2) reste derrière. Le score et l'α affichés ne changent pas : seul le rang change. */

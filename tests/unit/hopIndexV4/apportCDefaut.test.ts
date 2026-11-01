@@ -13,7 +13,8 @@ vi.setConfig({ testTimeout: 180_000 });
 const moteur0 = creerMoteur({ catalogue: CATALOGUE, stock: [] }); // les 318 variétés, sans stock : comme les mesures de g2d
 // D125 (a4) : ce fichier éprouve la règle de D99 (famille marquée), mesurée quand le dépassement d'une famille neutre comptait dans le rang ; il le rejoue donc avec `debordementNeutre: true`
 // (l'ordre d'avant). La règle neutre a ses propres tests (a4Biais.test.ts).
-const m = { ...moteur0, proposeVoies: (r: Recipe, d: Record<string, number>, o: object = {}) => moteur0.proposeVoies(r, d, { debordementNeutre: true, ...o }) };
+const m = { ...moteur0, proposeVoies: (r: Recipe, d: Record<string, number>, o: object = {}) => moteur0.proposeVoies(r, d, { debordementNeutre: true, saturation: false, ...o }) };
+// D195 (s3) : ce fichier éprouve des clés mesurées avant la règle « la demande prime sur la bande » ; il rejoue `saturation: false` (l'ordre d'avant). La règle a ses tests (saturationD195.test.ts).
 const R21C: Recipe = { name: 'Hazy du jeudi (21C)', styleCode: '21C', volumeL: 20, og: 1.058, boilMin: 60, yeastId: 'fermentis-us05', ebc: 8, additions: [
   { id: 'a1', hopKey: 'beermaverick-nugget', moment: 'b60', grams: 20 }, { id: 'a2', hopKey: 'beermaverick-cascade', moment: 'dryActive', grams: 80 }] };
 const R16D: Recipe = { name: 'Stout export (16D)', styleCode: '16D', volumeL: 20, og: 1.066, boilMin: 60, yeastId: 'fermentis-us05', ebc: 70, additions: [

@@ -1,0 +1,146 @@
+{
+  "console": [
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+      "url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    },
+    {
+      "type": "debug",
+      "texte": "[vite] connecting...",
+      "url": "http://localhost:5621/@vite/client"
+    },
+    {
+      "type": "debug",
+      "texte": "[vite] connected.",
+      "url": "http://localhost:5621/@vite/client"
+    },
+    {
+      "type": "info",
+      "texte": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "url": "http://localhost:5621/node_modules/.vite/deps/react-dom_client.js?v=47439f26"
+    },
+    {
+      "type": "warn",
+      "texte": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "url": "http://localhost:5621/?dev-local"
+    },
+    {
+      "type": "info",
+      "texte": "[Firebase] Émulateurs locaux connectés (Firestore, Functions, Auth).",
+      "url": "http://localhost:5621/src/services/firebase.ts"
+    },
+    {
+      "type": "info",
+      "texte": "[AppCheck] VITE_RECAPTCHA_SITE_KEY absente — App Check désactivé (normal en développement).",
+      "url": "http://localhost:5621/src/services/firebase.ts"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+      "url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    },
+    {
+      "type": "debug",
+      "texte": "[vite] connecting...",
+      "url": "http://localhost:5621/@vite/client"
+    },
+    {
+      "type": "info",
+      "texte": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "url": "http://localhost:5621/node_modules/.vite/deps/react-dom_client.js?v=47439f26"
+    },
+    {
+      "type": "debug",
+      "texte": "[vite] connected.",
+      "url": "http://localhost:5621/@vite/client"
+    },
+    {
+      "type": "warn",
+      "texte": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "url": "http://localhost:5621/?dev-local"
+    },
+    {
+      "type": "info",
+      "texte": "[Firebase] Émulateurs locaux connectés (Firestore, Functions, Auth).",
+      "url": "http://localhost:5621/src/services/firebase.ts"
+    },
+    {
+      "type": "info",
+      "texte": "[AppCheck] VITE_RECAPTCHA_SITE_KEY absente — App Check désactivé (normal en développement).",
+      "url": "http://localhost:5621/src/services/firebase.ts"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "url": "http://127.0.0.1:5001/brasserie-l-affinee/europe-west6/driveAuthorization"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+      "url": "https://accounts.google.com/gsi/client"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+      "url": "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    },
+    {
+      "type": "debug",
+      "texte": "[vite] connecting...",
+      "url": "http://localhost:5621/@vite/client"
+    },
+    {
+      "type": "info",
+      "texte": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "url": "http://localhost:5621/node_modules/.vite/deps/react-dom_client.js?v=47439f26"
+    },
+    {
+      "type": "debug",
+      "texte": "[vite] connected.",
+      "url": "http://localhost:5621/@vite/client"
+    },
+    {
+      "type": "warn",
+      "texte": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "url": "http://localhost:5621/?dev-local"
+    },
+    {
+      "type": "info",
+      "texte": "[Firebase] Émulateurs locaux connectés (Firestore, Functions, Auth).",
+      "url": "http://localhost:5621/src/services/firebase.ts"
+    },
+    {
+      "type": "info",
+      "texte": "[AppCheck] VITE_RECAPTCHA_SITE_KEY absente — App Check désactivé (normal en développement).",
+      "url": "http://localhost:5621/src/services/firebase.ts"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "url": "http://127.0.0.1:5001/brasserie-l-affinee/europe-west6/aiTask"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "url": "http://127.0.0.1:5001/brasserie-l-affinee/europe-west6/driveAuthorization"
+    },
+    {
+      "type": "error",
+      "texte": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+      "url": "https://accounts.google.com/gsi/client"
+    }
+  ],
+  "erreurs": [],
+  "echecsReseau": [
+    "OPTIONS http://127.0.0.1:5001/brasserie-l-affinee/europe-west6/driveAuthorization : net::ERR_CONNECTION_REFUSED",
+    "OPTIONS http://127.0.0.1:5001/brasserie-l-affinee/europe-west6/driveAuthorization : net::ERR_CONNECTION_REFUSED"
+  ],
+  "bloquees": [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://accounts.google.com/gsi/client",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    "https://accounts.google.com/gsi/client"
+  ]
+}

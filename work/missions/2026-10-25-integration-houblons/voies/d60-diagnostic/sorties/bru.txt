@@ -1,0 +1,18 @@
+candidats 504, original Nugget @60′ (poids {"arome":0.1,"huiles":0.2,"amertume":0.7})
+  1 Bru                    score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 Cluster fugget         score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 Extra styrian dana     score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 Kohia Nelson           score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 Limequat               score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 machops                score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 Mapuche                score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+  1 Mega Motueka           score 100 palier très proche comp {"arome":100,"huiles":null,"amertume":null} couvAmertume [] huiles 0 arôme true fiabilité partielle reculé non
+--- les substituts classiques de Nugget (CTZ) dans la liste complète
+ 48 Columbus               score  91 palier très proche comp {"arome":100,"huiles":83,"amertume":93} couvAmertume ["α","β","cohumulone","rôle"] huiles 6 arôme true fiabilité bonne reculé non
+ 22 Warrior                score  95 palier très proche comp {"arome":100,"huiles":86,"amertume":96} couvAmertume ["α","β","cohumulone","rôle"] huiles 5 arôme true fiabilité bonne reculé non
+ 48 Magnum (US)            score  91 palier très proche comp {"arome":100,"huiles":73,"amertume":94} couvAmertume ["α","β","cohumulone","rôle"] huiles 5 arôme true fiabilité bonne reculé non
+ 32 Chinook                score  93 palier très proche comp {"arome":100,"huiles":88,"amertume":93} couvAmertume ["α","β","cohumulone","rôle"] huiles 6 arôme true fiabilité bonne reculé non
+ 61 Zeus                   score  90 palier très proche comp {"arome":100,"huiles":86,"amertume":90} couvAmertume ["α","β","cohumulone","rôle"] huiles 6 arôme true fiabilité bonne reculé non
+ 48 Tomahawk               score  91 palier très proche comp {"arome":100,"huiles":83,"amertume":93} couvAmertume ["α","β","cohumulone","rôle"] huiles 6 arôme true fiabilité bonne reculé non
+amertume inconnue : 76 candidats sur 504; parmi eux score >= 80 : 13, score = 100 : 12
+dans les 8 premiers : 8 ; dans les 30 premiers : 12
