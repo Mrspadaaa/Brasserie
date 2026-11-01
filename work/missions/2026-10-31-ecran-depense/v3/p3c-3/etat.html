@@ -235,6 +235,12 @@ button.p3a3-gh{width:100%;text-align:left;border-left:0;border-right:0}
 .p3a3-dens-une .p3a3-fix,.p3a3-dens-pastille .p3a3-fix{padding-bottom:3px;margin-top:-2px}
 .p3a3-dq{margin-left:auto;flex:none;width:94px;display:inline-grid;grid-template-columns:37px 7px 44px;column-gap:3px;font-family:var(--mono);font-size:12px;color:var(--t2);white-space:nowrap;font-variant-numeric:tabular-nums}
 .p3a3-dq>span:first-child{text-align:right}.p3a3-dq>span:last-child{text-align:left}
+/* D248 : « mettre plus en avant la quantité, juste mettre en gras, et bien alignées les champs ». La quantité en gras (ligne et
+   sous-total), rien d'autre ne change ; le sous-total de quantité tombe dans la colonne des quantités : 57 px = 3 + 7 (×) + 3 + 44 (prix). */
+.p3a3-dq>span:first-child{font-weight:600}
+.p3a3-gh .p3a3-q{font-weight:600;text-align:right;margin-right:57px}
+.p3a3-gh .p3a3-eqb{margin-left:auto;font-size:12px;color:var(--t1);background:#fff;border-radius:10px;padding:0 5px;line-height:18px;white-space:nowrap}
+.p3a3-gh .p3a3-eqb + .p3a3-q{margin-left:0}
 .p3a3-dq i{font-style:normal;text-align:center}
 /* pastille : la mouture sur la rangée de son malt, son montant à part ; elle se rattache d'un toucher */
 .p3a3-mpw{position:relative}
@@ -321,8 +327,8 @@ function sousTot(c){var ls=L.filter(function(x){return x.c===c||(c==='malt'&&x.c
  L.filter(function(x){return x.c===c;}).forEach(function(x){var u=(unite(x)||'?');q[u]=(q[u]||0)+Number(x.q);});
  ls.forEach(function(x){m+=x.m;});
  var qs=Object.keys(q).map(function(u){return u==='?'?'<i>'+q[u]+' ?</i>':q[u]+' '+u;}).join(' + ');
- if(c==='lev')qs+=' = '+q.Stk+' sachets';
- return {n:L.filter(function(x){return x.c===c;}).length,mo:c==='malt'&&CFG.mout==='sous'?5:0,q:qs,m:m};}
+ // D248 : « = 7 sachets » quitte la colonne des quantités et devient une pastille devant elle, comme « = 2 sachets » sur les lignes
+ return {n:L.filter(function(x){return x.c===c;}).length,mo:c==='malt'&&CFG.mout==='sous'?5:0,q:qs,m:m,eqb:c==='lev'?'= '+q.Stk+' sachets':''};}
 function rangee(x){
  var d=x.pt&&!S.pts[x.pt], sous=x.l==='mouture'&&S.mode==='cat'&&CFG.mout==='sous';
  // prix tel qu'imprimé (0,040 comme 0,0800), aligné sur la virgule : partie entière à droite, décimales à gauche
@@ -395,7 +401,7 @@ function liste(){
     st={n:lf.length+'/'+st.n,mo:0,m:fm,q:Object.keys(fq).map(function(u){return u==='?'?'<i>'+fq[u]+' ?</i>':fq[u]+' '+u;}).join(' + ')};
    }
    var tag=CFG.gh==='repli'?'button type="button" data-plier="'+g.c+'" aria-expanded="'+!plie+'"':'div';
-   h+='<div class="'+P+'grp" data-groupe="'+g.c+'"><'+tag+' class="'+P+'gh" data-booster="sous-total" style="--cat:var(--'+g.c+')">'+(CFG.gh==='repli'?'<span class="'+P+'chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.88" style="transform:rotate('+(plie?'-90':'0')+'deg)"><path d="M5 8l5 5 5-5"/></svg></span>':'<i class="'+P+'pt" style="background:var(--'+g.c+')"></i>')+'<strong>'+g.nm+'</strong><span class="'+P+'nb">'+st.n+(st.mo?' +'+st.mo+' ↳':'')+'</span>'+(PAST&&S.mode==='cat'&&g.c==='malt'&&!S.pts[3]?'<button type="button" class="'+P+'mb '+P+'tous" data-mout-tous="1" data-booster="mouture-tous">Rattacher les 5</button>':'')+'<span class="'+P+'q">'+st.q+'</span><span class="'+P+'mt">'+chf(st.m)+'</span></'+tag.split(' ')[0]+'>';
+   h+='<div class="'+P+'grp" data-groupe="'+g.c+'"><'+tag+' class="'+P+'gh" data-booster="sous-total" style="--cat:var(--'+g.c+')">'+(CFG.gh==='repli'?'<span class="'+P+'chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.88" style="transform:rotate('+(plie?'-90':'0')+'deg)"><path d="M5 8l5 5 5-5"/></svg></span>':'<i class="'+P+'pt" style="background:var(--'+g.c+')"></i>')+'<strong>'+g.nm+'</strong><span class="'+P+'nb">'+st.n+(st.mo?' +'+st.mo+' ↳':'')+'</span>'+(PAST&&S.mode==='cat'&&g.c==='malt'&&!S.pts[3]?'<button type="button" class="'+P+'mb '+P+'tous" data-mout-tous="1" data-booster="mouture-tous">Rattacher les 5</button>':'')+(st.eqb?'<span class="'+P+'eqb">'+st.eqb+'</span>':'')+'<span class="'+P+'q">'+st.q+'</span><span class="'+P+'mt">'+chf(st.m)+'</span></'+tag.split(' ')[0]+'>';
    // Services : chaque mouture nomme son malt sur sa pastille ; « Rattacher les 5 » vit sous l'en-tête du groupe
    if(g.c==='mout'&&!plie&&!S.pts[3]&&!S.filtre)h+='<div class="'+P+'fix" style="padding-top:4px"><button type="button" class="'+P+'mb '+P+'tous" data-mout-tous="1" data-booster="mouture-tous">Rattacher les 5 à leur malt</button></div>';
    h+='<ul style="list-style:none"'+(plie?' hidden':'')+'>';

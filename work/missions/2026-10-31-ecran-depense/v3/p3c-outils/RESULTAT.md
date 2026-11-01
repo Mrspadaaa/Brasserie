@@ -145,6 +145,57 @@ Captures ouvertes et comparées aux précédentes : `p3c-1-defile.png`, `p3c-2-t
 Reste à surveiller : dans p3c-3, une fois les moutures rattachées, « ✓ 2,40/kg » et « ✓ 0,60 » se suivent sur la même rangée. Les
 deux ✓ sont proches, mais chaque montant reste à part.
 
+## Retouche D248 (p3c-3 choisie ; « mettre plus en avant la quantité, juste mettre en gras, et bien alignées les champs »)
+Sa capture `brasseur/01-11-p3c-3-quantite-entouree.jpg` est ouverte : il entoure « 18 Kg » dans la bande Malts et
+« 6 Kg × 2,30 » sur Maris Otter. La cause est mesurée : le sous-total de quantité tombait 57 px à droite de la colonne des
+quantités, au-dessus du prix.
+
+1. **Le contrôle, d'abord (L13).** `v3/p3c-outils/controle-alignement.mjs <id…>` mesure à 390 tactile et à 1280, aux états
+   `repos`, `defile` et `tous`, réseau externe coupé :
+   - chaque quantité, de ligne et de sous-total de bande, doit avoir une graisse d'au moins 600, avec la taille et la couleur du
+     témoin ;
+   - prix et montants doivent garder la taille, la couleur et la graisse du témoin ;
+   - les bords droits des quantités doivent s'aligner à 1 px près, lignes et sous-totaux, sur tous les groupes ;
+   - les prix doivent s'aligner sur leur virgule à 1 px près. Le prix s'écrit tel qu'imprimé, de 2 à 4 décimales : la virgule est
+     le seul repère qui tient ;
+   - les bords droits des montants doivent s'aligner à 1 px près, lignes et sous-totaux.
+
+   Témoin : la copie de p3c-3 avant la retouche, `v3/p3c-outils/temoin-p3c-3/p3c-3-avant/etat.html`. Sortie : **ALIGNE ECHEC**,
+   6 vues sur 6 :
+   - `21/21 quantités pas en gras` ;
+   - `quantités : bords droits sur 57.0 px (pire : bande malt à 57.0 px)`.
+2. **La retouche, dans `v3/p3c-3` seulement.**
+   - La quantité passe en gras (600), sur les lignes (« 6 Kg », « 40 g », « 30 ? », « 2 Stk ») comme dans les bandes (« 18 Kg »,
+     « 270 g + 30 ? », « 7 Stk »). Elle garde sa taille et sa couleur.
+   - Le sous-total de quantité tombe dans la colonne des quantités : `margin-right:57px`, soit 3 + 7 (×) + 3 + 44 (prix).
+   - Levures : « = 7 sachets » quitte la colonne et devient une pastille devant « 7 Stk », comme « = 2 sachets » sur les lignes.
+     Sinon, « 7 Stk » ne pouvait pas s'aligner sur « 2 Stk ».
+   - Prix, montants, bandes, liseré : rien d'autre ne change, et pas d'en-tête de colonnes.
+3. **Frais de port (D249) : rien à faire.** La fixture de p3c-3 (sa facture 372765, 23 lignes) n'a aucune ligne de port : grep
+   « port », « Versand », « Porto », « Fracht », « livraison » dans `etat.html` et dans `diagnostic/d1/verite-facture-372765.json`.
+   Rien n'est touché ; la règle s'appliquera au port, ou à une facture qui en imprime.
+
+Contrôles rejoués (01.11, depuis la racine) :
+- `controle-alignement.mjs p3c-3` : **ALIGNE OK**, 6 vues ; 21 quantités (dont 3 de bande), 18 prix et 21 montants, écart 0,0 px
+  partout.
+- `controle-compact.mjs p3c-3` : **COMPACT OK** (a=17, b=23, médiane 29,0 ; au-dessus de la liste, 0,00 %).
+- `compter-lignes` : **LIGNES OK** (a=17, b=23).
+- `controle-commun … --sans-lignes` : **COMMUN OK**.
+- `mots --sans-lignes` : 51 mots, **MOTS OK**.
+- `contraste` : **CONTRASTE OK** (188 textes, le pire 5,24:1).
+- `verifier-page` : **PAGE OK**.
+- `controle-choix` : CHOIX OK, mais il ne compare rien : l'écran Dépense n'est pas dans `ecrans.json`.
+- `capturer.mjs p3c-3` : **CAPTURES OK 17**.
+- Aucun `type="number"`.
+
+Captures ouvertes et comparées à la sienne : `p3c-3-repos.png`, `-defile.png`, `-tous.png` et `-1280-repos.png`.
+- « 18 Kg » est maintenant au-dessus de « 6 Kg … 2 Kg », en gras.
+- « 270 g + 30 ? » s'aligne sur « 100 g », et « 7 Stk » sur « 2 Stk ».
+- À 390, dans la bande Malts, « Rattacher les 5 » et « 18 Kg » se suivent à 6 px : c'est serré, mais rien ne se chevauche.
+  Après le rattachement, le bouton disparaît.
+
+P3C3-R OK — quantités en gras et colonnes alignées (ALIGNE OK, témoin ECHEC à 57 px) ; pas de ligne de port dans la fixture
+
 P3C-R OK — retouches e-t4 faites (4 px p3c-1, /kg sur la rangée s'il tient, « ✓ 0,60 ») ; COMPACT, COMMUN, MOTS, CONTRASTE, PAGE, LIGNES OK
 
 P3C OK — trois degrés COMPACT OK (a/b 13/19, 14/20, 17/23 ; médianes 33, 29, 29 px contre 43), haut identique à p3a-3 (0,00 %), COMMUN, MOTS, CONTRASTE, PAGE, LIGNES OK
