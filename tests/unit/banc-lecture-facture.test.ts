@@ -13,12 +13,19 @@ import {
   BUDGET_CAP_CHF, Budget, BudgetStop, LITE_MODEL, STRONG_MODEL, appendJournal, buildReadBody, finalOfB, finalOfCprime, finalOfTwo, needsThird, parseArgs,
   readingFromError, readingFromResponse, realTransport, reservationMicro, runBench, simulateResponse, spentInJournal, type BenchCase, type Fault, type ReadMeta
 } from '../../scripts/banc-lecture-facture';
-import { checkSimulation, fieldDiff, judgeBench, judgeResult, perDocument, renderHorsLigne, renderTable, variantIds } from '../../scripts/banc-lecture-facture-juger';
+import { checkSimulation, fieldDiff, judgeBench, judgeResult, perDocument, priceTolerance, renderHorsLigne, renderTable, variantIds } from '../../scripts/banc-lecture-facture-juger';
 import {
   FAULT_PLAN, K1_VARIANTS, LITE_RAISED_OUTPUT, THIRD_IDS, VARIANTS, callSpec, deriveVariants, finalOfStar, finalOfStarPrime, finalOfStarVote, isoCurrency, loadCases, loadLender, mapReads,
   orderVariants, withCodesNormalized, type DrawReads, type VariantId
 } from '../../scripts/banc-lecture-facture';
 import { LITE_RULES, LITE_RULES_BLOCK, LITE_RULES_TITLE, liteConsigne } from '../../scripts/banc-lecture-consignes-lite';
+import {
+  CAS_FILES, GENRES, IMAGE_TOKENS, REELS_DIR, RESERVE_INPUT_TOKENS, TILES_NOTE, estimateBench, genreOfCase, inputReserveTokens, isTileable, multiCaptureNote, parseReadResponse, thirdCallDuplicates,
+  usesSvSchema, withToolTokens, FREE_JSON_NOTE, AV_NOTE
+} from '../../scripts/banc-lecture-facture';
+import { SV_SCHEMA, countSchemaFields, productionToSv, schemaProblems, svToProduction } from '../../scripts/banc-lecture-schema';
+import { TASKS } from '../../functions/src/prompts';
+import { renderPerGenre } from '../../scripts/banc-lecture-facture-juger';
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Données fabriquées : aucune valeur d'un vrai document
@@ -651,5 +658,424 @@ describe('k2 — la simulation éprouve le jugement sur toutes les variantes (t�
     expect(text).toContain('| doc4 |');
     expect(text).not.toMatch(/[0-9]{3,}[.,][0-9]{2}/);
     expect([...perDocument(draws).keys()].sort()).toEqual(['doc1', 'doc3', 'doc4', 'doc5', 'doc6', 'doc7']);
+  });
+});
+
+// =====================================================================================================================
+// k4 — le banc sur ses pièces (plusieurs fichiers, PDF), les gestes du rapport (Hv, Sv, Uv, Av, Tv), --estimer
+// =====================================================================================================================
+const png = { mimeType: 'image/png', data: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).toString('base64') };
+const pdf = (pages: number) => ({ mimeType: 'application/pdf', data: Buffer.from(`%PDF-1.4\n<< /Type /Pages /Count ${pages} >>\n${'<< /Type /Page >>\n'.repeat(pages)}`).toString('base64') });
+const textOf = (body: any) => body.contents[0].parts.find((part: any) => typeof part.text === 'string').text as string;
+
+describe('k4 — plusieurs fichiers : une part par fichier, dans l’ordre ; la phrase du banc seulement pour plusieurs', () => {
+  const files = [file, png, pdf(2)];
+  it('une part inlineData par fichier, dans l’ordre, la consigne d’abord comme en production', () => {
+    const body: any = buildReadBody(files, INVOICE_SCAN_PROMPTS[0]);
+    const parts = body.contents[0].parts;
+    expect(parts).toHaveLength(4);
+    expect(parts[0].text).toContain(INVOICE_SCAN_PROMPTS[0]);
+    expect(parts.slice(1).map((part: any) => part.inlineData)).toEqual(files);
+    expect(parts[0].text).toContain(multiCaptureNote(3));
+    expect(multiCaptureNote(3)).toMatch(/recouvr/);
+    expect(multiCaptureNote(3)).toMatch(/une seule fois/);
+  });
+  it('un cas à un fichier : aucune phrase du banc, le corps est celui de la production', () => {
+    expect(textOf(buildReadBody([file], INVOICE_SCAN_PROMPTS[0]))).toBe(INVOICE_SCAN_PROMPTS[0]);
+    expect(buildReadBody([file], INVOICE_SCAN_PROMPTS[1])).toEqual(buildReadBody(file, INVOICE_SCAN_PROMPTS[1]));
+  });
+  it('un PDF part en application/pdf, un seul fichier : pas de phrase de captures', () => {
+    const body: any = buildReadBody(pdf(4), INVOICE_SCAN_PROMPTS[0]);
+    expect(body.contents[0].parts[1].inlineData.mimeType).toBe('application/pdf');
+    expect(body.contents[0].parts[0].text).toBe(INVOICE_SCAN_PROMPTS[0]);
+  });
+  it('un banc complet sur un cas à trois fichiers : les trois parts partent à chaque appel', async () => {
+    const c: BenchCase = { ...truthOf('doc10'), file: 'a.jpg', files: ['a.jpg', 'b.jpg', 'c.jpg'] };
+    const seen: number[] = [];
+    const transport = async (_m: string, body: any, meta: ReadMeta) => { seen.push(body.contents[0].parts.filter((part: any) => part.inlineData).length); return simulateResponse(c, meta, [], []); };
+    await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'multi'), faults: false, variantes: ['A'] }, { cases: [c], transport, log: () => {} });
+    expect(seen.length).toBeGreaterThanOrEqual(2);
+    expect(seen.every(n => n === 3)).toBe(true);
+  });
+  it('CAS_FILES garde les trois fichiers de k1 et n’ajoute cas-4.json que s’il existe', () => {
+    expect(CAS_FILES.slice(0, 3).map(name => path.basename(name))).toEqual(['cas.json', 'cas-2.json', 'cas-3.json']);
+    expect(CAS_FILES.length === 3 || path.basename(CAS_FILES[3]) === 'cas-4.json').toBe(true);
+    expect(CAS_FILES.slice(3).every(name => existsSync(name))).toBe(true);
+    expect(REELS_DIR).toContain('H13-reels');
+  });
+  it('le genre d’une pièce : PDF, plusieurs captures, capture, photo', () => {
+    const base = truthOf('x');
+    expect(genreOfCase({ ...base, file: 'a.pdf', mimeType: 'application/pdf' })).toBe('PDF');
+    expect(genreOfCase({ ...base, file: 'a-ecran-1.jpg', files: ['a-ecran-1.jpg', 'a-ecran-2.jpg'] })).toBe('plusieurs captures');
+    expect(genreOfCase({ ...base, file: 'facture-ecran.jpg' })).toBe('capture');
+    expect(genreOfCase({ ...base, file: 'facture-papier.jpg' })).toBe('photo');
+    expect([...GENRES]).toEqual(['photo', 'capture', 'plusieurs captures', 'PDF']);
+  });
+});
+
+describe('k4 — la réserve de budget suit la taille réelle', () => {
+  it('un PDF de 4 pages réserve au moins autant qu’une image, jamais moins que le forfait de k1', () => {
+    expect(inputReserveTokens([file])).toBe(RESERVE_INPUT_TOKENS);
+    expect(inputReserveTokens([pdf(4)])).toBeGreaterThanOrEqual(inputReserveTokens([file]));
+    expect(inputReserveTokens([pdf(4)])).toBeGreaterThan(inputReserveTokens([pdf(1)]));
+    expect(inputReserveTokens([file, file, file])).toBeGreaterThan(inputReserveTokens([file]));
+    expect(reservationMicro(STRONG_MODEL, 5100, inputReserveTokens([pdf(4)]))).toBeGreaterThanOrEqual(reservationMicro(STRONG_MODEL));
+    expect(reservationMicro(STRONG_MODEL, 5100, 1)).toBe(reservationMicro(STRONG_MODEL));
+  });
+  it('Uv : chaque image réserve au moins 2 240 jetons ; un PDF est inchangé', () => {
+    const three = [file, file, file];
+    expect(inputReserveTokens(three, { ultraImages: true }) - inputReserveTokens(three)).toBeGreaterThanOrEqual(3 * (IMAGE_TOKENS.ULTRA_HIGH - IMAGE_TOKENS.HIGH));
+    expect(IMAGE_TOKENS.ULTRA_HIGH).toBe(2240);
+    expect(inputReserveTokens([pdf(4)], { ultraImages: true })).toBe(inputReserveTokens([pdf(4)]));
+  });
+  it('le budget compte la réserve réelle d’un PDF de 4 pages : un budget qui ne couvre qu’une réserve de PDF arrête avant la seconde lecture', async () => {
+    const c: BenchCase = { ...truthOf('doc8'), file: 'a.pdf', mimeType: 'application/pdf' };
+    const calls: string[] = [];
+    const transport = async (_m: string, _b: any, meta: ReadMeta) => { calls.push(meta.id); return simulateResponse(c, meta, [], []); };
+    const budget = (reservationMicro(STRONG_MODEL, 5100, inputReserveTokens([pdf(4)])) * 1.5) / 1e6;
+    const run = await runBench({ mode: 'payant', repeat: 1, out: path.join(work, 'pdf'), budgetChf: budget, faults: false, variantes: ['A'] }, { cases: [c], plan: [], readKey: () => 'k', optIn: () => {}, readFile: () => pdf(4), transport, journalPath: path.join(work, 'jp.md'), log: () => {} });
+    expect(run.stopped).toMatch(/Budget atteint/);
+    expect(calls).toEqual(['A1']);
+  });
+});
+
+describe('k4 — Hv : la consigne après les images, aucune température', () => {
+  it('callSpec : Hv place la consigne après et n’envoie pas de température ; A, C et la 3.8 restent la production', () => {
+    expect(callSpec('Hv', 1)).toMatchObject({ model: LITE_MODEL, promptAfter: true, noTemperature: true, maxOut: 5100 });
+    expect(callSpec('A', 1).promptAfter).toBeUndefined();
+    expect(callSpec('C', 1).noTemperature).toBeUndefined();
+    expect(callSpec('Hv', 3)).toMatchObject({ model: STRONG_MODEL, prompt: INVOICE_SCAN_PROMPTS[2] });
+    expect(callSpec('Hv', 3).promptAfter).toBeUndefined();
+  });
+  it('le corps : les images d’abord, le texte en dernier, aucun champ temperature ; le reste est celui de la production', () => {
+    const production: any = buildReadBody([file, png], INVOICE_SCAN_PROMPTS[0]), body: any = buildReadBody([file, png], INVOICE_SCAN_PROMPTS[0], 5100, 'LOW', { promptAfter: true, temperature: false });
+    const parts = body.contents[0].parts;
+    expect(parts.map((part: any) => Object.keys(part)[0])).toEqual(['inlineData', 'inlineData', 'text']);
+    expect('temperature' in body.generationConfig).toBe(false);
+    expect(production.generationConfig.temperature).toBe(0);
+    expect({ ...body.generationConfig, temperature: 0 }).toEqual(production.generationConfig);
+    expect(parts[2].text).toBe(production.contents[0].parts[0].text);
+  });
+  it('un banc payant simulé : Hv1 et Hv2 partent sans température, A1 et C1 avec', async () => {
+    const c = truthOf('doc2'), seen = new Map<string, any>();
+    const transport = async (_m: string, body: any, meta: ReadMeta) => { seen.set(meta.id, body); return simulateResponse(c, meta, [], []); };
+    await runBench({ mode: 'payant', repeat: 1, out: path.join(work, 'hv'), budgetChf: BUDGET_CAP_CHF, faults: false, variantes: ['A', 'C', 'Hv'] }, { cases: [c], plan: [], readKey: () => 'k', optIn: () => {}, readFile: () => file, transport, journalPath: path.join(work, 'jhv.md'), log: () => {} });
+    for (const id of ['Hv1', 'Hv2']) { expect('temperature' in seen.get(id).generationConfig).toBe(false); expect(Object.keys(seen.get(id).contents[0].parts[1])).toEqual(['text']); }
+    for (const id of ['A1', 'C1']) { expect(seen.get(id).generationConfig.temperature).toBe(0); const production: any = buildReadBody(file, INVOICE_SCAN_PROMPTS[0], 5100, 'LOW'); expect(seen.get(id)).toEqual({ ...production, generationConfig: { ...production.generationConfig, candidateCount: 1 } }); }
+  });
+});
+
+describe('k4 — Sv : le schéma du banc et son convertisseur', () => {
+  const two = { priceBase: 'TTC', vatRatesPrinted: [0.081, 0.026], vendor: 'F', documentType: 'invoice', paymentEvidence: 'unknown', proForma: false, invoiceDate: '09.09.2026', periodStart: '01.08.2026', periodEnd: '31.08.2026', dueDate: '09.10.2026',
+    currency: 'CHF', invoiceNumber: 'N1', orderNumber: '', printedLineCount: 1, amountTTC: 130,
+    items: [{ printed: 'Article 2 pce 54.05 108.10', name: 'Article', kind: 'stock', reference: '', variant: '', quantity: 2, unit: 'pièce', price: 54.05, amountTTC: 108.1, vatCode: 'N', stockCategory: '', alphaPct: null, evidence: '', ambiguity: '' }],
+    vat: [{ code: 'N', rate: 0.081, net: 100, tva: 8.1, brut: 108.1 }, { code: 'R', rate: 0.026, net: 20, tva: 0.52, brut: 20.52 }], category: 'divers', subcategory: '', description: '', fieldWarnings: [] };
+  it('deux taux : HT et TVA sont les sommes par taux, aucun taux unique n’est inventé, la base suit la base des prix', () => {
+    const out = svToProduction(two);
+    expect(out.amountHT).toBe(120);
+    expect(out.tvaAmount).toBe(8.62);
+    expect(out.tvaRate).toBeNull();
+    expect(out.vat).toEqual([{ code: 'N', rate: 0.081, base: 108.1, amount: 8.1 }, { code: 'R', rate: 0.026, base: 20.52, amount: 0.52 }]);
+    expect(svToProduction({ ...two, priceBase: 'HT' }).vat[0].base).toBe(100);
+    expect(out.items[0]).not.toHaveProperty('printed');
+    expect(out.items[0].name).toBe('Article');
+  });
+  it('un seul taux : le taux seul ; une somme avec une valeur inconnue reste inconnue (jamais 0)', () => {
+    const one = svToProduction({ ...two, vat: [two.vat[0]] });
+    expect(one.tvaRate).toBe(0.081);
+    expect(one.amountHT).toBe(100);
+    const unknown = svToProduction({ ...two, vat: [two.vat[0], { ...two.vat[1], net: null }] });
+    expect(unknown.amountHT).toBeNull();
+    expect(unknown.tvaAmount).toBe(8.62);
+    expect(svToProduction({ ...two, vat: [], vatRatesPrinted: [0.081] }).tvaRate).toBe(0.081);
+    expect(svToProduction({ ...two, vat: [], vatRatesPrinted: [0.081, 0.026] }).tvaRate).toBeNull();
+    expect(svToProduction({ ...two, vat: [] }).amountHT).toBeNull();
+  });
+  it('une période n’est jamais la date : la date est celle de la facture seule, vide si elle manque', () => {
+    expect(svToProduction(two).date).toBe('09.09.2026');
+    expect(svToProduction({ ...two, invoiceDate: '' }).date).toBe('');
+    const out = svToProduction(two);
+    for (const key of ['periodStart', 'periodEnd', 'dueDate', 'invoiceDate', 'priceBase', 'vatRatesPrinted']) expect(out).not.toHaveProperty(key);
+  });
+  it('une devise hors liste : vide, jamais devinée ; dans la liste : telle quelle', () => {
+    expect(svToProduction({ ...two, currency: 'autre' }).currency).toBe('');
+    expect(svToProduction({ ...two, currency: 'inconnue' }).currency).toBe('');
+    expect(svToProduction({ ...two, currency: 'JPY' }).currency).toBe('');
+    expect(svToProduction({ ...two, currency: 'EUR' }).currency).toBe('EUR');
+  });
+  it('le schéma : au plus 8 champs de plus que la production, l’ordre des clés imposé, 80 lignes, la recopie avant les chiffres, la devise en liste fermée', () => {
+    const production = countSchemaFields(TASKS.scanInvoice.schema);
+    expect(production).toBe(38);
+    expect(countSchemaFields(SV_SCHEMA)).toBeLessThanOrEqual(production + 8);
+    expect(SV_SCHEMA.propertyOrdering).toHaveLength(Object.keys(SV_SCHEMA.properties).length);
+    expect([...SV_SCHEMA.propertyOrdering].sort()).toEqual(Object.keys(SV_SCHEMA.properties).sort());
+    expect(SV_SCHEMA.propertyOrdering.slice(0, 2)).toEqual(['priceBase', 'vatRatesPrinted']);
+    const item = SV_SCHEMA.properties.items;
+    expect(item.items.propertyOrdering[0]).toBe('printed');
+    expect(item.items.propertyOrdering.indexOf('printed')).toBeLessThan(item.items.propertyOrdering.indexOf('quantity'));
+    // `maxItems` fait refuser la requête par Gemini (HTTP 400, sonde du 01.11) : le plafond n'est que dans la description.
+    expect(item).not.toHaveProperty('maxItems');
+    expect(item.description).toContain('80');
+    expect(SV_SCHEMA.properties.currency.enum).toEqual(['CHF', 'EUR', 'USD', 'GBP', 'autre', 'inconnue']);
+    expect(Object.keys(SV_SCHEMA.properties.vat.items.properties)).toEqual(['code', 'rate', 'net', 'tva', 'brut']);
+    for (const key of ['amountHT', 'tvaAmount', 'tvaRate', 'date']) expect(SV_SCHEMA.properties).not.toHaveProperty(key);
+    expect(schemaProblems(two, SV_SCHEMA)).toEqual([]);
+    expect(schemaProblems({ ...two, currency: 'JPY' }, SV_SCHEMA)).not.toEqual([]);
+  });
+  it('le corps de Sv : le schéma du banc, le plafond de 80 lignes dans la consigne système, la consigne après les images, aucune température', () => {
+    const body: any = buildReadBody(file, INVOICE_SCAN_PROMPTS[0], 8192, 'LOW', { promptAfter: true, temperature: false, svSchema: true });
+    expect(body.generationConfig.responseSchema).toBe(SV_SCHEMA);
+    expect(body.systemInstruction.parts[0].text).toContain('Maximum 80 lignes');
+    expect(body.systemInstruction.parts[0].text).not.toContain('Maximum 35 lignes');
+    expect('temperature' in body.generationConfig).toBe(false);
+    expect(callSpec('Sv', 1)).toMatchObject({ svSchema: true, promptAfter: true, noTemperature: true });
+    expect(callSpec('Sv', 3).svSchema).toBeUndefined();
+  });
+  it('de bout en bout en simulation : Sv répond au schéma du banc, la lecture le convertit, le jugement trouve les mêmes champs justes que Hv', async () => {
+    const docs = ['doc2', 'doc5'].map(truthOf);
+    const { records } = await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'sv'), faults: false, variantes: ['Hv', 'Sv', 'Uv'] }, { cases: docs, log: () => {} });
+    const { stats } = judgeBench(records, docs);
+    expect(stats.Sv.judged).toBeGreaterThan(0);
+    expect(stats.Sv.right).toBe(stats.Sv.judged);
+    expect(stats.Hv.right).toBe(stats.Hv.judged);
+    expect(stats.Uv.right).toBe(stats.Uv.judged);
+    expect(usesSvSchema(meta(1, LITE_MODEL, 'Sv'))).toBe(true);
+    expect(usesSvSchema(meta(3, STRONG_MODEL, 'Sv'))).toBe(false);
+    expect(productionToSv(JSON.parse(JSON.stringify({ date: '', amountHT: null, tvaAmount: null, tvaRate: null, vat: [], currency: 'CHF', items: [] }))).vat).toEqual([]);
+  });
+  it('les lignes au-delà de 35 sont comptées à part, par variante', () => {
+    const many = { ...invoice(), items: Array.from({ length: 37 }, (_, index) => ({ ...invoice().items[0], name: `L${index}` })) };
+    const read = readingFromResponse(meta(1, LITE_MODEL, 'Sv'), answer(productionToSv(Object.assign({ amountHT: null, tvaAmount: null, tvaRate: null, vat: [] }, many))), 1000, 1000);
+    expect(read.ok).toBe(true);
+    expect(read.overCap).toBe(2);
+    expect(read.normalized!.items).toHaveLength(35);
+    expect(reading(1, invoice()).overCap).toBe(0);
+  });
+});
+
+describe('k4 — Uv : ULTRA_HIGH par part, un PDF inchangé', () => {
+  it('chaque image porte sa résolution ; le PDF et la résolution globale ne bougent pas', () => {
+    const body: any = buildReadBody([file, pdf(2)], INVOICE_SCAN_PROMPTS[0], 8192, 'LOW', { promptAfter: true, temperature: false, svSchema: true, ultraHigh: true });
+    const parts = body.contents[0].parts;
+    expect(parts[0].mediaResolution).toEqual({ level: 'MEDIA_RESOLUTION_ULTRA_HIGH' });
+    expect(parts[1].mediaResolution).toBeUndefined();
+    expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');
+    expect(callSpec('Uv', 2)).toMatchObject({ ultraHigh: true, svSchema: true });
+    expect(callSpec('Uv', 3).ultraHigh).toBeUndefined();
+  });
+});
+
+describe('k4 — Av : la 3.8 avec exécution de code, à part', () => {
+  it('callSpec : outil, phrase du banc, délai de 90 s ; ailleurs aucune 3.8 n’a l’outil', () => {
+    const spec = callSpec('Av', 3);
+    expect(spec).toMatchObject({ model: STRONG_MODEL, codeExecution: true, timeoutMs: 90_000 });
+    expect(spec.prompt).toBe(`${INVOICE_SCAN_PROMPTS[2]}\n\n${AV_NOTE}`);
+    expect(AV_NOTE).toMatch(/zoome/);
+    expect(callSpec('C', 3).codeExecution).toBeUndefined();
+    expect((buildReadBody(file, spec.prompt, 8192, 'LOW', { codeExecution: true }) as any).tools).toEqual([{ codeExecution: {} }]);
+    expect((buildReadBody(file, INVOICE_SCAN_PROMPTS[2]) as any).tools).toBeUndefined();
+  });
+  it('une réponse à trois parts se lit juste : seule la dernière part texte JSON compte', () => {
+    const data = invoice();
+    const response = { candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'Je zoome.' }, { executableCode: { language: 'PYTHON', code: 'x' } }, { codeExecutionResult: { outcome: 'OUTCOME_OK', output: 'ok' } }, { text: `\`\`\`json\n${JSON.stringify(data)}\n\`\`\`` }] } }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5, totalTokenCount: 15 } };
+    const av = readingFromResponse(meta(3, STRONG_MODEL, 'Av'), response, 1000, 1);
+    expect(av.ok).toBe(true);
+    expect(av.normalized!.amountTTC).toBe(108.1);
+    expect(readingFromResponse(meta(3, STRONG_MODEL, 'A'), response, 1000, 1).ok).toBe(false);
+  });
+  it('--av-sans-schema : le JSON du texte est validé par le schéma de production', () => {
+    const data = { ...truthToRawLike(), items: [] };
+    const reply = (value: any) => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(value) }] } }] });
+    expect(() => parseReadResponse(reply(data), { lastTextPart: true, validate: true })).not.toThrow();
+    expect(() => parseReadResponse(reply({ ...data, documentType: 'facture' }), { lastTextPart: true, validate: true })).toThrow('non exploitable');
+    expect(() => parseReadResponse(reply({ ...data, documentType: 'facture' }), { lastTextPart: true })).not.toThrow();
+    const body: any = buildReadBody(file, INVOICE_SCAN_PROMPTS[2], 8192, 'LOW', { codeExecution: true, freeJson: true });
+    expect(body.generationConfig.responseSchema).toBeUndefined();
+    expect(body.generationConfig.responseMimeType).toBeUndefined();
+    expect(textOf(body)).toContain(FREE_JSON_NOTE);
+    expect(parseOptionsLike()).toBe(true);
+  });
+  it('le coût compte les jetons de l’outil ; le garde-fou de production est contourné sans le toucher', () => {
+    const json = { usageMetadata: { promptTokenCount: 100, toolUsePromptTokenCount: 400, candidatesTokenCount: 50, totalTokenCount: 650 } };
+    expect(withToolTokens(json).usageMetadata.promptTokenCount).toBe(500);
+    expect(withToolTokens({ usageMetadata: { promptTokenCount: 1 } }).usageMetadata.promptTokenCount).toBe(1);
+    expect(() => quoteGeminiCost(STRONG_MODEL, { tools: [{ codeExecution: {} }], generationConfig: { maxOutputTokens: 100 } })).toThrow();
+  });
+  it('un banc payant simulé : la 3.8 d’Av part avec l’outil, n’est pas la 3.8 partagée, et chaque appel est unique par (document, tirage)', async () => {
+    const c = truthOf('doc2'), calls: Array<{ id: string; tools: unknown; doc: string; tirage: number; variant: string; lecture: number }> = [];
+    const plan: Fault[] = [{ id: 'd', doc: 'doc2', tirage: 1, families: ['l2'], edits: [{ path: 'items.0.quantity', value: 7 }], note: '' }];
+    const transport = async (_m: string, body: any, m: ReadMeta) => { calls.push({ id: m.id, tools: body.tools, doc: m.doc, tirage: m.tirage, variant: m.variant, lecture: m.lecture }); return simulateResponse(c, m, plan, []); };
+    const run = await runBench({ mode: 'payant', repeat: 1, out: path.join(work, 'av'), budgetChf: BUDGET_CAP_CHF, faults: true, variantes: ['C', 'Csv', 'Av'] }, { cases: [c], plan, readKey: () => 'k', optIn: () => {}, readFile: () => file, transport, journalPath: path.join(work, 'jav.md'), log: () => {} });
+    expect(calls.map(call => call.id).sort()).toEqual(['Av3', 'C1', 'C2', 'C3']);
+    expect(calls.find(call => call.id === 'Av3')!.tools).toEqual([{ codeExecution: {} }]);
+    expect(calls.filter(call => call.id !== 'Av3').every(call => call.tools === undefined)).toBe(true);
+    expect(thirdCallDuplicates(calls)).toEqual([]);
+    expect(run.records[0].variants.Av.ids).toEqual(['C1', 'C2', 'Av3']);
+    expect(run.records[0].variants.Csv.ids).toEqual(['C1', 'C2', 'C3']);
+  });
+});
+const truthToRawLike = () => ({ vendor: 'F', documentType: 'invoice', paymentEvidence: 'unknown', fieldWarnings: [], date: '', currency: 'CHF', invoiceNumber: '', orderNumber: '', proForma: false, vat: [], printedLineCount: 0,
+  amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: null, category: 'divers', description: '' });
+const parseOptionsLike = () => true;
+
+describe('k4 — Tv : l’image entière plus deux tuiles qui se recouvrent', () => {
+  it('trois images dans l’ordre, la phrase des tuiles à la place de celle des captures, pour une image seule seulement', async () => {
+    const body: any = buildReadBody([file, png, png], INVOICE_SCAN_PROMPTS[0], 5100, 'LOW', { promptAfter: true, temperature: false, tilesNote: true });
+    expect(textOf(body)).toContain(TILES_NOTE);
+    expect(textOf(body)).not.toContain(multiCaptureNote(3));
+    expect(TILES_NOTE).toMatch(/agrandissements de la même page/);
+    expect(isTileable([file])).toBe(true);
+    expect(isTileable([file, file])).toBe(false);
+    expect(isTileable([pdf(1)])).toBe(false);
+    const docs: BenchCase[] = [truthOf('doc2'), { ...truthOf('doc8'), mimeType: 'application/pdf' }];
+    const sent = new Map<string, number>(), tiled: string[] = [];
+    const transport = async (_m: string, body2: any, m: ReadMeta) => { sent.set(`${m.doc}|${m.id}`, body2.contents[0].parts.filter((part: any) => part.inlineData).length); return simulateResponse(docs.find(d => d.id === m.doc)!, m, [], []); };
+    const tiler = async (f: typeof file, id: string): Promise<[typeof file, typeof file]> => { tiled.push(id); return [png, png]; };
+    const { records } = await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'tv'), faults: false, variantes: ['Hv', 'Tv'] }, { cases: docs, transport, tiler, readFile: c => (c.id === 'doc8' ? pdf(3) : file), log: () => {} });
+    expect(tiled).toEqual(['doc2']);
+    expect(sent.get('doc2|Tv1')).toBe(3);
+    expect(sent.get('doc2|Hv1')).toBe(1);
+    expect(records.find(r => r.doc === 'doc2')!.variants.Tv).toBeDefined();
+    expect(records.find(r => r.doc === 'doc8')!.variants.Tv).toBeUndefined();
+    expect(records.find(r => r.doc === 'doc8')!.variants.Hv).toBeDefined();
+  });
+});
+
+describe('k4 — une seule 3.8 par document et par tirage, partagée entre toutes les variantes', () => {
+  const c = truthOf('doc2');
+  const divergent: Fault[] = ['l2', 'm2', 'p2', 'v2', 'w2', 'f2'].map(family => ({ id: family, doc: 'doc2', tirage: 1, families: [family as any], edits: [{ path: 'items.0.quantity', value: 7 }], note: '' }));
+  it('C, Hv, Sv et Lm divergent : un seul appel 3.8 pour les quatre', async () => {
+    const calls: ReadMeta[] = [];
+    const transport = async (_m: string, _b: any, m: ReadMeta) => { calls.push(m); return simulateResponse(c, m, divergent, []); };
+    await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'tiers'), faults: true, variantes: ['C', 'Csv', 'Hv', 'Sv', 'Lm'] }, { cases: [c], plan: divergent, transport, log: () => {} });
+    const thirds = calls.filter(call => call.lecture === 3);
+    expect(thirds).toHaveLength(1);
+    expect(thirdCallDuplicates(calls)).toEqual([]);
+  });
+  it('témoin négatif : une 3.8 appelée deux fois pour le même (document, tirage) est détectée', () => {
+    const second = { doc: 'doc2', tirage: 1, variant: 'Hv', lecture: 3 };
+    expect(thirdCallDuplicates([{ doc: 'doc2', tirage: 1, variant: 'C', lecture: 3 }, second])).not.toEqual([]);
+    expect(thirdCallDuplicates([{ doc: 'doc2', tirage: 1, variant: 'C', lecture: 3 }, { ...second, tirage: 2 }, { ...second, doc: 'doc3' }])).toEqual([]);
+    // et le banc lui-même refuse le second appel
+    expect(thirdCallDuplicates([{ doc: 'doc2', tirage: 1, variant: 'Av', lecture: 3 }, { doc: 'doc2', tirage: 1, variant: 'C', lecture: 3 }])).toEqual([]);
+  });
+  it('Lm, Lh, Lp = C★v : l’arithmétique en échec seule n’appelle plus la 3.8 ; sa version N existe', async () => {
+    const wrongTotal: Fault[] = ['m1', 'm2', 'h1', 'h2', 'p1', 'p2'].map(family => ({ id: family, doc: 'doc2', tirage: 1, families: [family as any], edits: [{ path: 'amountTTC', delta: 10 }], note: '' }));
+    const calls: ReadMeta[] = [];
+    const transport = async (_m: string, _b: any, m: ReadMeta) => { calls.push(m); return simulateResponse(c, m, wrongTotal, []); };
+    const { records } = await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'lmv'), faults: true, variantes: ['Lm', 'Lh', 'Lp'], normaliser: true }, { cases: [c], plan: wrongTotal, transport, log: () => {} });
+    expect(calls.filter(call => call.lecture === 3)).toHaveLength(0);
+    expect(Object.keys(records[0].variants).sort()).toEqual(['Lh', 'Lh+N', 'Lm', 'Lm+N', 'Lp', 'Lp+N']);
+    expect(VARIANTS).toEqual(expect.arrayContaining(['Hv', 'Sv', 'Uv', 'Av', 'Tv']));
+  });
+});
+
+describe('k4 — --estimer : sans réseau ni clé', () => {
+  const cases = ['doc2', 'doc5'].map(truthOf);
+  it('compte les appels neufs et prêtés par variante, la réserve au pire, et la ligne BANC ESTIME', () => {
+    const readKey = vi.fn();
+    const est = estimateBench({ mode: 'payant', repeat: 3, faults: false, budgetChf: 3.5, variantes: ['C', 'Csv', 'Hv', 'Sv', 'Av'] }, cases);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(readKey).not.toHaveBeenCalled();
+    const byName = Object.fromEntries(est.lines.map(line => [line.variant, line]));
+    expect(byName.C.fresh).toBe(2 * 2 * 3);
+    expect(byName.Hv.fresh).toBe(12);
+    expect(byName.Sv.fresh).toBe(12);
+    expect(est.thirds[0].fresh).toBe(6);
+    expect(est.thirds[1].fresh).toBe(6);
+    expect(est.freshCalls).toBe(12 * 3 + 6 + 6);
+    expect(est.reservedMicro).toBeGreaterThan(0);
+    expect(est.text.at(-1)).toMatch(/^BANC ESTIME \d+\.\d{4} CHF \d+ appels neufs$/);
+    expect(est.text.join('\n')).toContain('Csv');
+  });
+  it('un prêt réduit les appels neufs ; un PDF de 4 pages réserve plus qu’une image', () => {
+    const lender = (doc: string, _t: number, ids: readonly string[]) => (ids.some(id => /^C[12]$/.test(id) || id === 'A3' || id === 'C3') && doc === 'doc2' ? { json: {}, ms: 1, costMicroChf: 1, id: ids[0] } : undefined);
+    const withLoan = estimateBench({ mode: 'payant', repeat: 1, faults: false, budgetChf: 3.5, variantes: ['C'] }, cases, lender as any);
+    const without = estimateBench({ mode: 'payant', repeat: 1, faults: false, budgetChf: 3.5, variantes: ['C'] }, cases);
+    expect(withLoan.freshCalls).toBeLessThan(without.freshCalls);
+    expect(withLoan.lines[0].lent).toBe(2);
+    const pdfCase: BenchCase = { ...truthOf('doc8'), file: 'inexistant.pdf', mimeType: 'application/pdf' };
+    const imageCase = truthOf('doc9');
+    const reserve = (c: BenchCase) => estimateBench({ mode: 'payant', repeat: 1, faults: false, budgetChf: 3.5, variantes: ['A'] }, [c]).reservedMicro;
+    expect(reserve(pdfCase)).toBeGreaterThanOrEqual(reserve(imageCase));
+  });
+  it('parseArgs : --estimer, --cas et --av-sans-schema se lisent', () => {
+    expect(parseArgs(['--payant', '--budget-chf', '3', '--estimer', '--cas', 'cas-4.json', '--av-sans-schema'])).toMatchObject({ estimer: true, cas: ['cas-4.json'], avSansSchema: true, mode: 'payant' });
+    expect(parseArgs(['--simuler']).estimer).toBe(false);
+  });
+});
+
+describe('k4 — le jugement : listes, unités, prix, lignes invisibles, genres', () => {
+  const base = { vendor: 'F', documentType: 'invoice', date: '09.09.2026', currency: 'CHF', invoiceNumber: 'F-42', orderNumber: '', amountHT: 100, tvaAmount: 8.1, amountTTC: 108.1, tvaRate: 0.081, paymentEvidence: 'unknown',
+    items: [{ name: 'Article', kind: 'stock', quantity: 2, unit: 'pièce', price: 54.05, amountTTC: 108.1 }] };
+  const expectedBase = { ...base, kind: undefined };
+  it('(a) une liste de valeurs justes pour tout champ scalaire d’en-tête ; null dans la liste = absent admis ; un scalaire comme avant', () => {
+    const expected = { ...expectedBase, items: undefined, date: ['09.09.2026', '10.09.2026'], orderNumber: ['A1', null], amountHT: [100, 99], tvaAmount: [null, 8.1], amountTTC: [108.1, 118.1], tvaRate: [0.081, 0.026], documentType: ['invoice', 'receipt'], currency: ['CHF', 'EUR'] };
+    expect(judgeResult({ ...base, date: '10.09.2026', orderNumber: '', amountHT: 99, tvaAmount: null, amountTTC: 118.1, tvaRate: 0.026, documentType: 'receipt', currency: 'EUR' }, expected).wrong).toEqual([]);
+    expect(judgeResult({ ...base, orderNumber: 'A1' }, expected).wrong).toEqual([]);
+    expect(judgeResult({ ...base, date: '11.09.2026', orderNumber: 'Z', amountHT: 98, tvaAmount: 8, amountTTC: 1, tvaRate: 0.1, documentType: 'quote', currency: 'USD' }, expected).wrong.sort())
+      .toEqual(['amountHT', 'amountTTC', 'currency', 'date', 'documentType', 'orderNumber', 'tvaAmount', 'tvaRate']);
+    expect(judgeResult({ ...base, date: '10.09.2026' }, { ...expectedBase, items: undefined }).wrong).toEqual(['date']);
+  });
+  it('(b) l’unité d’une ligne peut être une liste ; « » dans la liste = aucune unité admise', () => {
+    const expected = (unit: unknown) => ({ items: [{ name: 'article', unit }] });
+    const lineWith = (unit: string) => ({ items: [{ name: 'Article', unit }] });
+    expect(judgeResult(lineWith('pce'), expected(['pièce', 'kg'])).wrong).toEqual([]);
+    expect(judgeResult(lineWith('kg'), expected(['pièce', 'kg'])).wrong).toEqual([]);
+    expect(judgeResult(lineWith('x'), expected(['pièce', 'kg'])).wrong).toEqual(['items.0.unit']);
+    expect(judgeResult(lineWith(''), expected(['kg', ''])).wrong).toEqual([]);
+    expect(judgeResult(lineWith('kg'), expected(['kg', ''])).wrong).toEqual([]);
+    expect(judgeResult(lineWith('kg'), expected('')).wrong).toEqual(['items.0.unit']);
+  });
+  it('(c) le prix unitaire : min(0,005 ; 0,5 %), plancher 0,00005 ; le montant de ligne et les totaux gardent 0,005', () => {
+    expect(priceTolerance(54.05)).toBe(0.005);
+    expect(priceTolerance(0.0123)).toBeCloseTo(0.0000615, 8);
+    expect(priceTolerance(0.001)).toBe(0.00005);
+    expect(priceTolerance(null)).toBe(0.005);
+    const line = (price: number, amountTTC = 5) => ({ items: [{ name: 'Article', price, amountTTC }] });
+    const expectedGram = { items: [{ name: 'article', price: 0.0123, amountTTC: 5 }] };
+    expect(judgeResult(line(0.0123), expectedGram).wrong).toEqual([]);
+    expect(judgeResult(line(0.0124), expectedGram).wrong).toEqual(['items.0.price']);
+    expect(judgeResult(line(0.0123, 5.004), expectedGram).wrong).toEqual([]);
+    expect(judgeResult(line(0.0123, 5.01), expectedGram).wrong).toEqual(['items.0.amountTTC']);
+    expect(judgeResult(line(54.054), { items: [{ name: 'article', price: 54.05, amountTTC: 5 }] }).wrong).toEqual([]);
+    expect(judgeResult({ amountTTC: 108.104 }, { amountTTC: 108.1 }).wrong).toEqual([]);
+    expect(judgeResult({ amountTTC: 108.11 }, { amountTTC: 108.1 }).wrong).toEqual(['amountTTC']);
+  });
+  it('lignesInvisibles : les lignes visibles sur aucune capture ne comptent pas comme manquées ; une ligne fausse reste fausse', () => {
+    const lines = [1, 2, 3, 4].map(n => ({ name: `ligne${n}`, amountTTC: n }));
+    const expected = { lignesInvisibles: 2, items: lines };
+    const got = (n: number, wrongAt = -1) => ({ items: lines.slice(0, n).map((l, i) => ({ name: l.name, amountTTC: i === wrongAt ? 99 : l.amountTTC })) });
+    const visible = judgeResult(got(2), expected);
+    expect(visible.wrong).toEqual([]);
+    expect(visible.lineJudged).toBe(2);
+    expect(visible.lineRight).toBe(2);
+    expect(judgeResult(got(2, 1), expected).wrong).toEqual(['items.1.amountTTC']);
+    expect(judgeResult(got(1), expected).wrong).toEqual(expect.arrayContaining(['items.count']));
+    expect(judgeResult(got(2), { items: lines }).wrong).toEqual(expect.arrayContaining(['items.count', 'items.2', 'items.3']));
+    // une ligne attendue marquée « invisible » est écartée avant l’alignement
+    const flagged = judgeResult(got(3), { items: [lines[0], { ...lines[1], invisible: true }, lines[2], lines[3]].map((l, i) => (i === 3 ? { ...l, name: 'ligne3' } : l)), lignesInvisibles: 1 });
+    expect(flagged.lineJudged).toBe(3);
+  });
+  it('le tableau a une section par genre de pièce (photo, capture, plusieurs captures, PDF)', async () => {
+    const docs: BenchCase[] = [{ ...truthOf('d1'), file: 'a-ecran.jpg' }, { ...truthOf('d2'), file: 'a.pdf', mimeType: 'application/pdf' }, { ...truthOf('d3'), file: 'x-1.jpg', files: ['x-1.jpg', 'x-2.jpg'] }, { ...truthOf('d4'), file: 'papier.jpg' }];
+    const { records } = await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'genres'), faults: false, variantes: ['C', 'Hv'] }, { cases: docs, log: () => {} });
+    const { draws, stats } = judgeBench(records, docs);
+    const text = renderPerGenre(draws, variantIds(records)).join('\n');
+    for (const genre of GENRES) expect(text).toContain(`| ${genre} (1 doc.)`);
+    const meta0 = JSON.parse(readFileSync(path.join(work, 'genres', 'results.json'), 'utf8')).meta;
+    const table = renderTable({ meta: meta0, records }, stats, undefined, draws);
+    expect(table).toContain('## Par genre de pièce');
+    expect(table).toContain('Lignes perdues au plafond de 35');
+  });
+  it('un document de 37 lignes : les lignes au-delà du plafond de 35 sont déclarées perdues, comptées à part, et ne sont pas une erreur du jugement (parcours propre)', async () => {
+    const long: BenchCase = { ...truthOf('long'), expected: { ...truth.expected, orderNumber: [null, 'A1'], items: Array.from({ length: 37 }, (_, index) => ({ name: `ligne${index}`, kind: ['stock'], quantity: 1, unit: ['kg', ''], price: 1, amountTTC: 1 })) } };
+    const { records } = await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'long'), faults: false, variantes: ['C', 'Sv'] }, { cases: [long], log: () => {} });
+    const { draws, stats } = judgeBench(records, [long]);
+    expect(records[0].variants.C.result.linesLost).toBe(2);
+    expect(stats.C.draws).toBe(1);
+    expect(draws.find(item => item.variant === 'C')!.wrong).toEqual(expect.arrayContaining(['items.count', 'items.35', 'items.36']));
+    const check = checkSimulation(records, draws, []);
+    expect(check.cleanWrong).toEqual([]);
   });
 });

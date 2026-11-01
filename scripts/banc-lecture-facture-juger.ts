@@ -15,9 +15,10 @@
  * Sortie simulée (présence de faults.json) : le jugement doit retrouver chaque fausse réponse fabriquée qui atteint un résultat
  * final, et ne rien trouver sur les parcours propres ; `BANC SIMULE OK` seulement alors.
  */
+import { SCAN_MAX_ITEMS } from '../functions/src/invoiceScanCore';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { CAS_FILES, MISSION_DIR, N_SUFFIX, baseOfId, isNId, loadCases, orderVariants, valueAtPath, variantLabel, type AppliedFault, type BenchCase, type DrawRecord } from './banc-lecture-facture';
+import { CAS_FILES, GENRES, casPath, MISSION_DIR, N_SUFFIX, baseOfId, genreOfCase, isNId, loadCases, orderVariants, valueAtPath, variantLabel, type AppliedFault, type BenchCase, type DrawRecord } from './banc-lecture-facture';
 
 /** Les ids de variante présents dans les parcours (`Cs`, `Cs+N`…), dans l'ordre des tableaux. */
 export const variantIds = (records: DrawRecord[]): string[] => orderVariants(new Set(records.flatMap(record => Object.keys(record.variants))));
@@ -43,6 +44,12 @@ const close = (actual: unknown, expected: number | null, delta: number) =>
 const money = (actual: unknown, expected: number | null) => close(actual, expected, 0.005);
 const exactish = (actual: unknown, expected: number | null) => close(actual, expected, expected === null ? 0 : Math.max(1e-6 * Math.abs(expected), 1e-6));
 
+/** Une valeur attendue ou une liste de valeurs justes. */
+const alternatives = (value: unknown): any[] => (Array.isArray(value) ? value : [value]);
+const isAbsent = (value: unknown) => value === null || value === undefined || value === '';
+/** Le prix unitaire : 0,005 au plus, mais 0,5 % de la valeur attendue si c'est moins (un prix au gramme à 4 décimales), plancher 0,00005. Le montant de ligne et les totaux gardent 0,005. */
+export const priceTolerance = (expected: unknown) => (typeof expected === 'number' ? Math.max(0.00005, Math.min(0.005, 0.005 * Math.abs(expected))) : 0.005);
+
 export interface Verdict {
   /** champs d'en-tête et de totaux jugés / justes, plus le nombre de lignes */
   judged: number; right: number;
@@ -60,37 +67,44 @@ export function judgeResult(result: any, expected: Record<string, any>): Verdict
   // Fournisseur : une chaîne ou des alternatives ; vide = non jugé. Date : `null` ou vide attendu = date non imprimée, rien d'inventé.
   const vendors: string[] = (Array.isArray(expected.vendor) ? expected.vendor : [expected.vendor]).filter((name: unknown) => typeof name === 'string' && name);
   if (has('vendor') && vendors.length) check('vendor', vendors.some(name => canon(result.vendor).includes(canon(name))));
-  if (has('documentType')) check('documentType', result.documentType === expected.documentType);
-  if (has('date')) check('date', expected.date ? result.date === expected.date : !result.date);
-  if (has('currency')) check('currency', canon(result.currency) === canon(expected.currency));
+  if (has('documentType')) check('documentType', alternatives(expected.documentType).some(value => (isAbsent(value) ? !result.documentType : result.documentType === value)));
+  // Un champ scalaire d'en-tête peut porter une LISTE de valeurs justes ; null (ou vide) dans la liste = champ absent admis. Un scalaire se juge comme avant.
+  if (has('date')) check('date', alternatives(expected.date).some(value => (isAbsent(value) ? !result.date : result.date === value)));
+  if (has('currency')) check('currency', alternatives(expected.currency).some(value => (isAbsent(value) ? !result.currency : canon(result.currency) === canon(value))));
   if (has('invoiceNumber')) check('invoiceNumber', (Array.isArray(expected.invoiceNumber) ? expected.invoiceNumber : [expected.invoiceNumber]).map(canon).includes(canon(result.invoiceNumber)));
-  if (has('orderNumber')) check('orderNumber', canon(result.orderNumber) === canon(expected.orderNumber));
-  for (const field of ['amountHT', 'tvaAmount', 'amountTTC'] as const) if (has(field)) check(field, money(result[field], expected[field]));
-  if (has('tvaRate')) check('tvaRate', exactish(result.tvaRate, expected.tvaRate));
+  if (has('orderNumber')) check('orderNumber', alternatives(expected.orderNumber).some(value => (isAbsent(value) ? !canon(result.orderNumber) : canon(result.orderNumber) === canon(value))));
+  for (const field of ['amountHT', 'tvaAmount', 'amountTTC'] as const) if (has(field)) check(field, alternatives(expected[field]).some(value => money(result[field], value ?? null)));
+  if (has('tvaRate')) check('tvaRate', alternatives(expected.tvaRate).some(value => exactish(result.tvaRate, value ?? null)));
   if (has('paymentEvidence')) {
     // « paid » ou « unpaid » affirmés sans être attendus = inventé ; « unknown » est prudent, jamais compté faux.
     const allowed: string[] = Array.isArray(expected.paymentEvidence) ? expected.paymentEvidence : [expected.paymentEvidence];
     check('paymentEvidence', !(['paid', 'unpaid'].includes(result.paymentEvidence) && !allowed.includes(result.paymentEvidence)));
   }
   const items: any[] = Array.isArray(result.items) ? result.items : [];
-  const expectedItems: any[] = Array.isArray(expected.items) ? expected.items : [];
-  let lineRight = 0;
-  if (Array.isArray(expected.items)) check('items.count', items.length === expectedItems.length);
+  // Lignes visibles sur aucune capture : une ligne attendue marquée `invisible: true` est écartée avant l'alignement ; sinon `lignesInvisibles: n`
+  // pardonne jusqu'à n lignes attendues absentes du résultat (elles ne comptent ni comme justes ni comme manquées), et le compte de lignes
+  // est juste s'il vaut le total attendu ou ce total moins n.
+  const flagged = Array.isArray(expected.items) ? expected.items.filter((line: any) => line?.invisible === true).length : 0;
+  const expectedItems: any[] = Array.isArray(expected.items) ? expected.items.filter((line: any) => line?.invisible !== true) : [];
+  const hidden = Math.max(0, (Number.isInteger(expected.lignesInvisibles) ? expected.lignesInvisibles : 0) - flagged);
+  let lineRight = 0, forgiven = 0;
+  if (Array.isArray(expected.items)) check('items.count', items.length === expectedItems.length || (hidden > 0 && items.length === expectedItems.length - hidden));
   expectedItems.forEach((line, index) => {
     const actual = items[index];
+    if (!actual && forgiven < hidden && index >= items.length) { forgiven++; return; }
     if (!actual) { wrong.push(`items.${index}`); return; }
     const fails: string[] = [], on = (key: string) => Object.prototype.hasOwnProperty.call(line, key);
     // Un cas peut ne juger que certains champs de ligne (doc7 : nom, nature, montant) : seul ce qui est écrit est jugé.
     if (on('name') && !canon(actual.name).includes(canon(line.name))) fails.push('name');
     if (on('quantity') && !exactish(actual.quantity, line.quantity ?? null)) fails.push('quantity');
-    if (on('unit') && !(line.unit === '' ? !actual.unit : unitCanon(actual.unit) === unitCanon(line.unit))) fails.push('unit');
-    if (on('price') && !money(actual.price, line.price ?? null)) fails.push('price');
+    if (on('unit') && !alternatives(line.unit).some(unit => (isAbsent(unit) ? !actual.unit : unitCanon(actual.unit) === unitCanon(unit)))) fails.push('unit');
+    if (on('price') && !close(actual.price, line.price ?? null, priceTolerance(line.price))) fails.push('price');
     if (on('amountTTC') && !money(actual.amountTTC, line.amountTTC ?? null)) fails.push('amountTTC');
     if (Array.isArray(line.kind) && !line.kind.includes(actual.kind)) fails.push('kind');
     if (!fails.length) lineRight++;
     fails.forEach(field => wrong.push(`items.${index}.${field}`));
   });
-  return { judged, right, lineJudged: expectedItems.length, lineRight, wrong };
+  return { judged, right, lineJudged: expectedItems.length - forgiven, lineRight, wrong };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -100,27 +114,31 @@ export interface VariantStats {
   draws: number; failures: number; judged: number; right: number; lineJudged: number; lineRight: number;
   fauxVerts: number; fauxCorriges: number; alertesJustes: number; alertesInutiles: number; vraisVerts: number;
   statuts: Record<string, number>; inutilesCodes: Record<string, number>; ms: number[]; costMicro: number[]; calls: number[]; thirdFrom: Record<string, number>; secondRead: number; defects: string[];
+  /** Lignes écrites au-delà du plafond de 35 de la production (la plus longue lecture du parcours), et parcours touchés. */
+  capLost: number; capDraws: number;
 }
-export interface DrawVerdict { doc: string; tirage: number; variant: string; status: string | null; wrong: string[]; verdict: Verdict | null }
+export interface DrawVerdict { doc: string; genre: string; tirage: number; variant: string; status: string | null; wrong: string[]; verdict: Verdict | null }
 
 const median = (values: number[]) => { if (!values.length) return null; const s = [...values].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 
 export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: Record<string, VariantStats>; draws: DrawVerdict[] } {
   const byId = new Map(cases.map(c => [c.id, c]));
   const blank = (): VariantStats => ({ draws: 0, failures: 0, judged: 0, right: 0, lineJudged: 0, lineRight: 0, fauxVerts: 0, fauxCorriges: 0, alertesJustes: 0, alertesInutiles: 0, vraisVerts: 0,
-    statuts: {}, inutilesCodes: {}, ms: [], costMicro: [], calls: [], thirdFrom: {}, secondRead: 0, defects: [] });
+    statuts: {}, inutilesCodes: {}, ms: [], costMicro: [], calls: [], thirdFrom: {}, secondRead: 0, defects: [], capLost: 0, capDraws: 0 });
   const stats: Record<string, VariantStats> = Object.fromEntries(variantIds(records).map(v => [v, blank()]));
   const draws: DrawVerdict[] = [];
   for (const record of records) {
     const expected = byId.get(record.doc)?.expected;
     if (!expected) throw new Error(`Cas inconnu : ${record.doc}.`);
+    const genre = genreOfCase(byId.get(record.doc)!);
     for (const variant of orderVariants(Object.keys(record.variants))) {
       const run = record.variants[variant], stat = stats[variant];
       stat.draws++;
+      if (run.capLost) { stat.capLost += run.capLost; stat.capDraws++; }
       stat.ms.push(run.ms); stat.costMicro.push(run.costMicroChf); stat.calls.push(run.calls);
       if (run.thirdFrom) stat.thirdFrom[run.thirdFrom] = (stat.thirdFrom[run.thirdFrom] ?? 0) + 1;
       if (run.ids.length >= 2 && run.ids.some(id => /2$/.test(id))) stat.secondRead++;
-      if (!run.result) { stat.failures++; draws.push({ doc: record.doc, tirage: record.tirage, variant, status: null, wrong: [], verdict: null }); continue; }
+      if (!run.result) { stat.failures++; draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status: null, wrong: [], verdict: null }); continue; }
       const verdict = judgeResult(run.result, expected), status: string = run.result.review?.status ?? 'inconnu';
       stat.judged += verdict.judged; stat.right += verdict.right; stat.lineJudged += verdict.lineJudged; stat.lineRight += verdict.lineRight;
       stat.statuts[status] = (stat.statuts[status] ?? 0) + 1;
@@ -142,7 +160,7 @@ export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: 
         grouped.set(name, (grouped.get(name) ?? 0) + 1);
       }
       for (const [name, count] of grouped) stat.defects.push(`${record.doc} : ${name}${count > 1 ? ` (×${count})` : ''} faux en ${label}, tirage ${record.tirage}${status === 'checked' ? ' — FAUX VERT' : ''}`);
-      draws.push({ doc: record.doc, tirage: record.tirage, variant, status, wrong: verdict.wrong, verdict });
+      draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status, wrong: verdict.wrong, verdict });
     }
   }
   return { stats, draws };
@@ -169,7 +187,13 @@ export function checkSimulation(records: DrawRecord[], draws: DrawVerdict[], app
   }
   const faulty = new Set(applied.map(entry => `${entry.doc}|${entry.tirage}`));
   const clean = draws.filter(item => item.verdict && !faulty.has(`${item.doc}|${item.tirage}`));
-  const cleanWrong = clean.filter(item => item.wrong.length).map(item => `${item.doc} tirage ${item.tirage} ${item.variant} : ${item.wrong.join(', ')}`);
+  // Un document de plus de 35 lignes perd les suivantes au plafond de la production (le résultat le déclare : linesLost) : ce n'est pas une erreur du jugement.
+  const capExplained = (item: DrawVerdict, route: string) => {
+    const lost = records.find(r => r.doc === item.doc && r.tirage === item.tirage)?.variants[item.variant]?.result?.linesLost ?? 0;
+    const found = /^items\.(count|(\d+))(\..*)?$/.exec(route);
+    return lost > 0 && !!found && (found[1] === 'count' || Number(found[2]) >= SCAN_MAX_ITEMS);
+  };
+  const cleanWrong = clean.map(item => ({ item, wrong: item.wrong.filter(route => !capExplained(item, route)) })).filter(entry => entry.wrong.length).map(({ item, wrong }) => `${item.doc} tirage ${item.tirage} ${item.variant} : ${wrong.join(', ')}`);
   const fauxVerts = draws.filter(item => item.status === 'checked' && item.wrong.length).length;
   return { present, found, missed, cleanDraws: clean.length, cleanWrong, fauxVerts, ok: present > 0 && found === present && !cleanWrong.length && fauxVerts > 0 };
 }
@@ -219,6 +243,35 @@ export function renderPerDocument(draws: DrawVerdict[], ids: string[]): string[]
   return lines;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Par genre de pièce : photo, capture, plusieurs captures, PDF
+// ---------------------------------------------------------------------------------------------------------------------
+export interface GenreCell extends DocCell { docs: Set<string> }
+export function perGenre(draws: DrawVerdict[]): Map<string, Map<string, GenreCell>> {
+  const out = new Map<string, Map<string, GenreCell>>();
+  for (const draw of draws) {
+    const row = out.get(draw.genre) ?? new Map<string, GenreCell>();
+    out.set(draw.genre, row);
+    const cell = row.get(draw.variant) ?? { draws: 0, failures: 0, judged: 0, right: 0, lineJudged: 0, lineRight: 0, fauxVerts: 0, docs: new Set<string>() };
+    row.set(draw.variant, cell);
+    cell.draws++; cell.docs.add(draw.doc);
+    if (!draw.verdict) { cell.failures++; continue; }
+    cell.judged += draw.verdict.judged; cell.right += draw.verdict.right; cell.lineJudged += draw.verdict.lineJudged; cell.lineRight += draw.verdict.lineRight;
+    if (draw.status === 'checked' && draw.wrong.length) cell.fauxVerts++;
+  }
+  return out;
+}
+export function renderPerGenre(draws: DrawVerdict[], ids: string[]): string[] {
+  const table = perGenre(draws);
+  const lines = [`| genre de pièce | ${ids.map(shortLabel).join(' | ')} |`, `|---|${ids.map(() => '---').join('|')}|`];
+  for (const genre of [...GENRES, ...[...table.keys()].filter(key => !(GENRES as readonly string[]).includes(key))]) {
+    const row = table.get(genre);
+    if (!row) continue;
+    lines.push(`| ${genre} (${Math.max(...[...row.values()].map(cell => cell.docs.size))} doc.) | ${ids.map(id => { const c = row.get(id); return c ? `${c.right}/${c.judged} · ${c.lineRight}/${c.lineJudged}${c.fauxVerts ? ` · FV ${c.fauxVerts}` : ''}${c.failures ? ` · ${c.failures} sans résultat` : ''}` : '—'; }).join(' | ')} |`);
+  }
+  return lines;
+}
+
 /** Les champs qui changent d'état entre deux variantes, parcours par parcours : `doc2 : currency (×3)`. */
 export function fieldDiff(draws: DrawVerdict[], from: string, to: string): { fixed: string[]; broken: string[] } {
   const wrongOf = (id: string) => new Map(draws.filter(d => d.variant === id && d.verdict).map(d => [`${d.doc}|${d.tirage}`, new Set(d.wrong.map(fieldName))]));
@@ -257,6 +310,7 @@ export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: R
   lines.push(L('Alertes justes (disputed / unavailable, vraie erreur)', s => String(s.alertesJustes)));
   lines.push(L('Alertes inutiles (rien de faux)', s => String(s.alertesInutiles)));
   lines.push(L('Verts justes (checked / corrected, tout juste)', s => String(s.vraisVerts)));
+  lines.push(L('Lignes perdues au plafond de 35 (parcours touchés)', s => `${s.capLost} (${s.capDraws})`));
   lines.push(L('Durée médiane du parcours', s => sec(median0(s.ms))));
   lines.push(L('Durée maximale du parcours', s => sec(s.ms.length ? Math.max(...s.ms) : null)));
   lines.push(L('Appels (total · moyenne par parcours)', s => `${totalOf(s.calls)} · ${s.calls.length ? (totalOf(s.calls) / s.calls.length).toFixed(2).replace('.', ',') : '—'}`));
@@ -265,7 +319,8 @@ export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: R
   lines.push('', `Dépense réelle de cette passe (appels distincts, 3ᵉ lectures partagées comptées une fois${lentCount ? `, ${lentCount} lectures prêtées par ${meta.reprendre ?? 'une sortie précédente'} non comptées` : ''}) : ${francs(realCost)} CHF pour ${real.length} appels.`, '');
   lines.push('## Statuts finaux', '', heads, rule);
   for (const status of ['checked', 'corrected', 'disputed', 'unavailable']) lines.push(L(status, s => String(s.statuts[status] ?? 0)));
-  if (draws.length) lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids));
+  if (draws.length) lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids),
+    '', '## Par genre de pièce (mêmes comptes, additionnés par genre)', '', ...renderPerGenre(draws, ids));
   lines.push('', '## Pourquoi sonnent les alertes inutiles (points qui pèsent, tous champs justes)', '');
   for (const v of ids) lines.push(`- ${variantLabel(v)} : ${Object.entries(stats[v].inutilesCodes).sort((a, b) => b[1] - a[1]).map(([code, n]) => `${code} ×${n}`).join(', ') || 'aucune'}`);
   lines.push('', '## Ce que chaque variante a appelé', '');
@@ -332,7 +387,7 @@ export function renderHorsLigne(file: { meta: any; records: DrawRecord[] }, stat
   lines.push(L('Durée maximale', s => sec(s.ms.length ? Math.max(...s.ms) : null)));
   lines.push(L('Appels (moyenne par parcours)', s => (s.calls.length ? (totalOf(s.calls) / s.calls.length).toFixed(2).replace('.', ',') : '—')));
   lines.push(L('Coût médian par parcours (CHF)', s => francs(median0(s.costMicro))));
-  lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids), '');
+  lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids), '', '## Par genre de pièce', '', ...renderPerGenre(draws, ids), '');
 
   const delta = (from: string, to: string) => {
     const a = stats[from], b = stats[to];
@@ -364,7 +419,7 @@ function main() {
   const dir = args.find((arg, index) => !arg.startsWith('--') && index !== valueOfMd);
   if (!dir) throw new Error('Dossier de sortie du banc manquant.');
   const file = JSON.parse(readFileSync(path.join(dir, 'results.json'), 'utf8'));
-  const cases = loadCases(file.meta.casFiles?.length ? file.meta.casFiles.map((name: string) => CAS_FILES.find(candidate => path.basename(candidate) === name) ?? name) : CAS_FILES);
+  const cases = loadCases(file.meta.casFiles?.length ? file.meta.casFiles.map((name: string) => CAS_FILES.find(candidate => path.basename(candidate) === name) ?? casPath(name)) : CAS_FILES);
   const { stats, draws } = judgeBench(file.records, cases);
   const faultsPath = path.join(dir, 'faults.json');
   const simulation = existsSync(faultsPath) ? checkSimulation(file.records, draws, JSON.parse(readFileSync(faultsPath, 'utf8')).applied) : undefined;

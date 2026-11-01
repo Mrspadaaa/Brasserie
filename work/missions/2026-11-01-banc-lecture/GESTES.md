@@ -26,6 +26,7 @@ ou production), **plus tard** (après un résultat), **non** (raison).
 | 9 | Second avis d'un autre fournisseur (Azure prebuilt-invoice) | — | attend son accord : nouveau sous-traitant de ses factures | sur oui : variante au banc |
 | — | Plusieurs captures d'une même facture en une lecture | files | au banc (k4) ; l'app n'en joint qu'une | production : mini maquettes |
 | — | PDF (couche de texte lue par Gemini) | — | au banc (k4 : doc8, doc9) | — |
+| — | Plafond de 35 lignes par facture (`SCAN_MAX_ITEMS`) : son PDF 652093 en imprime 37, deux lignes perdues d'office | Sv | au banc (k4 : plafond 80 dans le schéma du banc, lignes perdues comptées) | production : son accord |
 | — | Exemples montrés à Gemini (few-shot) | — | non : un exemple pris dans ses pièces taille la consigne sur elles (L20) | — |
 | — | Skills, plugins, connecteurs MCP pour la lecture de l'app | — | non : ce sont des outils pour Claude, pas pour la Cloud Function (rapport, ligne 129) ; la boucle, elle, devient le skill `banc-lecture` | — |
 | — | Autre modèle Google | — | non pour l'instant : 3.5 Flash-Lite et 3.8 sont les plus récents (01.11) | à revoir à chaque nouveau modèle |
