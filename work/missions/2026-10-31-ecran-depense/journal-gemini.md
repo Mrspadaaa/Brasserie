@@ -22,6 +22,11 @@ Défaut vu à la lecture 3 : les sept montants de ligne sont lus (somme 110,40 =
 `quantity` et `amountTTC` vides ; l'écran montre « TTC (CHF) — » sur chaque ligne, « Quantité × prix 0/7 », « Somme des lignes non
 vérifiée ». La fixture n'a qu'une colonne de montants, sans en-tête. Suite : voie `fn-montant-seul` (mission 2026-11-01-bascule-lecture).
 
+| 4 | 01.11.2026 16:34 (UTC+1) | contrôle après le déploiement du correctif (D257, révision aitask-00043-raz) : deux Flash-Lite (3 451 et 4 459 ms), pas de 3.8 ; 7 montants de ligne, « Somme des lignes = imprimé 110,40 » | `voies/fn-montant-seul/facture-qr-d257.pdf` (la fixture du PDF, un commentaire ajouté après `%%EOF` pour une empreinte neuve) | 0,0096 CHF | 0,0552 CHF |
+
+Lecture 4 : les deux Flash-Lite ont rangé les montants en `amountTTC` (`price` vide) : la règle `montantDeLigne` n'a pas eu à jouer sur
+cette lecture ; elle est prouvée par les tests et le rejeu du banc (D256). Feuille fermée sans « Confirmer » ; « À payer 0 ».
+
 Coût lu dans Firestore, en lecture seule : `brewerAiCosts/2026-11`, `usedMicroChf` = 15 509, `reservedMicroChf` = 0. Le document du mois
 a été créé par cet appel (05:57:29 UTC) : tout son montant vient de ce test.
 

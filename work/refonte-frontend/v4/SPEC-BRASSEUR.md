@@ -919,3 +919,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **La TVA, son cas** (01.11, soir), à « TVA : es-tu assujetti ? », mot pour mot : « Je fais moins de 100k » (D250).
 - **La CSP de l'hébergement** (01.11, soir), à « CSP : peut-on ajouter 'wasm-unsafe-eval' dans firebase.json ? Sans ce mot, le QR ne lit
   rien en ligne. Je te montrerai la preuve jouée en local dès que le rejeu sera fini. », mot pour mot : « Oui » (D253).
+- **Les tests sur l'app en ligne** (01.11, soir, après les deux déploiements de la bascule), mot pour mot : « Les test d'intégration sur
+  la vrai app, vrai donné sont fonctionnels ? »
+- **Les tests sur l'app en ligne, suite** (01.11, soir, pendant ma réponse), mot pour mot : « Ils ont bien été effectué, sans problème? »
+- **Déployer le correctif des montants de ligne, pousser la branche** (01.11, soir), à « 1. Je déploie la fonction de lecture des
+  factures avec ce correctif (oui / pas maintenant) ? 2. Je pousse la branche et j'ouvre la PR, 42 commits (oui / plus tard) ? »,
+  mot pour mot : « Oui et oui » (D257).
