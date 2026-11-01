@@ -178,6 +178,11 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
   verts, `tva/v1/u4b-RESULTAT.md`). Passe 2 de la série r en vol : elle finit, puis tri du critique ; **pas de passe 3 ni de page TVA neuve**
   avant la rénovation. u3 devient une greffe de la reprise (la bouteille, et le prix partagé en coûts, TVA et « combien je gagne »).
   Rénovation : mission neuve `work/missions/2026-11-01-renovation/DEPART.md`, dans sa propre session (D207).
+- 01.11, nuit : **passe 2 TVA rendue** (TVA-R2 OK, `tva/v1/r-RESULTAT.md` : r3b, r4b et ses deux places côte à côte, r2b ; greffe 18 refusée
+  par l'auteur ; r2b ne montre plus la taille de l'inconnu dans la barre). Écart au brief : `r4b/places.html` et `capturer-places.mjs` écrits
+  par heredoc (interdit, fichiers fonctionnels). En attente (D259) : rejeu des critères, tri du critique et page « Vue TVA · passe 2 » à la
+  reprise de la TVA, après la rénovation. Jury rénovation rendu (`work/missions/2026-11-01-renovation/jury-renovation/fiche.md`), séries
+  v0 reno-r, reno-z, reno-u lancées.
 
 ## Signature
 - 31.10, nuit : **intégration de l1 par le pilote** : `invoice-v5` partout (`purchaseEntry.ts`, son test, `eval-expense-vision.mjs`, docs), plafond de sortie
