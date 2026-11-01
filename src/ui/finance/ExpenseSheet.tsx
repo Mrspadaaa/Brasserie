@@ -1,4 +1,5 @@
 import React,{useState,useRef,useEffect,useId,useMemo} from 'react';
+import { flushSync } from 'react-dom';
 import { Camera,FileText,Plus,Trash2,Check,Loader2,Package,CalendarDays,ChevronDown,AlertCircle,X } from 'lucide-react';
 import { ModalShell } from '../ModalShell';
 import { Field,inputClass } from '../FormNav';
@@ -41,6 +42,8 @@ const newLine=(intent='expense'):PurchaseLineDraft=>({id:crypto.randomUUID(),des
 const scanKind=(kind:ScannedLineKind):PurchaseLineDraft['kind']=>kind==='stock'?'ingredient':kind==='unknown'?'other':kind;
 const button='min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors';
 const dayShortcuts=[{label:'Hier',offsetDays:-1},{label:"Aujourd’hui",offsetDays:0},{label:'Demain',offsetDays:1}];
+/** Une date `JJ.MM.AAAA` qui existe au calendrier (31.02 n'en est pas une). */
+const dateValide=(swiss:string):boolean=>{const iso=toIsoDate(swiss);if(!iso)return false;const t=new Date(`${iso}T00:00:00Z`);return !Number.isNaN(t.getTime())&&t.toISOString().slice(0,10)===iso;};
 const uncertainClass='rounded-control border border-attention/50 bg-attention/5 p-2';
 const STOCK_KINDS=['ingredient','packaging','cleaning'];
 const fr=(n:number)=>String(n).replace('.',',');
@@ -206,7 +209,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     return root.querySelector<HTMLElement>('[data-purchase-lines] summary');
   };
   const focusIssue=(message:string)=>{
-    const target=issueTarget(message);
+    let target=issueTarget(message);
+    /* D233 : la date du paiement n'est plus un champ par défaut ; une erreur qui la vise la fait apparaître avant d'y mettre le focus. */
+    if(!target&&/paiement|échéance/.test(message)){flushSync(()=>{setPanel('paye');setPayeForme(true);});target=issueTarget(message);}
     if(!target){errorBox.current?.focus();return;}
     for(let ancestor=target.parentElement;ancestor&&ancestor!==form.current;ancestor=ancestor.parentElement){
       if(ancestor instanceof HTMLDetailsElement)ancestor.open=true;
@@ -342,6 +347,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const estRegle=(chip:Chip):boolean=>{
     if(reglees.has(chip.id))return true;
     if(chip.source==='paiement')return draft.paymentDateBasis!=='document_date';
+    /* D233 : le point « Date » se règle quand le brasseur a posé une date valide (jamais par défaut ni par le temps). */
+    if(chip.codes.includes('date-absente'))return reviewedFields.includes('date')&&dateValide(draft.date);
     if(chip.source==='mouture')return mouturesPropositions.length===0;
     /* Réglée par un article créé ou choisi ; ⇄ seul (« existing » sans article) la laisse ouverte, comme r2b. */
     if(chip.source==='voisin'){const l=draft.lines.find(x=>x.id===chip.cible);return l?.stockAction==='new'||(l?.stockAction==='existing'&&Boolean(l.stockRef));}
@@ -351,12 +358,29 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const reglesSet=new Set(chips.filter(estRegle).map(c=>c.id));
   const tout=chips.length>0&&chips.every(c=>reglesSet.has(c.id));
   const lienDe=(line:PurchaseLineDraft):LienStock=>precisIds.has(line.id)?'precis':line.stockAction==='existing'?(line.stockRef?'relie':'aucun'):line.stockAction==='new'?'neuf':'aucun';
+  /* D233 : « y aller » va toujours quelque part. `viser` ouvre les <details> qui contiennent la cible, la fait défiler visible (le défilant réserve la
+     hauteur de la bande : scroll-padding-top) et y met le focus sans second défilement. Le panneau (TVA, paiement) ou la preuve s'ouvre d'abord, de façon synchrone. */
+  const viser=(el:HTMLElement|null|undefined,opts:{focus?:HTMLElement|null;block?:ScrollLogicalPosition}={}):boolean=>{
+    if(!el)return false;
+    for(let ancestor:HTMLElement|null=el;ancestor&&ancestor!==form.current;ancestor=ancestor.parentElement){
+      if(ancestor instanceof HTMLDetailsElement)ancestor.open=true;
+    }
+    el.scrollIntoView?.({block:opts.block??'start',behavior:'smooth'});
+    opts.focus?.focus({preventScroll:true});
+    return true;
+  };
   const aller=(chip:Chip)=>{
-    if(chip.nom==='TVA'){setPanel('tva');return;}
-    if(chip.source==='paiement'){setPanel('paye');return;}
+    const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
+    if(chip.nom==='TVA'){flushSync(()=>setPanel('tva'));viser(q('[data-dp="panneau-tva"]'));return;}
+    if(chip.source==='paiement'){flushSync(()=>setPanel('paye'));viser(q('[data-dp="panneau-paye"]'));return;}
     const id=chip.source==='mouture'?mouturesPropositions[0]?.lineId:ligneDe(chip);
-    const el=id?form.current?.querySelector<HTMLElement>(`[data-dp-ligne="${id}"]`):null;
-    if(el){const d=el.querySelector('details');if(d)d.open=true;el.scrollIntoView?.({block:'start',behavior:'smooth'});}
+    const el=id?q(`[data-dp-ligne="${id}"]`):null;
+    if(el){const d=el.querySelector('details');if(d)d.open=true;viser(el);return;}
+    if(chip.codes.includes('date-absente')&&viser(q('[data-purchase-date]'),{focus:q('[data-purchase-date] input[type="date"]')}))return;
+    if(chip.codes.some(c=>c==='somme-ecart'||c==='somme-incomplete'||c==='total-absent')){const champ=q('#purchase-total');if(viser(champ,{focus:champ,block:'center'}))return;}
+    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-non-rapprochees')&&viser(q('[data-purchase-lines]')))return;
+    /* Sans cible propre : la preuve de la lecture, ouverte et amenée à l'écran. */
+    flushSync(()=>setPreuveOuverte(true));viser(q('[data-dp="preuve"]'));
   };
   const remarques=result?[...new Set([...result.issues,...(result.review?.findings??[]),...result.items.flatMap(item=>item.ambiguity?[`${item.name||'Article'} : ${item.ambiguity}`]:[])].map(p=>p.trim()).filter(Boolean))].filter(p=>!(points??[]).some(pt=>pt.message===p)):[];
   const driveOk=apercu?apercu.drive==='ok':draft.proofDataUrl?FirebaseAuthService.hasDriveAccess():true;void driveTick;
@@ -442,6 +466,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const numero=(pred:(c:Chip)=>boolean)=>{const i=chips.findIndex(pred);return i>=0?i+1:null;};
   const nTva=numero(c=>c.nom==='TVA'),nPaye=numero(c=>c.source==='paiement');
   const payeSuppose=draft.paymentStatus==='paid'&&draft.paymentDateBasis==='document_date';
+  /* D233 : une seule date par défaut, celle de l'achat ; la date du paiement la suit. Son champ n'apparaît que sur « Autre date », ou quand une autre date est déjà là (tapée, ou différente de l'achat). */
+  const dateSeparee=payeForme||draft.paymentDateBasis==='typed'||(Boolean(draft.paymentDate)&&Boolean(draft.date)&&draft.paymentDate!==draft.date);
   /* Une date jamais touchée par le brasseur et jamais lue : c'est la date du jour par défaut, dite comme telle (drapeau, pas une comparaison avec aujourd'hui). */
   const dateParDefaut=!scan?.ok&&!reviewedFields.includes('date')&&draft.paymentDateBasis!=='typed';
   const court=(date:string)=>date.replace(/^(\d{2}\.\d{2})\.\d{4}$/,(_m,jm)=>jm);
@@ -464,7 +490,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <ScanHint field="paymentEvidence" message={hints.paymentEvidence}/>
       {draft.paymentStatus==='paid'?<p className="text-xs text-cave-200">Moyen · {({bank:'Compte bancaire / carte',cash:'Espèces',twint:'TWINT',other:'Autre'} as Record<string,string>)[draft.paymentMethod]??draft.paymentMethod}</p>:null}
       {payeSuppose?<div className="flex flex-wrap gap-1.5"><button type="button" onClick={()=>{patch({paymentDate:draft.paymentDate});setPanel(null);}} className={boutonPlein}>C’est la date</button><button type="button" onClick={()=>setPayeForme(true)} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Autre date</button></div>:null}
-      <div className={`${payeSuppose&&!payeForme?'hidden':'block'} space-y-2 pb-1`}>{draft.paymentStatus==='paid'?<><DateField label="Date du paiement" value={draft.paymentDate} onChange={paymentDate=>patch({paymentDate})} shortcuts={dayShortcuts} monthShortcuts/><Field label="Moyen de paiement" htmlFor="purchase-payment-method"><select id="purchase-payment-method" className={inputClass} value={draft.paymentMethod} onChange={e=>patch({paymentMethod:e.target.value as any})}><option value="bank">Compte bancaire / carte</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field></>:<DateField label="Échéance (facultative)" value={draft.dueDate} onChange={dueDate=>patch({dueDate})} shortcuts={dayShortcuts} monthShortcuts/>}</div>
+      <div className={`${payeSuppose&&!payeForme?'hidden':'block'} space-y-2 pb-1`}>{draft.paymentStatus==='paid'?<>{dateSeparee?<DateField label="Date du paiement" value={draft.paymentDate} onChange={paymentDate=>patch({paymentDate})} shortcuts={dayShortcuts} monthShortcuts/>
+        :payeSuppose?null:<div data-dp="paye-suit" className="flex items-center gap-2"><span>Payé le <b className="font-mono font-medium text-cave-50">{draft.paymentDate||draft.date||'…'}</b></span><button type="button" onClick={()=>setPayeForme(true)} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Autre date</button></div>}<Field label="Moyen de paiement" htmlFor="purchase-payment-method"><select id="purchase-payment-method" className={inputClass} value={draft.paymentMethod} onChange={e=>patch({paymentMethod:e.target.value as any})}><option value="bank">Compte bancaire / carte</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field></>:<DateField label="Échéance (facultative)" value={draft.dueDate} onChange={dueDate=>patch({dueDate})} shortcuts={dayShortcuts} monthShortcuts/>}</div>
     </div></div>;
   const restantA_revoir=chips.filter(c=>!reglesSet.has(c.id)).map(c=>c.nom==='TVA'?`TVA ${draft.sourceVatAmount===undefined?'vide':`${fr2(draft.sourceVatAmount)} gardée`}`:c.source==='paiement'?'date de paiement supposée gardée':c.source==='mouture'?`${mouturesPropositions.length} moutures en service`:c.source==='voisin'?`${c.nom} non lié au stock`:c.codes.includes('unite-absente')?`${c.nom} : hors stock`:c.nom);
   return <ModalShell open onClose={()=>{if(!busy&&!saving)onClose();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl">
@@ -473,7 +500,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       {draft.proofDataUrl&&!busy?<button type="button" aria-label="Changer" title="Changer le fichier" disabled={saving||Boolean(pendingId)||Boolean(done)} onClick={()=>fileInput.current?.click()} className="min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-200 disabled:opacity-40"><FileText size={16}/></button>:null}
       <button type="button" disabled={busy||saving} onClick={onClose} aria-label="Fermer" className="min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"><X size={16}/></button>
     </header>
-    <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7">
+    <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7">
     {scan?.ok&&statut&&!attached?<BandeCollante cible={bandeauRef} racine={scroller} chips={chips} reglees={reglesSet} onAller={aller}/>:null}
     {attempted&&shownErrors.length>0?<div id={validationId} role="alert" className="border border-alert-strong/40 rounded-control bg-alert-strong/5 p-2 text-sm text-alert-strong"><p className="font-medium">À corriger</p><ul>{shownErrors.map(message=><li key={message}><button type="button" onClick={()=>focusIssue(message)} className="min-h-7 text-left underline underline-offset-2">{message}</button></li>)}</ul></div>:null}
     {proofSending?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Loader2 size={16} className="shrink-0 mt-0.5 animate-spin text-hop"/><span>{proofSending}</span></div>:null}

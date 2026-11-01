@@ -73,7 +73,10 @@ export function ChipsBar({ chips, reglees, onAller, tout, cacher }: { chips: rea
   </div>;
 }
 
-/** La bande collante (greffe z2b) : visible seulement quand le bandeau est sorti de l'écran défilant. */
+/** La bande collante (greffe z2b) : visible seulement quand le bandeau est sorti de l'écran défilant.
+ *  D233 : elle ne prend AUCUNE place dans le flux. Le support est collant, haut de 0, et sa marge basse (-0,5 rem) annule celle que `space-y-2` donne au
+ *  frère suivant ; la bande y est posée en `absolute`. Son apparition ne déplace donc rien (avant, elle poussait le contenu de sa hauteur, le bandeau
+ *  rentrait à l'écran, elle se retirait, le contenu remontait : un sautillement d'image en image). */
 export function BandeCollante({ cible, racine, chips, reglees, onAller }: { cible: React.RefObject<HTMLElement | null>; racine: React.RefObject<HTMLElement | null>; chips: readonly Chip[]; reglees: ReadonlySet<string>; onAller: (chip: Chip) => void }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -83,10 +86,12 @@ export function BandeCollante({ cible, racine, chips, reglees, onAller }: { cibl
     return () => obs.disconnect();
   }, [cible, racine]);
   const courant = chips.find(c => !reglees.has(c.id));
-  if (!visible || !chips.length) return null;
-  return <div data-dp="bande" className="sticky top-0 z-10 lg:hidden flex items-center gap-1.5 border-b border-cave-800 bg-cave-950 px-2 py-1 text-sm">
-    {chips.map((c, i) => <span key={c.id} className={`inline-flex size-[22px] items-center justify-center rounded-full font-mono text-xs ${reglees.has(c.id) ? 'bg-hop text-cave-950' : 'border border-dashed border-attention text-attention'}`}>{i + 1}</span>)}
-    <span className="min-w-0 flex-1 truncate text-cave-200">{courant ? courant.nom : 'points revus'}</span>
-    {courant ? <button type="button" onClick={() => onAller(courant)} className="min-h-7 rounded-control border border-cave-600 px-2 text-cave-50">y aller</button> : null}
+  if (!chips.length) return null;
+  return <div data-dp="bande-support" aria-hidden={visible ? undefined : true} className="sticky top-0 z-10 lg:hidden h-0 -mb-2 pointer-events-none">
+    {visible ? <div data-dp="bande" className="pointer-events-auto absolute inset-x-0 top-0 flex items-center gap-1.5 border-b border-cave-800 bg-cave-950 px-2 py-1 text-sm">
+      {chips.map((c, i) => <span key={c.id} className={`inline-flex size-[22px] items-center justify-center rounded-full font-mono text-xs ${reglees.has(c.id) ? 'bg-hop text-cave-950' : 'border border-dashed border-attention text-attention'}`}>{i + 1}</span>)}
+      <span className="min-w-0 flex-1 truncate text-cave-200">{courant ? courant.nom : 'points revus'}</span>
+      {courant ? <button type="button" onClick={() => onAller(courant)} className="min-h-7 rounded-control border border-cave-600 px-2 text-cave-50">y aller</button> : null}
+    </div> : null}
   </div>;
 }

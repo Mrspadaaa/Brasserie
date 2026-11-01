@@ -100,8 +100,10 @@ describe('C3, C1, C5, C6, C8, C14 : ce qu’il lit', () => {
     expect(within(panneau).getByRole('button', { name: 'C’est la date' }).className).toMatch(/bg-ebc-straw/);
     expect(within(panneau).getByRole('button', { name: 'C’est la date' }).className).toMatch(/text-cave-950/);
     expect(within(panneau).getByText('payé le · supposée')).toBeInTheDocument();
-    expect(within(panneau).getByRole('button', { name: 'Hier' })).toBeInTheDocument(); // le formulaire reste monté (sans `hidden`)
-    expect(within(panneau).getByRole('button', { name: 'Autre date' })).toBeInTheDocument();
+    // D233 : une seule date par défaut (celle de l'achat) ; le champ de la date du paiement n'apparaît que sur « Autre date ».
+    expect(within(panneau).queryByRole('button', { name: 'Hier' })).toBeNull();
+    fireEvent.click(within(panneau).getByRole('button', { name: 'Autre date' }));
+    expect(within(panneau).getByRole('button', { name: 'Hier' })).toBeInTheDocument();
     fireEvent.click(within(panneau).getByRole('button', { name: 'C’est la date' }));
     expect(screen.queryByText('supposée')).toBeNull();
   });

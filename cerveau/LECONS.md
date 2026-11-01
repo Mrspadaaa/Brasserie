@@ -72,10 +72,10 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ».
+- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ». 01.11 : Dépense testée au bureau ; au téléphone, l'écran sautille.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien.
-- Rôles : relecteur, auteur, exécutant
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`).
+- Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
@@ -104,16 +104,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Plafond de voie ≤ maxTurns ; un long livrable s'écrit section par section.
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Plafond de voie ≤ maxTurns ; un long livrable s'écrit section par section. Ex-L28 (24.10, six voies sans skill après une reprise) : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
-
-### L28 — Charger les skills de méthode avant de planifier, surtout après une reprise
-- Erreur : 24.10, après une reprise, six voies sans `voies` ni `conseil`.
-- Cause : le résumé précédait le système.
-- Faire : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
-- Rôles : pilote
-- Contrôle : aucun
 
 ## Décider
 

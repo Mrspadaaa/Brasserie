@@ -1230,6 +1230,35 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D212 (le brasseur, 31.10, nuit) : le plateau de r4d « Toujours visible ». L'état replié (#replie) sort de la passe 5.
 - D213 (le brasseur, 31.10, nuit) : sur le bloquant de la revue s1 (« Crystal » kg relié à « Houblon Crystal » g, 25 000 g), « oui attention au unités ». Portée lue (L01, étroite) : la dépense, partout où une quantité ou un prix a une unité (lecture, rapprochement au stock, enregistrement). Règles du pilote, réversibles : (1) une quantité garde l'unité imprimée, jamais réécrite en silence ; (2) une conversion d'unité (kg ↔ g, l ↔ ml, Stk ↔ sachet) est un fait que le brasseur voit : une proposition au stock dont l'unité diffère de celle de l'article montre la quantité convertie sur la ligne repliée (« 25 kg → 25 000 g ») ; (3) un prix se lit pour son unité (par kg, par 100 g, par pièce), jamais comparé à une autre ; (4) une ligne sans unité lisible n'est proposée à aucun article. Contrôle : tests d'unités de s1 (`tests/unit/depense/stock/unites.test.ts`), qui échouent sur le code d'aujourd'hui.
 - D214 (le brasseur, 31.10, nuit) : sur la règle n° 4 de D213, « Unité illisible : la ligne n'est reliée à aucun article.???? » Règle refusée : elle venait du pilote, pas de ses mots (L01). Lecture du pilote, étroite et réversible : une ligne dont l'unité est illisible reste proposée à son article aux mêmes conditions que toute autre ligne (nom, nature, catégorie, poids de levure, α, récolte) ; aucune unité n'est devinée ni recopiée de l'article ; le champ d'unité reste vide et la ligne repliée porte « unité à préciser » ; rien n'entre en stock tant que l'unité manque (garde à l'enregistrement : voie r1). Une unité lisible mais incompatible avec l'article donne toujours « rien ». Remplace D213 n° 4. Contrôle : `tests/unit/depense/stock/unites.test.ts` (voie s1), qui échoue sur la règle refusée.
+- D235 (le brasseur, 01.11, matin) : Nouvelle dépense, passe 3 (mots dans SPEC-BRASSEUR). Lectures étroites du pilote, signalées :
+  les « pastilles sur les items » de r1 (feuille) = le picto de lien au stock de chaque ligne, les pastilles d'équivalence (« = 2 sachets »)
+  et de doute (« unité ? ») ; le « récap en haut » = le bandeau et la preuve de r2b à 1280 (compte des liens, points), chaque compte
+  cliquable vers ses lignes ; « toute la place de l'app » = plein écran, sans marges de feuille ni navigation de l'app ; « trié par
+  catégorie avec sous total de quantité » = lignes groupées par catégorie, chaque groupe avec sa quantité par unité et son montant ;
+  Drive : envoi après « Confirmer », en arrière-plan, rien à l'écran tant que ça marche ; un échec = grosse notification qui ramène à la
+  facture (renvoyer le justificatif, reconnecter Drive). Base : r2b telle qu'elle est dans l'app ; variantes sur les axes ouverts
+  (en-tête de groupe, densité de ligne, renvoi du récap, forme de la notification) : voie p3-concepteurs, critique, page neuve.
+- D234 (le brasseur, 01.11, matin) : à la question « Je lance le banc des trois lectures sur vos vraies factures (≈ 50 appels, ≈ 1 CHF) ? »,
+  mot pour mot : « 5chf de budget accordé ». Lecture du pilote : 5 CHF au plus pour ce banc, hors des 10 CHF de D217 ; garde à 4,5 CHF,
+  réserve avant chaque appel, un journal par appel (`work/missions/2026-11-01-banc-lecture/journal-gemini.md`) ; ses factures d'octobre
+  (doc1 à doc6, déjà confiées pour ces tests) et sa photo de ce matin (doc7), rangées hors de Git. Trois variantes : la production, une
+  lecture d'abord (H13 du 16.10, jamais appliqué), et sa proposition (deux lectures 3.5 Flash-Lite, 3.8 en cas de désaccord). Aucun
+  changement de production avant son choix sur les chiffres.
+- D233 (le brasseur, 01.11, 8 h 25, sur son téléphone, version en ligne 153b2296 ; pilote) : « Y aller je fait rien, et il y a un vrai
+  problème, quand on ouvre certains champs, le fenêtre fait haut bas très rapidement, comme un cintillement, c'est horrible » ; puis « Aussi,
+  c'est assez fiable mais toujours plutôt lent ». Lectures étroites (L01), signalées :
+  - « y aller » : le point « Date » (`date-absente`) n'avait aucune cible. Tout point sans ligne reçoit la sienne (date de l'achat, total,
+    lignes), un panneau déjà ouvert défile quand même, et ce qui reste ouvre la preuve : jamais un « y aller » sans effet ; une date saisie
+    barre le point. Voie b1-bande.
+  - « plusieurs champs date […] pas utile den avoir plusieurs » : une seule date visible par défaut, celle de l'achat ; en « Déjà payé »,
+    la date du paiement la suit et son champ n'apparaît que sur « Autre date » (ou si une autre date a déjà été tapée) ; l'échéance
+    d'« À payer » reste. Réversible ; voie b1-bande, point 7.
+  - « cintillement » : la bande collante entrait dans le flux du défilant et poussait le contenu de sa hauteur ; le bandeau revenait à l'écran,
+    la bande sortait : boucle. La bande se superpose désormais au haut du défilant, sans place dans le flux (D233 de DEFAUTS-RECURRENTS).
+  - « plutôt lent » : mesuré dans les journaux d'`aiTask` (lecture seule) : sa 1re lecture, 2 lectures parallèles de 25 s (≈ 4 450 jetons
+    de sortie chacune) ; sa 2e, 2 lectures de 9 s puis une 3e de 8,6 s, lancée après elles (≈ 18 s). Lancer la 3e d'emblée diviserait
+    par deux la seconde attente, au prix d'un appel de plus par facture (≈ 0,01 à 0,04 CHF) : Gemini facturé en production, à son accord ;
+    rien n'est changé sans lui.
 - D232 (pilote, 01.11, matin ; D210, D217, D223) : tests en ligne de la version 5f224fc3, par son Chrome (lecture du DOM : écran du poste
   éteint, captures impossibles). Deux lectures étroites et réversibles :
   - « supprimées toutes deux » (D210) se lit « supprimée dans l'app » : une dépense payée ne s'efface pas, elle se corrige en gardant son
