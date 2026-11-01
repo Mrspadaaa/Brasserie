@@ -22,7 +22,7 @@ import { CAS_FILES, MISSION_DIR, N_SUFFIX, baseOfId, isNId, loadCases, orderVari
 /** Les ids de variante présents dans les parcours (`Cs`, `Cs+N`…), dans l'ordre des tableaux. */
 export const variantIds = (records: DrawRecord[]): string[] => orderVariants(new Set(records.flatMap(record => Object.keys(record.variants))));
 /** Court : `C′`, `C★`, `Lm+N` (pour les défauts et les journaux). */
-export const shortLabel = (id: string) => baseOfId(id).replace('Csp', 'C★′').replace('Cs', 'C★').replace('Cp', 'C′') + (isNId(id) ? N_SUFFIX : '');
+export const shortLabel = (id: string) => baseOfId(id).replace('Csp', 'C★′').replace('Csv', 'C★v').replace('Cs', 'C★').replace('Cp', 'C′') + (isNId(id) ? N_SUFFIX : '');
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Tolérances d'octobre
@@ -316,6 +316,7 @@ export function renderHorsLigne(file: { meta: any; records: DrawRecord[] }, stat
   lines.push('# Hors ligne — C★, C★′ et N sur la sortie payante de k1', '');
   lines.push(`Recalcul sans aucun appel ni clé, depuis les ${records.length} parcours déjà payés (${meta.reprendre ?? 'sortie k1'} : 7 documents × ${meta.repeat} tirages). Mêmes lectures, mêmes durées mesurées, mêmes coûts : seule la façon de conclure change.`);
   lines.push('- **C★** : comme C (deux Flash-Lite, la 3.8 sur désaccord), mais la 3.8 **tranche seule** : son résultat remplace le vote à trois. Statut d’une lecture seule : « checked » si aucun point ne pèse, « disputed » sinon.');
+  lines.push('- **C★v** : les valeurs de la 3.8 quand elle tranche (comme C★), mais le statut du vote à trois (comme C) : « disputed » dès que les lectures ont divergé sur un champ qui pèse. Décision du pilote du 01.11.');
   lines.push('- **C★′** : comme C★, et la 3.8 est aussi appelée quand les deux Flash-Lite concordent mais que l’arithmétique échoue (comme C′).');
   lines.push('- **+N** : normalisation de code appliquée à chaque lecture avant le vote, pour toutes les variantes : devise « Fr. », « SFr. », « CHF. » → « CHF ». Rien d’autre ; une devise étrangère n’est jamais devinée.');
   lines.push('- Aucune valeur des documents ici : des comptes, des durées, des coûts et des noms de champs. Une lecture des défauts communs à toutes les variantes est dans `RESULTAT-BANC.md` de la mission.', '');
@@ -346,7 +347,7 @@ export function renderHorsLigne(file: { meta: any; records: DrawRecord[] }, stat
   ] : [`- ${label} : variante absente de cette sortie.`];
 
   lines.push('## Ce que la 3.8 qui tranche seule change', '');
-  lines.push(...bullets('C★ contre C', delta('C', 'Cs')), ...bullets('C★′ contre C′', delta('Cp', 'Csp')), '');
+  lines.push(...bullets('C★ contre C', delta('C', 'Cs')), ...bullets('C★′ contre C′', delta('Cp', 'Csp')), ...bullets('C★v contre C', delta('C', 'Csv')), ...bullets('C★v contre C★ (le statut seul)', delta('Cs', 'Csv')), '');
   lines.push('## Ce que N rattrape seule', '');
   for (const id of ids.filter(id => !isNId(id))) if (ids.includes(`${id}${N_SUFFIX}`)) lines.push(...bullets(`${shortLabel(id)} + N contre ${shortLabel(id)}`, delta(id, `${id}${N_SUFFIX}`)));
   lines.push('', '## Lecture honnête', '',

@@ -74,14 +74,14 @@ export const CAS_FILES = ['cas.json', 'cas-2.json', 'cas-3.json'].map(name => pa
 /** Points d'origine `controle` qui pèsent et qui disent « l'arithmétique de cette lecture ne tient pas » (B et C′). Jamais la date absente. */
 export const ARITH_CODES: ReadonlySet<string> = new Set(['ligne-montant', 'somme-ecart', 'tva-incoherente', 'ht-tva-ttc', 'total-absent']);
 
-export type VariantId = 'A' | 'B' | 'C' | 'Cp' | 'Cs' | 'Csp' | 'Lm' | 'Lh' | 'Lp';
+export type VariantId = 'A' | 'B' | 'C' | 'Cp' | 'Cs' | 'Csv' | 'Csp' | 'Lm' | 'Lh' | 'Lp';
 /** Toutes les variantes connues, dans l'ordre des tableaux. */
-export const VARIANTS: readonly VariantId[] = ['A', 'B', 'C', 'Cp', 'Cs', 'Csp', 'Lm', 'Lh', 'Lp'];
+export const VARIANTS: readonly VariantId[] = ['A', 'B', 'C', 'Cp', 'Cs', 'Csv', 'Csp', 'Lm', 'Lh', 'Lp'];
 /** Les quatre de k1 : ce que le banc lit quand `--variantes` n'est pas donné. */
 export const K1_VARIANTS: readonly VariantId[] = ['A', 'B', 'C', 'Cp'];
 export const VARIANT_LABEL: Record<VariantId, string> = {
   A: 'A production', B: 'B une lecture d’abord', C: 'C Flash-Lite ×2 puis 3.8', Cp: 'C′ C gardée par les contrôles',
-  Cs: 'C★ la 3.8 tranche seule', Csp: 'C★′ C★ gardée par les contrôles', Lm: 'Lm C★′ réflexion medium', Lh: 'Lh C★′ réflexion high', Lp: 'Lp C★′ consigne Flash-Lite'
+  Cs: 'C★ la 3.8 tranche seule', Csv: 'C★v valeurs de la 3.8, statut du vote', Csp: 'C★′ C★ gardée par les contrôles', Lm: 'Lm C★′ réflexion medium', Lh: 'Lh C★′ réflexion high', Lp: 'Lp C★′ consigne Flash-Lite'
 };
 /** Suffixe d'une variante lue avec la normalisation de code (N) : `Cs+N`. */
 export const N_SUFFIX = '+N';
@@ -96,7 +96,7 @@ export function orderVariants(ids: Iterable<string>): string[] {
 
 /** Un groupe = une façon d'appeler : les variantes d'un même groupe partagent leurs lectures. */
 export type Group = 'A' | 'C' | 'Lm' | 'Lh' | 'Lp';
-export const GROUP_OF: Record<VariantId, Group> = { A: 'A', B: 'A', C: 'C', Cp: 'C', Cs: 'C', Csp: 'C', Lm: 'Lm', Lh: 'Lh', Lp: 'Lp' };
+export const GROUP_OF: Record<VariantId, Group> = { A: 'A', B: 'A', C: 'C', Cp: 'C', Cs: 'C', Csv: 'C', Csp: 'C', Lm: 'Lm', Lh: 'Lh', Lp: 'Lp' };
 /** Plafond de sortie relevé de Lm et Lh seuls : la réflexion compte dans `maxOutputTokens`, `high` peut couper à 5 100. */
 export const LITE_RAISED_OUTPUT = 8192;
 const TIMEOUT_MS = 45_000, TIMEOUT_THINKING_MS = 90_000;
@@ -311,6 +311,20 @@ export function finalOfStar(r1: Reading, r2: Reading, third?: Reading, force = f
     return finish(singleResult(finirUneLecture(third.normalized), 3), [r1, r2, third], true);
   return finalOfTwo(r1, r2, third, force);
 }
+/**
+ * C★v : les VALEURS de la 3.8 quand elle tranche (comme C★), mais le STATUT du vote à trois (comme C) : dès que les lectures ont
+ * divergé sur un champ qui pèse, le résultat reste « disputed » et garde les phrases du vote. Sans 3.8 appelée, c'est C.
+ * C'est le parcours de C★ dont la revue (statut, constats) est celle du rapprochement des trois lectures ; les points du vote
+ * qui sont des désaccords entre lectures s'ajoutent à ceux de la 3.8 seule.
+ */
+export function finalOfStarVote(r1: Reading, r2: Reading, third?: Reading, force = false): Final {
+  const star = finalOfStar(r1, r2, third, force);
+  if (star.used.length < 3 || !third?.normalized) return star;
+  const vote = finalOfTwo(r1, r2, third, force);
+  const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
+  return { ...star, result: { ...star.result, review: { ...vote.result.review }, issues: vote.result.issues, points: [...star.result.points, ...disagreements] } };
+}
+
 /** C★′ : comme C★, et un contrôle arithmétique en échec sur les deux lectures appelle aussi la 3.8, qui tranche seule. */
 export const finalOfStarPrime = (r1: Reading, r2: Reading, third?: Reading): Final => finalOfStar(r1, r2, third, arithmeticFailsOnTwo(r1, r2));
 
@@ -347,6 +361,7 @@ export function deriveVariants(reads: DrawReads, want: ReadonlySet<string>): Par
     if (want.has('C')) out.C = { final: finalOfTwo(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
     if (want.has('Cp')) out.Cp = { final: finalOfCprime(l1, l2, cpThird), ...(cpThird ? { thirdFrom: tf(cpThird) } : {}) };
     if (want.has('Cs')) out.Cs = { final: finalOfStar(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
+    if (want.has('Csv')) out.Csv = { final: finalOfStarVote(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
     if (want.has('Csp')) out.Csp = { final: finalOfStarPrime(l1, l2, cpThird), ...(cpThird ? { thirdFrom: tf(cpThird) } : {}) };
   }
   for (const group of ['Lm', 'Lh', 'Lp'] as const) {
@@ -671,7 +686,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
   let stopped: string | undefined;
   const summary = (final: Final, extra: Partial<VariantRecord> = {}): VariantRecord => ({ ids: final.used.map(read => read.meta.id), calls: final.used.length, ms: final.ms,
     costMicroChf: final.costMicroChf, costUnknown: final.costUnknown, result: final.result, ...(final.failure ? { failure: final.failure } : {}), ...extra });
-  const shortId = (id: string) => id.replace('Cp', 'C′').replace('Cs', 'C★').replace('C★p', 'C★′');
+  const shortId = (id: string) => id.replace('Cp', 'C′').replace('Cs', 'C★').replace('C★p', 'C★′').replace('C★v', 'C★v');
 
   try {
   outer: for (let tirage = 1; tirage <= options.repeat; tirage++) {

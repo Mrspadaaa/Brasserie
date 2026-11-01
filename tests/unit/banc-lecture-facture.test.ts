@@ -15,7 +15,7 @@ import {
 } from '../../scripts/banc-lecture-facture';
 import { checkSimulation, fieldDiff, judgeBench, judgeResult, perDocument, renderHorsLigne, renderTable, variantIds } from '../../scripts/banc-lecture-facture-juger';
 import {
-  FAULT_PLAN, K1_VARIANTS, LITE_RAISED_OUTPUT, THIRD_IDS, VARIANTS, callSpec, deriveVariants, finalOfStar, finalOfStarPrime, isoCurrency, loadCases, loadLender, mapReads,
+  FAULT_PLAN, K1_VARIANTS, LITE_RAISED_OUTPUT, THIRD_IDS, VARIANTS, callSpec, deriveVariants, finalOfStar, finalOfStarPrime, finalOfStarVote, isoCurrency, loadCases, loadLender, mapReads,
   orderVariants, withCodesNormalized, type DrawReads, type VariantId
 } from '../../scripts/banc-lecture-facture';
 import { LITE_RULES, LITE_RULES_BLOCK, LITE_RULES_TITLE, liteConsigne } from '../../scripts/banc-lecture-consignes-lite';
@@ -385,6 +385,45 @@ describe('k2 — C★ et C★′ : le résultat de la 3.8 tranche seul', () => {
   it('la 3.8 qui tranche est une lecture seule : un point qui pèse reste « disputed »', () => {
     const l1 = liteRead(1, ok), l2 = liteRead(2, wrongQty), third = strongThird({ ...ok, date: '' });
     expect(finalOfStar(l1, l2, third).result.review.status).toBe('disputed');
+  });
+});
+
+describe('k2 — C★v : les valeurs de la 3.8, le statut du vote', () => {
+  const ok = invoice(), wrongTotal = { ...invoice(), amountTTC: 118.1 };
+  // une lecture de la 3.8 dont l’arithmétique tient : aucun point ne pèse, elle seule finirait « checked »
+  const consistent = { ...invoice(), amountHT: 111, tvaAmount: 8.99, amountTTC: 119.99, items: [{ name: 'Article', kind: 'stock', quantity: 1, unit: 'pièce', price: 119.99, amountTTC: 119.99 }] };
+  const wrongQty = { ...invoice(), items: [{ ...invoice().items[0], quantity: 7 }] };
+  it('les trois lectures divergent : la 3.8 donne les valeurs (comme C★) et le statut « disputed » du vote est gardé (comme C)', () => {
+    const l1 = liteRead(1, ok), l2 = liteRead(2, wrongTotal), third = strongThird(consistent);
+    const star = finalOfStar(l1, l2, third), vote = finalOfTwo(l1, l2, third), v = finalOfStarVote(l1, l2, third);
+    expect(star.result.review.status).toBe('checked'); // C★ efface le désaccord : le faux vert
+    expect(vote.result.review.status).toBe('disputed');
+    expect(v.result.amountTTC).toBe(119.99);
+    expect(v.result.review.status).toBe('disputed');
+    expect(v.result.review.findings).toEqual(vote.result.review.findings);
+    expect(v.used.map(read => read.meta.id)).toEqual(['C1', 'C2', 'A3']);
+    expect(v.ms).toBe(star.ms);
+    expect(v.result.points.some((point: any) => point.source === 'désaccord' && point.pese)).toBe(true);
+  });
+  it('la 3.8 tranche un désaccord : les valeurs sont les siennes, le statut celui du vote (jamais plus vert que C)', () => {
+    const l1 = liteRead(1, ok), l2 = liteRead(2, wrongQty), third = strongThird(ok);
+    const star = finalOfStar(l1, l2, third), vote = finalOfTwo(l1, l2, third), v = finalOfStarVote(l1, l2, third);
+    expect(star.result.review.status).toBe('checked');
+    expect(v.result.review.status).toBe(vote.result.review.status);
+    expect(v.result.items[0].quantity).toBe(2);
+  });
+  it('sans 3.8 appelée ou sans 3.8 exploitable, C★v rend exactement le parcours de C', () => {
+    const l1 = liteRead(1, ok), l2 = liteRead(2, ok);
+    expect(finalOfStarVote(l1, l2, strongThird(ok)).result).toEqual(finalOfTwo(l1, l2).result);
+    const d1 = liteRead(1, ok), d2 = liteRead(2, wrongQty);
+    expect(finalOfStarVote(d1, d2, failedReading(3)).result).toEqual(finalOfTwo(d1, d2, failedReading(3)).result);
+  });
+  it('deriveVariants rend Csv (et sa version N) à côté de C et C★', () => {
+    const reads: DrawReads = { l1: liteRead(1, ok), l2: liteRead(2, { ...ok, amountTTC: 118.1 }), cThird: strongThird(consistent), lite: {} };
+    const out = deriveVariants(mapReads(reads, withCodesNormalized), new Set(['C', 'Cs', 'Csv']));
+    expect(out.Csv!.final.result.review.status).toBe('disputed');
+    expect(out.Cs!.final.result.review.status).toBe('checked');
+    expect(out.C!.final.result.review.status).toBe('disputed');
   });
 });
 
