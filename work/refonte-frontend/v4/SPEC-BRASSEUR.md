@@ -863,7 +863,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   date aussi attention ! » et « C'est pas utile den avoir plusieurs » (D233).
 - **La lecture d'une facture** (01.11, matin), mot pour mot : « Est-ce que on pourrait faire 2 lecture en parallèle de 3.5 flash et si ça
   diverge une relecture par 3.8 ? C'est quoi l'architecture actuellement ? Pourquoi on a choisi ça ? » ; puis, au banc proposé (≈ 1 CHF) :
-  « 5chf de budget accordé » (D234 ; banc k1, `work/missions/2026-11-01-banc-lecture/`).
+  « 5chf de budget accordé » (D234 ; banc k1, `work/missions/2026-11-01-banc-lecture/`). Puis, sur le résultat du banc (page
+  https://claude.ai/artifact/S4ovLYnPabLA5Pvq6n4rU9) et la question « veux-tu passer la lecture des factures à ta proposition C », mot pour
+  mot : « en théorie, oui, mais est-ce qu'il y a pas des nouvelles IA de Google plus rapide et meilleures pour ça ? »
 - **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
   cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
   (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que
