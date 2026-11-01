@@ -113,6 +113,7 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 | Nouvelle dépense · contrôle QR (12 v0 ; z2, r4, z4 en passe 2 ; z2 proposé par le critique) | 01.11 v1 | https://claude.ai/artifact/QSUXrTmuR2jXDEtAY2QjpM | `work/missions/2026-10-31-ecran-depense/choix-qr/index.html` |
 | Nouvelle dépense · p3a-3 compactée (p3c-1 à 3 ; p3c-2 proposé par le critique, D245) | 01.11 v1 | https://claude.ai/artifact/DFn4eoEbiUiD1orENfkDoF | `work/missions/2026-10-31-ecran-depense/choix-v3c/index.html` |
 | Vue TVA · panel v0 (12 concepts classés ; r3, r4, r2 en passe 2, u4 relancée) | 01.11 v1 | https://claude.ai/artifact/36nEadbKwv97zhX7mPtF6g | `work/missions/2026-10-31-ecran-depense/choix-tva/index.html` |
+| Nom d’un nouvel article venu d’une facture étrangère (A aujourd’hui, B à F ; B proposé par le pilote, critique e-t8 ACCEPTÉ) | 02.11 v1 | https://claude.ai/artifact/5zPHv4HDbgPzhnwNchQmBg | `work/missions/2026-10-31-ecran-depense/choix-nom/index.html` |
 
 ## Reprise
 - 31.10, nuit : d1, d2 et i1 rendus. Quatre voies écrites (l1-lecture, s1-stock, s2-enregistrement, t1-onglets ; exigences communes
