@@ -434,6 +434,20 @@ export function finalOfB(a1: Reading, a2: Reading, a3?: Reading): Final {
 export const finalOfCprime = (l1: Reading, l2: Reading, third?: Reading): Final =>
   finalOfTwo(l1, l2, third, arithmeticFailsOnTwo(l1, l2));
 
+/** C et sa famille : la 3.8 est appelée sur divergence, et aussi quand une lecture Flash-Lite manque (coupée, refusée). */
+export const needsThirdLite = (l1: Reading, l2: Reading): boolean => !l1.normalized || !l2.normalized || needsThird(l1, l2);
+/**
+ * C quand une lecture Flash-Lite manque et que la 3.8 a lu : jamais « Lecture indisponible ». Une Flash-Lite lisible et la 3.8
+ * votent à deux ; aucune Flash-Lite lisible, la 3.8 seule, « unavailable » à un lecteur (comme une lecture seule de la production).
+ * Le 01.11, les deux Flash-Lite de doc8 (37 lignes) étaient coupées à 5 100 jetons et C rendait une panne.
+ */
+export function finalOfLite(r1: Reading, r2: Reading, third?: Reading, force = false): Final {
+  if ((r1.normalized && r2.normalized) || !third?.normalized) return finalOfTwo(r1, r2, third, force);
+  const good = [r1, r2].find(read => read.normalized), failed = [r1, r2].find(read => !read.normalized);
+  if (!good) return finish(singleOfTwo(third, failed), [r1, r2, third], true);
+  return finish(finalOfTwo(good, third).result, [r1, r2, third], true);
+}
+
 /**
  * C★ : deux lectures Flash-Lite ; quand la 3.8 est appelée (divergence, ou `force` : l'arithmétique échoue), son résultat TRANCHE
  * SEUL, il n'y a plus de vote à trois. Son statut est celui d'une lecture seule (comme B) : « checked » si aucun point ne pèse,
@@ -442,7 +456,7 @@ export const finalOfCprime = (l1: Reading, l2: Reading, third?: Reading): Final 
 export function finalOfStar(r1: Reading, r2: Reading, third?: Reading, force = false): Final {
   if (r1.normalized && r2.normalized && third?.normalized && (force || needsThird(r1, r2)))
     return finish(singleResult(finirUneLecture(third.normalized), 3), [r1, r2, third], true);
-  return finalOfTwo(r1, r2, third, force);
+  return finalOfLite(r1, r2, third, force);
 }
 /**
  * C★v : les VALEURS de la 3.8 quand elle tranche (comme C★), mais le STATUT du vote à trois (comme C) : dès que les lectures ont
@@ -452,7 +466,7 @@ export function finalOfStar(r1: Reading, r2: Reading, third?: Reading, force = f
  */
 export function finalOfStarVote(r1: Reading, r2: Reading, third?: Reading, force = false): Final {
   const star = finalOfStar(r1, r2, third, force);
-  if (star.used.length < 3 || !third?.normalized) return star;
+  if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third, force);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
   return { ...star, result: { ...star.result, review: { ...vote.result.review }, issues: vote.result.issues, points: [...star.result.points, ...disagreements] } };
@@ -492,7 +506,7 @@ export function deriveVariants(reads: DrawReads, want: ReadonlySet<string>): Par
   }
   if (l1 && l2) {
     const tf = thirdFromOf;
-    if (want.has('C')) out.C = { final: finalOfTwo(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
+    if (want.has('C')) out.C = { final: finalOfLite(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
     if (want.has('Cp')) out.Cp = { final: finalOfCprime(l1, l2, cpThird), ...(cpThird ? { thirdFrom: tf(cpThird) } : {}) };
     if (want.has('Cs')) out.Cs = { final: finalOfStar(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
     if (want.has('Csv')) out.Csv = { final: finalOfStarVote(l1, l2, cThird), ...(cThird ? { thirdFrom: tf(cThird) } : {}) };
@@ -952,7 +966,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
         if (groups.has('C')) {
           // C, C′, C★, C★v, C★′, Av : deux lectures lite en parallèle ; la 3.8 est prêtée par A (ou k1) si elle existe, sinon un appel neuf
           const [l1, l2] = await parallel([doCall(c, files, tirage, 'C', 1), doCall(c, files, tirage, 'C', 2)]);
-          const cNeeds = needsThird(l1, l2), cpNeeds = !cNeeds && arithmeticFailsOnTwo(l1, l2);
+          const cNeeds = needsThirdLite(l1, l2), cpNeeds = !cNeeds && arithmeticFailsOnTwo(l1, l2);
           Object.assign(reads, { l1, l2 });
           if (cNeeds) { if (wanted.some(id => GROUP_OF[id] === 'C' && id !== 'Av')) { reads.cThird = await third('C'); reads.cpThird = reads.cThird; } if (want.has('Av')) reads.avThird = await doCall(c, files, tirage, 'Av', 3); }
           else if (cpNeeds && (want.has('Cp') || want.has('Csp'))) reads.cpThird = await third('Cp');

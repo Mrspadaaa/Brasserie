@@ -16,7 +16,7 @@ import {
 import { checkSimulation, fieldDiff, judgeBench, judgeResult, perDocument, priceTolerance, renderHorsLigne, renderTable, variantIds } from '../../scripts/banc-lecture-facture-juger';
 import {
   FAULT_PLAN, K1_VARIANTS, LITE_RAISED_OUTPUT, THIRD_IDS, VARIANTS, callSpec, deriveVariants, finalOfStar, finalOfStarPrime, finalOfStarVote, isoCurrency, loadCases, loadLender, mapReads,
-  orderVariants, withCodesNormalized, type DrawReads, type VariantId
+  orderVariants, withCodesNormalized, finalOfLite, needsThirdLite, type DrawReads, type VariantId
 } from '../../scripts/banc-lecture-facture';
 import { LITE_RULES, LITE_RULES_BLOCK, LITE_RULES_TITLE, liteConsigne } from '../../scripts/banc-lecture-consignes-lite';
 import {
@@ -351,6 +351,38 @@ describe('k1 — le budget : réservé avant, arrêt net, clé jamais écrite', 
 // =====================================================================================================================
 const liteRead = (lecture: 1 | 2, data: any, ms = 3000, group = 'C') => readingFromResponse(meta(lecture, LITE_MODEL, group), answer(data), ms, 1000);
 const strongThird = (data: any, ms = 7000) => readingFromResponse(meta(3, STRONG_MODEL, 'A'), answer(data), ms, 1000);
+
+describe('k4 — une lecture Flash-Lite manquante fait lire la 3.8', () => {
+  const ok = invoice();
+  const cutLite = (lecture: 1 | 2) => readingFromResponse(meta(lecture, LITE_MODEL, 'C'), { candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: '{"vendor":"Four' }] } }],
+    usageMetadata: { promptTokenCount: 5800, candidatesTokenCount: 5100, totalTokenCount: 10900 } }, 10000, 1000);
+  it('deux Flash-Lite coupées : la 3.8 est appelée et lit seule, « unavailable » à un lecteur, jamais une panne', () => {
+    const l1 = cutLite(1), l2 = cutLite(2), third = strongThird(ok, 20000);
+    expect(l1.normalized).toBeUndefined();
+    expect(needsThird(l1, l2)).toBe(false);
+    expect(needsThirdLite(l1, l2)).toBe(true);
+    expect(finalOfTwo(l1, l2).result).toBeNull();
+    for (const final of [finalOfLite(l1, l2, third), finalOfStarVote(l1, l2, third), finalOfStar(l1, l2, third)]) {
+      expect(final.result.amountTTC).toBe(108.1);
+      expect(final.result.review).toMatchObject({ status: 'unavailable', readers: 1 });
+      expect(final.used).toHaveLength(3);
+      expect(final.ms).toBe(10000 + 20000);
+    }
+  });
+  it('une Flash-Lite coupée, l’autre lisible : elle et la 3.8 votent à deux', () => {
+    const l1 = liteRead(1, ok), l2 = cutLite(2), third = strongThird(ok);
+    expect(needsThirdLite(l1, l2)).toBe(true);
+    const final = finalOfLite(l1, l2, third);
+    expect(final.result.amountTTC).toBe(108.1);
+    expect(final.result.review.readers).toBe(2);
+    expect(final.used).toHaveLength(3);
+  });
+  it('sans 3.8 lisible, le parcours de C est inchangé', () => {
+    const l1 = cutLite(1), l2 = cutLite(2);
+    expect(finalOfLite(l1, l2, failedReading(3)).result).toBeNull();
+    expect(finalOfLite(liteRead(1, ok), l2).result.review).toMatchObject({ status: 'unavailable', readers: 1 });
+  });
+});
 
 describe('k2 — C★ et C★′ : le résultat de la 3.8 tranche seul', () => {
   const ok = invoice(), wrongTotal = { ...invoice(), amountTTC: 118.1 };
