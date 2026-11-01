@@ -925,3 +925,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Déployer le correctif des montants de ligne, pousser la branche** (01.11, soir), à « 1. Je déploie la fonction de lecture des
   factures avec ce correctif (oui / pas maintenant) ? 2. Je pousse la branche et j'ouvre la PR, 42 commits (oui / plus tard) ? »,
   mot pour mot : « Oui et oui » (D257).
+- **La suite** (01.11, soir, après le déploiement du correctif et la PR 199), mot pour mot : « Continue » (lu : la suite prévue, port de
+  p3c-3 avec z2 D248, port « Total seulement » D249, vue TVA en mini maquettes D250).

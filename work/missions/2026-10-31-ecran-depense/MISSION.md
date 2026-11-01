@@ -69,6 +69,9 @@ Fini veut dire :
 | p3c-r | p3c-3 choisie : « p3c-3 le mieux mais mettre plus en avant la quantité, juste mettre en gras, et bien alignées les champs » (D248) ; quantité en gras, colonnes alignées, le reste tel quel | conception | concepteur | opus | 30 | work/missions/2026-10-31-ecran-depense/v3/p3c-*/** | e-t4 | baseline : controle-choix (écran dépense hors d'ecrans.json, dit), controle-alignement (témoin p3c-3 d'avant → ECHEC), controle-compact, controle-commun --profil=sans-houblons --sans-lignes, mots-premier-ecran --sans-lignes, controle-contraste, verifier-page, captures | brasseur | reprise |
 | e-t5 | verdict de la retouche p3c-3 contre sa capture entourée, agent neuf | jugement | critique | fable | 20 | work/missions/2026-10-31-ecran-depense/critique/VERDICT-p3c-3.md | p3c-r | verdict, captures ouvertes | pilote | — |
 | e-t4 | verdicts des trois degrés face à p3a-3 et p3a-2, agent neuf | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-depense/critique/VERDICTS-v3c.md | p3c | verdict par variante, captures ouvertes | pilote | — |
+| port-total | D249 : le port (lignes `shipping`) n'est jamais une ligne de la dépense enregistrée ; total et contrôle de somme le comptent ; vérité du banc corrigée, rejeu hors ligne (voies/port-total/VOIE.md) | jugement | auteur | sonnet | 80 | src/services/purchaseEntry.ts, functions/src/invoiceScanCore.ts, tests/unit/depense/port/**, tests/unit/purchaseEntry.test.ts, scripts/banc-lecture-facture.ts, scripts/banc-lecture-facture-juger.ts, work/missions/2026-11-01-banc-lecture/GESTES.md, work/missions/2026-10-31-ecran-depense/voies/port-total/** | — | GATES (plan relu, tests visés, build des fonctions, tsc, rejeu du banc) | pilote | — |
+| p3c-port | D248 : p3c-3 retouchée portée dans ExpenseSheet, plein écran à 390 (D235), sceau z2 tel quel (D246), « dont port » (D249) ; rien ne se perd (voies/p3c-port/VOIE.md) | jugement | auteur | sonnet | 150 | src/ui/finance/ExpenseSheet.tsx, src/ui/finance/InvoiceScanReview.tsx, src/ui/depense/**, src/ui/ModalShell.tsx, tests/integration/expenseSheet.test.tsx, tests/unit/depense/ecran/**, tests/unit/depense/qr/**, work/missions/2026-10-31-ecran-depense/voies/p3c-port/** | qr-ecart, p3c-r | GATES (plan relu, build, tsc, tests de l'écran, gardes, Chrome côte à côte aux trois modes) | pilote | — |
+| e-t6 | le port p3c-port jugé contre p3c-3 et z2 sur ses captures côte à côte, agent neuf | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-depense/critique/VERDICT-p3c-port.md | p3c-port | verdict, captures ouvertes | pilote | — |
 
 ## Boucle de retour
 Ses mots vont mot pour mot dans SPEC-BRASSEUR.md. Chaque défaut du diagnostic devient un test qui échoue sur le code d'aujourd'hui avant sa
@@ -129,6 +132,12 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 
 - 31.10, nuit : **r1-raccord écrite** (VOIE, GATES, LINT OK) et lancée (auteur Sonnet neuf) : COMPRIS puis PLAN.md, arrêt ; ensuite deux
   relecteurs neufs (Conception, Prêt à coder), tri du pilote, code, relecteur neuf. Le dessin de la mouture, S8 et la base de la date vont à la voie écran (L25).
+- 01.11, soir : son « Continue » après D257 (bascule de la lecture en ligne, PR 199). Lancées : **port-total** (D249, a0156059981dbe3e6)
+  et **p3c-port** (D248, a4f898e06ebc20851), premier temps (COMPRIS, PLAN), avec l'interface du port fixée par le pilote : lignes
+  `kind: 'shipping'`, « dont port » sous le total à l'écran, jamais une ligne enregistrée. p3c-port se joue dans la copie isolée
+  `%TEMP%/qr-app-copie` (`voies/p3c-port/copie.mjs`). Vue TVA (D250) : jury rapide (Brasseur fable a3473608b80587f6d, Contradicteur opus
+  aae7a38ae9acc4906) sur `jury-tva/dossier.md`, puis fiche, puis entonnoir allégé (12 à 16 v0 en 3 ou 4 séries, D204), critique, page.
+  Prochaine action : relire les deux PLAN par deux regards neufs chacun, trier, relancer le code ; fusionner le jury en fiche.
 
 ## Signature
 - 31.10, nuit : **intégration de l1 par le pilote** : `invoice-v5` partout (`purchaseEntry.ts`, son test, `eval-expense-vision.mjs`, docs), plafond de sortie
