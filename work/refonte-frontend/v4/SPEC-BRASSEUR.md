@@ -883,7 +883,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   rang 9 ; zxing-wasm, gratuit et local, reste ouvert). Puis, mot pour mot : « zxing-wasm ok » (D240) ; et : « Et Harness, skill tool ou
   third party non payant pour 3.5 flash lite ? » (GESTES : les gestes gratuits restants) ; puis, aux captures du doublon : « Et Harness,
   skill tool ou third party non Et Harness, skill tool ou third party non payant pour 3.5 flash lite ? Tu as pas répondu, doublon ok
-  parfait ».
+  parfait ». Puis, avec le lien du dépôt GitHub Anionex/dsh-vision-toolkit (https://share.google/fivmIAdnRQEAWiYzK), mot pour mot :
+  « Qqch du genre ferai sens adapté à Nos modèles et besoin ? » ; puis : « J'accorde 20chf de crédit en plus » (D242). Puis, à « pdf.js
+  dans l'app, ok ? » et « brancher le QR dans l'app […] je te montrerai d'abord des mini maquettes », mot pour mot : « Okok » (D243).
 - **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
   cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
   (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que
