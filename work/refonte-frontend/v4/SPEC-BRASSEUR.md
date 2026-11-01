@@ -998,3 +998,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   anglais, français, italien. Ça traduits en français et fait le bon lien » (lu : une catégorie, une famille ou un mot de métier lu en
   allemand, anglais, français ou italien devient la catégorie française de l'app et relie la ligne à la bonne famille et au bon article ;
   la désignation imprimée reste telle quelle, D261a. D271).
+  Puis, mot pour mot : « Italien possible aussi mais beaucoup plus rare » (lu : allemand, anglais et français d’abord ; l’italien
+  couvert par les mots de base, sans plus. D271).
+- **La pastille TVA** (01.11, nuit), à « Pastille TVA : elle reste, parce que la lecture prend le sous-total TTC pour le HT. La lever
+  demande de redéployer aiTask, ce qui reste ton choix. », mot pour mot : « Go » (lu : accord au correctif et au redéploiement d'aiTask
+  seul ; pas l'hébergement, pas les règles. D272).

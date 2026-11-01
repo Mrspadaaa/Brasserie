@@ -83,8 +83,9 @@ describe('D262a — la règle de TVA, sur une pièce imitée (TVA comprise, deux
     expect(pointsTva((r.result as any).points).length).toBeGreaterThan(0);
   });
 
-  it('hypothèse H2 (à confirmer par la lecture réelle) : un « Sub-Total » TTC lu comme HT lève ht-tva-ttc (HT + TVA ≠ TTC) — la règle est juste, la lecture est fausse', () => {
+  it('hypothèse H2, confirmée au banc k6 (les quatre lectures de sa pièce) : un « Sub-Total » TTC lu comme HT ne lève plus ht-tva-ttc — D272 le tient pour non lu (ht-d272.test.ts)', () => {
     const r = lire(lecture({ amountHT: sommeLignes(items().slice(0, -1)) }));
-    expect(trouve(r.points, 'ht-tva-ttc').length).toBe(1);
+    expect(trouve(r.points, 'ht-tva-ttc')).toEqual([]);
+    expect(r.amountHT).toBeNull();
   });
 });

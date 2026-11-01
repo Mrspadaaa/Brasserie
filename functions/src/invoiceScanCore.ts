@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 import { TIERS } from './models.js';
 import {
-  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
+  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, htEstUnSousTotalTTC, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
   type ControlStatus, type InvoiceField, type ScanControls, type ScanPoint, type ScanPointCode, type ScanPointDetail, type ScanRejet, type ScanVatRow,
 } from './invoiceControls.js';
 // Les règles de calcul vivent dans `invoiceControls.ts` (module pur, partagé avec le client) ; elles restent exportées d'ici.
@@ -303,6 +303,8 @@ export function normalizeInvoiceScan(raw: any) {
 
   // C4 — HT + TVA = TTC (comportement d'avant : 2 centimes de tolérance, chacun des trois arrondi séparément). Un HT n'est jamais calculé.
   // (la règle vit dans `invoiceControls.ts` : le client la refait avec la même fonction)
+  // D272 : un sous-total TTC lu comme HT n'est pas un HT.
+  if (htEstUnSousTotalTTC(result.amountHT, result.tvaAmount, result.amountTTC, items)) result.amountHT = null;
   const totals = totalsCheck(result.amountHT, result.tvaAmount, result.amountTTC);
   if (totals.point) { result.controls.totals = totals.totals; say(totals.point); }
   else if (totals.totals.statut === 'ok') result.controls.totals = totals.totals;
