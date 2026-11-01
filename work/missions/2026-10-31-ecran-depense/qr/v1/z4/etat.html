@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z4 v1 — Nouvelle dépense · la Section paiement du QR dans le règlement (passe 2, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--att:#9C7020;--attt:#7F5B10;--attf:#FBF6EA;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--fin:#1F64A3;--malt:#C9933A;--stk:#4C6B2A;--alert:#A8291F;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:10px;text-align:left}
+button:active{transform:scale(.97)}
+svg{display:block}
+[hidden]{display:none!important}
+.qrz4-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qrz4-sheet{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden}
+.qrz4-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.qrz4-hd h1{flex:1;font-size:18px;font-weight:600;color:var(--t0)}
+.qrz4-ib{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.qrz4-c{padding:8px 10px 72px;display:flex;flex-direction:column;gap:8px}
+.qrz4-just{display:flex;align-items:center;gap:8px;min-height:28px;color:var(--t2);font-size:14px}
+.qrz4-just span{flex:1}
+/* ── La base : le bandeau. Sur le total, la pastille « ✓ QR » (greffe r2 / u2) ; le duel dessous en désaccord. ── */
+.qrz4-band{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"l1 l1" "l2 sc" "l3 sc";column-gap:10px;row-gap:4px}
+.qrz4-l1{grid-area:l1;display:flex;align-items:baseline;gap:8px;min-width:0}
+.qrz4-vend{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.qrz4-date{font-family:var(--mono);font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz4-l2{grid-area:l2;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qrz4-tot{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);line-height:32px;border-bottom:1.5px dotted var(--bordm);padding:0 2px}
+.qrz4-tot[data-doute]{border-bottom:2px dotted var(--att);color:var(--attt)}
+.qrz4-dev{font-size:12px;color:var(--t2)}
+.qrz4-pq{height:22px;padding:0 6px;border-radius:10px;border:1px solid var(--hopt);color:var(--hopt);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.qrz4-pq[data-q="diff"]{border-color:var(--attt);color:var(--attt);font-family:var(--mono);font-weight:500}
+.qrz4-pq[data-q="partiel"],.qrz4-pq[data-q="off"]{border-color:var(--bordm);color:var(--t2);font-weight:400}
+.qrz4-pq[data-q="off"]{text-decoration:line-through;text-decoration-color:var(--alert)}
+.qrz4-pq[data-q="wait"]{border-color:var(--bordm);color:var(--t2);font-weight:400;animation:qrz4-pulse 1s ease-in-out infinite}
+@keyframes qrz4-pulse{50%{opacity:.3}}
+.qrz4-nl{margin-left:auto;height:28px;padding:0 8px;border:1px solid var(--bordm);background:#fff;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz4-nl b{font-family:var(--mono);font-weight:500}
+.qrz4-l3{grid-area:l3;display:flex;flex-direction:column;gap:4px}
+.qrz4-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--bord)}
+.qrz4-barre i{display:block;height:100%;border-right:1px solid #fff}
+.qrz4-barre i:last-child{border-right:0}
+.qrz4-duel{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.qrz4-duel button{min-height:40px;padding:2px 8px;border:1.5px solid var(--bordm);background:#fff;display:flex;flex-direction:column;justify-content:center;font-size:12px;color:var(--t2);line-height:1.2}
+.qrz4-duel button b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:18px;font-weight:600;color:var(--t0)}
+.qrz4-duel button b u{text-decoration:none;border-bottom:2px dotted var(--att);color:var(--attt)}
+.qrz4-duel button[data-src="qr"]{border-color:var(--attt);background:var(--attf)}
+.qrz4-duel button[aria-pressed="true"]{border-color:var(--t0);background:var(--t0);color:#ccc}
+.qrz4-duel button[aria-pressed="true"] b,.qrz4-duel button[aria-pressed="true"] b u{color:#fff;border-color:#fff}
+.qrz4-temoin{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--t2);min-height:18px}
+.qrz4-temoin b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t1)}
+.qrz4-temoin svg{color:var(--hopt)}
+.qrz4-photo{height:28px;padding:0 10px;border:1.5px dashed var(--att);background:var(--attf);color:var(--attt);font-size:14px;display:inline-flex;align-items:center;gap:6px;align-self:flex-start;white-space:nowrap}
+.qrz4-sans{grid-area:sc;align-self:start;width:64px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--t2);padding-top:2px}
+.qrz4-sans i{width:40px;height:40px;border-radius:50%;border:1.5px dashed var(--bordm)}
+/* ── La base : les points. ── */
+.qrz4-pts{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.qrz4-chip{min-height:28px;padding:0 8px;border:1px dashed var(--att);background:var(--attf);display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--t0);white-space:nowrap}
+.qrz4-chip i,.qrz4-tuile i{width:18px;height:18px;border-radius:50%;border:1px dashed var(--att);color:var(--attt);font-style:normal;font-family:var(--mono);font-size:12px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.qrz4-chip em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.qrz4-fait{border-style:solid!important;border-color:var(--bord)!important;background:#fff!important;color:var(--t2)!important;text-decoration:line-through}
+.qrz4-fait i{background:var(--hopt);border:0!important;color:#fff!important;text-decoration:none}
+.qrz4-regle i{background:var(--hopt);border:0!important;color:#fff!important}
+.qrz4-regle{border-style:solid!important;border-color:var(--bord)!important;background:#fff!important}
+.qrz4-tuile{flex:1 1 180px;min-height:52px;padding:4px 8px;border:1px dashed var(--att);background:var(--attf);display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--t2)}
+.qrz4-tuile>span:first-child{display:flex;align-items:center;gap:5px}
+.qrz4-tuile b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0);font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qrz4-sup{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px;font-family:var(--sans);font-weight:400}
+.qrz4-jauge{height:6px;border-radius:6px;background:var(--haut);overflow:hidden;width:100%;margin-top:2px}
+.qrz4-jauge i{display:block;height:100%;width:0;background:var(--hopt)}
+/* La carte Règlement de la base, ouverte par la tuile ; « À payer » y porte la proposition du QR. */
+.qrz4-card{border:1.5px solid var(--t0);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.qrz4-card .qrz4-deux{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.qrz4-card .qrz4-deux div{border:1px solid var(--bordm);border-radius:10px;padding:4px 8px;font-size:12px;color:var(--t2)}
+.qrz4-card .qrz4-deux b{display:block;font-family:var(--mono);font-size:18px;font-weight:600;color:var(--attt)}
+.qrz4-card .qrz4-deux div:last-child b{color:var(--t0)}
+.qrz4-card p{font-size:12px;color:var(--t2)}
+.qrz4-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;align-self:flex-start}
+.qrz4-seg button{padding:0 10px;font-size:14px;color:var(--t1);border-radius:0;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.qrz4-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.qrz4-row{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t2)}
+.qrz4-btn{height:28px;padding:0 10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz4-btn.qrz4-noir{background:var(--t0);color:#fff;border-color:var(--t0);font-weight:600}
+/* ── La Section paiement du bulletin : repliée au repos (titre, IBAN, référence, Copier) ; le QR et le reste au dépli. ── */
+.qrz4-sp{border:1px solid var(--t0);border-radius:10px;background:#fff;padding:6px 8px;display:flex;flex-direction:column;gap:4px}
+.qrz4-sp[data-q="off"]{border-color:var(--bordm)}
+.qrz4-sph{display:flex;align-items:center;gap:6px;min-height:24px;font-size:12px;font-weight:700;color:var(--t0);text-transform:uppercase;letter-spacing:.04em;padding:0}
+.qrz4-sph em{font-style:normal;font-weight:400;text-transform:none;letter-spacing:0;color:var(--t2);margin-left:auto}
+.qrz4-sph svg{color:var(--t2)}
+.qrz4-prop{height:28px;padding:0 10px;border:1.5px dashed var(--att);background:var(--attf);color:var(--attt);font-size:14px;display:inline-flex;align-items:center;gap:6px;align-self:flex-start;white-space:nowrap}
+.qrz4-prop small{font-size:12px;color:var(--attt)}
+.qrz4-prop[data-pris]{border-style:solid;border-color:var(--hopt);color:var(--hopt);background:#fff}
+.qrz4-f{display:grid;grid-template-columns:80px 1fr auto;align-items:center;column-gap:6px;min-height:26px}
+.qrz4-f span{font-size:12px;color:var(--t2)}
+.qrz4-f b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0);font-size:14px;line-height:1.35;word-break:break-word}
+.qrz4-f b.qrz4-vide{font-family:var(--sans);font-weight:400;color:var(--t2)}
+.qrz4-f b.qrz4-abs{font-family:var(--sans);font-weight:400;color:var(--t2);border-bottom:1.5px dotted var(--bordm);justify-self:start}
+.qrz4-cp{height:24px;padding:0 8px;border:1px solid var(--bordm);background:#fff;font-size:12px;color:var(--t1);display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.qrz4-cp[data-fait]{border-color:var(--hopt);color:var(--hopt)}
+.qrz4-plus{display:none;flex-direction:column;gap:4px;border-top:1px solid var(--bord);padding-top:4px}
+.qrz4-sp[aria-expanded="true"] .qrz4-plus{display:flex}
+.qrz4-sp[aria-expanded="true"] .qrz4-sph svg{transform:rotate(180deg)}
+.qrz4-qrl{display:grid;grid-template-columns:48px 1fr;column-gap:10px;align-items:center}
+.qrz4-qr{width:48px;height:48px}
+.qrz4-sp[data-q="off"] .qrz4-qr{opacity:.3}
+.qrz4-sp[data-q="wait"] .qrz4-qr{animation:qrz4-pulse 1s ease-in-out infinite}
+.qrz4-bas{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:var(--t1)}
+.qrz4-bas span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.qrz4-bas b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--t0);font-size:14px}
+.qrz4-ok{color:var(--hopt)}.qrz4-ko{color:var(--attt)}.qrz4-vide{color:var(--trait)}
+.qrz4-mini{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.qrz4-mini button{height:26px;padding:0 8px;border:1.5px solid var(--bordm);background:#fff;font-size:12px;color:var(--t2);white-space:nowrap}
+.qrz4-mini button b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--t0);font-size:14px}
+.qrz4-mini button[data-src="qr"]{border-color:var(--attt);background:var(--attf)}
+.qrz4-mini button[aria-pressed="true"]{background:var(--t0);border-color:var(--t0);color:#ccc}.qrz4-mini button[aria-pressed="true"] b{color:#fff}
+/* ── La base : la preuve. ── */
+.qrz4-preuve{border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column}
+.qrz4-preuve h2{font-size:14px;font-weight:600;color:var(--t0);min-height:24px;display:flex;align-items:center}
+.qrz4-pr{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--bord);font-size:14px;color:var(--t1)}
+.qrz4-pr:last-of-type{border-bottom:0}
+.qrz4-pr b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0)}
+.qrz4-cnt{display:flex;flex-wrap:wrap;gap:4px 10px;padding-top:6px;font-size:12px;color:var(--t1)}
+.qrz4-cnt span{display:inline-flex;align-items:center;gap:3px}.qrz4-cnt b{font-family:var(--mono);font-weight:500}
+/* ── La base : les lignes avec leur pastille de stock, Détail, les plis. ── */
+.qrz4-lt{display:flex;align-items:flex-start;gap:8px;padding:4px 0 2px;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz4-lt div{flex:1}.qrz4-lt small{display:block;font-size:12px;color:var(--attt)}
+.qrz4-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;column-gap:8px;min-height:44px;padding:2px 4px;border-bottom:1px solid var(--bord)}
+.qrz4-li .qrz4-n{font-size:16px;color:var(--t0);display:flex;flex-direction:column;gap:1px}
+.qrz4-li .qrz4-n span{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qrz4-li .qrz4-n small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.qrz4-past{font-size:12px;color:var(--t1);background:var(--haut);border-radius:9px;padding:0 6px;line-height:17px;font-family:var(--sans);white-space:nowrap}
+.qrz4-li .qrz4-a{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:500;color:var(--t0)}
+.qrz4-cube{width:20px;height:20px;color:var(--t1);position:relative}
+.qrz4-cube i{position:absolute;right:-3px;bottom:-3px;width:10px;height:10px;border-radius:50%;background:var(--t0);display:flex;align-items:center;justify-content:center}
+.qrz4-cube i svg{width:7px;height:7px}
+.qrz4-cube.qrz4-neuf{color:var(--stk)}.qrz4-cube.qrz4-neuf i{background:var(--stk)}
+.qrz4-cube.qrz4-aucun{color:var(--t2)}.qrz4-cube.qrz4-aucun i{display:none}
+.qrz4-mout{grid-template-columns:24px auto 1fr auto;background:var(--panel);margin-left:12px;border-left:1.5px dashed var(--bordm);border-radius:0 10px 10px 0;min-height:36px;column-gap:6px}
+.qrz4-mout .qrz4-tag{height:24px;padding:0 8px;border:1px solid var(--att);border-radius:10px;color:var(--attt);font-size:12px;display:inline-flex;align-items:center;background:#fff}
+.qrz4-mout .qrz4-ratt{height:24px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:12px;display:inline-flex;align-items:center;justify-self:start}
+.qrz4-pli{display:flex;align-items:center;gap:8px;min-height:32px;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz4-pli span{flex:1}.qrz4-pli em{font-style:normal;color:var(--t1)}.qrz4-pli small{font-size:12px;color:var(--t2)}
+.qrz4-pli.qrz4-det b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0)}
+.qrz4-note{font-size:12px;color:var(--t2);padding:6px 0 0}
+.qrz4-sk{height:14px;border-radius:7px;background:var(--haut);animation:qrz4-pulse 1s ease-in-out infinite;display:block}
+.qrz4-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.96);border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz4-go{margin-left:auto;height:32px;padding:0 12px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+  body{background:#E9E9E9}
+  .qrz4-sheet{max-width:1200px;margin:16px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px -20px rgba(0,0,0,.4);min-height:0;overflow:hidden}
+  .qrz4-c{display:grid;grid-template-columns:400px 1fr;grid-template-rows:auto auto auto auto auto auto 1fr;column-gap:16px;padding:10px 16px 16px;max-height:calc(100vh - 32px - 40px - 49px);overflow:auto;align-content:start}
+  .qrz4-c>*{grid-column:1}
+  .qrz4-c>.qrz4-lignes{grid-column:2;grid-row:1/9;align-self:start}
+  .qrz4-pied{position:sticky}
+  .qrz4-preuve{display:flex!important}
+}
+</style></head>
+<body><div class="qrz4-sheet" id="qrz4-root" data-etat="confirme">
+<header class="qrz4-hd"><h1>Nouvelle dépense</h1>
+  <span class="qrz4-ib" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.65"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 9h5M7.5 12h5"/></svg></span>
+  <button class="qrz4-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+</header>
+<main class="qrz4-c">
+  <div class="qrz4-just"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg><span>Voir le justificatif</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+
+  <section class="qrz4-band" data-dp="bandeau">
+    <div class="qrz4-l1"><span class="qrz4-vend">Malterie Fictive SA</span><span class="qrz4-date">12.10.2026</span></div>
+    <div class="qrz4-l2">
+      <span class="qrz4-tot" id="qrz4-tot" data-booster="total-tapable"><span id="qrz4-total">110,40</span></span><span class="qrz4-dev">CHF</span>
+      <span class="qrz4-pq" id="qrz4-pq" data-q="ok" data-booster="pastille-qr"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 3"/></svg><span id="qrz4-pqt">QR</span></span>
+      <button class="qrz4-nl" id="qrz4-nl" data-booster="ouvrir-preuve" data-geste="preuve" aria-expanded="false" aria-label="Détails de la lecture"><svg id="qrz4-nli" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><b id="qrz4-nbl">7</b>&nbsp;lignes</button>
+    </div>
+    <div class="qrz4-l3">
+      <div class="qrz4-duel" id="qrz4-duel" data-ql="contredit" data-booster="duel" hidden>
+        <button data-src="lu" aria-pressed="false">lu sur la page<b>110,<u>04</u></b></button>
+        <button data-src="qr" data-geste="prendre-qr" aria-pressed="false">QR-facture<b>110,<u>40</u></b></button>
+      </div>
+      <div class="qrz4-temoin" data-ql="contredit" hidden><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 3"/></svg>Somme des lignes <b>110,40</b> · deux contre un</div>
+      <button class="qrz4-photo" data-ql="illisible" data-booster="photographier" hidden><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5h3l1.5-2h3L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.4"/></svg>Photographier le QR</button>
+      <div class="qrz4-barre" aria-label="Les 7 lignes, à la largeur de leur montant" data-booster="barre-lignes"><i style="flex-grow:52.5;background:var(--malt)"></i><i style="flex-grow:3.75;background:var(--bordm)"></i><i style="flex-grow:18;background:var(--malt)"></i><i style="flex-grow:6.4;background:var(--malt)"></i><i style="flex-grow:9.8;background:var(--hop)"></i><i style="flex-grow:9.2;background:var(--fin)"></i><i style="flex-grow:10.75;background:var(--bordm)"></i></div>
+    </div>
+    <span class="qrz4-sans" id="qrz4-sansqr" data-dp="sans-qr" hidden><i aria-hidden="true"></i>sans QR</span>
+  </section>
+
+  <div class="qrz4-pts" data-dp="chips">
+    <button class="qrz4-chip" data-chip="qr" data-booster="chip-qr" hidden><i>1</i>Total</button>
+    <button class="qrz4-tuile" id="qrz4-tuile" data-chip="regl" data-booster="tuile-reglement" data-geste="tuile" aria-expanded="false"><span><i data-n="1">1</i>Règlement</span><b id="qrz4-tv">Payé le 12.10.2026<span class="qrz4-sup">supposée</span></b></button>
+    <button class="qrz4-chip" data-chip="mout"><i data-n="2">2</i>mouture <em>×1 +3,75</em></button>
+  </div>
+
+  <!-- La carte Règlement de la base ; « À payer » y est proposé par le QR, jamais basculé seul. -->
+  <section class="qrz4-card" id="qrz4-card" data-dp="reglement" hidden>
+    <div class="qrz4-deux"><div>payé le · supposée<b>12.10</b></div><div>facture<b>12.10</b></div></div>
+    <p>Date de paiement non imprimée · paiement lu sur le document.</p>
+    <div class="qrz4-seg" data-booster="bascule-reglement"><button aria-pressed="true" data-seg="paye"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 3"/></svg>Déjà payé</button><button aria-pressed="false" data-seg="apayer">À payer</button></div>
+    <div class="qrz4-row">Moyen · Compte bancaire / carte</div>
+    <div class="qrz4-row"><button class="qrz4-btn qrz4-noir" data-geste="date" data-booster="cest-la-date">C'est la date</button><button class="qrz4-btn">Autre date</button></div>
+  </section>
+
+  <!-- La Section paiement du bulletin, repliée au repos. -->
+  <section class="qrz4-sp" id="qrz4-sp" data-dp="section-paiement" data-q="ok" aria-expanded="false">
+    <button class="qrz4-sph" data-geste="ouvrir" data-booster="section-paiement" aria-label="Section paiement : déplier">Section paiement<em id="qrz4-src">QR-facture</em><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></button>
+    <button class="qrz4-prop" id="qrz4-prop" data-booster="proposer-a-payer" data-geste="adopter"><span>À payer · 30 jours</span><small>proposé par le QR · toucher pour l'adopter</small></button>
+    <div class="qrz4-f" id="qrz4-f1"><span>Compte</span><b id="qrz4-iban"><span style="white-space:nowrap">CH93 0076 2011 6238</span><br><span style="white-space:nowrap">5295 7</span></b><button class="qrz4-cp" data-booster="copier">Copier</button></div>
+    <div class="qrz4-f" id="qrz4-f2"><span>Référence</span><b id="qrz4-ref">21 00000 00003 13947 14300 09017</b><button class="qrz4-cp" data-booster="copier">Copier</button></div>
+    <div class="qrz4-plus">
+      <div class="qrz4-qrl">
+        <svg class="qrz4-qr" viewBox="0 0 26 26" aria-hidden="true">
+          <g fill="var(--t0)"><rect x="1" y="1" width="7" height="7" rx="1"/><rect x="18" y="1" width="7" height="7" rx="1"/><rect x="1" y="18" width="7" height="7" rx="1"/>
+          <rect x="10" y="1" width="2" height="2"/><rect x="14" y="2" width="2" height="2"/><rect x="11" y="5" width="2" height="2"/><rect x="1" y="10" width="2" height="2"/><rect x="5" y="11" width="2" height="2"/><rect x="2" y="14" width="2" height="2"/><rect x="6" y="15" width="2" height="2"/>
+          <rect x="19" y="10" width="2" height="2"/><rect x="23" y="11" width="2" height="2"/><rect x="20" y="14" width="2" height="2"/><rect x="24" y="15" width="2" height="2"/><rect x="10" y="19" width="2" height="2"/><rect x="14" y="20" width="2" height="2"/><rect x="11" y="23" width="2" height="2"/><rect x="15" y="24" width="2" height="2"/><rect x="19" y="19" width="2" height="2"/><rect x="23" y="20" width="2" height="2"/><rect x="21" y="23" width="2" height="2"/></g>
+          <g fill="#fff"><rect x="3" y="3" width="3" height="3"/><rect x="20" y="3" width="3" height="3"/><rect x="3" y="20" width="3" height="3"/></g>
+          <rect x="9.5" y="9.5" width="7" height="7" fill="var(--t0)"/><path d="M13 11v4M11 13h4" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+        <div>
+          <div class="qrz4-f"><span>Payable à</span><b id="qrz4-cre" style="font-family:var(--sans);font-weight:600">Malterie Fictive SA</b></div>
+          <div class="qrz4-f"><span>Conditions</span><b id="qrz4-cond">30 jours</b></div>
+        </div>
+      </div>
+      <div class="qrz4-mini" id="qrz4-mini" hidden><span>Montant</span><button data-src="lu" aria-pressed="false">lu <b>110,04</b></button><button data-src="qr" aria-pressed="false">QR <b>110,40</b></button></div>
+      <div class="qrz4-bas" id="qrz4-bas"></div>
+    </div>
+  </section>
+
+  <section class="qrz4-preuve" id="qrz4-preuve" data-dp="preuve" hidden>
+    <h2 id="qrz4-ph">Lecture vérifiée</h2>
+    <div class="qrz4-pr"><svg class="qrz4-ok" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><span>Somme des lignes = imprimé</span><b id="qrz4-psum">110,40</b></div>
+    <div class="qrz4-pr"><svg class="qrz4-ok" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><span>Quantité × prix, au centime</span><b>7/7</b></div>
+    <div class="qrz4-pr"><svg class="qrz4-ok" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><span>Lectures d'accord</span><b>2/2</b></div>
+    <div class="qrz4-cnt"><span><b>4</b> reliés</span><span><b>1</b> nouveau</span><span><b>1</b> mouture</span><span><b>1</b> sans stock</span></div>
+  </section>
+
+  <section class="qrz4-lignes" data-mots="lignes">
+    <div class="qrz4-lt"><div>Lignes de la facture · 7<small id="qrz4-ltp">6 proposées par la lecture, à vérifier</small></div><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9l4-4 4 4"/></svg></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M2 7l3.5 3.5L12 3"/></svg></i></span><span class="qrz4-n"><span>Maris Otter<em class="qrz4-past">+25 kg</em></span><small>25 kg</small></span><span class="qrz4-a">52,50</span></div>
+    <div class="qrz4-li qrz4-mout"><span class="qrz4-cube qrz4-aucun"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg></span><span class="qrz4-tag">mouture</span><span class="qrz4-ratt" data-booster="rattacher">Rattacher</span><span class="qrz4-a">3,75</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M2 7l3.5 3.5L12 3"/></svg></i></span><span class="qrz4-n"><span>Pilsner Malz<em class="qrz4-past">+10 kg</em></span><small>10 kg</small></span><span class="qrz4-a">18,00</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube qrz4-neuf"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M7 3v8M3 7h8"/></svg></i></span><span class="qrz4-n"><span>Carafa II<em class="qrz4-past">nouveau</em></span><small>2 kg</small></span><span class="qrz4-a">6,40</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M2 7l3.5 3.5L12 3"/></svg></i></span><span class="qrz4-n"><span>Citra 12,5 %<em class="qrz4-past">+100 g</em></span><small>100 g</small></span><span class="qrz4-a">9,80</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M2 7l3.5 3.5L12 3"/></svg></i></span><span class="qrz4-n"><span>Safale US-05<em class="qrz4-past">+2 sachets</em></span><small>2 Stk</small></span><span class="qrz4-a">9,20</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube qrz4-aucun"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h10l4 4v5H3z"/><path d="M13 6v4h4M6 15v1.5M14 15v1.5"/></svg></span><span class="qrz4-n"><span>Port</span><small>1 ×</small></span><span class="qrz4-a">10,75</span></div>
+    <div class="qrz4-pli qrz4-det"><span>Détail</span><b id="qrz4-detail">110,40 / 110,40</b></div>
+    <div class="qrz4-pli"><span>Pour quoi ?</span><small class="qrz4-sup">proposé</small><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+    <div class="qrz4-pli"><span>Fournisseur et catégorie<br><small>Malterie Fictive SA · Malts</small></span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+    <div class="qrz4-pli"><span>Référence et TVA du document</span><em style="color:var(--attt)">À vérifier</em><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+    <p class="qrz4-note">Le justificatif sera rangé dans ton Drive privé à l'enregistrement.</p>
+  </section>
+</main>
+<footer class="qrz4-pied"><span>Drive prêt</span><button class="qrz4-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer</button></footer>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('qrz4-root');
+  var etat=new URLSearchParams(location.search).get('etat')||'confirme';
+  if(['confirme','contredit','partiel','illisible','sans','lecture'].indexOf(etat)<0)etat='confirme';
+  root.setAttribute('data-etat',etat);
+  var $=function(id){return document.getElementById(id);};
+  var sp=$('qrz4-sp'),bas=$('qrz4-bas'),total=$('qrz4-total'),tot=$('qrz4-tot'),pq=$('qrz4-pq'),pqt=$('qrz4-pqt'),duel=$('qrz4-duel'),mini=$('qrz4-mini'),prop=$('qrz4-prop'),tuile=$('qrz4-tuile'),tv=$('qrz4-tv');
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+  function coche(ok){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 14 14');s.setAttribute('width','14');s.setAttribute('height','14');s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','1.7');var p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',ok===true?'M2 7l3.5 3.5L12 3':ok===false?'M3 5h8M3 9h8M9 3l-4 8':'M3 7h8');s.appendChild(p);s.setAttribute('class',ok===true?'qrz4-ok':ok===false?'qrz4-ko':'qrz4-vide');return s;}
+  // La ligne du bas de la section : ce que le QR confirme de la lecture ; « pas dans le QR » quand il ne le porte pas (greffe u3).
+  function basLigne(items){bas.textContent='';items.forEach(function(it){var s=el('span');if(it[0]!==null)s.appendChild(coche(it[0]));var l=el('span',null,it[1]);if(it[0]===null){l.style.borderBottom='1.5px dotted var(--bordm)';}s.appendChild(l);if(it[2])s.appendChild(el('b',null,it[2]));bas.appendChild(s);});}
+  var BAS={
+    confirme:[[true,'Montant','110,40 CHF'],[true,'Facture','F-1001'],[true,'Date','12.10.2026']],
+    contredit:[[true,'Facture','F-1001'],[true,'Date','12.10.2026']],
+    partiel:[[null,'Montant pas dans le QR · lu','110,40'],[true,'Devise','CHF'],[null,'Facture, date pas dans le QR','']],
+    illisible:[],sans:[],
+    lecture:[[true,'Montant','110,40 CHF'],[true,'Facture','F-1001'],[null,'lignes en lecture…','']]
+  };
+  var PQ={confirme:['ok','QR'],contredit:['diff','≠ QR'],partiel:['partiel','QR partiel'],illisible:['off','QR'],lecture:['wait','QR lu']};
+  function vide(id,txt){var b=$(id);b.textContent=txt;b.className='qrz4-vide';var c=b.parentNode.querySelector('.qrz4-cp');if(c)c.hidden=true;}
+  Array.prototype.forEach.call(root.querySelectorAll('[data-ql]'),function(l){l.hidden=l.getAttribute('data-ql')!==etat;});
+  var chipQr=root.querySelector('[data-chip="qr"]');
+  function renum(){var n=0;Array.prototype.forEach.call(root.querySelectorAll('.qrz4-pts>button'),function(c){if(!c.hidden){n++;c.querySelector('i').textContent=String(n);}});}
+  function copiers(){Array.prototype.forEach.call(root.querySelectorAll('.qrz4-cp'),function(c){c.addEventListener('click',function(){c.textContent='';c.appendChild(coche(true));c.appendChild(document.createTextNode('copié'));c.setAttribute('data-fait','');setTimeout(function(){c.textContent='Copier';c.removeAttribute('data-fait');},1500);});});}
+  if(etat==='sans'){pq.hidden=true;$('qrz4-sansqr').hidden=false;sp.hidden=true;}
+  else{
+    pq.setAttribute('data-q',PQ[etat][0]);pqt.textContent=PQ[etat][1];
+    if(PQ[etat][0]!=='ok'){pq.querySelector('svg').hidden=true;}
+    basLigne(BAS[etat]);
+    if(etat==='contredit'){
+      total.textContent='110,04';tot.setAttribute('data-doute','');sp.setAttribute('data-q','diff');chipQr.hidden=false;renum();mini.hidden=false;
+      $('qrz4-ph').textContent='Lecture à confirmer';$('qrz4-psum').textContent='110,40 ≠ 110,04';$('qrz4-detail').textContent='110,40 / 110,04';
+      $('qrz4-nli').innerHTML='<circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v3M7 9.5v.3"/>';$('qrz4-nli').setAttribute('stroke','var(--attt)');
+      function choisit(src){
+        Array.prototype.forEach.call(root.querySelectorAll('.qrz4-duel button,.qrz4-mini button'),function(o){o.setAttribute('aria-pressed',String(o.getAttribute('data-src')===src));});
+        total.textContent=src==='qr'?'110,40':'110,04';tot.removeAttribute('data-doute');chipQr.classList.add('qrz4-fait');
+        $('qrz4-detail').textContent=src==='qr'?'110,40 / 110,40':'110,40 / 110,04';
+        pq.setAttribute('data-q',src==='qr'?'ok':'diff');pqt.textContent=src==='qr'?'QR':'lu gardé';pq.querySelector('svg').hidden=src!=='qr';
+        basLigne([[src==='qr',src==='qr'?'Montant pris':'Montant lu gardé',src==='qr'?'110,40 CHF':'110,04 CHF'],[true,'Facture','F-1001'],[true,'Date','12.10.2026']]);
+      }
+      Array.prototype.forEach.call(root.querySelectorAll('.qrz4-duel button,.qrz4-mini button'),function(b){b.addEventListener('click',function(){choisit(b.getAttribute('data-src'));});});
+      chipQr.addEventListener('click',function(){duel.scrollIntoView({block:'center'});duel.style.outline='2px solid var(--att)';setTimeout(function(){duel.style.outline='';},800);});
+    }
+    if(etat==='partiel'){$('qrz4-src').textContent='QR-facture · bulletin ouvert';prop.querySelector('span').textContent='À payer';$('qrz4-cond').textContent='pas dans le QR';$('qrz4-cond').className='qrz4-abs';}
+    if(etat==='illisible'){
+      sp.setAttribute('data-q','off');$('qrz4-src').textContent='QR vu, illisible';prop.hidden=true;
+      vide('qrz4-iban','à saisir, le QR est barré');vide('qrz4-ref','—');vide('qrz4-cre','lu : Malterie Fictive SA');vide('qrz4-cond','—');
+    }
+    if(etat==='lecture'){
+      sp.setAttribute('data-q','wait');$('qrz4-src').textContent='QR lu en 0,5 s';
+      $('qrz4-nbl').textContent='…';root.querySelector('.qrz4-barre').style.visibility='hidden';root.querySelector('.qrz4-pts').hidden=true;
+      Array.prototype.forEach.call(root.querySelectorAll('.qrz4-li'),function(li){var n=li.querySelector('.qrz4-n'),a=li.querySelector('.qrz4-a');if(n){n.innerHTML='';var s1=el('span','qrz4-sk');s1.style.width='60%';n.appendChild(s1);}var tg=li.querySelector('.qrz4-tag'),rt=li.querySelector('.qrz4-ratt');if(tg){var s3=el('span','qrz4-sk');s3.style.width='120px';tg.parentNode.replaceChild(s3,tg);}if(rt)rt.remove();a.innerHTML='';var s2=el('span','qrz4-sk');s2.style.width='40px';a.appendChild(s2);});
+      $('qrz4-ltp').textContent='lecture en cours…';
+    }
+    copiers();
+  }
+  // La proposition du QR : « À payer » ne bascule qu'à son toucher ; alors la tuile porte l'échéance et sa jauge (greffe r4).
+  var card=$('qrz4-card');
+  function adopte(){
+    prop.setAttribute('data-pris','');prop.querySelector('span').textContent='À payer · adopté';prop.querySelector('small').textContent='30 jours';
+    root.querySelector('[data-seg="paye"]').setAttribute('aria-pressed','false');root.querySelector('[data-seg="apayer"]').setAttribute('aria-pressed','true');
+    tv.textContent='';tv.appendChild(document.createTextNode('À payer · 11.11.2026'));
+    var j=el('span','qrz4-jauge');var ji=el('i');ji.style.width=etat==='partiel'?'0':'3%';j.appendChild(ji);tv.appendChild(j);
+    tuile.classList.add('qrz4-regle');card.hidden=true;
+  }
+  prop.addEventListener('click',function(e){e.stopPropagation();if(!prop.hasAttribute('data-pris'))adopte();});
+  root.querySelector('[data-seg="apayer"]').addEventListener('click',function(){if(etat!=='sans'&&etat!=='illisible')adopte();});
+  tuile.addEventListener('click',function(){card.hidden=!card.hidden;tuile.setAttribute('aria-expanded',String(!card.hidden));});
+  root.querySelector('[data-geste="date"]').addEventListener('click',function(){tuile.classList.add('qrz4-fait');var s=tuile.querySelector('.qrz4-sup');if(s)s.remove();card.hidden=true;});
+  root.querySelector('.qrz4-sph').addEventListener('click',function(){sp.setAttribute('aria-expanded',sp.getAttribute('aria-expanded')==='true'?'false':'true');});
+  var nl=$('qrz4-nl'),pr=$('qrz4-preuve');
+  nl.addEventListener('click',function(){pr.hidden=!pr.hidden;nl.setAttribute('aria-expanded',String(!pr.hidden));});
+  var photo=root.querySelector('.qrz4-l3 .qrz4-photo');if(photo)photo.addEventListener('click',function(){photo.textContent='Appareil photo…';});
+  Array.prototype.forEach.call(root.querySelectorAll('.qrz4-seg button'),function(b){b.addEventListener('click',function(){Array.prototype.forEach.call(b.parentNode.children,function(o){o.setAttribute('aria-pressed',String(o===b));});});});
+  if(matchMedia('(min-width:900px)').matches){pr.hidden=false;if(etat!=='sans')sp.setAttribute('aria-expanded','true');}
+})();
+</script>
+</body></html>

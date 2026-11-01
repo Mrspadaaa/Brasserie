@@ -62,8 +62,9 @@ premier écran, aucune phrase d'aide au repos ; pas de cockpit ; texte ≥ 12 px
 - Contrôles, depuis la racine (`<dir>` = `work/missions/2026-10-31-ecran-depense/qr/v0`) :
   `node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs <dir>/<id> --ecran=depense` (l'écran dépense n'a pas d'entrée dans
   `ecrans.json` : note sa sortie telle quelle, ce n'est pas un échec de ta variante) ;
-  `node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs <dir> <id> --page=etat.html --profil=sans-houblons` → COMMUN OK ;
-  `node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs <dir> <id> --page=etat.html --max=100` → MOTS OK ;
+  `node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs <dir> <id> --page=etat.html --profil=sans-houblons --sans-lignes` → COMMUN OK ;
+  `node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs <dir> <id> --page=etat.html --max=100 --sans-lignes` → MOTS OK
+  (D238 : les lignes de facture, marquées `data-mots="lignes"`, ne comptent pas ; tout le reste, 100 mots au plus ; ne coupe aucune ligne) ;
   `node work/refonte-frontend/v4/tournoi/outils/controle-contraste.mjs <dir> <id> --page=etat.html` → CONTRASTE OK ;
   `node scripts/agents/verifier-page.mjs <dir>/<id>/etat.html --min-images 0` → PAGE OK.
   (Si un outil prend ses arguments autrement, lis son en-tête et adapte ; dis-le.)

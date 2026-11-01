@@ -62,8 +62,8 @@ Fini veut dire :
 | qr-r | contrôle QR, série r : dans la langue de l'écran en ligne (BRIEF-QR.md) | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-depense/qr/v0/r*/** | — | baseline : controle-choix (écran dépense hors d'ecrans.json, dit), controle-commun --profil=sans-houblons, mots-premier-ecran, controle-contraste, verifier-page, captures | brasseur | v0 ×4 (1 froide, 1 tiède, 2 chaudes) |
 | qr-z | contrôle QR, série z : créative à fond (BRIEF-QR.md) | conception | concepteur | fable | 60 | work/missions/2026-10-31-ecran-depense/qr/v0/z*/** | — | baseline : controle-choix (écran dépense hors d'ecrans.json, dit), controle-commun --profil=sans-houblons, mots-premier-ecran, controle-contraste, verifier-page, captures | brasseur | v0 ×4 (1 froide, 1 tiède, 2 chaudes) |
 | qr-u | contrôle QR, série u : libre au brief minimal (BRIEF-QR.md § Brief minimal) | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-depense/qr/v0/u*/** | — | baseline : controle-choix (écran dépense hors d'ecrans.json, dit), controle-commun --profil=sans-houblons, mots-premier-ecran, controle-contraste, verifier-page, captures | brasseur | v0 ×4 (1 froide, 1 tiède, 2 chaudes) |
-| qr-t | tri des 12 concepts QR (classement, 3 candidates, greffes) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-depense/critique/qr/** | qr-r, qr-z, qr-u | controle-panel, captures ouvertes | pilote | tri |
-| qr-p2 | passe 2 des 3 candidates QR, par leurs auteurs, avec les greffes du critique | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-depense/qr/v1/** | qr-t | controle-choix, controle-commun --profil=sans-houblons, mots-premier-ecran, controle-contraste, verifier-page, captures | brasseur | passe 2 |
+| qr-t | tri des 12 concepts QR (classement, 3 candidates, greffes) | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-depense/critique/qr/** | qr-r, qr-z, qr-u | controle-panel indicatif (une capture par variante, D244), couverture des axes, vignettes de la zone QR, captures ouvertes | pilote | tri |
+| qr-p2 | passe 2 des 3 candidates QR, par leurs auteurs, avec les greffes du critique | conception | concepteur | opus | 60 | work/missions/2026-10-31-ecran-depense/qr/v1/** | qr-t | controle-choix, controle-commun --profil=sans-houblons --sans-lignes, mots-premier-ecran --sans-lignes, controle-contraste, verifier-page, captures | brasseur | passe 2 |
 | qr-t2 | verdicts de la passe 2 QR, agent neuf | jugement | critique | fable | 30 | work/missions/2026-10-31-ecran-depense/critique/qr/VERDICTS-v1.md | qr-p2 | verdict par variante, captures ouvertes | pilote | — |
 
 ## Boucle de retour
@@ -84,6 +84,7 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 | Nouvelle dépense · panel v0 (12 concepts, classés) | 31.10 v1 | https://claude.ai/artifact/PNStV1RNHi7bYSogYMJhXy | `work/missions/2026-10-31-ecran-depense/panel-v0.html` |
 | Nouvelle dépense · passe 2 (r2b, z2b, u4b ; r2b choisie par le pilote, D227) | 01.11 v1 | https://claude.ai/artifact/PyodUeikFKc9SwD7M9k4wu | `work/missions/2026-10-31-ecran-depense/choix-v1/index.html` |
 | Nouvelle dépense · passe 3 (p3a-1 à 3, p3b-1 à 3 ; classement du critique, à choisir) | 01.11 v1 | https://claude.ai/artifact/Q7zqa6xvR8EGGAz3j14yh9 | `work/missions/2026-10-31-ecran-depense/choix-v3/index.html` |
+| Nouvelle dépense · contrôle QR (12 v0 ; z2, r4, z4 en passe 2 ; z2 proposé par le critique) | 01.11 v1 | https://claude.ai/artifact/QSUXrTmuR2jXDEtAY2QjpM | `work/missions/2026-10-31-ecran-depense/choix-qr/index.html` |
 
 ## Reprise
 - 31.10, nuit : d1, d2 et i1 rendus. Quatre voies écrites (l1-lecture, s1-stock, s2-enregistrement, t1-onglets ; exigences communes
