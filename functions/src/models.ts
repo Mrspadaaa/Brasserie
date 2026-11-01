@@ -64,7 +64,9 @@ export function aiTier(value: unknown): AiTier {
  * En Rapide seulement : Max (température 0,2, réflexion haute) n'a pas été mesuré
  * ainsi. Tout le reste garde 3.8 tant qu'un banc ne prouve pas l'égalité : import et
  * relecture (lite y omettait des paliers ou un alpha), fiches documentaires,
- * justificatifs, analyse et relecture du compagnon, recherche de fournisseurs.
+ * analyse et relecture du compagnon, recherche de fournisseurs. Les justificatifs
+ * ont leur propre vote (`invoiceScanVote.ts`, D247) : deux Flash-Lite, puis la 3.8
+ * sur désaccord ou lecture manquante, mesuré au banc de lecture du 1er novembre 2026.
  */
 export const LITE_ROUTES: Readonly<Record<string, GeminiThinkingLevel>> = Object.freeze({
   readHopCoa: 'minimal',

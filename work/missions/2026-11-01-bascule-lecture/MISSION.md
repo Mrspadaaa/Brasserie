@@ -23,6 +23,7 @@ dans Chrome sur fixtures, hébergement redéployé (D236).
 | fn-csv8 | `scanInvoiceSafely` passe de A à C★v8+N (voies/fn-csv8/VOIE.md) | jugement | auteur | sonnet | 60 | functions/src/ai.ts, functions/src/invoiceScan*.ts, functions/src/invoiceVision*.ts, tests des lectures de facture, work/missions/2026-11-01-bascule-lecture/voies/fn-csv8/** | — | tests visés (Gemini simulé), `npm --prefix functions run build`, témoins | pilote | — |
 | fn-relecture | relecture indépendante de fn-csv8 contre le banc (finalOfStarVote, withCodesNormalized) | jugement | relecteur | sonnet | 30 | work/missions/2026-11-01-bascule-lecture/voies/fn-relecture/** | fn-csv8 | parité avec le banc sur ses lectures enregistrées, verdict | pilote | — |
 | qr-app | QR lu dans le téléphone, confronté, montré comme z2 dans l'écran en ligne (voies/qr-app/VOIE.md, à écrire) | jugement | auteur | sonnet | 80 | src/services/qrLecture*.ts, src/ui/depense/**, src/ui/finance/ExpenseSheet.tsx, tests/unit/depense/qr/**, work/missions/2026-11-01-bascule-lecture/voies/qr-app/** | — | tests visés, build, Chrome sur fixtures (390 tactile, 1280), captures | pilote | reprise |
+| qr-rejeu | rejouer qr-app depuis la copie isolée, éprouver la CSP avec et sans `'wasm-unsafe-eval'` (voies/qr-rejeu/VOIE.md) | mécanique | executant | haiku | 40 | work/missions/2026-11-01-bascule-lecture/voies/qr-rejeu/**, %TEMP%/qr-app-copie | qr-app | tsc, build, check-no-dev-auth, tests de l'écran, témoin rouge, parcours Chrome, CSP (a/b), captures ouvertes | pilote | — |
 | qr-critique | le port de z2 jugé contre sa maquette (`qr/v1/z2`) | jugement | critique | fable | 30 | work/missions/2026-11-01-bascule-lecture/voies/qr-critique/** | qr-app | captures côte à côte avec la maquette, verdict | pilote | — |
 
 Reprise : z2 choisie : « Le sceau QR z2 parfait comme telle » (D246).
@@ -30,6 +31,7 @@ Reprise : z2 choisie : « Le sceau QR z2 parfait comme telle » (D246).
 ## Agents
 - fn-csv8 : a7604fd4850db9c7e (auteur, lancé 01.11 soir).
 - qr-app : a86404c3895918619 (auteur, lancé 01.11 soir).
+- fn-relecture : aac5a8e4af131b876 (relecteur, lancé 01.11 soir, après le premier retour de fn-csv8).
 
 ## Pages
 | Sujet | Version | Adresse | Source |
@@ -59,5 +61,14 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
   Reste ouvert : push et PR.
 - 01.11 soir, plus tard : p3c-3 retouchée (commit c11dac21, ALIGNE OK, témoin en échec rejoué) ; critique e-t5 (ab25a65a5ef72e1a5)
   en cours ; si RETENUE, lui envoyer p3c-3-repos.png et p3c-3-tous.png (SendUserFile), sinon relancer le concepteur avec ses défauts.
+- 01.11 soir, plus tard : fn-csv8 rend « FN-CSV8 OK ». Au rejeu du pilote : build vert, manifeste intact (21dd75b3) ; 28 fichiers verts
+  sur 29, `tests/integration/invoiceReview.test.ts` rouge (26 tests encore sur A). Relance 1/2 de fn-csv8 sur ce fichier. D251 : `model`
+  renvoyé = `SCAN_MODEL` ; commentaire de `functions/src/models.ts` corrigé par le pilote. fn-relecture lancée en parallèle.
+  qr-app rend « QR-APP OK » avec réserves. D252 : `InvoiceScanReview` rebranché, contrastes à mesurer de nouveau (suite 1 de qr-app).
+  La CSP de `firebase.json` bloque le wasm : accord de l'utilisateur à demander, avec la preuve locale (avec et sans
+  `'wasm-unsafe-eval'`). Ensuite : rejeu par l'exécutant (DEMANDE EXECUTANT du RESULTAT), puis qr-critique.
+  qr-app suite 1 rendue (InvoiceScanReview rebranché, contrastes 5,74 et 5,67) ; qr-rejeu lancé (a1d894e8dcd76f5c9).
+  Son « Oui » à la CSP (D253) : `'wasm-unsafe-eval'` ajouté à `script-src` de `firebase.json` **après** le retour de qr-rejeu (son
+  épreuve lit le fichier tel quel), puis hébergement déployé depuis une copie à `npm ci` réel.
 
 ## Signature

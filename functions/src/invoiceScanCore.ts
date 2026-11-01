@@ -16,6 +16,11 @@ export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
 /** Pire cas du schéma invoice-v5 (35 lignes, tous champs, 6 rangées de TVA) : 4 050 jetons, soit 80 % (l1, 31.10). */
 export const SCAN_MAX_OUTPUT = 5100;
+/**
+ * Plafond de sortie des deux lectures Flash-Lite (C★v8, D247). La réflexion compte dans `maxOutputTokens` : à 5 100, les deux Flash-Lite
+ * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 garde `SCAN_MAX_OUTPUT`.
+ */
+export const LITE_SCAN_MAX_OUTPUT = 8192;
 export const SCAN_MAX_CALLS = 3;
 export const SCAN_MAX_ITEMS = 35;
 export const SCAN_MAX_VAT_ROWS = 6;

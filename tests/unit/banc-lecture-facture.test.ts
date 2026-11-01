@@ -6,7 +6,7 @@ import path from 'node:path';
 // Même montage que invoiceScanTransport.test.ts : le budget Firestore est remplacé, le fournisseur est simulé.
 vi.mock('../../functions/src/invoiceScanBudget', () => ({ runBudgetedInvoiceScan: async (_uid: any, _file: any, work: any, provider: any) => ({ result: await work(provider), cached: false, documentHash: 'document-hash' }) }));
 import { scanInvoiceSafely } from '../../functions/src/ai';
-import { SCAN_MODEL } from '../../functions/src/invoiceScanCore';
+import { SCAN_MAX_OUTPUT, SCAN_MODEL } from '../../functions/src/invoiceScanCore';
 import { INVOICE_SCAN_PROMPTS } from '../../functions/src/invoiceScanPrompts';
 import { quoteGeminiCost } from '../../functions/src/geminiCosts';
 import {
@@ -67,63 +67,90 @@ describe('k1 — les consignes ne sont pas copiées, elles sont déplacées', ()
   });
 });
 
-describe('k1 — le corps du banc pour A est celui de scanInvoiceSafely, champ par champ', () => {
-  it('lectures 1, 2 et 3 : même JSON, même ordre de clés, même URL de modèle', async () => {
+// Voie fn-csv8 (D247) : la production lit désormais comme la variante Csv8 du banc. Ces deux blocs décrivaient A (deux lectures 3.8) ; ils
+// comparent maintenant la production à `callSpec('Csv8', …)` et à `finalOfStarVote` + N (`withCodesNormalized`). Le détail des cas et la parité
+// module / banc : tests/unit/invoiceScanCsv8.test.ts et tests/unit/invoiceScanVote.test.ts.
+describe('k1 — le corps du banc pour Csv8 est celui de scanInvoiceSafely, champ par champ', () => {
+  it('lectures 1, 2 et 3 : même JSON, même ordre de clés, même URL de modèle, même plafond de sortie', async () => {
     fetchMock.mockResolvedValueOnce(fetched(invoice())).mockResolvedValueOnce(fetched({ ...invoice(), amountTTC: 118.1 })).mockResolvedValueOnce(fetched({ ...invoice(), amountTTC: 128.1 }));
     await scanInvoiceSafely('u', file, 'fake-test-key');
     expect(fetchMock).toHaveBeenCalledTimes(3);
     INVOICE_SCAN_PROMPTS.forEach((prompt, index) => {
+      const spec = callSpec('Csv8', (index + 1) as 1 | 2 | 3);
       const [url, options] = fetchMock.mock.calls[index];
-      expect(url).toContain(`${SCAN_MODEL}:generateContent`);
-      const expected = buildReadBody(file, prompt);
+      expect(spec.prompt).toBe(prompt);
+      expect(spec.model).toBe(index < 2 ? LITE_MODEL : SCAN_MODEL);
+      expect(spec.maxOut).toBe(index < 2 ? LITE_RAISED_OUTPUT : SCAN_MAX_OUTPUT);
+      expect(url).toContain(`${spec.model}:generateContent`);
+      const expected = buildReadBody(file, spec.prompt, spec.maxOut, spec.thinking);
       expect(JSON.parse(options.body)).toEqual(expected);
       expect(options.body).toBe(JSON.stringify(expected));
       expect(JSON.parse(options.body).contents[0].parts[0].text).toBe(prompt);
     });
   });
-  it('envoyé après la normalisation du budget mensuel : le corps de la production plus candidateCount, rien d’autre', () => {
-    const body = buildReadBody(file, INVOICE_SCAN_PROMPTS[0]) as any;
-    const sent = quoteGeminiCost(SCAN_MODEL, body).body as any;
-    expect(sent).toEqual({ ...body, generationConfig: { ...body.generationConfig, candidateCount: 1 } });
+  it('envoyé après la normalisation du budget mensuel : le corps de la production plus candidateCount, rien d’autre (Flash-Lite et 3.8)', () => {
+    for (const [model, lecture] of [[LITE_MODEL, 1], [SCAN_MODEL, 3]] as const) {
+      const spec = callSpec('Csv8', lecture);
+      const body = buildReadBody(file, spec.prompt, spec.maxOut, spec.thinking) as any;
+      const sent = quoteGeminiCost(model, body).body as any;
+      expect(sent).toEqual({ ...body, generationConfig: { ...body.generationConfig, candidateCount: 1 } });
+    }
   });
 });
 
-describe('k1 — le parcours A du banc rend ce que rend la production, sur les mêmes réponses', () => {
+describe('k1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses', () => {
+  /** Les lectures du banc pour ces réponses, avec N : lectures 1 et 2 Flash-Lite, 3 la 3.8 ; le banc appelle la 3.8 comme la production (`needsThirdLite`). */
+  const bancOf = (payloads: Array<{ data?: any; finish?: string; failed?: true }>) => {
+    const reads = payloads.map((p, index) => {
+      const lecture = (index + 1) as 1 | 2 | 3, model = lecture === 3 ? STRONG_MODEL : LITE_MODEL;
+      return withCodesNormalized(p.failed ? failedReading(lecture, 503, model) : readingFromResponse({ ...meta(lecture, model, 'Csv8') }, answer(p.data, p.finish ?? 'STOP'), 1000, 1000));
+    });
+    const third = needsThirdLite(reads[0], reads[1]) ? reads[2] : undefined;
+    return finalOfStarVote(reads[0], reads[1], third);
+  };
   const scenarios: Array<[string, any[]]> = [
     ['deux lectures qui concordent', [invoice(), invoice()]],
     ['majorité de deux sur trois', [invoice('equipment'), invoice('maintenance'), invoice('maintenance')]],
-    ['divergence non résolue après trois lectures', [invoice(), { ...invoice(), amountTTC: 118.1 }, { ...invoice(), amountTTC: 128.1 }]],
-    ['devise étrangère transcrite à l’identique', [{ ...invoice(), currency: 'EUR' }, { ...invoice(), currency: 'EUR' }]]
+    ['divergence non résolue après trois lectures : la 3.8 tranche seule', [invoice(), { ...invoice(), amountTTC: 118.1 }, { ...invoice(), amountTTC: 128.1 }]],
+    ['devise étrangère transcrite à l’identique', [{ ...invoice(), currency: 'EUR' }, { ...invoice(), currency: 'EUR' }]],
+    ['« Fr. » et « CHF » : N évite la 3.8', [{ ...invoice(), currency: 'Fr.' }, invoice()]]
   ];
   for (const [name, payloads] of scenarios) {
     it(name, async () => {
       payloads.forEach(payload => fetchMock.mockResolvedValueOnce(fetched(payload)));
       const production: any = await scanInvoiceSafely('u', file, 'fake-test-key');
-      const reads = payloads.map((payload, index) => reading((index + 1) as 1 | 2 | 3, payload));
-      const banc = finalOfTwo(reads[0], reads[1], reads[2]);
+      const banc = bancOf(payloads.map(data => ({ data })));
       expect(banc.result).toEqual(production.data);
       expect(banc.used).toHaveLength(payloads.length);
-      expect(needsThird(reads[0], reads[1])).toBe(payloads.length === 3);
+      expect(fetchMock).toHaveBeenCalledTimes(payloads.length);
     });
   }
-  it('une lecture refusée par le fournisseur : « unavailable », une seule lecture', async () => {
-    fetchMock.mockResolvedValueOnce(fetched(invoice())).mockResolvedValueOnce(refused(503));
+  it('une Flash-Lite refusée par le fournisseur : la 3.8 est appelée, vote à deux', async () => {
+    fetchMock.mockResolvedValueOnce(fetched(invoice())).mockResolvedValueOnce(refused(503)).mockResolvedValueOnce(fetched(invoice()));
     const production: any = await scanInvoiceSafely('u', file, 'fake-test-key');
-    const banc = finalOfTwo(reading(1, invoice()), failedReading(2));
+    const banc = bancOf([{ data: invoice() }, { failed: true }, { data: invoice() }]);
+    expect(banc.result).toEqual(production.data);
+    expect(banc.result.review).toMatchObject({ readers: 2 });
+  });
+  it('une Flash-Lite coupée et la 3.8 refusée : « unavailable », la phrase de coupure et le point', async () => {
+    fetchMock.mockResolvedValueOnce(fetched(invoice())).mockResolvedValueOnce(fetched(invoice(), 'MAX_TOKENS')).mockResolvedValueOnce(refused(503));
+    const production: any = await scanInvoiceSafely('u', file, 'fake-test-key');
+    const banc = bancOf([{ data: invoice() }, { data: invoice(), finish: 'MAX_TOKENS' }, { failed: true }]);
     expect(banc.result).toEqual(production.data);
     expect(banc.result.review).toMatchObject({ status: 'unavailable', readers: 1 });
-  });
-  it('une lecture coupée par la limite de sortie : la phrase de coupure et le point', async () => {
-    fetchMock.mockResolvedValueOnce(fetched(invoice())).mockResolvedValueOnce(fetched(invoice(), 'MAX_TOKENS'));
-    const production: any = await scanInvoiceSafely('u', file, 'fake-test-key');
-    const banc = finalOfTwo(reading(1, invoice()), reading(2, invoice(), STRONG_MODEL, 1000, 'MAX_TOKENS'));
-    expect(banc.result).toEqual(production.data);
     expect(banc.result.points.some((point: any) => point.code === 'lecture-coupee')).toBe(true);
+  });
+  it('les deux Flash-Lite coupées : la 3.8 seule, « unavailable » à un lecteur', async () => {
+    fetchMock.mockResolvedValueOnce(fetched(invoice(), 'MAX_TOKENS')).mockResolvedValueOnce(fetched(invoice(), 'MAX_TOKENS')).mockResolvedValueOnce(fetched(invoice()));
+    const production: any = await scanInvoiceSafely('u', file, 'fake-test-key');
+    const banc = bancOf([{ data: invoice(), finish: 'MAX_TOKENS' }, { data: invoice(), finish: 'MAX_TOKENS' }, { data: invoice() }]);
+    expect(banc.result).toEqual(production.data);
+    expect(banc.result.review).toMatchObject({ status: 'unavailable', readers: 1 });
   });
   it('un arbitrage refusé : les divergences restent explicites', async () => {
     fetchMock.mockResolvedValueOnce(fetched(invoice('equipment'))).mockResolvedValueOnce(fetched(invoice('maintenance'))).mockResolvedValueOnce(refused(503));
     const production: any = await scanInvoiceSafely('u', file, 'fake-test-key');
-    const banc = finalOfTwo(reading(1, invoice('equipment')), reading(2, invoice('maintenance')), failedReading(3));
+    const banc = bancOf([{ data: invoice('equipment') }, { data: invoice('maintenance') }, { failed: true }]);
     expect(banc.result).toEqual(production.data);
   });
 });

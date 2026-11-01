@@ -917,3 +917,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Les frais de port** (01.11, soir), à « Frais de port « Total seulement » : seulement sur les commandes en plusieurs captures, ou aussi
   quand le port est imprimé comme un article ? », mot pour mot : « Non non aussi quand imprimé article » (D249).
 - **La TVA, son cas** (01.11, soir), à « TVA : es-tu assujetti ? », mot pour mot : « Je fais moins de 100k » (D250).
+- **La CSP de l'hébergement** (01.11, soir), à « CSP : peut-on ajouter 'wasm-unsafe-eval' dans firebase.json ? Sans ce mot, le QR ne lit
+  rien en ligne. Je te montrerai la preuve jouée en local dès que le rejeu sera fini. », mot pour mot : « Oui » (D253).

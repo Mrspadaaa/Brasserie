@@ -41,10 +41,14 @@ describe('LE4 — le journal d\'une lecture', () => {
   });
 });
 
+// Voie fn-csv8 (D247) : la lecture est C★v8. Une Flash-Lite manquante appelle la 3.8 (3ᵉ réponse de chaque test ci-dessous : elle échoue aussi, pour
+// éprouver la coupure dite telle quelle) ; la réussite de la 3.8 est dans tests/unit/invoiceScanCsv8.test.ts.
+const refus503 = { ok: false, status: 503, json: async () => ({}) };
 describe('LE4 — une lecture coupée est dite telle quelle', () => {
-  it('une lecture sur deux coupée (limite de sortie) : unavailable, readers 1, phrase et point lecture-coupee', async () => {
-    fetchMock.mockResolvedValueOnce(reponse(facture(), 'MAX_TOKENS')).mockResolvedValueOnce(reponse(facture()));
+  it('une lecture sur deux coupée (limite de sortie), la 3.8 en échec : unavailable, readers 1, phrase et point lecture-coupee', async () => {
+    fetchMock.mockResolvedValueOnce(reponse(facture(), 'MAX_TOKENS')).mockResolvedValueOnce(reponse(facture())).mockResolvedValueOnce(refus503);
     const { data } = await scanInvoiceSafely('u', file, 'fake-test-key') as any;
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(data.review.status).toBe('unavailable');
     expect(data.review.readers).toBe(1);
     expect(data.issues.join(' ')).toMatch(/coupée/);
@@ -53,17 +57,19 @@ describe('LE4 — une lecture coupée est dite telle quelle', () => {
   });
 
   it('une lecture arrêtée par le délai (AbortError) : cause « delai »', async () => {
-    fetchMock.mockRejectedValueOnce(abandon()).mockResolvedValueOnce(reponse(facture()));
+    fetchMock.mockRejectedValueOnce(abandon()).mockResolvedValueOnce(reponse(facture())).mockResolvedValueOnce(refus503);
     const { data } = await scanInvoiceSafely('u', file, 'fake-test-key') as any;
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(data.review.status).toBe('unavailable');
     expect(data.points.find((p: any) => p.code === 'lecture-coupee')).toMatchObject({ luTexte: 'delai' });
     expect(data.issues.join(' ')).toMatch(/délai/);
     expect(warn.mock.calls.some((c: any[]) => c[0] === 'Lecture de facture en échec' && c[1].cause === 'delai')).toBe(true);
   });
 
-  it('les deux lectures coupées : l\'erreur existante remonte', async () => {
+  it('les deux lectures coupées et la 3.8 aussi : l\'erreur existante remonte, trois appels', async () => {
     fetchMock.mockResolvedValue(reponse(facture(), 'MAX_TOKENS'));
     await expect(scanInvoiceSafely('u', file, 'fake-test-key')).rejects.toThrow('Lecture incomplète');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('la troisième lecture coupée : disputed, phrase existante conservée, point lecture-coupee', async () => {
