@@ -42,7 +42,7 @@ export function Preuve({ ouverte, statut, result, lignes, comptes, remarques, ca
 }) {
   const c = result.controls, lectures = result.review?.readers;
   const rang = (ok: boolean | null, texte: string, valeur: string) => <div className="grid grid-cols-[18px_1fr_auto] items-center gap-1.5 min-h-7 border-b border-cave-800 last:border-0 text-sm">{ok === true ? <Check size={14} className="text-hop"/> : <span className="text-cave-400">·</span>}<span className="text-cave-200">{texte}</span><b className="font-mono font-medium text-cave-50">{valeur}</b></div>;
-  return <section data-dp="preuve" aria-label="Preuve de la lecture" className={`${ouverte ? 'block' : 'hidden lg:block'} rounded-panel border border-cave-800 px-2.5 py-1.5`}>
+  return <section data-dp="preuve" aria-label="Preuve de la lecture" className={`${ouverte ? 'block' : 'hidden lg:block'} scroll-mt-12 rounded-panel border border-cave-800 px-2.5 py-1.5`}>
     <p className="text-sm font-medium text-cave-50">{TITRES[statut].title}</p>
     {c ? rang(c.sum.statut === 'ok', 'Somme des lignes = imprimé', c.sum.statut === 'ok' ? money(result.amountTTC ?? 0) : 'non vérifiée') : rang(null, 'Somme des lignes', 'non contrôlée')}
     {c ? rang(c.lines.failed === 0 && c.lines.skipped === 0 && c.lines.checked > 0, 'Quantité × prix, au centime', `${c.lines.checked}/${lignes}`) : rang(null, 'Quantité × prix', 'non contrôlé')}

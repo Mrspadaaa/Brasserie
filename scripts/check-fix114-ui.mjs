@@ -3,7 +3,7 @@
 // réseau hors localhost bloqué (polices Google seules permises). Rien n'est
 // enregistré : les formulaires s'ouvrent puis se ferment.
 //
-//   node scripts/check-fix114-ui.mjs --phase=avant|apres [--base=http://127.0.0.1:5184] [--widths=390,1280] [--recap-only]
+//   node scripts/check-fix114-ui.mjs --phase=avant|apres [--base=http://127.0.0.1:5184] [--widths=390,1280] [--recap-only] [--out=<dossier ignoré>]
 //
 // Mesures par vue : position du +, case ou flottement, bande de pied, dernier
 // contrôle de la page atteignable au-dessus du + (et touché à sa place),
@@ -17,7 +17,8 @@ const phase = arg('phase', 'apres');
 const base = arg('base', 'http://127.0.0.1:5184');
 const widths = arg('widths', '390,1280').split(',').map(Number);
 const origin = new URL(base).origin;
-const out = resolve('work/finalisation-tickets-2026-10-08/validations/114', phase);
+// `--out=<dossier>` (ignoré par Git) évite d'écraser les preuves de #114 déjà rangées sous validations/114/<phase>.
+const out = arg('out') ? resolve(arg('out')) : resolve('work/finalisation-tickets-2026-10-08/validations/114', phase);
 await mkdir(out, { recursive: true });
 
 const sleep = ms => new Promise(done => setTimeout(done, ms));

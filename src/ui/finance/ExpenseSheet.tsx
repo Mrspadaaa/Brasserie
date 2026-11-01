@@ -120,6 +120,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [readCount,setReadCount]=useState(0);
   const [driveAuthError,setDriveAuthError]=useState(false);
   const [driveTick,setDriveTick]=useState(0);
+  /* L'état Drive ne se dit qu'une fois le jeton vérifié (renouvellement silencieux) : jamais « Drive à connecter » quelques secondes quand Drive est prêt. */
+  const [driveVerifie,setDriveVerifie]=useState(()=>Boolean(apercu)||FirebaseAuthService.hasDriveAccess());
   const [reviewedFields,setReviewedFields]=useState<string[]>([]);
   const [panel,setPanel]=useState<'tva'|'paye'|null>(null);
   const [preuveOuverte,setPreuveOuverte]=useState(false);
@@ -138,6 +140,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
    * bouton restent en place : on ne perd aucun chemin.
    */
   const pickedOnOpen=useRef(false);
+  useEffect(()=>{
+    if(!draft.proofDataUrl||driveVerifie)return;
+    let actif=true;
+    FirebaseAuthService.ensureDriveAccessToken().catch(()=>null).finally(()=>{if(actif){setDriveVerifie(true);setDriveTick(t=>t+1);}});
+    return()=>{actif=false;};
+  },[draft.proofDataUrl,driveVerifie]);
   useEffect(()=>{
     if(!startWithScan||pickedOnOpen.current||apercu)return;
     pickedOnOpen.current=true;
@@ -466,7 +474,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <button type="button" disabled={busy||saving} onClick={onClose} aria-label="Fermer" className="min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400"><X size={16}/></button>
     </header>
     <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-2 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px] [&_summary]:min-h-7 [&_button:not([data-primary])]:min-h-7">
-    {scan?.ok&&statut?<BandeCollante cible={bandeauRef} racine={scroller} chips={chips} reglees={reglesSet} onAller={aller}/>:null}
+    {scan?.ok&&statut&&!attached?<BandeCollante cible={bandeauRef} racine={scroller} chips={chips} reglees={reglesSet} onAller={aller}/>:null}
     {attempted&&shownErrors.length>0?<div id={validationId} role="alert" className="border border-alert-strong/40 rounded-control bg-alert-strong/5 p-2 text-sm text-alert-strong"><p className="font-medium">À corriger</p><ul>{shownErrors.map(message=><li key={message}><button type="button" onClick={()=>focusIssue(message)} className="min-h-7 text-left underline underline-offset-2">{message}</button></li>)}</ul></div>:null}
     {proofSending?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Loader2 size={16} className="shrink-0 mt-0.5 animate-spin text-hop"/><span>{proofSending}</span></div>:null}
     {error?<div ref={errorBox} tabIndex={-1} role="alert" className="rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line">{error}</div>:null}
@@ -521,7 +529,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       </section>:null}
       {draft.proofDataUrl?<details className="text-sm text-cave-200 min-w-0 lg:col-start-1"><summary className="min-h-7 cursor-pointer flex items-center gap-2"><FileText size={16}/>Voir le justificatif</summary>{draft.proofType?.startsWith('image/')?<img src={draft.proofDataUrl} alt="Justificatif source" className="w-full rounded-panel"/>:<a href={draft.proofDataUrl} download={draft.proofFileName} className="text-ebc-straw min-h-7 flex items-center">Ouvrir le PDF original</a>}</details>:null}
       {scan?.ok&&result&&statut?<div className="lg:col-start-1"><InvoiceScanReview liens={Object.fromEntries(draft.lines.map((l,i)=>[l.id,mouturesPropositions.some(p=>p.lineId===l.id)||parentDeLaMouture(draft.lines,i)>=0?'mouture':lienDe(l)]))} result={result} cached={scan.cached} statut={statut} vendor={draft.vendor} date={draft.date} calcule={draft.sourceTotalBasis==='line_sum'} lines={draft.lines} comptes={compteLiens(draft.lines,precisIds)} remarques={remarques}
-        preuveOuverte={preuveOuverte} onPreuve={()=>setPreuveOuverte(o=>!o)} drive={!driveOk&&draft.proofDataUrl?'a-connecter':null} onDrive={()=>setDriveAuthError(true)} onLigne={id=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id})} bandeauRef={bandeauRef}
+        preuveOuverte={preuveOuverte} onPreuve={()=>setPreuveOuverte(o=>!o)} drive={driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null} onDrive={()=>setDriveAuthError(true)} onLigne={id=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id})} bandeauRef={bandeauRef}
         totalField={<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>}/></div>
       :<div className={hints.amountTTC?`${uncertainClass} lg:col-start-1`:'lg:col-start-1'}><Field label="Total TTC en CHF" htmlFor="purchase-total"><NumberInput id="purchase-total" fractionDigits={2} aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder={scan&&!scan.ok?'—':'0,00'} className={`${inputClass} !text-base font-mono font-semibold tabular-nums min-h-8`}/></Field><ScanHint field="amountTTC" message={hints.amountTTC}/></div>}
       {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm lg:col-start-1">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
@@ -547,7 +555,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
     {showForm&&!busy?<footer className={'shrink-0 min-h-9 px-3 py-0.5 border-t border-cave-800 flex items-center justify-between gap-2'+(keyboardInset?'':' pb-safe')}>
       {done?<div className="min-w-0 flex-1 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>
-      :<div className="min-w-0 flex-1 text-xs text-cave-200">{saving&&draft.proofDataUrl&&!receipt?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':'Drive à connecter'}</span>:null}</div>}
+      :<div className="min-w-0 flex-1 text-xs text-cave-200">{saving&&draft.proofDataUrl&&!receipt?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':driveVerifie?'Drive à connecter':''}</span>:null}</div>}
       {done?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>
       :attached?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>:sameChosen&&existing?<button type="button" disabled={saving} onClick={()=>{if(attachable)void attachToExisting(existing.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:attachable?<Check size={14}/>:<X size={14}/>} {attachable?saving?'Rattachement…':'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
       :!existing&&similarChoice==='same'&&similar?<button type="button" disabled={saving} onClick={()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center gap-1.5 font-semibold'}>{similarAttachable?<Check size={14}/>:<X size={14}/>}{similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>

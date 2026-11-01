@@ -404,6 +404,24 @@ async function openDetails(page, selector) {
   await sleep(300);
 }
 
+/** r2b : « Détails de la lecture » (la chip « n lignes » du bandeau) ouvre la preuve ; sur ordinateur elle est déjà ouverte. */
+async function openPreuve(c) {
+  const button = await c.page.$(`${sheet} button[aria-label="Détails de la lecture"]`);
+  if (!button) throw Error('Bouton « Détails de la lecture » absent (pas de lecture réussie ?)');
+  if ((await button.evaluate(e => e.getAttribute('aria-expanded'))) !== 'true') await click(c.page, `${sheet} button[aria-label="Détails de la lecture"]`);
+  await sleep(300);
+  await c.page.$eval(`${sheet} section[data-dp="preuve"]`, e => e.scrollIntoView({ block: 'center' }));
+  await sleep(200);
+}
+/** r2b : le panneau du règlement s'ouvre au toucher de la tuile « Règlement » (il n'y a plus de <details>). */
+async function openPayment(c) {
+  const open = () => c.page.$eval(`${sheet} [data-purchase-payment]`, e => !e.classList.contains('hidden'));
+  if (!(await open())) await click(c.page, `${sheet} [data-dp="tuile-paye"]`);
+  await sleep(300);
+  await c.page.$eval(`${sheet} [data-purchase-payment]`, e => e.scrollIntoView({ block: 'center' }));
+  await sleep(200);
+}
+
 /** Every document of the emulated database, fingerprinted, to attribute each write to a gesture. */
 async function dbSnapshot(db) {
   await sleep(1200);
@@ -487,9 +505,10 @@ async function scan(c, docId, { mode = 'replay', chooser, delayMs = 0, loadingSh
   const doc = c.docs[docId];
   let picker = chooser ? await chooser : null;
   if (!picker) {
-    // « Choisir le document » before a reading, « Changer » after one: find the visible one, then arm the chooser.
+    // « Choisir le document » before a reading, « Changer » (r2b : une icône dans l'en-tête, nom accessible « Changer ») after one:
+    // find the visible one by its accessible name, then arm the chooser.
     const label = await waitFor(() => c.page.$$eval(`${sheet} button`, buttons => {
-      const shown = buttons.filter(b => b.getClientRects().length && !b.disabled).map(b => b.innerText.trim());
+      const shown = buttons.filter(b => b.getClientRects().length && !b.disabled).map(b => (b.getAttribute('aria-label') || b.innerText).trim());
       return shown.find(text => text.startsWith('Choisir le document')) ?? shown.find(text => text === 'Changer') ?? false;
     }), 'bouton pour choisir un justificatif', 20000);
     [picker] = await Promise.all([c.page.waitForFileChooser({ timeout: 20000 }), click(c.page, `${sheet} button`, label)]);
@@ -513,14 +532,21 @@ async function readSheet(c) {
     const text = sel => root.querySelector(sel)?.innerText.replace(/\s+/g, ' ').trim() ?? null;
     return {
       review: text('section[aria-label="Vérification du justificatif"]'),
-      reviewDetails: [...root.querySelectorAll('section[aria-label="Vérification du justificatif"] li')].map(li => li.innerText.trim()),
+      // r2b : la preuve (« Détails de la lecture ») est repliée sur téléphone ; textContent lit aussi ce qui est replié.
+      reviewDetails: [...root.querySelectorAll('section[aria-label="Vérification du justificatif"] li')].map(li => li.textContent.replace(/\s+/g, ' ').trim()),
+      preuve: root.querySelector('section[data-dp="preuve"]')?.textContent.replace(/\s+/g, ' ').trim() ?? null,
+      preuveOuverte: root.querySelector('button[aria-label="Détails de la lecture"]')?.getAttribute('aria-expanded') ?? null,
+      chips: [...root.querySelectorAll('[data-dp="chips"] [data-dp-chip]')].map(b => b.getAttribute('aria-label')),
+      tuiles: { tva: text('[data-dp="tuile-tva"]'), reglement: text('[data-dp="tuile-paye"]') },
       alerts: [...root.querySelectorAll('[role="alert"]')].map(e => e.innerText.replace(/\s+/g, ' ').trim()),
       hints: Object.fromEntries([...root.querySelectorAll('[id^="scan-hint-"]')].map(e => [e.id.slice(10), { text: e.innerText.replace(/\s+/g, ' ').trim(), visible: !!e.getClientRects().length && !!e.offsetParent }])),
       total: value('#purchase-total'), description: value('#purchase-description'), vendor: value('#purchase-vendor'),
       category: value('#purchase-category'), invoiceNumber: value('#purchase-invoice-number'), vat: value('#purchase-vat'), vatRate: value('#purchase-vat-rate'),
       date: text('[data-purchase-date] summary'), dateOpen: root.querySelector('[data-purchase-date]')?.open ?? null,
       payment: [...root.querySelectorAll('[aria-label="État du règlement"] button')].map(b => `${b.innerText.trim()}=${b.getAttribute('aria-pressed')}`),
-      paymentSummary: text('[data-purchase-payment] summary'),
+      // r2b : le règlement n'est plus un <details> mais la tuile « Règlement » (le panneau [data-purchase-payment] s'ouvre à son toucher).
+      paymentSummary: text('[data-dp="tuile-paye"]'),
+      paymentPanelOpen: !!root.querySelector('[data-purchase-payment]:not(.hidden)'),
       dueDate: [...root.querySelectorAll('[data-purchase-payment] input[type="date"]')].map(e => `${e.closest('label,div')?.innerText?.split('\n')[0] ?? ''}=${e.value}`),
       lines: [...root.querySelectorAll('article[data-purchase-line]')].map(a => ({
         label: a.querySelector('[aria-label^="Libellé ligne"]')?.value ?? null, kind: a.querySelector('[aria-label^="Nature ligne"]')?.value ?? null,
@@ -566,8 +592,20 @@ async function confirmSheet(c, timeout = 45000) {
     if (!dialog) return 'fermée';
     const alerts = [...document.querySelectorAll('[role="dialog"] [role="alert"]')].map(e => e.innerText.trim()).filter(Boolean);
     const busy = document.querySelector('[role="dialog"] footer button')?.innerText.includes('Enregistrement');
-    return !busy && alerts.length ? `alerte: ${alerts.join(' | ').replace(/\s+/g, ' ').slice(0, 500)}` : false;
+    // r2b : un justificatif rangé laisse la feuille ouverte sur son reçu Drive jusqu'à « Terminé » (état `done` de la feuille).
+    const first = document.querySelector('[role="dialog"] footer button')?.innerText.trim();
+    if (first === 'Terminé') return 'recu';
+    return !busy && alerts.length ? `alerte: ${alerts.join(' | ').replace(/\s+/g, ' ').slice(0, 3000)}` : false;
   }, { timeout, polling: 500 })).jsonValue();
+  if (outcome === 'recu') {
+    // Le reçu tel que le brasseur le lit, puis son geste « Terminé » : la feuille se ferme.
+    c.lastReceipt = await c.page.$eval(`${sheet} footer`, e => e.innerText.replace(/\s+/g, ' ').trim()).catch(() => null);
+    await shoot(c, 'recu-drive');
+    await click(c.page, `${sheet} footer button`, 'Terminé', 5000);
+    const closed = await c.page.waitForFunction(() => !document.querySelector('[role="dialog"] footer'), { timeout: 10000 }).then(() => true).catch(() => false);
+    await sleep(800);
+    return closed ? 'fermée' : 'alerte: la feuille reste ouverte après « Terminé »';
+  }
   await sleep(800);
   return outcome;
 }
@@ -683,8 +721,9 @@ async function caseDoc5(c) {
     lectureAlerteDate: dateWarnings.length, indiceDateVisible: !!dateHint?.visible, detailsDateOuverts: read.dateOpen,
     indiceRepriseDeLaLecture: !!dateHint && dateWarnings.includes(dateHint.text.replace(/^À confirmer · /, '')),
     dansLesDetails: read.reviewDetails.some(item => dateWarnings.some(w => item.includes(w))) });
-  await openDetails(c.page, `${sheet} section[aria-label="Vérification du justificatif"] details`);
-  await shoot(c, 'doc5-revue-details', `${sheet} section[aria-label="Vérification du justificatif"]`);
+  await openPreuve(c);
+  // 'center' : le haut de la preuve ne passe pas sous la bande collante des points à régler (celle-ci couvre le haut de l'écran défilant).
+  await shoot(c, 'doc5-revue-details', `${sheet} section[data-dp="preuve"]`, 'center');
   await shoot(c, 'doc5-date', `${sheet} [data-purchase-date]`);
   await openDetails(c.page, `${sheet} details:has(#purchase-invoice-number)`);
   const vat = await readSheet(c);
@@ -723,25 +762,45 @@ async function caseDoc5(c) {
   c.check(!businessWrites(dbWrites(before, beforeConfirm)).length, 'doc5 : rien n’entre en stock avant la confirmation', { writes: businessWrites(dbWrites(before, beforeConfirm)) });
   let outcome = await confirmSheet(c, 60000);
   c.record('doc5-confirmation', outcome);
+  c.record('doc5-recu-drive', c.lastReceipt ?? null);
   if (outcome !== 'fermée') {
     await shoot(c, 'doc5-confirmation-refusee');
     // A unit the stock does not understand (read « Stk », stock in « sachet ») is corrected by hand, as a brewer would.
     const fixes = [];
     for (const seed of c.plan.seeds.filter(seed => seed.unit === 'sachet')) {
-      const unit = (await c.page.$$(`${sheet} article[data-purchase-line]`))[seed.line] && await (await c.page.$$(`${sheet} article[data-purchase-line]`))[seed.line].$('[aria-label^="Unité ligne"]');
+      const article = (await c.page.$$(`${sheet} article[data-purchase-line]`))[seed.line];
+      if (article) await toggleLine(article, true); // r2b : les champs de la ligne sont dans son plateau, replié au repos
+      const unit = article && await article.$('[aria-label^="Unité ligne"]');
       if (!unit) continue;
       const read = await unit.evaluate(e => e.value);
       await unit.evaluate(e => { e.scrollIntoView({ block: 'center' }); e.focus(); e.select(); });
       await c.page.keyboard.type(seed.unit); await c.page.keyboard.press('Tab'); await sleep(300);
+      c.record('doc5-correction-unite', { ligne: seed.line, lue: read, saisie: seed.unit });
       fixes.push({ line: seed.line, uniteLue: read, uniteSaisie: seed.unit });
     }
     c.record('doc5-corrections-manuelles', fixes);
     if (fixes.length) { outcome = await confirmSheet(c, 60000); c.record('doc5-confirmation-2', outcome); }
     if (outcome !== 'fermée') await shoot(c, 'doc5-confirmation-refusee-2');
   }
+  c.check(outcome === 'fermée', 'doc5 : « Confirmer » enregistre et la feuille se ferme (reçu Drive, puis « Terminé »)', { outcome });
   const after = await dbSnapshot(c.db);
   c.record('doc5-ecritures', businessWrites(dbWrites(before, after)));
   const view = await verifyPurchase(c, 'doc5', { stockPlan: plan });
+  // Attentes métier dures (r2b ne les change pas) : une seule dépense, au montant lu, toutes les lignes, le stock écrit pour les seules
+  // lignes de stock, les articles existants seulement augmentés de la quantité reçue, l'original rangé et identique.
+  const scannedItems = scanned.items ?? [];
+  const stockRows = view.stock?.lignes ?? [];
+  c.check(view.transactions === 1, 'doc5 : une seule dépense enregistrée', { transactions: view.transactions });
+  c.check(view.montantConformeALaLecture === true, 'doc5 : montant TTC de la dépense = montant lu', { lu: scanned.amountTTC });
+  c.check(view.lignes === scannedItems.length && view.lignesSansMontant === 0, 'doc5 : toutes les lignes lues sont enregistrées, chacune avec son montant', { lignes: view.lignes, lues: scannedItems.length, sansMontant: view.lignesSansMontant });
+  c.check(stockRows.length > 0 && stockRows.every(row => (row.lectureKind === 'stock') === row.stocke && (row.stocke ? row.mouvements === 1 : row.mouvements === 0)),
+    'doc5 : une réception par ligne de stock lue, aucun mouvement pour les services et le port', { ecarts: stockRows.filter(row => !((row.lectureKind === 'stock') === row.stocke && (row.stocke ? row.mouvements === 1 : row.mouvements === 0))).map(row => row.index) });
+  c.check(stockRows.filter(row => row.stocke).every(row => row.quantiteMouvement === row.quantiteLue), 'doc5 : la quantité reçue de chaque ligne = la quantité lue', {});
+  c.check((view.stock?.semis ?? []).length === c.plan.seeds.length && (view.stock?.semis ?? []).every(row => row.identiqueAuSemis && row.apres === row.avant + row.recuParMouvements && row.recuParMouvements > 0),
+    'doc5 : chaque article existant garde nom, catégorie et unité et reçoit exactement ses mouvements (rien d’autre modifié)', { semis: view.stock?.semis });
+  c.check(view.stock?.servicesStockes === 0 && view.stock?.doublonsDArticle === 0, 'doc5 : aucun service en stock, aucun doublon d’article', { servicesStockes: view.stock?.servicesStockes, doublons: view.stock?.doublonsDArticle });
+  c.check(view.justificatif?.original?.drive === true && view.justificatif.original.sha256Conforme === true && view.justificatif.original.bytes === true,
+    'doc5 : l’original est rangé dans Drive, même empreinte et même taille', { justificatif: view.justificatif });
   c.finding('M3-categories', 'catégorie canonique des articles créés (JUS-1)', { categories: view.stock?.categoriesNouveaux ?? null,
     minuscules: (view.stock?.categoriesNouveaux ?? []).filter(category => category && category[0] !== category[0].toUpperCase()).length,
     receptionsSurSemis: view.stock?.semis?.map(seed => ({ id: seed.id, recu: seed.apres > seed.avant })), doublonsDArticle: view.stock?.doublonsDArticle ?? null });
@@ -782,7 +841,9 @@ async function verifyPurchase(c, docId, { stockPlan = [] } = {}) {
         uniteLue: read.unit ?? '', uniteArticle: item?.unit ?? null, categorieArticle: item?.category ?? null, quantiteMouvement: moved[0]?.quantity ?? null,
         quantiteLue: read.quantity ?? null, prixUnitaireArticle: item?.pricePerUnit ?? null, semis: c.plan.seeds.find(seed => seed.id === item?.id)?.id ?? null };
     });
-    const seeded = c.plan.seeds.map(seed => { const item = items.find(entry => entry.id === seed.id); return { id: seed.id, avant: seed.currentStock, apres: item?.currentStock, uniteArticle: item?.unit, prixAvant: seed.pricePerUnit, prixApres: item?.pricePerUnit ?? null }; });
+    const seeded = c.plan.seeds.map(seed => { const item = items.find(entry => entry.id === seed.id); return { id: seed.id, avant: seed.currentStock, apres: item?.currentStock, uniteArticle: item?.unit, prixAvant: seed.pricePerUnit, prixApres: item?.pricePerUnit ?? null,
+      identiqueAuSemis: !!item && item.name === seed.name && item.category === seed.category && item.unit === seed.unit && item.kind === 'rawMaterials',
+      recuParMouvements: movements.filter(m => m.type === 'receipt' && m.stockItemRef === seed.id).reduce((sum, m) => sum + (Number(m.quantity) || 0), 0) }; });
     const groups = new Map();
     for (const item of items) { const key = fold(item.name).replace(/,?\s*kg$/, ''); groups.set(key, [...(groups.get(key) ?? []), item.id]); }
     view.stock = { lignes: stockRows, semis: seeded, doublonsDArticle: [...groups.values()].filter(ids => ids.length > 1).length,
@@ -833,11 +894,22 @@ async function financeViews(c, docId, { exports = true } = {}) {
     if (proofButton) {
       await proofButton.click();
       // An image original is an <img alt>, a PDF one an <iframe title> (DocumentProofLink).
-      const shown = await c.page.waitForFunction(name => [...document.querySelectorAll('img')].some(img => img.alt === name && img.complete && img.naturalWidth > 0)
-        || [...document.querySelectorAll('iframe')].some(frame => frame.title === name)
-        || [...document.querySelectorAll('[role="dialog"] [role="alert"]')].map(e => e.innerText).join(' ') || false, { timeout: 30000 }, doc.fileName)
+      // Le nom affiché est celui que Drive a rendu à l'enregistrement (« date fournisseur n°.jpg »), gardé sur le document de preuve : plus le
+      // nom du fichier choisi (dépense r2b, reçu Drive). On le lit sur le document de preuve de la dépense.
+      const proofName = tx.finance?.proofDocumentId ? (await c.db.doc(`financeDocuments/${tx.finance.proofDocumentId}`).get()).data()?.fileName : null;
+      const shown = await c.page.waitForFunction(names => [...document.querySelectorAll('img')].some(img => names.includes(img.alt) && img.complete && img.naturalWidth > 0)
+        || [...document.querySelectorAll('iframe')].some(frame => names.includes(frame.title))
+        || [...document.querySelectorAll('[role="dialog"] [role="alert"]')].map(e => e.innerText).join(' ') || false, { timeout: 30000 }, [proofName, doc.fileName].filter(Boolean))
         .then(handle => handle.jsonValue()).catch(error => `délai: ${String(error).slice(0, 120)}`);
       view.originalRouvert = shown === true ? 'image affichée' : shown;
+      view.nomAffiche = proofName ?? null;
+      // Les octets affichés sont ceux du document : empreinte de l'image montrée (blob de la page).
+      view.imageAfficheeIdentique = shown === true ? await c.page.evaluate(async (names, wanted) => {
+        const img = [...document.querySelectorAll('img')].find(i => names.includes(i.alt));
+        if (!img) return null;
+        const bytes = await (await fetch(img.src)).arrayBuffer();
+        return [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(b => b.toString(16).padStart(2, '0')).join('') === wanted;
+      }, [proofName, doc.fileName].filter(Boolean), doc.sha256).catch(() => null) : null;
       view.originalTelechargeDuDrive = c.drive.downloads.length > 0;
       await shoot(c, `${docId}-original`);
       await c.page.keyboard.press('Escape'); await sleep(500);
@@ -845,6 +917,7 @@ async function financeViews(c, docId, { exports = true } = {}) {
     await c.page.keyboard.press('Escape'); await sleep(600);
   }
   c.finding(`C1-vues-${docId}`, 'dépense retrouvée dans Finances (journal, détail, original)', view);
+  c.lastFinance = { docId, view };
   if (!exports) return;
   // Stock list after the purchase, as the brewer reads it.
   await click(c.page, 'nav button', 'Stocks');
@@ -874,6 +947,13 @@ async function financeViews(c, docId, { exports = true } = {}) {
       justificatif: line ? line[header.indexOf('Justificatif')] : null, fournisseur: line ? line[header.indexOf('Fournisseur ou client')] === tx.finance?.vendor : null };
   }
   before = readdirSync(c.downloads);
+  // Après le téléchargement Excel, l'écran Annuel peut revenir à « Préparer » : on le constate (exportsView) et on rouvre « Dossier ».
+  if (!(await c.page.$$eval('button', nodes => nodes.some(b => b.getClientRects().length && b.innerText.trim().startsWith('Télécharger le dossier avec justificatifs'))))) {
+    exportsView.ongletDossierReinitialiseApresExcel = true;
+    await shoot(c, `${docId}-annuel-reinitialise`);
+    await click(c.page, '#tax-tab-documents');
+    await sleep(600);
+  }
   await click(c.page, 'button', 'Télécharger le dossier avec justificatifs');
   const zip = await downloaded(c, before, 'dossier ZIP').catch(error => { exportsView.zip = String(error).slice(0, 120); return null; });
   if (zip) {
@@ -887,11 +967,19 @@ async function financeViews(c, docId, { exports = true } = {}) {
   await shoot(c, `${docId}-dossier-telecharge`);
   exportsView.exportTvaDedie = await c.page.evaluate(() => /décompte TVA|export TVA/i.test(document.body.innerText));
   c.finding(`C1-exports-${docId}`, 'dépense dans les exports de finances et de TVA', exportsView);
+  c.lastFinance.exportsView = exportsView;
 }
 
 /** Finances : la dépense doc5 dans les vues, l'original rouvert, les exports TVA et finances. */
 async function caseFinances(c) {
+  c.lastFinance = null;
   await financeViews(c, 'doc5');
+  const { view, exportsView } = c.lastFinance ?? {};
+  c.check(view?.ligneTrouvee === true && view.ligneMontreFournisseur === true, 'finances : la dépense doc5 est au journal, avec son fournisseur', { view });
+  c.check(view?.boutonJustificatif === true && view.originalRouvert === 'image affichée' && view.imageAfficheeIdentique === true,
+    'finances : le justificatif de doc5 se rouvre, octets identiques à l’original', { originalRouvert: view?.originalRouvert, identique: view?.imageAfficheeIdentique });
+  c.check(exportsView?.excel?.journal === true && exportsView?.zip?.originalIdentique === true && exportsView?.zip?.indexMentionneLaPiece === true,
+    'finances : la dépense est dans l’Excel annuel et le ZIP avec l’original identique', { exportsView });
 }
 
 /** doc6 : la même commande vue en ligne (ni date ni numéro) après doc5 ; JUS-1 : panneau en tête, refus sans choix ;
@@ -926,6 +1014,10 @@ async function caseDoc6(c) {
     piedApresChoix: afterChoice?.footer ?? null, ecrituresApresChoix: afterChoice?.writes ?? null, erreurClicPied: afterChoice?.clickError ?? null,
     sansChoix: String(refused).startsWith('alerte') && /doublon/.test(String(refused)) ? 'refusé (doublon)' : refused, choix: choice,
     depensesAuMemeTotal: sameTotal.length, nouvellesEcritures: writes.map(row => `${row.collection}+${row.added.length}~${row.changed.length}`) });
+  // Attentes dures du même cas (r2b ne les change pas) : le doublon est dit, refusé sans choix, et rien n'est écrit.
+  c.check(!!read.duplicate && !!existing && read.duplicate.includes(existing.description), 'doc6 : la dépense déjà enregistrée est montrée comme doublon possible', { duplicate: read.duplicate });
+  c.check(String(refused).startsWith('alerte') && /doublon/.test(String(refused)), 'doc6 : sans choix, « Confirmer » refuse (doublon)', { refused });
+  c.check(afterChoice?.writes === 0 && choice === 'feuille fermée' && sameTotal.length === 1 && !writes.length, 'doc6 : « Même achat » ne crée ni dépense ni écriture, la feuille se ferme', { afterChoice, choice, depensesAuMemeTotal: sameTotal.length, writes });
 }
 
 /** Correction V3 (B-V3-1) : commande répétée chez le même fournisseur, même total, 3 jours plus tôt, autre n° de facture
@@ -953,6 +1045,8 @@ async function caseAutreNumero(c) {
     const writes = businessWrites(dbWrites(before, await dbSnapshot(c.db)));
     c.finding('B1-autre-numero', 'commande répétée, même fournisseur et même total, autre n° de facture : aucun panneau (correction V3)', { applicable: true,
       ecartJours: 3, panneau: !!read.duplicate, pied: read.footer, ecritures: writes.map(row => `${row.collection}+${row.added.length}~${row.changed.length}`) });
+    // Le doublon bloquant ne se lève pas pour une commande répétée d'un autre n° ; le signal S8 (« Même commande, autre numéro ») n'est qu'un signal.
+    c.check(!read.duplicate && read.footer.includes('Confirmer') && !writes.length, 'autre-numero : aucun doublon bloquant, « Confirmer » proposé, aucune écriture', { duplicate: read.duplicate, footer: read.footer, writes });
   } finally {
     // Retirée même en cas d'échec : elle fausserait les cas suivants (même fournisseur, même total).
     await c.db.doc(`transactions/${id}`).delete();
@@ -1002,6 +1096,13 @@ async function caseRattacher(c) {
     empreinteReprise: tx?.finance?.sourceDocumentHash === c.docs.doc1.sha256, montantInchange: cents(tx?.amountTTC ?? NaN) === amountCents,
     ecritures: writes.map(row => `${row.collection}+${row.added.length}~${row.changed.length}`) });
   if (tx?.finance?.proofDocumentId) await financeViews(c, 'doc1', { exports: false });
+  // Attentes dures : le justificatif rejoint la dépense existante, sans dépense, sans écriture avant le geste, montant inchangé, original identique.
+  c.check(!!read.duplicate && afterChoice?.writes === 0 && /^Justificatif rattaché/.test(String(status)) && expenses.length === 1 && !!tx?.finance?.proofDocumentId
+    && original?.sha256 === c.docs.doc1.sha256 && tx?.finance?.sourceDocumentHash === c.docs.doc1.sha256 && cents(tx?.amountTTC ?? NaN) === amountCents,
+    'rattacher : « Même achat » joint l’original à la dépense existante, sans nouvelle dépense, montant inchangé', { panneau: !!read.duplicate, apresChoix: afterChoice, status, depenses: expenses.length, lie: !!tx?.finance?.proofDocumentId });
+  // La dépense rattachée porte l'empreinte de doc1 : laissée en place, le cas « doc1 » plus loin y verrait à juste titre un doublon
+  // (« Un achat similaire existe déjà »). Retirée ici, comme celle du cas « autre-numero », pour que chaque cas parte d'un registre connu.
+  await c.db.doc(`transactions/${id}`).delete();
 }
 
 /** JUS-1 (M3) : un article écrit en minuscules par une ancienne lecture (synthétique) se range avec les malts et garde
@@ -1022,6 +1123,8 @@ async function caseMinuscules(c) {
   await c.page.keyboard.press('Escape'); await sleep(500);
   c.finding('M3-lecture', 'article en minuscules : un seul groupe Malt, champs techniques, aucune réécriture (JUS-1)', { groupes: groups,
     groupesMalt: groups.filter(group => /^malt$/i.test(group)).length, ...detail, categorieStockee: (await c.db.doc(`stockItems/${id}`).get()).data()?.category });
+  c.check(groups.filter(group => /^malt$/i.test(group)).length === 1 && detail.sousTitreCanonique && detail.champsTechniques && (await c.db.doc(`stockItems/${id}`).get()).data()?.category === 'malt',
+    'minuscules : un seul groupe Malt, champs techniques, article ancien non réécrit', { groupes: groups, ...detail });
 }
 
 /** doc1 : facture d'écran, parcours complet puis réouverture. */
@@ -1038,6 +1141,8 @@ async function caseDoc1(c) {
   c.record('doc1-ecritures', businessWrites(dbWrites(before, await dbSnapshot(c.db))));
   const view = await verifyPurchase(c, 'doc1');
   if (view.transactions === 1) await financeViews(c, 'doc1', { exports: false });
+  c.check(outcome === 'fermée' && view.transactions === 1 && view.montantConformeALaLecture === true && view.justificatif?.original?.drive === true && view.justificatif.original.sha256Conforme === true && view.lignesSansMontant === 0,
+    'doc1 : « Confirmer » enregistre une dépense au montant lu, avec son original rangé (même empreinte)', { outcome, transactions: view.transactions, montant: view.montantConformeALaLecture, justificatif: view.justificatif });
 }
 
 /** doc4 : bordereau ; rien avant le geste, hors ligne au geste, puis un seul geste en ligne. */
@@ -1064,6 +1169,8 @@ async function caseDoc4(c) {
   const view = await verifyPurchase(c, 'doc4');
   c.finding('C4', 'bordereau : aucune dépense finale sans confirmation', { ecrituresAvantGeste: idle.length, typeSource: view.typeSource,
     baseDuTotal: view.baseDuTotal, statut: view.statut, depenses: view.transactions, paiementPropose: read.payment, indiceTotal: read.hints.amountTTC?.text ? 'présent' : 'absent' });
+  c.check(/^alerte: Hors connexion/.test(String(offline)) && !/offline|Failed/i.test(String(offline)) && !offlineWrites.length, 'doc4 : hors ligne, message français et aucune écriture serveur', { offline, offlineWrites: offlineWrites.length });
+  c.check(online === 'fermée' && view.transactions === 1 && view.justificatif?.original?.sha256Conforme === true, 'doc4 : au retour du réseau, un seul geste enregistre une seule dépense avec son original', { online, transactions: view.transactions, justificatif: view.justificatif });
   c.finding('C8-justificatif', 'hors ligne avec justificatif puis retour du réseau', { messageFrancais: /^alerte: Hors connexion/.test(String(offline)) && !/offline|Failed/i.test(String(offline)), horsLigne: offline, ecrituresServeurHorsLigne: offlineWrites.length, retour: online, depenses: view.transactions });
 }
 
@@ -1090,6 +1197,8 @@ async function caseHorsLigne(c) {
   await shoot(c, 'hors-ligne-retour');
   c.finding('C8-manuel', 'saisie hors ligne puis synchronisation', { geste: offline, serveurPendantHorsLigne: serverWhileOffline,
     serveurApresRetour: synced, secondGeste: closing, ecritures: businessWrites(dbWrites(before, await dbSnapshot(c.db))).map(row => `${row.collection}+${row.added.length}`) });
+  c.check(serverWhileOffline === 0 && synced === 1 && (await all(c.db, 'transactions')).filter(tx => tx.description === SYNTHETIC.description && cents(tx.amountTTC) === cents(SYNTHETIC.amount.replace(',', '.'))).length === 1,
+    'hors-ligne : rien au serveur pendant la coupure, exactement une dépense synchronisée au retour, au montant saisi', { serverWhileOffline, synced });
   if (closing !== 'fermée') await closeSheet(c);
 }
 
@@ -1099,12 +1208,14 @@ async function caseDoc3(c) {
   const chooser = await openInvoiceEntry(c);
   await scan(c, 'doc3', { chooser });
   await shoot(c, 'doc3-revue', `${sheet} section[aria-label="Vérification du justificatif"]`);
-  await openDetails(c.page, `${sheet} [data-purchase-payment]`);
+  await openPayment(c);
   const read = await readSheet(c);
   c.record('doc3-revue', read);
   await shoot(c, 'doc3-reglement', `${sheet} [data-purchase-payment]`);
   const writes = businessWrites(dbWrites(before, await dbSnapshot(c.db)));
   c.check(!writes.length, 'doc3 : aucune écriture sans enregistrement', { writes });
+  c.check(read.total !== null && cents(read.total.replace(/\s/g, '').replace(',', '.')) === cents(c.docs.doc3.result.amountTTC) && read.paymentSummary?.includes('À payer'),
+    'doc3 : le total proposé = le total lu (deux bulletins) et le règlement proposé est « À payer »', { total: read.total, reglement: read.paymentSummary });
   c.finding('C5', 'bulletins QR : montant, échéance, paiement', { totalPropose: read.total ? 'présent' : 'vide',
     totalEgalLecture: read.total !== null && cents(read.total.replace(/\s/g, '').replace(',', '.')) === cents(c.docs.doc3.result.amountTTC),
     bulletinsLus: (c.docs.doc3.result.items ?? []).length, paiement: read.payment, reglement: read.paymentSummary, echeance: read.dueDate, indiceTotal: read.hints.amountTTC?.text ?? null });
@@ -1118,7 +1229,7 @@ async function caseDoc2(c) {
   await scan(c, 'doc2', { chooser });
   const read = await readSheet(c);
   c.record('doc2-revue', read);
-  await openDetails(c.page, `${sheet} section[aria-label="Vérification du justificatif"] details`);
+  await openPreuve(c).catch(() => {});
   await shoot(c, 'doc2-revue');
   const outcome = await confirmSheet(c, 30000).catch(error => `erreur: ${String(error).slice(0, 200)}`);
   const after = await readSheet(c);
