@@ -861,5 +861,16 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   mot pour mot : « Y aller je fait rien, et il y a un vrai problème, quand on ouvre certains champs, le fenêtre fait haut bas très rapidement,
   comme un cintillement, c'est horrible » ; puis, sur la lecture : « Aussi, c'est assez fiable mais toujours plutôt lent » ; puis « cible rien pour « Date ». Il y a plusieurs champs
   date aussi attention ! » et « C'est pas utile den avoir plusieurs » (D233).
+- **La lecture d'une facture** (01.11, matin), mot pour mot : « Est-ce que on pourrait faire 2 lecture en parallèle de 3.5 flash et si ça
+  diverge une relecture par 3.8 ? C'est quoi l'architecture actuellement ? Pourquoi on a choisi ça ? » ; puis, au banc proposé (≈ 1 CHF) :
+  « 5chf de budget accordé » (D234 ; banc k1, `work/missions/2026-11-01-banc-lecture/`).
+- **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
+  cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
+  (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que
+  si l'entreprise est assujettie ; ouvert : une vue TVA, « assujetti ou pas », à montrer en mini maquettes).
+- **Les tests en ligne** (01.11, matin), mot pour mot : « Et les tests d'intégration dans la vrai app ont vraiment été très mediculeux ? »
+  (réponse : non ; L12 complétée, contrôle `controle-bande.mjs` en 390 tactile).
+- **Déployer** (01.11, matin), mot pour mot : « J'autorise de déployer sans faire tout les test npm run test. Mais seulement ceux visié
+  pour les changements » (D236).
 - **Nouvelle dépense, passe 3** (01.11, matin, sur sa capture de la passe 2 « r2b · repos à 1280 px », le bandeau et la preuve entourés ;
   `work/missions/2026-10-31-ecran-depense/brasseur/01-11-recap-r2b-1280.jpg`), mot pour mot : « Plusieurs points sur la vue et logistique. rang 7 · r1 · série r Nom d'approche : feuille J'aime beaucoup les pastilles sur les items, ça rend la chose très clair. Aussi un récap en haut comme sur le screen est top, avec la possibilité de clicker et avoir des revois Maintenant pour la lisibilité. Je veux que en un écran je vois le maximum d'items ajouter. Je veux que cette écran d'ajouter de facture prenne vraiment toute la place de l'app. Je veux aussi que ça soit trié par catégorie avec sous total de quantité. Par exemple je sais très bien combien d'houblon j'ai commandé. Mais pas forcément combien items au Total. Aussi bien utilisé les UX UI booster. Finalement, pour la logistique d'envoi sur le drive, c'est invisible, c'est à la fin en arrière plan. Et si ça fail. Grosse notification, renvoie sur la facture pour upload le justificatif ou/et réparé le lien drive » (D235).
