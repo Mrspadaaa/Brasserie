@@ -1,0 +1,80 @@
+<title>Lecture des factures</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+:root{--bg:#f6f4ef;--card:#fffdf8;--fg:#24211c;--mute:#6b645a;--line:#e2ddd2;--amber:#a8731c;--ok:#2f7a4a;--bad:#b23a2b;--bar:#8f8470;--best:#2f7a4a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1916;--card:#24211d;--fg:#ece7de;--mute:#a59d90;--line:#38332c;--amber:#d9a347;--ok:#6cc08a;--bad:#e07a6a;--bar:#9a8f7c;--best:#6cc08a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1916;--card:#24211d;--fg:#ece7de;--mute:#a59d90;--line:#38332c;--amber:#d9a347;--ok:#6cc08a;--bad:#e07a6a;--bar:#9a8f7c;--best:#6cc08a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 "IBM Plex Sans",system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+h1{font-size:22px;margin:0;text-wrap:balance}
+.sub{color:var(--mute);font-size:13px;margin:4px 0 0}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0}
+.c.out{opacity:.62}
+.c h2{font-size:14px;margin:0;display:flex;gap:6px;align-items:baseline}
+.tag{font-size:12px;border-radius:99px;padding:1px 8px;border:1px solid var(--line);color:var(--mute)}
+.tag.prod{color:var(--amber);border-color:var(--amber)}
+.tag.no{color:var(--bad);border-color:var(--bad)}
+.tag.yes{color:var(--ok);border-color:var(--ok)}
+.how{font-size:12px;color:var(--mute);margin:0}
+.k{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:13px}
+.k dt{color:var(--mute)}.k dd{margin:0;text-align:right}
+.fv0{color:var(--ok)}.fv{color:var(--bad);font-weight:600}
+.bars{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px}
+.bars h3{font-size:13px;margin:0;color:var(--mute);font-weight:600;letter-spacing:.02em}
+.row span{white-space:nowrap}.row{display:grid;grid-template-columns:20px 1fr 84px;gap:8px;align-items:center;font-size:13px}
+.track{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.fill{height:100%;background:var(--bar)}
+.fill.best{background:var(--best)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:10px;padding:12px;font-size:14px;display:grid;gap:6px}
+.note p{margin:0}
+.small{font-size:12px;color:var(--mute)}
+</style>
+<div class="w">
+  <header>
+    <h1>Lire une facture : 4 façons, mesurées sur tes 7 factures</h1>
+    <p class="sub">Banc du 01.11 · 7 factures × 3 tirages = 21 lectures par façon · 1,39 CHF dépensés sur les 5 accordés</p>
+  </header>
+
+  <section class="cards" aria-label="Les quatre façons">
+    <article class="c">
+      <h2>A <span class="tag prod">aujourd'hui</span></h2>
+      <p class="how">2 lectures 3.8 en parallèle, une 3ᵉ si elles divergent · justes = sur 243 champs, 207 lignes, durée médiane</p>
+      <dl class="k"><dt>Faux verts</dt><dd class="num fv0">0</dd><dt>Champs</dt><dd class="num">214/243</dd><dt>Lignes</dt><dd class="num">182/207</dd><dt>Durée</dt><dd class="num">17,4 s</dd><dt>CHF/facture</dt><dd class="num">0,042</dd></dl>
+    </article>
+    <article class="c out">
+      <h2>B <span class="tag no">écartée</span></h2>
+      <p class="how">1 lecture 3.8, la 2ᵉ seulement si un calcul échoue</p>
+      <dl class="k"><dt>Faux verts</dt><dd class="num fv">3</dd><dt>Champs</dt><dd class="num">214/243</dd><dt>Lignes</dt><dd class="num">182/207</dd><dt>Durée</dt><dd class="num">8,9 s</dd><dt>CHF/facture</dt><dd class="num">0,016</dd></dl>
+    </article>
+    <article class="c">
+      <h2>C <span class="tag yes">ta proposition</span></h2>
+      <p class="how">2 lectures Flash-Lite 3.5 en parallèle, 3.8 si elles divergent</p>
+      <dl class="k"><dt>Faux verts</dt><dd class="num fv0">0</dd><dt>Champs</dt><dd class="num">219/243</dd><dt>Lignes</dt><dd class="num">166/207</dd><dt>Durée</dt><dd class="num">10,4 s</dd><dt>CHF/facture</dt><dd class="num">0,025</dd></dl>
+    </article>
+    <article class="c out">
+      <h2>C′ <span class="tag">rien de plus</span></h2>
+      <p class="how">C, plus la 3.8 quand un calcul échoue</p>
+      <dl class="k"><dt>Faux verts</dt><dd class="num fv0">0</dd><dt>Champs</dt><dd class="num">219/243</dd><dt>Lignes</dt><dd class="num">166/207</dd><dt>Durée</dt><dd class="num">10,5 s</dd><dt>CHF/facture</dt><dd class="num">0,025</dd></dl>
+    </article>
+  </section>
+
+  <section class="bars" aria-label="Durée et coût">
+    <h3>DURÉE D'UNE LECTURE (médiane · pire)</h3>
+    <div class="row"><b>A</b><div class="track"><div class="fill" style="width:39%"></div></div><span class="num">17 · 45 s</span></div>
+    <div class="row"><b>C</b><div class="track"><div class="fill best" style="width:23%"></div></div><span class="num">10 · 30 s</span></div>
+    <h3>COÛT PAR FACTURE (CHF)</h3>
+    <div class="row"><b>A</b><div class="track"><div class="fill" style="width:84%"></div></div><span class="num">0,042</span></div>
+    <div class="row"><b>C</b><div class="track"><div class="fill best" style="width:49%"></div></div><span class="num">0,025</span></div>
+    <p class="small">Échelle : 45 s et 0,05 CHF. Tarif provisionné avec une marge (1,25 CHF/USD) : la facture Google est plus basse.</p>
+  </section>
+
+  <section class="note" aria-label="Ce que je retiens">
+    <p><b>Faux vert</b> : la facture est dite « vérifiée » alors qu'un chiffre est faux. C'est le pire cas ; A et C n'en ont aucun.</p>
+    <p><b>C contre A</b> : 40 % plus rapide, 42 % moins cher, 5 champs justes de plus, mais 16 lignes justes de moins sur 207 (prix et nature des lignes sur deux factures). Comme rien ne passe en « vérifié » à tort, ces lignes restent signalées « à confirmer ».</p>
+    <p><b>Deux tiers des défauts sont les mêmes dans les quatre façons</b> (ex. une date de période prise pour la date de la facture) : ils ne départagent rien et sont à corriger à part.</p>
+    <p class="small">21 lectures par façon : un écart d'une ou deux erreurs est un indice, pas une preuve. Rien n'est changé en production avant ton choix.</p>
+  </section>
+</div>

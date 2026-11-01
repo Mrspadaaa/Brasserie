@@ -214,3 +214,5 @@ Dépense réelle du banc (appels distincts, 3ᵉ lectures prêtées comptées un
 - **C′ n'apporte rien de plus que C** sur ce banc (mêmes résultats, un peu plus cher).
 - La production finit « à confirmer » 20 fois sur 21 : 14 alertes justes, 6 inutiles (divergences, date absente).
 - Décision : au brasseur (Gemini en production, D234 : aucun changement avant son choix sur ces chiffres).
+
+Page montrée au brasseur : https://claude.ai/artifact/S4ovLYnPabLA5Pvq6n4rU9 (01.11 v1, source `work/missions/2026-11-01-banc-lecture/page/index.html`).
