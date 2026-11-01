@@ -32,6 +32,9 @@ neufs sur brief serré (D207), puis une page neuve.
 
 ## Agents
 - reno-r : ae3e4b22b2438d8cb (opus) ; reno-z : adf38572f61bd2e10 (fable) ; reno-u : a84479055970cdd3b (opus), lancées le 01.11, nuit.
+- reno-t : a325eef533c472667 (fable), RENO-T OK.
+- reno-p2 (brief `v1/BRIEF-P2.md`, agents neufs, D207) : A = z2b, z1b, m1 (a1bd26dc03e0f30a8, opus) ; B = u4b, u2b, u3b
+  (a72f553fb09b37151, opus). Hebdo avant : 57 %.
 
 ## Pages
 | Sujet | Version | Adresse | Source |
