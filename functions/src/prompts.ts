@@ -34,7 +34,9 @@ export type TaskId =
   | 'reviewRecipe'
   | 'lookupIngredient'
   | 'lookupHopVariety'
-  | 'readHopCoa';
+  | 'readHopCoa'
+  /** D280 : la désignation en français des noms de base d'une facture (texte seul, appel à part de la lecture). */
+  | 'traduireNoms';
 
 export interface TaskDef {
   /** Consigne système, en français : les réponses sont lues par Gaëtan. */
@@ -994,6 +996,38 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
       },
       ['found', 'name', 'source']
     )
+  },
+
+  // --- 15. Désignation en français des noms de base d'une facture ----------
+  /**
+   * D271, D275, D278, D280 (voie f5c-noms-prod) : « Ça traduits en français et fait le bon lien ». Un appel TEXTE SEUL, à part de la lecture
+   * (`scanInvoice` ne change pas d'un octet) : le client envoie, par pièce, les noms de base déjà débarrassés des options, de l'état et du suffixe
+   * d'unité (`lireOptions`), sans image, sans montant, sans quantité. Consigne et schéma sont ceux du banc mesuré (`scripts/banc-noms-fr.ts`,
+   * `SYSTEME_NOMS_FR` et `NOMS_SCHEMA`, mot pour mot : un test les égale) ; ne les retoucher qu'après un nouveau banc.
+   * Routage : aucune ligne dans `LITE_ROUTES` (models.ts), donc `gemini-3.8-flash`, réflexion `low` (Rapide), température 0, comme au banc ;
+   * la 3.5 Flash-Lite a fait des contresens au banc (« Gärglocke » rendu « Bonbonne »).
+   * Plafond de sortie : celui du banc (600 + 36 × noms) pour le plus gros ticket qu'une lecture rende (35 lignes, `SCAN_MAX_ITEMS`).
+   */
+  traduireNoms: {
+    defaultTier: 'fast',
+    tier: 'fast',
+    maxOutputTokens: 600 + 36 * 35,
+    acceptsFile: false,
+    system: `Tu traduis en français des désignations d'articles d'une facture de brasserie (allemand, anglais, français ou italien). Tu ne vois ni le document ni aucun montant.
+Entrée : une liste d'objets { i, base, kind, stockCategory }. Sortie : pour chaque entrée, { i, nameFr } avec le même i, dans le même ordre, et rien d'autre.
+nameFr est la désignation de base en français :
+- Traduis tous les mots ordinaires : matière, usage, forme, couleur, frais (Malz, Hopfen, Hefe, Schlauch, Deckel, Porto, Verpackung, Zuschlag…), même dans une désignation en partie en français ou en anglais.
+- Garde tels quels : marque et nom propre, variété de houblon, souche et code de levure, ® et ™, références, codes, nombres, dimensions et contenances (« 5x8mm », « 30 L »). Un chiffre ou un code qui suit un nom fait partie du nom : ne le coupe pas et ne l'abrège pas.
+- Une désignation déjà en français, ou faite seulement d'un nom propre ou d'un code, se rend à l'identique.
+- N'ajoute ni ne retire aucune information : pas d'option, d'état du produit, d'unité, d'explication ni de parenthèse.
+- La même désignation reçoit toujours la même traduction.
+- kind et stockCategory servent seulement à lever une ambiguïté de sens ; ne les recopie pas.
+Exemples inventés : « Flaschenbürste Neo-7 » → « Goupillon pour bouteilles Neo-7 » ; « Sirup-Pumpe mit Deckel 12x3mm » → « Pompe à sirop avec couvercle 12x3mm » ; « Brew Kettle Lid 40 cm » → « Couvercle de marmite 40 cm » ; « MALTEX® Edel 7 » → « MALTEX® Noble 7 » ; « Joint torique 12x2mm » → « Joint torique 12x2mm ».`,
+    schema: {
+      type: 'OBJECT',
+      properties: { noms: { type: 'ARRAY', items: { type: 'OBJECT', properties: { i: { type: 'INTEGER' }, nameFr: { type: 'STRING' } }, required: ['i', 'nameFr'] } } },
+      required: ['noms']
+    }
   }
 };
 

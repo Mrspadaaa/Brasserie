@@ -18,7 +18,7 @@
 import { SCAN_MAX_ITEMS } from '../functions/src/invoiceScanCore';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { CAS_FILES, GENRES, casPath, MISSION_DIR, N_SUFFIX, baseOfId, genreOfCase, isNId, loadCases, orderVariants, valueAtPath, variantLabel, type AppliedFault, type BenchCase, type DrawRecord } from './banc-lecture-facture';
+import { CAS_FILES, GENRES, LEXIQUE_FR, OPTION_MOTS, UNITE_SUFFIXE, casPath, MISSION_DIR, N_SUFFIX, baseOfId, canonMot, genreOfCase, isNId, loadCases, motsDe, orderVariants, valueAtPath, variantLabel, type AppliedFault, type BenchCase, type DrawRecord } from './banc-lecture-facture';
 
 /** Les ids de variante présents dans les parcours (`Cs`, `Cs+N`…), dans l'ordre des tableaux. */
 export const variantIds = (records: DrawRecord[]): string[] => orderVariants(new Set(records.flatMap(record => Object.keys(record.variants))));
@@ -275,7 +275,8 @@ export interface SimulationCheck { present: number; found: number; missed: strin
 export function checkSimulation(records: DrawRecord[], draws: DrawVerdict[], applied: AppliedFault[]): SimulationCheck {
   let present = 0, found = 0;
   const missed: string[] = [];
-  for (const entry of applied) {
+  // f5 : une fausse désignation (`items.N.nameFr`) ne se juge pas ici (judgeResult ne lit pas nameFr) : son contrôle est `checkNomsFrSimulation`
+  for (const entry of applied.filter(item => !/^items\.\d+\.nameFr$/.test(item.path))) {
     const record = records.find(item => item.doc === entry.doc && item.tirage === entry.tirage);
     if (!record) continue;
     for (const variant of orderVariants(Object.keys(record.variants))) {
@@ -515,8 +516,199 @@ export function renderHorsLigne(file: { meta: any; records: DrawRecord[] }, stat
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Voie f5-noms-fr (01.11, D271, D275) : le juge du champ `nameFr` (la désignation en français) de la variante Csv8F
+// ---------------------------------------------------------------------------------------------------------------------
+/** Les défauts d'une désignation en français : absente, restée dans une autre langue, marque perdue, option ou état gardé, suffixe d'unité gardé, explication trop longue. */
+export type DefautNomFr = 'absent' | 'langue' | 'marque' | 'option' | 'unite' | 'long';
+export const DEFAUTS_NOM_FR: readonly DefautNomFr[] = ['absent', 'langue', 'marque', 'option', 'unite', 'long'];
+const inLexique = (word: string) => Object.prototype.hasOwnProperty.call(LEXIQUE_FR, word);
+/** Les jetons d'une désignation imprimée qui doivent survivre tels quels : marque ®/™, référence (lettres et chiffres), nombre à 4 chiffres ou plus, MAJUSCULES de 4 lettres ou plus (hors mots du lexique et d'option). */
+export function jetonsGardes(name: string): string[] {
+  const out: string[] = [];
+  for (const token of name.split(/[\s,;()/]+/).filter(Boolean)) {
+    const marked = /[®™]/.test(token), bare = token.replace(/[®™]/g, '').replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
+    const core = canonMot(bare);
+    if (!core || (inLexique(core) || OPTION_MOTS.has(core))) continue;
+    const letters = bare.replace(/[^\p{L}]/gu, '');
+    const reference = /\d/.test(core) && /[a-z]/.test(core) && core.length >= 3, number = /^\d{4,}$/.test(core), caps = letters.length >= 4 && letters === letters.toUpperCase() && !/\d/.test(core);
+    if (marked || reference || number || caps) out.push(bare);
+  }
+  return out;
+}
+/**
+ * Le verdict de `nameFr` sur une ligne du résultat final, par règles (un indice, jamais une traduction) :
+ *  - absent : la ligne a une désignation mais pas de `nameFr` ;
+ *  - langue : un mot du lexique d'allemand, d'anglais ou d'italien (`LEXIQUE_FR`) reste dans `nameFr` ;
+ *  - marque : une marque ®/™, une référence, un nombre à 4 chiffres ou un mot en MAJUSCULES de la désignation imprimée n'est plus dans `nameFr` ;
+ *  - option : crochets, deux-points, supplément « +CHF », mot d'état/option (geschrotet, crushed…) ou le texte de `variant` ;
+ *  - unite : le suffixe d'unité imprimé (« , Kg ») ou l'unité lue de la ligne en fin de texte ;
+ *  - long : bien plus long que l'imprimé (explication ajoutée).
+ */
+export function jugerNomFr(line: { name?: unknown; nameFr?: unknown; variant?: unknown; unit?: unknown }): DefautNomFr[] {
+  const name = String(line.name ?? '').trim(), fr = String(line.nameFr ?? '').trim();
+  if (!name) return [];
+  if (!fr) return ['absent'];
+  const defects: DefautNomFr[] = [], words = motsDe(fr);
+  if (words.some(inLexique)) defects.push('langue');
+  if (jetonsGardes(name).some(token => { const need = motsDe(token); return need.length > 0 && !need.every(word => words.includes(word)); })) defects.push('marque');
+  const variant = canonMot(String(line.variant ?? '')).replace(/\s+/g, ' ').trim();
+  // Une ligne qui est elle-même une option imprimée (« Schrotung ») n'est pas accusée d'en porter le mot
+  const lineIsOption = motsDe(name).some(word => OPTION_MOTS.has(word));
+  if (/\[[^\]]*\]|:|\+\s*(?:chf|fr|eur|€)/i.test(fr) || (!lineIsOption && words.some(word => OPTION_MOTS.has(word))) || (variant.length >= 4 && canonMot(fr).replace(/\s+/g, ' ').includes(variant))) defects.push('option');
+  const unit = String(line.unit ?? '').trim().replace(/[.*+?^${}()|[\]\\]/g, match => `\\${match}`);
+  if (UNITE_SUFFIXE.test(fr) || (unit && new RegExp(`[,;]\\s*${unit}\\.?\\s*$`, 'i').test(fr))) defects.push('unite');
+  if (fr.length > name.length * 1.8 + 20) defects.push('long');
+  return defects;
+}
+/** Une désignation sans mot du lexique dont `nameFr` diffère pourtant : nom propre ou mot déjà français retouché ? Ni défaut ni réussite : à lire dans les paires. */
+export function aLireNomFr(line: { name?: unknown; nameFr?: unknown }): boolean {
+  const name = String(line.name ?? '').replace(UNITE_SUFFIXE, '').trim(), fr = String(line.nameFr ?? '').trim();
+  if (!name || !fr || motsDe(name).some(inLexique)) return false;
+  return motsDe(name).filter(word => !OPTION_MOTS.has(word)).join(' ') !== motsDe(fr).join(' ');
+}
+
+export interface PaireNomFr { doc: string; tirage: number; variant: string; rang: number; name: string; nameFr: string; defauts: DefautNomFr[]; aLire: boolean }
+export interface NomsFrStats { items: number; justes: number; avecNomFr: number; aLire: number; defauts: Record<DefautNomFr, number>; parDoc: Record<string, { items: number; justes: number }>; parGenre: Record<string, { items: number; justes: number }>; paires: PaireNomFr[] }
+/** Le jugement de `nameFr` par variante qui le porte (Csv8F, Csv8F+N), sur les lignes du résultat final. Les paires (nom imprimé, nom français) sont PRIVÉES : jamais dans un tableau publiable. */
+export function judgeNomsFr(records: DrawRecord[], cases: BenchCase[]): Record<string, NomsFrStats> {
+  const genres = new Map(cases.map(c => [c.id, genreOfCase(c)]));
+  const out: Record<string, NomsFrStats> = {};
+  for (const record of records) for (const variant of orderVariants(Object.keys(record.variants))) {
+    if (baseOfId(variant) !== 'Csv8F') continue;
+    const stat = (out[variant] ??= { items: 0, justes: 0, avecNomFr: 0, aLire: 0, defauts: { absent: 0, langue: 0, marque: 0, option: 0, unite: 0, long: 0 }, parDoc: {}, parGenre: {}, paires: [] });
+    const lines: any[] = record.variants[variant].result?.items ?? [];
+    lines.forEach((line, rang) => {
+      if (!String(line?.name ?? '').trim()) return;
+      const defauts = jugerNomFr(line), aLire = defauts.length === 0 && aLireNomFr(line), genre = genres.get(record.doc) ?? 'photo';
+      stat.items++; if (!defauts.length) stat.justes++; if (line.nameFr) stat.avecNomFr++; if (aLire) stat.aLire++;
+      for (const code of defauts) stat.defauts[code]++;
+      const doc = (stat.parDoc[record.doc] ??= { items: 0, justes: 0 }), gen = (stat.parGenre[genre] ??= { items: 0, justes: 0 });
+      doc.items++; gen.items++; if (!defauts.length) { doc.justes++; gen.justes++; }
+      stat.paires.push({ doc: record.doc, tirage: record.tirage, variant, rang, name: String(line.name), nameFr: String(line.nameFr ?? ''), defauts, aLire });
+    });
+  }
+  return out;
+}
+/** Le tableau publiable de `nameFr` : des comptes seulement, aucun nom d'achat. */
+export function renderNomsFr(stats: Record<string, NomsFrStats>): string[] {
+  const ids = Object.keys(stats);
+  if (!ids.length) return ['Aucune variante Csv8F dans cette sortie.'];
+  const lines = ['## Désignation en français (nameFr) — comptes seulement', '', `| | ${ids.map(shortLabel).join(' | ')} |`, `|---|${ids.map(() => '---').join('|')}|`];
+  const L = (label: string, pick: (s: NomsFrStats) => string) => `| ${label} | ${ids.map(id => pick(stats[id])).join(' | ')} |`;
+  lines.push(L('Lignes avec un nameFr / lignes', s => `${s.avecNomFr} / ${s.items}`), L('Lignes sans défaut / lignes', s => `${s.justes} / ${s.items}`));
+  for (const code of DEFAUTS_NOM_FR) lines.push(L(`défaut « ${code} »`, s => String(s.defauts[code])));
+  lines.push(L('à lire à la main (nom retouché sans mot du lexique)', s => String(s.aLire)));
+  for (const id of ids) {
+    lines.push('', `### ${shortLabel(id)} — par pièce et par genre (lignes sans défaut / lignes)`, '', '| pièce | lignes |', '|---|---|');
+    for (const doc of Object.keys(stats[id].parDoc).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, '')))) lines.push(`| ${doc} | ${stats[id].parDoc[doc].justes} / ${stats[id].parDoc[doc].items} |`);
+    lines.push('', ...Object.entries(stats[id].parGenre).map(([genre, c]) => `- ${genre} : ${c.justes} / ${c.items}`));
+  }
+  lines.push('', 'Les règles sont des indices (lexique allemand, anglais, italien ; marque, option, unité) : le verdict final est la lecture des paires (nom imprimé, nom français) du fichier privé `noms-fr-paires.json`, par le pilote.');
+  return lines;
+}
+
+/** Simulation : chaque fausse désignation fabriquée (`items.N.nameFr` d'un plan de fautes) est retrouvée par le juge, sous le bon défaut, et aucune autre ligne n'est accusée. */
+const DEFAUT_DE_FAUTE: Record<string, DefautNomFr> = { 'nom-fr-non-traduit': 'langue', 'nom-fr-suffixe-unite': 'unite', 'nom-fr-option': 'option', 'nom-fr-absent': 'absent' };
+export const estFauteNomFr = (entry: AppliedFault) => /^items\.\d+\.nameFr$/.test(entry.path);
+export interface NomsFrSimulation { present: number; found: number; missed: string[]; accusees: string[]; ok: boolean }
+export function checkNomsFrSimulation(records: DrawRecord[], applied: AppliedFault[]): NomsFrSimulation {
+  const faults = applied.filter(estFauteNomFr);
+  let present = 0, found = 0;
+  const missed: string[] = [], accusees: string[] = [], expectedCells = new Set<string>();
+  for (const record of records) for (const variant of orderVariants(Object.keys(record.variants))) {
+    if (baseOfId(variant) !== 'Csv8F') continue;
+    const lines: any[] = record.variants[variant].result?.items ?? [];
+    for (const entry of faults.filter(item => item.doc === record.doc && item.tirage === record.tirage)) {
+      const rang = Number(entry.path.split('.')[1]), line = lines[rang], code = DEFAUT_DE_FAUTE[entry.fault];
+      if (!line) continue;
+      const there = code === 'absent' ? !line.nameFr : line.nameFr === entry.wrongValue;
+      if (!there) continue;
+      expectedCells.add(`${record.doc}|${record.tirage}|${variant}|${rang}`);
+      present++;
+      if (jugerNomFr(line).includes(code)) found++; else missed.push(`${entry.fault} (${record.doc}, tirage ${record.tirage}, ${shortLabel(variant)}, ligne ${rang + 1})`);
+    }
+    lines.forEach((line, rang) => {
+      if (expectedCells.has(`${record.doc}|${record.tirage}|${variant}|${rang}`)) return;
+      const defauts = jugerNomFr(line);
+      if (defauts.length) accusees.push(`${record.doc} tirage ${record.tirage} ${shortLabel(variant)} ligne ${rang + 1} : ${defauts.join(', ')}`);
+    });
+  }
+  return { present, found, missed, accusees, ok: present > 0 && found === present && !accusees.length };
+}
+
+/** Deux sorties du banc réunies : les variantes de la seconde s'ajoutent, par (pièce, tirage), à celles de la première (la production rejouée et Csv8F payée). */
+export function fusionnerSorties(a: DrawRecord[], b: DrawRecord[]): DrawRecord[] {
+  const bKey = new Map(b.map(record => [`${record.doc}|${record.tirage}`, record]));
+  const merged = a.map(record => { const other = bKey.get(`${record.doc}|${record.tirage}`); return other ? { ...record, readings: [...record.readings, ...other.readings], variants: { ...record.variants, ...other.variants } } : record; });
+  const seen = new Set(a.map(record => `${record.doc}|${record.tirage}`));
+  return [...merged, ...b.filter(record => !seen.has(`${record.doc}|${record.tirage}`))];
+}
+
+export interface PerteNomFr { cellule: string; avant: ComptesCellule; apres: ComptesCellule; ajoutes: string[] }
+export interface ComparaisonNomFr {
+  /** Les cellules (pièce / variante) où Csv8F perd un champ, une ligne, ou ajoute un champ faux. */ pertes: PerteNomFr[];
+  production: VariantStats; avecNomFr: VariantStats; sansPerte: boolean; raisons: string[];
+  /** Rapports médians Csv8F / production (durée, coût) : au-delà de 1,25 « à juger » (le champ ajoute des jetons de sortie). */ rapportTemps: number | null; rapportCout: number | null;
+}
+/** Csv8F+N contre Csv8+N, jugés comme les autres variantes (champs, lignes, faux verts, durée, coût) : « sans perte » seulement si rien n'est pire. */
+export function comparerCsv8F(records: DrawRecord[], cases: BenchCase[], production = 'Csv8+N', variante = 'Csv8F+N'): ComparaisonNomFr {
+  const { stats, draws } = judgeBench(records, cases);
+  const p = stats[production], f = stats[variante];
+  if (!p || !f) throw new Error(`Comparaison impossible : il faut ${production} et ${variante} dans les parcours.`);
+  const rename = (variant: string) => draws.filter(draw => draw.variant === variant).map(draw => ({ ...draw, variant: 'X' }));
+  const cellules = comparerJugements(rename(production), rename(variante));
+  const pertes = cellules.filter(cell => cell.perte).map(cell => ({ cellule: cell.cellule, avant: cell.avant, apres: cell.apres, ajoutes: cell.ajoutes }));
+  const raisons: string[] = [];
+  if (f.right < p.right) raisons.push(`champs justes ${f.right} contre ${p.right}`);
+  if (f.lineRight < p.lineRight) raisons.push(`lignes justes ${f.lineRight} contre ${p.lineRight}`);
+  if (f.fauxVerts > p.fauxVerts) raisons.push(`faux verts ${f.fauxVerts} contre ${p.fauxVerts}`);
+  if (f.failures > p.failures) raisons.push(`parcours sans résultat ${f.failures} contre ${p.failures}`);
+  if (pertes.length) raisons.push(`${pertes.length} cellule(s) pièce/variante en perte`);
+  const ratioOf = (a: number | null, b: number | null) => (a === null || b === null || b === 0 ? null : a / b);
+  return { pertes, production: p, avecNomFr: f, sansPerte: raisons.length === 0, raisons, rapportTemps: ratioOf(median(f.ms), median(p.ms)), rapportCout: ratioOf(median(f.costMicro), median(p.costMicro)) };
+}
+export function renderComparaison(c: ComparaisonNomFr, production = 'Csv8+N', variante = 'Csv8F+N'): string[] {
+  const row = (label: string, pick: (s: VariantStats) => string) => `| ${label} | ${pick(c.production)} | ${pick(c.avecNomFr)} |`;
+  const lines = [`## ${shortLabel(variante)} contre ${shortLabel(production)} — rien ne doit être perdu ailleurs`, '', `| | ${shortLabel(production)} | ${shortLabel(variante)} |`, '|---|---|---|'];
+  lines.push(row('Champs justes / jugés', s => ratio(s.right, s.judged)), row('Lignes justes / jugées', s => ratio(s.lineRight, s.lineJudged)), row('**Faux verts**', s => `**${s.fauxVerts}**`), row('Parcours sans résultat', s => String(s.failures)),
+    row('Durée médiane', s => sec(median(s.ms))), row('Durée maximale', s => sec(s.ms.length ? Math.max(...s.ms) : null)), row('Coût médian par parcours (CHF)', s => francs(median(s.costMicro))), row('Coût total (CHF)', s => francs(totalOf(s.costMicro))));
+  const times = (r: number | null) => (r === null ? '—' : `×${r.toFixed(2).replace('.', ',')}`);
+  lines.push('', `Durée médiane ${times(c.rapportTemps)}, coût médian ${times(c.rapportCout)} (au-delà de ×1,25 : à juger, le champ ajoute des jetons de sortie).`);
+  lines.push('', c.sansPerte ? 'AUCUNE PERTE — champs, lignes, faux verts et parcours : au moins aussi bons, aucune cellule pièce/variante en perte.' : `PERTE — ${c.raisons.join(' ; ')}.`);
+  for (const loss of c.pertes) lines.push(`- ${loss.cellule} : champs ${loss.avant.right}/${loss.avant.judged} → ${loss.apres.right}/${loss.apres.judged}, lignes ${loss.avant.lineRight}/${loss.avant.lineJudged} → ${loss.apres.lineRight}/${loss.apres.lineJudged}${loss.ajoutes.length ? `, nouveaux champs faux : ${loss.ajoutes.join(', ')}` : ''}`);
+  return lines;
+}
+
+/** `--noms-fr <dossier Csv8F> [--contre <dossier production>]` : le jugement de nameFr et la comparaison. Écrit le tableau (comptes) et les paires (privées) dans le dossier de la sortie Csv8F. */
+function mainNomsFr(args: string[]) {
+  const at = (flag: string) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : undefined; };
+  const dir = at('--noms-fr'), contre = at('--contre');
+  if (!dir || dir.startsWith('--')) throw new Error('--noms-fr attend le dossier de la sortie Csv8F.');
+  const file = JSON.parse(readFileSync(path.join(dir, 'results.json'), 'utf8'));
+  const other = contre ? JSON.parse(readFileSync(path.join(contre, 'results.json'), 'utf8')) : undefined;
+  const records: DrawRecord[] = other ? fusionnerSorties(other.records, file.records) : file.records;
+  const names: string[] = [...new Set<string>([...(file.meta.casFiles ?? []), ...(other?.meta.casFiles ?? [])])];
+  const cases = loadCases(names.length ? names.map((name: string) => CAS_FILES.find(candidate => path.basename(candidate) === name) ?? casPath(name)) : CAS_FILES);
+  const noms = judgeNomsFr(file.records, cases), lines = renderNomsFr(noms);
+  const out: string[] = [];
+  let simulation: NomsFrSimulation | undefined;
+  const faultsPath = path.join(dir, 'faults.json');
+  if (existsSync(faultsPath)) simulation = checkNomsFrSimulation(file.records, JSON.parse(readFileSync(faultsPath, 'utf8')).applied);
+  if (other) { const comparison = comparerCsv8F(records, cases, 'Csv8+N', 'Csv8F+N'); out.push('', ...renderComparaison(comparison)); console.log(comparison.sansPerte ? 'AUCUNE PERTE' : `PERTE : ${comparison.raisons.join(' ; ')}`); }
+  for (const [id, s] of Object.entries(noms)) console.log(`${shortLabel(id)} : nameFr sans défaut ${s.justes}/${s.items}, absents ${s.defauts.absent}, langue ${s.defauts.langue}, marque ${s.defauts.marque}, option ${s.defauts.option}, unité ${s.defauts.unite}, long ${s.defauts.long}, à lire ${s.aLire}`);
+  writeFileSync(path.join(dir, 'RESULTAT-NOMS-FR.md'), `${['# Désignation en français — résultat', '', ...lines, ...out].join('\n')}\n`);
+  writeFileSync(path.join(dir, 'noms-fr-paires.json'), `${JSON.stringify(Object.fromEntries(Object.entries(noms).map(([id, s]) => [id, s.paires])), null, 1)}\n`);
+  console.log(`Tableau : ${path.join(dir, 'RESULTAT-NOMS-FR.md')} ; paires privées : ${path.join(dir, 'noms-fr-paires.json')}`);
+  if (simulation) {
+    if (simulation.ok) console.log(`NOMS FR SIMULE OK — ${simulation.found}/${simulation.present} fausses désignations fabriquées retrouvées, aucune autre ligne accusée.`);
+    else { console.log(`NOMS FR SIMULE ECHEC — retrouvées ${simulation.found}/${simulation.present}, manquées : ${simulation.missed.join(' ; ') || 'aucune'}, accusées à tort : ${simulation.accusees.join(' ; ') || 'aucune'}.`); process.exit(1); }
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 function main() {
   const args = process.argv.slice(2).filter(arg => arg !== '--');
+  if (args.includes('--noms-fr')) { mainNomsFr(args); return; }
   const valueOfMd = args.indexOf('--hors-ligne-md') >= 0 ? args.indexOf('--hors-ligne-md') + 1 : -1;
   const dir = args.find((arg, index) => !arg.startsWith('--') && index !== valueOfMd);
   if (!dir) throw new Error('Dossier de sortie du banc manquant.');
@@ -524,7 +716,10 @@ function main() {
   const cases = loadCases(file.meta.casFiles?.length ? file.meta.casFiles.map((name: string) => CAS_FILES.find(candidate => path.basename(candidate) === name) ?? casPath(name)) : CAS_FILES);
   const { stats, draws } = judgeBench(file.records, cases);
   const faultsPath = path.join(dir, 'faults.json');
-  const simulation = existsSync(faultsPath) ? checkSimulation(file.records, draws, JSON.parse(readFileSync(faultsPath, 'utf8')).applied) : undefined;
+  const applied: AppliedFault[] | undefined = existsSync(faultsPath) ? JSON.parse(readFileSync(faultsPath, 'utf8')).applied : undefined;
+  // f5 : les fausses désignations (`nameFr`) ne passent pas par `judgeResult` ; leur contrôle est celui de `--noms-fr` (juge des noms)
+  const simulation = applied ? checkSimulation(file.records, draws, applied.filter(entry => !estFauteNomFr(entry))) : undefined;
+  const nomsFrSimulation = applied && file.records.some((record: DrawRecord) => Object.keys(record.variants).some(id => baseOfId(id) === 'Csv8F')) ? checkNomsFrSimulation(file.records, applied) : undefined;
   const table = renderTable(file, stats, simulation, draws);
   const target = path.join(dir, 'RESULTAT-BANC.md');
   writeFileSync(target, table);
@@ -548,10 +743,11 @@ function main() {
     console.log(`Publié : ${published}`);
   }
   if (simulation) {
-    if (simulation.ok) console.log(`BANC SIMULE OK — ${simulation.found}/${simulation.present} fausses réponses fabriquées retrouvées, ${simulation.fauxVerts} faux verts comptés, ${simulation.cleanDraws} parcours propres sans champ faux, aucun réseau.`);
+    if (nomsFrSimulation && !nomsFrSimulation.ok) { console.log(`BANC SIMULE ECHEC — désignations en français : retrouvées ${nomsFrSimulation.found}/${nomsFrSimulation.present}, manquées : ${nomsFrSimulation.missed.join(' ; ') || 'aucune'}, accusées à tort : ${nomsFrSimulation.accusees.join(' ; ') || 'aucune'}.`); process.exit(1); }
+    if (simulation.ok) console.log(`BANC SIMULE OK — ${simulation.found}/${simulation.present} fausses réponses fabriquées retrouvées, ${simulation.fauxVerts} faux verts comptés, ${simulation.cleanDraws} parcours propres sans champ faux, aucun réseau.${nomsFrSimulation ? ` Désignations en français : ${nomsFrSimulation.found}/${nomsFrSimulation.present} fausses fabriquées retrouvées, aucune autre accusée.` : ''}`);
     else { console.log(`BANC SIMULE ECHEC — retrouvées ${simulation.found}/${simulation.present}, manquées : ${simulation.missed.join(' ; ') || 'aucune'}, champs faux sur parcours propres : ${simulation.cleanWrong.join(' ; ') || 'aucun'}, faux verts ${simulation.fauxVerts}.`); process.exit(1); }
   } else console.log(`Tableau : ${target}`);
 }
 /** vite-node ne laisse pas le nom du script dans process.argv : le jugement se lance avec un dossier de banc, jamais sous vitest. */
 const rest = process.argv.slice(2).filter(arg => arg !== '--');
-if (!process.env.VITEST && rest.some(arg => !arg.startsWith('--')) && !rest.includes('--simuler') && !rest.includes('--payant') && !rest.includes('--hors-ligne')) main();
+if (!process.env.VITEST && !/banc-noms-fr/.test(process.argv[1] ?? '') && rest.some(arg => !arg.startsWith('--')) && !rest.includes('--simuler') && !rest.includes('--payant') && !rest.includes('--hors-ligne')) main();

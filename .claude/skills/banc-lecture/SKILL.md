@@ -22,6 +22,9 @@ Rapport de fond : `work/missions/2026-11-01-banc-lecture/reports/Lecture de fact
   `lignesInvisibles`, contrôle `VERITE OK`). Lecteur A : `general-purpose` en Opus ; lecteur B : `auteur` (Sonnet). En parallèle.
 - Le pilote compare les deux fichiers champ par champ, tranche chaque écart **sur l'image** (vérité croisée, aucune source seule), et écrit
   `cas-N.json`. Un doute qui reste devient une liste de valeurs justes, dit dans `notes`.
+- Une unité vraie s'étiquette sur la même pièce, jamais d'après le produit d'une autre pièce du même magasin : la boutique en ligne
+  du banc vend une même matière en « , Kg » et en « , Gramm », l'unité dans le nom et non en colonne (01.11 : une étiquette tirée
+  d'un PDF a fait 4 faux).
 
 ## 3. Mesurer
 - `npx tsx scripts/banc-lecture-facture.ts --simuler …` d'abord (`BANC SIMULE OK`, aucun réseau), puis `--estimer` sur la commande
@@ -40,3 +43,5 @@ Rapport de fond : `work/missions/2026-11-01-banc-lecture/reports/Lecture de fact
 - Une page neuve et datée (artefact privé) : production contre la meilleure variante, par document, avec ses mots. Liens dans le rapport.
 - La bascule de production (redéployer `aiTask`, nouvelle dépendance comme zxing-wasm, nouveau fournisseur comme Azure) attend son accord.
   Rien ne change dans `functions/` ni `src/` avant.
+- Un champ de ligne neuf (`nameFr`) : au schéma hors `required`, à `normalizeInvoiceScan` (il ne garde que les champs qu'il
+  énumère), au client, et hors de `itemFields` du vote s'il ne doit pas faire voter les lectures.

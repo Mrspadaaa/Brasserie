@@ -35,7 +35,9 @@ export type AiTaskId =
   /** Caractéristiques publiées d'un ingrédient, cherchées avec l'ancrage Google. */
   | 'lookupIngredient'
   | 'lookupHopVariety'
-  | 'readHopCoa';
+  | 'readHopCoa'
+  /** D280 : la désignation en français des noms de base d'une facture, texte seul (`src/services/nomsFr.ts`). */
+  | 'traduireNoms';
 
 export const TIER_LABEL: Record<AiTier, string> = {
   fast: '⚡ Rapide',

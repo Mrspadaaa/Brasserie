@@ -51,6 +51,13 @@
  *   Zv    comme C★v, mais sur un désaccord de total, date, n° ou montant de ligne, la 3.8 localise la zone et ne relit que ce champ.
  * Le budget cumulé monte à 24,5 CHF (D242) ; `--plafond-passe` (3 CHF par défaut) arrête une passe avant de le dépasser.
  *
+ * Voie f5-noms-fr (01.11, D271, D275) : « Ça traduits en français et fait le bon lien ».
+ *   Csv8F  C★v8 dont les deux Flash-Lite ET la 3.8 rendent en plus `nameFr` par article : la désignation en français, marque et nom propre gardés,
+ *          sans option ni unité (champ facultatif du schéma, une phrase de plus dans la consigne système ; `name` reste l'imprimé). Sa 3.8 est à elle
+ *          (jamais prêtée ni partagée : celle de la production ne porte pas `nameFr`). Le champ ne survit pas à `normalizeInvoiceScan` ni au rapprochement
+ *          (la production n'en reçoit rien) : le banc le garde à côté de chaque lecture (`Reading.namesFr`) et le rattache aux lignes du résultat final
+ *          (`withNamesFr`) pour que le juge (`banc-lecture-facture-juger.ts`, section « noms en français ») le lise. Avec N : `Csv8F+N` (= Csv8+N+F).
+ *
  *   npx vite-node --config vitest.config.ts scripts/banc-lecture-facture.ts -- --simuler --variantes Cs,Csp,Lm,Lh,Lp --out <dossier>
  *   npx vite-node --config vitest.config.ts scripts/banc-lecture-facture.ts -- --hors-ligne --reprendre <sortie k1> --variantes A,B,C,Cp,Cs,Csp --normaliser
  *   npx vite-node --config vitest.config.ts scripts/banc-lecture-facture.ts -- --payant --budget-chf 3.5 --reprendre <sortie k1> --variantes Lm,Lh,Lp --normaliser --confirm-paid-ai
@@ -119,16 +126,17 @@ export const CODE_EXEC_INPUT_FACTOR = 3;
 /** Points d'origine `controle` qui pèsent et qui disent « l'arithmétique de cette lecture ne tient pas » (B et C′). Jamais la date absente. */
 export const ARITH_CODES: ReadonlySet<string> = new Set(['ligne-montant', 'somme-ecart', 'tva-incoherente', 'ht-tva-ttc', 'total-absent']);
 
-export type VariantId = 'A' | 'B' | 'C' | 'Cp' | 'Cs' | 'Csv' | 'Csp' | 'Lm' | 'Lh' | 'Lp' | 'Hv' | 'Sv' | 'Uv' | 'Av' | 'Tv' | 'Csv8' | 'Avl' | 'Pv' | 'Bv' | 'Zv';
+export type VariantId = 'A' | 'B' | 'C' | 'Cp' | 'Cs' | 'Csv' | 'Csp' | 'Lm' | 'Lh' | 'Lp' | 'Hv' | 'Sv' | 'Uv' | 'Av' | 'Tv' | 'Csv8' | 'Avl' | 'Pv' | 'Bv' | 'Zv' | 'Csv8F';
 /** Toutes les variantes connues, dans l'ordre des tableaux. */
-export const VARIANTS: readonly VariantId[] = ['A', 'B', 'C', 'Cp', 'Cs', 'Csv', 'Csp', 'Lm', 'Lh', 'Lp', 'Hv', 'Sv', 'Uv', 'Av', 'Tv', 'Csv8', 'Avl', 'Pv', 'Bv', 'Zv'];
+export const VARIANTS: readonly VariantId[] = ['A', 'B', 'C', 'Cp', 'Cs', 'Csv', 'Csp', 'Lm', 'Lh', 'Lp', 'Hv', 'Sv', 'Uv', 'Av', 'Tv', 'Csv8', 'Avl', 'Pv', 'Bv', 'Zv', 'Csv8F'];
 /** Les quatre de k1 : ce que le banc lit quand `--variantes` n'est pas donné. */
 export const K1_VARIANTS: readonly VariantId[] = ['A', 'B', 'C', 'Cp'];
 export const VARIANT_LABEL: Record<VariantId, string> = {
   A: 'A production', B: 'B une lecture d’abord', C: 'C Flash-Lite ×2 puis 3.8', Cp: 'C′ C gardée par les contrôles',
   Cs: 'C★ la 3.8 tranche seule', Csv: 'C★v valeurs de la 3.8, statut du vote', Csp: 'C★′ C★ gardée par les contrôles', Lm: 'Lm C★v réflexion medium', Lh: 'Lh C★v réflexion high', Lp: 'Lp C★v consigne Flash-Lite',
   Hv: 'Hv C★v consigne après les images, sans température', Sv: 'Sv Hv + schéma du banc', Uv: 'Uv Sv + images ULTRA_HIGH', Av: 'Av C★v + 3.8 avec exécution de code', Tv: 'Tv Hv + tuiles',
-  Csv8: 'C★v8 C★v, sortie Flash-Lite 8 192', Avl: 'Avl C★v, Flash-Lite avec exécution de code', Pv: 'Pv PDF lu page par page', Bv: 'Bv image haute lue par bandes', Zv: 'Zv C★v, la 3.8 ne relit que la zone en cause'
+  Csv8: 'C★v8 C★v, sortie Flash-Lite 8 192', Avl: 'Avl C★v, Flash-Lite avec exécution de code', Pv: 'Pv PDF lu page par page', Bv: 'Bv image haute lue par bandes', Zv: 'Zv C★v, la 3.8 ne relit que la zone en cause',
+  Csv8F: 'Csv8F C★v8 + désignation en français (nameFr)'
 };
 /** Suffixe d'une variante lue avec la normalisation de code (N) : `Cs+N`. */
 export const N_SUFFIX = '+N';
@@ -142,17 +150,17 @@ export function orderVariants(ids: Iterable<string>): string[] {
 }
 
 /** Un groupe = une façon d'appeler : les variantes d'un même groupe partagent leurs lectures. */
-export type Group = 'A' | 'C' | 'Lm' | 'Lh' | 'Lp' | 'Hv' | 'Sv' | 'Uv' | 'Tv' | 'Csv8' | 'Avl' | 'Pv' | 'Bv';
+export type Group = 'A' | 'C' | 'Lm' | 'Lh' | 'Lp' | 'Hv' | 'Sv' | 'Uv' | 'Tv' | 'Csv8' | 'Avl' | 'Pv' | 'Bv' | 'Csv8F';
 /**
  * Av n'a pas de lectures 1 et 2 à lui : ce sont celles de C ; seule sa 3ᵉ lecture (3.8 avec exécution de code) lui est propre.
  * Zv non plus : ses deux lectures sont celles de C ; seule sa 3ᵉ lecture (la zone en cause) lui est propre.
  */
-export const GROUP_OF: Record<VariantId, Group> = { A: 'A', B: 'A', C: 'C', Cp: 'C', Cs: 'C', Csv: 'C', Csp: 'C', Lm: 'Lm', Lh: 'Lh', Lp: 'Lp', Hv: 'Hv', Sv: 'Sv', Uv: 'Uv', Av: 'C', Tv: 'Tv', Csv8: 'Csv8', Avl: 'Avl', Pv: 'Pv', Bv: 'Bv', Zv: 'C' };
+export const GROUP_OF: Record<VariantId, Group> = { A: 'A', B: 'A', C: 'C', Cp: 'C', Cs: 'C', Csv: 'C', Csp: 'C', Lm: 'Lm', Lh: 'Lh', Lp: 'Lp', Hv: 'Hv', Sv: 'Sv', Uv: 'Uv', Av: 'C', Tv: 'Tv', Csv8: 'Csv8', Avl: 'Avl', Pv: 'Pv', Bv: 'Bv', Zv: 'C', Csv8F: 'Csv8F' };
 /** Les groupes qui lisent à leur compte deux lectures Flash-Lite puis concluent comme C★v. */
-export const LITE_GROUPS = ['Lm', 'Lh', 'Lp', 'Hv', 'Sv', 'Uv', 'Tv', 'Csv8', 'Avl', 'Pv', 'Bv'] as const;
+export const LITE_GROUPS = ['Lm', 'Lh', 'Lp', 'Hv', 'Sv', 'Uv', 'Tv', 'Csv8', 'Avl', 'Pv', 'Bv', 'Csv8F'] as const;
 export type LiteGroup = typeof LITE_GROUPS[number];
 /** Les groupes de k5 : la 3.8 est aussi appelée quand une lecture Flash-Lite manque (coupée), comme C — c'est ainsi que le repli `finalOfLite` joue. */
-export const FULL_VOTE_GROUPS: ReadonlySet<string> = new Set(['Csv8', 'Avl', 'Pv', 'Bv']);
+export const FULL_VOTE_GROUPS: ReadonlySet<string> = new Set(['Csv8', 'Avl', 'Pv', 'Bv', 'Csv8F']);
 /** Pv et Bv : leurs deux lectures sont chacune la réunion de lectures partielles (une par page ou par bande), lancées ensemble. */
 export const PARTIAL_GROUPS: ReadonlySet<string> = new Set(['Pv', 'Bv']);
 /** Plafond de sortie relevé de Lm et Lh seuls : la réflexion compte dans `maxOutputTokens`, `high` peut couper à 5 100. */
@@ -173,11 +181,60 @@ export interface CallSpec {
   codeExecution?: boolean;
   /** Tv : l'image entière et deux tuiles. */
   tiles?: boolean;
+  /** Csv8F : le schéma et la consigne système portent `nameFr` (la 3.8 de la variante aussi). */
+  nameFr?: boolean;
 }
+/**
+ * Csv8F : la phrase ajoutée à la consigne SYSTÈME (après celle de `name`, qui reste l'imprimé). Le contrat du champ : français, marque et nom propre
+ * tels quels, ni option ni état ni unité ni explication. Les options (état du malt, supplément) et l'unité sont lues par le code, pas ici (voie f1).
+ */
+export const NAME_FR_NOTE = 'nameFr est la désignation de l’article en français (le document peut être en allemand, anglais, français ou italien) : traduis les mots communs, garde tels quels la marque et les noms propres (« CARABELGE® », « Styrian Goldings », « Wyeast 3787 Belgian High Gravity »), sans option, sans état du produit, sans unité ni suffixe d’unité (« , Kg »), sans explication. Une désignation déjà en français ou faite d’un seul nom propre se recopie. name reste, lui, la désignation imprimée exacte.';
+/** Le schéma de production avec `nameFr` ajouté aux propriétés d'une ligne, hors de `required` (champ facultatif). La production n'est jamais modifiée. */
+export function schemaWithNameFr(schema: any = TASKS.scanInvoice.schema): any {
+  const clone = JSON.parse(JSON.stringify(schema));
+  clone.properties.items.items.properties.nameFr = { type: 'STRING', description: 'Désignation en français, marque et nom propre gardés, sans option ni unité' };
+  return clone;
+}
+/**
+ * Lexique du banc (canon : minuscules, sans accent) : des mots d'allemand, d'anglais et d'italien que `nameFr` ne doit plus contenir, avec leur
+ * équivalent français. Une seule source pour la simulation (qui « traduit » ainsi) et pour le juge (qui refuse ce qui reste). Aucun mot qui est aussi
+ * du français (malt, pilsner, tank, fine, extrait) : un nom propre ou un mot déjà français n'est jamais pris pour une faute. Un indice, pas une traduction :
+ * le vrai verdict est la lecture des paires par le pilote.
+ */
+export const LEXIQUE_FR: Readonly<Record<string, string>> = {
+  und: 'et', mit: 'avec', ohne: 'sans', fur: 'pour', fuer: 'pour', von: 'de', zum: 'pour', zur: 'pour', deckel: 'couvercle', rund: 'rond', fein: 'fin', grob: 'gros', sack: 'sac',
+  hopfensack: 'sac à houblon', hopfen: 'houblon', malz: 'malt', hefe: 'levure', schlauch: 'tuyau', dichtung: 'joint', flasche: 'bouteille', flaschen: 'bouteilles',
+  kronkorken: 'capsules', verschluss: 'bouchon', gartank: 'fermenteur', garbehalter: 'fermenteur', liter: 'L', stuck: 'pièce',
+  with: 'avec', and: 'et', without: 'sans', for: 'pour', lid: 'couvercle', round: 'rond', bag: 'sac', hops: 'houblons', hop: 'houblon', yeast: 'levure', hose: 'tuyau',
+  gasket: 'joint', bottle: 'bouteille', bottles: 'bouteilles', caps: 'capsules', stopper: 'bouchon', fermenter: 'fermenteur', fermentor: 'fermenteur',
+  con: 'avec', senza: 'sans', per: 'pour', di: 'de', della: 'de la', del: 'du', coperchio: 'couvercle', tondo: 'rond', sacco: 'sac', luppolo: 'houblon',
+  lievito: 'levure', tubo: 'tuyau', bottiglia: 'bouteille', tappo: 'bouchon', fermentatore: 'fermenteur', malto: 'malt',
+  // f5b : les mots restés en allemand dans la passe Csv8F (D279)
+  zuschlag: 'supplément', verpackung: 'emballage', versand: 'expédition', weizen: 'blé', gerste: 'orge', spezial: 'spécial', hell: 'clair', dunkel: 'foncé', fass: 'fût',
+  weizenmalz: 'malt de blé', gerstenmalz: 'malt d’orge', rauchmalz: 'malt fumé', roggenmalz: 'malt de seigle', hafermalz: 'malt d’avoine', rostmalz: 'malt torréfié',
+  rostgerste: 'orge torréfiée', silikon: 'silicone', silikonschlauch: 'tuyau en silicone', dichtungsring: 'joint', wheat: 'blé', barley: 'orge', roasted: 'torréfié'
+};
+/** Un mot ramené à sa forme de comparaison : minuscules, sans accent. */
+export const canonMot = (word: string): string => word.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+/** Les mots d'une désignation (lettres et chiffres), en canon. */
+export const motsDe = (text: string): string[] => canonMot(text).split(/[^a-z0-9]+/).filter(Boolean);
+/** La « traduction » du banc simulé : un mot du lexique devient son équivalent, le reste (marque, nom propre) est gardé tel quel ; le suffixe d'unité imprimé (« , Kg ») tombe. */
+export function fakeFrench(name: string): string {
+  const kept = name.replace(/\[[^\]]*\]/g, ' ').replace(/\s+$/, '').replace(UNITE_SUFFIXE, '').replace(/[\p{L}\p{N}]+/gu, word => (OPTION_MOTS.has(canonMot(word)) ? ' ' : LEXIQUE_FR[canonMot(word)] ?? word));
+  const clean = kept.replace(/\s+/g, ' ').replace(/[\s,:;]+$/, '').trim();
+  // Une ligne qui EST une option (« Schrotung ») se recopie : rien d'autre à lui faire dire
+  return clean || name.trim();
+}
+/** Le suffixe d'unité que la désignation imprimée recopie parfois (« , Kg », « , 1 Kg », « ; Stk ») : séparateur puis unité, en fin de texte. Le juge refuse qu'il survive dans `nameFr`. */
+export const UNITE_SUFFIXE = /(?<!\d)\s*[,;]\s*(?:\d+(?:[.,]\d+)?\s*)?(?:kg|g|gr|gramm|gram|l|lt|liter|litre|stk|stuck|stück|st|pce|pc|pcs|pz|piece|pièce|x)\.?\s*$/i;
+/** Des mots d'option ou d'état du produit (canon) : ils vivent dans `variant` et dans l'état lu par le code, pas dans `nameFr`. */
+export const OPTION_MOTS: ReadonlySet<string> = new Set(['geschrotet', 'ungeschrotet', 'gemahlen', 'ungemahlen', 'schrotung', 'mischung', 'einzelprodukt', 'crushed', 'uncrushed', 'milled', 'macinato', 'concasse', 'moulu', 'mahlgrad']);
 /** La phrase du banc ajoutée à la consigne 3 d'Av : zoomer avant de lire les montants. */
 export const AV_NOTE = 'Tu disposes d’un outil d’exécution de code. Avant de lire les montants, zoome sur le tableau des lignes (recadre et agrandis l’image) pour lire chaque cellule ; puis réponds par le seul JSON demandé.';
 /** Le réglage d'un appel. La 3ᵉ lecture est la 3.8 de production (consigne 3), quel que soit le groupe qui la demande — sauf celle d'Av. */
 export function callSpec(group: string, lecture: 1 | 2 | 3): CallSpec {
+  // Csv8F : les trois lectures portent `nameFr`, et rien d'autre ne change (Flash-Lite à 8 192 jetons comme Csv8, 3.8 au plafond de production)
+  if (group === 'Csv8F') return { model: lecture === 3 ? STRONG_MODEL : LITE_MODEL, prompt: INVOICE_SCAN_PROMPTS[lecture - 1], thinking: 'LOW', maxOut: lecture === 3 ? SCAN_MAX_OUTPUT : LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, nameFr: true };
   if (lecture === 3 && group === 'Av') return { model: STRONG_MODEL, prompt: `${INVOICE_SCAN_PROMPTS[2]}\n\n${AV_NOTE}`, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_THINKING_MS, codeExecution: true };
   if (lecture === 3) return { model: STRONG_MODEL, prompt: INVOICE_SCAN_PROMPTS[2], thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
   const prompt = INVOICE_SCAN_PROMPTS[lecture - 1];
@@ -303,6 +360,8 @@ export interface ReadBodyOptions {
   tilesNote?: boolean;
   /** Pv, Bv : la phrase de rang (page ou bande k sur N), ajoutée à la fin de la consigne. */
   note?: string;
+  /** Csv8F : `nameFr` au schéma (facultatif) et sa phrase à la consigne système. */
+  nameFr?: boolean;
 }
 /** La phrase du banc ajoutée à la consigne d'un cas à plusieurs fichiers (jamais à un cas à un fichier). Générique : aucune valeur. */
 export const multiCaptureNote = (count: number) =>
@@ -322,9 +381,10 @@ export function buildReadBody(files: InvoiceFile | InvoiceFile[], prompt: string
   const text = notes.length ? `${prompt}\n\n${notes.join('\n\n')}` : prompt;
   const media = list.map(file => (options.ultraHigh && file.mimeType !== 'application/pdf' ? { inlineData: file, mediaResolution: { level: 'MEDIA_RESOLUTION_ULTRA_HIGH' } } : { inlineData: file }));
   const parts = options.promptAfter ? [...media, { text }] : [{ text }, ...media];
-  const schema = options.svSchema ? SV_SCHEMA : TASKS.scanInvoice.schema;
+  const schema = options.svSchema ? SV_SCHEMA : options.nameFr ? schemaWithNameFr() : TASKS.scanInvoice.schema;
+  const system = options.svSchema ? svSystem(TASKS.scanInvoice.system) : options.nameFr ? `${TASKS.scanInvoice.system}\n${NAME_FR_NOTE}` : TASKS.scanInvoice.system;
   return {
-    systemInstruction: { parts: [{ text: options.svSchema ? svSystem(TASKS.scanInvoice.system) : TASKS.scanInvoice.system }] },
+    systemInstruction: { parts: [{ text: system }] },
     contents: [{ role: 'user', parts }],
     generationConfig: { ...(options.freeJson ? {} : { responseMimeType: 'application/json', responseSchema: schema }), ...(options.temperature === false ? {} : { temperature: 0 }), maxOutputTokens,
       mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel } },
@@ -396,6 +456,8 @@ export interface Reading {
   lent?: boolean;
   /** Appels réels que cette lecture réunit (Pv, Bv : une par partie ; zoom : localiser + relire de chaque cellule) ; absent = un seul. */
   calls?: number;
+  /** Csv8F : le `nameFr` de chaque ligne de `normalized.items` (même rang ; « » si la lecture n'en a pas écrit). Absent pour toute autre variante. */
+  namesFr?: string[];
 }
 
 const tokensOf = (response: any) => {
@@ -410,7 +472,10 @@ export function readingFromResponse(meta: ReadMeta, response: any, ms: number, c
   const base = { meta, ms, finishReason, inputTokens: tokens.input, outputTokens: tokens.output, costMicroChf, raw: response };
   try {
     const decoded = parseReadResponse(response, parseOptionsOf(meta, codes));
-    return { ...base, ok: true, normalized: normalizeInvoiceScan(decoded), overCap: Math.max(0, decoded.items.length - SCAN_MAX_ITEMS), cause: null, state: 'STOP' };
+    // Csv8F : `normalizeInvoiceScan` ne connaît pas `nameFr` (la production non plus) ; le banc le garde à côté, au même rang que les lignes normalisées.
+    const frs = decoded.items.slice(0, SCAN_MAX_ITEMS).map((line: any) => (typeof line?.nameFr === 'string' ? line.nameFr.replace(/\s+/g, ' ').trim().slice(0, 200) : ''));
+    return { ...base, ok: true, normalized: normalizeInvoiceScan(decoded), overCap: Math.max(0, decoded.items.length - SCAN_MAX_ITEMS), cause: null, state: 'STOP',
+      ...(meta.variant === 'Csv8F' ? { namesFr: frs } : {}) };
   } catch (error: any) {
     return { ...base, ok: false, cause: causeOf(error), error: String(error?.message ?? error).slice(0, 120), state: finishReason && finishReason !== 'STOP' ? `coupée (${finishReason})` : 'illisible' };
   }
@@ -647,6 +712,30 @@ export function finalOfStarVote(r1: Reading, r2: Reading, third?: Reading, force
 /** C★′ : comme C★, et un contrôle arithmétique en échec sur les deux lectures appelle aussi la 3.8, qui tranche seule. */
 export const finalOfStarPrime = (r1: Reading, r2: Reading, third?: Reading): Final => finalOfStar(r1, r2, third, arithmeticFailsOnTwo(r1, r2));
 
+/**
+ * Csv8F : rattache `nameFr` aux lignes du résultat final. Pour chaque ligne, la première lecture de `sources` (la 3.8 si elle a tranché, puis les Flash-Lite)
+ * qui a une ligne de même `name` et un `nameFr` non vide le donne ; une ligne de même rang est préférée, une même désignation ne sert qu'une fois par lecture.
+ * Aucun `nameFr` n'est inventé : une ligne sans lecture qui le porte reste sans (le juge la compte « absente »). Le résultat de départ n'est pas modifié.
+ */
+export function withNamesFr(result: any, sources: ReadonlyArray<Reading | undefined>): any {
+  if (!result || !Array.isArray(result.items)) return result;
+  const lists = sources.filter((read): read is Reading => !!read?.namesFr && !!read.normalized);
+  if (!lists.length) return result;
+  const used = lists.map(() => new Set<number>());
+  const items = result.items.map((line: any, rank: number) => {
+    for (let s = 0; s < lists.length; s++) {
+      const lines = lists[s].normalized!.items;
+      const at = lines[rank]?.name === line.name && !used[s].has(rank) ? rank : lines.findIndex((other, k) => other.name === line.name && !used[s].has(k));
+      if (at < 0) continue;
+      used[s].add(at);
+      const fr = lists[s].namesFr![at];
+      if (fr) return { ...line, nameFr: fr };
+    }
+    return line;
+  });
+  return { ...result, items };
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Toutes les variantes d'un parcours, déduites des lectures (pur : la boucle du banc, le hors-ligne et N passent par ici)
 // ---------------------------------------------------------------------------------------------------------------------
@@ -710,7 +799,11 @@ export function deriveVariants(reads: DrawReads, want: ReadonlySet<string>): Par
   // Lm, Lh, Lp, Hv, Sv, Uv, Tv = C★v : la divergence seule appelle la 3.8, qui tranche les valeurs ; le statut du vote est gardé
   for (const group of LITE_GROUPS) {
     const entry = reads.lite[group];
-    if (entry && want.has(group)) out[group] = { final: finalOfStarVote(entry.r1, entry.r2, entry.third), ...(entry.third ? { thirdFrom: thirdFromOf(entry.third) } : {}) };
+    if (!entry || !want.has(group)) continue;
+    const final = finalOfStarVote(entry.r1, entry.r2, entry.third);
+    // Csv8F : `nameFr` rejoint le résultat final, pris de la 3.8 si elle a tranché, sinon des Flash-Lite (jamais ailleurs que dans le banc)
+    const sources = final.used.length >= 3 ? [entry.third, entry.r1, entry.r2] : [entry.r1, entry.r2];
+    out[group] = { final: group === 'Csv8F' ? { ...final, result: withNamesFr(final.result, sources) } : final, ...(entry.third ? { thirdFrom: thirdFromOf(entry.third) } : {}) };
   }
   return out;
 }
@@ -828,7 +921,7 @@ export function setAtPath(root: any, route: string, value: unknown) {
 // Simulation : réponses fabriquées depuis la vérité, et quelques fautes fabriquées pour éprouver le jugement
 // ---------------------------------------------------------------------------------------------------------------------
 export type Family = 'f1' | 'f2' | 'l1' | 'l2' | 's3' | 'm1' | 'm2' | 'h1' | 'h2' | 'p1' | 'p2' | 'v1' | 'v2' | 'w1' | 'w2' | 'u1' | 'u2' | 't1' | 't2'
-  | 'e1' | 'e2' | 'g1' | 'g2' | 'q1' | 'q2' | 'b1' | 'b2' | 'zl' | 'zr';
+  | 'e1' | 'e2' | 'g1' | 'g2' | 'q1' | 'q2' | 'b1' | 'b2' | 'zl' | 'zr' | 'n1' | 'n2' | 'n3';
 export interface Fault { id: string; doc: string; tirage: number; families: Family[]; edits: Array<{ path: string; value?: unknown; delta?: number }>; cut?: boolean; note: string }
 export interface AppliedFault { fault: string; doc: string; tirage: number; family: Family; path: string; wrongValue: unknown }
 
@@ -859,7 +952,14 @@ export const FAULT_PLAN: Fault[] = [
   { id: 'date-diverge-zoom', doc: 'doc4', tirage: 1, families: ['l1'], edits: [{ path: 'date', value: '01.01.2000' }], note: 'les deux Flash-Lite divergent sur la seule date : Zv zoome' },
   { id: 'ligne-diverge-zoom', doc: 'doc6', tirage: 3, families: ['l1'], edits: [{ path: 'items.0.amountTTC', delta: 2 }], note: 'les deux Flash-Lite divergent sur le seul montant de la première ligne : Zv zoome' },
   { id: 'total-diverge-sans-boite', doc: 'doc2', tirage: 2, families: ['l2'], edits: [{ path: 'amountTTC', delta: 4 }], note: 'divergence sur le total, et la 3.8 ne rend aucune boîte (réponse coupée) : Zv se replie sur la 3ᵉ lecture complète' },
-  { id: 'zoom-sans-boite', doc: 'doc2', tirage: 2, families: ['zl'], edits: [], cut: true, note: 'la localisation du zoom est coupée : aucune boîte' }
+  { id: 'zoom-sans-boite', doc: 'doc2', tirage: 2, families: ['zl'], edits: [], cut: true, note: 'la localisation du zoom est coupée : aucune boîte' },
+  // f5 : Csv8F (désignation en français). Une faute de champ ordinaire (faux vert), puis quatre fautes de `nameFr` que seul le juge des noms voit
+  { id: 'unite-x-noms-fr', doc: 'doc13', tirage: 1, families: ['n1', 'n2'], edits: [{ path: 'items.*.unit', value: 'x' }], note: 'les deux lectures de Csv8F inventent l’unité « x » (faux vert : la 3.8 n’est pas appelée)' },
+  { id: 'lite-divergent-noms-fr', doc: 'doc1', tirage: 1, families: ['n2'], edits: [{ path: 'items.2.quantity', value: 7 }], note: 'une lecture de Csv8F diverge : sa 3.8 (avec nameFr) tranche' },
+  { id: 'nom-fr-non-traduit', doc: 'doc5', tirage: 1, families: ['n1', 'n2', 'n3'], edits: [{ path: 'items.0.nameFr', value: 'Gärtank mit Deckel' }], note: 'nameFr resté en allemand' },
+  { id: 'nom-fr-suffixe-unite', doc: 'doc6', tirage: 1, families: ['n1', 'n2', 'n3'], edits: [{ path: 'items.1.nameFr', value: 'Capsules, Stk' }], note: 'nameFr qui garde le suffixe d’unité' },
+  { id: 'nom-fr-option', doc: 'doc4', tirage: 1, families: ['n1', 'n2', 'n3'], edits: [{ path: 'items.0.nameFr', value: 'Malt concassé [+CHF 0.10]' }], note: 'nameFr qui porte une option et un supplément' },
+  { id: 'nom-fr-absent', doc: 'doc2', tirage: 1, families: ['n1', 'n2', 'n3'], edits: [{ path: 'items.0.nameFr', value: '' }], note: 'nameFr absent sur une ligne' }
 ];
 
 const hashOf = (text: string) => createHash('sha256').update(text).digest().readUInt32BE(0);
@@ -877,8 +977,8 @@ export function truthToRaw(c: BenchCase): any {
   };
 }
 
-const LITE_FAMILY: Record<string, string> = { Lm: 'm', Lh: 'h', Lp: 'p', Hv: 'v', Sv: 'w', Uv: 'u', Tv: 't', Csv8: 'e', Avl: 'g', Pv: 'q', Bv: 'b' };
-export const familyOf = (meta: ReadMeta): Family => meta.zoom ? (meta.zoom.etape === 'loc' ? 'zl' : 'zr') : meta.lecture === 3 ? 's3'
+const LITE_FAMILY: Record<string, string> = { Lm: 'm', Lh: 'h', Lp: 'p', Hv: 'v', Sv: 'w', Uv: 'u', Tv: 't', Csv8: 'e', Avl: 'g', Pv: 'q', Bv: 'b', Csv8F: 'n' };
+export const familyOf = (meta: ReadMeta): Family => meta.zoom ? (meta.zoom.etape === 'loc' ? 'zl' : 'zr') : meta.lecture === 3 ? (meta.variant === 'Csv8F' ? 'n3' : 's3')
   : meta.model === LITE_MODEL ? (LITE_FAMILY[meta.variant] ? `${LITE_FAMILY[meta.variant]}${meta.lecture}` : meta.lecture === 1 ? 'l1' : 'l2') as Family
   : (meta.lecture === 1 ? 'f1' : 'f2');
 
@@ -889,6 +989,8 @@ const SIM_THOUGHTS: Record<string, number> = { Lm: 450, Lh: 1500 };
 export function simulateResponse(c: BenchCase, meta: ReadMeta, plan: Fault[], log: AppliedFault[]): { json: any; ms: number } {
   const family = familyOf(meta), seed = hashOf(`${c.id}|${meta.tirage}|${family}${meta.part ? `|p${meta.part.k}` : ''}`);
   const raw = truthToRaw(c);
+  // Csv8F : chaque ligne répond aussi `nameFr` (la « traduction » du lexique du banc) ; les fautes fabriquées la défont ensuite
+  if (meta.variant === 'Csv8F') for (const line of raw.items) line.nameFr = fakeFrench(String(line.name ?? ''));
   if (meta.zoom) return simulateZoom(c, meta, plan, seed, raw);
   let cut = false;
   for (const fault of plan.filter(item => item.doc === c.id && item.tirage === meta.tirage && item.families.includes(family))) {
@@ -1054,7 +1156,7 @@ export function withToolTokens(json: any): any {
 export function thirdCallDuplicates(calls: Array<{ doc: string; tirage: number; variant: string; lecture: number; zoom?: unknown }>): string[] {
   const seen = new Map<string, number>();
   // Zv : les appels de zoom (localiser, relire) ne sont pas des 3.8 complètes ; seule sa 3.8 de repli est la partagée.
-  for (const call of calls) if (call.lecture === 3 && !call.zoom) { const key = `${call.doc}|${call.tirage}|${call.variant === 'Av' ? 'Av' : 'partagée'}`; seen.set(key, (seen.get(key) ?? 0) + 1); }
+  for (const call of calls) if (call.lecture === 3 && !call.zoom) { const key = `${call.doc}|${call.tirage}|${call.variant === 'Av' || call.variant === 'Csv8F' ? call.variant : 'partagée'}`; seen.set(key, (seen.get(key) ?? 0) + 1); }
   return [...seen].filter(([, n]) => n > 1).map(([key, n]) => `${key} ×${n}`);
 }
 
@@ -1170,15 +1272,16 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
     // les appels de zoom ne se prêtent jamais. Hors ligne, tout ce que la sortie prêtée a gardé (même id) se rejoue, jamais un appel.
     const lend = (): Loan | undefined => {
       if (!lender) return undefined;
-      if (extra.zoom || (lecture === 3 && group === 'Av')) return offline ? lender(c.id, tirage, [meta.id]) : undefined;
+      if (extra.zoom || (lecture === 3 && (group === 'Av' || group === 'Csv8F'))) return offline ? lender(c.id, tirage, [meta.id]) : undefined;
       if (lecture === 3) return lender(c.id, tirage, THIRD_IDS);
       return offline || group === 'A' || group === 'C' ? lender(c.id, tirage, [meta.id]) : undefined;
     };
     const loan = lend();
     // Une seule 3.8 (partagée) par document et par tirage : un second appel est une erreur du banc, jamais une dépense.
     if (lecture === 3 && !loan && !extra.zoom) {
-      const key = `${c.id}|${tirage}|${group === 'Av' ? 'Av' : 'partagée'}`;
-      if (thirdKeys.has(key)) throw new Error(`Banc : la 3.8 ${group === 'Av' ? 'd’Av' : 'partagée'} est appelée deux fois pour ${c.id}, tirage ${tirage}.`);
+      const own = group === 'Av' || group === 'Csv8F';
+      const key = `${c.id}|${tirage}|${own ? group : 'partagée'}`;
+      if (thirdKeys.has(key)) throw new Error(`Banc : la 3.8 ${own ? `de ${group}` : 'partagée'} est appelée deux fois pour ${c.id}, tirage ${tirage}.`);
       thirdKeys.add(key);
     }
     if (loan) {
@@ -1188,7 +1291,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
     }
     if (offline) throw new Error(`Hors ligne : la lecture ${meta.id} (${meta.doc}, tirage ${tirage}) manque dans la sortie prêtée ; aucun appel n’est permis.`);
     const body = extra.zoom?.body ?? buildReadBody(files, spec.prompt, spec.maxOut, spec.thinking, { promptAfter: spec.promptAfter, temperature: !spec.noTemperature, svSchema: spec.svSchema,
-      ultraHigh: spec.ultraHigh, codeExecution: spec.codeExecution, freeJson, tilesNote: spec.tiles, ...(extra.note ? { note: extra.note } : {}) });
+      ultraHigh: spec.ultraHigh, codeExecution: spec.codeExecution, freeJson, tilesNote: spec.tiles, ...(spec.nameFr ? { nameFr: true } : {}), ...(extra.note ? { note: extra.note } : {}) });
     // Le garde-fou de coût de la production refuse l'outil d'exécution de code : il chiffre le corps sans l'outil, qui est remis à l'envoi.
     const { tools, ...quotable } = body as Record<string, unknown> & { tools?: unknown };
     const quote = quoteGeminiCost(model, quotable);
@@ -1333,7 +1436,8 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
           // Lm, Lh, Lp, Hv, Sv, Uv, Tv = C★v : la divergence seule appelle la 3.8, qui tranche les valeurs (le statut du vote est gardé).
           // Csv8, Avl, Pv, Bv : comme C, la 3.8 est aussi appelée quand une lecture manque (c'est le repli de `finalOfLite`).
           const needs = FULL_VOTE_GROUPS.has(group) ? needsThirdLite(r1, r2) : needsThird(r1, r2);
-          reads.lite[group] = { r1, r2, ...(needs ? { third: await third(group) } : {}) };
+          // Csv8F : sa 3.8 lit aussi `nameFr` : la sienne, jamais la partagée ni une prêtée
+          reads.lite[group] = { r1, r2, ...(needs ? { third: group === 'Csv8F' ? await doCall(c, files, tirage, group, 3) : await third(group) } : {}) };
         }
         const variants: Record<string, VariantRecord> = {};
         const put = (suffix: string, derived: Partial<Record<VariantId, Derived>>) => {
@@ -1404,7 +1508,8 @@ export function estimateBench(options: BenchOptions, cases: BenchCase[], lender?
           if (lender && (group === 'A' || group === 'C') && lender(c.id, tirage, [`${group}${lecture}`])) { line.lent++; continue; }
           for (const partFiles of sentParts) { line.fresh++; line.reservedMicro += reserve(spec, partFiles); }
         }
-        thirdPossible = true;
+        // Csv8F a sa propre 3.8 (avec nameFr), comptée à part, jamais prêtée
+        if (group === 'Csv8F') { thirdLine.fresh++; thirdLine.reservedMicro += reserve(callSpec('Csv8F', 3), files); } else thirdPossible = true;
       }
       if (thirdPossible) {
         if (lender?.(c.id, tirage, THIRD_IDS)) thirdLine.lent++; else { thirdLine.fresh++; thirdLine.reservedMicro += reserve(callSpec('A', 3), files); }
@@ -1446,7 +1551,7 @@ export function estimateBench(options: BenchOptions, cases: BenchCase[], lender?
 }
 
 /** vite-node ne laisse pas le nom du script dans process.argv : le banc se lance avec --simuler, --hors-ligne, --payant ou --estimer, jamais sous vitest. */
-const isMain = () => !process.env.VITEST && (process.argv.includes('--simuler') || process.argv.includes('--payant') || process.argv.includes('--hors-ligne') || process.argv.includes('--estimer'));
+const isMain = () => !process.env.VITEST && !/banc-noms-fr/.test(process.argv[1] ?? '') && (process.argv.includes('--simuler') || process.argv.includes('--payant') || process.argv.includes('--hors-ligne') || process.argv.includes('--estimer'));
 if (isMain()) {
   const options = parseArgs(process.argv.slice(2));
   if (options.estimer) {

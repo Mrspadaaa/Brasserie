@@ -35,6 +35,19 @@ améliorations ; écran = captures du bout en bout de doc14). La maquette : `wor
   couleur d'alerte) ; rien quand c'est sûr. L'unité déduite se pose au brouillon (champ facultatif qui garde la trace « déduite » ;
   D213 : la dépense ne réécrit pas l'imprimé en silence) ; l'enregistrement accepte `repris` et refuse `inconnu` (D214 restreint, D277).
 
+## Décisions du pilote sur f1 et f2 (réversibles, D277)
+- f1 : le suffixe d'unité sort du nom même quand la colonne d'unité est vide (« CARABELGE®, Kg » → base « CARABELGE® ») ; il est rendu
+  dans `uniteDuNom`, que `deduireUnite` lit déjà comme indice. Une variante inconnue (couleur, taille) sort de la base et reste dans
+  `restes` : le rapprochement la lit là si deux articles ne diffèrent que par elle.
+- f2 : « 1 Kg » en fin de nom d'une matière qui n'est ni malt ni céréale → kg, jaune ; le numéro de facture et la TVA absents → sans
+  couleur (`facultatif`) ; un écart de somme ou de TVA jusqu'à 5 centimes → jaune, au-delà → rouge.
+- « Ce que f3 devra changer » dans `work/missions/2026-10-31-ecran-depense/voies/f2-confiance/RESULTAT.md` (§ 1 à 5) fait partie de cette
+  voie : `uniteDeduite` facultatif sur `PurchaseLineDraft`, l'unité effective lue par `stockQuantityFor`, `effetStock`, `conversionDe`,
+  `matchStockLine`, `exactUnitPriceCents`, `linkUnits` ; la validation (`purchaseEntry.ts`, `unitOk`) accepte `sur` et `repris`, refuse
+  `inconnu` ; les points recalculés (`recalculerLecture`) passés à `contexte.points` pour qu'une valeur corrigée baisse son drapeau.
+- Le banc Chrome se joue d'un dossier que nul autre n'écrit (L17) : Vite recharge la page à chaque écriture dans `src/`. Si `vite.log`
+  du bout en bout dit « page reload » pendant ton passage, le passage ne vaut rien : relance-le. Le pilote rejoue le bout en bout à la fin.
+
 ## À faire (zone par zone, d'après l'inventaire)
 1. Rangée : nom de base, une ligne (deux au plus pour un nom long, jamais coupé au milieu d'un mot) ; pastille d'état du malt concassé
    à la place de la pastille mouture de p3c-3 (son picto ↳ et le supplément compris, « ↳ 0,20 », trait plein : rien à rattacher), libellé
