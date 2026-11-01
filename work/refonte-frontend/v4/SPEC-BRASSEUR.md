@@ -877,6 +877,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   `work/missions/2026-11-01-banc-lecture/GESTES.md` ; boucle : skill `banc-lecture`).
 - **Une pièce déjà saisie** (01.11, après ses pièces), mot pour mot : « et les deux PDF de la commande 652093 sont identiques. Géré ce cas
   là, on doit voir que ce document est déjà lié à un stock, facture ».
+- **Frais de port et second avis** (01.11, après-midi), à la question « Sur une commande en plusieurs captures, les frais de port
+  doivent-ils être une ligne de la dépense, ou seulement compter dans le total ? », mot pour mot : « Total seulement » ; puis, sur zxing-wasm
+  et Azure comme second avis : « Mais Azur est payant ? Je veux pas un nouveau poste de dépense Claud, ai infra » (Azure : non, GESTES
+  rang 9 ; zxing-wasm, gratuit et local, reste ouvert).
 - **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
   cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
   (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que

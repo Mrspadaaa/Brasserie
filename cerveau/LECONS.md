@@ -7,7 +7,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
   fausse, un travail refait. Avant de clore le tour.
 - **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
 - **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
-- **Taille** : 170 lignes, 30 leçons et 8 mécanisées au plus. Au plafond, une entrée impose une sortie : fusion, ligne « Mécanisées », [[controles-mecanises]] (`systeme.mjs cerveau`, `charge`, `remplaces`).
+- **Taille** : 170 lignes, 30 leçons et 8 mécanisées au plus. Au plafond, une entrée impose une sortie : fusion, ligne « Mécanisées », [[controles-mecanises]].
 
 ## Comprendre la demande
 
@@ -95,16 +95,16 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie.
+- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie, sources remises à HEAD.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` ; jamais un fichier remis à HEAD sans copie vérifiée (26.10, 01.11). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Plafond de voie ≤ maxTurns ; un long livrable s'écrit section par section. Ex-L28 (24.10, six voies sans skill après une reprise) : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Plafond de voie ≤ maxTurns ; un long livrable s'écrit section par section. Ex-L28 (24.10) : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 

@@ -39,4 +39,6 @@ Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` d
 
 **File d'envoi Drive (d3c, 01.11).** Une file sans minuterie exempte du délai anti-rafale tout essai qui n'a atteint aucun serveur et tout redémarrage ; sinon le job attend un événement qui ne vient pas. Seul le banc Chrome l'a montré (tests unitaires verts au temps factice). Copie de déploiement `%TEMP%/deploy-63130965` : son `.env.local` met les émulateurs à `true`, sans effet en production (`firebase.ts` exige `import.meta.env.DEV`).
 
+**Fixtures d'un banc Chrome sous `?dev-local` (dp-doublon, 01.11).** `import('/src/services/firestoreRepo.ts')` puis `FirestoreRepo.put` pose une donnée dans le cache mémoire seul ; `import('/src/services/geminiScanner.ts')` permet de remplacer `GeminiScannerService.scanDocument` par une lecture simulée comptée : même instance de module que l'app. Un filtre réseau sur « aiTask » se limite aux fetch/xhr vers l'extérieur : le module source `aiClient.ts` en importe un dont le nom contient « aiTask », et le bloquer casse le chargement.
+
 Voir [[socle-v01]] et [[chimie-eau]].
