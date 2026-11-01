@@ -53,6 +53,11 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
 - 01.11 soir : mission ouverte, fn-csv8 et qr-app lancées en parallèle (périmètres disjoints : functions/ contre src/ et package*.json).
   Prochaine action : à chaque retour, rejouer les tests et le build, puis fn-relecture (relecteur) et qr-critique (critique) ; ensuite
   déployer `aiTask` seul depuis une copie propre (lire « found », journaux), puis l'hébergement depuis une copie à `npm ci` réel.
-  Ses questions ouvertes : degré p3c, port « Total seulement », TVA (assujetti ?), push et PR.
+  Ses réponses du soir : p3c-3 choisie, quantité en gras et champs alignés (D248, retouche p3c-r en cours chez le concepteur
+  a435357168cc72f5c) ; port « Total seulement » partout (D249 : une voie après fn-csv8 et qr-app, et la vérité du banc à corriger) ;
+  TVA : moins de 100k (D250 : vue TVA en mini maquettes, cas non assujetti). Après qr-app : port de p3c-3 dans l'app avec z2.
+  Reste ouvert : push et PR.
+- 01.11 soir, plus tard : p3c-3 retouchée (commit c11dac21, ALIGNE OK, témoin en échec rejoué) ; critique e-t5 (ab25a65a5ef72e1a5)
+  en cours ; si RETENUE, lui envoyer p3c-3-repos.png et p3c-3-tous.png (SendUserFile), sinon relancer le concepteur avec ses défauts.
 
 ## Signature
