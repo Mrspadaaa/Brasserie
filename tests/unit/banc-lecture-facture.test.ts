@@ -327,9 +327,11 @@ describe('k1 — le budget : réservé avant, arrêt net, clé jamais écrite', 
     await expect(runBench({ mode: 'payant', repeat: 1, out: path.join(work, 'sans-cle'), budgetChf: 1, faults: false }, { cases, readKey: () => undefined, optIn: () => {}, readFile: () => file, journalPath: path.join(work, 'j2.md'), log: () => {} })).rejects.toThrow('Aucune clé');
     expect(fetchMock).not.toHaveBeenCalled();
   });
-  it('--payant exige un budget, au plus 4,5 CHF ; les deux modes s’excluent', () => {
+  it('--payant exige un budget, au plus 24,5 CHF cumulés (D242) ; les deux modes s’excluent', () => {
     expect(() => parseArgs(['--payant'])).toThrow('--budget-chf');
-    expect(() => parseArgs(['--payant', '--budget-chf', '5'])).toThrow('--budget-chf');
+    expect(BUDGET_CAP_CHF).toBe(24.5);
+    expect(() => parseArgs(['--payant', '--budget-chf', '25'])).toThrow('--budget-chf');
+    expect(parseArgs(['--payant', '--budget-chf', '24.5']).budgetChf).toBe(24.5);
     expect(() => parseArgs(['--payant', '--simuler', '--budget-chf', '4.5'])).toThrow('s’excluent');
     expect(parseArgs(['--', '--payant', '--budget-chf', '4.5']).budgetChf).toBe(4.5);
     expect(parseArgs(['--', '--simuler', '--out', 'x']).mode).toBe('simuler');
@@ -667,7 +669,8 @@ describe('k2 — la simulation éprouve le jugement sur toutes les variantes (t�
   it('retrouve chaque fausse réponse fabriquée, aucune sur les parcours propres ; l’unité inventée par Lm est un faux vert ; N rattrape « Fr. »', async () => {
     const out = path.join(work, 'toutes');
     const { records, faults } = await runBench({ mode: 'simuler', repeat: 3, out, faults: true, variantes: [...VARIANTS], normaliser: true }, { cases: docs, plan: FAULT_PLAN, log: () => {} });
-    expect(variantIds(records)).toHaveLength(VARIANTS.length * 2);
+    // Pv (un PDF de 2 pages ou plus) et Bv (une image haute) n'ont de parcours que sur ces pièces : aucun de ces documents fabriqués n'en est une.
+    expect(variantIds(records)).toHaveLength((VARIANTS.length - 2) * 2);
     const { draws, stats } = judgeBench(records, docs);
     const check = checkSimulation(records, draws, faults);
     expect(check.present).toBeGreaterThan(0);

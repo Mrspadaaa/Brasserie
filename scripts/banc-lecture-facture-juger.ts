@@ -117,7 +117,8 @@ export interface VariantStats {
   /** Lignes écrites au-delà du plafond de 35 de la production (la plus longue lecture du parcours), et parcours touchés. */
   capLost: number; capDraws: number;
 }
-export interface DrawVerdict { doc: string; genre: string; tirage: number; variant: string; status: string | null; wrong: string[]; verdict: Verdict | null }
+/** `ms` : la durée murale du parcours (appels parallèles comptés une fois). */
+export interface DrawVerdict { doc: string; genre: string; tirage: number; variant: string; status: string | null; wrong: string[]; verdict: Verdict | null; ms?: number }
 
 const median = (values: number[]) => { if (!values.length) return null; const s = [...values].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 
@@ -138,7 +139,7 @@ export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: 
       stat.ms.push(run.ms); stat.costMicro.push(run.costMicroChf); stat.calls.push(run.calls);
       if (run.thirdFrom) stat.thirdFrom[run.thirdFrom] = (stat.thirdFrom[run.thirdFrom] ?? 0) + 1;
       if (run.ids.length >= 2 && run.ids.some(id => /2$/.test(id))) stat.secondRead++;
-      if (!run.result) { stat.failures++; draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status: null, wrong: [], verdict: null }); continue; }
+      if (!run.result) { stat.failures++; draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status: null, wrong: [], verdict: null, ms: run.ms }); continue; }
       const verdict = judgeResult(run.result, expected), status: string = run.result.review?.status ?? 'inconnu';
       stat.judged += verdict.judged; stat.right += verdict.right; stat.lineJudged += verdict.lineJudged; stat.lineRight += verdict.lineRight;
       stat.statuts[status] = (stat.statuts[status] ?? 0) + 1;
@@ -160,10 +161,46 @@ export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: 
         grouped.set(name, (grouped.get(name) ?? 0) + 1);
       }
       for (const [name, count] of grouped) stat.defects.push(`${record.doc} : ${name}${count > 1 ? ` (×${count})` : ''} faux en ${label}, tirage ${record.tirage}${status === 'checked' ? ' — FAUX VERT' : ''}`);
-      draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status, wrong: verdict.wrong, verdict });
+      draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status, wrong: verdict.wrong, verdict, ms: run.ms });
     }
   }
   return { stats, draws };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Durée murale (k5) : « toujours plutôt lent » — par pièce, puis la médiane par genre de pièce
+// ---------------------------------------------------------------------------------------------------------------------
+/** Médiane des durées des tirages d'un (document, variante). Les appels parallèles sont comptés une fois (la durée du parcours est celle du banc). */
+export function durationPerDocument(draws: DrawVerdict[]): Map<string, Map<string, number>> {
+  const lists = new Map<string, Map<string, number[]>>();
+  for (const draw of draws) {
+    if (typeof draw.ms !== 'number') continue;
+    const row = lists.get(draw.doc) ?? new Map<string, number[]>();
+    lists.set(draw.doc, row);
+    row.set(draw.variant, [...(row.get(draw.variant) ?? []), draw.ms]);
+  }
+  return new Map([...lists].map(([doc, row]) => [doc, new Map([...row].map(([variant, list]) => [variant, median(list)!]))]));
+}
+/** Médiane, par genre de pièce, de la durée de tous les parcours (document × tirage) du genre. */
+export function durationPerGenre(draws: DrawVerdict[]): Map<string, Map<string, number>> {
+  const lists = new Map<string, Map<string, number[]>>();
+  for (const draw of draws) {
+    if (typeof draw.ms !== 'number') continue;
+    const row = lists.get(draw.genre) ?? new Map<string, number[]>();
+    lists.set(draw.genre, row);
+    row.set(draw.variant, [...(row.get(draw.variant) ?? []), draw.ms]);
+  }
+  return new Map([...lists].map(([genre, row]) => [genre, new Map([...row].map(([variant, list]) => [variant, median(list)!]))]));
+}
+export function renderDurations(draws: DrawVerdict[], ids: string[]): string[] {
+  const head = (first: string) => [`| ${first} | ${ids.map(shortLabel).join(' | ')} |`, `|---|${ids.map(() => '---').join('|')}|`];
+  const cell = (row: Map<string, number> | undefined, id: string) => { const ms = row?.get(id); return ms === undefined ? '—' : `${(ms / 1000).toFixed(1).replace('.', ',')} s`; };
+  const perDoc = durationPerDocument(draws), perGenreTable = durationPerGenre(draws);
+  const lines = ['## Durée murale par pièce (médiane des tirages ; appels parallèles comptés une fois)', '', ...head('document')];
+  for (const doc of [...perDoc.keys()].sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, '')))) lines.push(`| ${doc} | ${ids.map(id => cell(perDoc.get(doc), id)).join(' | ')} |`);
+  lines.push('', '## Durée murale médiane par genre de pièce', '', ...head('genre de pièce'));
+  for (const genre of [...GENRES, ...[...perGenreTable.keys()].filter(key => !(GENRES as readonly string[]).includes(key))]) if (perGenreTable.has(genre)) lines.push(`| ${genre} | ${ids.map(id => cell(perGenreTable.get(genre), id)).join(' | ')} |`);
+  return lines;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -320,7 +357,7 @@ export function renderTable(file: { meta: any; records: DrawRecord[] }, stats: R
   lines.push('## Statuts finaux', '', heads, rule);
   for (const status of ['checked', 'corrected', 'disputed', 'unavailable']) lines.push(L(status, s => String(s.statuts[status] ?? 0)));
   if (draws.length) lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids),
-    '', '## Par genre de pièce (mêmes comptes, additionnés par genre)', '', ...renderPerGenre(draws, ids));
+    '', '## Par genre de pièce (mêmes comptes, additionnés par genre)', '', ...renderPerGenre(draws, ids), '', ...renderDurations(draws, ids));
   lines.push('', '## Pourquoi sonnent les alertes inutiles (points qui pèsent, tous champs justes)', '');
   for (const v of ids) lines.push(`- ${variantLabel(v)} : ${Object.entries(stats[v].inutilesCodes).sort((a, b) => b[1] - a[1]).map(([code, n]) => `${code} ×${n}`).join(', ') || 'aucune'}`);
   lines.push('', '## Ce que chaque variante a appelé', '');
@@ -387,7 +424,7 @@ export function renderHorsLigne(file: { meta: any; records: DrawRecord[] }, stat
   lines.push(L('Durée maximale', s => sec(s.ms.length ? Math.max(...s.ms) : null)));
   lines.push(L('Appels (moyenne par parcours)', s => (s.calls.length ? (totalOf(s.calls) / s.calls.length).toFixed(2).replace('.', ',') : '—')));
   lines.push(L('Coût médian par parcours (CHF)', s => francs(median0(s.costMicro))));
-  lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids), '', '## Par genre de pièce', '', ...renderPerGenre(draws, ids), '');
+  lines.push('', '## Par document (champs justes/jugés · lignes justes/jugées · FV = faux verts)', '', ...renderPerDocument(draws, ids), '', '## Par genre de pièce', '', ...renderPerGenre(draws, ids), '', ...renderDurations(draws, ids), '');
 
   const delta = (from: string, to: string) => {
     const a = stats[from], b = stats[to];
