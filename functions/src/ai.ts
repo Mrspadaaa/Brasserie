@@ -6,6 +6,7 @@ import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
 import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
 import { reconcileInvoiceVision, finirUneLecture, ScanReadCutError, ligneJournalLecture, phraseCoupure, pointLectureCoupee, ajouterCoupure, type CauseCoupure, type InvoiceScanResult } from './invoiceVisionReview.js';
+import { INVOICE_SCAN_PROMPTS } from './invoiceScanPrompts.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
@@ -135,8 +136,8 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
     };
     // Both see only the original. Await every in-flight call before closing the budget ledger.
     const attempts = await Promise.allSettled([
-      read('Transcris tout le justificatif joint, en-tête, totaux et chaque ligne, dans l’ordre du document. Contrôle les chiffres et les signes des remises.', 1, 'parallele'),
-      read('Effectue une lecture indépendante complète du justificatif joint. Vérifie en priorité fournisseur, date, référence, devise, HT, TVA, TTC puis chaque article dans l’ordre imprimé. Distingue achat durable, réparation et consommable. Ne paraphrase pas les désignations.', 2, 'parallele')
+      read(INVOICE_SCAN_PROMPTS[0], 1, 'parallele'),
+      read(INVOICE_SCAN_PROMPTS[1], 2, 'parallele')
     ]);
     const readings = attempts.flatMap(attempt => attempt.status === 'fulfilled' ? [attempt.value] : []);
     if (!readings.length) throw (attempts[0] as PromiseRejectedResult).reason;
@@ -154,7 +155,7 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
       if (deadline.aborted) ajouterCoupure(reconciled.result as any, 'delai-saute', abouti);
       else try {
         // No competing amounts or classifications are disclosed: a third independent vote.
-        const correction: InvoiceScanResult = await read('Troisième contrôle attentif du document original : relis les petites lignes, séparateurs décimaux, signes, totaux, quantités, unités et la nature achat durable/réparation/consommable. Transcris de nouveau TOUS les champs et lignes dans leur ordre imprimé, avec les désignations exactes. Ne calcule aucune valeur absente.', 3, 'troisieme');
+        const correction: InvoiceScanResult = await read(INVOICE_SCAN_PROMPTS[2], 3, 'troisieme');
         reconciled = reconcileInvoiceVision([...readings, correction]);
       } catch (error) {
         ajouterCoupure(reconciled.result as any, cause(error) ?? 'delai-saute', abouti);
