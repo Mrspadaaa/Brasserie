@@ -1230,6 +1230,15 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D212 (le brasseur, 31.10, nuit) : le plateau de r4d « Toujours visible ». L'état replié (#replie) sort de la passe 5.
 - D213 (le brasseur, 31.10, nuit) : sur le bloquant de la revue s1 (« Crystal » kg relié à « Houblon Crystal » g, 25 000 g), « oui attention au unités ». Portée lue (L01, étroite) : la dépense, partout où une quantité ou un prix a une unité (lecture, rapprochement au stock, enregistrement). Règles du pilote, réversibles : (1) une quantité garde l'unité imprimée, jamais réécrite en silence ; (2) une conversion d'unité (kg ↔ g, l ↔ ml, Stk ↔ sachet) est un fait que le brasseur voit : une proposition au stock dont l'unité diffère de celle de l'article montre la quantité convertie sur la ligne repliée (« 25 kg → 25 000 g ») ; (3) un prix se lit pour son unité (par kg, par 100 g, par pièce), jamais comparé à une autre ; (4) une ligne sans unité lisible n'est proposée à aucun article. Contrôle : tests d'unités de s1 (`tests/unit/depense/stock/unites.test.ts`), qui échouent sur le code d'aujourd'hui.
 - D214 (le brasseur, 31.10, nuit) : sur la règle n° 4 de D213, « Unité illisible : la ligne n'est reliée à aucun article.???? » Règle refusée : elle venait du pilote, pas de ses mots (L01). Lecture du pilote, étroite et réversible : une ligne dont l'unité est illisible reste proposée à son article aux mêmes conditions que toute autre ligne (nom, nature, catégorie, poids de levure, α, récolte) ; aucune unité n'est devinée ni recopiée de l'article ; le champ d'unité reste vide et la ligne repliée porte « unité à préciser » ; rien n'entre en stock tant que l'unité manque (garde à l'enregistrement : voie r1). Une unité lisible mais incompatible avec l'article donne toujours « rien ». Remplace D213 n° 4. Contrôle : `tests/unit/depense/stock/unites.test.ts` (voie s1), qui échoue sur la règle refusée.
+- D255 (pilote, 01.11, soir ; D247, D253) : **hébergement déployé** avec le QR-facture et le sceau z2 (critique : RETENUE, après trois
+  passes et la voie qr-ecart), depuis le worktree neuf `%TEMP%/deploy-hosting-qr` placé sur dba49adb. `npm ci` réel ; `.env` racine
+  et `seedData.ts` copiés, jonction `functions/node_modules` (méthode D72). Tests visés (D236) : 74 fichiers verts. Build code 0,
+  bundle propre. « found 258 files in dist ». Vérifié en ligne :
+  - la page sert `index-CxkdwJ81.js` ;
+  - l'en-tête CSP porte `'wasm-unsafe-eval'` dans `script-src` ;
+  - le wasm de zxing est servi en `application/wasm` (966 895 octets), le worker de pdf.js en 200.
+  Aucune lecture de contrôle dans son compte : la première pièce qu'il lira dira le sceau en ligne. Retour arrière : la version
+  précédente dans la console Hosting, ou redéployer depuis 1dfeecb1 (sans QR ni mot de CSP).
 - D254 (pilote, 01.11, soir ; D247) : **`aiTask` déployé en C★v8 + N**, seul (`--only functions:aiTask`), depuis la copie propre
   `%TEMP%/deploy-63130965` placée sur 3b3e74ac. Depuis le précédent état de cette copie (5970478d), `functions/` ne diffère que par
   la voie fn-csv8. Résultat : « Successful update operation », révision `aitask-00042-tet` (14 h 06), hash `913a904c`. L'instance

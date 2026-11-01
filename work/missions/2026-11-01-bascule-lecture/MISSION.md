@@ -90,6 +90,9 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
   lu. qr-app a épuisé ses relances, et son contexte est très chargé ; voie neuve qr-ecart (a9392eb42ccce392b), auteur Sonnet, contrat
   étroit. Ensuite : rejugement de « écart », commit (suites 2, 3 et qr-ecart), copie d'hébergement resynchronisée, déploiement.
 - qr-ecart : QR-ECART OK (tests qui échouaient avant : 7 sur 33 ; 74 fichiers et 1 237 tests verts ; tsc, build et dev-auth propres ;
-  captures ouvertes par le pilote). **qr-critique : QR-CRITIQUE RETENUE** pour tout le port. Commit, puis hébergement.
+  captures ouvertes par le pilote). **qr-critique : QR-CRITIQUE RETENUE** pour tout le port. Commit dba49adb.
+- **Hébergement déployé** (D255) : `index-CxkdwJ81.js` servi, CSP avec `'wasm-unsafe-eval'`, wasm en `application/wasm`. Les deux
+  volets de la bascule sont en ligne. Reste : relire les journaux d'`aiTask` à sa première facture ; push et PR (son accord) ;
+  ensuite, port de p3c-3 avec z2 (D248), port « Total seulement » (D249), vue TVA en mini maquettes (D250).
 
 ## Signature
