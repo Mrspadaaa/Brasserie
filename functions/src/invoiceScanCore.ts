@@ -1,4 +1,5 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
 import { TIERS } from './models.js';
 import {
@@ -10,7 +11,7 @@ export { INVOICE_FIELDS, SCAN_POINT_CODES, lineMathCheck, sumCheck, toCents };
 export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCode, ScanPointDetail, ScanRejet, ScanVatRow };
 
 /** v5 (31.10.2026) : le résultat porte `points`, `controls`, `vat`, `proForma`, `linesLost`… Le hachage de la lecture en dépend :
- * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. */
+ * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. Le moteur, lui, entre par son empreinte (`invoiceScanIdFor`, D273c). */
 export const INVOICE_SCAN_VERSION = 'invoice-v5';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
@@ -113,8 +114,42 @@ export function validateInvoiceFile(file: unknown): InvoiceFile {
   return value;
 }
 
+/**
+ * D273c : l'empreinte du moteur de lecture. Les modules que l'entrée de la lecture (`ai`) importe, de proche en proche : un changement de
+ * règle, de consigne, de vote, de réglage ou de modèle donne un autre identifiant, et une pièce déjà lue est relue (quelques centimes).
+ */
+export function engineDigestOf(read: (module: string) => string, entry = 'ai'): { digest: string; modules: string[] } {
+  const hash = createHash('sha256'), seen = new Set<string>(), todo = [entry];
+  while (todo.length) {
+    const module = todo.shift()!;
+    if (seen.has(module)) continue;
+    seen.add(module);
+    const text = read(module);
+    hash.update(module).update('\0').update(text).update('\0');
+    for (const [, next] of text.matchAll(/(?:from|import)\s*\(?\s*['"]\.\/([\w.-]+?)\.js['"]/g)) todo.push(next);
+  }
+  return { digest: hash.digest('hex').slice(0, 16), modules: [...seen] };
+}
+
+let engineDigest: string | undefined;
+/** Lue une fois par instance, à côté de ce module (`lib/*.js` déployés, `src/*.ts` sous Vitest). Illisible : une empreinte au hasard, rien n'est servi du cache. */
+export function invoiceEngineDigest(): string {
+  if (engineDigest) return engineDigest;
+  const extension = import.meta.url.endsWith('.ts') ? 'ts' : 'js';
+  try {
+    engineDigest = engineDigestOf(module => readFileSync(new URL(`./${module}.${extension}`, import.meta.url), 'utf8')).digest;
+  } catch (error) {
+    console.error('Empreinte du moteur de lecture illisible : le cache de lecture est ignoré sur cette instance.', error);
+    engineDigest = randomUUID();
+  }
+  return engineDigest;
+}
+
+export function invoiceScanIdFor(uid: string, file: InvoiceFile, engine: string): string {
+  return createHash('sha256').update(INVOICE_SCAN_VERSION).update(engine).update(uid).update(file.mimeType).update(Buffer.from(file.data, 'base64')).digest('hex');
+}
 export function invoiceScanId(uid: string, file: InvoiceFile): string {
-  return createHash('sha256').update(INVOICE_SCAN_VERSION).update(uid).update(file.mimeType).update(Buffer.from(file.data, 'base64')).digest('hex');
+  return invoiceScanIdFor(uid, file, invoiceEngineDigest());
 }
 export function invoiceDocumentHash(file: InvoiceFile): string {
   return createHash('sha256').update(Buffer.from(file.data, 'base64')).digest('hex');

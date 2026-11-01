@@ -1012,3 +1012,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Local loin du vrai** (01.11, nuit), à « La lecture range bien les articles difficiles ; l'écran en ligne, lui, se trompe encore. »,
   mot pour mot : « C'est assez grave comme problème, ça veut dire que les tests local sont très loin de la vérité... » (lu : ce qu'on
   teste en local doit dire ce qu'il verra en ligne ; un écart entre les deux est un défaut, pas un détail. D273a à D273d, L28).
+- **Cache lié au moteur, et trop d'Autres** (01.11, nuit). Il cite ma recommandation puis répond, mot pour mot : « Cache de lecture : le lier au
+  moteur, pour qu'une pièce déjà lue soit relue après un changement. Une relecture coûte quelques centimes. Je le recommande yes ». Il ajoute
+  « Les articles difficiles, même jamais en stock / Top mais j'ai l'impression qu'il y a trop de d'items en autre ? ». Lu : « yes » est son
+  accord pour lier le cache au moteur et redéployer aiTask (D274). « Trop d'items en autre » veut dire trop d'articles dans la bande Autres (D273e).
