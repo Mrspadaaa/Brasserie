@@ -59,6 +59,46 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   const rangee = useRef<HTMLDivElement | null>(null);
   const def = defs[famille];
 
+  // Le repli des tuiles ne se fait jamais pendant l'appui qui prend le focus : replié au `mousedown`, la grille (trois rangées) redevient une rangée de 32 px,
+  // la page remonte sous la souris et le `mouseup` tombe ailleurs, sans `click` (p9-clic, 01.11). Souris tenue : on attend son `pointerup`, puis le tour suivant.
+  // Doigt ou clavier : le tour suivant. Si le champ a repris le focus entre-temps, rien ne se replie. Minuteries et écouteurs nettoyés au démontage.
+  const sourisTenue = useRef(false);
+  const minuterie = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const finAppui = useRef<(() => void) | null>(null);
+  const annulerRepli = () => {
+    if (minuterie.current !== null) { clearTimeout(minuterie.current); minuterie.current = null; }
+    if (finAppui.current) { finAppui.current(); finAppui.current = null; }
+  };
+  useEffect(() => {
+    const bas = (e: Event) => { sourisTenue.current = (e as PointerEvent).pointerType === 'mouse'; };
+    const haut = () => { sourisTenue.current = false; };
+    document.addEventListener('pointerdown', bas, true);
+    document.addEventListener('pointerup', haut, true);
+    document.addEventListener('pointercancel', haut, true);
+    return () => {
+      document.removeEventListener('pointerdown', bas, true);
+      document.removeEventListener('pointerup', haut, true);
+      document.removeEventListener('pointercancel', haut, true);
+      annulerRepli();
+    };
+  }, []);
+  const replierPlusTard = () => {
+    annulerRepli();
+    const replier = () => {
+      minuterie.current = setTimeout(() => {
+        minuterie.current = null;
+        if (champ.current && document.activeElement === champ.current) return;
+        setOuvert(false);
+      }, 0);
+    };
+    if (sourisTenue.current) {
+      const fin = () => { document.removeEventListener('pointerup', fin, true); document.removeEventListener('pointercancel', fin, true); finAppui.current = null; replier(); };
+      document.addEventListener('pointerup', fin, true);
+      document.addEventListener('pointercancel', fin, true);
+      finAppui.current = () => { document.removeEventListener('pointerup', fin, true); document.removeEventListener('pointercancel', fin, true); };
+    } else replier();
+  };
+
   // Le rayon du stock de la famille (KIND_DEF[famille].stock), comme le sélecteur d'avant.
   const articles = useMemo(
     () => stockItems.filter((i) => def.stock.some((c) => i.category.toLowerCase() === c.toLowerCase())),
@@ -149,8 +189,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           aria-autocomplete="list"
           aria-label={`Ajouter un fermentescible de la famille ${def.label} (nom, Entrée)`}
           value={valeur}
-          onFocus={() => setOuvert(true)}
-          onBlur={() => setOuvert(false)}
+          onFocus={() => { annulerRepli(); setOuvert(true); }}
+          onBlur={replierPlusTard}
           onChange={(e) => { setValeur(e.target.value); setCible(0); setFlechee(false); setOuvert(true); }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); entree(); }
