@@ -26,6 +26,7 @@ dans Chrome sur fixtures, hébergement redéployé (D236).
 | qr-rejeu | rejouer qr-app depuis la copie isolée, éprouver la CSP avec et sans `'wasm-unsafe-eval'` (voies/qr-rejeu/VOIE.md) | mécanique | executant | haiku | 40 | work/missions/2026-11-01-bascule-lecture/voies/qr-rejeu/**, %TEMP%/qr-app-copie | qr-app | tsc, build, check-no-dev-auth, tests de l'écran, témoin rouge, parcours Chrome, CSP (a/b), captures ouvertes | pilote | — |
 | qr-ecart | l'état « écart » se règle par un choix QR / lu, comme le duel du total (voies/qr-ecart/VOIE.md) | jugement | auteur | sonnet | 40 | src/ui/finance/ExpenseSheet.tsx, src/ui/finance/InvoiceScanReview.tsx, src/ui/depense/**, tests/unit/depense/qr/**, work/missions/2026-11-01-bascule-lecture/voies/qr-ecart/**, %TEMP%/qr-app-copie | qr-app | tests de l'écran (échouaient avant), tsc, build, check-no-dev-auth, parcours Chrome, captures ouvertes | pilote | — |
 | qr-critique | le port de z2 jugé contre sa maquette (`qr/v1/z2`) | jugement | critique | fable | 30 | work/missions/2026-11-01-bascule-lecture/voies/qr-critique/** | qr-app | captures côte à côte avec la maquette, verdict | pilote | — |
+| fn-montant-seul | une ligne à un seul montant (lu en `price`, sans quantité ni `amountTTC`) reçoit ce montant en `amountTTC` à la normalisation ; mesuré au banc hors ligne (voies/fn-montant-seul/VOIE.md) | jugement | auteur | sonnet | 40 | functions/src/invoiceScanCore.ts, functions/src/invoiceVisionReview.ts, tests des lectures de facture, work/missions/2026-11-01-bascule-lecture/voies/fn-montant-seul/** | fn-csv8 | tests (échouaient avant), parité, rejeu hors ligne du banc sans appel, `npm --prefix functions run build` | pilote | — |
 
 Reprise : z2 choisie : « Le sceau QR z2 parfait comme telle » (D246).
 
@@ -94,5 +95,11 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
 - **Hébergement déployé** (D255) : `index-CxkdwJ81.js` servi, CSP avec `'wasm-unsafe-eval'`, wasm en `application/wasm`. Les deux
   volets de la bascule sont en ligne. Reste : relire les journaux d'`aiTask` à sa première facture ; push et PR (son accord) ;
   ensuite, port de p3c-3 avec z2 (D248), port « Total seulement » (D249), vue TVA en mini maquettes (D250).
+- **Test en ligne de la version déployée** (01.11, 15 h 31 à 15 h 36, lectures 2 et 3 du journal Gemini, 0,030 CHF ; fixtures fictives,
+  rien enregistré). PNG : deux Flash-Lite d'accord, sans 3.8 ; QR lu ; l'état « écart » attrape une vraie erreur de date des deux
+  Flash-Lite (« 261012 » lu 26.10.2012 au lieu de 12.10.2026). PDF : pdf.js et QR lus en ligne, deux Flash-Lite en désaccord, la 3.8
+  tranche, en-tête juste (« = lu » partout). **Défaut** : les 7 montants de ligne sont rangés en `price` sans quantité ni `amountTTC`,
+  l'écran montre « — » et ne vérifie pas la somme. Voie fn-montant-seul (a0989d26fc59ac84f) lancée. À noter : deux Flash-Lite d'accord
+  sur une date fausse ne réveillent pas la 3.8 ; le QR est alors le seul garde-fou.
 
 ## Signature
