@@ -155,7 +155,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
 - Erreur : 01.11, une commande en ligne : noms doublés, faux écart, 27 s. « en 10s, un seul test, j'ai trouvé tout ça »
 - Cause : pièces fictives, écran jamais jugé contre la pièce.
-- Faire : une vraie pièce par genre dans l'app servie, chaque champ comparé à la pièce, temps compris ; sa pièce au banc le jour même.
+- Faire : une vraie pièce par genre dans l'app, champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local se dit « non déployé » (01.11).
 - Rôles : pilote, exécutant, relecteur
 - Contrôle : au banc (D261 à D263)
 

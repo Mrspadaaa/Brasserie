@@ -16,3 +16,16 @@
 
 ## Hebdo
 57 % à D260, 58 % à D262.
+
+## État au 01.11, 21 h (pilote, après D273)
+- En ligne : aiTask D272b (8050e494, instance 20 h 46) ; client 6bb83d4a (hébergement pas redéployé depuis).
+- D273 fait : 14 pièces lues dans l'app en ligne, 0,62 CHF, rien enregistré. `H13-reels/D273/` (pièces marquées, `resultats/`, `jugement.txt`) ;
+  en ligne 150/165 champs, 210/224 lignes ; banc 153/165, 217/224. Défauts D273a à D273d (DEFAUTS-RECURRENTS).
+- En vol : agent p3c-bandes `a257231fe65b00eb2` : D273d (test rouge `tests/unit/depense/bandes/familles-d273.test.ts`, 2/23), deux teintes
+  du critique, KO (e) de `voies/e-emulateur/final6/D`, chevauchement du récap. Non commités : k7, bandes, ce test.
+- Ensuite (pilote) : rejouer ses critères dans la copie, bout en bout D (`lancer.sh`), commit par chemins (k7 + bandes + D273d), puis
+  hébergement seul depuis `%TEMP%/deploy-hosting-qr` (accord D260), lire « found N files » et la page servie ; puis rejouer SA pièce
+  en ligne et lire ses groupes (D273a). Manifeste md5 `21dd75b3` avant et après chaque build.
+- À son choix (montré, pas bloquant) : D273c version du cache de lecture liée au moteur ; D273b captures multiples dans l'app ; D261c ;
+  la famille donnée par Gemini (≈ 1 CHF au banc). TX-6770960b suspendue.
+- Hebdo : 60 % ; il a dit « le quota n'est pas un problème pour ces tâches ».

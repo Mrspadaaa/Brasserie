@@ -1006,3 +1006,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Les 14 pièces, en vrai** (01.11, nuit), à « J'ai rejoué les 14 pièces du banc sans appel payant », mot pour mot : « Maintenant il
   faudra refaire ça avec appel payant sur la vrai alo » ; puis « App » (lu : « alo » = « app » ; rejouer les 14 pièces avec de vraies
   lectures payantes, dans l'app en ligne, chaque champ comparé à la vérité ; lecture seule, rien n'est confirmé ni enregistré. D273).
+- **Les articles difficiles** (01.11, nuit, pendant le passage en ligne), mot pour mot : « Ça catégories bien les items un peu difficile ?
+  Les bonnes famille ou sous familles, catégorie ? » ; puis « Même seul jamais eu en stock m », « ?* » (lu : « même ceux jamais eus en
+  stock ? » ; un article neuf, technique ou de marque, reçoit-il la bonne famille et la bonne catégorie ? D273d).
+- **Local loin du vrai** (01.11, nuit), à « La lecture range bien les articles difficiles ; l'écran en ligne, lui, se trompe encore. »,
+  mot pour mot : « C'est assez grave comme problème, ça veut dire que les tests local sont très loin de la vérité... » (lu : ce qu'on
+  teste en local doit dire ce qu'il verra en ligne ; un écart entre les deux est un défaut, pas un détail. D273a à D273d, L28).
