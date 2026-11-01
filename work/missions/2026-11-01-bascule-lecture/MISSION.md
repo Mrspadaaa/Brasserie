@@ -101,5 +101,9 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
   tranche, en-tête juste (« = lu » partout). **Défaut** : les 7 montants de ligne sont rangés en `price` sans quantité ni `amountTTC`,
   l'écran montre « — » et ne vérifie pas la somme. Voie fn-montant-seul (a0989d26fc59ac84f) lancée. À noter : deux Flash-Lite d'accord
   sur une date fausse ne réveillent pas la 3.8 ; le QR est alors le seul garde-fou.
+- fn-montant-seul : FN-MONTANT-SEUL OK (D256, 1257fd76) ; rejoué par le pilote : 176 tests visés verts, build vert, manifeste
+  inchangé. Son « Oui et oui » (D257) : `aiTask` déployé (révision aitask-00043-raz), lecture de contrôle 4 juste (somme vérifiée,
+  rien enregistré) ; branche poussée, PR https://github.com/Mrspadaaa/Brasserie/pull/199. Reste : port de p3c-3 avec z2 (D248),
+  port « Total seulement » (D249), vue TVA en mini maquettes (D250).
 
 ## Signature
