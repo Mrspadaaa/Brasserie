@@ -59,7 +59,27 @@ export interface Verdict {
   wrong: string[];
 }
 
-export function judgeResult(result: any, expected: Record<string, any>): Verdict {
+/** Réglage du jugement. `portEnLigne: true` rend EXACTEMENT le jugement d'avant la règle du port (D249) : il ne sert qu'à rejouer « avant » et à prouver que le reste n'a pas bougé. */
+export interface JudgeOptions { portEnLigne?: boolean }
+
+/**
+ * D249 : le port est « Total seulement » — il compte dans le total, jamais comme une ligne. Une ligne est du port si sa nature est `shipping`
+ * (lecture : une chaîne ; vérité : la liste `['shipping']` seule), si son montant (`amountTTC`) est un nombre fini ≥ 0, et si toutes les lignes ne sont pas
+ * du port (un document réduit à son port garde sa ligne). Même règle que l'écran (voie p3c-port, décision 7), sauf les centimes entiers, sans objet pour les vérités du banc.
+ * Un port sans montant, négatif, ou d'une autre nature (lu en `service`) reste une ligne ordinaire : le juge ne devine rien.
+ */
+export function lignesSansPort<T = any>(items: readonly T[] | undefined): T[] {
+  const lignes: any[] = Array.isArray(items) ? [...items] : [];
+  const estPort = (ligne: any) => {
+    const kind = ligne?.kind;
+    const shipping = kind === 'shipping' || (Array.isArray(kind) && kind.length === 1 && kind[0] === 'shipping');
+    return shipping && typeof ligne.amountTTC === 'number' && Number.isFinite(ligne.amountTTC) && ligne.amountTTC >= 0;
+  };
+  if (lignes.length && lignes.every(estPort)) return lignes;
+  return lignes.filter(ligne => !estPort(ligne));
+}
+
+export function judgeResult(result: any, expected: Record<string, any>, options: JudgeOptions = {}): Verdict {
   const wrong: string[] = [];
   let judged = 0, right = 0;
   const check = (route: string, ok: boolean) => { judged++; if (ok) right++; else wrong.push(route); };
@@ -80,12 +100,15 @@ export function judgeResult(result: any, expected: Record<string, any>): Verdict
     const allowed: string[] = Array.isArray(expected.paymentEvidence) ? expected.paymentEvidence : [expected.paymentEvidence];
     check('paymentEvidence', !(['paid', 'unpaid'].includes(result.paymentEvidence) && !allowed.includes(result.paymentEvidence)));
   }
-  const items: any[] = Array.isArray(result.items) ? result.items : [];
+  // D249 : le port compte dans le total (jugé plus haut) mais n'est pas une ligne, des deux côtés ; `portEnLigne` rend le jugement d'avant.
+  const sansPort = (lignes: any) => (options.portEnLigne ? lignes : lignesSansPort(lignes));
+  const items: any[] = Array.isArray(result.items) ? sansPort(result.items) : [];
+  const attendues: any[] | undefined = Array.isArray(expected.items) ? sansPort(expected.items) : undefined;
   // Lignes visibles sur aucune capture : une ligne attendue marquée `invisible: true` est écartée avant l'alignement ; sinon `lignesInvisibles: n`
   // pardonne jusqu'à n lignes attendues absentes du résultat (elles ne comptent ni comme justes ni comme manquées), et le compte de lignes
   // est juste s'il vaut le total attendu ou ce total moins n.
-  const flagged = Array.isArray(expected.items) ? expected.items.filter((line: any) => line?.invisible === true).length : 0;
-  const expectedItems: any[] = Array.isArray(expected.items) ? expected.items.filter((line: any) => line?.invisible !== true) : [];
+  const flagged = attendues ? attendues.filter((line: any) => line?.invisible === true).length : 0;
+  const expectedItems: any[] = attendues ? attendues.filter((line: any) => line?.invisible !== true) : [];
   const hidden = Math.max(0, (Number.isInteger(expected.lignesInvisibles) ? expected.lignesInvisibles : 0) - flagged);
   let lineRight = 0, forgiven = 0;
   if (Array.isArray(expected.items)) check('items.count', items.length === expectedItems.length || (hidden > 0 && items.length === expectedItems.length - hidden));
@@ -122,7 +145,7 @@ export interface DrawVerdict { doc: string; genre: string; tirage: number; varia
 
 const median = (values: number[]) => { if (!values.length) return null; const s = [...values].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 
-export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: Record<string, VariantStats>; draws: DrawVerdict[] } {
+export function judgeBench(records: DrawRecord[], cases: BenchCase[], options: JudgeOptions = {}): { stats: Record<string, VariantStats>; draws: DrawVerdict[] } {
   const byId = new Map(cases.map(c => [c.id, c]));
   const blank = (): VariantStats => ({ draws: 0, failures: 0, judged: 0, right: 0, lineJudged: 0, lineRight: 0, fauxVerts: 0, fauxCorriges: 0, alertesJustes: 0, alertesInutiles: 0, vraisVerts: 0,
     statuts: {}, inutilesCodes: {}, ms: [], costMicro: [], calls: [], thirdFrom: {}, secondRead: 0, defects: [], capLost: 0, capDraws: 0 });
@@ -140,7 +163,7 @@ export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: 
       if (run.thirdFrom) stat.thirdFrom[run.thirdFrom] = (stat.thirdFrom[run.thirdFrom] ?? 0) + 1;
       if (run.ids.length >= 2 && run.ids.some(id => /2$/.test(id))) stat.secondRead++;
       if (!run.result) { stat.failures++; draws.push({ doc: record.doc, genre, tirage: record.tirage, variant, status: null, wrong: [], verdict: null, ms: run.ms }); continue; }
-      const verdict = judgeResult(run.result, expected), status: string = run.result.review?.status ?? 'inconnu';
+      const verdict = judgeResult(run.result, expected, options), status: string = run.result.review?.status ?? 'inconnu';
       stat.judged += verdict.judged; stat.right += verdict.right; stat.lineJudged += verdict.lineJudged; stat.lineRight += verdict.lineRight;
       stat.statuts[status] = (stat.statuts[status] ?? 0) + 1;
       const bad = verdict.wrong.length > 0, alert = status === 'disputed' || status === 'unavailable';
@@ -165,6 +188,48 @@ export function judgeBench(records: DrawRecord[], cases: BenchCase[]): { stats: 
     }
   }
   return { stats, draws };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Avant / après une règle du juge (D249, voie port-total) : aucune pièce ne doit perdre un point
+// ---------------------------------------------------------------------------------------------------------------------
+export interface ComptesCellule { judged: number; right: number; lineJudged: number; lineRight: number }
+export interface CelluleComparee {
+  /** `doc/variante` */ cellule: string; tirages: number; avant: ComptesCellule; apres: ComptesCellule;
+  /** Chemins fautifs présents après et absents avant, par tirage (`t1:items.count`) ; et l'inverse. */ ajoutes: string[]; retires: string[];
+  /** Les chemins ajoutés sur une cellule dont la lecture lit le port sous un autre genre : signalés à part, jamais comptés comme perte du juge. */ signales: string[];
+  perte: boolean;
+}
+const zero = (): ComptesCellule => ({ judged: 0, right: 0, lineJudged: 0, lineRight: 0 });
+
+/**
+ * Perte, par cellule `doc/variante` (tous les tirages additionnés) : `judged − right` augmente, ou `lineJudged − lineRight` augmente, ou un chemin fautif est ajouté
+ * (hors `autreGenre`), ou la cellule disparaît. Retirer une ligne jugée (le port) n'est pas une perte tant que ces écarts ne grandissent pas. Des comptes seulement : aucune valeur de pièce.
+ */
+export function comparerJugements(avant: readonly DrawVerdict[], apres: readonly DrawVerdict[], autreGenre: ReadonlySet<string> = new Set()): CelluleComparee[] {
+  const grouper = (draws: readonly DrawVerdict[]) => {
+    const cellules = new Map<string, { comptes: ComptesCellule; chemins: Set<string>; tirages: number }>();
+    for (const draw of draws) {
+      if (!draw.verdict) continue;
+      const cle = `${draw.doc}/${draw.variant}`, cellule = cellules.get(cle) ?? { comptes: zero(), chemins: new Set<string>(), tirages: 0 };
+      cellule.tirages++;
+      for (const champ of ['judged', 'right', 'lineJudged', 'lineRight'] as const) cellule.comptes[champ] += draw.verdict[champ];
+      for (const chemin of draw.verdict.wrong) cellule.chemins.add(`t${draw.tirage}:${chemin}`);
+      cellules.set(cle, cellule);
+    }
+    return cellules;
+  };
+  const a = grouper(avant), b = grouper(apres);
+  return [...new Set([...a.keys(), ...b.keys()])].sort().map(cle => {
+    const x = a.get(cle), y = b.get(cle);
+    const ajoutes = [...(y?.chemins ?? [])].filter(chemin => !x?.chemins.has(chemin)).sort(), retires = [...(x?.chemins ?? [])].filter(chemin => !y?.chemins.has(chemin)).sort();
+    const signales = autreGenre.has(cle) ? ajoutes : [];
+    const cA = x?.comptes ?? zero(), cB = y?.comptes ?? zero();
+    const perte = !x || !y || x.tirages !== y.tirages
+      || cB.judged - cB.right > cA.judged - cA.right || cB.lineJudged - cB.lineRight > cA.lineJudged - cA.lineRight
+      || ajoutes.some(chemin => !signales.includes(chemin));
+    return { cellule: cle, tirages: Math.max(x?.tirages ?? 0, y?.tirages ?? 0), avant: cA, apres: cB, ajoutes, retires, signales, perte };
+  });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# Voie port-total — les frais de port « Total seulement », jamais une ligne de la dépense (D249)
+# Voie port-total — les frais de port « Total seulement », jamais un article ni une rangée de la dépense (D249, D258)
 
 - Mission : 2026-10-31-ecran-depense
 - Agent : auteur ; modèle : sonnet ; niveau : jugement (argent, contrôle de somme, enregistrement)
@@ -7,14 +7,15 @@
 
 ## Objectif
 Ses mots (SPEC-BRASSEUR, 01.11 soir) : frais de port « Total seulement » partout, « Non non aussi quand imprimé article » (D249). Le port
-n'est jamais une ligne de la dépense : il compte dans le total, il se dit à part (« dont port »), et le contrôle « somme = imprimé » en
-tient compte. Cela remplace la lecture étroite d'avant (commandes en captures seulement, `work/missions/2026-11-01-banc-lecture/GESTES.md`,
+n'est jamais une ligne de stock, d'écran ni de mouvement : il compte dans le total, il se dit à part (« dont port »), et le contrôle
+« somme = imprimé » en tient compte. Il reste une entrée `shipping` de `finance.lines` (la comptabilité exige Σ lignes = total,
+`ledger.ts:170`) : ne l'en retire pas. Cela remplace la lecture étroite d'avant (commandes en captures seulement, `work/missions/2026-11-01-banc-lecture/GESTES.md`,
 la ligne du port).
 
-**Interface fixée par le pilote** (la voie p3c-port, qui porte l'écran, s'appuie dessus ; ne la change pas sans le dire dans le plan) :
+**Interface d'origine, remplacée par D258** (le § « Décisions du pilote sur le plan » prime ; gardée pour mémoire) :
 - le port, ce sont les lignes de la lecture dont `kind === 'shipping'` (le schéma de lecture a déjà ce genre) ;
 - l'écran les montre en « dont port <montant> » sous le total, jamais dans une bande : c'est la voie **p3c-port**, pas la tienne ;
-- l'enregistrement de la dépense ne les écrit **pas** comme lignes ; le total TTC enregistré reste le total imprimé (port compris) ;
+- (remplacé par D1 : le port reste une entrée `shipping` de `finance.lines`) le total TTC enregistré reste le total imprimé (port compris) ;
   aucun article de stock, aucun mouvement pour le port ;
 - le contrôle « somme des lignes = imprimé » compte le port (Σ lignes hors port + port = total) : vérifie s'il le fait déjà.
 
@@ -37,10 +38,37 @@ touché). Deux temps :
 Écris `RESULTAT.md` **section par section dès le début** (L18).
 
 ## Possède
-`src/services/purchaseEntry.ts` et ses tests, `functions/src/invoiceScanCore.ts` (si le plan l'y met), `tests/unit/depense/port/` (neuf),
-`scripts/banc-lecture-facture.ts` et `scripts/banc-lecture-facture-juger.ts` (règle du port seulement), les vérités du banc de ses deux
-pièces à port-article (dossier `REELS_DIR` du banc, hors Git : n'en copie rien dans Git, n'écris aucune de leurs valeurs dans tes
-rapports), `work/missions/2026-11-01-banc-lecture/GESTES.md` (la ligne du port), `work/missions/2026-10-31-ecran-depense/voies/port-total/**`.
+- `src/services/purchaseEntry.ts`
+- `tests/unit/purchaseEntry.test.ts`
+- `functions/src/invoiceScanCore.ts` (si le plan l'y met)
+- `tests/unit/depense/port/` (neuf)
+- `scripts/banc-lecture-facture.ts` (règle du port seulement)
+- `scripts/banc-lecture-facture-juger.ts` (règle du port seulement)
+- `tests/unit/banc-lecture-facture.test.ts` (l'attente liée au port seulement, s'il y en a une ; sinon « non modifié »)
+- `tests/unit/banc-lecture-k5.test.ts` (l'attente liée au port seulement : il appelle `judgeResult`)
+- `work/missions/2026-11-01-banc-lecture/GESTES.md` (la ligne du port)
+- `work/missions/2026-10-31-ecran-depense/voies/port-total/**`
+
+Hors Git : les vérités du banc de ses **trois** pièces à port-article (doc5, doc8, doc9 ; dossier `REELS_DIR` du banc). N'en copie rien
+dans Git, n'écris aucune de leurs valeurs dans tes rapports.
+
+## Décisions du pilote sur le plan (01.11)
+- D1 : **une seule forme (A′, D258), pas de `draft.port`.** Le port reste une ligne `kind === 'shipping'` de `draft.lines` ;
+  `validatePurchase` et `recalculerLecture` le comptent déjà (Σ lignes = total) ; **ni `separerPort`, ni `lignesPourControle`, ni
+  `draft.port`, ni `portDe`, ni `estPort`, ni `portEnregistre`** dans ta voie (après la revue : l'écran seul a besoin du critère, il vit
+  chez p3c-port ; `portEnregistre` n'aurait aucun appelant, il ira à la voie p3c-finances). `savePurchase` **ne change pas** : il refuse
+  déjà une action de stock ou de matériel sur une ligne hors nature stockable, et n'écrit ni `stockItemRef`, ni `equipmentRef`, ni reçu
+  pour `stockAction: 'none'`. Tu **épingles** ce comportement par des tests (ligne `shipping` + `stockAction` ≠ `none` refusée ; ligne
+  `shipping` écrite en entrée `shipping` de `finance.lines`, sans référence, sans mouvement ; TVA identique à celle du même brouillon où
+  le port serait une ligne `service`). Ils passent déjà sur HEAD : dis-le tel quel dans TEMOIN AVANT.
+- **Règle du port à l'écran (pour mémoire, codée par p3c-port)** : une ligne est « du port » si `kind === 'shipping'`, son montant est
+  un nombre valide ≥ 0 (centimes entiers), et toutes les lignes du brouillon ne sont pas du port ; sinon elle reste une rangée
+  ordinaire, visible et corrigeable.
+- P6 (port lu sous un autre genre) : **lecture étroite, pas de code.** Seul `kind === 'shipping'` compte ; pas de `portProbable` (personne
+  ne l'afficherait : ce serait une couche morte). RESULTAT.md compte, sur les vérités du banc, les lignes de port lues sous un autre genre
+  (nombre seulement, aucune valeur) : c'est l'entrée d'un geste de consigne plus tard, mesuré au banc.
+- D2 : les vérités de doc5, doc8 et doc9 se corrigent toutes trois.
+- D4 : `tests/unit/banc-lecture-facture.test.ts` entre dans ton Possède, pour l'attente du port seulement.
 
 Interdits : `src/ui/**` (l'écran est à p3c-port), `src/ui/finance/ExpenseSheet.tsx`, `src/domain/finance/invoicePoints.ts` sauf si le
 plan prouve que le contrôle de somme y vit et que le pilote l'accorde ; tout ce que COMMUN.md interdit ; aucun déploiement, aucune
