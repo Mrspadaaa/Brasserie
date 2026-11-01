@@ -167,7 +167,8 @@ describe('Vision complète intégrée au handler et au budget, sans réseau', ()
     expect(memory.provider).toHaveBeenCalledTimes(3);
   });
 
-  it.each([{ quantity: undefined }, { unit: undefined }, { amountTTC: undefined }])('ne valide pas une valeur manquante %j à partir d’une seule lecture', async patch => {
+  // fn-montant-seul : un `price` seul devient le montant de la ligne (quantité 1) ; le montant manquant s'éprouve donc sans `price` non plus.
+  it.each([{ quantity: undefined }, { unit: undefined }, { amountTTC: undefined, price: null }])('ne valide pas une valeur manquante %j à partir d’une seule lecture', async patch => {
     const first = withLine(patch);
     arrangeReadings([first, invoice(), first]);
     const { data } = await scan();

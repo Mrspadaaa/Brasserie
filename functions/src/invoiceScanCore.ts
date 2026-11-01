@@ -229,6 +229,17 @@ function readRejets(value: unknown): ScanRejet[] {
     ? [{ champ: text(entry.champ, 40), ligne: Number.isInteger(entry.ligne) ? entry.ligne as number : null, luTexte: text(entry.luTexte, 60), raison: text(entry.raison, 120) }] : []);
 }
 
+/**
+ * Une ligne qui n'a qu'UN montant (aucun en-tête de colonne) : les modèles le rangent parfois en `price`, `amountTTC` vide. Quand la
+ * quantité est vide ou vaut 1, ce montant est celui de la ligne : `amountTTC = price`. Rien d'autre ne change (la quantité reste vide :
+ * aucun stock automatique ; `price` reste). Une quantité > 1 (ou < 1) n'est jamais multipliée ; un `amountTTC` déjà lu n'est jamais touché ;
+ * sans `price` fini, rien n'est inventé. Appliquée à chaque lecture avant le vote, donc aussi à la 3.8 qui tranche (voie fn-montant-seul).
+ */
+export function montantDeLigne(amountTTC: number | null, price: number | null, quantity: number | null): number | null {
+  if (amountTTC !== null || price === null) return amountTTC;
+  return quantity === null || quantity === 1 ? price : null;
+}
+
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
 export function normalizeInvoiceScan(raw: any) {
   const issues: string[] = [];
@@ -243,9 +254,10 @@ export function normalizeInvoiceScan(raw: any) {
     if (alphaRead !== null && alphaPct === null) reject('alphaPct', index + 1, String(alphaRead), 'α hors de ]0 ; 30] %');
     const code = text(item?.vatCode, 60);
     if (code.length > 10) reject('vatCode', index + 1, code, 'code de TVA coupé à 10 caractères');
+    const quantity = number(item?.quantity), price = number(item?.price);
     return {
       id: `line-${index + 1}`, name: text(item?.name), kind: SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const,
-      quantity: number(item?.quantity), unit: text(item?.unit, 30), price: number(item?.price), amountTTC: number(item?.amountTTC),
+      quantity, unit: text(item?.unit, 30), price, amountTTC: montantDeLigne(number(item?.amountTTC), price, quantity),
       reference: text(item?.reference, 70), variant: text(item?.variant, 80),
       stockCategory: text(item?.stockCategory, 60), evidence: text(item?.evidence, 250), ambiguity: text(item?.ambiguity, 200),
       vatCode: code.slice(0, 10), alphaPct, alphaPctLu: alphaRead,
