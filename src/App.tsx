@@ -1018,6 +1018,7 @@ export const App: React.FC = () => {
         onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); }}
         initialRecipeId={brewRecipeId}
         onBatchCreated={batch => route.open({ view: 'brewday', batchId: batch.id })}
+        onOpenExpense={id => { setQuickAction(null); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
         recipes={recipes}
         geminiApiKey={config.geminiApiKey}
         onSuccessMessage={showToast}

@@ -141,6 +141,64 @@ export function purchaseSimilarOrders(draft:PurchaseDraft,transactions:FinanceTr
   }).sort((a,b)=>a.gap-b.gap).map(({tx,reasons,days})=>({tx,reasons,days}));
 }
 
+/**
+ * Le fichier choisi est, octet pour octet, l'original d'une dépense non annulée : certain, sans lecture (dp-doublon, 01.11).
+ * Seule l'empreinte compte (une dépense ancienne sans empreinte n'est jamais trouvée ici : les règles après lecture la gardent).
+ * Plusieurs dépenses au même fichier : la dernière saisie d'abord. La saisie courante est écartée.
+ */
+export function purchaseSameFile(documentHash:string|undefined,transactions:FinanceTransaction[],submissionId?:string):FinanceTransaction|undefined {
+  if (!documentHash) return undefined;
+  return transactions.filter(tx=>tx.finance && !tx.finance.voidedAt && tx.id!==`TX-${submissionId}` && tx.finance.sourceDocumentHash===documentHash)
+    .sort((a,b)=>(b.finance?.recordedAt??'').localeCompare(a.finance?.recordedAt??''))[0];
+}
+
+/** Ce à quoi une dépense est liée : ses articles de stock (regroupés par article, quantités additionnées à unité égale) et son matériel. */
+export interface PurchaseLinks {
+  stock:Array<{ref:string;name?:string;quantity?:number;unit?:string}>;
+  equipment:Array<{ref:string;name?:string}>;
+}
+export function purchaseLinks(tx:FinanceTransaction,stocks:{rawMaterials:StockItem[];cleaning:StockItem[];equipment:EquipmentItem[]}):PurchaseLinks {
+  const items=[...stocks.rawMaterials,...stocks.cleaning], stock=new Map<string,PurchaseLinks['stock'][number]&{mixed?:boolean}>(), equipment=new Map<string,PurchaseLinks['equipment'][number]>();
+  for (const line of tx.finance?.lines??[]) {
+    if (line.stockItemRef) {
+      const seen=stock.get(line.stockItemRef), unit=(line.unit??'').trim();
+      if (!seen) stock.set(line.stockItemRef,{ref:line.stockItemRef,name:items.find(item=>item.ref===line.stockItemRef)?.name,quantity:line.quantity,unit:unit||undefined});
+      else if (seen.mixed || (seen.unit??'')!==unit || seen.quantity===undefined || line.quantity===undefined) {seen.mixed=true;seen.quantity=undefined;}
+      else seen.quantity=Math.round((seen.quantity+line.quantity)*1000)/1000;
+    }
+    if (line.equipmentRef && !equipment.has(line.equipmentRef)) equipment.set(line.equipmentRef,{ref:line.equipmentRef,name:stocks.equipment.find(item=>item.ref===line.equipmentRef)?.name});
+  }
+  return {stock:[...stock.values()].map(({mixed:_mixed,...entry})=>entry),equipment:[...equipment.values()]};
+}
+
+export interface SameOrder { tx:FinanceTransaction; reasons:string[]; days?:number; gapCents:number }
+/**
+ * Le même n° de commande chez le même fournisseur, 60 jours au plus, même si les totaux diffèrent : la facture PDF et la page web d'une
+ * commande (un supplément arrondi autrement, la page sans n° de facture). Un signal, jamais un blocage. Sans n° de commande lu des deux
+ * côtés : rien (les règles existantes seules). Ce que `purchaseDuplicates` et `purchaseSimilarOrders` signalent déjà est écarté.
+ * `gapCents` : ce document moins la dépense enregistrée.
+ */
+export function purchaseSameOrder(draft:PurchaseDraft,transactions:FinanceTransaction[]):SameOrder[] {
+  const key=purchaseVendorKey(draft.vendor), order=invoiceKey(draft.sourceOrderNumber);
+  if (draft.sourceDocumentType==='credit_note' || !key || !order || !isMoney(draft.amount) || draft.amount<=0) return [];
+  let day='';
+  const today=()=>day||(day=todayISO());
+  const already=new Set(purchaseSimilarOrders(draft,transactions).map(item=>item.tx.id));
+  return transactions.flatMap(tx=>{
+    const finance=tx.finance;
+    if (!finance || finance.kind!=='expense' || finance.voidedAt || tx.id===`TX-${draft.submissionId}` || already.has(tx.id)) return [];
+    if (invoiceKey(finance.sourceOrderNumber)!==order || purchaseVendorKey(finance.vendor??'')!==key || duplicateMatch(draft,tx,today)) return [];
+    const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
+    const since=(finance.recordedAt??'').slice(0,10)||to, gap=days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
+    if (gap>60) return [];
+    const gapCents=cents(draft.amount!)-cents(tx.amountTTC), mine=draft.invoiceNumber.trim(), theirs=(finance.invoiceNumber??'').trim();
+    const reasons=[`Même commande n° ${draft.sourceOrderNumber!.trim()}`,'Même fournisseur',gapCents?'Autre total':'Même total',
+      mine&&theirs&&invoiceKey(mine)!==invoiceKey(theirs)?`Autre n° de facture : ${mine} (déjà ${theirs})`:!mine?'Ce document sans n° de facture':!theirs?'Dépense enregistrée sans n° de facture':`Même facture n° ${mine}`,
+      days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`];
+    return [{tx,reasons,days,gapCents,gap}];
+  }).sort((a,b)=>a.gap-b.gap).map(({gap:_gap,...entry})=>entry);
+}
+
 export { isMillingSurcharge };
 /** Index de la ligne d'ingrédient dont `lines[index]` est la mouture : la ligne juste au-dessus, même quantité positive et même unité. Sinon -1. */
 export function millingParentIndex(lines:PurchaseLineDraft[],index:number):number {

@@ -9,7 +9,7 @@ import { DateField,swissToday,toIsoDate } from '../DateField';
 import { Combobox } from '../Combobox';
 import { StorageService } from '../../services/storage';
 import { GeminiScannerService,type ScanOutcome,type ScannedLineKind } from '../../services/geminiScanner';
-import { savePurchaseWithProofReceipt,confirmPurchase,canCloseWithoutAck,watchPurchaseConfirmation,validatePurchase,sansCetteSaisie,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,purchaseSimilarOrders,proposeMillingSurcharges,confirmMillingSurcharge,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
+import { savePurchaseWithProofReceipt,confirmPurchase,canCloseWithoutAck,watchPurchaseConfirmation,validatePurchase,sansCetteSaisie,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,purchaseSimilarOrders,purchaseSameFile,purchaseSameOrder,proposeMillingSurcharges,confirmMillingSurcharge,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
 import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit } from '../../services/stockLineMatching';
 import { isConfirmedWriteRejection } from '../../services/firestoreRepo';
 import { proofQueueAvailable } from '../../services/proofQueue';
@@ -21,6 +21,7 @@ import { FinanceService } from '../../services/financeService';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { lineMathCheck } from '../../domain/finance/invoicePoints';
 import { DriveConnection } from './DriveConnection';
+import { PieceDejaSaisie,LienDepense } from './PieceDejaSaisie';
 import { InvoiceScanReview } from './InvoiceScanReview';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
@@ -34,7 +35,9 @@ import { LigneTicket,Interrupteur } from '../depense/Ticket';
 import type { LienStock } from '../depense/Pictos';
 import type { ApercuDepense } from '../depense/types';
 
-export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense }
+export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
+  /** dp-doublon : ouvre la fiche d'une dépense déjà enregistrée (la feuille se ferme d'abord). Absent : « Fermer » seulement. */
+  onOpenExpense?:(id:string)=>void }
 const kinds:Array<{value:PurchaseLineDraft['kind'];label:string}>=[{value:'ingredient',label:'Ingrédients'},{value:'packaging',label:'Emballages'},{value:'cleaning',label:'Nettoyage'},{value:'equipment',label:'Matériel durable'},{value:'maintenance',label:'Entretien / réparation'},{value:'service',label:'Service'},{value:'shipping',label:'Livraison'},{value:'discount',label:'Remise'},{value:'other',label:'Autre'}];
 type PurchaseCategory=Exclude<FinanceCategory,'apports'|'recettes'>;
 const categories:Array<{value:PurchaseCategory;label:string}>=[{value:'brassage',label:'Brassage'},{value:'materiel',label:'Matériel'},{value:'nettoyage',label:'Nettoyage'},{value:'chargesFixes',label:'Charges fixes'},{value:'renovation',label:'Local'},{value:'divers',label:'Autre'}];
@@ -82,7 +85,7 @@ function NomArticle({index,line,neuf,prisParAutre,onNom}:{index:number;line:Purc
   </div>;
 }
 
-export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,startWithScan=false,initialPlanId,apercu:apercuProp}:ExpenseSheetProps) {
+export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,startWithScan=false,initialPlanId,apercu:apercuProp,onOpenExpense}:ExpenseSheetProps) {
   /* Le banc de développement : la prop n'existe qu'en développement (éliminée du bundle de production) ; elle remplace la lecture et l'enregistrement. */
   const apercu=import.meta.env.DEV?apercuProp:undefined;
   const [draft,setDraft]=useState<PurchaseDraft>(()=>{
@@ -120,6 +123,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [sameAs,setSameAs]=useState<string|null>(null);
   /* S8 : un signal (autre numéro, même commande, même total). État d'écran à part : il ne touche jamais `duplicateConfirmed` et ne bloque jamais. */
   const [similarState,setSimilarState]=useState<{id:string;choix:'same'|'other'}|null>(null);
+  /* dp-doublon : l'id de la dépense dont ce fichier est l'original (même empreinte) : dit sans lecture ; « Lire quand même » le lève. */
+  const [deja,setDeja]=useState<string|null>(null);
   const [payeForme,setPayeForme]=useState(false),[tableauMoutures,setTableauMoutures]=useState(false),[laissees,setLaissees]=useState(false);
   const [readCount,setReadCount]=useState(0);
   const [driveAuthError,setDriveAuthError]=useState(false);
@@ -240,7 +245,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     manuallyClassified.current.clear();
     setDraft(previous=>{const proposed=applyScannedDescription(previous,result),description=proposed.description??previous.description;return patchPurchaseDraft(previous,{vendor:result.vendor,date:result.date,...applyScannedPayment(previous,result,swissToday()),invoiceNumber:result.invoiceNumber,...proposed,category:result.category,amount:total.amount,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:total.amount}],sourceCurrency:result.currency,sourceAmount:result.amountTTC??undefined,sourceDocumentType:result.documentType,sourceOrderNumber:result.orderNumber,sourceTotalBasis:total.calculated?'line_sum':result.amountTTC!==null?'printed':undefined,sourceNetAmount:result.amountHT??undefined,sourceVatRate:result.tvaRate??undefined,sourceVatAmount:result.tvaAmount??undefined,scanModel:outcome.model,documentHash},swissToday());});
   };
-  const attach=async(file:File)=>{
+  const attach=async(file:File,lireQuandMeme=false)=>{
     if(scanLocked.current||saveLocked.current)return;
     /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
        il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
@@ -249,7 +254,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(proofSent.current){setError('Ce fichier est déjà parti pour cette saisie. Pour en joindre un autre, ferme et rouvre : rien n’a été enregistré.');return;}
     if(file.size>4*1024*1024 || !['image/jpeg','image/png','image/webp','application/pdf'].includes(GeminiScannerService.normalizeMimeType(file))){setError('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');return;}
     if(attachment&&scan?.ok)patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
-    scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);
+    scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);
     try {
       const proofDataUrl=await GeminiScannerService.fileToDataUrl(file);
       const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
@@ -257,6 +262,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(!mounted.current)return;
       setAttachment(file);
       patch({proofDataUrl,proofFileName:file.name,proofType:GeminiScannerService.normalizeMimeType(file),documentHash});
+      /* Le même fichier qu'une dépense saisie : certain, donc ni lecture ni coût ; le brasseur peut lire quand même. Hors ligne : les dépenses déjà chargées. */
+      const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
+      if(meme){setDeja(meme.id);return;}
       const outcome=await GeminiScannerService.scanDocument(file);
       if(!mounted.current)return;
       applyOutcome(outcome,documentHash);
@@ -313,7 +321,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   // La candidate la plus forte vient en tête (règle exacte, puis date la plus proche).
   const existing=duplicates[0],existingReasons=existing?purchaseDuplicateReasons(draft,existing):[],attachable=Boolean(existing&&purchaseProofAttachable(draft,existing));
   const sameChosen=Boolean(existing&&sameAs===`${existing.id}|${draft.documentHash??''}`);
-  const similar=useMemo(()=>purchaseSimilarOrders(draft,transactions).filter(item=>item.tx.id!==existing?.id)[0],[draft,transactions,existing?.id]);
+  const similar=useMemo(()=>{const id=existing?.id;const order=purchaseSimilarOrders(draft,transactions).find(item=>item.tx.id!==id);if(order)return {...order,gapCents:0};return purchaseSameOrder(draft,transactions).find(item=>item.tx.id!==id);},[draft,transactions,existing?.id]);
+  const dejaTx=deja?transactions.find(tx=>tx.id===deja):undefined;
+  /* Rang 0 (même fichier) : certain, le titre ne dit pas « peut-être » (critique, 01.11). */
+  const memeFichier=existingReasons[0]==='Même fichier déjà joint';
+  /* L'écart de dates de la même commande, signé (ce document moins la dépense enregistrée), écrit « +2 j » à côté de la date. */
+  const joursEcart=(()=>{if(!similar)return 0;const a=toIsoDate(draft.date),b=toIsoDate(similar.tx.date);return a&&b?Math.round((Date.parse(a)-Date.parse(b))/86_400_000):0;})();
   const similarChoice=similar&&similarState?.id===similar.tx.id?similarState.choix:null;
   const numCourt=(n?:string)=>n?(n.match(/(\d{4,})\D*$/)?.[1]??n):'—';
   const similarAttachable=Boolean(similar&&purchaseProofAttachable(draft,similar.tx));
@@ -512,7 +525,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {proofSending?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Loader2 size={16} className="shrink-0 mt-0.5 animate-spin text-hop"/><span>{proofSending}</span></div>:null}
     {error?<div ref={errorBox} tabIndex={-1} role="alert" className="rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line">{error}</div>:null}
     {attached?<div role="status" className="rounded-panel border border-hop/40 bg-hop/5 p-2 text-sm text-cave-200 flex gap-2"><Check size={16} className="shrink-0 mt-0.5 text-hop"/><span>Justificatif rattaché à « {attached.description} » du {attached.date}. Aucune nouvelle dépense ni entrée en stock.{receipt?<> <ReceiptLine receipt={receipt}/></>:null}</span></div>:null}
-    {draft.proofDataUrl&&!busy&&!attached&&!apercu?<DriveConnection always={driveAuthError} onConnected={()=>{setDriveAuthError(false);setError('');setDriveTick(t=>t+1);}}/>:null}
+    {draft.proofDataUrl&&!busy&&!attached&&!apercu&&!dejaTx?<DriveConnection always={driveAuthError} onConnected={()=>{setDriveAuthError(false);setError('');setDriveTick(t=>t+1);}}/>:null}
     <div className="space-y-2 pb-1" ref={form}>
       <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
       <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
@@ -531,16 +544,18 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <div className="flex items-center gap-2"><Loader2 size={18} className="animate-spin text-ebc-straw shrink-0"/><div className="min-w-0 flex-1"><p role="status" className="text-sm font-medium text-cave-50">Lecture et vérification…</p><p className="truncate font-mono text-xs text-cave-400">{attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}{(attachment?.size||apercu?.fichier.size)?` · ${fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo`:''}</p></div></div>
         <div className="grid grid-cols-2 gap-2 opacity-80"><div className="rounded-panel border border-cave-800 p-1.5"><span className="block text-xs text-cave-400">Règlement</span><span className="block text-sm text-cave-200">verrouillé pendant la lecture</span></div><div className="rounded-panel border border-cave-800 p-1.5"><span className="block text-xs text-cave-400">Pour quoi ?</span><span className="block text-sm text-cave-200">verrouillé pendant la lecture</span></div></div>
         {[0,1,2,3,4].map(i=><div key={i} aria-hidden className="grid grid-cols-[24px_1fr_40px] items-center gap-2"><span className="h-5 w-5 rounded bg-cave-800"/><span className="space-y-1"><span className="block h-3 w-3/5 rounded-full bg-cave-800"/><span className="block h-2.5 w-1/3 rounded-full bg-cave-800"/></span><span className="h-3 rounded-full bg-cave-800"/></div>)}
-      </div>:scan&&!scan.ok&&attachment?<div data-dp="erreur-lecture" className="flex flex-wrap items-center gap-1.5 border-t border-cave-700 py-2"><span className="min-w-0 flex-1 truncate text-xs text-cave-400">{attachment.name}</span>
+      </div>:dejaTx&&attachment?<PieceDejaSaisie tx={dejaTx} stocks={stocks} payments={FinanceService.getPayments?.()??[]} transactions={transactions} onLire={()=>void attach(attachment,true)}/>
+      :scan&&!scan.ok&&attachment?<div data-dp="erreur-lecture" className="flex flex-wrap items-center gap-1.5 border-t border-cave-700 py-2"><span className="min-w-0 flex-1 truncate text-xs text-cave-400">{attachment.name}</span>
         <button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>void attach(attachment)} className={boutonPlein}>Relire</button>
         <button type="button" onClick={()=>{const champ=form.current?.querySelector<HTMLElement>('#purchase-total');champ?.focus();champ?.scrollIntoView?.({block:'center'});}} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Saisir à la main</button></div>:null}
-      {showForm&&!busy&&!attached?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 lg:grid lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-x-5 lg:items-start">
+      {showForm&&!busy&&!attached&&!dejaTx?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0 flex flex-col gap-2 lg:grid lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-x-5 lg:items-start">
       <div className={`contents lg:col-start-1 lg:row-start-1 lg:block lg:sticky lg:top-0 ${done?'lg:max-h-[calc(100vh-12.5rem)]':'lg:max-h-[calc(100vh-9.5rem)]'} lg:space-y-2 lg:self-start lg:overflow-y-auto`}>
       <div className="order-1 flex flex-col gap-2">
-      {existing?<section id="purchase-duplicate" aria-label="Achat peut-être déjà enregistré" className={`${uncertainClass} space-y-1.5 lg:col-start-1`}>
-        <p className="text-sm font-medium text-attention flex items-center gap-1.5"><AlertCircle size={14} className="shrink-0"/>Achat peut-être déjà enregistré</p>
+      {existing?<section id="purchase-duplicate" aria-label={memeFichier?'Achat déjà enregistré · même fichier':'Achat peut-être déjà enregistré'} className={`${uncertainClass} space-y-1.5 lg:col-start-1`}>
+        <p className="text-sm font-medium text-attention flex items-center gap-1.5"><AlertCircle size={14} className="shrink-0"/>{memeFichier?'Achat déjà enregistré · même fichier':'Achat peut-être déjà enregistré'}</p>
         <div className="min-w-0 text-[13px] text-cave-200"><p className="truncate font-medium text-cave-50">{existing.description}</p>
           <p className="text-xs text-cave-400 break-words">{[existing.finance?.vendor,existing.finance?.proofDocumentId||existing.proofUrl?'justificatif joint':'sans justificatif'].filter(Boolean).join(' · ')}</p></div>
+        <LienDepense tx={existing} stocks={stocks}/>
         {/* Les deux documents côte à côte : deux n° de facture différents disent deux achats. */}
         <table className="w-full table-fixed text-xs">
           <thead><tr className="text-cave-400"><td className="w-14"/><th scope="col" className="py-0.5 text-left font-normal">Document lu</th><th scope="col" className="py-0.5 text-left font-normal">Déjà enregistré</th></tr></thead>
@@ -552,9 +567,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <p className="text-xs text-cave-400">{sameChosen?`Même achat : ${sameOutcome}.`:draft.duplicateConfirmed?'Autre achat : une seconde dépense est enregistrée avec ce document.':`Même achat : ${sameOutcome}. Autre achat : une seconde dépense est enregistrée.`}</p>
       </section>:null}
       {similar?<section aria-label="Même commande sous un autre numéro" className={`${uncertainClass} space-y-1.5 lg:col-start-1`}>
-        <p className="text-sm font-medium text-attention flex items-center gap-1.5"><AlertCircle size={14} className="shrink-0"/>Même commande, autre numéro : {similar.tx.finance?.invoiceNumber||'sans n°'}</p>
+        <p className="text-sm font-medium text-attention flex items-center gap-1.5"><AlertCircle size={14} className="shrink-0"/>{similar.gapCents?`Même commande ${numCourt(similar.tx.finance?.sourceOrderNumber)}, autre total`:`Même commande, autre numéro : ${similar.tx.finance?.invoiceNumber||'sans n°'}`}</p>
+        <LienDepense tx={similar.tx} stocks={stocks}/>
         <table className="w-full table-fixed text-xs"><thead><tr className="text-cave-400"><td className="w-16"/><th scope="col" className="py-0.5 text-left font-normal">Ce document</th><th scope="col" className="py-0.5 text-left font-normal">Déjà au registre</th></tr></thead>
-          <tbody>{[{l:'N°',a:draft.invoiceNumber.trim()||'sans n°',b:similar.tx.finance?.invoiceNumber||'sans n°',same:false},{l:'Date',a:draft.date,b:`${similar.tx.date}${similar.days?` · ${similar.days} j d’écart`:''}`,same:draft.date===similar.tx.date},{l:'Commande',a:numCourt(draft.sourceOrderNumber),b:numCourt(similar.tx.finance?.sourceOrderNumber),same:Boolean(draft.sourceOrderNumber)&&draft.sourceOrderNumber===similar.tx.finance?.sourceOrderNumber},{l:'Total',a:draft.amount===undefined?'—':money(draft.amount),b:money(similar.tx.amountTTC),same:true}].map(row=><tr key={row.l} className="border-t border-cave-800"><th scope="row" className="py-0.5 text-left font-normal text-cave-400">{row.l}</th><td className={`py-0.5 truncate font-mono ${row.same?'font-semibold text-attention':'text-cave-50'}`}>{row.a}</td><td className={`py-0.5 truncate font-mono ${row.same?'font-semibold text-attention':'text-cave-50'}`}>{row.b}</td></tr>)}</tbody></table>
+          <tbody>{[{l:'N°',a:draft.invoiceNumber.trim()||'sans n°',b:similar.tx.finance?.invoiceNumber||'sans n°',same:false},{l:'Date',a:draft.date,b:similar.tx.date,same:draft.date===similar.tx.date},{l:'Commande',a:numCourt(draft.sourceOrderNumber),b:numCourt(similar.tx.finance?.sourceOrderNumber),same:Boolean(draft.sourceOrderNumber)&&draft.sourceOrderNumber===similar.tx.finance?.sourceOrderNumber},{l:'Total',a:draft.amount===undefined?'—':money(draft.amount),b:money(similar.tx.amountTTC),same:!similar.gapCents}].map(row=><tr key={row.l} className="border-t border-cave-800"><th scope="row" className="py-0.5 text-left font-normal text-cave-400">{row.l}</th><td className={`py-0.5 truncate font-mono ${row.same?'font-semibold text-attention':'text-cave-50'}`}>{row.a}{row.l==='Total'&&similar.gapCents?<> <strong data-dp-ecart aria-label={`écart de ${money(Math.abs(similar.gapCents)/100)}`} className="font-semibold tabular-nums text-attention underline decoration-attention/60 underline-offset-2">{similar.gapCents>0?'+':'−'}{fr2(Math.abs(similar.gapCents)/100)}</strong></>:null}{row.l==='Date'&&joursEcart?<> <strong data-dp-jours aria-label={`${Math.abs(joursEcart)} jour${Math.abs(joursEcart)>1?'s':''} d’écart`} className="font-semibold tabular-nums text-attention">{joursEcart>0?'+':'−'}{Math.abs(joursEcart)} j</strong></>:null}</td><td className={`py-0.5 truncate font-mono ${row.same?'font-semibold text-attention':'text-cave-50'}`}>{row.b}</td></tr>)}</tbody></table>
         <div role="group" aria-label="Choix pour la même commande" className="flex flex-wrap gap-1.5">
           <button type="button" aria-pressed={similarChoice==='same'} onClick={()=>setSimilarState({id:similar.tx.id,choix:'same'})} className={`${button} ${similarChoice==='same'?'border-area-finances bg-area-finances/10 text-cave-50':'border-cave-700 text-cave-200'}`}>{similarAttachable?'Même achat : rattacher le justificatif':'Même achat · ne rien enregistrer'}</button>
           <button type="button" aria-pressed={similarChoice==='other'} onClick={()=>setSimilarState({id:similar.tx.id,choix:'other'})} className={`${button} ${similarChoice==='other'?'border-area-finances bg-area-finances/10 text-cave-50':'border-cave-700 text-cave-200'}`}>Autre achat</button></div>
@@ -588,9 +604,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </div>
     {showForm&&!busy?<footer className={'shrink-0 min-h-9 px-3 py-0.5 border-t border-cave-800 flex items-center justify-between gap-2'+(keyboardInset?'':' pb-safe')}>
       {done?<div className="min-w-0 flex-1 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>
-      :<div className="min-w-0 flex-1 text-xs text-cave-200">{saving&&draft.proofDataUrl&&!receipt&&(!proofQueueAvailable()||apercu)?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':driveVerifie?'Drive à connecter':''}</span>:null}</div>}
+      :<div className="min-w-0 flex-1 text-xs text-cave-200">{dejaTx?(onOpenExpense?<span>Rien n’est enregistré</span>:null):saving&&draft.proofDataUrl&&!receipt&&(!proofQueueAvailable()||apercu)?<span>Envoi au Drive{tailleMo?` · ${fr(tailleMo)} Mo`:''}</span>:saving?<span>{pendingId?'Confirmation…':'Enregistrement…'}</span>:!online?<span className="text-attention">Hors ligne · brouillon gardé</span>:nUnite&&attempted?<span className="text-attention">{nUnite} unité{nUnite>1?'s':''} à préciser</span>:draft.proofDataUrl&&!attached?<span>{driveOk?'Drive prêt':driveVerifie?'Drive à connecter':''}</span>:null}</div>}
       {done?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>
-      :attached?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>:sameChosen&&existing?<button type="button" disabled={saving} onClick={()=>{if(attachable)void attachToExisting(existing.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:attachable?<Check size={14}/>:<X size={14}/>} {attachable?saving?'Rattachement…':'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
+      :attached?<button type="button" onClick={onClose} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}><Check size={14}/>Terminé</button>
+      :dejaTx?<button type="button" onClick={()=>{onClose();onOpenExpense?.(dejaTx.id);}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 inline-flex items-center gap-1.5 font-semibold'}>{onOpenExpense?<FileText size={14}/>:<X size={14}/>}{onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer'}</button>:sameChosen&&existing?<button type="button" disabled={saving} onClick={()=>{if(attachable)void attachToExisting(existing.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:attachable?<Check size={14}/>:<X size={14}/>} {attachable?saving?'Rattachement…':'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
       :!existing&&similarChoice==='same'&&similar?<button type="button" disabled={saving} onClick={()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center gap-1.5 font-semibold'}>{similarAttachable?<Check size={14}/>:<X size={14}/>}{similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer'}</button>
       :<button type="button" disabled={saving} aria-label={saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer et enregistrer':'Enregistrer la dépense'} onClick={()=>void save()} className={button+' min-h-8 bg-ebc-straw border-ebc-straw text-cave-950 disabled:opacity-40 inline-flex items-center justify-center gap-1.5 font-semibold'}>{saving?<Loader2 size={14} className="animate-spin"/>:<Check size={14}/>} {saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer':'Enregistrer'}</button>}
     </footer>:null}
