@@ -1,0 +1,6 @@
+[
+  ["carte-synthese", "annee", "#tvar2-retour"],
+  ["trimestre-t2", "annee", "[data-per='2']"],
+  ["douteuse-ouverte", "douteuse", "[data-booster=douteuse]"],
+  ["segment-inconnu", "inconnues", ".tvar2-bin"]
+]
