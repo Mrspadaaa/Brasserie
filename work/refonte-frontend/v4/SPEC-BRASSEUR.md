@@ -1003,3 +1003,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **La pastille TVA** (01.11, nuit), à « Pastille TVA : elle reste, parce que la lecture prend le sous-total TTC pour le HT. La lever
   demande de redéployer aiTask, ce qui reste ton choix. », mot pour mot : « Go » (lu : accord au correctif et au redéploiement d'aiTask
   seul ; pas l'hébergement, pas les règles. D272).
+- **Les 14 pièces, en vrai** (01.11, nuit), à « J'ai rejoué les 14 pièces du banc sans appel payant », mot pour mot : « Maintenant il
+  faudra refaire ça avec appel payant sur la vrai alo » ; puis « App » (lu : « alo » = « app » ; rejouer les 14 pièces avec de vraies
+  lectures payantes, dans l'app en ligne, chaque champ comparé à la vérité ; lecture seule, rien n'est confirmé ni enregistré. D273).

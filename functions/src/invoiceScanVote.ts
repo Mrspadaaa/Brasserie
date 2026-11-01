@@ -100,7 +100,17 @@ export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: Lectur
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
-  return { ...star, result: { ...star.result, review: { ...vote.result.review }, issues: vote.result.issues, points: [...star.result.points, ...disagreements] } };
+  return { ...star, result: { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] } };
+}
+/**
+ * D272b : les phrases du vote, sans ses contrôles de calcul. Ceux-ci portent sur le mélange des trois lectures, alors que les valeurs gardées sont
+ * celles de la 3.8, dont les contrôles sont déjà dans son résultat (le 01.11, deux Flash-Lite sans la ligne de port faisaient dire « Écart 29,99 CHF »
+ * à côté d'une somme juste). Ce qu'une lecture a signalé reste (source « modèle » : une quantité illisible) ; les phrases de la 3.8 s'ajoutent.
+ */
+export function phrasesDuVote(vote: any, star: any): { issues: string[]; review: any } {
+  const calculs = new Set<string>((vote.points ?? []).filter((point: any) => (point.source ?? 'contrôle') === 'contrôle').map((point: any) => point.message));
+  const garder = (phrases: string[] = [], siennes: string[] = []) => [...new Set([...phrases.filter(phrase => !calculs.has(phrase)), ...siennes])];
+  return { issues: garder(vote.issues, star.issues), review: { ...vote.review, findings: garder(vote.review?.findings, star.review?.findings) } };
 }
 
 /** Ce que la lecture de facture demande à l'extérieur (réseau, budget, délai) : l'ordre des appels, lui, est ici. */

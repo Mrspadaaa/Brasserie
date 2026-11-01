@@ -70,6 +70,7 @@ import {
   type CauseCoupure, type InvoiceScanResult
 } from '../functions/src/invoiceVisionReview';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
+import { phrasesDuVote } from '../functions/src/invoiceScanVote';
 import { liteConsigne } from './banc-lecture-consignes-lite';
 import {
   OutilManquant, bandNote, imageSize, jimpBander, estimateBandCount, isTall, loadJimp, loadPdfRenderer, mergeDecoded, pageNote, sizeBander, type BandPart, type Bander
@@ -639,7 +640,8 @@ export function finalOfStarVote(r1: Reading, r2: Reading, third?: Reading, force
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third, force);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
-  return { ...star, result: { ...star.result, review: { ...vote.result.review }, issues: vote.result.issues, points: [...star.result.points, ...disagreements] } };
+  // D272b : les phrases du vote sans ses contrôles de calcul, comme la production (`phrasesDuVote`).
+  return { ...star, result: { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] } };
 }
 
 /** C★′ : comme C★, et un contrôle arithmétique en échec sur les deux lectures appelle aussi la 3.8, qui tranche seule. */
