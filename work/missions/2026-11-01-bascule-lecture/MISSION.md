@@ -72,5 +72,12 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
   épreuve lit le fichier tel quel), puis hébergement déployé depuis une copie à `npm ci` réel.
 - fn-relecture : FN-RELECTURE ACCEPTE (aucun bloquant). fn-csv8 commitée (3b3e74ac). **`aiTask` déployé** (D254, révision
   aitask-00042-tet, aucune erreur au démarrage). À faire : relire les journaux à la première facture lue ; retour arrière = 5970478d.
+- qr-rejeu (a1d894e8dcd76f5c9, relancé une fois à sa limite de tours) : ECHEC formel, examiné par le pilote. Étapes 2, 3, 6 et 7
+  conformes : build code 0, 74 fichiers et 1 215 tests verts, CSP (a) sans sceau avec violation `wasm-eval`, (b) « QR ✓ » image et PDF,
+  0 violation. Les trois points d'échec : (1) critère faux du pilote, `vue.test.ts` teste `qrVue.ts`, module pur qui reste en place ;
+  (2) contraste « 110,40 » mesuré par le pilote au pixel, 5,67 ; (3) captures de qr-app régénérées par le même script sur le même code
+  (`parcours.mjs` écrit par défaut dans `qr-app/captures` : un rejeu passe `--sortie`, L17). Captures CSP ouvertes par le pilote.
+  `'wasm-unsafe-eval'` ajouté à `script-src` de `firebase.json` (D253), seul changement du fichier. qr-critique lancée
+  (a7bcdb6dae375176a). Ensuite : commit de qr-app et de `firebase.json`, copie à `npm ci` réel, hébergement.
 
 ## Signature

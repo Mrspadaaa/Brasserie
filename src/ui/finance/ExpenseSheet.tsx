@@ -22,15 +22,19 @@ import { planOccurrences } from '../../domain/finance/forecast';
 import { lineMathCheck } from '../../domain/finance/invoicePoints';
 import { DriveConnection } from './DriveConnection';
 import { PieceDejaSaisie,LienDepense } from './PieceDejaSaisie';
-import { InvoiceScanReview } from './InvoiceScanReview';
+import { confronterQr } from '../../services/qrFacture';
+import { lireQrDuFichier,type ResultatQr } from '../../services/qrLecture';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
-import { chipsDeLecture,compteLiens,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,prixAvecMouture,recalculerLecture,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { chipsDeLecture,compteLiens,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { vueQr,fr2 as fr2Qr } from '../depense/qrVue';
+import { Sceau,SansQr,DuelTotal,TemoinSomme,BoutonPhotoQr,FicheQr } from '../depense/Qr';
 import { articleNeufDe,ligneDeBrouillon,type ArticleNeuf } from '../../domain/stock/articleNeuf';
 import { nomDeFiche,type Catalogues } from '../../domain/stock/fiche';
 import { donneesDeLigne,nomsPris,pliee,type MembreVirtuel } from '../../services/stockLineMatching';
 import { ChipsBar,BandeCollante } from '../depense/Verdict';
+import { InvoiceScanReview } from './InvoiceScanReview';
 import { LigneTicket,Interrupteur } from '../depense/Ticket';
 import type { LienStock } from '../depense/Pictos';
 import type { ApercuDepense } from '../depense/types';
@@ -134,6 +138,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [reviewedFields,setReviewedFields]=useState<string[]>([]);
   const [panel,setPanel]=useState<'tva'|'paye'|null>(null);
   const [preuveOuverte,setPreuveOuverte]=useState(false);
+  /* z2 (D246) : le QR-facture lu dans le téléphone. `undefined` : aucune lecture lancée ; `null` : elle court ; sinon son résultat. Rien n'est écrit : le contrôle vit dans l'écran. */
+  const [qrRes,setQrRes]=useState<ResultatQr|null|undefined>(undefined);
+  /* Le choix du brasseur devant un total contredit : `lu` (la page) ou `qr`. Le champ ne change qu'à ce geste. */
+  const [qrChoix,setQrChoix]=useState<'lu'|'qr'|null>(null);
+  const [qrOuvert,setQrOuvert]=useState<boolean|undefined>(undefined);
+  const [qrSurligne,setQrSurligne]=useState(false);
+  const qrJeton=useRef(0),qrAvant=useRef<number|undefined>(undefined),qrPhoto=useRef<HTMLInputElement>(null);
   const [reglees,setReglees]=useState<Set<string>>(new Set());
   const [done,setDone]=useState<DriveProofReceipt|null>(null);
   const [online,setOnline]=useState(apercu?apercu.reseau:typeof navigator==='undefined'||navigator.onLine!==false);
@@ -226,6 +237,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     target.focus();target.scrollIntoView?.({block:'nearest'});
   };
   /* Le bloc qui suit la lecture : le brouillon se pose sur l'état courant (une description ou une date de paiement tapée n'est jamais écrasée). */
+  /* Lit le QR-facture du fichier DANS le téléphone, à côté de Gemini : jamais attendue, jamais bloquante (`lireQrDuFichier` ne lève pas). Un résultat périmé (autre fichier) est jeté. */
+  const lancerQr=(file:File)=>{
+    const jeton=++qrJeton.current;
+    setQrRes(null);setQrOuvert(undefined);
+    lireQrDuFichier(file).catch(():ResultatQr=>({statut:'non-verifie',motif:'lecture impossible'})).then(res=>{if(mounted.current&&qrJeton.current===jeton)setQrRes(res);});
+  };
   const applyOutcome=(outcome:ScanOutcome,documentHash?:string)=>{
     setScan(outcome);
     if(!outcome.ok || !outcome.result){setError(outcome.error||'Le scan n’a pas abouti. Les champs restent modifiables.');return;}
@@ -254,7 +271,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(proofSent.current){setError('Ce fichier est déjà parti pour cette saisie. Pour en joindre un autre, ferme et rouvre : rien n’a été enregistré.');return;}
     if(file.size>4*1024*1024 || !['image/jpeg','image/png','image/webp','application/pdf'].includes(GeminiScannerService.normalizeMimeType(file))){setError('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');return;}
     if(attachment&&scan?.ok)patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
-    scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);
+    scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);
     try {
       const proofDataUrl=await GeminiScannerService.fileToDataUrl(file);
       const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
@@ -265,6 +282,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       /* Le même fichier qu'une dépense saisie : certain, donc ni lecture ni coût ; le brasseur peut lire quand même. Hors ligne : les dépenses déjà chargées. */
       const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
       if(meme){setDeja(meme.id);return;}
+      lancerQr(file);
       const outcome=await GeminiScannerService.scanDocument(file);
       if(!mounted.current)return;
       applyOutcome(outcome,documentHash);
@@ -277,8 +295,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const file=new File([''],apercu.fichier.name,{type:apercu.fichier.type});
     setAttachment(file);setShowForm(true);
     patch({proofDataUrl:'data:application/pdf;base64,JVBERi0xLjQK',proofFileName:apercu.fichier.name,proofType:apercu.fichier.type,documentHash:'simule'});
-    if(apercu.etat==='1')setBusy(true);
+    if(apercu.etat==='1'||apercu.etat==='qr-lecture')setBusy(true);
     else applyOutcome(apercu.outcome,'simule');
+    /* Le banc du QR : un vrai fichier fictif, lu par le vrai décodeur du navigateur (la lecture Gemini reste simulée). */
+    if(apercu.qrFichier){const q=apercu.qrFichier;fetch(q.url).then(r=>r.blob()).then(b=>lancerQr(new File([b],q.name,{type:q.type}))).catch(()=>undefined);}
     const t=setTimeout(()=>{document.body.dataset.apercu=apercu.etat;},120);
     return()=>clearTimeout(t);
   },[]);
@@ -351,6 +371,25 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const recalcul=useMemo(()=>result?recalculerLecture(result,draft):undefined,[result,draft]);
   const statut=result?statutAffiche(result,recalcul):null;
   const points=recalcul?.points??result?.points;
+  /* ------- z2 : le QR-facture face à la lecture. La confrontation lit la lecture TELLE QUE REÇUE (jamais le champ tapé) ; elle ne change aucun champ. ------- */
+  const confrontation=useMemo(()=>result&&qrRes?.statut==='lu'?confronterQr(qrRes.qr,result):null,[result,qrRes]);
+  const vue=qrRes===undefined?null:vueQr(qrRes,confrontation,result??null,qrChoix);
+  const qrContredit=Boolean(vue?.contredit);
+  const statutFinal=statut&&qrContredit?pireStatut(statut,'disputed'):statut;
+  const grandEcran=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:1024px)').matches;
+  const qrFicheOuverte=Boolean(vue&&vue.lignes.length>0&&(qrOuvert??grandEcran));
+  const sommeLignesCts=Math.round(draft.lines.reduce((s,l)=>s+(l.amount??0)*100,0));
+  const choisirQr=(source:'lu'|'qr')=>{
+    const duel=vue?.duel;
+    if(!duel)return;
+    if(source==='qr'){if(qrChoix!=='qr')qrAvant.current=draft.amount;setTotal(duel.qrNombre);}
+    else{if(qrChoix==='qr')setTotal(qrAvant.current);else reviewed('amountTTC');}
+    setQrChoix(source);
+  };
+  const sceauQr=vue?(vue.etat==='sans'?<SansQr/>:<Sceau vue={vue} ouvert={qrFicheOuverte} onClick={()=>setQrOuvert(!qrFicheOuverte)}/>):undefined;
+  const photographierQr=()=>qrPhoto.current?.click();
+  const sousTotalQr=vue?.duel?<><div className={qrSurligne?'rounded-control outline outline-2 outline-offset-1 outline-attention':''}><DuelTotal duel={vue.duel} choix={qrChoix} onChoix={choisirQr}/></div>{sommeLignesCts===Math.round(vue.duel.qrNombre*100)&&draft.lines.length>1?<TemoinSomme somme={fr2Qr(sommeLignesCts/100)}/>:null}</>:vue?.photographier?<BoutonPhotoQr onClick={photographierQr}/>:undefined;
+  const ficheQr=vue?<FicheQr vue={vue} ouvert={qrFicheOuverte} onFermer={()=>setQrOuvert(false)} onPhoto={photographierQr}/>:null;
   const mouturesPropositions=proposeMillingSurcharges(draft.lines);
   const mouturesLiees=draft.lines.filter((_,i)=>parentDeLaMouture(draft.lines,i)>=0).length;
   const precisIds=new Set(draft.lines.filter(line=>STOCK_KINDS.includes(line.kind)&&line.stockAction!=='none'&&!isReadableUnit(line.unit)).map(line=>line.id));
@@ -361,10 +400,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const premierMot=(d:string)=>d.trim().split(/[\s,]+/)[0]??d;
   for(const [id,voisinLu] of voisins.current)extras.push({id:`voisin:${id}`,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===id)?.description??'article'))} ${voisinLu.marque}`,enjeu:'stock',ligne:null,codes:[],source:'voisin',cible:id});
   const sommeMoutures=Math.round(mouturesPropositions.reduce((a,p)=>a+(draft.lines.find(l=>l.id===p.lineId)?.amount??0),0)*100);
-  const chips=chipsDeLecture(points,extras).map(c=>c.source==='mouture'?{...c,nom:`${c.nom}${sommeMoutures>0?` +${(sommeMoutures/100).toFixed(2).replace('.',',')}`:''}`}:c.codes.includes('unite-absente')&&c.ligne?{...c,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===`line-${c.ligne}`)?.description??c.nom))} unité`}:c);
+  /* z2 : devant un total contredit par le QR, la chip ① « Total » vient en tête et renvoie au duel ; elle remplace la chip « Total » du point de somme (même question). */
+  const chipQr:Chip[]=qrContredit?[{id:'qr',nom:'Total',enjeu:'argent',ligne:null,codes:[],source:'qr'}]:[];
+  const chips=[...chipQr,...chipsDeLecture(points,extras).filter(c=>!(qrContredit&&c.nom==='Total'&&c.source==='point'))].map(c=>c.source==='mouture'?{...c,nom:`${c.nom}${sommeMoutures>0?` +${(sommeMoutures/100).toFixed(2).replace('.',',')}`:''}`}:c.codes.includes('unite-absente')&&c.ligne?{...c,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===`line-${c.ligne}`)?.description??c.nom))} unité`}:c);
   const ligneDe=(chip:Chip)=>chip.cible??(chip.ligne?`line-${chip.ligne}`:undefined);
   const estRegle=(chip:Chip):boolean=>{
     if(reglees.has(chip.id))return true;
+    if(chip.source==='qr')return qrChoix!==null;
     if(chip.source==='paiement')return draft.paymentDateBasis!=='document_date';
     /* D233 : le point « Date » se règle quand le brasseur a posé une date valide (jamais par défaut ni par le temps). */
     if(chip.codes.includes('date-absente'))return reviewedFields.includes('date')&&dateValide(draft.date);
@@ -390,6 +432,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   };
   const aller=(chip:Chip)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
+    /* z2 : la chip « Total » du QR saute au duel et le surligne 0,8 s. */
+    if(chip.source==='qr'){if(viser(q('[data-dp="duel"]'),{block:'center'})){setQrSurligne(true);setTimeout(()=>{if(mounted.current)setQrSurligne(false);},800);}return;}
     if(chip.nom==='TVA'){flushSync(()=>setPanel('tva'));viser(q('[data-dp="panneau-tva"]'));return;}
     if(chip.source==='paiement'){flushSync(()=>setPanel('paye'));viser(q('[data-dp="panneau-paye"]'));return;}
     const id=chip.source==='mouture'?mouturesPropositions[0]?.lineId:ligneDe(chip);
@@ -428,7 +472,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const tailleMo=(()=>{const o=attachment?.size||apercu?.fichier.size;return o?Math.round(o/1e5)/10:0;})();
   const nUnite=shownErrors.filter(m=>m.includes('unité à préciser')).length;
   const enSauvegarde=saving&&!pendingId;
-  const totalField=<NumberInput id="purchase-total" fractionDigits={2} aria-label="Total TTC en CHF" aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder="0,00" className={`${inputClass} !text-[32px] !leading-tight font-mono font-semibold tabular-nums min-h-10 !w-40 !border-0 !border-b !border-dotted !bg-transparent !px-0`}/>;
+  const totalField=<NumberInput id="purchase-total" fractionDigits={2} aria-label="Total TTC en CHF" aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder="0,00" className={`${inputClass} !text-[32px] !leading-tight font-mono font-semibold tabular-nums min-h-10 !w-40 !border-0 !border-b !border-dotted !bg-transparent !px-0${qrContredit&&qrChoix===null?' !border-b-2 !border-attention !text-attention':''}`}/>;
   const ticket=(simple:boolean)=>draft.lines.map((line,index)=>{
     const mp=mouturesPropositions.find(p=>p.lineId===line.id),parentIdx=parentDeLaMouture(draft.lines,index),neuf=neufParLigne.get(line.id),nomRefuse=line.stockAction==='new'&&Boolean(line.articleName?.trim())&&nomPrisParAutre(line.id,line.articleName!);
     const isMouture=Boolean(mp)||parentIdx>=0;
@@ -529,6 +573,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     <div className="space-y-2 pb-1" ref={form}>
       <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
       <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
+      <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)lancerQr(file);e.target.value='';}}/>
       {!attachment&&!busy?showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:<section
         aria-label="Justificatif de la dépense"
         className={`py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors ${dropping?'border-ebc-straw bg-ebc-straw/10':'border-cave-700'}`}
@@ -541,7 +586,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <p className="text-xs text-center text-cave-400">PDF ou image{coarse?'':', ou dépose le fichier ici'} · lecture automatique · 4 Mo max.</p>
         {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
       </section>:busy?<div data-dp="lecture" className="border-t border-cave-700 py-2 space-y-2">
-        <div className="flex items-center gap-2"><Loader2 size={18} className="animate-spin text-ebc-straw shrink-0"/><div className="min-w-0 flex-1"><p role="status" className="text-sm font-medium text-cave-50">Lecture et vérification…</p><p className="truncate font-mono text-xs text-cave-400">{attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}{(attachment?.size||apercu?.fichier.size)?` · ${fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo`:''}</p></div></div>
+        <div className="flex items-center gap-2"><Loader2 size={18} className="animate-spin text-ebc-straw shrink-0"/><div className="min-w-0 flex-1"><p role="status" className="text-sm font-medium text-cave-50">Lecture et vérification…</p><p className="truncate font-mono text-xs text-cave-400">{attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}{(attachment?.size||apercu?.fichier.size)?` · ${fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo`:''}</p></div>{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0">{sceauQr}</div>:null}</div>{ficheQr}
         <div className="grid grid-cols-2 gap-2 opacity-80"><div className="rounded-panel border border-cave-800 p-1.5"><span className="block text-xs text-cave-400">Règlement</span><span className="block text-sm text-cave-200">verrouillé pendant la lecture</span></div><div className="rounded-panel border border-cave-800 p-1.5"><span className="block text-xs text-cave-400">Pour quoi ?</span><span className="block text-sm text-cave-200">verrouillé pendant la lecture</span></div></div>
         {[0,1,2,3,4].map(i=><div key={i} aria-hidden className="grid grid-cols-[24px_1fr_40px] items-center gap-2"><span className="h-5 w-5 rounded bg-cave-800"/><span className="space-y-1"><span className="block h-3 w-3/5 rounded-full bg-cave-800"/><span className="block h-2.5 w-1/3 rounded-full bg-cave-800"/></span><span className="h-3 rounded-full bg-cave-800"/></div>)}
       </div>:dejaTx&&attachment?<PieceDejaSaisie tx={dejaTx} stocks={stocks} payments={FinanceService.getPayments?.()??[]} transactions={transactions} onLire={()=>void attach(attachment,true)}/>
@@ -577,8 +622,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <p className="text-xs text-cave-400">{similarChoice==='same'?(similarAttachable?'Même achat : le justificatif rejoint la dépense existante, sans dépense, stock ni paiement en plus.':'Même achat : rien n’est enregistré, la dépense existante reste telle quelle.'):'Ce n’est qu’un signal : sans choix, l’achat s’enregistre normalement.'}</p>
       </section>:null}
       {draft.proofDataUrl?<details className="text-sm text-cave-200 min-w-0 lg:col-start-1"><summary className="min-h-7 cursor-pointer flex items-center gap-2"><FileText size={16}/>Voir le justificatif</summary>{draft.proofType?.startsWith('image/')?<img src={draft.proofDataUrl} alt="Justificatif source" className="w-full rounded-panel"/>:<a href={draft.proofDataUrl} download={draft.proofFileName} className="text-ebc-straw min-h-7 flex items-center">Ouvrir le PDF original</a>}</details>:null}
-      {scan?.ok&&result&&statut?<div className="lg:col-start-1"><InvoiceScanReview liens={Object.fromEntries(draft.lines.map((l,i)=>[l.id,mouturesPropositions.some(p=>p.lineId===l.id)||parentDeLaMouture(draft.lines,i)>=0?'mouture':lienDe(l)]))} result={result} cached={scan.cached} statut={statut} vendor={draft.vendor} date={draft.date} calcule={draft.sourceTotalBasis==='line_sum'} lines={draft.lines} comptes={compteLiens(draft.lines,precisIds)} remarques={remarques}
+      {scan?.ok&&result&&statutFinal?<div className="lg:col-start-1"><InvoiceScanReview liens={Object.fromEntries(draft.lines.map((l,i)=>[l.id,mouturesPropositions.some(p=>p.lineId===l.id)||parentDeLaMouture(draft.lines,i)>=0?'mouture':lienDe(l)]))} result={result} cached={scan.cached} statut={statutFinal} vendor={draft.vendor} date={draft.date} calcule={draft.sourceTotalBasis==='line_sum'} lines={draft.lines} comptes={compteLiens(draft.lines,precisIds)} remarques={remarques}
         preuveOuverte={preuveOuverte} onPreuve={()=>setPreuveOuverte(o=>!o)} drive={driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null} onDrive={()=>setDriveAuthError(true)} onLigne={id=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id})} bandeauRef={bandeauRef}
+        sceau={sceauQr} sousTotal={sousTotalQr} fiche={ficheQr} ecartTotal={qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined}
         totalField={<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>}/></div>
       :<div className={hints.amountTTC?`${uncertainClass} lg:col-start-1`:'lg:col-start-1'}><Field label="Total TTC en CHF" htmlFor="purchase-total"><NumberInput id="purchase-total" fractionDigits={2} aria-describedby={[hints.amountTTC?'scan-hint-amountTTC':'',attempted&&shownErrors.some(issue=>issue.includes('total'))?validationId:''].filter(Boolean).join(' ')||undefined} value={draft.amount} onValue={setTotal} emptyValue={undefined} min={0} placeholder={scan&&!scan.ok?'—':'0,00'} className={`${inputClass} !text-base font-mono font-semibold tabular-nums min-h-8`}/></Field><ScanHint field="amountTTC" message={hints.amountTTC}/></div>}
       {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm lg:col-start-1">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}

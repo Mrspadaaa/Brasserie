@@ -21,30 +21,41 @@ const LABELS_CORRIGES: Record<string, string> = { vendor: 'Fournisseur', date: '
 const champCorrige = (f: string) => LABELS_CORRIGES[f] ?? (/^items(?:\[(\d+)\]|\.(\d+))/.exec(f) ? `Article ${Number((/^items(?:\[(\d+)\]|\.(\d+))/.exec(f) as RegExpExecArray)[1] ?? (/^items(?:\[(\d+)\]|\.(\d+))/.exec(f) as RegExpExecArray)[2]) + 1}` : 'Détail du document');
 
 /** Le bandeau : fournisseur, date, total (le champ est celui de l'écran), chip « n lignes » qui ouvre la preuve, barre des lignes. */
-export function Bandeau({ vendor, date, totalField, calcule, statut, lines, preuveOuverte, onPreuve, drive, onDrive, onLigne, liens }: {
+export function Bandeau({ vendor, date, totalField, calcule, statut, lines, preuveOuverte, onPreuve, drive, onDrive, onLigne, liens, sceau, sousTotal }: {
   liens: Readonly<Record<string, LienStock>>;
   vendor: string; date: string; totalField: React.ReactNode; calcule: boolean; statut: StatutLecture | null; lines: readonly PurchaseLineDraft[];
   preuveOuverte: boolean; onPreuve: () => void; drive: 'ok' | 'a-connecter' | null; onDrive: () => void; onLigne: (id: string) => void;
+  /** z2 : le sceau QR (ou « sans QR »), à droite du total et de la barre ; absent, le bandeau est celui de la base, au pixel. */
+  sceau?: React.ReactNode;
+  /** z2 : le duel du total, le témoin des lignes ou « Photographier le QR », sous le total et au-dessus de la barre. */
+  sousTotal?: React.ReactNode;
 }) {
   const icone = statut === 'checked' ? <Check size={14} className="text-hop"/> : statut === 'corrected' ? <Check size={14} className="text-cave-400"/> : statut === 'unavailable' ? <HelpCircle size={14} className="text-attention"/> : <AlertCircle size={14} className="text-attention"/>;
-  return <section data-dp="bandeau" className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 py-1.5 space-y-1">
-    <div className="flex items-baseline justify-between gap-2"><span className="truncate text-base font-semibold text-cave-50">{vendor || 'Fournisseur'}</span><span className="font-mono text-sm text-cave-200">{date}</span></div>
+  return <section data-dp="bandeau" className={`rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 py-1.5 ${sceau ? 'grid grid-cols-[minmax(0,1fr)_auto] gap-x-2.5 gap-y-1' : 'space-y-1'}`}>
+    <div className={`flex items-baseline justify-between gap-2 ${sceau ? 'col-span-2' : ''}`}><span className="truncate text-base font-semibold text-cave-50">{vendor || 'Fournisseur'}</span><span className="font-mono text-sm text-cave-200">{date}</span></div>
     <div className="flex items-center gap-2">{totalField}<span className="text-xs text-cave-400">CHF{calcule ? ' · somme des lignes' : ''}</span>
       {statut ? <button type="button" aria-label="Détails de la lecture" aria-expanded={preuveOuverte} onClick={onPreuve} className="ml-auto min-h-7 inline-flex items-center gap-1 rounded-control border border-cave-700 px-2 text-sm text-cave-200">{icone}<span className="font-mono">{lines.length}</span>&nbsp;lignes</button> : null}</div>
-    {drive === 'a-connecter' ? <button type="button" onClick={onDrive} className="min-h-7 inline-flex items-center rounded-control border border-dashed border-attention px-2 text-sm text-attention">Drive à connecter</button> : null}
-    {lines.length > 1 && statut ? <div data-dp="barre" aria-label={`Les ${lines.length} lignes, à la largeur de leur montant`} className="flex h-2.5 overflow-hidden rounded-full border border-cave-800">{lines.map(l => <i key={l.id} onClick={() => onLigne(l.id)} className={`block h-full border-r border-cave-950 last:border-r-0 ${COULEUR_LIEN[liens[l.id] ?? 'aucun']}`} style={{ flexGrow: Math.max(l.amount ?? 0, 0.01) }}/>)}</div> : null}
+    {drive === 'a-connecter' || sousTotal || (lines.length > 1 && statut) ? <div className="flex min-w-0 flex-col gap-1">
+      {drive === 'a-connecter' ? <button type="button" onClick={onDrive} className="min-h-7 inline-flex items-center self-start rounded-control border border-dashed border-attention px-2 text-sm text-attention">Drive à connecter</button> : null}
+      {sousTotal}
+      {lines.length > 1 && statut ? <div data-dp="barre" aria-label={`Les ${lines.length} lignes, à la largeur de leur montant`} className="flex h-2.5 overflow-hidden rounded-full border border-cave-800">{lines.map(l => <i key={l.id} onClick={() => onLigne(l.id)} className={`block h-full border-r border-cave-950 last:border-r-0 ${COULEUR_LIEN[liens[l.id] ?? 'aucun']}`} style={{ flexGrow: Math.max(l.amount ?? 0, 0.01) }}/>)}</div> : null}
+    </div> : null}
+    {sceau ? <div className="col-start-2 row-span-2 row-start-2 self-start">{sceau}</div> : null}
   </section>;
 }
 
 /** La preuve : le statut en titre, les rangées chiffrées lues dans `controls` (rien d'affirmé sans contrôle), le compte des liens, les remarques. */
-export function Preuve({ ouverte, statut, result, lignes, comptes, remarques, cached }: {
+export function Preuve({ ouverte, statut, result, lignes, comptes, remarques, cached, ecartTotal }: {
   ouverte: boolean; statut: StatutLecture; result: ScannedInvoiceResult; lignes: number; comptes: CompteLiens; remarques: string[]; cached?: boolean;
+  /** z2 : quand le QR contredit le total de la page, la somme des lignes dit l'écart (« 110,40 ≠ 110,04 »). */
+  ecartTotal?: { lignes: string; lu: string };
 }) {
   const c = result.controls, lectures = result.review?.readers;
   const rang = (ok: boolean | null, texte: string, valeur: string) => <div className="grid grid-cols-[18px_1fr_auto] items-center gap-1.5 min-h-7 border-b border-cave-800 last:border-0 text-sm">{ok === true ? <Check size={14} className="text-hop"/> : <span className="text-cave-400">·</span>}<span className="text-cave-200">{texte}</span><b className="font-mono font-medium text-cave-50">{valeur}</b></div>;
   return <section data-dp="preuve" aria-label="Preuve de la lecture" className={`${ouverte ? 'block' : 'hidden lg:block'} scroll-mt-12 rounded-panel border border-cave-800 px-2.5 py-1.5`}>
     <p className="text-sm font-medium text-cave-50">{TITRES[statut].title}</p>
-    {c ? rang(c.sum.statut === 'ok', 'Somme des lignes = imprimé', c.sum.statut === 'ok' ? money(result.amountTTC ?? 0) : 'non vérifiée') : rang(null, 'Somme des lignes', 'non contrôlée')}
+    {ecartTotal ? rang(false, 'Somme des lignes = imprimé', `${ecartTotal.lignes} ≠ ${ecartTotal.lu}`)
+      : c ? rang(c.sum.statut === 'ok', 'Somme des lignes = imprimé', c.sum.statut === 'ok' ? money(result.amountTTC ?? 0) : 'non vérifiée') : rang(null, 'Somme des lignes', 'non contrôlée')}
     {c ? rang(c.lines.failed === 0 && c.lines.skipped === 0 && c.lines.checked > 0, 'Quantité × prix, au centime', `${c.lines.checked}/${lignes}`) : rang(null, 'Quantité × prix', 'non contrôlé')}
     {lectures ? ((result.points ?? []).some(p => p.origine === 'lecture' && p.pese !== false) ? rang(false, 'Lectures : désaccord sur certains points', `${lectures} lectures`) : rang(true, 'Lectures d’accord', `${lectures}/${lectures}`)) : null}
     {(result.linesLost ?? 0) > 0 ? rang(false, 'Lignes non gardées', String(result.linesLost)) : null}

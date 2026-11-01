@@ -52,8 +52,52 @@ function apercuS6(): ApercuDepense {
   };
 }
 
+// Les pièces FICTIVES du banc du QR (voie qr-app) : « Malterie Fictive SA », F-1001, 110,40 CHF, 12.10.2026 ; un vrai QR-facture SPC 0200 (exemples publics SIX), généré par
+// `work/missions/2026-11-01-bascule-lecture/voies/qr-app/fixtures/generer.mjs`. Lues par le VRAI décodeur du navigateur ; seule la lecture Gemini est simulée.
+const PIECES_QR = {
+  image: { url: new URL('./apercu/qr/facture-qr.png', import.meta.url).href, name: 'facture-qr.png', type: 'image/png' },
+  pdf: { url: new URL('./apercu/qr/facture-qr.pdf', import.meta.url).href, name: 'facture-qr.pdf', type: 'application/pdf' },
+  ouvert: { url: new URL('./apercu/qr/facture-qr-ouvert.png', import.meta.url).href, name: 'facture-qr-ouvert.png', type: 'image/png' },
+  abime: { url: new URL('./apercu/qr/facture-qr-abime.png', import.meta.url).href, name: 'facture-qr-abime.png', type: 'image/png' },
+  sans: { url: new URL('./apercu/qr/facture-sans-qr.png', import.meta.url).href, name: 'facture-sans-qr.png', type: 'image/png' },
+  inconnu: { url: new URL('./apercu/qr/facture-qr.png', import.meta.url).href, name: 'facture.bin', type: 'application/octet-stream' },
+};
+
+/** Les sept lignes fictives de la maquette z2 (somme 110,40). La mouture suit son malt. */
+function lectureQr(montantLu: number): ScannedInvoiceResult {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, amountTTC: number, reference = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant: '', stockCategory: '', evidence: `${name} (page 1)`, ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null });
+  result.items = [
+    ligne(1, 'Maris Otter, Kg', 'stock', 25, 'Kg', 2.1, 52.5), ligne(2, 'Zuschlag Schrotung', 'service', 25, 'Kg', 0.15, 3.75, 'ISHOP-SCHROT'),
+    ligne(3, 'Pilsner Malz, Kg', 'stock', 10, 'Kg', 1.8, 18), ligne(4, 'Carafa II, Kg', 'stock', 2, 'Kg', 3.2, 6.4),
+    ligne(5, 'Citra 12.5%', 'stock', 100, 'g', 0.098, 9.8), ligne(6, 'Safale US-05 11,5g', 'stock', 2, 'Stk', 4.6, 9.2), ligne(7, 'Port', 'shipping', 1, 'pce', 10.75, 10.75),
+  ] as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'Malterie Fictive SA', date: '12.10.2026', invoiceNumber: 'F-1001', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    amountTTC: montantLu, printedLineCount: 7, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Malts, houblon, levure',
+    controls: { lines: { checked: 7, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: montantLu === 110.4 ? 'ok' : 'ecart', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  return result;
+}
+
+/** `qr-<état>` : confirme, contredit (lu 110,04), partiel (bulletin sans montant), illisible (QR abîmé), sans, lecture (Gemini jamais fini), pdf (le même, en PDF), non-verifie. */
+function apercuQr(etat: string): ApercuDepense {
+  const nom = etat.slice(3);
+  const piece = nom === 'partiel' ? PIECES_QR.ouvert : nom === 'illisible' ? PIECES_QR.abime : nom === 'sans' ? PIECES_QR.sans : nom === 'pdf' ? PIECES_QR.pdf : nom === 'non-verifie' ? PIECES_QR.inconnu : PIECES_QR.image;
+  const result = lectureQr(nom === 'contredit' ? 110.04 : 110.4);
+  const fichier = { name: piece.name, size: 90000, type: 'application/pdf' };
+  const outcome: ScanOutcome = { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false };
+  return {
+    outcome, fichier, stocks: stockSimule(), transactions: [], etat, drive: 'ok', reseau: true, qrFichier: piece,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-12 Malterie Fictive SA F-1001.pdf', bytes: 90000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
 export function apercuDepense(etat: string): ApercuDepense {
   if (etat === 's6') return apercuS6();
+  if (etat.startsWith('qr-')) return apercuQr(etat);
   const result = clone(lecture) as unknown as ScannedInvoiceResult;
   if (etat === '2' || etat === 'date') {
     // « lue, sans point » : la facture sans ses points (SIMULÉ).

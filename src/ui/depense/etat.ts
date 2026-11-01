@@ -14,7 +14,7 @@ import type { StockItem } from '../../types';
 type Code = InvoicePoint['code'];
 export type Enjeu = 'argent' | 'stock' | 'info';
 export interface ChipDef { nom: string; enjeu: Enjeu }
-export interface Chip { id: string; nom: string; enjeu: Enjeu; ligne: number | null; codes: string[]; source: 'point' | 'paiement' | 'mouture' | 'voisin' | 'unite'; cible?: string }
+export interface Chip { id: string; nom: string; enjeu: Enjeu; ligne: number | null; codes: string[]; source: 'point' | 'paiement' | 'mouture' | 'voisin' | 'unite' | 'qr'; cible?: string }
 
 /** Le nom court de chaque code qui pèse (T3). Un code qui ne pèse pas (`type-deduit`) n'a pas de chip. */
 const NOMS: Partial<Record<Code, ChipDef>> = {
@@ -60,6 +60,8 @@ export function recalculerLecture(result: ScannedInvoiceResult, draft: Brouillon
 }
 /** Le statut affiché (T1) : sans `points`, le plancher de l2 (« à confirmer »), jamais « vérifié ». Un geste du brasseur ne le change pas. */
 const RANG_STATUT: Record<StatutLecture, number> = { checked: 0, corrected: 1, disputed: 2, unavailable: 3 };
+/** Le pire de deux statuts (z2 : un QR qui contredit le total ne laisse jamais « vérifiée »). */
+export const pireStatut = (a: StatutLecture, b: StatutLecture): StatutLecture => (RANG_STATUT[b] > RANG_STATUT[a] ? b : a);
 /** R10 (D229) : le titre est le PIRE du statut de départ (la lecture telle que reçue) et du recalcul : un geste ne le fait jamais monter
  *  (vider la TVA ne « vérifie » pas la lecture) ; une valeur tapée qui crée un point le fait descendre. « Points revus » est dit par la chip. */
 export function statutAffiche(result: ScannedInvoiceResult, recalcul: ResultatRecalcul | undefined): StatutLecture {

@@ -1,0 +1,91 @@
+{
+  "url": "http://localhost:3461",
+  "passe": "a",
+  "etats": {
+    "qr-confirme": {
+      "sceau": null,
+      "sansQr": false,
+      "aucunSceau": true,
+      "violationsCsp": [
+        {
+          "directive": "script-src",
+          "bloque": "wasm-eval",
+          "source": ""
+        },
+        {
+          "directive": "script-src",
+          "bloque": "wasm-eval",
+          "source": ""
+        }
+      ],
+      "consoleErreurs": [
+        "error: wasm streaming compile failed: CompileError: WebAssembly.instantiateStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script",
+        "error: falling back to ArrayBuffer instantiation",
+        "error: failed to asynchronously prepare wasm: CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-",
+        "error: Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src https://accounts.google.com"
+      ],
+      "erreursPage": [],
+      "reseau": [
+        "200 /node_modules/.vite/deps/jspdf.js?v=5a69428e",
+        "200 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm?import&url",
+        "200 /node_modules/.vite/deps/zxing-wasm_reader.js?v=5a69428e",
+        "200 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm"
+      ],
+      "workerPdf": [],
+      "wasm": [
+        "200 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm?import&url",
+        "200 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm"
+      ]
+    },
+    "qr-pdf": {
+      "sceau": null,
+      "sansQr": false,
+      "aucunSceau": true,
+      "violationsCsp": [
+        {
+          "directive": "script-src",
+          "bloque": "wasm-eval",
+          "source": ""
+        },
+        {
+          "directive": "script-src",
+          "bloque": "wasm-eval",
+          "source": ""
+        }
+      ],
+      "consoleErreurs": [
+        "error: wasm streaming compile failed: CompileError: WebAssembly.instantiateStreaming(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script",
+        "error: falling back to ArrayBuffer instantiation",
+        "error: failed to asynchronously prepare wasm: CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-",
+        "error: Aborted(CompileError: WebAssembly.instantiate(): Compiling or instantiating WebAssembly module violates the following Content Security policy directive because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src https://accounts.google.com"
+      ],
+      "erreursPage": [],
+      "reseau": [
+        "200 /?dev-local&depense=qr-pdf",
+        "200 /node_modules/.vite/deps/jspdf.js?v=5a69428e",
+        "200 /src/ui/depense/apercu/qr/facture-qr.pdf",
+        "304 /src/ui/depense/apercu/qr/facture-qr.pdf",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm?import&url",
+        "200 /node_modules/.vite/deps/zxing-wasm_reader.js?v=5a69428e",
+        "200 /node_modules/pdfjs-dist/build/pdf.worker.min.mjs?url",
+        "200 /node_modules/.vite/deps/pdfjs-dist.js?v=5a69428e",
+        "200 /node_modules/pdfjs-dist/build/pdf.worker.min.mjs",
+        "304 /node_modules/pdfjs-dist/build/pdf.worker.min.mjs",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm"
+      ],
+      "workerPdf": [
+        "200 /node_modules/pdfjs-dist/build/pdf.worker.min.mjs?url",
+        "200 /node_modules/pdfjs-dist/build/pdf.worker.min.mjs",
+        "304 /node_modules/pdfjs-dist/build/pdf.worker.min.mjs"
+      ],
+      "wasm": [
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm?import&url",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm",
+        "304 /node_modules/zxing-wasm/dist/reader/zxing_reader.wasm"
+      ]
+    }
+  }
+}
