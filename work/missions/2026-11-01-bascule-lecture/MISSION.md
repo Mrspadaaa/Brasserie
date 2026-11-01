@@ -24,6 +24,7 @@ dans Chrome sur fixtures, hébergement redéployé (D236).
 | fn-relecture | relecture indépendante de fn-csv8 contre le banc (finalOfStarVote, withCodesNormalized) | jugement | relecteur | sonnet | 30 | work/missions/2026-11-01-bascule-lecture/voies/fn-relecture/** | fn-csv8 | parité avec le banc sur ses lectures enregistrées, verdict | pilote | — |
 | qr-app | QR lu dans le téléphone, confronté, montré comme z2 dans l'écran en ligne (voies/qr-app/VOIE.md, à écrire) | jugement | auteur | sonnet | 80 | src/services/qrLecture*.ts, src/ui/depense/**, src/ui/finance/ExpenseSheet.tsx, tests/unit/depense/qr/**, work/missions/2026-11-01-bascule-lecture/voies/qr-app/** | — | tests visés, build, Chrome sur fixtures (390 tactile, 1280), captures | pilote | reprise |
 | qr-rejeu | rejouer qr-app depuis la copie isolée, éprouver la CSP avec et sans `'wasm-unsafe-eval'` (voies/qr-rejeu/VOIE.md) | mécanique | executant | haiku | 40 | work/missions/2026-11-01-bascule-lecture/voies/qr-rejeu/**, %TEMP%/qr-app-copie | qr-app | tsc, build, check-no-dev-auth, tests de l'écran, témoin rouge, parcours Chrome, CSP (a/b), captures ouvertes | pilote | — |
+| qr-ecart | l'état « écart » se règle par un choix QR / lu, comme le duel du total (voies/qr-ecart/VOIE.md) | jugement | auteur | sonnet | 40 | src/ui/finance/ExpenseSheet.tsx, src/ui/finance/InvoiceScanReview.tsx, src/ui/depense/**, tests/unit/depense/qr/**, work/missions/2026-11-01-bascule-lecture/voies/qr-ecart/**, %TEMP%/qr-app-copie | qr-app | tests de l'écran (échouaient avant), tsc, build, check-no-dev-auth, parcours Chrome, captures ouvertes | pilote | — |
 | qr-critique | le port de z2 jugé contre sa maquette (`qr/v1/z2`) | jugement | critique | fable | 30 | work/missions/2026-11-01-bascule-lecture/voies/qr-critique/** | qr-app | captures côte à côte avec la maquette, verdict | pilote | — |
 
 Reprise : z2 choisie : « Le sceau QR z2 parfait comme telle » (D246).
@@ -79,5 +80,16 @@ pièce fictive, si le pilote la juge nécessaire (D210 : 40 au plus).
   (`parcours.mjs` écrit par défaut dans `qr-app/captures` : un rejeu passe `--sortie`, L17). Captures CSP ouvertes par le pilote.
   `'wasm-unsafe-eval'` ajouté à `script-src` de `firebase.json` (D253), seul changement du fichier. qr-critique lancée
   (a7bcdb6dae375176a). Ensuite : commit de qr-app et de `firebase.json`, copie à `npm ci` réel, hébergement.
+- qr-app et CSP commitées (95b947fd). Copie d'hébergement `%TEMP%/deploy-hosting-qr` : worktree neuf sur 95b947fd, `npm ci` réel,
+  `.env` racine et `seedData.ts` copiés, jonction `functions/node_modules` (méthode D72). Build code 0, bundle propre, 74 fichiers
+  de tests verts. qr-critique REJETTE, trois écarts avec z2 : lecture sans les valeurs du QR, ① après ②, feuille à 1280 qui repousse
+  ① et ② sous le pli. Le reste est retenu tel quel. qr-app suite 2 (relance 1/2). Ensuite : nouveau critique, puis hébergement.
+  Hors périmètre, relevés par le critique : feuille non pleine hauteur à 390 (D235), tuile « TVA — » vide (vue TVA, D250).
+- qr-app suites 2 et 3 (relances 1 et 2/2) : les trois écarts sont corrigés et retenus, « invalide » est retenu, « écart » est marqué
+  (date en ambre, « ① Date »). Le critique retient tout le sceau sauf un geste : en « écart », la chip se règle sans choix entre QR et
+  lu. qr-app a épuisé ses relances, et son contexte est très chargé ; voie neuve qr-ecart (a9392eb42ccce392b), auteur Sonnet, contrat
+  étroit. Ensuite : rejugement de « écart », commit (suites 2, 3 et qr-ecart), copie d'hébergement resynchronisée, déploiement.
+- qr-ecart : QR-ECART OK (tests qui échouaient avant : 7 sur 33 ; 74 fichiers et 1 237 tests verts ; tsc, build et dev-auth propres ;
+  captures ouvertes par le pilote). **qr-critique : QR-CRITIQUE RETENUE** pour tout le port. Commit, puis hébergement.
 
 ## Signature

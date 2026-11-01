@@ -3,7 +3,7 @@
 // Présentation seulement : la vue (`qrVue.ts`) arrive calculée ; aucun champ de la dépense n'est changé ici sans un geste du brasseur (les gestes remontent par props).
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera, Check, X } from 'lucide-react';
-import type { Duel, EtatSceau, LigneFiche, VueQr } from './qrVue';
+import type { ChampTranchable, ChoixChamps, Duel, DuelChamp, EtatSceau, LigneFiche, VueQr } from './qrVue';
 
 const BORD: Record<EtatSceau, string> = { ok: 'border-hop', diff: 'border-attention', partiel: 'border-cave-200', off: 'border-cave-600', wait: 'border-cave-600', sans: 'border-cave-600' };
 const BARRE: Record<EtatSceau, string> = {
@@ -50,6 +50,19 @@ export function DuelTotal({ duel, choix, onChoix }: { duel: Duel; choix: 'lu' | 
   return <div data-dp="duel" role="group" aria-label="Le total : la page ou le QR ?" className="grid grid-cols-2 gap-1.5">{tuile('lu', 'lu sur la page', duel.resteLu)}{tuile('qr', 'QR-facture', duel.resteQr)}</div>;
 }
 
+/**
+ * Le duel d'un champ en écart (date, devise, créancier), dans sa rangée de la feuille : deux touches, « <valeur du QR> · QR » et « <valeur lue> · lu »
+ * (le duel du total, sans tuiles). Un toucher choisit ; la dépense ne change qu'à ce geste, jamais en ouvrant la feuille ni en touchant la chip.
+ */
+export function DuelChampTouches({ cle, libelle, duel, choix, onChoix }: { cle: ChampTranchable; libelle: string; duel: DuelChamp; choix: 'lu' | 'qr' | undefined; onChoix: (cle: ChampTranchable, source: 'lu' | 'qr') => void }) {
+  const touche = (source: 'lu' | 'qr', texte: string) => {
+    const pris = choix === source;
+    return <button type="button" data-dp-duel-champ={`${cle}:${source}`} aria-pressed={pris} onClick={() => onChoix(cle, source)}
+      className={`min-h-8 min-w-0 flex-1 break-words rounded-control border-[1.5px] px-2 py-0.5 text-left font-mono text-xs leading-tight ${pris ? 'border-cave-50 bg-cave-50 text-white' : source === 'qr' ? 'border-attention bg-attention/5 text-cave-50' : 'border-cave-600 text-cave-50'}`}>{texte} · {source === 'qr' ? 'QR' : 'lu'}</button>;
+  };
+  return <div data-dp="duel-champ" role="group" aria-label={`${libelle} : la page ou le QR ?`} className="col-span-3 col-start-2 flex gap-1.5 pb-0.5">{touche('qr', duel.qr)}{touche('lu', duel.lu)}</div>;
+}
+
 /** Le témoin des lignes : quand leur somme est celle du QR, deux sources sur trois s'accordent. Dit seulement s'il est vrai. */
 export function TemoinSomme({ somme }: { somme: string }) {
   return <p data-dp="temoin" className="flex min-h-[18px] items-center gap-1 text-xs text-cave-200"><Check size={12} className="text-hop"/>Somme des lignes <b className="font-mono font-medium text-cave-50">{somme}</b> · deux contre un</p>;
@@ -74,6 +87,9 @@ async function copierTexte(texte: string): Promise<boolean> {
   } catch { return false; }
 }
 
+/** Le mot d'une rangée en écart : « écart » tant que rien n'est choisi, puis ce qui a été choisi. */
+const noteChamp = (choix: 'lu' | 'qr' | undefined): string => (choix === 'qr' ? 'pris' : choix === 'lu' ? 'lu gardé' : 'écart');
+
 function IconeStatut({ statut }: { statut: LigneFiche['statut'] }) {
   if (statut === 'ok') return <Check size={14} className="text-hop" aria-label="d'accord"/>;
   if (statut === 'ko') return <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.7" className="text-attention" role="img" aria-label="écart"><path d="M3 5h8M3 9h8M9 3l-4 8"/></svg>;
@@ -82,7 +98,11 @@ function IconeStatut({ statut }: { statut: LigneFiche['statut'] }) {
 }
 
 /** La feuille « Ce que dit le QR » : en bas de l'écran au téléphone, en place sur ordinateur. IBAN et référence se copient (jamais remplacés par la lecture). */
-export function FicheQr({ vue, ouvert, onFermer, onPhoto }: { vue: VueQr; ouvert: boolean; onFermer: () => void; onPhoto: () => void }) {
+export function FicheQr({ vue, ouvert, onFermer, onPhoto, surligne, choixChamps, onChoixChamp }: {
+  vue: VueQr; ouvert: boolean; onFermer: () => void; onPhoto: () => void; surligne?: string | null;
+  /** Ce que le brasseur a tranché sur chaque champ en écart, et le geste qui tranche (seul geste qui écrit dans la dépense). */
+  choixChamps?: ChoixChamps; onChoixChamp?: (cle: ChampTranchable, source: 'lu' | 'qr') => void;
+}) {
   const [copie, setCopie] = useState<string | null>(null);
   const minuterie = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => { if (minuterie.current) clearTimeout(minuterie.current); }, []);
@@ -99,16 +119,19 @@ export function FicheQr({ vue, ouvert, onFermer, onPhoto }: { vue: VueQr; ouvert
         <span>Ce que dit le QR</span>
         <button type="button" aria-label="Fermer ce que dit le QR" onClick={onFermer} className="ml-auto flex size-7 items-center justify-center rounded-control text-cave-400 lg:hidden"><X size={14}/></button>
       </h2>
-      <div>{vue.lignes.map((ligne, i) => ligne.cle === 'probleme'
+      <div>{vue.lignes.map((ligne, i) => {
+        const duelChamp = ligne.cle === 'date' || ligne.cle === 'devise' || ligne.cle === 'creancier' ? vue.champs?.[ligne.cle] : undefined;
+        return ligne.cle === 'probleme'
         ? <p key={i} className="border-b border-cave-800 py-1 text-xs text-cave-200 last:border-0">{ligne.valeur}</p>
-        : <div key={ligne.cle} data-dp-qr-ligne={ligne.cle} className="grid min-h-[30px] grid-cols-[18px_5.25rem_1fr_auto] items-center gap-x-1.5 gap-y-1 border-b border-cave-800 py-0.5 text-sm last:border-0">
+        : <div key={ligne.cle} data-dp-qr-ligne={ligne.cle} className={`grid min-h-[30px] grid-cols-[18px_5.25rem_1fr_auto] items-center gap-x-1.5 gap-y-1 border-b border-cave-800 py-0.5 text-sm last:border-0 ${surligne === ligne.cle ? 'rounded-control bg-attention/10 outline outline-2 outline-attention' : ''}`}>
           <span className="flex items-center"><IconeStatut statut={ligne.statut === 'abs' ? null : ligne.statut}/></span>
           <span className="text-cave-200">{ligne.libelle}</span>
           <b className={ligne.statut === 'abs' ? 'justify-self-start self-center border-b border-dotted border-cave-600 font-normal text-cave-200' : ligne.statut === 'vide' ? 'font-normal text-cave-200' : 'break-words font-mono font-medium text-cave-50'} style={ligne.surDeuxLignes ? { whiteSpace: 'pre-line' } : undefined}>{ligne.valeur}</b>
           {ligne.copier
             ? <button type="button" data-dp="copier" aria-label={`Copier ${ligne.libelle}`} onClick={() => void copier(ligne.cle, ligne.copier!)} className={`inline-flex h-6 min-h-6 items-center gap-0.5 whitespace-nowrap rounded-control border px-2 text-xs ${copie === ligne.cle ? 'border-hop text-hop' : 'border-cave-600 text-cave-50'}`}>{copie === ligne.cle ? <><Check size={12}/>copié</> : 'Copier'}</button>
-            : <em className={`whitespace-nowrap text-xs not-italic ${ligne.statut === 'ko' ? 'font-semibold text-attention' : 'text-cave-200'}`}>{ligne.note}</em>}
-        </div>)}</div>
+            : <em className={`whitespace-nowrap text-xs not-italic ${ligne.statut === 'ko' ? 'font-semibold text-attention' : 'text-cave-200'}`}>{duelChamp ? noteChamp(choixChamps?.[ligne.cle as ChampTranchable]) : ligne.note}</em>}
+          {duelChamp && onChoixChamp ? <DuelChampTouches cle={ligne.cle as ChampTranchable} libelle={ligne.libelle} duel={duelChamp} choix={choixChamps?.[ligne.cle as ChampTranchable]} onChoix={onChoixChamp}/> : null}
+        </div>; })}</div>
       {vue.photographier ? <div className="pt-1.5"><BoutonPhotoQr onClick={onPhoto}/></div> : null}
     </section>
   </>;

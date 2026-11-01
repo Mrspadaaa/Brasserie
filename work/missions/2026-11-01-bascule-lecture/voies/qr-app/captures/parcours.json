@@ -1,39 +1,14 @@
 {
   "url": "http://localhost:3457",
   "etats": {
-    "confirme": {
-      "sceau": {
-        "q": "ok",
-        "verdict": "QR ✓",
-        "nom": "QR-facture : confirme la lecture",
-        "rect": {
-          "x": 302,
-          "y": 167,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 4.65
-      },
-      "sansQr": false,
-      "bandeau": {
-        "x": 13,
-        "y": 132,
-        "w": 364,
-        "h": 114
-      },
-      "debordH": false,
-      "duel": null,
-      "total": "110,40",
-      "msJusquAuSceau": 91
-    },
-    "contredit": {
+    "ecart": {
       "sceau": {
         "q": "diff",
-        "verdict": "110,40",
-        "nom": "QR-facture : le montant du QR est 110,40, la page dit 110,04",
+        "verdict": "écart",
+        "nom": "QR-facture : écart avec la lecture",
         "rect": {
           "x": 302,
-          "y": 167,
+          "y": 169,
           "w": 64,
           "h": 72
         },
@@ -44,221 +19,17 @@
         "x": 13,
         "y": 132,
         "w": 364,
-        "h": 175
-      },
-      "debordH": false,
-      "duel": {
-        "x": 24,
-        "y": 217,
-        "w": 268,
-        "h": 47
-      },
-      "total": "110,04",
-      "msJusquAuSceau": 228
-    },
-    "partiel": {
-      "sceau": {
-        "q": "partiel",
-        "verdict": "partiel",
-        "nom": "QR-facture : confirme en partie la lecture",
-        "rect": {
-          "x": 302,
-          "y": 167,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 12.63
-      },
-      "sansQr": false,
-      "bandeau": {
-        "x": 13,
-        "y": 132,
-        "w": 364,
-        "h": 114
+        "h": 116
       },
       "debordH": false,
       "duel": null,
       "total": "110,40",
-      "msJusquAuSceau": 268
-    },
-    "illisible": {
-      "sceau": {
-        "q": "off",
-        "verdict": "illisible",
-        "nom": "QR-facture : illisible",
-        "rect": {
-          "x": 302,
-          "y": 167,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 13.9
-      },
-      "sansQr": false,
-      "bandeau": {
-        "x": 13,
-        "y": 132,
-        "w": 364,
-        "h": 133
-      },
-      "debordH": false,
-      "duel": null,
-      "total": "110,40",
-      "msJusquAuSceau": 844
-    },
-    "sans": {
-      "sceau": null,
-      "sansQr": true,
-      "bandeau": {
-        "x": 13,
-        "y": 132,
-        "w": 364,
-        "h": 102
-      },
-      "debordH": false,
-      "duel": null,
-      "total": "110,40",
-      "msJusquAuSceau": 857
-    },
-    "lecture": {
-      "sceau": {
-        "q": "wait",
-        "verdict": "lecture…",
-        "nom": "QR-facture : lu, en attente de la lecture de la facture",
-        "rect": {
-          "x": 313,
-          "y": 504,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 5.74
-      },
-      "sansQr": false,
-      "bandeau": null,
-      "debordH": false,
-      "duel": null,
-      "total": null,
-      "msJusquAuSceau": 8
-    },
-    "pdf": {
-      "sceau": {
-        "q": "ok",
-        "verdict": "QR ✓",
-        "nom": "QR-facture : confirme la lecture",
-        "rect": {
-          "x": 302,
-          "y": 167,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 4.65
-      },
-      "sansQr": false,
-      "bandeau": {
-        "x": 13,
-        "y": 132,
-        "w": 364,
-        "h": 114
-      },
-      "debordH": false,
-      "duel": null,
-      "total": "110,40",
-      "msJusquAuSceau": 1062
-    },
-    "non-verifie": {
-      "sceau": null,
-      "sansQr": false,
-      "bandeau": {
-        "x": 13,
-        "y": 132,
-        "w": 364,
-        "h": 101
-      },
-      "debordH": false,
-      "duel": null,
-      "total": "110,40",
-      "msJusquAuSceau": 4001
-    },
-    "confirme-1280": {
-      "sceau": {
-        "q": "ok",
-        "verdict": "QR ✓",
-        "nom": "QR-facture : confirme la lecture",
-        "rect": {
-          "x": 404,
-          "y": 156,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 4.65
-      },
-      "sansQr": false,
-      "bandeau": {
-        "x": 39,
-        "y": 121,
-        "w": 440,
-        "h": 114
-      },
-      "debordH": false,
-      "duel": null,
-      "total": "110,40"
-    },
-    "contredit-1280": {
-      "sceau": {
-        "q": "diff",
-        "verdict": "110,40",
-        "nom": "QR-facture : le montant du QR est 110,40, la page dit 110,04",
-        "rect": {
-          "x": 404,
-          "y": 156,
-          "w": 64,
-          "h": 72
-        },
-        "contraste": 4.42
-      },
-      "sansQr": false,
-      "bandeau": {
-        "x": 39,
-        "y": 121,
-        "w": 440,
-        "h": 175
-      },
-      "debordH": false,
-      "duel": {
-        "x": 50,
-        "y": 206,
-        "w": 344,
-        "h": 47
-      },
-      "total": "110,04"
+      "msJusquAuSceau": 61
     }
   },
-  "gestes": {
-    "copierIban": {
-      "copie": [
-        "CH4431999123000889012"
-      ],
-      "bouton": "copié"
-    },
-    "duel": {
-      "avant": "110,04",
-      "prendreQr": "110,40",
-      "verdictApres": "QR ✓",
-      "reprendreLu": "110,04",
-      "verdictRetour": "lu gardé"
-    }
-  },
+  "gestes": {},
   "erreurs": [],
   "externes": [
-    "confirme: fonts.googleapis.com",
-    "contredit: fonts.googleapis.com",
-    "partiel: fonts.googleapis.com",
-    "illisible: fonts.googleapis.com",
-    "sans: fonts.googleapis.com",
-    "lecture: fonts.googleapis.com",
-    "pdf: fonts.googleapis.com",
-    "non-verifie: fonts.googleapis.com",
-    "confirme: fonts.googleapis.com",
-    "contredit: fonts.googleapis.com"
+    "ecart: fonts.googleapis.com"
   ]
 }

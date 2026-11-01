@@ -10,6 +10,8 @@ import { articlesNeufsDe } from '../../services/purchaseEntry';
 import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
 import type { ScanOutcome, ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { ApercuDepense } from './types';
+import { parseSwissQr } from '../../services/qrFacture';
+import type { ResultatQr } from '../../services/qrLecture';
 
 const pause = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 const clone = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
@@ -64,7 +66,7 @@ const PIECES_QR = {
 };
 
 /** Les sept lignes fictives de la maquette z2 (somme 110,40). La mouture suit son malt. */
-function lectureQr(montantLu: number): ScannedInvoiceResult {
+function lectureQr(montantLu: number, dateLue = '12.10.2026'): ScannedInvoiceResult {
   const result = clone(lecture) as unknown as ScannedInvoiceResult;
   const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, amountTTC: number, reference = '') =>
     ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant: '', stockCategory: '', evidence: `${name} (page 1)`, ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null });
@@ -74,7 +76,7 @@ function lectureQr(montantLu: number): ScannedInvoiceResult {
     ligne(5, 'Citra 12.5%', 'stock', 100, 'g', 0.098, 9.8), ligne(6, 'Safale US-05 11,5g', 'stock', 2, 'Stk', 4.6, 9.2), ligne(7, 'Port', 'shipping', 1, 'pce', 10.75, 10.75),
   ] as unknown as ScannedInvoiceResult['items'];
   Object.assign(result, {
-    proForma: false, vendor: 'Malterie Fictive SA', date: '12.10.2026', invoiceNumber: 'F-1001', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    proForma: false, vendor: 'Malterie Fictive SA', date: dateLue, invoiceNumber: 'F-1001', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
     amountTTC: montantLu, printedLineCount: 7, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Malts, houblon, levure',
     controls: { lines: { checked: 7, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: montantLu === 110.4 ? 'ok' : 'ecart', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
     review: { status: 'checked', findings: [], readers: 2 },
@@ -82,15 +84,21 @@ function lectureQr(montantLu: number): ScannedInvoiceResult {
   return result;
 }
 
-/** `qr-<état>` : confirme, contredit (lu 110,04), partiel (bulletin sans montant), illisible (QR abîmé), sans, lecture (Gemini jamais fini), pdf (le même, en PDF), non-verifie. */
+/** SIMULÉ (aucun décodage) : un QR-facture lu, mais non conforme (IBAN à clé fausse) : l'état « invalide » que z2 n'a pas dessiné. */
+function qrInvalideSimule(): ResultatQr {
+  const lignes = ['SPC', '0200', '1', 'CH0000000000000000000', 'S', 'Malterie Fictive SA', 'Route de la Malterie', '1', '1000', 'Lausanne', 'CH', '', '', '', '', '', '', '', '110.40', 'CHF', '', '', '', '', '', '', '', 'QRR', '210000000003139471430009017', '', 'EPD', ''];
+  return { statut: 'lu', ms: 480, qr: parseSwissQr(lignes.join('\n'))! };
+}
+
+/** `qr-<état>` : confirme, contredit (lu 110,04), partiel (bulletin sans montant), illisible (QR abîmé), ecart (date lue 13.10 contre 12.10 du QR), invalide (QR non conforme, SIMULÉ), sans, lecture (Gemini jamais fini), pdf (le même, en PDF), non-verifie. */
 function apercuQr(etat: string): ApercuDepense {
   const nom = etat.slice(3);
   const piece = nom === 'partiel' ? PIECES_QR.ouvert : nom === 'illisible' ? PIECES_QR.abime : nom === 'sans' ? PIECES_QR.sans : nom === 'pdf' ? PIECES_QR.pdf : nom === 'non-verifie' ? PIECES_QR.inconnu : PIECES_QR.image;
-  const result = lectureQr(nom === 'contredit' ? 110.04 : 110.4);
+  const result = lectureQr(nom === 'contredit' ? 110.04 : 110.4, nom === 'ecart' ? '13.10.2026' : '12.10.2026');
   const fichier = { name: piece.name, size: 90000, type: 'application/pdf' };
   const outcome: ScanOutcome = { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false };
   return {
-    outcome, fichier, stocks: stockSimule(), transactions: [], etat, drive: 'ok', reseau: true, qrFichier: piece,
+    outcome, fichier, stocks: stockSimule(), transactions: [], etat, drive: 'ok', reseau: true, qrFichier: piece, ...(nom === 'invalide' ? { qrSimule: qrInvalideSimule() } : {}),
     enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-12 Malterie Fictive SA F-1001.pdf', bytes: 90000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
   };
 }

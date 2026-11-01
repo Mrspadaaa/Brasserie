@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { confronterQr, parseSwissQr, type LectureQr } from '../../../../src/services/qrFacture';
-import { ecartMarque, ibanLisible, referenceLisible, vueQr } from '../../../../src/ui/depense/qrVue';
+import { ecartMarque, ibanLisible, referenceLisible, resumeQr, vueQr } from '../../../../src/ui/depense/qrVue';
 import type { ResultatQr } from '../../../../src/services/qrLecture';
 import { charge, QR_IBAN, QRR } from './aide';
 
@@ -73,6 +73,29 @@ describe('le choix devant le duel (z2)', () => {
   });
 });
 
+describe('un champ en écart (date) se tranche par un choix, pas autrement', () => {
+  const l = lecture({ date: '13.10.2026' });
+  const ecart = (champs: Parameters<typeof vueQr>[4] = { champs: {}, factureVue: false }) => vueQr(lu(), confronterQr((lu() as Extract<ResultatQr, { statut: 'lu' }>).qr, l), l, null, champs)!;
+  it('sans choix : « écart », la date lue et celle du QR sont proposées telles qu’elles s’écriraient', () => {
+    expect(ecart()).toMatchObject({ etat: 'diff', verdict: 'écart', champs: { date: { lu: '13.10.2026', qr: '12.10.2026' } } });
+  });
+  it('rien d’autre ne tranche : la rangée « Facture » ouverte ne tranche pas la date', () => {
+    expect(ecart({ champs: {}, factureVue: true })).toMatchObject({ etat: 'diff', verdict: 'écart' });
+  });
+  it('prendre le QR : « QR ✓ » et la rangée dit « pris » ; garder : « lu gardé »', () => {
+    const pris = ecart({ champs: { date: 'qr' }, factureVue: false });
+    expect(pris).toMatchObject({ etat: 'ok', verdict: 'QR ✓' });
+    expect(pris.lignes.find(x => x.cle === 'date')).toMatchObject({ statut: 'ok', note: 'pris' });
+    expect(ecart({ champs: { date: 'lu' }, factureVue: false })).toMatchObject({ etat: 'diff', verdict: 'lu gardé' });
+  });
+  it('un numéro de facture en écart non ouvert empêche de dire « tranché » ; ouvert, il ne compte plus', () => {
+    const f = lecture({ date: '13.10.2026', invoiceNumber: 'F-9999' });
+    const v = (fv: boolean) => vueQr(lu(), confronterQr((lu() as Extract<ResultatQr, { statut: 'lu' }>).qr, f), f, null, { champs: { date: 'qr' }, factureVue: fv })!;
+    expect(v(false)).toMatchObject({ etat: 'diff', verdict: 'écart' });
+    expect(v(true)).toMatchObject({ etat: 'ok', verdict: 'QR ✓' });
+  });
+});
+
 describe('« sans QR » n’est pas « pas vérifié »', () => {
   it('non vérifié (hors ligne, erreur) : aucun sceau, aucun cercle', () => {
     expect(vueQr({ statut: 'non-verifie', motif: 'hors ligne' }, null, lecture())).toBeNull();
@@ -119,5 +142,21 @@ describe('les écritures', () => {
   });
   it('la feuille met l’IBAN sur deux lignes (quatre groupes, puis le reste)', () => {
     expect(vue(lu())!.lignes.find(l => l.cle === 'iban')?.valeur).toBe('CH44 3199 9123 0008\n8901 2');
+  });
+});
+
+describe('resumeQr : la ligne du bloc « Lecture et vérification… »', () => {
+  it('dit le montant, la date et le créancier du QR, rien d’autre', () => {
+    expect(resumeQr(lu())).toBe('QR : 110,40 CHF · 12.10.2026 · Malterie Fictive SA');
+  });
+  it('un bulletin sans montant ni S1 : seulement le créancier ; jamais un 0', () => {
+    expect(resumeQr(lu({ montant: '', s1: '' }))).toBe('QR : Malterie Fictive SA');
+  });
+  it('QR non lu, illisible, sans, non conforme : rien', () => {
+    expect(resumeQr(null)).toBeNull();
+    expect(resumeQr(undefined)).toBeNull();
+    expect(resumeQr({ statut: 'illisible' })).toBeNull();
+    expect(resumeQr({ statut: 'sans' })).toBeNull();
+    expect(resumeQr(lu({ iban: 'CH0000000000000000000' }))).toBeNull();
   });
 });

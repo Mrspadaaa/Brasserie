@@ -21,7 +21,7 @@ const LABELS_CORRIGES: Record<string, string> = { vendor: 'Fournisseur', date: '
 const champCorrige = (f: string) => LABELS_CORRIGES[f] ?? (/^items(?:\[(\d+)\]|\.(\d+))/.exec(f) ? `Article ${Number((/^items(?:\[(\d+)\]|\.(\d+))/.exec(f) as RegExpExecArray)[1] ?? (/^items(?:\[(\d+)\]|\.(\d+))/.exec(f) as RegExpExecArray)[2]) + 1}` : 'Détail du document');
 
 /** Le bandeau : fournisseur, date, total (le champ est celui de l'écran), chip « n lignes » qui ouvre la preuve, barre des lignes. */
-export function Bandeau({ vendor, date, totalField, calcule, statut, lines, preuveOuverte, onPreuve, drive, onDrive, onLigne, liens, sceau, sousTotal }: {
+export function Bandeau({ vendor, date, totalField, calcule, statut, lines, preuveOuverte, onPreuve, drive, onDrive, onLigne, liens, sceau, sousTotal, doutes }: {
   liens: Readonly<Record<string, LienStock>>;
   vendor: string; date: string; totalField: React.ReactNode; calcule: boolean; statut: StatutLecture | null; lines: readonly PurchaseLineDraft[];
   preuveOuverte: boolean; onPreuve: () => void; drive: 'ok' | 'a-connecter' | null; onDrive: () => void; onLigne: (id: string) => void;
@@ -29,11 +29,13 @@ export function Bandeau({ vendor, date, totalField, calcule, statut, lines, preu
   sceau?: React.ReactNode;
   /** z2 : le duel du total, le témoin des lignes ou « Photographier le QR », sous le total et au-dessus de la barre. */
   sousTotal?: React.ReactNode;
+  /** z2 : le champ que le QR contredit (date, fournisseur, devise) est marqué en ambre, souligné en pointillé, comme le total. */
+  doutes?: { date?: boolean; vendor?: boolean; devise?: boolean };
 }) {
   const icone = statut === 'checked' ? <Check size={14} className="text-hop"/> : statut === 'corrected' ? <Check size={14} className="text-cave-400"/> : statut === 'unavailable' ? <HelpCircle size={14} className="text-attention"/> : <AlertCircle size={14} className="text-attention"/>;
   return <section data-dp="bandeau" className={`rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 py-1.5 ${sceau ? 'grid grid-cols-[minmax(0,1fr)_auto] gap-x-2.5 gap-y-1' : 'space-y-1'}`}>
-    <div className={`flex items-baseline justify-between gap-2 ${sceau ? 'col-span-2' : ''}`}><span className="truncate text-base font-semibold text-cave-50">{vendor || 'Fournisseur'}</span><span className="font-mono text-sm text-cave-200">{date}</span></div>
-    <div className="flex items-center gap-2">{totalField}<span className="text-xs text-cave-400">CHF{calcule ? ' · somme des lignes' : ''}</span>
+    <div className={`flex items-baseline justify-between gap-2 ${sceau ? 'col-span-2' : ''}`}><span className={`truncate text-base font-semibold ${doutes?.vendor ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-50'}`}>{vendor || 'Fournisseur'}</span><span className={`font-mono text-sm ${doutes?.date ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-200'}`}>{date}</span></div>
+    <div className="flex items-center gap-2">{totalField}<span className={`text-xs ${doutes?.devise ? 'text-attention border-b-2 border-dotted border-attention' : 'text-cave-400'}`}>CHF{calcule ? ' · somme des lignes' : ''}</span>
       {statut ? <button type="button" aria-label="Détails de la lecture" aria-expanded={preuveOuverte} onClick={onPreuve} className="ml-auto min-h-7 inline-flex items-center gap-1 rounded-control border border-cave-700 px-2 text-sm text-cave-200">{icone}<span className="font-mono">{lines.length}</span>&nbsp;lignes</button> : null}</div>
     {drive === 'a-connecter' || sousTotal || (lines.length > 1 && statut) ? <div className="flex min-w-0 flex-col gap-1">
       {drive === 'a-connecter' ? <button type="button" onClick={onDrive} className="min-h-7 inline-flex items-center self-start rounded-control border border-dashed border-attention px-2 text-sm text-attention">Drive à connecter</button> : null}

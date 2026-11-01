@@ -17,6 +17,8 @@ export interface ApercuDepense {
   reseau: boolean;
   /** Banc du QR (développement seulement) : un VRAI fichier fictif (image ou PDF portant un QR-facture), lu par le vrai décodeur dans le navigateur ; la lecture Gemini reste simulée. */
   qrFichier?: { url: string; name: string; type: string };
+  /** Banc du QR (développement seulement) : un résultat de lecture SIMULÉ (aucun décodage), pour un état qu'aucune pièce ne produit proprement (QR non conforme). */
+  qrSimule?: import('../../services/qrLecture').ResultatQr;
   /** SIMULÉ : remplace l'enregistrement réel (aucune écriture, aucun Drive) ; rend un reçu fabriqué. */
   enregistrer: (draft: PurchaseDraft) => Promise<DriveProofReceipt | undefined>;
 }

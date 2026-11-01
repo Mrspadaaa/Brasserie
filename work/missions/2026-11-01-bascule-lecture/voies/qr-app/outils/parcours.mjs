@@ -14,7 +14,7 @@ const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Applic
 const arg = (nom, defaut) => (process.argv.find(a => a.startsWith(`--${nom}=`)) ?? `--${nom}=${defaut}`).split('=').slice(1).join('=');
 const URL_APP = arg('url', 'http://localhost:3457').replace(/\/$/, '');
 const SORTIE = path.resolve(arg('sortie', path.join(ici, '..', 'captures')));
-const ETATS = arg('etats', 'confirme,contredit,partiel,illisible,sans,lecture,pdf,non-verifie').split(',');
+const ETATS = arg('etats', 'confirme,contredit,partiel,illisible,ecart,invalide,sans,lecture,pdf,non-verifie').split(',');
 fs.mkdirSync(SORTIE, { recursive: true });
 const dormir = (ms) => new Promise(r => setTimeout(r, ms));
 const rapport = { url: URL_APP, etats: {}, gestes: {}, erreurs: [], externes: [] };
@@ -91,7 +91,32 @@ try {
       await toucher(p, '[aria-label="Fermer ce que dit le QR"]');
       await toucher(p, '[aria-label="Détails de la lecture"]'); await photo(p, 'z2-contredit-preuve-390.png');
     }
-    if (etat === 'illisible' || etat === 'partiel') { await toucher(p, '[data-dp="sceau-qr"]'); await photo(p, `z2-${etat}-ouvert-390.png`); }
+    if (['illisible', 'partiel', 'ecart', 'invalide'].includes(etat)) { await toucher(p, '[data-dp="sceau-qr"]'); await photo(p, `z2-${etat}-ouvert-390.png`); }
+    if (etat === 'ecart') {
+      await toucher(p, '[aria-label="Fermer ce que dit le QR"]');
+      // Voie qr-ecart : la chip ouvre la feuille et ne règle RIEN ; seul un choix (deux touches de la rangée Date) règle la chip, efface la marque et écrit la date.
+      const etatEcart = () => p.evaluate(() => {
+        const b = document.querySelector('[data-dp="bandeau"]'), date = [...b.querySelectorAll('span')].find(s => /^\d{2}\.\d{2}\.\d{4}$/.test(s.textContent.trim()));
+        const chip = document.querySelector('[data-dp-chip="qr:date"]'), tuile = document.querySelector('[data-dp="tuile-paye"]');
+        const touches = [...document.querySelectorAll('[data-dp-duel-champ^="date:"]')].map(t => ({ texte: t.textContent, pressed: t.getAttribute('aria-pressed'), h: Math.round(t.getBoundingClientRect().height) }));
+        return { date: date?.textContent.trim(), dateMarquee: /border-dotted/.test(date?.className ?? ''), chip: chip?.getAttribute('aria-label'), chipBarree: /line-through/.test(chip?.className ?? ''), sceau: document.querySelector('[data-dp="sceau-qr"] b')?.textContent, paiement: tuile?.textContent.replace(/\s+/g, ' ').trim(), feuille: Boolean(document.querySelector('[data-dp="qr-fiche"]')), touches, debordH: document.documentElement.scrollWidth > document.documentElement.clientWidth };
+      });
+      const g = rapport.gestes.ecart = { repos: await etatEcart() };
+      await toucher(p, '[data-dp-chip="qr:date"]'); g.chipTouchee = await etatEcart(); await photo(p, 'z2-ecart-chip-390.png');
+      await toucher(p, '[data-dp-duel-champ="date:qr"]'); g.prendreQr = await etatEcart(); await photo(p, 'z2-ecart-prendre-qr-390.png');
+      await toucher(p, '[data-dp-duel-champ="date:lu"]'); g.reprendreLu = await etatEcart();
+      await p.close();
+      const seconde = await ouvrir('ecart'); await attendreQr(seconde.p, 'ecart'); await dormir(500);
+      await toucher(seconde.p, '[data-dp-chip="qr:date"]');
+      await toucher(seconde.p, '[data-dp-duel-champ="date:lu"]');
+      g.garder = await seconde.p.evaluate(() => {
+        const b = document.querySelector('[data-dp="bandeau"]'), date = [...b.querySelectorAll('span')].find(s => /^\d{2}\.\d{2}\.\d{4}$/.test(s.textContent.trim()));
+        return { date: date?.textContent.trim(), dateMarquee: /border-dotted/.test(date?.className ?? ''), chip: document.querySelector('[data-dp-chip="qr:date"]')?.getAttribute('aria-label'), sceau: document.querySelector('[data-dp="sceau-qr"] b')?.textContent, paiement: document.querySelector('[data-dp="tuile-paye"]')?.textContent.replace(/\s+/g, ' ').trim() };
+      });
+      await photo(seconde.p, 'z2-ecart-garder-390.png');
+      await seconde.p.close();
+      continue;
+    }
     if (etat === 'lecture') {
       await toucher(p, '[data-dp="sceau-qr"]');
       await p.waitForFunction(() => document.querySelector('[data-dp="qr-fiche"]')?.textContent.includes('lu en'), { timeout: 25000 });

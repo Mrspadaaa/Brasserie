@@ -35,10 +35,10 @@ const send = (view: ReturnType<typeof render>, name = 'facture-qr.png') => {
   fireEvent.change(view.container.querySelector('input[aria-label="Importer un justificatif"]')!, { target: { files: [file] } });
   return file;
 };
-const open = async (qr: unknown, montant = 110.4) => {
+const open = async (qr: unknown, montant = 110.4, more: Record<string, unknown> = {}) => {
   Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
   state.qr.mockImplementation(() => qr instanceof Promise ? qr : Promise.resolve(qr));
-  state.scanned.mockResolvedValueOnce({ ok: true, model: 'simule', result: lecture(montant) });
+  state.scanned.mockResolvedValueOnce({ ok: true, model: 'simule', result: lecture(montant, more) });
   const view = render(createElement(ExpenseSheet, { onClose: () => {}, onSaved: state.onSaved }));
   const file = send(view);
   await screen.findByRole('region', { name: 'Vérification du justificatif' });
@@ -223,5 +223,189 @@ describe('un autre fichier remet le sceau à zéro', () => {
     state.scanned.mockResolvedValueOnce({ ok: true, model: 'simule', result: lecture(110.4) });
     send(view, 'autre.png');
     await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'wait'));
+  });
+});
+
+describe('suite 2 : l’ordre de lecture et l’état « lecture » (critique z2)', () => {
+  const avant = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+  it('lecture : le montant, la date et le créancier lus par le QR se voient sans toucher le sceau, dans le bloc « Lecture et vérification… »', async () => {
+    Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
+    state.qr.mockResolvedValue(qrLu());
+    state.scanned.mockReturnValue(new Promise(() => undefined)); // Gemini n'a pas fini
+    const view = render(createElement(ExpenseSheet, { onClose: () => {}, onSaved: state.onSaved }));
+    send(view);
+    const bloc = await waitFor(() => { const e = document.querySelector('[data-dp="lecture"] [data-dp="qr-lecture"]'); expect(e).not.toBeNull(); return e!; });
+    expect(bloc.textContent).toBe('QR : 110,40 CHF · 12.10.2026 · Malterie Fictive SA');
+    expect(screen.queryByRole('region', { name: 'Ce que dit le QR' })).toBeNull();
+    expect(document.querySelector('[data-dp="lecture"] [data-dp="sceau-qr"]')).not.toBeNull();
+  });
+  it('lecture : un QR non conforme ou non lu n’écrit rien (il ne confirme rien)', async () => {
+    Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
+    state.qr.mockResolvedValue(qrLu({ iban: 'CH0000000000000000000' }));
+    state.scanned.mockReturnValue(new Promise(() => undefined));
+    const view = render(createElement(ExpenseSheet, { onClose: () => {}, onSaved: state.onSaved }));
+    send(view);
+    await waitFor(() => expect(document.querySelector('[data-dp="lecture"] [data-dp="sceau-qr"]')?.getAttribute('data-q')).toBe('off'));
+    expect(document.querySelector('[data-dp="qr-lecture"]')).toBeNull();
+  });
+  it('contredit : « ① Total » vient AVANT « ② Règlement » dans l’ordre de lecture', async () => {
+    await open(qrLu(), 110.04);
+    await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff'));
+    const total1 = screen.getByRole('button', { name: '1 Total' });
+    const reglement = document.querySelector('[data-dp="tuile-paye"]')!;
+    expect(avant(total1, reglement)).toBe(true);
+    expect(reglement.textContent).toContain('2');
+  });
+  it('contredit, grand écran : la feuille « Ce que dit le QR » vient APRÈS les tuiles et les chips (① et ② restent en haut)', async () => {
+    const mm = vi.fn().mockImplementation((q: string) => ({ matches: /min-width:\s*1024px/.test(q), media: q, addEventListener: () => undefined, removeEventListener: () => undefined, addListener: () => undefined, removeListener: () => undefined, onchange: null, dispatchEvent: () => false }));
+    Object.defineProperty(window, 'matchMedia', { configurable: true, writable: true, value: mm });
+    try {
+      await open(qrLu(), 110.04);
+      const fiche = await screen.findByRole('region', { name: 'Ce que dit le QR' });
+      const tuile = document.querySelector('[data-dp="tuile-paye"]')!;
+      const total1 = screen.getByRole('button', { name: '1 Total' });
+      expect(avant(total1, tuile)).toBe(true);
+      expect(avant(tuile, fiche)).toBe(true);
+      expect(avant(document.querySelector('[data-dp="bandeau"]')!, fiche)).toBe(true);
+      const autres = document.querySelector('[data-dp="chips"]:last-of-type');
+      if (autres) expect(avant(autres, fiche)).toBe(true);
+    } finally { delete (window as any).matchMedia; }
+  });
+});
+
+describe('suite 3 : « écart » sur un champ hors total (la page lit 13.10.2026, le QR dit 12.10.2026, le total est d’accord)', () => {
+  const ouvrirEcart = async () => { await open(qrLu(), 110.4, { date: '13.10.2026' }); await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff')); };
+  const avant = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+  it('fermé, le sceau dit « écart » ET le champ contesté est marqué (date ambre, pointillé) ; une chip « ① Date » le désigne, avant « ② Règlement »', async () => {
+    await ouvrirEcart();
+    expect(within(sceau()!).getByText('écart')).toBeInTheDocument();
+    const date = within(document.querySelector('[data-dp="bandeau"]') as HTMLElement).getByText('13.10.2026');
+    expect(date.className).toContain('border-dotted');
+    expect(date.className).toContain('text-attention');
+    const chip = screen.getByRole('button', { name: '1 Date' });
+    expect(avant(chip, document.querySelector('[data-dp="tuile-paye"]')!)).toBe(true);
+    expect(screen.queryByRole('button', { name: '1 Total' })).toBeNull();
+    expect(document.querySelector('[data-dp="duel"]')).toBeNull();
+  });
+  const bandeau = () => document.querySelector('[data-dp="bandeau"]') as HTMLElement;
+  const rangee = (cle: string) => document.querySelector(`[data-dp-qr-ligne="${cle}"]`) as HTMLElement;
+
+  it('la chip ouvre la feuille et surligne la rangée « Date » (deux touches) ; elle NE se règle PAS, la marque reste, la date ne change pas', async () => {
+    await ouvrirEcart();
+    fireEvent.click(screen.getByRole('button', { name: '1 Date' }));
+    const fiche = await screen.findByRole('region', { name: 'Ce que dit le QR' });
+    const r = fiche.querySelector('[data-dp-qr-ligne="date"]')!;
+    expect(r.className).toContain('outline-attention');
+    expect(within(r as HTMLElement).getByRole('button', { name: '12.10.2026 · QR' })).toHaveAttribute('aria-pressed', 'false');
+    expect(within(r as HTMLElement).getByRole('button', { name: '13.10.2026 · lu' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '1 Date' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '1 Date réglé' })).toBeNull();
+    const date = within(bandeau()).getByText('13.10.2026');
+    expect(date.className).toContain('border-dotted');
+    expect(within(sceau()!).getByText('écart')).toBeInTheDocument();
+  });
+  it('ouvrir la feuille par le sceau ne règle rien non plus', async () => {
+    await ouvrirEcart();
+    fireEvent.click(sceau()!);
+    await screen.findByRole('region', { name: 'Ce que dit le QR' });
+    expect(screen.queryByRole('button', { name: '1 Date réglé' })).toBeNull();
+    expect(within(bandeau()).getByText('13.10.2026').className).toContain('border-dotted');
+  });
+  it('prendre le QR : la date de la dépense devient 12.10.2026, la tuile Règlement la suit, la chip se règle, la marque s’efface, le sceau dit « QR ✓ »', async () => {
+    await ouvrirEcart();
+    fireEvent.click(screen.getByRole('button', { name: '1 Date' }));
+    fireEvent.click(await screen.findByRole('button', { name: '12.10.2026 · QR' }));
+    expect(screen.getByRole('button', { name: '12.10.2026 · QR' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '1 Date réglé' })).toBeInTheDocument();
+    const date = within(bandeau()).getByText('12.10.2026');
+    expect(date.className).not.toContain('border-dotted');
+    expect(within(bandeau()).queryByText('13.10.2026')).toBeNull();
+    expect(document.querySelector('[data-dp="tuile-paye"]')!.textContent).toContain('Payé le 12.10.2026');
+    expect(within(sceau()!).getByText('QR ✓')).toBeInTheDocument();
+    const sent = await confirmer();
+    expect(sent.date).toBe('12.10.2026');
+    expect(sent.paymentDate).toBe('12.10.2026');
+  });
+  it('garder la page : la date reste 13.10.2026, la chip se règle, la marque s’efface, le sceau dit « lu gardé »', async () => {
+    await ouvrirEcart();
+    fireEvent.click(screen.getByRole('button', { name: '1 Date' }));
+    fireEvent.click(await screen.findByRole('button', { name: '13.10.2026 · lu' }));
+    expect(screen.getByRole('button', { name: '13.10.2026 · lu' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '1 Date réglé' })).toBeInTheDocument();
+    const date = within(bandeau()).getByText('13.10.2026');
+    expect(date.className).not.toContain('border-dotted');
+    expect(document.querySelector('[data-dp="tuile-paye"]')!.textContent).toContain('Payé le 13.10.2026');
+    expect(within(sceau()!).getByText('lu gardé')).toBeInTheDocument();
+    const sent = await confirmer();
+    expect(sent.date).toBe('13.10.2026');
+  });
+  it('prendre le QR puis reprendre la page remet 13.10.2026 (rien n’est perdu)', async () => {
+    await ouvrirEcart();
+    fireEvent.click(sceau()!);
+    fireEvent.click(await screen.findByRole('button', { name: '12.10.2026 · QR' }));
+    expect(within(bandeau()).getByText('12.10.2026')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '13.10.2026 · lu' }));
+    expect(within(bandeau()).getByText('13.10.2026')).toBeInTheDocument();
+    expect(document.querySelector('[data-dp="tuile-paye"]')!.textContent).toContain('Payé le 13.10.2026');
+    expect(within(sceau()!).getByText('lu gardé')).toBeInTheDocument();
+  });
+  it('« Confirmer » n’est jamais bloqué par le QR : la dépense part avec la date lue, aucun champ n’a changé sans geste', async () => {
+    await ouvrirEcart();
+    expect(screen.getByRole('button', { name: 'Confirmer et enregistrer' })).toBeEnabled();
+    const sent = await confirmer();
+    expect(sent.date).toBe('13.10.2026');
+    expect(sent.amount).toBe(110.4);
+  });
+  it('le fournisseur contesté : le nom est marqué et la chip s’appelle « Créancier »', async () => {
+    await open(qrLu({ creancier: ['S', 'Brasserie Autre SA', 'Rue 1', '1', '1000', 'Lausanne', 'CH'] }), 110.4);
+    await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff'));
+    expect(screen.getByRole('button', { name: '1 Créancier' })).toBeInTheDocument();
+    expect(within(document.querySelector('[data-dp="bandeau"]') as HTMLElement).getByText('Malterie Fictive SA').className).toContain('border-dotted');
+  });
+  const AUTRE = ['S', 'Brasserie Autre SA', 'Rue 1', '1', '1000', 'Lausanne', 'CH'];
+  const fournisseur = () => (document.querySelector('#purchase-vendor') as HTMLInputElement).value;
+  it('créancier : la chip ne règle rien ; « prendre le QR » écrit le nom du QR dans le fournisseur ; « garder » laisse la page', async () => {
+    await open(qrLu({ creancier: AUTRE }), 110.4);
+    await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff'));
+    fireEvent.click(screen.getByRole('button', { name: '1 Créancier' }));
+    await screen.findByRole('region', { name: 'Ce que dit le QR' });
+    expect(screen.queryByRole('button', { name: '1 Créancier réglé' })).toBeNull();
+    expect(fournisseur()).toBe('Malterie Fictive SA');
+    fireEvent.click(screen.getByRole('button', { name: 'Brasserie Autre SA · QR' }));
+    expect(fournisseur()).toBe('Brasserie Autre SA');
+    expect(screen.getByRole('button', { name: '1 Créancier réglé' })).toBeInTheDocument();
+    expect(within(sceau()!).getByText('QR ✓')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Malterie Fictive SA · lu' }));
+    expect(fournisseur()).toBe('Malterie Fictive SA');
+    expect(within(sceau()!).getByText('lu gardé')).toBeInTheDocument();
+  });
+  it('créancier : garder la page ne change rien au fournisseur et règle la chip', async () => {
+    await open(qrLu({ creancier: AUTRE }), 110.4);
+    await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff'));
+    fireEvent.click(screen.getByRole('button', { name: '1 Créancier' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Malterie Fictive SA · lu' }));
+    expect(fournisseur()).toBe('Malterie Fictive SA');
+    expect(screen.getByRole('button', { name: '1 Créancier réglé' })).toBeInTheDocument();
+    expect(within(sceau()!).getByText('lu gardé')).toBeInTheDocument();
+  });
+  describe('devise (la page lit EUR, le QR dit CHF)', () => {
+    const ouvrirDevise = async () => { await open(qrLu(), 110.4, { currency: 'EUR' }); await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff')); };
+    const original = () => screen.queryByText(/Montants à renseigner en CHF/);
+    it('la chip ne règle rien ; « CHF · QR » écrit la devise du QR ; « EUR · lu » la laisse', async () => {
+      await ouvrirDevise();
+      expect(original()).not.toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: /^\d Devise$/ }));
+      await screen.findByRole('region', { name: 'Ce que dit le QR' });
+      expect(screen.queryByRole('button', { name: /Devise réglé/ })).toBeNull();
+      expect(original()).not.toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'CHF · QR' }));
+      expect(screen.getByRole('button', { name: /^\d Devise réglé$/ })).toBeInTheDocument();
+      expect(original()).toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'EUR · lu' }));
+      expect(original()).not.toBeNull();
+      expect(within(sceau()!).getByText('lu gardé')).toBeInTheDocument();
+    });
   });
 });

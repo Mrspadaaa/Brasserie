@@ -41,7 +41,18 @@ export interface VueQr {
   contredit: boolean;
   /** L'illisible propose de photographier le QR. */
   photographier: boolean;
+  /** Les champs (hors total) que le QR contredit : chacun est marqué dans le bandeau et désigné par une chip numérotée. */
+  ecarts?: Array<'facture' | 'date' | 'devise' | 'creancier'>;
+  /** Les champs (hors total, hors facture) que le brasseur peut trancher dans la feuille : ce que la page lit et ce que le QR dit, tels qu'ils s'écriraient dans la dépense. */
+  champs?: Partial<Record<ChampTranchable, DuelChamp>>;
 }
+
+/** Les champs qui se règlent par un choix devant leur rangée (« Facture » n'a pas de champ au bandeau : elle se règle à l'ouverture). */
+export type ChampTranchable = 'date' | 'devise' | 'creancier';
+export type ChoixChamps = Partial<Record<ChampTranchable, 'lu' | 'qr'>>;
+export interface DuelChamp { lu: string; qr: string }
+/** Ce que le brasseur a déjà décidé devant l'écart : un choix par champ tranchable, et si la rangée « Facture » a été ouverte (elle se règle ainsi). */
+export interface DecisionsQr { champs: ChoixChamps; factureVue: boolean }
 
 export const fr2 = (n: number): string => (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
 /** AAAA-MM-JJ → JJ.MM.AAAA ; une valeur d'une autre forme est rendue telle quelle. */
@@ -101,6 +112,18 @@ function lignesConfrontees(c: ConfrontationQr, qr: QrFacture): LigneFiche[] {
   return [...sortie, ...lignesPaiement(c, qr)];
 }
 
+/**
+ * La ligne du bloc « Lecture et vérification… » (z2, état lecture) : ce que le QR dit seul, sans toucher le sceau (« QR : 110,40 CHF · 12.10.2026 · Malterie Fictive SA »).
+ * Seulement ce que le QR porte (un champ absent n'est pas écrit) ; `null` quand le QR n'est pas lu, ou n'est pas conforme (il ne confirme rien).
+ */
+export function resumeQr(resultat: ResultatQr | null | undefined): string | null {
+  if (!resultat || resultat.statut !== 'lu' || !resultat.qr.valid) return null;
+  const qr = resultat.qr;
+  const morceaux = [qr.montant === null ? '' : `${fr2(qr.montant)} ${qr.devise}`, qr.s1?.date?.debut ? dateSuisse(qr.s1.date.debut) : '', qr.creancier.nom];
+  const dit = morceaux.filter(Boolean);
+  return dit.length ? `QR : ${dit.join(' · ')}` : null;
+}
+
 /** Les lignes avant que la lecture de la facture ne soit là : ce que le QR dit seul, « lu en 0,5 s ». */
 function lignesSeules(qr: QrFacture, ms: number): LigneFiche[] {
   const sortie: LigneFiche[] = [];
@@ -127,7 +150,7 @@ function lignesIllisible(lecture: LectureQr | null): LigneFiche[] {
  * (`null` : la lecture de la facture n'est pas là). Rend `null` quand il n'y a rien à dire : lecture non vérifiée (hors ligne, erreur) ou pas de fichier.
  * « Sans QR » (`sans`) et « pas vérifié » (`null`) ne se confondent jamais.
  */
-export function vueQr(resultat: ResultatQr | null, confrontation: ConfrontationQr | null, lecture: LectureQr | null, choix: 'lu' | 'qr' | null = null): VueQr | null {
+export function vueQr(resultat: ResultatQr | null, confrontation: ConfrontationQr | null, lecture: LectureQr | null, choix: 'lu' | 'qr' | null = null, decisions: DecisionsQr = { champs: {}, factureVue: false }): VueQr | null {
   if (resultat === null) return { etat: 'wait', verdict: 'lecture…', aria: 'QR-facture : lecture en cours', lignes: [], duel: null, contredit: false, photographier: false };
   if (resultat.statut === 'non-verifie') return null;
   if (resultat.statut === 'sans') return { etat: 'sans', verdict: '', aria: 'Aucun QR-facture sur ce document', lignes: [], duel: null, contredit: false, photographier: false };
@@ -147,25 +170,45 @@ export function vueQr(resultat: ResultatQr | null, confrontation: ConfrontationQ
   const montantContredit = c.montant.statut === 'contredit';
   const autreContredit = [c.numero, c.date, c.creancier, c.devise].some(champ => champ.statut === 'contredit');
   const deviseContredite = c.devise.statut === 'contredit';
+  const ecarts = (['facture', 'date', 'devise', 'creancier'] as const).filter(k => c[k === 'facture' ? 'numero' : k].statut === 'contredit');
   if (montantContredit || autreContredit) {
     let duel: Duel | null = null;
     if (montantContredit && !deviseContredite && c.montant.qr !== null && c.montant.lecture !== null) {
       const lu = fr2(c.montant.lecture), q = fr2(c.montant.qr), e = ecartMarque(lu, q);
       duel = { lu, qr: q, luNombre: c.montant.lecture, qrNombre: c.montant.qr, prefixe: e.prefixe, resteLu: e.resteA, resteQr: e.resteB };
     }
-    // Le choix du brasseur devant le duel (z2) : « pris » (le QR, « QR ✓ ») ou « lu gardé » (la page). Le sceau le dit ; rien d'autre ne change ici.
+    // Les champs hors total que le brasseur peut trancher dans la feuille : la page lit une chose, le QR en dit une autre (les deux écrites telles qu'elles iraient dans la dépense).
+    const champs: NonNullable<VueQr['champs']> = {};
+    const duelChamp = (cle: ChampTranchable, champ: ChampConfronte<string>, formate: (v: string) => string) => {
+      if (champ.statut === 'contredit' && champ.qr !== null && champ.lecture !== null) champs[cle] = { lu: formate(champ.lecture), qr: formate(champ.qr) };
+    };
+    duelChamp('date', c.date, dateSuisse); duelChamp('devise', c.devise, v => v); duelChamp('creancier', c.creancier, v => v);
+    // Le choix du brasseur (z2) : « pris » (le QR, « QR ✓ ») ou « lu gardé » (la page). Un écart non tranché reste « écart » : ouvrir la feuille ou toucher la chip ne tranche rien.
+    // La rangée touchée dit son choix ; le sceau dit la somme des choix. Rien d'autre ne change ici (le champ de la dépense, c'est l'écran qui l'écrit, au geste).
+    const decides: Array<'lu' | 'qr' | null> = [];
     const montant = lignes.find(l => l.cle === 'montant');
-    if (duel && montant && choix === 'qr') {
-      montant.statut = 'ok'; montant.note = 'pris';
-      return { etat: 'ok', verdict: 'QR ✓', aria: `QR-facture : le montant du QR (${duel.qr}) est pris`, lignes, duel, contredit: true, photographier: false };
+    if (duel) decides.push(choix);
+    for (const k of ['date', 'devise', 'creancier'] as const) {
+      const duelK = champs[k], ligne = lignes.find(l => l.cle === k), choisi = decisions.champs[k] ?? null;
+      if (!duelK) continue;
+      decides.push(choisi);
+      if (ligne && choisi === 'qr') { ligne.statut = 'ok'; ligne.note = 'pris'; }
+      if (ligne && choisi === 'lu') ligne.note = `lu ${duelK.lu} gardé`;
     }
-    if (duel && montant && choix === 'lu') {
-      montant.note = `lu ${duel.lu} gardé`;
-      return { etat: 'diff', verdict: 'lu gardé', aria: `QR-facture : la lecture de la page (${duel.lu}) est gardée`, lignes, duel, contredit: true, photographier: false };
+    // « Facture » n'a pas de champ au bandeau : la rangée ouverte la règle (comme avant) ; non ouverte, elle empêche de dire « tranché ».
+    if (ecarts.includes('facture') && !decisions.factureVue) decides.push(null);
+    if (duel && montant && choix === 'qr') { montant.statut = 'ok'; montant.note = 'pris'; }
+    if (duel && montant && choix === 'lu') montant.note = `lu ${duel.lu} gardé`;
+    const tranche = decides.length > 0 && decides.every(d => d !== null);
+    if (tranche) {
+      const tousQr = decides.every(d => d === 'qr');
+      const seulTotal = Boolean(duel) && decides.length === 1;
+      if (tousQr) return { etat: 'ok', verdict: 'QR ✓', aria: seulTotal ? `QR-facture : le montant du QR (${duel!.qr}) est pris` : 'QR-facture : les valeurs du QR sont prises', lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs };
+      return { etat: 'diff', verdict: 'lu gardé', aria: seulTotal ? `QR-facture : la lecture de la page (${duel!.lu}) est gardée` : 'QR-facture : la lecture de la page est gardée', lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs };
     }
     return {
       etat: 'diff', verdict: duel ? duel.qr : deviseContredite ? 'devise' : 'écart', aria: duel ? `QR-facture : le montant du QR est ${duel.qr}, la page dit ${duel.lu}` : 'QR-facture : écart avec la lecture',
-      lignes, duel, contredit: montantContredit, photographier: false,
+      lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs,
     };
   }
   if (c.montant.statut === 'confirme') return { etat: 'ok', verdict: 'QR ✓', aria: 'QR-facture : confirme la lecture', lignes, duel: null, contredit: false, photographier: false };
