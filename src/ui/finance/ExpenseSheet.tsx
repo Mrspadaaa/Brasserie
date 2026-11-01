@@ -121,7 +121,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [driveAuthError,setDriveAuthError]=useState(false);
   const [driveTick,setDriveTick]=useState(0);
   /* L'état Drive ne se dit qu'une fois le jeton vérifié (renouvellement silencieux) : jamais « Drive à connecter » quelques secondes quand Drive est prêt. */
-  const [driveVerifie,setDriveVerifie]=useState(()=>Boolean(apercu)||FirebaseAuthService.hasDriveAccess());
+  const [driveVerifie,setDriveVerifie]=useState(()=>Boolean(apercu));
   const [reviewedFields,setReviewedFields]=useState<string[]>([]);
   const [panel,setPanel]=useState<'tva'|'paye'|null>(null);
   const [preuveOuverte,setPreuveOuverte]=useState(false);
