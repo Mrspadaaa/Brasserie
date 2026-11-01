@@ -29,3 +29,12 @@
 - À son choix (montré, pas bloquant) : D273c version du cache de lecture liée au moteur ; D273b captures multiples dans l'app ; D261c ;
   la famille donnée par Gemini (≈ 1 CHF au banc). TX-6770960b suspendue.
 - Hebdo : 60 % ; il a dit « le quota n'est pas un problème pour ces tâches ».
+
+## État au 01.11, 21 h 30 (pilote, D274 et D273e)
+- D274 (son « yes ») : l'identifiant de lecture d'aiTask porte l'empreinte des 40 modules qu'aiTask importe (`invoiceEngineDigest`), commit
+  abd80cde ; test `tests/unit/invoiceScanCache-d273c.test.ts` (rouge 4/5, puis vert) ; déploiement d'aiTask seul depuis
+  `%TEMP%/deploy-63130965` (journal `scratchpad/deploy-d274.log`). Retour arrière : redéployer depuis 8050e494. Fait : révision `aitask-00047-jil`, empreinte `7909df236aecab9d` ; doc14 renvoyée, relue en direct (3 lectures, 16/16), rien enregistré, journaux sans alerte.
+- D273e (« trop d'items en autre ») : en ligne, l'ancien client met 12 articles en Autres sur doc14. En local, 24 des 232 articles du banc
+  tombent en Autres : 8 lignes de port (tenues à part), 10 achats privés, et 7 articles de brassage (El Dorado, Barbe Rouge, Malzextraktpulver,
+  Sekt). Les 6 premiers cas sont envoyés à la voie p3c-bandes (`a257231fe65b00eb2`) ; on attend d'elle le compte « autres = N sur 232 ».
+- Ensuite : sans changement (retour de p3c-bandes, ses critères rejoués, bout en bout D, commit, hébergement, sa pièce rejouée en ligne).
