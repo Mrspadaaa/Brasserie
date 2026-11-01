@@ -927,3 +927,15 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   mot pour mot : « Oui et oui » (D257).
 - **La suite** (01.11, soir, après le déploiement du correctif et la PR 199), mot pour mot : « Continue » (lu : la suite prévue, port de
   p3c-3 avec z2 D248, port « Total seulement » D249, vue TVA en mini maquettes D250).
+- **La vue TVA, et la rénovation d'abord** (01.11, nuit, sur sa capture de u3, la bouteille « TVA dans chaque 33 cl 13,35 ct », le haut
+  marron de la bouteille entouré en rouge ; `work/missions/2026-10-31-ecran-depense/brasseur/01-11-u3-bouteille-marron-entouree.jpg`,
+  hors Git), mot pour mot : « Même si c'est un peu enfantin j'aime assez bien, après pas convaincu vraiment du design. Mais avoir une
+  vrai vu comme ça c'est top, aussi il y a pas vraiment le roi, et la partie maron ? Ni vraiment combien je gagne ? Mais des outils de
+  genre prix, prédictions et tout c'est top.
+
+  Après c'est plus pour après pour le moment je fais pas encore de la grosse vente, c'est des outils important et essentiel. Mais j'ai
+  plus besoin d'outil de prédictions, vu d'ensemble, panification et autres car la brasserie est en grande rénovation, et il me manque
+  encore beaucoup de choses et j'ai pas beaucoup de temps à consacrer à ça et pas non plus un gros budget. Genre installation de hotte.
+  Installation du 2eme évier. Armoire extérieur, seconde passe sur les sols ectt création du site web vitrine.... » (lu : « le roi » =
+  le ROI, retour sur investissement ; « panification » = planification ; la partie marron de u3 est le fond vide de la bouteille, elle
+  ne représente rien. D259 : ce défaut à contrôler, et la rénovation passe devant, la TVA et les outils de vente « pour après »).

@@ -171,6 +171,13 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
   places : gardée comme variante). Prochaine action : rejouer les GATES des deux voies à leur retour (`systeme.mjs voies`), `git status`
   contre les Possède, relecture du code par un relecteur neuf, critique e-t6 sur les captures de p3c-port ; tri TVA quand z et u rentrent.
   LEÇON PROPOSÉE (contre-revue) : un test de plan qui promet « l'erreur mène au champ » nomme le chemin de code (message, sélecteur).
+- 01.11, nuit (D259) : son retour sur la page TVA v0, sur sa capture de u3 (`brasseur/01-11-u3-bouteille-marron-entouree.jpg`, hors Git) :
+  « un peu enfantin j'aime assez bien », « avoir une vrai vu comme ça c'est top », « et la partie maron ? Ni vraiment combien je gagne ? »,
+  outils de vente « pour après », la rénovation d'abord. Versé : SPEC, D259, défaut D259 (contrôle `controle-zones.mjs` à écrire avant la
+  reprise TVA), étalonnage (`c-tva-u3-bouteille`, mitige ; le critique l'avait classée 9 sur 12). **u4b rendue** (TVA-U4B OK, cinq contrôles
+  verts, `tva/v1/u4b-RESULTAT.md`). Passe 2 de la série r en vol : elle finit, puis tri du critique ; **pas de passe 3 ni de page TVA neuve**
+  avant la rénovation. u3 devient une greffe de la reprise (la bouteille, et le prix partagé en coûts, TVA et « combien je gagne »).
+  Rénovation : mission neuve `work/missions/2026-11-01-renovation/DEPART.md`, dans sa propre session (D207).
 
 ## Signature
 - 31.10, nuit : **intégration de l1 par le pilote** : `invoice-v5` partout (`purchaseEntry.ts`, son test, `eval-expense-vision.mjs`, docs), plafond de sortie
