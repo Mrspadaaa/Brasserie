@@ -1016,3 +1016,41 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   moteur, pour qu'une pièce déjà lue soit relue après un changement. Une relecture coûte quelques centimes. Je le recommande yes ». Il ajoute
   « Les articles difficiles, même jamais en stock / Top mais j'ai l'impression qu'il y a trop de d'items en autre ? ». Lu : « yes » est son
   accord pour lier le cache au moteur et redéployer aiTask (D274). « Trop d'items en autre » veut dire trop d'articles dans la bande Autres (D273e).
+- **La vue Dépense ne respecte ni ses demandes ni sa vue de base** (01.11, nuit, sur ma capture 390 de sa commande, deux zones
+  entourées : le bouton « Créer « CARABELGE· Mischung: Einzelprodukt, Schrotung: geschrotet [+CHF 0.10] » » et « 100 Gram0,0101 », avec
+  la maquette p3c-3 au repos), mot pour mot : « Il y a plein de problème sur cette vue, déjà pas de traduction. Ensuite le concassage
+  n'est pas un produit mais un état du malt. C'est pas du tout compacte, comme demandé, et ça créé de base automatiquement un nouveau
+  produit du ça arrive pas à lié à un stock. Pas besoin d'afficher autant. Ça respecte pas trop les demandes.... Ni la vue de base. »
+  (lu : les options imprimées dans le nom — « Mischung: Einzelprodukt », « Schrotung: geschrotet [+CHF 0.10] » — ne sont ni traduites ni
+  comprises ; « geschrotet » (concassé) est l'état du malt, une pastille ↳ sur sa rangée avec son supplément, jamais une partie du nom
+  ni un produit ; une rangée tient sur une ligne, comme p3c-3 ; une ligne d'ingrédient qu'aucun article ne relie devient d'office un
+  nouvel article, montré par le picto « nouveau », sans bouton « Créer » ; le reste se replie. D275).
+- **L'enrichissement des nouveaux articles** (01.11, nuit), mot pour mot : « Une fois produits ajouter, vue fermé et tout, ça créé une
+  procédure pour enrichir le nouveau produit du stock btw, comme demandé il y a un moment » (lu : la demande du 31.10, ligne « Peut être à
+  la fin quand on valide la facture, en arrière plan », n'est pas faite ; après Confirmer, la vue fermée, une procédure en arrière-plan
+  remplit la fiche de chaque nouvel article, sans doublon de fiche. D276).
+- **La vue de base, c'est p3c-3 et la suite** (01.11, nuit), à « ta maquette choisie (p3c-3) », mot pour mot : « non c'était un exemple,
+  il y a une quelques améliorations entre temps » (lu : la base est p3c-3 avec ce qu'il a demandé depuis : quantité en gras et colonnes
+  alignées (D248), sceau QR (D246), port « Total seulement » / « dont port » (D249), noms sans doublon (D261a), raccourcis de date
+  (D262b), familles pour tous les types (D262d), quatre langues lues en français (D271). D275).
+- **Les unités, trois cas** (01.11, nuit, sur la même capture, « 85 ? », « 2 ? », « 1 ? », « 11 ? » entourés), mot pour mot : « Pour les
+  unités, c'est quand même facile à devenir ?? SI il y a un doute, ça me flag mais de base ça essaie d'auto remplir. Il y a 3 cas de
+  figure: sûr ou quasiment sûr, rien. / Pas sûr mais repis, flag jaune. Je contrôle / Ne sait pas, aucune idée, flag rouge, je dois
+  remplir ou corrigé » (lu : « devenir » = « deviner », « repis » = « repris » ; une unité absente ou illisible est déduite (prix ×
+  quantité = montant, famille, article relié, sachet de levure) ; sûre : rien d'affiché ; probable : remplie avec un signal jaune, qu'il
+  contrôle ; inconnue : signal rouge, à remplir. Jamais « ? » quand l'unité se déduit. D277).
+  Puis, à « Ensuite je prépare les trois niveaux d'unité », mot pour mot : « pas que pour les unités mais globalement pour tout » (lu :
+  chaque valeur de la Dépense — unité, quantité, prix, famille, article relié, date, fournisseur, total — suit les trois cas : sûre, rien ;
+  reprise sans certitude, jaune, il contrôle ; inconnue, rouge, il remplit. Un seul code de signal pour tout l'écran. D277).
+- **Ajouter un article** (01.11, nuit), mot pour mot : « Normalement, pas besoin mais est-ce possible d'ajouter un item ? » (lu : ajouter
+  une ligne à la main dans la Dépense ; elle existe, « + Ajouter une ligne » au pied de la liste, 35 lignes au plus ; elle reste dans la
+  refonte, et une ligne ajoutée vide porte le signal rouge de ses valeurs à remplir, D277).
+- **Un seul problème réglé** (01.11, nuit, sur la capture 390 après D273f, « 100 g × 0,0101 » entouré et coché), mot pour mot : « La ça
+  règle que un des problèmes cité » (lu : la quantité ne court plus sur le prix, mais traduction, concassage, compacité, bouton « Créer »
+  et unités restent ; D273f n'est qu'un des défauts de D275 à D277).
+- **Les noms en français, et le budget** (01.11, nuit), à « Pour f5, la lecture doit rendre la désignation en français, ce qui demande un
+  changement d'aiTask, mesuré au banc avant ton choix », mot pour mot : « Pour ce dernier, il faudra modifier aiTask, à mesurer au banc
+  j'autorise ce changement, hausse aussi le total à 49chd pour l'ia » (lu : accord pour ajouter la désignation en français à la lecture
+  d'aiTask et la redéployer, si le banc ne montre aucune perte ; « 49chd » = 49 CHF : le plafond cumulé des appels IA payants du banc et
+  des essais passe de 25 à 49 CHF. D278).
+  Puis, mot pour mot : « Chf* » (lu : « 49chd » = 49 CHF, confirmé).

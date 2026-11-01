@@ -2,7 +2,7 @@
 // de l'écran) au toucher. `article[data-purchase-line][data-dp-ligne=<id>]` > `details` > un seul `summary` direct. Présentation seulement : tout arrive calculé.
 import React from 'react';
 import { PictoLien, type LienStock } from './Pictos';
-import type { GroupeCle } from './groupes';
+import { FILET_FAMILLE, type GroupeCle } from './groupes';
 import { pastilleConversion } from './etat';
 import './p3c.css';
 
@@ -18,7 +18,7 @@ export interface LigneP3cProps {
 
 const stop = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); };
 /** La barre de couleur de la bande, à gauche de chaque rangée (jetons de l'app). */
-const BARRE: Record<GroupeCle, string> = { malt: 'border-l-4 border-l-ebc-gold', houblon: 'border-l-4 border-l-hop', levure: 'border-l-4 border-l-area-finances', autres: 'border-l-4 border-l-cave-400' };
+const BARRE: Record<GroupeCle, string> = FILET_FAMILLE;
 
 export function LigneP3c(p: LigneP3cProps) {
   const mout = p.boutonMouture;

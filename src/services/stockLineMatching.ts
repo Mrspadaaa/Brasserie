@@ -2,6 +2,7 @@ import { normalize } from './search';
 import { Units } from './units';
 import type { StockItem } from '../types';
 import { CEREALS, hasHopWord, hasYeastWord, inferNature, isReadableUnit, knownCategoriesOf, pieceUnitsEquivalent, PRODUCT_DESCRIPTORS, readProductLabel, weightKey, type Nature, type ProductIdentity } from './ingredientIdentity';
+import { categorieDeFamille, familleDe } from '../ui/depense/familles';
 import { connuesUnSeulCote, ecartsEntre, lireEbc, lireOrigine, nomPropre, sansBis, sansDonneesDeFiche, type Contexte, type DonneesProduit, type Ecart } from '../domain/stock/donnees';
 
 /**
@@ -27,12 +28,24 @@ export const PROPOSAL_WEIGHT_MARK = '#poids';
 
 /** Catégories de Stocks, dans l'ordre d'affichage : l'app les compare à l'identique (fiche, levure, brassage). */
 export const STOCK_CATEGORIES = ['Malt', 'Houblon', 'Levure', 'Sucre', 'Additif', 'Emballage', 'CIP alcalin', 'CIP acide', 'Désinfectant', 'Détergent', 'Sols', 'EPI', 'Consommable'];
-/** La lecture écrit souvent au pluriel, en minuscules ou en allemand (catalogues des malteries). */
+/**
+ * La lecture écrit souvent au pluriel, en minuscules, en allemand, en anglais ou en italien (D271 : les factures viennent en quatre langues).
+ * Clés sans accent ni casse (`normalize`) ; la valeur est toujours le nom français de `STOCK_CATEGORIES`. Aucun nom de pièce ici : des mots de famille.
+ * Absents exprès : « nettoyage / Reinigung / cleaning / pulizia » (trop large : détergent, désinfectant ou CIP ?) — la nature de la ligne tranche alors.
+ */
 const SYNONYMS = new Map(Object.entries({
-  malts: 'Malt', malz: 'Malt', cereale: 'Malt', cereales: 'Malt',
-  houblons: 'Houblon', hopfen: 'Houblon',
-  levures: 'Levure', hefe: 'Levure',
-  sucres: 'Sucre', additifs: 'Additif', emballages: 'Emballage', consommables: 'Consommable'
+  malts: 'Malt', malz: 'Malt', malze: 'Malt', cereale: 'Malt', cereales: 'Malt', cereal: 'Malt', cereals: 'Malt',
+  grain: 'Malt', grains: 'Malt', getreide: 'Malt', malto: 'Malt', malti: 'Malt', cereali: 'Malt',
+  malzextrakt: 'Malt', malzextrakte: 'Malt', 'malt extract': 'Malt', 'extrait de malt': 'Malt', 'estratto di malto': 'Malt',
+  houblons: 'Houblon', hopfen: 'Houblon', hop: 'Houblon', hops: 'Houblon', pellet: 'Houblon', pellets: 'Houblon', hopfenpellets: 'Houblon',
+  luppolo: 'Houblon', luppoli: 'Houblon',
+  levures: 'Levure', hefe: 'Levure', hefen: 'Levure', brauhefe: 'Levure', trockenhefe: 'Levure', yeast: 'Levure', yeasts: 'Levure', lievito: 'Levure', lieviti: 'Levure',
+  sucres: 'Sucre', zucker: 'Sucre', sugar: 'Sucre', sugars: 'Sucre', zucchero: 'Sucre', zuccheri: 'Sucre',
+  additifs: 'Additif', additive: 'Additif', additives: 'Additif', additivo: 'Additif', additivi: 'Additif', zusatz: 'Additif', zusatze: 'Additif', zusatzstoff: 'Additif', zusatzstoffe: 'Additif',
+  emballages: 'Emballage', packaging: 'Emballage', verpackung: 'Emballage', verpackungen: 'Emballage', imballaggio: 'Emballage', imballaggi: 'Emballage',
+  consommables: 'Consommable', consumable: 'Consommable', consumables: 'Consommable', verbrauchsmaterial: 'Consommable', 'materiale di consumo': 'Consommable', 'materiali di consumo': 'Consommable',
+  detergents: 'Détergent', detergent: 'Détergent', reinigungsmittel: 'Détergent', detersivo: 'Détergent', detersivi: 'Détergent',
+  desinfectants: 'Désinfectant', disinfectant: 'Désinfectant', disinfectants: 'Désinfectant', desinfektionsmittel: 'Désinfectant', disinfettante: 'Désinfectant', disinfettanti: 'Désinfectant'
 }));
 
 /**
@@ -45,6 +58,18 @@ export function canonicalStockCategory(value: string | undefined): string {
   const key = normalize(text).replace(/\s+/g, ' ');
   if (!key) return text;
   return STOCK_CATEGORIES.find(category => normalize(category) === key) ?? SYNONYMS.get(key) ?? text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/**
+ * Catégorie d'un article NEUF (k7, D271, D273d) : la catégorie lue quand c'est une de `STOCK_CATEGORIES` (après synonymes), jamais un mot étranger
+ * ou inconnu (« yeast », « other_stock », « Grain »). Sinon la famille que l'écran donne à la ligne (`familleDe`, la MÊME décision que la bande
+ * affichée) : un sirop candi lu « other_stock » est un Sucre, un emballage au libellé de houblon un Emballage. « Divers » seulement quand la famille est « Autres ».
+ */
+export function categorieArticleNeuf(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'>): string {
+  const lue = canonicalStockCategory(l.stockCategory);
+  if (STOCK_CATEGORIES.includes(lue)) return lue;
+  const contexte = contexteDe({ ...l, stockCategory: undefined });
+  return categorieDeFamille(familleDe({ nom: l.description, kind: l.kind, contexte }), l.description);
 }
 
 const sameSet = (a: string[], b: string[]) => { const A = new Set(a), B = new Set(b); return A.size === B.size && [...A].every(w => B.has(w)); };
@@ -62,13 +87,23 @@ const KIND_REFUSES: Record<string, string[]> = {
 
 /** Au-delà de ce poids imprimé, une ligne de levure n'est plus un sachet : face à un article en sachets sans poids, rien (s1b n° 4). */
 export const SACHET_MAX_G = 50;
-/** Écritures d'une unité que `Units` ne reconnaît pas, ramenées au kg ou au L pour l'appariement seulement (`Units` ne change pas). */
-const UNIT_SPELLINGS: Record<string, string> = { kilo: 'kg', kilos: 'kg', kilogramm: 'kg', kilogramme: 'kg', kilogrammes: 'kg', liter: 'l', liters: 'l', litre: 'l', litres: 'l' };
+/**
+ * Écritures d'une unité que `Units` ne reconnaît pas, en quatre langues (D271, D273f), ramenées au g, au kg ou au L pour la Dépense seulement
+ * (`Units` ne change pas, s1b n° 2).
+ */
+const UNIT_SPELLINGS: Record<string, string> = {
+  gramm: 'g', gramme: 'g', grammes: 'g', gram: 'g', grams: 'g', grammo: 'g', grammi: 'g', gr: 'g',
+  kilo: 'kg', kilos: 'kg', kilogramm: 'kg', kilogramme: 'kg', kilogrammes: 'kg', kilogram: 'kg', kilograms: 'kg', chilo: 'kg', chilogrammo: 'kg', chilogrammi: 'kg',
+  liter: 'l', liters: 'l', litre: 'l', litres: 'l', litro: 'l', litri: 'l',
+};
+const unitSpelling = (unit: string) => (unit ?? '').trim().toLowerCase().replace(/[.\s]+$/, '');
 /** Unité telle que l'appariement la compare : minuscules, sans point final (« Kg. » → « kg »), « Kilo » → « kg », « litres » → « l ». */
 export const linkUnit = (unit: string) => {
-  const key = (unit ?? '').trim().toLowerCase().replace(/[.\s]+$/, '');
+  const key = unitSpelling(unit);
   return UNIT_SPELLINGS[key] ?? key;
 };
+/** L'unité à l'écran : une écriture longue (« Gramm », « Kilogramm », « Liter ») devient son symbole ; toute autre reste telle qu'imprimée (« Kg », « Stk »). */
+export const shortUnit = (unit: string) => UNIT_SPELLINGS[unitSpelling(unit)] ?? (unit ?? '').trim();
 
 /** `vendor` : fournisseur du justificatif ; ses mots dans un nom d'article ne le rendent pas plus précis que la ligne. */
 export interface StockLineInput {

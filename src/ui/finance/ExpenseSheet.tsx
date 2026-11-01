@@ -10,7 +10,7 @@ import { Combobox } from '../Combobox';
 import { StorageService } from '../../services/storage';
 import { GeminiScannerService,type ScanOutcome,type ScannedLineKind } from '../../services/geminiScanner';
 import { savePurchaseWithProofReceipt,confirmPurchase,canCloseWithoutAck,watchPurchaseConfirmation,validatePurchase,sansCetteSaisie,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,purchaseSimilarOrders,purchaseSameFile,purchaseSameOrder,proposeMillingSurcharges,confirmMillingSurcharge,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
-import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit } from '../../services/stockLineMatching';
+import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit, shortUnit } from '../../services/stockLineMatching';
 import { isConfirmedWriteRejection } from '../../services/firestoreRepo';
 import { proofQueueAvailable } from '../../services/proofQueue';
 import { FirebaseAuthService } from '../../services/firebaseAuth';
@@ -538,7 +538,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const portTexte=(()=>{const c=portCents(draft.lines,port);return c===null?null:fr2c(c);})();
   const parentIdxDe=(i:number)=>i>=0&&i<draft.lines.length?millingParentIndex(draft.lines,i):-1;
   const contexteLigne=(line:PurchaseLineDraft)=>{const a=articleDe(line);return a?contexteDeArticle(a):donneesDeLigne(ligneDeBrouillon(line,draft.vendor)).contexte;};
-  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i);return groupeDe(contexteLigne(draft.lines[p>=0?p:i]));};
+  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category);};
   const numeros=numerosPapier(draft.lines,port);
   const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
@@ -600,7 +600,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
       nom={isMouture?'mouture':sansAlphaDoublon(line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} groupe={groupeDeLigne(index)}
       alpha={alphaLu} ebc={ebcLu} conversion={article?conversionDe(line,article):undefined} unitePrecis={precisIds.has(line.id)}
-      qte={{texte:line.quantity!==undefined?`${fr(line.quantity)} ${line.unit.trim()||'?'}`:'?',inconnue:!uniteLisible||line.quantity===undefined}}
+      qte={{texte:line.quantity!==undefined?`${fr(line.quantity)} ${shortUnit(line.unit)||'?'}`:'?',inconnue:!uniteLisible||line.quantity===undefined}}
       prix={line.unitPrice!==undefined?prixImprime(line.unitPrice):'—'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
       prixKg={pk?{texte:`✓ ${pk}`,aria:`${pk} avec mouture`}:undefined} pastilleMouture={pastilleMouture}
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
@@ -655,7 +655,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ligneEls=new Map<string,React.ReactNode>();
   draft.lines.forEach((line,index)=>{ligneEls.set(line.id,construire(line,index,simplePurchase));});
   /* Les bandes, la barre, les comptes : tous sur le même ensemble de lignes (R2). */
-  const ligneBandes:LigneBande[]=lignesAff.map(l=>{const i=draft.lines.indexOf(l),art=articleDe(l),cv=art?conversionDe(l,art):undefined,m=cv?/=\s*(\d+)\s*sachet/.exec(cv):null;return {id:l.id,groupe:groupeDeLigne(i),amount:l.amount,quantity:l.quantity,unit:l.unit,uniteLisible:isReadableUnit(l.unit),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined};});
+  const ligneBandes:LigneBande[]=lignesAff.map(l=>{const i=draft.lines.indexOf(l),art=articleDe(l),cv=art?conversionDe(l,art):undefined,m=cv?/=\s*(\d+)\s*sachet/.exec(cv):null;return {id:l.id,groupe:groupeDeLigne(i),amount:l.amount,quantity:l.quantity,unit:shortUnit(l.unit),uniteLisible:isReadableUnit(l.unit),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined};});
   const bandes=calculerBandes(ligneBandes);
   const barre:ItemBarre[]=lignesAff.map(l=>({id:l.id,cents:l.amount===undefined?0:Math.round(l.amount*100),groupe:groupeDeLigne(draft.lines.indexOf(l)),ouvert:douteuxIds.has(l.id),nom:l.description}));
   const centsAff=lignesAff.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);

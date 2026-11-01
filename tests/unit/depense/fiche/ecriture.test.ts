@@ -125,7 +125,8 @@ describe('R16 : l’article existant ne bouge pas', () => {
 describe('une saisie sans produit connu s’écrit comme avant', () => {
   it('« Sabro® 13.4% » inconnu : « Sabro », α 13,4 ; le reste inchangé', () => {
     entry.savePurchase(draft([nouvelle('h1', 'Sabro® 13.4%', 'g', 30)]));
-    expect(ecrits()[0]).toMatchObject({ name: 'Sabro', alphaPct: 13.4, category: 'Divers' });
+    // D273d : « Sabro » est une variété du catalogue de l'app ; sans catégorie lue, l'article neuf prend la catégorie de sa famille (Houblon), plus « Divers ».
+    expect(ecrits()[0]).toMatchObject({ name: 'Sabro', alphaPct: 13.4, category: 'Houblon' });
   });
 });
 

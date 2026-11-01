@@ -97,7 +97,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie, sources remises à HEAD.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` ; jamais un fichier remis à HEAD sans copie vérifiée. Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins. Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` ; jamais un fichier remis à HEAD sans copie vérifiée. Déployer ou jouer un banc Chrome d'un dossier que nul autre n'écrit (Vite recharge, 01.11), puis lire « found N files » et la page servie.
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 

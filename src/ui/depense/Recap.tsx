@@ -5,10 +5,10 @@ import { AlertCircle, Check, HelpCircle } from 'lucide-react';
 import type { StatutLecture } from '../../domain/finance/invoicePoints';
 import { PictoLien, type LienStock } from './Pictos';
 import { TITRES } from './Verdict';
-import type { GroupeCle } from './groupes';
+import { POINT_FAMILLE, type GroupeCle } from './groupes';
 import './p3c.css';
 
-const TEINTE: Record<GroupeCle, string> = { malt: 'bg-ebc-gold', houblon: 'bg-hop', levure: 'bg-area-finances', autres: 'bg-cave-400' };
+const TEINTE: Record<GroupeCle, string> = POINT_FAMILLE;
 export const POINT_GROUPE: Record<GroupeCle, string> = TEINTE;
 export const motStatut = (statut: StatutLecture | null) => (statut ? TITRES[statut].title : 'Lecture');
 
@@ -45,7 +45,7 @@ export function Preuve(p: { rangees: Rang[]; corriges: string[]; remarques: stri
     <div className="grid grid-cols-2 gap-x-2.5">
       {p.rangees.map((r, i) => <button key={i} type="button" onClick={p.onRangee} className="flex min-h-[26px] w-full items-center gap-1 border-b border-cave-800 text-left text-sm">
         {r.ok === true ? <Check size={14} className="shrink-0 text-hop"/> : <span className="w-3.5 shrink-0 text-center text-cave-400">·</span>}
-        <span className="min-w-0 whitespace-nowrap text-left leading-tight text-cave-200">{r.texte}</span><b className="ml-auto whitespace-nowrap pl-1.5 font-mono font-medium text-cave-50">{r.valeur}</b></button>)}
+        <span className="min-w-0 text-left leading-tight text-cave-200">{r.texte}</span><b className="ml-auto whitespace-nowrap pl-1.5 font-mono font-medium text-cave-50">{r.valeur}</b></button>)}
       {/* Les propositions de la lecture (« 14 proposées par la lecture, à vérifier ») vivent ici, dans la case libre de la grille quand le nombre de rangées est impair (compact), sinon sur une rangée entière. */}
       {p.propositions ? <p data-dp="propositions" className={`flex items-center text-xs leading-[13px] text-attention ${p.rangees.length % 2 === 1 ? '' : 'col-span-2'}`}>{p.propositions}</p> : null}
     </div>

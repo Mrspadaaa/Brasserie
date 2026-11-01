@@ -27,3 +27,5 @@ Corriger chaque copie, ne pas la contourner.
 | `nom de l'étape et sa position .* manquent dans l'en-tête` | le fil d'étapes seul dans l'en-tête de l'étape ; « Text header inutile » (D58, sur « Houblons 3/7 ») | 2026-10-24 |
 | `APP INTACTE OK` | depuis D64 (porte B ouverte), l'intégration écrit dans src/ ; `app-intacte.mjs` ne garde plus que functions/ (FONCTIONS INTACTES OK) | 2026-10-25 |
 | `stop à 80 %\|[Aa]ucun lancement (dès\|à partir de) 77 %` | aucun plafond hebdomadaire, la fenêtre de 5 h reste la seule limite (« Oublie la règle 80% elle est fausse, tu peux la supprimer ») | 2026-10-26 |
+| `sans unité devinée` | l'unité absente se déduit et se signale : sûre, rien ; reprise, jaune ; inconnue, rouge (D277, « de base ça essaie d'auto remplir ») | 2026-11-01 |
+| `Créer « … » »\? sur chaque ligne\|bouton « Créer » par ligne` | une ligne d'ingrédient sans article devient d'office un nouvel article, picto « nouveau », sans bouton au repos (D275) | 2026-11-01 |

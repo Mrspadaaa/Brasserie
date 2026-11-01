@@ -1300,9 +1300,10 @@ const readRows = c => c.page.evaluate(() => [...document.querySelectorAll('[role
   unit: a.querySelector('[aria-label^="Unité ligne"]')?.value ?? null })));
 
 /** La famille de chaque ligne de la pièce doc14, par son numéro sur le papier (1 à 16), d'après la vérité croisée du 01.11 (notes de cas-5.json) : levure,
- * malts, sucre, houblon, matériel de fermentation, emballage. Les lignes où deux genres se défendent (6, 15, 16) n'ont qu'une exigence : pas « autres ». */
-const FAMILLES_DOC14 = { levure: [1], malt: [7, 9, 11], sucre: [8], houblon: [10], materiel: [2, 3, 4, 5], emballage: [12, 13, 14] };
-const AMBIGUES_DOC14 = [6, 15, 16];
+ * malts, sucre, houblon, matériel de fermentation, emballage. Les lignes où deux genres se défendent (6, 12, 15, 16) n'ont qu'une exigence : pas « autres ».
+ * La 12 (« Gummiring », joints de bouteilles) : la vérité admet packaging, stock, other et equipment ; la lecture dit equipment, la bande Matériel suit. */
+const FAMILLES_DOC14 = { levure: [1], malt: [7, 9, 11], sucre: [8], houblon: [10], materiel: [2, 3, 4, 5], emballage: [13, 14] };
+const AMBIGUES_DOC14 = [6, 12, 15, 16];
 /** Les lignes que la vérité dit « stock » sans ambiguïté (levure, malts, sucre, houblon) : chacune doit entrer au stock avec son mouvement. */
 const STOCK_DOC14 = [1, 7, 8, 9, 10, 11];
 
@@ -1371,6 +1372,43 @@ async function caseDoc14(c) {
   const enAutres = [...Object.values(FAMILLES_DOC14).flat(), ...AMBIGUES_DOC14].filter(n => !bandOf(n) || bandOf(n) === 'autres');
   c.check(unies && distinctes && nommees && !enAutres.length, 'doc14 (e) : chaque ligne tombe dans la bande de sa famille, « autres » seulement pour l’inclassable (D262d)',
     { bandesParFamille: bandsOf, lignesEnAutres: enAutres, ambigues: Object.fromEntries(AMBIGUES_DOC14.map(n => [n, bandOf(n)])) });
+
+  // (g) D273f : aucune quantité ne chevauche son prix unitaire. « 100 Gramm » débordait la colonne de 37 px et courait sur « 0,0101 » (390, 01.11).
+  // Le texte se mesure par une plage (le bloc de la cellule garde sa largeur quand le texte déborde).
+  const chevauchent = await c.page.evaluate(() => [...document.querySelectorAll('[role="dialog"] article[data-dp-ligne] .dp-p3c-dq')].filter(dq => {
+    const texte = el => { if (!el) return null; const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect(); };
+    const q = texte(dq.querySelector('[data-dp-qte]')), x = texte(dq.querySelector('i')), p = texte(dq.querySelector('[data-dp-prix]'));
+    return !!(q && x && p) && (q.right > x.left + 0.5 || x.right > p.left + 0.5);
+  }).map(dq => dq.getAttribute('aria-label')));
+  c.check(!chevauchent.length, 'doc14 (g) : aucune quantité ne chevauche son prix unitaire (D273f)', { chevauchent });
+
+  // (h) à (l) : sa plainte du 01.11 au soir sur cette pièce (D275, D277), jugée sur l'écran servi au repos.
+  const vue = await c.page.evaluate(() => [...document.querySelectorAll('[role="dialog"] article[data-dp-ligne]')].filter(a => !a.hidden).map(a => {
+    const sum = a.querySelector('summary'), nom = a.querySelector('[data-dp-nom]'), qte = a.querySelector('[data-dp-qte]');
+    return {
+      id: a.getAttribute('data-dp-ligne'), groupe: a.getAttribute('data-dp-groupe'), nom: nom ? nom.textContent.trim() : '', haut: Math.round(a.getBoundingClientRect().height),
+      etat: [...a.querySelectorAll('[data-dp-etat]')].map(e => (e.getAttribute('aria-label') || '') + ' ' + e.textContent).join(' '),
+      creer: a.querySelectorAll('[data-dp-creer]').length, neuf: !!sum?.querySelector('svg[aria-label="nouvel article"]'),
+      qte: qte ? qte.textContent.trim() : '', qteNiveau: qte?.closest('[data-dp-niveau]')?.getAttribute('data-dp-niveau') ?? qte?.getAttribute('data-dp-niveau') ?? null,
+      rouges: a.querySelectorAll('summary [data-dp-niveau="inconnu"]').length,
+    };
+  }));
+  const bandesQte = await c.page.evaluate(() => [...document.querySelectorAll('[role="dialog"] [data-dp-bande-entete]')].map(e => e.textContent.replace(/\s+/g, ' ').trim()));
+  c.record('doc14-vue-d275', { vue, bandesQte });
+  const ligneDe = n => vue.find(v => v.id === `line-${n}`);
+  const optionsAllemandes = vue.filter(v => /mischung|schrotung|einzelprodukt|\[\+chf/i.test(v.nom)).map(v => v.id);
+  const malts = [7, 9, 11].map(ligneDe);
+  c.check(!optionsAllemandes.length && malts.every(v => v && /concass/i.test(v.etat)), 'doc14 (h) : les options sortent du nom, l’état « concassé » se lit sur chaque malt (D275a)',
+    { optionsAllemandes, etats: malts.map(v => v && { id: v.id, nom: v.nom, etat: v.etat }) });
+  const largeur = await c.page.evaluate(() => window.innerWidth), plafond = largeur < 600 ? 52 : 36;
+  const hautes = vue.filter(v => v.groupe !== 'port' && v.haut > plafond).map(v => ({ id: v.id, haut: v.haut }));
+  c.check(!hautes.length, `doc14 (j) : au repos, chaque rangée tient sur une ligne, deux au plus pour un nom long (≤ ${plafond} px à ${largeur}) (D275c)`, { hautes });
+  const avecCreer = vue.filter(v => v.creer).map(v => v.id), sansNeuf = STOCK_DOC14.map(ligneDe).filter(v => !v || !v.neuf).map((v, i) => v?.id ?? `line-${STOCK_DOC14[i]}`);
+  c.check(!avecCreer.length && !sansNeuf.length, 'doc14 (k) : aucun bouton « Créer » au repos ; chaque ingrédient sans article est un nouvel article d’office (D275d)', { avecCreer, sansNeuf });
+  const qteInconnues = vue.filter(v => /\?\s*$/.test(v.qte)).map(v => ({ id: v.id, qte: v.qte })), houblon = ligneDe(10);
+  const rouges = vue.filter(v => v.rouges).map(v => v.id), bandesAvecInconnu = bandesQte.filter(t => /\d\s*\?/.test(t));
+  c.check(!qteInconnues.length && !bandesAvecInconnu.length && /^85\s*g$/.test(houblon?.qte ?? '') && houblon?.qteNiveau === 'repris' && !rouges.length,
+    'doc14 (l) : aucune unité « ? » quand elle se déduit ; 85 g de houblon remplis en jaune, aucun rouge sur cette pièce (D277)', { qteInconnues, bandesAvecInconnu, houblon, rouges });
 
   // (f) confirmer. Une ligne de stock sans action prend un nouvel article (le geste du brasseur) ; ce que l'app propose seule est gardé.
   const posees = [];
@@ -1459,6 +1497,10 @@ async function caseDoc14(c) {
   // Les articles neufs se rangent sous une catégorie de brasseur (Malt, Houblon, Levure…), pas sous le mot anglais de la lecture (« yeast », « grain »).
   const categoriesNeuves = [...new Set(STOCK_DOC14.map(n => stockItems.find(entry => entry.ref === lines[n - 1]?.stockItemRef)?.category))];
   c.check(categoriesNeuves.every(category => category && !/^(yeast|grain|hop|additive)$/i.test(category)), 'doc14 (f) : les articles neufs prennent une catégorie de brasseur, pas le mot anglais de la lecture', { categories: categoriesNeuves });
+  // (i) le concassage est l'état du malt, jamais une partie du nom d'un article (D275b).
+  const nomsNeufs = STOCK_DOC14.map(n => ({ n, nom: stockItems.find(entry => entry.ref === lines[n - 1]?.stockItemRef)?.name ?? null }));
+  const nomsAvecOption = nomsNeufs.filter(x => !x.nom || /mischung|schrotung|einzelprodukt|\[\+chf|·|,\s*(kg|gramm)\s*$/i.test(x.nom));
+  c.check(!nomsAvecOption.length, 'doc14 (i) : chaque article neuf porte le nom de base, sans option ni unité (D275b)', { nomsNeufs });
   c.check(!lignePort?.stockItemRef &&!movements.some(move => lignePort && move.stockItemRef === lignePort.stockItemRef && lignePort.stockItemRef), 'doc14 (d) : le port n’entre jamais en stock',
     { lignesEnregistrees: lines.length, portEnregistreCommeLigne: !!lignePort });
   c.finding('doc14-enregistre', 'doc14 : ce que la dépense porte une fois enregistrée', { lignesEnregistrees: lines.length, genres: lines.map(line => line.kind), mouvements: movements.length,

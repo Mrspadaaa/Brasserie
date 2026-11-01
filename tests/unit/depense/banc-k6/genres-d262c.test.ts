@@ -2,7 +2,7 @@
 // Origine de la famille affichée (prouvée ici, chemins dans RESULTAT.md) : ni le `kind` de la lecture (`SCAN_KINDS`) ni une table de la lecture.
 // ExpenseSheet.tsx `groupeDeLigne` → `contexteLigne` → `donneesDeLigne(...).contexte` → `contexteDe` (src/services/stockLineMatching.ts) : le `kind` ne sert
 // qu'à écarter `packaging` et `cleaning` ; sinon la famille se lit dans les MOTS du nom (`inferNature`, `hasHopWord`, `hasYeastWord`, listes fermées) et
-// dans `stockCategory` ; puis `groupeDe` (src/ui/depense/groupes.ts) ne connaît que 4 bandes : malt, houblon, levure, autres.
+// dans `stockCategory` ; puis `groupeDe` (src/ui/depense/groupes.ts, familles.ts) range la ligne dans l’une des 11 bandes (p3c-bandes).
 // Un article rapproché du stock (`articleDe`) donne sa catégorie ; ici aucun stock : c'est le cas d'une pièce neuve.
 import { describe, expect, it } from 'vitest';
 import { contexteDe } from '../../../../src/services/stockLineMatching';
@@ -23,15 +23,15 @@ const VERITE: Record<string, string> = {
 };
 
 describe('D262c — la famille de chaque ligne, d’où elle vient et où elle se trompe', () => {
-  it('l’écran ne connaît aujourd’hui que 4 bandes (malt, houblon, levure, autres) : « sucre », « matériel », « emballage » n’y sont pas (voir le test de contrat plus bas)', () => {
-    expect(['malt', 'houblon', 'levure', 'autres'].every(cle => (ORDRE_GROUPES as readonly string[]).includes(cle))).toBe(true);
+  it('l’écran connaît une bande par famille : malt, houblon, levure, sucre, additif, matériel, emballage, nettoyage, consommable, service, autres', () => {
+    expect(['malt', 'houblon', 'levure', 'sucre', 'additif', 'materiel', 'emballage', 'nettoyage', 'consommable', 'service', 'autres'].every(cle => (ORDRE_GROUPES as readonly string[]).includes(cle))).toBe(true);
   });
 
   it('ce qui est juste avant et après : levure (nom), malt « Malz » (nom), houblon (catalogue) ; un emballage n’est ni malt, ni houblon, ni levure', () => {
     expect(bande('Levure fictive 1111, Souche Test', 'stock', 'HE1111')).toBe('levure');
     expect(bande('Premium Pilsner Malz, Kg', 'stock', 'MA0020')).toBe('malt');
     expect(bande('Saaz fictif 3.5%', 'stock', 'HO0066')).toBe('houblon');
-    expect(['autres', 'emballage']).toContain(bande('Kronkorken 100 Kapseln fictif', 'packaging', 'KR2173'));
+    expect(bande('Kronkorken 100 Kapseln fictif', 'packaging', 'KR2173')).toBe('emballage');
   });
 
   it('la catégorie lue (`stockCategory`) décide de la famille d’un nom sans mot de famille : « Malt » donne malt', () => {
@@ -63,7 +63,10 @@ describe('D262c — la famille de chaque ligne, d’où elle vient et où elle s
     expect(contexteDe({ description: 'CARAFICTIF®, Kg', kind: 'other', reference: 'MA0222', stockCategory: '' } as any)).toBe('autre');
   });
 
-  // Reste à dessiner (L24) : trois bandes de plus (sucre, matériel de brassage, emballage) sur un écran que le brasseur a choisi (D105, règle n° 1).
-  // Ni `src/ui/depense/groupes.ts` ni `ExpenseSheet.tsx` ne sont touchés par cette voie : ce test attend la décision du brasseur sur les variantes.
-  it.todo('bandes sucre, matériel, emballage : groupeDe(contexte, kind, description) range chaque ligne de la pièce imitée dans sa bande (choix de dessin du brasseur, en attente)');
+  // Voie p3c-bandes (D262d : « j'ai validé les maquettes de tout ça ?? ») : son choix p3c-3 est une bande teintée par famille ; sucre, matériel, emballage,
+  // additifs, nettoyage, consommables et services sont la même bande pour chaque famille. Le détail des familles : tests/unit/depense/bandes/.
+  it('bandes sucre, matériel, emballage : groupeDe(contexte, kind, description) range chaque ligne de la pièce imitée dans sa bande', () => {
+    const ecarts = LIGNES.filter(([nom, kind, reference]) => bande(nom, kind, reference) !== VERITE[nom]).map(([nom]) => nom);
+    expect(ecarts).toEqual([]);
+  });
 });

@@ -103,7 +103,41 @@ function apercuQr(etat: string): ApercuDepense {
   };
 }
 
+/**
+ * `familles` (voie p3c-bandes, D262c, D262d) : une lecture SIMULÉE dont les lignes couvrent TOUTES les familles (malts avec mouture, houblon, levures, sucre, additifs, matériel,
+ * emballage, nettoyage, consommables, services, un inclassable) et un port. Désignations en allemand, anglais et français (D271), aucune valeur d'une vraie pièce. Aucune écriture, aucun Gemini.
+ */
+function apercuFamilles(): ApercuDepense {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, amountTTC: number, stockCategory = '', reference = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant: '', stockCategory, evidence: `${name} (page 1)`, ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null });
+  const items = [
+    ligne(1, 'Maris Otter, Kg', 'stock', 25, 'Kg', 2.1, 52.5), ligne(2, 'Zuschlag Schrotung', 'service', 25, 'Kg', 0.15, 3.75, '', 'ISHOP-SCHROT'), ligne(3, 'Château Abbey, Kg', 'stock', 5, 'Kg', 3.2, 16),
+    ligne(4, 'Citra 12.5%', 'stock', 100, 'g', 0.098, 9.8), ligne(5, 'Hopfenpellets Saaz 8%', 'stock', 100, 'g', 0.07, 7),
+    ligne(6, 'Omega OYL-200', 'stock', 2, 'Stk', 9.5, 19), ligne(7, 'Safale US-05 11,5g', 'stock', 2, 'Stk', 4.6, 9.2),
+    ligne(8, 'Candi Syrup D-180', 'stock', 1, 'Kg', 7.5, 7.5), ligne(9, 'Whirlfloc 10 Tabs', 'stock', 1, 'Stk', 3.9, 3.9), ligne(10, 'CaCl2 500 g', 'stock', 1, 'Stk', 6.2, 6.2),
+    ligne(11, 'Fermzilla 27 L', 'equipment', 1, 'Stk', 119, 119), ligne(12, 'Hop Spider Bag', 'stock', 1, 'Stk', 14.5, 14.5),
+    ligne(13, 'Kronkorken 26 mm (100)', 'packaging', 2, 'Stk', 2.5, 5), ligne(14, 'Chemipro OXI 1 kg', 'cleaning', 1, 'Kg', 18.9, 18.9),
+    ligne(15, 'Handschuhe Nitril M', 'stock', 1, 'Stk', 8.4, 8.4, 'EPI'), ligne(16, 'Analyse Wasserprobe', 'service', 1, 'Stk', 45, 45), ligne(17, 'Divers fictif XJ-17', 'other', 1, 'Stk', 3, 3),
+    ligne(18, 'Versand / Port', 'shipping', 1, 'pce', 10.75, 10.75),
+  ];
+  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  result.items = items as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'Boutique Fictive GmbH', date: '12.10.2026', invoiceNumber: 'F-2002', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    amountTTC: total, printedLineCount: items.length, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Toutes les familles',
+    controls: { lines: { checked: items.length, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  const fichier = { name: 'capture-familles.jpg', size: 90000, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false }, fichier, stocks: stockSimule(), transactions: [], etat: 'familles', drive: 'ok', reseau: true,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-12 Boutique Fictive F-2002.pdf', bytes: 90000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
 export function apercuDepense(etat: string): ApercuDepense {
+  if (etat === 'familles') return apercuFamilles();
   if (etat === 's6') return apercuS6();
   if (etat.startsWith('qr-')) return apercuQr(etat);
   const result = clone(lecture) as unknown as ScannedInvoiceResult;

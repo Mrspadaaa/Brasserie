@@ -5,11 +5,12 @@ import { prepareFinanceDocument, saveFinanceDocumentConfirmed, loadDriveProofRec
 import { dropQueuedProof, enqueueProof, getProofJob, markQueuedOnTransaction, proofQueueAvailable, runProofQueue, voidProofJob } from './proofQueue';
 import { Units } from './units';
 import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
-import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
+import type { FinanceLine, FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
+import { sumCheck } from '../domain/finance/invoicePoints';
 import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO } from '../domain/finance/ledger';
 import { normalize } from './search';
-import { canonicalStockCategory, linkUnit, nomsPris, pliee, SACHET_MAX_G, type MembreVirtuel } from './stockLineMatching';
+import { canonicalStockCategory, categorieArticleNeuf, linkUnit, nomsPris, pliee, SACHET_MAX_G, type MembreVirtuel } from './stockLineMatching';
 import { articleNeufDe, ligneDeBrouillon, type ArticleNeuf } from '../domain/stock/articleNeuf';
 import { contexteDe } from './stockLineMatching';
 import type { Catalogues } from '../domain/stock/fiche';
@@ -350,7 +351,7 @@ function newArticleUnit(unit:string):string {
  * Une clé sans valeur n'est pas écrite. L'unité de l'article est celle de la table de l'appariement (D213) ; la ligne de la dépense garde l'unité imprimée.
  */
 export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
-  return {id:ref,ref,name:derive?.name??line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:newArticleUnit(line.unit),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+  return {id:ref,ref,name:derive?.name??line.description.trim(),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(line.unit),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
     ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
 }
 /** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
@@ -379,6 +380,30 @@ async function cataloguesPour(draft:PurchaseDraft):Promise<Catalogues|undefined>
   catch { return undefined; }
 }
 
+/** Une ligne d'arrondi déjà imprimée sur le document (français, allemand, anglais, italien). */
+const LIGNE_ARRONDI=/arrondi|rundung|rounding|arrotondamento/i;
+/**
+ * k7 (D261b, relais de la pastille) : l'écart signé, en centimes, entre le total et la somme des lignes quand c'est un arrondi suisse à 5 centimes ; 0 quand
+ * la somme est exacte ; `undefined` pour tout autre écart (refusé comme avant). La règle est celle de `sumCheck` (total multiple de 5 ct, égal à la somme
+ * arrondie à 5 ct, écart de 2 ct au plus) : l'importer garde une seule source. Une ligne d'arrondi déjà imprimée n'autorise rien de plus : l'écart reste un écart.
+ */
+export function arrondiDuTotal(draft:Pick<PurchaseDraft,'amount'|'lines'>):number|undefined {
+  if(!isMoney(draft.amount) || draft.lines.some(line=>!isMoney(line.amount)))return undefined;
+  const ecart=cents(draft.amount)-draft.lines.reduce((sum,line)=>sum+cents(line.amount!),0);
+  if(ecart===0)return 0;
+  if(draft.lines.some(line=>LIGNE_ARRONDI.test(line.description)))return undefined;
+  return sumCheck(draft.lines.map(line=>({amountTTC:line.amount!})),draft.amount,null,0).sum.statut==='ok'?ecart:undefined;
+}
+/** La ligne que l'enregistrement ajoute pour un arrondi : « Arrondi à 5 centimes », au montant signé (`discount` si négatif, `other` si positif), sans stock. */
+function ligneArrondi(draft:PurchaseDraft):FinanceLine[] {
+  const ecart=arrondiDuTotal(draft);
+  if(!ecart)return [];
+  const pris=new Set(draft.lines.map(line=>line.id));
+  let id='arrondi-5ct';
+  for(let n=2;pris.has(id);n++)id=`arrondi-5ct-${n}`;
+  return [{id,description:'Arrondi à 5 centimes',kind:ecart<0?'discount':'other',amountCents:ecart}];
+}
+
 /** Checks every mutation first. No stock/equipment is created during matching. */
 export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof StorageService.getStocks>,transactions:FinanceTransaction[]=[]):string[] {
   const errors:string[]=[];
@@ -390,7 +415,7 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   if (new Set(draft.lines.map(line=>line.id)).size!==draft.lines.length || draft.lines.some(line=>!/^[A-Za-z0-9-]{1,80}$/.test(line.id))) errors.push('Les identifiants des lignes sont invalides. Rouvre la saisie.');
   if (draft.lines.some(line=>!line.description.trim() || !isMoney(line.amount))) errors.push('Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum.');
   if (draft.lines.some(line=>line.kind==='discount' ? line.amount>0 : line.amount<0)) errors.push('Une remise est négative; les autres lignes sont positives.');
-  if (cents(draft.amount??0)!==draft.lines.reduce((sum,line)=>sum+cents(line.amount??0),0)) errors.push('Le détail des lignes doit correspondre exactement au total TTC.');
+  if (cents(draft.amount??0)!==draft.lines.reduce((sum,line)=>sum+cents(line.amount??0),0) && arrondiDuTotal(draft)===undefined) errors.push('Le détail des lignes doit correspondre exactement au total TTC.');
   if (draft.paymentStatus==='paid' && !purchaseIsoDate(draft.paymentDate)) errors.push('Renseigne la date du paiement.');
   if (draft.paymentStatus==='paid' && purchaseIsoDate(draft.paymentDate)>todayISO()) errors.push('Le paiement est futur : utilise « À payer ».');
   if (draft.dueDate && !purchaseIsoDate(draft.dueDate)) errors.push('L’échéance est invalide.');
@@ -618,7 +643,7 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   const amount=draft.amount!,registered=StorageService.getConfig().fiscal.isTvaRegistered;
   const vat=registered && draft.sourceCurrency==='CHF' && Number.isFinite(draft.sourceVatAmount) ? draft.sourceVatAmount : 0;
   const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:storedProofName,proofType:draft.proofType,
-    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:inQueue?undefined:proof?.id,...(inQueue&&queued?{proofUpload:{state:'queued' as const,uid:queued.uid,at}}:{}),proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
+    finance:{version:1,kind:'expense',amountCents:cents(amount),lines:[...lines,...ligneArrondi(draft)],vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:inQueue?undefined:proof?.id,...(inQueue&&queued?{proofUpload:{state:'queued' as const,uid:queued.uid,at}}:{}),proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
   const payment=purchasePayment(draft,at);
   // All validation and material preparation above precede the first synchronous write.
   if (payment) FinanceService.stageNewTransactionPayment(tx,payment);

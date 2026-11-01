@@ -1,5 +1,7 @@
 # Journal Gemini — tests Dépense en ligne (D210, D217)
 
+Plafond (D278, 01.11, nuit : « hausse aussi le total à 49chd pour l'ia », « Chf* ») : 49 CHF cumulés pour le banc et les essais en ligne réunis (au 01.11, 22 h : 7,99 CHF au banc, environ 0,67 CHF en ligne) ; une passe au plus 3 CHF, lancée par le pilote seul.
+
 Bornes : 10 CHF en tout (D217), 40 lectures au plus, une seule dépense « TEST pilote » à la fois, supprimée avec son fichier Drive
 dans la même séance, rien en stock. Cumul relu avant chaque appel. Jamais dans `npm test`.
 

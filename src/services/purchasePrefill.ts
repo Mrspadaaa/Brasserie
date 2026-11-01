@@ -1,7 +1,8 @@
 import type { ScannedInvoiceResult } from './geminiScanner';
 import type { PurchaseDraft } from './purchaseEntry';
-import { canonicalStockCategory } from './stockLineMatching';
+import { canonicalStockCategory, STOCK_CATEGORIES } from './stockLineMatching';
 import { normalize } from './search';
+import { inferNature } from './ingredientIdentity';
 
 const MILLING_WORDS = /\b(?:schrot\w*|mouture\w*|moulage|moulu\w*|crush\w*|milling|gemahlen)\b/;
 /** Une ligne de mouture : un service dont le libellé ou la référence porte un mot de mouture (liste fermée, sans accent ni casse). */
@@ -22,8 +23,12 @@ export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
   const families: string[] = [];
   for (const item of scan.items) {
     if (isMillingSurcharge({ kind: item.kind, description: item.name, sourceReference: item.reference })) continue;
+    // k7 (D271) : une catégorie lue dans une autre langue (« yeast », « Hefe ») est ramenée à son nom français ; une catégorie inconnue n'est jamais recopiée
+    // telle quelle dans « Pour quoi ? » : la nature de la ligne la remplace.
     const category = canonicalStockCategory(item.stockCategory);
-    const family = category ? (PLURAL_FAMILIES[category] ?? category.toLowerCase()) : (KIND_FAMILIES[item.kind] ?? '');
+    const known = STOCK_CATEGORIES.includes(category);
+    const deduced = !known && item.kind === 'stock' ? inferNature(item.name).strong : undefined;
+    const family = known ? (PLURAL_FAMILIES[category] ?? category.toLowerCase()) : deduced && PLURAL_FAMILIES[deduced] ? PLURAL_FAMILIES[deduced] : (KIND_FAMILIES[item.kind] ?? '');
     if (family && !families.includes(family)) families.push(family);
   }
   const vendor = (scan.vendor ?? '').replace(/\s+/g, ' ').trim(), number = (scan.invoiceNumber ?? '').replace(/\s+/g, ' ').trim();

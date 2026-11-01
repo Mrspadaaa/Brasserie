@@ -1,5 +1,7 @@
 # Journal des appels Gemini du banc de lecture (k1-banc, D233 et D234)
 
+Plafond (D278, 01.11, nuit : « hausse aussi le total à 49chd pour l'ia », « Chf* ») : 49 CHF cumulés pour le banc et les essais en ligne réunis (au 01.11, 22 h : 7,99 CHF au banc, environ 0,67 CHF en ligne) ; une passe au plus 3 CHF, lancée par le pilote seul.
+
 Une ligne par appel, écrite juste après lui. Aucune valeur des documents. Coûts au tarif provisionné de `geminiCosts.ts` (1,25 CHF/USD, marge de sécurité), pas une facture.
 
 | date | doc | tirage | variante | lecture | modèle | durée | entrée | sortie | coût CHF | cumul CHF | état |

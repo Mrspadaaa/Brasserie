@@ -1,9 +1,22 @@
 // Calculs purs de la liste en bandes (p3c-3) : quel groupe, quels sous-totaux, quelle ligne est du port. Aucun React, aucun service.
 // Règles du plan : R2 (un seul ensemble de lignes affichées), R3 (l'inconnu n'est jamais 0), centimes entiers partout, unités jamais additionnées entre elles.
 
-export type GroupeCle = 'malt' | 'houblon' | 'levure' | 'autres';
-export const NOMS_GROUPES: Record<GroupeCle, string> = { malt: 'Malts', houblon: 'Houblons', levure: 'Levures', autres: 'Autres' };
-export const ORDRE_GROUPES: readonly GroupeCle[] = ['malt', 'houblon', 'levure', 'autres'];
+import { familleDe, NOMS_FAMILLES, ORDRE_FAMILLES, type FamilleCle } from './familles';
+
+/** Une bande par famille (D262c, D262d) : malts, houblons, levures, sucres, additifs, matériel, emballage, nettoyage, consommables, services, autres. */
+export type GroupeCle = FamilleCle;
+export const NOMS_GROUPES: Record<GroupeCle, string> = NOMS_FAMILLES;
+export const ORDRE_GROUPES: readonly GroupeCle[] = ORDRE_FAMILLES;
+/** Les jetons de l'app qui teintent chaque famille (quatre ont une couleur par thème dans p3c.css : `dp-p3c-pt-<clé>`, `dp-p3c-fi-<clé>`) : la pastille de l'en-tête (et la barre du récap) et le filet de gauche des rangées. Le fond de l'en-tête est dans p3c.css (`dp-p3c-t-<clé>`). */
+export const POINT_FAMILLE: Record<GroupeCle, string> = {
+  malt: 'bg-ebc-gold', houblon: 'bg-hop', levure: 'bg-area-finances', sucre: 'bg-ebc-amber', additif: 'bg-area-agenda', materiel: 'bg-water', emballage: 'dp-p3c-pt-emballage',
+  nettoyage: 'dp-p3c-pt-nettoyage', consommable: 'dp-p3c-pt-consommable', service: 'dp-p3c-pt-service', autres: 'bg-cave-400',
+};
+export const FILET_FAMILLE: Record<GroupeCle, string> = {
+  malt: 'border-l-4 border-l-ebc-gold', houblon: 'border-l-4 border-l-hop', levure: 'border-l-4 border-l-area-finances', sucre: 'border-l-4 border-l-ebc-amber',
+  additif: 'border-l-4 border-l-area-agenda', materiel: 'border-l-4 border-l-water', emballage: 'border-l-4 dp-p3c-fi-emballage', nettoyage: 'border-l-4 dp-p3c-fi-nettoyage',
+  consommable: 'border-l-4 dp-p3c-fi-consommable', service: 'border-l-4 dp-p3c-fi-service', autres: 'border-l-4 border-l-cave-400',
+};
 
 /** La forme minimale dont le critère du port a besoin (VOIE.md, décision 7). */
 export interface LigneMin { id: string; kind: string; amount?: number }
@@ -26,8 +39,16 @@ export function portCents(lines: readonly LigneMin[], port: ReadonlySet<string>)
   if (port.size === 0) return null;
   return lines.filter(l => port.has(l.id)).reduce((s, l) => s + centimes(l.amount as number), 0);
 }
-/** Le groupe d'une ligne à partir du contexte que l'identité a lu (`Malt`, `Houblon`, `Levure`) ; tout le reste va dans « Autres ». */
-export const groupeDe = (contexte: string | undefined): GroupeCle => (contexte === 'Malt' ? 'malt' : contexte === 'Houblon' ? 'houblon' : contexte === 'Levure' ? 'levure' : 'autres');
+/**
+ * La famille d'une ligne : le contexte que l'identité a lu (`Malt`, `Houblon`, `Levure`), puis le `kind` de la lecture, le nom imprimé, la catégorie de
+ * stock lue sur la ligne et celle de l'article rattaché (voir `familles.ts` pour l'ordre). « Autres » ne reçoit que l'inclassable.
+ * Les arguments absents ou d'un autre type sont ignorés (`['Malt', …].map(groupeDe)` passe un rang et un tableau).
+ */
+export const groupeDe = (contexte: string | undefined, kind?: unknown, description?: unknown, stockCategory?: unknown, categorieArticle?: unknown): GroupeCle =>
+  familleDe({
+    contexte, kind: typeof kind === 'string' ? kind : undefined, nom: typeof description === 'string' ? description : undefined,
+    stockCategory: typeof stockCategory === 'string' ? stockCategory : undefined, categorieArticle: typeof categorieArticle === 'string' ? categorieArticle : undefined,
+  });
 
 /** Une ligne affichée, avec ce dont les sous-totaux ont besoin (le groupe d'une mouture rattachable est celui de son malt). */
 export interface LigneBande {
