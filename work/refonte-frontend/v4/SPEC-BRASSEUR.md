@@ -868,7 +868,15 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   mot : « en théorie, oui, mais est-ce qu'il y a pas des nouvelles IA de Google plus rapide et meilleures pour ça ? » ; puis : « 3.5
   Flash-Lite, il y a pas moyen de le faire mieux fonctionner ? Avec un meilleur Harness, guideline, ou une utilisation plus haute de son
   intelligence ? Genre en Max ou xhigh ? Et si il y a probablement fallback sur 3.8 ? » ; puis : « Regarde avec des skill ou autre
-  outil, workflow ou third party comment l'améliorer au Max pour la vision » ; puis : « Tu as assez de vrai donné de test ? »
+  outil, workflow ou third party comment l'améliorer au Max pour la vision » ; puis : « Tu as assez de vrai donné de test ? » ; puis,
+  sans mot, de nouvelles pièces (10 h, hors de Git dans `H13-reels/`) : deux PDF B&R identiques (commande 652093), dix images (captures
+  de trois commandes B&R, une photo de facture CFF), un PDF B&R (commande 686863), et : « Il y a des screenshots qui sont de la même
+  facture mais sur plusieurs écran » ; puis, au rapport « Lire juste d'abord, plus vite ensuite » (envoyé), mot pour mot : « Met déjà en
+  place le système qui permet d'améliorer et compare avec les données que l'on a, j'en ai pas plus pour le moment » ; puis : « J'ai
+  l'impression que tout ce qui est skill, harness ou autre a été un peu mis de côte » (registre de chaque geste :
+  `work/missions/2026-11-01-banc-lecture/GESTES.md` ; boucle : skill `banc-lecture`).
+- **Une pièce déjà saisie** (01.11, après ses pièces), mot pour mot : « et les deux PDF de la commande 652093 sont identiques. Géré ce cas
+  là, on doit voir que ce document est déjà lié à un stock, facture ».
 - **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
   cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
   (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que

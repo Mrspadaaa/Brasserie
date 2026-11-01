@@ -75,6 +75,7 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 |---|---|---|---|
 | Nouvelle dépense · panel v0 (12 concepts, classés) | 31.10 v1 | https://claude.ai/artifact/PNStV1RNHi7bYSogYMJhXy | `work/missions/2026-10-31-ecran-depense/panel-v0.html` |
 | Nouvelle dépense · passe 2 (r2b, z2b, u4b ; r2b choisie par le pilote, D227) | 01.11 v1 | https://claude.ai/artifact/PyodUeikFKc9SwD7M9k4wu | `work/missions/2026-10-31-ecran-depense/choix-v1/index.html` |
+| Nouvelle dépense · passe 3 (p3a-1 à 3, p3b-1 à 3 ; classement du critique, à choisir) | 01.11 v1 | https://claude.ai/artifact/Q7zqa6xvR8EGGAz3j14yh9 | `work/missions/2026-10-31-ecran-depense/choix-v3/index.html` |
 
 ## Reprise
 - 31.10, nuit : d1, d2 et i1 rendus. Quatre voies écrites (l1-lecture, s1-stock, s2-enregistrement, t1-onglets ; exigences communes
