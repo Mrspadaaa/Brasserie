@@ -147,6 +147,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const calcules=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
   /* D370 : une ligne venue sans libellé garde son champ pendant qu'on le tape (il ne part plus à la première lettre). */
   const libellesVides=useRef(new Set<string>());
+  /* D370 : pendant la frappe du libellé, la ligne garde sa bande et son sous-groupe (sinon elle change de place à la première lettre, et le champ avec elle) ; elle se range au départ du champ. */
+  const libelleFige=useRef(new Map<string,{groupe:GroupeCle;sous:string|undefined}>());
   const [piedVise,setPiedVise]=useState(false);
   const famillesChoisies=useRef(new Map<string,GroupeCle>());
   /* p3c-3 : le plateau que le brasseur a ouvert ou fermé (par id) : il survit au changement de bande d'une ligne (la rangée est remontée ailleurs). */
@@ -828,8 +830,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const portTexte=(()=>{const c=portCents(draft.lines,port);return c===null?null:fr2c(c);})();
   const parentIdxDe=(i:number)=>i>=0&&i<draft.lines.length?millingParentIndex(draft.lines,i):-1;
   const contexteLigne=(line:PurchaseLineDraft)=>{const a=articleDe(line);return a?contexteDeArticle(a):donneesDeLigne(ligneDeBrouillon(line,draft.vendor)).contexte;};
-  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return famillesChoisies.current.get(l.id)??groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
-  const sousFamilleLigne=(i:number):string|undefined=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return famillesChoisies.current.has(l.id)?undefined:sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
+  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return famillesChoisies.current.get(l.id)??libelleFige.current.get(l.id)?.groupe??groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
+  const sousFamilleLigne=(i:number):string|undefined=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];const fige=libelleFige.current.get(l.id);if(fige&&!famillesChoisies.current.has(l.id))return fige.sous;return famillesChoisies.current.has(l.id)?undefined:sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
   const numeros=numerosPapier(draft.lines,port);
   const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
@@ -1019,7 +1021,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
     const uImp=line.unit.trim(),pieceImprimee=line.quantity!==undefined&&uImp!==''&&cleUnite(uImp)==='piece'&&uImp.toLowerCase()!=='pièce'?` · ${fr(line.quantity)} ${uImp}`:'';
     const libelleVide=!line.description.trim();if(libelleVide)libellesVides.current.add(line.id);
-    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
+    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onFocus={()=>{libelleFige.current.set(line.id,{groupe:groupeDeLigne(index),sous:sousFamilleLigne(index)});}} onBlur={()=>{if(libelleFige.current.delete(line.id))setPlateaux(n=>n+1);}} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
     const mouturePlateau=enfant&&cestMoutureEnPastille&&pastilleMouture?<RangeeMouture ligne={enfantIdx+1} liee={pastilleMouture.liee} aria={pastilleMouture.aria} onBascule={pastilleMouture.onBascule}
       texte={`${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${shortUnit(enfant.unit)} × `}${enfant.unitPrice===undefined?'—':fr(enfant.unitPrice)} = ${enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100))}`}/>:null;
     const plateauEl=<div data-dp-pu4d className="space-y-1.5">

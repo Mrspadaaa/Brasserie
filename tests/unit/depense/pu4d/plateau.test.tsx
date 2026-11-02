@@ -116,6 +116,7 @@ describe('D370 — le libellé d’une ligne ajoutée', () => {
     const l = ouvrir(view, id);
     const champ = l.querySelector('[aria-label^="Libellé ligne"]') as HTMLTextAreaElement;
     expect(champ).not.toBeNull();
+    champ.focus();
     let tape = '';
     for (const lettre of 'Rouleau') {
       tape += lettre;
