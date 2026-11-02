@@ -32,8 +32,7 @@ Sombre pour la vue 1 de ta forme. Valeurs fictives (Brauhaus Ouest), sommes just
 2. `node scripts/agents/verifier-page.mjs work/missions/2026-10-31-ecran-depense/choix-valider/index.html --page-lot --captures work/missions/2026-10-31-ecran-depense/choix-valider/controle` → `PAGE OK` ; ouvre chaque capture (L12).
 3. Hors de la seconde ligne et du bandeau, A reprend `q2-d-arrivee.png` au pixel (mesure, L03), chaque écart nommé.
 4. `controle-choix` : l'écran Dépense n'est pas dans `ecrans.json` ; le dire dans RESULTAT.
-5. La page dit en mots simples ce qu'on attend de lui (une lettre), sans code (L24), et rappelle en une ligne que la question 1 (la ligne
-   ajoutée) attend toujours sa lettre sur la page d'avant, avec son lien : https://claude.ai/artifact/79XCxPnFyyyyj1DyXvtmAf
+5. La page dit en mots simples ce qu'on attend de lui (une lettre), sans code (L24). (Question 1 tranchée : 1 B, D314 ; plus de rappel.)
 
 ## Retour
 `choix-valider/RESULTAT.md` (options, mesures, captures ouvertes, doutes ; `LEÇON PROPOSÉE : …`), puis une ligne
