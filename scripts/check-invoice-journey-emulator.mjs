@@ -421,7 +421,9 @@ function reponseFlux(c, call, data, request, fail) {
   const pages = Array.isArray(data.files) ? data.files.length : 0;
   const reponse = (resultat, extra = {}) => ({ ok: true, data: resultat, model: 'rejeu-jus0', tier: 'fast', elapsedMs: piece.msFinal ?? 1200, documentHash: doc?.sha256 ?? 'banc-pages', ...(pages ? { pages } : {}), ...extra });
   const morceau = () => ({ message: { etape: 'provisoire', jeton, data: piece.provisoire, model: 'rejeu-jus0', elapsedMs: piece.msProvisoire ?? 800 } });
-  const forme = c.serveurCache?.has(ai.piece) && ai.cacheable ? 'cache' : ai.forme;
+  // `relance` : la requête suivante de la même lecture (relance du client au retour du réseau) est servie du cache du serveur, final seul, sans morceau.
+  ai.servies = (ai.servies ?? 0) + 1;
+  const forme = ai.relance && ai.servies > 1 ? ai.relance : c.serveurCache?.has(ai.piece) && ai.cacheable ? 'cache' : ai.forme;
   const final = donnees => ({ result: reponse({ ...donnees, provisoireJeton: jeton }), apres: ai.delaiMs ?? 0 });
   const blocs = {
     cache: [{ result: reponse(piece.finalSeul ?? piece.final, { cached: true }), apres: 0 }],
@@ -2383,6 +2385,7 @@ async function caseLenteurTouchee(c) {
   await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] summary`, e => { e.scrollIntoView({ block: 'center' }); e.click(); });
   await waitFor(() => c.page.$eval(`${sheet} [data-dp-ligne="${id}"] details`, d => d.open).catch(() => false), 'touchee : le plateau de la ligne s’ouvre', 5000);
   const qteAvant = await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] [aria-label^="Quantité ligne"]`, e => e.value);
+  const nomAvant = await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] [aria-label^="Libellé ligne"]`, e => e.value).catch(() => null);
   await typeInto(c.page, `${sheet} [data-dp-ligne="${id}"] [aria-label^="Quantité ligne"]`, qteTapee);
   const tape = await c.page.evaluate(i => ({ vendor: document.querySelector('#purchase-vendor').value, qte: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Quantité ligne"]`).value }), id);
   c.check(tape.vendor === SYNTHETIC.vendor && tape.qte === qteTapee && qteAvant !== qteTapee, 'lenteur-touchee : la frappe a pris pendant l’attente (fournisseur et quantité)', { ...tape, qteAvant });
@@ -2394,6 +2397,8 @@ async function caseLenteurTouchee(c) {
   const apres = await c.page.evaluate((i, autresIds) => ({
     vendor: document.querySelector('#purchase-vendor').value, qte: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Quantité ligne"]`)?.value ?? null,
     qteBleue: document.querySelector(`[data-dp-ligne="${i}"] [data-dp-qte]`)?.getAttribute('data-dp-corrige') === '1',
+    nom: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Libellé ligne"]`)?.value ?? null,
+    avant: document.querySelector(`[data-dp-ligne="${i}"] [data-dp-avant]`)?.textContent ?? null,
     ligneCorrigee: document.querySelector(`[data-dp-ligne="${i}"]`)?.hasAttribute('data-dp-corrigee') ?? false,
     autresCorrigees: autresIds.map(a => document.querySelector(`[data-dp-ligne="${a}"]`)?.hasAttribute('data-dp-corrigee') ?? false),
     vendorAvant: !!document.querySelector('[data-dp="vendor-avant"]') }), id, autres);
@@ -2401,10 +2406,12 @@ async function caseLenteurTouchee(c) {
   c.record('lenteur-touchee-etat', { ...e, texte: undefined, apres });
   await shoot(c, 'lenteur-touchee-apres');
   c.check(apres.vendor === SYNTHETIC.vendor && !apres.vendorAvant, 'lenteur-touchee : le fournisseur tapé n’est pas réécrit par la 3.8, et aucune ancienne valeur n’est barrée dessus', apres);
-  c.check(apres.qte === qteTapee && !apres.qteBleue, 'lenteur-touchee : la quantité tapée n’est pas réécrite, sans la marque bleue', { qte: apres.qte, qteBleue: apres.qteBleue });
+  // La pastille « quantité » du résumé porte aussi l'unité : bleue quand la 3.8 corrige l'UNITÉ (kg), la quantité tapée, elle, reste.
+  c.check(apres.qte === qteTapee, 'lenteur-touchee : la quantité tapée n’est pas réécrite par la 3.8', { qte: apres.qte, qteBleue: apres.qteBleue });
   c.check(autres.length > 0 && apres.autresCorrigees.every(Boolean), 'lenteur-touchee : les lignes qu’il n’a pas touchées reçoivent les corrections de la 3.8', { autres, corrigees: apres.autresCorrigees });
-  // Ce que la rangée touchée devient pour le reste de ses cellules (nom, unité) : constaté, pas jugé ici (e-ecran : « le champ ouvert rend toute la rangée touchée »).
-  c.finding('lenteur-touchee', 'la rangée où il a tapé une quantité : la 3.8 corrige-t-elle ses autres cellules (nom, unité) ?', { rangeeCorrigee: apres.ligneCorrigee });
+  // e-finitions : la saisie est gardée CELLULE PAR CELLULE : la quantité tapée reste, et la 3.8 corrige quand même le nom de la même rangée.
+  // Le nom corrigé se lit au « avant » barré sous le nom (le nom imprimé que la 3.8 corrige), pas au libellé de la facture.
+  c.check(apres.ligneCorrigee === true && !!apres.avant && !apres.avant.includes(qteTapee + ' '), 'lenteur-touchee : la rangée où il a tapé sa quantité reçoit quand même la correction du nom (saisie gardée cellule par cellule)', { rangeeCorrigee: apres.ligneCorrigee, avantBarre: !!apres.avant, nomLibelleAvant: nomAvant !== null });
   c.check(!e.fil && e.bouton.off === false && Number.isFinite(e.puceN) && e.puceN >= 1 && !sansErreur(c, base).length, 'lenteur-touchee : le fil part, « Confirmer » est actif, la puce compte, aucune erreur de console', { puce: e.puce, erreurs: sansErreur(c, base) });
   await closeSheet(c);
 }
@@ -2423,10 +2430,10 @@ async function caseLenteurSans38(c) {
 
 /**
  * Le réseau tombe PENDANT la 3.8 : le flux se coupe après le morceau. Ce que le brasseur doit trouver : ses valeurs provisoires restent, la feuille reste utilisable, rien d'écrit.
- * PLAN § 4 voulait en plus une relance au retour en ligne ; `ExpenseSheet.tsx` ne la fait pas (e-ecran, « Doutes et limites ») : le banc le constate, il ne le compte pas en KO.
+ * e-finitions : au retour du réseau (événement `online`, parti de `page.setOfflineMode(false)`), le client relance UNE fois la lecture, servie du cache du serveur (final seul) : le final s'applique.
  */
-async function caseLenteurHorsLigne(c) {
-  const base = await ouvrirLenteur(c, 'doc14', 'coupe', { lenteur: { delaiMs: 6000 } });
+async function caseLenteurHorsLigne(c, piece = 'doc5', strict = true) {
+  const base = await ouvrirLenteur(c, piece, 'coupe', { lenteur: { delaiMs: 6000, relance: 'cache' } });
   const attente = await etatLenteur(c);
   await shoot(c, 'lenteur-hors-ligne-attente');
   await c.setOffline(true);
@@ -2436,16 +2443,18 @@ async function caseLenteurHorsLigne(c) {
   c.record('lenteur-hors-ligne-etat', { attente: { ...attente, texte: undefined }, coupe: { ...coupe, texte: undefined } });
   await shoot(c, 'lenteur-hors-ligne-coupe');
   await c.setOffline(false);
-  await sleep(4000);
+  const final = await attendreFinal(c, 'lenteur-hors-ligne : le final de la relance arrive', 40000).catch(() => null);
+  await sleep(600);
   const retour = await etatLenteur(c);
   await shoot(c, 'lenteur-hors-ligne-retour');
   c.check(attente.fil && attente.bouton.off, 'lenteur-hors-ligne : avant la coupure, la vérification est en cours (fil, « Confirmer » gris)');
-  c.check(coupe.lignes === base.piece.lignesProvisoire && retour.lignes === base.piece.lignesProvisoire, 'lenteur-hors-ligne : les valeurs provisoires restent après la coupure et au retour du réseau', { coupe: coupe.lignes, retour: retour.lignes, attendu: base.piece.lignesProvisoire });
+  c.check(coupe.lignes === base.piece.lignesProvisoire, 'lenteur-hors-ligne : les valeurs provisoires restent après la coupure du flux', { coupe: coupe.lignes, attendu: base.piece.lignesProvisoire });
   c.check(coupe.fil === coupe.bouton.off, 'lenteur-hors-ligne : l’écran est cohérent (le fil reste avec « Confirmer » gris, ou part avec « Confirmer » actif)', { fil: coupe.fil, bouton: coupe.bouton });
   c.check(retour.fil === retour.bouton.off, 'lenteur-hors-ligne : cohérent aussi au retour du réseau', { fil: retour.fil, bouton: retour.bouton });
   c.check(await sansEcriture(c, base.db) && !sansErreur(c, base).length, 'lenteur-hors-ligne : rien d’écrit, aucune erreur de console', { erreurs: sansErreur(c, base) });
-  c.finding('lenteur-hors-ligne', 'relance de la lecture au retour du réseau (PLAN § 4)', { lecturesDuCas: lecturesDepuis(c, base.appels), relancee: lecturesDepuis(c, base.appels) > 1,
-    coupe: { fil: coupe.fil, bouton: coupe.bouton, alertes: coupe.alertes }, retour: { fil: retour.fil, bouton: retour.bouton, alertes: retour.alertes } });
+  c.check(coupe.fil && coupe.bouton.off && lecturesDepuis(c, base.appels) === 2, 'lenteur-hors-ligne : hors ligne, le fil et la roue restent ; au retour du réseau le client relance UNE fois la lecture (relancee: true)', { lecturesDuCas: lecturesDepuis(c, base.appels), fil: coupe.fil, bouton: coupe.bouton });
+  const finalApplique = !!final && !retour.fil && retour.bouton.off === false && retour.lignes === base.piece.lignesFinal && Number.isFinite(retour.puceN) && retour.puceN >= 1;
+  (strict ? c.check : (ok, label, data) => c.finding('lenteur-hors-ligne-ajout', label, { ok, ...data }))(finalApplique, 'lenteur-hors-ligne : le final de la relance est appliqué (fil parti, « Confirmer » actif, lignes du final, puce « corrigées »)', { fil: retour.fil, bouton: retour.bouton, lignes: retour.lignes, attendu: base.piece.lignesFinal, puce: retour.puce, alertes: retour.alertes });
   await closeSheet(c);
 }
 
@@ -2481,7 +2490,7 @@ async function caseLenteurSansResultat(c) {
   await shoot(c, 'lenteur-sans-resultat-fin');
   c.check(avant.fil && avant.bouton.off && !fin.fil && fin.bouton.off === false, 'lenteur-sans-resultat : le fil et la roue tiennent jusqu’à la fermeture du flux, puis « Confirmer » devient actif', { avant: avant.bouton, fin: fin.bouton });
   c.check(fin.lignes === base.piece.lignesProvisoire && fin.puce === null, 'lenteur-sans-resultat : les valeurs provisoires restent, aucune puce « corrigées »', { lignes: fin.lignes, puce: fin.puce });
-  c.finding('lenteur-sans-resultat', 'le message du serveur (« a fermé la connexion sans réponse ») n’est pas affiché : la fin de partie montre la forme d’une 3.8 coupée (« 2 lectures », « Lecture coupée »)', { alertes: fin.alertes, messageAffiche: /fermé la connexion|sans réponse/i.test(fin.texte) });
+  c.check(/fermé la connexion|sans réponse/i.test(fin.texte) && fin.alertes.some(t => /fermé la connexion|sans réponse/i.test(t)), 'lenteur-sans-resultat : le message du serveur (flux fermé sans réponse) est visible, à côté de « Lecture coupée »', { alertes: fin.alertes });
   c.check(/2 lectures/.test(fin.preuve ?? '') && /Lecture coupée/.test(fin.texte), 'lenteur-sans-resultat : la fin de partie a la forme d’une 3.8 coupée : « 2 lectures » et « Lecture coupée »', { preuve: fin.preuve });
   c.check(/contrôle complémentaire n['’]a pas abouti|Lecture coupée/i.test(fin.texte), 'lenteur-sans-resultat : le point « lecture coupée » marque les lignes (la phrase de la 3.8 coupée)', { extrait: fin.texte.slice(0, 200) });
   c.check(await sansEcriture(c, base.db) && e.bouton.off === false, 'lenteur-sans-resultat : rien d’écrit');
@@ -2564,7 +2573,7 @@ async function caseHtConfirmer(c) {
   c.check(appel?.expectedFiles === true && lecture.lines.length === piece.final.items.length, 'ht-confirmer : les trois pages sont lues (empreinte de chacune), toutes les lignes sont là', { lignes: lecture.lines.length, attendu: piece.final.items.length });
   c.check(Number.isFinite(total) && Math.abs(somme - total) <= 5, 'ht-confirmer : les lignes arrivent au TTC, leur somme est le total TTC lu (à 5 centimes près)', { somme, total });
   // n3-ht pose la phrase « Lignes imprimées hors taxe, passées au TTC. » sur l'indice du total SEULEMENT si aucun autre indice n'y est déjà (`||=`) : le banc dit lequel l'écran montre.
-  c.finding('ht-confirmer', 'l’indice sous le total TTC sur la pièce HT', { indice: lecture.hints.amountTTC ?? null, phraseHtAffichee: /passées au TTC/.test(JSON.stringify(lecture.hints) + e.texte) });
+  c.check(e.texte.includes('Lignes imprimées hors taxe, passées au TTC.') && e.texte.includes('Les totaux HT + TVA ne correspondent pas'), 'ht-confirmer : la phrase « Lignes imprimées hors taxe, passées au TTC. » est visible, à côté de l’indice des totaux', { indice: lecture.hints.amountTTC ?? null });
   c.check(!e.fil && e.bouton.off === false, 'ht-confirmer : « Confirmer » est actif (pas de 3.8 à attendre)', { bouton: e.bouton });
   // Le choix du stock : comme les autres cas, les lignes à relier reçoivent la décision par défaut du banc (l'article le plus proche, ou nouveau) ; ici seul compte le total.
   const resultat = await confirmSheet(c, 90000);
@@ -2577,7 +2586,7 @@ async function caseHtConfirmer(c) {
   c.check(!sansErreur(c, base).length, 'ht-confirmer : aucune erreur de console', { erreurs: sansErreur(c, base), transactionsAvecEmpreinte: ecrit });
 }
 
-const CASES = { 'lenteur-provisoire': caseLenteurProvisoire, 'lenteur-lue': caseLenteurLue, 'lenteur-echec': caseLenteurEchec, 'lenteur-touchee': caseLenteurTouchee, 'lenteur-sans-38': caseLenteurSans38,
+const CASES = { 'lenteur-hors-ligne-ajout': c => caseLenteurHorsLigne(c, 'doc14', false), 'lenteur-provisoire': caseLenteurProvisoire, 'lenteur-lue': caseLenteurLue, 'lenteur-echec': caseLenteurEchec, 'lenteur-touchee': caseLenteurTouchee, 'lenteur-sans-38': caseLenteurSans38,
   'lenteur-hors-ligne': caseLenteurHorsLigne, 'lenteur-fermee': caseLenteurFermee, 'lenteur-sans-resultat': caseLenteurSansResultat, 'lenteur-perdues-2': caseLenteurPerdues2, 'ht-confirmer': caseHtConfirmer,
   pages: casePages, 'nom-b': caseNomB, 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
   'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules, enrichir: caseEnrichir };

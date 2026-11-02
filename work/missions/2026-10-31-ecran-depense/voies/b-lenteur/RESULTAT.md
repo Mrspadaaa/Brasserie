@@ -1,4 +1,4 @@
-OK — Banc Chrome de la lecture lente : flux SSE rejoué, 10 cas lenteur et ht-confirmer (108 OK, 0 KO), témoin négatif rouge
+OK — Banc Chrome de la lecture lente rejoué après e-finitions : 4 CONSTAT devenus contrôles, 26 cas × 2 largeurs, 3 constats restants (voir « Rejeu après e-finitions »)
 
 Voie b-lenteur, 02.11, agent auteur (Sonnet). Aucun commit, aucun déploiement, aucun appel Gemini (réponses brutes déjà payées de `banc-k6-C/raw`, rejouées par le vrai `lireCsv8`), aucune donnée réelle. Le banc a joué dans l'arbre (copie nue : `lancer.sh`), sans autre voie en écriture.
 
@@ -65,3 +65,30 @@ DÉCISION À PRENDRE : (1) hors ligne pendant la 3.8 : relancer la lecture au re
 
 CONNAISSANCE : le flux de `httpsCallable.stream` (firebase-functions 0.12.9) ignore le statut HTTP et ne lit que les lignes `data: {…}` ; une erreur du serveur y arrive comme `{error:{status,message}}`, que `_errorForResponse` traduit en code. Un banc qui rejoue `aiTask` doit répondre par ce format, bloc par bloc, et exiger `pages: N` pour les lectures à plusieurs pages.
 LEÇON PROPOSÉE : un banc qui rejoue un service doit être mis à jour dans la voie qui change le protocole (ici : le flux d'e-ecran a fait passer de 62 à 18 OK les cas existants sans que personne le voie) ; ajouter au contrat d'une voie de port « rejouer les cas existants du banc avant de rendre ».
+
+## Rejeu après e-finitions (commit 8f0cf42f ; aucune valeur de ses pièces dans cette section)
+Banc dans l'arbre, aucune autre voie en écriture. Script : `scripts/check-invoice-journey-emulator.mjs` (`node --check` OK). Sorties : `rejeu-lenteur/`, `rejeu-lenteur2/`, `rejeu-existants/`, `rejeu-finances2/`, `bilan.txt`.
+
+### Les CONSTAT changés en contrôles (sens inversé)
+- `lenteur-hors-ligne` exige `relancee: true` : hors ligne (`page.setOfflineMode(true)`), le fil et la roue restent après la coupure du flux ; au retour (`setOfflineMode(false)`, l'événement `online` part vraiment) UNE seule relance (2 lectures du cas), servie du cache du serveur (final seul), et le final est appliqué (fil parti, « Confirmer » actif, lignes du final, puce « corrigées »). Le banc sert la relance par `ai.relance = 'cache'`.
+- `lenteur-sans-resultat` exige le message du serveur visible (alerte « a fermé la connexion sans réponse »), à côté de « Lecture coupée » : vert, capture ouverte.
+- `ht-confirmer` exige la phrase « Lignes imprimées hors taxe, passées au TTC. » visible à côté de l'indice des totaux : vert, capture ouverte.
+- `lenteur-touchee` : la quantité tapée est gardée ET la rangée est corrigée (nom imprimé barré sous le nom, unité corrigée) : vert. Deux réglages de mon contrôle, dits : (a) « sans marque bleue » retiré : la pastille de la quantité porte aussi l'unité, bleue quand la 3.8 corrige l'unité, la quantité tapée, elle, reste ; (b) le nom corrigé se lit à l'ancien nom barré, non au champ « libellé ».
+
+### Choix du cas hors ligne, et un défaut de plus
+`lenteur-hors-ligne` joue la pièce de 26 lignes (provisoire et final de même longueur) : relance et final appliqués, vert. Rejoué sur la pièce dont la 3.8 AJOUTE une ligne (`lenteur-hors-ligne-ajout`) : la relance a bien lieu, mais le final n'est PAS appliqué ; l'écran reste en fin de partie (« 2 lectures », « Lecture coupée », lignes du provisoire, pas de puce). Cause probable : le final servi du cache ne porte pas le jeton (`ai.ts`, « le résultat du registre reste sans jeton »), les listes sont de longueurs différentes, le repli de M4 passe en `echec`. Ce cas est un `CONSTAT lenteur-hors-ligne-ajout`, non un KO : à décider. **DÉFAUT 7** (e-finitions) : après une relance hors ligne servie du cache, une pièce dont la 3.8 ajoute ou retire une ligne n'applique pas son final.
+
+### Sorties
+- Lenteur + `ht-confirmer`, 390 et 1280 (`rejeu-lenteur/`) : `exit 1 (112 OK, 6 KO, 0 ARRÊT)`. Les 6 KO : `lenteur-touchee` ×2 (mes deux réglages ci-dessus, avant correction), `lenteur-hors-ligne` sur la pièce à ligne ajoutée ×1, aux deux largeurs. Aucune autre : `ht-confirmer` (indice HT visible, « Confirmer » enregistre) et `lenteur-sans-resultat` (message visible) verts aux deux largeurs.
+- Rejeu des trois cas corrigés (`rejeu-lenteur2/` : `lenteur-touchee`, `lenteur-hors-ligne`, `lenteur-hors-ligne-ajout`) : `exit 0 (42 OK, 0 KO, 0 ARRÊT)`, avec le constat ci-dessus. Les 7 autres cas lenteur ont donc tourné dans `rejeu-lenteur/` à 0 KO. Au total, les 10 cas lenteur + `ht-confirmer` + le cas ajout : tous verts sauf le constat 7.
+- Cas existants, 15 cas × 2 largeurs (`rejeu-existants/`) : `exit 1 (182 OK, 4 KO, 0 ARRÊT)` : les neuf d'avant + `autre-numero`, `rattacher`, `minuscules`, `doc1`, `doc14`, `drive-fond`. Les 4 KO :
+  - `doc14 (c)` ×2 : une pastille « 3 » sur la tuile TVA et l'indice « Valeur corrigée après relecture », points `ht-tva-ttc` et `lectures-divergentes` de la lecture rejouée : **le même constat qu'e-bout** (défaut de la lecture, non du port), pas nouveau ;
+  - `finances` Excel/ZIP ×2 : « Délai dépassé : téléchargement Excel » ; **intermittent** : `doc5,finances` rejoué seul (`rejeu-finances2/`, 390 et 1280) : `exit 0 (30 OK, 0 KO)`. (`finances` seul n'a pas de dépense à retrouver : il suit `doc5`.)
+
+### Captures ouvertes en image
+`rejeu-lenteur2/390-05-lenteur-hors-ligne-retour` (relance : « Lecture déjà disponible · aucun nouvel appel IA », « 26 corrigées », fil parti, « Confirmer » noir), `rejeu-lenteur/390-13-lenteur-sans-resultat-fin` (bandeau en tête : « Le serveur IA a fermé la connexion sans réponse. Réessaie dans quelques instants ; la saisie manuelle reste disponible. », « 2 lectures », « Lecture coupée »), `rejeu-lenteur/390-18-ht-lue` (« Lignes imprimées hors taxe, passées au TTC. » sous les chips, à côté de l'indice « Désaccord »), `rejeu-lenteur2/390-02-lenteur-touchee-apres` (quantité « 3 » gardée, unité « kg » corrigée en pastille bleue, nom imprimé barré, 9 corrigées). Non ouvertes : leurs versions 1280 et celles des autres cas (mesurées).
+
+### Essais
+Réglages de mes contrôles : 2 passes (les 3 KO « touchee » et « hors ligne » du premier rejeu). Aucun contrôle existant affaibli.
+
+DÉCISION À PRENDRE : défaut 7 : après relance hors ligne, un final servi du cache sans jeton n'est pas appliqué quand le nombre de lignes diffère du provisoire. Options : (a) le serveur remet le jeton sur la copie rendue du cache après une relance ; (b) le client applique un final sans jeton par le rapprochement des lignes (`alignerLignes`) même si les longueurs diffèrent ; (c) le laisser (forme « 3.8 coupée », rien d'écrit). Recommandation : (b), sans toucher au serveur ni au cache. Voie e-finitions.
