@@ -1301,3 +1301,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - (02.11, soir, à la suite), mot pour mot : « Donc pas besoin de mettre cette action en avant. » (lu : confirme D364 suite, le lien discret replié.)
 - (02.11, soir, à la suite), mot pour mot : « Ça peut être, un peu caché ou autre mais ça doit être possible. Ça peut être sous un dropdown ou
   autre » (lu : le changement de famille peut vivre sous « plus », même en menu déroulant ; l'exigence est qu'il existe et qu'il tienne. D364.)
+- **Intégrer et déployer** (02.11, soir), mot pour mot : « Pas besoin de tout retester ou rien, intégre le tout et deploye » (lu : le port de
+  pu4d et le ticket partent ensemble dès que le port est fini ; ni rejeu du banc, ni test d'écran du critique, ni suite complète. Restent les
+  gestes du déploiement lui-même : build, check-no-dev-auth, manifeste, puis la page servie relue en ligne. D365.)

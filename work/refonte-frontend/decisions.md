@@ -1768,3 +1768,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   toujours visibles) y entrent : ses mots les plus récents priment. Le choix du brasseur tient contre la règle.
   D364, fin, ses mots « Ça peut être, un peu caché ou autre mais ça doit être possible. Ça peut être sous un dropdown ou autre » : le plus simple,
   un champ « Famille » sous « plus » (menu déroulant permis pour ce geste rare, seule exception à D350), aux noms des bandes ; le choix tient.
+- D365 (le brasseur, 02.11, soir) : « Pas besoin de tout retester ou rien, intégre le tout et deploye ». Pour ce lot, il lève la garde D342
+  (VERDICT du critique, « Pilote : vu ») et le test léger de D363 ; t-ecran-leger écartée. Gardés, car ce sont les gestes du déploiement et non des
+  tests : tests ciblés du port, build (tsc compris), `check-no-dev-auth`, manifeste inchangé, déploiement d'un dossier que nul autre n'écrit,
+  `--only hosting`, la page servie relue en ligne (lecture seule). Lecture étroite (L01) : ce lot seulement ; D342 reste la règle des suivants.
