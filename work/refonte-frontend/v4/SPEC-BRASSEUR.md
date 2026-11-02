@@ -1252,3 +1252,28 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   et celles des rangées sont dans la même colonne, leurs unités alignées. `…/5529bb39-image.jpg`. D352.)
 - (suite), mot pour mot : « Fin est-ce que c'est vraiment la dernière version ? » (lu : « enfin » ; oui, pa1b est la passe 2 de pa1, la
   dernière rendue, pas encore sur une page. D350.)
+- **Le plateau, passe 3** (02.11, soir), sur sa capture de pu4c (cas a, Maris Otter ouvert), le segment « Kg | g » entouré et la rangée
+  Safale US-05 (« 3 sachets » en bleu, « 2 sachets × 4,90 » barré) entourée,
+  `C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/527b9dbf-image.jpg`, mot pour mot : « Pas d'unité pour un objet ?
+  Comment avec avec stk ? » (lu : le choix d'unité d'une ligne n'offre que Kg | g ; il doit offrir aussi la pièce, l'unité d'un objet, en un
+  toucher, et montrer comment se lit une ligne imprimée « Stk ». D353.)
+- (suite), mot pour mot : « Aussi on voit toujours un changement de relecture alors que en théorie on a tout accepté ? » (lu : un changement
+  de la relecture déjà accepté ne se marque plus, ni bleu ni ancien barré ; la marque de d-lue ne reste que tant qu'un geste l'attend. D354.)
+- (suite), sur la même capture, « 2 à régler · Citra › » entouré dans le plateau de Maris Otter,
+  `…/0f26165d-image.jpg`, mot pour mot : « C'est normal ça ? Ça parle d'un autre item sur le détail d'un ? » (lu : non ; le détail d'une ligne
+  ne parle que d'elle. Le compte des lignes à régler et le passage à la suivante restent au récap. Lecture étroite : aucune autre ligne
+  nommée dans le détail ; la position sans nom est à lui montrer. D355.)
+- **Le quota, relu** (02.11, soir), sur ma phrase « À 90 %, je ne lance plus rien de neuf. », mot pour mot : « je ne lance plus rien de neuf.,
+  non mais terminé avec tout ça » (lu : D347 voulait dire « à 90 %, aie fini tes tâches », pas « arrête de lancer » ; le budget d'ici 90 %
+  sert à mener au bout ce qui est en cours : le plateau jusqu'à sa page, son ticket jusqu'au déploiement, les restes. D356, L01.)
+- **Le rejeu de son ticket, sombre sous filtre** (02.11, soir), sur la capture du banc `apres-G4/390-18-g-brassage-sombre-puce-neuf-liste.png`
+  (version 60a8c25f, non déployée), « Regrouper en une dépense » entouré, `…/ab4e4ce0-image.jpg`, mot pour mot : « Toujours trop accessible,
+  visible, et est-ce réversible ? » (lu : oui, réversible depuis le lot g, « ↶ Rétablir » jusqu'à « Confirmer », pas encore en ligne ; mais le
+  bouton reste à côté de « + Ajouter une ligne », avec le même cadre. Lecture étroite : un lien discret, hors de cette rangée. D357.)
+- (suite), une flèche rouge vers l'en-tête, entre le titre et l'icône du justificatif, `…/47e89cb6-image.jpg`, mot pour mot : « Il manque les
+  deux boutons ? » (lu : le segment « Plié | Déplié » de son choix E, D311. Il ne se montre que si la liste a des sous-familles à plier ; une
+  facture de brassage n'en a pas, il n'aurait rien à faire (« Plié, déplié ne fait rien », D333). Rien n'est changé ; à lui de dire s'il le
+  veut toujours là. D311.)
+- (suite), « Détail » et ses deux montants (un centime d'écart) entourés, `…/72f56106-image.jpg`, mot pour mot : « Montant inégale ???? » (lu : l'écart d'un centime est
+  l'arrondi suisse à 5 centimes, enregistré en ligne « Arrondi à 5 centimes » (D270), mais l'écran le montre en jaune sans le dire. Il se montre
+  comme sa propre ligne neutre, celle qu'on enregistre. Deuxième plainte sur ce centime après D261b (01.11). D358, L13.)
