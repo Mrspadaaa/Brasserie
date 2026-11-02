@@ -132,3 +132,7 @@ retirées de l'index, fichiers gardés sur le disque).
   états, à jouer avec une vraie pièce en ligne) et p3c-2 (décision introuvable).
 - Restes : écrans Houblons à regarder en ligne depuis le menu (étape Houblons d'une recette) ; les 46 anciens tests ; fiche matériel ; LEÇON
   PROPOSÉE de p-port-pu4d et a-entrees à traiter à la signature.
+- Vérifié en ligne (02.11, vers 21 h 40, Chrome, lecture seule) : Brassins › Recettes › « Modifier » d'une recette › étape Houblons rend l'écran v4
+  (`data-hop-v4-etape`, paquet `index-D_r8o4EC.js`) : rail Ébullition 60′ et 10′, whirlpool, J+3, cartes (nom, α, rôle, arômes, dose, IBU),
+  « Sans … › », radar « Au style », « Ouvrir l'analyse de ma bière ». Fermé par « Fermer », sans dialogue ni écriture. Capture Chrome impossible
+  (Page.captureScreenshot expire) : vu par le texte de la page, pas à l'image.
