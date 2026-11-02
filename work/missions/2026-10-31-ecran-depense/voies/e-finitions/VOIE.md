@@ -1,7 +1,7 @@
 # Voie e-finitions — les retours du critique sur la lecture lente (VERDICT-e-ecran, D308, D312)
 
-Agent : `auteur` (Sonnet). Plafond : 60 tours. Ligne `e-finitions` de MISSION.md. Part **après** la voie b-lenteur (son banc Chrome joue
-l'arbre : rien n'est écrit dans `src/` pendant qu'il tourne, L17). Aucun déploiement, aucun commit, **aucun appel réel à Gemini**.
+Agent : `auteur` (Sonnet). Plafond : 80 tours. Ligne `e-finitions` de MISSION.md. Part **après** la voie b-lenteur (son banc Chrome joue
+l'arbre : rien n'est écrit dans `src/` pendant qu'il tourne, L17). Après toi, le banc b-lenteur rejoue tous les cas. Aucun déploiement, aucun commit, **aucun appel réel à Gemini**.
 
 ## Ses mots (SPEC, mot pour mot)
 D277 : « Ne sait pas, aucune idée, flag rouge, je dois remplir ou corrigé » ; « On peut pas passer directement à l'intégration dans l'app »
@@ -25,6 +25,18 @@ D277 : « Ne sait pas, aucune idée, flag rouge, je dois remplir ou corrigé » 
 5. **Mineur 3, dernière rangée sous le bandeau à 390.** Au bout du défilement, la dernière rangée est entière au-dessus du bandeau (retrait
    bas égal à sa hauteur, s'il manque).
 
+Trouvés au banc Chrome sur ses pièces rejouées (`voies/b-lenteur/RESULTAT.md`, défauts 1 à 3 et 6, écarts de `perdues-2`) :
+6. **Hors ligne pendant la 3.8 : relancer une fois au retour du réseau** (PLAN § 4, D312 ; décision du pilote). Le fil et la roue restent
+   pendant la coupure ; au retour en ligne, le client relance une fois le même appel (servi du cache du serveur, sans coût) ; si la relance
+   échoue, la forme de la 3.8 coupée (A).
+7. **Le message du serveur après un provisoire sans final** (flux fermé sans résultat, ou coupé) : `finDePartie` pose le message comme le
+   fait une erreur d'aujourd'hui, à côté de « Lecture coupée » (`ExpenseSheet.tsx:395-399`).
+8. **Pièce HT : l'indice de n3-ht ne doit pas disparaître.** Quand un autre indice occupe déjà le total, la phrase « Lignes imprimées hors taxe,
+   passées au TTC. » reste visible (deux phrases, la plus grave d'abord) ; le changement se fait côté écran, `purchasePrefill.ts` n'est pas à toi.
+9. **Sa saisie, cellule par cellule** (PLAN § 4 bis, B2) : ouvrir une rangée ou y poser le focus ne la rend pas « touchée » ; seule une cellule
+   dont il a changé la valeur est gardée ; les autres cellules de la rangée (le nom compris) reçoivent la correction de la 3.8.
+10. **Bandeau à 390, nom long** : le nom se coupe avec « … » et le montant reste visible en entier.
+
 ## Possède
 `src/ui/finance/ExpenseSheet.tsx`, `src/ui/depense/Recap.tsx`, `Ligne.tsx`, `Liste.tsx`, `Pied.tsx`, `finale.ts`, `apercuDev.ts`,
 `p3c.css`, `tests/unit/depense/lecture-d/**`, `work/missions/2026-10-31-ecran-depense/voies/e-finitions/**`, et
@@ -35,7 +47,10 @@ D277 : « Ne sait pas, aucune idée, flag rouge, je dois remplir ou corrigé » 
 1. Témoins écrits d'abord dans `tests/unit/depense/lecture-d/finitions.test.tsx`, rouges sur HEAD (sortie gardée dans
    `voies/e-finitions/rouge.txt`), verts après : (a) taper 12 dans la quantité de Pilsner → « Qté × prix 6/7 » sans coche ; (a') même geste
    sur une lecture ordinaire, sans lenteur ; (b) une 3.8 qui corrige la TVA seule → case TVA en bleu avec l'ancienne valeur barrée, puce
-   « 1 corrigée » ; (c) un champ sans case corrigé → pas compté ; (d) barré « × 1,45 » seul quand la quantité est la sienne.
+   « 1 corrigée » ; (c) un champ sans case corrigé → pas compté ; (d) barré « × 1,45 » seul quand la quantité est la sienne ; (e) coupure
+   réseau pendant l'attente puis retour : un seul second appel, et le final s'applique ; relance en échec : forme A ; (f) flux fermé sans
+   résultat : le message du serveur est affiché ; (g) indice HT et indice de totaux visibles ensemble ; (h) focus posé dans une rangée sans
+   changer de valeur : la 3.8 corrige toute la rangée ; quantité changée : seule la quantité est gardée, le nom est corrigé.
 2. Dans la copie isolée : `node work/missions/2026-10-31-ecran-depense/voies/p3c-port/copie.mjs "npx vitest run tests/unit/depense tests/unit/designTokens.test.ts --maxWorkers=2"`,
    puis `… copie.mjs "npx tsc --noEmit -p tsconfig.json"`, puis `… copie.mjs "npm run build"` : verts, aucune attente existante changée.
 3. Captures (`capturer-lenteur.mjs`) : `ECRAN-D OK` avec, en plus, `lenteur-entete` et des mesures qui échouent sur HEAD : récap « 6/7 » dans
