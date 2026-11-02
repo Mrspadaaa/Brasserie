@@ -1132,3 +1132,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Lecture lente, la ligne ajoutée : son choix 1 B** (02.11, vers 16 h 30, en réponse à la question 1 de la même page, la seule posée),
   mot pour mot : « B » (lu : la rangée ajoutée par la lecture lente sur le fond bleu des corrections, valeurs en bleu, « ↻ » devant le nom,
   sans ancienne valeur ; comptée dans la puce « ↻ N corrigées ». D314.)
+- **Trop de questions** (02.11, vers 16 h 40, quand le pilote lui réclame une lettre pour la page « Lecture lente : le total corrigé, la 3e
+  lecture qui n'arrive pas · 02.11 », publiée minutes avant), mot pour mot : « Ce que j'attends de toi : une lettre pour chacune des deux
+  questions des cas rares, par exemple « 1 A, 2 D ». ?? J'ai déjà donné mon avis » (lu : ne plus lui réclamer de lettre pour des cas rares ;
+  leurs défauts A s'appliquent. D315, L24.)

@@ -65,7 +65,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
-- Erreur : 08.10, des reçus, des registres « qualifiés » et des couches V3/V4/V5.5 donnaient l'impression d'avancer, sans fonction utilisable.
+- Erreur : 08.10, reçus, registres « qualifiés », couches V3/V4/V5.5 : l'air d'avancer, rien d'utilisable.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
 - Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (SPEC § 1).
 - Rôles : pilote, relecteur, exécutant
@@ -120,19 +120,19 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif (01.11 : `maxItems`).
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
-- Erreur : 22.10, quatre questions fermées, sans mini maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « Comprends pas ces 2 points ».
+- Erreur : 22.10, questions fermées sans maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « Comprends pas ces 2 points » ; « ?? J'ai déjà donné mon avis » (cas rares).
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
-- Faire : chaque choix ouvert devient un axe de variantes ; on lui montre, il choisit. Publiée en artefact privé ; sans page : « à dessiner ». Une page par choix, ses variantes côte à côte avec sa référence (D126). Un point ouvert : le lien, ce qu'on attend de lui, sans code (D307).
+- Faire : chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315).
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
 ### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
-- Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur et le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « trop d'usage de sonnet et hiku ».
+- Erreur : 22.10, la planche « épicé » de Sonnet, acceptée par relecteur et pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « trop d'usage de sonnet et hiku ».
 - Cause : les modèles étaient répartis par coût, et le critique Fable calibré du lot 21 (`fils21-choisir/critique/PORTRAIT.md`) avait été remplacé par un relecteur générique.
 - Faire : maquettes, pictos et cartes à l'agent `concepteur` (Opus), montrés dans une vraie carte de la base. Relecture d'interface à l'agent `critique` (Fable). Sonnet pour les diagnostics, les contrôles et le code.
 - Rôles : pilote
