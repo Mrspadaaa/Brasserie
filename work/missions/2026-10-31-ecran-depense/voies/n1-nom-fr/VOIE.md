@@ -57,7 +57,7 @@ déploiement, aucun appel réseau hors localhost, Gemini toujours simulé. Copie
 ## Possède
 `src/services/stockLineMatching.ts`, `src/services/purchaseEntry.ts`, `src/domain/stock/articleNeuf.ts`, `src/types/index.ts` (le seul
 champ nouveau de `StockItem`), `src/ui/finance/ExpenseSheet.tsx` (le nom de l'article neuf et le lien venu de `nameFr`),
-`src/ui/StockDetailSheet.tsx` (N5 seulement), `tests/unit/depense/nom-b/**`, `scripts/check-invoice-journey-emulator.mjs` (un cas nouveau
+`src/ui/StockDetailSheet.tsx` (N5 seulement), `src/ui/depense/confiance.ts` et `src/ui/depense/etat.ts` (`memeProduit`, revue Prêt 5, ajout du pilote 02.11), `src/ui/depense/rangees.ts` (`ligneConfianceDe` seulement, demande de la voie au temps 2a), `tests/unit/depense/nom-b/**`, `scripts/check-invoice-journey-emulator.mjs` (un cas nouveau
 `nom-b`, hors `ALL_CASES` s'il le faut, les autres cas inchangés), `work/missions/2026-10-31-ecran-depense/voies/n1-nom-fr/**`.
 Si un autre fichier doit changer, le plan le dit et le pilote tranche.
 

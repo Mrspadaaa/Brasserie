@@ -1828,16 +1828,34 @@ async function f4Confirmer(c, draft) {
     catch (error) { return { ok: false, error: String(error?.message ?? error).slice(0, 400) }; }
   }, draft);
 }
-/** La file de f4 au repos (plus aucun travail `attend`), lue dans la page. */
+/**
+ * La file de f4 au repos (plus aucun travail `attend`), lue dans la page, PUIS ses écritures confirmées par le serveur émulé. Un travail « fait »
+ * a posé son `put` (le cache local de l'app le voit), mais Firestore groupe et envoie l'écriture un peu après : lire le serveur dès que la file
+ * est vide donnait un article sans fiche (02.11 : état d'écriture `pending` au contrôle, `confirmed` 6 s plus tard, l'app juste).
+ */
 async function f4Repos(c, timeout = 90000) {
   return waitFor(() => c.page.evaluate(async () => {
     const f = await import('/src/services/enrichissement.ts');
     await f.runEnrichissement('banc'); await f.enrichissementAuRepos();
     const r = await f.resumeEnrichissement();
-    return r.enAttente === 0 ? r : false;
-  }), 'file de f4 au repos', timeout);
+    if (r.enAttente !== 0) return false;
+    const { FirestoreRepo } = await import('/src/services/firestoreRepo.ts');
+    try { await FirestoreRepo.waitForWrites(30000); } catch { return false; }
+    return r;
+  }), 'file de f4 au repos, écritures confirmées', timeout);
 }
 const f4Article = async (c, ref) => (await c.db.doc(`stockItems/${ref}`).get()).data() ?? null;
+/** Sonde de diagnostic (02.11) : ce que la page voit (stock local, état d'écriture) contre ce que le serveur émulé porte, à l'instant. */
+async function f4Sonde(c, refs) {
+  const page = await c.page.evaluate(async liste => {
+    const { StorageService } = await import('/src/services/storage.ts');
+    const { FirestoreRepo } = await import('/src/services/firestoreRepo.ts');
+    const s = StorageService.getStocks(), tous = [...s.rawMaterials, ...s.cleaning];
+    return liste.map(ref => ({ ref, existe: tous.some(i => i.ref === ref), local: tous.find(i => i.ref === ref)?.fiche ?? null, ecriture: FirestoreRepo.documentWriteState('stockItems', ref).status, enLigne: navigator.onLine }));
+  }, refs);
+  const serveur = await Promise.all(refs.map(async ref => ({ ref, fiche: (await f4Article(c, ref))?.fiche ?? null })));
+  return { le: new Date().toISOString(), page, serveur };
+}
 
 /**
  * enrichir (f4, PLAN § 9) : une dépense de cinq articles neufs, la feuille fermée. Windsor → catalogue des levures ; Target → sa variété ; l'ambre →
@@ -1848,6 +1866,14 @@ async function caseEnrichir(c) {
   if (String(process.env.EMU_CASES) !== 'enrichir') throw Error('Le cas enrichir se lance seul (--cases enrichir) : il allume la recherche de fiche simulée.');
   c.enrichir = { appels: [] };
   const erreurs = c.entry.errors.length;
+  // Chaque erreur de console avec l'adresse qui l'a causée (le texte de Chrome ne la donne pas) : le banc coupe lui-même le réseau hors localhost.
+  const consoleDuCas = [];
+  let coupe = false;
+  const ecouteConsole = message => {
+    if (message.type() !== 'error') return;
+    consoleDuCas.push({ texte: message.text().slice(0, 160), url: message.location()?.url ?? '', horsLigne: coupe });
+  };
+  c.page.on('console', ecouteConsole);
   // Les contrôles de ce cas, comptés pour la ligne « ENRICHIR OK » (un arrêt en route laisse « ENRICHIR » absent : échec).
   const verifier = c.check, resultats = [];
   c.check = (ok, label, data) => { resultats.push(!!ok); verifier(ok, label, data); };
@@ -1867,6 +1893,8 @@ async function caseEnrichir(c) {
   c.record('enrichir-confirmation-1', premiere);
   if (!premiere.ok) throw Error(`enrichir : la première dépense est refusée : ${premiere.error}`);
   const resume1 = await f4Repos(c);
+  const refs1 = [0, 1, 2, 3, 4].map(i => `MP-${sub}-${i}`);
+  c.record('enrichir-sonde-1', await f4Sonde(c, refs1));
   const [malt, windsor, target, ambre, banc7] = await Promise.all([0, 1, 2, 3, 4].map(i => f4Article(c, `MP-${sub}-${i}`)));
   const appels1 = c.enrichir.appels.length;
   c.record('enrichir-articles-1', { resume1, appels: c.enrichir.appels, malt: malt?.fiche ?? null, windsor: windsor?.fiche ?? null, target: target?.fiche ?? null, ambre: ambre && { fiche: ambre.fiche, colorEbc: ambre.colorEbc, potentialPpg: ambre.potentialPpg }, banc7: banc7?.fiche ?? null });
@@ -1883,24 +1911,34 @@ async function caseEnrichir(c) {
 
   // La même ambre en « bis », réseau coupé : rien d'écrit hors ligne ; au retour, la fiche retenue, aucun appel de plus.
   const sub2 = `f4-enrichir-${c.width}-2`;
-  await c.setOffline(true);
+  await c.setOffline(true); coupe = true;
   const seconde = await f4Confirmer(c, f4Saisie(sub2, [f4Ligne('e0', 'Malterie du Banc Ambre 60 15 EBC', 'kg', 3, { stockCategory: 'Malt', sourceReference: 'MB-A60' })]));
   c.record('enrichir-confirmation-2', seconde);
   await sleep(4000);
-  const horsLigne = await f4Article(c, `MP-${sub2}-0`);
-  c.check(!horsLigne?.fiche, 'enrichir : hors ligne, aucune fiche écrite', { article: horsLigne });
-  await c.setOffline(false);
+  // L'article existe bien pour la page (la dépense est enregistrée hors ligne) et n'a aucune fiche, ni chez elle ni au serveur : ce n'est pas un vide.
+  const horsLigne = await f4Sonde(c, [`MP-${sub2}-0`]);
+  c.record('enrichir-hors-ligne', horsLigne);
+  c.check(horsLigne.page[0].existe && !horsLigne.page[0].local && !horsLigne.serveur[0].fiche && horsLigne.page[0].enLigne === false,
+    'enrichir : hors ligne, l’article est enregistré sans fiche (ni dans l’app ni au serveur)', { sonde: horsLigne });
+  await c.setOffline(false); coupe = false;
   const resume2 = await f4Repos(c);
   const bis = await f4Article(c, `MP-${sub2}-0`);
   c.record('enrichir-articles-2', { resume2, bis: bis && { name: bis.name, fiche: bis.fiche, colorEbc: bis.colorEbc, potentialPpg: bis.potentialPpg } });
-  c.check(seconde.ok && bis?.fiche?.cle === ambre?.fiche?.cle && bis?.colorEbc === 15 && c.enrichir.appels.length === appels1,
-    'enrichir : le « bis » reprend la fiche de l’ambre (même clé), garde son EBC lu, aucun appel de plus', { seconde, bis, appels: c.enrichir.appels.length });
+  // Une clé DÉFINIE des deux côtés (02.11 : `undefined === undefined` laissait passer un bis sans fiche).
+  c.check(seconde.ok && !!ambre?.fiche?.cle && bis?.fiche?.cle === ambre.fiche.cle && bis.fiche.id === ambre.fiche.id && bis?.colorEbc === 15 && c.enrichir.appels.length === appels1,
+    'enrichir : le « bis » reprend la fiche de l’ambre (même clé, définie), garde son EBC lu, aucun appel de plus', { seconde, bis, cleAmbre: ambre?.fiche?.cle ?? null, appels: c.enrichir.appels.length });
   await reloadApp(c);
   await click(c.page, 'nav button', 'Stocks');
   await sleep(1200);
   await shoot(c, 'enrichir-stock-2');
-  const nouvelles = c.entry.errors.slice(erreurs);
-  c.check(!nouvelles.length, 'enrichir : 0 erreur de console', { erreurs: nouvelles });
+  c.page.off('console', ecouteConsole);
+  c.record('enrichir-console', { toutes: c.entry.errors.slice(erreurs).length, duCas: consoleDuCas });
+  // Ce que le banc provoque lui-même est écarté, chaque cause nommée : (1) une adresse hors localhost qu'il bloque (polices, Google Identity, sonde
+  // de connexion de Firestore) ; (2) une requête locale coupée pendant la partie hors ligne (`ERR_INTERNET_DISCONNECTED`). Toute autre erreur reste.
+  const dehors = e => e.url !== '' && !/^(data|blob):/.test(e.url) && !/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(e.url);
+  const parLeBanc = e => dehors(e) || (e.horsLigne && /ERR_INTERNET_DISCONNECTED/.test(e.texte));
+  const nouvelles = consoleDuCas.filter(e => !parLeBanc(e));
+  c.check(!nouvelles.length, 'enrichir : 0 erreur de console venue de l’app (hors réseau coupé par le banc)', { erreurs: nouvelles, ecartees: consoleDuCas.length - nouvelles.length });
   c.check = verifier;
   console.log(`${resultats.length === 8 && resultats.every(Boolean) ? 'ENRICHIR OK' : 'ENRICHIR KO'} ${c.width} · ${resultats.filter(Boolean).length}/8 · appels ${c.enrichir.appels.length}`);
 }

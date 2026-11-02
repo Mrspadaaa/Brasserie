@@ -1078,3 +1078,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   aujourd'hui, l'autre pour plusieurs, qui ouvre la rangée de pages de B. D291). Puis, sur la forme 3 de la maquette retenue
   (`choix-captures/retenue/img/1-entree-f3.png`, « Un document » | « Plusieurs », un trait rouge dessous), mot pour mot : « Celle là que
   je veux » (lu : la forme 3 est la base du code, telle quelle).
+  Puis, sur l'écart de la frise annoncé (« la frise ne coche « envoi ✓ » qu'une fois l'envoi réellement fait »), mot pour mot :
+  « Mais l'envoi au drive de fait en arrière plan ?? » (lu : une question. Il lit « envoi » comme l'envoi au Drive. Or la frise parle
+  de l'envoi des pages à la lecture, au toucher de « Lire ». Le Drive part en arrière-plan après « Confirmer », et la frise ne l'attend pas.
+  Le mot prête à confusion : à suivre.)
