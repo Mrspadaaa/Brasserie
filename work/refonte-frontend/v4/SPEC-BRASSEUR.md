@@ -1118,3 +1118,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **La frise de « Plusieurs » : son choix B** (02.11, vers 13 h 45, après l'explication du pilote et la page « La frise de « Plusieurs » · 02.11 »,
   https://claude.ai/artifact/EZBoX4NkK9nGxDKijfwCPJ), mot pour mot : « B » (lu : sous le premier trait de la frise, « N pages ✓ » au repos et
   pendant la lecture, comme l'app en ligne ; « Un document » garde « envoi ✓ ». D309.)
+- **Tout plier, déplier : son choix E** (02.11, vers 14 h 30, devant la page « Tout plier, déplier sur D · 02.11 »,
+  https://claude.ai/artifact/T1cw6DYZX9YCBz4uELbXBE), mot pour mot : « E c'est très bien » (lu : le segment « Plié | Déplié » dans l'en-tête de la
+  feuille, entre le titre et le justificatif, pour toute la dépense ; à l'état mêlé, aucun des deux n'est allumé. D311.)
