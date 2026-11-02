@@ -1296,3 +1296,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   mot : « Aussi, comment je change la catégorie d'un item, ici grand sac n'est pas dans l'emballage mais rénovation. » (lu : la famille d'une
   ligne, la bande où elle est rangée, doit se changer en un toucher sur la ligne ouverte, avec le nom de la bande ; aujourd'hui seul le type
   d'achat se change, et la famille suit par une règle cachée. D364.)
+- **Un geste rare** (02.11, soir, juste après), mot pour mot : « C'est normalement une action assez rare » (lu : changer la famille d'une ligne
+  reste discret, replié derrière le nom de sa bande, un toucher pour voir les choix ; jamais une rangée toujours visible. D364.)

@@ -1763,3 +1763,6 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   Rien ne dit « Rénovation » : la famille suit une règle cachée. Dans le port pu4d, les pastilles du type fin (un toucher, D350) deviennent les
   pastilles de famille : les bandes de la dépense où la ligne peut aller, nommées comme les bandes, celle de la ligne allumée. Lecture étroite
   (L01) : le choix de pu4d vaut pour son principe (L03), la liste des bandes est celle de sa pièce, pas celle de la fixture. Réversible.
+  Suite de D364, ses mots « C'est normalement une action assez rare » : au repos, seul un lien discret au nom de la bande ; un toucher montre les
+  pastilles (5 au plus), un toucher range la ligne et referme. Les quatre pastilles du type fin de pu4d (« Discutable » de sa NOTE, 28 px
+  toujours visibles) y entrent : ses mots les plus récents priment. Le choix du brasseur tient contre la règle.
