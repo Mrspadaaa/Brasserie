@@ -1115,3 +1115,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **La lenteur : son choix D** (02.11, vers 13 h 35, après l'explication du pilote et la page « La lenteur de la lecture · 02.11 »,
   https://claude.ai/artifact/TNNSAZdhSkoit5NkHyksPa), mot pour mot : « La lenteur go pour la d » (lu : l'option D de la page, l'écran tout de
   suite après les deux lectures rapides, valeurs provisoires, la lecture lente finit en arrière-plan, « Confirmer » attend la lecture finale. D308.)
+- **La frise de « Plusieurs » : son choix B** (02.11, vers 13 h 45, après l'explication du pilote et la page « La frise de « Plusieurs » · 02.11 »,
+  https://claude.ai/artifact/EZBoX4NkK9nGxDKijfwCPJ), mot pour mot : « B » (lu : sous le premier trait de la frise, « N pages ✓ » au repos et
+  pendant la lecture, comme l'app en ligne ; « Un document » garde « envoi ✓ ». D309.)
