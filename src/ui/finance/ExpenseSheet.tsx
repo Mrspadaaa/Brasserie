@@ -43,10 +43,10 @@ import { Interrupteur } from '../depense/Ticket';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
-import { Liste } from '../depense/Liste';
+import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c } from '../depense/Ligne';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
-import { bandes as calculerBandes,groupeDe,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,type GroupeCle,type LigneBande } from '../depense/groupes';
+import { bandes as calculerBandes,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
 import { avecUnitesDeduites,confianceLigne,contexteConfiance,libelleLu,ligneConfianceDe,niveauxRangee,optionsEnFrancais,pastilleEtat,texteQuantite } from '../depense/rangees';
 import { confianceEntete,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
@@ -140,6 +140,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ouvertesRef=useRef(new Map<string,boolean>());
   /* VERDICT-f3-p2, détail 3 : la barre d'un bis se fond dans le plateau ouvert ; un toucher d'ouverture rend l'écran (une fois par geste). */
   const [,setPlateaux]=useState(0);
+  /* D307 (son choix D) : le choix du brasseur sur chaque sous-groupe d'une bande (`true` ouvert, `false` replié ; rien : replié, sauf une ligne à vérifier). État d'écran seulement ; remis à zéro à chaque lecture. */
+  const [choixGroupes,setChoixGroupes]=useState<ChoixGroupes>(()=>new Map());
   /* Lignes dont l'article de stock vient de la lecture : une proposition, montrée comme telle jusqu'au choix du brasseur. */
   const proposedStock=useRef(new Set<string>());
   /* L'article proposé par la lecture pour chaque ligne : l'interrupteur « oui » le repose explicitement (jamais l'ancien `stockRef` resté dans la ligne). */
@@ -305,6 +307,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(!target&&/paiement|échéance/.test(message)){flushSync(()=>{setPanel('paye');setPayeForme(true);});target=issueTarget(message);}
     if(!target){errorBox.current?.focus();return;}
     /* p3c-port : la cible peut être masquée par le filtre ou rangée dans le tiroir du port : le filtre est levé, le tiroir ouvert, avant le focus. */
+    reveler(target);
     if(target.closest('[hidden]'))flushSync(()=>setFiltre(null));
     if(target.closest('[data-dp="port-tiroir"]'))flushSync(()=>setPortOuvert(true));
     for(let ancestor=target.parentElement;ancestor&&ancestor!==form.current;ancestor=ancestor.parentElement){
@@ -326,7 +329,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const result=outcome.result;
     const total=invoiceTotalProposal(result);
     const stockItems=[...stocks.rawMaterials,...stocks.cleaning];
-    proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
+    proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setChoixGroupes(new Map());setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
     /* D275 : le libellé est la base de la désignation (sans options ni suffixe d'unité), ou sa désignation française lue ; l'imprimé complet reste au brouillon et au plateau. */
     /* Voie n1-nom-fr : le nom imprimé lu (base sans options) est gardé ICI, une fois : retaper le libellé ne le change pas, c'est lui qui s'écrit « Sur la facture ». */
     const lues0:PurchaseLineDraft[]=result.items.map(item=>{const lu=libelleLu(item),nomLu=lireOptions(String(item.name??''),item.variant?String(item.variant):undefined,String(item.unit??'')).base.trim().slice(0,80);return {id:item.id,description:lu.description,...(nomLu?{nomLu}:{}),...(lu.imprime?{imprime:lu.imprime}:{}),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',lu.imprime?`Imprimé : ${libelleDeLigne(item.name,item.variant)}`:'',item.evidence].filter(Boolean).join(' · ')};});
@@ -657,6 +660,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
      hauteur de la bande : scroll-padding-top) et y met le focus sans second défilement. Le panneau (TVA, paiement) ou la preuve s'ouvre d'abord, de façon synchrone. */
   const viser=(el:HTMLElement|null|undefined,opts:{focus?:HTMLElement|null;block?:ScrollLogicalPosition}={}):boolean=>{
     if(!el)return false;
+    reveler(el);
     for(let ancestor:HTMLElement|null=el;ancestor&&ancestor!==form.current;ancestor=ancestor.parentElement){
       if(ancestor instanceof HTMLDetailsElement)ancestor.open=true;
     }
@@ -674,6 +678,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const id=chip.source==='mouture'?mouturesPropositions[0]?.lineId:ligneDe(chip);
     const el=id?q(`[data-dp-ligne="${id}"]`):null;
     if(el){
+      reveler(el);
       if(el.closest('[hidden]'))flushSync(()=>setFiltre(null));
       if(el.closest('[data-dp="port-tiroir"]'))flushSync(()=>setPortOuvert(true));
       const d=el.querySelector('details');if(d)d.open=true;viser(el);return;
@@ -720,9 +725,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const parentIdxDe=(i:number)=>i>=0&&i<draft.lines.length?millingParentIndex(draft.lines,i):-1;
   const contexteLigne=(line:PurchaseLineDraft)=>{const a=articleDe(line);return a?contexteDeArticle(a):donneesDeLigne(ligneDeBrouillon(line,draft.vendor)).contexte;};
   const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
+  const sousFamilleLigne=(i:number):string|undefined=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
   const numeros=numerosPapier(draft.lines,port);
   const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
+  /* D307 : les rangées dont le plateau est ouvert (elles ouvrent leur sous-groupe : jamais une rangée ouverte cachée dans un groupe replié). */
+  const plateauxOuverts=new Set<string>();
   const basculeMouture=(id:string,liee:boolean)=>{if(liee)updateLine(id,{surchargeOf:undefined});else patch({lines:confirmMillingSurcharge(draft.lines,id)});};
   /* Le tableau « lu → avec mouture » (C16, R1) : monté au plateau du malt de la première mouture proposée ; il ne lie rien (« Laisser en service » non plus). */
   const tableauEl=mouturesPropositions.length&&!laissees?<div data-dp="tableau-moutures" className="w-full rounded-panel border-2 border-cave-50/80 p-2 space-y-1 text-sm">
@@ -783,6 +791,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* La barre sous la rangée : seulement un rouge (l'unité qui ne se déduit pas : g, kg, Stk) ou un jaune qui demande un geste (un bis, plusieurs articles). Aucun bouton « Créer » au repos. */
     /* VERDICT-f3-p2, détail 3 : plateau ouvert, la barre d’un bis se fond dans la ligne « article » (un seul ⇄) ; fermée, la barre reste. */
     const ouverte=ouvertesRef.current.has(line.id)?Boolean(ouvertesRef.current.get(line.id)):Boolean(startsOpen(line));
+    if(ouverte)plateauxOuverts.add(line.id);
     const garderBisEl=bisAConfirmer&&regle&&voisin?<button type="button" aria-label={`Garder le nouvel article « ${neuf?.name??line.description.trim()} »`} onClick={()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">{neuf?.name??line.description.trim()}</button>:null;
     const stockBisEl=bisAConfirmer&&regle&&voisin?<span data-dp-stock-bis className="inline-flex items-center gap-1 text-xs text-cave-400 opacity-80"><Package size={14}/>stock : {etiquetteVoisin(regle,voisin)}</span>:null;
     const bisFondu=bisAConfirmer&&ouverte;
@@ -904,8 +913,21 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const HORS_STOCK_KINDS=['service','shipping','discount','other','maintenance'];
   const niveauLigne=new Map(draft.lines.map(l=>{const c=confianceLigne(ligneConfianceDe(effDe(l)),ctxConf),n=niveauxRangee(l,c),vide=!l.description.trim();return [l.id,{unite:c.unite.niveau,pire:vide?'inconnu' as Niveau:n.pire}];}));
   const ligneBandes:LigneBande[]=lignesAff.map(l=>{const i=draft.lines.indexOf(l),u=uniteDe(l),art=articleDe(l),cv=art?conversionDe({...l,unit:u},art):undefined,m=cv?/=\s*(\d+)\s*sachet/.exec(cv):null,nu=niveauLigne.get(l.id)?.unite;
-    return {id:l.id,groupe:groupeDeLigne(i),amount:l.amount,quantity:l.quantity,unit:shortUnit(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{})};});
+    const sf=sousFamilleLigne(i),pire=niveauLigne.get(l.id)?.pire;
+    return {id:l.id,groupe:groupeDeLigne(i),...(sf?{sousFamille:sf}:{}),...((pire&&pire!=='sur')||douteuxIds.has(l.id)?{averifier:true}:{}),amount:l.amount,quantity:l.quantity,unit:shortUnit(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{})};});
   const bandes=calculerBandes(ligneBandes);
+  /* D307 : les rangées qu'on doit voir ouvrent leur sous-groupe, quel que soit le choix (plateau ouvert, filtre des comptes). */
+  const forcesGroupes=new Set<string>([...plateauxOuverts,...(visibles??[])]);
+  /* D311 (son choix E) : l'état du segment « Plié | Déplié » se calcule sur l'état réel des groupes, il n'est jamais gardé. */
+  const etatSeg=etatSegment(bandes,choixGroupes,forcesGroupes);
+  /* Replier un sous-groupe ferme les plateaux de ses rangées : sinon une rangée ouverte forcerait le groupe à rester ouvert. */
+  const fermerPlateaux=(ids:readonly string[])=>{let change=false;ids.forEach(id=>{if(plateauxOuverts.has(id)){ouvertesRef.current.set(id,false);change=true;}});if(change)setPlateaux(n=>n+1);};
+  const basculerGroupe=(cle:string,sg:SousGroupe,ouvrir:boolean)=>{setChoixGroupes(c=>poserGroupe(c,cle,sg.nom,ouvrir));if(!ouvrir)fermerPlateaux(sg.ids);};
+  /* « Tout plier, déplier » (toutes les bandes ou une seule) : l'état est prêt ; son contrôle visible est le choix de la voie r3-plier (rien n'est posé à l'écran ici). */
+  const toutPlierGroupes=(cle?:string)=>{setChoixGroupes(c=>plierTout(bandes,c,cle));bandes.filter(b=>!cle||b.cle===cle).forEach(b=>b.sousGroupes?.forEach(sg=>{if(pliable(sg)&&!sg.averifier)fermerPlateaux(sg.ids);}));};
+  const toutDeplierGroupes=(cle?:string)=>setChoixGroupes(c=>deplierTout(bandes,c,cle));
+  /* Une cible (« y aller », une erreur) dans un sous-groupe replié : il s'ouvre d'abord, de façon synchrone, avant le défilement et le focus. */
+  const reveler=(el:Element|null|undefined)=>{const corps=el?.closest<HTMLElement>('[data-dp-sg-corps]'),cle=corps?.dataset.dpSgCorps;if(corps&&cle&&corps.hidden)flushSync(()=>setChoixGroupes(c=>new Map(c).set(cle,true)));};
   const barre:ItemBarre[]=lignesAff.map(l=>({id:l.id,cents:l.amount===undefined?0:Math.round(l.amount*100),groupe:groupeDeLigne(draft.lines.indexOf(l)),ouvert:douteuxIds.has(l.id),nom:l.description}));
   const centsAff=lignesAff.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
   const papier=ordre==='papier'?{ids:lignesAff.map(l=>l.id),cents:centsAff,incomplet:lignesAff.some(l=>l.amount===undefined),...((()=>{const c=portCents(draft.lines,port);return c&&!lignesAff.some(l=>port.has(l.id))?{port:c}:{};})())}:null;
@@ -1096,7 +1118,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-3 lg:order-none lg:pb-0">{rubriquesScan}{phraseRecu}</div>
       </div>
       <div className="order-2 lg:order-none lg:col-start-2">
-        <Liste ordre={ordre} bandes={bandes} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
+        <Liste ordre={ordre} bandes={bandes} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
           pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,detail:draft.lines.length>1?detailListe:null}}
           onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>
@@ -1118,7 +1140,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </fieldset>;
   const enteteFichier=surFichier;
   return <ModalShell open onClose={()=>{if(!busy&&!saving)onClose();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl" plein>
-    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={onClose} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}/>
+    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={onClose} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
+      milieu={ordre==='cat'&&etatSeg.visible?<SegmentPlier plie={etatSeg.plie} deplie={etatSeg.deplie} onPlier={()=>toutPlierGroupes()} onDeplier={()=>toutDeplierGroupes()}/>:undefined}/>
     <div ref={scroller} className="dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]">
       <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)} pages={pagesJointes?pages.map(p=>({id:p.id,url:p.url,nom:p.file.name})):undefined} onChanger={pagesJointes?ouvrirEntree:()=>fileInput.current?.click()}/></div>
       <div data-dp="alertes" className="space-y-1.5 px-2 pt-1.5 empty:hidden">{recu}{alertes}</div>

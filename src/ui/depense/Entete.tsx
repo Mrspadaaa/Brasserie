@@ -9,11 +9,14 @@ export interface FichierJustif { nom: string; url: string; type: string }
 
 export function Entete(p: { titleId: string; titre: string; horsLigne: boolean; fichier: FichierJustif | null; ouvert: boolean; fermerOff: boolean; onFermer: () => void; onBasculer: () => void; recapRef?: React.Ref<HTMLElement>;
   /** Le nombre de pages du justificatif joint (2 et plus) : la pile « N » remplace l'icône du document. */
-  pages?: number }) {
+  pages?: number;
+  /** D311 : ce qui se pose entre le titre et le justificatif (le segment « Plié | Déplié » de son choix E) ; rien par défaut. */
+  milieu?: React.ReactNode }) {
   const plusieurs = (p.pages ?? 0) > 1;
   return <header className="flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1">
     <button type="button" disabled={p.fermerOff} onClick={p.onFermer} aria-label="Fermer" className="flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"><X size={20}/></button>
     <h2 id={p.titleId} className="min-w-0 flex-1 truncate text-base font-semibold text-cave-50">{p.titre}</h2>
+    {p.milieu ?? null}
     {p.horsLigne ? <span data-dp="hors-ligne" title="Hors ligne · brouillon gardé" className="shrink-0 rounded-control border border-cave-600 px-1.5 text-xs leading-5 text-cave-200">hors ligne</span> : null}
     {p.fichier ? plusieurs
       ? <button type="button" aria-label={`Justificatif, ${p.pages} pages : voir les pages, changer`} aria-expanded={p.ouvert} onClick={p.onBasculer} className={`flex h-8 min-w-8 items-center justify-center rounded-control px-1 text-cave-200 ${p.ouvert ? 'bg-cave-800' : ''}`}><PilePages n={p.pages!}/></button>

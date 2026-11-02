@@ -52,3 +52,20 @@
 .dp-p3c-t-papier { --dp-p3c-teinte: rgb(var(--cave-400) / .2); }
 /* D275c : le nom d'une rangée tient sur une ligne, deux au plus pour un nom long ; il passe à la ligne entre deux mots, jamais au milieu d'un mot. L'imprimé entier est au plateau. */
 .dp-p3c-nom { overflow-wrap: normal; word-break: normal; hyphens: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+/* D307 (son choix D) : la ligne d'une sous-famille repliée sous l'en-tête de bande, à la hauteur d'une rangée. `--dp-sg-c` : la couleur de la famille de la bande (le fond de la ligne ouverte). */
+.dp-p3c-sg-c-malt { --dp-sg-c: 224 160 46; }
+.dp-p3c-sg-c-houblon { --dp-sg-c: var(--hop); }
+.dp-p3c-sg-c-levure { --dp-sg-c: var(--area-finances); }
+.dp-p3c-sg-c-sucre { --dp-sg-c: 200 122 44; }
+.dp-p3c-sg-c-additif { --dp-sg-c: var(--area-agenda); }
+.dp-p3c-sg-c-materiel { --dp-sg-c: var(--water); }
+.dp-p3c-sg-c-emballage { --dp-sg-c: var(--dp-fam-emballage); }
+.dp-p3c-sg-c-nettoyage { --dp-sg-c: var(--dp-fam-nettoyage); }
+.dp-p3c-sg-c-consommable { --dp-sg-c: var(--dp-fam-consommable); }
+.dp-p3c-sg-c-renovation { --dp-sg-c: var(--dp-fam-renovation); }
+.dp-p3c-sg-c-service { --dp-sg-c: var(--dp-fam-service); }
+.dp-p3c-sg-c-autres { --dp-sg-c: var(--cave-400); }
+.dp-p3c-sg[aria-expanded='true'] { background: rgb(var(--dp-sg-c, var(--cave-400)) / .1); }
+.dp-p3c-sg:focus-visible { outline-offset: -2px; border-radius: 0; }
+/* D311 (son choix E) : le segment « Plié | Déplié » est rogné par son cadre (overflow caché) : le contour de focus se dessine à l'intérieur. */
+.dp-p3c-seg:focus-visible { outline-offset: -2px; border-radius: 0; }
