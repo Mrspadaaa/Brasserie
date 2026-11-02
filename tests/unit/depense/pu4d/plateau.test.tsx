@@ -81,12 +81,13 @@ describe('le plateau porté, sur l’écran rendu', () => {
     expect(a.querySelector('[data-dp-centime]')).toBeNull();
     expect(a.querySelector('[data-dp-stock]')?.textContent).toContain('Maris Otter');
   });
-  it('une ligne hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d) et les quatre types en pastilles d’un toucher', async () => {
+  it('une ligne hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d) et la famille sous « Famille », sans pastilles (D364)', async () => {
     const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Tournevis cruciforme', 'equipment', 1, 'Stk', 9.5)]);
     const c = ouvrir(view, 'line-2');
     expect(c.querySelector('[data-dp-stock]')?.textContent).toContain('hors stock');
-    expect([...c.querySelectorAll('[data-dp-types] button')].map(b => b.textContent)).toEqual(['Nettoyage', 'Entretien', 'Emballages', 'Outillage']);
-    expect(c.querySelector('[data-dp-types] [aria-pressed="true"]')?.textContent).toBe('Outillage');
+    expect(c.querySelector('[data-dp-types]')).toBeNull();
+    expect(c.querySelector('[data-dp-suivre], button')).not.toBeNull();
+    expect(c.querySelector('select[data-dp-famille]')).not.toBeNull();
     expect(c.querySelector('select:not([data-dp-famille])')).toBeNull();
   });
 });
