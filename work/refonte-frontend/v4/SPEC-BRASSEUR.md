@@ -1139,3 +1139,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **« Tout valider » : son choix B** (02.11, vers 17 h, devant la page « Lecture lente : « Tout valider » les lignes pas retrouvées · 02.11 »,
   https://claude.ai/artifact/8ggW4mCuYfjgY85qQKsUP1, après « Sans réponse, je garde B »), mot pour mot : « Oui b » (lu : le bandeau au pouce
   montre la ligne en cours, « pas retrouvée · 1/2 », Garder et Retirer, et « ↻ Tout valider » à côté. D316.)
+- **Passer à l'intégration** (02.11, vers 17 h, après D316), mot pour mot : « On peut pas passer directement à l'intégration dans l'app »
+  (lu, L01, lecture étroite : plus de page de choix ni de mini maquette pour ce qui reste de la Dépense ; le reste se code dans l'app avec le
+  défaut du pilote et il le juge dans l'app. D317.)
