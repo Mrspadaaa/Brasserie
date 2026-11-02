@@ -149,7 +149,7 @@ describe('D371, D372 — une ligne en pièce reliée à un houblon compté en g'
     const duel = l.querySelector('[data-dp-duel]');
     expect(duel?.getAttribute('data-dp-lien-etat')).toBe('inconnu');
     expect(duel?.textContent).toContain('pièce ne s’ajoute pas');
-    expect(duel?.textContent).toMatch(/compté ens*g/);
+    expect(duel?.textContent).toContain('compté en g');
     expect(l.querySelector('[data-dp-unite-segments]')).toBeNull();
     const cases = l.querySelector('[data-dp-cases-unite]');
     expect(cases?.textContent).toContain('g proposé, comme au stock');
