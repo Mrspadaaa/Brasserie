@@ -175,13 +175,14 @@ describe('R6 : échecs comptés et non comptés', () => {
   });
 });
 
-describe('Plafond : 5 recherches arrivées par jour', () => {
-  it('la 6ᵉ du jour attend le lendemain', async () => {
-    const lignes = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot'].map((n, i) => ligne(`l${i}`, `Weyermann ${n} du Banc`, 'kg', 1, { stockCategory: 'Malt' }));
+describe(`Plafond : ${PLAFOND_JOUR} recherches arrivées par jour`, () => {
+  it('la suivante du jour attend le lendemain', async () => {
+    expect(PLAFOND_JOUR).toBe(30);
+    const lignes = Array.from({ length: PLAFOND_JOUR + 1 }, (_, i) => ligne(`l${i}`, `Weyermann Essai${i} du Banc`, 'kg', 1, { stockCategory: 'Malt' }));
     const d = saisie(lignes);
     await confirmer(d);
     expect(banc.recherche).toHaveBeenCalledTimes(PLAFOND_JOUR);
-    expect(await travail(banc, `MP-${d.submissionId}-5`)).toMatchObject({ etat: 'plafond' });
+    expect(await travail(banc, `MP-${d.submissionId}-${PLAFOND_JOUR}`)).toMatchObject({ etat: 'plafond' });
     banc.horloge.ms += JOUR; await tourner();
     expect(banc.recherche).toHaveBeenCalledTimes(PLAFOND_JOUR + 1);
   });

@@ -24,10 +24,10 @@ export const iaPermise = (): boolean => etatIA() !== 'eteinte';
 /** Vitest pose `MODE === 'test'` : l'exécutant réel y est interdit (P4). */
 export const enTest = (): boolean => (import.meta as { env?: Record<string, unknown> }).env?.MODE === 'test';
 
-/** Recherches arrivées au serveur, par jour de Zurich et par appareil. */
-export const PLAFOND_JOUR = 5;
-/** Garde-fou de coût : tentatives parties par jour, quelle qu'en soit l'issue. */
-export const PLAFOND_TENTATIVES = 10;
+/** Recherches arrivées au serveur, par jour de Zurich et par appareil (D299 : « augmente à 30 appel Max par jour »). */
+export const PLAFOND_JOUR = 30;
+/** Garde-fou de coût : tentatives parties par jour, quelle qu'en soit l'issue ; 30 appels au plus, échecs compris (D299). */
+export const PLAFOND_TENTATIVES = 30;
 /** 30 min au moins entre deux essais d'un même travail, dans une même vie de page. */
 export const ECART_ESSAIS_MS = 30 * 60_000;
 /** Trois jours distincts d'échec compté → `echec`. */

@@ -1089,3 +1089,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   éteinte en ligne. Je vous proposerai d'abord 3 appels réels mesurés. » : « Allume la » (lu : pour cette tâche, les gestes externes
   qu'elle exige se font sans lui demander ; l'IA de remplissage des fiches s'allume en ligne dès le prochain déploiement, sans attendre
   3 appels d'essai ; ses coûts se mesurent sur les premiers appels réels, dans le budget fixé. D298.)
+  Puis, en citant « Le coût sera mesuré sur les premiers vrais appels ; je n'ai fabriqué aucun appel d'essai. », mot pour mot : « Fait en 1 ou 2
+  et augmente à 30 appel Max par jour » (lu : faire 1 ou 2 appels réels pour mesurer le coût, et monter le plafond de l'IA de remplissage
+  des fiches à 30 appels par jour. D299.)
