@@ -199,7 +199,7 @@ describe('« Tout valider » (sa maquette B, D316) à deux lignes', () => {
     fireEvent.click(within(view.container.querySelector<HTMLElement>('[data-dp="perdues"]')!).getByRole('button', { name: /Tout valider/ }));
     await waitFor(() => expect(view.container.querySelector('[data-dp="perdues"]')).toBeNull());
     expect(view.container.querySelector('[data-dp-perdue]')).toBeNull(); expect(lignes(view)).toHaveLength(7);
-    expect(view.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/3\s*corrigées/);
+    expect(view.container.querySelector('[data-va="corrigees"]')).toBeNull(); // D354 : tout est accepté, la puce ne compte plus rien
   });
 });
 

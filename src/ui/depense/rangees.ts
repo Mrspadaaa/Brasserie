@@ -60,10 +60,15 @@ export function avecUnitesDeduites<D extends Pick<PurchaseDraft, 'lines' | 'vend
 /** Les niveaux que la rangée montre : la quantité (avec son unité), le prix, le montant, et le nom (famille ou article à contrôler). */
 export interface NiveauxRangee { qte: Niveau; prix: Niveau; montant: Niveau; nom: Niveau; pire: Niveau; raisons: string[] }
 const INGREDIENT = 'ingredient';
+/**
+ * L'article ne compte que pour un ingrédient : pour l'emballage, le matériel, le nettoyage, « aucun mouvement » est un choix, pas un doute. Une exception (D334, g7-reste) : « ⇄ Choisir un
+ * autre article » touché sans choisir laisse un lien demandé et vide (`existing`, sans `stockRef`), quelle que soit la nature : le champ est à remplir (le plateau le dit déjà en rouge).
+ */
+export const articleCompte = (line: Pick<PurchaseLineDraft, 'kind' | 'stockAction' | 'stockRef'>): boolean =>
+  line.kind === INGREDIENT || (line.stockAction === 'existing' && !line.stockRef);
 export function niveauxRangee(line: PurchaseLineDraft, conf: ConfianceLigne): NiveauxRangee {
   const qte = pireNiveau([conf.unite, conf.quantite]);
-  // L'article ne compte que pour un ingrédient : pour l'emballage, le matériel, le nettoyage, « aucun mouvement » est un choix, pas un doute.
-  const nom = pireNiveau([conf.famille, ...(line.kind === INGREDIENT ? [conf.article] : [])]);
+  const nom = pireNiveau([conf.famille, ...(articleCompte(line) ? [conf.article] : [])]);
   const raisons = [
     ...(qte !== 'sur' ? [conf.unite.niveau !== 'sur' ? conf.unite.raison : conf.quantite.raison] : []),
     ...(conf.prix.niveau !== 'sur' ? [conf.prix.raison] : []), ...(conf.montant.niveau !== 'sur' ? [conf.montant.raison] : []),

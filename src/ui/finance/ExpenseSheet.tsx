@@ -49,9 +49,9 @@ import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libe
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { bandes as calculerBandes,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
-import { avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
-import { confianceEntete,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
-import { uniteEffective } from '../../services/purchaseEntry';
+import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
+import { confianceEntete,natureSansEnjeu,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
+import { arrondiDuTotal,uniteEffective } from '../../services/purchaseEntry';
 import { regleProduit,linkUnit } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
@@ -179,7 +179,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Ce que la fusion a corrigé (pour le bleu des cellules, l'ancienne valeur barrée, la puce), les lignes que la 3.8 ne lit plus (hors du brouillon, donc hors des sommes) et le nombre de lignes gardées. */
   const [fusion,setFusion]=useState<{lignes:Record<string,Correction[]>;entete:Record<string,{avant:unknown;apres:unknown}>;ajoutees:ReadonlySet<string>;n:number;avant:Record<string,CellulesLigne>}|null>(null);
   const [perdues,setPerdues]=useState<Perdue[]>([]),[nGardees,setNGardees]=useState(0);
-  /* D329 : la file des changements de la 3e lecture. `tranchees` : les corrections et lignes ajoutées gardées (elles restent à l'écran, bleues) ; `nTranchees` : les gestes faits (le « 2/7 » du bandeau). */
+  /* D329 : la file des changements de la 3e lecture. `tranchees` : les corrections et lignes ajoutées gardées (D354 : la marque, bleu et ancienne valeur barrée, ne reste que tant que son geste l'attend) ; `nTranchees` : les gestes faits (le « 2/7 » du bandeau). */
   const [tranchees,setTranchees]=useState<Set<string>>(()=>new Set()),[nTranchees,setNTranchees]=useState(0);
   /* D332 : les lignes d'avant « Regrouper en une dépense », rendues par « Rétablir » jusqu'à « Confirmer ». */
   const [avantRegroupement,setAvantRegroupement]=useState<PurchaseLineDraft[]|null>(null);
@@ -722,7 +722,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const chipQr:Chip[]=[...(qrContredit?[{id:'qr',nom:'Total',enjeu:'argent',ligne:null,codes:[],source:'qr'} as Chip]:[]),...qrEcarts.map((k):Chip=>({id:`qr:${k}`,nom:NOM_ECART[k],enjeu:'argent',ligne:null,codes:[],source:'qr',cible:k}))];
   /* D277 : le point « unité absente » d'une ligne dont l'unité se déduit n'est plus un point : la rangée la dit (jaune, ou rien si elle est sûre). */
   const uniteDeduiteDe=(c:Chip)=>{const l=c.ligne?draft.lines.find(x=>x.id===`line-${c.ligne}`):undefined;return Boolean(l&&isReadableUnit(uniteDe(l)));};
-  const chips=[...chipQr,...chipsDeLecture(points,extras).filter(c=>!(qrContredit&&c.nom==='Total'&&c.source==='point')&&!(c.codes.length>0&&c.codes.every(code=>code==='unite-absente')&&uniteDeduiteDe(c)))].map(c=>c.source==='mouture'?{...c,nom:`${c.nom}${sommeMoutures>0?` +${(sommeMoutures/100).toFixed(2).replace('.',',')}`:''}`}:c.codes.includes('unite-absente')&&c.ligne?{...c,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===`line-${c.ligne}`)?.description??c.nom))} unité`}:c);
+  /* D328a, D353 : un désaccord sur la seule nature d'une ligne sans stock (matériel, rénovation, services) n'engage rien : sûr = rien, ni chip ni file. */
+  const ctxPoints=contexteConfiance(draftEff,articlesStock,points),pointsMontres=points?.filter(p=>!natureSansEnjeu(p,ctxPoints));
+  const chips=[...chipQr,...chipsDeLecture(pointsMontres,extras).filter(c=>!(qrContredit&&c.nom==='Total'&&c.source==='point')&&!(c.codes.length>0&&c.codes.every(code=>code==='unite-absente')&&uniteDeduiteDe(c)))].map(c=>c.source==='mouture'?{...c,nom:`${c.nom}${sommeMoutures>0?` +${(sommeMoutures/100).toFixed(2).replace('.',',')}`:''}`}:c.codes.includes('unite-absente')&&c.ligne?{...c,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===`line-${c.ligne}`)?.description??c.nom))} unité`}:c);
   const ligneDe=(chip:Chip)=>chip.cible??(chip.ligne?`line-${chip.ligne}`:undefined);
   const estRegle=(chip:Chip):boolean=>{
     if(reglees.has(chip.id))return true;
@@ -887,7 +889,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const conf=confianceLigne(ligneConfianceDe(eff),ctxConf),nv=niveauxRangee(line,conf);
     const niveaux={...nv,nom:line.description.trim()?nv.nom:'inconnu' as Niveau,raisons:line.description.trim()?nv.raisons:['libellé à remplir',...nv.raisons]};
     /* D334 : le champ qui manque porte le rouge et son nom au plateau ; le mot est un geste (focus sur le champ). */
-    const rouges=champsARemplir(conf,{libelleVide:!line.description.trim(),ingredient:line.kind==='ingredient'});champsRougesIds.set(line.id,rouges);
+    const rouges=champsARemplir(conf,{libelleVide:!line.description.trim(),ingredient:articleCompte(line)});champsRougesIds.set(line.id,rouges);
     const rougeDe=(c:ChampARemplir['champ'])=>rouges.some(r=>r.champ===c),ROUGE=' !border-dashed !border-alert',niv=(c:ChampARemplir['champ'])=>rougeDe(c)?{'data-dp-niveau':'inconnu'}:{};
     /* Un « bis » fait nouvel article d'office (D215, D275d) : sa barre reste, jaune, tant qu'il n'a pas choisi (« Target bis » ou ⇄). */
     const bisAConfirmer=!isMouture&&line.stockAction==='new'&&neufDOffice.current.has(line.id)&&Boolean(voisin);
@@ -968,7 +970,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
       douteux={douteux} filtree={Boolean(visibles&&visibles.has(line.id)&&!isMouture)} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}
       fix={correction} fixNiveau={fixNiveau} lienNiveau={status.proposed?"repris":undefined} plateau={plateauEl} moutureArticles={enfant&&cestMoutureEnPastille?construire(enfant,enfantIdx,false):undefined}
-      onToggle={surToggle} corrigee={corrigeeDe(line)} neuve={fusion?.ajoutees.has(line.id)}/>;
+      onToggle={surToggle} corrigee={tranchees.has(`corr:${line.id}`)?undefined:corrigeeDe(line)} neuve={Boolean(fusion?.ajoutees.has(line.id))&&!tranchees.has(`ajout:${line.id}`)}/>;
   };
   const tvaLues=[...new Set((points??[]).filter(p=>p.code==='lectures-divergentes'&&/tva/i.test(p.champ)).flatMap(p=>(p.valeurs??[]).map(v=>v.valeur).filter((v):v is number=>typeof v==='number')))];
   const tvaPoint=(points??[]).find(p=>p.code==='tva-incoherente');
@@ -1113,7 +1115,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {...compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),n:parNiveau('repris').length+desaccordsRestants.filter(c=>c.ligne===null).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0)},
     compteDe('remplir',parNiveau('inconnu'),()=>'à remplir','precis',chips.filter(c=>c.codes.includes('unite-absente')),undefined,'inconnu'),
     /* Lenteur D (sa maquette `d-lue`) : « ↻ N corrigées », au geste de filtre des autres puces. N compte les CIBLES (une rangée à deux cellules corrigées : 1 ; un champ d'en-tête : 1 ; une ligne ajoutée : 1) et, comme sa maquette `choix-valider`, les lignes pas retrouvées qui attendent encore. */
-    ...(()=>{const ids=[...Object.keys(fusion?.lignes??{}).filter(id=>draft.lines.some(l=>l.id===id)),...(fusion?[...fusion.ajoutees]:[]),...perdues.map(p=>p.ligne.id)],n=(fusion?.n??0)+perdues.length,mot=n>1?'corrigées':'corrigée';return n>0?[{cle:'corrigees',n,mot,lien:'aucun' as LienStock,ronds:[],fait:false,ids,actif:filtre?.mot===mot,corrigee:true} as CompteItem]:[];})(),
+    ...(()=>{/* D354 : un changement accepté (Garder, Tout valider) ne se marque plus : ni la rangée, ni la puce ne le comptent. */const touchees=[...Object.keys(fusion?.lignes??{}).filter(id=>draft.lines.some(l=>l.id===id)),...(fusion?[...fusion.ajoutees]:[])],attendues=touchees.filter(id=>!tranchees.has(`corr:${id}`)&&!tranchees.has(`ajout:${id}`)),ids=[...attendues,...perdues.map(p=>p.ligne.id)],n=Math.max(0,(fusion?.n??0)-(touchees.length-attendues.length))+perdues.length,mot=n>1?'corrigées':'corrigée';return n>0?[{cle:'corrigees',n,mot,lien:'aucun' as LienStock,ronds:[],fait:false,ids,actif:filtre?.mot===mot,corrigee:true} as CompteItem]:[];})(),
   ];
   const surCompte=(c:CompteItem)=>{
     if(c.cle==='controler'&&!c.ids.length&&desaccordsRestants[0]){aller(desaccordsRestants[0]);return;}
@@ -1271,7 +1273,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </>;
   const recu=done?<div data-dp="recu" role="status" className="min-w-0 rounded-panel border border-hop/40 bg-hop/5 p-2 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>:null;
   const rubriquesScan=<Rubriques items={[itemQuoi,...itemsRub]}/>;
-  const detailListe={lignes:fr2c(draft.lines.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0)),total:fr2c(Math.round((draft.amount||0)*100)),ecart:Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005};
+  /* D358 : l'arrondi suisse à 5 centimes est SA ligne neutre (celle que l'enregistrement ajoute, `arrondiDuTotal` : même règle) ; avec elle le détail égale le total et rien n'est signalé. Tout autre écart reste signalé. Elle n'est pas dans le brouillon : rien n'est compté deux fois. */
+  const arrondiCents=arrondiDuTotal(draft)||0,sommeCents=draft.lines.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
+  const detailListe={lignes:fr2c(sommeCents+arrondiCents),total:fr2c(Math.round((draft.amount||0)*100)),ecart:Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)+arrondiCents/100-(draft.amount||0))>0.005};
   const scanLayout=scan?.ok&&result&&statutFinal?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0">
     {/* 1280 : la colonne de gauche (récap, tuiles, rubriques) est COLLANTE comme `.p3a3-gauche` de la maquette (sticky top 0, hauteur du corps, défilement propre) ; sur téléphone
         l'enveloppe disparaît (`contents`) et `order` garde l'ordre d'avant : récap, liste, rubriques. */}
@@ -1292,7 +1296,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-2 lg:order-none lg:col-start-2">
         <Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
-          pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,detail:draft.lines.length>1?{...detailListe,cache:Boolean(scan?.cached)}:null}}
+          pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,arrondi:arrondiCents?{texte:`${arrondiCents<0?'−':'+'}${fr2c(Math.abs(arrondiCents))}`}:null,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,detail:draft.lines.length>1?{...detailListe,cache:Boolean(scan?.cached)}:null}}
           onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={regrouper}>
           {tiroirPort}
         </Liste>

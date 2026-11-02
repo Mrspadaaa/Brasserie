@@ -14,7 +14,7 @@ import { isReadableUnit } from '../../services/ingredientIdentity';
 import { donneesDeLigne, linkUnit, regleProduit, SACHET_MAX_G, shortUnit } from '../../services/stockLineMatching';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { StockItem } from '../../types';
-import { estFamilleIngredient, familleDe, jetons, type FamilleCle } from './familles';
+import { estFamilleIngredient, familleAUnStock, familleDe, jetons, type FamilleCle } from './familles';
 
 export type Niveau = 'sur' | 'repris' | 'inconnu';
 /** Une valeur et ce qu'on en sait. `valeur` absente + `sur` = « sans objet » (un port n'a pas d'unité) ; absente + `inconnu` = rien de lisible. */
@@ -325,6 +325,20 @@ export interface ConfianceLigne {
 }
 const sansObjet = (): { niveau: Niveau; raison: string } => ({ niveau: 'sur', raison: 'sans objet : ne passe pas en stock' });
 
+/**
+ * D328a, D353 (g7-reste) : un désaccord des lectures sur la seule NATURE (`kind`) d'une ligne dont la famille n'a pas de stock (matériel, rénovation, services) n'engage rien :
+ * ni mouvement de stock, ni article, la famille vient des mots de la ligne et non de la nature disputée. Sûr = rien (D277) : ni la rangée, ni la file des désaccords ne le marquent.
+ * La famille « Autres » (rien ne dit mieux) et celles qui entrent en stock (nettoyage, emballage…) gardent le désaccord : leur nature décide d'un mouvement.
+ */
+const estDesaccordDeNature = (p: InvoicePoint): boolean => p.code === 'lectures-divergentes' && p.champs.length > 0 && p.champs.every(champ => /^items\.\d+\.kind$/.test(champ));
+export function natureSansEnjeu(p: InvoicePoint, c: ContexteConfiance): boolean {
+  if (!estDesaccordDeNature(p) || p.ligne === null || p.ligne === undefined) return false;
+  const l = c.lignes.find((x, i) => (ligneDepuisId(x.id) ?? i + 1) === p.ligne);
+  if (!l) return false;
+  const famille = familleDeLigne(l, c);
+  return !familleAUnStock(famille) && famille !== 'autres';
+}
+
 /** La somme des montants des lignes tombe sur le total imprimé : le total corrobore chaque montant (règle du serveur, `sumCheck`). */
 export function totalCorrobore(c: ContexteConfiance): boolean {
   if (c.total === null || c.total === undefined) return false;
@@ -335,7 +349,7 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
   const kind = kindDe(l.kind), horsStock = HORS_STOCK.has(kind);
   const rang = ligneDepuisId(l.id) ?? (c.lignes.findIndex(x => x.id === l.id) + 1);
   const corrobore = totalCorrobore(c);
-  const cibles = (c.points ?? []).filter(p => p.ligne === rang).flatMap(p => ciblesDuPoint(p, corrobore));
+  const cibles = (c.points ?? []).filter(p => p.ligne === rang && !natureSansEnjeu(p, c)).flatMap(p => ciblesDuPoint(p, corrobore));
   const de = (champ: ChampLigne) => cibles.filter(x => x.champ === champ);
 
   const unite = ((): ValeurUnite => {

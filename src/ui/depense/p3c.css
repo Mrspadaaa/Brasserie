@@ -77,3 +77,6 @@
 .dp-p3c-on-finances { --dp-on: var(--area-finances-texte); }
 /* D311 (son choix E) : le segment « Plié | Déplié » est rogné par son cadre (overflow caché) : le contour de focus se dessine à l'intérieur. */
 .dp-p3c-seg:focus-visible { outline-offset: -2px; border-radius: 0; }
+/* D328d (g7-reste) : sous un filtre, en sombre, la rangée gardée avait un fond ambre à 15 % : le texte secondaire (154,138,126) n'y tenait que 3,9 à 4,0:1 et le vert « ✓ au centime » 4,0:1.
+   À 5 % le même texte tient 4,5:1 au moins sur le fond le plus clair de la feuille ; le repère de la rangée gardée reste son bord de 1,5 px (et l'éclair de 1,6 s). Le clair ne change pas. */
+[data-theme='cave'] [data-dp-filtree] { background-color: rgb(var(--attention) / .05); }

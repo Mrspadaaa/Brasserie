@@ -65,17 +65,19 @@ describe('D329 : les valeurs corrigées passent par le bandeau', () => {
     expect(geste(v, 'garder')).toBeEnabled(); expect(geste(v, 'annuler')).toBeEnabled(); expect(geste(v, 'tout')).toBeEnabled();
     expect(bandeau(v)!.querySelector('[data-dp-perdue-geste="retirer"]')).toBeNull();
   });
-  it('« Garder » : la correction reste (bleu, puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce', async () => {
+  it('« Garder » : la correction n’est plus marquée (D354 : ni bleu, ni ancienne valeur, un de moins à la puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce', async () => {
     const v = await lire('lue');
     fireEvent.click(geste(v, 'garder'));
     await waitFor(() => expect(nom(v)).toBe('Sabro'));
     expect(rang(v)).toBe('2/3'); expect(mot(v)).toMatch(/^quantité corrigée/);
-    expect(ligne(v, 'line-1')!.querySelector('[data-dp-qte]')!.getAttribute('data-dp-corrige')).toBe('1'); expect(champ(v, 'line-1', 'Quantité', 1)).toMatch(/^5/);
-    expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/3\s*corrigées/);
+    expect(ligne(v, 'line-1')!.querySelector('[data-dp-corrige]')).toBeNull(); expect(ligne(v, 'line-1')!.querySelector('[data-dp-avant]')).toBeNull(); // la valeur gardée reste, sa marque part
+    expect(champ(v, 'line-1', 'Quantité', 1)).toMatch(/^5/);
+    expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).not.toBeNull(); // Sabro attend encore son geste : sa marque reste
+    expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/2\s*corrigées/);
     fireEvent.click(geste(v, 'annuler'));
     await waitFor(() => expect(nom(v)).toBe('Citra'));
     expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).toBeNull(); expect((ligne(v, 'line-4')!.querySelector('[aria-label="Unité ligne 4"]') as HTMLInputElement).value).toBe('');
-    expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/2\s*corrigées/);
+    expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/1\s*corrigée(?!s)/);
     expect(rang(v)).toBe('3/3');
     fireEvent.click(geste(v, 'garder'));
     await waitFor(() => expect(bandeau(v)).toBeNull());
@@ -88,12 +90,13 @@ describe('D329 : les valeurs corrigées passent par le bandeau', () => {
     expect(champ(v, 'line-1', 'Quantité', 1)).toBe('10'); expect(champ(v, 'line-1', 'Prix', 1)).toBe('1,45');
     expect(ligne(v, 'line-1')!.querySelector('[data-dp-avant]')).toBeNull();
   });
-  it('« Tout valider » garde tout d’un toucher : le bandeau part, les corrections restent bleues, la puce garde son compte', async () => {
+  it('« Tout valider » garde tout d’un toucher : le bandeau part et plus rien ne se marque (D354 : ni bleu, ni ancienne valeur, plus de puce « corrigées »)', async () => {
     const v = await lire('lue');
     fireEvent.click(geste(v, 'tout'));
     await waitFor(() => expect(bandeau(v)).toBeNull());
-    expect(ligne(v, 'line-1')!.querySelector('[data-dp-qte]')!.getAttribute('data-dp-corrige')).toBe('1');
-    expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/3\s*corrigées/);
+    for (const id of ['line-1', 'line-4', 'line-5']) { const l = ligne(v, id)!; expect(l.hasAttribute('data-dp-corrigee'), id).toBe(false); expect(l.querySelector('[data-dp-corrige]'), id).toBeNull(); expect(l.querySelector('[data-dp-avant]'), id).toBeNull(); }
+    expect(champ(v, 'line-1', 'Quantité', 1)).toMatch(/^5/); // la valeur gardée est celle de la lecture
+    expect(v.container.querySelector('[data-va="corrigees"]')).toBeNull();
   });
   it('« Confirmer » sans trancher : tout est gardé (la quantité corrigée est enregistrée)', async () => {
     const v = await lire('lue');
@@ -116,13 +119,13 @@ describe('D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccor
     await waitFor(() => expect(mot(v)).toMatch(/corrigé/));
     expect(nom(v)).toBe('Malt Pilsner'); expect(rang(v)).toBe('3/5');
   });
-  it('« Tout valider » : les lignes perdues partent, les corrections restent', async () => {
+  it('« Tout valider » : les lignes perdues partent, les corrections gardées ne se marquent plus (D354)', async () => {
     const v = await lire('perdues-2');
     expect(v.container.querySelectorAll('[data-dp-perdue]')).toHaveLength(2);
     fireEvent.click(geste(v, 'tout'));
     await waitFor(() => expect(bandeau(v)).toBeNull());
     expect(v.container.querySelectorAll('[data-dp-perdue]')).toHaveLength(0);
-    expect(ligne(v, 'line-1')!.querySelector('[data-dp-corrige]')).not.toBeNull();
+    expect(ligne(v, 'line-1')!.querySelector('[data-dp-corrige]')).toBeNull();
   });
   it('la ligne ajoutée vient après les corrections : « ajoutée », Garder ou Retirer (la ligne et un de la puce partent)', async () => {
     const v = await lire('ajoutee');
@@ -136,7 +139,7 @@ describe('D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccor
     fireEvent.click(geste(v, 'retirer'));
     await waitFor(() => expect(bandeau(v)).toBeNull());
     expect(ligne(v, 'line-8')).toBeNull();
-    expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/3\s*corrigées/);
+    expect(v.container.querySelector('[data-va="corrigees"]')).toBeNull(); // D354 : les trois corrections sont gardées, la ligne ajoutée est retirée : plus rien à compter
   });
   it('un désaccord qui pèse vient en dernier ; c’est une valeur reprise : il compte dans « à contrôler » (pas de puce à part) ; « Garder » règle le point et le bandeau part', async () => {
     const v = await lire('sans-38', r => { r.points = [DESACCORD('vendor', null)]; });
