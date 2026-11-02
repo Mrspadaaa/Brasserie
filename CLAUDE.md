@@ -103,9 +103,9 @@ Système complet : `docs/agents/systeme.md`.
   inachevé récupérable (manque précis) / inutilisable ; finir ou brancher plutôt
   qu'ajouter une couche parallèle ; ne rien supprimer sans accord.
 - Tester d'abord par la vision (D343) : vraies pièces, chaque état et geste
-  dans Chrome, deux thèmes, 390 tactile et 1280, jugés par le critique
-  qui pense comme le brasseur (pratique, à sa place, réagit juste), puis le
-  pilote. Vitest pour les règles de calcul ; peu de fixtures. Local, puis
+  dans Chrome, deux thèmes, 390 tactile et 1280 ; le critique, puis le
+  pilote, fait seulement « combien et quels problèmes ? », liste numérotée
+  (D344). Vitest pour les règles de calcul ; peu de fixtures. Local, puis
   émulateurs, puis en ligne, lecture seule.
 - Gemini jamais dans un test unitaire ni dans `npm test` : toujours simulé.
   Appels réels seulement dans des tests spéciaux dédiés, lancés explicitement,

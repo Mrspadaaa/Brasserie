@@ -1224,3 +1224,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   Il faut passer moins de temps avec fixture et unit test mais beaucoup plus cas réel et test d'écran par vision sur une crique qui analyse et pense
   comme un brasseur, et regarde si tout est vraiment pratique, au bon endroit, réagit correctement » (lu : une règle de méthode pour toute l'app ;
   « crique » lu « critique » ; il précise aussitôt, mot pour mot : « Critique ». D343.)
+- **Le critique, simple** (02.11, soir, vers 19 h 10), mot pour mot : « Le critique ne doit pas faire 1000 trucs juste exactement ce que tu as fait
+  avec les 16 point » (lu : au test d'écran, le critique fait seulement ce que le pilote a fait sur sa capture : la question « combien et quels
+  problèmes ? », une liste numérotée, les doutes à part ; pas de grille. D344.)
