@@ -1099,3 +1099,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   des produits réels absents du catalogue, avec la requête même de la procédure, sans écrire dans son stock réel. D302.) Puis, en citant
   ma question « voulez-vous relever le budget IA du mois au-dessus de 20 CHF », mot pour mot : « oui 50chf » (lu : le plafond du mois
   du serveur, partagé par toute l'IA, passe de 20 à 50 CHF. D301.)
+- **Les familles de la rénovation** (02.11, vers 12 h 40, avec la photo d'un ticket de magasin de bricolage du jour : vitrificateur pour sol,
+  bac et rouleaux de peinture, turbine de mélange, brosses métalliques, ruban de masquage, détartrant, déboucheur, seau, combinaison et masque
+  de protection), mot pour mot : « Je viens de faire un achat, il me manque encore pas mal de catégorie, famille, sous familles, notamment pour
+  la rénovation » (lu : les catégories, familles et sous-familles de la Dépense ne couvrent pas les travaux du local ; un achat de rénovation
+  doit trouver sa catégorie et ses familles, sans finir en « Autre ». La photo reste hors de Git. D306.)
