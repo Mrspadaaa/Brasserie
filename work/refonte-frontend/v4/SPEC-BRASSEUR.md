@@ -1227,3 +1227,17 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Le critique, simple** (02.11, soir, vers 19 h 10), mot pour mot : « Le critique ne doit pas faire 1000 trucs juste exactement ce que tu as fait
   avec les 16 point » (lu : au test d'écran, le critique fait seulement ce que le pilote a fait sur sa capture : la question « combien et quels
   problèmes ? », une liste numérotée, les doutes à part ; pas de grille. D344.)
+- **La vue détail d'une ligne à refaire** (02.11, soir, vers 19 h 20, sa capture en clair de 18 h 01 : DURGOL EXPRESS ouvert sous Nettoyage, « plus »
+  ouvert), mot pour mot : « Cette vue là de détails doit être refait, fait moi des mini maquettes pour résoudre les problèmes, rendre le workflow,
+  process plus simple, sur téléphone notamment. Mapping peut utiliser l'ai su besoin » (lu : le plateau d'une ligne ouverte se refait ; mini
+  maquettes à lui montrer, téléphone d'abord ; la liaison à un article du stock peut s'appuyer sur l'IA ; « su » lu « si ». D345, L24.)
+- **« Mais l'app »** (02.11, soir, vers 19 h 30, sur ma phrase « l'app y a ajouté une phrase, un second sélecteur d'unité, une pastille en
+  trop »), mot pour mot : « mais l'app y a ajouté une phrase, un second sélecteur d'unité, une pastille en trop. / Comment ça main l'app ???? »,
+  puis : « Mais l'app » (lu : ce n'est pas l'app, c'est nous ; la phrase rejetait la faute sur l'outil. Le port de p3c-3 du 01.11, commit
+  c032e1a2, sous la direction du pilote, a ajouté la phrase d'unité et rangé l'ancien formulaire sous « plus » ; la pastille « article ? »
+  venait d'avant, gardée. D346, L03.)
+- (suite, vers 19 h 31), mot pour mot : « L'app ne décide pas, c'est que toi qui fait du code ??? » (lu : oui ; tout ce qui est dans l'app y a
+  été mis par le pilote ou les agents qu'il dirige. D346.)
+- **Le quota** (02.11, soir, vers 19 h 35), mot pour mot : « À 90% d'usage hebdo, terminé tes tâches » (lu : à 90 % de l'usage hebdomadaire,
+  tous modèles, le pilote termine et ferme ses tâches proprement : rien de neuf lancé, l'état de reprise écrit. Usage lu à cet instant : 81 %.
+  D347.)

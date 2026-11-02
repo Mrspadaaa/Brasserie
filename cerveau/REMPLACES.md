@@ -29,3 +29,5 @@ Corriger chaque copie, ne pas la contourner.
 | `stop à 80 %\|[Aa]ucun lancement (dès\|à partir de) 77 %` | aucun plafond hebdomadaire, la fenêtre de 5 h reste la seule limite (« Oublie la règle 80% elle est fausse, tu peux la supprimer ») | 2026-10-26 |
 | `sans unité devinée` | l'unité absente se déduit et se signale : sûre, rien ; reprise, jaune ; inconnue, rouge (D277, « de base ça essaie d'auto remplir ») | 2026-11-01 |
 | `Créer « … » »\? sur chaque ligne\|bouton « Créer » par ligne` | une ligne d'ingrédient sans article devient d'office un nouvel article, picto « nouveau », sans bouton au repos (D275) | 2026-11-01 |
+
+- 02.11 : « aucun nouvel agent dès 98 % hebdo, arrêt à 99 % » (26.10) remplacé par « À 90% d'usage hebdo, terminé tes tâches » ([[fermeture-et-quota]]).
