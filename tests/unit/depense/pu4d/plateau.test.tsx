@@ -130,8 +130,8 @@ describe('D370 — le libellé d’une ligne ajoutée', () => {
   });
 });
 
-describe('D371 — une ligne en pièce reliée à un houblon compté en g', () => {
-  it('« Galaxy » en pièce, « Suivre au stock » : reliée à l’article (pas de doublon), l’alerte « compté en g » et « Compter en g » d’un toucher', async () => {
+describe('D371, D372 — une ligne en pièce reliée à un houblon compté en g', () => {
+  it('« Galaxy » en pièce, « Suivre au stock » : reliée (pas de doublon) ; son face à face Facture | Stock (pu4d), « compté en g », cinq cases, g proposé ; g d’un toucher', async () => {
     const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3)]);
     const avant = new Set([...view.container.querySelectorAll('[data-dp-ligne]')].map(e => e.getAttribute('data-dp-ligne')));
     fireEvent.click(screen.getByRole('button', { name: /Ajouter une ligne/ }));
@@ -145,11 +145,19 @@ describe('D371 — une ligne en pièce reliée à un houblon compté en g', () =
     l = ligneEl(view, id);
     expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('Galaxy');
     expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('relié');
-    const alerte = l.querySelector('[data-dp-alerte-unite]');
-    expect(alerte?.textContent).toContain('compté en g');
-    fireEvent.click([...alerte!.querySelectorAll('button')].find(b => /Compter en g/.test(b.textContent ?? ''))!);
-    l = ligneEl(view, id);
+    // D372 : sa vue, pas une alerte : le face à face rouge, l'unité en ▒, les cinq cases, l'unité du stock proposée.
+    const duel = l.querySelector('[data-dp-duel]');
+    expect(duel?.getAttribute('data-dp-lien-etat')).toBe('inconnu');
+    expect(duel?.textContent).toContain('pièce ne s’ajoute pas');
+    expect(duel?.textContent).toMatch(/compté ens*g/);
+    expect(l.querySelector('[data-dp-unite-segments]')).toBeNull();
+    const cases = l.querySelector('[data-dp-cases-unite]');
+    expect(cases?.textContent).toContain('g proposé, comme au stock');
     expect(l.querySelector('[data-dp-alerte-unite]')).toBeNull();
+    fireEvent.click(cases!.querySelector('button[data-val="g"]')!);
+    l = ligneEl(view, id);
+    expect(l.querySelector('[data-dp-duel]')).toBeNull();
+    expect(l.querySelector('[data-dp-cases-unite]')).toBeNull();
     expect(l.querySelector('[data-dp-unite-segments] [aria-pressed="true"]')?.textContent).toBe('g');
     expect(state.writes).toEqual([]);
   });

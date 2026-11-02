@@ -14,6 +14,7 @@ import { isReadableUnit } from '../../services/ingredientIdentity';
 import { donneesDeLigne, linkUnit, regleProduit, SACHET_MAX_G, shortUnit } from '../../services/stockLineMatching';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { StockItem } from '../../types';
+import { uniteHorsArticle } from './calculPlateau';
 import { estFamilleIngredient, familleAUnStock, familleDe, jetons, type FamilleCle } from './familles';
 
 export type Niveau = 'sur' | 'repris' | 'inconnu';
@@ -352,7 +353,7 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
   const cibles = (c.points ?? []).filter(p => p.ligne === rang && !natureSansEnjeu(p, c)).flatMap(p => ciblesDuPoint(p, corrobore));
   const de = (champ: ChampLigne) => cibles.filter(x => x.champ === champ);
 
-  const unite = ((): ValeurUnite => {
+  let unite = ((): ValeurUnite => {
     const u = deduireUnite(l, c);
     // Une valeur imprimée ou tapée n'est pas baissée par un point de la lecture sur l'unité (le brasseur l'a sous les yeux) sauf désaccord des lectures.
     return baisser(u, de('unite').filter(x => !(u.source === 'imprimee' && x.raison.startsWith('remplacé')))) as ValeurUnite;
@@ -391,6 +392,9 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
       : { niveau: 'repris', raison: 'aucun article choisi' };
   }
   art = baisser(art, de('article'));
+  // D372 : l'unité d'une ligne reliée qui ne s'ajoute pas à son article (pièce face au g, L face au Kg…), quel que soit le produit : à remplir, comme une unité illisible.
+  if (article && unite.valeur && uniteHorsArticle({ description: l.description, quantity: q, unit: unite.valeur }, article))
+    unite = { ...unite, niveau: 'inconnu', raison: `${shortUnit(unite.valeur)} ne s'ajoute pas au stock, compté en ${shortUnit(article.unit)}` };
   return { unite, quantite, prix, montant, famille: fam, article: art, pire: pireNiveau([unite, quantite, prix, montant, fam, art]) };
 }
 

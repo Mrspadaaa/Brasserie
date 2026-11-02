@@ -45,7 +45,7 @@ import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
-import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,AlerteUnite } from '../depense/Plateau';
+import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides } from '../depense/Plateau';
 import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,recalculer,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
 import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
@@ -960,12 +960,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </RangeeCalcul>;
     /* Les cinq cases de l'unité qui manque : le prix par unité dessous, l'unité du stock proposée (jamais posée). */
     const uniteStock=article&&isReadableUnit(article.unit)?CINQ_UNITES.find(u=>cleUnite(u.valeur)===cleUnite(article.unit))?.valeur:undefined;
-    /* D371 : la ligne reliée dont l'unité ne s'ajoute pas à l'article : l'alerte, et l'unité du stock en un toucher. */
-    const alerteUniteEl=article&&line.stockAction==='existing'&&!uniteManque&&uniteHorsArticle({description:line.description,quantity:line.quantity,unit:unite},article)?<AlerteUnite nom={article.name} unite={motUnite(unite,line.quantity)} uniteStock={motUnite(article.unit)} onCompter={()=>choisirUnite(uniteStock??article.unit)}/>:null;
     const casesEl=uniteManque&&!(horsStock&&!STOCK_KINDS.includes(line.kind))?<CasesUnite ref={el=>{if(el)casesRefs.current.set(line.id,el);else casesRefs.current.delete(line.id);}} index={index+1} unites={CINQ_UNITES} propose={uniteStock} prix={prixTexte||undefined} onChoisir={choisirUnite}/>:null;
-    /* Le face à face de la ligne dont l'unité manque (son article est relié) : l'extrait à gauche, « compté en Kg » au stock. */
-    const duelUniteEl=uniteManque&&article?<Duel etat="inconnu" symbole="?" note="unité illisible"
-      facture={<><Petit>extrait · ligne {numeros.get(line.id)??index+1}</Petit><span className="whitespace-pre-wrap break-words rounded-control bg-cave-800 px-1 font-mono text-xs text-cave-50">{line.evidence??line.imprime?.nom??line.description}</span><Petit ton="alert">unité illisible</Petit></>}
+    /* Le face à face de la ligne dont l'unité manque (son article est relié) : l'extrait à gauche, « compté en Kg » au stock. D372 : une unité lisible qui ne s'ajoute pas à l'article (`confianceLigne`) prend le même face à face, sa raison à la place de « unité illisible ». */
+    const uniteHors=lisible&&article&&rougeDe('unite')&&uniteHorsArticle({description:line.description,quantity:line.quantity,unit:unite},article)?`${motUnite(unite,line.quantity)} ne s’ajoute pas`:undefined;
+    const duelUniteEl=uniteManque&&article?<Duel etat="inconnu" symbole="?" note={uniteHors??'unité illisible'}
+      facture={<><Petit>extrait · ligne {numeros.get(line.id)??index+1}</Petit><span className="whitespace-pre-wrap break-words rounded-control bg-cave-800 px-1 font-mono text-xs text-cave-50">{line.evidence??line.imprime?.nom??line.description}</span><Petit ton="alert">{uniteHors??'unité illisible'}</Petit></>}
       stock={<><Nom>{article.name}</Nom><Petit>compté en <Marque>{motUnite(article.unit)}</Marque></Petit><Apres texte={`${nombreFr(article.currentStock)} ${motUnite(article.unit)}`}/><Petit>au stock</Petit></>}/>:null;
     /* Une correction de la 3e lecture qui attend son geste : les deux lectures face à face, « Garder 3 » ou « Remettre 2 » (D354 : acceptée, elle ne se marque plus). */
     const effetArticle=article&&!uniteManque?apresReception(draft.lines,line.id,article,uniteDe):undefined;
@@ -1030,7 +1029,6 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <Imprime texte={`${imprimeTexte}${pieceImprimee}`} reference={line.sourceReference}/>
       {libelleChamp}
       {calculEl}
-      {alerteUniteEl}
       {nombresEl}
       {casesEl}
       {rouges.some(r=>r.champ!=='unite')?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.filter(r=>r.champ!=='unite').map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}
