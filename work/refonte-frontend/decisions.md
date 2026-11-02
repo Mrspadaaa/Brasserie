@@ -1801,3 +1801,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   et « effacer » remet à vide ; (3) le troisième champ se calcule des deux autres (prix = montant ÷ quantité, quantité = montant ÷ prix si le
   résultat tombe juste), marqué comme calculé, jamais par-dessus une valeur lue. Les nombres par unité sont une hypothèse du pilote,
   réversible. Preuve : le banc par le menu (puces et plateaux), captures regardées par le pilote ; puis le déploiement, puis la lecture en ligne.
+- D370 (le brasseur, 02.11, soir ; L13) : « je peux entrer que une lettre dans ce champs avant que ça valide ». Cause : au plateau, le champ
+  « Article ou prestation » n'existait que tant que le libellé était vide ; la première lettre le retirait, le focus partait. Correctif : une ligne
+  venue sans libellé garde son champ (sans le rouge une fois nommée) ; le texte d'attente aligné à gauche. Témoins rouges sur 5f83812f : banc
+  `d370-temoin` (deux thèmes) et test unitaire `plateau.test.tsx` D370. Sa demande : le correctif seul, un test unitaire, le déploiement.

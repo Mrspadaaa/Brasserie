@@ -1322,3 +1322,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   a un bouton comme les unités, avec quelques nombre. Pour les pièces 1,2,3,5,10 ( 1+10 ferait 11). Aussi pour les grame et houblons ça serait
   d'autres nombre plus censé genre 1,5, 10, 100 ect... » (lu : (1) les pastilles du récap ne filtrent plus la liste ; (2) des boutons de
   quantité comme les unités, qui s'additionnent, selon l'unité ; (3) le champ manquant se calcule des deux autres. D369.)
+- **Libellé d'une ligne ajoutée** (02.11, soir ; capture `uploads/…/3c59d55b-image.jpg` : rangée « Ligne sans libellé », champ « Article ou
+  prestation » ouvert, cerné de rouge), mot pour mot : « Problème, je peux entrer que une lettre dans ce champs avant que ça valide » (D370.)
+- (02.11, soir, suite de D370), mot pour mot : « Fix ça, et le reste attendra, fait juste le correctif, unit test et deploye » (lu : D370 seul,
+  un test unitaire, le déploiement ; le banc après correctif et les restes de D369 attendent.)

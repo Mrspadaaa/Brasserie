@@ -106,3 +106,25 @@ describe('D364 — changer la famille d’une ligne', () => {
     expect(state.writes).toEqual([]);
   });
 });
+
+describe('D370 — le libellé d’une ligne ajoutée', () => {
+  it('« + Ajouter une ligne », puis « Rouleau » tapé lettre par lettre : le champ reste le même, sans partir à la première lettre', async () => {
+    const view = await lire('renovation', [ligne(1, 'Peinture murale blanche mate 10 L', 'stock', 1, 'Stk', 64.9)]);
+    const avant = new Set([...view.container.querySelectorAll('[data-dp-ligne]')].map(e => e.getAttribute('data-dp-ligne')));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter une ligne/ }));
+    const id = [...view.container.querySelectorAll('[data-dp-ligne]')].map(e => e.getAttribute('data-dp-ligne')!).find(x => !avant.has(x))!;
+    const l = ouvrir(view, id);
+    const champ = l.querySelector('[aria-label^="Libellé ligne"]') as HTMLTextAreaElement;
+    expect(champ).not.toBeNull();
+    let tape = '';
+    for (const lettre of 'Rouleau') {
+      tape += lettre;
+      fireEvent.change(champ, { target: { value: tape } });
+      expect(champ.isConnected).toBe(true); // le même champ, toujours là : le focus n'a pas à partir
+    }
+    expect(champ.value).toBe('Rouleau');
+    expect(ligneEl(view, id).querySelector('[aria-label^="Libellé ligne"]')).toBe(champ);
+    expect(champ.closest('[data-dp-niveau="inconnu"]')).toBeNull(); // nommée, plus de rouge
+    expect(state.writes).toEqual([]);
+  });
+});

@@ -145,6 +145,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
   /* D369 : le champ de `q × prix = montant` que le calcul a posé, par ligne (il suit les deux autres) ; les lignes dont la quantité a été posée d'un toucher (ses nombres restent). */
   const calcules=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
+  /* D370 : une ligne venue sans libellé garde son champ pendant qu'on le tape (il ne part plus à la première lettre). */
+  const libellesVides=useRef(new Set<string>());
   const [piedVise,setPiedVise]=useState(false);
   const famillesChoisies=useRef(new Map<string,GroupeCle>());
   /* p3c-3 : le plateau que le brasseur a ouvert ou fermé (par id) : il survit au changement de bande d'une ligne (la rangée est remontée ailleurs). */
@@ -1016,7 +1018,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
           {status.proposed?<BoutonTexte attention aria={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});}}>Garder</BoutonTexte>:null}{autrePlateau}{retirerEl}</>}</LigneArticle>;
     const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
     const uImp=line.unit.trim(),pieceImprimee=line.quantity!==undefined&&uImp!==''&&cleUnite(uImp)==='piece'&&uImp.toLowerCase()!=='pièce'?` · ${fr(line.quantity)} ${uImp}`:'';
-    const libelleChamp=!line.description.trim()?<span data-dp-niveau="inconnu" className="flex rounded-control border border-dashed border-alert"><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full text-left font-sans`}/></span>:null;
+    const libelleVide=!line.description.trim();if(libelleVide)libellesVides.current.add(line.id);
+    const libelleChamp=libellesVides.current.has(line.id)?<span {...(libelleVide?{'data-dp-niveau':'inconnu'}:{})} className={`flex rounded-control${libelleVide?' border border-dashed border-alert':''}`}><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full !text-left font-sans`}/></span>:null;
     const mouturePlateau=enfant&&cestMoutureEnPastille&&pastilleMouture?<RangeeMouture ligne={enfantIdx+1} liee={pastilleMouture.liee} aria={pastilleMouture.aria} onBascule={pastilleMouture.onBascule}
       texte={`${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${shortUnit(enfant.unit)} × `}${enfant.unitPrice===undefined?'—':fr(enfant.unitPrice)} = ${enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100))}`}/>:null;
     const plateauEl=<div data-dp-pu4d className="space-y-1.5">
