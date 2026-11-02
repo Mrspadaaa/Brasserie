@@ -66,11 +66,12 @@ export function canonicalStockCategory(value: string | undefined): string {
  * ou inconnu (« yeast », « other_stock », « Grain »). Sinon la famille que l'écran donne à la ligne (`familleDe`, la MÊME décision que la bande
  * affichée) : un sirop candi lu « other_stock » est un Sucre, un emballage au libellé de houblon un Emballage. « Divers » seulement quand la famille est « Autres ».
  */
-export function categorieArticleNeuf(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'>): string {
+export function categorieArticleNeuf(l: Pick<StockLineInput, 'description' | 'stockCategory' | 'reference' | 'kind'> & { categorie?: string }): string {
   const lue = canonicalStockCategory(l.stockCategory);
   if (STOCK_CATEGORIES.includes(lue)) return lue;
   const contexte = contexteDe({ ...l, stockCategory: undefined });
-  return categorieDeFamille(familleDe({ nom: l.description, kind: l.kind, contexte }), l.description);
+  // D306 : `categorie` (la catégorie de la dépense) est facultative ; les appelants d'aujourd'hui ne la passent pas (une ligne de Rénovation n'a pas d'article neuf).
+  return categorieDeFamille(familleDe({ nom: l.description, kind: l.kind, contexte, categorie: l.categorie }), l.description);
 }
 
 const sameSet = (a: string[], b: string[]) => { const A = new Set(a), B = new Set(b); return A.size === B.size && [...A].every(w => B.has(w)); };

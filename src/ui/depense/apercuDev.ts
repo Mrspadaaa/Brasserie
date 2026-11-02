@@ -137,6 +137,42 @@ function apercuFamilles(): ApercuDepense {
 }
 
 /**
+ * `renovation` (voie r1-renovation, D306) : une pièce de bricolage SIMULÉE (« Brico Fictif SA »), « Pour quoi ? » lu `renovation` (Local). Désignations inventées en français,
+ * allemand, anglais et italien, lues `stock`, `other`, `equipment` ou `cleaning` comme la lecture le fait : peinture et sols, outillage, quincaillerie, électricité, plomberie,
+ * protection (un EPI lu en catégorie de stock), deux termes ambigus (un seau, une brosse), un détartrant (Nettoyage), une ligne sans mot reconnu (Divers travaux), un port.
+ * Aucune valeur ni désignation d'une vraie pièce. Aucune écriture, aucun Gemini ; une ligne de Rénovation ne crée ni article ni mouvement.
+ */
+function apercuRenovation(): ApercuDepense {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, stockCategory = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC: Math.round(quantity * price * 100) / 100, reference: '', variant: '', stockCategory, evidence: `${name} (page 1)`, ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null });
+  const items = [
+    ligne(1, 'Peinture murale blanche mate 10 L', 'stock', 1, 'Stk', 64.9), ligne(2, 'Vitrificateur parquet satiné 2.5 L', 'other', 1, 'Stk', 38.5),
+    ligne(3, 'Pinceau plat 50 mm', 'equipment', 3, 'Stk', 4.9), ligne(4, 'Fliesenkleber 5 kg', 'other', 2, 'Stk', 11.9), ligne(5, 'Ruban de masquage 50 m', 'stock', 4, 'Stk', 3.2),
+    ligne(6, 'Ponceuse excentrique 125 mm', 'equipment', 1, 'Stk', 89), ligne(7, 'Sandpaper assortment 40-120', 'other', 1, 'Stk', 12.4),
+    ligne(8, 'Dübel 8 mm, 50 Stück', 'stock', 2, 'Stk', 6.5), ligne(9, 'Vis à bois 4 x 40 (200)', 'other', 1, 'Stk', 9.9),
+    ligne(10, 'Interrupteur va-et-vient blanc', 'equipment', 3, 'Stk', 7.8), ligne(11, 'Presa di corrente da incasso', 'other', 3, 'Stk', 5.4),
+    ligne(12, 'Mitigeur lavabo chromé', 'equipment', 1, 'Stk', 54), ligne(13, 'Gants nitrile M', 'stock', 1, 'Stk', 8.4, 'EPI'),
+    ligne(14, 'Eimer 12 Liter', 'other', 2, 'Stk', 3.9), ligne(15, 'Brosse métallique', 'other', 1, 'Stk', 5.5),
+    ligne(16, 'Détartrant anticalcaire 1 L', 'cleaning', 2, 'Stk', 6.9), ligne(17, 'Étagère murale bois 80 cm', 'equipment', 2, 'Stk', 14.5),
+    ligne(18, 'Versand / Port', 'shipping', 1, 'pce', 9.9),
+  ];
+  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  result.items = items as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'Brico Fictif SA', date: '14.10.2026', invoiceNumber: 'B-3003', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [], category: 'renovation',
+    amountTTC: total, printedLineCount: items.length, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Travaux du local (SIMULÉ)',
+    controls: { lines: { checked: items.length, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  const fichier = { name: 'capture-renovation.jpg', size: 90000, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false }, fichier, stocks: stockSimule(), transactions: [], etat: 'renovation', drive: 'ok', reseau: true,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-14 Brico Fictif B-3003.pdf', bytes: 90000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
+/**
  * `commande` (voie f3-rangees, D275, D277) : une commande en ligne SIMULÉE de la forme de sa pièce du 01.11 (aucune valeur ni désignation de sa pièce) : malts
  * « …, Kg » ou « …, Gramm » avec l'option « Mischung / Schrotung : geschrotet [+CHF …] », colonne d'unité vide ailleurs (levure, houblon, sucre, matériel,
  * emballage), port à part, date non imprimée. Aucun article ne relie ces lignes : les ingrédients sont « nouvel article » d'office. Aucune écriture, aucun Gemini.
@@ -177,6 +213,7 @@ function apercuCommande(): ApercuDepense {
 export function apercuDepense(etat: string): ApercuDepense {
   if (etat === 'commande') return apercuCommande();
   if (etat === 'familles') return apercuFamilles();
+  if (etat === 'renovation') return apercuRenovation();
   if (etat === 's6') return apercuS6();
   if (etat.startsWith('qr-')) return apercuQr(etat);
   const result = clone(lecture) as unknown as ScannedInvoiceResult;

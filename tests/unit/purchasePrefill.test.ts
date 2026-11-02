@@ -19,6 +19,14 @@ describe('Propositions de saisie, sans inventer les valeurs imprimées', () => {
     expect(invoicePurchaseDescription(scan({ description: 'Facture Fournisseur fictif pour malt et houblon' }))).toBe('Fournisseur fictif');
     expect(invoicePurchaseDescription(scan({ description: 'Pompe pour le circuit de nettoyage', invoiceNumber: 'F-12' }))).toBe('Fournisseur fictif · F-12');
   });
+  it('D306 : une pièce de travaux dit « travaux », jamais « ingrédients » ; le reste ne change pas', () => {
+    const travaux = scan({ category: 'renovation', invoiceNumber: 'B-1', items: [
+      { id: 'line-1', name: 'Peinture murale 10 L', kind: 'stock', quantity: 1, unit: 'Stk', amountTTC: 64.9 },
+      { id: 'line-2', name: 'Seau 12 L', kind: 'other', quantity: 1, unit: 'Stk', amountTTC: 3.9 },
+      { id: 'line-3', name: 'Détartrant 1 L', kind: 'stock', quantity: 1, unit: 'Stk', amountTTC: 6.9 }] });
+    expect(invoicePurchaseDescription(travaux)).toBe('Fournisseur fictif · B-1 · travaux, nettoyage');
+    expect(invoicePurchaseDescription(scan({ category: 'brassage', items: [{ id: 'line-1', name: 'Pale Ale Malt', kind: 'stock', stockCategory: 'Malt', quantity: 25, unit: 'kg', amountTTC: 52 }] }))).toBe('Fournisseur fictif · malts');
+  });
   it('propose la somme au centime et distingue cette proposition du total source absent', () => {
     const result = scan();
     expect(invoiceTotalProposal(result)).toEqual({ amount: 43.4, calculated: true });

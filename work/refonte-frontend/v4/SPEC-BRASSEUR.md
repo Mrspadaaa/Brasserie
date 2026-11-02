@@ -1104,3 +1104,11 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   de protection), mot pour mot : « Je viens de faire un achat, il me manque encore pas mal de catégorie, famille, sous familles, notamment pour
   la rénovation » (lu : les catégories, familles et sous-familles de la Dépense ne couvrent pas les travaux du local ; un achat de rénovation
   doit trouver sa catégorie et ses familles, sans finir en « Autre ». La photo reste hors de Git. D306.)
+- **Les sous-familles : son choix D** (02.11, vers 13 h 15, devant la page « Les sous-familles dans une bande · 02.11 »,
+  https://claude.ai/artifact/YBVsYNiZTnXr819j4AuyZc), mot pour mot : « J'aime beaucoup D mais il faudrait pouvoir facilement tout plier, déplier »
+  (lu : D, la bande en sous-groupes repliés, est sa maquette ; il y faut un geste simple qui plie ou déplie tous les sous-groupes d'un coup.
+  D307.)
+- **Deux points pas compris** (02.11, vers 13 h 20, après le message du pilote qui listait « tes choix sur la frise et sur la lenteur ; « je lance
+  la correction des lignes hors taxe ? » »), mot pour mot : « tes choix sur la frise et sur la lenteur ; « je lance la correction des lignes hors
+  taxe ? » Comprends pas ces 2 points » (lu : le pilote a nommé des pages et un code de décision sans dire de quoi il s'agit ; il faut le dire
+  en mots simples, avec le lien et ce qu'on attend de lui, et ne rien lui demander qui ne soit pas à lui de trancher. D307.)

@@ -44,6 +44,8 @@ export interface ContexteConfiance {
   /** Le stock (l'article relié par `stockRef`, l'appariement d'une ligne non reliée). */
   articles?: readonly StockItem[];
   fournisseur?: string;
+  /** D306 : la catégorie de la dépense (« Pour quoi ? » : `brassage`, `renovation`…) ; elle décide des termes ambigus des travaux (voir `familleDe`). */
+  categorie?: string;
   /** Le total TTC imprimé : il corrobore (ou non) les montants des lignes. */
   total?: number | null;
   /** Les points de la lecture (recalculés au client si possible). */
@@ -87,11 +89,11 @@ interface Analyse { famille: FamilleCle; kind: string; q?: number; p?: number; a
 const MEMO_FAMILLE = new WeakMap<object, { cle: string; famille: FamilleCle }>();
 function familleDeLigne(l: LigneConfiance, c: ContexteConfiance): FamilleCle {
   const article = articleDe(l, c);
-  const cle = [l.description, l.kind, l.stockCategory, article?.category, c.fournisseur].join('|');
+  const cle = [l.description, l.kind, l.stockCategory, article?.category, c.fournisseur, c.categorie].join('|');
   const memo = MEMO_FAMILLE.get(l);
   if (memo && memo.cle === cle) return memo.famille;
   const contexte = donneesDeLigne(ligneDeBrouillon({ description: l.description, unit: l.unit ?? '', quantity: nombre(l.quantity), kind: l.kind, stockCategory: l.stockCategory, sourceReference: l.sourceReference }, c.fournisseur)).contexte;
-  const famille = familleDe({ nom: l.description, kind: l.kind, contexte, stockCategory: l.stockCategory, categorieArticle: article?.category });
+  const famille = familleDe({ nom: l.description, kind: l.kind, contexte, stockCategory: l.stockCategory, categorieArticle: article?.category, categorie: c.categorie });
   MEMO_FAMILLE.set(l, { cle, famille });
   return famille;
 }
@@ -349,7 +351,8 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
 
   const article = articleDe(l, c);
   let art: Valeur<string>;
-  if (horsStock || (l.stockAction === 'none' && ['equipment', 'maintenance'].includes(kind))) art = { ...sansObjet() };
+  // D306 : une ligne de Rénovation ne crée ni article ni mouvement, même lue « stock » : sans objet.
+  if (horsStock || famille === 'renovation' || (l.stockAction === 'none' && ['equipment', 'maintenance'].includes(kind))) art = { ...sansObjet() };
   else if (l.stockAction === 'existing') art = article ? { niveau: 'sur', valeur: article.name, raison: 'article relié' } : { niveau: 'inconnu', raison: 'article relié introuvable : à choisir' };
   else if (l.stockAction === 'new') art = { niveau: 'sur', raison: 'article neuf' };
   else {

@@ -6,19 +6,19 @@ import { linkUnit } from '../../services/stockLineMatching';
 import { Units } from '../../services/units';
 import type { Niveau } from './confiance';
 
-/** Une bande par famille (D262c, D262d) : malts, houblons, levures, sucres, additifs, matériel, emballage, nettoyage, consommables, services, autres. */
+/** Une bande par famille (D262c, D262d, D306) : malts, houblons, levures, sucres, additifs, matériel, emballage, nettoyage, consommables, rénovation, services, autres. */
 export type GroupeCle = FamilleCle;
 export const NOMS_GROUPES: Record<GroupeCle, string> = NOMS_FAMILLES;
 export const ORDRE_GROUPES: readonly GroupeCle[] = ORDRE_FAMILLES;
-/** Les jetons de l'app qui teintent chaque famille (quatre ont une couleur par thème dans p3c.css : `dp-p3c-pt-<clé>`, `dp-p3c-fi-<clé>`) : la pastille de l'en-tête (et la barre du récap) et le filet de gauche des rangées. Le fond de l'en-tête est dans p3c.css (`dp-p3c-t-<clé>`). */
+/** Les jetons de l'app qui teintent chaque famille (cinq ont une couleur par thème dans p3c.css : `dp-p3c-pt-<clé>`, `dp-p3c-fi-<clé>`) : la pastille de l'en-tête (et la barre du récap) et le filet de gauche des rangées. Le fond de l'en-tête est dans p3c.css (`dp-p3c-t-<clé>`). */
 export const POINT_FAMILLE: Record<GroupeCle, string> = {
   malt: 'bg-ebc-gold', houblon: 'bg-hop', levure: 'bg-area-finances', sucre: 'bg-ebc-amber', additif: 'bg-area-agenda', materiel: 'bg-water', emballage: 'dp-p3c-pt-emballage',
-  nettoyage: 'dp-p3c-pt-nettoyage', consommable: 'dp-p3c-pt-consommable', service: 'dp-p3c-pt-service', autres: 'bg-cave-400',
+  nettoyage: 'dp-p3c-pt-nettoyage', consommable: 'dp-p3c-pt-consommable', renovation: 'dp-p3c-pt-renovation', service: 'dp-p3c-pt-service', autres: 'bg-cave-400',
 };
 export const FILET_FAMILLE: Record<GroupeCle, string> = {
   malt: 'border-l-4 border-l-ebc-gold', houblon: 'border-l-4 border-l-hop', levure: 'border-l-4 border-l-area-finances', sucre: 'border-l-4 border-l-ebc-amber',
   additif: 'border-l-4 border-l-area-agenda', materiel: 'border-l-4 border-l-water', emballage: 'border-l-4 dp-p3c-fi-emballage', nettoyage: 'border-l-4 dp-p3c-fi-nettoyage',
-  consommable: 'border-l-4 dp-p3c-fi-consommable', service: 'border-l-4 dp-p3c-fi-service', autres: 'border-l-4 border-l-cave-400',
+  consommable: 'border-l-4 dp-p3c-fi-consommable', renovation: 'border-l-4 dp-p3c-fi-renovation', service: 'border-l-4 dp-p3c-fi-service', autres: 'border-l-4 border-l-cave-400',
 };
 
 /** La forme minimale dont le critère du port a besoin (VOIE.md, décision 7). */
@@ -44,13 +44,14 @@ export function portCents(lines: readonly LigneMin[], port: ReadonlySet<string>)
 }
 /**
  * La famille d'une ligne : le contexte que l'identité a lu (`Malt`, `Houblon`, `Levure`), puis le `kind` de la lecture, le nom imprimé, la catégorie de
- * stock lue sur la ligne et celle de l'article rattaché (voir `familles.ts` pour l'ordre). « Autres » ne reçoit que l'inclassable.
+ * stock lue sur la ligne et celle de l'article rattaché (voir `familles.ts` pour l'ordre), puis la catégorie de la dépense (D306 : `renovation`). « Autres » ne reçoit que l'inclassable.
  * Les arguments absents ou d'un autre type sont ignorés (`['Malt', …].map(groupeDe)` passe un rang et un tableau).
  */
-export const groupeDe = (contexte: string | undefined, kind?: unknown, description?: unknown, stockCategory?: unknown, categorieArticle?: unknown): GroupeCle =>
+export const groupeDe = (contexte: string | undefined, kind?: unknown, description?: unknown, stockCategory?: unknown, categorieArticle?: unknown, categorie?: unknown): GroupeCle =>
   familleDe({
     contexte, kind: typeof kind === 'string' ? kind : undefined, nom: typeof description === 'string' ? description : undefined,
     stockCategory: typeof stockCategory === 'string' ? stockCategory : undefined, categorieArticle: typeof categorieArticle === 'string' ? categorieArticle : undefined,
+    categorie: typeof categorie === 'string' ? categorie : undefined,
   });
 
 /** Une ligne affichée, avec ce dont les sous-totaux ont besoin (le groupe d'une mouture rattachable est celui de son malt). */

@@ -3,6 +3,7 @@ import type { PurchaseDraft } from './purchaseEntry';
 import { canonicalStockCategory, STOCK_CATEGORIES } from './stockLineMatching';
 import { normalize } from './search';
 import { inferNature } from './ingredientIdentity';
+import { familleDe } from '../ui/depense/familles';
 
 const MILLING_WORDS = /\b(?:schrot\w*|mouture\w*|moulage|moulu\w*|crush\w*|milling|gemahlen)\b/;
 /** Une ligne de mouture : un service dont le libellé ou la référence porte un mot de mouture (liste fermée, sans accent ni casse). */
@@ -28,7 +29,9 @@ export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
     const category = canonicalStockCategory(item.stockCategory);
     const known = STOCK_CATEGORIES.includes(category);
     const deduced = !known && item.kind === 'stock' ? inferNature(item.name).strong : undefined;
-    const family = known ? (PLURAL_FAMILIES[category] ?? category.toLowerCase()) : deduced && PLURAL_FAMILIES[deduced] ? PLURAL_FAMILIES[deduced] : (KIND_FAMILIES[item.kind] ?? '');
+    // D306 : une ligne de la famille Rénovation dit « travaux », un nettoyant sans catégorie lue « nettoyage », jamais « ingrédients » (lus `stock`).
+    const famille = familleDe({ nom: item.name, kind: item.kind, stockCategory: item.stockCategory, categorie: scan.category });
+    const family = famille === 'renovation' ? 'travaux' : !known && famille === 'nettoyage' ? 'nettoyage' : known ? (PLURAL_FAMILIES[category] ?? category.toLowerCase()) : deduced && PLURAL_FAMILIES[deduced] ? PLURAL_FAMILIES[deduced] : (KIND_FAMILIES[item.kind] ?? '');
     if (family && !families.includes(family)) families.push(family);
   }
   const vendor = (scan.vendor ?? '').replace(/\s+/g, ' ').trim(), number = (scan.invoiceNumber ?? '').replace(/\s+/g, ' ').trim();

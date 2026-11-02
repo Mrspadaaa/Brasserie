@@ -47,6 +47,6 @@ describe('D271 — le nom imprimé dans la langue de la facture, la bande en fra
   });
 
   it('les noms des bandes sont français, jamais ceux de la facture', () => {
-    expect(Object.values(NOMS_GROUPES).join('|')).toBe('Malts|Houblons|Levures|Sucres|Additifs|Matériel de brassage|Emballage|Nettoyage|Consommables|Services|Autres');
+    expect(Object.values(NOMS_GROUPES).join('|')).toBe('Malts|Houblons|Levures|Sucres|Additifs|Matériel de brassage|Emballage|Nettoyage|Consommables|Rénovation|Services|Autres');
   });
 });

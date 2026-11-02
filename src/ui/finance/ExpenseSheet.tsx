@@ -245,8 +245,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const simplePurchase=draft.lines.length===1&&!scan?.ok&&draft.lines[0].description===draft.description&&draft.lines[0].amount===draft.amount;
   const selectCategory=(category:PurchaseCategory)=>{
     const line=draft.lines[0];
-    const suggestedKind:Record<PurchaseCategory,PurchaseLineDraft['kind']>={brassage:'ingredient',materiel:'equipment',nettoyage:'cleaning',chargesFixes:'service',renovation:'service',divers:'other'};
-    patch({category,...(simplePurchase&&!manuallyClassified.current.has(line.id)&&line.stockAction==='none'&&line.equipmentAction==='none'?{lines:[{...line,kind:suggestedKind[category]}]}:{})});
+    const suggestedKind:Record<PurchaseCategory,PurchaseLineDraft['kind']>={brassage:'ingredient',materiel:'equipment',nettoyage:'cleaning',chargesFixes:'service',renovation:'equipment',divers:'other'};
+    /* D306 : une ligne devenue Rénovation (la catégorie change après la lecture) repasse à « aucun article » quand son « nouvel article » avait été posé d'office (`neufDOffice`) ; un choix du brasseur ne bouge jamais. */
+    const repasse=draft.lines.filter(l=>l.stockAction==='new'&&neufDOffice.current.has(l.id)&&groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,category)==='renovation').map(l=>l.id);
+    repasse.forEach(id=>neufDOffice.current.delete(id));
+    patch({category,...(simplePurchase&&!manuallyClassified.current.has(line.id)&&line.stockAction==='none'&&line.equipmentAction==='none'?{lines:[{...line,kind:suggestedKind[category]}]}:repasse.length?{lines:draft.lines.map(l=>repasse.includes(l.id)?{...l,stockAction:'none' as const,stockRef:undefined,articleName:undefined}:l)}:{})});
   };
   /* D277 : le brouillon tel que l'enregistrement le lit, avec l'unité déduite de chaque ligne à l'unité illisible (dérivée du brouillon et du stock courants,
      jamais gardée seule) : ce que l'écran montre est ce qui est validé et écrit. */
@@ -326,14 +329,19 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
     /* D275 : le libellé est la base de la désignation (sans options ni suffixe d'unité), ou sa désignation française lue ; l'imprimé complet reste au brouillon et au plateau. */
     /* Voie n1-nom-fr : le nom imprimé lu (base sans options) est gardé ICI, une fois : retaper le libellé ne le change pas, c'est lui qui s'écrit « Sur la facture ». */
-    const lues:PurchaseLineDraft[]=result.items.map(item=>{const lu=libelleLu(item),nomLu=lireOptions(String(item.name??''),item.variant?String(item.variant):undefined,String(item.unit??'')).base.trim().slice(0,80);return {id:item.id,description:lu.description,...(nomLu?{nomLu}:{}),...(lu.imprime?{imprime:lu.imprime}:{}),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',lu.imprime?`Imprimé : ${libelleDeLigne(item.name,item.variant)}`:'',item.evidence].filter(Boolean).join(' · ')};});
+    const lues0:PurchaseLineDraft[]=result.items.map(item=>{const lu=libelleLu(item),nomLu=lireOptions(String(item.name??''),item.variant?String(item.variant):undefined,String(item.unit??'')).base.trim().slice(0,80);return {id:item.id,description:lu.description,...(nomLu?{nomLu}:{}),...(lu.imprime?{imprime:lu.imprime}:{}),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',lu.imprime?`Imprimé : ${libelleDeLigne(item.name,item.variant)}`:'',item.evidence].filter(Boolean).join(' · ')};});
+    /* D306 : une ligne que la lecture dit « stock » (kind ingredient) et dont la famille est la Rénovation prend le kind « equipment » : le sélecteur dit Matériel, ses drapeaux sont ceux d'une ligne de matériel, aucun article. */
+    const estRenovation=(l:PurchaseLineDraft)=>groupeDe(donneesDeLigne(ligneDeBrouillon({...l,unit:uniteEffective(l)},result.vendor??undefined)).contexte,l.kind,l.description,l.stockCategory,undefined,result.category)==='renovation';
+    const lues:PurchaseLineDraft[]=lues0.map(l=>l.kind==='ingredient'&&estRenovation(l)?{...l,kind:'equipment' as const,stockAction:'none' as const}:l);
     /* D277 : l'unité absente se déduit avant le rapprochement (« de base ça essaie d'auto remplir ») ; l'imprimé reste vide (D213). */
     const existantsLus=sansCetteSaisie(stockItems,draft.submissionId);
-    const deduites=avecUnitesDeduites({lines:lues,vendor:result.vendor??'',amount:total.amount},stockItems).lines;
+    const deduites=avecUnitesDeduites({lines:lues,vendor:result.vendor??'',amount:total.amount,category:result.category},stockItems).lines;
     const lines=deduites.map(line=>{
       /* S1 : une proposition, jamais une écriture. L'unité imprimée reste celle de la ligne (jamais réécrite, D213) ; ce que l'identité a lu (α, récolte,
          poids du sachet) va dans l'extrait, avec sa source. */
       const unit=uniteEffective(line);
+      /* D306 : une ligne de Rénovation ne crée jamais d'article de stock ni de mouvement, même lue « stock » : ni proposition, ni nouvel article d'office. */
+      if(groupeDe(donneesDeLigne(ligneDeBrouillon({...line,unit},result.vendor??undefined)).contexte,line.kind,line.description,line.stockCategory,undefined,result.category)==='renovation')return {...line,stockAction:'none' as const};
       const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind,...(line.nomLu?{nomLu:line.nomLu}:{})},stockItems):undefined;
       if(!match){
         const voisin=(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?voisinEtMarque({...line,unit},stockItems,result.vendor??undefined):undefined;if(voisin)voisins.current.set(line.id,voisin);
@@ -711,7 +719,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const portTexte=(()=>{const c=portCents(draft.lines,port);return c===null?null:fr2c(c);})();
   const parentIdxDe=(i:number)=>i>=0&&i<draft.lines.length?millingParentIndex(draft.lines,i):-1;
   const contexteLigne=(line:PurchaseLineDraft)=>{const a=articleDe(line);return a?contexteDeArticle(a):donneesDeLigne(ligneDeBrouillon(line,draft.vendor)).contexte;};
-  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category);};
+  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
   const numeros=numerosPapier(draft.lines,port);
   const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();

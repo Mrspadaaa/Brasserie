@@ -138,6 +138,7 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 | Plusieurs captures pour une seule dépense (A aujourd’hui, B à F ; son choix B, bouton noir coupé en deux, D291 ; critique e-t10 ACCEPTÉ) | 02.11 v1 | https://claude.ai/artifact/7e5AuRChUtCuaAnCqu42ce | `work/missions/2026-10-31-ecran-depense/choix-captures/index.html` |
 | La lenteur de la lecture (A aujourd’hui, B à E ; avis du concepteur D ; critique e-t11 ACCEPTÉ, trois majeurs corrigés) | 02.11 v1 | https://claude.ai/artifact/TNNSAZdhSkoit5NkHyksPa | `work/missions/2026-10-31-ecran-depense/choix-lenteur/index.html` |
 | La frise de « Plusieurs » : le mot sous le premier trait (A son dessin « envoi ✓ », B en ligne « 3 pages ✓ », C mélange ; B proposée par le pilote, écart (a) du critique e-n2 montré, L03) | 02.11 v1 | https://claude.ai/artifact/EZBoX4NkK9nGxDKijfwCPJ | `work/missions/2026-10-31-ecran-depense/choix-frise/index.html` |
+| Les sous-familles dans une bande (A aujourd’hui, B sous-titres, C un mot, D replié, E pastilles ; B proposée par le concepteur ; D306 ; critique e-t12 ACCEPTÉ, majeur quantité corrigé) | 02.11 v1 | https://claude.ai/artifact/YBVsYNiZTnXr819j4AuyZc | `work/missions/2026-10-31-ecran-depense/choix-sousfamilles/index.html` |
 
 ## Reprise
 - 31.10, nuit : d1, d2 et i1 rendus. Quatre voies écrites (l1-lecture, s1-stock, s2-enregistrement, t1-onglets ; exigences communes

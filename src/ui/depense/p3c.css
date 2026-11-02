@@ -31,21 +31,24 @@
 .dp-p3c-t-sucre { --dp-p3c-teinte: rgb(200 122 44 / .24); }
 .dp-p3c-t-additif { --dp-p3c-teinte: rgb(var(--area-agenda) / .22); }
 .dp-p3c-t-materiel { --dp-p3c-teinte: rgb(var(--water) / .24); }
-/* Quatre familles ont leur propre couleur par thème (critique du 01.11 : Consommables = Autres en sombre, Nettoyage = vert du houblon en clair, Emballage et Services presque invisibles en sombre). */
-:root, [data-theme='clair'] { --dp-fam-emballage: 107 58 30; --dp-fam-nettoyage: 14 138 122; --dp-fam-consommable: 168 62 108; --dp-fam-service: 160 82 45; }
-[data-theme='cave'] { --dp-fam-emballage: 168 112 72; --dp-fam-nettoyage: 80 200 170; --dp-fam-consommable: 222 128 166; --dp-fam-service: 214 110 70; }
+/* D306 : la Rénovation, kaki (clair 120 112 28, cave 196 186 90), distincte des onze autres et du rouge d'alerte. Cinq familles ont leur propre couleur par thème (critique du 01.11 pour les quatre premières : Consommables = Autres en sombre, Nettoyage = vert du houblon en clair, Emballage et Services presque invisibles en sombre). */
+:root, [data-theme='clair'] { --dp-fam-emballage: 107 58 30; --dp-fam-nettoyage: 14 138 122; --dp-fam-consommable: 168 62 108; --dp-fam-service: 160 82 45; --dp-fam-renovation: 120 112 28; }
+[data-theme='cave'] { --dp-fam-emballage: 168 112 72; --dp-fam-nettoyage: 80 200 170; --dp-fam-consommable: 222 128 166; --dp-fam-service: 214 110 70; --dp-fam-renovation: 196 186 90; }
 .dp-p3c-t-emballage { --dp-p3c-teinte: rgb(var(--dp-fam-emballage) / .26); }
 .dp-p3c-t-nettoyage { --dp-p3c-teinte: rgb(var(--dp-fam-nettoyage) / .2); }
 .dp-p3c-t-consommable { --dp-p3c-teinte: rgb(var(--dp-fam-consommable) / .2); }
 .dp-p3c-t-service { --dp-p3c-teinte: rgb(var(--dp-fam-service) / .24); }
+.dp-p3c-t-renovation { --dp-p3c-teinte: rgb(var(--dp-fam-renovation) / .22); }
 .dp-p3c-pt-emballage { background-color: rgb(var(--dp-fam-emballage)); }
 .dp-p3c-pt-nettoyage { background-color: rgb(var(--dp-fam-nettoyage)); }
 .dp-p3c-pt-consommable { background-color: rgb(var(--dp-fam-consommable)); }
 .dp-p3c-pt-service { background-color: rgb(var(--dp-fam-service)); }
+.dp-p3c-pt-renovation { background-color: rgb(var(--dp-fam-renovation)); }
 .dp-p3c-fi-emballage { border-left-color: rgb(var(--dp-fam-emballage)); }
 .dp-p3c-fi-nettoyage { border-left-color: rgb(var(--dp-fam-nettoyage)); }
 .dp-p3c-fi-consommable { border-left-color: rgb(var(--dp-fam-consommable)); }
 .dp-p3c-fi-service { border-left-color: rgb(var(--dp-fam-service)); }
+.dp-p3c-fi-renovation { border-left-color: rgb(var(--dp-fam-renovation)); }
 .dp-p3c-t-papier { --dp-p3c-teinte: rgb(var(--cave-400) / .2); }
 /* D275c : le nom d'une rangée tient sur une ligne, deux au plus pour un nom long ; il passe à la ligne entre deux mots, jamais au milieu d'un mot. L'imprimé entier est au plateau. */
 .dp-p3c-nom { overflow-wrap: normal; word-break: normal; hyphens: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }

@@ -29,8 +29,9 @@ export const ligneConfianceDe = (line: PurchaseLineDraft): LigneConfiance => ({
   sourceReference: line.sourceReference, stockAction: line.stockAction, stockRef: line.stockRef, nameFr: line.nameFr, nomLu: line.nomLu,
 });
 
-export function contexteConfiance(draft: Pick<PurchaseDraft, 'lines' | 'vendor' | 'amount'>, articles: readonly StockItem[], points?: readonly InvoicePoint[]): ContexteConfiance {
-  return { lignes: draft.lines.map(ligneConfianceDe), articles, fournisseur: draft.vendor, total: draft.amount ?? null, ...(points ? { points } : {}) };
+/** D306 : `category` (« Pour quoi ? ») est lue avec les lignes : l'unité déduite et la bande lisent la même famille. */
+export function contexteConfiance(draft: Pick<PurchaseDraft, 'lines' | 'vendor' | 'amount'> & { category?: string }, articles: readonly StockItem[], points?: readonly InvoicePoint[]): ContexteConfiance {
+  return { lignes: draft.lines.map(ligneConfianceDe), articles, fournisseur: draft.vendor, total: draft.amount ?? null, ...(draft.category ? { categorie: draft.category } : {}), ...(points ? { points } : {}) };
 }
 
 const memeDeduite = (a: PurchaseLineDraft['uniteDeduite'], b: PurchaseLineDraft['uniteDeduite']) =>
@@ -39,7 +40,7 @@ const memeDeduite = (a: PurchaseLineDraft['uniteDeduite'], b: PurchaseLineDraft[
  * Le brouillon avec l'unité déduite de chaque ligne à l'unité illisible (D277) : sûre ou reprise seulement ; une unité lisible (imprimée ou tapée) n'en a jamais.
  * Dérivé du brouillon et du stock COURANTS : l'écran et l'enregistrement lisent le même. Rend le même objet si rien ne change.
  */
-export function avecUnitesDeduites<D extends Pick<PurchaseDraft, 'lines' | 'vendor' | 'amount'>>(draft: D, articles: readonly StockItem[]): D {
+export function avecUnitesDeduites<D extends Pick<PurchaseDraft, 'lines' | 'vendor' | 'amount'> & { category?: string }>(draft: D, articles: readonly StockItem[]): D {
   const c = contexteConfiance(draft, articles);
   let change = false;
   const lines = draft.lines.map(line => {

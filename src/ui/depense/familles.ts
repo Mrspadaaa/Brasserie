@@ -6,22 +6,28 @@
 // Source de la famille, dans l'ordre :
 //   1. l'article de stock rattaché (sa catégorie est ce que le stock gardera), puis la catégorie lue sur la ligne (`stockCategory`, normalisée par
 //      `canonicalStockCategory` : « Yeast », « Hefe » → « Levure ») ; une catégorie d'ingrédient ne capture jamais une ligne que la lecture dit
-//      matériel, emballage, nettoyage, entretien ou service (un « Hop Filter Bag » n'est pas un houblon) ;
-//   2. le `kind` de la lecture : equipment/maintenance → Matériel de brassage, packaging → Emballage, cleaning → Nettoyage, service → Services ;
-//   3. les mots du nom : le matériel d'abord (« Hop Spider Bag » n'est pas du houblon), puis l'emballage et le nettoyage, puis le contexte que
+//      matériel, emballage, nettoyage, entretien ou service (un « Hop Filter Bag » n'est pas un houblon) ; une catégorie lue « Consommable » ou « EPI »
+//      (jamais celle d'un article rattaché) cède aux travaux ;
+//   2. D306 — les travaux du local. Le port et la remise ne changent pas. Un détartrant, un déboucheur : Nettoyage, sous toute catégorie. Un mot SANS
+//      ÉQUIVOQUE des travaux (peinture, cheville, carrelage…) : Rénovation sous toute catégorie, sauf un mot de nettoyage ou un mot précis du brassage
+//      (cuve, fermenteur, spider… : il reste Matériel, même sous `renovation`). Un mot AMBIGU (robinet, tuyau, joint, brosse, seau, gant, masque, ruban…) : Rénovation
+//      seulement quand la catégorie de la dépense (« Pour quoi ? ») vaut `renovation`, sa famille d'avant ailleurs. Sous `renovation`, toute autre ligne
+//      sans mot d'ingrédient, d'emballage, de nettoyage ni de service est en Rénovation ;
+//   3. le `kind` de la lecture : equipment/maintenance → Matériel de brassage, packaging → Emballage, cleaning → Nettoyage, service → Services ;
+//   4. les mots du nom : le matériel d'abord (« Hop Spider Bag » n'est pas du houblon), puis l'emballage et le nettoyage, puis le contexte que
 //      `contexteDe` a lu (Malt, Houblon, Levure), puis les listes de ce fichier ;
-//   4. « Autres » ne reçoit que l'inclassable (et le port ou la remise qui resteraient en ligne).
+//   5. « Autres » ne reçoit que l'inclassable (et le port ou la remise qui resteraient en ligne).
 import { canonicalStockCategory, STOCK_CATEGORIES } from '../../services/stockLineMatching';
 import { hasHopWord } from '../../services/ingredientIdentity';
 import { NOMS_HOUBLONS_COMPOSES, NOMS_HOUBLONS_SIMPLES } from './nomsHoublons';
 
-export type FamilleCle = 'malt' | 'houblon' | 'levure' | 'sucre' | 'additif' | 'materiel' | 'emballage' | 'nettoyage' | 'consommable' | 'service' | 'autres';
+export type FamilleCle = 'malt' | 'houblon' | 'levure' | 'sucre' | 'additif' | 'materiel' | 'emballage' | 'nettoyage' | 'consommable' | 'renovation' | 'service' | 'autres';
 
-/** L'ordre d'affichage des bandes (D262c). */
-export const ORDRE_FAMILLES: readonly FamilleCle[] = ['malt', 'houblon', 'levure', 'sucre', 'additif', 'materiel', 'emballage', 'nettoyage', 'consommable', 'service', 'autres'];
+/** L'ordre d'affichage des bandes (D262c ; D306 : Rénovation après Consommables). */
+export const ORDRE_FAMILLES: readonly FamilleCle[] = ['malt', 'houblon', 'levure', 'sucre', 'additif', 'materiel', 'emballage', 'nettoyage', 'consommable', 'renovation', 'service', 'autres'];
 export const NOMS_FAMILLES: Record<FamilleCle, string> = {
   malt: 'Malts', houblon: 'Houblons', levure: 'Levures', sucre: 'Sucres', additif: 'Additifs', materiel: 'Matériel de brassage', emballage: 'Emballage',
-  nettoyage: 'Nettoyage', consommable: 'Consommables', service: 'Services', autres: 'Autres',
+  nettoyage: 'Nettoyage', consommable: 'Consommables', renovation: 'Rénovation', service: 'Services', autres: 'Autres',
 };
 
 /** Casse, accents et ß pliés : « Gärtank » → « gartank », « Château » → « chateau ». */
@@ -158,6 +164,106 @@ export function estNomHoublon(nom: string, t: string[] = jetons(nom)): boolean {
   return ALPHA_IMPRIME.test(plier(nom)) && t.some(j => NOMS_HOUBLONS_SIMPLES.has(j));
 }
 
+// ——— D306 : les travaux du local. Termes génériques en quatre langues (D271), aucune désignation d'une pièce (L20). ———
+export type SousFamilleRenovation = 'Peinture et sols' | 'Outillage' | 'Quincaillerie' | 'Électricité' | 'Plomberie' | 'Protection' | 'Divers travaux';
+/** L'ordre d'affichage des sous-familles de la Rénovation (D306). */
+export const SOUS_FAMILLES_RENOVATION: readonly SousFamilleRenovation[] = ['Peinture et sols', 'Outillage', 'Quincaillerie', 'Électricité', 'Plomberie', 'Protection', 'Divers travaux'];
+type SousMots = Exclude<SousFamilleRenovation, 'Divers travaux'>;
+/** Mots pliés exacts, débuts et fins de mots composés (allemand), phrases pliées (le nom entier est entouré d'espaces). */
+interface Mots { mots: ReadonlySet<string>; tous: readonly string[]; debuts?: readonly string[]; fins?: readonly string[]; phrases?: readonly string[] }
+const m = (mots: string, extra: Omit<Mots, 'mots' | 'tous'> = {}): Mots => { const l = liste(mots); return { mots: l, tous: [...l], ...extra }; };
+/** Dans quel ordre on cherche la sous-famille : la Protection d'abord (« gants de peintre »), puis du plus précis au plus large. */
+const LECTURE: readonly SousMots[] = ['Protection', 'Électricité', 'Plomberie', 'Quincaillerie', 'Outillage', 'Peinture et sols'];
+
+/** Mots SANS ÉQUIVOQUE des travaux : Rénovation sous toute catégorie de dépense. Aucun ne se lit dans une recette ni sur une cuve. */
+const TRAVAUX_SUR: Record<Exclude<SousMots, 'Protection'>, Mots> = {
+  'Peinture et sols': m(`
+    peinture peintures peintre peintres vernis vitrificateur vitrificateurs lasure lasures enduit enduits platre platres mastic mastics silicone silicones appret primaire pinceau pinceaux
+    manchon manchons carrelage carrelages ciment betons beton parquet parquets lino linoleum stratifie moquette faience diluant diluants decapant masquage
+    farbe farben wandfarbe deckenfarbe holzfarbe fassadenfarbe lack lacke klarlack holzlack parkettlack buntlack lasur lasuren grundierung tiefengrund spachtelmasse putz verputz kitt
+    dichtmasse silikon acryl pinsel malerpinsel farbrolle farbroller farbwanne abdeckband malerkrepp abdeckfolie abdeckplane abdeckvlies fliese fliesen fliesenkleber fugenmasse
+    fugenmortel zement mortel parkett laminat bodenbelag teppichboden verdunner
+    paint paints primer varnish plaster putty sealant caulk grout tile tiles cement concrete screed paintbrush paintbrushes masking laminate flooring undercoat
+    vernice vernici pittura pitture smalto stucco intonaco sigillante mastice pennello pennelli piastrella piastrelle cemento calcestruzzo fissativo diluente mascheratura`,
+    { debuts: ['maler'], phrases: [' rouleau a peinture ', ' rouleaux a peinture ', ' bac a peinture ', ' bacs a peinture ', ' sous couche ', ' produit pour sol ', ' produits pour sol ', ' colle a carrelage ',
+      ' ruban de masquage ', ' ruban masquage ', ' paint roller ', ' paint tray ', ' masking tape ', ' rullo per pittura ', ' nastro carta ', ' nastro per mascheratura '] }),
+  Outillage: m(`
+    ponceuse ponceuses abrasif abrasifs outil outils outillage marteau marteaux tournevis perceuse perceuses meuleuse visseuse cutter cutters spatule spatules truelle truelles
+    scie scies escabeau echelle echelles rabot tenaille tenailles
+    schleifmaschine schleifpapier schleifschwamm schleifblock schleifklotz hammer schraubendreher schraubenzieher bohrmaschine akkuschrauber bohrer sageblatt handsage spachtel
+    wasserwaage zollstock cuttermesser leiter trittleiter werkzeug werkzeuge zange zangen
+    sander sandpaper screwdriver screwdrivers drill saw spatula trowel pliers wrench ladder tool tools toolbox
+    levigatrice martello cacciavite trapano sega spatola cazzuola utensili utensile
+    grattoir grattoirs racloir racloirs raclette schaber spachtelklinge scraper scrapers raschietto raschietti abrasive farbmischer farbruhrer`,
+    { debuts: ['schleif'], phrases: [' turbine a peinture ', ' turbine peinture ', ' paint mixer ', ' melangeur a peinture ', ' melangeur peinture ', ' malaxeur a peinture ', ' ruhrer fur farbe ', ' miscelatore per vernici ', ' miscelatore vernice ', ' papier de verre ', ' papier abrasif ', ' niveau a bulle ', ' carta vetrata ', ' carta abrasiva ', ' cle a molette '] }),
+  Quincaillerie: m(`
+    cheville chevilles boulon boulons ecrou ecrous rondelle rondelles agrafe agrafes charniere charnieres equerre equerres serrure serrures poignee poignees verrou verrous visserie quincaillerie
+    dubel schraube schrauben holzschraube holzschrauben spanplattenschraube spanplattenschrauben scharnier scharniere nagel beschlag eisenwaren unterlagscheibe beilagscheibe
+    bolt bolts nail nails hinge hinges woodscrew wallplug tassello tasselli viti bullone bulloni chiodo chiodi cerniera cerniere ferramenta`,
+    { debuts: ['holzschraub'], phrases: [' vis a bois ', ' vis a metaux ', ' vis a placo ', ' wood screw ', ' wood screws ', ' viti per legno '] }),
+  Électricité: m(`
+    interrupteur interrupteurs disjoncteur disjoncteurs ampoule ampoules luminaire luminaires multiprise multiprises rallonge rallonges douille douilles electricite electricien gaine gaines
+    schalter lichtschalter steckdose steckdosen sicherung sicherungen gluhbirne gluhbirnen leuchte leuchten elektroinstallation elektriker bulb bulbs electrician electrical
+    interruttore interruttori lampadina lampadine elettricista guaina guaine`,
+    { phrases: [' prise de courant ', ' prise electrique ', ' prise murale ', ' fil electrique ', ' presa di corrente ', ' power outlet ', ' wall socket ', ' extension cord ', ' electrical tape '] }),
+  Plomberie: m(`
+    mitigeur mitigeurs sanitaire sanitaires lavabo lavabos evier eviers wc plomberie plombier teflon ptfe armatur armaturen abfluss wasserhahn waschbecken dichtungsband spulkasten sanitar
+    plumbing plumber sanitary idraulico sifone sifoni lavandino rubinetteria`,
+    { phrases: [' colle pvc ', ' ruban teflon ', ' ruban de teflon ', ' ruban ptfe '] }),
+};
+/**
+ * Mots AMBIGUS : ils se lisent aussi dans une brasserie (un robinet de cuve, un tuyau, un gant, une brosse, un seau, du ruban). Rénovation seulement quand la catégorie
+ * de la dépense (« Pour quoi ? ») vaut `renovation` ; ailleurs ces lignes gardent la famille d'avant (D306).
+ */
+const TRAVAUX_AMBIGUS: Record<SousMots, Mots> = {
+  Protection: m(`
+    gant gants handschuh handschuhe gloves guanti lunettes brille schutzbrille goggles occhiali masque masques maske mask mascherina combinaison combinaisons overall coverall
+    schutzanzug schutzhandschuhe schutzmaske atemschutz gehorschutz tuta casque helm helmet casco genouilleres ffp2 ffp3 respirateur respirator epi ppe dpi tablier schurze apron
+    grembiule bottes stiefel boots stivali
+    protection protections protezione protege genouillere genouilleres knieschoner kniepolster kneepad kneepads ginocchiere ginocchiera`,
+    { debuts: ['schutz'], phrases: [' protege genoux ', ' knee pad ', ' knee pads ', ' protege genou '] }),
+  Électricité: m('cable cables kabel wire plug plugs socket switch prise prises stecker spina presa prese'),
+  Plomberie: m(`
+    robinet robinets hahn rubinetto faucet tuyau tuyaux tubo tubi schlauch schlauche hose hoses joint joints dichtung dichtungen guarnizione guarnizioni raccord raccords raccordo
+    flexible flexibles pvc rohr rohre pipe pipes fitting fittings siphon siphons syphon vanne vannes ventil ventile valve valves valvola pompe pompes pumpe pumpen pump pumps pompa clamp`,
+    { fins: ['schlauch', 'ventil', 'pumpe'] }),
+  Quincaillerie: m('vis screw screws haken washer washers'),
+  Outillage: m(`
+    seau seaux eimer bucket buckets secchio secchi brosse brosses burste brush brushes spazzola spazzole eponge eponges schwamm sponge sponges spugna chiffon chiffons lappen tuch tucher
+    pince pinces balai besen broom entonnoir trichter funnel
+    melangeur melangeurs malaxeur malaxeurs turbine turbines ruhrer ruhrquirl ruhrwerk mixer mixers miscelatore miscelatori lame lames klinge klingen blade blades`),
+  'Peinture et sols': m(`
+    ruban rubans klebeband adhesif tape tapes nastro nastri rouleau rouleaux gips gypse gypsum gesso bache baches sols boden floor colle kleber glue colla`),
+};
+/** Un tuyau (de silicone) est du brassage : « silicone » ne suffit pas à le faire passer en Rénovation. */
+const TUYAUX = liste('tuyau tuyaux schlauch schlauche hose hoses tubo tubi');
+const SILICONES = liste('silicone silicones silikon');
+
+/** Un ticket abrège (« vitrific. », « protect. ») : un jeton d'au moins 6 lettres qui est le début d'un mot de la liste compte comme ce mot. */
+const abrege = (mots: Mots, j: string): boolean => j.length >= 6 && mots.tous.some(w => w.length > j.length && w.startsWith(j));
+const lit = (mots: Mots, t: readonly string[], joint: string): boolean =>
+  t.some(j => mots.mots.has(j) || abrege(mots, j) || (mots.debuts?.some(d => j.startsWith(d)) ?? false) || (mots.fins?.some(f => finit(j, [f])) ?? false)) || (mots.phrases?.some(p => joint.includes(p)) ?? false);
+/** Les jetons qui comptent pour les travaux : sans « silicone » quand la ligne parle d'un tuyau ou d'un flexible. */
+const jetonsTravaux = (t: readonly string[]): readonly string[] =>
+  t.some(j => TUYAUX.has(j) || finit(j, ['schlauch'])) ? t.filter(j => !SILICONES.has(j)) : t;
+const estTravauxSur = (t: readonly string[], joint: string): boolean => {
+  const u = jetonsTravaux(t);
+  return (Object.values(TRAVAUX_SUR) as Mots[]).some(mots => lit(mots, u, joint));
+};
+const estTravauxAmbigu = (t: readonly string[], joint: string): boolean => (Object.values(TRAVAUX_AMBIGUS) as Mots[]).some(mots => lit(mots, t, joint));
+/** Un mot précis du brassage (cuve, fermenteur, spider…) : les termes ambigus de `MATERIEL` (robinet, tuyau, joint, vanne, pompe…) n'en font pas partie. */
+const MATERIEL_AMBIGU = liste('robinet robinets hahn rubinetto faucet tuyau tuyaux tubo tubi schlauch schlauche hose hoses joint joints dichtung guarnizione vanne vannes ventil ventile valve valves valvola pompe pompes pumpe pumpen pump pumps pompa clamp trichter entonnoir funnel');
+const SUFFIXES_AMBIGUS = ['schlauch', 'ventil', 'pumpe'];
+const estMaterielPrecis = (t: readonly string[]): boolean =>
+  t.some(j => (MATERIEL.has(j) && !MATERIEL_AMBIGU.has(j)) || (finit(j, MATERIEL_SUFFIXES) && !finit(j, SUFFIXES_AMBIGUS))) || (t.some(j => SACS.has(j)) && t.some(j => FILTRES.has(j))) || ` ${t.join(' ')} `.includes(' uni tank ');
+
+/** Détartrant, anticalcaire, déboucheur : du Nettoyage sous toute catégorie (D306), en quatre langues. */
+const DETARTRANT_DEBUTS = ['detartr', 'entkalk', 'descal', 'decalcific', 'anticalc', 'antikalk', 'deboucheur', 'deboucha', 'rohrreinig', 'abflussreinig', 'disgorg', 'unclog', 'kalkloser', 'kalkreinig'];
+/** Marques de détartrants et de déboucheurs courantes en Suisse (jetons exacts). */
+const DETARTRANT_MARQUES = liste('durgol kalkex antikal antikalk calgon viakal cilit drano destop rohrfrei abflussfrei kalkfrei');
+const estDetartrant = (t: readonly string[], joint: string): boolean =>
+  t.some(j => commence(j, DETARTRANT_DEBUTS) || DETARTRANT_MARQUES.has(j) || (j.length >= 6 && DETARTRANT_DEBUTS.some(d => d.startsWith(j)))) || [' drain cleaner ', ' drain opener ', ' limescale remover ', ' lime remover ', ' calc remover '].some(p => joint.includes(p));
+
 export interface EntreeFamille {
   /** Le nom imprimé de la ligne (jamais traduit). */
   nom?: string;
@@ -169,6 +275,8 @@ export interface EntreeFamille {
   stockCategory?: string;
   /** La catégorie de l'article de stock rattaché à la ligne. */
   categorieArticle?: string;
+  /** D306 : la catégorie de la dépense (« Pour quoi ? » : `brassage`, `materiel`, `renovation`…). Les termes ambigus des travaux n'entrent en Rénovation que sous `renovation`. */
+  categorie?: string;
 }
 
 const KIND_FAMILLE: Record<string, FamilleCle> = { equipment: 'materiel', maintenance: 'materiel', packaging: 'emballage', cleaning: 'nettoyage', service: 'service', shipping: 'autres', discount: 'autres' };
@@ -179,15 +287,40 @@ const KINDS_HORS_INGREDIENT: ReadonlySet<string> = new Set(['equipment', 'mainte
 export function familleDe(e: EntreeFamille): FamilleCle {
   const kind = typeof e.kind === 'string' ? e.kind : '';
   const horsIngredient = KINDS_HORS_INGREDIENT.has(kind);
-  // 1. La catégorie de stock : celle de l'article rattaché, sinon celle que la lecture a écrite.
-  const parCategorie = familleDeCategorie(e.categorieArticle) ?? familleDeCategorie(e.stockCategory);
-  if (parCategorie && !(horsIngredient && FAMILLES_INGREDIENT.has(parCategorie))) return parCategorie;
-  // 2. Le kind de la lecture. Un nettoyage peut être un consommable (gants) : les mots tranchent.
+  const renov = e.categorie === 'renovation';
   const nom = typeof e.nom === 'string' ? e.nom : '';
   const t = jetons(nom), joint = ` ${t.join(' ')} `;
-  if (kind === 'cleaning') return t.some(j => CONSOMMABLE.has(j)) ? 'consommable' : 'nettoyage';
+  const detartrant = estDetartrant(t, joint), sur = estTravauxSur(t, joint);
+  // 1. La catégorie de stock : celle de l'article rattaché, sinon celle que la lecture a écrite. Une catégorie lue « Consommable » (jamais celle d'un article
+  //    rattaché) cède au détartrant, aux travaux et à la catégorie `renovation`.
+  const deArticle = familleDeCategorie(e.categorieArticle), parCategorie = deArticle ?? familleDeCategorie(e.stockCategory);
+  if (parCategorie && !(horsIngredient && FAMILLES_INGREDIENT.has(parCategorie))) {
+    const lueGenerique = !deArticle && parCategorie === 'consommable';
+    if (!(lueGenerique && (renov || detartrant || sur))) return parCategorie;
+  }
+  // 2. D306. Le port et la remise ne changent pas.
+  if (kind === 'shipping' || kind === 'discount') return 'autres';
+  if (detartrant) return 'nettoyage';
+  const mNettoyage = estNettoyage(t, joint);
+  if (kind === 'service') return renov && !t.some(j => SERVICE.has(j)) ? 'renovation' : 'service';
+  if (kind === 'packaging') return 'emballage';
+  if (kind === 'cleaning') {
+    // Un nettoyage peut être un consommable (gants) : les mots tranchent. Sous `renovation`, l'EPI et les travaux passent en Rénovation.
+    if (!mNettoyage && (sur || (renov && estTravauxAmbigu(t, joint)))) return 'renovation';
+    return t.some(j => CONSOMMABLE.has(j)) ? 'consommable' : 'nettoyage';
+  }
+  const motIngredient = () => ['Malt', 'Houblon', 'Levure'].includes(e.contexte ?? '') || t.some(j => ADDITIF_FORT.has(j)) || estAdditif(t) || estSucre(t) || estLevure(t, joint) || estMalt(t, joint)
+    || hasHopWord(nom) || estNomHoublon(nom, t) || t.some(j => HOUBLON.has(j) || commence(j, ['hopfen']));
+  if (renov) {
+    // Un mot PRÉCIS du brassage (cuve, fermenteur, spider, sacs + filtres…) garde la main sous Local : « Hop Spider Bag » reste du Matériel.
+    if (!estMaterielPrecis(t)) {
+      if (!mNettoyage && (sur || estTravauxAmbigu(t, joint))) return 'renovation';
+      if (!motIngredient() && !estEmballage(t) && !mNettoyage && !t.some(j => SERVICE.has(j))) return 'renovation';
+    }
+  } else if (sur && !mNettoyage && !estMaterielPrecis(t) && !t.some(j => TUYAUX.has(j) || finit(j, ['schlauch']))) return 'renovation';
+  // 3. Le kind de la lecture : un nettoyage et un emballage sont déjà tranchés ci-dessus.
   if (kind && KIND_FAMILLE[kind]) return KIND_FAMILLE[kind];
-  // 3. Les mots. Le matériel d'abord : « Hop Spider Bag » n'est pas du houblon.
+  // 4. Les mots. Le matériel d'abord : « Hop Spider Bag » n'est pas du houblon.
   if (estMateriel(nom)) return 'materiel';
   if (estEmballage(t)) return 'emballage';
   if (estNettoyage(t, joint)) return 'nettoyage';
@@ -225,10 +358,32 @@ export function categorieDeFamille(famille: FamilleCle, nom = ''): string {
       const t = jetons(nom);
       if (t.some(j => commence(j, ['desinfe', 'disinfe', 'sanitiz', 'sanitis', 'sanific', 'igieniz', 'iodophor', 'javel', 'hypochlorite'])) || joint.includes(' star san ') || t.includes('starsan') || t.includes('saniclean')) return 'Désinfectant';
       if (t.some(j => ['soude', 'natronlauge', 'lauge', 'caustique', 'caustic', 'cip'].includes(j))) return 'CIP alcalin';
-      if (t.some(j => commence(j, ['detergen', 'detersiv', 'reinig', 'nettoy', 'percarbon', 'perkarbon']) || ['chemipro', 'pbw', 'oxi', 'oxyclean', 'lessive', 'cleaner'].includes(j))) return 'Détergent';
+      if (t.some(j => commence(j, ['detergen', 'detersiv', 'reinig', 'nettoy', 'percarbon', 'perkarbon', ...DETARTRANT_DEBUTS]) || DETARTRANT_MARQUES.has(j) || ['chemipro', 'pbw', 'oxi', 'oxyclean', 'lessive', 'cleaner'].includes(j))) return 'Détergent';
       return 'Consommable';
     }
-    case 'materiel': case 'consommable': case 'service': return 'Consommable';
+    // Une ligne de Rénovation n'entre jamais en stock (D306) ; « Consommable » vaut mieux que « Divers » si elle arrivait ici.
+    case 'materiel': case 'consommable': case 'service': case 'renovation': return 'Consommable';
     default: return 'Divers';
   }
+}
+
+/**
+ * D306 : la sous-famille d'une ligne. Pour la Rénovation, une de `SOUS_FAMILLES_RENOVATION` (Protection d'abord, puis du plus précis au plus large ; un mot sans
+ * équivoque l'emporte sur un mot ambigu ; « Divers travaux » quand aucun mot n'est reconnu). Pour les autres familles, la sous-famille qui existe déjà : la
+ * catégorie de stock de l'article rattaché ou lue sur la ligne (celle de `STOCK_CATEGORIES` qui va dans cette famille), et pour Nettoyage et Consommables
+ * `categorieDeFamille` ; sinon `undefined`. Pure, et non affichée dans l'app : l'affichage est un choix à lui (voie r2).
+ */
+export function sousFamilleDe(famille: FamilleCle, e: EntreeFamille): string | undefined {
+  const nom = typeof e.nom === 'string' ? e.nom : '';
+  const lue = [e.categorieArticle, e.stockCategory].map(c => (c && c.trim() ? canonicalStockCategory(c) : undefined)).find(c => c !== undefined && STOCK_CATEGORIES.includes(c) && FAMILLE_DE_CATEGORIE[c] === famille);
+  if (famille === 'renovation') {
+    if ([e.categorieArticle, e.stockCategory].some(c => c && c.trim() && canonicalStockCategory(c) === 'EPI')) return 'Protection';
+    const t = jetons(nom), joint = ` ${t.join(' ')} `, u = jetonsTravaux(t);
+    if (lit(TRAVAUX_AMBIGUS.Protection, t, joint)) return 'Protection';
+    for (const sous of LECTURE) if (sous !== 'Protection' && lit(TRAVAUX_SUR[sous], u, joint)) return sous;
+    for (const sous of LECTURE) if (lit(TRAVAUX_AMBIGUS[sous], t, joint)) return sous;
+    return 'Divers travaux';
+  }
+  if (famille === 'nettoyage' || famille === 'consommable') return lue ?? categorieDeFamille(famille, nom);
+  return lue;
 }

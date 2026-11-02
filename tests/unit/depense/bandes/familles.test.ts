@@ -9,13 +9,13 @@ const L = (id: string, groupe: GroupeCle, amount: number, quantity: number, unit
 
 describe('D262c — une bande par famille, dans l’ordre, chacune avec son sous-total', () => {
   it('l’ordre est celui du brasseur : malts, houblons, levures, sucres, additifs, matériel, emballage, nettoyage, consommables, services, autres', () => {
-    expect([...ORDRE_GROUPES]).toEqual(['malt', 'houblon', 'levure', 'sucre', 'additif', 'materiel', 'emballage', 'nettoyage', 'consommable', 'service', 'autres']);
-    expect(ORDRE_GROUPES.map(c => NOMS_GROUPES[c])).toEqual(['Malts', 'Houblons', 'Levures', 'Sucres', 'Additifs', 'Matériel de brassage', 'Emballage', 'Nettoyage', 'Consommables', 'Services', 'Autres']);
+    expect([...ORDRE_GROUPES]).toEqual(['malt', 'houblon', 'levure', 'sucre', 'additif', 'materiel', 'emballage', 'nettoyage', 'consommable', 'renovation', 'service', 'autres']);
+    expect(ORDRE_GROUPES.map(c => NOMS_GROUPES[c])).toEqual(['Malts', 'Houblons', 'Levures', 'Sucres', 'Additifs', 'Matériel de brassage', 'Emballage', 'Nettoyage', 'Consommables', 'Rénovation', 'Services', 'Autres']);
   });
 
   it('une pièce inventée aux lignes de toutes les familles : une bande par famille, dans l’ordre, chacune avec son sous-total en centimes entiers', () => {
     const piece: Array<[GroupeCle, number, number, string]> = [
-      ['autres', 3, 1, 'Stk'], ['service', 12.5, 1, ''], ['consommable', 4.2, 2, 'Stk'], ['nettoyage', 18.9, 1, 'Kg'], ['emballage', 25, 100, 'Stk'], ['materiel', 120, 1, 'Stk'],
+      ['autres', 3, 1, 'Stk'], ['service', 12.5, 1, ''], ['consommable', 4.2, 2, 'Stk'], ['renovation', 20, 1, 'Stk'], ['nettoyage', 18.9, 1, 'Kg'], ['emballage', 25, 100, 'Stk'], ['materiel', 120, 1, 'Stk'],
       ['additif', 6.1, 50, 'g'], ['sucre', 7.5, 1, 'Kg'], ['levure', 9.5, 2, 'Stk'], ['houblon', 8, 100, 'g'], ['malt', 13.8, 6, 'Kg'], ['malt', 2.4, 1, 'Kg'],
     ];
     const b = bandes(piece.map(([g, a, q, u], i) => L(String(i), g, a, q, u)));
