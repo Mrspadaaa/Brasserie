@@ -1184,14 +1184,15 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     compte('bis',()=>'bis','bis',chips.filter(c=>c.source==='voisin')),
     compteDe('mouture',[...idsDe('mouture'),...concasses.map(x=>x.l.id)],n=>n>1?'moutures':'mouture','mouture',chips.filter(c=>c.source==='mouture'),centsMoutures>0?`+${eur(centsMoutures)}`:undefined),
     /* A3 : un désaccord est une valeur reprise (jaune) : il compte dans « à contrôler » (ceux qui ne tombent pas sur une rangée s'y ajoutent) ; la file de D329 le traite. */
-    {...compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),...(piedVise?{actif:true}:{}),n:parNiveau('repris').length+desaccordsRestants.filter(c=>c.ligne===null).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0)},
+    {...compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),...(piedVise&&desaccordsRestants.length?{actif:true}:{}),n:parNiveau('repris').length+desaccordsRestants.filter(c=>c.ligne===null).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0)},
     compteDe('remplir',parNiveau('inconnu'),()=>'à remplir','precis',chips.filter(c=>c.codes.includes('unite-absente')),undefined,'inconnu'),
     /* Lenteur D (sa maquette `d-lue`) : « ↻ N corrigées », au geste de filtre des autres puces. N compte les CIBLES (une rangée à deux cellules corrigées : 1 ; un champ d'en-tête : 1 ; une ligne ajoutée : 1) et, comme sa maquette `choix-valider`, les lignes pas retrouvées qui attendent encore. */
     ...(()=>{/* D354 : un changement accepté (Garder, Tout valider) ne se marque plus : ni la rangée, ni la puce ne le comptent. */const touchees=[...Object.keys(fusion?.lignes??{}).filter(id=>draft.lines.some(l=>l.id===id)),...(fusion?[...fusion.ajoutees]:[])],attendues=touchees.filter(id=>!tranchees.has(`corr:${id}`)&&!tranchees.has(`ajout:${id}`)),ids=[...attendues,...perdues.map(p=>p.ligne.id)],n=Math.max(0,(fusion?.n??0)-(touchees.length-attendues.length))+perdues.length,mot=n>1?'corrigées':'corrigée';return n>0?[{cle:'corrigees',n,mot,lien:'aucun' as LienStock,ronds:[],fait:false,ids,actif:filtre?.mot===mot,corrigee:true} as CompteItem]:[];})(),
   ];
   const surCompte=(c:CompteItem)=>{
-    /* D369 : « à contrôler » dont les points ne sont sur aucune rangée (désaccord du document) : rien à filtrer ; le bandeau où il se règle s'éclaire, la puce s'allume. */
-    if(c.cle==='controler'&&!c.ids.length&&desaccordsRestants[0]){if(courantChg){setPiedVise(true);setTimeout(()=>{if(mounted.current)setPiedVise(false);},1600);}else aller(desaccordsRestants[0]);return;}
+    /* D369 : « à contrôler » dont les points ne sont sur aucune rangée (désaccord du document) : rien à filtrer ; comme un filtre, la puce s'allume et le bandeau où il se règle s'éclaire, jusqu'au second toucher. */
+    if(c.cle==='controler'&&!c.ids.length&&desaccordsRestants[0]){if(courantChg){setPiedVise(v=>!v);setFiltre(null);setGarde([]);}else aller(desaccordsRestants[0]);return;}
+    setPiedVise(false);
     if(!c.ids.length)return;
     if(filtre&&filtre.mot===c.mot){setFiltre(null);setGarde([]);return;}
     setFiltre({mot:c.mot,ids:c.ids});setGarde(c.ids);setTimeout(()=>{if(mounted.current)setGarde([]);},1600);
@@ -1405,7 +1406,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
       </div>
     </div>
-    {showForm&&courantChg&&chgSecond?<BandeauPerdues vise={piedVise} nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
+    {showForm&&courantChg&&chgSecond?<BandeauPerdues vise={piedVise&&desaccordsRestants.length>0} nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
     {showForm?<Pied ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
   </ModalShell>;
 }
