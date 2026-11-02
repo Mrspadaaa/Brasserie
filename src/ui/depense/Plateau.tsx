@@ -36,6 +36,13 @@ export function NombresRapides({ index, nombres, effacable, onAjouter, onEffacer
     {effacable ? <button type="button" aria-label="effacer la quantité" onClick={onEffacer} className="min-w-9 px-1.5 text-sm text-cave-400">✕</button> : null}
   </span>;
 }
+/** D371 : l'unité de la ligne ne s'ajoute pas à l'article relié : dit sur-le-champ, au plateau, avec l'unité du stock en un toucher. */
+export function AlerteUnite({ nom, unite, uniteStock, onCompter }: { nom: string; unite: string; uniteStock: string; onCompter: () => void }) {
+  return <div role="alert" data-dp-alerte-unite data-dp-niveau="inconnu" className="flex flex-wrap items-center gap-1.5 rounded-control border-2 border-alert bg-alert/10 px-2 py-1.5 text-sm text-cave-50">
+    <span className="min-w-0 flex-1">« {nom} » est compté en <b className="font-mono">{uniteStock}</b> au stock : <b className="font-mono">{unite}</b> ne s’y ajoute pas.</span>
+    <button type="button" onClick={onCompter} className="inline-flex min-h-8 shrink-0 items-center rounded-control border border-alert bg-cave-950 px-2.5 text-sm font-semibold text-cave-50">Compter en {uniteStock}</button>
+  </div>;
+}
 /** L'unité qui manque n'a pas de champ : une boîte rouge tiretée, et ses cinq cases juste dessous. */
 export function BoiteUniteVide() {
   return <span data-dp-niveau="inconnu" aria-hidden className="inline-flex h-9 min-w-16 items-center justify-center rounded-control border-2 border-dashed border-alert bg-alert/10 font-mono text-base text-alert">▒</span>;

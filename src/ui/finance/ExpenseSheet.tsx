@@ -45,8 +45,8 @@ import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
-import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides } from '../depense/Plateau';
-import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,recalculer,type ChampCalcul } from '../depense/calculPlateau';
+import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,AlerteUnite } from '../depense/Plateau';
+import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,recalculer,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
 import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
@@ -960,6 +960,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     </RangeeCalcul>;
     /* Les cinq cases de l'unité qui manque : le prix par unité dessous, l'unité du stock proposée (jamais posée). */
     const uniteStock=article&&isReadableUnit(article.unit)?CINQ_UNITES.find(u=>cleUnite(u.valeur)===cleUnite(article.unit))?.valeur:undefined;
+    /* D371 : la ligne reliée dont l'unité ne s'ajoute pas à l'article : l'alerte, et l'unité du stock en un toucher. */
+    const alerteUniteEl=article&&line.stockAction==='existing'&&!uniteManque&&uniteHorsArticle({description:line.description,quantity:line.quantity,unit:unite},article)?<AlerteUnite nom={article.name} unite={motUnite(unite,line.quantity)} uniteStock={motUnite(article.unit)} onCompter={()=>choisirUnite(uniteStock??article.unit)}/>:null;
     const casesEl=uniteManque&&!(horsStock&&!STOCK_KINDS.includes(line.kind))?<CasesUnite ref={el=>{if(el)casesRefs.current.set(line.id,el);else casesRefs.current.delete(line.id);}} index={index+1} unites={CINQ_UNITES} propose={uniteStock} prix={prixTexte||undefined} onChoisir={choisirUnite}/>:null;
     /* Le face à face de la ligne dont l'unité manque (son article est relié) : l'extrait à gauche, « compté en Kg » au stock. */
     const duelUniteEl=uniteManque&&article?<Duel etat="inconnu" symbole="?" note="unité illisible"
@@ -1007,7 +1009,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const effetDroite=!enTrio&&!corrigeeEnAttente&&!(uniteManque&&article)?(effetArticle?.texte??(line.stockAction==='new'&&line.quantity!==undefined&&lisible?`0 → ${nombreFr(line.quantity)} ${motUnite(unite,line.quantity)}`:undefined)):undefined;
     const natureSegEl=segNature?<SegmentNature index={index+1} nature={segNature} onChoisir={changerNature} droite={effetDroite?<Apres texte={effetDroite}/>:undefined}/>:null;
     /* Hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d), le type d'achat en pastilles d'un toucher (D350). */
-    const suivreAuStock=()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu});if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:'new'});};
+    const suivreAuStock=()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);/* D371b : une unité qui ne s'y ajoute pas (« pièce » face à l'article en g) n'en fait pas un autre produit : le nom seul relie, l'alerte d'unité suit (jamais un doublon). */const meme=lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu})??(isReadableUnit(uniteDe(line))?lieAuStock(line.description,'',undefined,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined);if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:'new'});};
     const autrePlateau=<BoutonCarre aria="Choisir un autre article" onClick={choisirAutre}/>;
     const retirerEl=<BoutonTexte aria={`Retirer l’article, ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'none'});}}>Retirer</BoutonTexte>;
     const stockable=STOCK_KINDS.includes(line.kind);
@@ -1028,6 +1030,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <Imprime texte={`${imprimeTexte}${pieceImprimee}`} reference={line.sourceReference}/>
       {libelleChamp}
       {calculEl}
+      {alerteUniteEl}
       {nombresEl}
       {casesEl}
       {rouges.some(r=>r.champ!=='unite')?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.filter(r=>r.champ!=='unite').map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}

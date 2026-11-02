@@ -1326,3 +1326,11 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   prestation » ouvert, cerné de rouge), mot pour mot : « Problème, je peux entrer que une lettre dans ce champs avant que ça valide » (D370.)
 - (02.11, soir, suite de D370), mot pour mot : « Fix ça, et le reste attendra, fait juste le correctif, unit test et deploye » (lu : D370 seul,
   un test unitaire, le déploiement ; le banc après correctif et les restes de D369 attendent.)
+- **Ligne de houblon ajoutée, reliée au stock** (02.11, soir ; capture `uploads/…/2da34348-image.jpg` : ligne ajoutée « Idaho 7 14aa chf »,
+  reliée d'office à « Houblon Idaho 7 12.7% », `7 [g Kg pièce] × 2,00 = 14,00`, pièce choisie, rien à droite de la nature), mot pour mot :
+  « Ça va vraiment marché là ? J'ai aussi l'impression que "l'autocomplete" pour la liaison avec le stock fonctionne pas super bien. SI je crée
+  un houblon Idaho7 il le trouve pas directement. Peut être aussi que l'ajout des unités à cassé quelques chose, car là sur l'écran on devrait
+  voir qqch » (D371.)
+- (02.11, soir, suite de D371), mot pour mot : « Le problème vient de la ligne saisie en « pièce », alors que l'Idaho 7 est compté en grammes
+  dans le stock exactement, mais on a pas la vue, popup sur le changement problématique » (lu : une alerte visible sur-le-champ quand l'unité de
+  la ligne ne s'ajoute pas à l'article relié, avec l'unité du stock en un toucher.)

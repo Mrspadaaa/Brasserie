@@ -1,6 +1,6 @@
 // Les règles pures du plateau pu4d (D361) : le choix d'unité en un toucher (D350, D353 : la pièce toujours offerte) et le stock avant → après réception.
 // Aucune écriture, aucun service : ce que le plateau montre est calculé ici sur le brouillon et le stock courants.
-import { isPieceUnit, isSachetUnit } from '../../services/ingredientIdentity';
+import { isPieceUnit, isReadableUnit, isSachetUnit } from '../../services/ingredientIdentity';
 import { linkUnit, shortUnit } from '../../services/stockLineMatching';
 import { stockQuantityFor, type PurchaseLineDraft } from '../../services/purchaseEntry';
 import type { StockItem } from '../../types';
@@ -99,4 +99,10 @@ export function recalculer(ligne: Calcul, champ: ChampCalcul, valeur: number | u
   else if (m !== undefined && p !== undefined && p > 0 && q === undefined) { const r = m / p, e = Math.round(r); if (e > 0 && Math.abs(r - e) < 1e-3) plus = { quantity: e }; }
   const pose = Object.keys(plus)[0] as ChampCalcul | undefined;
   return { patch: { [champ]: valeur, ...(libre ? { [libre]: undefined } : {}), ...plus }, calcule: pose };
+}
+
+/** D371 : l'unité lue ou choisie ne s'ajoute pas à l'article relié (« pièce » face à un houblon compté en g) ; « Confirmer » le refuserait. Rien tant qu'une des deux unités est illisible. */
+export function uniteHorsArticle(ligne: { description: string; quantity?: number; unit: string }, article: { name: string; unit: string; category?: string }): boolean {
+  if (!isReadableUnit(ligne.unit) || !isReadableUnit(article.unit)) return false;
+  return !stockQuantityFor({ description: ligne.description, quantity: ligne.quantity !== undefined && ligne.quantity > 0 ? ligne.quantity : 1, unit: ligne.unit }, article).ok;
 }

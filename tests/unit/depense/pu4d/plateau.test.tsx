@@ -129,3 +129,28 @@ describe('D370 — le libellé d’une ligne ajoutée', () => {
     expect(state.writes).toEqual([]);
   });
 });
+
+describe('D371 — une ligne en pièce reliée à un houblon compté en g', () => {
+  it('« Galaxy » en pièce, « Suivre au stock » : reliée à l’article (pas de doublon), l’alerte « compté en g » et « Compter en g » d’un toucher', async () => {
+    const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3)]);
+    const avant = new Set([...view.container.querySelectorAll('[data-dp-ligne]')].map(e => e.getAttribute('data-dp-ligne')));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter une ligne/ }));
+    const id = [...view.container.querySelectorAll('[data-dp-ligne]')].map(e => e.getAttribute('data-dp-ligne')!).find(x => !avant.has(x))!;
+    let l = ouvrir(view, id);
+    const champ = l.querySelector('[aria-label^="Libellé ligne"]') as HTMLTextAreaElement;
+    champ.focus(); fireEvent.change(champ, { target: { value: 'Galaxy' } }); champ.blur();
+    l = ligneEl(view, id);
+    fireEvent.click(l.querySelector('[data-dp-cases-unite] button[data-val="pièce"]')!);
+    fireEvent.click(screen.getByRole('button', { name: /Suivre au stock/ }));
+    l = ligneEl(view, id);
+    expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('Galaxy');
+    expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('relié');
+    const alerte = l.querySelector('[data-dp-alerte-unite]');
+    expect(alerte?.textContent).toContain('compté en g');
+    fireEvent.click([...alerte!.querySelectorAll('button')].find(b => /Compter en g/.test(b.textContent ?? ''))!);
+    l = ligneEl(view, id);
+    expect(l.querySelector('[data-dp-alerte-unite]')).toBeNull();
+    expect(l.querySelector('[data-dp-unite-segments] [aria-pressed="true"]')?.textContent).toBe('g');
+    expect(state.writes).toEqual([]);
+  });
+});
