@@ -105,6 +105,18 @@ function loadNomsRejoues(file) {
   return noms;
 }
 
+/**
+ * Lenteur D : les pièces rejouées EN FLUX (fichier hors Git fabriqué par `voies/b-lenteur/outils/fabriquer.ts` : le morceau provisoire, le final et ses `rangProvisoire`, tels que `lireCsv8` les rend sur
+ * les lectures brutes déjà payées). Vide si le manifeste n'a pas de clé `lenteur` ; les cas `lenteur-*` et `ht-confirmer` l'exigent. La pièce HT porte ses trois images (sha de chacune).
+ */
+function loadLenteur(file) {
+  if (!file) return { pieces: {} };
+  const { pieces } = JSON.parse(readFileSync(file, 'utf8'));
+  for (const piece of Object.values(pieces))
+    if (piece.images) piece.pages = piece.images.map(image => { const bytes = readFileSync(image); return { image, bytes, sha256: sha(bytes) }; });
+  return { pieces };
+}
+
 /** Replay manifest: images and recorded outputs read by path; nothing of them is copied into this file. */
 function loadReplay(file) {
   const manifest = JSON.parse(readFileSync(file, 'utf8'));
@@ -230,7 +242,10 @@ async function outer() {
     const env = { ...process.env, JAVA_HOME, PATH: `${join(JAVA_HOME, 'bin')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}`,
       EMU_OUT: out, EMU_TMP: tmp, EMU_WIDTHS: option('widths', '390,1280'), EMU_CASES: option('cases', ALL_CASES.filter(name => name !== 'doc14' || replayDocs.doc14).join(',')),
       EMU_PORT: String(port), EMU_RULES_SHA: rules.sha, EMU_REPLAY: resolve(replay), EMU_VITE_CONFIG: viteConfig ?? '',
-      EMU_NOMS: option('noms') ? resolve(option('noms')) : '' };
+      EMU_NOMS: option('noms') ? resolve(option('noms')) : '',
+      // Lenteur D (voie b-lenteur) : le fichier des pièces rejouées en flux (clé `lenteur` du manifeste, hors Git) ; `--sans-flux` = témoin négatif (le flux est absent).
+      EMU_LENTEUR: (m => m.lenteur ? resolve(dirname(resolve(replay)), m.lenteur) : '')(JSON.parse(readFileSync(resolve(replay), 'utf8'))),
+      EMU_SANS_FLUX: flag('sans-flux') ? '1' : '' };
     for (const secret of ['GEMINI_API_KEY', 'GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY', 'GOOGLE_GENAI_API_KEY', 'GEMINI_KEY'])
       delete env[secret];
     const inner = `"${process.execPath}" "${SELF}" --inner`;
@@ -300,6 +315,39 @@ function pageServices() {
     else if (init.body) body = { base64: toBase64(new Uint8Array(await new Response(init.body).arrayBuffer())) };
     const answer = await window.__jus0Bridge({ kind: match ? match[1] : 'drive', url, method: (init.method || 'GET').toUpperCase(), headers, body });
     if (answer.networkError) throw new TypeError('Failed to fetch');
+    // Lenteur D (PLAN § 5 [M7]) : le client lit la réponse de `aiTask` en flux (`Accept: text/event-stream`, `httpsCallable.stream`). Le flux se construit ICI, dans la page : le délai entre deux blocs
+    // se joue côté page. Le pont rend soit `{ sse: [{ message | result | error | ferme | coupe, apres? }…], debutMs, delaiMs, fluxId }`, soit une réponse ordinaire (`{ status, text }`) que le flux
+    // porte en UN seul bloc `data: …` (c'est le format du serveur : `{result}` ou `{error}`) : les cas existants, qui rejouent un final, ne changent pas. Une requête SANS cet en-tête reste servie d'un bloc.
+    // `window.__jus0SansFlux` (témoin négatif, `--sans-flux`) rend le comportement d'avant le flux : une réponse JSON d'un bloc, sans `data:`.
+    if (match && /event-stream/i.test(headers.accept || '') && !window.__jus0SansFlux) {
+      const blocs = answer.sse ?? [{ brut: answer.text ?? '' }];
+      const signal = init.signal, encodeur = new TextEncoder(), minuteurs = [];
+      let fini = false;
+      const dire = etat => { try { window.__jus0Bridge({ kind: 'flux-etat', etat, fluxId: answer.fluxId ?? null, at: Date.now() }); } catch { /* le pont ne doit jamais gêner le flux */ } };
+      const flux = new ReadableStream({
+        start(controleur) {
+          const arreter = etat => { if (fini) return; fini = true; minuteurs.forEach(clearTimeout); dire(etat); };
+          if (signal) signal.addEventListener('abort', () => { arreter('annule'); try { controleur.error(new DOMException('The user aborted a request.', 'AbortError')); } catch { /* déjà fermé */ } }, { once: true });
+          const jouer = i => {
+            if (fini) return;
+            if (i >= blocs.length) { arreter('ferme'); controleur.close(); return; }
+            const bloc = blocs[i];
+            minuteurs.push(setTimeout(() => {
+              if (fini) return;
+              if (bloc.coupe) { arreter('coupe'); controleur.error(new TypeError('network error')); return; }
+              if (bloc.ferme) { arreter('ferme'); controleur.close(); return; }
+              const ligne = bloc.brut !== undefined ? bloc.brut : JSON.stringify(bloc.message !== undefined ? { message: bloc.message } : bloc.result !== undefined ? { result: bloc.result } : { error: bloc.error });
+              controleur.enqueue(encodeur.encode(`data: ${ligne}\n\n`));
+              dire(bloc.message !== undefined ? 'morceau' : bloc.result !== undefined ? 'resultat' : bloc.error !== undefined ? 'erreur' : 'brut');
+              jouer(i + 1);
+            }, bloc.apres ?? (i === 0 ? (answer.debutMs ?? 0) : (answer.delaiMs ?? 0))));
+          };
+          jouer(0);
+        },
+        cancel() { if (!fini) { fini = true; minuteurs.forEach(clearTimeout); dire('annule'); } }
+      });
+      return new Response(flux, { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
+    }
     const payload = answer.status === 204 ? null : answer.base64 ? Uint8Array.from(atob(answer.base64), c => c.charCodeAt(0)) : (answer.text ?? '');
     return new Response(payload, { status: answer.status, headers: answer.headers || {} });
   };
@@ -330,6 +378,7 @@ function callableAnswer(c, request) {
     return json({ ok: true, data: { noms }, model: 'rejeu-noms', elapsedMs: 900 });
   }
   if (data.task !== 'scanInvoice') return fail(400, 'FAILED_PRECONDITION', 'Banc : seule la lecture de justificatif est rejouée.');
+  if (ai.lenteur) return reponseFlux(c, call, data, request, fail);
   // n2-pages : une lecture à plusieurs pages doit porter EXACTEMENT les pages fictives du cas (nombre, ordre, empreinte de chacune) et aucun `file` ; sinon le cas échoue (une seule image envoyée ne passe pas).
   if (Array.isArray(data.files)) {
     const attendues = c.pagesAttendues ?? [];
@@ -343,6 +392,54 @@ function callableAnswer(c, request) {
   if (ai.mode === 'inutilisable') return json({ ok: true, data: 'La réponse du modèle ne contient aucun champ exploitable.', model: 'rejeu-jus0', elapsedMs: 900 });
   if (!doc || !call.expectedFile) return fail(400, 'FAILED_PRECONDITION', 'Banc : fichier inattendu pour ce cas.');
   return json({ ok: true, data: doc.result, model: 'rejeu-jus0', elapsedMs: 1200, documentHash: doc.sha256 });
+}
+
+/**
+ * Lenteur D : la réponse FLUX de `aiTask` pour une pièce du fichier `lenteur` (`c.lenteur`). `c.ai.lenteur` = { piece, forme, debutMs, delaiMs, cacheable? } :
+ *  - `normale`  : le morceau provisoire après `debutMs`, puis le final (avec `provisoireJeton` et ses `rangProvisoire`) `delaiMs` plus tard ;
+ *  - `echec`    : comme `normale`, mais la 3.8 a échoué (le final porte les valeurs du provisoire et le point « lecture coupée ») ;
+ *  - `perdues-2`: comme `normale`, le final ne lit plus deux lignes du provisoire (DÉRIVÉ d'une vraie lecture : simulé, marqué dans le rapport) ;
+ *  - `seul`     : un final sans morceau (pièce sans 3.8, cache) ;
+ *  - `sans-resultat` : le morceau, puis le flux se ferme sans `result` ; `coupe` : le morceau, puis une coupure réseau du flux.
+ * Le serveur de production finit sa lecture et la met en cache quand le client coupe : avec `cacheable`, la requête suivante pour la même pièce reçoit le final seul (`cached`).
+ * Le fichier envoyé doit être l'image (ou les pages) de la pièce : l'empreinte est vérifiée comme pour les autres cas.
+ */
+function reponseFlux(c, call, data, request, fail) {
+  const ai = c.ai.lenteur, piece = c.lenteur.pieces[ai.piece];
+  if (!piece) return fail(400, 'FAILED_PRECONDITION', `Banc : pièce de lenteur inconnue (${ai.piece}).`);
+  const doc = c.docs[ai.piece];
+  if (Array.isArray(data.files)) {
+    const attendues = piece.pages?.map(page => page.sha256) ?? [];
+    call.files = data.files;
+    call.expectedFiles = attendues.length > 1 && data.files.length === attendues.length && data.files.every((f, i) => f.sha256 === attendues[i]) && !data.file;
+    if (!call.expectedFiles) return fail(400, 'FAILED_PRECONDITION', 'Banc : pages inattendues pour ce cas.');
+  } else {
+    call.expectedFile = doc ? data.file?.sha256 === doc.sha256 : false;
+    if (!call.expectedFile) return fail(400, 'FAILED_PRECONDITION', 'Banc : fichier inattendu pour ce cas.');
+  }
+  const fluxId = c.calls.ai.length - 1, jeton = `jeton-banc-${fluxId}`;
+  const pages = Array.isArray(data.files) ? data.files.length : 0;
+  const reponse = (resultat, extra = {}) => ({ ok: true, data: resultat, model: 'rejeu-jus0', tier: 'fast', elapsedMs: piece.msFinal ?? 1200, documentHash: doc?.sha256 ?? 'banc-pages', ...(pages ? { pages } : {}), ...extra });
+  const morceau = () => ({ message: { etape: 'provisoire', jeton, data: piece.provisoire, model: 'rejeu-jus0', elapsedMs: piece.msProvisoire ?? 800 } });
+  const forme = c.serveurCache?.has(ai.piece) && ai.cacheable ? 'cache' : ai.forme;
+  const final = donnees => ({ result: reponse({ ...donnees, provisoireJeton: jeton }), apres: ai.delaiMs ?? 0 });
+  const blocs = {
+    cache: [{ result: reponse(piece.finalSeul ?? piece.final, { cached: true }), apres: 0 }],
+    seul: [{ result: reponse(piece.finalSeul ?? piece.final), apres: ai.debutMs ?? 0 }],
+    normale: [{ ...morceau(), apres: ai.debutMs ?? 0 }, final(piece.final)],
+    echec: [{ ...morceau(), apres: ai.debutMs ?? 0 }, final(piece.finalEchec)],
+    'perdues-2': [{ ...morceau(), apres: ai.debutMs ?? 0 }, final(piece.finalPerdues2)],
+    'sans-resultat': [{ ...morceau(), apres: ai.debutMs ?? 0 }, { ferme: true, apres: ai.delaiMs ?? 0 }],
+    coupe: [{ ...morceau(), apres: ai.debutMs ?? 0 }, { coupe: true, apres: ai.delaiMs ?? 0 }]
+  }[forme];
+  if (!blocs) return fail(400, 'FAILED_PRECONDITION', `Banc : forme de lenteur inconnue (${forme}).`);
+  call.flux = { piece: ai.piece, forme, jeton, simule: forme === 'perdues-2' };
+  // Une requête sans `Accept: text/event-stream` (ancien client) ne reçoit que le final, d'un bloc, comme avant.
+  if (!/event-stream/i.test(request.headers?.accept ?? '')) {
+    const dernier = blocs.at(-1)?.result;
+    return dernier ? { status: 200, headers: { 'Content-Type': 'application/json' }, text: JSON.stringify({ result: dernier }) } : fail(500, 'INTERNAL', 'Banc : aucun final à rendre sans flux.');
+  }
+  return { status: 200, headers: { 'Content-Type': 'text/event-stream' }, sse: blocs, fluxId };
 }
 
 /** In-memory Google Drive v3 subset used by `driveFileStore.ts`: ids, folders, resumable upload, metadata, media. */
@@ -553,8 +650,8 @@ async function openInvoiceEntry(c) {
   return chooser;
 }
 /** Picks a document in an open chooser (or opens one with « Un document »), then waits for the reading. */
-async function scan(c, docId, { mode = 'replay', chooser, delayMs = 0, loadingShot } = {}) {
-  c.ai = { mode, doc: docId, delayMs };
+async function scan(c, docId, { mode = 'replay', chooser, delayMs = 0, loadingShot, lenteur } = {}) {
+  c.ai = { mode, doc: docId, delayMs, ...(lenteur ? { lenteur: { piece: docId, ...lenteur } } : {}) };
   const doc = c.docs[docId];
   let picker = chooser ? await chooser : null;
   if (!picker) {
@@ -2178,7 +2275,311 @@ async function casePages(c) {
   c.record('pages-pdf-octets', fichier?.bytes.length ?? null);
 }
 
-const CASES = { pages: casePages, 'nom-b': caseNomB, 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
+// ───────────────────────────── Lenteur D (voie b-lenteur) : la lecture lente jouée dans Chrome sur ses vraies pièces rejouées ─────────────────────────────
+// Chaque cas joue le parcours par l'entrée de l'app (« Entrer une facture », choisir la pièce, attendre, toucher). Le flux est celui du serveur : un morceau provisoire (les deux Flash-Lite),
+// puis le final de la 3.8 (voir `reponseFlux`). Les pièces viennent de `voies/b-lenteur/outils/fabriquer.ts` (hors Git) ; rien d'inventé, sauf `lenteur-perdues-2` (dérivé, marqué).
+const LENTEUR = { debutMs: 800, delaiMs: 9000 };
+/** Ce que le brasseur voit pendant et après la vérification : le fil, le bouton principal, la preuve, la puce, les lignes (corrigées, neuves, pas retrouvées), le bandeau, les alertes. */
+const etatLenteur = c => c.page.evaluate(() => {
+  const d = document.querySelector('[role="dialog"]');
+  if (!d) return null;
+  const b = d.querySelector('footer button[data-primary]'), puce = d.querySelector('[data-va="corrigees"]'), texte = e => e?.textContent.replace(/\s+/g, ' ').trim() ?? null;
+  return {
+    fil: !!d.querySelector('[data-dp="fil"]'), filH: d.querySelector('[data-dp="fil"]')?.getBoundingClientRect().height ?? null,
+    bouton: b ? { texte: b.innerText.trim(), off: b.disabled, aria: b.getAttribute('aria-label'), roue: !!b.querySelector('svg.animate-spin') } : null,
+    preuve: texte(d.querySelector('[data-dp="preuve"]')), puce: texte(puce), puceN: puce ? Number(/\d+/.exec(puce.textContent)?.[0] ?? NaN) : null,
+    lignes: d.querySelectorAll('article[data-dp-ligne]').length, corrigees: d.querySelectorAll('article[data-dp-corrigee]').length, neuves: d.querySelectorAll('article[data-dp-neuve]').length,
+    perdues: d.querySelectorAll('[data-dp-perdue]').length, bandeau: texte(d.querySelector('[data-dp="perdues"]')),
+    vendorAvant: texte(d.querySelector('[data-dp="vendor-avant"]')), alertes: [...d.querySelectorAll('[role="alert"]')].map(e => e.innerText.replace(/\s+/g, ' ').trim()),
+    fermer: (f => (f ? !f.disabled : null))(d.querySelector('header button[aria-label="Fermer"]')),
+    texte: d.innerText.replace(/\s+/g, ' '), debord: Math.max(0, document.documentElement.scrollWidth - innerWidth)
+  };
+});
+/** Attend la fin de la vérification : le fil parti et le bouton principal actif. */
+const attendreFinal = async (c, label, timeout = 40000) => waitFor(async () => { const e = await etatLenteur(c); return e && !e.fil && e.bouton && !e.bouton.off ? e : false; }, label, timeout);
+const sansEcriture = async (c, avant) => !businessWrites(dbWrites(avant, await dbSnapshot(c.db))).length;
+/** Ouvre la feuille et lit la pièce par le fichier : le morceau arrive après `debutMs`, le final `delaiMs` plus tard. Rend ce qu'il faut pour juger (nombre d'erreurs de console avant, base avant, la pièce). */
+async function ouvrirLenteur(c, piece, forme, options = {}) {
+  if (!c.lenteur.pieces[piece] || !c.docs[piece]) throw Error(`Pièce ${piece} absente du fichier lenteur ou du manifeste (voies/b-lenteur/outils/fabriquer.ts, puis manifeste.json en 4ᵉ argument de lancer.sh).`);
+  if (!options.garderCache) c.serveurCache.clear();
+  c.flux.length = 0;
+  const base = { erreurs: c.entry.errors.length, db: await dbSnapshot(c.db), appels: c.calls.ai.length, flux: c.flux.length };
+  const chooser = await openInvoiceEntry(c);
+  await scan(c, piece, { chooser, lenteur: { forme, ...LENTEUR, ...(options.lenteur ?? {}) } });
+  return { ...base, piece: c.lenteur.pieces[piece] };
+}
+const sansErreur = (c, base) => c.entry.errors.slice(base.erreurs).filter(texte => !/Failed to load resource|ERR_BLOCKED_BY_CLIENT/.test(texte));
+/** Les lectures de justificatif (hors traduction des noms) envoyées depuis le rang `depuis` de la liste des appels. */
+const lecturesDepuis = (c, depuis) => c.calls.ai.slice(depuis).filter(a => a.task === 'scanInvoice').length;
+const evenements = (c, etat) => c.flux.filter(e => e.etat === etat).length;
+
+/** Le provisoire : l'écran arrive avant la 3.8 (« Confirmer » gris avec la roue, le fil, « Lectures ●●◌ »), « Fermer » reste, rien n'est écrit. Sa maquette : choix-lenteur/d-06. */
+async function caseLenteurProvisoire(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'normale');
+  const e = await etatLenteur(c);
+  c.record('lenteur-provisoire-etat', { ...e, texte: undefined });
+  await shoot(c, 'lenteur-provisoire-attente');
+  c.check(e.fil && Math.abs(e.filH - 22) <= 1, 'lenteur-provisoire : le fil de 22 px est sous l’en-tête (d-06)', { filH: e.filH });
+  c.check(e.bouton?.off === true && e.bouton.aria === 'Vérification en cours' && e.bouton.roue && e.bouton.texte === 'Confirmer', 'lenteur-provisoire : « Confirmer » est gris, avec la roue et « Vérification en cours »', e.bouton);
+  c.check(/Lectures/.test(e.preuve ?? '') && e.lignes === base.piece.lignesProvisoire, 'lenteur-provisoire : l’écran arrive avec les lignes du provisoire et la rangée « Lectures »', { preuve: e.preuve, lignes: e.lignes, attendu: base.piece.lignesProvisoire });
+  c.check(e.puce === null && e.fermer === true && e.debord <= 1, 'lenteur-provisoire : aucune puce « corrigées » avant la 3.8, « Fermer » actif, aucun débordement', { puce: e.puce, fermer: e.fermer, debord: e.debord });
+  await c.page.click(`${sheet} footer button[data-primary]`).catch(() => null);
+  await sleep(400);
+  c.check((await etatLenteur(c))?.fil && await sansEcriture(c, base.db), 'lenteur-provisoire : un toucher sur « Confirmer » gris ne fait rien (la feuille reste, rien n’est écrit)');
+  c.check(evenements(c, 'morceau') === 1 && evenements(c, 'resultat') === 0, 'lenteur-provisoire : le flux a rendu un morceau et pas encore de final', { flux: c.flux.map(x => x.etat) });
+  const fini = await attendreFinal(c, 'lenteur-provisoire : le final arrive');
+  c.check(fini.bouton.texte === 'Confirmer' && evenements(c, 'resultat') === 1 && !sansErreur(c, base).length, 'lenteur-provisoire : le final arrive, « Confirmer » devient actif, aucune erreur de console', { erreurs: sansErreur(c, base) });
+  await closeSheet(c);
+}
+
+/** La lue : le final arrive, le fil part, la puce « ↻ N corrigées », valeurs bleues, ancienne valeur barrée. Sa maquette : choix-lenteur/d-lue. */
+async function caseLenteurLue(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'normale');
+  const avant = await etatLenteur(c);
+  const fini = await attendreFinal(c, 'lenteur-lue : le final arrive');
+  await sleep(500);
+  const e = await etatLenteur(c);
+  c.record('lenteur-lue-etat', { avant: { ...avant, texte: undefined }, apres: { ...e, texte: undefined } });
+  await shoot(c, 'lenteur-lue-repos');
+  await shoot(c, 'lenteur-lue-lignes', `${sheet} [data-dp="liste"]`);
+  c.check(avant.fil && !e.fil && e.bouton.off === false && e.bouton.texte === 'Confirmer' && e.bouton.aria === 'Confirmer et enregistrer' && !e.bouton.roue, 'lenteur-lue : le fil part, « Confirmer » est actif (noir), sans roue', { avant: avant.bouton, apres: e.bouton });
+  c.check(Number.isFinite(e.puceN) && e.puceN >= 1 && /corrigée/.test(e.puce ?? ''), 'lenteur-lue : la puce « N corrigées » est là, N ≥ 1', { puce: e.puce });
+  c.check(e.lignes === base.piece.lignesFinal && e.neuves === base.piece.rangsNuls && e.corrigees >= 1, 'lenteur-lue : les lignes du final (la ligne que la 3.8 ajoute est neuve), des lignes corrigées', { lignes: e.lignes, attendu: base.piece.lignesFinal, neuves: e.neuves, attenduNeuves: base.piece.rangsNuls, corrigees: e.corrigees });
+  c.check(!!e.vendorAvant, 'lenteur-lue : le fournisseur corrigé par la 3.8 est sur le bleu, l’ancien barré à côté', { vendorAvant: e.vendorAvant });
+  c.check(Number.isFinite(e.puceN) && e.puceN >= e.corrigees + e.neuves && e.debord <= 1 && !sansErreur(c, base).length, 'lenteur-lue : la puce compte au moins les lignes corrigées et neuves, aucun débordement, aucune erreur de console', { puceN: e.puceN, corrigees: e.corrigees, neuves: e.neuves, erreurs: sansErreur(c, base) });
+  c.check(await sansEcriture(c, base.db), 'lenteur-lue : la lecture seule n’écrit rien');
+  await closeSheet(c);
+}
+
+/** L'échec de la 3.8 : le final rend les valeurs du provisoire et le point « lecture coupée » ; le fil part, « 2 lectures », aucune puce. Sa maquette : choix-cas-38/q2-a. */
+async function caseLenteurEchec(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'echec');
+  const avant = await etatLenteur(c);
+  await attendreFinal(c, 'lenteur-echec : le final arrive');
+  await sleep(500);
+  const e = await etatLenteur(c);
+  c.record('lenteur-echec-etat', { ...e, texte: undefined });
+  await shoot(c, 'lenteur-echec-repos');
+  c.check(avant.fil && !e.fil && e.bouton.off === false && !e.bouton.roue, 'lenteur-echec : le fil part, « Confirmer » est actif', { bouton: e.bouton });
+  c.check(/2 lectures/.test(e.preuve ?? '') && e.puce === null, 'lenteur-echec : la rangée dit « 2 lectures », aucune puce « corrigées »', { preuve: e.preuve, puce: e.puce });
+  c.check(e.lignes === base.piece.lignesProvisoire && e.corrigees === 0 && e.neuves === 0, 'lenteur-echec : les lignes sont celles du provisoire, aucune corrigée, aucune neuve', { lignes: e.lignes, attendu: base.piece.lignesProvisoire, corrigees: e.corrigees, neuves: e.neuves });
+  c.check(/Lecture coupée|contrôle complémentaire|coupée/i.test(e.texte) && !sansErreur(c, base).length, 'lenteur-echec : la lecture coupée est dite, aucune erreur de console', { erreurs: sansErreur(c, base) });
+  await closeSheet(c);
+}
+
+/**
+ * Sa saisie l'emporte : un fournisseur et une quantité tapés PENDANT l'attente ne sont pas réécrits par la 3.8 ; les lignes qu'il n'a pas touchées reçoivent ses corrections.
+ * La quantité est tapée dans la rangée dont la 3.8 change le nom (le libellé de la facture est derrière « plus » : une pièce n'existe qu'une fois sur le plateau). La frappe est celle de `typeInto`
+ * (le champ prend le focus, son texte est sélectionné, les touches le remplacent, Tab sort) : un triple clic ne sélectionne pas un champ de ce plateau.
+ */
+async function caseLenteurTouchee(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'normale', { lenteur: { delaiMs: 14000 } });
+  const rang = base.piece.rangsNomChange[0], id = `line-${rang + 1}`, autres = base.piece.rangsUniteChange.filter(r => r !== rang).map(r => `line-${r + 1}`);
+  const qteTapee = '3';
+  // Le fournisseur : le plateau « Fournisseur » est replié au repos ; le geste est de l'ouvrir et de taper.
+  await openDetails(c.page, `${sheet} details:has(#purchase-vendor)`);
+  await typeInto(c.page, '#purchase-vendor', SYNTHETIC.vendor);
+  // La ligne : un toucher sur la rangée ouvre son plateau, puis on tape dans sa quantité.
+  await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] summary`, e => { e.scrollIntoView({ block: 'center' }); e.click(); });
+  await waitFor(() => c.page.$eval(`${sheet} [data-dp-ligne="${id}"] details`, d => d.open).catch(() => false), 'touchee : le plateau de la ligne s’ouvre', 5000);
+  const qteAvant = await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] [aria-label^="Quantité ligne"]`, e => e.value);
+  await typeInto(c.page, `${sheet} [data-dp-ligne="${id}"] [aria-label^="Quantité ligne"]`, qteTapee);
+  const tape = await c.page.evaluate(i => ({ vendor: document.querySelector('#purchase-vendor').value, qte: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Quantité ligne"]`).value }), id);
+  c.check(tape.vendor === SYNTHETIC.vendor && tape.qte === qteTapee && qteAvant !== qteTapee, 'lenteur-touchee : la frappe a pris pendant l’attente (fournisseur et quantité)', { ...tape, qteAvant });
+  const pendant = await etatLenteur(c);
+  c.check(pendant.fil && pendant.bouton.off, 'lenteur-touchee : la vérification est toujours en cours quand il tape', { fil: pendant.fil, bouton: pendant.bouton });
+  await shoot(c, 'lenteur-touchee-pendant');
+  await attendreFinal(c, 'lenteur-touchee : le final arrive', 60000);
+  await sleep(600);
+  const apres = await c.page.evaluate((i, autresIds) => ({
+    vendor: document.querySelector('#purchase-vendor').value, qte: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Quantité ligne"]`)?.value ?? null,
+    qteBleue: document.querySelector(`[data-dp-ligne="${i}"] [data-dp-qte]`)?.getAttribute('data-dp-corrige') === '1',
+    ligneCorrigee: document.querySelector(`[data-dp-ligne="${i}"]`)?.hasAttribute('data-dp-corrigee') ?? false,
+    autresCorrigees: autresIds.map(a => document.querySelector(`[data-dp-ligne="${a}"]`)?.hasAttribute('data-dp-corrigee') ?? false),
+    vendorAvant: !!document.querySelector('[data-dp="vendor-avant"]') }), id, autres);
+  const e = await etatLenteur(c);
+  c.record('lenteur-touchee-etat', { ...e, texte: undefined, apres });
+  await shoot(c, 'lenteur-touchee-apres');
+  c.check(apres.vendor === SYNTHETIC.vendor && !apres.vendorAvant, 'lenteur-touchee : le fournisseur tapé n’est pas réécrit par la 3.8, et aucune ancienne valeur n’est barrée dessus', apres);
+  c.check(apres.qte === qteTapee && !apres.qteBleue, 'lenteur-touchee : la quantité tapée n’est pas réécrite, sans la marque bleue', { qte: apres.qte, qteBleue: apres.qteBleue });
+  c.check(autres.length > 0 && apres.autresCorrigees.every(Boolean), 'lenteur-touchee : les lignes qu’il n’a pas touchées reçoivent les corrections de la 3.8', { autres, corrigees: apres.autresCorrigees });
+  // Ce que la rangée touchée devient pour le reste de ses cellules (nom, unité) : constaté, pas jugé ici (e-ecran : « le champ ouvert rend toute la rangée touchée »).
+  c.finding('lenteur-touchee', 'la rangée où il a tapé une quantité : la 3.8 corrige-t-elle ses autres cellules (nom, unité) ?', { rangeeCorrigee: apres.ligneCorrigee });
+  c.check(!e.fil && e.bouton.off === false && Number.isFinite(e.puceN) && e.puceN >= 1 && !sansErreur(c, base).length, 'lenteur-touchee : le fil part, « Confirmer » est actif, la puce compte, aucune erreur de console', { puce: e.puce, erreurs: sansErreur(c, base) });
+  await closeSheet(c);
+}
+
+/** Une pièce sans 3.8 (ou servie du cache) : l'écran final d'emblée, sans fil, « Confirmer » actif tout de suite, aucune puce. Sa maquette : choix-cas-38/q2-avant. */
+async function caseLenteurSans38(c) {
+  const base = await ouvrirLenteur(c, 'doc2', 'seul', { lenteur: { debutMs: 800 } });
+  const e = await etatLenteur(c);
+  c.record('lenteur-sans-38-etat', { ...e, texte: undefined });
+  await shoot(c, 'lenteur-sans-38-repos');
+  c.check(!e.fil && e.bouton.off === false && !e.bouton.roue && e.bouton.texte === 'Confirmer', 'lenteur-sans-38 : aucun fil, « Confirmer » actif d’emblée', { fil: e.fil, bouton: e.bouton });
+  c.check(e.puce === null && /Lectures/.test(e.preuve ?? '') && e.lignes === base.piece.lignesFinal, 'lenteur-sans-38 : aucune puce, la rangée « Lectures » d’aujourd’hui, les lignes du final', { puce: e.puce, preuve: e.preuve, lignes: e.lignes });
+  c.check(evenements(c, 'morceau') === 0 && evenements(c, 'resultat') === 1 && !sansErreur(c, base).length && await sansEcriture(c, base.db), 'lenteur-sans-38 : le flux n’a rendu aucun morceau, aucune erreur de console, rien d’écrit', { flux: c.flux.map(x => x.etat) });
+  await closeSheet(c);
+}
+
+/**
+ * Le réseau tombe PENDANT la 3.8 : le flux se coupe après le morceau. Ce que le brasseur doit trouver : ses valeurs provisoires restent, la feuille reste utilisable, rien d'écrit.
+ * PLAN § 4 voulait en plus une relance au retour en ligne ; `ExpenseSheet.tsx` ne la fait pas (e-ecran, « Doutes et limites ») : le banc le constate, il ne le compte pas en KO.
+ */
+async function caseLenteurHorsLigne(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'coupe', { lenteur: { delaiMs: 6000 } });
+  const attente = await etatLenteur(c);
+  await shoot(c, 'lenteur-hors-ligne-attente');
+  await c.setOffline(true);
+  await waitFor(async () => evenements(c, 'coupe') > 0, 'lenteur-hors-ligne : le flux est coupé', 30000);
+  await sleep(1500);
+  const coupe = await etatLenteur(c);
+  c.record('lenteur-hors-ligne-etat', { attente: { ...attente, texte: undefined }, coupe: { ...coupe, texte: undefined } });
+  await shoot(c, 'lenteur-hors-ligne-coupe');
+  await c.setOffline(false);
+  await sleep(4000);
+  const retour = await etatLenteur(c);
+  await shoot(c, 'lenteur-hors-ligne-retour');
+  c.check(attente.fil && attente.bouton.off, 'lenteur-hors-ligne : avant la coupure, la vérification est en cours (fil, « Confirmer » gris)');
+  c.check(coupe.lignes === base.piece.lignesProvisoire && retour.lignes === base.piece.lignesProvisoire, 'lenteur-hors-ligne : les valeurs provisoires restent après la coupure et au retour du réseau', { coupe: coupe.lignes, retour: retour.lignes, attendu: base.piece.lignesProvisoire });
+  c.check(coupe.fil === coupe.bouton.off, 'lenteur-hors-ligne : l’écran est cohérent (le fil reste avec « Confirmer » gris, ou part avec « Confirmer » actif)', { fil: coupe.fil, bouton: coupe.bouton });
+  c.check(retour.fil === retour.bouton.off, 'lenteur-hors-ligne : cohérent aussi au retour du réseau', { fil: retour.fil, bouton: retour.bouton });
+  c.check(await sansEcriture(c, base.db) && !sansErreur(c, base).length, 'lenteur-hors-ligne : rien d’écrit, aucune erreur de console', { erreurs: sansErreur(c, base) });
+  c.finding('lenteur-hors-ligne', 'relance de la lecture au retour du réseau (PLAN § 4)', { lecturesDuCas: lecturesDepuis(c, base.appels), relancee: lecturesDepuis(c, base.appels) > 1,
+    coupe: { fil: coupe.fil, bouton: coupe.bouton, alertes: coupe.alertes }, retour: { fil: retour.fil, bouton: retour.bouton, alertes: retour.alertes } });
+  await closeSheet(c);
+}
+
+/** La feuille se ferme PENDANT l'attente : le flux est coupé par l'écran, rien n'est gardé ; rouvrir la même pièce rend le final d'emblée (cache du serveur), sans fil. */
+async function caseLenteurFermee(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'normale', { lenteur: { cacheable: true } });
+  const attente = await etatLenteur(c);
+  c.check(attente.fil && attente.fermer === true, 'lenteur-fermee : pendant l’attente, « Fermer » est actif', { fil: attente.fil, fermer: attente.fermer });
+  await closeSheet(c);
+  const ferme = await waitFor(async () => !(await c.page.$(`${sheet} footer`)), 'lenteur-fermee : la feuille se ferme', 10000).catch(() => false);
+  await waitFor(async () => evenements(c, 'annule') > 0, 'lenteur-fermee : le flux est coupé par l’écran', 10000).catch(() => null);
+  await shoot(c, 'lenteur-fermee-apres-fermeture');
+  c.check(ferme && evenements(c, 'annule') === 1 && evenements(c, 'resultat') === 0, 'lenteur-fermee : la feuille se ferme, le flux est coupé par l’écran (signal levé), aucun final reçu', { ferme, flux: c.flux.map(x => x.etat) });
+  await sleep(1500);
+  c.check(await sansEcriture(c, base.db) && !sansErreur(c, base).length, 'lenteur-fermee : rien d’écrit, aucune erreur de console après la fermeture', { erreurs: sansErreur(c, base) });
+  // Le serveur a fini sa lecture et l'a mise en cache : la même pièce rouverte rend le final d'emblée.
+  const avantFlux = c.flux.length;
+  await ouvrirLenteur(c, 'doc14', 'normale', { garderCache: true, lenteur: { cacheable: true } });
+  const e = await etatLenteur(c);
+  await shoot(c, 'lenteur-fermee-reouverte');
+  c.check(!e.fil && e.bouton.off === false && /déjà disponible/.test(e.texte) && c.flux.every(x => x.etat !== 'morceau'), 'lenteur-fermee : la même pièce rouverte : le final d’emblée (« déjà disponible »), sans fil ni morceau', { fil: e.fil, bouton: e.bouton, flux: c.flux.map(x => x.etat), avantFlux });
+  await closeSheet(c);
+}
+
+/** Le flux se ferme après le morceau sans jamais rendre de final : la fin de partie. Les valeurs provisoires restent, le fil part, « Confirmer » est actif, le message est dit. */
+async function caseLenteurSansResultat(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'sans-resultat', { lenteur: { delaiMs: 4000 } });
+  const avant = await etatLenteur(c);
+  const e = await attendreFinal(c, 'lenteur-sans-resultat : la fin de partie rend la main', 30000);
+  await sleep(500);
+  const fin = await etatLenteur(c);
+  c.record('lenteur-sans-resultat-etat', { avant: { ...avant, texte: undefined }, fin: { ...fin, texte: undefined } });
+  await shoot(c, 'lenteur-sans-resultat-fin');
+  c.check(avant.fil && avant.bouton.off && !fin.fil && fin.bouton.off === false, 'lenteur-sans-resultat : le fil et la roue tiennent jusqu’à la fermeture du flux, puis « Confirmer » devient actif', { avant: avant.bouton, fin: fin.bouton });
+  c.check(fin.lignes === base.piece.lignesProvisoire && fin.puce === null, 'lenteur-sans-resultat : les valeurs provisoires restent, aucune puce « corrigées »', { lignes: fin.lignes, puce: fin.puce });
+  c.finding('lenteur-sans-resultat', 'le message du serveur (« a fermé la connexion sans réponse ») n’est pas affiché : la fin de partie montre la forme d’une 3.8 coupée (« 2 lectures », « Lecture coupée »)', { alertes: fin.alertes, messageAffiche: /fermé la connexion|sans réponse/i.test(fin.texte) });
+  c.check(/2 lectures/.test(fin.preuve ?? '') && /Lecture coupée/.test(fin.texte), 'lenteur-sans-resultat : la fin de partie a la forme d’une 3.8 coupée : « 2 lectures » et « Lecture coupée »', { preuve: fin.preuve });
+  c.check(/contrôle complémentaire n['’]a pas abouti|Lecture coupée/i.test(fin.texte), 'lenteur-sans-resultat : le point « lecture coupée » marque les lignes (la phrase de la 3.8 coupée)', { extrait: fin.texte.slice(0, 200) });
+  c.check(await sansEcriture(c, base.db) && e.bouton.off === false, 'lenteur-sans-resultat : rien d’écrit');
+  await closeSheet(c);
+}
+
+/**
+ * Son choix B (« Tout valider ») : la 3.8 ne lit plus deux lignes du provisoire (DÉRIVÉ d'une vraie lecture, deux lignes du final retirées : SIMULÉ, dit dans le rapport). Deux parcours :
+ * (1) bandeau « 1/2 », Garder une, Retirer l'autre ; (2) bandeau « 1/2 », « Tout valider » : toutes partent. Ses maquettes : choix-valider/b-arrivee, b-garder, tout.
+ */
+async function caseLenteurPerdues2(c) {
+  c.finding('lenteur-perdues-2', 'pièce DÉRIVÉE (simulé) : deux lignes de la lecture finale de doc14 retirées pour jouer « pas retrouvée »', { derive: true, lignesRetirees: c.lenteur.pieces.doc14.lignesRetirees });
+  const base = await ouvrirLenteur(c, 'doc14', 'perdues-2');
+  await attendreFinal(c, 'lenteur-perdues-2 : le final arrive');
+  await sleep(600);
+  const arrivee = await etatLenteur(c);
+  c.record('lenteur-perdues-2-arrivee', { ...arrivee, texte: undefined });
+  await shoot(c, 'lenteur-perdues-2-arrivee');
+  c.check(arrivee.perdues === 2 && /pas retrouvée/.test(arrivee.bandeau ?? '') && /1\/2/.test(arrivee.bandeau ?? ''), 'lenteur-perdues-2 : deux lignes barrées, le bandeau dit « pas retrouvée · 1/2 » (b-arrivee)', { perdues: arrivee.perdues, bandeau: arrivee.bandeau });
+  const gestes = await c.page.$$eval(`${sheet} [data-dp="perdues"] [data-dp-perdue-geste]`, els => els.map(e => e.getAttribute('data-dp-perdue-geste')));
+  c.check(['tout', 'garder', 'retirer'].every(g => gestes.includes(g)), 'lenteur-perdues-2 : « Tout valider », Garder et Retirer sont au bandeau', { gestes });
+  c.check(Number.isFinite(arrivee.puceN) && arrivee.puceN >= 2 && arrivee.bouton.off === false, 'lenteur-perdues-2 : la puce compte les lignes pas retrouvées, « Confirmer » est actif sans trancher', { puce: arrivee.puce, bouton: arrivee.bouton });
+  // (1) Garder la première : elle redevient une rangée ordinaire.
+  await click(c.page, `${sheet} [data-dp="perdues"] [data-dp-perdue-geste="garder"]`);
+  await sleep(500);
+  const garde = await etatLenteur(c);
+  await shoot(c, 'lenteur-perdues-2-garder');
+  c.check(garde.perdues === 1 && garde.lignes === arrivee.lignes + 1, 'lenteur-perdues-2 : « Garder » remet la ligne en rangée ordinaire, il reste une pas retrouvée (b-garder)', { perdues: garde.perdues, lignes: garde.lignes, avant: arrivee.lignes });
+  await click(c.page, `${sheet} [data-dp="perdues"] [data-dp-perdue-geste="retirer"]`);
+  await sleep(500);
+  const retiree = await etatLenteur(c);
+  await shoot(c, 'lenteur-perdues-2-retirer');
+  c.check(retiree.perdues === 0 && !retiree.bandeau && retiree.lignes === garde.lignes, 'lenteur-perdues-2 : « Retirer » fait partir l’autre, le bandeau part, la ligne gardée reste', { perdues: retiree.perdues, bandeau: retiree.bandeau, lignes: retiree.lignes });
+  await closeSheet(c);
+  // (2) Tout valider : toutes partent d'un toucher.
+  await ouvrirLenteur(c, 'doc14', 'perdues-2');
+  await attendreFinal(c, 'lenteur-perdues-2 : le final arrive (tout valider)');
+  await sleep(600);
+  const avantTout = await etatLenteur(c);
+  await click(c.page, `${sheet} [data-dp="perdues"] [data-dp-perdue-geste="tout"]`);
+  await sleep(600);
+  const tout = await etatLenteur(c);
+  await shoot(c, 'lenteur-perdues-2-tout');
+  c.check(avantTout.perdues === 2 && tout.perdues === 0 && !tout.bandeau && tout.lignes === avantTout.lignes, '« Tout valider » : les deux lignes pas retrouvées partent d’un toucher, aucune ligne gardée (tout)', { avant: avantTout.perdues, apres: tout.perdues, lignes: tout.lignes, attendu: avantTout.lignes });
+  c.check(tout.bouton.off === false && !sansErreur(c, base).length && await sansEcriture(c, base.db), 'lenteur-perdues-2 : « Confirmer » reste actif, aucune erreur de console, rien d’écrit', { erreurs: sansErreur(c, base) });
+  await closeSheet(c);
+}
+
+/**
+ * n3-ht, critère 4 : la SEULE pièce HT du dépôt (une commande de trois images, `banc-k5-C`), sa lecture rejouée telle quelle. Les lignes arrivent au TTC (au prorata), la phrase le dit,
+ * et « Confirmer » n'est plus refusé pour « Le détail des lignes doit correspondre exactement au total TTC ». Le banc tourne sur les émulateurs (Firestore, Drive factice) : la dépense s'y écrit.
+ */
+async function caseHtConfirmer(c) {
+  const piece = c.lenteur.pieces.ht;
+  if (!piece?.pages) throw Error('Pièce HT absente du fichier lenteur (fabriquer.ts).');
+  c.docs.ht = { id: 'ht', image: '', fileName: 'ht', bytes: Buffer.alloc(0), sha256: 'ht-pages', truth: null, mimeType: 'image/jpeg', result: piece.final };
+  c.pagesAttendues = piece.pages.map(page => page.sha256);
+  c.ai = { mode: 'replay', doc: 'ht', delayMs: 0, lenteur: { piece: 'ht', forme: 'seul', debutMs: 800 } };
+  c.flux.length = 0;
+  const base = { erreurs: c.entry.errors.length, db: await dbSnapshot(c.db) };
+  const premier = await openInvoiceEntry(c); (await premier)?.cancel?.();
+  const nb = () => c.page.$$eval(`${sheet} [data-dp="rangee-pages"] [data-dp="page"]`, els => els.length).catch(() => 0);
+  const choisir = async (texte, fichier) => {
+    const [picker] = await Promise.all([c.page.waitForFileChooser({ timeout: 20000 }), click(c.page, `${sheet} button`, texte)]);
+    await picker.accept([fichier]);
+  };
+  await choisir('Plusieurs', piece.pages[0].image);
+  await waitFor(async () => (await nb()) === 1, 'ht : première page de la rangée');
+  for (const [i, page] of piece.pages.slice(1).entries()) { await choisir('+ page', page.image); await waitFor(async () => (await nb()) === i + 2, `ht : page ${i + 2} de la rangée`); }
+  await click(c.page, `${sheet} button`, 'Lire 3 pages');
+  await c.page.waitForFunction(() => !document.body.innerText.includes('Lecture et vérification') && !document.body.innerText.includes('Préparation des pages')
+    && (document.querySelector('section[aria-label="Vérification du justificatif"]') || document.querySelector('[role="dialog"] [role="alert"]') || document.querySelector('#purchase-total')), { timeout: 90000 });
+  await sleep(800);
+  const appel = c.calls.ai.filter(a => a.task === 'scanInvoice').at(-1);
+  const lecture = await readSheet(c);
+  const e = await etatLenteur(c);
+  c.record('ht-revue', { ...lecture, review: undefined, reviewDetails: undefined });
+  await shoot(c, 'ht-lue');
+  const somme = lecture.lines.reduce((s, l) => s + cents((l.amount ?? '0').replace(/[\s']/g, '').replace(',', '.')), 0), total = cents((lecture.total ?? 'NaN').replace(/[\s']/g, '').replace(',', '.'));
+  c.check(appel?.expectedFiles === true && lecture.lines.length === piece.final.items.length, 'ht-confirmer : les trois pages sont lues (empreinte de chacune), toutes les lignes sont là', { lignes: lecture.lines.length, attendu: piece.final.items.length });
+  c.check(Number.isFinite(total) && Math.abs(somme - total) <= 5, 'ht-confirmer : les lignes arrivent au TTC, leur somme est le total TTC lu (à 5 centimes près)', { somme, total });
+  // n3-ht pose la phrase « Lignes imprimées hors taxe, passées au TTC. » sur l'indice du total SEULEMENT si aucun autre indice n'y est déjà (`||=`) : le banc dit lequel l'écran montre.
+  c.finding('ht-confirmer', 'l’indice sous le total TTC sur la pièce HT', { indice: lecture.hints.amountTTC ?? null, phraseHtAffichee: /passées au TTC/.test(JSON.stringify(lecture.hints) + e.texte) });
+  c.check(!e.fil && e.bouton.off === false, 'ht-confirmer : « Confirmer » est actif (pas de 3.8 à attendre)', { bouton: e.bouton });
+  // Le choix du stock : comme les autres cas, les lignes à relier reçoivent la décision par défaut du banc (l'article le plus proche, ou nouveau) ; ici seul compte le total.
+  const resultat = await confirmSheet(c, 90000);
+  c.record('ht-confirmation', resultat);
+  if (resultat !== 'fermée') await shoot(c, 'ht-confirmation-refusee');
+  c.check(!/détail des lignes doit correspondre exactement au total TTC/.test(resultat), 'ht-confirmer : « Confirmer » n’est pas refusé pour « Le détail des lignes doit correspondre exactement au total TTC »', { resultat });
+  c.check(resultat === 'fermée', 'ht-confirmer : « Confirmer » enregistre la dépense (la feuille se ferme)', { resultat });
+  const ecrit = (await all(c.db, 'transactions')).filter(tx => tx.finance?.sourceDocumentHash).length;
+  c.record('ht-ecritures', businessWrites(dbWrites(base.db, await dbSnapshot(c.db))).map(row => `${row.collection}+${row.added.length}`));
+  c.check(!sansErreur(c, base).length, 'ht-confirmer : aucune erreur de console', { erreurs: sansErreur(c, base), transactionsAvecEmpreinte: ecrit });
+}
+
+const CASES = { 'lenteur-provisoire': caseLenteurProvisoire, 'lenteur-lue': caseLenteurLue, 'lenteur-echec': caseLenteurEchec, 'lenteur-touchee': caseLenteurTouchee, 'lenteur-sans-38': caseLenteurSans38,
+  'lenteur-hors-ligne': caseLenteurHorsLigne, 'lenteur-fermee': caseLenteurFermee, 'lenteur-sans-resultat': caseLenteurSansResultat, 'lenteur-perdues-2': caseLenteurPerdues2, 'ht-confirmer': caseHtConfirmer,
+  pages: casePages, 'nom-b': caseNomB, 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
   'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules, enrichir: caseEnrichir };
 
 async function inner() {
@@ -2192,6 +2593,7 @@ async function inner() {
   if (process.env.GEMINI_API_KEY !== undefined) throw Error('Aucune clé Gemini dans ce parcours');
   const docs = loadReplay(process.env.EMU_REPLAY);
   const nomsFr = loadNomsRejoues(process.env.EMU_NOMS);
+  const lenteur = loadLenteur(process.env.EMU_LENTEUR);
   const plan = seedPlan(docs);
   const report = { project: PROJECT, rulesSha: process.env.EMU_RULES_SHA, widths, cases, startedAt: new Date().toISOString(),
     replay: Object.fromEntries(Object.values(docs).map(doc => [doc.id, { fichier: relative(dirname(process.env.EMU_REPLAY), doc.image), sha256: doc.sha256.slice(0, 12) }])),
@@ -2241,7 +2643,7 @@ async function inner() {
       mkdirSync(downloads, { recursive: true });
       const cdp = await browser.target().createCDPSession();
       await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads, browserContextId: context.id });
-      const c = { width, base, out, db, docs, nomsFr, entry, downloads, shotIndex: 0, plan, page: null,
+      const c = { width, base, out, db, docs, nomsFr, lenteur, serveurCache: new Set(), flux: [], entry, downloads, shotIndex: 0, plan, page: null,
         ai: { mode: 'replay', doc: null, delayMs: 0 }, calls: { ai: [], drive: [] }, driveMode: { delayMs: 0, fail: null }, tokenMode: null,
         drive: { files: new Map(), sessions: new Map(), next: 0, log: [], uploads: [], downloads: [] },
         step: (label, data = {}) => { entry.steps.push({ label, at: new Date().toISOString(), ...data }); console.log(`${width} · ${label}`); write(); },
@@ -2281,11 +2683,18 @@ async function inner() {
           }
         });
         await page.exposeFunction('__jus0Bridge', async request => {
+          // Lenteur D : l'état du flux construit dans la page (morceau, résultat, annulé par le client, fermé, coupé). Le serveur de production finit sa lecture et la met en cache quand le client coupe.
+          if (request.kind === 'flux-etat') {
+            c.flux.push({ etat: request.etat, fluxId: request.fluxId, at: request.at });
+            if (request.etat === 'annule' && request.fluxId !== null) { const piece = c.calls.ai[request.fluxId]?.flux?.piece; if (piece) c.serveurCache.add(piece); }
+            return {};
+          }
           if (request.kind === 'drive') { if (c.driveMode.delayMs) await sleep(c.driveMode.delayMs); return driveAnswer(c, request); }
           if (request.kind === 'aiTask' && c.ai.delayMs) await sleep(c.ai.delayMs);
           return callableAnswer(c, request);
         });
         await page.evaluateOnNewDocument(pageServices);
+        if (process.env.EMU_SANS_FLUX) await page.evaluateOnNewDocument(() => { window.__jus0SansFlux = true; });
         await page.setViewport({ width, height: mobile ? 844 : 900, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: 1 });
         return page;
       };

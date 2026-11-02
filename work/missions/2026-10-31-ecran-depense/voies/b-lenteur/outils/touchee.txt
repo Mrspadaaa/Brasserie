@@ -1,0 +1,42 @@
+/**
+ * Sa saisie l'emporte : un fournisseur et une quantité tapés PENDANT l'attente ne sont pas réécrits par la 3.8 ; les lignes qu'il n'a pas touchées reçoivent ses corrections.
+ * La quantité est tapée dans la rangée dont la 3.8 change le nom (le libellé de la facture est derrière « plus » : une pièce n'existe qu'une fois sur le plateau). La frappe est celle de `typeInto`
+ * (le champ prend le focus, son texte est sélectionné, les touches le remplacent, Tab sort) : un triple clic ne sélectionne pas un champ de ce plateau.
+ */
+async function caseLenteurTouchee(c) {
+  const base = await ouvrirLenteur(c, 'doc14', 'normale', { lenteur: { delaiMs: 14000 } });
+  const rang = base.piece.rangsNomChange[0], id = `line-${rang + 1}`, autres = base.piece.rangsUniteChange.filter(r => r !== rang).map(r => `line-${r + 1}`);
+  const qteTapee = '3';
+  // Le fournisseur : le plateau « Fournisseur » est replié au repos ; le geste est de l'ouvrir et de taper.
+  await openDetails(c.page, `${sheet} details:has(#purchase-vendor)`);
+  await typeInto(c.page, '#purchase-vendor', SYNTHETIC.vendor);
+  // La ligne : un toucher sur la rangée ouvre son plateau, puis on tape dans sa quantité.
+  await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] summary`, e => { e.scrollIntoView({ block: 'center' }); e.click(); });
+  await waitFor(() => c.page.$eval(`${sheet} [data-dp-ligne="${id}"] details`, d => d.open).catch(() => false), 'touchee : le plateau de la ligne s’ouvre', 5000);
+  const qteAvant = await c.page.$eval(`${sheet} [data-dp-ligne="${id}"] [aria-label^="Quantité ligne"]`, e => e.value);
+  await typeInto(c.page, `${sheet} [data-dp-ligne="${id}"] [aria-label^="Quantité ligne"]`, qteTapee);
+  const tape = await c.page.evaluate(i => ({ vendor: document.querySelector('#purchase-vendor').value, qte: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Quantité ligne"]`).value }), id);
+  c.check(tape.vendor === SYNTHETIC.vendor && tape.qte === qteTapee && qteAvant !== qteTapee, 'lenteur-touchee : la frappe a pris pendant l’attente (fournisseur et quantité)', { ...tape, qteAvant });
+  const pendant = await etatLenteur(c);
+  c.check(pendant.fil && pendant.bouton.off, 'lenteur-touchee : la vérification est toujours en cours quand il tape', { fil: pendant.fil, bouton: pendant.bouton });
+  await shoot(c, 'lenteur-touchee-pendant');
+  await attendreFinal(c, 'lenteur-touchee : le final arrive', 60000);
+  await sleep(600);
+  const apres = await c.page.evaluate((i, autresIds) => ({
+    vendor: document.querySelector('#purchase-vendor').value, qte: document.querySelector(`[data-dp-ligne="${i}"] [aria-label^="Quantité ligne"]`)?.value ?? null,
+    qteBleue: document.querySelector(`[data-dp-ligne="${i}"] [data-dp-qte]`)?.getAttribute('data-dp-corrige') === '1',
+    ligneCorrigee: document.querySelector(`[data-dp-ligne="${i}"]`)?.hasAttribute('data-dp-corrigee') ?? false,
+    autresCorrigees: autresIds.map(a => document.querySelector(`[data-dp-ligne="${a}"]`)?.hasAttribute('data-dp-corrigee') ?? false),
+    vendorAvant: !!document.querySelector('[data-dp="vendor-avant"]') }), id, autres);
+  const e = await etatLenteur(c);
+  c.record('lenteur-touchee-etat', { ...e, texte: undefined, apres });
+  await shoot(c, 'lenteur-touchee-apres');
+  c.check(apres.vendor === SYNTHETIC.vendor && !apres.vendorAvant, 'lenteur-touchee : le fournisseur tapé n’est pas réécrit par la 3.8, et aucune ancienne valeur n’est barrée dessus', apres);
+  c.check(apres.qte === qteTapee && !apres.qteBleue, 'lenteur-touchee : la quantité tapée n’est pas réécrite, sans la marque bleue', { qte: apres.qte, qteBleue: apres.qteBleue });
+  c.check(autres.length > 0 && apres.autresCorrigees.every(Boolean), 'lenteur-touchee : les lignes qu’il n’a pas touchées reçoivent les corrections de la 3.8', { autres, corrigees: apres.autresCorrigees });
+  // Ce que la rangée touchée devient pour le reste de ses cellules (nom, unité) : constaté, pas jugé ici (e-ecran : « le champ ouvert rend toute la rangée touchée »).
+  c.finding('lenteur-touchee', 'la rangée où il a tapé une quantité : la 3.8 corrige-t-elle ses autres cellules (nom, unité) ?', { rangeeCorrigee: apres.ligneCorrigee });
+  c.check(!e.fil && e.bouton.off === false && Number.isFinite(e.puceN) && e.puceN >= 1 && !sansErreur(c, base).length, 'lenteur-touchee : le fil part, « Confirmer » est actif, la puce compte, aucune erreur de console', { puce: e.puce, erreurs: sansErreur(c, base) });
+  await closeSheet(c);
+}
+
