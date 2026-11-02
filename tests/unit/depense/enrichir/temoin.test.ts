@@ -27,7 +27,7 @@ const verdict = (r: ReturnType<typeof regleProduit>) => ({
   candidats: 'candidats' in r ? r.candidats.map(c => c.ref) : undefined,
 });
 
-// D286 : les témoins rouges jusqu'aux branchements du pilote (P5) sont en `it.fails` : la suite reste verte, et un témoin qui passe trop tôt la rend rouge. Au branchement, `it.fails` redevient `it`.
+// D286, D290 : branchés le 02.11 (accord du schéma) ; les témoins, en `it.fails` jusque-là, sont redevenus `it`.
 describe('constat : ce que le code d’aujourd’hui fait d’un article neuf (E1, E2, E3)', () => {
   it('E2 : le rapprochement des recettes ne reconnaît qu’une levure de facture sur quatre (372765), alors que les quatre sont au catalogue', () => {
     const refs = yeastReferences();
@@ -49,11 +49,11 @@ describe('constat : ce que le code d’aujourd’hui fait d’un article neuf (E
 
 describe('P1 : une valeur remplie par f4 ne change jamais le verdict de la règle (même verdict que l’article d’avant f4)', () => {
   const munich = article('MP-a-0', 'Münchner Malz', 'Malt', 'kg', { fiche: { id: 'munich-malt', approchee: false } });
-  it.fails('(a) EBC trouvé 24, la ligne imprime 25 EBC : pas de « bis » forcé (aujourd’hui : neuf, « Münchner Malz bis »)', () => {
+  it('(a) EBC trouvé 24, la ligne imprime 25 EBC : pas de « bis » forcé (aujourd’hui : neuf, « Münchner Malz bis »)', () => {
     const l = ligne('Münchner Malz 25 EBC', 'kg');
     expect(verdict(regleProduit(l, [remplir(munich, 'colorEbc', 24)]))).toEqual(verdict(regleProduit(l, [munich])));
   });
-  it.fails('(b) la ligne ne dit pas l’EBC et la règle de s1 ne relie pas (unité Stk contre kg) : l’EBC trouvé n’ajoute pas « connu d’un seul côté » (aujourd’hui : seul [ebc] contre [])', () => {
+  it('(b) la ligne ne dit pas l’EBC et la règle de s1 ne relie pas (unité Stk contre kg) : l’EBC trouvé n’ajoute pas « connu d’un seul côté » (aujourd’hui : seul [ebc] contre [])', () => {
     const l = ligne('Münchner Malz', 'Stk');
     expect(verdict(regleProduit(l, [remplir(munich, 'colorEbc', 24)]))).toEqual(verdict(regleProduit(l, [munich])));
   });
@@ -67,14 +67,14 @@ describe('P1 : une valeur remplie par f4 ne change jamais le verdict de la règl
     const l = ligne('LALLEMAND Windsor 11g', 'Stk', 2);
     expect(verdict(regleProduit(l, [lie]))).toEqual(verdict(regleProduit(l, [windsor])));
   });
-  it.fails('(c2) « Windsor bis » créé à la main puis lié par f4 : le lien ne retire pas son « bis » (aujourd’hui : ambigu, « Windsor bis 2 »)', () => {
+  it('(c2) « Windsor bis » créé à la main puis lié par f4 : le lien ne retire pas son « bis » (aujourd’hui : ambigu, « Windsor bis 2 »)', () => {
     const seul = article('S-1', 'Windsor', 'Levure', 'sachet');
     const bis = article('S-2', 'Windsor bis', 'Levure', 'sachet');
     const bisLie = { ...bis, fiche: { id: 'levure:lalbrew-windsor', approchee: false, par: 'catalogue', cle: 'levure||windsor' } } as StockItem;
     const l = ligne('Windsor', 'Stk', 1);
     expect(verdict(regleProduit(l, [seul, bisLie]))).toEqual(verdict(regleProduit(l, [seul, bis])));
   });
-  it.fails('(d) « Target bis » nu lié par f4 à sa variété : même verdict', () => {
+  it('(d) « Target bis » nu lié par f4 à sa variété : même verdict', () => {
     const target = article('S-3', 'Target', 'Houblon', 'g', { alphaPct: 11.8 });
     const bis = article('S-4', 'Target bis', 'Houblon', 'g');
     const bisLie = { ...bis, fiche: { id: 'beermaverick-target', approchee: false, par: 'catalogue', cle: 'houblon||target' } } as StockItem;

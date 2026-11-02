@@ -19,9 +19,9 @@ beforeEach(() => {
     fiche: { id: 'cle:malt|weyermann|carahell', approchee: false, par: 'en-ligne', cle: 'malt|weyermann|carahell' } }];
 });
 
-// D286 : les témoins rouges jusqu'aux branchements du pilote (P5) sont en `it.fails` : la suite reste verte, et un témoin qui passe trop tôt la rend rouge. Au branchement, `it.fails` redevient `it`.
+// D286, D290 : branchés le 02.11 (accord du schéma) ; les témoins, en `it.fails` jusque-là, sont redevenus `it`.
 describe('E4 : `learnIngredient` et la fiche retenue d’un article f4', () => {
-  it.fails('« Weyermann Carahell » (recette) : les valeurs vont à l’article f4, aucun FICHE-… (rouge jusqu’au branchement de storage.ts)', () => {
+  it('« Weyermann Carahell » (recette) : les valeurs vont à l’article f4, aucun FICHE-… (rouge jusqu’au branchement de storage.ts)', () => {
     StorageService.learnIngredient('Weyermann Carahell', { category: 'Malt', colorEbc: 20 } as any);
     const refs = etat.puts.filter(p => p[0] === 'stockItems').map(p => p[1]);
     expect(refs.some((r: string) => r.startsWith('FICHE-'))).toBe(false);

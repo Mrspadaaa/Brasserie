@@ -1853,11 +1853,13 @@ async function caseEnrichir(c) {
   c.check = (ok, label, data) => { resultats.push(!!ok); verifier(ok, label, data); };
   const pris = new Set(c.plan.seeds.map(seed => fold(seed.name)));
   const generique = ['Maris Otter', 'Roggenmalz', 'Wiener Malz', 'Melanoidin Malz'].find(n => !pris.has(fold(n)));
+  // Le houblon semé de doc5 peut déjà porter la variété (02.11 : « Target 11.3% » au stock, refus « nom déjà pris », S6) : une variété absente des semis.
+  const houblon = [['Target', 11.3], ['Challenger', 7.5], ['Admiral', 14.8]].find(([v]) => ![...pris].some(n => n.includes(fold(v))));
   const sub = `f4-enrichir-${c.width}-1`;
   const lignes = [
     f4Ligne('e0', generique, 'kg', 25, { stockCategory: 'Malt' }),
     f4Ligne('e1', 'LALLEMAND Windsor 11g', 'Stk', 2, { stockCategory: 'Levure' }),
-    f4Ligne('e2', 'Target 11.3%', 'g', 100, { stockCategory: 'Houblon' }),
+    f4Ligne('e2', `${houblon[0]} ${houblon[1]}%`, 'g', 100, { stockCategory: 'Houblon' }),
     f4Ligne('e3', 'Malterie du Banc Ambre 60', 'kg', 5, { stockCategory: 'Malt', sourceReference: 'MB-A60' }),
     f4Ligne('e4', 'Levure du Banc 7', 'Stk', 1, { stockCategory: 'Levure' }),
   ];
@@ -1870,7 +1872,7 @@ async function caseEnrichir(c) {
   c.record('enrichir-articles-1', { resume1, appels: c.enrichir.appels, malt: malt?.fiche ?? null, windsor: windsor?.fiche ?? null, target: target?.fiche ?? null, ambre: ambre && { fiche: ambre.fiche, colorEbc: ambre.colorEbc, potentialPpg: ambre.potentialPpg }, banc7: banc7?.fiche ?? null });
   c.check(windsor?.fiche?.id === 'levure:lalbrew-windsor' && windsor.fiche.par === 'catalogue' && !!windsor.yeastLab && windsor.yeastLot === undefined,
     'enrichir : Windsor lié au catalogue des levures (laboratoire rempli, aucun lot)', { fiche: windsor?.fiche, yeastLab: windsor?.yeastLab });
-  c.check(/target/.test(String(target?.fiche?.id)) && target?.alphaPct === 11.3 && !!target?.fiche?.cle, 'enrichir : Target lié à sa variété, α du lot gardé', { fiche: target?.fiche, alphaPct: target?.alphaPct });
+  c.check(String(target?.fiche?.id).includes(fold(houblon[0])) && target?.alphaPct === houblon[1] && !!target?.fiche?.cle, `enrichir : ${houblon[0]} lié à sa variété, α du lot gardé`, { fiche: target?.fiche, alphaPct: target?.alphaPct });
   c.check(ambre?.fiche?.par === 'en-ligne' && ambre.potentialPpg === 33 && ambre.fiche.remplis?.potentialPpg?.niveau === 'repris' && !!ambre.fiche.remplis.potentialPpg.deduit,
     'enrichir : l’ambre rempli en ligne (repris, « peut être calculé », source citée)', { fiche: ambre?.fiche, potentialPpg: ambre?.potentialPpg });
   c.check(!banc7?.fiche && banc7?.yeastLab === undefined, 'enrichir : la levure du Banc introuvable : rien d’inventé', { article: banc7 });

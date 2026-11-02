@@ -1,5 +1,6 @@
 import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction } from '../domain/finance/ledger';
 import type { FinancialPayment } from '../domain/finance/types';
+import { apprendreSurFicheRetenue } from './enrichissementRecette';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
 import {
   Transaction,
@@ -732,6 +733,7 @@ export const StorageService = {
       (!facts.category || s.category.toLocaleLowerCase('fr') === facts.category.toLocaleLowerCase('fr'))) : candidates;
     // A stale/deleted ref or ambiguous legacy name must never update a random lot.
     if (matches.length > 1 || facts.ref && matches.length !== 1) return;
+    if (!matches.length && !facts.ref && apprendreSurFicheRetenue(name, facts, stock, (resume, details) => this.logAction('Modification', 'Stocks', name.trim(), resume, details))) return;
     const item = matches[0];
     const fields: Array<keyof StockItem> = ['colorEbc', 'potentialPpg', 'alphaPct', 'yeastLab',
       'yeastStrain', 'yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC',

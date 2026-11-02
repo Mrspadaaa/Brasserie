@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
 import { startProofQueue } from './services/proofQueue';
+import { startEnrichissement } from './services/enrichissement';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
@@ -307,6 +308,7 @@ export const App: React.FC = () => {
 
     StorageService.startSync();
     const stopProofQueue = startProofQueue();
+    const stopFiches = startEnrichissement();
 
     let cancelled = false;
     runMigrationIfNeeded().then((report) => {
@@ -326,6 +328,7 @@ export const App: React.FC = () => {
     return () => {
       cancelled = true;
       stopProofQueue();
+      stopFiches();
     };
   }, [currentUser]);
 

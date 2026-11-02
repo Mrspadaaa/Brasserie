@@ -1,6 +1,7 @@
 import { normalize } from './search';
 import { Units } from './units';
 import type { StockItem } from '../types';
+import { porteDonneeLue, valeurLueDe } from '../domain/stock/ficheValeurs';
 import { CEREALS, hasHopWord, hasYeastWord, inferNature, isReadableUnit, knownCategoriesOf, pieceUnitsEquivalent, PRODUCT_DESCRIPTORS, readProductLabel, weightKey, type Nature, type ProductIdentity } from './ingredientIdentity';
 import { categorieDeFamille, familleDe } from '../ui/depense/familles';
 import { connuesUnSeulCote, ecartsEntre, lireEbc, lireOrigine, nomPropre, sansBis, sansDonneesDeFiche, type Contexte, type DonneesProduit, type Ecart } from '../domain/stock/donnees';
@@ -177,7 +178,7 @@ function categorieCompatible(line: Pick<StockLineInput, 'kind'>, nature: Nature,
 }
 
 /** Un article qui porte une donnée écrite par S6 : seul celui-là perd son « bis » dans les jetons (T5). Un « Target bis » nu, créé à la main, garde les siens. */
-const porteDonneeS6 = (item: StockItem) => item.alphaPct !== undefined || item.origin !== undefined || item.colorEbc !== undefined || item.fiche !== undefined;
+const porteDonneeS6 = porteDonneeLue;
 /**
  * L'identité d'un article du stock pour l'appariement : celle de son nom ; pour un article écrit par S6, sans son « bis » ou « bis N » final et avec
  * son origine quand le nom ne l'écrit pas (« Cascade » + origin CH ≡ « Cascade CH »). Aucun autre article ne change.
@@ -396,7 +397,7 @@ export function donneesDArticle(item: StockItem, hop?: boolean, yeast?: boolean)
   const lecture = h ? 'Houblon' as Contexte : contexte;
   const net = sansDonneesDeFiche(item.name, lecture);
   const lu = readProductLabel(net, { unit: linkUnit(item.unit), hop: h, yeast: y, side: 'item' });
-  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, item.name, lecture, { alpha: positif(item.alphaPct), origine: item.origin, ebc: positif(item.colorEbc) }) };
+  return { contexte, lu, jetons: lu.tokens, donnees: donneesDe(lu, item.name, lecture, { alpha: positif(valeurLueDe(item, 'alphaPct')), origine: item.origin, ebc: positif(valeurLueDe(item, 'colorEbc')) }) };
 }
 
 export const pliee = (nom: string) => normalize(nom ?? '').replace(/\s+/g, ' ').trim();

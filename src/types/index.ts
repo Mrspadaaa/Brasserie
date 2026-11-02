@@ -64,7 +64,16 @@ export interface StockItem {
    * (`beermaverick-cascade`, `munich-malt`) ; `approchee` : ce n'est pas exactement la bonne fiche (l'origine ou l'α lus sortent de la sienne), jugé à la création
    * (toutes les valeurs lues ne sont pas gardées sur l'article). Facultatif ; absent = aucune fiche cherchée ou trouvée.
    */
-  fiche?: { id: string; approchee: boolean };
+  fiche?: {
+    id: string; approchee: boolean;          // s6 ; jamais réécrits par f4
+    cle?: string;                            // famille|fabricant|mots (f4, D290)
+    par?: 'catalogue' | 'retenue' | 'en-ligne'; // provenance du lien posé par f4 ; absent = lien de s6
+    aControler?: boolean; propose?: string | null;
+    remplis?: Partial<Record<'colorEbc' | 'potentialPpg' | 'yeastLab' | 'yeastStrain' | 'yeastForm' | 'yeastAttenuationPct' | 'yeastTempMinC'
+      | 'yeastTempMaxC' | 'yeastFlocculation' | 'yeastAlcoholTolerancePct' | 'yeastTechnicalFacts' | 'yeastFermentationFacts' | 'technicalSource',
+      { par: 'catalogue' | 'retenue' | 'en-ligne'; source: string; url?: string; le: string; niveau: 'sur' | 'repris'; valeur: unknown; deduit?: string }>>;
+    vu?: string;
+  };
 
   /*
    * Caractéristiques techniques de l'article, recopiées UNE FOIS depuis la

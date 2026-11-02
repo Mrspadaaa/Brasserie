@@ -1,4 +1,5 @@
 import { StorageService } from './storage';
+import { planifierEnrichissement } from './enrichissement';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { FinanceService, validateFinancialPayment } from './financeService';
 import { prepareFinanceDocument, saveFinanceDocumentConfirmed, loadDriveProofReceipt, type DriveProofReceipt } from './financeDocuments';
@@ -527,6 +528,7 @@ export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<
     try {
       const transactionId=savePurchase(draft,{catalogues});
       void runProofQueue('save');
+      planifierEnrichissement(draft);
       return {transactionId,queued:true};
     } catch(error) {
       // La dépense n'a pas été écrite : le fichier est encore dans la feuille, la ligne de la file n'a plus d'objet.
@@ -545,7 +547,7 @@ export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<
     }
     confirmedProofs.set(draft,{dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
   }
-  return {transactionId:savePurchase(draft,{catalogues}),proof:proofReceipts.get(draft.submissionId)};
+  const transactionId=savePurchase(draft,{catalogues}); planifierEnrichissement(draft); return {transactionId,proof:proofReceipts.get(draft.submissionId)};
 }
 export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
   return (await savePurchaseWithProofReceipt(draft)).transactionId;

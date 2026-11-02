@@ -52,6 +52,7 @@ import { confianceEntete,pireNiveau,type ChampEntete,type Niveau } from '../depe
 import { uniteEffective } from '../../services/purchaseEntry';
 import { regleProduit,linkUnit } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
+import { tenirEnrichissement } from '../../services/enrichissement';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
   /** dp-doublon : ouvre la fiche d'une dépense déjà enregistrée (la feuille se ferme d'abord). Absent : « Fermer » seulement. */
@@ -189,6 +190,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const hints=scan?.ok&&scan.result?Object.fromEntries(Object.entries(invoiceFieldHints(scan.result)).filter(([field])=>!reviewedFields.includes(field))):{};
   const reviewed=(field:string)=>setReviewedFields(previous=>previous.includes(field)?previous:[...previous,field]);
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
+  useEffect(()=>tenirEnrichissement(),[]);
   useEffect(()=>{const up=()=>setOnline(true),down=()=>setOnline(false);window.addEventListener('online',up);window.addEventListener('offline',down);return()=>{window.removeEventListener('online',up);window.removeEventListener('offline',down);};},[]);
   /*
    * ⚠️ Une facture est d'abord un DOCUMENT, pas une photo. Arriver ici depuis le
