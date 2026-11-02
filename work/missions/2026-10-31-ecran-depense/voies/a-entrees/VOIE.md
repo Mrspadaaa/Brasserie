@@ -1,6 +1,6 @@
 # Voie a-entrees — ses choix, codés mais hors des vraies entrées ? (D366)
 
-Agent : `relecteur` (Sonnet). Plafond : 40 tours. Lecture seule du code ; tu n'écris que `voies/a-entrees/RESULTAT.md`.
+Agent : `relecteur` (Sonnet). Plafond : 30 tours. Lecture seule du code ; tu n'écris que `voies/a-entrees/RESULTAT.md`.
 
 ## Pourquoi
 Mots du brasseur (02.11, soir) : « Pourquoi ça a pas été porté ??? », puis « mais aucune des deux entrées réelles ne l'affiche. C'est le cas pour
