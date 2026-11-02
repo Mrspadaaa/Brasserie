@@ -1299,3 +1299,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Un geste rare** (02.11, soir, juste après), mot pour mot : « C'est normalement une action assez rare » (lu : changer la famille d'une ligne
   reste discret, replié derrière le nom de sa bande, un toucher pour voir les choix ; jamais une rangée toujours visible. D364.)
 - (02.11, soir, à la suite), mot pour mot : « Donc pas besoin de mettre cette action en avant. » (lu : confirme D364 suite, le lien discret replié.)
+- (02.11, soir, à la suite), mot pour mot : « Ça peut être, un peu caché ou autre mais ça doit être possible. Ça peut être sous un dropdown ou
+  autre » (lu : le changement de famille peut vivre sous « plus », même en menu déroulant ; l'exigence est qu'il existe et qu'il tienne. D364.)

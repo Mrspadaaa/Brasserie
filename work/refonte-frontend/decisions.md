@@ -1766,3 +1766,5 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   Suite de D364, ses mots « C'est normalement une action assez rare » : au repos, seul un lien discret au nom de la bande ; un toucher montre les
   pastilles (5 au plus), un toucher range la ligne et referme. Les quatre pastilles du type fin de pu4d (« Discutable » de sa NOTE, 28 px
   toujours visibles) y entrent : ses mots les plus récents priment. Le choix du brasseur tient contre la règle.
+  D364, fin, ses mots « Ça peut être, un peu caché ou autre mais ça doit être possible. Ça peut être sous un dropdown ou autre » : le plus simple,
+  un champ « Famille » sous « plus » (menu déroulant permis pour ce geste rare, seule exception à D350), aux noms des bandes ; le choix tient.
