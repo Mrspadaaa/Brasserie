@@ -84,3 +84,11 @@ retirées de l'index, fichiers gardés sur le disque).
 4. Restes : doc6 « Même achat », la pastille TVA de doc14, les menus déroulants de l'app (D350), l'écran vide de 18 h 04, D326 (3) à (8),
    le Malt Vienne, la signature de la mission, les lignes LEÇON PROPOSÉE et CONNAISSANCE (g1, g6, pg, pu, pa, pz, pt).
 - Usage : 87 % à 20 h 30. D356 : tout finir d'ici 90 %.
+
+## Vers 20 h 45 : g7 rendu, 7945555e
+- g7-reste fini et commité (cd14101b, sorties neutres 7945555e) ; D359. Le script de banc reste hors Git (noms de cas de sa pièce).
+- `deploy-hosting-qr` détachée sur **7945555e** (functions/ inchangé depuis 60a8c25f : hébergement seul à déployer), `g-banc.mjs` recopié.
+  Tests depense + finance : 2 351 verts, 1 rouge environnemental (`enrichir/interrupteur.test.ts`, variable de build de la copie, fichier
+  inchangé depuis 60a8c25f). Build et check-no-dev-auth : voir `scratchpad/verif-7945555e.txt`.
+- Plateau : « Oui c'est très bien implémente ça », puis « Ah att il faut choisir » : il choisit sur la page v1 ; aucun port avant (D360).
+- Suite : rejeu banc `apres2` (agent g6, G1 à G4 puis A à D), captures regardées, `t-ecran-g7` (VOIE prête), garde, `--only hosting`.

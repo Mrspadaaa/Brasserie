@@ -1277,3 +1277,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - (suite), « Détail » et ses deux montants (un centime d'écart) entourés, `…/72f56106-image.jpg`, mot pour mot : « Montant inégale ???? » (lu : l'écart d'un centime est
   l'arrondi suisse à 5 centimes, enregistré en ligne « Arrondi à 5 centimes » (D270), mais l'écran le montre en jaune sans le dire. Il se montre
   comme sa propre ligne neutre, celle qu'on enregistre. Deuxième plainte sur ce centime après D261b (01.11). D358, L13.)
+- **Le plateau, son choix** (02.11, soir), sur ma ligne « Page v1 publiée : (https://claude.ai/artifact/XeGBAqvwsAHgwuAtLSXGJH) — les trois
+  versions (pu4d, pa1d, pz2d), cas par cas, à côté de p3c-3. », mot pour mot : « Oui c'est très bien implémente ça » (lu : la page lui va ;
+  il ne nomme pas de version.) Puis, aussitôt, mot pour mot : « Ah att il faut choisir » (lu : il va choisir sur la page ; rien n'est porté
+  avant son choix, le reste continue. D360.)
