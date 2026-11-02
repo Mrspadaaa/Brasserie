@@ -1153,3 +1153,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   faite. Okay alors ça sera pour le futur pour le moment la vente= full TVA, je paye et je me fait pas remboursé. Parcontre je vends sans TVA.
   Pour le moment », puis aussitôt : « L'achat full TVA pardon » (lu : achats TVA comprise, payée et non remboursée ; ventes sans TVA ; non assujetti
   pour le moment. D320.)
+- **Tester sur l'app déployée** (02.11, vers 19 h, pendant les finitions de la lecture lente), mot pour mot : « Bien faire les test sur la vrai
+  app déployé » (lu : après la mise en ligne, jouer la lecture lente et les lignes HT dans son app en ligne, sur ses vraies pièces ; D264, D298. D321.)
