@@ -1155,3 +1155,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   pour le moment. D320.)
 - **Tester sur l'app déployée** (02.11, vers 19 h, pendant les finitions de la lecture lente), mot pour mot : « Bien faire les test sur la vrai
   app déployé » (lu : après la mise en ligne, jouer la lecture lente et les lignes HT dans son app en ligne, sur ses vraies pièces ; D264, D298. D321.)
+- **Le test de bout en bout** (02.11, vers 19 h 30), mot pour mot : « Sur la vrai app fait le test bout en bout complet avec le Max cas de figure
+  couvert, recherche IA d'un article pas encore en stock, MAJ du stock, facture à jour, finance à jour ect... », puis : « J'autorise d'enregistrer
+  quelques exemples » (lu : accord pour écrire quelques dépenses d'essai dans son app en ligne, avec leurs effets sur le stock, les finances et
+  le Drive. D322.)
