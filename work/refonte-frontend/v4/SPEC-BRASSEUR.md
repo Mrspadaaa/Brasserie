@@ -1292,3 +1292,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : le port de pu4d d'abord, avec peu de tests ; puis un test léger (tests de la Dépense, build, une dizaine de captures) ; puis un
   parcours de bout en bout sur l'app déployée. Le rejeu complet du banc et les 30 captures avant chaque déploiement tombent pour ce lot ;
   un seul déploiement porte le ticket et le port. D363.)
+- **Changer la famille d'une ligne** (02.11, soir ; capture `uploads/…/c6c2887d-image.jpg`, la bande Emballage et sa rangée entourées), mot pour
+  mot : « Aussi, comment je change la catégorie d'un item, ici grand sac n'est pas dans l'emballage mais rénovation. » (lu : la famille d'une
+  ligne, la bande où elle est rangée, doit se changer en un toucher sur la ligne ouverte, avec le nom de la bande ; aujourd'hui seul le type
+  d'achat se change, et la famille suit par une règle cachée. D364.)

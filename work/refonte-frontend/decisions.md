@@ -1757,3 +1757,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   Puis un seul déploiement (7945555e et le port) après un test léger : tests de la Dépense, build, check-no-dev-auth, une dizaine de captures
   (deux thèmes, 390 et 1280, 8 états) jugées par le critique puis le pilote (D342 tenu au plus court). Puis le parcours de bout en bout
   sur l'app en ligne, dans le cadre de D322. Lecture étroite (L01) : « allège » porte sur ce lot, pas sur la règle D342.
+- D364 (pilote, 02.11, soir ; L13, L03, D350) : sa question « comment je change la catégorie d'un item, ici grand sac n'est pas dans l'emballage
+  mais rénovation ». Aujourd'hui (en ligne et 7945555e) : ligne ouverte, segment « Matériel », ou « plus › Type d'achat › Autre » ; sous une
+  dépense « Local », la ligne passe en Rénovation (vérifié sur `familleDe` : packaging → emballage ; other, maintenance, equipment → renovation).
+  Rien ne dit « Rénovation » : la famille suit une règle cachée. Dans le port pu4d, les pastilles du type fin (un toucher, D350) deviennent les
+  pastilles de famille : les bandes de la dépense où la ligne peut aller, nommées comme les bandes, celle de la ligne allumée. Lecture étroite
+  (L01) : le choix de pu4d vaut pour son principe (L03), la liste des bandes est celle de sa pièce, pas celle de la fixture. Réversible.
