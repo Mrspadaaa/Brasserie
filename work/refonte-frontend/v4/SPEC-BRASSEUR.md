@@ -1309,3 +1309,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « https://claude.ai/artifact/7e5AuRChUtCuaAnCqu42ce Pourquoi ça a pas été porté ??? », puis « Ajoute ça encore » (lu : B était codé (n2-pages,
   D303) mais aucune vraie entrée ne le montrait : « Lire un justificatif » ouvrait d'office le sélecteur d'un seul fichier, « Saisir une
   dépense » gardait « Joindre un justificatif ». Les deux entrées offrent maintenant « Plusieurs ». D366.)
+- (02.11, soir, à la suite), mot pour mot : « mais aucune des deux entrées réelles ne l'affiche. C'est le cas pour d'autres chose ??????? »
+  (lu : l'audit de chacun de ses choix, atteint ou non depuis une vraie entrée ; voie a-entrees.)
+- **Les tests qui ne voient rien** (02.11, soir), mot pour mot : « Tes tests servent à rien, on a 81 tests qui passe, mais on l'a même pas sûr
+  l'app ??? Je peux faire 6000 test si c'est pas visible, ça sert à rien.... Seul les vrais tests d'intégration sur la vrai app avec la vision
+  sert vraiment.... Et comment ça a pu être loupé ??? » (lu : une preuve, c'est le parcours depuis le menu de l'app en ligne, regardé ; un test
+  qui monte l'écran ou un banc qui remplit d'office le sélecteur ne prouve pas qu'on y arrive. D367.)

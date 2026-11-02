@@ -1784,3 +1784,14 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   plus d'ouverture d'office, la première vue montre « Un document » | « Plusieurs » (ses mots de D291) ; la saisie sans justificatif garde son
   bouton à contour, coupé de même (« Joindre un justificatif » | « Plusieurs »). Témoin `entree-reelle.test.tsx`, 2 rouges sur f6b29066, verts
   après. Coût pour le cas à 99 % : un toucher de plus (« Un document ») ; retour arrière : remettre l'effet `pickedOnOpen`.
+- D367 (pilote, 02.11, soir ; ses mots « Tes tests servent à rien… Et comment ça a pu être loupé ??? », L11, L13) : comment B a été loupé.
+  (1) Les tests montent la feuille sur sa première vue ; en jsdom, le sélecteur ouvert d'office n'ouvre rien, donc « Plusieurs » s'y voit.
+  (2) Le banc Chrome passe bien par le menu, mais il était écrit autour du défaut : `openInvoiceEntry` attend le sélecteur « que l'App ouvre
+  d'elle-même » et le cas pages le ferme (`(await premier)?.cancel?.()`) avant sa capture « pages-entree ». (3) Le critique (e-n2) a jugé ces
+  captures, pas le geste du téléphone. Personne n'a joué l'entrée depuis le menu sur l'app en ligne, à l'œil. Règle : un choix est fini quand
+  le menu de l'app en ligne le montre, regardé ; un banc qui ferme ou remplit d'office un sélecteur échoue au lieu de passer.
+- D368 (pilote, 02.11, soir ; a-entrees, D71 à D74) : **ses sept écrans Houblons étaient éteints en ligne.** Ils sont codés (`src/ui/hopIndex/`)
+  et derrière `VITE_HOP_V4=on` au build ; D71 à D74 (25 et 26.10) les ont déployés allumés. Les déploiements suivants depuis `deploy-hosting-qr`
+  ont été construits sans la variable (`VITE_HOP_V4:void 0` dans le paquet en ligne) : l'ancienne étape Houblons et l'atelier V5.5 sont revenus
+  sans que personne le voie. Remis : d14ff6cf construit avec `VITE_HOP_V4=on`, déployé (`--only hosting`), le paquet en ligne porte `"on"`.
+  À mécaniser : la garde de déploiement refuse un `dist` sans `VITE_HOP_V4:"on"`.
