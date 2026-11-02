@@ -1144,3 +1144,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   défaut du pilote et il le juge dans l'app. D317.)
 - **Mise en ligne : oui** (02.11, vers 17 h, à « Je les mets en ligne dès qu'elles sont vérifiées : oui, ou pas encore ? »), mot pour mot : « Oui »
   (lu : accord groupé pour déployer aiTask et l'hébergement une fois tout vérifié. D318.)
+- **La TVA d'un ticket** (02.11, vers 17 h 30, avec la photo de son ticket Bauhaus du 02.11 : « Montant brut 202,20 · Montant net 187,05 ·
+  TVA1 8,10 % 15,15 »), mot pour mot : « Pour la TVA je comprends pas trop. J'ai bien payé 202.20 mais en théorie je pourrais me faire
+  rembourser 15.15chf. Comment est monté ce montant ? Ça déduis 8.1% à chaque article ??? Ça serait vraiment pas très logique.. en fait je
+  sais pas vraiment ce qui est le mieux, je connais pas encore ces cas de figure. Ni comment me faire rembourser la TVA... » (lu : une question,
+  pas un défaut de lecture ; la TVA est comprise dans le prix payé, 202,20 × 8,1 / 108,1 = 15,15. D319.)
