@@ -1121,3 +1121,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Tout plier, déplier : son choix E** (02.11, vers 14 h 30, devant la page « Tout plier, déplier sur D · 02.11 »,
   https://claude.ai/artifact/T1cw6DYZX9YCBz4uELbXBE), mot pour mot : « E c'est très bien » (lu : le segment « Plié | Déplié » dans l'en-tête de la
   feuille, entre le titre et le justificatif, pour toute la dépense ; à l'état mêlé, aucun des deux n'est allumé. D311.)
+- **Le segment de E n'est qu'un raccourci** (02.11, vers 15 h, juste après son choix E), mot pour mot : « Avec e, on doit toujours pouvoir plier
+  déplier individuelle les catégories, ce bouton lock rien, juste un shortcut » (lu : chaque sous-groupe se plie et se déplie toujours d'un
+  toucher, après « Plié » comme après « Déplié » ; le segment règle tout d'un coup et ne fige rien ; un toucher sur un groupe le met à l'état mêlé. D311.)

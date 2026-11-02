@@ -50,3 +50,34 @@ Interdits : `familles.ts` (sauf un export d'ordre si tsc l'exige, et le dire), l
 ## Rendre
 `RESULTAT.md` : inventaire de D, fichiers, témoins, sorties, captures décrites, écarts à sa maquette (aucun sans le dire), doutes ;
 `LEÇON PROPOSÉE : …`, `CONNAISSANCE : …`. Une ligne : `R4-PORT-D OK — …` ou `R4-PORT-D ECHEC — …`.
+
+## Reprise 1 (pilote, 02.11) : son choix E, puis les mineurs du critique
+Critique de r4 : ACCEPTÉ (`critique/VERDICT-r4-port-d.md`, lis-le). Ses mots (SPEC, 02.11, mot pour mot) : « E c'est très bien », puis
+« Avec e, on doit toujours pouvoir plier déplier individuelle les catégories, ce bouton lock rien, juste un shortcut ». D311.
+Sa maquette (règle n° 1, la base) : `choix-plier/maquettes/e-plie.html`, `e-deplie.html`, `e-mele.html`, `e-plie-sombre.html` et `choix-plier/img/e-*.png`.
+
+**E, le segment « Plié | Déplié »** (28 px, dans l'en-tête de la feuille, entre le titre et le justificatif, pour toute la dépense) :
+1. « Plié » replie tous les sous-groupes pliables, **sauf un groupe qui porte une ligne à vérifier, qui reste ouvert** (sa page : « Une ligne
+   à vérifier garde son groupe ouvert, même tout plié »). Le `plierTout` actuel replie aussi ce groupe : corrige-le (témoin rouge avant).
+   « Déplié » les ouvre tous.
+2. C'est un raccourci, il ne fige rien : après l'un ou l'autre, chaque sous-groupe se plie et se déplie toujours d'un toucher, y compris celui
+   d'une ligne à vérifier. L'état allumé se **calcule** sur l'état réel des groupes (jamais un mode gardé) : « Plié » allumé quand l'état égale
+   ce que « Plié » produit, « Déplié » quand tout est ouvert, aucun des deux sinon (état mêlé, sa vue `e-mele`). Au repos d'une lecture, « Plié »
+   est donc allumé.
+3. Visible en vue Catégorie seulement, et seulement quand une bande a deux sous-familles ou plus (lecture du pilote, réversible ; dis-la dans RESULTAT).
+4. Mesure de l'en-tête avec le titre le plus long que la feuille affiche (critique r3) : rien ne se chevauche ni ne passe à la ligne à 390 et à 1280.
+   Boutons à `aria-pressed`, focus visible, cibles selon DESIGN.md.
+5. Témoins : tout plié avec une ligne à vérifier (son groupe ouvert) ; un toucher après « Plié » ouvre un groupe et éteint « Plié » ; un toucher
+   replie un groupe à vérifier ; « Déplié » puis un toucher ; segment absent en vue Papier et sur une dépense sans bande à deux sous-familles.
+6. Captures côte à côte avec `choix-plier/img/e-plie.png`, `e-deplie.png`, `e-mele.png`, `e-plie-sombre.png` (390 tactile ; plus 1280 clair) ;
+   ouvre chacune (L12).
+
+**Les mineurs du critique** :
+- M1 : colonne des quantités décalée sur une ligne « + ? » (`10 Stk` à 505 px contre 538) ; l'en-tête de bande a le même décalage. Corrige les
+  deux ensemble : la colonne du montant réserve la largeur de « 000,00 + ? » dès qu'un inconnu existe dans la bande. Pour ce seul point, l'en-tête
+  de bande t'est ouvert (même fichier, mêmes classes) ; mesure l'écart ≤ 2 px sur toutes les lignes et l'en-tête, avant et après.
+- « Y aller » vers une ligne d'un groupe replié (`reveler`) : un test d'écran, et un geste dans `capturer-d.mjs` (la cible visible, le groupe ouvert).
+- M2 (« Consommable » dans Nettoyage) : mesuré par le pilote sur sa pièce du 02.11 : 2 lignes de Nettoyage sur 2 en Détergent, aucun groupe « Consommable » ; rien à faire ici.
+
+Critères 2 à 5 de la voie rejoués à l'identique ; tests dans `tests/unit/depense/bandes/` et `tests/unit/depense/ecran/` (fichiers `*-d311.test.*`).
+Rendre : RESULTAT.md complété (section « Reprise 1 »), une ligne `R4-PORT-D OK — …` ou `R4-PORT-D ECHEC — …`.
