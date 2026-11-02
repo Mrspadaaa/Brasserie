@@ -1772,3 +1772,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   (VERDICT du critique, « Pilote : vu ») et le test léger de D363 ; t-ecran-leger écartée. Gardés, car ce sont les gestes du déploiement et non des
   tests : tests ciblés du port, build (tsc compris), `check-no-dev-auth`, manifeste inchangé, déploiement d'un dossier que nul autre n'écrit,
   `--only hosting`, la page servie relue en ligne (lecture seule). Lecture étroite (L01) : ce lot seulement ; D342 reste la règle des suivants.
+  D365, fait (02.11, vers 21 h) : **f6b29066 déployé** (`--only hosting`, 266 fichiers, depuis `deploy-hosting-qr`). Il porte le ticket Bauhaus
+  (lot g, g7-reste), le port pu4d (28c98cba) et la famille sous « Famille » seulement (D364 suite : les quatre pastilles du type fin retirées,
+  vues en double au seul rendu fait, 12 plateaux à 390, 37 OK). Avant : 5 tests du plateau verts, build vert, `check-no-dev-auth` propre,
+  `functions/` inchangé depuis le dernier `aiTask` (D325). Après : la page servie en ligne charge `index-CiOKVLBh.js`, le même que `dist`.
+  Ouvert : 46 anciens tests visent l'ancien formulaire (RESULTAT de p-port-pu4d) ; fiche matériel et libellé d'une ligne lue retirés avec lui.
+  Retour arrière : redéployer 7945555e ou la version d'avant depuis la copie.

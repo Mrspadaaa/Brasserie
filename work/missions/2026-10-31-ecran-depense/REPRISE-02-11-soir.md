@@ -110,3 +110,11 @@ retirées de l'index, fichiers gardés sur le disque).
      - critique côte à côte avec pu4d ; `controle-plateau-ligne` sur pu4d au cas c ;
      - la garde, puis le déploiement de l'hébergement.
   3. À 95 % : l'état est écrit ici, le commit fait, le rapport rendu.
+
+## Vers 21 h : déployé (D363 à D365)
+- Ses mots : « Allège les test… », « Pas besoin de tout retester ou rien, intégre le tout et deploye ». Banc et critique levés pour ce lot.
+- **En ligne : f6b29066** (hébergement). Ticket Bauhaus, port pu4d, famille d'une ligne sous « Famille » (D364). Page servie vérifiée.
+- Restes, semaine suivante (D362) : réécrire les 46 anciens tests de la Dépense (liste dans `voies/p-port-pu4d/RESULTAT.md`) ;
+  fiche matériel (créer ou lier un matériel) et libellé d'une ligne lue, retirés avec l'ancien formulaire : où les remettre ;
+  la famille n'est pas écrite avec la dépense (le type d'achat suit) ; après « Regrouper », le panneau « à contrôler » nomme les anciennes
+  lignes, avec des mots anglais (« equipment / other / stock ») ; doc6, doc14, D326 (3) à (8), les LEÇON PROPOSÉE et CONNAISSANCE des voies.
