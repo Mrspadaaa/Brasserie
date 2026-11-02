@@ -1112,3 +1112,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   la correction des lignes hors taxe ? » »), mot pour mot : « tes choix sur la frise et sur la lenteur ; « je lance la correction des lignes hors
   taxe ? » Comprends pas ces 2 points » (lu : le pilote a nommé des pages et un code de décision sans dire de quoi il s'agit ; il faut le dire
   en mots simples, avec le lien et ce qu'on attend de lui, et ne rien lui demander qui ne soit pas à lui de trancher. D307.)
+- **La lenteur : son choix D** (02.11, vers 13 h 35, après l'explication du pilote et la page « La lenteur de la lecture · 02.11 »,
+  https://claude.ai/artifact/TNNSAZdhSkoit5NkHyksPa), mot pour mot : « La lenteur go pour la d » (lu : l'option D de la page, l'écran tout de
+  suite après les deux lectures rapides, valeurs provisoires, la lecture lente finit en arrière-plan, « Confirmer » attend la lecture finale. D308.)
