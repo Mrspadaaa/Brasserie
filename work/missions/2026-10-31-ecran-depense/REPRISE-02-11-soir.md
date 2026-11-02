@@ -154,3 +154,11 @@ retirées de l'index, fichiers gardés sur le disque).
   facture lue. Pas de lecture payante pour le voir en ligne : à voir sur sa prochaine pièce.
 - Restent : à 390, avec trois unités et un prix à 4 décimales, `= montant` passe à la ligne ; les nombres changent si l'unité se déduit après
   le premier toucher (Kg → pièce) ; ronds « Devise » et « Lecture coupée » inchangés.
+
+## Vers 22 h 45 : D370, le libellé d'une ligne ajoutée (c625a2c6, déployé)
+- Plainte : une lettre seulement dans « Article ou prestation ». Causes : le champ n'existait que libellé vide, et la ligne changeait de bande
+  ou de sous-groupe dès la première lettre (famille déduite des mots). Correctif : champ gardé, bande et sous-groupe figés pendant la frappe,
+  rangés quand le champ est quitté.
+- Témoins rouges sur 5f83812f : banc `d370-temoin` (D370 KO, deux thèmes), test `plateau.test.tsx` D370. Vert après : 90/90 Dépense.
+- Sa demande : le correctif seul, un test unitaire, le déploiement. Banc après correctif non rejoué ; restes de D369 en attente.
+- Déployé : `index-HV8VtptN.js` servi, drapeau Houblons « on », functions inchangé.
