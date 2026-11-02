@@ -29,6 +29,15 @@ retirées de l'index, fichiers gardés sur le disque).
   Page v0 publiée : https://claude.ai/artifact/HxaxpDdzztLYPrCCnwnMAs (source `choix-plateau/index.html`, images `choix-plateau/img/`,
   non versionnées). Passe 2 rendue : `plateau/v1/pu4b`, `pz2b`, `pa1b`. Verdict du critique en cours → `plateau/critique/RESULTAT.md`.
 
+## 21 h 30 : ses remarques sur pa1b (D350 à D352)
+- « éviter les dropdown sur mobile, ça nécessite 2 actions » ; « Au centime, ça veut dire quoi ?? Ça ajoute rien, non ? » (« ✓ au centime »
+  retiré quand le calcul tombe juste, remplace D349 sur ce point) ; « Unité pas aligné btw » (bande et rangées). SPEC, DEFAUTS, décisions faits.
+- Contrôle `work/refonte-frontend/v4/tournoi/outils/controle-sans-menu.mjs <etat.html>` (menus, chevrons, « au centime », alignement au repos) :
+  ECHEC sur pa1b, pu4b, pz2b (témoins). Heuristique : un faux positif possible est à montrer sur capture.
+- Verdict passe 2 (critique) : pa1b ACCEPTÉ ; pu4b REJET (rangée ouverte sans sa mesure) ; pz2b REJET (mouture « Rattacher » absente).
+- Passe 3 lancée chez les mêmes auteurs : `plateau/v2/pa1c`, `pu4c`, `pz2c`. Puis le critique, puis la page v1 (artefact neuf).
+- À l'intégration : relever les menus déroulants, « ✓ au centime » et l'alignement des unités dans l'app (`src/ui/depense`), lecture étroite.
+
 ## Prochaine action, dans l'ordre
 1. Verdict passe 2 : relancer ou écarter chaque REJET (2 fois au plus) ; puis page v1, artefact neuf daté (`choix-plateau-v1/`),
    `verifier-page.mjs --page-lot`, ligne dans « ## Pages ». Lien à lui : il choisit.

@@ -1241,3 +1241,14 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Le quota** (02.11, soir, vers 19 h 35), mot pour mot : « À 90% d'usage hebdo, terminé tes tâches » (lu : à 90 % de l'usage hebdomadaire,
   tous modèles, le pilote termine et ferme ses tâches proprement : rien de neuf lancé, l'état de reprise écrit. Usage lu à cet instant : 81 %.
   D347.)
+- **Le plateau, passe 2** (02.11, soir, vers 21 h 30), sur sa capture de pa1b (cas b, l'unité « g ⌄ » entourée,
+  `C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/154ccf8c-image.jpg`), mot pour mot : « Ça c'est bien mais éviter les
+  dropdown sur mobile, ça nécessite 2 actions » (lu : pa1b lui plaît ; au téléphone, un choix se fait en un toucher, sans menu déroulant.
+  Portée, lecture étroite : les maquettes et l'écran Dépense au téléphone ; le reste de l'app est à relever. D350.)
+- (suite), sur la même capture, « ✓ au centime » entouré, mot pour mot : « Au centime, ça veut dire quoi ?? Ça ajoute rien, non ? » (lu :
+  quand quantité × prix tombe juste au centime, la marque n'ajoute rien, sûr = rien, D277 ; elle ne se montre que si le calcul ne tombe pas
+  juste. Remplace D349 pour « au centime ». `…/4497707e-image.jpg`. D351.)
+- (suite), « 10 Kg » de la bande et « 6 Kg » de la rangée entourés, mot pour mot : « Unité pas aligné btw » (lu : la quantité de la bande
+  et celles des rangées sont dans la même colonne, leurs unités alignées. `…/5529bb39-image.jpg`. D352.)
+- (suite), mot pour mot : « Fin est-ce que c'est vraiment la dernière version ? » (lu : « enfin » ; oui, pa1b est la passe 2 de pa1, la
+  dernière rendue, pas encore sur une page. D350.)
