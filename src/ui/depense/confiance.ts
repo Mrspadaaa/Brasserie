@@ -35,6 +35,8 @@ const pireDe = (a: Niveau, b: Niveau): Niveau => (RANG[b] > RANG[a] ? b : a);
 export interface LigneConfiance {
   id: string; description: string; kind?: string; quantity?: number | null; unit?: string; unitPrice?: number | null; amount?: number | null;
   stockCategory?: string; sourceReference?: string; stockAction?: 'none' | 'new' | 'existing'; stockRef?: string;
+  /** Voie n1-nom-fr : le nom français et le nom imprimé lu de la ligne, pour que la confiance lise le même rapprochement que l'écran et l'enregistrement. */
+  nameFr?: string; nomLu?: string;
 }
 export interface ContexteConfiance {
   /** Toutes les lignes de la pièce (les autres lignes de la même famille éclairent l'unité). */
@@ -351,7 +353,7 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
   else if (l.stockAction === 'existing') art = article ? { niveau: 'sur', valeur: article.name, raison: 'article relié' } : { niveau: 'inconnu', raison: 'article relié introuvable : à choisir' };
   else if (l.stockAction === 'new') art = { niveau: 'sur', raison: 'article neuf' };
   else {
-    const regle = c.articles ? regleProduit(ligneDeBrouillon({ description: l.description, unit: l.unit ?? '', quantity: q, kind: l.kind, stockCategory: l.stockCategory, sourceReference: l.sourceReference }, c.fournisseur), c.articles) : undefined;
+    const regle = c.articles ? regleProduit(ligneDeBrouillon({ description: l.description, unit: l.unit ?? '', quantity: q, kind: l.kind, stockCategory: l.stockCategory, sourceReference: l.sourceReference, nameFr: l.nameFr, nomLu: l.nomLu }, c.fournisseur), c.articles) : undefined;
     art = regle && regle.cas === 'meme' ? { niveau: 'repris', valeur: regle.article.name, raison: `article proposé « ${regle.article.name} », pas encore relié` }
       : { niveau: 'repris', raison: 'aucun article choisi' };
   }

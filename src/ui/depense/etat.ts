@@ -87,8 +87,9 @@ export function phraseRelation(d: { relation: string; lu: number | null; calcule
  * R6 : un article du stock est-il CE produit ? La règle unique de `stockLineMatching.ts` (S6, R9) : « même article » seulement si l'appariement de s1 relie cet
  * article ; une autre α, une autre origine ou un autre EBC n'est jamais fusionné (D215), une donnée connue d'un seul côté non plus (cas « incertain »).
  */
-export function memeProduit(description: string, unit: string, items: readonly StockItem[], quantity?: number, vendor?: string): StockItem | undefined {
-  const regle = regleProduit({ description, unit, quantity: quantity !== undefined && quantity > 0 ? quantity : 1, ...(vendor?.trim() ? { vendor: vendor.trim() } : {}) }, items);
+export function memeProduit(description: string, unit: string, items: readonly StockItem[], quantity?: number, vendor?: string, noms?: { nameFr?: string; nomLu?: string }): StockItem | undefined {
+  // Voie n1-nom-fr : la même lecture que l'écran et l'enregistrement : le nom imprimé lu (noms gardés) et le nom français comptent.
+  const regle = regleProduit({ ...ligneProduit({ description, unit, quantity: quantity !== undefined && quantity > 0 ? quantity : 1, ...(noms ?? {}) }, vendor) }, items);
   return regle.cas === 'meme' ? regle.article : undefined;
 }
 /** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
@@ -166,7 +167,7 @@ export function prixAvecMouture(malt: Pick<PurchaseLineDraft, 'amount' | 'quanti
  * Un article du stock du même produit que la ligne mais qui n'est pas le même article (autre α, origine, récolte, EBC, poids ; ou donnée connue d'un seul côté) :
  * montré grisé, JAMAIS lié. La règle unique de `stockLineMatching.ts` (S6, R9) : `neuf`, `incertain` ou `ambigu`.
  */
-export function voisinDe(line: Pick<PurchaseLineDraft, 'description' | 'unit' | 'quantity'> & Partial<Pick<PurchaseLineDraft, 'kind' | 'stockCategory' | 'sourceReference'>>, items: readonly StockItem[]): StockItem | undefined {
+export function voisinDe(line: Pick<PurchaseLineDraft, 'description' | 'unit' | 'quantity'> & Partial<Pick<PurchaseLineDraft, 'kind' | 'stockCategory' | 'sourceReference' | 'nameFr' | 'nomLu'>>, items: readonly StockItem[]): StockItem | undefined {
   const regle = regleProduit(ligneProduit(line), items);
   return regle.cas === 'neuf' || regle.cas === 'incertain' ? regle.voisin : regle.cas === 'ambigu' ? regle.candidats[0] : undefined;
 }

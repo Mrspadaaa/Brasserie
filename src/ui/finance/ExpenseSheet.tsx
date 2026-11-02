@@ -25,6 +25,7 @@ import { PieceDejaSaisie,LienDepense } from './PieceDejaSaisie';
 import { confronterQr } from '../../services/qrFacture';
 import { lireQrDuFichier,type ResultatQr } from '../../services/qrLecture';
 import { retenirNomBrasseur,traduireLignes } from '../../services/nomsFr';
+import { lireOptions } from '../depense/optionsDuNom';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
@@ -147,6 +148,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const relieAuto=useRef(new Map<string,string>());
   /* D275d : les lignes que la lecture a faites « nouvel article » d'office ; un « bis » reste à confirmer (sa barre) tant que le brasseur n'a pas choisi. */
   const neufDOffice=useRef(new Set<string>());
+  /* Voie n1-nom-fr : le brouillon et le stock COURANTS (mis à jour à chaque rendu) pour l'arrivée du français, et la quantité et l'unité de chaque ligne telles que lues : une ligne que le brasseur a retouchée n'est jamais reprise. */
+  const draftCourant=useRef<PurchaseDraft|null>(null),existantsCourants=useRef<StockItem[]>([]),lectureLigne=useRef(new Map<string,string>());
   /* Une ligne s'ouvre d'elle-même seulement à sa création si elle est à compléter ; ensuite le brasseur décide. */
   const lineStartsOpen=useRef(new Map<string,boolean>());
   const [attachedTo,setAttachedTo]=useState<string|null>(null);
@@ -312,7 +315,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const stockItems=[...stocks.rawMaterials,...stocks.cleaning];
     proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
     /* D275 : le libellé est la base de la désignation (sans options ni suffixe d'unité), ou sa désignation française lue ; l'imprimé complet reste au brouillon et au plateau. */
-    const lues:PurchaseLineDraft[]=result.items.map(item=>{const lu=libelleLu(item);return {id:item.id,description:lu.description,...(lu.imprime?{imprime:lu.imprime}:{}),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',lu.imprime?`Imprimé : ${libelleDeLigne(item.name,item.variant)}`:'',item.evidence].filter(Boolean).join(' · ')};});
+    /* Voie n1-nom-fr : le nom imprimé lu (base sans options) est gardé ICI, une fois : retaper le libellé ne le change pas, c'est lui qui s'écrit « Sur la facture ». */
+    const lues:PurchaseLineDraft[]=result.items.map(item=>{const lu=libelleLu(item),nomLu=lireOptions(String(item.name??''),item.variant?String(item.variant):undefined,String(item.unit??'')).base.trim().slice(0,80);return {id:item.id,description:lu.description,...(nomLu?{nomLu}:{}),...(lu.imprime?{imprime:lu.imprime}:{}),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',lu.imprime?`Imprimé : ${libelleDeLigne(item.name,item.variant)}`:'',item.evidence].filter(Boolean).join(' · ')};});
     /* D277 : l'unité absente se déduit avant le rapprochement (« de base ça essaie d'auto remplir ») ; l'imprimé reste vide (D213). */
     const existantsLus=sansCetteSaisie(stockItems,draft.submissionId);
     const deduites=avecUnitesDeduites({lines:lues,vendor:result.vendor??'',amount:total.amount},stockItems).lines;
@@ -320,7 +324,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       /* S1 : une proposition, jamais une écriture. L'unité imprimée reste celle de la ligne (jamais réécrite, D213) ; ce que l'identité a lu (α, récolte,
          poids du sachet) va dans l'extrait, avec sa source. */
       const unit=uniteEffective(line);
-      const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind},stockItems):undefined;
+      const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind,...(line.nomLu?{nomLu:line.nomLu}:{})},stockItems):undefined;
       if(!match){
         const voisin=(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?voisinEtMarque({...line,unit},stockItems,result.vendor??undefined):undefined;if(voisin)voisins.current.set(line.id,voisin);
         /* D275d : un ingrédient qu'aucun article ne relie est d'office un nouvel article (plus de bouton « Créer » au repos) ; la règle est celle du choix « Créer » :
@@ -340,10 +344,23 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     setDraft(previous=>{const proposed=applyScannedDescription(previous,result),description=proposed.description??previous.description;return patchPurchaseDraft(previous,{vendor:result.vendor,date:result.date,...applyScannedPayment(previous,result,swissToday()),invoiceNumber:result.invoiceNumber,...proposed,category:result.category,amount:total.amount,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:total.amount}],sourceCurrency:result.currency,sourceAmount:result.amountTTC??undefined,sourceDocumentType:result.documentType,sourceOrderNumber:result.orderNumber,sourceTotalBasis:total.calculated?'line_sum':result.amountTTC!==null?'printed':undefined,sourceNetAmount:result.amountHT??undefined,sourceVatRate:result.tvaRate??undefined,sourceVatAmount:result.tvaAmount??undefined,scanModel:outcome.model,documentHash},swissToday());});
     /* D280 : le français des noms de base, à part de la lecture, sans l'attendre ; apparié par id. Hors ligne, en échec ou en aperçu : le nom imprimé reste. */
     const jeton=++nomsJeton.current;
+    lectureLigne.current=new Map(lines.map(l=>[l.id,`${l.quantity}|${l.unit}`]));
     if(!apercu)void traduireLignes(lines.map(l=>({name:l.imprime?.nom??l.description,variant:l.imprime?.variante,unit:l.unit,kind:l.kind,stockCategory:l.stockCategory,stockAction:l.stockAction,stockRef:l.stockRef})),{stock:stockItems,enLigne:online}).then(noms=>{
       if(!mounted.current||nomsJeton.current!==jeton||!noms.size)return;
       const parId=new Map(lines.map((l,rang)=>[l.id,noms.get(rang)]));
-      setDraft(previous=>({...previous,lines:previous.lines.map(l=>{const fr=parId.get(l.id);return fr&&!l.nameFr?{...l,nameFr:fr}:l;})}));
+      /* Voie n1-nom-fr (choix B) : le français peut relier une ligne `nouvel article` INTACTE (dans `neufDOffice`, sans nom tapé, ni nature changée, ni quantité ni unité retouchées) à un article du
+         stock : relié comme à la lecture (D295 : `relieAuto`, cube coché, « nom déjà au stock », sans « Garder » : la facture suivante se relie toute seule, b-suivantes.png) ; plusieurs articles → « choisis », aucun lien. Le calcul se fait ICI, sur le brouillon et le
+         stock COURANTS, et les refs sont mutées hors de l'updater (qui se rejoue deux fois en StrictMode). Une ligne retouchée ou déjà choisie par le brasseur n'est jamais reprise. */
+      const courant=draftCourant.current,decisions=new Map<string,Partial<PurchaseLineDraft>>();
+      for(const l of courant?.lines??[]){
+        const fr=parId.get(l.id);
+        if(!fr||l.nameFr||l.stockAction!=='new'||!neufDOffice.current.has(l.id)||l.articleName?.trim()||manuallyClassified.current.has(l.id)||lectureLigne.current.get(l.id)!==`${l.quantity}|${l.unit}`)continue;
+        const unit=uniteEffective(l),regle=regleProduit(ligneDeBrouillon({...l,unit,nameFr:fr},courant?.vendor||undefined),existantsCourants.current);
+        if(regle.cas==='meme'){relieAuto.current.set(l.id,regle.article.name);neufDOffice.current.delete(l.id);decisions.set(l.id,{stockAction:'existing',stockRef:regle.article.ref});}
+        else if(regle.cas==='neuf'||regle.cas==='incertain'){const voisin=voisinEtMarque({...l,unit,nameFr:fr},existantsCourants.current,courant?.vendor||undefined);if(voisin)voisins.current.set(l.id,voisin);}
+        else if(regle.cas==='ambigu'){const voisin=voisinEtMarque({...l,unit,nameFr:fr},existantsCourants.current,courant?.vendor||undefined);if(voisin)voisins.current.set(l.id,voisin);neufDOffice.current.delete(l.id);decisions.set(l.id,{stockAction:'none',stockRef:undefined});}
+      }
+      setDraft(previous=>({...previous,lines:previous.lines.map(l=>{const fr=parId.get(l.id);return fr&&!l.nameFr?{...l,nameFr:fr,...(decisions.get(l.id)??{})}:l;})}));
     });
   };
   const attach=async(file:File,lireQuandMeme=false)=>{
@@ -564,17 +581,18 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const eur=(cents:number)=>(cents/100).toFixed(2).replace('.',',');
   const prixMouture=(index:number,confirme:boolean)=>{const malt=draft.lines[index],m=draft.lines[index+1];if(!m||!malt||malt.stockAction==='none'||m.kind!=='service'||!((m.amount??0)>0)||(confirme&&parentDeLaMouture(draft.lines,index+1)!==index))return undefined;const p=prixAvecMouture(malt,m);return p?`${p.exact?'':'≈ '}${eur(p.cents)}/${malt.unit}`:undefined;};
   const kgPrix=(index:number)=>{const p=prixMouture(index,true);return p?`${p} avec mouture`:undefined;};
-  const lieAuStock=(description:string,unit:string,quantity?:number)=>memeProduit(description,unit,sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId),quantity,draft.vendor);
+  const lieAuStock=(description:string,unit:string,quantity?:number,noms?:{nameFr?:string;nomLu?:string})=>memeProduit(description,unit,sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId),quantity,draft.vendor,noms);
   /* S6 (T3, T4) : l'article neuf de chaque ligne non reliée, DÉRIVÉ de la ligne et du stock courants par la fonction même de l'enregistrement : ce qui est montré est ce qui
      est écrit. Seul le nom tapé (`articleName`) est gardé ; les lignes « neuves » plus haut comptent pour le suffixe (« bis », « bis 2 »). Mis en cache par ligne. */
   const existants=sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId);
+  existantsCourants.current=existants;draftCourant.current=draft;
   const signatureStock=`${draft.vendor}§`+existants.map(item=>`${item.ref}|${item.name}|${item.category}|${item.unit}|${item.supplier??''}|${item.alphaPct??''}|${item.colorEbc??''}|${item.origin??''}|${item.fiche?.id??''}`).join(';');
   const neufParLigne=new Map<string,ArticleNeuf>();
   {
     const virtuels:MembreVirtuel[]=[];
     for(const l of draft.lines){
       if(!STOCK_KINDS.includes(l.kind)||l.stockAction==='existing'||!l.description.trim())continue;
-      const sig=[l.description,uniteDe(l),l.quantity,l.stockCategory,l.sourceReference,l.kind,l.articleName,virtuels.map(v=>v.nom).join('|'),signatureStock,catalogues.houblons?'c':'-'].join('§');
+      const sig=[l.description,l.nameFr,l.nomLu,uniteDe(l),l.quantity,l.stockCategory,l.sourceReference,l.kind,l.articleName,virtuels.map(v=>v.nom).join('|'),signatureStock,catalogues.houblons?'c':'-'].join('§');
       let cache=cacheNeuf.current.get(l.id);
       if(!cache||cache.sig!==sig){cache={sig,neuf:articleNeufDe(ligneDeBrouillon({...l,unit:uniteDe(l)},draft.vendor),existants,catalogues,l.articleName,virtuels)};cacheNeuf.current.set(l.id,cache);}
       neufParLigne.set(l.id,cache.neuf);
@@ -617,7 +635,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const mathEl=calculOk!==undefined?<p className={`text-xs ${calculOk?'text-cave-200':'text-attention'}`}>{String(line.quantity).replace('.',',')} × {fr(line.unitPrice!)} {calculOk?'= montant ✓':'≠ montant, écart à vérifier'}</p>:null;
     const extraitEl=line.evidence?<details className="text-xs text-cave-400"><summary className="cursor-pointer min-h-8 flex items-center">Voir l’extrait du document</summary><p className="text-cave-200 leading-relaxed">{line.evidence}</p></details>:null;
     const interrupteurEl=<Interrupteur label={`Mettre en stock, ligne ${index+1}`} actif={line.stockAction!=='none'} onChange={on=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);if(on)updateLine(line.id,{stockAction:'existing',stockRef:proposedRef.current.get(line.id)??''});else updateLine(line.id,{stockAction:'none'});}}/>;
-    const choixStockEl=<select aria-label={`Stock ligne ${index+1}`} value={line.stockAction} onChange={e=>{const v=e.target.value as any;proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=v==='new'?lieAuStock(line.description,uniteDe(line),line.quantity):undefined;if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:v});}} className={inputClass}><option value="none">Aucun mouvement de stock</option><option value="existing">Ajouter à un article existant</option><option value="new">Créer un nouvel article</option></select>;
+    const choixStockEl=<select aria-label={`Stock ligne ${index+1}`} value={line.stockAction} onChange={e=>{const v=e.target.value as any;proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=v==='new'?lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined;if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:v});}} className={inputClass}><option value="none">Aucun mouvement de stock</option><option value="existing">Ajouter à un article existant</option><option value="new">Créer un nouvel article</option></select>;
     const comboArticleEl=<Combobox ariaLabel="Article" value={line.stockRef||''} onChange={stockRef=>{proposedStock.current.delete(line.id);updateLine(line.id,{stockRef});}} options={stockOptions} placeholder="Chercher dans le stock"/>;
     const relieEl=line.stockAction==='existing'?<>{relieAuto.current.has(line.id)?<p className="text-xs text-cave-200">relié à « {relieAuto.current.get(line.id)} », nom déjà au stock</p>:null}{comboArticleEl}{articleDe(line)?.fiche?<p data-dp-fiche className="text-xs text-cave-200">{phraseFiche(articleDe(line)!.fiche!,catalogues)}</p>:null}</>:null;
     const nomEl=line.stockAction==='new'&&neuf?<NomArticle index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/>:null;
@@ -656,7 +674,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* La barre sous la rangée : seulement un rouge (l'unité qui ne se déduit pas : g, kg, Stk) ou un jaune qui demande un geste (un bis, plusieurs articles). Aucun bouton « Créer » au repos. */
     /* VERDICT-f3-p2, détail 3 : plateau ouvert, la barre d’un bis se fond dans la ligne « article » (un seul ⇄) ; fermée, la barre reste. */
     const ouverte=ouvertesRef.current.has(line.id)?Boolean(ouvertesRef.current.get(line.id)):Boolean(startsOpen(line));
-    const garderBisEl=bisAConfirmer&&regle&&voisin?<button type="button" aria-label={`Garder le nouvel article « ${neuf?.name??line.description.trim()} »`} onClick={()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">{regle.cas==='neuf'&&regle.motif==='origine'&&neuf?.origin?`${line.description.trim().split(/\s+/)[0]} ${neuf.origin}`:neuf?.name??line.description.trim()}</button>:null;
+    const garderBisEl=bisAConfirmer&&regle&&voisin?<button type="button" aria-label={`Garder le nouvel article « ${neuf?.name??line.description.trim()} »`} onClick={()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">{neuf?.name??line.description.trim()}</button>:null;
     const stockBisEl=bisAConfirmer&&regle&&voisin?<span data-dp-stock-bis className="inline-flex items-center gap-1 text-xs text-cave-400 opacity-80"><Package size={14}/>stock : {etiquetteVoisin(regle,voisin)}</span>:null;
     const bisFondu=bisAConfirmer&&ouverte;
     const fixNiveau:Niveau|undefined=precisIds.has(line.id)?'inconnu':(bisAConfirmer&&!bisFondu)||ambigu?'repris':undefined;

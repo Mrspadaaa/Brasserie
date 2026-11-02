@@ -12,7 +12,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 » (tests) appliqué partout (G38). 25.10 : « traits trié » lu « plein » (D147). 27.10 : « bannir » lu « reculer » (D194). 31.10 : « modifier à la volée » lu « la masse » (D211). 01.11 : « sans clavier » lu « sans focus » (D230).
+- Erreur : 12.10, « seul 3.8 » (tests) appliqué partout (G38). 27.10 : « bannir » lu « reculer » (D194). 31.10 : « modifier à la volée » lu « la masse » (D211). 01.11 : « sans clavier » lu « sans focus » (D230).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil
@@ -26,9 +26,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155). 01.11 : D262d.
+- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155). 01.11 : D262d. 02.11 : un tri de revue a rendu F, colonne refusée (D295).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24).
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -161,4 +161,4 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.
+- Toutes dans [[controles-mecanises]] (M16 sortie le 02.11).

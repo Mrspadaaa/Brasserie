@@ -26,7 +26,7 @@ export const optionsDe = (line: Pick<PurchaseLineDraft, 'imprime' | 'unit'>): Op
 export const ligneConfianceDe = (line: PurchaseLineDraft): LigneConfiance => ({
   id: line.id, description: line.imprime ? [line.imprime.nom, line.imprime.variante].filter(Boolean).join(' · ') : line.description, kind: line.kind,
   quantity: line.quantity ?? null, unit: line.unit, unitPrice: line.unitPrice ?? null, amount: line.amount ?? null, stockCategory: line.stockCategory,
-  sourceReference: line.sourceReference, stockAction: line.stockAction, stockRef: line.stockRef,
+  sourceReference: line.sourceReference, stockAction: line.stockAction, stockRef: line.stockRef, nameFr: line.nameFr, nomLu: line.nomLu,
 });
 
 export function contexteConfiance(draft: Pick<PurchaseDraft, 'lines' | 'vendor' | 'amount'>, articles: readonly StockItem[], points?: readonly InvoicePoint[]): ContexteConfiance {

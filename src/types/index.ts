@@ -60,6 +60,12 @@ export interface StockItem {
   /** Houblon ou malt : code pays lu sur la facture à la création de l'article (« CH »), en capitales. Facultatif ; absent = inconnu (voie s6-fiche, D215). */
   origin?: string;
   /**
+   * Les noms IMPRIMÉS (base lue, sans options) sous lesquels l'article est arrivé sur des factures, dans toutes les langues (voie n1-nom-fr, choix B du 02.11) :
+   * « Wiener Malz » pour l'article « Malt de Vienne ». Une facture suivante dont le nom lu égale l'un d'eux se relie (lien sûr, toutes les autres portes tenues).
+   * Jamais le nom de l'article lui-même ; 8 noms au plus, une fois chacun. Facultatif : absent = article d'avant B ou saisi à la main.
+   */
+  nomsFacture?: string[];
+  /**
    * La fiche des catalogues du dépôt la plus proche, posée à la création de l'article depuis une dépense (voie s6-fiche, D215). `id` : identifiant du catalogue
    * (`beermaverick-cascade`, `munich-malt`) ; `approchee` : ce n'est pas exactement la bonne fiche (l'origine ou l'α lus sortent de la sienne), jugé à la création
    * (toutes les valeurs lues ne sont pas gardées sur l'article). Facultatif ; absent = aucune fiche cherchée ou trouvée.

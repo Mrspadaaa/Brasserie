@@ -11,7 +11,7 @@ import { Button } from '../components/ui/Button';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Combobox } from './Combobox';
 import { useSyncedDraft } from '../hooks/useLiveData';
-import { canonicalStockCategory } from '../services/stockLineMatching';
+import { canonicalStockCategory, memeNom } from '../services/stockLineMatching';
 import './stocks.css';
 
 interface StockDetailSheetProps {
@@ -52,6 +52,8 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   const category = canonicalStockCategory(draft.category);
   const malt = category === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(category);
   const technical = malt || category === 'Houblon' || category === 'Levure';
+  // Choix B (voie n1-nom-fr) : les noms imprimés de l'article sur les factures, en petit sous « Nom » ; jamais le nom de l'article lui-même ; lecture seule.
+  const nomsFacture = (draft.nomsFacture ?? []).filter(nom => nom.trim() && !memeNom(nom, draft.name)); // la même égalité que l'écriture (N2, N4) : `memeNom`
 
   return <>
     <Sheet open onClose={onClose} title={item.name} subtitle={`${canonicalStockCategory(item.category)} · ${item.ref}`} className="sm:max-w-2xl sm:mx-auto"
@@ -109,6 +111,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
           <Field label="Nom" htmlFor="stock-label" error={draft.name.trim() ? undefined : 'Indiquez le nom de l’article.'}>
             <TextInput id="stock-label" name="stock_sheet_item_label" required aria-invalid={!draft.name.trim()} value={draft.name} onChange={name => setDraft({ ...draft, name })}/>
           </Field>
+          {nomsFacture.length > 0 && <p data-stock-noms-facture className="-mt-1 text-xs text-cave-400">Sur la facture : {nomsFacture.join(' · ')}</p>}
           <div className="grid grid-cols-2 gap-2">
             <Field label="Catégorie" htmlFor="stock-category">
               <Combobox id="stock-category" ariaLabel="Catégorie" value={draft.category} onChange={category => setDraft({ ...draft, category })}

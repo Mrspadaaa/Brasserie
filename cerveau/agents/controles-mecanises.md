@@ -2,7 +2,7 @@
 name: controles-mecanises
 description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes ; M11, M12, M14 sortis le 24.10, M10 le 01.11) ; leur contrôle bloque seul, la ligne garde le pourquoi.
 type: agents
-maj: 2026-11-01
+maj: 2026-11-02
 sources: cerveau/LECONS.md (section Mécanisées, avant l'élagage du 22.10)
 ---
 
@@ -27,3 +27,4 @@ LECONS.md en leçon active.
 - M01 (complément, 24.10, fl-tri) — Le brief d'une série v0 cite D97 : `controle-valeurs-brutes` entre dans ses GATES et se rejoue sur le texte rendu, pas sur la NOTE.
 - M10 (sorti de LECONS le 01.11) — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert). Le 01.11, deux fois (dp-doublon, puis le pilote au banc QR) : un `\d` ou `\s` passé par un heredoc ou un `node -e` entre guillemets est devenu `d` ou `s`, et la date du QR jugée fausse. Une regex se pose avec l'outil d'édition, puis se relit dans le fichier.
 - M13 (sorti de LECONS le 01.11, nuit) — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
+- M16 (L03, sorti de LECONS le 02.11) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

@@ -1522,6 +1522,19 @@ async function caseDoc14(c) {
   c.check(parLigne.every(row => row.mouvements === 1 && row.quantiteOk && row.articleExiste && !!row.uniteArticle), 'doc14 (f) : chaque ligne de stock a son mouvement (quantité, unité, article)',
     { lignes: parLigne.filter(row => !(row.mouvements === 1 && row.quantiteOk && row.articleExiste && !!row.uniteArticle)) });
   c.check(parLigne.every(row => row.articleAJour), 'doc14 (f) : l’article est à jour (stock avant + quantité reçue)', { lignes: parLigne.filter(row => !row.articleAJour).map(row => row.n) });
+  // (n) n1-nom-fr, choix B (02.11) : un article neuf dont le français REJOUÉ (`--noms`) diffère de sa base imprimée porte ce français pour nom et garde la base dans `nomsFacture` ; sinon le nom imprimé.
+  if (c.nomsFr.size) {
+    const net = texte => fold(texte).replace(/[®™]/g, '').replace(/\s*:\s*$/, '').replace(/\s+/g, ' ').trim();
+    const choix = STOCK_DOC14.map(n => {
+      const imprime = net(items[n - 1]?.name), cle = [...c.nomsFr.keys()].filter(k => imprime.startsWith(net(k))).sort((a, b) => b.length - a.length)[0];
+      const article = stockItems.find(entry => entry.ref === lines[n - 1]?.stockItemRef), francais = cle ? c.nomsFr.get(cle) : undefined;
+      const different = !!francais && net(francais) !== net(cle);
+      const ok = !!article && (different ? net(article.name) === net(francais) && (article.nomsFacture ?? []).some(k => net(k) === net(cle)) : !(article.nomsFacture ?? []).some(k => net(k) === net(article.name)));
+      return { n, imprime: items[n - 1]?.name, base: cle ?? null, francais: francais ?? null, different, nom: article?.name ?? null, nomsFacture: article?.nomsFacture ?? null, ok };
+    });
+    c.record('doc14-noms-b', choix);
+    c.check(choix.length > 0 && choix.every(row => row.ok), 'doc14 (n) : chaque article neuf au français rejoué différent porte ce français et garde sa base imprimée ; sinon le nom imprimé (choix B)', { lignes: choix.filter(row => !row.ok) });
+  }
   const lignePort = lines.find(line => line.kind === 'shipping');
   // Les articles neufs se rangent sous une catégorie de brasseur (Malt, Houblon, Levure…), pas sous le mot anglais de la lecture (« yeast », « grain »).
   const categoriesNeuves = [...new Set(STOCK_DOC14.map(n => stockItems.find(entry => entry.ref === lines[n - 1]?.stockItemRef)?.category))];
@@ -1943,7 +1956,85 @@ async function caseEnrichir(c) {
   console.log(`${resultats.length === 8 && resultats.every(Boolean) ? 'ENRICHIR OK' : 'ENRICHIR KO'} ${c.width} · ${resultats.filter(Boolean).length}/8 · appels ${c.enrichir.appels.length}`);
 }
 
-const CASES = { 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
+/**
+ * Voie n1-nom-fr (choix B du 02.11) : l'article en français, le nom imprimé gardé, toute facture suivante se relie. Le cas sert ses PIÈCES FICTIVES (déclarées telles : fournisseurs et lignes
+ * inventés, images empruntées au manifeste, jamais Gemini) : A (« Wiener Malz … », traduit « Malt Viennois … » par `--noms`/le cas), B (« Vienna Malt … », même français, autre fournisseur).
+ * Le nom des produits porte une marque de largeur (une base d'émulateur partagée par les deux largeurs). Se lance seul : `--cases nom-b`.
+ */
+async function caseNomB(c) {
+  const marque = c.width <= 500 ? 'Alpha' : 'Beta';
+  const imprimeA = `Wiener Malz ${marque}`, imprimeB = `Vienna Malt ${marque}`, francais = `Malt Viennois ${marque}`;
+  c.nomsFr.set(imprimeA, francais); c.nomsFr.set(imprimeB, francais); // fictif : le français rejoué de la pièce réelle est celui de « Wiener Malz » (results.json) ; ici la même traduction des deux noms
+  const modele = structuredClone((c.docs.doc14 ?? Object.values(c.docs)[0]).result);
+  // Deux images à elles (jamais celles des pièces du manifeste : leur empreinte serait « déjà enregistrée » pour les cas suivants, et inversement) : deux captures de maquette du dossier de la mission.
+  const emprunt = ['work/missions/2026-10-31-ecran-depense/choix-nom/img/a-depense.png', 'work/missions/2026-10-31-ecran-depense/choix-nom/img/a-stock.png'];
+  const piece = (id, image, fournisseur, numero, date, nom, quantite, prix) => {
+    const montant = Math.round(quantite * prix * 100) / 100;
+    const result = { ...modele, vendor: fournisseur, invoiceNumber: numero, date, currency: 'CHF', amountTTC: montant, amountHT: null, tvaRate: null, tvaAmount: null, description: 'Malts fictifs', issues: [], review: undefined,
+      items: [{ id: 'line-1', name: nom, variant: '', kind: 'stock', quantity: quantite, unit: 'Kg', price: prix, amountTTC: montant, stockCategory: 'malt', reference: '', evidence: '', ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null }] };
+    const chemin = join(ROOT, image), bytes = readFileSync(chemin);
+    c.docs[id] = { id, image: chemin, fileName: basename(chemin), bytes, sha256: sha(bytes), result, truth: null, mimeType: 'image/png' };
+  };
+  piece('nomb-a', emprunt[0], `Malzhaus Fiktiv ${marque}`, `NOMB-A-${marque}`, '10.09.2026', imprimeA, 10, 1.5);
+  piece('nomb-b', emprunt[1], `Northfield Fiktiv ${marque}`, `NOMB-B-${marque}`, '12.09.2026', imprimeB, 25, 1.4);
+  const champNom = `${sheet} [aria-label="Nom de l’article, ligne 1"]`;
+  const valeurNom = () => c.page.$eval(champNom, e => e.value).catch(() => null);
+  const articles = async () => (await all(c.db, 'stockItems')).filter(a => !a.deleted);
+  const avant = (await articles()).length;
+
+  // 1. La pièce A : le nom imprimé à la lecture, le français à son arrivée (sans l'attendre), « Confirmer » → l'article porte le français et garde l'imprimé.
+  await scan(c, 'nomb-a', { chooser: await openInvoiceEntry(c), delayMs: 800 });
+  const lu = await valeurNom();
+  await waitFor(async () => (await valeurNom()) === francais, `nomb : le champ « article » dit « ${francais} »`, 20000).catch(() => {});
+  const apres = await valeurNom();
+  c.check(apres === francais, 'nom-b : le nouvel article se nomme en français au plateau (N1)', { auRepos: lu, apresArrivee: apres });
+  await shoot(c, 'nomb-depense-a');
+  // Le plateau de la première facture, ouvert : « article « … » · nouvel article » (le champ du nom, en français).
+  await click(c.page, `${sheet} [data-dp-ligne="line-1"] summary`, undefined, 10000).catch(() => {});
+  await sleep(400);
+  await shoot(c, 'nomb-plateau-a', `${sheet} [data-dp-ligne="line-1"]`);
+  const sortieA = await confirmSheet(c);
+  c.check(sortieA === 'fermée', 'nom-b : « Confirmer » de la pièce A enregistre', { sortieA });
+  const articleA = await waitFor(async () => (await articles()).find(a => a.name === francais) ?? false, 'nom-b : l’article de la pièce A est au stock', 30000).catch(() => null);
+  c.record('nomb-article-a', articleA);
+  c.check(!!articleA && JSON.stringify(articleA.nomsFacture) === JSON.stringify([imprimeA]), 'nom-b : l’article porte le français et garde le nom imprimé lu (N1, N2)', { name: articleA?.name, nomsFacture: articleA?.nomsFacture });
+
+  // 2. La fiche de l'article : « Sur la facture : … » sous « Nom » (N5).
+  await goTab(c, 'Stocks');
+  await click(c.page, 'button', `Ouvrir ${francais}`);
+  const vu = await waitFor(() => c.page.evaluate(() => [...document.querySelectorAll('[data-stock-noms-facture]')].map(e => e.textContent.replace(/\s+/g, ' ').trim())[0] ?? false), 'nom-b : « Sur la facture » à la fiche', 15000).catch(() => null);
+  c.check(vu === `Sur la facture : ${imprimeA}`, 'nom-b : la fiche dit « Sur la facture : … » sous « Nom » (N5)', { vu });
+  await shoot(c, 'nomb-fiche');
+  await c.page.keyboard.press('Escape'); await sleep(500);
+
+  // 3. La pièce B (autre langue, autre fournisseur) : la ligne se relie à l'article (proposition jaune « Garder »), aucun nouvel article ; « Confirmer » apprend « Vienna Malt … » (N3, N4).
+  const avantB = (await articles()).length;
+  await scan(c, 'nomb-b', { chooser: await openInvoiceEntry(c), delayMs: 800 });
+  // D295 : la facture suivante se relie toute seule (cube coché, « relié à « … », nom déjà au stock », « 1 relié »), sans « Garder » ni jaune (b-suivantes.png).
+  const dit = `relié à « ${francais} », nom déjà au stock`;
+  const relie = await waitFor(() => c.page.evaluate(texte => (document.querySelector('[role="dialog"]')?.textContent ?? '').replace(/\s+/g, ' ').includes(texte), dit), `nom-b : « ${dit} »`, 20000).catch(() => false);
+  const sansGarder = !(await c.page.$(`${sheet} [aria-label^="Garder l’article"]`));
+  const recap = await c.page.evaluate(() => /1\s*relié/.test(document.querySelector('[role="dialog"]')?.textContent ?? ''));
+  c.check(relie && sansGarder && recap, 'nom-b : la facture suivante se relie toute seule à l’article, sans « Garder » (N3, D295)', { dit, relie, sansGarder, recap });
+  await shoot(c, 'nomb-depense-b');
+  const sortieB = await confirmSheet(c);
+  const apresB = await waitFor(async () => { const a = (await articles()).find(x => x.name === francais); return a && (a.nomsFacture ?? []).includes(imprimeB) ? a : false; }, 'nom-b : « Vienna Malt » appris', 30000).catch(() => null);
+  const comptes = (await articles()).length;
+  c.record('nomb-article-b', apresB);
+  c.check(sortieB === 'fermée' && comptes === avantB, 'nom-b : la pièce B n’ajoute aucun article (une fiche par produit)', { sortieB, avantB, comptes, avantA: avant });
+  c.check(!!apresB && apresB.nomsFacture.length === 2 && apresB.nomsFacture.includes(imprimeA) && apresB.nomsFacture.includes(imprimeB) && apresB.currentStock === 35,
+    'nom-b : le nom imprimé de B s’ajoute (une fois), le stock reçoit les 25 Kg (N4)', { nomsFacture: apresB?.nomsFacture, currentStock: apresB?.currentStock });
+  await goTab(c, 'Stocks');
+  await shoot(c, 'nomb-stock');
+  // La fiche après la seconde facture : les deux noms imprimés (N5).
+  await click(c.page, 'button', `Ouvrir ${francais}`);
+  const deux = await waitFor(() => c.page.evaluate(() => [...document.querySelectorAll('[data-stock-noms-facture]')].map(e => e.textContent.replace(/\s+/g, ' ').trim())[0] ?? false), 'nom-b : « Sur la facture » à la fiche (2 noms)', 15000).catch(() => null);
+  c.check(deux === `Sur la facture : ${imprimeA} · ${imprimeB}`, 'nom-b : la fiche, après la seconde facture, dit les deux noms imprimés (N5)', { deux });
+  await shoot(c, 'nomb-fiche-2');
+  await c.page.keyboard.press('Escape'); await sleep(400);
+}
+
+const CASES = { 'nom-b': caseNomB, 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
   'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules, enrichir: caseEnrichir };
 
 async function inner() {

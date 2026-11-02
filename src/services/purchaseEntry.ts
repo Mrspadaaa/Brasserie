@@ -11,8 +11,8 @@ import { sumCheck } from '../domain/finance/invoicePoints';
 import { planOccurrences } from '../domain/finance/forecast';
 import { isoDate, todayISO } from '../domain/finance/ledger';
 import { normalize } from './search';
-import { canonicalStockCategory, categorieArticleNeuf, linkUnit, nomsPris, pliee, SACHET_MAX_G, type MembreVirtuel } from './stockLineMatching';
-import { articleNeufDe, ligneDeBrouillon, type ArticleNeuf } from '../domain/stock/articleNeuf';
+import { canonicalStockCategory, categorieArticleNeuf, linkUnit, memeNom, nomsPris, pliee, SACHET_MAX_G, STOCK_CATEGORIES, type MembreVirtuel } from './stockLineMatching';
+import { articleNeufDe, ligneDeBrouillon, nomImprimeDe, type ArticleNeuf } from '../domain/stock/articleNeuf';
 import { contexteDe } from './stockLineMatching';
 import type { Catalogues } from '../domain/stock/fiche';
 import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
@@ -43,6 +43,12 @@ export interface PurchaseLineDraft {
    * le rapprochement, le nom de l'article neuf et la validation lisent `description`. Facultatif ; brouillon seulement.
    */
   nameFr?:string;
+  /**
+   * Voie n1-nom-fr (choix B) : le nom IMPRIMÉ lu (base sans options, `lireOptions`), gardé une fois à la lecture (`applyOutcome`) : il ne change plus quand le brasseur retape le libellé.
+   * C'est lui qui s'écrit dans `StockItem.nomsFacture` (« Sur la facture : … ») et qui se compare aux noms gardés. Absent (saisie à la main, brouillon d'avant B) : rien n'est gardé ni appris.
+   * Facultatif ; brouillon seulement.
+   */
+  nomLu?:string;
   /**
    * D277 (voie f2) : l'unité DÉDUITE quand `unit` (l'imprimé, jamais réécrit, D213) est illisible ; `sur` ou `repris` seulement (une unité inconnue n'en a pas).
    * Lue par la validation, le mouvement de stock et l'article neuf (`uniteEffective`) ; le prix unitaire n'est jamais gardé sur elle.
@@ -369,7 +375,9 @@ function newArticleUnit(unit:string):string {
  * Une clé sans valeur n'est pas écrite. L'unité de l'article est celle de la table de l'appariement (D213) ; la ligne de la dépense garde l'unité imprimée.
  */
 export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
-  return {id:ref,ref,name:derive?.name??line.description.trim(),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(uniteEffective(line)),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+  const nom=derive?.name??line.description.trim(), garde=nomImprimeDe(line);
+  // Choix B : le nom imprimé lu est gardé à la fiche, sauf s'il égale le nom de l'article (jamais de doublon, ni ici ni à l'apprentissage).
+  return {id:ref,ref,name:nom,...(garde&&!memeNom(garde,nom)?{nomsFacture:[garde]}:{}),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(uniteEffective(line)),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
     ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
 }
 /** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
@@ -390,6 +398,28 @@ export function articlesNeufsDe(draft:PurchaseDraft,existants:readonly StockItem
     virtuels.push({nom:article.name});
     return [{lineId:line.id,index,ref,type:line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const,item:newStockItem(line,draft,ref,article)}];
   });
+}
+/** Les noms imprimés gardés par article : 8 au plus (au-delà, rien n'est écrit et rien n'est retiré). */
+const NOMS_FACTURE_MAX=8;
+/**
+ * N4 (voie n1-nom-fr) : ce que « Confirmer » apprend. Pour chaque ligne reliée à un article existant dont le nom imprimé LU (`nomLu`) n'est pas le nom de l'article ni déjà gardé :
+ * le nom s'ajoute aux noms gardés de l'article (une fois, sans doublon). Un nom déjà gardé sur un AUTRE article en est retiré (lien manuel vers B : le nom se déplace, l'erreur se corrige par le geste ordinaire).
+ * Un article de catégorie inconnue (« Divers ») n'apprend rien : un nom gardé y serait un lien « sûr » sur un fourre-tout. Rien sans `nomLu`. Pur : rend les listes à écrire, article par article.
+ */
+export function nomsAppris(draft:Pick<PurchaseDraft,'lines'>,items:readonly StockItem[]):Array<{ref:string;noms:string[]}> {
+  const sorties=new Map<string,string[]>();
+  const courant=(item:StockItem)=>sorties.get(item.ref)??[...(item.nomsFacture??[])];
+  for (const line of draft.lines) {
+    const nom=nomImprimeDe(line), cible=line.stockAction==='existing'?items.find(item=>item.ref===line.stockRef):undefined;
+    if (!nom || !cible || !STOCK_CATEGORIES.includes(canonicalStockCategory(cible.category))) continue;
+    const cle=pliee(nom);
+    if (memeNom(nom,cible.name)) continue;
+    const deja=courant(cible).some(gardé=>pliee(gardé)===cle);
+    if (!deja && courant(cible).length>=NOMS_FACTURE_MAX) continue;
+    for (const autre of items) if (autre.ref!==cible.ref && courant(autre).some(gardé=>pliee(gardé)===cle)) sorties.set(autre.ref,courant(autre).filter(gardé=>pliee(gardé)!==cle));
+    if (!deja) sorties.set(cible.ref,[...courant(cible),nom]);
+  }
+  return [...sorties].map(([ref,noms])=>({ref,noms}));
 }
 /** Le chargement du catalogue plein des houblons, seulement quand une ligne de houblon crée un article ; échec ou hors ligne : rien, donc aucune fiche. */
 async function cataloguesPour(draft:PurchaseDraft):Promise<Catalogues|undefined> {
@@ -455,10 +485,12 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
       } else if (line.stockAction==='new' && ['ingredient','cleaning','packaging'].includes(line.kind)) {
         // S6 (T4) : jamais deux articles du même nom. Un nom tapé vide ou déjà pris (stock, autre ligne neuve de la saisie) est refusé ; un houblon ou un malt que
         // l'appariement relierait à un article existant ne crée pas de « bis » inventé : on relie la ligne.
-        const article=articleNeufDeLigne(line,existants,virtuels,{},draft.vendor), tape=line.articleName;
+        const article=articleNeufDeLigne(line,existants,virtuels,{},draft.vendor), tape=line.articleName, francais=Boolean(line.nameFr?.trim());
         if (tape!==undefined && !tape.trim()) errors.push(`${line.description} : renseigne le nom de l’article.`);
         else if (tape!==undefined && nomsPris(existants,virtuels).has(pliee(tape))) errors.push(`${line.description} : Un article porte déjà ce nom : relie-le ou change le nom (« ${tape.trim()} »).`);
-        else if (tape===undefined && article.derive && article.regle.cas==='meme') errors.push(`${line.description} : cet article existe déjà (« ${article.regle.article.name} ») : relie la ligne à cet article.`);
+        else if (tape===undefined && (article.derive || francais) && article.regle.cas==='meme') errors.push(`${line.description} : cet article existe déjà (« ${article.regle.article.name} ») : relie la ligne à cet article.`);
+        // Choix B : un article NON dérivé qui prend son nom français ne double ni un article du stock ni une autre ligne neuve de la saisie (« plein de fiches du même produit »).
+        else if (tape===undefined && francais && !article.derive && nomsPris(existants,virtuels).has(pliee(article.name))) errors.push(`${line.description} : Un article porte déjà ce nom : relie-le ou change le nom (« ${article.name.trim()} »).`);
         virtuels.push({nom:article.name});
       }
     }
@@ -677,6 +709,8 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
     if (!newStocks.some(entry=>entry.item.ref===receipt.ref)) FirestoreRepo.adjustNumber('stockItems',receipt.ref,'currentStock',receipt.qty);
     FirestoreRepo.put('movements',`receipt-${draft.submissionId}-${receipt.lineId}`,{id:`receipt-${draft.submissionId}-${receipt.lineId}`,type:'receipt',stockItemRef:receipt.ref,stockKind:receipt.type,quantity:receipt.qty,unit:receipt.unit,transactionId:txId,date:purchaseIsoDate(draft.date),createdAt:at});
   }
+  // N4 : les noms imprimés appris, un `put` de champ (`merge`) par article ; jamais `updateStockItem` (il réécrirait `currentStock` en concurrence avec `adjustNumber`).
+  for (const appris of nomsAppris(draft,[...stocks.rawMaterials,...stocks.cleaning])) FirestoreRepo.put('stockItems',appris.ref,{nomsFacture:appris.noms},{merge:true});
   submitted.add(draft.submissionId);
   replayable.delete(draft.submissionId);
   return txId;
