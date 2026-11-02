@@ -1149,3 +1149,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   rembourser 15.15chf. Comment est monté ce montant ? Ça déduis 8.1% à chaque article ??? Ça serait vraiment pas très logique.. en fait je
   sais pas vraiment ce qui est le mieux, je connais pas encore ces cas de figure. Ni comment me faire rembourser la TVA... » (lu : une question,
   pas un défaut de lecture ; la TVA est comprise dans le prix payé, 202,20 × 8,1 / 108,1 = 15,15. D319.)
+- **Son statut TVA, pour le moment** (02.11, vers 18 h, après ma réponse sur la TVA), mot pour mot : « Lignes hors taxe : la correction est
+  faite. Okay alors ça sera pour le futur pour le moment la vente= full TVA, je paye et je me fait pas remboursé. Parcontre je vends sans TVA.
+  Pour le moment », puis aussitôt : « L'achat full TVA pardon » (lu : achats TVA comprise, payée et non remboursée ; ventes sans TVA ; non assujetti
+  pour le moment. D320.)
