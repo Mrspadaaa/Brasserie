@@ -153,9 +153,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
-- Erreur : 01.11, une commande en ligne : noms doublés, faux écart, 27 s. « en 10s, un seul test, j'ai trouvé tout ça »
-- Cause : pièces fictives, écran jamais jugé contre la pièce.
-- Faire : une vraie pièce par genre dans l'app, champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local se dit « non déployé » (01.11).
+- Erreur : 01.11, une commande en ligne : noms doublés, faux écart, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ». 02.11 : fiches des malts vertes au banc, vides en vrai (D302).
+- Cause : pièces fictives, écran jamais jugé contre la pièce ; réponse IA rejouée inventée.
+- Faire : une vraie pièce par genre dans l'app, champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local se dit « non déployé » (01.11). Une réponse IA rejouée se copie d'une vraie.
 - Rôles : pilote, exécutant, relecteur
 - Contrôle : au banc (D261 à D263)
 

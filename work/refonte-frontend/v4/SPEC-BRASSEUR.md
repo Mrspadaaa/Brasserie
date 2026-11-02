@@ -1095,3 +1095,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   Puis, sur le premier appel mesuré (0,35 CHF, dont 20 recherches comptées d'office), mot pour mot : « SI 20 recherche= 0.35chf c'est
   tout bon alors on peut augmenter le cap à 200 » (lu : le coût lui convient, pas de second appel d'essai ; le plafond de l'IA de
   remplissage des fiches passe de 30 à 200 appels par jour et par appareil. D300.)
+  Puis, mot pour mot : « Fait plusieurs vrai appel test de enrichit » (lu : plusieurs vrais appels de l'IA de remplissage des fiches, sur
+  des produits réels absents du catalogue, avec la requête même de la procédure, sans écrire dans son stock réel. D302.) Puis, en citant
+  ma question « voulez-vous relever le budget IA du mois au-dessus de 20 CHF », mot pour mot : « oui 50chf » (lu : le plafond du mois
+  du serveur, partagé par toute l'IA, passe de 20 à 50 CHF. D301.)

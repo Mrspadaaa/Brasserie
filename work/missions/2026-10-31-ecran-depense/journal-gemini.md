@@ -45,3 +45,19 @@ vérifiée). Suppression : voir plus bas.
 - Drive : fichier `2026-11-01 Atelier Mesure Fictif Sàrl 7.png` mis à la corbeille ; vérifié sur la page Corbeille de Drive (présent) et
   dans le dossier « L'Affinée / Justificatifs / 2026 » (absent). Corbeille non vidée.
 - Rien en stock : la ligne était « Service », « 1 sans stock » ; aucun article créé, aucun mouvement.
+
+## 02.11 — appels réels de l'IA des fiches en ligne (D299, D302)
+Par aiTask `lookupIngredient` déployé, depuis l'app ouverte dans son Chrome ; coût lu au registre du mois (`brewerAiCosts/2026-11/calls`).
+Rien d'appliqué ni d'écrit dans le stock.
+
+| Heure (UTC) | Produit | Durée | Jetons (µCHF) | Recherches | Compté (µCHF) |
+|---|---|---|---|---|---|
+| 09:32 | Gerstenflocken (D299, introuvable) | — | 3 379 | 20 provisionnées | 353 379 |
+| 09:47 | BEST Red X | 7,6 s | 5 080 | 1 | 22 580 |
+| 09:47 | Château Cara Ruby | 6,5 s | 3 441 | 20 provisionnées | 353 441 |
+| 09:47 | Crisp Chevallier Heritage Malt | 7,4 s | 4 512 | 2 | 39 512 |
+| 09:47 | Candi Syrup D-180 | 14,1 s | 5 620 | 2 | 40 620 |
+| 09:48 | Bulldog B4 English Ale | 10,4 s | 12 284 | 20 provisionnées | 362 284 |
+
+Total 1,171 CHF (D299 0,353 ; D302 0,818). Cumul des appels payants : 8,653 + 1,171 = **9,824 CHF sur 49**.
+Réponses brutes : `tests/unit/depense/enrichir/reponses-reelles-d302.json`.
