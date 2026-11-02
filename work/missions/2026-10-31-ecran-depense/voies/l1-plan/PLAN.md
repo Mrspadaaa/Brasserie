@@ -1,13 +1,22 @@
 # l1-plan — son choix D de la lenteur : le plan technique (D308)
 
-Voie l1-plan, 02.11, auteur Opus. Je n'ai modifié aucun code de l'app, fait aucun commit et aucun appel Gemini. J'ai écrit deux fichiers
-dans `voies/l1-plan/` : ce plan et `octets.mjs`, une mesure hors ligne de la taille des réponses.
+Voie l1-plan, 02.11, auteur Opus. Je n'ai modifié aucun code de l'app, fait aucun commit et aucun appel Gemini.
+Version 2 : je reprends le plan après le REJET de `RELECTURE.md`. Les points B1 à B3, M1 à M7 et m1 à m7 sont traités ; chaque reprise
+est marquée `[B1]`, `[M3]`, etc.
+Fichiers écrits, tous dans `voies/l1-plan/` et hors ligne :
+- ce plan ;
+- `octets.mjs`, qui mesure la taille des réponses ;
+- `apparier.ts`, qui mesure le rapprochement des lignes entre le provisoire et le final (§ 2 bis) ;
+- `gen/invoiceVisionReview-copie.ts`, la copie qu'écrit `apparier.ts`.
 Les lignes citées sont celles du worktree au 02.11, à HEAD a115e82e. `ExpenseSheet.tsx` porte des changements non commités de r4-port-d
 (voir `git status`) : ses numéros de ligne bougeront avec ce port, mais les noms de fonction restent.
 
 **Recommandation : (a), un seul appel `aiTask` qui rend deux fois** (callable en flux, `sendChunk` côté serveur, `.stream()` côté client).
-Le premier écran arrive au bout de 6,3 s médian (9,9 s pour la pire pièce), « Confirmer » au bout de 18,5 s médian (37,7 s au pire).
-C'est exactement le D mesuré par m-lenteur. L'option ne change ni les appels, ni le coût, ni les règles Firestore, ni les index.
+- Le premier écran arrive au bout de 6,3 s médian (9,9 s pour la pire pièce) ; « Confirmer », au bout de 18,5 s médian (37,7 s au
+  pire). C'est le D mesuré par m-lenteur.
+- Les appels de lecture et leur coût ne changent pas. Il s'ajoute au plus un appel texte `traduireNoms` quand la 3.8 change un nom, soit
+  environ 0,005 CHF la pièce au plus `[M6]`.
+- Aucune règle Firestore, aucun index.
 
 ## Ses mots et sa maquette (règle n° 1)
 - « La lenteur go pour la d » (SPEC, 02.11). Sa maquette : `choix-lenteur/maquettes/d-06.html`, `d-15.html` et `d-lue.html`, avec
@@ -142,7 +151,8 @@ package.json:3` et `functions/package-lock.json:1464-1465` ; le dépôt demande 
 - `fetchImpl` se lit à chaque appel (l. 444-446) : le banc qui remplace `window.fetch` continue d'intercepter.
 
 **Compatible dans les deux sens, donc sans ordre de déploiement.**
-- Un ancien client n'envoie pas `Accept: text/event-stream` : `sendChunk` ne fait rien et la réponse reste celle d'aujourd'hui.
+- Un ancien client n'envoie pas `Accept: text/event-stream` : `sendChunk` ne fait rien et la réponse reste celle d'aujourd'hui. Cela vaut
+  aussi pour une app ancienne gardée en cache (PWA) face au serveur neuf : ni fil ni puce, sans autre conséquence `[m7]`.
 - Un nouveau client face à l'ancien `aiTask`, qui n'appelle jamais `sendChunk`, ne reçoit que le résultat final : c'est A.
 
 **Ce que (a) change côté serveur** (fichiers de la voie S) :
@@ -152,24 +162,44 @@ package.json:3` et `functions/package-lock.json:1464-1465` ; le dépôt demande 
     complémentaire n'a pas abouti » n'a rien à faire sur le premier écran ;
   - `Csv8Io.provisoire?(result)` est appelé entre la l. 137 et la l. 140, **seulement si les deux Flash-Lite sont lisibles et que la
     3.8 va partir**. Son échec ne fait jamais échouer la lecture (`try/catch`, jamais attendu avant `readStrong`) ;
-  - quand un provisoire est parti, chaque ligne finale reçoit `rangProvisoire` (l'index de sa ligne provisoire, ou `null` si la 3.8
-    l'ajoute), et le résultat reçoit `apresProvisoire: true`. C'est un ajout facultatif, que le cache garde.
+  - quand un provisoire est parti, chaque ligne finale reçoit `rangProvisoire`, l'index de sa ligne provisoire ou `null` si la 3.8
+    l'ajoute. Le rapprochement se fait par `alignerLignes`, avec un repli par la position (§ 2 bis). Le résultat reçoit
+    `provisoireJeton`, le jeton du morceau envoyé dans **cet** appel. Ce sont des ajouts facultatifs, que le cache garde. Il n'y a pas
+    de `apresProvisoire` `[M4]` : le client ne se fie qu'au morceau qu'il a reçu et à l'égalité des jetons.
 - `invoiceVisionReview.ts` : `alignLines` est exportée (renommée `alignerLignes`), sans autre changement.
 - `ai.ts` :
   - le handler devient `async (request, response)` ;
-  - pour `scanInvoice` avec `request.acceptsStreaming`, il passe `onProvisoire = data => response?.sendChunk({ etape:'provisoire',
-    data, model, elapsedMs, pages? }).catch(() => false)` à `scanInvoiceSafely` (nouveau paramètre facultatif) ;
+  - pour `scanInvoice` avec `request.acceptsStreaming`, il tire un jeton (`randomUUID`) et passe à `scanInvoiceSafely`, en **cinquième
+    paramètre** facultatif, `{ jeton, onProvisoire: data => response?.sendChunk({ etape:'provisoire', jeton, data, model, elapsedMs,
+    pages? }).catch(() => false) }`. Le quatrième, `evaluationOptions` (`ai.ts:148`), sert à `scripts/eval-expense-vision.mjs` et ne
+    bouge pas `[m1]` ;
+  - le jeton n'est posé sur le résultat que si ce résultat a été calculé dans cet appel (`reviewed.cached === false`, `ai.ts:203`). Un
+    `degraded` resservi après une relecture ratée (`invoiceScanBudget.ts:139-145`) ne le porte donc jamais `[M4]` ;
   - `response.signal` n'arrête pas la lecture : une 3.8 déjà partie finit et se met en cache.
 
 **Ce que (a) change côté client** (voies C et E) :
-- `aiClient.ts` reçoit `runFlux(req, onEtape)` : `callAiTask.stream(payload, { signal })`, un délai propre de 150 s, la lecture des
-  morceaux, puis `await data`, avec une erreur si le flux se ferme sans résultat. Les erreurs passent par `humanize`.
-- `geminiScanner.ts` : `scanDocument` et `scanPages` prennent `{ onProvisoire }` en option, et `normalizeResult` garde
-  `rangProvisoire` et `apresProvisoire`.
+- `aiClient.ts` reçoit `runFlux(req, onEtape, signal?)`. Il fait `const { stream, data } = await callAiTask.stream(payload, { signal })`
+  (`stream()` rend une **Promise**, `functions-public.d.ts:135`). Puis il lit les morceaux et fait `await data`.
+  - Le délai propre est de 150 s. Son `AbortController` est combiné au `signal` de l'écran, qui est levé quand la feuille se ferme.
+  - Un flux fermé sans résultat est une erreur.
+  - Les erreurs passent par `humanize`.
+- `geminiScanner.ts` : `scanDocument` et `scanPages` prennent `{ onProvisoire, signal }` en option, et `normalizeResult` garde
+  `rangProvisoire` et `provisoireJeton`. Le provisoire passe lui aussi par `normalizeResult`, et porte le `jeton` du morceau.
 - L'écran : voir la section 5, voie E.
 
-**Coût.** Les mêmes appels qu'aujourd'hui : deux Flash-Lite, plus une 3.8 sur 12 pièces sur 14, soit 0,0445 CHF par pièce (médiane).
-Le même journal `brewerAiCosts` et le même registre `invoiceScans`, à 3 appels au plus.
+**Coût.** La lecture fait les mêmes appels qu'aujourd'hui : deux Flash-Lite, plus une 3.8 sur 12 pièces sur 14, soit 0,0445 CHF par
+pièce (médiane). Le journal `brewerAiCosts` et le registre `invoiceScans` (3 appels au plus) ne changent pas.
+
+**`traduireNoms` en plus `[M6]`.** Aujourd'hui, `traduireLignes` fait un seul appel par pièce (`src/services/nomsFr.ts:128-130`). Avec
+D, il en fait un au provisoire, puis un autre au final, pour les seules lignes dont le nom de base change ou que la 3.8 ajoute.
+- Mesuré par `apparier.ts` : **10 pièces sur 12** ont au moins un nom ou une variante changés, ou une ligne ajoutée, soit 52 lignes.
+  C'est une borne haute : une variante changée ne change pas toujours la base envoyée à la traduction.
+- Coût de l'appel : la traduction d'une pièce **entière** coûte environ 0,005 CHF en 3.8, 4,1 s médian (D280,
+  `work/refonte-frontend/decisions.md:1241`). Le second appel n'envoie qu'une partie des noms : sa borne est **+ 0,005 CHF sur environ
+  10 pièces sur 12**.
+- Ce second appel passe par `aiTask`, donc par `brewerAiCosts`.
+- Variante moins chère, réversible : traduire une seule fois, au final. Les noms français arriveraient alors après « Confirmer » noir.
+  Je ne la retiens pas : elle change ce qu'il voit pendant les 12 s d'attente.
 
 **Octets.** Les octets montants ne changent pas : l'image part une fois. En descente, un morceau de plus, de la taille d'une lecture.
 Mesuré par `node work/missions/2026-10-31-ecran-depense/voies/l1-plan/octets.mjs work/finalisation-tickets-2026-10-08/H13-reels/
@@ -178,8 +208,8 @@ banc-k6-C/raw` :
     OCTETS Csv81 : 14 lectures, médiane 7577, max 13911
     OCTETS Csv82 : 14 lectures, médiane 8093, max 14161
 
-Cela fait environ 8 ko médian et 14 ko au plus, en plus des points. Ce sont des textes de réponse, pas des valeurs, et la mesure s'est
-faite hors ligne.
+Cela fait environ 8 ko médian et 14 ko au plus. C'est le texte brut du modèle. Le morceau réel porte la lecture normalisée et ses points :
+il est donc plus gros, mais du même ordre, et sans enjeu face à l'image qui monte `[m5]`.
 
 **Risques.**
 - Une connexion tenue ouverte jusqu'à 37,7 s, aujourd'hui déjà le cas avec A. Le battement est à 30 s.
@@ -218,12 +248,45 @@ faite hors ligne.
   d'une 3.8 lancée en parallèle n'est pas mesuré, et c'est hors de la mesure qu'il a choisie. **Non retenue maintenant** ; voir
   « Décision à prendre ».
 
+## 2 bis. Le rapprochement provisoire → final, mesuré `[M3]`
+Commande, hors ligne et sans appel :
+`npx tsx work/missions/2026-10-31-ecran-depense/voies/l1-plan/apparier.ts --banc=banc-k6-C`.
+
+Méthode :
+- Les lectures `Csv81`, `Csv82` et `Csv83` viennent de `H13-reels/banc-k6-C/raw`, chargées comme dans `m-lenteur/mesurer.ts` : même
+  `readingFromResponse` avec N, et même règle « la 3.8 que le code appellerait ».
+- Le provisoire est `reconcileInvoiceVision([l1, l2]).result`, la base de `provisoireDeDeux`. Le final est `finalOfStarVote(l1, l2, l3)`.
+- Le rapprochement est `alignLines`, pris dans une **copie** du fichier de production, écrite par le script dans `gen/` : imports
+  redirigés, un export ajouté. `functions/src/` n'est pas touché.
+- Le script n'écrit que des comptes.
+
+    APPARIER 12/14 pièces avec provisoire : 183 lignes rapprochées sur 184 provisoires (99.5 %) et 190 finales (96.3 %) ; sans paire
+    1 provisoires, 7 finales, sur 7 pièces ; repêchables par la position 1 (listes de même longueur : 6 pièces) ; rapprochées hors de
+    leur rang 0 ; rapprochées et changées 80
+    CHAMPS CHANGES (lignes rapprochées) : variant 37, stockCategory 25, name 22, price 12, unit 10, kind 2
+    NOMS 10/12 pièces ont au moins un nom changé ou une ligne ajoutée (52 lignes)
+
+Ce que ces nombres disent :
+- **Les lignes ajoutées par la 3.8 sont fréquentes** : 7 lignes, sur 6 pièces sur 12 (doc3, doc6, doc10, doc11, doc12 et doc14 ont
+  chacune une ligne finale sans paire). Le choix l2-lignes (D310) vise donc un cas courant, pas un cas rare.
+- **Une seule ligne provisoire perd sa paire** : doc13, qui n'a qu'une ligne et dont la 3.8 change à la fois le nom et le montant. C'est
+  le cas annoncé par la relecture.
+- **Le repli est nécessaire et suffit sur ce banc** : quand les deux listes ont la même longueur, un orphelin provisoire de rang i se
+  rapproche de l'orphelin final de rang i. Il repêche doc13 (1 sur 1). Hors de ce cas, aucun repli : la ligne finale est « ajoutée » et
+  la provisoire « non lue ». Le choix l2-lignes dit comment elles se montrent.
+- Aucune ligne rapprochée ne change de rang : la renumérotation (§ 4 bis, B3) ne déplace donc rien sur ce banc. Elle reste exigée, pour
+  un ordre qui changerait.
+- 80 lignes rapprochées ont au moins un champ différent. Ce sont surtout la variante (37) et la famille (25), qui ne sont pas toujours
+  des cellules visibles. La puce compte les cellules **du brouillon** qui changent, après les mêmes transformations (B1) : jamais ces
+  80 champs bruts.
+- Limites : 12 pièces et 1 tirage, donc un indice. Le repli n'est éprouvé que sur 1 cas.
+
 ## 3. La recommandation : (a)
 
 | | 1er écran (méd / pire) | « Confirmer » (méd / pire) | appels | coût par pièce (méd) | règles ou index |
 |---|---|---|---|---|---|
 | aujourd'hui (A) | 18,5 s / 37,7 s | 18,5 s / 37,7 s | 2 + 3.8 sur 12/14 | 0,0445 CHF | — |
-| **(a) un appel en flux** | **6,3 s / 9,9 s** | **18,5 s / 37,7 s** | identiques | 0,0445 CHF | aucun |
+| **(a) un appel en flux** | **6,3 s / 9,9 s** | **18,5 s / 37,7 s** | identiques, + un `traduireNoms` sur environ 10 pièces sur 12 | 0,0445 CHF + ≤ 0,005 | aucun |
 | (b) deux appels | 6,3 s / 9,9 s | > 18,5 s (+ aller-retour et renvoi de l'image, non mesuré) | identiques | 0,0445 CHF | aucun (registre touché) |
 | (c1) écoute de la fiche | 6,3 s / 9,9 s | 18,5 s / 37,7 s | identiques | 0,0445 CHF | **règle neuve : écartée** |
 
@@ -253,36 +316,199 @@ pas : je propose une forme sans la décider.
 | **3.8 en échec** (erreur, sortie coupée, refus du budget) | le final arrive avec les valeurs du provisoire et le point « lecture coupée » (`invoiceScanVote.ts:64`) ; le fil part, la rangée dit « 2 lectures » en attention (forme d'aujourd'hui, l. 970), aucune puce « corrigées » | noir ; le point est un drapeau comme les autres |
 | **3.8 en retard** (plus de 40 s) | le fil, « ●●◌ » et la roue restent ; la 3.8 est coupée à 45 s par appel (`ai.ts:190`) et l'ensemble à 100 s (`ai.ts:185`), puis c'est le cas « en échec » | gris jusqu'à l'arrivée, puis noir ; aucune attente au-delà de 100 s plus l'envoi. Un « Confirmer sans attendre » n'est pas dans sa maquette : **à montrer** seulement si le pilote le juge utile, sinon rien |
 | **erreur après le provisoire** (IA mise en pause pendant la 3.8 : `stopped.signal.throwIfAborted()`, `invoiceScanBudget.ts:134`, rendu en `ok:false`, `ai.ts:335`) | les valeurs provisoires restent, comme dans le cas « en échec » ; le message d'erreur se place où ? **à montrer** (la rangée d'erreur d'aujourd'hui, `ExpenseSheet.tsx:1087`, ne vise que l'absence de lecture) | noir ; les drapeaux du provisoire restent |
-| **hors ligne pendant la 3.8** | le flux tombe ; les valeurs provisoires restent, le fil et la roue aussi ; au retour en ligne (événement `online`, l. 209), le client relance **une fois** le même appel, que le serveur sert depuis le cache (`invoiceScanBudget.ts:37`, sans coût) s'il a fini ; s'il tourne encore : « déjà en cours » (l. 55), et le client réessaie une fois 20 s plus tard. Le fil « en attente du réseau » n'est pas dessiné : **à montrer** | gris tant que le final n'est pas là (sa règle) ; l'enregistrement hors ligne ne se fait donc pas sur un provisoire |
-| **onglet fermé** | rien n'est gardé côté client, comme aujourd'hui ; le serveur finit et met en cache (`https.js:426-428`). Rouvrir le même fichier : le final arrive tout de suite (`cached`), sans fil | noir |
+| **hors ligne pendant la 3.8** | le flux tombe ; les valeurs provisoires restent, le fil et la roue aussi ; au retour en ligne (événement `online`, l. 209), le client relance **une fois** le même appel, que le serveur sert depuis le cache (`invoiceScanBudget.ts:37`, sans coût) s'il a fini ; s'il tourne encore : « déjà en cours » (l. 55), et le client réessaie une fois 20 s plus tard. Le fil « en attente du réseau » n'est pas dessiné : **à montrer** | gris tant que le final n'est pas là (sa règle), au plus jusqu'à la fin de partie (ligne suivante) |
+| **fin de partie : la reprise échoue, ou un `running` n'expire pas** `[M2]` | l'attente est **bornée côté client** : 150 s après l'envoi (`AI_CLIENT_TIMEOUT_MS`), ou après la seconde reprise ratée. L'écran prend alors la forme du cas « 3.8 en échec », qui existe déjà : le fil part, la rangée dit « 2 lectures » en attention (`ExpenseSheet.tsx:970`), et le récap porte la phrase de production « Le contrôle complémentaire n'a pas abouti. Les divergences restent à vérifier sur le justificatif. » (`invoiceVisionReview.ts:213`), posée par le client sur le provisoire. Ses saisies restent. Cette issue est **à montrer** : la forme existe, mais son emploi sans réponse du serveur est neuf | noir ; il enregistre les valeurs provisoires, avec leurs drapeaux, comme aujourd'hui après une 3.8 coupée |
+| **feuille fermée, ou onglet fermé** `[M1]` | la feuille **se ferme** pendant la vérification : « Fermer » n'est pas bloqué. Le `signal` de l'écran coupe le flux ; rien n'est gardé côté client, comme aujourd'hui quand on ferme après une lecture. Le serveur finit et met en cache (`https.js:426-428`). Rouvrir le même fichier : le final arrive tout de suite (`cached`), sans fil ni morceau | noir |
+| **un final sans jeton égal après un provisoire** `[M4]` (le `degraded` resservi, `invoiceScanBudget.ts:139-145`) | l'en-tête se fusionne comme d'habitude. Les lignes se rapprochent par la position si les deux listes ont la même longueur ; sinon les lignes provisoires restent telles quelles, et l'écran prend la forme de la fin de partie | noir |
+| **un final seul, sans morceau** (cache, ancien serveur, pièce sans 3.8) `[M4]` | `applyOutcome` comme aujourd'hui ; `rangProvisoire` et `provisoireJeton`, s'ils sont là, sont ignorés | noir |
 | **plusieurs pages** | le même chemin : `scanInvoiceSafely` lit les pages d'un seul appel (`ai.ts:154`), et le morceau porte `pages` ; le fil est celui de `FrisePages` avec `pages` (`Pages.tsx:56`) | comme le cas normal |
 | **une cellule qu'il a touchée** | sa valeur reste, sans fond bleu ; une valeur de la 3.8 qui en diffère n'est ni posée ni montrée | ne dépend pas de la cellule |
 | **une ligne qu'il a ajoutée** (id `crypto.randomUUID()`, `ExpenseSheet.tsx:67`, jamais `line-N`) | intacte | — |
 | **une ligne qu'il a supprimée** | la 3.8 ne la fait pas revenir, même corrigée | — |
-| **une ligne que la 3.8 ajoute** (`rangProvisoire: null`) | une rangée de plus, à sa place dans le groupe ; elle compte dans la puce. La forme d'une rangée neuve n'est pas dessinée : **à montrer** (ma proposition : la rangée entière sur fond bleu, sans ancienne valeur) | — |
-| **une ligne que la 3.8 ne lit plus** (ligne provisoire sans paire) | « rien ne se perd » : je ne la retire pas en silence. **À montrer** (ma proposition : la rangée barrée en attention, qu'il retire ou garde d'un toucher) | — |
-| **un en-tête corrigé** (numéro, HT, type de pièce, total) | sa maquette ne corrige que des rangées. Le fond bleu et l'ancienne valeur barrée sur un champ d'en-tête : **à montrer** ; il compte dans la puce | — |
+| **une ligne que la 3.8 ajoute** (`rangProvisoire: null` ; 7 lignes sur 6 pièces sur 12, § 2 bis) | une rangée de plus, id `line-${nProvisoire + k}` (B3), à sa place dans le groupe ; elle compte 1 dans la puce. Sa forme : **le choix l2-lignes** (D310), pas encore fait ; E l'attend | — |
+| **une ligne que la 3.8 ne lit plus** (1 ligne sur 184, § 2 bis, repêchée par la position) | « rien ne se perd » : je ne la retire pas en silence. Sa forme : **le choix l2-lignes** | — |
+| **un en-tête corrigé** (numéro, HT, type de pièce, total, date…) | sa saisie l'emporte, comme sur une rangée (§ 4 bis, B2). Sa maquette ne corrige que des rangées. Le fond bleu et l'ancienne valeur barrée sur un champ d'en-tête : **à montrer**. Le champ compte une fois dans la puce | — |
 
-La règle de fusion, pure et testable (`src/ui/depense/finale.ts`, voie E) :
-- Une cellule est « touchée » si elle est dans le registre `touchees` (posé par ses gestes : champs, unité, nature, article) **ou** si
-  sa valeur diffère de celle du provisoire.
-- Pour chaque ligne finale appariée (`rangProvisoire = r`), sur la ligne `line-${r+1}` du brouillon et pour chaque cellule (libellé,
-  quantité, unité, prix, montant, nature, référence) :
-  - touchée : rien ne change ;
-  - sinon : la valeur finale est posée, et la correction notée `{ ligneId, champ, avant, apres }` si les deux valeurs diffèrent.
-- Les points du final sont renumérotés de l'ordre final vers les ids provisoires (`ligne`, `lignes`), parce que l'écran lit le rang
-  dans l'id (`confiance.ts:320`).
-- Une ligne corrigée et non touchée se rapproche de nouveau du stock (unité, proposition, nouvel article), par les mêmes fonctions
-  qu'`applyOutcome` (l. 341-363). Une ligne dont il a déjà choisi l'article garde son choix (`manuallyClassified`, l. 138).
-- `traduireLignes` ne repart que pour les lignes dont le nom a changé.
+## 4 bis. La règle de fusion (`src/ui/depense/finale.ts`, pure, voie E)
 
-## 5. Les voies du port (après r4-port-d, D308 (3))
+### La base de comparaison `[B1]`
+- **La base est le brouillon tel que l'a posé `applyOutcome` du provisoire.** Ce n'est pas la valeur brute de la lecture. Au moment où
+  `applyOutcome(provisoire)` pose le brouillon (`ExpenseSheet.tsx:365`), E prend un **instantané** `base`, par id de ligne et par
+  cellule, pour toutes les cellules de la liste B2. C'est la même idée que `lectureLigne` (l. 368), qui ne garde aujourd'hui que
+  `quantité|unité`.
+- Cet instantané suit la **seule** écriture faite par le programme entre le provisoire et le final : le `.then` de `traduireLignes`
+  (l. 370-384), qui pose `nameFr` et parfois `stockAction` et `stockRef`. Ces cellules, l'instantané les reprend au même moment.
+  Tout autre changement vient d'un de ses gestes. Les effets d'un geste comptent comme ce geste : la catégorie Rénovation (l. 251),
+  ou le prix vidé quand il change l'unité (l. 246).
+- **Le final passe par les mêmes transformations** avant toute comparaison. Il faut d'abord extraire, sans changer son comportement, le
+  calcul pur des lignes d'`applyOutcome` (l. 333-363) : libellé lu, Rénovation, unités déduites, rapprochement du stock, nouvel article
+  d'office. Ce calcul devient `lignesDeLecture(result, stock, existants)`, qui rend les lignes et les propositions. L'en-tête prend les
+  mêmes fonctions qu'aujourd'hui : `invoiceTotalProposal`, `applyScannedDescription` et `applyScannedPayment`
+  (`src/services/purchasePrefill.ts:144`).
+- Pour chaque cellule `c` d'une ligne appariée :
+  - elle est **touchée** si `courant[c] !== base[c]`, ou si son registre (B2) la nomme, ou si elle a le focus à l'arrivée du final
+    `[m3]` ;
+  - touchée, elle ne change pas ;
+  - sinon, elle prend `final[c]`, et la correction `{ id, champ, avant: base[c], apres: final[c] }` est notée si les deux valeurs
+    diffèrent.
+- Témoin rouge E1 : une unité absente du provisoire, déduite (« kg »), que le brasseur ne touche pas, et que la 3.8 lit « g ». Le
+  final pose « g », bleu, avec « kg » barré. Le test échoue si la comparaison se fait sur la valeur brute (`''` ≠ « kg » ⇒ jugée
+  touchée).
+
+### La liste des cellules et leur registre « touché » `[B2]`
+Partout, « touché » = `courant ≠ base` **ou** le registre de la cellule.
+
+En-tête : la cellule du brouillon, d'où vient sa valeur, et son registre.
+
+| cellule | ce qui la pose | registre |
+|---|---|---|
+| `vendor` | `result.vendor` (l. 365) | `reviewedFields` `'vendor'` (l. 206 ; posé l. 612 et dans la carte d'en-tête, l. 1017) |
+| `date` | `result.date` | `'date'` (l. 611, 1013) |
+| `invoiceNumber` | `result.invoiceNumber` | `'invoiceNumber'` |
+| `amount`, `sourceAmount`, `sourceTotalBasis` (le total : une seule cellule) | `invoiceTotalProposal`, `result.amountTTC` | `'amountTTC'` (`setTotal`, l. 550) |
+| `sourceVatAmount`, `sourceVatRate` (la TVA : une seule cellule) | `result.tvaAmount`, `result.tvaRate` | `'tvaAmount'` ; le choix d'une valeur de TVA dans le panneau (l. 887) ajoute `'TVA|'` à `reglees` : la cellule est touchée |
+| `sourceNetAmount` (HT) | `result.amountHT` | aucun aujourd'hui : diff seul ; E ajoute `'amountHT'` à `reviewedFields` au geste |
+| paiement (`paymentStatus`, `paymentDate`…) | `applyScannedPayment` | `'paymentEvidence'`, et `paymentDateBasis === 'typed'`, que `applyScannedPayment` respecte déjà (`purchasePrefill.ts:146`) |
+| `description`, `descriptionSource` | `applyScannedDescription` | `descriptionSource === 'typed'` |
+| `category` | `result.category` | `'category'` |
+| `sourceCurrency` | `result.currency` | `'currency'` (l. 613) |
+| `sourceDocumentType`, `sourceOrderNumber` | `result.documentType`, `result.orderNumber` | diff seul (aucun champ ne les édite aujourd'hui) |
+| `scanModel` | toujours celui du final | ce n'est pas une cellule |
+
+Rangée : la cellule de `PurchaseLineDraft`, d'où vient sa valeur, et son registre.
+
+| cellule | ce qui la pose | registre |
+|---|---|---|
+| `description` (libellé), `nomLu`, `imprime` (nom et **variante**) | `libelleLu`, `lireOptions` (l. 335) | diff ; le libellé tapé (l. 747) |
+| `kind` (nature) | `scanKind`, Rénovation (l. 336-338) | `manuallyClassified` (l. 138) |
+| `quantity`, `unit` | lecture, puis `avecUnitesDeduites` (l. 341) | diff ; le segment d'unité (l. 820) |
+| `unitPrice`, `amount` | lecture, seulement si la devise est CHF (l. 335) | diff |
+| `stockCategory` (la famille) | lecture | diff ; la bande change si la famille change (m3, plus bas) |
+| `sourceReference`, `evidence` | lecture | diff ; `evidence` suit sa ligne et n'est jamais une correction montrée |
+| `stockAction`, `stockRef`, `articleName` (le lien au stock) | rapprochement (l. 342-363), traduction (l. 379-382) | `manuallyClassified`, `articleName` tapé, « Garder » (l. 795) |
+| `nameFr` | traduction | voir M6, plus bas |
+
+`alphaPct` et `vatCode` ne sont pas des cellules du brouillon. L'écran les lit dans `scan.result.items`. Ils suivent donc le résultat
+final remappé (B3). L'α qu'il tape sur la fiche d'un nouvel article vit dans le brouillon de l'article et n'est pas réécrit.
+
+Témoin rouge E2 : il tape la date (`reviewed('date')`, même valeur que la base, ou une autre) ; la 3.8 lit une autre date. Sa date
+reste, et aucune correction n'est comptée.
+
+### Une seule table « rang final → id du brouillon » `[B3]`
+Elle se construit une fois, puis s'applique à **tous** les champs du final qui portent une ligne.
+- Une ligne appariée (`rangProvisoire = r`, ou le repli par la position) prend l'id `line-${r+1}`, celui de sa ligne provisoire.
+- La k-ième ligne ajoutée par la 3.8 prend `line-${nProvisoire + k}`. Pourquoi pas un UUID : `confianceLigne` lit le rang dans l'id,
+  et retombe sur la position pour un autre id (`confiance.ts:320`). Un UUID prendrait donc les points d'une autre ligne. Pourquoi pas
+  l'index final : il entrerait en collision avec les ids provisoires `line-1` à `line-nProvisoire`. `nProvisoire + k` est unique et
+  lisible par `ligneDepuisId`.
+- Les champs remappés, chacun par la même table :
+  - `points[].ligne` et `points[].lignes[]` ;
+  - `points[].champs[]` (`items.N.champ`, `invoiceVisionReview.ts:84`) ;
+  - `points[].cle` (`…:N:champ`, l. 89) ;
+  - puis `points[].signature`, recalculée par `signerPoint` sur le point remappé ;
+  - `controls.lines.skippedIds`, des ids `line-N` (`invoiceControls.ts:127`), lus avec `port` à `ExpenseSheet.tsx:722, 967` ;
+  - `remarques[].ligne` et `rejets[].ligne` (`geminiScanner.ts:138, 144`) ;
+  - `items[]` eux-mêmes : remis dans l'ordre du brouillon, avec leur nouvel id.
+- `points[].valeurs[].ligne` reste tel quel : c'est le rang **dans chaque lecture**, pas dans le final. `linesLost` est un compte, pas un
+  index, et reste tel quel.
+- `reglees` (l. 194) est indexé par signature `[m6]`. Une décision du provisoire reste si la signature du point remappé existe encore ;
+  sinon elle tombe, et le point revient s'il existe toujours.
+- Témoin rouge E3 : une ligne de port à la position 3 du final et à la position 2 du provisoire, avec `skippedIds: ['line-3']`. Après
+  remap, `skippedIds` vaut `['line-2']`, et « Qté × prix » reste juste (l. 967).
+- Une ligne qu'il a ajoutée a un UUID et retombe sur la position (`confiance.ts:320`) `[m4]`. C'est un défaut d'aujourd'hui, hors de E
+  (`confiance.ts` n'est pas à E) ; je le note.
+
+### Les lignes ajoutées, retirées, supprimées
+- Une ligne finale sans paire : ajoutée, avec son id `line-${nProvisoire + k}`. Sa forme vient du choix l2-lignes.
+- Une ligne provisoire sans paire : gardée, jamais retirée en silence. Sa forme vient aussi de l2-lignes.
+- Une ligne qu'il a supprimée (une id de `base` absente du courant) ne revient pas.
+- Une ligne qu'il a ajoutée (un id hors de `base`) ne bouge pas.
+
+### Ce que la fusion ne fait jamais `[m3]`
+- Elle **n'appelle jamais `applyOutcome`**, qui remet tout à zéro : `choixGroupes`, `manuallyClassified`, `readCount` (la clé des
+  rangées, l. 854), et le plateau ouvert (l. 332, 364).
+- Elle garde `choixGroupes`. Une ligne corrigée qui devient « à vérifier » ouvre son groupe, selon la règle de r4-port-d. Une rangée
+  dont la nature ou la famille change passe dans sa nouvelle bande à l'arrivée, une seule fois. Une rangée qui a le focus est traitée
+  comme touchée et ne saute pas sous son doigt (L12).
+- Elle ne refait le rapprochement au stock (`lignesDeLecture`, sur la ligne seule) que pour une ligne corrigée qui n'est pas touchée
+  et dont l'article n'est pas choisi par lui.
+
+### La puce « ↻ N corrigées » `[m2]`
+N est le nombre de **cibles** corrigées : une rangée avec au moins une cellule corrigée compte 1, un champ d'en-tête corrigé compte 1.
+Sur `d-lue`, Malt Pilsner (deux cellules), Sabro et Citra donnent bien 3. Une ligne ajoutée par la 3.8 compte 1. Une ligne provisoire
+sans paire ne compte pas dans « corrigées » : sa marque est celle de l2-lignes.
+
+### La traduction après le final `[M6]`
+- La fusion **incrémente `nomsJeton`** (l. 367). Une traduction du provisoire encore en vol, comme sur doc3 et doc13, dont le final peut
+  arriver avant ses 3,8 s, est alors jetée par sa garde (l. 370).
+- La fusion **efface `nameFr`** d'une ligne dont le nom de base change, puis relance `traduireLignes` sur ces seules lignes et sur les
+  lignes ajoutées. C'est un appel, dont le coût est borné en § 2 (a).
+
+## 4 ter. Les états de l'écran `[M1]`
+Un état neuf, `verif: 'aucune' | 'attente' | 'finie' | 'echec'`, distinct de `busy`, avec une ref jumelle `verifRef` pour les gardes. Il
+s'y ajoute un jeton de lecture, `lectureJeton`, qui jette un final arrivé pour une autre lecture.
+
+| moment | `busy` | `verif` | `showForm` | `scanLocked` |
+|---|---|---|---|---|
+| envoi | vrai (l. 402, 477) | `aucune` | faux | vrai |
+| morceau provisoire reçu | **faux** | `attente` | **vrai, au morceau** (et non plus dans `finally`, l. 418, 499) | **reste vrai** |
+| final reçu et fusionné | faux | `finie` | vrai | faux (dans `finally`) |
+| fin de partie (M2) | faux | `echec` | vrai | faux |
+| final sans morceau (cache, pièce sans 3.8) | faux (dans `finally`) | `aucune` | vrai | faux |
+
+Ce que voit chaque élément pendant `attente` :
+- **Le formulaire et le justificatif** se montrent, puisque `busy` est faux (l. 998, 1152).
+- **« Fermer »** est permis : `fermerOff` et `dismissible` ne lisent que `busy || saving` (l. 1140-1141). À la fermeture, le démontage
+  lève le `signal` passé à `runFlux`.
+- **« Confirmer »** : texte « Confirmer », icône `'spin'`, désactivé, aria « Vérification en cours » (l. 993 : `disabled` devient
+  `saving || busy || verif === 'attente'`).
+- **`save`** sort tout de suite tant que `verifRef.current === 'attente'`, en plus de `scanLocked` (l. 520).
+- **`attachToExisting`** (l. 543-544), `attach`, `ajouterUnePage` et `lirePages` sont déjà gardés par `scanLocked`. Leurs boutons sont
+  désactivés pendant `attente` : « Rattacher le justificatif » (l. 991-992), « Changer » (`changerOff`), le dépôt de fichier. Ils ne
+  restent donc jamais actifs pour rien.
+- **Les champs** restent modifiables : sa saisie l'emporte.
+
+`attach` (l. 414) et `lirePages` (l. 494-495) gardent **un seul `await`**, celui du final. Le provisoire arrive par `onProvisoire`, qui :
+1. vérifie `mounted.current` et `lectureJeton` ;
+2. appelle `applyOutcome(provisoire, documentHash)` ;
+3. prend l'instantané `base` et retient le jeton du morceau ;
+4. pose `busy = false`, `showForm = true` et `verif = 'attente'`.
+
+Après l'`await` :
+- **un morceau a été reçu** et `final.provisoireJeton` égale son jeton : `appliquerFinale` (§ 4 bis), puis `verif = 'finie'` ;
+- **un morceau a été reçu, sans jeton égal** : le repli de M4 ;
+- **aucun morceau** : `applyOutcome(final)` comme aujourd'hui ;
+- **`ok: false` après un morceau** : la fin de partie (M2), avec le message dans `error`.
+
+**Le bornage `[M2]`.**
+- **Côté client, il suffit.** L'attente se termine au plus tard à 150 s après l'envoi, ou après la seconde reprise ratée. C'est un
+  minuteur de `runFlux`, plus la reprise hors ligne.
+- **Côté serveur, aucun bornage dans ce port.** Un `running` sans `previousResult` qui n'expire pas est un choix exprès : « A
+  crash/timeout deliberately retains its reservation and does not permit retry » (`invoiceScanBudget.ts:26`). Le borner rouvrirait une
+  lecture payée après un plantage. Ce n'est pas l'affaire de D, mais une décision d'argent ; je la laisse au pilote, hors de S.
+
+## 4 quater. Témoins de M4, voies C et E
+- C5 : un final seul, avec `rangProvisoire` et `provisoireJeton`, sans morceau → `onProvisoire` n'est jamais appelé ; le final est rendu
+  tel quel.
+- E4 : un morceau de jeton « j1 », puis un final sans `provisoireJeton` et de même longueur → les lignes se rapprochent par la position.
+  Le même cas, de longueur différente → les lignes provisoires restent, et `verif = 'echec'`.
+
+## 5. Les voies du port
 Le contrat entre les voies est fixé ici, pour que S et C travaillent en parallèle :
-- le morceau : `{ etape:'provisoire', data, model, elapsedMs, pages? }` ;
-- le final : `AiTaskResult` d'aujourd'hui, plus `data.apresProvisoire?: true` et `data.items[i].rangProvisoire?: number | null`.
+- le morceau : `{ etape:'provisoire', jeton, data, model, elapsedMs, pages? }` ;
+- le final : `AiTaskResult` d'aujourd'hui, plus `data.provisoireJeton?: string` et `data.items[i].rangProvisoire?: number | null`.
+  Aucun `apresProvisoire` `[M4]`.
+
+Chaque voie possède des **fichiers** disjoints, et un fichier de test à elle `[M5]` :
+- S : `serveur.test.ts` ;
+- C : `flux.test.ts` ;
+- E : `finale.test.ts` et `ecran.test.tsx` ;
+- B : aucun test unitaire.
+Les quatre fichiers de test vivent dans `tests/unit/depense/lecture-d/`. Aucune voie ne possède le dossier en bloc.
 
 **S, serveur** (Sonnet, `auteur`) — Possède `functions/src/invoiceScanVote.ts`, `functions/src/invoiceVisionReview.ts` (l'export
-seul), `functions/src/ai.ts` et `tests/unit/depense/lecture-d/serveur.test.ts`.
+seul), `functions/src/ai.ts` et `tests/unit/depense/lecture-d/serveur.test.ts`. S fait aussi le repli par la position dans le
+rapprochement (§ 2 bis), et le jeton.
 - Témoins rouges, avant le code :
   1. `lireCsv8` sur deux Flash-Lite en désaccord appelle `io.provisoire` une fois, **avant** que `readStrong` ne se résolve ;
   2. sur deux Flash-Lite d'accord, aucun provisoire ;
@@ -290,17 +516,23 @@ seul), `functions/src/ai.ts` et `tests/unit/depense/lecture-d/serveur.test.ts`.
   4. le provisoire ne contient aucun point `lecture-coupee` ;
   5. la 3.8 en échec : les valeurs finales égalent celles du provisoire, avec le point de coupure ;
   6. une ligne ajoutée par la 3.8 a `rangProvisoire: null`, une ligne permutée garde son rang ;
-  7. `scanInvoiceSafely(…, onProvisoire)` l'appelle sur un désaccord simulé par `fetch` (forme de `invoiceScanCsv8.test.ts`) ;
-  8. un `onProvisoire` qui lève ne change pas le final.
+  7. une pièce d'une ligne dont la 3.8 change le nom et le montant (la forme de doc13, en fictif) a `rangProvisoire: 0` par le repli par
+     la position ;
+  8. `scanInvoiceSafely(uid, file, apiKey, undefined, { jeton, onProvisoire })` l'appelle sur un désaccord simulé par `fetch` (forme de
+     `invoiceScanCsv8.test.ts`), et le final porte `provisoireJeton === jeton` ;
+  9. un final servi du cache ne porte pas le jeton de l'appel ;
+  10. un `onProvisoire` qui lève ne change pas le final.
 - Ces tests restent verts sans modification : `invoiceScanCsv8`, `invoiceScanVote` (parité avec le banc), `invoiceScanTransport`,
   `invoiceScanBudget`, `invoiceScanCache-d273c`. Pour ce dernier, l'empreinte change : il doit le dire, pas figer une valeur. Les deux
   `tsc` (app et functions).
 - Gemini est toujours simulé, avec des lectures fictives de la forme de celles des tests existants. Aucune valeur de ses pièces.
 
 **C, client** (Sonnet) — Possède `src/services/aiClient.ts`, `src/services/geminiScanner.ts` et
-`tests/unit/depense/lecture-d/flux.test.ts`. Le faux `httpsCallable` a un `.stream` qui rend des morceaux puis `data`.
+`tests/unit/depense/lecture-d/flux.test.ts`. Le faux `httpsCallable` a un `.stream` qui rend une **Promise** de `{ stream, data }`.
 - Témoins rouges :
-  1. `onProvisoire` est appelé avec un `ScanOutcome` provisoire, puis le final est rendu ;
+  1. `onProvisoire` est appelé avec un `ScanOutcome` provisoire qui porte le jeton, puis le final est rendu ;
+  1b. (C5, § 4 quater) un final seul, avec `rangProvisoire` et `provisoireJeton`, n'appelle jamais `onProvisoire` ;
+  1c. un `signal` levé par l'écran coupe le flux et rend `ok:false`, sans exception ;
   2. **un flux fermé sans résultat rend `ok:false`** et n'attend pas sans fin ;
   3. le délai de 150 s abandonne (faux temps) ;
   4. un serveur qui n'envoie aucun morceau rend le final seul, comme A ;
@@ -309,33 +541,62 @@ seul), `functions/src/ai.ts` et `tests/unit/depense/lecture-d/serveur.test.ts`.
   7. pour les pages, la règle `pages === N` (`geminiScanner.ts:111`) s'applique au final.
 - Le test existant `geminiScanner.test.ts` reste vert.
 
-**E, écran** (le dessin vient de sa maquette ; port en Sonnet, revue par le critique) — Possède `src/ui/finance/ExpenseSheet.tsx`,
-`src/ui/depense/finale.ts` (nouveau, pur), `Recap.tsx`, `Ligne.tsx`, `Pages.tsx`, `Pied.tsx`, `p3c.css`, `apercuDev.ts` (états
-`lenteur-provisoire`, `lenteur-lue`, `lenteur-echec`, `lenteur-touchee`) et `tests/unit/depense/lecture-d/`.
+**E, écran** (le dessin vient de sa maquette ; port en Sonnet, revue par le critique) — Possède :
+- `src/ui/finance/ExpenseSheet.tsx` ;
+- `src/ui/depense/finale.ts` (nouveau, pur : `lignesDeLecture` extrait d'`applyOutcome`, la table de B3, `appliquerFinale`) ;
+- `Recap.tsx`, `Ligne.tsx`, `Pages.tsx`, `Pied.tsx`, `p3c.css` ;
+- `Verdict.tsx`, pour la puce dans `ChipsBar` (l. 16) ;
+- `etat.ts`, pour la source de puce `'corrigee'` (`Chip.source`, l. 17) et `chipsDeLecture` ;
+- `types.ts`, où `ApercuDepense` (l. 9-14) gagne `provisoire`, `final` et `delaiMs` ;
+- `apercuDev.ts`, pour les états `lenteur-provisoire`, `lenteur-lue`, `lenteur-echec`, `lenteur-touchee` et `lenteur-sans-38` ;
+- `tests/unit/depense/lecture-d/finale.test.ts` et `ecran.test.tsx`.
+`[M5]` : E ne touche pas `confiance.ts`.
+
 - Témoins rouges :
-  1. après un provisoire, l'écran montre les lignes, et « Confirmer » est désactivé avec la roue (aria « Vérification en cours ») ;
-  2. `save` refuse tant que le final manque ;
-  3. après le final, le bouton est actif et la puce dit « N corrigées » ;
-  4. une quantité qu'il a tapée n'est pas réécrite ;
-  5. une ligne qu'il a supprimée ne revient pas ;
-  6. une ligne de la 3.8 sans paire est ajoutée ;
-  7. les points renumérotés visent la bonne rangée ;
-  8. le cas « en échec » rend « 2 lectures » et aucune puce ;
-  9. le cas sans 3.8 : aucun fil, bouton noir.
+  1. E1 (B1) : une unité déduite, non touchée, est corrigée par la 3.8 ;
+  2. E2 (B2) : une date tapée n'est pas réécrite ;
+  3. E3 (B3) : `skippedIds` est remappé, et « Qté × prix » reste juste ;
+  4. E4 (M4) : un final sans jeton égal, de même longueur, se rapproche par la position ; de longueur différente, il garde le provisoire
+     et passe en `echec` ;
+  5. après un provisoire, l'écran montre les lignes, et « Confirmer » est désactivé avec la roue (aria « Vérification en cours ») ;
+     « Fermer » reste actif, « Rattacher » et « Changer » sont désactivés ;
+  6. `save` refuse tant que `verif === 'attente'` ;
+  7. après le final, le bouton est actif et la puce dit « N corrigées », N compté par cible (m2) ;
+  8. une ligne qu'il a supprimée ne revient pas ;
+  9. une ligne de la 3.8 sans paire est ajoutée avec l'id `line-${n+1}` ;
+  10. la fusion n'appelle pas `applyOutcome` : `readCount` et `choixGroupes` restent (m3) ;
+  11. une traduction du provisoire qui arrive après la fusion est jetée, et `nameFr` est effacé sur un nom changé (M6) ;
+  12. le cas « en échec » rend « 2 lectures » et aucune puce ;
+  13. le cas sans 3.8 : aucun fil, bouton noir ;
+  14. la fin de partie à 150 s (faux temps) passe en `echec`, et le bouton est noir (M2).
 - Les suites Dépense existantes restent vertes (`tests/unit/depense/**`, 111 fichiers ou plus).
 
 **B, banc Chrome** (Haiku pour les rejeux et les captures) — Possède `scripts/check-invoice-journey-emulator.mjs` et le dossier de la
 voie.
-- `callableAnswer` (l. 309-346) répond aujourd'hui `application/json` d'un bloc. Il doit répondre en SSE quand la requête porte
-  `Accept: text/event-stream` : un morceau provisoire, une attente réglable, puis `result`.
+- `[M7]` **Le shim de page change aussi**, pas seulement `callableAnswer`.
+  - Aujourd'hui, le `window.fetch` posé dans la page (l. 275-305) construit `new Response(payload, …)` d'un bloc (l. 303-304), à partir
+    de la réponse du pont `__jus0Bridge` (l. 301, exposé l. 2283).
+  - Quand la requête porte `Accept: text/event-stream`, le pont rend `{ sse: [{ message }, …, { result }], delaiMs }`. Le shim en fait
+    un `ReadableStream`, construit **dans la page** : le délai se joue côté page, pas côté Node. Chaque bloc s'écrit `data: {…}\n\n`,
+    et les blocs sont séparés par `delaiMs`.
+  - Un cas « flux fermé sans résultat » ferme le flux sans `result`.
+- `callableAnswer` (l. 309-346) rend cette forme pour `scanInvoice` quand le cas le demande.
 - Le manifeste rejoué (hors Git) reçoit, pour chaque pièce, le provisoire calculé par `provisoireDeDeux` sur les deux lectures brutes
   de `banc-k6-C/raw`.
-- Cas : `lenteur-provisoire`, `lenteur-lue`, `lenteur-echec`, `lenteur-touchee`, `lenteur-sans-38`, `lenteur-hors-ligne`.
+- Cas : `lenteur-provisoire`, `lenteur-lue`, `lenteur-echec`, `lenteur-touchee`, `lenteur-sans-38`, `lenteur-hors-ligne`,
+  `lenteur-fermee` (la feuille se ferme pendant `attente`) et `lenteur-sans-resultat`.
 - Lancement : `bash work/missions/2026-10-31-ecran-depense/voies/e-bout/lancer.sh <sortie> <cas> 390,1280`.
 - Captures à 390 px tactile, ouvertes en image et mises côte à côte avec `d-06.png` et `d-lue.png` (L03, L12).
 
-Ordre : S et C en parallèle, puis E, puis B, puis le pilote (relecture, tests, deux `tsc`, build, banc), puis son accord pour le
-déploiement.
+**L'ordre `[M5]`** :
+1. r4-port-d, avec son ajout du segment Plié | Déplié (D311). Ce sont les mêmes fichiers qu'E (D308 (3)).
+2. Le choix l2-lignes (D310, `MISSION.md:118`) : la ligne que la 3.8 ajoute et celle qu'elle ne lit plus. Il vise un cas courant
+   (§ 2 bis : 6 pièces sur 12).
+3. S et C, en parallèle. Ils peuvent tourner pendant 1 et 2, puisqu'ils ne touchent aucun fichier de r4-port-d.
+4. E.
+5. B.
+6. n3-ht (les lignes hors taxe, qui touchent `ExpenseSheet.tsx`), **après E**.
+7. Le pilote : relecture, tests, deux `tsc`, build, banc. Puis son accord pour le déploiement.
 
 ## 6. Ce qui demande son accord
 Le redéploiement d'aiTask (`--only functions:aiTask`) et de l'hébergement : c'est le cadre neuf de D308 (4). Rien d'autre :
@@ -349,17 +610,29 @@ relue à son prochain envoi, soit environ 0,0445 CHF. Une pièce enregistrée n'
 ## Doutes et limites
 - Je n'ai pas vérifié ce que fait Cloud Run d'un handler dont le client s'est déconnecté. Repli : le cache, plus une reprise au retour
   en ligne. Avec A, le risque est déjà le même.
-- Un `running` sans `previousResult` reste refusé « déjà en cours » sans limite de temps (`invoiceScanBudget.ts:40, 55`). C'est un défaut
-  d'aujourd'hui que D ne crée pas. Il est hors de cette voie, à noter.
-- Les temps sont ceux du banc (14 pièces, 1 tirage) : un indice, pas une preuve.
+- Un `running` sans `previousResult` reste refusé « déjà en cours » sans limite de temps (`invoiceScanBudget.ts:40, 55`). C'est un choix
+  exprès (l. 26), pas un effet de D. Avec D, la fin de partie côté client (§ 4 ter, M2) empêche qu'il bloque l'écran.
+- Je n'ai pas vérifié que le réseau de Google ne met pas en tampon une réponse SSE. C'est à prouver au premier essai en ligne : un
+  `message` doit arriver avant le `result`. S'il était mis en tampon, l'écran se comporterait comme A, sans perte.
+- Les temps sont ceux du banc (14 pièces, 1 tirage), et la mesure de § 2 bis porte sur 12 pièces : des indices, pas des preuves. Le
+  repli par la position n'est éprouvé que sur doc13.
 
-DÉCISION À PRENDRE : (1) les cinq cas « à montrer » (erreur après le provisoire, hors ligne, ligne ajoutée par la 3.8, ligne qu'elle
-ne lit plus, en-tête corrigé). Options : mini maquettes dans un artefact neuf (L24), ou les formes que je propose en défaut
-réversible. Recommandation : mini maquettes pour la ligne ajoutée et la ligne disparue, qui sont les plus fréquentes après une
-correction de lignes ; défaut proposé pour les trois autres. (2) (c3), la 3.8 lancée en même temps que les Flash-Lite. Options : non,
-ou un banc payant plus tard. Recommandation : non pour ce port, car elle sort de la mesure qu'il a choisie.
+DÉCISION À PRENDRE :
+(1) Les cas « à montrer » qui restent sont l'erreur après le provisoire, le fil hors ligne, l'en-tête corrigé et la fin de partie. La
+ligne ajoutée et la ligne disparue sont déjà au choix l2-lignes. Options : des mini maquettes dans un artefact neuf (L24), ou les
+formes que je propose comme défaut réversible. Recommandation : ajouter l'en-tête corrigé et la fin de partie à la page de l2-lignes,
+où une même planche les montre ; garder le défaut proposé pour les deux autres.
+(2) (c3), la 3.8 lancée en même temps que les Flash-Lite. Options : non, ou un banc payant plus tard. Recommandation : non pour ce
+port, car elle sort de la mesure qu'il a choisie.
+(3) Borner côté serveur un `running` sans `previousResult` (`invoiceScanBudget.ts:26`). Recommandation : non dans ce port, puisque la
+borne côté client suffit à D ; c'est une décision d'argent, à part.
 
 CONNAISSANCE : le callable en flux est déjà installé et compatible dans les deux sens (`firebase` 11.10, `firebase-functions` 6.6 :
 `sendChunk`, `.stream()`). `stream()` n'a pas de délai (`streamAtURL`) et laisse `data` sans réponse si le serveur ne répond pas en SSE
 (`createResponseStream`). Le client doit fixer son délai et traiter un flux fermé sans résultat comme une erreur.
-LEÇON PROPOSÉE : aucune. Le piège des barres inverses dans `node -e` m'a coûté un essai (déjà dans [[poste-windows-msix]]).
+CONNAISSANCE (2) : sur banc-k6-C, `alignLines` rapproche 183 des 184 lignes provisoires de leur final. La 3.8 ajoute une ligne sur 6
+pièces sur 12. Seule une pièce d'une ligne, dont le nom et le montant changent ensemble, demande le repli par la position.
+LEÇON PROPOSÉE : un plan de fusion « sa saisie l'emporte » nomme trois choses avant d'être donné au codeur : la base de comparaison
+(le brouillon déjà transformé, pas la lecture brute), la liste complète des cellules avec leur registre (en-tête compris), et tous les
+champs qui portent un index de ligne. Il mesure aussi son appariement sur les vraies pièces. (C'est la proposition de RELECTURE.md, que
+je reprends : je l'ai manquée en version 1.)
