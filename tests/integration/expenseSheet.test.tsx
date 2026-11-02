@@ -37,12 +37,11 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     expect(screen.getByLabelText('Total TTC en CHF')).toHaveAccessibleDescription(expect.stringContaining('Somme des 2 lignes'));
     expect(screen.getByRole('button',{name:'Déjà payé'})).toHaveAttribute('aria-pressed','true');
     expect(screen.getByText('Payé le 31.08.2020')).toBeVisible();
-    const dateSummary=Array.from(view.container.querySelectorAll('summary')).find(node=>node.textContent?.startsWith('Achat du'))!;
+    const dateSummary=view.container.querySelector('[data-purchase-date] summary')!; // la rubrique « Date de l’achat » (p3c-3)
     fireEvent.click(dateSummary);
     const datePanel=within(dateSummary.parentElement!);
-    expect(datePanel.getByRole('button',{name:'Hier',exact:true})).toBeVisible();
-    expect(datePanel.getByRole('button',{name:'Aujourd’hui',exact:true})).toBeVisible();
-    expect(datePanel.getByRole('button',{name:'Demain',exact:true})).toBeVisible();
+    // D262b : « Aujourd'hui · Mois passé · Mois suivant », dans cet ordre ; ni « Hier » ni « Demain ».
+    expect(datePanel.getAllByRole('button').filter(b=>['Aujourd’hui','Mois passé','Mois suivant','Hier','Demain'].includes(b.textContent??'')).map(b=>b.textContent)).toEqual(['Aujourd’hui','Mois passé','Mois suivant']);
     fireEvent.change(screen.getByLabelText('Mois — Date de l’achat'),{target:{value:'2020-07'}});
     expect(screen.getByLabelText('Date de l’achat')).toHaveValue('2020-07-31');
     expect(screen.getByText('Payé le 31.07.2020')).toBeVisible();
@@ -89,7 +88,7 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     ['checked','Lecture à confirmer'],['corrected','Lecture à confirmer'],['disputed','Lecture à confirmer'],['unavailable','Vérification incomplète'],[undefined,'Vérification incomplète']
   ])('présente honnêtement le statut %s sans créer d’achat, de stock ni de matériel',async(status,title)=>{
     await openScannedInvoice(scannedInvoice(status?{status,readers:status==='corrected'?3:2,findings:[],correctedFields:status==='corrected'?['amountTTC','items[1].kind']:[]}:undefined));
-    expect(screen.getByText(title!)).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:new RegExp('^'+title)})).toBeInTheDocument();
     expect(screen.getByLabelText('Nature ligne 1')).toHaveValue('equipment');
     expect(screen.getByLabelText('Nature ligne 2')).toHaveValue('maintenance');
     expect(screen.getByLabelText('Matériel ligne 1')).toHaveValue('none');
@@ -100,11 +99,11 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
   const controls={lines:{checked:2,failed:0,skipped:0,skippedIds:[] as string[]},sum:{statut:'ok',base:'TTC'},vat:{statut:'ok',base:null},totals:{statut:'ok'}};
   it('nouveau format : aucun point qui pèse donne « Lecture vérifiée » ; un point qui pèse donne « Lecture à confirmer » (T1)',async()=>{
     await openScannedInvoice(Object.assign(scannedInvoice({status:'checked',findings:[],readers:2}),{points:[],controls}) as any);
-    expect(screen.getByText('Lecture vérifiée')).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:/^Lecture vérifiée/})).toBeInTheDocument();
     cleanup();
     const point={code:'tva-incoherente',gravite:'ecart',origine:'controle',enjeu:'info',bloque:false,champ:'vat',champs:[],ligne:null,cle:'tva-incoherente:-:vat',regle:'',lu:null,calcule:null,ecart:null,unite:'texte',message:'TVA incohérente'};
     await openScannedInvoice(Object.assign(scannedInvoice({status:'checked',findings:[],readers:2}),{points:[point],controls}) as any);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:/^Lecture à confirmer/})).toBeInTheDocument();
     expect(screen.getByRole('button',{name:/^1\s*TVA/})).toBeInTheDocument();
   });
   it('conserve les divergences et ambiguïtés dans la revue, sans répéter les avertissements',async()=>{
@@ -112,7 +111,16 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     result.issues=['Le montant de la deuxième ligne reste illisible.'];
     Object.assign(result.items[1],{ambiguity:'Réparation ou pièce de rechange à confirmer.'});
     await openScannedInvoice(result,true);
-    fireEvent.click(screen.getByLabelText('Détails de la lecture'));
+    /* p3c-3 : la preuve est ouverte d'office (rien à ouvrir) ; le toucher de la pastille « Lecture à confirmer, n lignes » AMÈNE à la liste (D7 : le geste a un effet vérifié). */
+    expect(screen.getByText('Lecture déjà disponible · aucun nouvel appel IA.')).toBeInTheDocument();
+    const vise=vi.fn(),avant=Object.getOwnPropertyDescriptor(Element.prototype,'scrollIntoView');
+    (Element.prototype as any).scrollIntoView=vise;
+    try{
+      fireEvent.click(screen.getByRole('button',{name:/^Lecture à confirmer/}));
+      expect(vise.mock.contexts.some(c=>(c as HTMLElement).getAttribute?.('data-dp')==='liste')).toBe(true);
+    }finally{
+      if(avant)Object.defineProperty(Element.prototype,'scrollIntoView',avant);else delete (Element.prototype as any).scrollIntoView;
+    }
     expect(screen.getAllByText('Le montant de la deuxième ligne reste illisible.')).toHaveLength(1);
     expect(screen.getByText('Lecture déjà disponible · aucun nouvel appel IA.')).toBeInTheDocument();
     expect(screen.getByText('Entretien de pompe : Réparation ou pièce de rechange à confirmer.')).toBeVisible();

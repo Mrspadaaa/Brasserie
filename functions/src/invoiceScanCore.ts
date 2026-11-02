@@ -1,8 +1,9 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
 import { TIERS } from './models.js';
 import {
-  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
+  INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, htEstUnSousTotalTTC, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
   type ControlStatus, type InvoiceField, type ScanControls, type ScanPoint, type ScanPointCode, type ScanPointDetail, type ScanRejet, type ScanVatRow,
 } from './invoiceControls.js';
 // Les règles de calcul vivent dans `invoiceControls.ts` (module pur, partagé avec le client) ; elles restent exportées d'ici.
@@ -10,12 +11,17 @@ export { INVOICE_FIELDS, SCAN_POINT_CODES, lineMathCheck, sumCheck, toCents };
 export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCode, ScanPointDetail, ScanRejet, ScanVatRow };
 
 /** v5 (31.10.2026) : le résultat porte `points`, `controls`, `vat`, `proForma`, `linesLost`… Le hachage de la lecture en dépend :
- * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. */
+ * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. Le moteur, lui, entre par son empreinte (`invoiceScanIdFor`, D273c). */
 export const INVOICE_SCAN_VERSION = 'invoice-v5';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
 /** Pire cas du schéma invoice-v5 (35 lignes, tous champs, 6 rangées de TVA) : 4 050 jetons, soit 80 % (l1, 31.10). */
 export const SCAN_MAX_OUTPUT = 5100;
+/**
+ * Plafond de sortie des deux lectures Flash-Lite (C★v8, D247). La réflexion compte dans `maxOutputTokens` : à 5 100, les deux Flash-Lite
+ * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 garde `SCAN_MAX_OUTPUT`.
+ */
+export const LITE_SCAN_MAX_OUTPUT = 8192;
 export const SCAN_MAX_CALLS = 3;
 export const SCAN_MAX_ITEMS = 35;
 export const SCAN_MAX_VAT_ROWS = 6;
@@ -108,8 +114,42 @@ export function validateInvoiceFile(file: unknown): InvoiceFile {
   return value;
 }
 
+/**
+ * D273c : l'empreinte du moteur de lecture. Les modules que l'entrée de la lecture (`ai`) importe, de proche en proche : un changement de
+ * règle, de consigne, de vote, de réglage ou de modèle donne un autre identifiant, et une pièce déjà lue est relue (quelques centimes).
+ */
+export function engineDigestOf(read: (module: string) => string, entry = 'ai'): { digest: string; modules: string[] } {
+  const hash = createHash('sha256'), seen = new Set<string>(), todo = [entry];
+  while (todo.length) {
+    const module = todo.shift()!;
+    if (seen.has(module)) continue;
+    seen.add(module);
+    const text = read(module);
+    hash.update(module).update('\0').update(text).update('\0');
+    for (const [, next] of text.matchAll(/(?:from|import)\s*\(?\s*['"]\.\/([\w.-]+?)\.js['"]/g)) todo.push(next);
+  }
+  return { digest: hash.digest('hex').slice(0, 16), modules: [...seen] };
+}
+
+let engineDigest: string | undefined;
+/** Lue une fois par instance, à côté de ce module (`lib/*.js` déployés, `src/*.ts` sous Vitest). Illisible : une empreinte au hasard, rien n'est servi du cache. */
+export function invoiceEngineDigest(): string {
+  if (engineDigest) return engineDigest;
+  const extension = import.meta.url.endsWith('.ts') ? 'ts' : 'js';
+  try {
+    engineDigest = engineDigestOf(module => readFileSync(new URL(`./${module}.${extension}`, import.meta.url), 'utf8')).digest;
+  } catch (error) {
+    console.error('Empreinte du moteur de lecture illisible : le cache de lecture est ignoré sur cette instance.', error);
+    engineDigest = randomUUID();
+  }
+  return engineDigest;
+}
+
+export function invoiceScanIdFor(uid: string, file: InvoiceFile, engine: string): string {
+  return createHash('sha256').update(INVOICE_SCAN_VERSION).update(engine).update(uid).update(file.mimeType).update(Buffer.from(file.data, 'base64')).digest('hex');
+}
 export function invoiceScanId(uid: string, file: InvoiceFile): string {
-  return createHash('sha256').update(INVOICE_SCAN_VERSION).update(uid).update(file.mimeType).update(Buffer.from(file.data, 'base64')).digest('hex');
+  return invoiceScanIdFor(uid, file, invoiceEngineDigest());
 }
 export function invoiceDocumentHash(file: InvoiceFile): string {
   return createHash('sha256').update(Buffer.from(file.data, 'base64')).digest('hex');
@@ -224,6 +264,17 @@ function readRejets(value: unknown): ScanRejet[] {
     ? [{ champ: text(entry.champ, 40), ligne: Number.isInteger(entry.ligne) ? entry.ligne as number : null, luTexte: text(entry.luTexte, 60), raison: text(entry.raison, 120) }] : []);
 }
 
+/**
+ * Une ligne qui n'a qu'UN montant (aucun en-tête de colonne) : les modèles le rangent parfois en `price`, `amountTTC` vide. Quand la
+ * quantité est vide ou vaut 1, ce montant est celui de la ligne : `amountTTC = price`. Rien d'autre ne change (la quantité reste vide :
+ * aucun stock automatique ; `price` reste). Une quantité > 1 (ou < 1) n'est jamais multipliée ; un `amountTTC` déjà lu n'est jamais touché ;
+ * sans `price` fini, rien n'est inventé. Appliquée à chaque lecture avant le vote, donc aussi à la 3.8 qui tranche (voie fn-montant-seul).
+ */
+export function montantDeLigne(amountTTC: number | null, price: number | null, quantity: number | null): number | null {
+  if (amountTTC !== null || price === null) return amountTTC;
+  return quantity === null || quantity === 1 ? price : null;
+}
+
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
 export function normalizeInvoiceScan(raw: any) {
   const issues: string[] = [];
@@ -238,9 +289,10 @@ export function normalizeInvoiceScan(raw: any) {
     if (alphaRead !== null && alphaPct === null) reject('alphaPct', index + 1, String(alphaRead), 'α hors de ]0 ; 30] %');
     const code = text(item?.vatCode, 60);
     if (code.length > 10) reject('vatCode', index + 1, code, 'code de TVA coupé à 10 caractères');
+    const quantity = number(item?.quantity), price = number(item?.price);
     return {
       id: `line-${index + 1}`, name: text(item?.name), kind: SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const,
-      quantity: number(item?.quantity), unit: text(item?.unit, 30), price: number(item?.price), amountTTC: number(item?.amountTTC),
+      quantity, unit: text(item?.unit, 30), price, amountTTC: montantDeLigne(number(item?.amountTTC), price, quantity),
       reference: text(item?.reference, 70), variant: text(item?.variant, 80),
       stockCategory: text(item?.stockCategory, 60), evidence: text(item?.evidence, 250), ambiguity: text(item?.ambiguity, 200),
       vatCode: code.slice(0, 10), alphaPct, alphaPctLu: alphaRead,
@@ -286,6 +338,8 @@ export function normalizeInvoiceScan(raw: any) {
 
   // C4 — HT + TVA = TTC (comportement d'avant : 2 centimes de tolérance, chacun des trois arrondi séparément). Un HT n'est jamais calculé.
   // (la règle vit dans `invoiceControls.ts` : le client la refait avec la même fonction)
+  // D272 : un sous-total TTC lu comme HT n'est pas un HT.
+  if (htEstUnSousTotalTTC(result.amountHT, result.tvaAmount, result.amountTTC, items)) result.amountHT = null;
   const totals = totalsCheck(result.amountHT, result.tvaAmount, result.amountTTC);
   if (totals.point) { result.controls.totals = totals.totals; say(totals.point); }
   else if (totals.totals.statut === 'ok') result.controls.totals = totals.totals;

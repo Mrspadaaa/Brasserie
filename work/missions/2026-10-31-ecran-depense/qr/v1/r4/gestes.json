@@ -1,0 +1,16 @@
+[
+  ["feuille-qr", "confirme", "#qrr4-sceau"],
+  ["iban-copie", "confirme", ["#qrr4-sceau", "[data-copie=\"iban\"]"]],
+  ["preuve", "confirme", "#qrr4-chip"],
+  ["reglement-ouvert", "confirme", "#qrr4-regl"],
+  ["proposition-adoptee", "confirme", "#qrr4-prop"],
+  ["proposition-adoptee-ouverte", "confirme", ["#qrr4-prop", "#qrr4-regl"]],
+  ["barre-ligne", "confirme", "[data-ligne=\"4\"]"],
+  ["rattacher", "confirme", "#qrr4-ratt"],
+  ["point-1", "contredit", "#qrr4-p1"],
+  ["garde-qr", "contredit", "[data-garde=\"qr\"]"],
+  ["garde-lu", "contredit", "[data-garde=\"lu\"]"],
+  ["garde-lu-feuille", "contredit", ["[data-garde=\"lu\"]", "#qrr4-sceau"]],
+  ["feuille-partiel", "partiel", "#qrr4-sceau"],
+  ["photographier", "illisible", "#qrr4-photo"]
+]

@@ -1,0 +1,5 @@
+[
+  ["mois-octobre", "annee", "[data-mo=\"9\"]"],
+  ["renvoi-inconnues", "inconnues", "[data-booster=inconnues]"],
+  ["douteuse-ouverte", "douteuse", "[data-booster=douteuse]"]
+]

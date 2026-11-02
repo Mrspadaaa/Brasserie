@@ -633,6 +633,12 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     if (!NIVEAUX.includes(v.niveau)) erreurs.push(`${id} : niveau « ${v.niveau} » (mécanique, jugement, conception)`);
     if (!MODELES.includes(v.modele)) erreurs.push(`${id} : modèle « ${v.modele} » inconnu`);
     if (!/^\d+$/.test(v.plafond ?? '')) erreurs.push(`${id} : plafond de tours absent`);
+    // Leçon L18 : un plafond au-dessus du maxTurns de l'agent n'est jamais atteint ; l'agent s'arrête avant son rendu (01.11 : f4 à 120 pour 160, relecteur à 30 pour 40).
+    // Les missions closes avant le 31.10 gardent leurs plafonds d'époque (leurs GATES rejouent ce contrôle).
+    const datee = /(\d{4}-\d{2}-\d{2})-[^/\\]+[/\\]MISSION\.md$/.exec(path.resolve(fichier))?.[1];
+    const ficheAgent = path.join(RACINE, '.claude', 'agents', `${v.agent}.md`);
+    const maxTurns = existe(ficheAgent) ? Number(/^maxTurns:\s*(\d+)/m.exec(lire(ficheAgent))?.[1]) : NaN;
+    if ((!datee || datee >= '2026-10-31') && Number.isInteger(maxTurns) && Number(v.plafond) > maxTurns) erreurs.push(`${id} : plafond ${v.plafond} au-dessus du maxTurns ${maxTurns} de ${v.agent} ; l'agent s'arrête avant son rendu (L18)`);
     if (!DECIDEURS.includes(v.decideur)) erreurs.push(`${id} : décideur « ${v.decideur} » (${DECIDEURS.join(', ')})`);
     if (!v.controles) erreurs.push(`${id} : contrôles absents`);
     if (!v.possede) erreurs.push(`${id} : périmètre d'écriture absent`);
@@ -1167,14 +1173,14 @@ function construireMission(dir, { critereFaux = false, critereIgnore = false, cr
 const TETE_VOIES = '| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |\n|---|---|---|---|---|---|---|---|---|---|---|';
 const planMission = (voies, avant = '') => `# Mission\n\n## Objectif\no\n${avant}\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n${TETE_VOIES}\n${voies.join('\n')}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`;
 
-function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false, sansControleChoix = false } = {}) {
+function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false, sansControleChoix = false, plafondTropHaut = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const dec = sansDecideur ? '' : 'pilote';
   const etape = sansEtape ? '—' : 'reprise';
   const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur | — |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur | — |';
   const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${sansControleChoix ? 'controle-commun, controle-teinte, controle-continuite' : 'controle-commun, controle-choix, controle-teinte, controle-continuite'} | brasseur | ${etape} |`;
   const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote | — |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote | — |';
-  fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
+  fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | ${plafondTropHaut ? 90 : 30} | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
   return f;
 }
 
@@ -1234,6 +1240,7 @@ function temoins() {
   attendu('conseil sans premier geste', verifierConseil(construireConseil(sous('k2'), { sansPremierGeste: true })).length === 0, false);
   attendu('plan routé', verifierMission(construireMissionPlan(sous('p1'))).length === 0, true);
   attendu('plan sans décideur', verifierMission(construireMissionPlan(sous('p2'), { sansDecideur: true })).length === 0, false);
+  attendu('plafond au-dessus du maxTurns de l’agent', verifierMission(construireMissionPlan(sous('p2b'), { plafondTropHaut: true })).length === 0, false);
   attendu('lot montré qui attend le brasseur', verifierMission(construireMissionPlan(sous('p3'), { attendBrasseur: true })).length === 0, false);
   attendu('maquette confiée à Sonnet', verifierMission(construireMissionPlan(sous('p4'), { interfaceSonnet: true })).length === 0, false);
   attendu('maquette relue par un relecteur générique', verifierMission(construireMissionPlan(sous('p5'), { relectureGenerique: true })).length === 0, false);

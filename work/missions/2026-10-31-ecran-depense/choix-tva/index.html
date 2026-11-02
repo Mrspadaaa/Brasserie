@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vue TVA · panel v0 · 01.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La vue TVA de « Dépense » : le panel v0, douze idées classées par le critique, une rangée par question.
+   Chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). Modèle : choix-qr. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.legende { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--alerte); }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Dépense · vue TVA</p>
+    <h1>Vue TVA · panel v0 · 01.11</h1>
+    <div id="a-choisir">
+      <p>Tu n'es pas assujetti : la vue répond à « est-ce que je la récupère, et combien elle me coûte ? »</p>
+      <p>Douze idées classées par le critique : dis laquelle te parle, ou quels morceaux prendre. r3, r4 et r2 partent en passe 2.</p>
+    </div>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-annee">
+    <div class="tete">
+      <h2 id="t-annee">L'année</h2>
+      <p>État <span class="id">annee</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-annee.png" data-titre="r3 · L'année · Par brassin"><img src="img/r3-annee.png" alt="r3, L'année"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Par brassin</b> <span class="id">r3</span></span><span class="legende">Réponse en trois secondes : TVA et CHF/L par brassin.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-annee.png" data-titre="r4 · L'année · Journal par mois"><img src="img/r4-annee.png" alt="r4, L'année"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Journal par mois</b> <span class="id">r4</span></span><span class="legende">Deux phrases en tête, récap à renvois, frise des mois.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-annee.png" data-titre="z3 · L'année · Gaufre par mois"><img src="img/z3-annee.png" alt="z3, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Gaufre par mois</b> <span class="id">z3</span></span><span class="legende">Une gaufre par mois, dans la carte de Synthèse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-annee.png" data-titre="u4 · L'année · Ticket et tampon"><img src="img/u4-annee.png" alt="u4, L'année"></button><figcaption><span class="pastille p-reserve">relancée</span><span><b>Ticket et tampon</b> <span class="id">u4</span></span><span class="legende">Un ticket et un tampon ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-annee.png" data-titre="z4 · L'année · Bouteilles par brassin"><img src="img/z4-annee.png" alt="z4, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Bouteilles par brassin</b> <span class="id">z4</span></span><span class="legende">Bouteilles par brassin, ct/L ; la TVA est dans le matériel.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-annee.png" data-titre="r2 · L'année · Trimestres"><img src="img/r2-annee.png" alt="r2, L'année"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Trimestres</b> <span class="id">r2</span></span><span class="legende">Le sélecteur de période est le graphique, par trimestre.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-annee.png" data-titre="u2 · L'année · Frise de 12 mois"><img src="img/u2-annee.png" alt="u2, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Frise de 12 mois</b> <span class="id">u2</span></span><span class="legende">Le plus grand graphique, douze mois ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-annee.png" data-titre="z1 · L'année · Récap et pastilles"><img src="img/z1-annee.png" alt="z1, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Récap et pastilles</b> <span class="id">z1</span></span><span class="legende">La liste la plus dense et lisible ; douteuse qui clignote.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-annee.png" data-titre="u3 · L'année · TVA dans chaque 33 cl"><img src="img/u3-annee.png" alt="u3, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>TVA dans chaque 33 cl</b> <span class="id">u3</span></span><span class="legende">Unité parlante, en ct/33 cl ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-annee.png" data-titre="r1 · L'année · Les chiffres seuls"><img src="img/r1-annee.png" alt="r1, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Les chiffres seuls</b> <span class="id">r1</span></span><span class="legende">Tout juste, « Non » d'abord ; un peu sage.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-annee.png" data-titre="u1 · L'année · Liste par poste"><img src="img/u1-annee.png" alt="u1, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Liste par poste</b> <span class="id">u1</span></span><span class="legende">Intervalles et import bien pensés ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-annee.png" data-titre="z2 · L'année · Barres par trimestre"><img src="img/z2-annee.png" alt="z2, L'année"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Barres par trimestre</b> <span class="id">z2</span></span><span class="legende">Bonnes barres par trimestre ; net en formule, à lire.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-inconnues">
+    <div class="tete">
+      <h2 id="t-inconnues">Beaucoup de TVA inconnue</h2>
+      <p>État <span class="id">inconnues</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-inconnues.png" data-titre="r3 · Beaucoup de TVA inconnue · Par brassin"><img src="img/r3-inconnues.png" alt="r3, TVA inconnue"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Par brassin</b> <span class="id">r3</span></span><span class="legende">Réponse en trois secondes : TVA et CHF/L par brassin.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-inconnues.png" data-titre="r4 · Beaucoup de TVA inconnue · Journal par mois"><img src="img/r4-inconnues.png" alt="r4, TVA inconnue"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Journal par mois</b> <span class="id">r4</span></span><span class="legende">Deux phrases en tête, récap à renvois, frise des mois.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-inconnues.png" data-titre="z3 · Beaucoup de TVA inconnue · Gaufre par mois"><img src="img/z3-inconnues.png" alt="z3, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Gaufre par mois</b> <span class="id">z3</span></span><span class="legende">Une gaufre par mois, dans la carte de Synthèse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-inconnues.png" data-titre="u4 · Beaucoup de TVA inconnue · Ticket et tampon"><img src="img/u4-inconnues.png" alt="u4, TVA inconnue"></button><figcaption><span class="pastille p-reserve">relancée</span><span><b>Ticket et tampon</b> <span class="id">u4</span></span><span class="legende">Un ticket et un tampon ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-inconnues.png" data-titre="z4 · Beaucoup de TVA inconnue · Bouteilles par brassin"><img src="img/z4-inconnues.png" alt="z4, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Bouteilles par brassin</b> <span class="id">z4</span></span><span class="legende">Bouteilles par brassin, ct/L ; la TVA est dans le matériel.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-inconnues.png" data-titre="r2 · Beaucoup de TVA inconnue · Trimestres"><img src="img/r2-inconnues.png" alt="r2, TVA inconnue"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Trimestres</b> <span class="id">r2</span></span><span class="legende">Le sélecteur de période est le graphique, par trimestre.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-inconnues.png" data-titre="u2 · Beaucoup de TVA inconnue · Frise de 12 mois"><img src="img/u2-inconnues.png" alt="u2, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Frise de 12 mois</b> <span class="id">u2</span></span><span class="legende">Le plus grand graphique, douze mois ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-inconnues.png" data-titre="z1 · Beaucoup de TVA inconnue · Récap et pastilles"><img src="img/z1-inconnues.png" alt="z1, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Récap et pastilles</b> <span class="id">z1</span></span><span class="legende">La liste la plus dense et lisible ; douteuse qui clignote.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-inconnues.png" data-titre="u3 · Beaucoup de TVA inconnue · TVA dans chaque 33 cl"><img src="img/u3-inconnues.png" alt="u3, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>TVA dans chaque 33 cl</b> <span class="id">u3</span></span><span class="legende">Unité parlante, en ct/33 cl ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-inconnues.png" data-titre="r1 · Beaucoup de TVA inconnue · Les chiffres seuls"><img src="img/r1-inconnues.png" alt="r1, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Les chiffres seuls</b> <span class="id">r1</span></span><span class="legende">Tout juste, « Non » d'abord ; un peu sage.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-inconnues.png" data-titre="u1 · Beaucoup de TVA inconnue · Liste par poste"><img src="img/u1-inconnues.png" alt="u1, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Liste par poste</b> <span class="id">u1</span></span><span class="legende">Intervalles et import bien pensés ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-inconnues.png" data-titre="z2 · Beaucoup de TVA inconnue · Barres par trimestre"><img src="img/z2-inconnues.png" alt="z2, TVA inconnue"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Barres par trimestre</b> <span class="id">z2</span></span><span class="legende">Bonnes barres par trimestre ; net en formule, à lire.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-si">
+    <div class="tete">
+      <h2 id="t-si">Si j'étais assujetti</h2>
+      <p>État <span class="id">si</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-si.png" data-titre="r3 · Si j'étais assujetti · Par brassin"><img src="img/r3-si.png" alt="r3, si assujetti"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Par brassin</b> <span class="id">r3</span></span><span class="legende">Réponse en trois secondes : TVA et CHF/L par brassin.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-si.png" data-titre="r4 · Si j'étais assujetti · Journal par mois"><img src="img/r4-si.png" alt="r4, si assujetti"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Journal par mois</b> <span class="id">r4</span></span><span class="legende">Deux phrases en tête, récap à renvois, frise des mois.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-si.png" data-titre="z3 · Si j'étais assujetti · Gaufre par mois"><img src="img/z3-si.png" alt="z3, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Gaufre par mois</b> <span class="id">z3</span></span><span class="legende">Une gaufre par mois, dans la carte de Synthèse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-si.png" data-titre="u4 · Si j'étais assujetti · Ticket et tampon"><img src="img/u4-si.png" alt="u4, si assujetti"></button><figcaption><span class="pastille p-reserve">relancée</span><span><b>Ticket et tampon</b> <span class="id">u4</span></span><span class="legende">Un ticket et un tampon ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-si.png" data-titre="z4 · Si j'étais assujetti · Bouteilles par brassin"><img src="img/z4-si.png" alt="z4, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Bouteilles par brassin</b> <span class="id">z4</span></span><span class="legende">Bouteilles par brassin, ct/L ; la TVA est dans le matériel.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-si.png" data-titre="r2 · Si j'étais assujetti · Trimestres"><img src="img/r2-si.png" alt="r2, si assujetti"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Trimestres</b> <span class="id">r2</span></span><span class="legende">Le sélecteur de période est le graphique, par trimestre.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-si.png" data-titre="u2 · Si j'étais assujetti · Frise de 12 mois"><img src="img/u2-si.png" alt="u2, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Frise de 12 mois</b> <span class="id">u2</span></span><span class="legende">Le plus grand graphique, douze mois ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-si.png" data-titre="z1 · Si j'étais assujetti · Récap et pastilles"><img src="img/z1-si.png" alt="z1, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Récap et pastilles</b> <span class="id">z1</span></span><span class="legende">La liste la plus dense et lisible ; douteuse qui clignote.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-si.png" data-titre="u3 · Si j'étais assujetti · TVA dans chaque 33 cl"><img src="img/u3-si.png" alt="u3, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>TVA dans chaque 33 cl</b> <span class="id">u3</span></span><span class="legende">Unité parlante, en ct/33 cl ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-si.png" data-titre="r1 · Si j'étais assujetti · Les chiffres seuls"><img src="img/r1-si.png" alt="r1, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Les chiffres seuls</b> <span class="id">r1</span></span><span class="legende">Tout juste, « Non » d'abord ; un peu sage.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-si.png" data-titre="u1 · Si j'étais assujetti · Liste par poste"><img src="img/u1-si.png" alt="u1, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Liste par poste</b> <span class="id">u1</span></span><span class="legende">Intervalles et import bien pensés ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-si.png" data-titre="z2 · Si j'étais assujetti · Barres par trimestre"><img src="img/z2-si.png" alt="z2, si assujetti"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Barres par trimestre</b> <span class="id">z2</span></span><span class="legende">Bonnes barres par trimestre ; net en formule, à lire.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-douteuse">
+    <div class="tete">
+      <h2 id="t-douteuse">Une facture douteuse</h2>
+      <p>État <span class="id">douteuse</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-douteuse.png" data-titre="r3 · Une facture douteuse · Par brassin"><img src="img/r3-douteuse.png" alt="r3, facture douteuse"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Par brassin</b> <span class="id">r3</span></span><span class="legende">Réponse en trois secondes : TVA et CHF/L par brassin.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-douteuse.png" data-titre="r4 · Une facture douteuse · Journal par mois"><img src="img/r4-douteuse.png" alt="r4, facture douteuse"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Journal par mois</b> <span class="id">r4</span></span><span class="legende">Deux phrases en tête, récap à renvois, frise des mois.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-douteuse.png" data-titre="z3 · Une facture douteuse · Gaufre par mois"><img src="img/z3-douteuse.png" alt="z3, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Gaufre par mois</b> <span class="id">z3</span></span><span class="legende">Une gaufre par mois, dans la carte de Synthèse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-douteuse.png" data-titre="u4 · Une facture douteuse · Ticket et tampon"><img src="img/u4-douteuse.png" alt="u4, facture douteuse"></button><figcaption><span class="pastille p-reserve">relancée</span><span><b>Ticket et tampon</b> <span class="id">u4</span></span><span class="legende">Un ticket et un tampon ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-douteuse.png" data-titre="z4 · Une facture douteuse · Bouteilles par brassin"><img src="img/z4-douteuse.png" alt="z4, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Bouteilles par brassin</b> <span class="id">z4</span></span><span class="legende">Bouteilles par brassin, ct/L ; la TVA est dans le matériel.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-douteuse.png" data-titre="r2 · Une facture douteuse · Trimestres"><img src="img/r2-douteuse.png" alt="r2, facture douteuse"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Trimestres</b> <span class="id">r2</span></span><span class="legende">Le sélecteur de période est le graphique, par trimestre.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-douteuse.png" data-titre="u2 · Une facture douteuse · Frise de 12 mois"><img src="img/u2-douteuse.png" alt="u2, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Frise de 12 mois</b> <span class="id">u2</span></span><span class="legende">Le plus grand graphique, douze mois ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-douteuse.png" data-titre="z1 · Une facture douteuse · Récap et pastilles"><img src="img/z1-douteuse.png" alt="z1, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Récap et pastilles</b> <span class="id">z1</span></span><span class="legende">La liste la plus dense et lisible ; douteuse qui clignote.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-douteuse.png" data-titre="u3 · Une facture douteuse · TVA dans chaque 33 cl"><img src="img/u3-douteuse.png" alt="u3, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>TVA dans chaque 33 cl</b> <span class="id">u3</span></span><span class="legende">Unité parlante, en ct/33 cl ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-douteuse.png" data-titre="r1 · Une facture douteuse · Les chiffres seuls"><img src="img/r1-douteuse.png" alt="r1, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Les chiffres seuls</b> <span class="id">r1</span></span><span class="legende">Tout juste, « Non » d'abord ; un peu sage.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-douteuse.png" data-titre="u1 · Une facture douteuse · Liste par poste"><img src="img/u1-douteuse.png" alt="u1, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Liste par poste</b> <span class="id">u1</span></span><span class="legende">Intervalles et import bien pensés ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-douteuse.png" data-titre="z2 · Une facture douteuse · Barres par trimestre"><img src="img/z2-douteuse.png" alt="z2, facture douteuse"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Barres par trimestre</b> <span class="id">z2</span></span><span class="legende">Bonnes barres par trimestre ; net en formule, à lire.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-ordi">
+    <div class="tete">
+      <h2 id="t-ordi">À l'ordinateur</h2>
+      <p>État <span class="id">annee</span> · 1280 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-1280.png" data-titre="r3 · À l'ordinateur · Par brassin"><img src="img/r3-1280.png" alt="r3, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Par brassin</b> <span class="id">r3</span></span><span class="legende">Réponse en trois secondes : TVA et CHF/L par brassin.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-1280.png" data-titre="r4 · À l'ordinateur · Journal par mois"><img src="img/r4-1280.png" alt="r4, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Journal par mois</b> <span class="id">r4</span></span><span class="legende">Deux phrases en tête, récap à renvois, frise des mois.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-1280.png" data-titre="z3 · À l'ordinateur · Gaufre par mois"><img src="img/z3-1280.png" alt="z3, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Gaufre par mois</b> <span class="id">z3</span></span><span class="legende">Une gaufre par mois, dans la carte de Synthèse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-1280.png" data-titre="u4 · À l'ordinateur · Ticket et tampon"><img src="img/u4-1280.png" alt="u4, à 1280 px"></button><figcaption><span class="pastille p-reserve">relancée</span><span><b>Ticket et tampon</b> <span class="id">u4</span></span><span class="legende">Un ticket et un tampon ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-1280.png" data-titre="z4 · À l'ordinateur · Bouteilles par brassin"><img src="img/z4-1280.png" alt="z4, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Bouteilles par brassin</b> <span class="id">z4</span></span><span class="legende">Bouteilles par brassin, ct/L ; la TVA est dans le matériel.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-1280.png" data-titre="r2 · À l'ordinateur · Trimestres"><img src="img/r2-1280.png" alt="r2, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Trimestres</b> <span class="id">r2</span></span><span class="legende">Le sélecteur de période est le graphique, par trimestre.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-1280.png" data-titre="u2 · À l'ordinateur · Frise de 12 mois"><img src="img/u2-1280.png" alt="u2, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Frise de 12 mois</b> <span class="id">u2</span></span><span class="legende">Le plus grand graphique, douze mois ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-1280.png" data-titre="z1 · À l'ordinateur · Récap et pastilles"><img src="img/z1-1280.png" alt="z1, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Récap et pastilles</b> <span class="id">z1</span></span><span class="legende">La liste la plus dense et lisible ; douteuse qui clignote.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-1280.png" data-titre="u3 · À l'ordinateur · TVA dans chaque 33 cl"><img src="img/u3-1280.png" alt="u3, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>TVA dans chaque 33 cl</b> <span class="id">u3</span></span><span class="legende">Unité parlante, en ct/33 cl ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-1280.png" data-titre="r1 · À l'ordinateur · Les chiffres seuls"><img src="img/r1-1280.png" alt="r1, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Les chiffres seuls</b> <span class="id">r1</span></span><span class="legende">Tout juste, « Non » d'abord ; un peu sage.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-1280.png" data-titre="u1 · À l'ordinateur · Liste par poste"><img src="img/u1-1280.png" alt="u1, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Liste par poste</b> <span class="id">u1</span></span><span class="legende">Intervalles et import bien pensés ; noms de fournisseurs à remplacer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-1280.png" data-titre="z2 · À l'ordinateur · Barres par trimestre"><img src="img/z2-1280.png" alt="z2, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Barres par trimestre</b> <span class="id">z2</span></span><span class="legende">Bonnes barres par trimestre ; net en formule, à lire.</span></figcaption></figure>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>

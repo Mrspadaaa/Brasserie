@@ -3,7 +3,7 @@ import { geminiTransport } from '../../functions/src/brewerHarness';
 import { GeminiRequestNotSentError, isGeminiRequestUncharged } from '../../functions/src/geminiErrors';
 import http from 'node:http';
 import https, { request as httpsNamedRequest } from 'node:https';
-import { guardWebSocket, guardXMLHttpRequest, isGeminiModelHost } from '../setup.gemini-guard';
+import { guardWebSocket, guardXMLHttpRequest, isDeployedFunctionHost, isGeminiModelHost } from '../setup.gemini-guard';
 
 // The normal suite (`npm test`) must never reach Gemini: real calls only run in dedicated, explicitly launched tests.
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
@@ -51,6 +51,16 @@ describe('garde Gemini de la suite normale', () => {
       'xgenerativelanguage.googleapis.com', 'generativelanguage.googleapis.com.example.test']) {
       expect(isGeminiModelHost(host), host).toBe(false);
     }
+  });
+
+  it('refuse aussi les Functions déployées (aiTask appelle Gemini derrière), jamais l’émulateur', async () => {
+    for (const host of ['europe-west6-laffinee.cloudfunctions.net', 'aitask-abc123-oa.a.run.app', 'EUROPE-WEST6-X.CLOUDFUNCTIONS.NET.']) {
+      expect(isDeployedFunctionHost(host), host).toBe(true);
+    }
+    for (const host of ['127.0.0.1', 'localhost', 'firestore.googleapis.com', 'run.app.example.test']) {
+      expect(isDeployedFunctionHost(host), host).toBe(false);
+    }
+    await expect(fetch('https://europe-west6-laffinee.cloudfunctions.net/aiTask', { method: 'POST' })).rejects.toThrow(/Function déployée interdit/u);
   });
 
   it('refuse tout fetch vers Gemini ou Vertex, quelle que soit la forme de la requête', async () => {

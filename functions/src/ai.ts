@@ -4,8 +4,10 @@ import { logger } from 'firebase-functions';
 import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
-import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
-import { reconcileInvoiceVision, finirUneLecture, ScanReadCutError, ligneJournalLecture, phraseCoupure, pointLectureCoupee, ajouterCoupure, type CauseCoupure, type InvoiceScanResult } from './invoiceVisionReview.js';
+import { validateInvoiceFile, normalizeInvoiceScan, LITE_SCAN_MAX_OUTPUT, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
+import { ScanReadCutError, ligneJournalLecture, type CauseCoupure } from './invoiceVisionReview.js';
+import { isoCurrency, lireCsv8 } from './invoiceScanVote.js';
+import { INVOICE_SCAN_PROMPTS } from './invoiceScanPrompts.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
@@ -94,18 +96,25 @@ interface AiTaskResult {
   documentHash?: string;
 }
 
-/** A separate, fixed-cost path: no model chain, no client tier/context/instruction. */
+/**
+ * A separate, fixed-cost path: no model chain, no client tier/context/instruction.
+ * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 5 100 jetons) sur désaccord
+ * ou quand une Flash-Lite manque ; l'ordre des appels et le vote sont dans `invoiceScanVote.ts` (portage à l'identique du banc).
+ */
 export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
   const started = Date.now();
-  const maxOutputTokens=evaluationOptions?.maxOutputTokens??SCAN_MAX_OUTPUT;
-  if(!Number.isSafeInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>SCAN_MAX_OUTPUT)throw new Error('Plafond de sortie invalide.');
+  // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8.
+  const override = evaluationOptions?.maxOutputTokens;
+  if (override !== undefined && (!Number.isSafeInteger(override) || override < 1 || override > SCAN_MAX_OUTPUT)) throw new Error('Plafond de sortie invalide.');
   const file: InvoiceFile = validateInvoiceFile(suppliedFile), model = SCAN_MODEL;
   assertGeminiModel(model);
-  const provider = async (body: Record<string, unknown>, signal: AbortSignal) => {
-    const response = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
+  assertGeminiModel(GEMINI_LITE_MODEL);
+  const provider = async (body: Record<string, unknown>, signal: AbortSignal, callModel: string = model) => {
+    assertGeminiModel(callModel);
+    const response = await fetch(`${GEMINI_ENDPOINT}/${callModel}:generateContent`, {
       method:'POST', headers:{ 'Content-Type':'application/json', 'x-goog-api-key':apiKey }, body:JSON.stringify(body), signal
     });
-    if (!response.ok) throw parseGeminiError(response.status, model, await response.json().catch(() => ({})));
+    if (!response.ok) throw parseGeminiError(response.status, callModel, await response.json().catch(() => ({})));
     return response.json();
   };
   const parse = (response: any) => {
@@ -115,9 +124,11 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
     if (!raw || raw.length > 45000) throw new Error('Lecture non exploitable.');
     const decoded = JSON.parse(raw);
     if (!decoded || typeof decoded !== 'object' || Array.isArray(decoded) || !Array.isArray(decoded.items)) throw new Error('Lecture non exploitable.');
+    // N : la devise en code ISO (« Fr. », « SFr. » → « CHF »), avant la normalisation et le vote ; toute autre devise reste telle quelle.
+    decoded.currency = isoCurrency(decoded.currency);
     return decoded;
   };
-  const body = (system: string, prompt: string, schema: Record<string, unknown>) => ({
+  const body = (system: string, prompt: string, schema: Record<string, unknown>, maxOutputTokens: number) => ({
     systemInstruction:{ parts:[{ text:system }] },
     contents:[{ role:'user', parts:[{ text:prompt }, { inlineData:file }] }],
     generationConfig:{ responseMimeType:'application/json', responseSchema:schema, temperature:0, maxOutputTokens,
@@ -127,41 +138,20 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
     const deadline = AbortSignal.timeout(100_000);
     // LE4 : une ligne de journal par lecture (durée, jetons, finishReason, coupée ou non), écrite AVANT le parsing ; aucun contenu de facture.
     const cause = (reason: any): CauseCoupure | null => reason instanceof ScanReadCutError ? 'sortie' : reason?.name === 'AbortError' || reason?.name === 'TimeoutError' ? 'delai' : null;
-    const read = (prompt: string, lecture: number, etape: 'parallele' | 'troisieme') => {
+    const read = (callModel: string, prompt: string, lecture: number, etape: 'parallele' | 'troisieme', maxOutputTokens: number) => {
       const started = Date.now();
-      return generate(body(TASKS.scanInvoice.system, prompt, TASKS.scanInvoice.schema), AbortSignal.any([deadline, AbortSignal.timeout(45_000)])).then(
-        response => { logger.info('Lecture de facture', ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response })); return normalizeInvoiceScan(parse(response)); },
-        error => { logger.warn('Lecture de facture en échec', { lecture, etape, elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
+      return generate(body(TASKS.scanInvoice.system, prompt, TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(45_000)]), callModel).then(
+        response => { logger.info('Lecture de facture', { ...ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response }), model: callModel }); return normalizeInvoiceScan(parse(response)); },
+        error => { logger.warn('Lecture de facture en échec', { lecture, etape, model: callModel, elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
     };
-    // Both see only the original. Await every in-flight call before closing the budget ledger.
-    const attempts = await Promise.allSettled([
-      read('Transcris tout le justificatif joint, en-tête, totaux et chaque ligne, dans l’ordre du document. Contrôle les chiffres et les signes des remises.', 1, 'parallele'),
-      read('Effectue une lecture indépendante complète du justificatif joint. Vérifie en priorité fournisseur, date, référence, devise, HT, TVA, TTC puis chaque article dans l’ordre imprimé. Distingue achat durable, réparation et consommable. Ne paraphrase pas les désignations.', 2, 'parallele')
-    ]);
-    const readings = attempts.flatMap(attempt => attempt.status === 'fulfilled' ? [attempt.value] : []);
-    if (!readings.length) throw (attempts[0] as PromiseRejectedResult).reason;
-    if (readings.length === 1) {
-      // Une lecture coupée se dit telle quelle (limite de sortie ou délai) : jamais une facture vérifiée.
-      const failed = attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult | undefined, why = cause(failed?.reason);
-      const finding = why ? phraseCoupure(why) : 'La double lecture n’a pas abouti. Vérifie les informations et les montants sur le justificatif.';
-      const single = finirUneLecture(readings[0]);
-      return { ...single, review:{ status:'unavailable', readers:1, correctedFields:[], findings:[finding] },
-        ...(why ? { points:[...single.points, pointLectureCoupee(why, finding)] } : {}), issues:[...single.issues, finding] };
-    }
-    let reconciled = reconcileInvoiceVision(readings);
-    if (reconciled.needsCorrection) {
-      const abouti = 'Le contrôle complémentaire n’a pas abouti. Les divergences restent à vérifier sur le justificatif.';
-      if (deadline.aborted) ajouterCoupure(reconciled.result as any, 'delai-saute', abouti);
-      else try {
-        // No competing amounts or classifications are disclosed: a third independent vote.
-        const correction: InvoiceScanResult = await read('Troisième contrôle attentif du document original : relis les petites lignes, séparateurs décimaux, signes, totaux, quantités, unités et la nature achat durable/réparation/consommable. Transcris de nouveau TOUS les champs et lignes dans leur ordre imprimé, avec les désignations exactes. Ne calcule aucune valeur absente.', 3, 'troisieme');
-        reconciled = reconcileInvoiceVision([...readings, correction]);
-      } catch (error) {
-        ajouterCoupure(reconciled.result as any, cause(error) ?? 'delai-saute', abouti);
-      }
-    }
-    return { ...reconciled.result, review:reconciled.review,
-      issues:[...new Set([...reconciled.result.issues, ...reconciled.review.findings])] };
+    // Both Flash-Lite see only the original. Every in-flight call is awaited before the budget ledger closes (lireCsv8).
+    return lireCsv8({
+      readLite: lecture => read(GEMINI_LITE_MODEL, INVOICE_SCAN_PROMPTS[lecture - 1], lecture, 'parallele', LITE_SCAN_MAX_OUTPUT),
+      // No competing amounts or classifications are disclosed: a third independent reading.
+      readStrong: () => read(model, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', SCAN_MAX_OUTPUT),
+      causeOf: cause,
+      deadlineReached: () => deadline.aborted
+    });
   }, provider, { degraded: (result: any) => result?.review?.status === 'unavailable' && Array.isArray(result?.points) && result.points.some((p: any) => p.code === 'lecture-coupee') });
   return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash };
 }

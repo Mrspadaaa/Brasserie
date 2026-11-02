@@ -7,8 +7,11 @@ import stock from './apercu/stock-simule.json';
 import lectureS6 from './apercu/lecture-s6.reconciliee.json';
 import stockS6 from './apercu/stock-s6.json';
 import { articlesNeufsDe } from '../../services/purchaseEntry';
+import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
 import type { ScanOutcome, ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { ApercuDepense } from './types';
+import { parseSwissQr } from '../../services/qrFacture';
+import type { ResultatQr } from '../../services/qrLecture';
 
 const pause = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 const clone = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
@@ -51,13 +54,157 @@ function apercuS6(): ApercuDepense {
   };
 }
 
-export function apercuDepense(etat: string): ApercuDepense {
-  if (etat === 's6') return apercuS6();
+// Les pièces FICTIVES du banc du QR (voie qr-app) : « Malterie Fictive SA », F-1001, 110,40 CHF, 12.10.2026 ; un vrai QR-facture SPC 0200 (exemples publics SIX), généré par
+// `work/missions/2026-11-01-bascule-lecture/voies/qr-app/fixtures/generer.mjs`. Lues par le VRAI décodeur du navigateur ; seule la lecture Gemini est simulée.
+const PIECES_QR = {
+  image: { url: new URL('./apercu/qr/facture-qr.png', import.meta.url).href, name: 'facture-qr.png', type: 'image/png' },
+  pdf: { url: new URL('./apercu/qr/facture-qr.pdf', import.meta.url).href, name: 'facture-qr.pdf', type: 'application/pdf' },
+  ouvert: { url: new URL('./apercu/qr/facture-qr-ouvert.png', import.meta.url).href, name: 'facture-qr-ouvert.png', type: 'image/png' },
+  abime: { url: new URL('./apercu/qr/facture-qr-abime.png', import.meta.url).href, name: 'facture-qr-abime.png', type: 'image/png' },
+  sans: { url: new URL('./apercu/qr/facture-sans-qr.png', import.meta.url).href, name: 'facture-sans-qr.png', type: 'image/png' },
+  inconnu: { url: new URL('./apercu/qr/facture-qr.png', import.meta.url).href, name: 'facture.bin', type: 'application/octet-stream' },
+};
+
+/** Les sept lignes fictives de la maquette z2 (somme 110,40). La mouture suit son malt. */
+function lectureQr(montantLu: number, dateLue = '12.10.2026'): ScannedInvoiceResult {
   const result = clone(lecture) as unknown as ScannedInvoiceResult;
-  if (etat === '2') {
+  const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, amountTTC: number, reference = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant: '', stockCategory: '', evidence: `${name} (page 1)`, ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null });
+  result.items = [
+    ligne(1, 'Maris Otter, Kg', 'stock', 25, 'Kg', 2.1, 52.5), ligne(2, 'Zuschlag Schrotung', 'service', 25, 'Kg', 0.15, 3.75, 'ISHOP-SCHROT'),
+    ligne(3, 'Pilsner Malz, Kg', 'stock', 10, 'Kg', 1.8, 18), ligne(4, 'Carafa II, Kg', 'stock', 2, 'Kg', 3.2, 6.4),
+    ligne(5, 'Citra 12.5%', 'stock', 100, 'g', 0.098, 9.8), ligne(6, 'Safale US-05 11,5g', 'stock', 2, 'Stk', 4.6, 9.2), ligne(7, 'Port', 'shipping', 1, 'pce', 10.75, 10.75),
+  ] as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'Malterie Fictive SA', date: dateLue, invoiceNumber: 'F-1001', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    amountTTC: montantLu, printedLineCount: 7, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Malts, houblon, levure',
+    controls: { lines: { checked: 7, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: montantLu === 110.4 ? 'ok' : 'ecart', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  return result;
+}
+
+/** SIMULÉ (aucun décodage) : un QR-facture lu, mais non conforme (IBAN à clé fausse) : l'état « invalide » que z2 n'a pas dessiné. */
+function qrInvalideSimule(): ResultatQr {
+  const lignes = ['SPC', '0200', '1', 'CH0000000000000000000', 'S', 'Malterie Fictive SA', 'Route de la Malterie', '1', '1000', 'Lausanne', 'CH', '', '', '', '', '', '', '', '110.40', 'CHF', '', '', '', '', '', '', '', 'QRR', '210000000003139471430009017', '', 'EPD', ''];
+  return { statut: 'lu', ms: 480, qr: parseSwissQr(lignes.join('\n'))! };
+}
+
+/** `qr-<état>` : confirme, contredit (lu 110,04), partiel (bulletin sans montant), illisible (QR abîmé), ecart (date lue 13.10 contre 12.10 du QR), invalide (QR non conforme, SIMULÉ), sans, lecture (Gemini jamais fini), pdf (le même, en PDF), non-verifie. */
+function apercuQr(etat: string): ApercuDepense {
+  const nom = etat.slice(3);
+  const piece = nom === 'partiel' ? PIECES_QR.ouvert : nom === 'illisible' ? PIECES_QR.abime : nom === 'sans' ? PIECES_QR.sans : nom === 'pdf' ? PIECES_QR.pdf : nom === 'non-verifie' ? PIECES_QR.inconnu : PIECES_QR.image;
+  const result = lectureQr(nom === 'contredit' ? 110.04 : 110.4, nom === 'ecart' ? '13.10.2026' : '12.10.2026');
+  const fichier = { name: piece.name, size: 90000, type: 'application/pdf' };
+  const outcome: ScanOutcome = { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false };
+  return {
+    outcome, fichier, stocks: stockSimule(), transactions: [], etat, drive: 'ok', reseau: true, qrFichier: piece, ...(nom === 'invalide' ? { qrSimule: qrInvalideSimule() } : {}),
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-12 Malterie Fictive SA F-1001.pdf', bytes: 90000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
+/**
+ * `familles` (voie p3c-bandes, D262c, D262d) : une lecture SIMULÉE dont les lignes couvrent TOUTES les familles (malts avec mouture, houblon, levures, sucre, additifs, matériel,
+ * emballage, nettoyage, consommables, services, un inclassable) et un port. Désignations en allemand, anglais et français (D271), aucune valeur d'une vraie pièce. Aucune écriture, aucun Gemini.
+ */
+function apercuFamilles(): ApercuDepense {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, amountTTC: number, stockCategory = '', reference = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant: '', stockCategory, evidence: `${name} (page 1)`, ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null });
+  const items = [
+    ligne(1, 'Maris Otter, Kg', 'stock', 25, 'Kg', 2.1, 52.5), ligne(2, 'Zuschlag Schrotung', 'service', 25, 'Kg', 0.15, 3.75, '', 'ISHOP-SCHROT'), ligne(3, 'Château Abbey, Kg', 'stock', 5, 'Kg', 3.2, 16),
+    ligne(4, 'Citra 12.5%', 'stock', 100, 'g', 0.098, 9.8), ligne(5, 'Hopfenpellets Saaz 8%', 'stock', 100, 'g', 0.07, 7),
+    ligne(6, 'Omega OYL-200', 'stock', 2, 'Stk', 9.5, 19), ligne(7, 'Safale US-05 11,5g', 'stock', 2, 'Stk', 4.6, 9.2),
+    ligne(8, 'Candi Syrup D-180', 'stock', 1, 'Kg', 7.5, 7.5), ligne(9, 'Whirlfloc 10 Tabs', 'stock', 1, 'Stk', 3.9, 3.9), ligne(10, 'CaCl2 500 g', 'stock', 1, 'Stk', 6.2, 6.2),
+    ligne(11, 'Fermzilla 27 L', 'equipment', 1, 'Stk', 119, 119), ligne(12, 'Hop Spider Bag', 'stock', 1, 'Stk', 14.5, 14.5),
+    ligne(13, 'Kronkorken 26 mm (100)', 'packaging', 2, 'Stk', 2.5, 5), ligne(14, 'Chemipro OXI 1 kg', 'cleaning', 1, 'Kg', 18.9, 18.9),
+    ligne(15, 'Handschuhe Nitril M', 'stock', 1, 'Stk', 8.4, 8.4, 'EPI'), ligne(16, 'Analyse Wasserprobe', 'service', 1, 'Stk', 45, 45), ligne(17, 'Divers fictif XJ-17', 'other', 1, 'Stk', 3, 3),
+    ligne(18, 'Versand / Port', 'shipping', 1, 'pce', 10.75, 10.75),
+  ];
+  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  result.items = items as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'Boutique Fictive GmbH', date: '12.10.2026', invoiceNumber: 'F-2002', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    amountTTC: total, printedLineCount: items.length, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Toutes les familles',
+    controls: { lines: { checked: items.length, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  const fichier = { name: 'capture-familles.jpg', size: 90000, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false }, fichier, stocks: stockSimule(), transactions: [], etat: 'familles', drive: 'ok', reseau: true,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-12 Boutique Fictive F-2002.pdf', bytes: 90000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
+/**
+ * `commande` (voie f3-rangees, D275, D277) : une commande en ligne SIMULÉE de la forme de sa pièce du 01.11 (aucune valeur ni désignation de sa pièce) : malts
+ * « …, Kg » ou « …, Gramm » avec l'option « Mischung / Schrotung : geschrotet [+CHF …] », colonne d'unité vide ailleurs (levure, houblon, sucre, matériel,
+ * emballage), port à part, date non imprimée. Aucun article ne relie ces lignes : les ingrédients sont « nouvel article » d'office. Aucune écriture, aucun Gemini.
+ */
+function apercuCommande(): ApercuDepense {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const option = (sup: string) => `Mischung: Einzelprodukt, Schrotung: geschrotet [+CHF ${sup}]`;
+  const ligne = (id: number, name: string, kind: string, quantity: number | null, unit: string, price: number | null, amountTTC: number, stockCategory = '', variant = '', reference = '') =>
+    ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC, reference, variant, stockCategory, evidence: '', ambiguity: '', vatCode: '', alphaPct: null, alphaPctLu: null });
+  const items = [
+    ligne(1, 'Omega OYL-061, Voss Kveik', 'stock', 2, '', 8.9, 17.8, 'yeast', '', 'HE0901'), ligne(2, 'Gärfass 30 Liter mit Deckel', 'equipment', 1, '', 32, 32, '', '', 'GA0101'),
+    ligne(3, 'Hopfensack fein', 'equipment', 4, '', 0.8, 3.2, '', '', 'SA0201'), ligne(4, 'Carafa Spezial I®, Kg', 'stock', 2, 'Kg', 2.4, 4.8, 'malt', option('0.10'), 'MA0301'),
+    ligne(5, 'Candi Sugar Amber 500g', 'stock', 1, '', 5.9, 5.9, 'sugar', '', 'CA0401'), ligne(6, 'Wiener Malz, Kg', 'stock', 5, 'Kg', 1.7, 8.5, 'malt', option('0.10'), 'MA0302'),
+    ligne(7, 'Ekuanot 14.5%', 'stock', 85, '', 0.05, 4.25, 'hop', '', 'HO0501'), ligne(8, 'Melanoidin Malz®, Gramm', 'stock', 100, 'Gramm', 0.0111, 1.11, 'malt', option('0.0001'), 'MA0303'),
+    ligne(9, 'Kronkorken 100 Kapseln schwarz', 'packaging', 1, '', 2.9, 2.9, '', '', 'KR0601'),
+    // VERDICT-f3 défaut 3 : un article relié (Pilsner Malz du stock simulé), un « bis » (Target 11.3% face à Target 11.8%), une unité qui ne se déduit pas (ni prix ni famille).
+    ligne(11, 'Pilsner Malz, Kg', 'stock', 4, 'Kg', 1.5, 6, 'malt', '', 'MA0304'), ligne(12, 'Target 11.3%', 'stock', 40, 'g', 0.04, 1.6, 'hop', '', 'HO0502'),
+    ligne(13, 'Brauzusatz Probe', 'stock', 3, '', null, 4.5, '', '', 'ZU0701'),
+    ligne(10, 'Shipping', 'shipping', null, '', null, 12),
+  ];
+  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  result.items = items as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'BOUTIQUE FICTIVE', date: null, invoiceNumber: '', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [],
+    amountTTC: total, printedLineCount: items.length - 1, linesLost: 0, fieldWarnings: [], issues: [], remarques: [], description: 'Commande en ligne',
+    controls: { lines: { checked: items.length - 1, failed: 0, skipped: 1, skippedIds: ['line-10'] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  const point = makePoint('date-absente', 'ecart', 'date', null, { regle: 'le code relève ce que la lecture ne permet pas de tenir pour sûr', message: 'Date absente ou invalide : à saisir.', unite: 'texte', enjeu: 'info' });
+  result.points = [{ ...point, source: 'contrôle', pese: true, signature: signerPoint(point) }];
+  const fichier = { name: 'capture-commande.jpg', size: 120000, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false }, fichier, stocks: stockSimule(), transactions: [], etat: 'commande', drive: 'ok', reseau: true,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: 'commande fictive.pdf', bytes: 120000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
+export function apercuDepense(etat: string): ApercuDepense {
+  if (etat === 'commande') return apercuCommande();
+  if (etat === 'familles') return apercuFamilles();
+  if (etat === 's6') return apercuS6();
+  if (etat.startsWith('qr-')) return apercuQr(etat);
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  if (etat === '2' || etat === 'date') {
     // « lue, sans point » : la facture sans ses points (SIMULÉ).
     result.points = []; result.fieldWarnings = []; result.issues = []; result.review = { status: 'checked', findings: [], readers: 2 };
     result.items = result.items.map(i => (i.name.startsWith('Sabro') ? { ...i, unit: 'g' } : i));
+  }
+  if (etat === 'date') {
+    // D233 : « lue, sans point » dont la date est absente ; un seul point, `date-absente`, de la forme du serveur (invoiceVisionReview.ts, pointsDesIssues) : écart, champ date, enjeu info, pèse.
+    // Sept lignes sans mouture ni voisin d'article (la facture du brasseur du 01.11 en avait sept) : le total et les contrôles suivent les lignes gardées, aucun autre point ne pèse.
+    result.items = result.items.filter(i => !/Zuschlag|Target|Hallertauer|Sabro|Galaxy|Nelson|Motueka|Goldings|Cascade/.test(i.name)).slice(0, 7);
+    const somme = Math.round(result.items.reduce((a, i) => a + (i.amountTTC ?? 0), 0) * 100) / 100;
+    Object.assign(result, { amountTTC: somme, amountHT: null, tvaAmount: null, vat: [], printedLineCount: result.items.length, proForma: false, controls: { ...result.controls!, lines: { checked: result.items.length, failed: 0, skipped: 0, skippedIds: [] } } });
+    (result as { date: string | null }).date = null;
+    const point = makePoint('date-absente', 'ecart', 'date', null, { regle: 'le code relève ce que la lecture ne permet pas de tenir pour sûr', message: 'Date absente ou invalide : à saisir.', unite: 'texte', enjeu: 'info' });
+    result.points = [{ ...point, source: 'contrôle', pese: true, signature: signerPoint(point) }];
+  }
+  if (etat === 'port' || etat === 'port-sans-montant' || etat === 'tout-port') {
+    // p3c-port (P21, D249) : états du port, SIMULÉS, dérivés ici (le JSON épinglé de `fixture.test.ts` ne change pas). Une ligne « Port » `shipping` :
+    // 8,50 (état `port`, total 95,00), sans montant (`port-sans-montant`, la rangée reste visible : l'inconnu n'est jamais 0), ou seule (`tout-port`, 12,50 : une rangée).
+    const base = (montant: number | null) => ({ id: 'line-24', name: 'Versand / Port', kind: 'shipping' as const, quantity: 1, unit: '', price: montant, amountTTC: montant, stockCategory: '', reference: 'VERSAND', evidence: '', ambiguity: '' }) as unknown as ScannedInvoiceResult['items'][number];
+    const ajuste = (items: ScannedInvoiceResult['items'], total: number) => {
+      Object.assign(result, { items, amountTTC: total, printedLineCount: items.length, controls: { ...result.controls!, lines: { ...result.controls!.lines, checked: items.length } } });
+    };
+    if (etat === 'port') { ajuste([...result.items, base(8.5)], 95); }
+    else if (etat === 'port-sans-montant') { ajuste([...result.items, base(null)], 86.5); }
+    else { ajuste([base(12.5)], 12.5); result.points = []; result.fieldWarnings = []; result.issues = []; result.tvaAmount = null; result.vat = []; }
   }
   const fichier = { name: 'capture-facture.jpg', size: 735721, type: 'application/pdf' };
   const outcome: ScanOutcome = etat === '5'

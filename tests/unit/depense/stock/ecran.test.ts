@@ -22,7 +22,7 @@ import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 
 const lineOf = (n: number) => { const row = (lecture as any).items[n - 1]; return row; };
-const summaries = (view: ReturnType<typeof render>) => Array.from(view.container.querySelectorAll('[data-purchase-line]')) as HTMLElement[];
+const summaries = (view: ReturnType<typeof render>) => Array.from({ length: 23 }, (_, i) => view.container.querySelector('[data-dp-ligne="line-' + (i + 1) + '"]') as HTMLElement); // R1 : par id, dans l'ordre du brouillon
 
 beforeEach(() => {
   cleanup(); vi.restoreAllMocks(); state.writes = []; state.scanned.mockReset();
@@ -47,16 +47,16 @@ describe('S1 : la feuille propose l’article à la lecture de la facture 372765
     const view = await lire();
     const ligne1 = summaries(view)[0];
     expect(lineOf(1).name).toBe('Maris Otter, Kg');
-    expect(ligne1.querySelector('summary')!.textContent).toContain('proposé');
-    expect(ligne1.querySelector('summary')!.textContent).toContain('Maris Otter');
+    expect(ligne1.querySelector('[data-dp-stock]')!.textContent).toContain('proposé');
+    expect(ligne1.querySelector('[data-dp-nom]')!.textContent).toContain('Maris Otter');
     expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('existing');
     expect(state.writes).toEqual([]);
   });
 
-  it('les lignes de mouture (service) n’ont ni sélecteur de stock ni proposition ; Goldings et Hallertauer, absents, restent « aucun mouvement »', async () => {
+  it('les lignes de mouture (service) n’ont ni sélecteur de stock ni proposition ; Goldings et Hallertauer, absents, sont nouveaux d’office (D275, voie f3 ; HEAD : « aucun mouvement »)', async () => {
     await lire();
     for (const n of [2, 5, 7, 14, 16]) expect(screen.queryByLabelText(`Stock ligne ${n}`), `ligne ${n}`).toBeNull();
-    for (const n of [9, 22]) expect((screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value, `ligne ${n}`).toBe('none');
+    for (const n of [9, 22]) expect((screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value, `ligne ${n}`).toBe('new');
   });
 
   it('Caramünch, Target, Galaxy et les quatre levures sont proposées sur leur article', async () => {
@@ -64,16 +64,16 @@ describe('S1 : la feuille propose l’article à la lecture de la facture 372765
     for (const n of [1, 3, 4, 6, 8, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21, 23]) expect((screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value, `ligne ${n}`).toBe('existing');
   });
 
-  it('la description reste le libellé brut ; l’α, la récolte et le poids sont déduits en clair dans l’extrait, avec leur source', async () => {
+  it('la description est la base du libellé, l’imprimé reste à côté (D275, voie f3 ; HEAD : le libellé brut) ; l’α, la récolte et le poids sont déduits en clair dans l’extrait, avec leur source', async () => {
     const view = await lire();
-    expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter, Kg');
+    expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter');
     expect((screen.getByLabelText('Libellé ligne 8') as HTMLInputElement).value).toBe('Target 11.3%');
     const texte8 = summaries(view)[7].textContent ?? '';
     expect(texte8).toContain('Libellé : Target 11.3%');
     expect(texte8).toContain('α 11,3 % (libellé)');
     const levure = Array.from(summaries(view)).find(row => (row.textContent ?? '').includes('Safale US-05'))!;
     expect(levure.textContent).toContain('poids du sachet 11,5 g (libellé)');
-    expect(levure.querySelector('summary')!.textContent).toContain('poids du sachet non confirmé');
+    expect(levure.querySelector('[data-dp-stock]')!.textContent).toContain('poids du sachet non confirmé');
   });
 
   it('un choix du brasseur n’est jamais remplacé : écarter la proposition la laisse écartée, même après d’autres modifications', async () => {
@@ -82,7 +82,7 @@ describe('S1 : la feuille propose l’article à la lecture de la facture 372765
     fireEvent.change(view.container.querySelector('#purchase-total')!, { target: { value: '90' } });
     fireEvent.change(screen.getByLabelText('Libellé ligne 1'), { target: { value: 'Maris Otter (sac)' } });
     expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('none');
-    expect(summaries(view)[0].querySelector('summary')!.textContent).not.toContain('proposé');
+    expect(summaries(view)[0].textContent).not.toContain('proposé'); // toute la rangée (HEAD : tout le summary), pas seulement l'effet de stock
     expect(state.writes).toEqual([]);
   });
 });

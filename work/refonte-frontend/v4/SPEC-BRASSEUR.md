@@ -857,3 +857,217 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   dans le nom (« Cascade CH ») ? », mot pour mot : « voulez-vous l'origine oui » (D216).
 - **Gemini pour les tests** (31.10, nuit, dépense), après « Gemini en production attendra votre accord, avec le coût par produit
   montré avant. », mot pour mot : « Je l'accord pour les test 10ch de budget » (D217).
+- **La dépense sur son téléphone** (01.11, 8 h 25, sa facture Infomaniak de 7 lignes, point « ① Date » seul, version en ligne 153b2296),
+  mot pour mot : « Y aller je fait rien, et il y a un vrai problème, quand on ouvre certains champs, le fenêtre fait haut bas très rapidement,
+  comme un cintillement, c'est horrible » ; puis, sur la lecture : « Aussi, c'est assez fiable mais toujours plutôt lent » ; puis « cible rien pour « Date ». Il y a plusieurs champs
+  date aussi attention ! » et « C'est pas utile den avoir plusieurs » (D233).
+- **La lecture d'une facture** (01.11, matin), mot pour mot : « Est-ce que on pourrait faire 2 lecture en parallèle de 3.5 flash et si ça
+  diverge une relecture par 3.8 ? C'est quoi l'architecture actuellement ? Pourquoi on a choisi ça ? » ; puis, au banc proposé (≈ 1 CHF) :
+  « 5chf de budget accordé » (D234 ; banc k1, `work/missions/2026-11-01-banc-lecture/`). Puis, sur le résultat du banc (page
+  https://claude.ai/artifact/S4ovLYnPabLA5Pvq6n4rU9) et la question « veux-tu passer la lecture des factures à ta proposition C », mot pour
+  mot : « en théorie, oui, mais est-ce qu'il y a pas des nouvelles IA de Google plus rapide et meilleures pour ça ? » ; puis : « 3.5
+  Flash-Lite, il y a pas moyen de le faire mieux fonctionner ? Avec un meilleur Harness, guideline, ou une utilisation plus haute de son
+  intelligence ? Genre en Max ou xhigh ? Et si il y a probablement fallback sur 3.8 ? » ; puis : « Regarde avec des skill ou autre
+  outil, workflow ou third party comment l'améliorer au Max pour la vision » ; puis : « Tu as assez de vrai donné de test ? » ; puis,
+  sans mot, de nouvelles pièces (10 h, hors de Git dans `H13-reels/`) : deux PDF B&R identiques (commande 652093), dix images (captures
+  de trois commandes B&R, une photo de facture CFF), un PDF B&R (commande 686863), et : « Il y a des screenshots qui sont de la même
+  facture mais sur plusieurs écran » ; puis, au rapport « Lire juste d'abord, plus vite ensuite » (envoyé), mot pour mot : « Met déjà en
+  place le système qui permet d'améliorer et compare avec les données que l'on a, j'en ai pas plus pour le moment » ; puis : « J'ai
+  l'impression que tout ce qui est skill, harness ou autre a été un peu mis de côte » (registre de chaque geste :
+  `work/missions/2026-11-01-banc-lecture/GESTES.md` ; boucle : skill `banc-lecture`).
+- **Une pièce déjà saisie** (01.11, après ses pièces), mot pour mot : « et les deux PDF de la commande 652093 sont identiques. Géré ce cas
+  là, on doit voir que ce document est déjà lié à un stock, facture ».
+- **Frais de port et second avis** (01.11, après-midi), à la question « Sur une commande en plusieurs captures, les frais de port
+  doivent-ils être une ligne de la dépense, ou seulement compter dans le total ? », mot pour mot : « Total seulement » ; puis, sur zxing-wasm
+  et Azure comme second avis : « Mais Azur est payant ? Je veux pas un nouveau poste de dépense Claud, ai infra » (Azure : non, GESTES
+  rang 9 ; zxing-wasm, gratuit et local, reste ouvert). Puis, mot pour mot : « zxing-wasm ok » (D240) ; et : « Et Harness, skill tool ou
+  third party non payant pour 3.5 flash lite ? » (GESTES : les gestes gratuits restants) ; puis, aux captures du doublon : « Et Harness,
+  skill tool ou third party non Et Harness, skill tool ou third party non payant pour 3.5 flash lite ? Tu as pas répondu, doublon ok
+  parfait ». Puis, avec le lien du dépôt GitHub Anionex/dsh-vision-toolkit (https://share.google/fivmIAdnRQEAWiYzK), mot pour mot :
+  « Qqch du genre ferai sens adapté à Nos modèles et besoin ? » ; puis : « J'accorde 20chf de crédit en plus » (D242). Puis, à « pdf.js
+  dans l'app, ok ? » et « brancher le QR dans l'app […] je te montrerai d'abord des mini maquettes », mot pour mot : « Okok » (D243).
+- **La TVA** (01.11, matin), mot pour mot : « Aussi pour la TVA. SI plusieurs articles dans la même facture ont différentes taux, comment
+  cela est géré ? En tant que indépendant je dois pouvoir me faire rembourser la TVA ? J'aurais besoin d'avoir une vision là dessus »
+  (réponse donnée : la lecture contrôle chaque taux, l'enregistrement ne garde que la TVA totale et un seul taux, la TVA ne se récupère que
+  si l'entreprise est assujettie ; ouvert : une vue TVA, « assujetti ou pas », à montrer en mini maquettes).
+- **Les tests en ligne** (01.11, matin), mot pour mot : « Et les tests d'intégration dans la vrai app ont vraiment été très mediculeux ? »
+  (réponse : non ; L12 complétée, contrôle `controle-bande.mjs` en 390 tactile).
+- **Déployer** (01.11, matin), mot pour mot : « J'autorise de déployer sans faire tout les test npm run test. Mais seulement ceux visié
+  pour les changements » (D236).
+- **Nouvelle dépense, passe 3** (01.11, matin, sur sa capture de la passe 2 « r2b · repos à 1280 px », le bandeau et la preuve entourés ;
+  `work/missions/2026-10-31-ecran-depense/brasseur/01-11-recap-r2b-1280.jpg`), mot pour mot : « Plusieurs points sur la vue et logistique. rang 7 · r1 · série r Nom d'approche : feuille J'aime beaucoup les pastilles sur les items, ça rend la chose très clair. Aussi un récap en haut comme sur le screen est top, avec la possibilité de clicker et avoir des revois Maintenant pour la lisibilité. Je veux que en un écran je vois le maximum d'items ajouter. Je veux que cette écran d'ajouter de facture prenne vraiment toute la place de l'app. Je veux aussi que ça soit trié par catégorie avec sous total de quantité. Par exemple je sais très bien combien d'houblon j'ai commandé. Mais pas forcément combien items au Total. Aussi bien utilisé les UX UI booster. Finalement, pour la logistique d'envoi sur le drive, c'est invisible, c'est à la fin en arrière plan. Et si ça fail. Grosse notification, renvoie sur la facture pour upload le justificatif ou/et réparé le lien drive » (D235).
+- **Nouvelle dépense, son choix de la passe 3** (01.11, soir, sur la page de la passe 3), mot pour mot : « Les bandes teintées p3a-3
+  j'aime beaucoup ! C'est le top 1 de loin quasiment rien ne doit être changé.  Il faudrait juste le rendre un peu plus compact, pas comme
+  Le tableau à prix p3a-2 mais presque enfin pas copier mais adapté. C'est du 99% bon » (D245).
+- **Contrôle QR, son choix** (01.11, soir, sur la page du contrôle QR), mot pour mot : « Le sceau QR z2 parfait comme telle » (D246).
+- **La vue TVA** (01.11, soir, à « Vue TVA : elle attend aussi ton choix »), mot pour mot : « Vue TVA : elle attend aussi ton choix. Je
+  comprends pas ? Je vois pas l'artefact où j'ai déjà validé ? » (réponse : aucune page TVA n'existe encore ; la phrase du pilote était
+  fausse, un choix sans page ; L24 complétée).
+- **La vision, encore** (01.11, soir), mot pour mot : « Pour la vision, on a pas réussi à faire mieux que ce qui est déjà ? Même avec tout
+  les test, nouvelle implantation, rien ??? Et si on met le Harness skill et autres dans notre méthode actuelle, on gagne encore en
+  qualité ? » (réponse : pas plus juste que la production sur ses 13 pièces, à ±2 points, ce que 13 pièces ne départagent pas ; gagné :
+  même justesse pour ≈ 44 % de moins avec C★v8, plus de lecture coupée, le QR qui certifie sans IA ; les skills ne tournent pas dans
+  l'app ; le levier suivant : plus de pièces, et la bascule en production, à son accord ; `GESTES.md` du banc).
+- **La bascule de la lecture** (01.11, soir), à « basculer la production sur C★v8 avec la correction automatique et le QR : même
+  justesse, moins cher, sans lecture coupée. Ça demande ton accord, car il faut redéployer la lecture en production », mot pour mot :
+  « Yes ok » (D247).
+- **Nouvelle dépense, son degré** (01.11, soir, sur sa capture de p3c-3 au repos, « 18 Kg » de la bande Malts et « 6 Kg × 2,30 » de Maris
+  Otter entourés en rouge ; `work/missions/2026-10-31-ecran-depense/brasseur/01-11-p3c-3-quantite-entouree.jpg`), mot pour mot :
+  « p3c-3 le mieux mais mettre plus en avant la quantité, juste mettre en gras, et bien alignées les champs » (D248).
+- **Les frais de port** (01.11, soir), à « Frais de port « Total seulement » : seulement sur les commandes en plusieurs captures, ou aussi
+  quand le port est imprimé comme un article ? », mot pour mot : « Non non aussi quand imprimé article » (D249).
+- **La TVA, son cas** (01.11, soir), à « TVA : es-tu assujetti ? », mot pour mot : « Je fais moins de 100k » (D250).
+- **La CSP de l'hébergement** (01.11, soir), à « CSP : peut-on ajouter 'wasm-unsafe-eval' dans firebase.json ? Sans ce mot, le QR ne lit
+  rien en ligne. Je te montrerai la preuve jouée en local dès que le rejeu sera fini. », mot pour mot : « Oui » (D253).
+- **Les tests sur l'app en ligne** (01.11, soir, après les deux déploiements de la bascule), mot pour mot : « Les test d'intégration sur
+  la vrai app, vrai donné sont fonctionnels ? »
+- **Les tests sur l'app en ligne, suite** (01.11, soir, pendant ma réponse), mot pour mot : « Ils ont bien été effectué, sans problème? »
+- **Déployer le correctif des montants de ligne, pousser la branche** (01.11, soir), à « 1. Je déploie la fonction de lecture des
+  factures avec ce correctif (oui / pas maintenant) ? 2. Je pousse la branche et j'ouvre la PR, 42 commits (oui / plus tard) ? »,
+  mot pour mot : « Oui et oui » (D257).
+- **La suite** (01.11, soir, après le déploiement du correctif et la PR 199), mot pour mot : « Continue » (lu : la suite prévue, port de
+  p3c-3 avec z2 D248, port « Total seulement » D249, vue TVA en mini maquettes D250).
+- **La vue TVA, et la rénovation d'abord** (01.11, nuit, sur sa capture de u3, la bouteille « TVA dans chaque 33 cl 13,35 ct », le haut
+  marron de la bouteille entouré en rouge ; `work/missions/2026-10-31-ecran-depense/brasseur/01-11-u3-bouteille-marron-entouree.jpg`,
+  hors Git), mot pour mot : « Même si c'est un peu enfantin j'aime assez bien, après pas convaincu vraiment du design. Mais avoir une
+  vrai vu comme ça c'est top, aussi il y a pas vraiment le roi, et la partie maron ? Ni vraiment combien je gagne ? Mais des outils de
+  genre prix, prédictions et tout c'est top.
+
+  Après c'est plus pour après pour le moment je fais pas encore de la grosse vente, c'est des outils important et essentiel. Mais j'ai
+  plus besoin d'outil de prédictions, vu d'ensemble, panification et autres car la brasserie est en grande rénovation, et il me manque
+  encore beaucoup de choses et j'ai pas beaucoup de temps à consacrer à ça et pas non plus un gros budget. Genre installation de hotte.
+  Installation du 2eme évier. Armoire extérieur, seconde passe sur les sols ectt création du site web vitrine.... » (lu : « le roi » =
+  le ROI, retour sur investissement ; « panification » = planification ; la partie marron de u3 est le fond vide de la bouteille, elle
+  ne représente rien. D259 : ce défaut à contrôler, et la rénovation passe devant, la TVA et les outils de vente « pour après »).
+- **Le quota, l'état stable et le déploiement** (01.11, nuit, après la page Rénovation v0 et le départ de la passe 2), mot pour mot :
+  « À 60 jusqu'à 65 hebdo, stop les nouvelles tâches et met dans un état stable et deploye. Les choix seront fait demain » (lu : à
+  60 % de l'hebdo, aucune tâche neuve ; ce qui est en vol se finit et se vérifie ; l'état stable se déploie avant 65 % ; ses choix de
+  maquettes attendent demain. D260).
+- **Une facture simple, lue fausse et lente** (01.11, nuit, 18 h 49 sur son téléphone, sur l'app en ligne de D255 : une capture de commande
+  Brau- und Rauchshop, 16 articles, port 30,00, total 170,20, sans date ; cinq captures de l'écran et la pièce,
+  `work/missions/2026-10-31-ecran-depense/brasseur/01-11-brau-*.jpg`, hors Git), mot pour mot : « Ça semble pas être super juste ???
+  Et ça a pris vraiment beaucoup de temps pour une "facture" relativement simple ??? » (lu : les noms doublés « … [+CHF 0.10]· Mischung:
+  … [+CHF 0.10] », l'écart d'un centime « Détail : 170,21 / 170,20 » signalé alors que c'est l'arrondi suisse à 5 centimes, le port
+  rangé comme un article, six pastilles sur une pièce simple ; et la lecture : deux lectures en 7 s qui divergent, puis une troisième
+  par 3.8 en 20 s. D261).
+- **Les modèles de lecture, la TVA et la date** (01.11, nuit, après mon diagnostic de la pièce Brau- und Rauchshop), mot pour mot :
+  « SI on perd à ce point en qualité avec 2 Rapid puis 1 lent autant utiliser 2 lents puis 1 lent comme au début. Aussi le ht, TVA
+  semble pas super fonctionné comme illustré dans la capture.
+
+  Pour les date. Il faut en UX UI booster. Aujourd'hui
+
+  Mois passé
+
+  Mois suivant
+
+
+  La date exacte est rarement important. Le mois l'est plus » (lu : une condition, « si on perd » ; les défauts vus sur cette pièce
+  viennent des règles de l'app, pas des modèles, donc la comparaison « 2 lents puis 1 lent » se mesure au banc avec sa pièce avant
+  toute bascule (L20) ; la pastille ④ TVA et « Référence et TVA du document · À vérifier » sur une TVA juste, 0,60 + 8,30 = 8,90 ;
+  les raccourcis de la date deviennent « Aujourd'hui · Mois passé · Mois suivant », le jour d'aujourd'hui dans le mois choisi.
+  D262).
+- **Le classement des lignes** (01.11, nuit, même pièce Brau- und Rauchshop), mot pour mot : « Et aussi ça à pas classé, levure,  malt,
+  outils de brassage, autre ect... Correctement » (lu : chaque ligne doit tomber dans sa famille, levure, malt, houblon, matériel de
+  brassage, autre ; l'écran en ligne de D255 montre toutes les lignes sous la même icône, sans famille. D262c).
+- **Comment ça a pu passer** (01.11, nuit, pendant les correctifs), mot pour mot : « Mais pourtant en 10s, un seul test, j'ai trouvé tout
+  ça, comment ça a pu passer au travers ??? SI des tests avec toutes les preuve ont bien été fait, ça a été fait n'importe comment ?? »
+  (lu : nos tests et le banc n'avaient aucune pièce de ce genre, une commande en ligne avec la mouture dans le nom, un total arrondi à
+  5 centimes, deux taux de TVA et un port non taxé ; les tests en ligne de D210 se sont faits sur des pièces fictives ; personne n'a
+  jugé l'écran champ par champ contre une vraie pièce, comme lui. Leçon L28).
+- **Le banc d'abord** (01.11, nuit), à « Demain au banc, avec ta pièce », mot pour mot : « non non c'est prio 1 ça, même si on dépasse
+  les 65% » (lu : le banc de la pièce Brau- und Rauchshop passe ce soir, en priorité 1, au-delà de la borne de D260. D263).
+- **Le bout en bout, sur la vraie app** (01.11, nuit, pendant le banc), mot pour mot : « Fait bien à la fin les test d'intégration bout en
+  bout. Et les tests sur la VRAI app avec les VRAIS donnés. Est-ce que le stock de met bien à jour ? Les factures aussi, tout suit ... »
+  (lu : avant de clore, un parcours complet facture → dépense → stock joué sur les émulateurs, puis sur l'app en ligne avec ses vraies
+  données ; vérifier que le stock bouge et que la facture suit partout. Une écriture sur un article réel reste à son accord, D217. D264).
+- **Toutes les pièces au banc** (01.11, nuit), mot pour mot : « Il faut testé aussi avec les autres pièces de test btw pas juste
+  celle-ci... » (lu : la comparaison C★v8 contre « 2 × 3.8 puis 3.8 » se fait sur les 14 pièces, la sienne comprise. D263).
+- **Les réponses de la nuit** (01.11, nuit, sur le rapport du banc), mot pour mot : à « Une partie de la règle TVA tourne sur le serveur.
+  Pour qu'elle s'applique, il faut redéployer aiTask, ce qui demande ton accord » : « Ok » (D267) ; à « il faut trois bandes de plus sur
+  l'écran que tu as choisi. Je te les montrerai en mini maquettes » : « Je comprends pas ,j'ai validé les maquettes de tout ça ?? », puis
+  « Le classement par famille ou sous familles était pas que pour malt et houblons mais pour tout type de famille ??? » (lu : son choix
+  p3a-3/p3c-3, « trié par catégorie avec sous total de quantité » (D235), vaut pour toutes les familles ; la maquette n'en montrait que
+  quatre parce que sa facture d'exemple n'avait que celles-là. D262d) ; à « l'annulation de la saisie en double de la commande d'avril
+  (TX-6770960b) » : « Ok » (D268).
+- **L'annulation attend** (01.11, nuit), à « À faire par toi : l'annulation de TX-6770960b », mot pour mot : « Pas important pour le
+  moment » (lu : l'annulation de la saisie en double et la relecture du stock attendent ; rien n'est touché. D268 suspendue).
+- **Qui trie par famille** (01.11, nuit), mot pour mot : « L'ai ou code trie correctement les items par famille ? SI il y aune
+  nouvelle levure, nouveau fermenteur ou autre item un peu plus technique ou complexe ? » (lu : « L'ai » = l'IA ; il veut savoir si une
+  levure, un fermenteur ou un article technique inconnus tombent dans la bonne famille. Sondé : non, le code trie par mots. D269).
+- **Quatre langues** (01.11, nuit, à « les mots anglais de la lecture »), mot pour mot : « Langue utilisée pour les factures, allemand,
+  anglais, français, italien. Ça traduits en français et fait le bon lien » (lu : une catégorie, une famille ou un mot de métier lu en
+  allemand, anglais, français ou italien devient la catégorie française de l'app et relie la ligne à la bonne famille et au bon article ;
+  la désignation imprimée reste telle quelle, D261a. D271).
+  Puis, mot pour mot : « Italien possible aussi mais beaucoup plus rare » (lu : allemand, anglais et français d’abord ; l’italien
+  couvert par les mots de base, sans plus. D271).
+- **La pastille TVA** (01.11, nuit), à « Pastille TVA : elle reste, parce que la lecture prend le sous-total TTC pour le HT. La lever
+  demande de redéployer aiTask, ce qui reste ton choix. », mot pour mot : « Go » (lu : accord au correctif et au redéploiement d'aiTask
+  seul ; pas l'hébergement, pas les règles. D272).
+- **Les 14 pièces, en vrai** (01.11, nuit), à « J'ai rejoué les 14 pièces du banc sans appel payant », mot pour mot : « Maintenant il
+  faudra refaire ça avec appel payant sur la vrai alo » ; puis « App » (lu : « alo » = « app » ; rejouer les 14 pièces avec de vraies
+  lectures payantes, dans l'app en ligne, chaque champ comparé à la vérité ; lecture seule, rien n'est confirmé ni enregistré. D273).
+- **Les articles difficiles** (01.11, nuit, pendant le passage en ligne), mot pour mot : « Ça catégories bien les items un peu difficile ?
+  Les bonnes famille ou sous familles, catégorie ? » ; puis « Même seul jamais eu en stock m », « ?* » (lu : « même ceux jamais eus en
+  stock ? » ; un article neuf, technique ou de marque, reçoit-il la bonne famille et la bonne catégorie ? D273d).
+- **Local loin du vrai** (01.11, nuit), à « La lecture range bien les articles difficiles ; l'écran en ligne, lui, se trompe encore. »,
+  mot pour mot : « C'est assez grave comme problème, ça veut dire que les tests local sont très loin de la vérité... » (lu : ce qu'on
+  teste en local doit dire ce qu'il verra en ligne ; un écart entre les deux est un défaut, pas un détail. D273a à D273d, L28).
+- **Cache lié au moteur, et trop d'Autres** (01.11, nuit). Il cite ma recommandation puis répond, mot pour mot : « Cache de lecture : le lier au
+  moteur, pour qu'une pièce déjà lue soit relue après un changement. Une relecture coûte quelques centimes. Je le recommande yes ». Il ajoute
+  « Les articles difficiles, même jamais en stock / Top mais j'ai l'impression qu'il y a trop de d'items en autre ? ». Lu : « yes » est son
+  accord pour lier le cache au moteur et redéployer aiTask (D274). « Trop d'items en autre » veut dire trop d'articles dans la bande Autres (D273e).
+- **La vue Dépense ne respecte ni ses demandes ni sa vue de base** (01.11, nuit, sur ma capture 390 de sa commande, deux zones
+  entourées : le bouton « Créer « CARABELGE· Mischung: Einzelprodukt, Schrotung: geschrotet [+CHF 0.10] » » et « 100 Gram0,0101 », avec
+  la maquette p3c-3 au repos), mot pour mot : « Il y a plein de problème sur cette vue, déjà pas de traduction. Ensuite le concassage
+  n'est pas un produit mais un état du malt. C'est pas du tout compacte, comme demandé, et ça créé de base automatiquement un nouveau
+  produit du ça arrive pas à lié à un stock. Pas besoin d'afficher autant. Ça respecte pas trop les demandes.... Ni la vue de base. »
+  (lu : les options imprimées dans le nom — « Mischung: Einzelprodukt », « Schrotung: geschrotet [+CHF 0.10] » — ne sont ni traduites ni
+  comprises ; « geschrotet » (concassé) est l'état du malt, une pastille ↳ sur sa rangée avec son supplément, jamais une partie du nom
+  ni un produit ; une rangée tient sur une ligne, comme p3c-3 ; une ligne d'ingrédient qu'aucun article ne relie devient d'office un
+  nouvel article, montré par le picto « nouveau », sans bouton « Créer » ; le reste se replie. D275).
+- **L'enrichissement des nouveaux articles** (01.11, nuit), mot pour mot : « Une fois produits ajouter, vue fermé et tout, ça créé une
+  procédure pour enrichir le nouveau produit du stock btw, comme demandé il y a un moment » (lu : la demande du 31.10, ligne « Peut être à
+  la fin quand on valide la facture, en arrière plan », n'est pas faite ; après Confirmer, la vue fermée, une procédure en arrière-plan
+  remplit la fiche de chaque nouvel article, sans doublon de fiche. D276).
+- **La vue de base, c'est p3c-3 et la suite** (01.11, nuit), à « ta maquette choisie (p3c-3) », mot pour mot : « non c'était un exemple,
+  il y a une quelques améliorations entre temps » (lu : la base est p3c-3 avec ce qu'il a demandé depuis : quantité en gras et colonnes
+  alignées (D248), sceau QR (D246), port « Total seulement » / « dont port » (D249), noms sans doublon (D261a), raccourcis de date
+  (D262b), familles pour tous les types (D262d), quatre langues lues en français (D271). D275).
+- **Les unités, trois cas** (01.11, nuit, sur la même capture, « 85 ? », « 2 ? », « 1 ? », « 11 ? » entourés), mot pour mot : « Pour les
+  unités, c'est quand même facile à devenir ?? SI il y a un doute, ça me flag mais de base ça essaie d'auto remplir. Il y a 3 cas de
+  figure: sûr ou quasiment sûr, rien. / Pas sûr mais repis, flag jaune. Je contrôle / Ne sait pas, aucune idée, flag rouge, je dois
+  remplir ou corrigé » (lu : « devenir » = « deviner », « repis » = « repris » ; une unité absente ou illisible est déduite (prix ×
+  quantité = montant, famille, article relié, sachet de levure) ; sûre : rien d'affiché ; probable : remplie avec un signal jaune, qu'il
+  contrôle ; inconnue : signal rouge, à remplir. Jamais « ? » quand l'unité se déduit. D277).
+  Puis, à « Ensuite je prépare les trois niveaux d'unité », mot pour mot : « pas que pour les unités mais globalement pour tout » (lu :
+  chaque valeur de la Dépense — unité, quantité, prix, famille, article relié, date, fournisseur, total — suit les trois cas : sûre, rien ;
+  reprise sans certitude, jaune, il contrôle ; inconnue, rouge, il remplit. Un seul code de signal pour tout l'écran. D277).
+- **Ajouter un article** (01.11, nuit), mot pour mot : « Normalement, pas besoin mais est-ce possible d'ajouter un item ? » (lu : ajouter
+  une ligne à la main dans la Dépense ; elle existe, « + Ajouter une ligne » au pied de la liste, 35 lignes au plus ; elle reste dans la
+  refonte, et une ligne ajoutée vide porte le signal rouge de ses valeurs à remplir, D277).
+- **Un seul problème réglé** (01.11, nuit, sur la capture 390 après D273f, « 100 g × 0,0101 » entouré et coché), mot pour mot : « La ça
+  règle que un des problèmes cité » (lu : la quantité ne court plus sur le prix, mais traduction, concassage, compacité, bouton « Créer »
+  et unités restent ; D273f n'est qu'un des défauts de D275 à D277).
+- **Les noms en français, et le budget** (01.11, nuit), à « Pour f5, la lecture doit rendre la désignation en français, ce qui demande un
+  changement d'aiTask, mesuré au banc avant ton choix », mot pour mot : « Pour ce dernier, il faudra modifier aiTask, à mesurer au banc
+  j'autorise ce changement, hausse aussi le total à 49chd pour l'ia » (lu : accord pour ajouter la désignation en français à la lecture
+  d'aiTask et la redéployer, si le banc ne montre aucune perte ; « 49chd » = 49 CHF : le plafond cumulé des appels IA payants du banc et
+  des essais passe de 25 à 49 CHF. D278).
+  Puis, mot pour mot : « Chf* » (lu : « 49chd » = 49 CHF, confirmé).
+- **Le nom d'un nouvel article venu d'une facture étrangère** (02.11), sur la page de choix c-nom
+  (https://claude.ai/artifact/5zPHv4HDbgPzhnwNchQmBg), à « Quelle option veux-tu : B seule, B + D, ou une autre combinaison ? », mot pour
+  mot : « Oui b c'est très bien » (lu : B seule. L'article entre au stock sous son nom français ; le nom imprimé est gardé et se lit à la
+  fiche, en petit, « Sur la facture : … » ; toute facture suivante du même produit, quelle que soit sa langue, se relie à cet article.
+  Ni C (deux noms dans la liste), ni D (fusion des doublons déjà là), ni E (nom proposé en jaune), ni F (lien d'une autre langue proposé
+  en jaune). D289).
+- **Les accords groupés** (02.11), sur ma liste, mot pour mot, chaque réponse après sa ligne :
+  « Format des fiches : tes articles de stock auraient un champ de plus pour leur fiche. Ce champ est le seul blocage avant de brancher le
+  remplissage automatique de la fiche d'un nouvel article après « Confirmer » ; le code est prêt. Ok » (lu : accord du schéma
+  `StockItem.fiche` élargi, f4 branchement 6 ; les branchements 1 à 5 se posent. D290) ;
+  « IA pour remplir les fiches : éteinte par défaut ; l'allumer en ligne te coûterait des appels Gemini. Combien en plus, c'est comme
+  l'autocomplete, non ? » (lu : une question, pas un accord ; l'IA de l'enrichissement reste éteinte en ligne jusqu'à sa réponse) ;
+  « Poids de l'app au démarrage : le remplissage des fiches ajoute environ 18 Ko ; je recommande d'accepter. Ok » (lu : +18 Ko acceptés) ;
+  « Push des commits sur GitHub. Ok » (lu : accord de pousser la branche ; pas de PR ni de fusion) ;
+  « Choix encore ouverts : D273b (version du cache de lecture) et D261c. Montre moi » (lu : les montrer en pages de choix. D273c, la
+  version du cache, est déjà tranchée par son « yes » de D274 ; le choix ouvert est D273b, plusieurs captures pour une dépense, et
+  D261c, la lenteur de la lecture).

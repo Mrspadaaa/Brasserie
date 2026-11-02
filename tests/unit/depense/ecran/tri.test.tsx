@@ -31,7 +31,15 @@ const lire = async (resultat: any = lecture) => {
   await screen.findByRole('region', { name: 'Vérification du justificatif' });
   return view;
 };
-const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelectorAll('[data-purchase-line]')[n - 1]) as HTMLElement;
+const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelector('[data-dp-ligne="line-' + n + '"]')) as HTMLElement; // R1 : par id, jamais par rang
+const prixKg = (view: { container: HTMLElement }, n: number) => ligne(view, n).querySelector('[data-dp-prixkg]')?.getAttribute('aria-label') ?? ''; // la pastille « ✓ 2,40/Kg » et son nom accessible
+/** « Sans prix avec mouture » sur TOUTE la rangée (D3) : ni pastille, ni nom accessible, ni phrase « 2,40/Kg avec mouture » (prixKg() rend '' si absent : il passerait d'office).
+ *  L'en-tête « avec mouture » du tableau du plateau n'est pas un prix : seule la phrase prix + unité compte. */
+const sansPrixMouture = (view: { container: HTMLElement }, n: number) => {
+  expect(ligne(view, n).querySelector('[data-dp-prixkg]')).toBeNull();
+  expect(ligne(view, n).querySelector('[aria-label*="avec mouture"]')).toBeNull();
+  expect(ligne(view, n).textContent).not.toMatch(/[\d,]+\/\S+ avec mouture/);
+};
 beforeEach(() => {
   cleanup(); vi.restoreAllMocks(); state.saved.mockReset(); state.scanned.mockReset(); state.transactions = [];
   vi.spyOn(FirebaseAuthService, 'ensureDriveAccessToken').mockResolvedValue('synthetic-token'); vi.spyOn(FirebaseAuthService, 'hasDriveAccess').mockReturnValue(true); vi.spyOn(FirebaseAuthService, 'prepareGoogleLogin').mockResolvedValue();
@@ -41,15 +49,15 @@ afterEach(cleanup);
 describe('R1 : un prix « avec mouture » n’est montré que si le catalogue l’écrira', () => {
   it('malt relié + mouture de service rattachée : « 2,40/Kg avec mouture » ; malt non relié : rien', async () => {
     const view = await lire();
-    expect(ligne(view, 1).textContent).not.toMatch(/avec mouture/);
+    sansPrixMouture(view, 1);
     fireEvent.click(view.container.querySelector('[data-dp-mouture-tous]')!);
-    expect(ligne(view, 1).textContent).toMatch(/✓ 2,40\/Kg avec mouture/);
+    expect(prixKg(view, 1)).toMatch(/^2,40\/Kg avec mouture$/);
+    expect(ligne(view, 1).querySelector('[data-dp-prixkg]')!.textContent).toMatch(/✓ 2,40\/Kg/);
     fireEvent.click(screen.getByRole('switch', { name: 'Mettre en stock, ligne 1' }));
-    expect(ligne(view, 1).textContent).not.toMatch(/avec mouture/);
+    sansPrixMouture(view, 1);
   });
   it('C16 : le tableau des moutures dit « lu 2,30 → 2,40 /Kg » seulement pour un malt relié, et « Laisser en service » ne lie rien', async () => {
     const view = await lire();
-    fireEvent.click(screen.getByRole('button', { name: 'Tableau des moutures' }));
     const tableau = view.container.querySelector('[data-dp="tableau-moutures"]') as HTMLElement;
     expect(tableau.textContent).toMatch(/2,30.*→.*2,40/);
     fireEvent.click(within(tableau).getByRole('button', { name: 'Laisser en service' }));
@@ -65,8 +73,10 @@ describe('R6 : « Créer un nouvel article » d’un produit déjà au stock dev
     fireEvent.change(screen.getByLabelText('Stock ligne 18'), { target: { value: 'none' } });
     fireEvent.change(screen.getByLabelText('Stock ligne 18'), { target: { value: 'new' } });
     expect(screen.getByLabelText('Stock ligne 18')).toHaveValue('existing');
-    expect(within(ligne(view, 8)).getByRole('button', { name: 'Créer « Target bis »' })).toBeInTheDocument();
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Choisir un autre article' }));
+    // D275 (voie f3) : un bis est nouvel article d'office ; la barre jaune le garde (HEAD : « Créer « Target bis » »).
+    expect(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Stock ligne 8')).toHaveValue('new');
+    fireEvent.click(within(ligne(view, 8)).getAllByRole('button', { name: 'Choisir un autre article' })[0]);
     expect(screen.getByLabelText('Stock ligne 8')).toHaveValue('existing');
   });
 });
@@ -76,16 +86,17 @@ describe('R10, D229 : un geste ne fait jamais monter le statut ; une valeur tap�
     await lire();
     fireEvent.click(document.querySelector('[data-dp="tuile-tva"]')!);
     fireEvent.click(screen.getByText('proposé · HT vide').closest('button')!);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
-    expect(screen.queryByText('Lecture vérifiée')).toBeNull();
+    expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Lecture vérifiée/ })).toBeNull();
   });
   it('une valeur fausse tapée garde sa valeur, crée un point (chip « Total ») et ne vérifie rien', async () => {
     await lire();
     const total = screen.getByLabelText('Total TTC en CHF');
     fireEvent.change(total, { target: { value: '70' } }); fireEvent.blur(total);
     expect(total).toHaveValue('70,00');
-    expect(Array.from(document.querySelectorAll('[data-dp-chip]')).some(c => /Total/.test(c.textContent ?? ''))).toBe(true);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
+    // D277 (voie f3) : la rangée des points part ; le point du total se dit sur le total lui-même (HEAD : une chip « Total »).
+    expect(document.querySelector('[data-dp="total-niveau"]')?.getAttribute('data-dp-niveau')).toMatch(/^(repris|inconnu)$/);
+    expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
   });
 });
 
@@ -100,8 +111,10 @@ describe('C3, C1, C5, C6, C8, C14 : ce qu’il lit', () => {
     expect(within(panneau).getByRole('button', { name: 'C’est la date' }).className).toMatch(/bg-ebc-straw/);
     expect(within(panneau).getByRole('button', { name: 'C’est la date' }).className).toMatch(/text-cave-950/);
     expect(within(panneau).getByText('payé le · supposée')).toBeInTheDocument();
-    expect(within(panneau).getByRole('button', { name: 'Hier' })).toBeInTheDocument(); // le formulaire reste monté (sans `hidden`)
-    expect(within(panneau).getByRole('button', { name: 'Autre date' })).toBeInTheDocument();
+    // D233 : une seule date par défaut (celle de l'achat) ; le champ de la date du paiement n'apparaît que sur « Autre date ».
+    expect(within(panneau).queryByRole('button', { name: 'Hier' })).toBeNull();
+    fireEvent.click(within(panneau).getByRole('button', { name: 'Autre date' }));
+    expect(within(panneau).getByRole('button', { name: 'Hier' })).toBeInTheDocument();
     fireEvent.click(within(panneau).getByRole('button', { name: 'C’est la date' }));
     expect(screen.queryByText('supposée')).toBeNull();
   });
@@ -109,13 +122,18 @@ describe('C3, C1, C5, C6, C8, C14 : ce qu’il lit', () => {
     const view = await lire();
     const resume = ligne(view, 1).querySelector('summary')!;
     expect(resume.querySelector('b')!.textContent).toBe('Maris Otter');
-    expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter, Kg');
-    expect(resume.querySelector('[class*="chevron"]')).not.toBeNull();
+    // D275 (voie f3) : le suffixe d'unité sort du nom (uniteDuNom) ; l'imprimé reste au plateau (HEAD : libellé « Maris Otter, Kg »).
+    expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter');
+    expect(ligne(view, 1).querySelector('[data-dp-imprime]')!.textContent).toContain('Maris Otter, Kg');
+    // Pas de chevron par ligne : aucun pictogramme chevron (lucide pose la classe `lucide-chevron-*`) et le marqueur qui neutralise le chevron global des `summary` est là.
+    expect(resume.querySelector('svg[class*="chevron"]')).toBeNull();
+    expect(resume.querySelector('.dp-no-chevron')).not.toBeNull();
   });
   it('C6 : le compte de la preuve fait 23 (toutes catégories), sans phrase d’aide', async () => {
     const view = await lire();
     const compte = view.container.querySelector('[data-dp="compte-liens"]')!;
-    const somme = Array.from(compte.querySelectorAll('b')).reduce((n, b) => n + Number(b.textContent), 0);
+    // D277 : « n proposé », « à contrôler », « à remplir » sont des comptes de niveau, hors de la partition des liens (HEAD : toutes les « b » du compte).
+    const somme = Array.from(compte.querySelectorAll('[data-va]:not([data-dp-niveau]) b')).reduce((n, b) => n + Number(b.textContent), 0);
     expect(somme).toBe(23);
     expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).not.toMatch(/Certains points restent à confirmer/);
   });
@@ -142,7 +160,7 @@ describe('R2 : panneaux toujours montés, IntersectionObserver absent, « À rev
     state.stocks = stock();
     render(<ExpenseSheet onClose={() => {}} onSaved={() => {}} apercu={apercu}/>);
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
-    fireEvent.click(screen.getAllByRole('button', { name: 'g' })[0]);
+    // D275 (voie f3) : Sabro « 30 » prend l'unité de ses voisines (g, jaune) ; plus de « g » à toucher (HEAD : clic sur « g »).
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
     await waitFor(() => expect(enregistrer).toHaveBeenCalledTimes(1), { timeout: 4000 });
     const revoir = await screen.findByText(/À revoir/);
@@ -183,17 +201,15 @@ describe('Reprise (01.11) : les détails du critique et du relecteur', () => {
     expect(region.textContent).not.toContain('Même fournisseur et même total');
     expect(region.querySelectorAll('p')).toHaveLength(2); // le titre et la ligne de conséquence
   });
-  it('critique R3 : la barre est colorée par lien, trois teintes distinctes, le noir réservé au « sans stock »', async () => {
+  it('p3c-3 : la barre est teintée par catégorie (malt, houblon, levure), hachurée pour un point ouvert ; le lien reste au picto de la rangée', async () => {
     const view = await lire();
     const segments = Array.from(view.container.querySelectorAll('[data-dp="barre"] i')) as HTMLElement[];
     expect(segments).toHaveLength(23);
+    expect(new Set(segments.map(s => s.getAttribute('data-dp-groupe')))).toEqual(new Set(['malt', 'houblon', 'levure']));
     const teintes = new Set(segments.map(s => (s.className.match(/bg-[\w/-]+/) ?? [''])[0]));
-    for (const t of ['bg-attention', 'bg-area-finances', 'bg-hop']) expect(teintes.has(t) || t === 'bg-area-finances').toBe(true);
-    expect(segments[0].className).toContain('bg-attention'); // relié : ocre
-    expect(segments[1].className).toContain('bg-hop'); // mouture (service) : vert
-    expect(segments[0].className).not.toContain('bg-cave-50');
-    const noirs = segments.filter(s => s.className.includes('bg-cave-50'));
-    expect(noirs.length).toBeGreaterThan(0); // les lignes sans stock
+    expect(teintes.size).toBe(3); // trois teintes distinctes
+    const hachures = segments.filter(s => s.className.includes('dp-p3c-hachure'));
+    expect(hachures.length).toBeGreaterThan(0); // les points ouverts (Target, Hallertauer, Sabro, les 5 moutures)
   });
   it('critique R5 : « Envoi au Drive · 0,7 Mo » pendant l’envoi quand la taille est connue', async () => {
     let fin: (r?: any) => void = () => {};
@@ -203,15 +219,19 @@ describe('Reprise (01.11) : les détails du critique et du relecteur', () => {
     const apercu = { outcome: { ok: true, result: JSON.parse(JSON.stringify(lecture)), proofDataUrl: '', fileName: 'f.pdf', mimeType: 'application/pdf' }, fichier: { name: 'f.pdf', size: 735721, type: 'application/pdf' }, stocks: stock(), transactions: [], etat: '3', drive: 'ok', reseau: true, enregistrer } as any;
     render(<ExpenseSheet onClose={() => {}} onSaved={() => {}} apercu={apercu}/>);
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
-    fireEvent.click(screen.getAllByRole('button', { name: 'g' })[0]);
+    // D275 (voie f3) : Sabro « 30 » prend l'unité de ses voisines (g, jaune) ; plus de « g » à toucher (HEAD : clic sur « g »).
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
     await waitFor(() => expect(document.querySelector('footer')!.textContent).toContain('Envoi au Drive · 0,7 Mo'));
     fin(undefined);
   });
-  it('critique R6 : « Sabro® » s’écrit « Sabro » dans la chip', async () => {
-    await lire();
-    const chip = Array.from(document.querySelectorAll('[data-dp-chip]')).map(c => c.getAttribute('aria-label') ?? '').find(t => /unité/.test(t));
-    expect(chip).toMatch(/^3 Sabro unité$/);
+  it('critique R6 (D275, voie f3) : Sabro n’a plus de chip « unité » : « 30 g » se déduit de ses voisines', async () => {
+    const view = await lire();
+    const chip = Array.from(document.querySelectorAll('[data-dp-chip],[data-dp-rond]')).map(c => c.getAttribute('aria-label') ?? '').find(t => /unité/.test(t));
+    expect(chip).toBeUndefined();
+    const qte = ligne(view, 20).querySelector('[data-dp-qte]')!;
+    expect(qte.textContent).toBe('30 g');
+    expect(qte.hasAttribute('data-dp-niveau')).toBe(false); // sûre : deux voisines impriment « g »
+    expect(ligne(view, 20).querySelector('[data-dp-nom]')!.textContent).not.toMatch(/®/);
   });
   it('relecteur R6 : le choix « Créer » d’un produit déjà au stock dit « relié à X, nom déjà au stock »', async () => {
     await lire();

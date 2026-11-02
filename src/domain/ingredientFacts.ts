@@ -5,6 +5,7 @@ import { alcoholPercentUnit, readYeastDocumentaryNotes, readYeastFactValue, read
   type YeastDocumentaryNote, type YeastDocumentaryNotes, type YeastTechnicalFact, type YeastTechnicalSelections } from '../../functions/src/yeastTechnicalFacts';
 import type { YeastCandidateDocumentaryFields } from '../../functions/src/yeastDocumentarySheet';
 import { readYeastDocumentaryView as readSharedYeastDocumentaryView } from '../services/recipeDraft';
+import { origineDesValeurs } from './stock/ficheValeurs';
 
 export type IngredientKind = 'levure' | 'malt' | 'houblon';
 
@@ -631,13 +632,17 @@ export function factsForStock(kind: IngredientKind, facts: IngredientFacts): Par
   };
 }
 
+/**
+ * Les faits d'un article de stock pour une recette. Voie f4-enrichir (P2) : une valeur remplie en ligne ou retenue d'un autre article, pas encore
+ * vue par le brasseur, sert (elle comble le trou) mais sous l'origine `ai`, jamais `personal` ; une valeur du catalogue, sous `manufacturer`.
+ */
 export function factsFromStock(item: StockItem): IngredientFacts {
   return sanitizeFacts({
     found: true,
     name: item.name,
     fermentation: item.yeastFermentationFacts,
     technicalFacts: item.yeastTechnicalFacts,
-    origin: 'personal',
+    origin: origineDesValeurs(item),
     flocculation: item.yeastFlocculation,
     alcoholTolerancePct: item.yeastAlcoholTolerancePct,
     note: item.yeastNotes,

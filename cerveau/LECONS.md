@@ -7,7 +7,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
   fausse, un travail refait. Avant de clore le tour.
 - **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
 - **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
-- **Taille** : 170 lignes, 30 leçons et 8 mécanisées au plus. Au plafond, une entrée impose une sortie : fusion, ligne « Mécanisées », [[controles-mecanises]] (`systeme.mjs cerveau`, `charge`, `remplaces`).
+- **Taille** : 170 lignes, 30 leçons et 8 mécanisées au plus. Au plafond, une entrée impose une sortie : fusion, ligne « Mécanisées », [[controles-mecanises]].
 
 ## Comprendre la demande
 
@@ -21,14 +21,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L02 — Expliquer une chose qui marche, ce n'est pas la refaire
 - Erreur : 19.10, lots 12 et 12b. Il voulait une explication à l'appui long ; les lots ont refait la carte. « Tu as pas du tout bien compris le besoin ».
 - Cause : le comportement actuel n'a pas été lu (l'appui long ouvrait déjà la fiche).
-- Faire : lire ce que la base fait déjà à cet endroit, garder l'actuel au repos et n'ajouter qu'un petit élément. Quand il demande de challenger, rendre l'analyse avant de construire.
+- Faire : lire ce que la base fait déjà, garder l'actuel au repos et n'ajouter qu'un petit élément. Quand il demande de challenger, rendre l'analyse avant de construire.
 - Rôles : pilote, auteur
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155).
+- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155). 01.11 : D262d.
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -72,48 +72,41 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ».
+- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ». 01.11 : Dépense testée au bureau ; au téléphone, l'écran sautille.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien.
-- Rôles : relecteur, auteur, exécutant
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`). Une reprise sur événement : rechargement et réseau rendu, joués dans Chrome (01.11).
+- Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit) ; 20.10, « épicé » critiqué une deuxième fois (lots 15 et 21), la première plainte n'étant pas un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD et sur la version voulue avant la voie (r14 ; GESTES, 31.10).
+- Faire : tout message, question comprise, va mot pour mot dans SPEC au tour même (01.11 : six oubliés). Ligne à DEFAUTS-RECURRENTS avec ses mots, contrôle qui échoue sur la version rejetée, puis corriger. Rien montré sans LOT OK. Après deux refus du même élément, changer de genre de solution, et partir d'une référence qu'il connaît ([[beermaverick-radar]]). Une plainte ambiguë : chaque lecture devient un axe de variantes, aucune un contrôle bloquant (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD et sur la version voulue avant la voie ; un état de banc neuf, par une fonction pure aussi.
 - Rôles : pilote, auteur
 - Contrôle : `systeme.mjs mission` (portée), cablage (« OK 0/0 »)
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
 - Cause : 83 % de ses mots (vin blanc, groseille) sont hors des 12 familles et sortent du dessin ; nul n'a confronté le rendu à sa réputation ([[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (un linalol d'un autre houblon ; 31.10 : EBC au menu, « ? » à côté). Un critère de rang tiré de son attente se teste d'abord sur la donnée (27.10 : radar entier, f8 ; Calypso, 1 % des DIPA).
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (31.10 : EBC au menu, « ? » à côté). Un critère tiré de son attente, et la colonne « aujourd'hui » d'un choix, se testent d'abord sur la donnée et le code (27.10 : radar entier ; 02.11 : Pilsner déjà relié).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100)
 
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie.
+- Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie, sources remises à HEAD.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins (`git commit -- <chemins>`). Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement changé : `grep` des lecteurs (module compris), tests rejoués (D79, c8) ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins. Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement, champ nourri d'ailleurs : `grep` des lecteurs (module compris), tests rejoués ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence : `git show HEAD:<f>` vers `os.tmpdir()` ; rien remis à HEAD sans copie vérifiée. Déployer ou jouer un banc Chrome d'un dossier que nul autre n'écrit (Vite recharge, 01.11), puis lire « found N files » et la page servie.
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Plafond de voie ≤ maxTurns ; un long livrable s'écrit section par section.
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Un long livrable s'écrit section par section. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
-- Contrôle : `node scripts/agents/systeme.mjs agents`
-
-### L28 — Charger les skills de méthode avant de planifier, surtout après une reprise
-- Erreur : 24.10, après une reprise, six voies sans `voies` ni `conseil`.
-- Cause : le résumé précédait le système.
-- Faire : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
-- Rôles : pilote
-- Contrôle : aucun
+- Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns (01.11)
 
 ## Décider
 
@@ -127,16 +120,16 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond.
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif (01.11 : `maxItems`).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
-- Erreur : 22.10, le lot 22 attendait quatre questions fermées ; aucune mini maquette, aucune planche publiée.
-- Cause : le pilote a traduit « au brasseur de trancher » (conseil) en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
-- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page (artefact privé). Une page par choix, ses variantes côte à côte avec sa référence (D126).
+- Erreur : 22.10, quatre questions fermées au lot 22, sans mini maquette ni planche. 01.11 : « Vue TVA : à choisir », sans page.
+- Cause : « au brasseur de trancher » (conseil) traduit en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
+- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote la publie (artefact privé) ; sans page : « à dessiner ». Une page par choix, ses variantes côte à côte avec sa référence (D126).
 - Rôles : pilote, conseil
-- Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix ; `controle-page-choix.mjs` (D126)
+- Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
 ### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
 - Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur et le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « trop d'usage de sonnet et hiku ».
@@ -159,8 +152,13 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, critique, conseil
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
+### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
+- Erreur : 01.11, une commande en ligne : noms doublés, faux écart, 27 s. « en 10s, un seul test, j'ai trouvé tout ça »
+- Cause : pièces fictives, écran jamais jugé contre la pièce.
+- Faire : une vraie pièce par genre dans l'app, champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local se dit « non déployé » (01.11).
+- Rôles : pilote, exécutant, relecteur
+- Contrôle : au banc (D261 à D263)
+
 ## Mécanisées
 
-- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les `\b` de D98 devenus 0x08) : `systeme.mjs cablage` les refuse. Un critère n'imprime jamais son jeton sans condition (faux vert).
-- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 21 (44 v0) a battu le lot 22 (« vraiment plus qualitatif »). `systeme.mjs mission` : 12 à 16 v0 en 3 ou 4 séries (D204), chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

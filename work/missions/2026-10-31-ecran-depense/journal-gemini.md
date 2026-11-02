@@ -1,5 +1,7 @@
 # Journal Gemini — tests Dépense en ligne (D210, D217)
 
+Plafond (D278, 01.11, nuit : « hausse aussi le total à 49chd pour l'ia », « Chf* ») : 49 CHF cumulés pour le banc et les essais en ligne réunis (au 01.11, 22 h : 7,99 CHF au banc, environ 0,67 CHF en ligne) ; une passe au plus 3 CHF, lancée par le pilote seul.
+
 Bornes : 10 CHF en tout (D217), 40 lectures au plus, une seule dépense « TEST pilote » à la fois, supprimée avec son fichier Drive
 dans la même séance, rien en stock. Cumul relu avant chaque appel. Jamais dans `npm test`.
 
@@ -10,6 +12,22 @@ en entrée et 7,5 CHF en sortie ; 3 appels de 5 100 jetons de sortie au plus, do
 |---|---|---|---|---|---|
 | — | — | (aucun appel avant le 01.11) | — | 0 | 0 CHF |
 | 1 | 01.11.2026 06:57 (UTC+1) | lecture d'une facture fictive, version 5f224fc3 en ligne ; « Lectures d'accord 2/2 » | `ticket-test-pilote.png` (fictif, une ligne de service, 35 CHF) | 0,0155 CHF | 0,0155 CHF |
+| 2 | 01.11.2026 15:31 (UTC+1) | C★v8 + QR en ligne (D254, D255) : deux Flash-Lite (1 819 et 3 043 ms), pas de 3.8 ; QR lu, état « écart » sur la date | `src/ui/depense/apercu/qr/facture-qr.png` (fictive, section de paiement seule) | 0,0031 CHF | 0,0186 CHF |
+| 3 | 01.11.2026 15:33 (UTC+1) | même chose sur le PDF (pdf.js en ligne) : deux Flash-Lite en désaccord (3 808 et 4 542 ms), la 3.8 (8 933 ms) ; QR lu, tout « = lu » | `src/ui/depense/apercu/qr/facture-qr.pdf` (fictive, 7 lignes, 110,40 CHF) | 0,0270 CHF | 0,0456 CHF |
+
+Lectures 2 et 3 : coût calculé depuis les jetons des journaux d'`aiTask` au tarif de `geminiCosts.ts` (`amount`), car le document du
+mois (`brewerAiCosts/2026-11`, 186 369 µCHF à 15:34) compte aussi l'usage IA du brasseur pendant la journée. Le même PDF renvoyé deux
+fois de plus est servi par le cache (`cached: true`) : aucun appel, aucun coût. Aucune dépense enregistrée (feuilles fermées sans
+« Confirmer ») ; Finances › Opérations : « À payer 0 », rien en stock, rien dans le Drive.
+
+Défaut vu à la lecture 3 : les sept montants de ligne sont lus (somme 110,40 = total imprimé), mais la 3.8 les range en `price` avec
+`quantity` et `amountTTC` vides ; l'écran montre « TTC (CHF) — » sur chaque ligne, « Quantité × prix 0/7 », « Somme des lignes non
+vérifiée ». La fixture n'a qu'une colonne de montants, sans en-tête. Suite : voie `fn-montant-seul` (mission 2026-11-01-bascule-lecture).
+
+| 4 | 01.11.2026 16:34 (UTC+1) | contrôle après le déploiement du correctif (D257, révision aitask-00043-raz) : deux Flash-Lite (3 451 et 4 459 ms), pas de 3.8 ; 7 montants de ligne, « Somme des lignes = imprimé 110,40 » | `voies/fn-montant-seul/facture-qr-d257.pdf` (la fixture du PDF, un commentaire ajouté après `%%EOF` pour une empreinte neuve) | 0,0096 CHF | 0,0552 CHF |
+
+Lecture 4 : les deux Flash-Lite ont rangé les montants en `amountTTC` (`price` vide) : la règle `montantDeLigne` n'a pas eu à jouer sur
+cette lecture ; elle est prouvée par les tests et le rejeu du banc (D256). Feuille fermée sans « Confirmer » ; « À payer 0 ».
 
 Coût lu dans Firestore, en lecture seule : `brewerAiCosts/2026-11`, `usedMicroChf` = 15 509, `reservedMicroChf` = 0. Le document du mois
 a été créé par cet appel (05:57:29 UTC) : tout son montant vient de ce test.

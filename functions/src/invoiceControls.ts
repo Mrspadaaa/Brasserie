@@ -174,6 +174,8 @@ export function sumCheck(items: Array<Pick<CoreItem, 'amountTTC'>>, amountTTC: n
   const ht = toCents(amountHT);
   if (ht !== null && sum === ht) return { points: [], sum: { statut: 'ok', base: 'HT' } };
   const gap = ttc - sum;
+  // D261b : un total imprimé multiple de 5 centimes qui est la somme des lignes arrondie au 5 centimes le plus proche (Rundung suisse) n'est pas un écart.
+  if (ttc % 5 === 0 && Math.abs(gap) <= 2 && Math.round(sum / 5) * 5 === ttc) return { points: [], sum: { statut: 'ok', base: 'TTC' } };
   const hint = Math.abs(gap) <= 5 ? ' (un arrondi imprimé, Rundung, est-il une ligne omise ?)' : '';
   return {
     points: [makePoint('somme-ecart', 'ecart', 'amountTTC', null, {
@@ -196,6 +198,18 @@ export function totalsCheck(amountHT: number | null, tvaAmount: number | null, a
       message: 'Les totaux HT + TVA ne correspondent pas au TTC du document.',
     }),
   };
+}
+/** D272 — Un « HT » lu qui est un sous-total TTC. Sur une facture aux prix TVA comprise, la lecture prend parfois le sous-total des articles
+ * (avant port) pour le HT : HT + TVA ≠ TTC, et ce montant égale la somme des lignes hors port, elles-mêmes au TTC (leur somme est le TTC).
+ * Il n'est alors pas tenu pour lu (l'appelant le met à null) ; un HT n'est jamais calculé. Un HT faux d'une autre forme garde son écart
+ * (un HT égal au TTC aussi : le nullifier dans une seule des deux lectures créerait un désaccord qui paie une 3.8). */
+export function htEstUnSousTotalTTC(amountHT: number | null, tvaAmount: number | null, amountTTC: number | null, items: Array<Pick<CoreItem, 'kind' | 'amountTTC'>>): boolean {
+  const ht = toCents(amountHT), vatCents = toCents(tvaAmount), ttc = toCents(amountTTC);
+  if (ht === null || vatCents === null || ttc === null || vatCents <= 0 || Math.abs(ht + vatCents - ttc) <= 2) return false;
+  const lignes = items.map(item => ({ kind: item.kind, cents: toCents(item.amountTTC) }));
+  if (!lignes.some(l => l.kind === 'shipping') || lignes.some(l => l.cents === null)) return false;
+  const somme = lignes.reduce((s, l) => s + l.cents!, 0), horsPort = lignes.filter(l => l.kind !== 'shipping').reduce((s, l) => s + l.cents!, 0);
+  return Math.abs(somme - ttc) <= 2 && Math.abs(ht - horsPort) <= 2;
 }
 /** Le total TTC est absent ou non positif : le point (message identique à la phrase d'`issues` de `normalizeInvoiceScan`). */
 export function totalAbsentPoint(amountTTC: number | null): ScanPoint | null {

@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-24",
+ "maj": "2026-11-01",
  "items": [
   {
    "id": "p-l5a-comparer-p03-p01",
@@ -1114,6 +1114,18 @@
    "date": "2026-10-24",
    "source": "SPEC-BRASSEUR.md, § 1 « Le rail, côté froid » (D123). Sa capture de téléphone n'est pas archivée : la capture b est le rejeu de la voie p22 sur la maquette 5345f6ad, Nugget glissé vers la post-fermentation",
    "hors_image": "geste : le rail se juge en glissant ; la capture b est un rejeu, pas la sienne. Hors du score, comme les autres items de geste."
+  },
+  {
+   "id": "c-tva-u3-bouteille",
+   "type": "classe",
+   "lot": "tva-v0",
+   "sujet": "tva",
+   "variante": "u3",
+   "capture": "work/missions/2026-10-31-ecran-depense/tva/v0/u3/captures/u3-annee-390.png",
+   "classe": "mitige",
+   "mots": "« Même si c'est un peu enfantin j'aime assez bien, après pas convaincu vraiment du design. Mais avoir une vrai vu comme ça c'est top, aussi il y a pas vraiment le roi, et la partie maron ? Ni vraiment combien je gagne ? »",
+   "date": "2026-11-01",
+   "source": "SPEC-BRASSEUR.md, § « La vue TVA, et la rénovation d'abord » (D259). Sa capture de téléphone (haut marron entouré) est hors Git ; la capture citée est celle de la voie, même état. Le critique l'avait classée 9 sur 12 (critique/tva/SYNTHESE.md)"
   }
  ],
  "amendements": [

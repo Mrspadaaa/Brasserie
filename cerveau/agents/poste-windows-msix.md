@@ -1,8 +1,8 @@
 ---
 name: poste-windows-msix
-description: Pièges du PC Windows avec Claude Desktop (MSIX, WMI, tâches planifiées, barres obliques inverses dans Bash, accents graves).
+description: Pièges du PC Windows avec Claude Desktop (MSIX, WMI, tâches planifiées, barres obliques inverses dans Bash, accents graves, déploiement sans functions/.env).
 type: agents
-maj: 2026-10-24
+maj: 2026-11-01
 sources: mémoire locale poste-claude-desktop-msix.md ; veille/relance-releve.ps1 ; veille/lancer-veille.ps1 ; veille-orchestrateur.ps1 (tous absents de ce worktree)
 ---
 
@@ -15,6 +15,7 @@ Constats du 12.10 au 16.10, sur le PC de l'utilisateur, en supervisant l'orchest
 - **Compteur de mots** (`mots-premier-ecran.mjs`) : « : », « ? » et « · » isolés comptent comme des mots (trois variantes du lot 22 l'ont appris trop tard) ; il compte aussi tout texte dont le haut est sous 844 px (même sous un dock fixe), et `{a}/{b}` en JSX fait deux mots (r5, 24.10). **Capture d'une page faite d'iframes** : fenêtre aussi haute que la page, sinon Chrome ne peint pas les iframes hors champ (cases vides, r1 du 22.10).
 - **Pas de Python sur le poste** : une retouche en série s'écrit en Node, par `split/join` ou par indices (22.10, r7g ; et `String.replace` interprète `$` dans la chaîne de remplacement, L26). Copier un générateur non suivi par git avant de le retoucher par script.
 - **gate-check coupe un critère à 120 s** : `controle-commun` sur huit pages le dépasse (22.10, séries r7). Découper le critère (quatre pages au plus).
+- **Déployer une fonction depuis une copie propre sans `functions/.env`** (règle : ce fichier n'est ni lu ni copié). Le CLI affiche « AUTHORIZED_ACCOUNTS est vide » pendant l'analyse locale, mais la production garde ses variables. Vérifié le 01.11 : `hopReclasserIA`, déployé ainsi le 27.10, a accepté le brasseur le soir même, et aucun journal de production ne contient cette phrase depuis. Après chaque déploiement, la chercher de nouveau dans les journaux.
 - `veille-orchestrateur.ps1` doit rester **ASCII** et a des fins de ligne CRLF : PowerShell 5.1 le lit en ANSI.
 
 Voir [[agents-sans-openai]].

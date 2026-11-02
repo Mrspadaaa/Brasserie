@@ -19,10 +19,11 @@ vi.mock('../../../../src/services/purchaseEntry', async importOriginal => ({ ...
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 
-const lire = async () => {
+const lire = async (patch?: (r: any) => void) => {
   Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
   state.stocks = { rawMaterials: (stockJson.articles as any[]).filter(a => a.name !== 'Verdant IPA').map(a => (a.name === 'Target' ? { ...a, name: 'Target 11.8%' } : a)), cleaning: [], equipment: [], kegs: [] };
-  state.scanned.mockResolvedValueOnce({ ok: true, model: 'rejeu', result: JSON.parse(JSON.stringify(lecture)) });
+  const resultat = JSON.parse(JSON.stringify(lecture)); patch?.(resultat);
+  state.scanned.mockResolvedValueOnce({ ok: true, model: 'rejeu', result: resultat });
   const view = render(<ExpenseSheet onClose={() => {}} onSaved={() => {}}/>);
   const file = new File(['%PDF-1.4\n'], 'facture-372765.pdf', { type: 'application/pdf' });
   Object.defineProperty(file, 'arrayBuffer', { value: async () => new TextEncoder().encode('%PDF-1.4\n').buffer });
@@ -39,24 +40,32 @@ afterEach(cleanup);
 describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
   it('les chips sont les points typés qui pèsent, l’argent d’abord ; le statut est « à confirmer » ; rien n’est écrit', async () => {
     const view = await lire();
-    const chips = Array.from(view.container.querySelectorAll('[data-dp-chip]')).map(c => c.getAttribute('aria-label') ?? c.textContent ?? '');
+    // Un nom par rôle (D6) : `data-dp-chip` = une chip qu'on touche (tuile, ChipsBar) ; `data-dp-rond` = le rond numéroté d'un compte (non cliquable, même numéro).
+    // Les ronds précèdent les tuiles dans le DOM : les points se lisent triés par leur numéro (l'ordre de risque), et ce numéro doit courir de 1 à n sans trou.
+    const chips = Array.from(view.container.querySelectorAll('[data-dp-chip],[data-dp-rond]')).map(c => c.getAttribute('aria-label') ?? c.textContent ?? '').sort((a, b) => Number.parseInt(a, 10) - Number.parseInt(b, 10));
+    const numeros = Array.from(new Set(chips.map(c => Number.parseInt(c, 10))));
+    expect(numeros).toEqual(numeros.map((_, i) => i + 1));
+    expect(view.container.querySelectorAll('[data-dp-chip][role="img"]')).toHaveLength(0); // aucun rond sous le nom d'une chip
     // C12 : les tuiles TVA et Payé portent les numéros 1 et 2 ; les chips suivantes ont les libellés de la maquette.
     expect(chips[0]).toMatch(/^1\s*TVA/);
     expect(chips[1]).toMatch(/^2\s*Règlement/);
-    expect(chips.some(c => /Sabro\S* unité/.test(c))).toBe(true);
+    expect(chips.some(c => /Sabro\S* unité/.test(c))).toBe(false); // D275 (voie f3) : l'unité de Sabro se déduit (g, jaune) ; plus de point « unité » (HEAD : true)
     expect(chips.some(c => /mouture ×5 \+1,50/.test(c))).toBe(true);
     expect(chips.some(c => /Target α/.test(c))).toBe(true);
-    expect(screen.getByText('Lecture à confirmer')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
     expect(view.container.textContent).not.toMatch(/assujetti/i);
     expect(state.saved).not.toHaveBeenCalled();
   });
   it('la pastille-mot dit l’effet au stock (« +6 kg », « unité à préciser ») ; aucune pastille sur la mouture', async () => {
     const view = await lire();
     const lignes = Array.from(view.container.querySelectorAll('[data-purchase-line]')) as HTMLElement[];
+    const ligneId = (id: string) => view.container.querySelector('[data-dp-ligne="' + id + '"]') as HTMLElement; // R1 : par id
     expect(lignes).toHaveLength(23);
-    expect(within(lignes[0]).getByText('+6 kg')).toBeInTheDocument();
-    expect(lignes[1].querySelector('[data-dp-pastille]')).toBeNull();
-    expect(within(lignes[19]).getAllByText(/unité à préciser/).length).toBeGreaterThan(0);
+    expect(within(ligneId('line-1')).getByText('+6 kg')).toBeInTheDocument();
+    expect(ligneId('line-2').querySelector('[data-dp-pastille]')).toBeNull();
+    // D275 (voie f3) : Sabro n'est plus « unité à préciser » : le plateau dit l'unité déduite et pourquoi, à contrôler (HEAD : « unité à préciser »).
+    expect(within(ligneId('line-20')).queryAllByText(/unité à préciser/)).toHaveLength(0);
+    expect(ligneId('line-20').querySelector('[data-dp-unite-deduite]')!.textContent).toMatch(/^unité g déduite · .+/); // sûre : deux voisines impriment « g » (confiance.ts, seconde source)
   });
   it('l’interrupteur « Mettre en stock » écrit none / existing, jamais new, et son état se lit', async () => {
     await lire();
@@ -70,7 +79,8 @@ describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
     expect(screen.getByLabelText('Stock ligne 1')).not.toHaveValue('new');
   });
   it('T4 : Confirmer avec une unité à préciser reste cliquable, n’écrit rien, dit « 1 unité à préciser » et mène au champ', async () => {
-    await lire();
+    // D275 (voie f3) : Sabro se déduit désormais ; la lecture n'a plus que « Maris Otter » 6 sans unité, ni prix, ni voisine, ni indice dans le nom (« 6 ? », rouge).
+    await lire(r => { r.items = [{ ...r.items[0], name: 'Maris Otter', unit: '', price: null }]; r.amountTTC = r.items[0].amountTTC; r.printedLineCount = 1; });
     const confirmer = screen.getByRole('button', { name: 'Confirmer et enregistrer' });
     expect(confirmer).toBeEnabled();
     fireEvent.click(confirmer);
@@ -78,7 +88,7 @@ describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('À corriger');
     expect(screen.getByText('1 unité à préciser')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Confirmer et enregistrer' })).toBeEnabled();
-    expect(screen.getByLabelText('Unité ligne 20')).toHaveFocus();
+    expect(screen.getByLabelText('Unité ligne 1')).toHaveFocus();
   });
   it('S8 : même commande sous un autre numéro = un signal, jamais un blocage ; « Même achat · ne rien enregistrer » n’écrit rien', async () => {
     state.transactions = [{ id: 'TX-380001', date: '30.04.2026', amountTTC: 86.5, description: 'Brau- und Rauchshop · 380001', category: 'brassage', finance: { kind: 'expense', version: 1, amountCents: 8650, vendor: 'Brau- und Rauchshop GmbH', invoiceNumber: '380001', sourceOrderNumber: 'Onlinebestellung-686863', recordedAt: '2026-04-30T10:00:00.000Z', lines: [] } }];
@@ -103,7 +113,7 @@ describe('le banc de développement n’atteint jamais l’enregistrement réel'
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
     expect(state.scanned).not.toHaveBeenCalled();
     fireEvent.click(screen.getByLabelText('Mettre en stock, ligne 20'));
-    for (const unit of ['g']) fireEvent.click(screen.getAllByRole('button', { name: unit })[0]);
+    // D275 (voie f3) : Sabro « 30 » prend le g de ses voisines ; plus de « g » à toucher (HEAD : clic sur « g »).
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
     await waitFor(() => expect(enregistrer.mock.calls.length + (screen.queryByRole('alert') ? 1 : 0)).toBeGreaterThan(0));
     expect(state.saved).not.toHaveBeenCalled();

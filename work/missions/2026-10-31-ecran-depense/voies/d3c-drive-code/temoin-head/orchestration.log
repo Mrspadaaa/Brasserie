@@ -1,0 +1,10 @@
+[2026-11-01T09:06:53.710Z] dossier temporaire : C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-r5sBUc
+[2026-11-01T09:06:53.712Z] règles générées depuis le gabarit (sha a66184ee3434) → C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-r5sBUc\firestore.rules
+[2026-11-01T09:06:56.672Z] tsc functions → C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-r5sBUc\functions\lib : exit 0
+
+[2026-11-01T09:06:56.936Z] emulators:exec --project demo-jus --config C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-r5sBUc\firebase.json
+[2026-11-01T09:06:56.944Z] firebase emulators:exec pid 27396
+[2026-11-01T09:17:03.571Z] emulators:exec terminé : exit 1
+[2026-11-01T09:17:05.074Z] ports émulateurs et serveur libérés
+[2026-11-01T09:17:05.298Z] fichiers protégés inchangés : [["firebase.json",true,"7fcc0820e4cf",""],[".firebaserc",false,null,""],["firestore.rules",true,"5f064a7a64ad",""],["firestore.indexes.json",true,"9c2610aec4ac",""]]
+[2026-11-01T09:17:05.332Z] ÉCHEC (exit 1)

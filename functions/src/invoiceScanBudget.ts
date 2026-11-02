@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { getFirestore } from 'firebase-admin/firestore';
 import { BrewerBudgetError, DEFAULT_BREWER_LIMITS } from './brewerLimits.js';
-import { invoiceScanId, invoiceDocumentHash, SCAN_MAX_CALLS, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
+import { invoiceScanId, invoiceDocumentHash, LITE_SCAN_MAX_OUTPUT, SCAN_MAX_CALLS, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
+import { GEMINI_LITE_MODEL, assertGeminiModel } from './models.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { GeminiRequestNotSentError, isGeminiRequestUncharged } from './geminiErrors.js';
 
@@ -15,7 +16,10 @@ function controls(raw: any) {
     throw new Error('Les limites IA ne peuvent pas être vérifiées. Utilise la saisie manuelle.');
   return limits;
 }
-type Generate = (body: Record<string, unknown>, signal: AbortSignal) => Promise<any>;
+/** `model` : le modèle de CET appel (défaut : la 3.8). Il fixe le tarif réservé, le plafond de sortie et l'URL du fournisseur. */
+type Generate = (body: Record<string, unknown>, signal: AbortSignal, model?: string) => Promise<any>;
+/** Le plafond de sortie de chaque modèle : la Flash-Lite a 8 192 jetons (C★v8), la 3.8 garde 5 100. */
+const outputCap = (model: string) => model === GEMINI_LITE_MODEL ? LITE_SCAN_MAX_OUTPUT : SCAN_MAX_OUTPUT;
 
 /** Dedicated document ledger, shared global limits. Never touches brewerJobs.
  * The byte hash is server-owned; concurrent/repeated requests never pay twice.
@@ -59,7 +63,9 @@ export async function runBudgetedInvoiceScan<T>(uid: string, file: InvoiceFile, 
   const unsubscribe = db.doc(controlPath).onSnapshot(snapshot => {
     try { controls(snapshot.data()); } catch (error) { stopped.abort(error); }
   }, () => stopped.abort(new Error('Contrôle du budget indisponible.')));
-  const generate: Generate = async (body, signal) => {
+  const generate: Generate = async (body, signal, model = SCAN_MODEL) => {
+    // Dernier verrou : un modèle hors de la liste blanche n'est ni réservé ni envoyé.
+    assertGeminiModel(model);
     const requestSignal = AbortSignal.any([signal, stopped.signal]);
     requestSignal.throwIfAborted();
     // Read small invoice print at high resolution with a conservative daily media allowance.
@@ -67,7 +73,7 @@ export async function runBudgetedInvoiceScan<T>(uid: string, file: InvoiceFile, 
     // Do not count base64 bytes as text tokens, or silently ignore multimodal cost.
     const requestedOutput=Number((body.generationConfig as any)?.maxOutputTokens??SCAN_MAX_OUTPUT);
     if(!Number.isSafeInteger(requestedOutput)||requestedOutput<1)throw new Error('Plafond de sortie invalide.');
-    const output=Math.min(SCAN_MAX_OUTPUT,requestedOutput);
+    const output=Math.min(outputCap(model),requestedOutput);
     const config = { ...(body.generationConfig as object), maxOutputTokens: output, mediaResolution: 'MEDIA_RESOLUTION_HIGH' };
     const request = { ...body, generationConfig:config };
     const textBody = JSON.stringify(request, (key, value) => key === 'inlineData' ? { media:true } : value);
@@ -89,10 +95,11 @@ export async function runBudgetedInvoiceScan<T>(uid: string, file: InvoiceFile, 
     let result: any;
     try {
       if (requestSignal.aborted) throw new GeminiRequestNotSentError(requestSignal.reason);
-      result = await runWithMonthlyAiBudget(SCAN_MODEL, request, normalized => {
+      // Le coût réservé et réglé suit le modèle de l'appel (geminiCosts.ts) : une Flash-Lite n'est jamais provisionnée au tarif de la 3.8.
+      result = await runWithMonthlyAiBudget(model, request, normalized => {
         if (requestSignal.aborted) throw new GeminiRequestNotSentError(requestSignal.reason);
         providerStarted = true;
-        return provider(normalized, requestSignal);
+        return provider(normalized, requestSignal, model);
       });
     } catch (error) {
       // A refused monthly reservation or proven uncharged request has no token cost. Release the daily

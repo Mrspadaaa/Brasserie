@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u1 — Rénovation sur le Bord (01.11)</title>
+<style>
+:root{--acc:#C8382F;--page:#fff;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666;--t1:#333;--t0:#111;
+--fin:#1F64A3;--fin-f:#E3EAF1;--prod:#9A4F1E;--prod-f:#EFE5DF;--stk:#4C6B2A;--stk-f:#E5E9DF;--agd:#6A4FB0;--agd-f:#ECE8F4;
+--att:#7F5B10;--att-f:#F6EEDC;--ok:#3F6B2E;--alert:#A8291F;--alert-f:#F8E4E2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--t1);font:14px/1.35 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+.renou1-mono{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.renou1-app{max-width:760px;margin:0 auto;min-height:100vh;padding-bottom:64px}
+.renou1-tete{display:flex;align-items:center;gap:8px;height:44px;padding:0 10px;border-bottom:1px solid var(--bord);position:sticky;top:0;background:var(--page);z-index:3}
+.renou1-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.renou1-nom{font-weight:600;font-size:17px;color:var(--t0);flex:1}
+.renou1-ico{width:30px;height:30px;border-radius:10px;border:1px solid var(--bord);display:grid;place-items:center;background:var(--pan)}
+svg.renou1-s{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.renou1-zone{padding:8px 10px;display:flex;flex-direction:column;gap:8px}
+.renou1-carte{border:1px solid var(--bord);border-radius:16px;overflow:hidden;background:var(--pan)}
+.renou1-ct{display:flex;align-items:center;gap:8px;padding:7px 12px;font-weight:600;font-size:15px}
+.renou1-ct .renou1-d{margin-left:auto;font-weight:400;font-size:13px;color:var(--t1);white-space:nowrap}
+.renou1-ct .renou1-d .renou1-compte{display:inline-flex;margin-left:6px;vertical-align:middle}
+.renou1-cc{padding:6px 12px 8px;color:var(--t1)}
+.renou1-prod{border-color:#DCC8BC}.renou1-prod .renou1-ct{background:var(--prod-f);color:var(--prod)}
+.renou1-stk{border-color:#C9D2BE}.renou1-stk .renou1-ct{background:var(--stk-f);color:var(--stk)}
+.renou1-agd{border-color:#D3CBE6}.renou1-agd .renou1-ct{background:var(--agd-f);color:var(--agd)}
+/* la carte Rénovation */
+.renou1-reno{border:1.5px solid #A9C0D6;background:var(--page)}
+.renou1-reno>.renou1-ct{background:var(--fin-f);color:var(--fin)}
+.renou1-compte{display:flex;gap:3px;align-items:center}
+.renou1-compte i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--fin);display:block}
+.renou1-compte i.renou1-plein{background:var(--fin)}
+.renou1-ensuite{display:flex;align-items:center;gap:8px;margin:8px 10px 4px;padding:8px 8px 8px 12px;border-radius:10px;background:#111;color:#fff}
+.renou1-ensuite b{display:block;font-size:12px;font-weight:600;color:#F2C14E;letter-spacing:.02em}
+.renou1-ensuite span{font-size:15px}
+.renou1-fait{margin-left:auto;flex:none;height:30px;padding:0 12px;border-radius:999px;border:0;background:#fff;color:#111;font:600 13px/1 inherit;font-family:inherit}
+.renou1-groupe{padding:6px 12px 0;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.renou1-ligne{display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 12px;border-bottom:1px solid var(--bord);cursor:pointer;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;font:inherit;color:inherit}
+.renou1-ligne:last-child{border-bottom:0}
+.renou1-pas{display:flex;gap:2px;flex:none}
+.renou1-pas i{width:6px;height:16px;border-radius:999px;background:var(--sur);display:block}
+.renou1-pas i.renou1-on{background:var(--fin)}
+.renou1-pas i.renou1-fin{background:var(--ok)}
+.renou1-titre{flex:1;min-width:0}
+.renou1-titre strong{display:block;color:var(--t0);font-size:15px;font-weight:600}
+.renou1-titre small{display:block;font-size:12px;color:var(--t2)}
+.renou1-manque{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.renou1-trou{font-size:12px;padding:1px 8px;border-radius:999px;border:1px dashed #B58A2E;color:var(--att);background:var(--att-f);white-space:nowrap}
+.renou1-mt{font-size:14px;color:var(--t0);white-space:nowrap}
+.renou1-mt.renou1-rouge{color:var(--alert);font-weight:600}
+.renou1-detail{padding:4px 12px 10px 26px;border-bottom:1px solid var(--bord);background:var(--pan)}
+.renou1-dl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}
+.renou1-dl span:nth-child(odd){color:var(--t2)}
+.renou1-dl .renou1-tot{border-top:1px solid var(--bordm);padding-top:3px;color:var(--t0);font-weight:600}
+.renou1-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.renou1-btn{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--bordm);background:var(--page);font:600 13px/1 inherit;font-family:inherit;color:var(--t0);display:inline-flex;align-items:center;gap:6px}
+.renou1-btn.renou1-p{background:#111;color:#fff;border-color:#111}
+.renou1-noter{display:flex;gap:6px;align-items:center;padding:8px 12px;border-top:1px solid var(--bord)}
+.renou1-champ{flex:1;min-width:0;height:34px;border-radius:10px;border:1px solid var(--bordm);padding:0 10px;font:16px inherit;font-family:inherit;color:var(--t0);background:var(--page)}
+.renou1-champ.renou1-focus{border:2px solid var(--fin)}
+.renou1-quand{display:flex;gap:6px;padding:0 12px 8px}
+.renou1-seg{height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--bordm);background:var(--page);font:13px/1 inherit;font-family:inherit;color:var(--t1)}
+.renou1-seg[aria-pressed=true]{background:var(--fin-f);border-color:var(--fin);color:var(--fin);font-weight:600}
+.renou1-bandeau{display:flex;gap:8px;align-items:center;margin:8px 10px 0;padding:6px 10px;border-radius:10px;font-size:13px}
+.renou1-hl{background:var(--sur);color:var(--t1)}
+.renou1-rg{background:var(--alert-f);color:var(--alert)}
+.renou1-jauge{margin:8px 12px 2px}
+.renou1-barre{display:flex;height:14px;border-radius:999px;overflow:hidden;background:var(--sur)}
+.renou1-barre i{display:block;height:100%}
+.renou1-leg{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-top:3px}
+.renou1-leg b{color:var(--t0);font-weight:600}
+.renou1-vide{padding:12px;color:var(--t1)}
+.renou1-vide strong{display:block;font-size:16px;color:var(--t0)}
+.renou1-attente{font-size:12px;color:var(--t2);display:inline-flex;gap:4px;align-items:center}
+.renou1-nav{position:fixed;left:0;right:0;bottom:0;height:56px;background:var(--pan);border-top:1px solid var(--bord);display:flex;align-items:stretch;z-index:4}
+.renou1-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--t1);text-decoration:none}
+.renou1-nav a.renou1-act{background:var(--sur);color:var(--t0);font-weight:600;box-shadow:inset 0 3px 0 #111}
+.renou1-plus{flex:none !important;width:64px;margin:6px 6px 6px 0;border-radius:999px;background:#111;color:#fff !important}
+@media (min-width:900px){.renou1-zone{display:grid;grid-template-columns:1fr 1fr;align-items:start}.renou1-reno{grid-row:span 4}}
+</style>
+</head>
+<body>
+<div class="renou1-app">
+  <header class="renou1-tete">
+    <span class="renou1-logo"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6h9v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M15 9h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M6 6h9v3H6z" fill="#fff"/></svg></span>
+    <span class="renou1-nom">L'Affinée</span>
+    <span class="renou1-ico" aria-label="Thème"><svg class="renou1-s" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+    <span class="renou1-ico" aria-label="Chercher"><svg class="renou1-s" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+  </header>
+  <main class="renou1-zone" id="renou1-zone"></main>
+  <nav class="renou1-nav" aria-label="Navigation principale">
+    <a href="#" class="renou1-act"><svg class="renou1-s" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Bord</a>
+    <a href="#" style="color:var(--fin)"><svg class="renou1-s" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg><span style="color:var(--t1)">Finances</span></a>
+    <a href="#" style="color:var(--prod)"><svg class="renou1-s" viewBox="0 0 24 24"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9 11v6M12 11v6"/></svg><span style="color:var(--t1)">Brassins</span></a>
+    <a href="#" style="color:var(--stk)"><svg class="renou1-s" viewBox="0 0 24 24"><path d="M12 3l4 2.5v4.5l-4 2.5-4-2.5V5.5zM8 12.5l4 2.5v4.5l-4 2.5-4-2.5V15zM16 12.5l4 2.5v4.5l-4 2.5-4-2.5V15z"/></svg><span style="color:var(--t1)">Stocks</span></a>
+    <a href="#"><svg class="renou1-s" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>Clients</a>
+    <a href="#" class="renou1-plus" aria-label="Ajouter"><svg class="renou1-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+  </nav>
+</div>
+<script>
+(function () {
+  var etat = new URLSearchParams(location.search).get('etat') || 'encours';
+  var zone = document.getElementById('renou1-zone');
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function chf(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' CHF'; }
+  var ICO = {
+    cle: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg>',
+    brassin: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9 11v6M12 11v6"/></svg>',
+    stock: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M12 3l4 2.5v4.5l-4 2.5-4-2.5V5.5zM8 12.5l4 2.5v4.5l-4 2.5-4-2.5V15zM16 12.5l4 2.5v4.5l-4 2.5-4-2.5V15z"/></svg>',
+    agenda: '<svg class="renou1-s" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+    check: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    nuage: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M3 3l18 18M8 8a5 5 0 0 0-1 0 4 4 0 0 0 0 8h9M20 15.5A3.5 3.5 0 0 0 17 10h-1a6 6 0 0 0-5.5-4"/></svg>',
+    plus: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    chev: '<svg class="renou1-s" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>'
+  };
+  // Données fictives : ses cinq titres, montants, artisans et heures inventés.
+  var PROJETS = [
+    { id: 'hotte', titre: 'Hotte', quand: 'Bientôt', etape: 3, etapeNom: 'Devis en cours', mt: 3610, mois: 'décembre 2026', manque: [], qui: 'Sophie, ventilation',
+      parts: [['Achat', 2850], ['Livraison', 120], ['Pose (Sophie, 6 h)', 640]], suite: 'Relancer Sophie pour signer le devis de la hotte' },
+    { id: 'evier', titre: '2ᵉ évier', quand: 'Bientôt', etape: 2, etapeNom: 'À étudier', mt: 380, mois: null, manque: ['date', 'pose'], qui: 'Marc, sanitaire',
+      parts: [['Achat', 380], ['Raccordement (Marc)', null]], suite: 'Demander à Marc le prix du raccordement' },
+    { id: 'armoire', titre: 'Armoire extérieure', quand: 'Ensuite', etape: 1, etapeNom: 'Idée', mt: null, mois: null, manque: ['prix', 'date'], qui: null, parts: [], suite: 'Estimer le prix de l\'armoire' },
+    { id: 'sols', titre: 'Sols, seconde passe', quand: 'Ensuite', etape: 4, etapeNom: 'Prêt à acheter', mt: 460, mois: 'janvier 2027', manque: [], qui: 'toi, 8 h',
+      parts: [['Résine', 460], ['Ton temps', '8 h']], suite: 'Commander la résine des sols' },
+    { id: 'site', titre: 'Site web vitrine', quand: 'Plus tard', etape: 1, etapeNom: 'Idée', mt: null, mois: null, manque: ['prix'], qui: 'toi, 10 h', parts: [['Ton temps', '10 h']], suite: 'Estimer le prix du site' }
+  ];
+
+  function pas(p, fini) {
+    var h = '<span class="renou1-pas" aria-label="Étape ' + p.etape + ' sur 4">';
+    for (var i = 1; i <= 4; i++) h += '<i class="' + (fini ? 'renou1-fin' : i <= p.etape ? 'renou1-on' : '') + '"></i>';
+    return h + '</span>';
+  }
+  function ligne(p, opt) {
+    opt = opt || {};
+    var droite = '';
+    if (opt.depasse && p.id === 'hotte') droite = '<span class="renou1-mt renou1-mono renou1-rouge">+370</span>';
+    else if (p.manque.length) droite = '<span class="renou1-manque">' + p.manque.map(function (m) { return '<span class="renou1-trou" data-mots="lignes">' + m + ' ?</span>'; }).join('') + '</span>';
+    else droite = '<span class="renou1-mt renou1-mono">' + chf(p.mt) + '</span>';
+    var sous = p.etapeNom + (p.mois ? ' · ' + p.mois : '') + (opt.attente && p.id === 'armoire' ? '' : '');
+    var b = el('button', 'renou1-ligne');
+    b.setAttribute('aria-expanded', opt.ouvert ? 'true' : 'false');
+    b.innerHTML = pas(p) + '<span class="renou1-titre"><strong data-mots="lignes">' + p.titre + '</strong><small data-mots="lignes">' + sous + '</small></span>' + droite;
+    return b;
+  }
+  function detail(p, depasse) {
+    var d = el('div', 'renou1-detail');
+    var h = '<div class="renou1-dl">';
+    p.parts.forEach(function (x) { h += '<span>' + x[0] + '</span><span class="renou1-mono">' + (x[1] == null ? 'à chiffrer' : typeof x[1] === 'number' ? chf(x[1]) : x[1]) + '</span>'; });
+    h += '<span class="renou1-tot">Prévu</span><span class="renou1-tot renou1-mono">' + chf(p.mt) + '</span>';
+    if (depasse) h += '<span style="color:var(--alert)">Facturé</span><span class="renou1-mono" style="color:var(--alert);font-weight:600">' + chf(3980) + '</span>';
+    h += '</div>';
+    h += (depasse ? '<div class="renou1-actions"><button class="renou1-btn renou1-p">Voir la facture</button><button class="renou1-btn">Relever le budget</button>'
+      : '<div class="renou1-actions"><button class="renou1-btn renou1-p">Noter l\'achat</button><button class="renou1-btn">Changer le mois</button>') + '<button class="renou1-btn">' + ICO.check + 'Réalisé</button></div>';
+    d.innerHTML = h; return d;
+  }
+  function carteBase(cls, ico, titre, droite, corps) {
+    var c = el('section', 'renou1-carte ' + cls);
+    c.innerHTML = '<div class="renou1-ct">' + ico + titre + '<span class="renou1-d">' + droite + '</span></div>' + (corps ? '<div class="renou1-cc">' + corps + '</div>' : '');
+    return c;
+  }
+  function compteur(n, total) { var h = '<span class="renou1-compte" aria-label="' + n + ' sur ' + total + ' réalisés">'; for (var i = 0; i < total; i++) h += '<i class="' + (i < n ? 'renou1-plein' : '') + '"></i>'; return n + ' sur ' + total + ' faits ' + h + '</span>'; }
+
+  function reno() {
+    var c = el('section', 'renou1-carte renou1-reno');
+    var tete = el('div', 'renou1-ct');
+    var n = etat === 'fini' ? 5 : 0;
+    tete.innerHTML = ICO.cle + 'Rénovation<span class="renou1-d">' + (etat === 'jour1' ? 'rien de noté' : compteur(n, 5)) + '</span>';
+    c.appendChild(tete);
+
+    if (etat === 'jour1') {
+      c.appendChild(el('div', 'renou1-vide', '<strong>Qu\'est-ce qui te manque ?</strong>Note le besoin. Le prix et la date viendront ensuite.'));
+      c.appendChild(noter(false));
+      return c;
+    }
+    if (etat === 'fini') {
+      c.appendChild(el('div', 'renou1-jauge', '<div class="renou1-leg"><span>Facturé, 5 projets</span><b class="renou1-mono">' + chf(6590) + '</b></div><div class="renou1-leg"><span>Prévu au départ, 3 chiffrés</span><b class="renou1-mono">' + chf(4450) + '</b></div><div class="renou1-leg"><span>Ton temps noté</span><b class="renou1-mono">18 h</b></div>'));
+      var fin = [['Hotte', 3980], ['2ᵉ évier', 610], ['Armoire extérieure', 1240], ['Sols, seconde passe', 470], ['Site web vitrine', 290]];
+      fin.forEach(function (f, i) {
+        var b = el('button', 'renou1-ligne');
+        b.innerHTML = '<span style="color:var(--ok)">' + ICO.check + '</span><span class="renou1-titre"><strong data-mots="lignes">' + f[0] + '</strong></span><span class="renou1-mt renou1-mono">' + chf(f[1]) + '</span>';
+        c.appendChild(b);
+      });
+      return c;
+    }
+    if (etat === 'horsligne') c.appendChild(el('div', 'renou1-bandeau renou1-hl', ICO.nuage + 'Hors ligne. Tes notes restent sur ce téléphone.'));
+    if (etat === 'depasse') c.appendChild(el('div', 'renou1-bandeau renou1-rg', '<b>Hotte : 370 CHF au-dessus du devis.</b>'));
+    if (etat === 'caisse') {
+      var j = el('div', 'renou1-jauge');
+      // Trésorerie renseignée dans Finances (fictive) ; à payer = projets chiffrés.
+      j.innerHTML = '<div class="renou1-leg"><span>Au compte <b class="renou1-mono">' + chf(6200) + '</b></span><span>À payer <b class="renou1-mono">' + chf(4450) + '</b></span></div>' +
+        '<div class="renou1-barre" role="img" aria-label="4 450 CHF à payer sur 6 200 CHF au compte"><i style="width:58.2%;background:var(--fin)"></i><i style="width:6.1%;background:var(--fin);border-left:2px solid #fff"></i><i style="width:7.4%;background:var(--fin);border-left:2px solid #fff"></i></div>' +
+        '<div class="renou1-leg" data-mots="lignes"><span>hotte</span><span>évier · sols</span><span style="flex:1"></span></div>' +
+        '<div class="renou1-leg"><span>Reste <b class="renou1-mono">' + chf(1750) + '</b></span><span>2 sans prix</span></div>';
+      c.appendChild(j);
+    }
+    var ens = el('div', 'renou1-ensuite');
+    ens.innerHTML = '<div><b>ENSUITE</b><span>' + (etat === 'depasse' ? 'Vérifier la facture de pose de Sophie' : PROJETS[0].suite) + '</span></div><button class="renou1-fait">Fait</button>';
+    c.appendChild(ens);
+
+    var groupe = '';
+    PROJETS.forEach(function (p) {
+      if (p.quand !== groupe) { groupe = p.quand; c.appendChild(el('div', 'renou1-groupe', groupe)); }
+      var ouvert = (etat === 'ouvert' || etat === 'depasse') && p.id === 'hotte';
+      c.appendChild(ligne(p, { ouvert: ouvert, depasse: etat === 'depasse' }));
+      if (ouvert) c.appendChild(detail(p, etat === 'depasse'));
+    });
+    if (etat === 'horsligne' || etat === 'ajout') {
+      var neu = el('button', 'renou1-ligne');
+      neu.innerHTML = '<span class="renou1-pas"><i class="renou1-on"></i><i></i><i></i><i></i></span><span class="renou1-titre"><strong data-mots="lignes">Lampes de la salle</strong><small>Idée</small></span>' +
+        (etat === 'horsligne' ? '<span class="renou1-attente">' + ICO.nuage + 'à envoyer</span>' : '<span class="renou1-manque"><span class="renou1-trou" data-mots="lignes">prix ?</span></span>');
+      if (etat === 'horsligne') c.appendChild(neu);
+    }
+    c.appendChild(noter(etat === 'ajout'));
+    if (etat === 'ajout') {
+      var q = el('div', 'renou1-quand');
+      q.innerHTML = '<button class="renou1-seg" aria-pressed="true">Bientôt</button><button class="renou1-seg" aria-pressed="false">Ensuite</button><button class="renou1-seg" aria-pressed="false">Plus tard</button>';
+      c.appendChild(q);
+    }
+    return c;
+  }
+  function noter(actif) {
+    var n = el('div', 'renou1-noter');
+    n.innerHTML = '<input class="renou1-champ' + (actif ? ' renou1-focus' : '') + '" aria-label="Ce qui te manque" placeholder="Ce qui te manque…" value="' + (actif ? 'Lampes de la salle' : '') + '">' +
+      '<button class="renou1-btn' + (actif ? ' renou1-p' : '') + '">' + ICO.plus + 'Noter</button>';
+    return n;
+  }
+
+  zone.appendChild(reno());
+  zone.appendChild(carteBase('renou1-prod', ICO.brassin, 'Brassins', '0 en cuve', 'Aucun brassin en cuve.'));
+  zone.appendChild(carteBase('renou1-stk', ICO.stock, 'Stocks', 'Voir', 'Stocks suffisants'));
+  var fin = carteBase('renou1-finc', '<svg class="renou1-s" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg>', 'Finances', 'Ce mois ' + ICO.chev, null);
+  fin.style.borderColor = '#A9C0D6'; fin.firstChild.style.background = 'var(--fin-f)'; fin.firstChild.style.color = 'var(--fin)';
+  zone.appendChild(fin);
+  zone.appendChild(carteBase('renou1-agd', ICO.agenda, 'Agenda', '0 à faire', 'Rien à faire.'));
+  document.body.setAttribute('data-etat', etat);
+})();
+</script>
+</body>
+</html>

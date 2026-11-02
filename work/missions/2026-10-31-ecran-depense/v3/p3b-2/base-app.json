@@ -1,0 +1,8 @@
+{
+  "a": 7,
+  "b": 12,
+  "date": "01.11.2026",
+  "selecteur": "[data-dp-ligne]",
+  "commande": "node scripts/with_server.mjs --server \"npm run dev -- --port 5617 --strictPort\" --port 5617 --env VITE_FIREBASE_API_KEY=fake -- node work/missions/2026-10-31-ecran-depense/v3/p3b-1/compter-lignes.mjs",
+  "sortie": "LIGNES a=7 b=12 (base : l app servie, http://localhost:5617, ?dev-local&depense=3, [data-dp-ligne])"
+}

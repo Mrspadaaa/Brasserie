@@ -63,6 +63,11 @@ interface ModalShellProps {
   labelledBy?: string;
   /** A local action opened from a full-screen page must sit above that page. */
   abovePage?: boolean;
+  /**
+   * Plein écran (p3c-port, D235) : la feuille prend toute la fenêtre, sans marges ni coins, à toutes les largeurs. Le piège de focus, Échap et le
+   * défilement figé restent ceux de la coque. Clavier ouvert : la hauteur se cale sur ce qui est visible (pas de marge concurrente).
+   */
+  plein?: boolean;
 }
 
 export const ModalShell: React.FC<ModalShellProps> = ({
@@ -72,7 +77,8 @@ export const ModalShell: React.FC<ModalShellProps> = ({
   size = 'lg',
   dismissible = true,
   labelledBy,
-  abovePage = false
+  abovePage = false,
+  plein = false
 }) => {
   const inheritedOpener = React.useContext(ModalOpenerContext);
   const coarse = useCoarsePointer();
@@ -152,7 +158,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
     <div
       className={`fixed inset-0 ${abovePage ? 'z-[60]' : 'z-50'} flex justify-center bg-cave-950/80 backdrop-blur-sm
                   animate-in fade-in
-                  ${bottomAligned ? 'items-end' : 'items-center p-3 sm:p-4'}`}
+                  ${plein ? 'items-stretch' : bottomAligned ? 'items-end' : 'items-center p-3 sm:p-4'}`}
       onPointerDown={(e) => {
         // Uniquement le fond : un glissement parti de l'intérieur ne ferme pas.
         if (dismissible && e.target === e.currentTarget) onClose();
@@ -164,7 +170,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
         tabIndex={-1}
         aria-modal="true"
         aria-labelledby={labelledBy}
-        style={{
+        style={plein ? { height: keyboardInset ? `calc(100dvh - ${keyboardInset}px)` : undefined } : {
           /*
            * Le clavier ne réduit ni `vh` ni `dvh` : on retranche nous-mêmes sa
            * hauteur mesurée, sans quoi le bas du formulaire reste dessous.
@@ -174,13 +180,13 @@ export const ModalShell: React.FC<ModalShellProps> = ({
             ? `calc(100dvh - ${keyboardInset}px - 8px)`
             : undefined
         }}
-        className={`w-full ${maxWidth} flex flex-col overflow-hidden
-                    bg-cave-900 border border-cave-800 shadow-2xl
-                    ${
+        className={`w-full ${plein ? 'max-w-none h-full rounded-none border-0' : maxWidth} flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    ${plein ? '' : `border ${
                       bottomAligned
                         ? 'rounded-t-sheet border-b-0 max-h-[94dvh]'
                         : 'rounded-3xl max-h-[92dvh]'
-                    }`}
+                    }`}`}
       >
         {children}
       </div>

@@ -65,6 +65,8 @@ interface QuickActionModalProps {
   initialScreen?: QuickActionScreen;
   initialRecipeId?: string;
   onBatchCreated?: (batch: Batch) => void;
+  /** Une pièce déjà enregistrée : ouvrir sa dépense dans Finances. */
+  onOpenExpense?: (id: string) => void;
 }
 
 /** Points d'entrée directs, ouverts depuis le bouton d'action. */
@@ -91,7 +93,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   onOpenCreateBatch,
   initialScreen = 'menu',
   initialRecipeId,
-  onBatchCreated
+  onBatchCreated,
+  onOpenExpense
 }) => {
   const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
   const [screen, setScreen] = useState<ModalScreen>(initialScreen);
@@ -614,7 +617,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   if (!isOpen) return null;
   // Banc local : la feuille attend sa fixture (sinon elle se monterait sans elle et ouvrirait le sélecteur de fichiers).
   if(import.meta.env.DEV && !apercuDepense && new URLSearchParams(location.search).has('depense')) return null;
-  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined}/>;
+  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined} onOpenExpense={onOpenExpense}/>;
 
   return (
     <>

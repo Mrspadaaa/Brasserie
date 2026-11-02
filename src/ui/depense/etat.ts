@@ -14,7 +14,7 @@ import type { StockItem } from '../../types';
 type Code = InvoicePoint['code'];
 export type Enjeu = 'argent' | 'stock' | 'info';
 export interface ChipDef { nom: string; enjeu: Enjeu }
-export interface Chip { id: string; nom: string; enjeu: Enjeu; ligne: number | null; codes: string[]; source: 'point' | 'paiement' | 'mouture' | 'voisin' | 'unite'; cible?: string }
+export interface Chip { id: string; nom: string; enjeu: Enjeu; ligne: number | null; codes: string[]; source: 'point' | 'paiement' | 'mouture' | 'voisin' | 'unite' | 'qr'; cible?: string }
 
 /** Le nom court de chaque code qui pèse (T3). Un code qui ne pèse pas (`type-deduit`) n'a pas de chip. */
 const NOMS: Partial<Record<Code, ChipDef>> = {
@@ -60,6 +60,8 @@ export function recalculerLecture(result: ScannedInvoiceResult, draft: Brouillon
 }
 /** Le statut affiché (T1) : sans `points`, le plancher de l2 (« à confirmer »), jamais « vérifié ». Un geste du brasseur ne le change pas. */
 const RANG_STATUT: Record<StatutLecture, number> = { checked: 0, corrected: 1, disputed: 2, unavailable: 3 };
+/** Le pire de deux statuts (z2 : un QR qui contredit le total ne laisse jamais « vérifiée »). */
+export const pireStatut = (a: StatutLecture, b: StatutLecture): StatutLecture => (RANG_STATUT[b] > RANG_STATUT[a] ? b : a);
 /** R10 (D229) : le titre est le PIRE du statut de départ (la lecture telle que reçue) et du recalcul : un geste ne le fait jamais monter
  *  (vider la TVA ne « vérifie » pas la lecture) ; une valeur tapée qui crée un point le fait descendre. « Points revus » est dit par la chip. */
 export function statutAffiche(result: ScannedInvoiceResult, recalcul: ResultatRecalcul | undefined): StatutLecture {
@@ -90,7 +92,8 @@ export function memeProduit(description: string, unit: string, items: readonly S
   return regle.cas === 'meme' ? regle.article : undefined;
 }
 /** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
-export const nomAffiche = (description: string, article?: StockItem): string => article?.name ?? (readProductLabel(description, { hop: hasHopWord(description), yeast: hasYeastWord(description), side: 'line' }).name || description);
+/** D287 : le deux-points final d'un libellé de facture (« Frais de port : ») tombe, imprimé ou traduit. */
+export const nomAffiche = (description: string, article?: StockItem): string => article?.name ?? (readProductLabel(description, { hop: hasHopWord(description), yeast: hasYeastWord(description), side: 'line' }).name || description).replace(/\s*:\s*$/u, '');
 
 export interface CompteLiens { relie: number; neuf: number; precis: number; mouture: number; autre: number }
 /** Le compte des liens de la preuve : chaque ligne y est une fois, donc la somme vaut le nombre de lignes. */
@@ -116,6 +119,32 @@ export function effetStock(line: PurchaseLineDraft, article: StockItem | undefin
   if (!isReadableUnit(line.unit) || line.quantity === undefined) return 'unité à préciser';
   const q = stockQuantityFor({ description: line.description, quantity: line.quantity, unit: line.unit }, article);
   return q.ok ? `+${num(q.quantity)} ${article.unit}` : 'unité ?';
+}
+/**
+ * Le nom d'une rangée SANS le pourcentage d'α que la rangée dit déjà dans son « α 9,6 » (C084 : pas d'info en doublon). Affichage seul : le nom imprimé entier reste au plateau,
+ * et rien d'enregistré ne change. Seul un pourcentage égal à l'α affiché est retiré (« Nelson Sauvin 9.6% » + α 9,6 → « Nelson Sauvin ») ; un autre (« Target 11.8% » face à α 11,3) reste.
+ */
+/** Le libellé d'une ligne lue : `nom · variante`, sauf si la lecture a déjà mis la variante dans le nom (D261a). Comparaison sans casse,
+ *  accents, espaces ni ponctuation ; rien n'est retiré du nom. */
+export function libelleDeLigne(nom: string, variante: string | undefined): string {
+  const plat = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const v = (variante ?? '').trim();
+  if (!v || !nom) return nom || v;
+  return plat(nom).includes(plat(v)) ? nom : `${nom} · ${v}`;
+}
+
+export function sansAlphaDoublon(nom: string, alpha: string | undefined): string {
+  if (!alpha) return nom;
+  const a = Number(alpha.replace(',', '.'));
+  if (!Number.isFinite(a)) return nom;
+  const sans = nom.replace(/\s*\(?\b(\d+(?:[.,]\d+)?)\s*%\)?/g, (tout: string, n: string) => (Math.abs(Number(n.replace(',', '.')) - a) < 1e-9 ? '' : tout)).replace(/\s{2,}/g, ' ').trim();
+  return sans || nom;
+}
+/** La conversion de la pastille d'une rangée : « = 2 sachets » (l'équivalent, au pluriel quand il le faut ; la quantité imprimée est déjà dans la colonne). « 25 kg → 25 000 g » reste entier. */
+export function pastilleConversion(conversion: string): string {
+  const egal = /^.*?=\s*(\d+(?:[.,]\d+)?)\s+sachet\b/.exec(conversion);
+  if (egal) return `= ${egal[1]} sachet${Number(egal[1].replace(',', '.')) > 1 ? 's' : ''}`;
+  return /[=→]/.test(conversion) ? conversion : `= ${conversion}`;
 }
 export const conversionDe = (line: PurchaseLineDraft, article: StockItem | undefined): string | undefined =>
   article && line.quantity !== undefined && isReadableUnit(line.unit) ? formatUnitLink(line.quantity, line.unit, article.unit, article.category) : undefined;

@@ -5,8 +5,9 @@
   mapping, on veut pas de retrouver avec plein de fiche du même produit ». La justesse passe avant la vitesse.
 - **Les unités** (D213, « oui attention au unités ») : une quantité garde l'unité imprimée, jamais réécrite en silence ; une conversion
   (kg ↔ g, l ↔ ml, Stk ↔ sachet) se voit et se teste ; un prix se lit pour son unité (par kg, par 100 g, par pièce) et ne se compare
-  jamais à un prix d'une autre unité ; une ligne à l'unité illisible reste reliée à son article, l'unité vide et marquée « unité à préciser », sans unité devinée, et rien
-  n'entre en stock tant qu'elle manque (D214, « Unité illisible : la ligne n'est reliée à aucun article.???? »). Chaque voie teste les unités qu'elle touche.
+  jamais à un prix d'une autre unité ; une ligne à l'unité illisible reste reliée à son article (D214, « Unité illisible : la ligne n'est reliée à aucun article.???? ») ;
+  depuis D277, l'unité absente se déduit et se signale : sûre, rien ; reprise, jaune ; inconnue, rouge, et rien n'entre en stock tant
+  qu'elle est inconnue (« de base ça essaie d'auto remplir »). Chaque voie teste les unités qu'elle touche.
 - **Même produit, autres données** (D215) : une ligne d'un produit connu dont une donnée lue (α, origine, récolte, EBC, potentiel,
   poids…) diffère de l'article n'est jamais fusionnée ni recopiée dans l'article existant ; elle donne un article « bis » (« Cascade CH » quand l'origine diffère, D216), lié à la fiche du
   produit, avec ses valeurs vraies là où on les a ; une fiche approchée se voit comme telle. Une seule fiche par produit.

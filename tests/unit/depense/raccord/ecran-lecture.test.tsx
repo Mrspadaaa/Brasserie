@@ -133,7 +133,8 @@ describe('R2 : une description tapée n’est jamais écrasée par un scan', () 
 });
 
 describe('R3 : une date de paiement tapée n’est jamais écrasée par un scan', () => {
-  const hier = () => within(document.querySelector('[data-purchase-payment]') as HTMLElement).getByRole('button', { name: 'Hier' });
+  // D233 : le champ de la date du paiement n'apparaît que sur « Autre date » (une seule date par défaut : celle de l'achat).
+  const hier = () => { const p = within(document.querySelector('[data-purchase-payment]') as HTMLElement); const autre = p.queryByRole('button', { name: 'Autre date' }); if (autre) fireEvent.click(autre); return p.getByRole('button', { name: 'Hier' }); };
   it('scan 1, date de paiement tapée (« Hier »), scan 2 : la date reste, sa base est « typed », la date du document suit le scan', async () => {
     const view = await open(result());
     fireEvent.click(hier());

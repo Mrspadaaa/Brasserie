@@ -26,7 +26,8 @@ describe('C2 — somme des lignes = total, au centime', () => {
   });
 
   it('une ligne sans montant (cas b) : point somme-incomplete qui nomme la ligne, jamais « vérifié »', () => {
-    const r = lire(avecLigne(lecture372765(), 3, { amountTTC: null }));
+    // fn-montant-seul : une ligne à `price` seul reçoit amountTTC = price ; ici la ligne n'a AUCUN montant (ni price ni amountTTC).
+    const r = lire(avecLigne(lecture372765(), 3, { amountTTC: null, price: null }));
     const [p] = trouve(r.points, 'somme-incomplete');
     expect(p).toMatchObject({ gravite: 'inverifiable', lignes: [4], champ: 'amountTTC' });
     expect(r.controls.sum.statut).toBe('incomplet');
