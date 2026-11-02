@@ -136,3 +136,21 @@ retirées de l'index, fichiers gardés sur le disque).
   (`data-hop-v4-etape`, paquet `index-D_r8o4EC.js`) : rail Ébullition 60′ et 10′, whirlpool, J+3, cartes (nom, α, rôle, arômes, dose, IBU),
   « Sans … › », radar « Au style », « Ouvrir l'analyse de ma bière ». Fermé par « Fermer », sans dialogue ni écriture. Capture Chrome impossible
   (Page.captureScreenshot expire) : vu par le texte de la page, pas à l'image.
+
+## Vers 22 h : D369, filtres et quantité d'un toucher (811db792, non déployé à l'écriture)
+- Filtres, sur le banc par le menu (pièce Bauhaus, 390, d14ff6cf) : « à remplir » filtre (capture `d369-remplir/390-04`). « 2 à contrôler » ne fait
+  rien de visible (M8 KO, filtre nul ; déjà KO sur 7945555e, `apres2-G*`) : ses points sont des désaccords du document, sur aucune rangée ; le toucher
+  sautait à la preuve, déjà à l'écran. Sa pièce (une ligne) : « 1 à contrôler » idem ; « 1 à remplir » filtre une liste d'une ligne (rien ne change à l'œil).
+- Correctif : « à contrôler » sans rangée allume la puce et éclaire 1,6 s le bandeau du pied où le désaccord se règle (Garder, Voir, Tout valider).
+  Lecture étroite (L01) ; les ronds « Devise » et « Lecture coupée » (sans cible propre : la preuve) restent tels quels, à lui montrer s'il les visait.
+- Quantité : « +1 +2 +3 +5 +10 » (pièce, sachet), « +1 +5 +10 +100 +500 » (g), « +1 +5 +10 +25 » (Kg), « +1 +5 +10 +20 » (L), sous `q × prix = montant`
+  quand la quantité manque ou est rouge, et après un toucher ; « ✕ » remet à vide. Le champ qui manque se calcule des deux autres (`recalculer`),
+  jamais par-dessus une valeur posée ; la quantité seulement si elle tombe juste. Au geste seulement, rien à l'ouverture de la pièce.
+- Banc : cas `g-quantite` ajouté aux deux copies du script de banc (non commité).
+- Suite : 15a3b508 (puce allumée jusqu'au second toucher), 5f83812f (bandeau cerné, sans éclair : M5 sombre). Banc `d369-apres`, 390, deux thèmes :
+  13 OK, 0 KO (D369 ×6, M8, M5, M6). Témoin `d369-temoin` sur d14ff6cf : D369 KO. Captures regardées : « 11 pièce × 0,7727 = 8,50 » ; « 2 à contrôler » allumé.
+- Déployé (hosting seul, functions inchangé) : 5f83812f, `index-Dc4foCCD.js` servi, `ExpenseSheet-Bg06CXh1.js` porte « Quantité en un toucher », drapeau
+  Houblons « on ». En ligne, par le menu : la saisie à la main n'a pas le plateau pu4d (ancien formulaire) ; les boutons n'existent que sur une
+  facture lue. Pas de lecture payante pour le voir en ligne : à voir sur sa prochaine pièce.
+- Restent : à 390, avec trois unités et un prix à 4 décimales, `= montant` passe à la ligne ; les nombres changent si l'unité se déduit après
+  le premier toucher (Kg → pièce) ; ronds « Devise » et « Lecture coupée » inchangés.
