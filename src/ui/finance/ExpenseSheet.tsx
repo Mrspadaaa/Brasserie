@@ -40,7 +40,6 @@ import { donneesDeLigne,nomsPris,pliee,type MembreVirtuel } from '../../services
 import { ChipsBar,TITRES } from '../depense/Verdict';
 import { InvoiceScanReview } from './InvoiceScanReview';
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
-import { Interrupteur } from '../depense/Ticket';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
@@ -50,7 +49,7 @@ import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libe
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { bandes as calculerBandes,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
-import { avecUnitesDeduites,confianceLigne,contexteConfiance,libelleLu,ligneConfianceDe,niveauxRangee,optionsEnFrancais,pastilleEtat,texteQuantite } from '../depense/rangees';
+import { avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
 import { confianceEntete,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
 import { uniteEffective } from '../../services/purchaseEntry';
 import { regleProduit,linkUnit } from '../../services/stockLineMatching';
@@ -179,7 +178,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const lectureJeton=useRef(0),lectureAbort=useRef<AbortController|null>(null),provRef=useRef<{base:BaseFusion;scan:ScanOutcome}|null>(null),courantRef=useRef<{reviewedFields:string[];reglees:ReadonlySet<string>;stockItems:StockItem[]}>({reviewedFields:[],reglees:new Set(),stockItems:[]});
   /* Ce que la fusion a corrigé (pour le bleu des cellules, l'ancienne valeur barrée, la puce), les lignes que la 3.8 ne lit plus (hors du brouillon, donc hors des sommes) et le nombre de lignes gardées. */
   const [fusion,setFusion]=useState<{lignes:Record<string,Correction[]>;entete:Record<string,{avant:unknown;apres:unknown}>;ajoutees:ReadonlySet<string>;n:number;avant:Record<string,CellulesLigne>}|null>(null);
-  const [perdues,setPerdues]=useState<Perdue[]>([]),[perduesIds,setPerduesIds]=useState<string[]>([]),[nGardees,setNGardees]=useState(0);
+  const [perdues,setPerdues]=useState<Perdue[]>([]),[nGardees,setNGardees]=useState(0);
+  /* D329 : la file des changements de la 3e lecture. `tranchees` : les corrections et lignes ajoutées gardées (elles restent à l'écran, bleues) ; `nTranchees` : les gestes faits (le « 2/7 » du bandeau). */
+  const [tranchees,setTranchees]=useState<Set<string>>(()=>new Set()),[nTranchees,setNTranchees]=useState(0);
+  /* D332 : les lignes d'avant « Regrouper en une dépense », rendues par « Rétablir » jusqu'à « Confirmer ». */
+  const [avantRegroupement,setAvantRegroupement]=useState<PurchaseLineDraft[]|null>(null);
   const [driveAuthError,setDriveAuthError]=useState(false);
   const [driveTick,setDriveTick]=useState(0);
   /* L'état Drive ne se dit qu'une fois le jeton vérifié (renouvellement silencieux) : jamais « Drive à connecter » quelques secondes quand Drive est prêt. */
@@ -389,7 +392,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const posee=applyOutcome(provisoire,documentHash);
     if(!posee||!provisoire.jeton)return;
     provRef.current={base:baseDeBrouillon(posee.posee,provisoire.jeton,posee.propositions,posee.nLignes),scan:provisoire};
-    setFusion(null);setPerdues([]);setPerduesIds([]);setNGardees(0);
+    setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);
     setBusy(false);setShowForm(true);setVerif('attente');
   };
   /** La fin de partie (M2, R1) : le final n'arrive pas (délai, erreur, flux fermé) : les valeurs du provisoire restent, avec le point « lecture coupée » (`delai-saute`), comme une 3.8 coupée aujourd'hui. Ses saisies restent. */
@@ -434,8 +437,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const jeton=++nomsJeton.current;
     setDraft(()=>s.draft);
     setScan({...final,result:s.result,...(documentHash?{documentHash}:{})});
-    setFusion({lignes:s.corrections.lignes,entete:s.corrections.entete,ajoutees:new Set(s.ajoutees),n:s.nCorrigees,avant:prov.base.lignes});
-    setPerdues(s.perdues);setPerduesIds(s.perdues.map(p=>p.ligne.id));setNGardees(0);
+    /* B1 : le français que la 3e lecture rend (le nom imprimé ne change pas, seul son rendu) est une traduction : ni barrée, ni bleue, ni comptée dans « ↻ corrigées ». Seule une valeur que la 3e lecture a LUE autrement l'est. */
+    const lignesCorr:Record<string,Correction[]>={};let nCorr=s.nCorrigees;
+    for(const [id,cs] of Object.entries(s.corrections.lignes)){const vraies=sansTraductions(cs,prov.base.lignes[id]);if(vraies.length)lignesCorr[id]=vraies;else nCorr-=1;}
+    setFusion({lignes:lignesCorr,entete:s.corrections.entete,ajoutees:new Set(s.ajoutees),n:nCorr,avant:prov.base.lignes});
+    setPerdues(s.perdues);setNGardees(0);setTranchees(new Set());setNTranchees(0);
     setVerif('finie');
     /* M6 : la traduction du provisoire en vol est jetée (`nomsJeton`) ; les lignes sans français (nom changé, ligne ajoutée, traduction jetée) se traduisent à nouveau, ce seul appel. */
     traduire(s.draft.lines.filter(l=>!l.nameFr),jeton,stockItems);
@@ -456,7 +462,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* La dépense lue d'avant, remise à zéro quand un nouveau document ou un nouveau lot de pages est choisi (la description tapée est gardée). */
   const remettreLaDepenseAZero=()=>patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
   /* La lecture d'avant s'efface : erreur, reçu, lecture, QR. */
-  const effacerLecture=()=>{setFusion(null);setPerdues([]);setPerduesIds([]);setNGardees(0);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
+  const effacerLecture=()=>{setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
   /* Les pages d'avant s'en vont (URL d'objet révoquées), avec leur PDF, leur lecture confirmée et l'entrée rouverte par « Changer ». */
   const libererPages=()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);pagesRef.current=[];pdfRef.current=null;setPages([]);setNPagesLues(0);setAssemblageEchoue(false);setEntreeOuverte(false);};
   const attach=async(file:File,lireQuandMeme=false)=>{
@@ -747,6 +753,15 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     opts.focus?.focus({preventScroll:true});
     return true;
   };
+  /* D334 : le focus va sur le champ qui manque (la rangée s'ouvre d'abord, son groupe aussi). */
+  const focaliser=(id:string,n:number,champ:string)=>{
+    const el=form.current?.querySelector<HTMLElement>(`[data-dp-ligne="${id}"]`);if(!el)return;
+    reveler(el);
+    const d=el.querySelector<HTMLDetailsElement>('details');if(d)d.open=true;
+    if(champ==='libelle'){const plus=el.querySelector<HTMLDetailsElement>('details[data-dp-plus]');if(plus)plus.open=true;}
+    const sel:Record<string,string>={quantite:`[aria-label="Quantité ligne ${n}"]`,unite:`[aria-label="Unité ligne ${n}"]`,prix:`[aria-label="Prix ligne ${n}"]`,montant:`[aria-label="Montant ligne ${n}"]`,article:'[data-dp-stock] [aria-label="Article"]',libelle:`[aria-label="Libellé ligne ${n}"]`};
+    const cible=el.querySelector<HTMLElement>(sel[champ]);cible?.scrollIntoView?.({block:'center'});cible?.focus?.({preventScroll:true});
+  };
   const aller=(chip:Chip)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
     /* z2 : la chip « Total » du QR saute au duel et le surligne 0,8 s. */
@@ -808,6 +823,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const numeros=numerosPapier(draft.lines,port);
   const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
+  const champsRougesIds=new Map<string,ChampARemplir[]>();
   /* D307 : les rangées dont le plateau est ouvert (elles ouvrent leur sous-groupe : jamais une rangée ouverte cachée dans un groupe replié). */
   const plateauxOuverts=new Set<string>();
   const basculeMouture=(id:string,liee:boolean)=>{if(liee)updateLine(id,{surchargeOf:undefined});else patch({lines:confirmMillingSurcharge(draft.lines,id)});};
@@ -838,13 +854,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const calculOk=line.quantity!==undefined&&line.unitPrice!==undefined&&line.amount!==undefined?lineMathCheck([{id:line.id,name:line.description,kind:line.kind,quantity:line.quantity,unit:line.unit,price:line.unitPrice,amountTTC:line.amount}]).points.length===0:undefined;
     const mathEl=calculOk!==undefined?<p className={`text-xs ${calculOk?'text-cave-200':'text-attention'}`}>{String(line.quantity).replace('.',',')} × {fr(line.unitPrice!)} {calculOk?'= montant ✓':'≠ montant, écart à vérifier'}</p>:null;
     const extraitEl=line.evidence?<details className="text-xs text-cave-400"><summary className="cursor-pointer min-h-8 flex items-center">Voir l’extrait du document</summary><p className="text-cave-200 leading-relaxed">{line.evidence}</p></details>:null;
-    const interrupteurEl=<Interrupteur label={`Mettre en stock, ligne ${index+1}`} actif={line.stockAction!=='none'} onChange={on=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);if(on)updateLine(line.id,{stockAction:'existing',stockRef:proposedRef.current.get(line.id)??''});else updateLine(line.id,{stockAction:'none'});}}/>;
-    const choixStockEl=<select aria-label={`Stock ligne ${index+1}`} value={line.stockAction} onChange={e=>{const v=e.target.value as any;proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=v==='new'?lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined;if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:v});}} className={inputClass}><option value="none">Aucun mouvement de stock</option><option value="existing">Ajouter à un article existant</option><option value="new">Créer un nouvel article</option></select>;
+    const choixStockEl=<select aria-label={`Stock ligne ${index+1}`} value={line.stockAction} onChange={e=>{const v=e.target.value as any;proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=v==='new'?lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined;if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:v});}} className={inputClass}><option value="none">Aucun mouvement de stock</option><option value="existing">Ajouter à un article existant</option><option value="new">Nouvel article</option></select>;
     const comboArticleEl=<Combobox ariaLabel="Article" value={line.stockRef||''} onChange={stockRef=>{proposedStock.current.delete(line.id);updateLine(line.id,{stockRef});}} options={stockOptions} placeholder="Chercher dans le stock"/>;
     const relieEl=line.stockAction==='existing'?<>{relieAuto.current.has(line.id)?<p className="text-xs text-cave-200">relié à « {relieAuto.current.get(line.id)} », nom déjà au stock</p>:null}{comboArticleEl}{articleDe(line)?.fiche?<p data-dp-fiche className="text-xs text-cave-200">{phraseFiche(articleDe(line)!.fiche!,catalogues)}</p>:null}</>:null;
     const nomEl=line.stockAction==='new'&&neuf?<NomArticle index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/>:null;
     const champQte=<NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={inputClass}/>;
-    const champUnite=(cls:string,ph?:string,niv?:Niveau)=><TextInput aria-label={`Unité ligne ${index+1}`} {...(niv&&niv!=='sur'?{'data-dp-niveau':niv}:{})} value={line.unit} onChange={unit=>updateLine(line.id,{unit})} placeholder={ph??effDe(line).uniteDeduite?.unite??"kg, g, L, sachet…"} className={cls}/>;
+    const champUnite=(cls:string,ph?:string,niv?:Niveau)=><TextInput aria-label={`Unité ligne ${index+1}`} {...(niv&&niv!=='sur'?{'data-dp-niveau':niv}:{})} value={line.unit} onChange={unit=>updateLine(line.id,{unit})} placeholder={ph??effDe(line).uniteDeduite?.unite??'unité'} className={cls}/>;
     const qteUniteEl=line.stockAction!=='none'?<div className="grid grid-cols-2 gap-2"><Field label="Quantité reçue">{champQte}</Field><Field label="Unité lue / reçue">{champUnite('')}</Field></div>:null;
     const materielEl=line.kind==='equipment'||line.kind==='maintenance'?<div className="space-y-2"><Field label={line.kind==='equipment'?'Fiche matériel':'Matériel entretenu'}><select aria-label={`Matériel ligne ${index+1}`} value={line.equipmentAction} onChange={e=>updateLine(line.id,{equipmentAction:e.target.value as any})} className={inputClass}><option value="none">Ne pas lier de matériel</option>{line.kind==='equipment'?<option value="new">Créer la fiche de ce matériel</option>:null}<option value="existing">Lier un matériel déjà présent</option></select></Field>{line.equipmentAction==='existing'?<Combobox ariaLabel="Matériel" value={line.equipmentRef||''} onChange={equipmentRef=>updateLine(line.id,{equipmentRef})} options={equipmentOptions} placeholder="Chercher un matériel"/>:null}{line.equipmentAction==='new'?<p className="text-xs text-cave-400">La fiche reprendra le prix et la date de cet achat. L’amortissement se renseigne dans Finances → Annuel.</p>:null}</div>:null;
     const fields=<>
@@ -853,7 +868,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
           {!simple&&mathEl}
           {extraitEl}
           {STOCK_KINDS.includes(line.kind)?<div className="space-y-2"><label className="text-sm text-cave-200 flex items-center gap-2"><Package size={16}/>Réception en stock</label>
-            {interrupteurEl}{choixStockEl}{nomEl}{relieEl}{qteUniteEl}</div>:null}
+            {choixStockEl}{nomEl}{relieEl}{qteUniteEl}</div>:null}
           {materielEl}
     </>;
     if(simple)return <article data-purchase-line key={line.id} className="border-t border-cave-700 py-2 space-y-2">{fields}</article>;
@@ -871,6 +886,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const horsStock=['service','shipping','discount','other','maintenance'].includes(line.kind);
     const conf=confianceLigne(ligneConfianceDe(eff),ctxConf),nv=niveauxRangee(line,conf);
     const niveaux={...nv,nom:line.description.trim()?nv.nom:'inconnu' as Niveau,raisons:line.description.trim()?nv.raisons:['libellé à remplir',...nv.raisons]};
+    /* D334 : le champ qui manque porte le rouge et son nom au plateau ; le mot est un geste (focus sur le champ). */
+    const rouges=champsARemplir(conf,{libelleVide:!line.description.trim(),ingredient:line.kind==='ingredient'});champsRougesIds.set(line.id,rouges);
+    const rougeDe=(c:ChampARemplir['champ'])=>rouges.some(r=>r.champ===c),ROUGE=' !border-dashed !border-alert',niv=(c:ChampARemplir['champ'])=>rougeDe(c)?{'data-dp-niveau':'inconnu'}:{};
     /* Un « bis » fait nouvel article d'office (D215, D275d) : sa barre reste, jaune, tant qu'il n'a pas choisi (« Target bis » ou ⇄). */
     const bisAConfirmer=!isMouture&&line.stockAction==='new'&&neufDOffice.current.has(line.id)&&Boolean(voisin);
     const ambigu=!isMouture&&line.kind==='ingredient'&&line.stockAction==='none'&&regle?.cas==='ambigu'&&Boolean(voisin);
@@ -906,35 +924,38 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const ud=eff.uniteDeduite;
     const segmentsUnite=ud&&ud.niveau==='repris'?(()=>{const d=shortUnit(ud.unite),choix=[...new Set([d,'g','kg','Stk'])];return <span data-dp-unite-segments role="group" aria-label={`Confirmer l’unité, ligne ${index+1}`} className="ml-1 inline-flex overflow-hidden rounded-control border border-attention align-middle">{choix.map(u=><button key={u} type="button" aria-pressed={u===d} onClick={()=>updateLine(line.id,{unit:u})} className={`min-h-7 px-2 text-sm ${u===d?'bg-attention/15 font-semibold text-cave-50':'text-cave-200'}`}>{u}</button>)}</span>;})():null;
     const calculEl=<div data-dp-calcul className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-cave-200">
-      <NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={`${CHAMP_P3C} w-16 text-right`}/>
-      {(()=>{const vide=!isReadableUnit(uniteEffective(eff))&&!horsStock;return champUnite(`${CHAMP_P3C} w-11 text-center${vide?' !border-dashed !border-alert placeholder:text-alert':''}`,vide?'?':undefined,vide?'inconnu':undefined);})()}<span aria-hidden>×</span>
-      <NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>updateLine(line.id,{unitPrice})} emptyValue={undefined} min={0} className={`${CHAMP_P3C} w-[4.75rem] text-right`}/><span aria-hidden>=</span>
-      <NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{updateLine(line.id,{amount});if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} className={`${CHAMP_P3C} w-[4.75rem] text-right`}/>
+      <span {...niv('quantite')} className="inline-flex"><NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={`${CHAMP_P3C} w-16 text-right${rougeDe('quantite')?ROUGE:''}`}/></span>
+      {(()=>{const vide=(!isReadableUnit(uniteEffective(eff))&&!horsStock)||rougeDe('unite');return champUnite(`${CHAMP_P3C} w-11 text-center${vide?' !border-dashed !border-alert placeholder:text-alert':''}`,vide?'?':undefined,vide?'inconnu':undefined);})()}<span aria-hidden>×</span>
+      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>updateLine(line.id,{unitPrice})} emptyValue={undefined} min={0} fractionDigits={decimalesAuRepos(line.unitPrice)} className={`${CHAMP_P3C} w-[4.75rem] text-right${rougeDe('prix')?ROUGE:''}`}/></span><span aria-hidden>=</span>
+      <span {...niv('montant')} className="inline-flex"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{updateLine(line.id,{amount});if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_P3C} w-[4.75rem] text-right${rougeDe('montant')?ROUGE:''}`}/></span>
       {calculOk===true?<span data-dp-centime className="inline-flex min-h-6 items-center rounded-control border border-cave-700 px-1.5 text-xs text-hop">✓ au centime</span>
         :calculOk===false?<span data-dp-centime data-dp-niveau="repris" className="text-xs text-attention underline decoration-dotted decoration-attention underline-offset-2">≠ montant, écart à vérifier</span>:null}
     </div>;
-    const NATURES:Array<[PurchaseLineDraft['kind'],string]>=[['ingredient','Ingrédient'],['service','Service'],['equipment','Matériel']];
-    const natureSegEl=<div data-dp-nature role="group" aria-label={`Type d’achat, ligne ${index+1}`} className="inline-flex overflow-hidden rounded-control border border-cave-600">{NATURES.map(([k,mot])=><button key={k} type="button" aria-pressed={line.kind===k} onClick={()=>{if(line.kind!==k)changerNature(k);}} className={`min-h-7 px-2.5 text-sm ${line.kind===k?'bg-ebc-straw font-semibold text-cave-950':'text-cave-200'}`}>{mot}</button>)}</div>;
+    /* D335 : le segment garde ses trois mots et en allume toujours un (la nature fine reste au menu « Type d'achat ») ; une remise n'en montre aucun. */
+    const NATURES:Array<[NatureSegment,string]>=[['ingredient','Ingrédient'],['service','Service'],['equipment','Matériel']];
+    const segNature=natureDuSegment(line.kind);
+    const natureSegEl=segNature?<div data-dp-nature role="group" aria-label={`Type d’achat, ligne ${index+1}`} className="inline-flex overflow-hidden rounded-control border border-cave-600">{NATURES.map(([k,mot])=><button key={k} type="button" aria-pressed={segNature===k} onClick={()=>{if(segNature!==k)changerNature(k);}} className={`min-h-7 px-2.5 text-sm ${segNature===k?'bg-ebc-straw font-semibold text-cave-950':'text-cave-200'}`}>{mot}</button>)}</div>:null;
     const pastilleEl=pastille?<span data-dp-pastille title={line.stockAction==='new'&&neuf?.fiche?`fiche ${neuf.nomFiche??'liée'}${neuf.fiche.approchee?' · approchée (pas exactement la bonne)':''}`:undefined} className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span>:null;
     const retirerEl=<button type="button" aria-label={`Retirer l’article, ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'none'});}} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-200">Retirer</button>;
     const articleEl=STOCK_KINDS.includes(line.kind)&&!isMouture?<div data-dp-stock className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-cave-200">{line.stockAction==='none'?<span>aucun stock</span>
       :line.stockAction==='new'&&neuf?<><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>» · nouvel article</span>{autre}{(()=>{const v=[neuf.alphaPct!==undefined?`α ${fr(neuf.alphaPct)}`:'',neuf.colorEbc!==undefined?`${fr(neuf.colorEbc)} EBC`:'',neuf.origin?`origine ${neuf.origin}`:''].filter(Boolean).join(' · ');return v?<span data-dp-valeurs className="font-mono text-cave-200">{v}</span>:null;})()}</>
-      :line.stockAction==='existing'&&!line.stockRef?<><span>article « ? » · à choisir</span><div className="min-w-[12rem] flex-1">{comboArticleEl}</div></>
+      :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
       :<><span>article « <b className="font-medium text-cave-50">{nomArticle||'à choisir'}</b> » · {line.stockAction==='new'?'nouvel article':status.proposed?<span data-dp-niveau="repris" className="text-attention">proposé</span>:'relié'}{status.notes.length?` · ${status.notes.join(' · ')}`:''}</span>
         {/* D277 (« globalement pour tout ») : un lien proposé par la lecture reste jaune jusqu’à « Garder » ou ⇄. */}
         {status.proposed?<button type="button" aria-label={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">Garder</button>:null}
-        {autre}{line.stockAction==='existing'?retirerEl:null}</>}{bisFondu?<>{stockBisEl}{garderBisEl}</>:null}{pastilleEl}</div>:null;
+        {autre}{line.stockAction==='existing'?retirerEl:null}</>}{bisFondu?<>{stockBisEl}{garderBisEl}</>:null}{line.stockAction==='existing'&&!line.stockRef?null:pastilleEl}</div>:null;
     const plusEl=<details data-dp-plus className="text-xs text-cave-400"><summary className="inline-flex min-h-7 cursor-pointer items-center rounded-control px-1 text-cave-200 underline decoration-dotted underline-offset-2">plus</summary>
-      <div className="mt-1 space-y-2">{libelleEl}{natureEl}{extraitEl}
-        {STOCK_KINDS.includes(line.kind)?<div className="space-y-2"><label className="text-sm text-cave-200 flex items-center gap-2"><Package size={16}/>Réception en stock</label>{interrupteurEl}{choixStockEl}{line.stockAction==='existing'&&line.stockRef?relieEl:null}</div>:null}</div></details>;
+      {/* C5, C7 : « plus » ne s'ouvre jamais seul ; la fiche matériel y vit ; Le menu du stock est le seul contrôle (C7 : « Aucun mouvement de stock », « Ajouter à un article existant », « Nouvel article » ; plus d'interrupteur). Le menu « Type d'achat » reste le choix fin (D335). */}
+      <div className="mt-1 space-y-2">{libelleEl}{natureEl}{extraitEl}{materielEl}
+        {STOCK_KINDS.includes(line.kind)?<div className="space-y-2">{choixStockEl}{line.stockAction==='existing'&&line.stockRef?relieEl:null}</div>:null}</div></details>;
     const plateauEl=<div className="space-y-1.5">
       <p data-dp-imprime className="text-xs text-cave-400">imprimé « <span className="font-mono text-cave-200">{line.imprime?.nom??(line.description||'—')}</span> »{line.sourceReference?` · ${line.sourceReference}`:''}</p>
       {opts.comprises.length||opts.restes.length?<p data-dp-options className="text-xs text-cave-200">{opts.comprises.join(' · ')}{opts.restes.length?<span className="text-cave-400">{opts.comprises.length?' · ':''}tel qu’imprimé : {opts.restes.join(' · ')}</span>:null}</p>:null}
-      {ud?<p data-dp-unite-deduite {...(ud.niveau==='repris'?{'data-dp-niveau':'repris'}:{})} className={`text-xs ${ud.niveau==='repris'?'text-attention':'text-cave-200'}`}>unité {shortUnit(ud.unite)} déduite · {ud.raison}{ud.niveau==='repris'?' · à contrôler':''}{segmentsUnite}</p>:null}
+      {/* C2 : pas de phrase d'unité sous les champs (la raison est au survol de la rangée) ; le segment g / kg / Stk n'existe que pour une unité inconnue (la barre sous la rangée). */}
       {calculEl}
+      {rouges.length?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}
       {isMouture?null:natureSegEl}
       {articleEl}
-      {materielEl}
       {line.id===mouturesPropositions[0]?.parentId?tableauEl:null}
       {plusEl}
     </div>;
@@ -945,7 +966,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       prix={line.unitPrice!==undefined?prixImprime(line.unitPrice):'—'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
       prixKg={pk?{texte:`✓ ${pk}`,aria:`${pk} avec mouture`}:undefined} pastilleMouture={pastilleMouture} etat={etat}
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
-      douteux={douteux} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}
+      douteux={douteux} filtree={Boolean(visibles&&visibles.has(line.id)&&!isMouture)} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}
       fix={correction} fixNiveau={fixNiveau} lienNiveau={status.proposed?"repris":undefined} plateau={plateauEl} moutureArticles={enfant&&cestMoutureEnPastille?construire(enfant,enfantIdx,false):undefined}
       onToggle={surToggle} corrigee={corrigeeDe(line)} neuve={fusion?.ajoutees.has(line.id)}/>;
   };
@@ -1008,10 +1029,42 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const perduesParBande=new Map<string,React.ReactNode[]>();
   for(const p of perdues){const l=p.ligne,g=groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category),u=uniteEffective(l);
     perduesParBande.set(g,[...(perduesParBande.get(g)??[]),<LignePerdue key={l.id} id={l.id} groupe={g} nom={nomAffiche(l.nameFr&&!articleDe(l)?l.nameFr:l.description,articleDe(l))} qte={texteQuantite(l,u,false)} prix={l.unitPrice!==undefined?prixImprime(l.unitPrice):'—'} montant={l.amount===undefined?'—':fr2c(Math.round(l.amount*100))} masquee={Boolean(visibles&&!visibles.has(l.id))}/>]);}
-  const perdueCourante=perdues[0];
-  const garderPerdue=()=>{const p=perdueCourante;if(!p)return;setDraft(previous=>({...previous,lines:rangerLaPerdue(previous.lines,p,p.ligne)}));setPerdues(ps=>ps.filter(x=>x.ligne.id!==p.ligne.id));setNGardees(n=>n+1);};
-  const retirerPerdue=()=>{const p=perdueCourante;if(p)setPerdues(ps=>ps.filter(x=>x.ligne.id!==p.ligne.id));};
-  const toutValider=()=>setPerdues([]);
+  /* D329 (son choix B étendu) : le bandeau au pouce est la file de TOUS les changements de la 3e lecture encore à trancher, dans l'ordre : lignes pas retrouvées, valeurs corrigées, lignes ajoutées, désaccords qui pèsent. */
+  const estDesaccord=(c:Chip)=>c.source==='point'&&c.codes.includes('lectures-divergentes')&&c.nom!=='TVA';
+  const desaccordsRestants=chips.filter(c=>estDesaccord(c)&&!reglesSet.has(c.id));
+  const fileChangements:Changement[]=[
+    ...perdues.map((p):Changement=>({type:'perdue',cle:`perdue:${p.ligne.id}`,id:p.ligne.id,mot:'pas retrouvée'})),
+    ...draft.lines.flatMap((l):Changement[]=>{const c=corrigeeDe(l);return c&&(c.qte||c.prix||c.montant||c.nom)&&!tranchees.has(`corr:${l.id}`)?[{type:'corrigee',cle:`corr:${l.id}`,id:l.id,mot:motDeCorrection(c)}]:[];}),
+    ...draft.lines.filter(l=>fusion?.ajoutees.has(l.id)&&!tranchees.has(`ajout:${l.id}`)).map((l):Changement=>({type:'ajoutee',cle:`ajout:${l.id}`,id:l.id,mot:'ajoutée'})),
+    ...desaccordsRestants.map((c):Changement=>({type:'desaccord',cle:`des:${c.id}`,id:c.id,mot:'désaccord'})),
+  ];
+  const courantChg=fileChangements[0];
+  const garderPerdue=(id:string)=>{const p=perdues.find(x=>x.ligne.id===id);if(!p)return;setDraft(previous=>({...previous,lines:rangerLaPerdue(previous.lines,p,p.ligne)}));setPerdues(ps=>ps.filter(x=>x.ligne.id!==id));setNGardees(n=>n+1);};
+  const retirerPerdue=(id:string)=>setPerdues(ps=>ps.filter(x=>x.ligne.id!==id));
+  /* « Annuler » : la valeur du provisoire revient (les cellules corrigées seules), la correction et son bleu partent, la puce baisse d'un. */
+  const annulerCorrection=(id:string)=>{
+    const cs=fusion?.lignes[id],l=draft.lines.find(x=>x.id===id),avant=fusion?.avant[id];if(!cs||!l)return;
+    const bonnes=cs.filter(c=>memeValeur((l as unknown as Record<string,unknown>)[c.champ],c.apres));
+    setDraft(previous=>({...previous,lines:previous.lines.map(x=>{if(x.id!==id)return x;const y={...x} as unknown as Record<string,unknown>;for(const c of bonnes)y[c.champ]=c.avant;
+      if(bonnes.some(c=>c.champ==='description'||c.champ==='nomLu'||c.champ==='imprime')&&avant?.nameFr)y.nameFr=avant.nameFr;
+      if(bonnes.some(c=>c.champ==='unit'||c.champ==='quantity')){if(avant&&'uniteDeduite' in avant&&avant.uniteDeduite)y.uniteDeduite=avant.uniteDeduite;else delete y.uniteDeduite;}
+      return y as unknown as PurchaseLineDraft;})}));
+    setFusion(f=>{if(!f)return f;const {[id]:_a,...reste}=f.lignes;return {...f,lignes:reste,n:Math.max(0,f.n-1)};});setNGardees(n=>n+1);
+  };
+  const retirerAjoutee=(id:string)=>{setDraft(previous=>({...previous,lines:previous.lines.filter(x=>x.id!==id)}));setFusion(f=>f?{...f,ajoutees:new Set([...f.ajoutees].filter(x=>x!==id)),n:Math.max(0,f.n-1)}:f);setNGardees(n=>n+1);};
+  const garderCourant=()=>{const c=courantChg;if(!c)return;
+    if(c.type==='perdue')garderPerdue(c.id);else if(c.type==='desaccord')setReglees(r=>new Set(r).add(c.id));else setTranchees(t=>new Set(t).add(c.cle));
+    setNTranchees(n=>n+1);};
+  const toutValider=()=>{setPerdues([]);setTranchees(t=>new Set([...t,...fileChangements.filter(c=>c.type==='corrigee'||c.type==='ajoutee').map(c=>c.cle)]));setReglees(r=>new Set([...r,...desaccordsRestants.map(c=>c.id)]));setNTranchees(n=>n+fileChangements.length);};
+  const ligneChg=courantChg?(courantChg.type==='perdue'?perdues.find(x=>x.ligne.id===courantChg.id)?.ligne:draft.lines.find(l=>l.id===courantChg.id)):undefined;
+  const chgNom=courantChg?.type==='desaccord'?((points??[]).find(pt=>pt.code==='lectures-divergentes'&&!/tva/i.test(pt.champ))?.message??'Les lectures divergent'):ligneChg?nomAffiche(ligneChg.description):'';
+  const chgMontant=courantChg?.type==='desaccord'?'':ligneChg?.amount===undefined?'—':fr2c(Math.round(ligneChg.amount*100));
+  const chgSecond=!courantChg?undefined:courantChg.type==='corrigee'?{geste:'annuler' as const,label:'Annuler',onClick:()=>{annulerCorrection(courantChg.id);setNTranchees(n=>n+1);}}
+    :courantChg.type==='desaccord'?{geste:'voir' as const,label:'Voir',onClick:()=>{const ch=chips.find(x=>x.id===courantChg.id);if(ch)aller(ch);}}
+    :{geste:'retirer' as const,label:'Retirer',onClick:()=>{if(courantChg.type==='perdue')retirerPerdue(courantChg.id);else retirerAjoutee(courantChg.id);setNTranchees(n=>n+1);}};
+  /* D332 : « Regrouper en une dépense » garde les lignes d'avant ; « ↶ Rétablir » les rend, avec leurs retouches, jusqu'à « Confirmer ». */
+  const regrouper=()=>{setAvantRegroupement(draft.lines);patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]});};
+  const retablir=()=>{if(!avantRegroupement)return;patch({lines:avantRegroupement});setAvantRegroupement(null);};
   draft.lines.forEach((line,index)=>{ligneEls.set(line.id,construire(line,index,simplePurchase));});
   /* Les bandes, la barre, les comptes : tous sur le même ensemble de lignes (R2). */
   /* D277 : le niveau de chaque rangée (la quantité et son unité, le prix, le montant, le nom), une seule lecture pour les bandes et les comptes. */
@@ -1019,8 +1072,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const niveauLigne=new Map(draft.lines.map(l=>{const c=confianceLigne(ligneConfianceDe(effDe(l)),ctxConf),n=niveauxRangee(l,c),vide=!l.description.trim();return [l.id,{unite:c.unite.niveau,pire:vide?'inconnu' as Niveau:n.pire}];}));
   const ligneBandes:LigneBande[]=lignesAff.map(l=>{const i=draft.lines.indexOf(l),u=uniteDe(l),art=articleDe(l),cv=art?conversionDe({...l,unit:u},art):undefined,m=cv?/=\s*(\d+)\s*sachet/.exec(cv):null,nu=niveauLigne.get(l.id)?.unite;
     const sf=sousFamilleLigne(i),pire=niveauLigne.get(l.id)?.pire;
-    return {id:l.id,groupe:groupeDeLigne(i),...(sf?{sousFamille:sf}:{}),...((pire&&pire!=='sur')||douteuxIds.has(l.id)?{averifier:true}:{}),amount:l.amount,quantity:l.quantity,unit:shortUnit(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{})};});
+    return {id:l.id,groupe:groupeDeLigne(i),...(sf?{sousFamille:sf}:{}),...((pire&&pire!=='sur')||douteuxIds.has(l.id)?{averifier:true}:{}),amount:l.amount,quantity:l.quantity,unit:shortUnit(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{}),...(HORS_STOCK_KINDS.includes(l.kind)?{horsStock:true}:{})};});
   const bandes=calculerBandes(ligneBandes);
+  /* D2 : sous un filtre, les quantités et montants des en-têtes (bande et sous-groupe) sont ceux des rangées MONTRÉES ; la structure (ids, plis) reste celle de toutes les lignes. */
+  const bandesMontrees=visibles?(()=>{const vues=calculerBandes(ligneBandes.filter(l=>visibles.has(l.id)));return bandes.map(b=>{const v=vues.find(x=>x.cle===b.cle);return {...b,qte:v?.qte??[],cents:v?.cents??0,incomplet:v?.incomplet??false,eqb:v?.eqb,sousGroupes:b.sousGroupes?.map(sg=>{const w=v?.sousGroupes?.find(x=>x.nom===sg.nom);return {...sg,qte:w?.qte??[],cents:w?.cents??0,incomplet:w?.incomplet??false};})};});})():bandes;
   /* D307 : les rangées qu'on doit voir ouvrent leur sous-groupe, quel que soit le choix (plateau ouvert, filtre des comptes). */
   const forcesGroupes=new Set<string>([...plateauxOuverts,...(visibles??[])]);
   /* D311 (son choix E) : l'état du segment « Plié | Déplié » se calcule sur l'état réel des groupes, il n'est jamais gardé. */
@@ -1029,7 +1084,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const fermerPlateaux=(ids:readonly string[])=>{let change=false;ids.forEach(id=>{if(plateauxOuverts.has(id)){ouvertesRef.current.set(id,false);change=true;}});if(change)setPlateaux(n=>n+1);};
   const basculerGroupe=(cle:string,sg:SousGroupe,ouvrir:boolean)=>{setChoixGroupes(c=>poserGroupe(c,cle,sg.nom,ouvrir));if(!ouvrir)fermerPlateaux(sg.ids);};
   /* « Tout plier, déplier » (toutes les bandes ou une seule) : l'état est prêt ; son contrôle visible est le choix de la voie r3-plier (rien n'est posé à l'écran ici). */
-  const toutPlierGroupes=(cle?:string)=>{setChoixGroupes(c=>plierTout(bandes,c,cle));bandes.filter(b=>!cle||b.cle===cle).forEach(b=>b.sousGroupes?.forEach(sg=>{if(pliable(sg)&&!sg.averifier)fermerPlateaux(sg.ids);}));};
+  const toutPlierGroupes=(cle?:string)=>{setChoixGroupes(c=>plierTout(bandes,c,cle));bandes.filter(b=>!cle||b.cle===cle).forEach(b=>b.sousGroupes?.forEach(sg=>{if(pliable(sg))fermerPlateaux(sg.ids);}));};
   const toutDeplierGroupes=(cle?:string)=>setChoixGroupes(c=>deplierTout(bandes,c,cle));
   /* Une cible (« y aller », une erreur) dans un sous-groupe replié : il s'ouvre d'abord, de façon synchrone, avant le défilement et le focus. */
   const reveler=(el:Element|null|undefined)=>{const corps=el?.closest<HTMLElement>('[data-dp-sg-corps]'),cle=corps?.dataset.dpSgCorps;if(corps&&cle&&corps.hidden)flushSync(()=>setChoixGroupes(c=>new Map(c).set(cle,true)));};
@@ -1053,17 +1108,20 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     compteDe('propose',idsDe('relie').filter(id=>proposedStock.current.has(id)),n=>n>1?'proposés':'proposé','relie',[],undefined,'repris'),
     compte('neuf',n=>n>1?'nouveaux':'nouveau','neuf',[]),
     compte('bis',()=>'bis','bis',chips.filter(c=>c.source==='voisin')),
-    compte('aucun',()=>'hors stock','aucun',[]),
     compteDe('mouture',[...idsDe('mouture'),...concasses.map(x=>x.l.id)],n=>n>1?'moutures':'mouture','mouture',chips.filter(c=>c.source==='mouture'),centsMoutures>0?`+${eur(centsMoutures)}`:undefined),
-    compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),
+    /* A3 : un désaccord est une valeur reprise (jaune) : il compte dans « à contrôler » (ceux qui ne tombent pas sur une rangée s'y ajoutent) ; la file de D329 le traite. */
+    {...compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),n:parNiveau('repris').length+desaccordsRestants.filter(c=>c.ligne===null).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0)},
     compteDe('remplir',parNiveau('inconnu'),()=>'à remplir','precis',chips.filter(c=>c.codes.includes('unite-absente')),undefined,'inconnu'),
     /* Lenteur D (sa maquette `d-lue`) : « ↻ N corrigées », au geste de filtre des autres puces. N compte les CIBLES (une rangée à deux cellules corrigées : 1 ; un champ d'en-tête : 1 ; une ligne ajoutée : 1) et, comme sa maquette `choix-valider`, les lignes pas retrouvées qui attendent encore. */
     ...(()=>{const ids=[...Object.keys(fusion?.lignes??{}).filter(id=>draft.lines.some(l=>l.id===id)),...(fusion?[...fusion.ajoutees]:[]),...perdues.map(p=>p.ligne.id)],n=(fusion?.n??0)+perdues.length,mot=n>1?'corrigées':'corrigée';return n>0?[{cle:'corrigees',n,mot,lien:'aucun' as LienStock,ronds:[],fait:false,ids,actif:filtre?.mot===mot,corrigee:true} as CompteItem]:[];})(),
   ];
   const surCompte=(c:CompteItem)=>{
+    if(c.cle==='controler'&&!c.ids.length&&desaccordsRestants[0]){aller(desaccordsRestants[0]);return;}
     if(!c.ids.length)return;
     if(filtre&&filtre.mot===c.mot){setFiltre(null);setGarde([]);return;}
     setFiltre({mot:c.mot,ids:c.ids});setGarde(c.ids);setTimeout(()=>{if(mounted.current)setGarde([]);},1600);
+    /* D334 : sous « à remplir », la première rangée s'ouvre et le focus va sur le champ qui manque. */
+    if(c.cle==='remplir'){const id=c.ids[0],rs=champsRougesIds.get(id),idx=draft.lines.findIndex(l=>l.id===id);if(id&&rs?.length&&idx>=0){ouvertesRef.current.set(id,true);setPlateaux(n=>n+1);requestAnimationFrame(()=>focaliser(id,idx+1,rs[0].champ));}}
     requestAnimationFrame(()=>form.current?.querySelector('[data-dp="liste"]')?.scrollIntoView?.({block:'start'}));
   };
   const versListe=()=>{viser(form.current?.querySelector<HTMLElement>('[data-dp="liste"]'));};
@@ -1083,7 +1141,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Qté × prix non contrôlé',valeur:''},
     /* n2-pages, sa maquette 6 : des lectures d'accord sur une pièce de plusieurs pages (le serveur en a confirmé N) disent « ✓ N pages lues », sans valeur à droite ; en désaccord,
        « Lectures · N pages » et « n lectures » ; un document seul : « Lectures » et « 2/2 », comme avant. Sans lectures annoncées rien n'est inventé. */
-    ...(verif==='attente'?[{ok:null,texte:'Lectures',valeur:'',lectures:{faites:2,sur:3}}]:lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeur:`${lectures} lectures`}:nPagesLues>1?{ok:true,texte:`${nPagesLues} pages lues`,valeur:''}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
+    ...(verif==='attente'?[{ok:null,texte:'Lectures',valeur:'',lectures:{faites:2,sur:3}}]:lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeur:`${lectures}/${lectures}`}:nPagesLues>1?{ok:true,texte:`${nPagesLues} pages lues`,valeur:''}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
     ...((result.linesLost??0)>0?[{ok:false,texte:'Lignes non gardées',valeur:String(result.linesLost)}]:[]),
   ]:[];
   const corriges=[...new Set((result?.review?.correctedFields??[]).map(f=>f.startsWith('items')?'Articles':f))];
@@ -1116,9 +1174,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {scan?.ok?<summary className="list-none cursor-pointer min-h-7 flex flex-wrap items-center gap-x-2 text-xs text-cave-200">Lignes de la facture · {draft.lines.length}{proposedCount?<span className="text-attention">{proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}{hints.items?<span className="text-attention">À vérifier</span>:null}</summary>
     :<summary className="list-none relative pr-6 min-h-7 cursor-pointer text-sm text-cave-200"><ChevronDown size={14} className="absolute right-0 top-1.5"/><span className="block">Articles, stock et matériel · {draft.lines.length}{hints.items?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</span><span className="block text-xs text-cave-400 mt-1">{[...new Set(draft.lines.map(line=>kinds.find(kind=>kind.value===line.kind)?.label))].join(' · ')}</span>{linkedSummary?<span className="block mt-1 text-cave-200">{linkedSummary}{proposedCount?<span className="text-attention"> · {proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}</span>:null}</summary>}
     <ScanHint field="items" message={hints.items}/>
-    <div className="space-y-2 pt-2">{!scan?.ok?<div className="flex justify-between gap-2 items-center"><h3 className="font-semibold text-cave-50">Ce que tu achètes</h3>{draft.lines.length>1?<button type="button" className="text-xs text-cave-400 min-h-7" onClick={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>Regrouper en une dépense</button>:null}</div>:null}
+    <div className="space-y-2 pt-2">{!scan?.ok?<div className="flex justify-between gap-2 items-center"><h3 className="font-semibold text-cave-50">Ce que tu achètes</h3>{draft.lines.length>1?<button type="button" className="text-xs text-cave-400 min-h-7" onClick={regrouper}>Regrouper en une dépense</button>:null}</div>:null}
       {draft.lines.map(l=><React.Fragment key={l.id}>{ligneEls.get(l.id)}</React.Fragment>)}
-      <div className="flex gap-2"><button type="button" disabled={draft.lines.length>=35} onClick={()=>patch({lines:[...draft.lines,newLine()]})} className={`${button} border-dashed border-cave-600 text-cave-200 flex-1 flex justify-center items-center gap-2`}><Plus size={17}/>Ajouter une ligne</button>{scan?.ok&&draft.lines.length>1?<button type="button" className={`${button} border-dashed border-cave-600 text-cave-200`} onClick={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>Regrouper en une dépense</button>:null}</div>
+      <div className="flex gap-2"><button type="button" disabled={draft.lines.length>=35} onClick={()=>patch({lines:[...draft.lines,newLine()]})} className={`${button} border-dashed border-cave-600 text-cave-200 flex-1 flex justify-center items-center gap-2`}><Plus size={17}/>Ajouter une ligne</button>{scan?.ok&&draft.lines.length>1?<button type="button" className={`${button} border-dashed border-cave-600 text-cave-200`} onClick={regrouper}>Regrouper en une dépense</button>:null}</div>
       {draft.lines.length>1?<p className={`text-sm text-right ${Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005?'text-attention':'text-cave-400'}`}>Détail : {money(draft.lines.reduce((sum,line)=>sum+(line.amount||0),0))} / {money(draft.amount||0)}</p>:null}
     </div></details>;
   /* ------- les rubriques (P16) : mêmes champs, mêmes id ------- */
@@ -1223,8 +1281,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {doublons}
         <InvoiceScanReview bandeauRef={bandeauRef}
           bandeau={{vendor:draft.vendor,date:draft.date,niveaux:niveauxEntete,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal messages={[hints.amountTTC,...(hints.amountTTC&&result?.lignesPasseesAuTtc&&hints.amountTTC!==LIGNES_HT_PASSEES_AU_TTC?[LIGNES_HT_PASSEES_AU_TTC]:[])]}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true),corriges:enteteCorrige}}
-          preuve={{rangees,corriges,remarques,cached:Boolean(scan.cached),visee:viseePreuve,onRangee:versListe,propositions:hints.items?"À vérifier":null}}
-          comptes={<><Comptes items={comptesItems} onCompte={surCompte}/>{chips.some(c=>!aSaPlace(c))||tout?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={aSaPlace}/>:null}</>}/>
+          preuve={{rangees,corriges,remarques,cached:Boolean(scan.cached),visee:viseePreuve,onRangee:versListe,propositions:null}}
+          comptes={<><Comptes items={comptesItems} onCompte={surCompte}/>{chips.some(c=>!aSaPlace(c)&&!estDesaccord(c))||tout?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={c=>aSaPlace(c)||estDesaccord(c)}/>:null}</>}/>
         {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
         {tuiles}{panneaux}
         {ficheQr}
@@ -1232,10 +1290,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-3 lg:order-none lg:pb-0">{rubriquesScan}{phraseRecu}</div>
       </div>
       <div className="order-2 lg:order-none lg:col-start-2">
-        <Liste ordre={ordre} bandes={bandes} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
+        <Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
-          pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,detail:draft.lines.length>1?detailListe:null}}
-          onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>
+          pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,detail:draft.lines.length>1?{...detailListe,cache:Boolean(scan?.cached)}:null}}
+          onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={regrouper}>
           {tiroirPort}
         </Liste>
       </div>
@@ -1270,7 +1328,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
       </div>
     </div>
-    {showForm&&perdueCourante?<BandeauPerdues nom={nomAffiche(perdueCourante.ligne.description)} montant={perdueCourante.ligne.amount===undefined?'—':fr2c(Math.round(perdueCourante.ligne.amount*100))} rang={perduesIds.indexOf(perdueCourante.ligne.id)+1} total={perduesIds.length} onGarder={garderPerdue} onRetirer={retirerPerdue} onToutValider={toutValider}/>:null}
+    {showForm&&courantChg&&chgSecond?<BandeauPerdues nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
     {showForm?<Pied ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
   </ModalShell>;
 }

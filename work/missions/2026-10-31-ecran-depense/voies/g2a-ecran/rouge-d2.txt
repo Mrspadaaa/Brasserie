@@ -1,0 +1,49 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+ [31m❯[39m tests/unit/depense/g2a/rangee.test.tsx [2m([22m[2m21 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m20 skipped[39m[2m)[22m[33m 306[2mms[22m[39m
+   [2m[90m↓[39m[22m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22mune ligne sans unité ni prix : « unité à remplir » et « prix à remplir » au plateau, les deux champs marqués inconnu, la quantité qui est là non
+   [2m[90m↓[39m[22m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22mune ligne qui n’a rien à remplir ne porte aucun mot rouge au plateau
+   [2m[90m↓[39m[22m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22mun article relié qu’on n’a pas choisi : « article à choisir », le choix marqué inconnu, et le nom de la rangée aussi
+   [2m[90m↓[39m[22m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22msous le filtre « à remplir », la rangée s’ouvre et le focus va sur le premier champ qui manque
+   [2m[90m↓[39m[22m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22mun toucher sur le mot rouge donne le focus au champ
+   [2m[90m↓[39m[22m D328h : prix et montants à deux décimales au moins, tant que le champ n’a pas le focus[2m > [22m« 1,2 » est montré « 1,20 », « 9,5 » « 9,50 », « 0,098 » reste (champs du plateau et cellules de la rangée)
+   [2m[90m↓[39m[22m D328h : prix et montants à deux décimales au moins, tant que le champ n’a pas le focus[2m > [22mau focus, la valeur est celle qu’il tape (« 1,5 » reste « 1,5 ») ; à la sortie du champ, « 1,50 »
+   [2m[90m↓[39m[22m D328h : prix et montants à deux décimales au moins, tant que le champ n’a pas le focus[2m > [22mpur : decimalesAuRepos
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mpur : la table des natures
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « ingredient » : exactement un segment pressé (ingredient)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « equipment » : exactement un segment pressé (equipment)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « packaging » : exactement un segment pressé (equipment)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « cleaning » : exactement un segment pressé (equipment)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « maintenance » : exactement un segment pressé (equipment)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « other » : exactement un segment pressé (equipment)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « service » : exactement un segment pressé (service)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « shipping » : exactement un segment pressé (service)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mune ligne « discount » : exactement un segment pressé (undefined)
+   [2m[90m↓[39m[22m D335 : le segment Nature allume toujours l’un de ses trois mots[2m > [22mtoucher le segment déjà allumé ne change rien ; toucher un autre pose ingredient, service ou equipment
+   [2m[90m↓[39m[22m D328b (câblage g2a → g2b) : aucun « ? » d’un service ou d’une remise à l’en-tête de bande[2m > [22mune ligne de service ou de remise sans unité ne met aucun « ? » dans les en-têtes de bande
+[31m   [31m×[31m D2 : sous un filtre, les en-têtes disent ce qui est montré[2m > [22m« à contrôler » : le montant de chaque bande montrée est la somme de ses rangées montrées, et le compte dit « n/N » (n < N quelque part)[39m[33m 305[2mms[22m[39m
+[31m     → expected 5.85 to be close to 4.25, received difference is 1.5999999999999996, but expected 0.005[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/rangee.test.tsx[2m > [22mD2 : sous un filtre, les en-têtes disent ce qui est montré[2m > [22m« à contrôler » : le montant de chaque bande montrée est la somme de ses rangées montrées, et le compte dit « n/N » (n < N quelque part)
+[31m[1mAssertionError[22m: expected 5.85 to be close to 4.25, received difference is 1.5999999999999996, but expected 0.005[39m
+[36m [2m❯[22m tests/unit/depense/g2a/rangee.test.tsx:[2m145:30[22m[39m
+    [90m143| [39m      const somme = lignes.reduce((t, l) => t + Number((l.querySelecto…
+    [90m144| [39m      const entete = b.querySelector('[data-dp-sous-montant]')!.textCo…
+    [90m145| [39m      [34mexpect[39m([33mNumber[39m(entete))[33m.[39m[34mtoBeCloseTo[39m(somme[33m,[39m [34m2[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m146| [39m      [34mexpect[39m(lignes[33m.[39mlength)[33m.[39m[34mtoBeGreaterThanOrEqual[39m(n)[33m;[39m
+    [90m147| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m20 skipped[39m[90m (21)[39m
+[2m   Start at [22m 19:01:50
+[2m   Duration [22m 2.04s[2m (transform 565ms, setup 104ms, collect 894ms, tests 306ms, environment 553ms, prepare 55ms)[22m
+

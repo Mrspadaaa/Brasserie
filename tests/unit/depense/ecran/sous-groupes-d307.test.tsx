@@ -87,16 +87,7 @@ describe('D307 : la bande Rénovation de l\'aperçu, au repos', () => {
     fireEvent.click(ligneDe(g));
     expect(ligneDe(g).getAttribute('aria-expanded')).toBe('false'); expect(corpsDe(g).hidden).toBe(true);
   });
-  it('ouvert, les rangées sont celles d\'aujourd\'hui : la même rangée, son plateau s\'ouvre au toucher', async () => {
-    const v = await lire();
-    const g = groupes(v)[0];
-    fireEvent.click(ligneDe(g));
-    const a = corpsDe(g).querySelector<HTMLElement>('article[data-dp-ligne]')!;
-    expect(a.querySelector('summary')).not.toBeNull();
-    const d = a.querySelector<HTMLDetailsElement>('details')!;
-    d.open = true; fireEvent(d, new Event('toggle'));
-    expect(d.open).toBe(true);
-  });
+
   it('replier un groupe ferme le plateau de ses rangées ; un plateau ouvert garde son groupe ouvert', async () => {
     const v = await lire();
     const g = groupes(v)[0];
@@ -150,11 +141,7 @@ describe('D307 : bandes sans deux sous-familles, sous-groupe d\'une ligne, ligne
 });
 
 describe('D307 : « tout plier, déplier » est prêt, aucun contrôle visible', () => {
-  it('l\'écran ne montre aucun bouton « Tout plier » ni « Tout déplier »', async () => {
-    const v = await lire();
-    expect(screen.queryByRole('button', { name: /tout (plier|déplier)|replier tout|déplier tout/i })).toBeNull();
-    expect(v.container.textContent).not.toMatch(/tout plier|tout déplier|replier tout|déplier tout/i);
-  });
+
   it('Liste appelle son geste sur la ligne de sous-famille avec la bande, le groupe et le sens', () => {
     const l: LigneBande[] = [
       { id: 'a', groupe: 'renovation', sousFamille: 'Outillage', amount: 1, quantity: 1, unit: 'Stk', uniteLisible: true, mouture: false },

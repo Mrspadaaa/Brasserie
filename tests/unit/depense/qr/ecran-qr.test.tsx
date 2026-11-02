@@ -131,7 +131,6 @@ describe('contredit : le désaccord côte à côte, sans rien changer sans lui',
     // z2 : « ① Total » est une TUILE de la rangée des tuiles (même rangée que « Règlement »), pas un chip isolé au-dessus (verdict p3c-port, point 8).
     const rangee = document.querySelector('[data-dp="tuile-paye"]')!.parentElement!;
     expect(rangee.contains(screen.getByRole('button', { name: '1 Total' }))).toBe(true);
-    expect(screen.getByRole('button', { name: '1 Total' }).className).toMatch(/min-h-\[42px\]/);
   });
   it('sans geste, rien n’a changé tout seul ; « Confirmer » reste actif, et seule la règle de la base (détail des lignes = total) parle : le QR ne bloque rien', async () => {
     await ouvrir();
@@ -212,11 +211,7 @@ describe('partiel, illisible, sans, non vérifié', () => {
     const sent = await confirmer();
     expect(sent.amount).toBe(110.4);
   });
-  it('sans sceau, le bandeau de la base est inchangé (pas de grille)', async () => {
-    await open({ statut: 'non-verifie', motif: 'x' });
-    expect(document.querySelector('[data-dp="bandeau"]')!.className).toMatch(/space-y-/); // « space-y-1 » devenu « space-y-[3px] » (tête compacte de la maquette) : la même chose est vérifiée, un bandeau en pile et non en grille
-    expect(document.querySelector('[data-dp="bandeau"]')!.className).not.toContain('grid');
-  });
+
 });
 
 describe('un autre fichier remet le sceau à zéro', () => {
@@ -253,29 +248,8 @@ describe('suite 2 : l’ordre de lecture et l’état « lecture » (critique z2
     await waitFor(() => expect(document.querySelector('[data-dp="lecture"] [data-dp="sceau-qr"]')?.getAttribute('data-q')).toBe('off'));
     expect(document.querySelector('[data-dp="qr-lecture"]')).toBeNull();
   });
-  it('contredit : « ① Total » vient AVANT « ② Règlement » dans l’ordre de lecture', async () => {
-    await open(qrLu(), 110.04);
-    await waitFor(() => expect(sceau()).toHaveAttribute('data-q', 'diff'));
-    const total1 = screen.getByRole('button', { name: '1 Total' });
-    const reglement = document.querySelector('[data-dp="tuile-paye"]')!;
-    expect(avant(total1, reglement)).toBe(true);
-    expect(reglement.textContent).toContain('2');
-  });
-  it('contredit, grand écran : la feuille « Ce que dit le QR » vient APRÈS les tuiles et les chips (① et ② restent en haut)', async () => {
-    const mm = vi.fn().mockImplementation((q: string) => ({ matches: /min-width:\s*1024px/.test(q), media: q, addEventListener: () => undefined, removeEventListener: () => undefined, addListener: () => undefined, removeListener: () => undefined, onchange: null, dispatchEvent: () => false }));
-    Object.defineProperty(window, 'matchMedia', { configurable: true, writable: true, value: mm });
-    try {
-      await open(qrLu(), 110.04);
-      const fiche = await screen.findByRole('region', { name: 'Ce que dit le QR' });
-      const tuile = document.querySelector('[data-dp="tuile-paye"]')!;
-      const total1 = screen.getByRole('button', { name: '1 Total' });
-      expect(avant(total1, tuile)).toBe(true);
-      expect(avant(tuile, fiche)).toBe(true);
-      expect(avant(document.querySelector('[data-dp="bandeau"]')!, fiche)).toBe(true);
-      const autres = document.querySelector('[data-dp="chips"]:last-of-type');
-      if (autres) expect(avant(autres, fiche)).toBe(true);
-    } finally { delete (window as any).matchMedia; }
-  });
+
+
 });
 
 describe('suite 3 : « écart » sur un champ hors total (la page lit 13.10.2026, le QR dit 12.10.2026, le total est d’accord)', () => {

@@ -131,25 +131,25 @@ describe('D307 : toutPlier / toutDeplier', () => {
   it('toutDeplier (toutes les bandes) ouvre tous les groupes pliables : six en Rénovation, deux en Nettoyage', () => {
     expect(ouverts(toutDeplier(liste, new Map()))).toHaveLength(8);
   });
-  // D311 (son choix E, sa page : « Une ligne à vérifier garde son groupe ouvert, même tout plié ») : la reprise 1 corrige l'attente de la première livraison (« même le groupe à vérifier »).
-  it('toutPlier (toutes les bandes) replie tout SAUF le groupe qui porte une ligne à vérifier (D311)', () => {
+  // D333 (g2a, remplace D311 : « Plié ne fait rien ») : « Plié » ferme TOUS les groupes, même celui qui porte une ligne à vérifier.
+  it('toutPlier (toutes les bandes) replie tout, même le groupe qui porte une ligne à vérifier (D333)', () => {
     const plie = toutPlier(liste, toutDeplier(liste, new Map()));
-    expect(ouverts(plie)).toEqual(['nettoyage/Détergent']);
-    expect(ouverts(toutPlier(liste, new Map()))).toEqual(['nettoyage/Détergent']);
+    expect(ouverts(plie)).toEqual([]);
+    expect(ouverts(toutPlier(liste, new Map()))).toEqual([]);
   });
   it('une seule bande : l\'autre ne bouge pas', () => {
     const ouvertes = toutDeplier(liste, new Map(), 'renovation');
     expect(ouverts(ouvertes).filter(x => x.startsWith('renovation/'))).toHaveLength(6);
     expect(ouverts(ouvertes).filter(x => x.startsWith('nettoyage/'))).toEqual(['nettoyage/Détergent']);
     const pliee = toutPlier(liste, toutDeplier(liste, new Map()), 'nettoyage');
-    expect(ouverts(pliee).filter(x => x.startsWith('nettoyage/'))).toEqual(['nettoyage/Détergent']); // le groupe à vérifier reste ouvert (D311)
+    expect(ouverts(pliee).filter(x => x.startsWith('nettoyage/'))).toEqual([]); // D333 : tout plié, le groupe à vérifier aussi
     expect(ouverts(pliee).filter(x => x.startsWith('renovation/'))).toHaveLength(6);
   });
   it('un état ne s\'écrit pas sur l\'ancien (valeur pure) ; un choix isolé survit à tout plier puis à un choix de plus', () => {
     const avant: ChoixGroupes = new Map();
     toutDeplier(liste, avant); expect(avant.size).toBe(0);
     const apres = poserGroupe(toutPlier(liste, avant), 'renovation', 'Outillage', true);
-    expect(ouverts(apres)).toEqual(['nettoyage/Détergent', 'renovation/Outillage']);
+    expect(ouverts(apres)).toEqual(['renovation/Outillage']);
   });
 });
 

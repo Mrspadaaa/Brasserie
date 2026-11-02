@@ -1,0 +1,1269 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+[90mstdout[2m | tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22m[2mD329 : les valeurs corrigées passent par le bandeau[2m > [22m[2m« Garder » : la correction reste (bleu, puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstdout[2m | tests/unit/depense/fiche/ecran.test.tsx[2m > [22m[2mR2, R3, R4 : le bouton dit le nom qui sera écrit[2m > [22m[2mR4 : Target et Target bis au stock, « Target 12.5% » : « Créer « Target bis 2 » »
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstdout[2m | tests/unit/depense/ecran/tri.test.tsx[2m > [22m[2mR6 : « Créer un nouvel article » d’un produit déjà au stock devient « Relier » (D215 : une autre α reste « Créer »)[2m > [22m[2mGalaxy (même produit) : le choix « new » relie ; Target 11.3% (autre α) : « Créer » et ⇄ « Relier à Target 11.8% »
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/g2a/tout-valider.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 2568[2mms[22m[39m
+   [33m[2m✓[22m[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22mtrois corrections, aucune ligne perdue : le bandeau existe, « 2 valeurs corrigées · 1/3 » sur Pilsner, « Tout valider » dès 2 éléments [33m 321[2mms[22m[39m
+   [33m[2m✓[22m[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Garder » : la correction reste (bleu, puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce [33m 372[2mms[22m[39m
+   [33m[2m✓[22m[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Confirmer » sans trancher : tout est gardé (la quantité corrigée est enregistrée) [33m 353[2mms[22m[39m
+   [33m[2m✓[22m[39m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mdeux lignes pas retrouvées puis les trois corrections : « 1/5 », « 2/5 », « 3/5 » ; Retirer reste pour une ligne perdue [33m 346[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/qr/ecran-qr.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 4688[2mms[22m[39m
+   [33m[2m✓[22m[39m contredit : le désaccord côte à côte, sans rien changer sans lui[2m > [22mprendre le QR pose 110,40, règle la chip, et la dépense s’enregistre à 110,40 ; reprendre la page remet 110,04 [33m 353[2mms[22m[39m
+   [33m[2m✓[22m[39m suite 3 : « écart » sur un champ hors total (la page lit 13.10.2026, le QR dit 12.10.2026, le total est d’accord)[2m > [22mgarder la page : la date reste 13.10.2026, la chip se règle, la marque s’efface, le sceau dit « lu gardé » [33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m suite 3 : « écart » sur un champ hors total (la page lit 13.10.2026, le QR dit 12.10.2026, le total est d’accord)[2m > [22mdevise (la page lit EUR, le QR dit CHF)[2m > [22mla chip ne règle rien ; « CHF · QR » écrit la devise du QR ; « EUR · lu » la laisse [33m 377[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/ecran/tri.test.tsx[2m > [22m[2mReprise (01.11) : les détails du critique et du relecteur[2m > [22m[2mcritique R5 : « Envoi au Drive · 0,7 Mo » pendant l’envoi quand la taille est connue
+[22m[39mAn update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/unit/depense/ecran/tri.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 10221[2mms[22m[39m
+   [33m[2m✓[22m[39m R1 : un prix « avec mouture » n’est montré que si le catalogue l’écrira[2m > [22mmalt relié + mouture de service rattachée : « 2,40/Kg avec mouture » ; malt non relié : rien [33m 626[2mms[22m[39m
+   [33m[2m✓[22m[39m R1 : un prix « avec mouture » n’est montré que si le catalogue l’écrira[2m > [22mC16 : le tableau des moutures dit « lu 2,30 → 2,40 /Kg » seulement pour un malt relié, et « Laisser en service » ne lie rien [33m 363[2mms[22m[39m
+   [33m[2m✓[22m[39m R6 : « Créer un nouvel article » d’un produit déjà au stock devient « Relier » (D215 : une autre α reste « Créer »)[2m > [22mGalaxy (même produit) : le choix « new » relie ; Target 11.3% (autre α) : « Créer » et ⇄ « Relier à Target 11.8% » [33m 1755[2mms[22m[39m
+   [33m[2m✓[22m[39m R10, D229 : un geste ne fait jamais monter le statut ; une valeur tapée est gardée[2m > [22m« — » sur la TVA : le titre reste « Lecture à confirmer », la chip dit « points revus » [33m 792[2mms[22m[39m
+   [33m[2m✓[22m[39m R10, D229 : un geste ne fait jamais monter le statut ; une valeur tapée est gardée[2m > [22mune valeur fausse tapée garde sa valeur, crée un point (chip « Total ») et ne vérifie rien [33m 874[2mms[22m[39m
+   [33m[2m✓[22m[39m C3, C1, C5, C6, C8, C14 : ce qu’il lit[2m > [22mC3 : le Total s’affiche « 86,50 » hors frappe [33m 564[2mms[22m[39m
+   [33m[2m✓[22m[39m C3, C1, C5, C6, C8, C14 : ce qu’il lit[2m > [22mC1 : « C’est la date » est un bouton plein lisible ; « Autre date » ouvre le formulaire monté ; la carte dit « supposée » [33m 664[2mms[22m[39m
+   [33m[2m✓[22m[39m C3, C1, C5, C6, C8, C14 : ce qu’il lit[2m > [22mC5 : la ligne montre le nom de l’article, l’imprimé reste dans le plateau ; C14 : pas de chevron par ligne [33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m C3, C1, C5, C6, C8, C14 : ce qu’il lit[2m > [22mC8 : l’état 8 montre le tableau « Ce document / Déjà au registre » et dit où va le fichier [33m 477[2mms[22m[39m
+   [33m[2m✓[22m[39m R2 : panneaux toujours montés, IntersectionObserver absent, « À revoir » à N points[2m > [22m« À revoir » dit chaque point ouvert avec la valeur gardée (TVA, date supposée, moutures, voisin, unité) [33m 688[2mms[22m[39m
+   [33m[2m✓[22m[39m Reprise (01.11) : les détails du critique et du relecteur[2m > [22mcritique R1 : « C’est la date » referme le panneau Payé [33m 344[2mms[22m[39m
+   [33m[2m✓[22m[39m Reprise (01.11) : les détails du critique et du relecteur[2m > [22mp3c-3 : la barre est teintée par catégorie (malt, houblon, levure), hachurée pour un point ouvert ; le lien reste au picto de la rangée [33m 346[2mms[22m[39m
+   [33m[2m✓[22m[39m Reprise (01.11) : les détails du critique et du relecteur[2m > [22mcritique R5 : « Envoi au Drive · 0,7 Mo » pendant l’envoi quand la taille est connue [33m 681[2mms[22m[39m
+   [33m[2m✓[22m[39m Reprise (01.11) : les détails du critique et du relecteur[2m > [22mcritique R6 (D275, voie f3) : Sabro n’a plus de chip « unité » : « 30 g » se déduit de ses voisines [33m 313[2mms[22m[39m
+   [33m[2m✓[22m[39m Reprise (01.11) : les détails du critique et du relecteur[2m > [22mrelecteur R6 : le choix « Créer » d’un produit déjà au stock dit « relié à X, nom déjà au stock » [33m 767[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/stock/ecran.test.ts[2m > [22m[2mS1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ)[2m > [22m[2mCaramünch, Target, Galaxy et les quatre levures sont proposées sur leur article
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/fiche/ecran.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 11484[2mms[22m[39m
+   [33m[2m✓[22m[39m R2, R3, R4 : le bouton dit le nom qui sera écrit[2m > [22mR2 : « Target 11.3% » face à « Target 11.8% » : « Créer « Target bis » », ⇄ « Choisir un autre article » (r2b) gardé [33m 436[2mms[22m[39m
+   [33m[2m✓[22m[39m R2, R3, R4 : le bouton dit le nom qui sera écrit[2m > [22mR3 : « Cascade CH » face à « Cascade US » : « Créer « Cascade CH » » et ⇄ (aujourd’hui : aucun bouton, la ligne n’a pas d’α) [33m 350[2mms[22m[39m
+   [33m[2m✓[22m[39m R9 : un nom tapé n’est jamais écrasé[2m > [22m« Créer » ouvre le champ « Nom de l’article » pré-rempli ; ce qu’on y tape reste après un changement de libellé, et part dans le brouillon enregistré [33m 1354[2mms[22m[39m
+   [33m[2m✓[22m[39m R9 : un nom tapé n’est jamais écrasé[2m > [22mvider le champ rend la main au nom proposé [33m 802[2mms[22m[39m
+   [33m[2m✓[22m[39m R12, R13 : le menu « Créer un nouvel article »[2m > [22mR12 : Maris Otter (déjà au stock) relie ; retiré du stock, le menu donne le nom propre « Maris Otter » dans le champ [33m 1210[2mms[22m[39m
+   [33m[2m✓[22m[39m R12, R13 : le menu « Créer un nouvel article »[2m > [22mR13 : « Target » sans α face à Target (11,8) et Target bis (11,3) : pas de bouton « Créer », « plusieurs articles », le menu donne un nom libre [33m 732[2mms[22m[39m
+   [33m[2m✓[22m[39m R12, R13 : le menu « Créer un nouvel article »[2m > [22mCascade CH 8% (déjà de la famille « Cascade US ») : l’α et l’origine sont ceux du libellé, le nom tapé part dans le brouillon enregistré [33m 969[2mms[22m[39m
+   [33m[2m✓[22m[39m la pastille dit la fiche et sa marque[2m > [22mune ligne nouvelle sans fiche reste « nouveau » ; Cascade CH : « fiche Cascade US · approchée » ; Target bis : « fiche Target UK » ; le plateau le redit [33m 519[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’attention, le libellé, Sabro[2m > [22mn° 5 : « 40 g · α 11,3 » sous la ligne, l’article grisé « Target α 11,8 », puis « α 11,3 » à côté de la fiche dans le plateau [33m 475[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’attention, le libellé, Sabro[2m > [22mn° 5 : l’origine et l’EBC lus, jamais une valeur inconnue (Cascade CH sans α : pas d’α) [33m 485[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’attention, le libellé, Sabro[2m > [22mn° 6 : le bouton dit « Target bis » ou « Créer CH » (nom complet dans son nom accessible), bouton et ⇄ dans un même groupe [33m 444[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’attention, le libellé, Sabro[2m > [22mn° 8 : le premier champ du plateau s’appelle « Libellé de la facture » [33m 512[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’attention, le libellé, Sabro[2m > [22mn° 9 (D275, voie f3) : une ligne d’ingrédient inconnue (Goldings East Kent) est nouvel article d’office, picto « nouvel article », aucun bouton « Créer » [33m 440[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, les accords, « origine CH »[2m > [22mn° 13 : tant que le nom tapé est refusé, la tête de ligne garde le nom proposé ; le nom tapé reste dans son champ avec le message [33m 893[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, les accords, « origine CH »[2m > [22mn° 14 : ⇄ « Choisir un autre article » ouvre le plateau sur le choix de l’article et ne relie rien ; l’article se choisit dans le plateau [33m 716[2mms[22m[39m
+   [33m[2m✓[22m[39m tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, les accords, « origine CH »[2m > [22mn° 16 : le compteur accorde le nombre [33m 338[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/p3c.test.tsx [2m([22m[2m24 tests[22m[2m)[22m[33m 12708[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : les bandes teintées de la facture 372765[2m > [22mT1 : trois bandes dans l’ordre malt, houblon, levure ; sous-totaux 36,85 · 20,05 · 29,60 ; quantités en gras « 18 Kg », « 270 g + 30 ? », « 7 Stk » [33m 428[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : les bandes teintées de la facture 372765[2m > [22mT2 : « 23 lignes », 23 segments de barre, Σ des comptes = 23 (R2) ; « sans stock » est un compte [33m 481[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : les bandes teintées de la facture 372765[2m > [22mT14 : le mot du statut n’a qu’un porteur (nom accessible de la pastille), jamais un texte doublé [33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le port « Total seulement » (D249)[2m > [22mT3 : « dont port 8,50 » ; total 95,00 ; 23 lignes ; la ligne de port n’est dans aucune bande mais dans son tiroir ; elle se corrige [33m 1015[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le port « Total seulement » (D249)[2m > [22mT4 : un port sans montant reste une rangée (Autres), « dont port » se tait, et Confirmer mène au champ de la ligne 24 [33m 818[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le port « Total seulement » (D249)[2m > [22mT7b : en ordre Papier le port n’est pas une rangée [33m 751[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : R1, ordre, filtre, mouture, pied[2m > [22mT6 : une erreur de quantité mène à la ligne 12 par son id, pas par son rang dans le DOM (ordre Catégorie) [33m 1173[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : R1, ordre, filtre, mouture, pied[2m > [22mT7 : « Papier » : une bande, 23 numéros 1 à 23, plus aucune pastille de mouture (les 5 moutures sont des rangées) [33m 709[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : R1, ordre, filtre, mouture, pied[2m > [22mT8 : toucher « bis » filtre la liste ; les lignes masquées restent montées ; « Toutes les lignes » la rend [33m 651[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : R1, ordre, filtre, mouture, pied[2m > [22mT9 : rien ne se rattache sans geste ; « Rattacher les 5 » rattache les 5 et la pastille dit « 2,40/Kg avec mouture » [33m 599[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : R1, ordre, filtre, mouture, pied[2m > [22mT10 : le pied porte la bascule Catégorie / Papier et un Confirmer actif ; hors ligne : étiquette d’en-tête [33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le picto du justificatif, les propositions, le changement de bande, l’unité[2m > [22mT13 : le picto ouvre « Voir l’original » / « Changer » ; « Changer » est monté (panneau fermé = classe hidden) [33m 673[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le picto du justificatif, les propositions, le changement de bande, l’unité[2m > [22mT15 : « n proposé(s) » jaune au récap (n = lignes proposées) ; plus de phrase « proposée par la lecture » [33m 384[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le picto du justificatif, les propositions, le changement de bande, l’unité[2m > [22mT18 : changer le type d’achat de la ligne 8 la fait passer dans « Autres » ; son plateau reste ouvert [33m 652[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : le picto du justificatif, les propositions, le changement de bande, l’unité[2m > [22mT19 (D275, voie f3) : Sabro « 30 » prend le g de ses voisines (sûr : deux l’impriment) ; taper « g » ne change rien au prix imprimé [33m 472[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’écran rendu, « Qté × prix » hors port[2m > [22mT17 : 34 lignes affichées + 1 port = 35 : « Ajouter une ligne » est désactivé et dit « port compris » ; à 34 lignes il reste actif [33m 1165[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’écran rendu, « Qté × prix » hors port[2m > [22minvariant (état 3) : Σ sous-totaux des bandes + dont port = Σ des montants du brouillon = « Détail » = Total, lus sur l’écran [33m 577[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’écran rendu, « Qté × prix » hors port[2m > [22minvariant (état port) : Σ sous-totaux des bandes + dont port = Σ des montants du brouillon = « Détail » = Total, lus sur l’écran [33m 489[2mms[22m[39m
+   [33m[2m✓[22m[39m p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’écran rendu, « Qté × prix » hors port[2m > [22mD12 : « Qté × prix » compte les lignes LUES hors port : 23/23 avec ou sans la ligne de port (VERDICT-f3 détail 5 : « ✓ Qté × prix 23/23 » comme la base ; HEAD : « 23/23 lues ») [33m 591[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/lecture-d/ecran.test.tsx[2m > [22m[2mE7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22m[2mle fil part, « Lectures 3/3 », la puce compte les rangées (3), l’ancienne valeur est « 10 Kg × 1,45 », et la fusion garde les rangées en place (m3)
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/stock/ecran.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 3961[2mms[22m[39m
+   [33m[2m✓[22m[39m S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ)[2m > [22mpropose Maris Otter sur la ligne 1, avec la marque « proposé », sans aucune écriture [33m 658[2mms[22m[39m
+   [33m[2m✓[22m[39m S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ)[2m > [22mles lignes de mouture (service) n’ont ni sélecteur de stock ni proposition ; Goldings et Hallertauer, absents, sont nouveaux d’office (D275, voie f3 ; HEAD : « aucun mouvement ») [33m 421[2mms[22m[39m
+   [33m[2m✓[22m[39m S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ)[2m > [22mCaramünch, Target, Galaxy et les quatre levures sont proposées sur leur article [33m 750[2mms[22m[39m
+   [33m[2m✓[22m[39m S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ)[2m > [22mla description est la base du libellé, l’imprimé reste à côté (D275, voie f3 ; HEAD : le libellé brut) ; l’α, la récolte et le poids sont déduits en clair dans l’extrait, avec leur source [33m 680[2mms[22m[39m
+   [33m[2m✓[22m[39m S1 : la feuille propose l’article à la lecture de la facture 372765 (stock SIMULÉ)[2m > [22mun choix du brasseur n’est jamais remplacé : écarter la proposition la laisse écartée, même après d’autres modifications [33m 1451[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/ecran/ecran.test.tsx[2m > [22m[2mr2b : les points qui pèsent, la pastille, l’interrupteur[2m > [22m[2ml’interrupteur « Mettre en stock » écrit none / existing, jamais new, et son état se lit
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/rangees/rangees.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 4235[2mms[22m[39m
+   [33m[2m✓[22m[39m zone 2 : nouvel article d’office, aucun « Créer » au repos[2m > [22mles ingrédients sans article sont « new », avec le picto « nouvel article » ; matériel et emballage sans mouvement ni bouton [33m 382[2mms[22m[39m
+   [33m[2m✓[22m[39m zone 7 : « + Ajouter une ligne » reste ; une ligne vide se dit en rouge[2m > [22mla ligne ajoutée montre son nom et sa quantité en rouge [33m 350[2mms[22m[39m
+   [33m[2m✓[22m[39m VERDICT-f3 défaut 1 : le plateau ouvert est celui de p3c-3 (p3c-3-geste-plateau.png)[2m > [22maucun doublon : le nom de l’article se saisit une fois, « nouvel article » et la fiche ne se disent qu’une fois [33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m VERDICT-f3-p2 détails 2 à 4[2m > [22mdétail 2 : le champ d’unité vide dit « ? » en rouge tirets [33m 400[2mms[22m[39m
+   [33m[2m✓[22m[39m VERDICT-f3-p2 détails 2 à 4[2m > [22mdétail 3 : un bis ouvert n’a qu’un ⇄ ; sa barre se fond dans la ligne « article » du plateau [33m 391[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m[2m(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m[2m(a) il tape 12 dans la quantité de Pilsner pendant l’attente : après le final, « Qté × prix 6/7 », sans coche
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [31m❯[39m tests/unit/depense/lecture-d/ecran.test.tsx [2m([22m[2m16 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 3698[2mms[22m[39m
+   [33m[2m✓[22m[39m E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend[2m > [22mles lignes sont là, le fil et « Lectures ●●◌ » aussi ; « Confirmer » est désactivé avec la roue (aria « Vérification en cours ») ; « Fermer » reste actif [33m 349[2mms[22m[39m
+   [32m✓[39m E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend[2m > [22mles champs restent modifiables pendant l’attente : sa saisie est prise[32m 229[2mms[22m[39m
+   [32m✓[39m E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22mle fil part, « Lectures 3/3 », la puce compte les rangées (3), l’ancienne valeur est « 10 Kg × 1,45 », et la fusion garde les rangées en place (m3)[32m 222[2mms[22m[39m
+   [32m✓[39m E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22mE8 : une ligne qu’il a supprimée pendant l’attente ne revient pas[32m 176[2mms[22m[39m
+   [32m✓[39m E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22mune cellule qu’il a tapée pendant l’attente reste la sienne, sans bleu ; l’autre cellule de la rangée est corrigée[32m 260[2mms[22m[39m
+   [32m✓[39m E9 et son choix 1 B : une ligne que la 3.8 ajoute[2m > [22mune rangée de plus (id `line-${n+1}`), toute sur le bleu avec ↻, comptée dans la puce (4 corrigées)[32m 251[2mms[22m[39m
+[31m   [31m×[31m son choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22mbarrée, hors des sommes, au bandeau ; « Confirmer » sans trancher : elle part (elle n’est pas enregistrée)[39m[32m 260[2mms[22m[39m
+[31m     → expected 'Avoine maltée 1,70pas retrouvée · 1/4…' not to match /Tout valider/[39m
+[31m   [31m×[31m son choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22m« Garder » la remet en rangée ordinaire à sa place, dans les sommes ; « Retirer » la fait partir[39m[32m 135[2mms[22m[39m
+[31m     → expected <div data-dp="perdues" …(3)>…(2)</div> to be null[39m
+[31m   [31m×[31m « Tout valider » (sa maquette B, D316) à deux lignes[2m > [22mle bandeau défile (« 1/2 » puis « 2/2 »), « Tout valider » à côté ; Garder puis Retirer un à un[39m[33m 350[2mms[22m[39m
+[31m     → expected '1/5' to be '1/2' // Object.is equality[39m
+   [33m[2m✓[22m[39m « Tout valider » (sa maquette B, D316) à deux lignes[2m > [22m« Tout valider » : toutes les lignes pas retrouvées partent d’un toucher [33m 351[2mms[22m[39m
+   [32m✓[39m le total corrigé (défaut A, D315)[2m > [22mle champ d’en-tête que la 3.8 corrige est sur le bleu, l’ancien total barré à côté, et compte une fois dans la puce[32m 242[2mms[22m[39m
+   [32m✓[39m E12, E13 : sans 3.8 et 3.8 en échec[2m > [22mE12 : le final arrive avec les valeurs du provisoire et le point « lecture coupée » : « 2 lectures » en attention, aucune puce, bouton noir[32m 94[2mms[22m[39m
+   [32m✓[39m E12, E13 : sans 3.8 et 3.8 en échec[2m > [22mE13 : une pièce sans 3.8 (le final seul, aucun morceau) : aucun fil, bouton noir, « Lectures 2/2 » comme aujourd’hui[32m 76[2mms[22m[39m
+   [32m✓[39m E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de partie[2m > [22mle final rend `ok:false` après le morceau : le fil part, le bouton est noir, la forme est celle d’une 3.8 coupée (point « lecture coupée », « 2 lectures »)[32m 186[2mms[22m[39m
+   [32m✓[39m E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de partie[2m > [22mune erreur levée après le morceau ne laisse jamais le bouton gris[32m 286[2mms[22m[39m
+   [32m✓[39m E11 (M6) : la traduction du provisoire qui arrive après la fusion est jetée ; un nom changé est retraduit[2m > [22mle nom de base changé par la 3.8 efface `nameFr` et la seconde traduction ne porte que ce qui n’a pas de français[32m 229[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/ecran/sous-groupes-d311.test.tsx[2m > [22m[2mD311 : le segment « Plié | Déplié » de son choix E[2m > [22m[2m« Déplié » ouvre tous les groupes et s'allume seul ; « Plié » les replie et s'allume seul
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/lecture-d/finitions.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 3642[2mms[22m[39m
+   [33m[2m✓[22m[39m (a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a) il tape 12 dans la quantité de Pilsner pendant l’attente : après le final, « Qté × prix 6/7 », sans coche [33m 484[2mms[22m[39m
+   [33m[2m✓[22m[39m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mla relance échoue : la forme de la 3.8 coupée (« 2 lectures », « Lecture coupée »), et pas de troisième appel [33m 343[2mms[22m[39m
+   [33m[2m✓[22m[39m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22men ligne, un échec de la 3.8 ne relance rien : la fin de partie est immédiate [33m 328[2mms[22m[39m
+   [33m[2m✓[22m[39m (h) sa saisie, cellule par cellule[2m > [22m(h’) la quantité changée : seule la quantité est gardée, le nom et le prix sont corrigés [33m 374[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/ecran.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 5264[2mms[22m[39m
+   [33m[2m✓[22m[39m r2b : les points qui pèsent, la pastille, l’interrupteur[2m > [22mles chips sont les points typés qui pèsent, l’argent d’abord ; le statut est « à confirmer » ; rien n’est écrit [33m 1004[2mms[22m[39m
+   [33m[2m✓[22m[39m r2b : les points qui pèsent, la pastille, l’interrupteur[2m > [22mla pastille-mot dit l’effet au stock (« +6 kg », « unité à préciser ») ; aucune pastille sur la mouture [33m 472[2mms[22m[39m
+   [33m[2m✓[22m[39m r2b : les points qui pèsent, la pastille, l’interrupteur[2m > [22ml’interrupteur « Mettre en stock » écrit none / existing, jamais new, et son état se lit [33m 1046[2mms[22m[39m
+   [33m[2m✓[22m[39m r2b : les points qui pèsent, la pastille, l’interrupteur[2m > [22mS8 : même commande sous un autre numéro = un signal, jamais un blocage ; « Même achat · ne rien enregistrer » n’écrit rien [33m 1227[2mms[22m[39m
+   [33m[2m✓[22m[39m le banc de développement n’atteint jamais l’enregistrement réel[2m > [22mavec `apercu`, ni Gemini ni l’enregistrement réel ne sont appelés ; l’enregistrement simulé rend le reçu qui reste [33m 1226[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/raccord/changer-fichier.test.tsx[2m > [22m[2mD7 : la dépense attend sa confirmation, le fichier ne change plus[2m > [22m[2mun second fichier (autre contenu) est refusé par le champ caché ; deux échecs de confirmation de suite ; le reçu et l’empreinte restent ceux du premier
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstdout[2m | tests/unit/depense/nom-b/ecran-nom-b.test.tsx[2m > [22m[2mN1 — le nom de l'article neuf à l'écran[2m > [22m[2mle champ « article « … » » dit le nom imprimé à la lecture, puis le français à son arrivée ; « Confirmer » avant l'arrivée : le nom imprimé
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstderr[2m | tests/unit/depense/nom-b/ecran-nom-b.test.tsx[2m > [22m[2mN1 — le nom de l'article neuf à l'écran[2m > [22m[2mun nom tapé par le brasseur n'est jamais remplacé par le français
+[22m[39mAn update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/unit/depense/pages/parcours.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 3649[2mms[22m[39m
+   [33m[2m✓[22m[39m T-A1 attachment = le PDF dès l'assemblage[2m > [22mscanPages reçoit les 3 originales dans l'ordre ; la carte dit « 3 pages » pendant la lecture ; applyOutcome reçoit l'empreinte des pages [33m 684[2mms[22m[39m
+   [33m[2m✓[22m[39m T-A6 / T-A7 / T-A8 « Changer »[2m > [22mT-A6 : « Changer » puis refermer le panneau → le brouillon est identique (bandeau, lignes, pile) ; aucune lecture de plus [33m 377[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/ecran/sous-groupes-d311.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 4733[2mms[22m[39m
+   [33m[2m✓[22m[39m D311 : le segment « Plié | Déplié » de son choix E[2m > [22mau repos d'une lecture, il est dans l'en-tête de la feuille, entre le titre et le justificatif, « Plié » allumé [33m 420[2mms[22m[39m
+   [33m[2m✓[22m[39m D311 : le segment « Plié | Déplié » de son choix E[2m > [22m« Déplié » ouvre tous les groupes et s'allume seul ; « Plié » les replie et s'allume seul [33m 369[2mms[22m[39m
+   [33m[2m✓[22m[39m D311 : le segment « Plié | Déplié » de son choix E[2m > [22mun toucher après « Plié » ouvre un groupe et éteint « Plié » (état mêlé : aucun des deux) [33m 352[2mms[22m[39m
+   [33m[2m✓[22m[39m D311 : le segment « Plié | Déplié » de son choix E[2m > [22m« Déplié » puis un toucher replie un groupe : mêlé, et chaque groupe reste libre [33m 552[2mms[22m[39m
+[31m   [31m×[31m D311 : le segment « Plié | Déplié » de son choix E[2m > [22m« Plié » laisse ouvert un groupe à vérifier ; un toucher le replie quand même ; « Plié » le rouvre[39m[32m 93[2mms[22m[39m
+[31m     → expected [] to deeply equal [ 'plie' ][39m
+[31m   [31m×[31m D311 : le segment « Plié | Déplié » de son choix E[2m > [22m« Plié » ferme le plateau ouvert d'une rangée d'un groupe qu'il replie (sinon la rangée garderait son groupe ouvert)[39m[33m 1141[2mms[22m[39m
+[31m     → expected [ 'Outillage=false', …(2) ] to deeply equal [ 'Outillage=false', …(2) ]
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body[31m
+    [33mstyle[31m=[32m"overflow: hidden;"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"_r_k_"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<header[31m
+            [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Fermer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-x"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M18 6 6 18"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m6 6 12 12"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+              [33mid[31m=[32m"_r_k_"[31m
+            [36m>[31m
+              [0mNouvelle dépense[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33maria-label[31m=[32m"Sous-groupes"[31m
+              [33mclass[31m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[31m
+              [33mdata-dp-plier[31m=[32m"true"[31m
+              [33mrole[31m=[32m"group"[31m
+            [36m>[31m
+              [36m<button[31m
+                [33maria-pressed[31m=[32m"true"[31m
+                [33mclass[31m=[32m"dp-p3c-seg min-h-7 px-2 text-sm bg-ebc-straw text-cave-950"[31m
+                [33mdata-dp-plier-bouton[31m=[32m"plie"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mPlié[0m
+              [36m</button>[31m
+              [36m<button[31m
+                [33maria-pressed[31m=[32m"false"[31m
+                [33mclass[31m=[32m"dp-p3c-seg min-h-7 px-2 text-sm text-cave-200"[31m
+                [33mdata-dp-plier-bouton[31m=[32m"deplie"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mDéplié[0m
+              [36m</button>[31m
+            [36m</div>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-label[31m=[32m"Justificatif : voir l’original, changer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M10 9H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 13H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 17H8"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+          [36m</header>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m""[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[31m
+                [33mdata-dp[31m=[32m"justificatif"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex flex-wrap items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<a[31m
+                    [33mclass[31m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[31m
+                    [33mdownload[31m=[32m"facture-travaux.pdf"[31m
+                    [33mhref[31m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[31m
+                  [36m>[31m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Changer"[31m
+                    [33mclass[31m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[31m
+                 ...[39m
+   [33m[2m✓[22m[39m D311 : le segment « Plié | Déplié » de son choix E[2m > [22msegment absent en vue Papier [33m 1090[2mms[22m[39m
+   [32m✓[39m D311 : le segment « Plié | Déplié » de son choix E[2m > [22msegment absent sur une dépense sans bande à deux sous-familles pliables[32m 114[2mms[22m[39m
+   [33m[2m✓[22m[39m « Y aller » vers une ligne d'un groupe replié (critique r4)[2m > [22mune erreur sur une ligne d'un groupe replié rouvre son groupe, la cible est visible et a le focus [33m 424[2mms[22m[39m
+   [32m✓[39m M1 : un montant inconnu ne décale pas la colonne des quantités[2m > [22ml'en-tête de bande et la ligne de sous-famille au montant inconnu réservent la largeur de « + ? » ; les autres lignes gardent les classes d'aujourd'hui[32m 175[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/ecran/sous-groupes-d307.test.tsx[2m > [22m[2mD307 : la bande Rénovation de l'aperçu, au repos[2m > [22m[2mun toucher ouvre le groupe (aria-expanded=true, ses rangées apparaissent), un second le ferme
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstdout[2m | tests/unit/depense/raccord/ecran-recu.test.tsx[2m > [22m[2mR4 : le reçu arrive à l’écran[2m > [22m[2msans reçu Drive à montrer, la feuille se ferme comme avant (e-port, T5)
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/nom-b/ecran-nom-b.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 2989[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/raccord/changer-fichier.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 3460[2mms[22m[39m
+   [33m[2m✓[22m[39m D7 : la dépense attend sa confirmation, le fichier ne change plus[2m > [22mun second fichier (autre contenu) est refusé par le champ caché ; deux échecs de confirmation de suite ; le reçu et l’empreinte restent ceux du premier [33m 688[2mms[22m[39m
+   [33m[2m✓[22m[39m D7 : un envoi tenté, rien d’écrit[2m > [22mjustificatif rattaché avec succès : le fichier ne change plus, le texte dit qu’il est rattaché [33m 309[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/raccord/ecran-lecture.test.tsx[2m > [22m[2mR1 : le prix unitaire lu est gardé[2m > [22m[2mR1b : retaper l’unité de la ligne retire le prix lu (il valait pour l’unité imprimée)
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/raccord/ecran-recu.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 2509[2mms[22m[39m
+   [33m[2m✓[22m[39m R4 : le reçu arrive à l’écran[2m > [22mau premier clic : onSaved reçoit le reçu de Drive ; la feuille reste ouverte sur le reçu et ne se ferme qu’à « Terminé » (e-port, T5) [33m 345[2mms[22m[39m
+   [33m[2m✓[22m[39m R4 : le reçu arrive à l’écran[2m > [22mDrive confirmé puis confirmation en attente : la ligne du pied dit le reçu et son lien ; la reprise ne renvoie rien et rend le même reçu [33m 330[2mms[22m[39m
+   [33m[2m✓[22m[39m DR4 : un envoi long est un état, pas une erreur[2m > [22mplus de 15 s au rattachement : même état, texte vrai pour ce bouton ; le second clic réussit [33m 362[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/sous-groupes-d307.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 3089[2mms[22m[39m
+   [33m[2m✓[22m[39m D307 : la bande Rénovation de l'aperçu, au repos[2m > [22mles sous-groupes pliables ont une ligne : bouton, aria-expanded=false, nombre ; leur corps est caché [33m 380[2mms[22m[39m
+   [33m[2m✓[22m[39m D307 : la bande Rénovation de l'aperçu, au repos[2m > [22mouvert, les rangées sont celles d'aujourd'hui : la même rangée, son plateau s'ouvre au toucher [33m 434[2mms[22m[39m
+   [33m[2m✓[22m[39m D307 : la bande Rénovation de l'aperçu, au repos[2m > [22mreplier un groupe ferme le plateau de ses rangées ; un plateau ouvert garde son groupe ouvert [33m 420[2mms[22m[39m
+   [33m[2m✓[22m[39m D307 : la bande Rénovation de l'aperçu, au repos[2m > [22mla vue « Papier » ne change pas : aucune ligne de sous-famille [33m 468[2mms[22m[39m
+   [33m[2m✓[22m[39m D307 : « tout plier, déplier » est prêt, aucun contrôle visible[2m > [22ml'écran ne montre aucun bouton « Tout plier » ni « Tout déplier » [33m 408[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/g2a/rangee.test.tsx[2m > [22m[2mD328h : prix et montants à deux décimales au moins, tant que le champ n’a pas le focus[2m > [22m[2mau focus, la valeur est celle qu’il tape (« 1,5 » reste « 1,5 ») ; à la sortie du champ, « 1,50 »
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/raccord/ecran-lecture.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 2293[2mms[22m[39m
+   [33m[2m✓[22m[39m R1 : le prix unitaire lu est gardé[2m > [22mchaque ligne scannée porte son prix lu, la ligne sans prix lu n’en reçoit pas [33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m R1 : le prix unitaire lu est gardé[2m > [22mR1b : retaper l’unité de la ligne retire le prix lu (il valait pour l’unité imprimée) [33m 394[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/g2a/rangee.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 2942[2mms[22m[39m
+   [33m[2m✓[22m[39m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22mune ligne sans unité ni prix : « unité à remplir » et « prix à remplir » au plateau, les deux champs marqués inconnu, la quantité qui est là non [33m 407[2mms[22m[39m
+   [33m[2m✓[22m[39m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22mun article relié qu’on n’a pas choisi : « article à choisir », le choix marqué inconnu, et le nom de la rangée aussi [33m 373[2mms[22m[39m
+   [33m[2m✓[22m[39m D330, D334 : le champ qui manque porte le rouge et son nom, au plateau[2m > [22msous le filtre « à remplir », la rangée s’ouvre et le focus va sur le premier champ qui manque [33m 343[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/pages/rangee.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1765[2mms[22m[39m
+   [33m[2m✓[22m[39m T-R1 / T-R2 la rangée[2m > [22m« Plusieurs » ouvre le sélecteur des pages ; trois choix → trois vignettes numérotées, un × chacune, « + page », « Lire 3 pages » [33m 471[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/finitions.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1822[2mms[22m[39m
+   [33m[2m✓[22m[39m finitions sur l’écran rendu (372765)[2m > [22mpoint 6 : « Nelson Sauvin » ne répète plus 9.6 % : le nom et « α 9,6 », l’imprimé entier reste au plateau [33m 480[2mms[22m[39m
+   [33m[2m✓[22m[39m finitions sur l’écran rendu (372765)[2m > [22mcritique 2 (tête compacte) : seuls les comptes non nuls sont affichés (pas de « 0 nouveau »), et la tuile Règlement tient sur deux lignes (« supposée » dans la ligne du titre) [33m 380[2mms[22m[39m
+   [33m[2m✓[22m[39m finitions sur l’écran rendu (372765)[2m > [22mpoint 2 : les propositions de la lecture vivent au récap (pastille « proposé » des comptes), plus au-dessus des bandes [33m 328[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/ecran/bande.test.tsx[2m > [22m[2mD233 : « y aller » va toujours quelque part[2m > [22m[2mune date posée règle le point : la date n’est plus rouge
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstdout[2m | tests/unit/depense/g2a/plier-regrouper.test.tsx[2m > [22m[2mD333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m[2m« Plié » ferme le plateau ouvert d’une rangée de tout groupe qu’il replie
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/g2a/plier-regrouper.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1310[2mms[22m[39m
+   [33m[2m✓[22m[39m D333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m« Plié » ferme aussi le groupe qui porte une ligne à voir (son en-tête garde son compte) ; « Déplié » ouvre tout ; un toucher seul : état mêlé ; le groupe refermé redonne « Plié » [33m 467[2mms[22m[39m
+   [33m[2m✓[22m[39m D332 : « Regrouper en une dépense » a son retour[2m > [22m« ↶ Rétablir les N lignes » rend les lignes et leurs retouches, et le geste « Regrouper » revient [33m 585[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/stock/renovation-d306.test.tsx[2m > [22m[2mD306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22m[2msous Brassage aussi : un mot sans équivoque (peinture, chevilles) donne la Rénovation, donc le kind Matériel
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/ecran/bande.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 2277[2mms[22m[39m
+   [33m[2m✓[22m[39m D233 : « y aller » va toujours quelque part[2m > [22mune date posée règle le point : la date n’est plus rouge [33m 308[2mms[22m[39m
+   [33m[2m✓[22m[39m D233 : « y aller » va toujours quelque part[2m > [22m« y aller » sur Date, panneau Règlement ouvert : le focus va dans la date de l’achat, jamais dans le paiement [33m 321[2mms[22m[39m
+   [33m[2m✓[22m[39m D233 : « y aller » va toujours quelque part[2m > [22mun point sans cible propre ouvre la preuve (jamais un « y aller » sans effet) [33m 369[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/doublon/feuille.test.tsx[2m > [22m[2mle même fichier qu’une dépense saisie[2m > [22m[2mune ancienne dépense sans empreinte : inchangé, la lecture part
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/doublon/feuille.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1082[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/stock/renovation-d306.test.tsx [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1490[2mms[22m[39m
+   [33m[2m✓[22m[39m D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22mles lignes de travaux sont en bande Rénovation, sans sélecteur de stock (kind Matériel : aucun article), le malt reste proposé sur son article [33m 421[2mms[22m[39m
+   [32m✓[39m D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22mune ligne lue « stock » dont la famille est la Rénovation prend le kind Matériel (sélecteur « Matériel », plus « Ingrédient »), le malt reste Ingrédient[32m 191[2mms[22m[39m
+   [32m✓[39m D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22msous Brassage aussi : un mot sans équivoque (peinture, chevilles) donne la Rénovation, donc le kind Matériel[32m 222[2mms[22m[39m
+[31m   [31m×[31m D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22m« Pour quoi ? » change après la lecture : le « nouvel article » posé d’office d’une ligne devenue Rénovation repasse à « aucun article » ; un choix du brasseur ne bouge pas[39m[32m 289[2mms[22m[39m
+[31m     → brosse avant: expected 'none' to be 'new' // Object.is equality[39m
+   [32m✓[39m D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22maucune rangée de la Rénovation n’est « nouvel article » ni « proposé »[32m 168[2mms[22m[39m
+   [32m✓[39m D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22msans catégorie « Local » : la peinture et les chevilles (mots sans équivoque) restent en Rénovation sans article ; le seau (ambigu) garde sa famille d’avant[32m 197[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/drive-fond/feuille.test.tsx[2m > [22m[2mFeuille « Nouvelle dépense » avec l’envoi en arrière-plan[2m > [22m[2mhors ligne et écriture en file locale : fermée sans attendre l’accusé, qui est suivi hors de la feuille
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [31m❯[39m tests/unit/depense/pages/entree.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1039[2mms[22m[39m
+   [33m[2m✓[22m[39m T-E1 le bouton coupé en deux[2m > [22m« Un document » (nom accessible = texte visible) et « Plusieurs » dans le même conteneur ; « Photographier le ticket » seulement en tactile [33m 470[2mms[22m[39m
+   [32m✓[39m T-E2 / T-E3 « Un document » : le parcours d'aujourd'hui[2m > [22mT-E2 : le premier input de type fichier du DOM est « Importer un justificatif » ; l'input des pages vient après[32m 26[2mms[22m[39m
+   [32m✓[39m T-E2 / T-E3 « Un document » : le parcours d'aujourd'hui[2m > [22mT-E3 : un toucher ouvre le sélecteur du fichier ; un fichier → scanDocument une fois, scanPages jamais ; l'en-tête garde son nom d'avant[32m 233[2mms[22m[39m
+   [32m✓[39m T-E4 les jetons du bouton, aucune couleur littérale[2m > [22m« Un document » : bg-ebc-straw text-cave-950, data-primary ; « Plusieurs » : mêmes jetons[32m 16[2mms[22m[39m
+   [32m✓[39m T-E5 / T-E6 le dépôt par glisser sur l'entrée[2m > [22mT-E5 : deux fichiers lâchés d'un coup → refus qui dit quoi faire ; rien n'est lu, la page 2 n'est pas perdue en silence[32m 28[2mms[22m[39m
+   [32m✓[39m T-E5 / T-E6 le dépôt par glisser sur l'entrée[2m > [22mT-E6 : un seul fichier lâché → lu comme aujourd'hui[32m 93[2mms[22m[39m
+[31m   [31m×[31m Preuve : une rangée ne sort pas de sa case (« · Quantité × prix non contrôlé » sortait de la carte à 390 et à 1280)[2m > [22mle libellé est « Qté × prix » sans contrôle comme avec ; chaque rangée peut rétrécir (bouton min-w-0), la valeur est tronquée, le libellé ne pousse pas[39m[32m 165[2mms[22m[39m
+[31m     → expected 'flex min-h-[26px] w-full min-w-0 item…' to contain 'overflow-hidden'[39m
+   [32m✓[39m Pastille du bandeau : le pluriel[2m > [22m1 → « 1 ligne »[32m 2[2mms[22m[39m
+   [32m✓[39m Pastille du bandeau : le pluriel[2m > [22m2 → « 2 lignes »[32m 2[2mms[22m[39m
+   [32m✓[39m Pastille du bandeau : le pluriel[2m > [22m6 → « 6 lignes »[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/stock/unites.test.ts[2m > [22m[2mD213 unités : la ligne repliée de la feuille[2m > [22m[2ml’unité imprimée est là quand la proposition est écartée, et la conversion disparaît
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/pages/alleger.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 653[2mms[22m[39m
+   [33m[2m✓[22m[39m T-A5 / T-A6 dans la fiche[2m > [22mT-A5 : « Un document » avec la photo de 8,1 Mo → lue une fois, allégée en JPEG, sans le refus « 4 Mo maximum » [33m 589[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/feuille.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1039[2mms[22m[39m
+   [33m[2m✓[22m[39m Feuille « Nouvelle dépense » avec l’envoi en arrière-plan[2m > [22mle service rend queued : onSaved sans reçu, onClose sans « Terminé », ni « Envoi au Drive » ni « Justificatif rangé » [33m 426[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/stock/unites.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 746[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/noms-fr/ecran-noms.test.tsx[2m > [22m[2mD280 — le français des noms sur les rangées[2m > [22m[2mune traduction vide ou en échec laisse le nom imprimé
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [32m✓[39m tests/unit/depense/noms-fr/ecran-noms.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 571[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/drive-fond/fiche.test.tsx[2m > [22m[2mFiche d’une dépense dont le justificatif n’est pas parti[2m > [22m[2m« Renvoyer maintenant » avec le fichier local : bascule queued (écrite sur la dépense) sans rien choisir
+[22m[39mAn update to ProofResendPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/depense/drive-fond/notification.test.tsx[2m > [22m[2mProofUploadNotice[2m > [22m[2m« Plus tard » réduit sans effacer l’état
+[22m[39mAn update to ProofUploadNotice inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/unit/depense/drive-fond/notification.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 471[2mms[22m[39m
+   [33m[2m✓[22m[39m ProofUploadNotice[2m > [22mfailed dans Firestore : rôle alert, cause dite, toujours là après 10 s [33m 359[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/drive-fond/fiche.test.tsx[2m > [22m[2mFiche d’une dépense dont le justificatif n’est pas parti[2m > [22m[2m« Abandonner » retire proofUpload, la dépense reste sans justificatif, le job devient voided (fichier gardé)
+[22m[39mAn update to ProofResendPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/depense/drive-fond/fiche.test.tsx[2m > [22m[2mFiche d’une dépense dont le justificatif n’est pas parti[2m > [22m[2mmotif auth : « Reconnecter Drive » dans la fiche
+[22m[39mAn update to ReconnectDriveButton inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/unit/depense/drive-fond/fiche.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 531[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture-d/flux.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 173[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/fiche-n5.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 264[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/malts-completer.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 133[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/onglets/ta2-compteur.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 216[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/libelles.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/qr/lecture.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/pages/lecture-client.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/pages/encodeur.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/pages/lecture-serveur.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+[90mstderr[2m | tests/unit/depense/lecture-d/serveur.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [32m✓[39m tests/unit/depense/lecture-d/serveur.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 138[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/pages/lecture-serveur.test.ts[2m > [22m[2mT-S2 une lecture de N pages : N parts d'image, dans l'ordre, comme le banc[2m > [22m[2mles deux Flash-Lite envoient [texte avec la note, a, b, c] ; le retour dit pages:3 ; la clé de cache est celle des pages
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":2,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/depense/pages/lecture-serveur.test.ts[2m > [22m[2mT-S3 un fichier seul (ou un tableau d'un) : le corps d'aujourd'hui, aucune clé pages[2m > [22m[2mle fichier
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/depense/pages/lecture-serveur.test.ts[2m > [22m[2mT-S3 un fichier seul (ou un tableau d'un) : le corps d'aujourd'hui, aucune clé pages[2m > [22m[2mun tableau de 1
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/depense/noms-fr/aiTask-traduireNoms.test.ts[2m > [22m[2mf5c — la tâche traduireNoms reprend le banc mesuré, sans retouche[2m > [22m[2mun appel réel simulé part vers la 3.8 : texte seul, température 0, réflexion basse, schéma et consigne du banc
+[22m[39m{"task":"traduireNoms","tier":"fast","model":"gemini-3.8-flash","thinkingLevel":"low","elapsedMs":0,"email":"noms-test@example.invalid","severity":"INFO","message":"Tâche IA exécutée"}
+
+[90mstderr[2m | tests/unit/depense/noms-fr/aiTask-traduireNoms.test.ts[2m > [22m[2mf5c — la tâche traduireNoms reprend le banc mesuré, sans retouche[2m > [22m[2mune réponse coupée n’est pas relancée en boucle : une nouvelle tentative au plus, sur la 3.8, puis l’échec est rendu
+[22m[39m{"task":"traduireNoms","model":"gemini-3.8-flash","attempt":1,"message":"Gemini en échec","severity":"WARNING"}
+
+[90mstderr[2m | tests/unit/depense/noms-fr/aiTask-traduireNoms.test.ts[2m > [22m[2mf5c — la tâche traduireNoms reprend le banc mesuré, sans retouche[2m > [22m[2mune réponse coupée n’est pas relancée en boucle : une nouvelle tentative au plus, sur la 3.8, puis l’échec est rendu
+[22m[39m{"task":"traduireNoms","model":"gemini-3.8-flash","attempt":2,"message":"Gemini en échec","severity":"WARNING"}
+{"task":"traduireNoms","tier":"fast","models":["gemini-3.8-flash","gemini-3.8-flash"],"failures":["Gemini HTTP 503 · server","Gemini HTTP 503 · server"],"severity":"ERROR","message":"Error: Tâche IA en échec après la nouvelle tentative\n    at entryFromArgs (C:\\Users\\mrspa\\AppData\\Local\\Temp\\qr-app-copie\\functions\\node_modules\\firebase-functions\\lib\\logger\\index.js:144:19)\n    at Object.error (C:\\Users\\mrspa\\AppData\\Local\\Temp\\qr-app-copie\\functions\\node_modules\\firebase-functions\\lib\\logger\\index.js:131:11)\n    at C:\\Users\\mrspa\\AppData\\Local\\Temp\\qr-app-copie\\functions\\src\\ai.ts:427:12\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at C:\\Users\\mrspa\\AppData\\Local\\Temp\\qr-app-copie\\tests\\unit\\depense\\noms-fr\\aiTask-traduireNoms.test.ts:98:22\n    at file:///C:/Users/mrspa/AppData/Local/Temp/qr-app-copie/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"}
+
+ [32m✓[39m tests/unit/depense/noms-fr/aiTask-traduireNoms.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/learn.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1604[2mms[22m[39m
+   [33m[2m✓[22m[39m M3 : sur `proche`, les faits acceptés ne disparaissent pas en silence[2m > [22m« Carahell » contre l’article f4 « Weyermann Carahell » : rien sur l’article, une ligne de journal, les faits gardés à contrôler [33m 306[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/pages/lecture-serveur.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 211[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/rapprochement/lecture-coupee.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [32m✓[39m tests/unit/depense/rapprochement/lecture-coupee.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/levure.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 345[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/stock/perf.test.ts[2m > [22m[2mcoût de l’appariement[2m > [22m[2m35 lignes × 500 articles en moins d’une seconde
+[22m[39mPERF appariement : 35 lignes x 500 articles = 416 ms, 26 proposition(s)
+
+ [32m✓[39m tests/unit/depense/stock/perf.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 419[2mms[22m[39m
+   [33m[2m✓[22m[39m coût de l’appariement[2m > [22m35 lignes × 500 articles en moins d’une seconde [33m 418[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/pages/pdf.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 301[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/procedure.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 226[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/interrupteur.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 227[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/envoi.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 182[2mms[22m[39m
+ [2m[90m↓[39m[22m tests/unit/depense/g2b/mesure-banc.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [32m✓[39m tests/unit/depense/banc-k6/troisieme-d261c.test.ts [2m([22m[2m13 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/bandes/renovation-d306.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/noms-fr/traduireLignes.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/temoin.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/troisieme-lecture.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/fiche/regle.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/g2b/nature-et-famille.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture-d/finale.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/pdf.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/file.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/malts.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/file.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 3585[2mms[22m[39m
+   [33m[2m✓[22m[39m Plafond : 200 recherches arrivées par jour[2m > [22mla suivante du jour attend le lendemain [33m 3287[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/corrections.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/points-uniques.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/fiche/ecriture.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/stock/relecture.test.ts [2m([22m[2m148 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/raccord/unites-enregistrement.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/statut.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/bandes/categorie-famille.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k7/categorie.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/confiance/niveaux.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/etat.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/relais.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/desaccords.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/renvoi.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/confiance/points.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/stock/facture-372765.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/stock/chasse-etendue.test.ts [2m([22m[2m132 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/fiche/fiche.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k6/tva-d262a.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k6/vote-d272b.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/somme.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/options/options-du-nom.test.ts [2m([22m[2m73 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enregistrement/paiement-prix.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/conserve.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enregistrement/justificatif-persistance.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/document.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/g2b/unite-et-niveau.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k7/arrondi.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/bandes/familles.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/confiance/unites.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enregistrement/justificatif-nom.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/fixture.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/bandes/langues.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/doublon/regles.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enregistrement/doublon-commande.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/stock/chasse-17-10.test.ts[2m > [22m[2mchasse du 17.10 rejouée : aucune fausse proposition[2m > [22m[2mbilan : 0 fausse proposition ; les manquées sont comptées à part
+[22m[39mCHASSE 17.10 : 27 cas, 0 fausse(s) [], 1 manquée(s) [A9 (témoin)]
+
+ [32m✓[39m tests/unit/depense/stock/chasse-17-10.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/port/port-enregistrement.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/facture-372765.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/refus.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/lien.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/nom.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/unites.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/stock/identite.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/confiance-b.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/onglets/ta4-sans-echeance.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/onglets/ta3-a-payer.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k6/ht-d272.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/appris.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/qr/vue.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/lignes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enregistrement/mouture-prix.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/bandes/familles-d273.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/port/port-banc-juge.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k6/genres-d262c.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/onglets/ta6-tendance.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/g2b/desaccord.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/n3-ht/lignes-ht.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/contrat-synchrone.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/recalcul.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/fiche/donnees.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/fiche/fixture-s6.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/cle-f4.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k6/historique-d264a.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/cle.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/confirmer.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/bandes/sous-groupes-d307.test.ts [2m([22m[2m27 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 11[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22msept sous-groupes, dans l'ordre de SOUS_FAMILLES_RENOVATION, pas dans celui du papier[32m 1[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22mrangées d'un groupe : l'ordre du papier[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22msous-totaux de quantité (la fonction de la bande) et de montant, au centime : ceux de sa maquette[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22mla somme des sous-groupes est la bande : 454,70, 16 rangées, 25 Stk[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22mles unités d'une même grandeur s'additionnent dans un sous-groupe comme dans la bande (1 Kg + 300 g = 1,3 Kg), les pièces à part[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22mles centimes restent entiers : 0,10 + 0,20 = 0,30[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : les sous-groupes d'une bande à sept sous-familles[2m > [22ml'inconnu n'est jamais 0 : un montant absent marque son sous-groupe (« + ? »), pas les autres ; une unité illisible reste « ? »[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une bande sans deux sous-familles reste celle d'aujourd'hui[2m > [22mune seule sous-famille : aucun sous-groupe, la bande est identique à celle de lignes sans sous-famille[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une bande sans deux sous-familles reste celle d'aujourd'hui[2m > [22mHoublons et Malts (une catégorie de stock ou aucune) : aucun sous-groupe[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une bande sans deux sous-familles reste celle d'aujourd'hui[2m > [22maucune sous-famille : la bande n'a pas le champ[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : un sous-groupe d'une ligne n'a ni chevron ni ligne[2m > [22mDivers travaux (une ligne) n'est pas pliable ; Outillage (deux) l'est[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : un sous-groupe d'une ligne n'a ni chevron ni ligne[2m > [22mun sous-groupe non pliable est toujours « ouvert » : sa rangée seule, quoi que dise le choix[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : un sous-groupe d'une ligne n'a ni chevron ni ligne[2m > [22mles lignes sans sous-famille d'une bande qui en a d'autres viennent à la fin, sans ligne de sous-famille[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : l'ordre des sous-groupes hors Rénovation est celui de STOCK_CATEGORIES[2m > [22mNettoyage : CIP alcalin, CIP acide, Désinfectant, Détergent, quel que soit l'ordre du papier[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : l'ordre des sous-groupes hors Rénovation est celui de STOCK_CATEGORIES[2m > [22mun nom hors liste vient après, dans l'ordre d'arrivée[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une ligne à vérifier ouvre son groupe d'office[2m > [22mle groupe de la ligne jaune est marqué, les autres non[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une ligne à vérifier ouvre son groupe d'office[2m > [22msans choix du brasseur : Électricité ouvert, les autres repliés[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une ligne à vérifier ouvre son groupe d'office[2m > [22mson quantité porte le niveau « repris » (jaune pointillé à l'écran)[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une ligne à vérifier ouvre son groupe d'office[2m > [22mle brasseur peut le fermer (le choix prime) ; une rangée à voir (plateau, filtre) le rouvre[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : une ligne à vérifier ouvre son groupe d'office[2m > [22mun groupe replié s'ouvre sur le choix du brasseur[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : toutPlier / toutDeplier[2m > [22mau départ : seul le groupe à vérifier est ouvert[32m 0[2mms[22m[39m
+   [32m✓[39m D307 : toutPlier / toutDeplier[2m > [22mtoutDeplier (toutes les bandes) ouvre tous les groupes pliables : six en Rénovation, deux en Nettoyage[32m 0[2mms[22m[39m
+[31m   [31m×[31m D307 : toutPlier / toutDeplier[2m > [22mtoutPlier (toutes les bandes) replie tout SAUF le groupe qui porte une ligne à vérifier (D311)[39m[32m 4[2mms[22m[39m
+[31m     → expected [] to deeply equal [ 'nettoyage/Détergent' ][39m
+[31m   [31m×[31m D307 : toutPlier / toutDeplier[2m > [22mune seule bande : l'autre ne bouge pas[39m[32m 1[2mms[22m[39m
+[31m     → expected [] to deeply equal [ 'nettoyage/Détergent' ][39m
+[31m   [31m×[31m D307 : toutPlier / toutDeplier[2m > [22mun état ne s'écrit pas sur l'ancien (valeur pure) ; un choix isolé survit à tout plier puis à un choix de plus[39m[32m 1[2mms[22m[39m
+[31m     → expected [ 'renovation/Outillage' ] to deeply equal [ 'nettoyage/Détergent', …(1) ][39m
+   [32m✓[39m D307 : la sous-famille vient de la même entrée que la famille[2m > [22msousFamilleDeLigne suit groupeDe : un tuyau sans autre mot, sous Local, est une Plomberie de la Rénovation[32m 1[2mms[22m[39m
+   [32m✓[39m D307 : la sous-famille vient de la même entrée que la famille[2m > [22mune famille sans sous-famille (Houblons) : undefined[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/tva.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/banc-k6/arrondi-d261b.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/fiche-fr.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/groupes.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/qr/confronter.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enregistrement/unites.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/qr/qr-facture.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/port/port-controle-somme.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/raccord/autre-original.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/valeurs.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/raccord/rattachement-en-cours.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/nom-b/table-i-f.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/rapprochement/source-unique.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/bandes/sous-groupes-d311.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 12[2mms[22m[39m
+   [32m✓[39m D311 : « Plié » garde ouvert un groupe à vérifier[2m > [22mau repos d'une lecture : seul le groupe à vérifier est ouvert[32m 1[2mms[22m[39m
+[31m   [31m×[31m D311 : « Plié » garde ouvert un groupe à vérifier[2m > [22m« Plié » après « Déplié » : tout replié, sauf Désinfectant (sa page : « une ligne à vérifier garde son groupe ouvert, même tout plié »)[39m[32m 5[2mms[22m[39m
+[31m     → expected [] to deeply equal [ 'nettoyage/Désinfectant' ][39m
+[31m   [31m×[31m D311 : « Plié » garde ouvert un groupe à vérifier[2m > [22m« Plié » rouvre un groupe à vérifier que le brasseur avait fermé[39m[32m 1[2mms[22m[39m
+[31m     → expected [] to deeply equal [ 'nettoyage/Désinfectant' ][39m
+   [32m✓[39m D311 : « Plié » garde ouvert un groupe à vérifier[2m > [22m« Déplié » ouvre tout[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : « Plié » garde ouvert un groupe à vérifier[2m > [22mune seule bande : « Plié » de la Rénovation ne touche pas Nettoyage[32m 0[2mms[22m[39m
+[31m   [31m×[31m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mau repos d'une lecture, « Plié » est allumé, pas « Déplié »[39m[32m 1[2mms[22m[39m
+[31m     → expected { visible: true, plie: false, …(1) } to deeply equal { visible: true, plie: true, …(1) }[39m
+   [32m✓[39m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22maprès « Déplié » : « Déplié » allumé seul ; après « Plié » : « Plié » allumé seul[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mun toucher après « Plié » ouvre un groupe : « Plié » s'éteint, aucun des deux n'est allumé (état mêlé, sa vue e-mele)[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mun toucher replie un groupe à vérifier : toujours possible, l'état est alors mêlé[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mrouvrir le groupe refermé rend l'état de « Plié » : l'état est celui des groupes, pas un mode[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22m« Déplié » puis un toucher qui replie un groupe : mêlé ; « Déplié » puis un toucher sur un groupe déjà ouvert le replie[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mun groupe forcé ouvert (plateau ouvert, filtre) compte comme ouvert : l'état suit ce qu'on voit[32m 0[2mms[22m[39m
+[31m   [31m×[31m D311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mtous les groupes à vérifier : « Plié » et « Déplié » produisent le même état, les deux allumés[39m[32m 1[2mms[22m[39m
+[31m     → expected { visible: true, plie: false, …(1) } to deeply equal { visible: true, plie: true, …(1) }[39m
+   [32m✓[39m D311 : le segment n'existe que s'il a quelque chose à plier[2m > [22msans bande à deux sous-familles : invisible[32m 0[2mms[22m[39m
+   [32m✓[39m D311 : le segment n'existe que s'il a quelque chose à plier[2m > [22mdeux sous-familles d'une ligne chacune : rien à plier, invisible (lecture du pilote, plus étroite que « deux sous-familles »)[32m 0[2mms[22m[39m
+   [32m✓[39m M1 : la colonne des quantités ne glisse pas sur un montant inconnu[2m > [22msans inconnu : rien (les classes d'aujourd'hui)[32m 0[2mms[22m[39m
+   [32m✓[39m M1 : la colonne des quantités ne glisse pas sur un montant inconnu[2m > [22mavec inconnu : le montant réserve la largeur de « 410,50 + ? » en ch, la quantité rend d'autant sa marge[32m 0[2mms[22m[39m
+   [32m✓[39m M1 : la colonne des quantités ne glisse pas sur un montant inconnu[2m > [22mun montant plus long réserve plus (« 1234,50 + ? » : 11 ch)[32m 0[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/qr/s1.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/noms-fr/cleBase.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/temoin-e4.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/drive-fond/echecs.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/ecran/libelle.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/bandes/unites-d273f.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/lecture/taille.test.ts[2m > [22m[2mPlafond de sortie de la lecture[2m > [22m[2mune facture de 35 lignes comme la sienne (23 lignes de sa fixture, étendues à 35) tient sous 3 800 jetons estimés
+[22m[39m35 lignes typiques : 3199 jetons pour un plafond de 8192
+
+[90mstdout[2m | tests/unit/depense/lecture/taille.test.ts[2m > [22m[2mPlafond de sortie de la lecture[2m > [22m[2mpire cas du schéma (35 lignes, tous les champs remplis, 6 rangées de TVA) : tient sous le plafond, sans la marge de 20 % — mesure à décider
+[22m[39mpire cas : 4050 jetons pour un plafond de 8192 (marge 51 %)
+
+ [32m✓[39m tests/unit/depense/lecture/taille.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/enrichir/faits.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+[90mstdout[2m | tests/unit/depense/fiche/lignes-372765.test.ts[2m > [22m[2mles 23 lignes de la facture 372765 face au stock simulé[2m > [22m[2maffiche le tableau (pour RESULTAT)
+[22m[39m 1 Maris Otter, Kg                    s1=Maris Otter · règle=meme
+ 3 Gerstenflocken, 1 Kg               s1=Gerstenflocken · règle=meme
+ 4 Röstgerste, Kg                     s1=Röstgerste · règle=meme
+ 6 CARAMÜNCH® Typ 2 Kg                s1=Caramünch Typ 2 · règle=meme
+ 8 Target 11.3%                       s1=— · règle=neuf voisin=Target 11.8% nom=« Target bis »
+ 9 Goldings East Kent 5.5%            s1=— · règle=inconnu nom=« Goldings East Kent »
+10 LALLEMAND Windsor 11g              s1=LALLEMAND Windsor · règle=meme
+11 Safale BE-256 (Abbaye) 11.5 g      s1=Safale BE-256 · règle=meme
+12 Safale US-05 11,5g                 s1=SafAle US-05 · règle=meme
+13 Pilsner Malz, Kg                   s1=Pilsner Malz · règle=meme
+15 Weizenmalz hell, Kg                s1=Weizenmalz hell · règle=meme
+17 Haferflocken, 1 Kg                 s1=Haferflocken · règle=meme
+18 Galaxy 17.2%                       s1=Galaxy · règle=meme
+19 Nelson Sauvin ™ 9.6%               s1=Nelson Sauvin 9.6% · règle=meme
+20 Sabro® 13.4%                       s1=Sabro 13.4% · règle=meme
+21 LALLEMAND Verdant IPA 11g          s1=— · règle=inconnu nom=« LALLEMAND Verdant IPA 11g »
+22 Hallertauer Blanc 9.5% CH          s1=— · règle=neuf voisin=Hallertauer Blanc DE 9.5% nom=« Hallertauer Blanc CH »
+23 Motueka ™ 8.1%                     s1=Motueka 8.1% · règle=meme
+
+ [32m✓[39m tests/unit/depense/fiche/lignes-372765.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture/plafond-38.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/noms-fr/nom-affiche.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 14 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d307.test.ts[2m > [22mD307 : toutPlier / toutDeplier[2m > [22mtoutPlier (toutes les bandes) replie tout SAUF le groupe qui porte une ligne à vérifier (D311)
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'nettoyage/Détergent' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "nettoyage/Détergent",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d307.test.ts:[2m137:27[22m[39m
+    [90m135| [39m  it('toutPlier (toutes les bandes) replie tout SAUF le groupe qui por…
+    [90m136| [39m    [35mconst[39m plie [33m=[39m [34mtoutPlier[39m(liste[33m,[39m [34mtoutDeplier[39m(liste[33m,[39m [35mnew[39m [33mMap[39m()))[33m;[39m
+    [90m137| [39m    [34mexpect[39m([34mouverts[39m(plie))[33m.[39m[34mtoEqual[39m([[32m'nettoyage/Détergent'[39m])[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m138| [39m    expect(ouverts(toutPlier(liste, new Map()))).toEqual(['nettoyage/D…
+    [90m139| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d307.test.ts[2m > [22mD307 : toutPlier / toutDeplier[2m > [22mune seule bande : l'autre ne bouge pas
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'nettoyage/Détergent' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "nettoyage/Détergent",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d307.test.ts:[2m145:68[22m[39m
+    [90m143| [39m    expect(ouverts(ouvertes).filter(x => x.startsWith('nettoyage/'))).…
+    [90m144| [39m    const pliee = toutPlier(liste, toutDeplier(liste, new Map()), 'net…
+    [90m145| [39m    expect(ouverts(pliee).filter(x => x.startsWith('nettoyage/'))).toE…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m146| [39m    expect(ouverts(pliee).filter(x => x.startsWith('renovation/'))).to…
+    [90m147| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d307.test.ts[2m > [22mD307 : toutPlier / toutDeplier[2m > [22mun état ne s'écrit pas sur l'ancien (valeur pure) ; un choix isolé survit à tout plier puis à un choix de plus
+[31m[1mAssertionError[22m: expected [ 'renovation/Outillage' ] to deeply equal [ 'nettoyage/Détergent', …(1) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "nettoyage/Détergent",[39m
+[2m    "renovation/Outillage",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d307.test.ts:[2m152:28[22m[39m
+    [90m150| [39m    [34mtoutDeplier[39m(liste[33m,[39m avant)[33m;[39m [34mexpect[39m(avant[33m.[39msize)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m151| [39m    const apres = poserGroupe(toutPlier(liste, avant), 'renovation', '…
+    [90m152| [39m    expect(ouverts(apres)).toEqual(['nettoyage/Détergent', 'renovation…
+    [90m   | [39m                           [31m^[39m
+    [90m153| [39m  })[33m;[39m
+    [90m154| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d311.test.ts[2m > [22mD311 : « Plié » garde ouvert un groupe à vérifier[2m > [22m« Plié » après « Déplié » : tout replié, sauf Désinfectant (sa page : « une ligne à vérifier garde son groupe ouvert, même tout plié »)
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'nettoyage/Désinfectant' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "nettoyage/Désinfectant",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d311.test.ts:[2m26:70[22m[39m
+    [90m 24| [39m  })[33m;[39m
+    [90m 25| [39m  it('« Plié » après « Déplié » : tout replié, sauf Désinfectant (sa p…
+    [90m 26| [39m    expect(ouverts(toutPlier(liste, toutDeplier(liste, new Map())))).t…
+    [90m   | [39m                                                                     [31m^[39m
+    [90m 27| [39m  })[33m;[39m
+    [90m 28| [39m  it('« Plié » rouvre un groupe à vérifier que le brasseur avait fermé…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d311.test.ts[2m > [22mD311 : « Plié » garde ouvert un groupe à vérifier[2m > [22m« Plié » rouvre un groupe à vérifier que le brasseur avait fermé
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'nettoyage/Désinfectant' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "nettoyage/Désinfectant",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d311.test.ts:[2m31:46[22m[39m
+    [90m 29| [39m    const ferme = poserGroupe(new Map(), 'nettoyage', 'Désinfectant', …
+    [90m 30| [39m    [34mexpect[39m([34mouverts[39m(ferme))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m 31| [39m    expect(ouverts(toutPlier(liste, ferme))).toEqual(['nettoyage/Désin…
+    [90m   | [39m                                             [31m^[39m
+    [90m 32| [39m  })[33m;[39m
+    [90m 33| [39m  [34mit[39m([32m'« Déplié » ouvre tout'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d311.test.ts[2m > [22mD311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mau repos d'une lecture, « Plié » est allumé, pas « Déplié »
+[31m[1mAssertionError[22m: expected { visible: true, plie: false, …(1) } to deeply equal { visible: true, plie: true, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "deplie": false,[22m
+[32m-   "plie": true,[39m
+[31m+   "plie": false,[39m
+[2m    "visible": true,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d311.test.ts:[2m44:43[22m[39m
+    [90m 42| [39mdescribe('D311 : l\'état allumé se calcule, il n\'est jamais gardé', (…
+    [90m 43| [39m  it('au repos d\'une lecture, « Plié » est allumé, pas « Déplié »', (…
+    [90m 44| [39m    expect(etatSegment(liste, new Map())).toEqual({ visible: true, pli…
+    [90m   | [39m                                          [31m^[39m
+    [90m 45| [39m  })[33m;[39m
+    [90m 46| [39m  it('après « Déplié » : « Déplié » allumé seul ; après « Plié » : « P…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/bandes/sous-groupes-d311.test.ts[2m > [22mD311 : l'état allumé se calcule, il n'est jamais gardé[2m > [22mtous les groupes à vérifier : « Plié » et « Déplié » produisent le même état, les deux allumés
+[31m[1mAssertionError[22m: expected { visible: true, plie: false, …(1) } to deeply equal { visible: true, plie: true, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "deplie": true,[22m
+[32m-   "plie": true,[39m
+[31m+   "plie": false,[39m
+[2m    "visible": true,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/bandes/sous-groupes-d311.test.ts:[2m74:42[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/ecran/sous-groupes-d311.test.tsx[2m > [22mD311 : le segment « Plié | Déplié » de son choix E[2m > [22m« Plié » laisse ouvert un groupe à vérifier ; un toucher le replie quand même ; « Plié » le rouvre
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'plie' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "plie",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/ecran/sous-groupes-d311.test.tsx:[2m95:23[22m[39m
+    [90m 93| [39m    [35mconst[39m v [33m=[39m [35mawait[39m [34mlire[39m([33mAVERIFIER[39m())[33m;[39m
+    [90m 94| [39m    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', '…
+    [90m 95| [39m    [34mexpect[39m([34mallume[39m(v))[33m.[39m[34mtoEqual[39m([[32m'plie'[39m])[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 96| [39m    fireEvent[33m.[39m[34mclick[39m([34mbouton[39m(v[33m,[39m [32m'deplie'[39m))[33m;[39m
+    [90m 97| [39m    [34mexpect[39m([34metats[39m(v)[33m.[39m[34mevery[39m(x [33m=>[39m x[33m.[39m[34mendsWith[39m([32m'=true'[39m)))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/ecran/sous-groupes-d311.test.tsx[2m > [22mD311 : le segment « Plié | Déplié » de son choix E[2m > [22m« Plié » ferme le plateau ouvert d'une rangée d'un groupe qu'il replie (sinon la rangée garderait son groupe ouvert)
+[31m[1mAssertionError[22m[39m: expected [ 'Outillage=false', …(2) ] to deeply equal [ 'Outillage=false', …(2) ]
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_k_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+              [33mid[39m=[32m"_r_k_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Sous-groupes"[39m
+              [33mclass[39m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[39m
+              [33mdata-dp-plier[39m=[32m"true"[39m
+              [33mrole[39m=[32m"group"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-pressed[39m=[32m"true"[39m
+                [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm bg-ebc-straw text-cave-950"[39m
+                [33mdata-dp-plier-bouton[39m=[32m"plie"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mPlié[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33maria-pressed[39m=[32m"false"[39m
+                [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm text-cave-200"[39m
+                [33mdata-dp-plier-bouton[39m=[32m"deplie"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mDéplié[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M10 9H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 13H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 17H8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+                [33mdata-dp[39m=[32m"justificatif"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                    [33mdownload[39m=[32m"facture-travaux.pdf"[39m
+                    [33mhref[39m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[39m
+                  [36m>[39m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Changer"[39m
+                    [33mclass[39m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[39m
+                 ...
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "Outillage=false",[22m
+[32m-   "Électricité=true",[39m
+[31m+   "Électricité=false",[39m
+[2m    "Plomberie=false",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/ecran/sous-groupes-d311.test.tsx:[2m114:42[22m[39m
+    [90m112| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mallume[39m(v))[33m.[39m[34mtoEqual[39m([]))[33m;[39m
+    [90m113| [39m    fireEvent[33m.[39m[34mclick[39m([34mbouton[39m(v[33m,[39m [32m'plie'[39m))[33m;[39m
+    [90m114| [39m    await waitFor(() => expect(etats(v)).toEqual(['Outillage=false', '…
+    [90m   | [39m                                         [31m^[39m
+    [90m115| [39m    expect(groupe(v, 'Outillage').querySelector<HTMLDetailsElement>('a…
+    [90m116| [39m  })[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/ecran.test.tsx[2m > [22mson choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22mbarrée, hors des sommes, au bandeau ; « Confirmer » sans trancher : elle part (elle n’est pas enregistrée)
+[31m[1mAssertionError[22m: expected 'Avoine maltée 1,70pas retrouvée · 1/4…' not to match /Tout valider/[39m
+
+[32m- Expected:[39m 
+/Tout valider/
+
+[31m+ Received:[39m 
+"Avoine maltée 1,70pas retrouvée · 1/4Tout validerGarderRetirer"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/ecran.test.tsx:[2m150:145[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/ecran.test.tsx[2m > [22mson choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22m« Garder » la remet en rangée ordinaire à sa place, dans les sommes ; « Retirer » la fait partir
+[31m[1mAssertionError[22m: expected <div data-dp="perdues" …(3)>…(2)</div> to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<div
+  aria-label="Lignes que la 3e lecture n’a pas retrouvées"
+  class="mx-2 mb-1.5 min-w-0 space-y-1 rounded-panel border-[1.5px] border-dashed border-attention bg-attention/10 px-2.5 py-1.5 lg:col-start-2 lg:mx-0"
+  data-dp="perdues"
+  role="group"
+>
+  <div
+    class="flex min-h-7 items-center gap-1.5"
+  >
+    <span
+      class="flex min-w-0 flex-1 flex-col leading-[1.15]"
+    >
+      <b
+        class="flex min-w-0 items-baseline gap-1 text-sm font-semibold text-cave-50"
+      >
+        <span
+          class="min-w-0 truncate"
+          data-dp-perdue-nom="true"
+        >
+          Malt Pilsner
+        </span>
+         
+        <span
+          class="shrink-0 font-mono"
+          data-dp-perdue-montant="true"
+        >
+          14,50
+        </span>
+      </b>
+      <small
+        class="text-xs font-semibold text-attention"
+        data-dp-perdue-mot="true"
+      >
+        2 valeurs corrigées
+         · 
+        <span
+          class="font-mono"
+          data-dp-perdue-rang="true"
+        >
+          2
+          /
+          4
+        </span>
+      </small>
+    </span>
+    <button
+      class="inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border-[1.5px] border-attention bg-cave-950 px-2.5 text-[13px] font-bold text-attention"
+      data-dp-perdue-geste="tout"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-refresh-cw"
+        fill="none"
+        height="15"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2.2"
+        viewBox="0 0 24 24"
+        width="15"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+        />
+        <path
+          d="M21 3v5h-5"
+        />
+        <path
+          d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+        />
+        <path
+          d="M8 16H3v5"
+        />
+      </svg>
+      Tout valider
+    </button>
+  </div>
+  <div
+    class="flex items-center gap-1.5"
+  >
+    <button
+      class="inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border border-cave-600 bg-cave-950 px-2.5 text-[13px] font-semibold text-cave-50"
+      data-dp-perdue-geste="garder"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-check"
+        fill="none"
+        height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2.4"
+        viewBox="0 0 24 24"
+        width="14"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M20 6 9 17l-5-5"
+        />
+      </svg>
+      Garder
+    </button>
+    <button
+      class="inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border border-cave-600 bg-cave-950 px-2.5 text-[13px] font-semibold text-cave-50"
+      data-dp-perdue-geste="annuler"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-undo2 lucide-undo-2"
+        fill="none"
+        height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2.4"
+        viewBox="0 0 24 24"
+        width="14"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9 14 4 9l5-5"
+        />
+        <path
+          d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"
+        />
+      </svg>
+      Annuler
+    </button>
+  </div>
+</div>
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/ecran.test.tsx:[2m164:146[22m[39m
+    [90m162| [39m    fireEvent.click(within(garde.view.container.querySelector<HTMLElem…
+    [90m163| [39m    await waitFor(() => expect(ligne(garde.view, 'line-4')).not.toBeNu…
+    [90m164| [39m    expect(garde.view.container.querySelector('[data-dp-perdue]')).toB…
+    [90m   | [39m                                                                                                                                                 [31m^[39m
+    [90m165| [39m    [34mexpect[39m([34mlignes[39m(garde[33m.[39mview))[33m.[39m[34mtoHaveLength[39m([34m8[39m)[33m;[39m
+    [90m166| [39m    expect(ligne(garde.view, 'line-4')!.textContent).toMatch(/Avoine m…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/ecran.test.tsx[2m > [22m« Tout valider » (sa maquette B, D316) à deux lignes[2m > [22mle bandeau défile (« 1/2 » puis « 2/2 »), « Tout valider » à côté ; Garder puis Retirer un à un
+[31m[1mAssertionError[22m: expected '1/5' to be '1/2' // Object.is equality[39m
+
+Expected: [32m"1/[7m2[27m"[39m
+Received: [31m"1/[7m5[27m"[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/ecran.test.tsx:[2m183:131[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/entree.test.tsx[2m > [22mPreuve : une rangée ne sort pas de sa case (« · Quantité × prix non contrôlé » sortait de la carte à 390 et à 1280)[2m > [22mle libellé est « Qté × prix » sans contrôle comme avec ; chaque rangée peut rétrécir (bouton min-w-0), la valeur est tronquée, le libellé ne pousse pas
+[31m[1mAssertionError[22m: expected 'flex min-h-[26px] w-full min-w-0 item…' to contain 'overflow-hidden'[39m
+
+Expected: [32m"overflow-hidden"[39m
+Received: [31m"flex min-h-[26px] w-full min-w-0 items-center gap-1 border-b border-cave-800 text-left text-sm"[39m
+
+[36m [2m❯[22m tests/unit/depense/pages/entree.test.tsx:[2m121:27[22m[39m
+    [90m119| [39m    [35mfor[39m ([35mconst[39m r [35mof[39m rangees) {
+    [90m120| [39m      [34mexpect[39m(r[33m.[39mclassName)[33m.[39m[34mtoMatch[39m([36m/(^| )min-w-0( |$)/[39m)[33m;[39m
+    [90m121| [39m      [34mexpect[39m(r[33m.[39mclassName)[33m.[39m[34mtoContain[39m([32m'overflow-hidden'[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m122| [39m      const [libelle, valeur] = [r.querySelector('span:not([class*="w-…
+    [90m123| [39m      [34mexpect[39m(valeur[33m.[39mclassName)[33m.[39m[34mtoContain[39m([32m'truncate'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/stock/renovation-d306.test.tsx[2m > [22mD306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement[2m > [22m« Pour quoi ? » change après la lecture : le « nouvel article » posé d’office d’une ligne devenue Rénovation repasse à « aucun article » ; un choix du brasseur ne bouge pas
+[31m[1mAssertionError[22m: brosse avant: expected 'none' to be 'new' // Object.is equality[39m
+
+Expected: [32m"ne[7mw[27m"[39m
+Received: [31m"n[7mon[27me"[39m
+
+[36m [2m❯[22m tests/unit/depense/stock/renovation-d306.test.tsx:[2m78:40[22m[39m
+    [90m 76| [39m  it('« Pour quoi ? » change après la lecture : le « nouvel article » …
+    [90m 77| [39m    await lire('brassage', [ligne(6, 'Brosse métallique', 'stock', 1, …
+    [90m 78| [39m    [34mexpect[39m([34mstockDe[39m([34m6[39m)[33m,[39m [32m'brosse avant'[39m)[33m.[39m[34mtoBe[39m([32m'new'[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m 79| [39m    [34mexpect[39m([34mstockDe[39m([34m7[39m)[33m,[39m [32m'seau avant'[39m)[33m.[39m[34mtoBe[39m([32m'new'[39m)[33m;[39m
+    [90m 80| [39m    // le brasseur écarte puis choisit lui-même « nouvel article » pou…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m146 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (153)[39m
+[2m      Tests [22m [1m[31m14 failed[39m[22m[2m | [22m[1m[32m2327 passed[39m[22m[2m | [22m[33m4 skipped[39m[90m (2345)[39m
+[2m   Start at [22m 18:47:57
+[2m   Duration [22m 56.55s[2m (transform 4.57s, setup 19.25s, collect 30.31s, tests 112.73s, environment 29.79s, prepare 11.65s)[22m
+

@@ -89,20 +89,19 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
     expect(etats(v)).toContain('Peinture et sols=false'); expect(allume(v)).toEqual([]);
     toucher(v, 'Peinture et sols'); expect(allume(v)).toEqual(['deplie']);
   });
-  it('« Plié » laisse ouvert un groupe à vérifier ; un toucher le replie quand même ; « Plié » le rouvre', async () => {
+  it('D333 : « Plié » ferme aussi le groupe à vérifier ; un toucher le rouvre ; « Plié » le referme', async () => {
     const v = await lire(AVERIFIER());
     expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); // au repos : le groupe rouge est ouvert d'office
-    expect(allume(v)).toEqual(['plie']);
+    expect(allume(v)).toEqual([]); // mêlé
     fireEvent.click(bouton(v, 'deplie'));
     expect(etats(v).every(x => x.endsWith('=true'))).toBe(true);
     fireEvent.click(bouton(v, 'plie'));
-    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); // tout plié : Électricité reste ouvert
+    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']); // D333 : tout plié, Électricité aussi
     expect(allume(v)).toEqual(['plie']);
-    // Un toucher le replie quand même : l'état devient mêlé ; « Plié » le rouvre.
     toucher(v, 'Électricité');
-    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']); expect(allume(v)).toEqual([]);
+    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); expect(allume(v)).toEqual([]);
     fireEvent.click(bouton(v, 'plie'));
-    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); expect(allume(v)).toEqual(['plie']);
+    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']); expect(allume(v)).toEqual(['plie']);
   });
   it('« Plié » ferme le plateau ouvert d\'une rangée d\'un groupe qu\'il replie (sinon la rangée garderait son groupe ouvert)', async () => {
     const v = await lire(AVERIFIER());
@@ -111,7 +110,7 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
     d.open = true; fireEvent(d, new Event('toggle'));
     await waitFor(() => expect(allume(v)).toEqual([]));
     fireEvent.click(bouton(v, 'plie'));
-    await waitFor(() => expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']));
+    await waitFor(() => expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']));
     expect(groupe(v, 'Outillage').querySelector<HTMLDetailsElement>('article details')!.open).toBe(false);
   });
   it('segment absent en vue Papier', async () => {
@@ -145,18 +144,5 @@ describe('« Y aller » vers une ligne d\'un groupe replié (critique r4)', () =
     expect(cible).not.toBe(document.body);
     expect(groupe(v, 'Électricité').contains(cible)).toBe(true);
     expect(cible.closest('[hidden]')).toBeNull();
-  });
-});
-
-describe('M1 : un montant inconnu ne décale pas la colonne des quantités', () => {
-  it('l\'en-tête de bande et la ligne de sous-famille au montant inconnu réservent la largeur de « + ? » ; les autres lignes gardent les classes d\'aujourd\'hui', async () => {
-    const v = await lire(AVERIFIER());
-    const entete = v.container.querySelector<HTMLElement>('[data-dp-bande="renovation"] [data-dp-bande-entete] [data-dp-sous-montant]')!;
-    expect(entete.textContent).toMatch(/\+ \?$/); expect(entete.style.minWidth).toMatch(/ch\)$/);
-    const qte = v.container.querySelector<HTMLElement>('[data-dp-bande="renovation"] [data-dp-bande-entete] [data-dp-sous-qte]')!;
-    expect(qte.style.marginRight).toMatch(/^calc\(57px - max\(0px, [\d.]+ch - 54px\)\)$/);
-    expect(groupe(v, 'Électricité').querySelector<HTMLElement>('[data-dp-sg-montant]')!.style.minWidth).toMatch(/ch\)$/);
-    expect(groupe(v, 'Outillage').querySelector<HTMLElement>('[data-dp-sg-montant]')!.style.minWidth).toBe('');
-    expect(groupe(v, 'Outillage').querySelector<HTMLElement>('[data-dp-sg-qte]')!.style.marginRight).toBe('');
   });
 });

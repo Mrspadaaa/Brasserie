@@ -40,12 +40,13 @@ describe('les règles d\'unité, une à une (PLAN.md, correspondance 2)', () => 
     const l = ligne('Cuve fictive 30 Liter', 1, 39, { kind: 'equipment', unit: '?' });
     expect(unite(l)).toMatchObject({ niveau: 'sur', valeur: 'Stk', source: 'deduite' });
   });
-  it('1. port, remise, service, divers : sans objet, sûr, sans valeur', () => {
-    for (const kind of ['shipping', 'discount', 'service', 'other', 'maintenance']) {
+  it('1. port, remise, service : sans objet, sûr, sans valeur ; entretien et divers (D328b) : une pièce déduite, sûre, quand la quantité est entière', () => {
+    for (const kind of ['shipping', 'discount', 'service']) {
       const u = unite(ligne('Ligne fictive', 1, 5, { kind }));
       expect(u).toMatchObject({ niveau: 'sur', source: 'aucune', regle: 'sans-objet' });
       expect(u.valeur).toBeUndefined();
     }
+    for (const kind of ['other', 'maintenance']) expect(unite(ligne('Ligne fictive', 1, 5, { kind }))).toMatchObject({ niveau: 'sur', valeur: 'Stk', source: 'deduite', regle: 'piece-hors-stock' });
   });
   it('2. quantité absente, nulle ou négative : inconnu', () => {
     for (const q of [undefined, 0, -2]) expect(unite(ligne('Malt fictif', q, 1.7))).toMatchObject({ niveau: 'inconnu', regle: 'sans-quantite' });
@@ -108,8 +109,10 @@ describe('les règles d\'unité, une à une (PLAN.md, correspondance 2)', () => 
     expect(unite(ligne('Pilsner Malz fictif', 5, 0.3))).toMatchObject({ niveau: 'inconnu', regle: 'malt-indecis' });
     expect(unite(ligne('Pilsner Malz fictif', 5, 45))).toMatchObject({ niveau: 'inconnu' });
   });
-  it('17. autre famille, entier, plus de 50 centimes : une pièce, reprise ; fractionnaire : inconnu', () => {
-    expect(unite(ligne('Produit fictif XJ-17', 3, 9.9))).toMatchObject({ niveau: 'repris', valeur: 'Stk', regle: 'piece-defaut' });
+  it('17. autre famille, entier, plus de 50 centimes : une pièce, sûre quand q × prix = montant (D328a), reprise sinon ; fractionnaire : inconnu', () => {
+    expect(unite(ligne('Produit fictif XJ-17', 3, 9.9))).toMatchObject({ niveau: 'sur', valeur: 'Stk', regle: 'piece-defaut' });
+    expect(unite(ligne('Produit fictif XJ-17', 3, 9.9, { amount: undefined }))).toMatchObject({ niveau: 'repris', valeur: 'Stk', regle: 'piece-defaut' });
+    expect(unite(ligne('Produit fictif XJ-17', 3, 9.9, { amount: 31 }))).toMatchObject({ niveau: 'repris', valeur: 'Stk', regle: 'piece-defaut' });
     expect(unite(ligne('Produit fictif XJ-17', 2.5, 9.9))).toMatchObject({ niveau: 'inconnu' });
     expect(unite(ligne('Produit fictif XJ-17', 3, 0.1))).toMatchObject({ niveau: 'inconnu' });
   });
@@ -132,7 +135,7 @@ describe('les règles d\'unité, une à une (PLAN.md, correspondance 2)', () => 
   });
   it('seconde source : deux autres lignes de la famille imprimant la même unité font passer un repris à sûr', () => {
     const net = (nom: string, q: number, p: number, over: Partial<LigneConfiance> = {}) => ligne(nom, q, p, { kind: 'cleaning', ...over });
-    const a = net('Nettoyant fictif A', 2, 4, { unit: 'Stk' }), b = net('Nettoyant fictif B', 3, 5, { unit: 'Stk' }), c = net('Nettoyant fictif C', 1, 4.5);
+    const a = net('Nettoyant fictif A', 2, 4, { unit: 'Stk' }), b = net('Nettoyant fictif B', 3, 5, { unit: 'Stk' }), c = net('Nettoyant fictif C', 1, 4.5, { amount: undefined }); // montant absent : le calcul ne confirme rien (D328a : un calcul qui tombe juste est déjà sûr seul)
     expect(unite(c, [a, b, c])).toMatchObject({ niveau: 'sur', valeur: 'Stk', regle: 'piece-defaut' });
     expect(unite(c, [a, c])).toMatchObject({ niveau: 'repris', valeur: 'Stk' });
     expect(unite(c)).toMatchObject({ niveau: 'repris', valeur: 'Stk' });

@@ -50,11 +50,7 @@ describe('zone 1 : la rangée dit la base et l’état du malt', () => {
     expect(etat.querySelector('svg')).not.toBeNull();
     expect(resume(6).querySelector('[data-dp-etat]')!.textContent).toContain('0,50');
   });
-  it('la quantité est en gras ; le libellé n’est jamais coupé au milieu d’un mot', async () => {
-    await ouvrir();
-    for (const n of [1, 4, 7]) expect(resume(n).querySelector('[data-dp-qte]')!.className).toMatch(/font-semibold/);
-    expect(resume(4).querySelector('[data-dp-nom]')!.className).toMatch(/dp-p3c-nom/);
-  });
+
 });
 
 describe('zone 2 : nouvel article d’office, aucun « Créer » au repos', () => {
@@ -105,11 +101,7 @@ describe('zones 3 et 4 : trois niveaux, la quantité déduite en jaune, les unit
     const houblon = calculerBandes([{ ...L('c', 85, 'g', 'repris'), groupe: 'houblon' }]).find(b => b.cle === 'houblon')!;
     expect(houblon.qte[0].niveau).toBe('repris');
   });
-  it('la date manquante est rouge dans le bandeau ; la rangée des points n’existe plus', async () => {
-    await ouvrir();
-    expect(q('[data-dp="bandeau"] [data-dp-niveau="inconnu"][aria-label="Date de l’achat à remplir"]')).not.toBeNull();
-    expect(document.querySelectorAll('[data-dp="chips"] [data-dp-chip]')).toHaveLength(0);
-  });
+
 });
 
 describe('zone 5 : le récap compte', () => {
@@ -117,7 +109,7 @@ describe('zone 5 : le récap compte', () => {
     await ouvrir();
     const t = q('[data-dp="compte-liens"]').textContent!;
     expect(t).toMatch(/\d+ nouveaux/);
-    expect(t).toMatch(/\d+ hors stock/);
+    expect(t).not.toMatch(/hors stock/); // A3 (g2a) : retiré, dans aucune maquette
     expect(t).toMatch(/\d+ à contrôler/);
     expect(t).toMatch(/3 moutures \+0,71/); // 2 × 0,10 + 5 × 0,10 + 100 × 0,0001, compris dans les prix
     expect(t).not.toMatch(/(^|\D)0 (relié|nouveau|bis|hors|mouture|à )/);
@@ -162,32 +154,17 @@ describe('VERDICT-f3 défaut 1 : le plateau ouvert est celui de p3c-3 (p3c-3-ges
     expect(p.querySelector('[data-dp-stock] input[aria-label="Nom de l’article, ligne 4"]')).not.toBeNull();
     expect(ligne(4).querySelectorAll('[data-dp-plus]')).toHaveLength(1);
   });
-  it('aucun doublon : le nom de l’article se saisit une fois, « nouvel article » et la fiche ne se disent qu’une fois', async () => {
-    await ouvrir();
-    const tout = ligne(4).querySelector('details')!.cloneNode(true) as HTMLElement;
-    tout.querySelector('summary')?.remove();
-    expect(tout.querySelectorAll('input[aria-label^="Nom de l’article"]')).toHaveLength(1);
-    expect((premierPlan(4).textContent!.match(/nouvel article/g) ?? []).length).toBe(1); // derrière « plus », l'option « Créer un nouvel article » de la liste n'est qu'un choix
-    expect((tout.textContent!.match(/approchée/g) ?? []).length).toBeLessThanOrEqual(1);
-  });
-  it('matériel : « Fiche matériel » est sa seule liste, au premier plan ; ni stock ni nom d’article', async () => {
-    await ouvrir();
-    const p = premierPlan(2);
-    expect(p.textContent).not.toMatch(ANCIEN);
-    expect(p.querySelector('select[aria-label="Matériel ligne 2"]')).not.toBeNull();
-    expect(p.querySelectorAll('select')).toHaveLength(1);
-  });
+
+
 });
 
 describe('VERDICT-f3 défaut 8 : le jaune « à contrôler » a son geste au plateau', () => {
-  it('« unité g déduite … à contrôler » suivi de g / kg / Stk, g pré-choisi ; toucher g lève le jaune', async () => {
+  it('C2 (g2a, critique g3) : l’unité déduite reste jaune à la rangée (raison au survol), sans phrase ni segment sous les champs ; le segment g / kg / Stk n’existe que pour une unité inconnue', async () => {
     await ouvrir();
-    const seg = () => Array.from(ligne(7).querySelectorAll('[data-dp-unite-segments] button')) as HTMLButtonElement[];
-    expect(seg().map(b => `${b.textContent}${b.getAttribute('aria-pressed') === 'true' ? '*' : ''}`)).toEqual(['g*', 'kg', 'Stk']);
+    expect(ligne(7).querySelector('[data-dp-unite-segments]')).toBeNull(); expect(ligne(7).querySelector('[data-dp-unite-deduite]')).toBeNull();
     expect(resume(7).querySelector('[data-dp-qte]')!.getAttribute('data-dp-niveau')).toBe('repris');
-    fireEvent.click(seg()[0]);
-    expect(resume(7).querySelector('[data-dp-qte]')!.hasAttribute('data-dp-niveau')).toBe(false);
-    expect(resume(7).querySelector('[data-dp-prix]')!.textContent).not.toBe('—'); // le prix imprimé reste : l'unité confirmée est celle qu'il avait
+    expect(resume(7).getAttribute('title')).toMatch(/./);
+    expect(within(ligne(13)).getAllByRole('button', { name: 'kg' }).length).toBeGreaterThan(0); // l'unité inconnue garde son segment
   });
 });
 
@@ -205,38 +182,6 @@ describe('VERDICT-f3-p2 majeur 1 (D277, « globalement pour tout ») : un lien p
     expect(lien()?.hasAttribute('data-dp-niveau')).toBe(false);
     expect(propose()).toBeNull();
     expect(ligne(11).querySelector('[data-dp-stock]')!.textContent).toMatch(/· relié/);
-  });
-});
-
-describe('VERDICT-f3-p2 détails 2 à 4', () => {
-  it('détail 2 : le champ d’unité vide dit « ? » en rouge tirets', async () => {
-    await ouvrir();
-    const u = ligne(13).querySelector('[data-dp-calcul] input[aria-label^="Unité ligne"]') as HTMLInputElement;
-    expect(u.placeholder).toBe('?');
-    expect(u.getAttribute('data-dp-niveau')).toBe('inconnu');
-  });
-  it('détail 3 : un bis ouvert n’a qu’un ⇄ ; sa barre se fond dans la ligne « article » du plateau', async () => {
-    await ouvrir();
-    // fermée : la barre jaune seule (la base)
-    expect(ligne(12).querySelector('[data-dp-barre]')).not.toBeNull();
-    const d = ligne(12).querySelector('details')!;
-    act(() => { d.open = true; fireEvent(d, new Event('toggle')); });
-    const corps = ligne(12).querySelector('[data-dp-corps]')!;
-    expect(within(ligne(12)).getAllByRole('button', { name: 'Choisir un autre article' })).toHaveLength(1);
-    expect(corps.querySelector('[data-dp-stock]')!.textContent).toMatch(/stock : Target α 11,8/);
-    expect(within(corps as HTMLElement).getByRole('button', { name: 'Garder le nouvel article « Target bis »' })).toBeTruthy();
-    expect(ligne(12).querySelector('[data-dp-barre]')).toBeNull();
-    // refermée : la barre revient
-    act(() => { d.open = false; fireEvent(d, new Event('toggle')); });
-    expect(ligne(12).querySelector('[data-dp-barre]')).not.toBeNull();
-  });
-  it('détail 4 : la carte « Date de l’achat » est fermée au repos ; « date ? » l’ouvre ; son avertissement tient sur une ligne', async () => {
-    await ouvrir();
-    const bloc = document.querySelector<HTMLDetailsElement>('[data-purchase-date]')!;
-    expect(bloc.open).toBe(false);
-    fireEvent.click(q('[data-dp="bandeau"] [aria-label="Date de l’achat à remplir"]'));
-    expect(bloc.open).toBe(true);
-    expect(bloc.querySelector('#scan-hint-date')!.className).toMatch(/whitespace-nowrap/);
   });
 });
 

@@ -63,10 +63,10 @@ describe('les points d\'en-tête : le niveau du champ qu\'ils visent', () => {
     for (const code of ['lignes-annoncees', 'lignes-non-rapprochees', 'lecture-coupee'] as const) expect(entete([point(code, null)]).lignes.niveau, code).toBe('repris');
     for (const code of ['pro-forma-non-payee', 'devis', 'document-livraison', 'avoir'] as const) expect(entete([point(code, null)]).document.niveau, code).toBe('repris');
   });
-  it('désaccord entre lectures : repris si l\'une est retenue, inconnu sinon ; tranché à la majorité (ne pèse pas) : rien', () => {
+  it('désaccord entre lectures : toujours repris (jaune, D277 ; g2b), qu\'une lecture soit retenue ou non ; tranché à la majorité (ne pèse pas) : rien', () => {
     const lectures = (retenue: boolean) => [{ lecture: 1, valeur: 'a', retenue }, { lecture: 2, valeur: 'b', retenue: false }];
     expect(entete([point('lectures-divergentes', null, { champ: 'vendor', valeurs: lectures(true) })]).fournisseur.niveau).toBe('repris');
-    expect(entete([point('lectures-divergentes', null, { champ: 'vendor', valeurs: lectures(false) })]).fournisseur.niveau).toBe('inconnu');
+    expect(entete([point('lectures-divergentes', null, { champ: 'vendor', valeurs: lectures(false) })]).fournisseur.niveau).toBe('repris');
     expect(entete([point('lectures-divergentes', null, { champ: 'vendor', valeurs: lectures(true), pese: false })]).fournisseur.niveau).toBe('sur');
   });
   it('devise non CHF : le total est repris', () => {

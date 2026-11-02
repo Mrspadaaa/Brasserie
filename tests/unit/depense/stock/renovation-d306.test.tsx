@@ -74,7 +74,7 @@ describe('D306 — une pièce de travaux lue « stock » sous Local : la Rénova
     for (const id of ['line-2', 'line-4']) expect(natureDe(view, id), id).toBe('Matériel');
   });
   it('« Pour quoi ? » change après la lecture : le « nouvel article » posé d’office d’une ligne devenue Rénovation repasse à « aucun article » ; un choix du brasseur ne bouge pas', async () => {
-    await lire('brassage', [ligne(6, 'Brosse métallique', 'stock', 1, 'Stk', 5.5), ligne(7, 'Seau galvanisé', 'stock', 1, 'Stk', 9.9)]);
+    await lire('brassage', [ligne(6, 'Balai de cantonnier', 'stock', 1, 'Stk', 5.5), ligne(7, 'Seau galvanisé', 'stock', 1, 'Stk', 9.9)]);
     expect(stockDe(6), 'brosse avant').toBe('new');
     expect(stockDe(7), 'seau avant').toBe('new');
     // le brasseur écarte puis choisit lui-même « nouvel article » pour le seau : ce n’est plus un choix d’office

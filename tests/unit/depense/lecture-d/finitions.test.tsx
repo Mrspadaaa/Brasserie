@@ -180,7 +180,7 @@ describe('(e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau
     await waitFor(() => expect(fil(view)).toBeNull());
     expect(state.scanned).toHaveBeenCalledTimes(2);
     expect(principal(view)).toBeEnabled();
-    expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).toMatch(/2 lectures/); expect(view.container.textContent).toMatch(/Lecture coupée/);
+    expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).toMatch(/2[/]2/); expect(view.container.textContent).toMatch(/Lecture coupée/);
     expect(view.container.querySelector('[data-va="corrigees"]')).toBeNull();
     await evenement('online'); await evenement('online'); expect(state.scanned).toHaveBeenCalledTimes(2);
   });

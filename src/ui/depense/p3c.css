@@ -67,5 +67,13 @@
 .dp-p3c-sg-c-autres { --dp-sg-c: var(--cave-400); }
 .dp-p3c-sg[aria-expanded='true'] { background: rgb(var(--dp-sg-c, var(--cave-400)) / .1); }
 .dp-p3c-sg:focus-visible { outline-offset: -2px; border-radius: 0; }
+/* D331 : la puce de filtre ACTIVE (aria-pressed) : fond plein de son jeton, bord plein, texte « sur-aplat » ; les textes colorés des jetons de texte (clair et cave) tiennent 4,5:1 sur leur fond. */
+.dp-p3c-on { background-color: rgb(var(--dp-on)); border: 1.5px solid rgb(var(--dp-on)); color: rgb(var(--sur-paille)); }
+.dp-p3c-on b, .dp-p3c-on svg { color: inherit; }
+.dp-p3c-on i[aria-hidden] { background-color: rgb(var(--sur-paille)); }
+.dp-p3c-on-straw { --dp-on: var(--ebc-straw); }
+.dp-p3c-on-alert { --dp-on: var(--alert-strong-texte); }
+.dp-p3c-on-attention { --dp-on: var(--attention-texte); }
+.dp-p3c-on-finances { --dp-on: var(--area-finances-texte); }
 /* D311 (son choix E) : le segment « Plié | Déplié » est rogné par son cadre (overflow caché) : le contour de focus se dessine à l'intérieur. */
 .dp-p3c-seg:focus-visible { outline-offset: -2px; border-radius: 0; }

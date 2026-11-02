@@ -58,7 +58,7 @@ function CorpsBande({ b, p }: { b: Bande; p: { lignes: ReadonlyMap<string, React
         className={`dp-p3c-sg dp-p3c-sg-c-${b.cle} ${FILET_FAMILLE[b.cle]} flex min-h-7 w-full items-center gap-1.5 border-b border-cave-800 px-2.5 text-left text-sm`}>
         <span aria-hidden className="inline-flex w-[18px] shrink-0 justify-center text-cave-400">{ouvert ? <ChevronDown size={14} strokeWidth={2.2}/> : <ChevronRight size={14} strokeWidth={2.2}/>}</span>
         <span className={`min-w-0 truncate ${ouvert ? 'font-semibold' : ''} text-cave-50`}>{sg.nom}</span>
-        <span data-dp-sg-compte className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{sg.ids.length}</span>
+        <span data-dp-sg-compte className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{p.visibles ? `${sg.ids.filter(x => p.visibles!.has(x)).length}/${sg.ids.length}` : sg.ids.length}</span>
         <span data-dp-sg-qte style={reserveInconnu(fr2(sg.cents), sg.incomplet).qte} className="ml-auto mr-[57px] whitespace-nowrap text-right font-mono text-xs font-semibold text-cave-200"><QteSousGroupe qte={sg.qte}/></span>
         <span data-dp-sg-montant style={reserveInconnu(fr2(sg.cents), sg.incomplet).montant} {...(sg.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm ${sg.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(sg.cents)}{sg.incomplet ? ' + ?' : null}</span>
       </button>
@@ -70,7 +70,7 @@ function CorpsBande({ b, p }: { b: Bande; p: { lignes: ReadonlyMap<string, React
 export function Liste(p: {
   ordre: 'cat' | 'papier'; bandes: Bande[]; papier: { ids: string[]; cents: number; incomplet: boolean; /** Le port, hors de l'ordre du papier : « 80,46 + port 12,00 » (VERDICT-f3, détail 7). */ port?: number } | null; lignes: ReadonlyMap<string, React.ReactNode>;
   filtre: FiltreListe | null; visibles: ReadonlySet<string> | null; nAffichees: number; onSansFiltre: () => void; rattacherTous: { n: number; onTous: () => void } | null;
-  pied: { ajouterOff: boolean; ajouterTitre?: string; regrouper: boolean; detail: { lignes: string; total: string; ecart: boolean } | null };
+  pied: { ajouterOff: boolean; ajouterTitre?: string; regrouper: boolean; /** D332 : après « Regrouper », le geste « ↶ Rétablir les N lignes » prend sa place jusqu'à « Confirmer ». */ retablir?: { n: number; onRetablir: () => void } | null; detail: { lignes: string; total: string; ecart: boolean; /** A4 : « Lecture déjà disponible · aucun nouvel appel IA », au survol du Détail. */ cache?: boolean } | null };
   onAjouter: () => void; onRegrouper: () => void; children?: React.ReactNode;
   /** D307 : le choix du brasseur sur chaque sous-groupe, les rangées qu'on doit voir (elles ouvrent leur groupe), le geste d'un toucher sur la ligne de sous-famille. */
   choixGroupes?: ChoixGroupes; forces?: ReadonlySet<string>; onBasculeGroupe?: (bande: string, sg: SousGroupe, ouvrir: boolean) => void;
@@ -91,7 +91,7 @@ export function Liste(p: {
         <div data-dp-bande-entete className={`dp-p3c-bande-entete flex items-center gap-1.5 px-2.5 text-sm dp-p3c-t-${b.cle}`}>
           <i aria-hidden className={`size-2.5 shrink-0 rounded-full ${POINT_GROUPE[b.cle]}`}/>
           <strong className="font-semibold text-cave-50">{b.nom}</strong>
-          <span className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{b.ids.length}{b.moutureIds.length ? ` +${b.moutureIds.length} ↳` : ''}</span>
+          <span data-dp-bande-compte className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{p.visibles ? `${b.ids.filter(id => p.visibles!.has(id)).length}/${b.ids.length}` : b.ids.length}{!p.visibles && b.moutureIds.length ? ` +${b.moutureIds.length} ↳` : ''}</span>
           {b.cle === 'malt' && p.rattacherTous ? <button type="button" data-dp-mouture-tous onClick={p.rattacherTous.onTous} className="min-h-6 whitespace-nowrap rounded-control border border-ebc-straw bg-ebc-straw px-1.5 text-xs font-semibold text-cave-950">Rattacher les {p.rattacherTous.n}</button> : null}
           {b.eqb ? <span className="ml-auto whitespace-nowrap rounded-control bg-cave-950 px-1.5 text-xs leading-[18px] text-cave-200">{b.eqb}</span> : null}
           <span data-dp-sous-qte style={reserveInconnu(fr2(b.cents), b.incomplet).qte} className={`${b.eqb ? '' : 'ml-auto'} mr-[57px] whitespace-nowrap text-right font-mono text-xs font-semibold text-cave-200`}>{b.qte.map((e, i) => <React.Fragment key={i}>{i ? ' + ' : ''}{e.inconnue
@@ -116,8 +116,9 @@ export function Liste(p: {
     {p.children}
     <div data-dp="fin" className="flex flex-wrap items-center gap-1.5 px-2.5 py-2">
       <button type="button" disabled={p.pied.ajouterOff} title={p.pied.ajouterTitre} onClick={p.onAjouter} className="min-h-7 rounded-control border border-dashed border-cave-600 px-2.5 text-sm text-cave-200 disabled:opacity-40">+ Ajouter une ligne</button>
-      {p.pied.regrouper ? <button type="button" onClick={p.onRegrouper} className="min-h-7 rounded-control border border-dashed border-cave-600 px-2.5 text-sm text-cave-200">Regrouper en une dépense</button> : null}
-      {p.pied.detail ? <span className={`ml-auto text-xs ${p.pied.detail.ecart ? 'text-attention' : 'text-cave-400'}`}>Détail <b className="font-mono font-medium">{p.pied.detail.lignes} / {p.pied.detail.total}</b></span> : null}
+      {p.pied.retablir ? <button type="button" data-dp-retablir onClick={p.pied.retablir.onRetablir} className="min-h-7 rounded-control border border-dashed border-cave-600 px-2.5 text-sm text-cave-200">↶ Rétablir les {p.pied.retablir.n} lignes</button>
+        : p.pied.regrouper ? <button type="button" onClick={p.onRegrouper} className="min-h-7 rounded-control border border-dashed border-cave-600 px-2.5 text-sm text-cave-200">Regrouper en une dépense</button> : null}
+      {p.pied.detail ? <span title={p.pied.detail.cache ? 'Lecture déjà disponible · aucun nouvel appel IA' : undefined} className={`ml-auto text-xs ${p.pied.detail.ecart ? 'text-attention' : 'text-cave-400'}`}>Détail <b className="font-mono font-medium">{p.pied.detail.lignes} / {p.pied.detail.total}</b></span> : null}
     </div>
   </section>;
 }

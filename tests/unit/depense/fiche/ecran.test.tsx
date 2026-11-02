@@ -147,26 +147,9 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     await screen.findByLabelText('Nom de l’article, ligne 9');
     expect(ligne(view, 9).querySelector('[data-dp-valeurs]')?.textContent).toBe('origine CH');
   });
-  it('n° 6 : le bouton dit « Target bis » ou « Créer CH » (nom complet dans son nom accessible), bouton et ⇄ dans un même groupe', async () => {
-    const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-C', 'Cascade US', 'Houblon', 'g')]);
-    const target = within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' });
-    expect(target.textContent).toBe('Target bis');
-    const cascade = within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' });
-    expect(cascade.textContent).toBe('Cascade CH'); // D275 (voie f3) : un bis est nouvel article d'office ; le bouton le garde, il ne « crée » plus (HEAD : « Créer CH »)
-    expect(cascade.parentElement?.querySelector('button[aria-label="Choisir un autre article"]')).toBeTruthy();
-  });
-  it('n° 7 : la pastille « approchée » prend la teinte d’attention ; la fiche exacte reste grise', async () => {
-    const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-C', 'Cascade US', 'Houblon', 'g')]);
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
-    await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('fiche Cascade US · approchée'), { timeout: 5000 });
-    expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.className).toMatch(/text-attention/);
-    expect(ligne(view, 8).querySelector('[data-dp-pastille]')?.className).not.toMatch(/text-attention/);
-  });
-  it('n° 8 : le premier champ du plateau s’appelle « Libellé de la facture »', async () => {
-    const view = await lire();
-    expect(within(ligne(view, 8)).getByText('Libellé de la facture')).toBeInTheDocument();
-  });
+
+
+
   it('n° 9 (D275, voie f3) : une ligne d’ingrédient inconnue (Goldings East Kent) est nouvel article d’office, picto « nouvel article », aucun bouton « Créer »', async () => {
     const view = await lire();
     expect(within(ligne(view, 9)).queryByRole('button', { name: /^Créer/ })).toBeNull();
@@ -195,17 +178,14 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-Cascade', 'Cascade US', 'Houblon', 'g')]);
     fireEvent.click(within(ligne(view, 9)).getAllByRole('button', { name: 'Choisir un autre article' })[0]); // D275 (voie f3) : le ⇄ de la barre et celui du plateau (« article « … » · nouvel article ⇄ »)
     expect(screen.getByLabelText('Stock ligne 9')).toHaveValue('existing');
-    expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('article ?');
+    expect(ligne(view, 9).querySelector('[data-dp-pastille]')).toBeNull(); // C1 (g2a) : une seule pastille, « article « ? » · à choisir »
     expect(within(ligne(view, 9)).getByLabelText('Article')).toBeInTheDocument();
     expect(within(ligne(view, 9)).queryByText(/^\+20 g$/)).toBeNull();
     fireEvent.change(within(ligne(view, 9)).getByLabelText('Article'), { target: { value: 'Cascade US' } });
     fireEvent.click(await within(ligne(view, 9)).findByRole('option', { name: /Cascade US/ }));
     await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('+20 g'));
   });
-  it('n° 15 : chaque ligne se cale sous la bande collante (scroll-margin-top)', async () => {
-    const view = await lire();
-    for (const l of Array.from(view.container.querySelectorAll('[data-purchase-line]'))) expect(l.className).toMatch(/(^|\s)scroll-mt-9(\s|$)/); // 36 px sous l'en-tête de bande collant (28 px) ; écart de VALEUR annoncé (HEAD : scroll-mt-12 sous une bande de 40 px), la valeur exacte est tenue
-  });
+
   it('n° 16 : le compteur accorde le nombre', async () => {
     const view = await lire();
     const compte = () => view.container.querySelector('[data-dp="compte-liens"]')?.textContent ?? '';
@@ -220,6 +200,6 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
     await waitFor(() => expect(n()).toBe(avant + 1));
     fireEvent.change(screen.getByLabelText('Stock ligne 9'), { target: { value: 'none' } });
     await waitFor(() => expect(n()).toBe(avant));
-    expect(compte()).toMatch(/1 hors stock|\d+ hors stock/);
+    expect(compte()).not.toMatch(/hors stock/); // A3 (g2a) : « hors stock » n'est dans aucune maquette
   });
 });

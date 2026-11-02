@@ -14,7 +14,7 @@ import { isReadableUnit } from '../../services/ingredientIdentity';
 import { donneesDeLigne, linkUnit, regleProduit, SACHET_MAX_G, shortUnit } from '../../services/stockLineMatching';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { StockItem } from '../../types';
-import { familleDe, jetons, type FamilleCle } from './familles';
+import { estFamilleIngredient, familleDe, jetons, type FamilleCle } from './familles';
 
 export type Niveau = 'sur' | 'repris' | 'inconnu';
 /** Une valeur et ce qu'on en sait. `valeur` absente + `sur` = « sans objet » (un port n'a pas d'unité) ; absente + `inconnu` = rien de lisible. */
@@ -54,6 +54,8 @@ export interface ContexteConfiance {
 
 // ——— Ce qu'est une ligne ———
 const HORS_STOCK: ReadonlySet<string> = new Set(['service', 'shipping', 'discount', 'other', 'maintenance', 'unknown']);
+/** D328b : les natures hors stock qui sont des objets (un entretien, un divers) : leur quantité entière se compte à la pièce. */
+const PIECE_HORS_STOCK: ReadonlySet<string> = new Set(['other', 'maintenance']);
 const kindDe = (kind: string | undefined): string => (kind === 'stock' || !kind ? 'ingredient' : kind);
 const nombre = (n: unknown): number | undefined => (typeof n === 'number' && Number.isFinite(n) ? n : undefined);
 const virgule = (n: number) => String(Math.round(n * 1e6) / 1e6).replace('.', ',');
@@ -121,7 +123,7 @@ const grandeur = (u: string): string => (u === 'm' ? 'longueur' : Units.familyOf
 const formule = (a: Analyse) => `${virgule(a.q!)} × ${a.p !== undefined ? virgule(a.p) : '?'}${a.a !== undefined ? ` = ${francs(a.a)}` : ''}`;
 
 /** Les règles d'unité, dans l'ordre d'essai (PLAN.md, correspondance 2). Une ligne sans unité lisible, du stock ou du matériel, quantité > 0. */
-function regles(l: LigneConfiance, a: Analyse, nom: string): Brut {
+function regles(l: LigneConfiance, a: Analyse, nom: string, categorie?: string): Brut {
   const q = a.q!, p = a.p, exact = a.calcul === 'exact', famille = a.famille;
   const segment = premierSegment(nom);
   // 3. L'unité écrite dans le nom, nue, après une virgule : imprimée, avec le calcul comme seconde source.
@@ -161,6 +163,10 @@ function regles(l: LigneConfiance, a: Analyse, nom: string): Brut {
   }
   // 13 et 14. Une mesure en fin de nom est une contenance : un pot de 460 ml est une pièce, un paquet de 1 kg vaut 1 kg.
   const mesure = mesureFinale(segment);
+  // D328a : hors des familles d'ingrédients, une quantité entière dont q × prix = montant tombe juste est une pièce, SÛRE : la contenance du nom (un pot « 5,8KG ») ne dit pas la quantité.
+  // Une ligne d'ingrédient que nul mot ne classe (« Autres », sous « Brassage ») peut être un adjuvant vendu au poids : elle garde les règles d'un ingrédient.
+  const horsIngredient = !estFamilleIngredient(famille) && !(famille === 'autres' && a.kind === 'ingredient' && categorie === 'brassage');
+  if (mesure && entier(q) && horsIngredient && exact) return brut('sur', 'Stk', `« ${virgule(mesure.n)} ${shortUnit(mesure.unite)} » : la contenance, ${formule(a)} tombe juste : des pièces`, 'mesure-contenance');
   if (mesure && entier(q)) {
     const poidsOuVolume = Units.familyOf(mesure.unite) !== 'piece';
     if (poidsOuVolume && Math.abs(mesure.n - 1) < 1e-9 && (mesure.unite === 'kg' || mesure.unite === 'l')) return brut('repris', mesure.unite, `« 1 ${shortUnit(mesure.unite)} » en fin de nom : le paquet vaut 1 ${shortUnit(mesure.unite)}`, 'mesure-un');
@@ -172,8 +178,10 @@ function regles(l: LigneConfiance, a: Analyse, nom: string): Brut {
     if (p >= 0.0008 && p <= 0.008 && entier(q) && q >= 50) return brut('repris', 'g', `${formule(a)} : des grammes`, 'malt-gramme');
     return brut('inconnu', undefined, `malt à ${virgule(p)} : kg ou g, rien ne le dit`, 'malt-indecis');
   }
-  // 17. Le reste, entier et à plus de 50 centimes : une pièce.
-  if (famille !== 'malt' && p !== undefined && p >= 0.5 && entier(q) && q <= 1000) return brut('repris', 'Stk', `${formule(a)} : des pièces`, 'piece-defaut');
+  // 17. Le reste, entier et à plus de 50 centimes : une pièce. D328a : sûre quand q × prix = montant tombe juste, hors des familles d'ingrédients (sucre et additif gardent « repris »).
+  if (famille !== 'malt' && p !== undefined && p >= 0.5 && entier(q) && q <= 1000) {
+    return horsIngredient && exact ? brut('sur', 'Stk', `${formule(a)} tombe juste : des pièces`, 'piece-defaut') : brut('repris', 'Stk', `${formule(a)} : des pièces`, 'piece-defaut');
+  }
   return brut('inconnu', undefined, `${formule(a)} : ni nom, ni prix, ni famille ne disent l'unité`, 'indecis');
 }
 
@@ -203,11 +211,17 @@ const SANS_ELEVATION = new Set(['paquet', 'mesure-contenance', 'mesure-un', 'tuy
 export function deduireUnite(l: LigneConfiance, c: ContexteConfiance): ValeurUnite {
   const imprimee = (l.unit ?? '').trim();
   if (isReadableUnit(imprimee)) return { niveau: 'sur', valeur: shortUnit(imprimee), raison: 'unité imprimée', source: 'imprimee', regle: 'imprimee' };
-  if (HORS_STOCK.has(kindDe(l.kind))) return { niveau: 'sur', raison: 'sans objet : ne passe pas en stock', source: 'aucune', regle: 'sans-objet' };
+  // D328b : une ligne hors stock n'est jamais « inconnue » pour l'unité. Un entretien ou un divers en quantité entière se compte à la pièce (déduite, sûre : rien n'en dépend) ;
+  // le reste (service, port, remise, quantité non entière ou absente) n'a pas d'unité : « sans objet », sûr.
+  if (HORS_STOCK.has(kindDe(l.kind))) {
+    const qh = nombre(l.quantity);
+    if (PIECE_HORS_STOCK.has(kindDe(l.kind)) && qh !== undefined && qh > 0 && entier(qh)) return { niveau: 'sur', valeur: 'Stk', raison: 'une pièce : ne passe pas en stock', source: 'deduite', regle: 'piece-hors-stock' };
+    return { niveau: 'sur', raison: 'sans objet : ne passe pas en stock', source: 'aucune', regle: 'sans-objet' };
+  }
   const q = nombre(l.quantity);
   if (q === undefined || !(q > 0)) return { niveau: 'inconnu', raison: 'quantité absente : unité non déductible', source: 'aucune', regle: 'sans-quantite' };
   const a = analyser(l, c);
-  let r = regles(l, a, l.description);
+  let r = regles(l, a, l.description, c.categorie);
   // Un calcul qui ne tombe pas juste : plus rien n'est sûr.
   if (r.niveau === 'sur' && a.calcul !== 'exact' && !(r.regle === 'piece-evidente' && q === 1)) r = { ...r, niveau: 'repris', raison: `${r.raison} (le calcul ne tombe pas juste)` };
   // Sans règle : l'article relié tenu à la pièce, puis les autres lignes de la famille.
@@ -262,9 +276,11 @@ export const TABLE_POINTS: Record<ScanPointCode, ReglePoint> = {
     return cs.length ? cs.map(c => cible(c, 'inconnu', 'valeur rejetée à la mise en forme')) : [cible(CHAMP_ENTETE_DE[p.champ] ?? 'lignes', 'inconnu', 'valeur rejetée à la mise en forme')];
   },
   'lectures-divergentes': p => {
+    // Un désaccord de lecture est une valeur REPRISE (D277, jaune : il contrôle), jamais « inconnue » : le point ne fait que baisser une valeur que le brouillon porte, et un champ vide est
+    // déjà « inconnu » de lui-même (rien de lisible). Même quand aucune lecture n'est retenue, la valeur posée (lue par l'une, ou tapée) reste à contrôler, pas à remplir.
     const retenue = (p.valeurs ?? []).some(v => v.retenue && v.valeur !== null && v.valeur !== '');
-    const niveau: Niveau = retenue ? 'repris' : 'inconnu';
-    const raison = retenue ? 'deux lectures diffèrent' : 'les lectures diffèrent, aucune n\'est retenue';
+    const niveau: Niveau = 'repris';
+    const raison = retenue ? 'deux lectures diffèrent' : 'les lectures diffèrent, aucune n\'est retenue : à contrôler';
     if (p.ligne !== null && p.ligne !== undefined) { const cs = cellules(p); if (cs.length) return cs.map(c => cible(c, niveau, raison)); }
     return [cible(CHAMP_ENTETE_DE[p.champ] ?? 'lignes', niveau, raison)];
   },

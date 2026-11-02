@@ -108,5 +108,70 @@ export function optionsEnFrancais(line: PurchaseLineDraft, unite: string): { com
 export function texteQuantite(line: PurchaseLineDraft, unite: string, horsStock: boolean): string {
   if (line.quantity === undefined) return horsStock ? '' : '?';
   const u = shortUnit(unite);
-  return `${virgule(line.quantity)}${u ? ` ${u === 'sachet' && line.quantity > 1 ? 'sachets' : u}` : ' ?'}`;
+  return `${virgule(line.quantity)}${u ? ` ${u === 'sachet' && line.quantity > 1 ? 'sachets' : u}` : horsStock ? '' : ' ?'}`;
+}
+
+// ——— Voie g2a (D328g, D328h, D334, D329) ———
+
+/** D328g : les mots d'un nom, sans casse, accents, ponctuation ni ordre (« BAC A PEINTURE 32X36 » et « Bac à peinture 32X36 » : mêmes mots). */
+const motsDuNom = (s: string): string => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim().split(' ').filter(Boolean).sort().join(' ');
+export const memesMots = (a: string, b: string): boolean => motsDuNom(a) !== '' && motsDuNom(a) === motsDuNom(b);
+
+/**
+ * B1 (remplace D328g) : le français que la 3e lecture rend d'un nom (`nameFr` de la lecture : la description change, le nom IMPRIMÉ non) est une traduction, pas une correction : ni bleue, ni barrée, ni comptée.
+ * Les cellules de nom (description, nomLu, imprime) ne restent une correction que si le nom imprimé a été LU autrement (mêmes mots à la casse, aux accents, à la ponctuation et à l'ordre près : pas lu autrement).
+ * `base` : les cellules du provisoire ; une cellule absente de la liste est restée celle de la base.
+ */
+export function sansTraductions<C extends { champ: string; avant: unknown; apres: unknown }>(cs: readonly C[], base: { description?: string; imprime?: { nom: string; variante?: string } } | undefined): C[] {
+  const NOM = ['description', 'nomLu', 'imprime'];
+  if (!cs.some(c => NOM.includes(c.champ))) return [...cs];
+  const imprimeDe = (v: { nom: string; variante?: string } | undefined, description: string | undefined) => (v ? [v.nom, v.variante].filter(Boolean).join(' ') : description ?? '');
+  const apresDe = <T,>(champ: string, repli: T): T => { const c = cs.find(x => x.champ === champ); return (c ? c.apres : repli) as T; };
+  const avant = imprimeDe(base?.imprime, base?.description);
+  const apres = imprimeDe(apresDe('imprime', base?.imprime), apresDe('description', base?.description));
+  return memesMots(avant, apres) ? cs.filter(c => !NOM.includes(c.champ)) : [...cs];
+}
+
+/** D328h : un prix ou un montant au repos : deux décimales au moins, davantage quand il en porte (« 9,50 », « 0,098 » reste). */
+export const decimalesAuRepos = (n: number | undefined): number => {
+  if (n === undefined || !Number.isFinite(n)) return 2;
+  return Math.max(2, (String(Math.round(n * 1e6) / 1e6).split('.')[1] ?? '').length);
+};
+
+/** D335 : le segment « Ingrédient | Service | Matériel » allume toujours l'un de ses trois mots ; une remise n'en montre aucun. */
+export type NatureSegment = 'ingredient' | 'service' | 'equipment';
+export function natureDuSegment(kind: PurchaseLineDraft['kind']): NatureSegment | undefined {
+  if (kind === 'discount') return undefined;
+  if (kind === 'ingredient') return 'ingredient';
+  if (kind === 'service' || kind === 'shipping') return 'service';
+  return 'equipment'; // equipment, packaging, cleaning, maintenance, other
+}
+
+/** D334 : un champ qui manque à la rangée, et le mot court qui le nomme au plateau. */
+export interface ChampARemplir { champ: 'quantite' | 'unite' | 'prix' | 'montant' | 'article' | 'libelle'; mot: string }
+export function champsARemplir(conf: ConfianceLigne, o: { libelleVide: boolean; ingredient: boolean }): ChampARemplir[] {
+  return [
+    ...(o.libelleVide ? [{ champ: 'libelle' as const, mot: 'libellé à remplir' }] : []),
+    ...(conf.quantite.niveau === 'inconnu' ? [{ champ: 'quantite' as const, mot: 'quantité à remplir' }] : []),
+    ...(conf.unite.niveau === 'inconnu' ? [{ champ: 'unite' as const, mot: 'unité à remplir' }] : []),
+    ...(conf.prix.niveau === 'inconnu' ? [{ champ: 'prix' as const, mot: 'prix à remplir' }] : []),
+    ...(conf.montant.niveau === 'inconnu' ? [{ champ: 'montant' as const, mot: 'montant à remplir' }] : []),
+    ...(o.ingredient && conf.article.niveau === 'inconnu' ? [{ champ: 'article' as const, mot: 'article à choisir' }] : []),
+  ];
+}
+
+/**
+ * D329 : un changement de la 3e lecture encore à trancher, dans l'ordre du papier : une ligne pas retrouvée, une valeur corrigée, une ligne ajoutée, un désaccord qui pèse.
+ * `mot` : ce que dit le bandeau (« pas retrouvée », « nom corrigé », « ajoutée », « désaccord »).
+ */
+export type Changement =
+  | { type: 'perdue'; cle: string; id: string; mot: string }
+  | { type: 'corrigee'; cle: string; id: string; mot: string }
+  | { type: 'ajoutee'; cle: string; id: string; mot: string }
+  | { type: 'desaccord'; cle: string; id: string; mot: string };
+
+/** « nom corrigé », « quantité corrigée », « prix corrigé », « montant corrigé », ou « 2 valeurs corrigées ». */
+export function motDeCorrection(champs: { qte: boolean; prix: boolean; montant: boolean; nom: boolean }): string {
+  const dits = [champs.nom ? 'nom corrigé' : '', champs.qte ? 'quantité corrigée' : '', champs.prix ? 'prix corrigé' : '', champs.montant ? 'montant corrigé' : ''].filter(Boolean);
+  return dits.length === 1 ? dits[0] : `${dits.length} valeurs corrigées`;
 }

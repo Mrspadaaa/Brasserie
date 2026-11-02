@@ -147,7 +147,7 @@ describe('son choix 2 D : une ligne que la 3.8 ne lit plus', () => {
     expect(barree).not.toBeNull(); expect(barree.textContent).toMatch(/Avoine maltée/); expect(barree.querySelector('.line-through')).not.toBeNull();
     expect(lignes(view)).toHaveLength(7); // hors du brouillon : ni sommes, ni compte
     const bandeau = view.container.querySelector<HTMLElement>('[data-dp="perdues"]')!;
-    expect(bandeau.textContent).toMatch(/Avoine maltée/); expect(bandeau.textContent).toMatch(/pas retrouvée/); expect(bandeau.textContent).not.toMatch(/Tout valider/); // une seule ligne : « Garder » et « Retirer » à côté du nom
+    expect(bandeau.textContent).toMatch(/Avoine maltée/); expect(bandeau.textContent).toMatch(/pas retrouvée/); expect(bandeau.textContent).toMatch(/Tout valider/); // D329 : la file compte aussi les 3 corrections (4 éléments)
     expect(within(bandeau).getByRole('button', { name: /Garder/ })).toBeEnabled(); expect(within(bandeau).getByRole('button', { name: /Retirer/ })).toBeEnabled();
     expect(principal(view)).toBeEnabled();
     expect(view.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/4\s*corrigées/); // 3 + la ligne qui attend
@@ -161,7 +161,7 @@ describe('son choix 2 D : une ligne que la 3.8 ne lit plus', () => {
     await waitFor(() => expect(garde.view.container.querySelector('[data-dp="perdues"]')).not.toBeNull());
     fireEvent.click(within(garde.view.container.querySelector<HTMLElement>('[data-dp="perdues"]')!).getByRole('button', { name: /Garder/ }));
     await waitFor(() => expect(ligne(garde.view, 'line-4')).not.toBeNull());
-    expect(garde.view.container.querySelector('[data-dp-perdue]')).toBeNull(); expect(garde.view.container.querySelector('[data-dp="perdues"]')).toBeNull();
+    expect(garde.view.container.querySelector('[data-dp-perdue]')).toBeNull(); expect(garde.view.container.querySelector('[data-dp="perdues"]')!.textContent).not.toMatch(/Avoine/); // D329 : les corrections suivent
     expect(lignes(garde.view)).toHaveLength(8);
     expect(ligne(garde.view, 'line-4')!.textContent).toMatch(/Avoine maltée/);
     expect(garde.view.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/3\s*corrigées/);
@@ -169,7 +169,7 @@ describe('son choix 2 D : une ligne que la 3.8 ne lit plus', () => {
     const retire = await lire('perdue'); await screen.findByRole('region', { name: 'Vérification du justificatif' }); await retire.arrive();
     await waitFor(() => expect(retire.view.container.querySelector('[data-dp="perdues"]')).not.toBeNull());
     fireEvent.click(within(retire.view.container.querySelector<HTMLElement>('[data-dp="perdues"]')!).getByRole('button', { name: /Retirer/ }));
-    await waitFor(() => expect(retire.view.container.querySelector('[data-dp="perdues"]')).toBeNull());
+    await waitFor(() => expect(retire.view.container.querySelector('[data-dp="perdues"]')!.textContent).not.toMatch(/Avoine/));
     expect(retire.view.container.querySelector('[data-dp-perdue]')).toBeNull(); expect(ligne(retire.view, 'line-4')).toBeNull(); expect(lignes(retire.view)).toHaveLength(7);
   });
 });
@@ -180,16 +180,16 @@ describe('« Tout valider » (sa maquette B, D316) à deux lignes', () => {
     await screen.findByRole('region', { name: 'Vérification du justificatif' }); await arrive();
     const bandeau = () => view.container.querySelector<HTMLElement>('[data-dp="perdues"]')!;
     await waitFor(() => expect(bandeau()).not.toBeNull());
-    expect(bandeau().textContent).toMatch(/Avoine maltée/); expect(bandeau().querySelector('[data-dp-perdue-rang]')?.textContent).toBe('1/2'); expect(within(bandeau()).getByRole('button', { name: /Tout valider/ })).toBeEnabled();
+    expect(bandeau().textContent).toMatch(/Avoine maltée/); expect(bandeau().querySelector('[data-dp-perdue-rang]')?.textContent).toBe('1/5'); expect(within(bandeau()).getByRole('button', { name: /Tout valider/ })).toBeEnabled();
     expect(view.container.querySelectorAll('[data-dp-perdue]')).toHaveLength(2);
     expect(view.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/5\s*corrigées/); // 3 + 2
     fireEvent.click(within(bandeau()).getByRole('button', { name: /Garder/ }));
     await waitFor(() => expect(bandeau().textContent).toMatch(/Amarillo/));
-    expect(bandeau().querySelector('[data-dp-perdue-rang]')?.textContent).toBe('2/2'); expect(within(bandeau()).getByRole('button', { name: /Tout valider/ })).toBeEnabled();
+    expect(bandeau().querySelector('[data-dp-perdue-rang]')?.textContent).toBe('2/5'); expect(within(bandeau()).getByRole('button', { name: /Tout valider/ })).toBeEnabled();
     expect(ligne(view, 'line-4')).not.toBeNull(); expect(lignes(view)).toHaveLength(8);
     expect(view.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/4\s*corrigées/);
     fireEvent.click(within(bandeau()).getByRole('button', { name: /Retirer/ }));
-    await waitFor(() => expect(view.container.querySelector('[data-dp="perdues"]')).toBeNull());
+    await waitFor(() => expect(view.container.querySelector('[data-dp="perdues"]')!.textContent).not.toMatch(/Amarillo/));
     expect(view.container.querySelector('[data-dp-perdue]')).toBeNull(); expect(lignes(view)).toHaveLength(8);
   });
   it('« Tout valider » : toutes les lignes pas retrouvées partent d’un toucher', async () => {
@@ -222,7 +222,7 @@ describe('E12, E13 : sans 3.8 et 3.8 en échec', () => {
     await screen.findByRole('region', { name: 'Vérification du justificatif' }); await arrive();
     await waitFor(() => expect(view.container.querySelector('[data-dp="fil"]')).toBeNull());
     expect(view.container.querySelector('[data-va="corrigees"]')).toBeNull();
-    expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).toMatch(/2 lectures/);
+    expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).toMatch(/2[/]2/);
     expect(view.container.querySelector('[data-dp-chip]')?.getAttribute('aria-label') ?? '').not.toBe('');
     expect(view.container.textContent).toMatch(/Lecture coupée/);
     expect(principal(view)).toBeEnabled();
@@ -245,7 +245,7 @@ describe('E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de part
     await arrive();
     await waitFor(() => expect(view.container.querySelector('[data-dp="fil"]')).toBeNull());
     expect(principal(view)).toBeEnabled();
-    expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).toMatch(/2 lectures/); expect(view.container.textContent).toMatch(/Lecture coupée/);
+    expect(view.container.querySelector('[data-dp="preuve"]')!.textContent).toMatch(/2[/]2/); expect(view.container.textContent).toMatch(/Lecture coupée/);
     expect(view.container.querySelector('[data-va="corrigees"]')).toBeNull(); expect(lignes(view)).toHaveLength(7); // ses lignes et ses saisies restent
   });
   it('une erreur levée après le morceau ne laisse jamais le bouton gris', async () => {

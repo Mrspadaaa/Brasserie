@@ -82,6 +82,8 @@ export interface LigneBande {
   niveau?: Niveau;
   /** Une ligne hors stock sans quantité (un service, une remise) : sans objet pour les quantités de la bande, jamais un « ? ». */
   sansQuantite?: boolean;
+  /** D328b : la nature de la ligne ne passe pas en stock (service, port, remise, entretien, divers…). Sans unité lisible, sa quantité est « sans objet » pour l'en-tête : jamais un « ? ». */
+  horsStock?: boolean;
 }
 /** `niveau` : le pire des lignes additionnées (`repris` : au moins une unité déduite, le sous-total se marque en jaune). */
 export interface QteGroupe { unite: string; n: number; inconnue: boolean; niveau?: Niveau }
@@ -108,12 +110,14 @@ const arrondi = (n: number) => Math.round(n * 1e6) / 1e6;
  * Les quantités d'une bande. D277 (« 7 Kg + 100 g » → « 7,1 Kg ») : les unités d'une même grandeur (masse, volume) s'additionnent dans l'unité la plus
  * présente quand chaque conversion est exacte (au millionième) ; les pièces ne s'additionnent qu'à unité égale (« Stk » et « sachet » restent à part).
  */
+/** Une ligne dont la quantité ne compte pas dans l'en-tête : sans quantité hors stock, ou hors stock sans unité (D328b : rien d'inconnu, donc aucun « ? »). */
+const horsCompte = (l: LigneBande): boolean => l.sansQuantite === true || (l.horsStock === true && (!l.uniteLisible || l.quantity === undefined));
 function quantites(lignes: readonly LigneBande[]): QteGroupe[] {
   type Forme = { q: number; lignes: number; ordre: number };
   const parGrandeur = new Map<string, { formes: Map<string, Forme>; niveau: Niveau }>();
   let inconnu = 0, ordre = 0;
   for (const l of lignes) {
-    if (l.sansQuantite) continue;
+    if (horsCompte(l)) continue;
     if (!l.uniteLisible || l.quantity === undefined) { inconnu += l.quantity ?? 0; continue; }
     const cle = linkUnit(l.unit), famille = Units.familyOf(cle), g = famille === 'piece' ? `piece:${cle}` : famille;
     const e = parGrandeur.get(g) ?? { formes: new Map<string, Forme>(), niveau: 'sur' as Niveau };
@@ -134,7 +138,7 @@ function quantites(lignes: readonly LigneBande[]): QteGroupe[] {
     if (formes.length > 1 && exacts) sortie.push({ unite: cible, n: arrondi(convertis.reduce<number>((s, c) => s + (c as number), 0)), inconnue: false, ...niveau });
     else for (const [forme, f] of formes) sortie.push({ unite: forme, n: arrondi(f.q), inconnue: false, ...niveau });
   }
-  const aPart = lignes.some(l => !l.sansQuantite && (!l.uniteLisible || l.quantity === undefined));
+  const aPart = lignes.some(l => !horsCompte(l) && (!l.uniteLisible || l.quantity === undefined));
   if (aPart) sortie.push({ unite: '?', n: Math.round(inconnu * 1e6) / 1e6, inconnue: true, niveau: 'inconnu' });
   return sortie;
 }
@@ -205,26 +209,26 @@ export function poserGroupe(choix: ChoixGroupes, bande: string, nom: string, ouv
 }
 const reglerTous = (liste: readonly Bande[], choix: ChoixGroupes, ouvert: boolean, bande?: string): ChoixGroupes => {
   const m = new Map(choix);
-  // « Plié » garde ouvert un groupe qui porte une ligne à vérifier (D311, sa maquette E) ; « Déplié » ouvre tout.
-  for (const b of liste) if (!bande || b.cle === bande) for (const sg of b.sousGroupes ?? []) if (pliable(sg)) m.set(cleGroupe(b.cle, sg.nom), ouvert || sg.averifier);
+  // D333 : « Plié » ferme TOUS les groupes, même celui qui porte une ligne à voir (son en-tête garde le compte et la couleur) ; « Déplié » ouvre tout.
+  for (const b of liste) if (!bande || b.cle === bande) for (const sg of b.sousGroupes ?? []) if (pliable(sg)) m.set(cleGroupe(b.cle, sg.nom), ouvert);
   return m;
 };
 /**
- * D311 (« Plié », son choix E) : tous les sous-groupes pliables, de toutes les bandes ou d'une seule (`bande`), repliés, SAUF un groupe qui porte une ligne à vérifier,
- * qui reste ouvert. Un raccourci : rien n'est figé, chaque groupe se rouvre ou se referme ensuite d'un toucher (`poserGroupe`), celui d'une ligne à vérifier aussi.
+ * D311, D333 (« Plié », son choix E) : tous les sous-groupes pliables, de toutes les bandes ou d'une seule (`bande`), repliés, sans exception. Un raccourci : rien n'est figé,
+ * chaque groupe se rouvre ou se referme ensuite d'un toucher (`poserGroupe`).
  */
 export const toutPlier = (liste: readonly Bande[], choix: ChoixGroupes, bande?: string): ChoixGroupes => reglerTous(liste, choix, false, bande);
 /** « Déplié » : tous les sous-groupes pliables, de toutes les bandes ou d'une seule, ouverts. */
 export const toutDeplier = (liste: readonly Bande[], choix: ChoixGroupes, bande?: string): ChoixGroupes => reglerTous(liste, choix, true, bande);
 /**
  * D311 : l'état du segment « Plié | Déplié », CALCULÉ sur l'état réel des groupes (`groupeOuvert`, rangées forcées comprises), jamais gardé : `plie` quand chaque
- * sous-groupe pliable est dans l'état que « Plié » produit (replié, ou ouvert s'il porte une ligne à vérifier), `deplie` quand tous sont ouverts, aucun des deux sinon
+ * sous-groupe pliable est replié (D333 : même celui d'une ligne à vérifier), `deplie` quand tous sont ouverts, aucun des deux sinon
  * (état mêlé). `visible` : au moins un sous-groupe pliable dans les bandes (sinon le segment n'a rien à plier).
  */
 export function etatSegment(liste: readonly Bande[], choix: ChoixGroupes, forces?: ReadonlySet<string>): { visible: boolean; plie: boolean; deplie: boolean } {
   const pl = liste.flatMap(b => (b.sousGroupes ?? []).filter(pliable).map(sg => ({ bande: b.cle, sg, ouvert: groupeOuvert(b.cle, sg, choix, forces) })));
   if (!pl.length) return { visible: false, plie: false, deplie: false };
-  return { visible: true, plie: pl.every(x => x.ouvert === x.sg.averifier), deplie: pl.every(x => x.ouvert) };
+  return { visible: true, plie: pl.every(x => !x.ouvert), deplie: pl.every(x => x.ouvert) };
 }
 /** « 18 Kg », « 270 g + 30 ? » : le texte de la colonne des quantités d'un sous-total. */
 export const texteQte = (q: readonly QteGroupe[]): string => q.map(e => (e.inconnue ? `${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?` : `${String(e.n).replace('.', ',')} ${e.unite === 'sachet' && e.n > 1 ? 'sachets' : e.unite}`)).join(' + ');

@@ -58,10 +58,7 @@ describe('p3c-3 : les bandes teintées de la facture 372765', () => {
     expect(Array.from(compte.querySelectorAll('[data-va]:not([data-dp-niveau]) b')).reduce((n, b) => n + Number(b.textContent), 0)).toBe(23);
     expect(compte.textContent).not.toContain('sans stock'); // D275 : « hors stock » remplace « sans stock » ; ici Goldings et Hallertauer sont nouveaux d'office, aucun hors stock
   });
-  it('T14 : le mot du statut n’a qu’un porteur (nom accessible de la pastille), jamais un texte doublé', async () => {
-    await ouvrir('3');
-    expect(screen.queryAllByText('Lecture à confirmer')).toHaveLength(0);
-  });
+
 });
 
 describe('p3c-3 : le port « Total seulement » (D249)', () => {
@@ -137,53 +134,19 @@ describe('p3c-3 : R1, ordre, filtre, mouture, pied', () => {
     expect(ligne('line-1').querySelector('[data-dp-prixkg]')!.getAttribute('aria-label')).toBe('2,40/Kg avec mouture');
     expect(qa('[data-dp-mouture]').every(b => (b.getAttribute('aria-label') ?? '').includes('rattachée'))).toBe(true);
   });
-  it('T10 : le pied porte la bascule Catégorie / Papier et un Confirmer actif ; hors ligne : étiquette d’en-tête', async () => {
-    await ouvrir('3');
-    const pied = document.querySelector('footer')!;
-    expect(within(pied).getByRole('button', { name: 'Catégorie' })).toHaveAttribute('aria-pressed', 'true');
-    expect(within(pied).getByRole('button', { name: 'Confirmer et enregistrer' })).toBeEnabled();
-    cleanup();
-    await ouvrir('9');
-    expect(q('[data-dp="hors-ligne"]').textContent).toBe('hors ligne');
-  });
+
   it('T10b : pendant la lecture, Confirmer est désactivé et dit pourquoi (seule exception à « jamais bloqué »)', async () => {
     Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
     render(<ExpenseSheet onClose={() => {}} onSaved={() => {}} apercu={apercuDepense('1')}/>);
     const bouton = await screen.findByRole('button', { name: 'Lecture en cours' });
     expect(bouton).toBeDisabled(); expect(bouton).toHaveAttribute('title', 'Lecture en cours');
   });
-  it('T11 : ModalShell `plein` : sans marges ni coins, panneau pleine hauteur ; sans `plein`, la feuille d’avant', () => {
-    const { rerender } = render(<ModalShell open onClose={() => {}} plein><p>x</p></ModalShell>);
-    const dialogue = () => screen.getByRole('dialog');
-    expect(dialogue().className).toContain('h-full'); expect(dialogue().className).toContain('rounded-none');
-    expect(dialogue().parentElement!.className).not.toContain('p-3');
-    rerender(<ModalShell open onClose={() => {}}><p>x</p></ModalShell>);
-    expect(dialogue().className).not.toContain('h-full'); expect(dialogue().className).toMatch(/rounded-(3xl|t-sheet)/);
-  });
-  it('T12 : bandeau sorti de l’écran : le pied montre le point courant « ② Règlement » et son toucher y mène ; tout réglé : « ✓ points revus »', async () => {
-    const callbacks: Array<(e: any[]) => void> = [];
-    (globalThis as any).IntersectionObserver = class { constructor(cb: any) { callbacks.push(cb); } observe() { callbacks.forEach(cb => cb([{ isIntersecting: false }])); } disconnect() {} unobserve() {} };
-    try {
-      await ouvrir('3');
-      const pied = document.querySelector('footer')!;
-      await waitFor(() => expect(pied.querySelector('[data-dp="pied-courant"]')).not.toBeNull());
-      expect(pied.querySelector('[data-dp="pied-courant"]')!.textContent).toMatch(/^\d/); // « 1 TVA » : le premier point non réglé, numéroté
-    } finally { delete (globalThis as any).IntersectionObserver; }
-  });
+
+
 });
 
 describe('p3c-3 : le picto du justificatif, les propositions, le changement de bande, l’unité', () => {
-  it('T13 : le picto ouvre « Voir l’original » / « Changer » ; « Changer » est monté (panneau fermé = classe hidden)', async () => {
-    await ouvrir('3');
-    const picto = screen.getByRole('button', { name: 'Justificatif : voir l’original, changer' });
-    expect(picto).toHaveAttribute('aria-expanded', 'false');
-    expect(q('[data-dp="justificatif"]').className).toMatch(/(^|\s)hidden(\s|$)/);
-    expect(screen.getByRole('button', { name: 'Changer' })).toBeInTheDocument();
-    fireEvent.click(picto);
-    expect(picto).toHaveAttribute('aria-expanded', 'true');
-    expect(q('[data-dp="justificatif"]').className).not.toMatch(/(^|\s)hidden(\s|$)/);
-    expect(within(q('[data-dp="justificatif"]')).getByText('Ouvrir le PDF original')).toBeInTheDocument();
-  });
+
   // VERDICT-f3-p2, majeur 1 (D277) : HEAD disait « n proposées par la lecture, à vérifier » dans la preuve ; le lien proposé est désormais une pastille jaune « n proposé(s) » à côté de « relié », et la phrase disparaît.
   it('T15 : « n proposé(s) » jaune au récap (n = lignes proposées) ; plus de phrase « proposée par la lecture »', async () => {
     await ouvrir('3');

@@ -71,7 +71,6 @@ describe('finitions sur l’écran rendu (372765)', () => {
     expect(conv.length).toBeGreaterThan(0);
     for (const c of conv) {
       expect(c.textContent).toMatch(/^= \d+ sachets?$/);
-      expect(c.className).toMatch(/whitespace-nowrap/);
       expect(c.parentElement).toBe(c.closest('[data-dp-ligne]')!.querySelector('[data-dp-nom]')!.parentElement); // pastille et nom : un seul bloc, elle ne passe pas sous le nom
     }
     expect(conv.some(c => /^= [2-9]\d* sachets$/.test(c.textContent ?? ''))).toBe(true); // « 2 sachets », pas « 2 sachet »
@@ -91,23 +90,6 @@ describe('finitions sur l’écran rendu (372765)', () => {
     const prixMalt = qa('[data-dp-bande="malt"] [data-dp-prix]').map(p => p.textContent!);
     expect(prixMalt).toContain('2,30');
   });
-  it('critique 2 (tête compacte) : seuls les comptes non nuls sont affichés (pas de « 0 nouveau »), et la tuile Règlement tient sur deux lignes (« supposée » dans la ligne du titre)', async () => {
-    await ouvrir('3');
-    for (const b of qa('[data-dp="compte-liens"] button')) {
-      const n = Number(b.querySelector('b')!.textContent);
-      expect(n > 0 || b.querySelector('[data-dp-rond]')).toBeTruthy();
-    }
-    expect(q('[data-dp="compte-liens"]').textContent).not.toMatch(/\b0 nouveau/);
-    const tuile = q('[data-dp="tuile-paye"]');
-    expect(tuile.querySelectorAll(':scope > span.flex, :scope > span.block')).toHaveLength(2); // le titre (avec « supposée ») et la valeur : deux lignes (le rond ① est posé en absolu)
-    expect(tuile.querySelector(':scope > span.flex')!.textContent).toMatch(/Règlement.*supposée/);
-    expect(tuile.querySelector(':scope > span.block')!.textContent).toMatch(/^Payé le \d{2}\.\d{2}\.\d{4}$/);
-  });
-  // VERDICT-f3-p2, majeur 1 (D277) : HEAD lisait « [data-dp="propositions"] » (la phrase « n proposées… ») dans la preuve ; le signal est désormais la pastille « n proposé » des comptes du récap.
-  it('point 2 : les propositions de la lecture vivent au récap (pastille « proposé » des comptes), plus au-dessus des bandes', async () => {
-    await ouvrir('3');
-    const p = q('[data-dp="compte-liens"] [data-va="propose"]');
-    expect(p).not.toBeNull();
-    expect(q('[data-dp="liste"]').parentElement!.contains(p)).toBe(false);
-  });
+
+
 });

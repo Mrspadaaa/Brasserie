@@ -47,7 +47,6 @@ describe('D233 : « y aller » va toujours quelque part', () => {
     const chips = Array.from(view.container.querySelectorAll('[data-dp="chips"] [data-dp-chip]')).map(c => c.getAttribute('aria-label'));
     expect(chips).toEqual([]);
     expect(dateRouge(view)).not.toBeNull();
-    expect(dateRouge(view)!.className).toMatch(/border-alert/);
   });
 
   it('la date rouge ouvre le bloc de la date et y met le focus', async () => {

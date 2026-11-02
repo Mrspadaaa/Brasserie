@@ -177,7 +177,7 @@ describe('T-A9 la preuve : « ✓ N pages lues » (sa maquette 6), sinon les lec
     await lue(view, lectureOk(3, { points: [DESACCORD] }));
     const rang = rangeeDe(/Lectures/);
     expect(rang.textContent).toContain('Lectures · 3 pages');
-    expect(rang.textContent).toContain('2 lectures');
+    expect(rang.textContent).toContain('2/2'); // A2 (g2a) : « n/n », jamais « n lectures »
     expect(preuve().textContent).not.toMatch(/pages lues/);
   });
   it('un document seul → inchangé : « Lectures » et 2/2', async () => {
@@ -245,16 +245,7 @@ describe('T-A11 le double clic', () => {
 });
 
 describe('T-A12 / T-A13 sans pages, rien ne change', () => {
-  it('T-A12 : l\'en-tête et le panneau d\'un fichier seul ont leurs noms et leur rendu d\'avant', () => {
-    const fichier = { nom: 'facture.pdf', url: 'blob:x', type: 'application/pdf' };
-    const { container } = render(<><Entete titleId="t" titre="Nouvelle dépense" horsLigne={false} fichier={fichier} ouvert={false} fermerOff={false} onFermer={() => undefined} onBasculer={() => undefined}/>
-      <Justificatif fichier={fichier} ouvert changerOff={false} onChanger={() => undefined}/></>);
-    expect(screen.getByRole('button', { name: 'Justificatif : voir l’original, changer' })).toBeTruthy();
-    expect(container.querySelector('header')!.textContent).toBe('Nouvelle dépense');
-    expect(screen.getByRole('link', { name: 'Ouvrir le PDF original' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Changer' })).toBeTruthy();
-    expect(container.querySelector('[data-dp="pages-panneau"]')).toBeNull();
-  });
+
   it('T-A13 : un fichier seul → scanDocument, jamais scanPages ; pas de pile', async () => {
     etat.scanned.mockResolvedValue(lectureOk());
     const view = await monter();

@@ -26,6 +26,8 @@ export interface LigneP3cProps {
   corrigee?: { qte?: boolean; prix?: boolean; montant?: boolean; nom?: boolean; avant: string };
   /** Lenteur D, son choix 1 B (`choix-lignes-38/q1-b`) : une ligne que la 3.8 ajoute : toute la rangée sur le bleu des corrections, un ↻ devant le nom, aucune ancienne valeur. */
   neuve?: boolean;
+  /** D2 (sa maquette `p3c-3-renvoi`) : sous un filtre, chaque rangée gardée est sur fond jaune avec un bord. */
+  filtree?: boolean;
 }
 
 const stop = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); };
@@ -40,7 +42,7 @@ export function LigneP3c(p: LigneP3cProps) {
   const mout = p.boutonMouture, n = p.niveaux, c = p.corrigee;
   const titre = n.raisons.length ? n.raisons.join(' · ') : undefined;
   return <article data-purchase-line data-dp-ligne={p.id} data-dp-groupe={p.groupe} hidden={p.masquee} {...(p.neuve ? { 'data-dp-neuve': '1' } : {})} {...(c ? { 'data-dp-corrigee': '1' } : {})}
-    className={`dp-p3c-li scroll-mt-9 border-b border-cave-800 ${p.boutonMouture ? "" : BARRE[p.groupe]} ${p.neuve ? 'bg-area-finances/10' : p.douteux ? (p.fixNiveau === 'inconnu' ? 'bg-alert/5' : 'bg-attention/5') : ''} ${p.garde ? 'dp-p3c-garde' : ''}`}>
+    className={`dp-p3c-li scroll-mt-9 border-b border-cave-800 ${p.boutonMouture ? "" : BARRE[p.groupe]} ${p.neuve ? 'bg-area-finances/10' : p.douteux ? (p.fixNiveau === 'inconnu' ? 'bg-alert/5' : 'bg-attention/5') : ''} ${p.garde ? 'dp-p3c-garde' : ''} ${p.filtree ? 'bg-attention/15 shadow-[inset_0_0_0_1.5px_rgb(var(--attention))]' : ''}`} {...(p.filtree ? { 'data-dp-filtree': '1' } : {})}>
     <details data-dp-plateau open={p.ouverte} onToggle={e => p.onToggle(p.id, (e.currentTarget as HTMLDetailsElement).open)}>
       <summary title={titre} className="dp-p3c-r relative list-none cursor-pointer flex items-center gap-1.5 px-2.5 min-h-7">
         {p.numeroPapier !== undefined ? <span data-dp-numero className="w-[18px] text-right font-mono text-xs text-cave-400">{p.numeroPapier}</span> : null}
@@ -48,7 +50,7 @@ export function LigneP3c(p: LigneP3cProps) {
         <span className="min-w-0 flex-1 flex flex-wrap items-center gap-x-1.5 py-0.5">
           {/* Le nom et sa pastille d'équivalence forment un seul bloc : le nom se coupe entre deux mots (deux lignes au plus), la pastille « = 2 sachets » reste à sa droite. */}
           {mout ? null : <span className="flex min-w-0 items-center gap-x-1.5">
-            <b data-dp-nom {...niveau(n.nom)} className={`dp-p3c-nom min-w-0 text-sm font-normal leading-tight ${p.neuve ? 'text-area-finances' : n.nom === 'sur' ? 'text-cave-50' : n.nom === 'inconnu' ? 'text-alert underline decoration-dashed decoration-alert underline-offset-2' : MARQUE[n.nom]}`}>{p.neuve ? <RefreshCw size={14} strokeWidth={2.2} aria-label="ligne ajoutée par la 3e lecture" role="img" className="mr-1 inline shrink-0 align-[-2px]"/> : null}{p.nom || 'Ligne sans libellé'}</b>
+            <b data-dp-nom {...niveau(n.nom)} className={`dp-p3c-nom min-w-0 text-sm font-normal leading-tight ${p.neuve ? 'text-area-finances' : n.nom === 'sur' ? 'text-cave-50' : MARQUE[n.nom]}`}>{p.neuve ? <RefreshCw size={14} strokeWidth={2.2} aria-label="ligne ajoutée par la 3e lecture" role="img" className="mr-1 inline shrink-0 align-[-2px]"/> : null}{p.nom || 'Ligne sans libellé'}</b>
             {p.conversion ? <span data-dp-conversion className="shrink-0 whitespace-nowrap rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-cave-200">{pastilleConversion(p.conversion)}</span> : null}</span>}
           {mout ? <span data-dp-nom className="sr-only">{p.nom}</span> : null}
           {mout ? <button type="button" data-dp-mouture={mout.attr ? p.id : undefined} data-dp-mouture-plateau={mout.attr ? undefined : p.id} aria-label={`${mout.liee ? 'Détacher la mouture de' : 'Rattacher la mouture à'} ${mout.parent}`}

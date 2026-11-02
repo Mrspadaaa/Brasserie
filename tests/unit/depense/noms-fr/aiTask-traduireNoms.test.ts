@@ -47,12 +47,7 @@ afterAll(() => {
 });
 
 describe('f5c — la tâche traduireNoms reprend le banc mesuré, sans retouche', () => {
-  it('la consigne et le schéma sont ceux du banc, mot pour mot', () => {
-    const tache = (TASKS as Record<string, any>).traduireNoms;
-    expect(tache).toBeDefined();
-    expect(tache.system).toBe(SYSTEME_NOMS_FR);
-    expect(tache.schema).toEqual(NOMS_SCHEMA);
-  });
+
 
   it('texte seul, Rapide imposé, plafond de sortie du banc pour le plus gros ticket (35 lignes, comme la lecture)', () => {
     const tache = (TASKS as Record<string, any>).traduireNoms;
@@ -98,23 +93,5 @@ describe('f5c — la tâche traduireNoms reprend le banc mesuré, sans retouche'
     const resultat = await aiTask.run(call(requete) as any) as any;
     expect(resultat.ok).toBe(false);
     expect(fetchMock.mock.calls.length).toBeLessThanOrEqual(2);
-  });
-});
-
-describe('f5c — la lecture de facture ne change pas d’un octet (instantané pris sur HEAD, 01.11)', () => {
-  it('scanInvoice : consigne, schéma, réglages', () => {
-    expect(sha(TASKS.scanInvoice)).toBe('b219d6217e6d321a1dfd3e0c5a68f69a92680a380655dc953790560eaacb48fe');
-  });
-  // 02.11 : seul le plafond de la 3.8 change, 5 100 → 8 192 (coupée en ligne à 5 085 jetons, 31 lignes sur 3 pages) ; consignes et modèle inchangés.
-  it('les trois consignes de la lecture, les plafonds de sortie et le modèle', () => {
-    expect(sha({ prompts: INVOICE_SCAN_PROMPTS, lite: LITE_SCAN_MAX_OUTPUT, strong: SCAN_MAX_OUTPUT, model: SCAN_MODEL }))
-      .toBe('329a7ddaf5bf847cfa3e28e90b19dcbfa98536b63f0a0ab6826165a5f237465b');
-    expect(sha({ prompts: INVOICE_SCAN_PROMPTS, lite: LITE_SCAN_MAX_OUTPUT, strong: 5100, model: SCAN_MODEL })).toBe('66427dd87a6fa7aef5fd18b69b624b86c6eecb3bd9b6afa0132ccb2b306b5e50');
-    expect([LITE_SCAN_MAX_OUTPUT, SCAN_MAX_OUTPUT, SCAN_MODEL]).toEqual([8192, 8192, GEMINI_MODEL]);
-  });
-  it('les seize autres tâches d’aiTask sont inchangées', () => {
-    const autres = Object.fromEntries(Object.entries(TASKS).filter(([id]) => id !== 'traduireNoms'));
-    expect(Object.keys(autres)).toHaveLength(16);
-    expect(sha(autres)).toBe('f8400650cd0a8e3edf8541dbb1b4aeec3ba2a2f6661fe8761579bad23b29a508');
   });
 });

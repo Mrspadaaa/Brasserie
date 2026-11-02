@@ -282,6 +282,22 @@ export interface EntreeFamille {
 const KIND_FAMILLE: Record<string, FamilleCle> = { equipment: 'materiel', maintenance: 'materiel', packaging: 'emballage', cleaning: 'nettoyage', service: 'service', shipping: 'autres', discount: 'autres' };
 /** Les familles d'ingrédient ne capturent pas une ligne dont la lecture dit qu'elle n'en est pas un. */
 const FAMILLES_INGREDIENT: ReadonlySet<FamilleCle> = new Set<FamilleCle>(['malt', 'houblon', 'levure', 'sucre', 'additif']);
+/** D328a : une famille d'ingrédient de brassage (malt, houblon, levure, sucre, additif) : ses règles d'unité ne changent pas. */
+export const estFamilleIngredient = (famille: FamilleCle): boolean => FAMILLES_INGREDIENT.has(famille);
+/**
+ * D328c : la famille a-t-elle une catégorie de stock (`STOCK_CATEGORIES`) ? Malt, houblon, levure, sucre, additif, emballage, nettoyage (CIP, désinfectant, détergent, sols)
+ * et consommable (EPI) en ont une ; matériel, rénovation, services et « Autres » n'en ont pas : leurs lignes n'entrent jamais en stock. Lu dans la table des catégories.
+ */
+export const familleAUnStock = (famille: FamilleCle): boolean => Object.values(FAMILLE_DE_CATEGORIE).includes(famille);
+/**
+ * D328c : la nature (`kind` du brouillon) que prend une ligne lue « stock » dont la famille n'est pas un ingrédient : nettoyage et consommable → `cleaning`, emballage →
+ * `packaging` (ces natures entrent en stock : un article déjà là se relie), matériel → `equipment`, services → `service`, « Autres » → `other` (rien en stock). La Rénovation garde
+ * `equipment` (D306, acquis : « Matériel » au sélecteur, ses tests) ; `other` si le brasseur le préfère : une seule ligne ici.
+ * Absent pour un ingrédient : la nature « ingredient » reste celle de la lecture.
+ */
+export const NATURE_DE_FAMILLE: Partial<Record<FamilleCle, 'cleaning' | 'packaging' | 'equipment' | 'service' | 'other'>> = {
+  nettoyage: 'cleaning', consommable: 'cleaning', emballage: 'packaging', materiel: 'equipment', service: 'service', renovation: 'equipment', autres: 'other',
+};
 const KINDS_HORS_INGREDIENT: ReadonlySet<string> = new Set(['equipment', 'maintenance', 'service', 'packaging', 'cleaning', 'shipping', 'discount']);
 
 export function familleDe(e: EntreeFamille): FamilleCle {

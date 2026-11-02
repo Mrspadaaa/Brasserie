@@ -14,6 +14,7 @@ import { lireOptions } from './optionsDuNom';
 import { libelleDeLigne, voisinEtMarque } from './etat';
 import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
 import { groupeDe } from './groupes';
+import { familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
 import type { StockItem } from '../../types';
 
 // Le point « lecture coupée » (R1) : recopié du serveur (`functions/src/invoiceVisionReview.ts`, `phraseCoupure`, `pointLectureCoupee`, `ajouterCoupure`) en fonctions pures, parce que ce module tire `invoiceScanCore`, `models` et `node:*`
@@ -56,15 +57,33 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
     const lu = libelleLu(item), nomLu = lireOptions(String(item.name ?? ''), item.variant ? String(item.variant) : undefined, String(item.unit ?? '')).base.trim().slice(0, 80);
     return { id: item.id, description: lu.description, ...(nomLu ? { nomLu } : {}), ...(lu.imprime ? { imprime: lu.imprime } : {}), kind: scanKind(item.kind), amount: result.currency === 'CHF' ? (item.amountTTC ?? undefined) : undefined, quantity: item.quantity ?? undefined, unit: item.unit, unitPrice: result.currency === 'CHF' ? (item.price ?? undefined) : undefined, stockAction: 'none' as const, equipmentAction: 'none' as const, stockCategory: item.stockCategory, sourceReference: item.reference, evidence: [item.reference ? `Réf. ${item.reference}` : '', lu.imprime ? `Imprimé : ${libelleDeLigne(item.name, item.variant)}` : '', item.evidence].filter(Boolean).join(' · ') };
   });
-  /* D306 : une ligne que la lecture dit « stock » (kind ingredient) et dont la famille est la Rénovation prend le kind « equipment » : aucun article. */
-  const estRenovation = (l: PurchaseLineDraft) => groupeDe(donneesDeLigne(ligneDeBrouillon({ ...l, unit: uniteEffective(l) }, result.vendor ?? undefined)).contexte, l.kind, l.description, l.stockCategory, undefined, result.category) === 'renovation';
-  const lues: PurchaseLineDraft[] = lues0.map(l => (l.kind === 'ingredient' && estRenovation(l) ? { ...l, kind: 'equipment' as const, stockAction: 'none' as const } : l));
-  /* D277 : l'unité absente se déduit avant le rapprochement ; l'imprimé reste vide (D213). */
   const existantsLus = sansCetteSaisie(stockItems, submissionId);
+  const familleDeLigne = (l: PurchaseLineDraft): FamilleCle => groupeDe(donneesDeLigne(ligneDeBrouillon({ ...l, unit: uniteEffective(l) }, result.vendor ?? undefined)).contexte, l.kind, l.description, l.stockCategory, undefined, result.category);
+  /* D328c : une famille SANS stock (matériel, rénovation, services, « Autres ») dont un article existe déjà au stock, relié par son nom (même produit) ou par la ressemblance que `matchStockLine`
+     retient, garde la ligne en ingrédient (liée à lui : le lien d'un article du brasseur ne se perd pas). Les familles AVEC stock (nettoyage, emballage, consommable) prennent leur nature
+     (cleaning, packaging) : le rapprochement qui suit relie le même article, pour ces natures aussi. */
+  const dejaAuStock = (l: PurchaseLineDraft, famille: FamilleCle): boolean => {
+    if (familleAUnStock(famille)) return false;
+    const unit = uniteEffective(l);
+    if (regleProduit(ligneDeBrouillon({ ...l, unit }, result.vendor ?? undefined), existantsLus).cas === 'meme') return true;
+    return STOCK_LINE_PROPOSALS_ENABLED && matchStockLine({ description: l.description, unit, quantity: l.quantity, vendor: result.vendor ?? undefined, stockCategory: l.stockCategory, reference: l.sourceReference, kind: l.kind, ...(l.nomLu ? { nomLu: l.nomLu } : {}) }, stockItems as StockItem[]) !== undefined;
+  };
+  /* D306, D328c : une ligne que la lecture dit « stock » (kind ingredient) prend la nature de sa famille quand ce n'est pas un ingrédient (`NATURE_DE_FAMILLE` : nettoyant → cleaning, emballage → packaging,
+     matériel et rénovation → equipment, inclassable → other) : la bande et le type d'achat disent la même chose. Sans catégorie de stock (matériel, rénovation, services, « Autres »), aucun article, et
+     jamais de « nouvel article » d'office (nettoyage et emballage non plus : seul un article déjà là se relie). Exceptions : un article déjà au stock la garde en ingrédient (familles sans stock) ;
+     une ligne « Autres » d'une dépense de brassage (un adjuvant que nul mot ne classe) reste un ingrédient, jamais perdue. */
+  const lues: PurchaseLineDraft[] = lues0.map(l => {
+    if (l.kind !== 'ingredient') return l;
+    const famille = familleDeLigne(l), nature = NATURE_DE_FAMILLE[famille];
+    if (!nature || (famille === 'autres' && result.category === 'brassage') || dejaAuStock(l, famille)) return l;
+    return { ...l, kind: nature, stockAction: 'none' as const };
+  });
+  /* D277 : l'unité absente se déduit avant le rapprochement ; l'imprimé reste vide (D213). */
   const deduites = avecUnitesDeduites({ lines: lues, vendor: result.vendor ?? '', amount: total.amount, category: result.category }, stockItems as StockItem[]).lines;
   const lines = deduites.map(line => {
     const unit = uniteEffective(line);
-    if (groupeDe(donneesDeLigne(ligneDeBrouillon({ ...line, unit }, result.vendor ?? undefined)).contexte, line.kind, line.description, line.stockCategory, undefined, result.category) === 'renovation') return { ...line, stockAction: 'none' as const };
+    /* D306 : une ligne de Rénovation (lue emballage, nettoyage…) ne se relie à rien ; D328c : un ingrédient qui est resté tel (article déjà au stock) suit le rapprochement. */
+    if (line.kind !== 'ingredient' && familleDeLigne({ ...line, unit }) === 'renovation') return { ...line, stockAction: 'none' as const };
     const match = STOCK_LINE_PROPOSALS_ENABLED && (STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind) ? matchStockLine({ description: line.description, unit, quantity: line.quantity, vendor: result.vendor ?? undefined, stockCategory: line.stockCategory, reference: line.sourceReference, kind: line.kind, ...(line.nomLu ? { nomLu: line.nomLu } : {}) }, stockItems as StockItem[]) : undefined;
     if (!match) {
       const voisin = (STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind) ? voisinEtMarque({ ...line, unit }, stockItems, result.vendor ?? undefined) : undefined;
@@ -211,7 +230,8 @@ export function libelleAvant(base: CellulesLigne, corrections: readonly Pick<Cor
   /* e-finitions (mineur 2) : quand la quantité d'aujourd'hui n'est ni la lue ni une correction, elle est la sienne : le barré ne montre alors que le prix (« × 1,45 »), jamais un produit qui n'a pas existé (« 12 Kg × 1,45 »). */
   const qteLaSienne = !qteCorrigee && courant !== undefined && !(memes(courant.quantity, base.quantity) && (courant.unit ?? '') === (base.unit ?? ''));
   const ligne = { quantity: base.quantity, unit: base.unit ?? '', uniteDeduite: base.uniteDeduite } as PurchaseLineDraft;
-  const qte = qteLaSienne ? '' : texteQuantite(ligne, uniteEffective(ligne), true).replace(/^$/, '?');
+  // Le barré dit « ? » pour une unité ou une quantité qui n'était pas lue : `horsStock` faux (la rangée n'ajoute plus « ? » à une ligne hors stock, g2a, mais ici l'ancienne valeur est à dire).
+  const qte = qteLaSienne ? '' : texteQuantite(ligne, uniteEffective(ligne), false);
   const parts: string[] = [];
   if (champs.has('unitPrice')) parts.push(`${qte ? `${qte} ` : ''}× ${base.unitPrice === undefined ? '?' : prixImprime(base.unitPrice)}`);
   else if (champs.has('quantity') || champs.has('unit')) parts.push(qte);

@@ -1,0 +1,4260 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+[90mstdout[2m | tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22m[2mD329 : les valeurs corrigées passent par le bandeau[2m > [22m[2m« Garder » : la correction reste (bleu, puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+[90mstdout[2m | tests/unit/depense/g2a/plier-regrouper.test.tsx[2m > [22m[2mD333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m[2m« Plié » ferme le plateau ouvert d’une rangée de tout groupe qu’il replie
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [31m❯[39m tests/unit/depense/g2a/plier-regrouper.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 1956[2mms[22m[39m
+[31m   [31m×[31m D333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m« Plié » ferme aussi le groupe qui porte une ligne à voir (son en-tête garde son compte) ; « Déplié » ouvre tout ; un toucher seul : état mêlé ; le groupe refermé redonne « Plié »[39m[32m 272[2mms[22m[39m
+[31m     → expected [ 'Outillage=false', …(2) ] to deeply equal [ 'Outillage=false', …(2) ][39m
+[31m   [31m×[31m D333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m« Plié » ferme le plateau ouvert d’une rangée de tout groupe qu’il replie[39m[33m 1218[2mms[22m[39m
+[31m     → expected [ 'Outillage=false', …(2) ] to deeply equal [ 'Outillage=false', …(2) ]
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body[31m
+    [33mstyle[31m=[32m"overflow: hidden;"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"_r_4_"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<header[31m
+            [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Fermer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-x"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M18 6 6 18"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m6 6 12 12"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+              [33mid[31m=[32m"_r_4_"[31m
+            [36m>[31m
+              [0mNouvelle dépense[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33maria-label[31m=[32m"Sous-groupes"[31m
+              [33mclass[31m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[31m
+              [33mdata-dp-plier[31m=[32m"true"[31m
+              [33mrole[31m=[32m"group"[31m
+            [36m>[31m
+              [36m<button[31m
+                [33maria-pressed[31m=[32m"true"[31m
+                [33mclass[31m=[32m"dp-p3c-seg min-h-7 px-2 text-sm bg-ebc-straw text-cave-950"[31m
+                [33mdata-dp-plier-bouton[31m=[32m"plie"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mPlié[0m
+              [36m</button>[31m
+              [36m<button[31m
+                [33maria-pressed[31m=[32m"false"[31m
+                [33mclass[31m=[32m"dp-p3c-seg min-h-7 px-2 text-sm text-cave-200"[31m
+                [33mdata-dp-plier-bouton[31m=[32m"deplie"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mDéplié[0m
+              [36m</button>[31m
+            [36m</div>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-label[31m=[32m"Justificatif : voir l’original, changer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M10 9H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 13H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 17H8"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+          [36m</header>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m""[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[31m
+                [33mdata-dp[31m=[32m"justificatif"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex flex-wrap items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<a[31m
+                    [33mclass[31m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[31m
+                    [33mdownload[31m=[32m"facture-travaux.pdf"[31m
+                    [33mhref[31m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[31m
+                  [36m>[31m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Changer"[31m
+                    [33mclass[31m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[31m
+                 ...[39m
+[31m   [31m×[31m D332 : « Regrouper en une dépense » a son retour[2m > [22m« ↶ Rétablir les N lignes » rend les lignes et leurs retouches, et le geste « Regrouper » revient[39m[33m 464[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "button" and name "↶ Rétablir les 6 lignes"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "Nouvelle dépense":
+  [36m<div[31m
+    [33maria-labelledby[31m=[32m"_r_8_"[31m
+    [33maria-modal[31m=[32m"true"[31m
+    [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                      bg-cave-900 border-cave-800 shadow-2xl
+                      "[31m
+    [33mrole[31m=[32m"dialog"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Fermer"[31m
+    [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Justificatif : voir l’original, changer":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-label[31m=[32m"Justificatif : voir l’original, changer"[31m
+    [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Changer":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Changer"[31m
+    [33mclass[31m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[31m
+    [33mtitle[31m=[32m"Changer le fichier"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Achat du 14.10.2026":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Achat du 14.10.2026"[31m
+    [33mclass[31m=[32m"shrink-0 border-b border-dashed font-mono text-sm min-h-6 text-cave-200 border-cave-600"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Lecture vérifiée, 1 ligne":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Lecture vérifiée, 1 ligne"[31m
+    [33mclass[31m=[32m"ml-auto inline-flex min-h-7 shrink-0 items-center gap-1 rounded-control border bg-cave-950 px-2 text-sm text-cave-200 border-cave-700"[31m
+    [33mtitle[31m=[32m"Lecture vérifiée, 1 ligne"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Somme = imprimé311,40":
+  [36m<button[31m
+    [33mclass[31m=[32m"flex min-h-[26px] w-full min-w-0 items-center gap-1 overflow-hidden border-b border-cave-800 text-left text-sm"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "·Qté × prix0/1":
+  [36m<button[31m
+    [33mclass[31m=[32m"flex min-h-[26px] w-full min-w-0 items-center gap-1 overflow-hidden border-b border-cave-800 text-left text-sm"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Lectures2/2":
+  [36m<button[31m
+    [33mclass[31m=[32m"flex min-h-[26px] w-full min-w-0 items-center gap-1 overflow-hidden border-b border-cave-800 text-left text-sm"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "aucun mouvement de stock1 hors stock":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 "[31m
+    [33mdata-va[31m=[32m"aucun"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "TVA—":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33mclass[31m=[32m"relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] pl-2 min-w-[80px] flex-1 basis-[80px] text-left border-cave-800"[31m
+    [33mdata-dp[31m=[32m"tuile-tva"[31m
+    [33mdata-dp-chip[31m=[32m"TVA|"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "1RèglementsupposéePayé le 14.10.2026":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33mclass[31m=[32m"relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] pl-8 min-w-[156px] flex-1 basis-[156px] text-left border-dashed border-attention bg-attention/5"[31m
+    [33mdata-dp[31m=[32m"tuile-paye"[31m
+    [33mdata-dp-chip[31m=[32m"paye"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "proposé · HT vide—":
+  [36m<button[31m
+    [33mclass[31m=[32m"min-h-9 rounded-control border border-hop px-3 text-left"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Déjà payé":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"true"[31m
+    [33mclass[31m=[32m"min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors border-area-finances text-cave-50 bg-area-finances/10"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "À payer":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors border-cave-700 text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "C’est la date":
+  [36m<button[31m
+    [33mclass[31m=[32m"min-h-7 rounded-control border border-ebc-straw bg-ebc-straw px-2.5 text-sm font-semibold text-cave-950"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Autre date":
+  [36m<button[31m
+    [33mclass[31m=[32m"min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Mois précédent — Date de l’achat":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Mois précédent — Date de l’achat"[31m
+    [33mclass[31m=[32m"min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Mois suivant — Date de l’achat":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Mois suivant — Date de l’achat"[31m
+    [33mclass[31m=[32m"min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Aujourd’hui":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Mois passé":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Mois suivant":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Ingrédient":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-7 px-2.5 text-sm text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Service":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-7 px-2.5 text-sm text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Matériel":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-7 px-2.5 text-sm text-cave-200"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "+ Ajouter une ligne":
+  [36m<button[31m
+    [33mclass[31m=[32m"min-h-7 rounded-control border border-dashed border-cave-600 px-2.5 text-sm text-cave-200 disabled:opacity-40"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Catégorie":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"true"[31m
+    [33mclass[31m=[32m"min-h-8 px-2.5 text-sm bg-ebc-straw text-cave-950"[31m
+    [33mdata-ordre[31m=[32m"cat"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Papier":
+  [36m<button[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-8 px-2.5 text-sm text-cave-200"[31m
+    [33mdata-ordre[31m=[32m"papier"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Confirmer et enregistrer":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Confirmer et enregistrer"[31m
+    [33mclass[31m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[31m
+    [33mdata-primary[31m=[32m"true"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Nouvelle dépense":
+  [36m<h2[31m
+    [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+    [33mid[31m=[32m"_r_8_"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Ouvrir le PDF original":
+  [36m<a[31m
+    [33mclass[31m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[31m
+    [33mdownload[31m=[32m"facture-travaux.pdf"[31m
+    [33mhref[31m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<fieldset[31m
+    [33mclass[31m=[32m"min-w-0"[31m
+  [36m/>[31m
+
+  Name "État du règlement":
+  [36m<div[31m
+    [33maria-label[31m=[32m"État du règlement"[31m
+    [33mclass[31m=[32m"inline-flex gap-1"[31m
+    [33mrole[31m=[32m"group"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mclass[31m=[32m"border-b border-cave-800 "[31m
+    [33mdata-dp-rubrique[31m=[32m"quoi"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mclass[31m=[32m"border-b border-cave-800 "[31m
+    [33mdata-dp-rubrique[31m=[32m"date"[31m
+    [33mdata-purchase-date[31m=[32m"true"[31m
+    [33mdata-purchase-options[31m=[32m"true"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mclass[31m=[32m"border-b border-cave-800 "[31m
+    [33mdata-dp-rubrique[31m=[32m"four"[31m
+    [33mdata-purchase-options[31m=[32m"true"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mclass[31m=[32m"border-b border-cave-800 "[31m
+    [33mdata-dp-rubrique[31m=[32m"ref"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mdata-dp-plateau[31m=[32m"true"[31m
+  [36m/>[31m
+
+  Name "Type d’achat, ligne 1":
+  [36m<div[31m
+    [33maria-label[31m=[32m"Type d’achat, ligne 1"[31m
+    [33mclass[31m=[32m"inline-flex overflow-hidden rounded-control border border-cave-600"[31m
+    [33mdata-dp-nature[31m=[32m"true"[31m
+    [33mrole[31m=[32m"group"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mclass[31m=[32m"text-xs text-cave-400"[31m
+    [33mdata-dp-plus[31m=[32m"true"[31m
+  [36m/>[31m
+
+  Name "Ordre des lignes":
+  [36m<div[31m
+    [33maria-label[31m=[32m"Ordre des lignes"[31m
+    [33mclass[31m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[31m
+    [33mrole[31m=[32m"group"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  region:
+
+  Name "Vérification du justificatif":
+  [36m<section[31m
+    [33maria-label[31m=[32m"Vérification du justificatif"[31m
+    [33mclass[31m=[32m"space-y-1.5"[31m
+  [36m/>[31m
+
+  Name "Preuve de la lecture":
+  [36m<section[31m
+    [33maria-label[31m=[32m"Preuve de la lecture"[31m
+    [33mclass[31m=[32m"scroll-mt-12 rounded-panel border border-cave-800 px-2 pb-1 pt-0.5 "[31m
+    [33mdata-dp[31m=[32m"preuve"[31m
+  [36m/>[31m
+
+  Name "Lignes de la facture":
+  [36m<section[31m
+    [33maria-label[31m=[32m"Lignes de la facture"[31m
+    [33mclass[31m=[32m"pb-2"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Total TTC en CHF":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Total TTC en CHF"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50 !text-[32px] !leading-[1.05] font-mono font-semibold tabular-nums !min-h-0 !h-[34px] !py-0 !w-[7ch] min-w-0 !border-0 !border-b !border-dotted !bg-transparent !px-0"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"next"[31m
+    [33mid[31m=[32m"purchase-total"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mname[31m=[32m"num_purchase-total"[31m
+    [33mplaceholder[31m=[32m"0,00"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"311,40"[31m
+  [36m/>[31m
+
+  Name "Pour quoi ?":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Pour quoi ?"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33mid[31m=[32m"purchase-description"[31m
+    [33minputmode[31m=[32m"text"[31m
+    [33mplaceholder[31m=[32m"À décrire"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"Brico Fictif SA · B-3003 · travaux"[31m
+  [36m/>[31m
+
+  Name "Fournisseur":
+  [36m<input[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33mid[31m=[32m"purchase-vendor"[31m
+    [33minputmode[31m=[32m"text"[31m
+    [33mplaceholder[31m=[32m"Nom du fournisseur"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"Brico Fictif SA"[31m
+  [36m/>[31m
+
+  Name "N° de facture":
+  [36m<input[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33mid[31m=[32m"purchase-invoice-number"[31m
+    [33minputmode[31m=[32m"text"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"B-3003"[31m
+  [36m/>[31m
+
+  Name "TVA source (CHF)":
+  [36m<input[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"next"[31m
+    [33mid[31m=[32m"purchase-vat"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mname[31m=[32m"num_purchase-vat"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m""[31m
+  [36m/>[31m
+
+  Name "Taux source (%)":
+  [36m<input[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"next"[31m
+    [33mid[31m=[32m"purchase-vat-rate"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mname[31m=[32m"num_purchase-vat-rate"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m""[31m
+  [36m/>[31m
+
+  Name "Quantité ligne 1":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Quantité ligne 1"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-16 text-right"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"next"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m""[31m
+  [36m/>[31m
+
+  Name "Unité ligne 1":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Unité ligne 1"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-11 text-center"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33minputmode[31m=[32m"text"[31m
+    [33mplaceholder[31m=[32m"kg, g, L, sachet…"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m""[31m
+  [36m/>[31m
+
+  Name "Prix ligne 1":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Prix ligne 1"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-[4.75rem] text-right"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"next"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m""[31m
+  [36m/>[31m
+
+  Name "Montant ligne 1":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Montant ligne 1"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-[4.75rem] text-right"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"next"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"311,4"[31m
+  [36m/>[31m
+
+  Name "Libellé ligne 1":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Libellé ligne 1"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33minputmode[31m=[32m"text"[31m
+    [33mplaceholder[31m=[32m"Article ou prestation"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"Brico Fictif SA · B-3003 · travaux"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  img:
+
+  Name "aucun mouvement de stock":
+  [36m<svg[31m
+    [33maria-label[31m=[32m"aucun mouvement de stock"[31m
+    [33mclass[31m=[32m"shrink-0 text-cave-400"[31m
+    [33mfill[31m=[32m"none"[31m
+    [33mheight[31m=[32m"16"[31m
+    [33mrole[31m=[32m"img"[31m
+    [33mstroke[31m=[32m"currentColor"[31m
+    [33mstroke-width[31m=[32m"1.875"[31m
+    [33mviewBox[31m=[32m"0 0 20 20"[31m
+    [33mwidth[31m=[32m"16"[31m
+  [36m/>[31m
+
+  Name "aucun mouvement de stock":
+  [36m<svg[31m
+    [33maria-label[31m=[32m"aucun mouvement de stock"[31m
+    [33mclass[31m=[32m"shrink-0 text-cave-400"[31m
+    [33mfill[31m=[32m"none"[31m
+    [33mheight[31m=[32m"18"[31m
+    [33mrole[31m=[32m"img"[31m
+    [33mstroke[31m=[32m"currentColor"[31m
+    [33mstroke-width[31m=[32m"1.6666666666666667"[31m
+    [33mviewBox[31m=[32m"0 0 20 20"[31m
+    [33mwidth[31m=[32m"18"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-xs text-cave-400"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-xs text-cave-200"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-xs text-cave-200"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 pb-2 text-xs text-cave-400"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-xs text-cave-400"[31m
+    [33mdata-dp-imprime[31m=[32m"true"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Moyen de paiement":
+  [36m<select[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mid[31m=[32m"purchase-payment-method"[31m
+  [36m/>[31m
+
+  Name "Catégorie":
+  [36m<select[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+    [33mid[31m=[32m"purchase-category"[31m
+  [36m/>[31m
+
+  Name "Nature ligne 1":
+  [36m<select[31m
+    [33maria-label[31m=[32m"Nature ligne 1"[31m
+    [33mclass[31m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  option:
+
+  Name "Compte bancaire / carte":
+  [36m<option[31m
+    [33mvalue[31m=[32m"bank"[31m
+  [36m/>[31m
+
+  Name "Espèces":
+  [36m<option[31m
+    [33mvalue[31m=[32m"cash"[31m
+  [36m/>[31m
+
+  Name "TWINT":
+  [36m<option[31m
+    [33mvalue[31m=[32m"twint"[31m
+  [36m/>[31m
+
+  Name "Autre":
+  [36m<option[31m
+    [33mvalue[31m=[32m"other"[31m
+  [36m/>[31m
+
+  Name "Brassage":
+  [36m<option[31m
+    [33mvalue[31m=[32m"brassage"[31m
+  [36m/>[31m
+
+  Name "Matériel":
+  [36m<option[31m
+    [33mvalue[31m=[32m"materiel"[31m
+  [36m/>[31m
+
+  Name "Nettoyage":
+  [36m<option[31m
+    [33mvalue[31m=[32m"nettoyage"[31m
+  [36m/>[31m
+
+  Name "Charges fixes":
+  [36m<option[31m
+    [33mvalue[31m=[32m"chargesFixes"[31m
+  [36m/>[31m
+
+  Name "Local":
+  [36m<option[31m
+    [33mvalue[31m=[32m"renovation"[31m
+  [36m/>[31m
+
+  Name "Autre":
+  [36m<option[31m
+    [33mvalue[31m=[32m"divers"[31m
+  [36m/>[31m
+
+  Name "Ingrédients":
+  [36m<option[31m
+    [33mvalue[31m=[32m"ingredient"[31m
+  [36m/>[31m
+
+  Name "Emballages":
+  [36m<option[31m
+    [33mvalue[31m=[32m"packaging"[31m
+  [36m/>[31m
+
+  Name "Nettoyage":
+  [36m<option[31m
+    [33mvalue[31m=[32m"cleaning"[31m
+  [36m/>[31m
+
+  Name "Matériel durable":
+  [36m<option[31m
+    [33mvalue[31m=[32m"equipment"[31m
+  [36m/>[31m
+
+  Name "Entretien / réparation":
+  [36m<option[31m
+    [33mvalue[31m=[32m"maintenance"[31m
+  [36m/>[31m
+
+  Name "Service":
+  [36m<option[31m
+    [33mvalue[31m=[32m"service"[31m
+  [36m/>[31m
+
+  Name "Livraison":
+  [36m<option[31m
+    [33mvalue[31m=[32m"shipping"[31m
+  [36m/>[31m
+
+  Name "Remise":
+  [36m<option[31m
+    [33mvalue[31m=[32m"discount"[31m
+  [36m/>[31m
+
+  Name "Autre":
+  [36m<option[31m
+    [33mvalue[31m=[32m"other"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  emphasis:
+
+  Name "":
+  [36m<em[31m
+    [33mclass[31m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<em[31m
+    [33mclass[31m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<em[31m
+    [33mclass[31m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<em[31m
+    [33mclass[31m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[31m
+    [33mclass[31m=[32m"font-semibold text-cave-50"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[31m
+    [33mclass[31m=[32m"dp-p3c-li scroll-mt-9 border-b border-cave-800 border-l-4 dp-p3c-fi-renovation  "[31m
+    [33mdata-dp-groupe[31m=[32m"renovation"[31m
+    [33mdata-dp-ligne[31m=[32m"a92bbf90-014d-4b88-9bed-5accab275047"[31m
+    [33mdata-purchase-line[31m=[32m"true"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  [36m<footer[31m
+    [33mclass[31m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_8_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_8_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+          [36m<button[31m
+            [33maria-expanded[31m=[32m"false"[31m
+            [33maria-label[31m=[32m"Justificatif : voir l’original, changer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-file-text"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M10 9H8"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M16 13H8"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M16 17H8"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[31m
+              [33mdata-dp[31m=[32m"justificatif"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center gap-1.5"[31m
+              [36m>[31m
+                [36m<a[31m
+                  [33mclass[31m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[31m
+                  [33mdownload[31m=[32m"facture-travaux.pdf"[31m
+                  [33mhref[31m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[31m
+                [36m>[31m
+                  [0mOuvrir le PDF original[0m
+                [36m</a>[31m
+                [36m<button[31m
+                  [33maria-label[31m=[32m"Changer"[31m
+                  [33mclass[31m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[31m
+                  [33mtitle[31m=[32m"Changer le fichier"[31m
+                  [33mtype[31m=[32m"button"[31m
+                [36m>[31m
+                  [36m<svg[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                    [33mfill[31m=[32m"none"[31m
+                    [33mheight[31m=[32m"14"[31m
+                    [33mstroke[31m=[32m"currentColor"[31m
+                    [33mstroke-linecap[31m=[32m"round"[31m
+                    [33mstroke-linejoin[31m=[32m"round"[31m
+                    [33mstroke-width[31m=[32m"2"[31m
+                    [33mviewBox[31m=[32m"0 0 24 24"[31m
+                    [33mwidth[31m=[32m"14"[31m
+                    [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                  [36m>[31m
+                    [36m<path[31m
+                      [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                    [36m/>[31m
+                    [36m<path[31m
+                      [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                    [36m/>[31m
+                    [36m<path[31m
+                      [33md[31m=[32m"M10 9H8"[31m
+                    [36m/>[31m
+                    [36m<path[31m
+              ...[39m
+ [31m❯[39m tests/unit/depense/g2a/tout-valider.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m8 failed[39m[2m)[22m[33m 3243[2mms[22m[39m
+[31m   [31m×[31m D329 : les valeurs corrigées passent par le bandeau[2m > [22mtrois corrections, aucune ligne perdue : le bandeau existe, « 2 valeurs corrigées · 1/3 » sur Pilsner, « Tout valider » dès 2 éléments[39m[33m 308[2mms[22m[39m
+[31m     → expected null not to be null[39m
+[31m   [31m×[31m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Garder » : la correction reste (bleu, puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce[39m[32m 192[2mms[22m[39m
+[31m     → Cannot read properties of null (reading 'querySelector')[39m
+[31m   [31m×[31m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Annuler » sur Pilsner : quantité et prix du provisoire reviennent (10 Kg × 1,45)[39m[32m 126[2mms[22m[39m
+[31m     → Cannot read properties of null (reading 'querySelector')[39m
+[31m   [31m×[31m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Tout valider » garde tout d’un toucher : le bandeau part, les corrections restent bleues, la puce garde son compte[39m[32m 87[2mms[22m[39m
+[31m     → Cannot read properties of null (reading 'querySelector')[39m
+   [32m✓[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Confirmer » sans trancher : tout est gardé (la quantité corrigée est enregistrée)[32m 92[2mms[22m[39m
+[31m   [31m×[31m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mdeux lignes pas retrouvées puis les trois corrections : « 1/5 », « 2/5 », « 3/5 » ; Retirer reste pour une ligne perdue[39m[32m 90[2mms[22m[39m
+[31m     → expected '' to match /pas retrouvée/[39m
+   [32m✓[39m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22m« Tout valider » : les lignes perdues partent, les corrections restent[32m 101[2mms[22m[39m
+[31m   [31m×[31m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mla ligne ajoutée vient après les corrections : « ajoutée », Garder ou Retirer (la ligne et un de la puce partent)[39m[32m 192[2mms[22m[39m
+[31m     → Cannot read properties of null (reading 'querySelector')[39m
+[31m   [31m×[31m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mun désaccord qui pèse vient en dernier : la puce dit « 2 désaccords », « Garder » règle le point et le bandeau part[39m[33m 1027[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Vérification du justificatif"
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_10_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_10_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+            [33mdata-dp[31m=[32m"alertes"[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"pb-2"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier le QR"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Ajouter une page"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"space-y-1.5"[31m
+                [33mdata-dp[31m=[32m"lecture"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex items-baseline justify-between gap-2"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[31m
+                    [36m>[31m
+                      [0mfacture.pdf[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-xs text-cave-400"[31m
+                    [36m>[31m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"sr-only"[31m
+                    [33mrole[31m=[32m"status"[31m
+                  [36m>[31m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[31m
+                  [36m<div[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[31m
+                    [33mdata-dp[31m=[32m"frise"[31m
+                    [33mdata-etat[31m=[32m"lecture"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-200"[31m
+                      [36m/>[31m
+                      [0menvoi ✓[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[31m
+                      [36m/>[31m
+                      [0mlecture[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px]"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-800"[31m
+                      [36m/>[31m
+                      [0mvérification[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[31m
+                  [33mdata-dp[31m=[32m"lignes-arrivent"[31m
+                [36m>[31m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"px-1 pb-3 pt-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mPour quoi ?[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0maprès la lecture[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mRèglement[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<footer[31m
+          [33mclass[31m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[31m
+        [36m>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m/>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Lecture en cours"[31m
+            [33mclass[31m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[31m
+            [33mdata-primary[31m=[32m"true"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtitle[31m=[32m"Lecture en cours"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-check"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"14"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"14"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[31m
+        [36m</footer>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_10_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_10_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+            [33mdata-dp[31m=[32m"alertes"[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"pb-2"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier le QR"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Ajouter une page"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"space-y-1.5"[31m
+                [33mdata-dp[31m=[32m"lecture"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex items-baseline justify-between gap-2"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[31m
+                    [36m>[31m
+                      [0mfacture.pdf[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-xs text-cave-400"[31m
+                    [36m>[31m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"sr-only"[31m
+                    [33mrole[31m=[32m"status"[31m
+                  [36m>[31m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[31m
+                  [36m<div[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[31m
+                    [33mdata-dp[31m=[32m"frise"[31m
+                    [33mdata-etat[31m=[32m"lecture"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-200"[31m
+                      [36m/>[31m
+                      [0menvoi ✓[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[31m
+                      [36m/>[31m
+                      [0mlecture[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px]"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-800"[31m
+                      [36m/>[31m
+                      [0mvérification[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[31m
+                  [33mdata-dp[31m=[32m"lignes-arrivent"[31m
+                [36m>[31m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"px-1 pb-3 pt-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mPour quoi ?[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0maprès la lecture[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mRèglement[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<footer[31m
+          [33mclass[31m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[31m
+        [36m>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m/>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Lecture en cours"[31m
+            [33mclass[31m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[31m
+            [33mdata-primary[31m=[32m"true"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtitle[31m=[32m"Lecture en cours"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-check"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"14"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"14"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[31m
+        [36m</footer>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m×[31m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22m« Voir » ouvre la rangée du désaccord et le bandeau reste jusqu’à « Garder »[39m[33m 1027[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Vérification du justificatif"
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_13_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_13_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+            [33mdata-dp[31m=[32m"alertes"[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"pb-2"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier le QR"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Ajouter une page"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"space-y-1.5"[31m
+                [33mdata-dp[31m=[32m"lecture"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex items-baseline justify-between gap-2"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[31m
+                    [36m>[31m
+                      [0mfacture.pdf[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-xs text-cave-400"[31m
+                    [36m>[31m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"sr-only"[31m
+                    [33mrole[31m=[32m"status"[31m
+                  [36m>[31m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[31m
+                  [36m<div[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[31m
+                    [33mdata-dp[31m=[32m"frise"[31m
+                    [33mdata-etat[31m=[32m"lecture"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-200"[31m
+                      [36m/>[31m
+                      [0menvoi ✓[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[31m
+                      [36m/>[31m
+                      [0mlecture[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px]"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-800"[31m
+                      [36m/>[31m
+                      [0mvérification[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[31m
+                  [33mdata-dp[31m=[32m"lignes-arrivent"[31m
+                [36m>[31m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"px-1 pb-3 pt-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mPour quoi ?[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0maprès la lecture[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mRèglement[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<footer[31m
+          [33mclass[31m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[31m
+        [36m>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m/>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Lecture en cours"[31m
+            [33mclass[31m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[31m
+            [33mdata-primary[31m=[32m"true"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtitle[31m=[32m"Lecture en cours"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-check"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"14"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"14"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[31m
+        [36m</footer>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_13_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_13_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+            [33mdata-dp[31m=[32m"alertes"[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"pb-2"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier le QR"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Ajouter une page"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"space-y-1.5"[31m
+                [33mdata-dp[31m=[32m"lecture"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex items-baseline justify-between gap-2"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[31m
+                    [36m>[31m
+                      [0mfacture.pdf[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-xs text-cave-400"[31m
+                    [36m>[31m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"sr-only"[31m
+                    [33mrole[31m=[32m"status"[31m
+                  [36m>[31m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[31m
+                  [36m<div[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[31m
+                    [33mdata-dp[31m=[32m"frise"[31m
+                    [33mdata-etat[31m=[32m"lecture"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-200"[31m
+                      [36m/>[31m
+                      [0menvoi ✓[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[31m
+                      [36m/>[31m
+                      [0mlecture[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px]"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-800"[31m
+                      [36m/>[31m
+                      [0mvérification[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[31m
+                  [33mdata-dp[31m=[32m"lignes-arrivent"[31m
+                [36m>[31m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"px-1 pb-3 pt-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mPour quoi ?[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0maprès la lecture[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mRèglement[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<footer[31m
+          [33mclass[31m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[31m
+        [36m>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m/>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Lecture en cours"[31m
+            [33mclass[31m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[31m
+            [33mdata-primary[31m=[32m"true"[31m
+            [33mdisabled[31m=[32m""[31m
+            [33mtitle[31m=[32m"Lecture en cours"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-check"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"14"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"14"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M20 6 9 17l-5-5"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[31m
+        [36m</footer>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 11 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/plier-regrouper.test.tsx[2m > [22mD333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m« Plié » ferme aussi le groupe qui porte une ligne à voir (son en-tête garde son compte) ; « Déplié » ouvre tout ; un toucher seul : état mêlé ; le groupe refermé redonne « Plié »
+[31m[1mAssertionError[22m: expected [ 'Outillage=false', …(2) ] to deeply equal [ 'Outillage=false', …(2) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "Outillage=false",[22m
+[32m-   "Électricité=false",[39m
+[31m+   "Électricité=true",[39m
+[2m    "Plomberie=false",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/g2a/plier-regrouper.test.tsx:[2m42:22[22m[39m
+    [90m 40| [39m    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', '…
+    [90m 41| [39m    fireEvent[33m.[39m[34mclick[39m([34mbouton[39m(v[33m,[39m [32m'plie'[39m))[33m;[39m
+    [90m 42| [39m    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', …
+    [90m   | [39m                     [31m^[39m
+    [90m 43| [39m    [34mexpect[39m([34mallume[39m(v))[33m.[39m[34mtoEqual[39m([[32m'plie'[39m])[33m;[39m
+    [90m 44| [39m    expect(groupe(v, 'Électricité').querySelector('[data-dp-sg-compte]…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/plier-regrouper.test.tsx[2m > [22mD333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit[2m > [22m« Plié » ferme le plateau ouvert d’une rangée de tout groupe qu’il replie
+[31m[1mAssertionError[22m[39m: expected [ 'Outillage=false', …(2) ] to deeply equal [ 'Outillage=false', …(2) ]
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_4_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+              [33mid[39m=[32m"_r_4_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Sous-groupes"[39m
+              [33mclass[39m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[39m
+              [33mdata-dp-plier[39m=[32m"true"[39m
+              [33mrole[39m=[32m"group"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-pressed[39m=[32m"true"[39m
+                [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm bg-ebc-straw text-cave-950"[39m
+                [33mdata-dp-plier-bouton[39m=[32m"plie"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mPlié[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33maria-pressed[39m=[32m"false"[39m
+                [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm text-cave-200"[39m
+                [33mdata-dp-plier-bouton[39m=[32m"deplie"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mDéplié[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M10 9H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 13H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 17H8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+                [33mdata-dp[39m=[32m"justificatif"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                    [33mdownload[39m=[32m"facture-travaux.pdf"[39m
+                    [33mhref[39m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[39m
+                  [36m>[39m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Changer"[39m
+                    [33mclass[39m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[39m
+                 ...
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "Outillage=false",[22m
+[32m-   "Électricité=false",[39m
+[31m+   "Électricité=true",[39m
+[2m    "Plomberie=false",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/g2a/plier-regrouper.test.tsx:[2m59:42[22m[39m
+    [90m 57| [39m    d[33m.[39mopen [33m=[39m [35mtrue[39m[33m;[39m [34mfireEvent[39m(d[33m,[39m [35mnew[39m [33mEvent[39m([32m'toggle'[39m))[33m;[39m
+    [90m 58| [39m    fireEvent[33m.[39m[34mclick[39m([34mbouton[39m(v[33m,[39m [32m'plie'[39m))[33m;[39m
+    [90m 59| [39m    await waitFor(() => expect(etats(v)).toEqual(['Outillage=false', '…
+    [90m   | [39m                                         [31m^[39m
+    [90m 60| [39m    expect(groupe(v, 'Électricité').querySelector<HTMLDetailsElement>(…
+    [90m 61| [39m  })[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/plier-regrouper.test.tsx[2m > [22mD332 : « Regrouper en une dépense » a son retour[2m > [22m« ↶ Rétablir les N lignes » rend les lignes et leurs retouches, et le geste « Regrouper » revient
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name "↶ Rétablir les 6 lignes"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "Nouvelle dépense":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"_r_8_"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                      bg-cave-900 border-cave-800 shadow-2xl
+                      "[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Justificatif : voir l’original, changer":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+    [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Changer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Changer"[39m
+    [33mclass[39m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[39m
+    [33mtitle[39m=[32m"Changer le fichier"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Achat du 14.10.2026":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Achat du 14.10.2026"[39m
+    [33mclass[39m=[32m"shrink-0 border-b border-dashed font-mono text-sm min-h-6 text-cave-200 border-cave-600"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Lecture vérifiée, 1 ligne":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Lecture vérifiée, 1 ligne"[39m
+    [33mclass[39m=[32m"ml-auto inline-flex min-h-7 shrink-0 items-center gap-1 rounded-control border bg-cave-950 px-2 text-sm text-cave-200 border-cave-700"[39m
+    [33mtitle[39m=[32m"Lecture vérifiée, 1 ligne"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Somme = imprimé311,40":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-[26px] w-full min-w-0 items-center gap-1 overflow-hidden border-b border-cave-800 text-left text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "·Qté × prix0/1":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-[26px] w-full min-w-0 items-center gap-1 overflow-hidden border-b border-cave-800 text-left text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Lectures2/2":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex min-h-[26px] w-full min-w-0 items-center gap-1 overflow-hidden border-b border-cave-800 text-left text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "aucun mouvement de stock1 hors stock":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 "[39m
+    [33mdata-va[39m=[32m"aucun"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "TVA—":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] pl-2 min-w-[80px] flex-1 basis-[80px] text-left border-cave-800"[39m
+    [33mdata-dp[39m=[32m"tuile-tva"[39m
+    [33mdata-dp-chip[39m=[32m"TVA|"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "1RèglementsupposéePayé le 14.10.2026":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] pl-8 min-w-[156px] flex-1 basis-[156px] text-left border-dashed border-attention bg-attention/5"[39m
+    [33mdata-dp[39m=[32m"tuile-paye"[39m
+    [33mdata-dp-chip[39m=[32m"paye"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "proposé · HT vide—":
+  [36m<button[39m
+    [33mclass[39m=[32m"min-h-9 rounded-control border border-hop px-3 text-left"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Déjà payé":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors border-area-finances text-cave-50 bg-area-finances/10"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "À payer":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors border-cave-700 text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "C’est la date":
+  [36m<button[39m
+    [33mclass[39m=[32m"min-h-7 rounded-control border border-ebc-straw bg-ebc-straw px-2.5 text-sm font-semibold text-cave-950"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Autre date":
+  [36m<button[39m
+    [33mclass[39m=[32m"min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Mois précédent — Date de l’achat":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Mois précédent — Date de l’achat"[39m
+    [33mclass[39m=[32m"min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Mois suivant — Date de l’achat":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Mois suivant — Date de l’achat"[39m
+    [33mclass[39m=[32m"min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Aujourd’hui":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Mois passé":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Mois suivant":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ingrédient":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-7 px-2.5 text-sm text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Service":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-7 px-2.5 text-sm text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Matériel":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-7 px-2.5 text-sm text-cave-200"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "+ Ajouter une ligne":
+  [36m<button[39m
+    [33mclass[39m=[32m"min-h-7 rounded-control border border-dashed border-cave-600 px-2.5 text-sm text-cave-200 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Catégorie":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"min-h-8 px-2.5 text-sm bg-ebc-straw text-cave-950"[39m
+    [33mdata-ordre[39m=[32m"cat"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Papier":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-8 px-2.5 text-sm text-cave-200"[39m
+    [33mdata-ordre[39m=[32m"papier"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Confirmer et enregistrer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Confirmer et enregistrer"[39m
+    [33mclass[39m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[39m
+    [33mdata-primary[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Nouvelle dépense":
+  [36m<h2[39m
+    [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+    [33mid[39m=[32m"_r_8_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Ouvrir le PDF original":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+    [33mdownload[39m=[32m"facture-travaux.pdf"[39m
+    [33mhref[39m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "État du règlement":
+  [36m<div[39m
+    [33maria-label[39m=[32m"État du règlement"[39m
+    [33mclass[39m=[32m"inline-flex gap-1"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"border-b border-cave-800 "[39m
+    [33mdata-dp-rubrique[39m=[32m"quoi"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"border-b border-cave-800 "[39m
+    [33mdata-dp-rubrique[39m=[32m"date"[39m
+    [33mdata-purchase-date[39m=[32m"true"[39m
+    [33mdata-purchase-options[39m=[32m"true"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"border-b border-cave-800 "[39m
+    [33mdata-dp-rubrique[39m=[32m"four"[39m
+    [33mdata-purchase-options[39m=[32m"true"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"border-b border-cave-800 "[39m
+    [33mdata-dp-rubrique[39m=[32m"ref"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mdata-dp-plateau[39m=[32m"true"[39m
+  [36m/>[39m
+
+  Name "Type d’achat, ligne 1":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Type d’achat, ligne 1"[39m
+    [33mclass[39m=[32m"inline-flex overflow-hidden rounded-control border border-cave-600"[39m
+    [33mdata-dp-nature[39m=[32m"true"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"text-xs text-cave-400"[39m
+    [33mdata-dp-plus[39m=[32m"true"[39m
+  [36m/>[39m
+
+  Name "Ordre des lignes":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Ordre des lignes"[39m
+    [33mclass[39m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Vérification du justificatif":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Vérification du justificatif"[39m
+    [33mclass[39m=[32m"space-y-1.5"[39m
+  [36m/>[39m
+
+  Name "Preuve de la lecture":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Preuve de la lecture"[39m
+    [33mclass[39m=[32m"scroll-mt-12 rounded-panel border border-cave-800 px-2 pb-1 pt-0.5 "[39m
+    [33mdata-dp[39m=[32m"preuve"[39m
+  [36m/>[39m
+
+  Name "Lignes de la facture":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Lignes de la facture"[39m
+    [33mclass[39m=[32m"pb-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Total TTC en CHF":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Total TTC en CHF"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50 !text-[32px] !leading-[1.05] font-mono font-semibold tabular-nums !min-h-0 !h-[34px] !py-0 !w-[7ch] min-w-0 !border-0 !border-b !border-dotted !bg-transparent !px-0"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33mid[39m=[32m"purchase-total"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mname[39m=[32m"num_purchase-total"[39m
+    [33mplaceholder[39m=[32m"0,00"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"311,40"[39m
+  [36m/>[39m
+
+  Name "Pour quoi ?":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Pour quoi ?"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33mid[39m=[32m"purchase-description"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mplaceholder[39m=[32m"À décrire"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"Brico Fictif SA · B-3003 · travaux"[39m
+  [36m/>[39m
+
+  Name "Fournisseur":
+  [36m<input[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33mid[39m=[32m"purchase-vendor"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mplaceholder[39m=[32m"Nom du fournisseur"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"Brico Fictif SA"[39m
+  [36m/>[39m
+
+  Name "N° de facture":
+  [36m<input[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33mid[39m=[32m"purchase-invoice-number"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"B-3003"[39m
+  [36m/>[39m
+
+  Name "TVA source (CHF)":
+  [36m<input[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33mid[39m=[32m"purchase-vat"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mname[39m=[32m"num_purchase-vat"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Taux source (%)":
+  [36m<input[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33mid[39m=[32m"purchase-vat-rate"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mname[39m=[32m"num_purchase-vat-rate"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Quantité ligne 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Quantité ligne 1"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-16 text-right"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Unité ligne 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Unité ligne 1"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-11 text-center"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mplaceholder[39m=[32m"kg, g, L, sachet…"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Prix ligne 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Prix ligne 1"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-[4.75rem] text-right"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Montant ligne 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Montant ligne 1"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"min-h-7 h-7 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-sm text-cave-50 tabular-nums w-[4.75rem] text-right"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"311,4"[39m
+  [36m/>[39m
+
+  Name "Libellé ligne 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Libellé ligne 1"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mplaceholder[39m=[32m"Article ou prestation"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"Brico Fictif SA · B-3003 · travaux"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "aucun mouvement de stock":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"aucun mouvement de stock"[39m
+    [33mclass[39m=[32m"shrink-0 text-cave-400"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"16"[39m
+    [33mrole[39m=[32m"img"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-width[39m=[32m"1.875"[39m
+    [33mviewBox[39m=[32m"0 0 20 20"[39m
+    [33mwidth[39m=[32m"16"[39m
+  [36m/>[39m
+
+  Name "aucun mouvement de stock":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"aucun mouvement de stock"[39m
+    [33mclass[39m=[32m"shrink-0 text-cave-400"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"18"[39m
+    [33mrole[39m=[32m"img"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-width[39m=[32m"1.6666666666666667"[39m
+    [33mviewBox[39m=[32m"0 0 20 20"[39m
+    [33mwidth[39m=[32m"18"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 pb-2 text-xs text-cave-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400"[39m
+    [33mdata-dp-imprime[39m=[32m"true"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Moyen de paiement":
+  [36m<select[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mid[39m=[32m"purchase-payment-method"[39m
+  [36m/>[39m
+
+  Name "Catégorie":
+  [36m<select[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mid[39m=[32m"purchase-category"[39m
+  [36m/>[39m
+
+  Name "Nature ligne 1":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Nature ligne 1"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "Compte bancaire / carte":
+  [36m<option[39m
+    [33mvalue[39m=[32m"bank"[39m
+  [36m/>[39m
+
+  Name "Espèces":
+  [36m<option[39m
+    [33mvalue[39m=[32m"cash"[39m
+  [36m/>[39m
+
+  Name "TWINT":
+  [36m<option[39m
+    [33mvalue[39m=[32m"twint"[39m
+  [36m/>[39m
+
+  Name "Autre":
+  [36m<option[39m
+    [33mvalue[39m=[32m"other"[39m
+  [36m/>[39m
+
+  Name "Brassage":
+  [36m<option[39m
+    [33mvalue[39m=[32m"brassage"[39m
+  [36m/>[39m
+
+  Name "Matériel":
+  [36m<option[39m
+    [33mvalue[39m=[32m"materiel"[39m
+  [36m/>[39m
+
+  Name "Nettoyage":
+  [36m<option[39m
+    [33mvalue[39m=[32m"nettoyage"[39m
+  [36m/>[39m
+
+  Name "Charges fixes":
+  [36m<option[39m
+    [33mvalue[39m=[32m"chargesFixes"[39m
+  [36m/>[39m
+
+  Name "Local":
+  [36m<option[39m
+    [33mvalue[39m=[32m"renovation"[39m
+  [36m/>[39m
+
+  Name "Autre":
+  [36m<option[39m
+    [33mvalue[39m=[32m"divers"[39m
+  [36m/>[39m
+
+  Name "Ingrédients":
+  [36m<option[39m
+    [33mvalue[39m=[32m"ingredient"[39m
+  [36m/>[39m
+
+  Name "Emballages":
+  [36m<option[39m
+    [33mvalue[39m=[32m"packaging"[39m
+  [36m/>[39m
+
+  Name "Nettoyage":
+  [36m<option[39m
+    [33mvalue[39m=[32m"cleaning"[39m
+  [36m/>[39m
+
+  Name "Matériel durable":
+  [36m<option[39m
+    [33mvalue[39m=[32m"equipment"[39m
+  [36m/>[39m
+
+  Name "Entretien / réparation":
+  [36m<option[39m
+    [33mvalue[39m=[32m"maintenance"[39m
+  [36m/>[39m
+
+  Name "Service":
+  [36m<option[39m
+    [33mvalue[39m=[32m"service"[39m
+  [36m/>[39m
+
+  Name "Livraison":
+  [36m<option[39m
+    [33mvalue[39m=[32m"shipping"[39m
+  [36m/>[39m
+
+  Name "Remise":
+  [36m<option[39m
+    [33mvalue[39m=[32m"discount"[39m
+  [36m/>[39m
+
+  Name "Autre":
+  [36m<option[39m
+    [33mvalue[39m=[32m"other"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  emphasis:
+
+  Name "":
+  [36m<em[39m
+    [33mclass[39m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<em[39m
+    [33mclass[39m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<em[39m
+    [33mclass[39m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<em[39m
+    [33mclass[39m=[32m"ml-auto max-w-[62%] truncate text-xs not-italic text-cave-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"font-semibold text-cave-50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"dp-p3c-li scroll-mt-9 border-b border-cave-800 border-l-4 dp-p3c-fi-renovation  "[39m
+    [33mdata-dp-groupe[39m=[32m"renovation"[39m
+    [33mdata-dp-ligne[39m=[32m"a92bbf90-014d-4b88-9bed-5accab275047"[39m
+    [33mdata-purchase-line[39m=[32m"true"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  [36m<footer[39m
+    [33mclass[39m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_8_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_8_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-file-text"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10 9H8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 13H8"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 17H8"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+              [33mdata-dp[39m=[32m"justificatif"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+              [36m>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                  [33mdownload[39m=[32m"facture-travaux.pdf"[39m
+                  [33mhref[39m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[39m
+                [36m>[39m
+                  [0mOuvrir le PDF original[0m
+                [36m</a>[39m
+                [36m<button[39m
+                  [33maria-label[39m=[32m"Changer"[39m
+                  [33mclass[39m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[39m
+                  [33mtitle[39m=[32m"Changer le fichier"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"14"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"14"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M10 9H8"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+              ...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/depense/g2a/plier-regrouper.test.tsx:[2m73:28[22m[39m
+    [90m 71| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mrangees[39m(v))[33m.[39m[34mtoBe[39m([34m1[39m))[33m;[39m
+    [90m 72| [39m    expect(screen.queryByRole('button', { name: 'Regrouper en une dépe…
+    [90m 73| [39m    fireEvent.click(screen.getByRole('button', { name: `↶ Rétablir les…
+    [90m   | [39m                           [31m^[39m
+    [90m 74| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mrangees[39m(v))[33m.[39m[34mtoBe[39m(avant))[33m;[39m
+    [90m 75| [39m    expect((screen.getByLabelText('Quantité ligne 2') as HTMLInputElem…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : les valeurs corrigées passent par le bandeau[2m > [22mtrois corrections, aucune ligne perdue : le bandeau existe, « 2 valeurs corrigées · 1/3 » sur Pilsner, « Tout valider » dès 2 éléments
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m62:28[22m[39m
+    [90m 60| [39m  it('trois corrections, aucune ligne perdue : le bandeau existe, « 2 …
+    [90m 61| [39m    [35mconst[39m v [33m=[39m [35mawait[39m [34mlire[39m([32m'lue'[39m)[33m;[39m
+    [90m 62| [39m    [34mexpect[39m([34mbandeau[39m(v))[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m 63| [39m    expect(nom(v)).toBe('Malt Pilsner'); expect(mot(v)).toMatch(/^2 va…
+    [90m 64| [39m    expect(geste(v, 'garder')).toBeEnabled(); expect(geste(v, 'annuler…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : les valeurs corrigées passent par le bandeau[2m > [22m« Garder » : la correction reste (bleu, puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'querySelector')[39m
+[36m [2m❯[22m geste tests/unit/depense/g2a/tout-valider.test.tsx:[2m45:47[22m[39m
+    [90m 43| [39mtype [33mVue[39m [33m=[39m [33mReturnType[39m[33m<[39m[35mtypeof[39m render[33m>[39m[33m;[39m
+    [90m 44| [39mconst bandeau = (v: Vue) => v.container.querySelector<HTMLElement>('[d…
+    [90m 45| [39mconst geste = (v: Vue, g: string) => bandeau(v)!.querySelector<HTMLBut…
+    [90m   | [39m                                              [31m^[39m
+    [90m 46| [39mconst rang = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-ra…
+    [90m 47| [39mconst mot = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-mot…
+[90m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m69:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : les valeurs corrigées passent par le bandeau[2m > [22m« Annuler » sur Pilsner : quantité et prix du provisoire reviennent (10 Kg × 1,45)
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'querySelector')[39m
+[36m [2m❯[22m geste tests/unit/depense/g2a/tout-valider.test.tsx:[2m45:47[22m[39m
+    [90m 43| [39mtype [33mVue[39m [33m=[39m [33mReturnType[39m[33m<[39m[35mtypeof[39m render[33m>[39m[33m;[39m
+    [90m 44| [39mconst bandeau = (v: Vue) => v.container.querySelector<HTMLElement>('[d…
+    [90m 45| [39mconst geste = (v: Vue, g: string) => bandeau(v)!.querySelector<HTMLBut…
+    [90m   | [39m                                              [31m^[39m
+    [90m 46| [39mconst rang = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-ra…
+    [90m 47| [39mconst mot = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-mot…
+[90m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m85:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : les valeurs corrigées passent par le bandeau[2m > [22m« Tout valider » garde tout d’un toucher : le bandeau part, les corrections restent bleues, la puce garde son compte
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'querySelector')[39m
+[36m [2m❯[22m geste tests/unit/depense/g2a/tout-valider.test.tsx:[2m45:47[22m[39m
+    [90m 43| [39mtype [33mVue[39m [33m=[39m [33mReturnType[39m[33m<[39m[35mtypeof[39m render[33m>[39m[33m;[39m
+    [90m 44| [39mconst bandeau = (v: Vue) => v.container.querySelector<HTMLElement>('[d…
+    [90m 45| [39mconst geste = (v: Vue, g: string) => bandeau(v)!.querySelector<HTMLBut…
+    [90m   | [39m                                              [31m^[39m
+    [90m 46| [39mconst rang = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-ra…
+    [90m 47| [39mconst mot = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-mot…
+[90m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m92:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mdeux lignes pas retrouvées puis les trois corrections : « 1/5 », « 2/5 », « 3/5 » ; Retirer reste pour une ligne perdue
+[31m[1mAssertionError[22m: expected '' to match /pas retrouvée/[39m
+
+[32m- Expected:[39m 
+/pas retrouvée/
+
+[31m+ Received:[39m 
+""
+
+[36m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m109:58[22m[39m
+    [90m107| [39m  it('deux lignes pas retrouvées puis les trois corrections : « 1/5 »,…
+    [90m108| [39m    [35mconst[39m v [33m=[39m [35mawait[39m [34mlire[39m([32m'perdues-2'[39m)[33m;[39m
+    [90m109| [39m    expect(nom(v)).toBe('Avoine maltée'); expect(mot(v)).toMatch(/pas …
+    [90m   | [39m                                                         [31m^[39m
+    [90m110| [39m    [34mexpect[39m([34mgeste[39m(v[33m,[39m [32m'retirer'[39m))[33m.[39m[34mtoBeEnabled[39m()[33m;[39m
+    [90m111| [39m    fireEvent[33m.[39m[34mclick[39m([34mgeste[39m(v[33m,[39m [32m'retirer'[39m))[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mla ligne ajoutée vient après les corrections : « ajoutée », Garder ou Retirer (la ligne et un de la puce partent)
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'querySelector')[39m
+[36m [2m❯[22m rang tests/unit/depense/g2a/tout-valider.test.tsx:[2m46:35[22m[39m
+    [90m 44| [39mconst bandeau = (v: Vue) => v.container.querySelector<HTMLElement>('[d…
+    [90m 45| [39mconst geste = (v: Vue, g: string) => bandeau(v)!.querySelector<HTMLBut…
+    [90m 46| [39mconst rang = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-ra…
+    [90m   | [39m                                  [31m^[39m
+    [90m 47| [39mconst mot = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-mot…
+    [90m 48| [39mconst nom = (v: Vue) => bandeau(v)!.querySelector('[data-dp-perdue-nom…
+[90m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m128:12[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mun désaccord qui pèse vient en dernier : la puce dit « 2 désaccords », « Garder » règle le point et le bandeau part
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find role="region" and name "Vérification du justificatif"
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_10_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_10_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+            [33mdata-dp[39m=[32m"alertes"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pb-2"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier le QR"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Ajouter une page"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1.5"[39m
+                [33mdata-dp[39m=[32m"lecture"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[39m
+                    [36m>[39m
+                      [0mfacture.pdf[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-xs text-cave-400"[39m
+                    [36m>[39m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[39m
+                  [36m<div[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[39m
+                    [33mdata-dp[39m=[32m"frise"[39m
+                    [33mdata-etat[39m=[32m"lecture"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-200"[39m
+                      [36m/>[39m
+                      [0menvoi ✓[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[39m
+                      [36m/>[39m
+                      [0mlecture[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px]"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-800"[39m
+                      [36m/>[39m
+                      [0mvérification[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[39m
+                  [33mdata-dp[39m=[32m"lignes-arrivent"[39m
+                [36m>[39m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-1 pb-3 pt-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mPour quoi ?[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0maprès la lecture[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mRèglement[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<footer[39m
+          [33mclass[39m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Lecture en cours"[39m
+            [33mclass[39m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[39m
+            [33mdata-primary[39m=[32m"true"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"Lecture en cours"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[39m
+        [36m</footer>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_10_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_10_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+            [33mdata-dp[39m=[32m"alertes"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pb-2"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier le QR"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Ajouter une page"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1.5"[39m
+                [33mdata-dp[39m=[32m"lecture"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[39m
+                    [36m>[39m
+                      [0mfacture.pdf[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-xs text-cave-400"[39m
+                    [36m>[39m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[39m
+                  [36m<div[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[39m
+                    [33mdata-dp[39m=[32m"frise"[39m
+                    [33mdata-etat[39m=[32m"lecture"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-200"[39m
+                      [36m/>[39m
+                      [0menvoi ✓[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[39m
+                      [36m/>[39m
+                      [0mlecture[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px]"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-800"[39m
+                      [36m/>[39m
+                      [0mvérification[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[39m
+                  [33mdata-dp[39m=[32m"lignes-arrivent"[39m
+                [36m>[39m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-1 pb-3 pt-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mPour quoi ?[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0maprès la lecture[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mRèglement[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<footer[39m
+          [33mclass[39m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Lecture en cours"[39m
+            [33mclass[39m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[39m
+            [33mdata-primary[39m=[32m"true"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"Lecture en cours"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[39m
+        [36m</footer>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m lire tests/unit/depense/g2a/tout-valider.test.tsx:[2m38:16[22m[39m
+    [90m 36| [39m  Object.defineProperty(file, 'arrayBuffer', { value: async () => new …
+    [90m 37| [39m  fireEvent.change(view.container.querySelector('input[type="file"]')!…
+    [90m 38| [39m  await screen.findByRole('region', { name: 'Vérification du justifica…
+    [90m   | [39m               [31m^[39m
+    [90m 39| [39m  await act(async () => { g.ouvre(); await g.promesse; await new Promi…
+    [90m 40| [39m  await waitFor(() => expect(view.container.querySelector('[data-dp="f…
+[90m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m141:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22m« Voir » ouvre la rangée du désaccord et le bandeau reste jusqu’à « Garder »
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find role="region" and name "Vérification du justificatif"
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_13_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_13_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+            [33mdata-dp[39m=[32m"alertes"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pb-2"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier le QR"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Ajouter une page"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1.5"[39m
+                [33mdata-dp[39m=[32m"lecture"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[39m
+                    [36m>[39m
+                      [0mfacture.pdf[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-xs text-cave-400"[39m
+                    [36m>[39m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[39m
+                  [36m<div[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[39m
+                    [33mdata-dp[39m=[32m"frise"[39m
+                    [33mdata-etat[39m=[32m"lecture"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-200"[39m
+                      [36m/>[39m
+                      [0menvoi ✓[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[39m
+                      [36m/>[39m
+                      [0mlecture[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px]"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-800"[39m
+                      [36m/>[39m
+                      [0mvérification[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[39m
+                  [33mdata-dp[39m=[32m"lignes-arrivent"[39m
+                [36m>[39m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-1 pb-3 pt-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mPour quoi ?[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0maprès la lecture[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mRèglement[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<footer[39m
+          [33mclass[39m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Lecture en cours"[39m
+            [33mclass[39m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[39m
+            [33mdata-primary[39m=[32m"true"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"Lecture en cours"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[39m
+        [36m</footer>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_13_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_13_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+            [33mdata-dp[39m=[32m"alertes"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pb-2"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier le QR"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Ajouter une page"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1.5"[39m
+                [33mdata-dp[39m=[32m"lecture"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold leading-6 text-cave-50"[39m
+                    [36m>[39m
+                      [0mfacture.pdf[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-xs text-cave-400"[39m
+                    [36m>[39m
+                      [0m0[0m
+                      [0m Mo[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"sr-only"[39m
+                    [33mrole[39m=[32m"status"[39m
+                  [36m>[39m
+                    [0mLecture et vérification…[0m
+                  [36m</p>[39m
+                  [36m<div[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[39m
+                    [33mdata-dp[39m=[32m"frise"[39m
+                    [33mdata-etat[39m=[32m"lecture"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-200"[39m
+                      [36m/>[39m
+                      [0menvoi ✓[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control dp-p3c-frise-cours"[39m
+                      [36m/>[39m
+                      [0mlecture[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px]"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-800"[39m
+                      [36m/>[39m
+                      [0mvérification[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[39m
+                  [33mdata-dp[39m=[32m"lignes-arrivent"[39m
+                [36m>[39m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-1 pb-3 pt-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mPour quoi ?[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0maprès la lecture[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mRèglement[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<footer[39m
+          [33mclass[39m=[32m"flex h-[52px] shrink-0 items-center gap-2 border-t border-cave-800 bg-cave-950 px-2 pb-safe"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Lecture en cours"[39m
+            [33mclass[39m=[32m"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"[39m
+            [33mdata-primary[39m=[32m"true"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtitle[39m=[32m"Lecture en cours"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-check"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m [0m
+            [0mEnregistrer[0m
+          [36m</button>[39m
+        [36m</footer>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m lire tests/unit/depense/g2a/tout-valider.test.tsx:[2m38:16[22m[39m
+    [90m 36| [39m  Object.defineProperty(file, 'arrayBuffer', { value: async () => new …
+    [90m 37| [39m  fireEvent.change(view.container.querySelector('input[type="file"]')!…
+    [90m 38| [39m  await screen.findByRole('region', { name: 'Vérification du justifica…
+    [90m   | [39m               [31m^[39m
+    [90m 39| [39m  await act(async () => { g.ouvre(); await g.promesse; await new Promi…
+    [90m 40| [39m  await waitFor(() => expect(view.container.querySelector('[data-dp="f…
+[90m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m150:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (13)[39m
+[2m   Start at [22m 18:40:57
+[2m   Duration [22m 4.94s[2m (transform 697ms, setup 225ms, collect 1.64s, tests 5.20s, environment 1.14s, prepare 111ms)[22m
+

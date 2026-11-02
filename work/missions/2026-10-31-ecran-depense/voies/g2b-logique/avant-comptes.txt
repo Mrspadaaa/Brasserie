@@ -1,0 +1,26 @@
+stdout | tests/unit/depense/g2b/mesure-banc.test.ts > mesure banc (hors ligne) > écrit les fiches anonymes et les comptes
+REJEU-K6 (7 pièces, 82 lignes)
+  unité, familles d'ingrédients : {"sur":28,"repris":18}
+  unité, hors ingrédients       : {"sur":33,"repris":3}
+  pire niveau, hors ingrédients : {"sur":32,"inconnu":1,"repris":3}
+  nature, ingrédients           : {"ingredient":46}
+  nature, hors ingrédients      : {"service":17,"other":6,"shipping":3,"equipment":6,"ingredient":1,"packaging":3}
+  « nouveau » d'office          : 47
+BANC D272B (14 pièces, 232 lignes)
+  unité, familles d'ingrédients : {"sur":83,"repris":64}
+  unité, hors ingrédients       : {"sur":76,"repris":9}
+  pire niveau, hors ingrédients : {"sur":73,"inconnu":2,"repris":10}
+  nature, ingrédients           : {"ingredient":147}
+  nature, hors ingrédients      : {"service":31,"other":10,"shipping":7,"equipment":27,"packaging":4,"ingredient":6}
+  « nouveau » d'office          : 153
+TICKET (17 lignes) — comptes seulement
+  famille : {"renovation":14,"emballage":1,"nettoyage":2}
+  nature  : {"maintenance":1,"packaging":1,"equipment":12,"ingredient":2,"other":1}
+  stock   : {"none":15,"new":2}  nouveaux : 2
+  unité   : {"sur/sans-objet":2,"sur/piece-evidente":1,"repris/piece-defaut":14}
+  pire    : {"sur":3,"repris":14}
+ ✓ tests/unit/depense/g2b/mesure-banc.test.ts (1 test) 120ms
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  18:51:02
+   Duration  1.46s (transform 654ms, setup 98ms, collect 1.06s, tests 120ms, environment 0ms, prepare 56ms)

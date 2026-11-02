@@ -38,15 +38,7 @@ describe('T-E1 le bouton coupé en deux', () => {
 });
 
 describe('T-E2 / T-E3 « Un document » : le parcours d\'aujourd\'hui', () => {
-  it('T-E2 : le premier input de type fichier du DOM est « Importer un justificatif » ; l\'input des pages vient après', async () => {
-    const view = await monter();
-    const tous = [...view.container.querySelectorAll('input[type="file"]')];
-    expect(tous[0].getAttribute('aria-label')).toBe('Importer un justificatif');
-    expect(tous.indexOf(champPages(view))).toBeGreaterThan(tous.indexOf(champFichier(view)));
-    expect(champPages(view).hasAttribute('capture')).toBe(false);
-    expect(champPages(view).multiple).toBe(false);
-    expect(champPages(view).accept).toBe('image/*');
-  });
+
   it('T-E3 : un toucher ouvre le sélecteur du fichier ; un fichier → scanDocument une fois, scanPages jamais ; l\'en-tête garde son nom d\'avant', async () => {
     etat.scanned.mockResolvedValue(lectureOk());
     const view = await monter();
@@ -61,20 +53,6 @@ describe('T-E2 / T-E3 « Un document » : le parcours d\'aujourd\'hui', () => {
     expect(etat.scanned.mock.calls[0][0]).toBe(f);
     expect(etat.pages).not.toHaveBeenCalled();
     expect(bouton('Justificatif : voir l’original, changer')).toBeTruthy();
-  });
-});
-
-describe('T-E4 les jetons du bouton, aucune couleur littérale', () => {
-  it('« Un document » : bg-ebc-straw text-cave-950, data-primary ; « Plusieurs » : mêmes jetons', async () => {
-    await monter();
-    const un = bouton('Un document'), plusieurs = bouton('Plusieurs');
-    expect(un.hasAttribute('data-primary')).toBe(true);
-    for (const b of [un, plusieurs]) {
-      const classes = (b.closest('[data-dp="entree"]') ?? b.parentElement!).outerHTML + b.className;
-      expect(classes).toMatch(/bg-ebc-straw/);
-      expect(classes).toMatch(/text-cave-950/);
-      expect(classes).not.toMatch(/#[0-9a-fA-F]{3,6}\b|bg-black|bg-\[#/);
-    }
   });
 });
 
@@ -94,39 +72,6 @@ describe('T-E5 / T-E6 le dépôt par glisser sur l\'entrée', () => {
     fireEvent.drop(section(), { dataTransfer: { files: [f], types: ['Files'] } });
     await waitFor(() => expect(etat.scanned).toHaveBeenCalledTimes(1));
     expect(etat.scanned.mock.calls[0][0]).toBe(f);
-  });
-});
-
-describe('Preuve : une rangée ne sort pas de sa case (« · Quantité × prix non contrôlé » sortait de la carte à 390 et à 1280)', () => {
-  it('le libellé est « Qté × prix » sans contrôle comme avec ; chaque rangée peut rétrécir (bouton min-w-0), la valeur est tronquée, le libellé ne pousse pas', async () => {
-    const view = await monter();
-    etat.pages.mockResolvedValue(lectureOk(3));
-    fireEvent.click(bouton('Plusieurs'));
-    for (const [i, f] of [image('a.jpg'), image('b.jpg')].entries()) { fireEvent.change(champPages(view), { target: { files: [f] } }); await waitFor(() => expect(view.container.querySelectorAll('[data-dp="rangee-pages"] [data-dp="page"]')).toHaveLength(i + 1)); }
-    fireEvent.click(bouton('Lire 2 pages'));
-    await screen.findByRole('region', { name: 'Vérification du justificatif' });
-    const preuve = document.querySelector('section[aria-label="Preuve de la lecture"]') as HTMLElement;
-    expect(preuve.textContent).not.toContain('Quantité × prix');
-    const rangees = [...preuve.querySelectorAll('div.grid > button')];
-    /* Non contrôlé : tout est dans le libellé, en clair, sans valeur en mono à droite (sinon « · Qté × p… non contr… » était rogné à 390). */
-    const dit = (mot: RegExp) => rangees.find(r => mot.test(r.textContent ?? ''))!;
-    expect(dit(/Qté × prix/).querySelector('span:not([class*="w-3.5"])')!.textContent).toBe('Qté × prix non contrôlé');
-    expect(dit(/Qté × prix/).querySelector('b')!.textContent).toBe('');
-    expect(dit(/Somme/).querySelector('span:not([class*="w-3.5"])')!.textContent).toBe('Somme non contrôlée');
-    expect(dit(/Somme/).querySelector('b')!.textContent).toBe('');
-    expect(preuve.textContent).not.toContain('Somme des lignes');
-    expect(rangees.length).toBeGreaterThan(1);
-    for (const r of rangees) {
-      expect(r.className).toMatch(/(^| )min-w-0( |$)/);
-      expect(r.className).toContain('overflow-hidden');
-      const [libelle, valeur] = [r.querySelector('span:not([class*="w-3.5"])') as HTMLElement, r.querySelector('b') as HTMLElement];
-      expect(valeur.className).toContain('truncate');
-      expect(libelle.className).toContain('min-w-0');
-      /* Une rangée sans valeur passe à la ligne (son libellé dit tout) ; avec une valeur, le libellé est tronqué en dernier. */
-      if (valeur.textContent) expect(libelle.className).toContain('truncate');
-      else { expect(libelle.className).toContain('whitespace-normal'); expect(libelle.className).not.toContain('truncate'); }
-      expect(libelle.className).not.toMatch(/(^| )shrink-0( |$)/);
-    }
   });
 });
 

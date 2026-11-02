@@ -65,18 +65,7 @@ describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
     expect(ligneId('line-2').querySelector('[data-dp-pastille]')).toBeNull();
     // D275 (voie f3) : Sabro n'est plus « unité à préciser » : le plateau dit l'unité déduite et pourquoi, à contrôler (HEAD : « unité à préciser »).
     expect(within(ligneId('line-20')).queryAllByText(/unité à préciser/)).toHaveLength(0);
-    expect(ligneId('line-20').querySelector('[data-dp-unite-deduite]')!.textContent).toMatch(/^unité g déduite · .+/); // sûre : deux voisines impriment « g » (confiance.ts, seconde source)
-  });
-  it('l’interrupteur « Mettre en stock » écrit none / existing, jamais new, et son état se lit', async () => {
-    await lire();
-    const interrupteur = screen.getByRole('switch', { name: 'Mettre en stock, ligne 1' });
-    expect(interrupteur).toHaveAttribute('aria-checked', 'true');
-    fireEvent.click(interrupteur);
-    expect(interrupteur).toHaveAttribute('aria-checked', 'false');
-    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('none');
-    fireEvent.click(interrupteur);
-    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
-    expect(screen.getByLabelText('Stock ligne 1')).not.toHaveValue('new');
+    expect(ligneId('line-20').querySelector('[data-dp-unite-deduite]')).toBeNull(); // C2 (g2a, critique g3) : aucune phrase d'unité sous les champs ; la raison est au survol de la rangée (titre)
   });
   it('T4 : Confirmer avec une unité à préciser reste cliquable, n’écrit rien, dit « 1 unité à préciser » et mène au champ', async () => {
     // D275 (voie f3) : Sabro se déduit désormais ; la lecture n'a plus que « Maris Otter » 6 sans unité, ni prix, ni voisine, ni indice dans le nom (« 6 ? », rouge).
@@ -112,7 +101,7 @@ describe('le banc de développement n’atteint jamais l’enregistrement réel'
     render(<ExpenseSheet onClose={onClose} onSaved={() => {}} apercu={apercu}/>);
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
     expect(state.scanned).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByLabelText('Mettre en stock, ligne 20'));
+    fireEvent.change(screen.getByLabelText('Stock ligne 20'), { target: { value: 'none' } }); // C7 : le menu du stock, plus d'interrupteur
     // D275 (voie f3) : Sabro « 30 » prend le g de ses voisines ; plus de « g » à toucher (HEAD : clic sur « g »).
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
     await waitFor(() => expect(enregistrer.mock.calls.length + (screen.queryByRole('alert') ? 1 : 0)).toBeGreaterThan(0));
