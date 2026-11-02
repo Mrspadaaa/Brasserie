@@ -169,3 +169,8 @@ retirées de l'index, fichiers gardés sur le disque).
 - Tests : `d371/liaison`, `d371/recherche`, `plateau.test.tsx` D371 (rouge sur c625a2c6). 96/96 Dépense. Servi : `index-BRPLnj3s.js`.
 - Non fait : banc par la vision de l'alerte ; la ligne de la liste ne se marque pas en rouge ; « à remplir » ne la compte pas ; l'unité
   déduite « pièce » d'une ligne de houblon sans unité reste.
+
+## Vers 23 h 45 — D372 déployé (ddbabbfc)
+- Sa plainte : l'alerte de D371 n'est pas sa vue ; il attendait le face à face pu4d, générique. Fait : règle dans `confianceLigne`, vue « unité à remplir » de pu4d.
+- Banc : cas `g-unite` ajouté (scripts/g-banc.mjs du banc et check-invoice-journey-emulator.mjs du worktree, non commités) ; 5 OK.
+- Prochaine action : rien d'ouvert sur D372 ; restes connus listés dans D369 et D371.

@@ -1812,3 +1812,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   c'est par là que sa ligne y est arrivée, probablement. Correctif : alerte au plateau (« compté en g au stock : pièce ne s'y ajoute pas »,
   « Compter en g » d'un toucher) ; « Suivre au stock » retombe sur le nom seul quand l'unité bloque, l'alerte suit. Témoin rouge sur c625a2c6
   (test d'écran D371), vert après (96/96 Dépense). Déployé 27d12523.
+
+## D372 — 02.11, soir : le conflit d'unité dans sa vue pu4d, pour tout produit (déployé ddbabbfc)
+- Ses mots (SPEC, 02.11) : « Mais cette vue a été oublié ?? », « C'est à ça que je m'attendais ??? », « Et ça doit être générique […] pas juste sur ce cas précis ??? ».
+- Faute : D371 avait inventé une alerte rouge (« Compter en g »), alors que sa maquette pu4d (état d) a déjà le geste d'une unité en doute (règle n° 1, L03).
+- Règle : `confianceLigne` (`src/ui/depense/confiance.ts`) met l'unité « à remplir » quand une ligne reliée a une unité lisible qui ne s'ajoute pas à son article
+  (`uniteHorsArticle`), quels que soient le produit et la paire (pièce/g, L/Kg, g/L, Kg/pièce). La rangée, « à remplir » et le plateau suivent : ▒ à la place de l'unité,
+  cinq cases avec l'unité du stock proposée, face à face FACTURE « pièce ne s'ajoute pas » | STOCK « compté en g », lien rouge « ? ». L'alerte `AlerteUnite` est retirée.
+- Preuves : `tests/unit/depense/d372` (10, dont 4 paires refusées et 5 acceptées) et le test d'écran pu4d, rouges sur 27d12523, verts sur ddbabbfc ; dossier Dépense :
+  62 échecs anciens avant comme après, aucun nouveau. Banc `g-unite` 390, clair et sombre : 5 OK, captures regardées. En ligne : `index-DHCDSPpx.js`, marqueur présent, alerte absente.
+- Reste : le libellé « article « X » · relié à « X », nom déjà au stock » répète le nom ; hors de ce correctif.

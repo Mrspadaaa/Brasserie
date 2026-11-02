@@ -1334,3 +1334,12 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - (02.11, soir, suite de D371), mot pour mot : « Le problème vient de la ligne saisie en « pièce », alors que l'Idaho 7 est compté en grammes
   dans le stock exactement, mais on a pas la vue, popup sur le changement problématique » (lu : une alerte visible sur-le-champ quand l'unité de
   la ligne ne s'ajoute pas à l'article relié, avec l'unité du stock en un toucher.)
+- **La vue face à face oubliée** (02.11, soir ; capture `uploads/…/a6d2e0e9-image.jpg` : sa page de choix, état « pu4d · relecture à accepter »,
+  le face à face FACTURE (1re lecture 2, 3e lecture 3) | STOCK (Safale US-05, 4 → 7 sachets après réception), « Garder 3 », « Remettre 2 » ;
+  en vignette, l'état « unité illisible » : FACTURE extrait | STOCK « compté en Kg »), mot pour mot : « Mais cette vue a été oublié ?? » (lu, après
+  D371 : l'alerte rouge ajoutée n'est pas sa maquette ; un conflit d'unité avec l'article relié se montre dans SON face à face Facture | Stock,
+  comme l'unité illisible de pu4d, avec les cases et l'unité du stock proposée. D372.)
+- **Suite, même soir**, mot pour mot : « C'est à ça que je m'attendais ??? » (lu : le face à face Facture | Stock de sa maquette pu4d, à la place
+  de l'alerte rouge de D371. D372.)
+- **Suite**, mot pour mot : « Et ça doit être générique, on est bien d'accord, pas juste sur ce cas précis ??? » (lu : toute ligne reliée dont l'unité
+  ne s'ajoute pas à celle de l'article, quels que soient le produit et la paire d'unités ; le test en joue plusieurs. D372.)

@@ -26,9 +26,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres sans les pistes. 23 au 25.10 : maquette hors de ses choix, vignette prise pour consigne. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 portée avec l'ancien formulaire sous « plus » : « Mais l'app » (D346).
+- Erreur : 19.10, l5b : barres sans les pistes. 23 au 25.10 : maquette hors de ses choix, vignette prise pour consigne. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 portée avec l'ancien formulaire sous « plus » : « Mais l'app » (D346). 02.11 : alerte d'unité inventée, l'état pu4d existait (D372).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24).
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -42,7 +42,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Préparer : briefs, données, architecture
 
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
-- Erreur : 19.10, « au style » n'a été contrôlé que sur Ma bière ; Comparer, Suggestions, la fiche et la substitution l'ont perdu. « commen ça a pu être oublié ? »
+- Erreur : 19.10, « au style » n'a été contrôlé que sur Ma bière ; les autres écrans l'ont perdu. « commen ça a pu être oublié ? »
 - Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
 - Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md.
 - Rôles : pilote
@@ -104,7 +104,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf (300 k, 26.10). Un long livrable s'écrit section par section. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf. Un long livrable s'écrit section par section. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns (01.11)
 
@@ -146,7 +146,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun ; revenu 4 fois : à mécaniser
 
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
-- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Son portrait n'avait jamais été confronté à ses verdicts.
+- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
 - Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement est une proposition ; le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. L'agent qui a lu ou enrichi le jeu ne refait jamais l'épreuve.
 - Rôles : pilote, critique, conseil
