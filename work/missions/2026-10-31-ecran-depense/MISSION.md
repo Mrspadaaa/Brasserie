@@ -170,6 +170,7 @@ Avant : semaine, tous modèles 12 %, Fable 8 % (31.10, vers 17 h).
 | Lecture lente : le total corrigé, la 3e lecture qui n'arrive pas (Q1 total : A fond bleu et 46,40 barré, B « ↻ +1,60 », C bleu souligné, D rien ; Q2 jamais arrivée : A forme d'aujourd'hui, B « ●●× », C fil figé « non vérifiée », D puce « non vérifiée » ; D312 ; critique ACCEPTÉ, majeur levé) | 02.11 v1 | https://claude.ai/artifact/6eUKWCHpbz1iWMB28hchHs | `work/missions/2026-10-31-ecran-depense/choix-cas-38/index.html` |
 | Lecture lente : « Tout valider » les lignes pas retrouvées (sur son 2 D, deux lignes : A une à la fois « 1/2 », B « Tout valider » dans le bandeau, C bandeau en liste, D la question sur la rangée ; D313 ; critique ACCEPTÉ, majeur levé ; son choix B le 02.11, D316) | 02.11 v1 | https://claude.ai/artifact/8ggW4mCuYfjgY85qQKsUP1 | `work/missions/2026-10-31-ecran-depense/choix-valider/index.html` |
 | Vue détail d'une ligne (le plateau) · panel v0 (16 idées sur six cas, classées par le critique ; pu4, pz2, pa1 en passe 2 ; D345, D348) | 02.11 v1 | https://claude.ai/artifact/HxaxpDdzztLYPrCCnwnMAs | `work/missions/2026-10-31-ecran-depense/choix-plateau/index.html` |
+| Vue détail d'une ligne, passe 4 | v1, 02.11 | https://claude.ai/artifact/XeGBAqvwsAHgwuAtLSXGJH | work/missions/2026-10-31-ecran-depense/choix-plateau-v1/index.html |
 
 ## Reprise
 - 31.10, nuit : d1, d2 et i1 rendus. Quatre voies écrites (l1-lecture, s1-stock, s2-enregistrement, t1-onglets ; exigences communes

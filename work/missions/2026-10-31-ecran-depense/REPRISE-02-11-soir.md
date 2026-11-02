@@ -59,3 +59,28 @@ retirées de l'index, fichiers gardés sur le disque).
 - La vue détail sera refaite après son choix : les corrections du plateau d'aujourd'hui sont provisoires.
 - Le `.gitignore` des missions laisse passer les `.json` : les sorties de banc qui portent ses valeurs sont en `.json.txt` ; ne jamais
   `git add -f` un dossier de banc.
+
+## Vers 20 h 30 (horloge du poste) : passe 4, page v1, rejeu, g7
+- Ses remarques sur pu4c-a (D353 à D355) et sur le banc de 60a8c25f (D357, D358, et « Il manque les deux boutons ? », le segment Plié | Déplié
+  caché sans sous-famille, question rendue) ; D356 : D347 relu, « à 90 %, aie fini tes tâches », tout mener au bout. L01 mise à jour.
+- Contrôle `work/refonte-frontend/v4/tournoi/outils/controle-plateau-ligne.mjs` (pièce offerte, barré sans geste, autre ligne nommée) :
+  LIGNE ECHEC sur pu4c, pa1c, pz2c (témoins).
+- Passe 4 : `plateau/v3/pu4d`, `pa1d`, `pz2d`, MENU OK et LIGNE OK ; critique ACCEPTÉ les trois (`plateau/critique/RESULTAT-p4.md`) :
+  pu4d, pa1d, pz2d dans cet ordre. **Page v1 publiée** : https://claude.ai/artifact/XeGBAqvwsAHgwuAtLSXGJH (source `choix-plateau-v1/`, PAGE OK,
+  captures regardées). Il choisit ; ensuite le port de son choix dans `src/ui/depense` (D345), avec D350 à D355 dans l'app.
+- g6-rejeu fini : M 10 sur 13 passées KO → OK ; restent M1 (2 rangées de matériel sans unité), M5 sombre sous filtre (texte 2,1 sur ambre,
+  vu sur `apres-G4/390-18`), M11 (mise en place sans « à remplir ») ; existants 122 OK, 4 KO inchangés (doc6, doc14).
+- **g7-reste** (auteur Sonnet, en cours) : M1, M5, M11, D354 dans l'app, D357 Regrouper discret, D358 l'arrondi en sa propre ligne (2e plainte
+  après D261b, changement de genre, message envoyé à l'agent). Il ne commite pas.
+- Le test d'écran se fera sur la version de g7, pas sur 60a8c25f (voie `t-ecran-g7`, VOIE à recibler sur le sha).
+
+## Prochaine action, dans l'ordre (remplace la liste plus haut)
+1. Retour de g7 : relire le diff et rejouer ses tests ; tsc, build, manifeste 21dd75b3 ; commit par chemins.
+2. Copie `deploy-hosting-qr` : `git checkout --detach <sha g7>`, functions/lib, `scripts/g-banc.mjs` recopié. Puis rejeu G1, G3, G4 et A
+   (Haiku, `lancer-g.sh`, un banc à la fois). Puis le pilote regarde les captures.
+3. t-ecran-g7 (critique neuf) : `VERDICT.md` dans `avant-deploiement/<sha>/`, puis « Pilote : vu », puis
+   `node scripts/agents/controle-avant-deploiement.mjs <sha>`. Sur AVANT-DEPLOIEMENT OK, déployer en deux temps : `--only hosting`, puis
+   `--only functions:aiTask` si `functions/` a changé.
+4. Restes : doc6 « Même achat », la pastille TVA de doc14, les menus déroulants de l'app (D350), l'écran vide de 18 h 04, D326 (3) à (8),
+   le Malt Vienne, la signature de la mission, les lignes LEÇON PROPOSÉE et CONNAISSANCE (g1, g6, pg, pu, pa, pz, pt).
+- Usage : 87 % à 20 h 30. D356 : tout finir d'ici 90 %.
