@@ -1281,3 +1281,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   versions (pu4d, pa1d, pz2d), cas par cas, à côté de p3c-3. », mot pour mot : « Oui c'est très bien implémente ça » (lu : la page lui va ;
   il ne nomme pas de version.) Puis, aussitôt, mot pour mot : « Ah att il faut choisir » (lu : il va choisir sur la page ; rien n'est porté
   avant son choix, le reste continue. D360.)
+- (suite, son choix), sur sa capture de pa1d au cas c (« article — · hors stock » et « + Suivre au stock » sur la ligne du détartrant,
+  « extrait · Supprimer » dessous), `…/9fd4298a-image.jpg`, mot pour mot : « Ah oui la 1 est toujours mieux sauf une fois elle oublie d'ajouter
+  ce champs » (lu : pu4d, la n° 1, est son choix ; sur une ligne hors stock, elle oublie le champ article de pa1d, « article — · hors stock
+  + Suivre au stock » : greffé. D361.)

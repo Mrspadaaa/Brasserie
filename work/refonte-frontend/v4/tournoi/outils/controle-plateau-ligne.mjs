@@ -4,6 +4,7 @@
 //   que si son geste attend (« Tout valider », « Garder », « Remettre », « Revenir à » visible).
 // D355 « Ça parle d'un autre item sur le détail d'un ? » : sous la bande des malts, aucune autre ligne nommée
 //   (« n à régler · X › », « Suivante : X »). Lecture étroite : la position sans nom (« ‹ 1 sur 2 › ») reste permise.
+// D361 « la 1 est toujours mieux sauf une fois elle oublie d'ajouter ce champs » : au cas c, « + Suivre au stock » sur la ligne hors stock.
 // Usage : node controle-plateau-ligne.mjs <etat.html> [--etats repos,a,b,c,d,e,f] [--theme cave]
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -53,6 +54,8 @@ try {
         if (t.length > 60 || !/(à régler|Suivante)\s*[·:]\s*\p{Lu}/iu.test(t)) continue;
         if (e.getBoundingClientRect().top + scrollY > haut) { out.push(`${etat} · « ${t} » dans la liste, nomme une autre ligne`); break; }
       }
+      // D361 : la ligne hors stock (cas c) garde son champ article, « article — · hors stock + Suivre au stock » (pa1d, greffe sur pu4d).
+      if (etat === 'c' && ![...document.querySelectorAll('button,[role=button]')].some((b) => vu(b) && /Suivre au stock/.test(texte(b)))) out.push(`${etat} · ligne hors stock sans « Suivre au stock »`);
       return out;
     }, etat));
   }
