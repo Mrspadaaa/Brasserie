@@ -636,3 +636,15 @@ LEÇON PROPOSÉE : un plan de fusion « sa saisie l'emporte » nomme trois chose
 (le brouillon déjà transformé, pas la lecture brute), la liste complète des cellules avec leur registre (en-tête compris), et tous les
 champs qui portent un index de ligne. Il mesure aussi son appariement sur les vraies pièces. (C'est la proposition de RELECTURE.md, que
 je reprends : je l'ai manquée en version 1.)
+
+## 7. Précisions de la relecture 2 (pilote, 02.11 ; `RELECTURE-2.md`, RELECTURE OK)
+Elles font partie du contrat des voies S, C, E et B, au même titre que le reste du plan.
+- **R1** (fin de partie, E) : le client appelle `ajouterCoupure(provisoire, 'delai-saute', phraseCoupure('delai-saute'))`
+  (`functions/src/invoiceVisionReview.ts:216-227`) : le point `lecture-coupee` marque les lignes « repris » (`confiance.ts:282`), pas seulement une phrase.
+- **R2** : la 3.8 ajoute 6 lignes sur 6 pièces sur 12 après le repli de doc13 ; la ligne « ne lit plus » de § 4 est repêchée par la position.
+  Le cas reste réel (listes de longueurs différentes).
+- **R3** : les décisions de fin de plan sont tranchées par D312 (`work/refonte-frontend/decisions.md`). E code les formes A de la voie l3-cas
+  (en-tête corrigé : la langue bleue de sa maquette ; 3.8 qui n'arrive jamais : la forme d'aujourd'hui d'une 3.8 coupée) et ne les attend pas.
+- **R4** : `points[].ligne` vaut le numéro de l'id (`line-N` donne N), pas la position dans `items` (`confiance.ts:320`).
+- **R5** : `traduireLignes` rend une `Map<rang, nameFr>` dont le rang est la position dans la liste envoyée ; pour la seconde traduction
+  (lignes changées seulement), E reporte ce rang vers l'id.
