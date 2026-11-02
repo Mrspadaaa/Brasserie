@@ -1746,3 +1746,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   Elle est la base du port, telle quelle (règle n° 1). Greffe de pa1d : sur une ligne hors stock, « article — · hors stock + Suivre au stock » (sa
   capture de pa1d-c). Contrôle `controle-plateau-ligne.mjs`, LIGNE ECHEC sur pu4d au cas c, OK sur pa1d. Voie p-port-pu4d (auteur) ; puis rejeu
   du banc, critique côte à côte avec pu4d, garde, déploiement. Remplace p3c-3 pour le plateau seul (le reste de la feuille ne bouge pas).
+- D362 (le brasseur, 02.11, soir) : « Va jusqu'à 95 de quota, mais ne lance pas de nouvelles tâche, on termine juste celle-ci proprement ».
+  Le seuil passe à 95 %, ce qui remplace D356 sur ce point. On ne lance que les étapes des deux tâches en cours :
+  - son ticket, avec le rejeu du banc, le test d'écran, la garde et le déploiement de 7945555e ;
+  - le port de pu4d, avec le banc, le critique côte à côte, la garde et le déploiement.
+  Les restes (doc6, doc14, menus déroulants de l'app, D326, Malt Vienne, écran vide de 18 h 04) ne sont pas lancés : ils restent listés
+  pour la semaine suivante. À 95 % : l'état est écrit, le commit fait, le rapport rendu.

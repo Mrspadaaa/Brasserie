@@ -1285,3 +1285,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « extrait · Supprimer » dessous), `…/9fd4298a-image.jpg`, mot pour mot : « Ah oui la 1 est toujours mieux sauf une fois elle oublie d'ajouter
   ce champs » (lu : pu4d, la n° 1, est son choix ; sur une ligne hors stock, elle oublie le champ article de pa1d, « article — · hors stock
   + Suivre au stock » : greffé. D361.)
+- **Le quota, encore** (02.11, soir), mot pour mot : « Va jusqu'à 95 de quota, mais ne lance pas de nouvelles tâche, on termine juste celle-ci
+  proprement » (lu : le plafond passe à 95 % d'usage hebdomadaire ; on finit proprement ce qui est en cours, son ticket jusqu'au déploiement
+  et le port de pu4d, sans rien lancer d'autre ; les restes attendent la semaine suivante. Remplace D356 sur le seuil. D362.)
