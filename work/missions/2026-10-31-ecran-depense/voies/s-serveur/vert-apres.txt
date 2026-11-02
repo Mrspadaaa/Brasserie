@@ -1,0 +1,102 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+ [32m✓[39m tests/unit/invoiceScanBudget.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 149[2mms[22m[39m
+ [32m✓[39m tests/unit/invoiceScanVote.test.ts [2m([22m[2m55 tests[22m[2m)[22m[32m 128[2mms[22m[39m
+[90mstderr[2m | tests/unit/depense/lecture-d/serveur.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [32m✓[39m tests/unit/depense/lecture-d/serveur.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 127[2mms[22m[39m
+ [32m✓[39m tests/unit/invoiceScanCache-d273c.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+[90mstderr[2m | tests/unit/invoiceScanCsv8.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [32m✓[39m tests/unit/invoiceScanCsv8.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+[90mstderr[2m | tests/unit/invoiceScanMontantSeul.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [32m✓[39m tests/unit/invoiceScanMontantSeul.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mlance deux lectures complètes parallèles, Flash-Lite haute résolution, sans web ni clé dans URL
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":2,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mcorrige le préclassement matériel après une majorité indépendante de deux sur trois (la 3.8 est la troisième)
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mcorrige le préclassement matériel après une majorité indépendante de deux sur trois (la 3.8 est la troisième)
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mla 3.8 tranche avec sa valeur et le résultat reste en désaccord après trois lectures toutes différentes
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mla 3.8 tranche avec sa valeur et le résultat reste en désaccord après trois lectures toutes différentes
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mne relance pas une lecture pour une devise étrangère identiquement transcrite
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2maucun retry après rejet des lectures par le fournisseur : deux Flash-Lite puis la 3.8 une seule fois, jamais une quatrième
+[22m[39m{"lecture":1,"etape":"parallele","model":"gemini-3.5-flash-lite","elapsedMs":1,"cause":"erreur","erreur":"Gemini HTTP 429 · rate-limit","severity":"WARNING","message":"Lecture de facture en échec"}
+{"lecture":2,"etape":"parallele","model":"gemini-3.5-flash-lite","elapsedMs":1,"cause":"erreur","erreur":"Gemini HTTP 429 · rate-limit","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2maucun retry après rejet des lectures par le fournisseur : deux Flash-Lite puis la 3.8 une seule fois, jamais une quatrième
+[22m[39m{"lecture":3,"etape":"troisieme","model":"gemini-3.8-flash","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 429 · rate-limit","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mattend une sœur encore en cours après le rejet de la première, puis appelle la 3.8
+[22m[39m{"lecture":1,"etape":"parallele","model":"gemini-3.5-flash-lite","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mattend une sœur encore en cours après le rejet de la première, puis appelle la 3.8
+[22m[39m{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mattend une sœur encore en cours après le rejet de la première, puis appelle la 3.8
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mune seconde lecture échouée appelle la 3.8, qui vote à deux avec la première
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mune seconde lecture échouée appelle la 3.8, qui vote à deux avec la première
+[22m[39m{"lecture":2,"etape":"parallele","model":"gemini-3.5-flash-lite","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mune seconde lecture échouée appelle la 3.8, qui vote à deux avec la première
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mune seconde lecture échouée et la 3.8 aussi garde la première, sans quatrième appel
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mune seconde lecture échouée et la 3.8 aussi garde la première, sans quatrième appel
+[22m[39m{"lecture":2,"etape":"parallele","model":"gemini-3.5-flash-lite","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mune seconde lecture échouée et la 3.8 aussi garde la première, sans quatrième appel
+[22m[39m{"lecture":3,"etape":"troisieme","model":"gemini-3.8-flash","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mun arbitrage échoué laisse les divergences explicites sans quatrième appel
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mun arbitrage échoué laisse les divergences explicites sans quatrième appel
+[22m[39m{"lecture":3,"etape":"troisieme","model":"gemini-3.8-flash","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mignore les pensées du modèle lors de la lecture du JSON
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/invoiceScanTransport.test.ts[2m > [22m[2mVision des justificatifs : fournisseur entièrement simulé[2m > [22m[2mrespecte le petit plafond de sortie du test réel
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":null,"outputTokens":null,"thoughtsTokens":null,"totalTokens":10,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+ [32m✓[39m tests/unit/invoiceScanTransport.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/unit/invoiceScanCore.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m183 passed[39m[22m[90m (183)[39m
+[2m   Start at [22m 14:05:43
+[2m   Duration [22m 2.36s[2m (transform 318ms, setup 690ms, collect 2.15s, tests 499ms, environment 1ms, prepare 435ms)[22m
+

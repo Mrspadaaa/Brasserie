@@ -1,5 +1,5 @@
 import type { FinanceCategory } from '../types';
-import { AiClient, type AiTier } from './aiClient';
+import { AiClient, type AiFluxEtape, type AiRequest, type AiResponse, type AiTier } from './aiClient';
 import { totalAdmis } from './pagesJustificatif';
 import { peserPoint, type InvoiceControls, type InvoicePoint } from '../domain/finance/invoicePoints';
 
@@ -13,7 +13,11 @@ export interface ScannedInvoiceResult {
   vendor:string; date:string; currency:string; invoiceNumber:string;
   amountHT:number|null; tvaRate:number|null; tvaAmount:number|null; amountTTC:number|null;
   category:FinanceCategory; subcategory:string; description:string;
+  /** Lenteur D : le jeton du morceau provisoire envoyé dans l'appel qui a calculé ce final ; absent d'un final seul (cache, ancien serveur, pièce sans 3.8). */
+  provisoireJeton?:string;
   items:Array<{ id:string; name:string; kind:ScannedLineKind; reference?:string; variant?:string; quantity:number|null; unit:string; price?:number|null; amountTTC?:number|null; stockCategory?:string; evidence?:string; ambiguity?:string; vatCode?:string; alphaPct?:number|null; alphaPctLu?:number|null;
+    /** Lenteur D : le rang de la ligne provisoire d'où vient cette ligne finale ; `null` = ajoutée par la 3.8 ; absent = le serveur ne le dit pas (jamais fabriqué). */
+    rangProvisoire?:number|null;
     /** D275, voie f5 : la désignation en français (marque et nom propre tels quels, sans option ni unité), seulement si la lecture la rend ; jamais exigée. */
     nameFr?:string }>;
   issues:string[]; review?:{ status:InvoiceReviewStatus; findings:string[]; readers?:number; correctedFields?:string[] };
@@ -28,6 +32,15 @@ export interface ScanOutcome {
   model?:string; elapsedMs?:number; error?:string; documentHash?:string; cached?:boolean;
   /** n2-pages : le nombre de pages que le serveur a lues, posé seulement quand il est celui des pages envoyées. */
   pagesLues?:number;
+  /** Lenteur D : posé seulement sur un résultat provisoire (le morceau du flux) ; le final le retrouve dans `result.provisoireJeton`. */
+  jeton?:string;
+}
+/** Lenteur D : ce que l'écran donne à `scanDocument` et `scanPages` pour lire le flux. Sans option, la lecture est celle d'aujourd'hui, un seul appel. */
+export interface ScanFluxOptions {
+  /** Appelé une fois, au plus tard avant le final, avec la lecture des deux premiers lecteurs ; jamais appelé quand le serveur n'envoie aucun morceau. */
+  onProvisoire?:(provisoire:ScanOutcome)=>void;
+  /** Levé quand la feuille se ferme : coupe l'attente, le serveur finit et met en cache. */
+  signal?:AbortSignal;
 }
 /** n2-pages : ce qu'un serveur qui ne lit pas encore plusieurs pages (avant le redéploiement d'`aiTask`) fait dire à l'écran. */
 export const PLUSIEURS_PAGES_INDISPONIBLE='La lecture de plusieurs pages n’est pas encore disponible sur le serveur. Lis-les avec « Un document », ou saisis à la main.';
@@ -87,12 +100,21 @@ export const GeminiScannerService = {
     return new Promise((resolve,reject) => { const reader=new FileReader(); reader.onload=()=>resolve(String(reader.result)); reader.onerror=()=>reject(new Error('Le justificatif ne peut pas être lu.')); reader.readAsDataURL(file); });
   },
   normalizeMimeType(file:File):string { return file.type || (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : ''); },
-  async scanDocument(file:File,_tier:AiTier='fast'):Promise<ScanOutcome> {
+  /**
+   * Lenteur D : sans option, un seul appel comme avant. Avec `onProvisoire` ou `signal`, la lecture passe par le flux d'`aiTask` : le morceau
+   * provisoire est rendu à `onProvisoire` (même forme qu'un `ScanOutcome`, plus `jeton`), le final est la valeur rendue, comme sans flux.
+   */
+  async appeler(req:AiRequest,options:ScanFluxOptions|undefined,provisoire:(etape:AiFluxEtape)=>ScanOutcome):Promise<AiResponse> {
+    if (!options?.onProvisoire && !options?.signal) return AiClient.run(req);
+    const onProvisoire=options.onProvisoire;
+    return AiClient.runFlux(req,etape=>{ if (onProvisoire) onProvisoire(provisoire(etape)); },options.signal);
+  },
+  async scanDocument(file:File,_tier:AiTier='fast',options?:ScanFluxOptions):Promise<ScanOutcome> {
     const mimeType=this.normalizeMimeType(file), base={ proofDataUrl:'',fileName:file.name,mimeType };
     if (!['image/jpeg','image/png','image/webp','application/pdf'].includes(mimeType) || file.size>4*1024*1024)
       return { ...base,ok:false,error:'Choisis une image JPG, PNG, WebP ou un PDF de 4 Mo maximum (4 pages).' };
     const proofDataUrl=await this.fileToDataUrl(file);
-    const response=await AiClient.run({ task:'scanInvoice',tier:'fast',file });
+    const response=await this.appeler({ task:'scanInvoice',tier:'fast',file },options,etape=>({ ...base,proofDataUrl,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs }));
     if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:response.error || 'Lecture indisponible. Complète les champs manuellement.' };
     return { ...base,proofDataUrl,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:response.documentHash,cached:response.cached };
   },
@@ -101,12 +123,13 @@ export const GeminiScannerService = {
    * de rendre une lecture : `ok:true` sans `pages === N` et le refus exact de `validateInvoiceFile` disent « pas encore disponible » ; toute autre erreur
    * (budget, délai, quota, lecture non exploitable) garde son message.
    */
-  async scanPages(files:File[]):Promise<ScanOutcome> {
+  async scanPages(files:File[],options?:ScanFluxOptions):Promise<ScanOutcome> {
     const base={ proofDataUrl:'',fileName:`${files.length} pages`,mimeType:files[0]?this.normalizeMimeType(files[0]):'' };
     const types=['image/jpeg','image/png','image/webp'];
     if (files.length<2||files.length>4||files.some(file=>!types.includes(this.normalizeMimeType(file))||file.size>4*1024*1024)||!totalAdmis(files.map(file=>file.size)))
       return { ...base,ok:false,error:'Choisis de 2 à 4 images JPG, PNG ou WebP (4 Mo chacune, 12 Mo en tout).' };
-    const response=await AiClient.run({ task:'scanInvoice',tier:'fast',files });
+    // La règle `pages === N` ne vaut que pour le final : un morceau qui dit un autre nombre de pages ne pose simplement pas `pagesLues`.
+    const response=await this.appeler({ task:'scanInvoice',tier:'fast',files },options,etape=>({ ...base,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs,...(etape.pages===files.length?{pagesLues:etape.pages}:{}) }));
     if (!response.ok) return { ...base,ok:false,error:response.error===REFUS_VIEUX_SERVEUR?PLUSIEURS_PAGES_INDISPONIBLE:response.error||'Lecture indisponible. Complète les champs manuellement.' };
     if (!response.data||response.pages!==files.length) return { ...base,ok:false,error:PLUSIEURS_PAGES_INDISPONIBLE };
     return { ...base,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:response.documentHash,cached:response.cached,pagesLues:response.pages };
@@ -121,9 +144,12 @@ export const GeminiScannerService = {
       vendor:text(raw?.vendor),date:this.normalizeDate(raw?.date),currency:text(raw?.currency,5),invoiceNumber:text(raw?.invoiceNumber,70),
       amountHT:number(raw?.amountHT),tvaRate:number(raw?.tvaRate),tvaAmount:number(raw?.tvaAmount),amountTTC:number(raw?.amountTTC),
       category:['brassage','materiel','nettoyage','chargesFixes','renovation','divers'].includes(raw?.category)?raw.category:'divers',subcategory:text(raw?.subcategory,60),description:text(raw?.description,300),
+      ...(typeof raw?.provisoireJeton==='string'&&raw.provisoireJeton?{provisoireJeton:text(raw.provisoireJeton,80)}:{}),
       items:(Array.isArray(raw?.items)?raw.items:[]).slice(0,35).map((item:any,index:number)=>({ id:`line-${index+1}`,name:text(item?.name),kind:kinds.includes(item?.kind)?item.kind:'unknown',reference:text(item?.reference,70),variant:text(item?.variant,80),quantity:number(item?.quantity),unit:text(item?.unit,30),price:number(item?.price),amountTTC:number(item?.amountTTC),stockCategory:text(item?.stockCategory,60),evidence:text(item?.evidence),ambiguity:text(item?.ambiguity),
         ...(typeof item?.vatCode==='string'?{vatCode:text(item.vatCode,10)}:{}),
-        ...('alphaPct' in (item??{})?{alphaPct:number(item.alphaPct)}:{}), ...('alphaPctLu' in (item??{})?{alphaPctLu:number(item.alphaPctLu)}:{}) })),
+        ...('alphaPct' in (item??{})?{alphaPct:number(item.alphaPct)}:{}), ...('alphaPctLu' in (item??{})?{alphaPctLu:number(item.alphaPctLu)}:{}),
+        // Lenteur D : un rang entier, ou null (ligne ajoutée par la 3.8). Une valeur invalide n'est pas lue comme « ajoutée » : la clé est omise.
+        ...(item?.rangProvisoire===null?{rangProvisoire:null}:int(item?.rangProvisoire)!==null?{rangProvisoire:int(item.rangProvisoire)!}:{}) })),
       issues:messages(raw?.issues),
       review:raw?.review ? {
         status:reviewStatuses.includes(raw.review.status)?raw.review.status:'unavailable',

@@ -142,6 +142,8 @@ function alignLines(base: Item[], other: Item[]): Pairing {
   }
   return { match, orphansBase: base.flatMap((_, bi) => (match.has(bi) ? [] : [bi])), orphansOther: other.flatMap((_, oi) => (taken.has(oi) ? [] : [oi])) };
 }
+/** D308 : exportée sous ce nom pour rapprocher les lignes du premier écran (deux Flash-Lite) de celles de la lecture finale (`invoiceScanVote.ts`). */
+export { alignLines as alignerLignes };
 const complete = (p: Pairing) => !p.orphansBase.length && !p.orphansOther.length;
 const holdsProduct = (item: Item) => { const r = lineMathCheck([item]); return r.lines.checked === 1 && r.lines.failed === 0; };
 const lineSummary = (item: Item) => `${item.name || '?'} · ${item.quantity ?? '?'} ${item.unit} · ${item.amountTTC === null ? '?' : item.amountTTC.toFixed(2).replace('.', ',')}`;

@@ -101,6 +101,61 @@ async function toBase64(file: File | Blob): Promise<{ data: string; mimeType: st
  */
 const callAiTask = httpsCallable<Record<string, unknown>, AiResponse>(functions, 'aiTask', { timeout: AI_CLIENT_TIMEOUT_MS });
 
+/**
+ * Lenteur D (PLAN.md § 5) : le morceau que le serveur envoie quand les deux premières lectures sont finies et que la troisième part.
+ * `data` est la lecture brute, à passer par `normalizeResult` ; `jeton` identifie cet appel (le final le reprend dans `provisoireJeton`).
+ */
+export interface AiFluxEtape {
+  etape: 'provisoire';
+  jeton: string;
+  data: any;
+  model?: string;
+  elapsedMs?: number;
+  pages?: number;
+}
+
+/** Un morceau n'est transmis que s'il a la forme du contrat : une autre étape ou un morceau mal formé est ignoré, jamais deviné. */
+const estEtapeProvisoire = (m: unknown): m is AiFluxEtape =>
+  m !== null && typeof m === 'object' && (m as AiFluxEtape).etape === 'provisoire' &&
+  typeof (m as AiFluxEtape).jeton === 'string' && (m as AiFluxEtape).jeton !== '' &&
+  (m as AiFluxEtape).data !== null && typeof (m as AiFluxEtape).data === 'object';
+
+const MESSAGE_FLUX_FERME = 'Le serveur IA a fermé la connexion sans réponse. Réessaie dans quelques instants ; la saisie manuelle reste disponible.';
+const MESSAGE_LECTURE_INTERROMPUE = 'Lecture interrompue.';
+
+/** Laisse passer quelques micro-tâches : une réponse déjà reçue a le temps de se poser avant qu'on dise « rien reçu ». */
+async function laisserPasser(): Promise<void> {
+  for (let i = 0; i < 8; i++) await Promise.resolve();
+}
+
+async function chargeDe(req: AiRequest): Promise<Record<string, unknown>> {
+  const payload: Record<string, unknown> = {
+    task: req.task,
+    tier: req.task === 'scanInvoice' ? 'fast' : req.tier,
+    context: req.task === 'scanInvoice' ? undefined : req.context,
+    instruction: req.task === 'scanInvoice' ? undefined : req.instruction
+  };
+
+  if (req.files?.length) {
+    payload.files = await Promise.all(req.files.map(toBase64));
+  } else if (req.file) {
+    payload.file = await toBase64(req.file);
+  }
+  return payload;
+}
+
+/** Ce que `run` et `runFlux` font de la réponse finale du serveur (un contrôle propre à une tâche, comme la levure). */
+function reponseDe<T>(req: AiRequest, result: HttpsCallableResult<AiResponse> | { data?: AiResponse }): AiResponse<T> {
+  const response = result.data ?? { ok: false, error: 'Réponse vide du serveur.' };
+  const yeastLookup = req.task === 'lookupIngredient' && req.context !== null &&
+    typeof req.context === 'object' && 'kind' in req.context && req.context.kind === 'levure';
+  if (response.ok && yeastLookup) {
+    const error = yeastLookupResultError(response.data);
+    if (error) return { ...response, ok: false, data: undefined, error } as AiResponse<T>;
+  }
+  return response as AiResponse<T>;
+}
+
 export const AiClient = {
   /**
    * Exécute une tâche IA.
@@ -111,30 +166,71 @@ export const AiClient = {
    */
   async run<T = any>(req: AiRequest): Promise<AiResponse<T>> {
     try {
-      const payload: Record<string, unknown> = {
-        task: req.task,
-        tier: req.task === 'scanInvoice' ? 'fast' : req.tier,
-        context: req.task === 'scanInvoice' ? undefined : req.context,
-        instruction: req.task === 'scanInvoice' ? undefined : req.instruction
-      };
-
-      if (req.files?.length) {
-        payload.files = await Promise.all(req.files.map(toBase64));
-      } else if (req.file) {
-        payload.file = await toBase64(req.file);
-      }
-
+      const payload = await chargeDe(req);
       const result: HttpsCallableResult<AiResponse> = await callAiTask(payload);
-      const response = result.data ?? { ok: false, error: 'Réponse vide du serveur.' };
-      const yeastLookup = req.task === 'lookupIngredient' && req.context !== null &&
-        typeof req.context === 'object' && 'kind' in req.context && req.context.kind === 'levure';
-      if (response.ok && yeastLookup) {
-        const error = yeastLookupResultError(response.data);
-        if (error) return { ...response, ok: false, data: undefined, error };
-      }
-      return response as AiResponse<T>;
+      return reponseDe<T>(req, result);
     } catch (err: any) {
       return { ok: false, error: this.humanize(err) };
+    }
+  },
+
+  /**
+   * Lenteur D : comme `run`, mais en flux. `onEtape` reçoit le morceau provisoire dès qu'il arrive ; la promesse rend le final, tel que
+   * `run` le rendrait. Un serveur sans flux (ancien `aiTask`) ne rend que le final : `onEtape` n'est alors jamais appelé.
+   *
+   * Ne lève jamais, comme `run`. Deux pièges de `stream()` (@firebase/functions 0.12.9, PLAN.md § 2 (a)) sont tenus ici :
+   *  - il n'a aucun délai : le client pose le sien (`AI_CLIENT_TIMEOUT_MS`), combiné au `signal` de l'écran ;
+   *  - une réponse qui n'est pas en flux (401, 429, 503 de Cloud Run) ferme le flux sans jamais résoudre `data` : un flux fermé sans
+   *    résultat est une erreur, jamais une attente.
+   * Un `signal` levé (la feuille se ferme) coupe l'attente ; le serveur finit sa lecture et la met en cache.
+   */
+  async runFlux<T = any>(req: AiRequest, onEtape: (etape: AiFluxEtape) => void, signal?: AbortSignal): Promise<AiResponse<T>> {
+    if (typeof callAiTask.stream !== 'function') return this.run(req) as Promise<AiResponse<T>>;
+    if (signal?.aborted) return { ok: false, error: MESSAGE_LECTURE_INTERROMPUE };
+
+    const coupe = new AbortController();
+    let cause: 'delai' | 'ecran' | null = null;
+    const interrompre = (c: 'delai' | 'ecran') => { if (!cause) { cause = c; coupe.abort(); } };
+    const minuteur = setTimeout(() => interrompre('delai'), AI_CLIENT_TIMEOUT_MS);
+    const surEcran = () => interrompre('ecran');
+    signal?.addEventListener('abort', surEcran, { once: true });
+    // Rejetée dès que l'attente est coupée : chaque lecture du flux et de `data` s'y mesure, car le faux flux ou le réseau peut ne jamais répondre.
+    const coupee = new Promise<never>((_, rejeter) => coupe.signal.addEventListener('abort', () => rejeter(new Error('coupée')), { once: true }));
+    coupee.catch(() => {});
+
+    try {
+      const payload = await chargeDe(req);
+      if (coupe.signal.aborted) throw new Error('coupée');
+      const { stream, data } = await Promise.race([callAiTask.stream(payload, { signal: coupe.signal }), coupee]);
+      // `data` peut être rejetée en même temps que le flux (message « error ») : sans ce `catch`, la seconde rejection est « non gérée ».
+      const resultat = Promise.resolve(data);
+      resultat.catch(() => {});
+
+      const lecteur = stream[Symbol.asyncIterator]();
+      try {
+        for (;;) {
+          const pas = await Promise.race([lecteur.next(), coupee]);
+          if (pas.done) break;
+          if (!estEtapeProvisoire(pas.value)) continue;
+          // L'écran ne doit jamais faire échouer la lecture : le final compte plus que son confort.
+          try { onEtape(pas.value); } catch { /* le final arrive quand même */ }
+        }
+      } finally {
+        // Sans attendre : sur un flux coupé, `return()` peut ne jamais rendre la main.
+        void Promise.resolve(lecteur.return?.()).catch(() => {});
+      }
+
+      // Le flux est fermé. Un résultat déjà reçu se pose en quelques micro-tâches ; au-delà, rien ne viendra (piège 2).
+      const final = await Promise.race([resultat, laisserPasser().then(() => null), coupee]);
+      if (final === null) return { ok: false, error: MESSAGE_FLUX_FERME };
+      return reponseDe<T>(req, { data: final });
+    } catch (err: any) {
+      if (cause === 'delai') return { ok: false, error: this.humanize({ code: 'functions/deadline-exceeded' }) };
+      if (cause === 'ecran') return { ok: false, error: MESSAGE_LECTURE_INTERROMPUE };
+      return { ok: false, error: this.humanize(err) };
+    } finally {
+      clearTimeout(minuteur);
+      signal?.removeEventListener('abort', surEcran);
     }
   },
 

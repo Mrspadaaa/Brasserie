@@ -1,5 +1,5 @@
 import {
-  ajouterCoupure, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
+  ajouterCoupure, alignerLignes, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
   type CauseCoupure, type InvoiceScanResult
 } from './invoiceVisionReview.js';
 
@@ -123,6 +123,36 @@ export interface Csv8Io {
   causeOf(reason: unknown): CauseCoupure | null;
   /** Le délai global est atteint : la 3.8 n'est plus appelée, et la coupure se dit « delai-saute ». */
   deadlineReached(): boolean;
+  /**
+   * D308 (lenteur D) : le premier écran. Appelé une fois, entre la fin des deux Flash-Lite et le départ de la 3.8, seulement quand les deux sont
+   * lisibles et que la 3.8 va partir. Jamais attendu : la 3.8 ne le retient pas. Un échec (levée ou promesse rejetée) ne change rien à la lecture ;
+   * une levée dit aussi que le morceau n'est pas parti, donc le final ne porte aucun `rangProvisoire`.
+   */
+  provisoire?(result: any): unknown;
+}
+
+/**
+ * D308 : le premier écran de la lecture : le rapprochement de `finalOfTwo` des deux Flash-Lite, SANS la coupure (« delai-saute ») : la 3.8 n'a pas échoué,
+ * elle est en cours. Deux lecteurs, marqué `provisoire: true`. Rien d'autre ne change : mêmes points, mêmes phrases, même ordre de lignes (celui de la
+ * première lecture) que `finalOfTwo` quand la 3.8 échoue. Copie neuve : `finalOfTwo` ajoute plus tard sa coupure au final, jamais à ce morceau.
+ */
+export function provisoireDeDeux(r1: LectureVote, r2: LectureVote): any | null {
+  if (!r1.normalized || !r2.normalized) return null;
+  const reconciled = reconcileInvoiceVision([r1.normalized, r2.normalized]);
+  return { ...reconciled.result, review: { ...reconciled.review, readers: 2 },
+    issues: [...new Set([...reconciled.result.issues, ...reconciled.review.findings])], provisoire: true };
+}
+
+/**
+ * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si la 3.8 l'ajoute. Le rapprochement est celui de la production
+ * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position). Repli par la position (PLAN § 2 bis) : quand les deux listes ont la même
+ * longueur, une ligne sans paire des deux côtés au même rang est la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13 du banc).
+ */
+export function rangsProvisoires(provisoire: any[], final: any[]): Array<number | null> {
+  const paire = alignerLignes(provisoire, final);
+  const rangDe = new Map<number, number>([...paire.match].map(([p, f]) => [f, p]));
+  const repli = provisoire.length === final.length;
+  return final.map((_, f) => rangDe.get(f) ?? (repli && paire.orphansBase.includes(f) && paire.orphansOther.includes(f) ? f : null));
 }
 
 /**
@@ -135,11 +165,22 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
   const asRead = (attempt: PromiseSettledResult<InvoiceScanResult>): LectureVote =>
     attempt.status === 'fulfilled' ? { normalized: attempt.value, cause: null } : { cause: io.causeOf(attempt.reason) };
   const [l1, l2] = attempts.map(asRead);
-  let third: LectureVote | undefined;
+  let third: LectureVote | undefined, provisoire: any | null = null;
   if (needsThirdLite(l1, l2) && !io.deadlineReached()) {
+    // D308 : le premier écran part avant la 3.8 et ne l'attend pas. Seulement si les deux Flash-Lite sont lisibles ; sinon on attend la 3.8.
+    if (io.provisoire && l1.normalized && l2.normalized) {
+      try {
+        const morceau = provisoireDeDeux(l1, l2), sorti = io.provisoire(morceau);
+        if (sorti && typeof (sorti as Promise<unknown>).catch === 'function') (sorti as Promise<unknown>).catch(() => undefined);
+        provisoire = morceau;
+      } catch { provisoire = null; }
+    }
     try { third = { normalized: await io.readStrong(), cause: null }; } catch (error) { third = { cause: io.causeOf(error) }; }
   }
   const final = finalOfStarVote(l1, l2, third);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
-  return final.result;
+  if (!provisoire) return final.result;
+  // La 3.8 a lu : ses lignes se rapprochent de celles du provisoire. Elle a échoué : le final EST le provisoire (plus la coupure), chaque rang est le sien.
+  const rangs = third?.normalized ? rangsProvisoires(provisoire.items, final.result.items) : final.result.items.map((_: unknown, rang: number) => rang);
+  return { ...final.result, items: final.result.items.map((ligne: any, rang: number) => ({ ...ligne, rangProvisoire: rangs[rang] })) };
 }

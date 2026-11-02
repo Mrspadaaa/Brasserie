@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
-import { onCall, HttpsError, CallableRequest } from 'firebase-functions/v2/https';
+import { createHash, randomUUID } from 'node:crypto';
+import { onCall, HttpsError, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
 import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
@@ -145,7 +145,17 @@ export function chargeDeLecture(data: { task?: unknown; file?: unknown; files?: 
  * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 5 100 jetons) sur désaccord
  * ou quand une Flash-Lite manque ; l'ordre des appels et le vote sont dans `invoiceScanVote.ts` (portage à l'identique du banc).
  */
-export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
+/**
+ * D308 (lenteur D) : le premier écran en flux. `jeton` est tiré par l'appel ; `onProvisoire` reçoit le provisoire (les deux Flash-Lite, sans la 3.8) et ce
+ * qu'il faut pour le morceau (modèle, durée, pages) ; il ne doit jamais retarder la 3.8, et une levée de sa part ne change rien au final (sauf
+ * qu'aucun jeton ni rang n'est posé : le morceau n'est pas parti). Absent (ancien client, appel sans SSE, test réel) : la lecture est celle d'avant.
+ */
+export interface FluxProvisoire {
+  jeton: string;
+  onProvisoire: (data: unknown, meta: { model: string; elapsedMs: number; pages?: number }) => unknown;
+}
+
+export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire): Promise<AiTaskResult> {
   const started = Date.now();
   // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8.
   const override = evaluationOptions?.maxOutputTokens;
@@ -181,6 +191,8 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
     generationConfig:{ responseMimeType:'application/json', responseSchema:schema, temperature:0, maxOutputTokens,
       mediaResolution:'MEDIA_RESOLUTION_HIGH', thinkingConfig:{ thinkingLevel:'LOW' } }
   });
+  // Vrai seulement si le morceau provisoire est parti pendant CET appel (jamais pour un résultat servi du cache ou resservi après une relecture ratée).
+  let provisoireParti = false;
   const reviewed = await runBudgetedInvoiceScan(uid, key, async generate => {
     const deadline = AbortSignal.timeout(100_000);
     // LE4 : une ligne de journal par lecture (durée, jetons, finishReason, coupée ou non), écrite AVANT le parsing ; aucun contenu de facture.
@@ -197,10 +209,17 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
       // No competing amounts or classifications are disclosed: a third independent reading.
       readStrong: () => read(model, INVOICE_SCAN_PROMPTS[2], 3, 'troisieme', SCAN_MAX_OUTPUT),
       causeOf: cause,
-      deadlineReached: () => deadline.aborted
+      deadlineReached: () => deadline.aborted,
+      ...(flux ? { provisoire: (data: unknown) => {
+        const envoye = flux.onProvisoire(data, { model, elapsedMs: Date.now() - started, ...(pages.length > 1 ? { pages: pages.length } : {}) });
+        provisoireParti = true;       // une levée de `onProvisoire` passe par-dessus : le morceau n'est pas parti, ni jeton ni rang
+        return envoye;
+      } } : {})
     });
   }, provider, { degraded: (result: any) => result?.review?.status === 'unavailable' && Array.isArray(result?.points) && result.points.some((p: any) => p.code === 'lecture-coupee') });
-  return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash, ...(pages.length > 1 ? { pages:pages.length } : {}) };
+  // Le jeton va sur une COPIE rendue au client : le résultat gardé par le registre (et son cache) reste sans jeton, et ne le rejoue jamais.
+  const data = flux && provisoireParti && !reviewed.cached ? { ...(reviewed.result as object), provisoireJeton: flux.jeton } : reviewed.result;
+  return { ok:true, data, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash, ...(pages.length > 1 ? { pages:pages.length } : {}) };
 }
 
 /** Aussi lue par `hopReclasserIA` : une seule liste de comptes, une seule règle. */
@@ -301,7 +320,7 @@ export const aiTask = onCall(
     // charge, et ça borne la facture en cas de boucle accidentelle.
     maxInstances: 3
   },
-  async (request: CallableRequest<AiTaskPayload>): Promise<AiTaskResult> => {
+  async (request: CallableRequest<AiTaskPayload>, response?: CallableResponse<unknown>): Promise<AiTaskResult> => {
     const email = assertAuthorized(request);
     const { task, tier: requestedTier, context, instruction, file, files } = request.data ?? {};
 
@@ -330,7 +349,13 @@ export const aiTask = onCall(
 
     if (task === 'scanInvoice') {
       try {
-        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey);
+        // D308 : un client qui demande le flux (`Accept: text/event-stream`) reçoit le premier écran dès que les deux Flash-Lite ont lu ; les autres,
+        // et l'ancien client, ne reçoivent que le final (`sendChunk` ne fait rien sans flux). `response.signal` n'arrête pas la lecture : elle finit et se met en cache.
+        const jeton = randomUUID();
+        const flux: FluxProvisoire | undefined = request.acceptsStreaming && response
+          ? { jeton, onProvisoire: (data, meta) => response.sendChunk({ etape: 'provisoire', jeton, data, ...meta }).catch(() => false) }
+          : undefined;
+        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey, undefined, flux);
       } catch (error: any) {
         return { ok:false, tier:'fast', error:error?.message || 'Lecture indisponible. Complète le justificatif manuellement.' };
       }
