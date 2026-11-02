@@ -38,6 +38,13 @@ retirées de l'index, fichiers gardés sur le disque).
 - Passe 3 lancée chez les mêmes auteurs : `plateau/v2/pa1c`, `pu4c`, `pz2c`. Puis le critique, puis la page v1 (artefact neuf).
 - À l'intégration : relever les menus déroulants, « ✓ au centime » et l'alignement des unités dans l'app (`src/ui/depense`), lecture étroite.
 
+## 22 h : passe 3 rendue
+- `plateau/v2/pa1c`, `pu4c`, `pz2c` : MENU OK rejoué par le pilote sur les trois ; pu4c-a regardée (unités alignées, Kg | g, Rattacher).
+- pa1c signale : unité rare sans chemin (3e case « autre » ?) ; « 2 à contrôler » au récap contre « 2 à régler » au plateau.
+- Verdict du critique lancé → `plateau/critique/RESULTAT-p3.md`. Ensuite : page v1 (artefact neuf, `choix-plateau-v1/`, les trois en
+  passe 3 côte à côte avec pa1b et p3c-3, ses trois remarques en tête), `verifier-page.mjs --page-lot`, ligne « ## Pages ».
+- Usage hebdo 85 % à 22 h. À 90 % : rien de neuf (D347).
+
 ## Prochaine action, dans l'ordre
 1. Verdict passe 2 : relancer ou écarter chaque REJET (2 fois au plus) ; puis page v1, artefact neuf daté (`choix-plateau-v1/`),
    `verifier-page.mjs --page-lot`, ligne dans « ## Pages ». Lien à lui : il choisit.
