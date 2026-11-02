@@ -1071,3 +1071,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « Choix encore ouverts : D273b (version du cache de lecture) et D261c. Montre moi » (lu : les montrer en pages de choix. D273c, la
   version du cache, est déjà tranchée par son « yes » de D274 ; le choix ouvert est D273b, plusieurs captures pour une dépense, et
   D261c, la lenteur de la lecture).
+- **Plusieurs captures pour une dépense** (02.11, sur la capture à 1280 px de la page de choix `choix-captures`, non publiée, un trait
+  rouge sur les colonnes B et C), mot pour mot : « Variante b, mais dans la première vue, pouvoir choisir entre envoyé 1 ou plusieurs
+  documents, dans 99% des cas c'est que 1 document » ; puis : « Le bouton noir est splitter en 2 » (lu : B retenue, « + page » puis
+  « Lire » ; à l'entrée, le bouton noir « Choisir le document » coupé en deux : une moitié pour un document, qui part tout de suite comme
+  aujourd'hui, l'autre pour plusieurs, qui ouvre la rangée de pages de B. D291). Puis, sur la forme 3 de la maquette retenue
+  (`choix-captures/retenue/img/1-entree-f3.png`, « Un document » | « Plusieurs », un trait rouge dessous), mot pour mot : « Celle là que
+  je veux » (lu : la forme 3 est la base du code, telle quelle).
