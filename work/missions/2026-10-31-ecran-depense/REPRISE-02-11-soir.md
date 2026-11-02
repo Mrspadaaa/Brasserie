@@ -118,3 +118,17 @@ retirées de l'index, fichiers gardés sur le disque).
   fiche matériel (créer ou lier un matériel) et libellé d'une ligne lue, retirés avec l'ancien formulaire : où les remettre ;
   la famille n'est pas écrite avec la dépense (le type d'achat suit) ; après « Regrouper », le panneau « à contrôler » nomme les anciennes
   lignes, avec des mots anglais (« equipment / other / stock ») ; doc6, doc14, D326 (3) à (8), les LEÇON PROPOSÉE et CONNAISSANCE des voies.
+
+## Vers 21 h 30 : B rendu atteignable, Houblons rallumés (D366 à D368)
+- **En ligne : d14ff6cf construit avec `VITE_HOP_V4=on`** (paquet `index-D_r8o4EC.js`, `flags` à `"on"`). Contient f6b29066 et D366.
+- D366 : son choix B passait inaperçu (sélecteur d'un seul fichier ouvert d'office ; « Joindre un justificatif » seul en saisie). Corrigé, vu par
+  le menu sur le banc (`leger-pages/390-01-pages-entree.png`). Dans Chrome en ligne, la page lue montre « Un document », « Plusieurs »,
+  « Saisir sans justificatif » ; la capture Chrome bloque dès qu'un calque s'ouvre (fenêtre à 2560 px), non résolu.
+- D368 : ses sept écrans Houblons étaient éteints en ligne depuis les déploiements de la Dépense ; rallumés. Garde
+  `node scripts/check-build-flags.mjs dist` à lancer avant chaque déploiement, avec `check-no-dev-auth`. Construire par
+  `VITE_HOP_V4=on npm run build`.
+- Banc : `openInvoiceEntry` échoue désormais si un sélecteur s'ouvre seul (copie `g-banc.mjs` et script du worktree, non commité : noms de sa pièce).
+- Audit `voies/a-entrees/RESULTAT.md` : 13 atteints, 7 éteints par le drapeau (rallumés), 2 sans choix, 5 douteux. Les douteux : lenteur D (quatre
+  états, à jouer avec une vraie pièce en ligne) et p3c-2 (décision introuvable).
+- Restes : écrans Houblons à regarder en ligne depuis le menu (étape Houblons d'une recette) ; les 46 anciens tests ; fiche matériel ; LEÇON
+  PROPOSÉE de p-port-pu4d et a-entrees à traiter à la signature.
