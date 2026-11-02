@@ -35,7 +35,7 @@ export function RangeePages(p: { pages: VignettePage[]; max: number; onRetirer: 
         <Numero n={i + 1}/>
       </div>)}
       {n < p.max ? <button type="button" onClick={p.onAjouter} className="flex h-[116px] w-[62px] shrink-0 flex-col items-center justify-center gap-1 rounded-control border border-dashed border-cave-600 text-xs font-medium text-cave-200">
-        <span className="flex size-6 items-center justify-center rounded-full border border-cave-500"><Plus size={14}/></span>+ page</button> : null}
+        <span className="flex size-6 items-center justify-center rounded-full border border-cave-400"><Plus size={14}/></span>+ page</button> : null}
     </div>
     <button type="button" onClick={p.onLire} className="min-h-9 w-full rounded-control bg-ebc-straw text-[13px] font-semibold text-cave-950">Lire {n} page{n > 1 ? 's' : ''}</button>
     <p className="text-center text-xs text-cave-400">ajoute la suivante, puis Lire</p>
@@ -80,5 +80,16 @@ export function PanneauPages(p: { pages: VignettePage[]; changerOff: boolean; on
   return <div data-dp="pages-panneau" className="flex items-center gap-1.5">
     <div className="flex gap-1.5">{p.pages.map((page, i) => <a key={page.id} data-dp="vignette" href={page.url || undefined} target="_blank" rel="noopener noreferrer" aria-label={`Voir la page ${i + 1}`} className="relative block h-14 w-[40px] shrink-0 overflow-hidden rounded-control border border-cave-600 bg-cave-950"><Miniature url={page.url}/><Numero n={i + 1} petit/></a>)}</div>
     <button type="button" aria-label="Changer" title="Changer les pages" disabled={p.changerOff} onClick={p.onChanger} className="ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"><FileText size={14}/>Changer</button>
+  </div>;
+}
+
+/**
+ * Lenteur D (sa maquette `choix-lenteur/d-06`) : le fil de 22 px sous l'en-tête pendant la vérification, qui reprend la frise d'aujourd'hui (« envoi » et « lecture » faits, « vérification » en cours). Il part quand la 3.8 est arrivée.
+ * Hors du défilement : il reste sous l'en-tête. Le cadre bleu épais des captures de la page de choix n'en fait pas partie.
+ */
+export function FilVerification() {
+  return <div data-dp="fil" role="status" aria-label="Vérification en cours" className="flex h-[22px] shrink-0 items-center gap-1.5 border-b border-cave-800 bg-cave-950 px-2.5 text-xs font-semibold text-cave-50">
+    <i aria-hidden className="block h-1 w-9 rounded-full bg-cave-200"/><i aria-hidden className="block h-1 w-9 rounded-full bg-cave-200"/><i aria-hidden className="dp-p3c-frise-cours block h-1 w-24 rounded-full" style={{ backgroundSize: '12px 4px' }}/>
+    <span>vérification</span>
   </div>;
 }

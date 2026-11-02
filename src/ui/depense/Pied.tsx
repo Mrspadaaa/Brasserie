@@ -1,7 +1,7 @@
 // Le pied de 52 px de p3c-3 : la bascule Catégorie / Papier et le bouton principal (« Confirmer » jamais bloqué, sauf pendant la lecture).
 // Il porte aussi ce que portait la bande collante : quand le bandeau est sorti de l'écran, le point courant et son « y aller », ou « ✓ points revus ».
 import React, { useEffect, useState } from 'react';
-import { Check, FileText, Loader2, X } from 'lucide-react';
+import { Check, FileText, Loader2, RefreshCw, X } from 'lucide-react';
 
 export interface BoutonPied { texte: string; aria: string; disabled: boolean; titre?: string; icone: 'check' | 'x' | 'file' | 'spin'; onClick: () => void }
 
@@ -29,4 +29,23 @@ export function Pied(p: {
     <button type="button" data-primary aria-label={p.bouton.aria} title={p.bouton.titre} disabled={p.bouton.disabled} onClick={p.bouton.onClick}
       className="ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40">{icone} {p.bouton.texte}</button>
   </footer>;
+}
+
+/**
+ * Lenteur D, son choix 2 D et son choix B de « Tout valider » (`choix-valider/b-arrivee`, `b-garder`, `tout`) : le bandeau au-dessus du pied, au pouce, pour les lignes que la 3.8 ne lit plus. UNE ligne : le nom, le montant et « pas retrouvée »
+ * à gauche, « ✓ Garder » et « ✕ Retirer » à droite (`q2-d-arrivee`). PLUSIEURS : le bandeau défile (« pas retrouvée · 1/2 »), « ↻ Tout valider » à droite du nom, « Garder » et « Retirer » dessous ; un geste passe à la suivante.
+ * « Tout valider » : toutes les lignes pas retrouvées partent d'un toucher ; chacune garde Garder / Retirer. Confirmer sans trancher : elles partent. Isolé dans ce composant : la forme se remplace sans toucher la logique.
+ */
+export function BandeauPerdues(p: { nom: string; montant: string; rang: number; total: number; onGarder: () => void; onRetirer: () => void; onToutValider: () => void }) {
+  const ch = 'inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border border-cave-600 bg-cave-950 px-2.5 text-[13px] font-semibold text-cave-50';
+  const garder = <button type="button" data-dp-perdue-geste="garder" onClick={p.onGarder} className={ch}><Check size={14} strokeWidth={2.4}/>Garder</button>;
+  const retirer = <button type="button" data-dp-perdue-geste="retirer" onClick={p.onRetirer} className={ch}><X size={13} strokeWidth={2.4}/>Retirer</button>;
+  const texte = <span className="flex min-w-0 flex-1 flex-col leading-[1.15]"><b className="truncate text-sm font-semibold text-cave-50">{p.nom} <span className="font-mono">{p.montant}</span></b>
+    <small className="text-xs font-semibold text-attention">pas retrouvée{p.total > 1 ? <> · <span className="font-mono" data-dp-perdue-rang>{p.rang}/{p.total}</span></> : null}</small></span>;
+  return <div data-dp="perdues" role="group" aria-label="Lignes que la 3e lecture n’a pas retrouvées" className="mx-2 mb-1.5 shrink-0 space-y-1 rounded-panel border-[1.5px] border-dashed border-attention bg-attention/10 px-2.5 py-1.5">
+    {p.total > 1 ? <>
+      <div className="flex min-h-7 items-center gap-1.5">{texte}<button type="button" data-dp-perdue-geste="tout" onClick={p.onToutValider} className="inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border-[1.5px] border-attention bg-cave-950 px-2.5 text-[13px] font-bold text-attention"><RefreshCw size={15} strokeWidth={2.2}/>Tout valider</button></div>
+      <div className="flex items-center gap-1.5">{garder}{retirer}</div></>
+      : <div className="flex min-h-7 items-center gap-1.5">{texte}{garder}{retirer}</div>}
+  </div>;
 }

@@ -8,7 +8,7 @@ import { NumberInput } from '../NumberInput';
 import { DateField,swissToday,toIsoDate } from '../DateField';
 import { Combobox } from '../Combobox';
 import { StorageService } from '../../services/storage';
-import { GeminiScannerService,type ScanOutcome,type ScannedLineKind } from '../../services/geminiScanner';
+import { GeminiScannerService,type ScanOutcome,type ScanFluxOptions } from '../../services/geminiScanner';
 import { savePurchaseWithProofReceipt,confirmPurchase,canCloseWithoutAck,watchPurchaseConfirmation,validatePurchase,sansCetteSaisie,purchaseDuplicates,purchaseDuplicateReasons,purchaseProofAttachable,attachProofToPurchase,purchaseSimilarOrders,purchaseSameFile,purchaseSameOrder,proposeMillingSurcharges,confirmMillingSurcharge,type PurchaseDraft,type PurchaseLineDraft } from '../../services/purchaseEntry';
 import { STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, PROPOSAL_WEIGHT_MARK, matchStockLine, formatUnitLink, isReadableUnit, shortUnit } from '../../services/stockLineMatching';
 import { isConfirmedWriteRejection } from '../../services/firestoreRepo';
@@ -41,10 +41,11 @@ import { ChipsBar,TITRES } from '../depense/Verdict';
 import { InvoiceScanReview } from './InvoiceScanReview';
 import { Interrupteur } from '../depense/Ticket';
 import { Entete,Justificatif } from '../depense/Entete';
-import { Pied,type BoutonPied } from '../depense/Pied';
+import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
-import { LigneP3c } from '../depense/Ligne';
+import { LigneP3c,LignePerdue } from '../depense/Ligne';
+import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { bandes as calculerBandes,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
@@ -54,7 +55,7 @@ import { uniteEffective } from '../../services/purchaseEntry';
 import { regleProduit,linkUnit } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
-import { EntreeFendue,RangeePages,FrisePages,ResteDeLecture,MiniPages } from '../depense/Pages';
+import { EntreeFendue,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVerification } from '../depense/Pages';
 import { assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
@@ -65,7 +66,6 @@ type PurchaseCategory=Exclude<FinanceCategory,'apports'|'recettes'>;
 const categories:Array<{value:PurchaseCategory;label:string}>=[{value:'brassage',label:'Brassage'},{value:'materiel',label:'Matériel'},{value:'nettoyage',label:'Nettoyage'},{value:'chargesFixes',label:'Charges fixes'},{value:'renovation',label:'Local'},{value:'divers',label:'Autre'}];
 const money=(n:number)=>formatCHF(Math.round(n*100));
 const newLine=(intent='expense'):PurchaseLineDraft=>({id:crypto.randomUUID(),description:'',kind:intent==='equipment'?'equipment':'ingredient',unit:'',stockAction:'none',equipmentAction:intent==='equipment'?'new':'none'});
-const scanKind=(kind:ScannedLineKind):PurchaseLineDraft['kind']=>kind==='stock'?'ingredient':kind==='unknown'?'other':kind;
 const button='min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors';
 // D262b : « La date exacte est rarement important. Le mois l'est plus. »
 // Le paiement garde « Hier · Aujourd’hui · Demain » (lecture étroite de D262b : sa capture visait la date de l’achat).
@@ -172,6 +172,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* p3c-3 : états d'écran seulement (rien n'est écrit) : l'ordre des lignes, le filtre des comptes, les lignes en éclair, le panneau du justificatif, le tiroir du port, la preuve visée. */
   const [ordre,setOrdre]=useState<'cat'|'papier'>('cat'),[filtre,setFiltre]=useState<{mot:string;ids:string[]}|null>(null),[garde,setGarde]=useState<string[]>([]),[justifOuvert,setJustifOuvert]=useState(false),[portOuvert,setPortOuvert]=useState(false),[viseePreuve,setViseePreuve]=useState(false);
   const [readCount,setReadCount]=useState(0);
+  /* Lenteur D (D308, PLAN § 4 ter) : `verif` dit où en est la vérification (la 3.8) ; il est distinct de `busy`. `aucune` : pas de morceau provisoire (cache, pièce sans 3.8, ancien serveur) ; `attente` : le provisoire est là, le final pas ; `finie` : fusionné ; `echec` : fin de partie. */
+  const [verif,setVerifEtat]=useState<'aucune'|'attente'|'finie'|'echec'>('aucune'),verifRef=useRef<'aucune'|'attente'|'finie'|'echec'>('aucune');
+  const setVerif=(v:'aucune'|'attente'|'finie'|'echec')=>{verifRef.current=v;setVerifEtat(v);};
+  const lectureJeton=useRef(0),lectureAbort=useRef<AbortController|null>(null),provRef=useRef<{base:BaseFusion;scan:ScanOutcome}|null>(null),courantRef=useRef<{reviewedFields:string[];reglees:ReadonlySet<string>;stockItems:StockItem[]}>({reviewedFields:[],reglees:new Set(),stockItems:[]});
+  /* Ce que la fusion a corrigé (pour le bleu des cellules, l'ancienne valeur barrée, la puce), les lignes que la 3.8 ne lit plus (hors du brouillon, donc hors des sommes) et le nombre de lignes gardées. */
+  const [fusion,setFusion]=useState<{lignes:Record<string,Correction[]>;entete:Record<string,{avant:unknown;apres:unknown}>;ajoutees:ReadonlySet<string>;n:number;avant:Record<string,CellulesLigne>}|null>(null);
+  const [perdues,setPerdues]=useState<Perdue[]>([]),[perduesIds,setPerduesIds]=useState<string[]>([]),[nGardees,setNGardees]=useState(0);
   const [driveAuthError,setDriveAuthError]=useState(false);
   const [driveTick,setDriveTick]=useState(0);
   /* L'état Drive ne se dit qu'une fois le jeton vérifié (renouvellement silencieux) : jamais « Drive à connecter » quelques secondes quand Drive est prêt. */
@@ -204,7 +211,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [online,setOnline]=useState(apercu?apercu.reseau:typeof navigator==='undefined'||navigator.onLine!==false);
   const hints=scan?.ok&&scan.result?Object.fromEntries(Object.entries(invoiceFieldHints(scan.result)).filter(([field])=>!reviewedFields.includes(field))):{};
   const reviewed=(field:string)=>setReviewedFields(previous=>previous.includes(field)?previous:[...previous,field]);
-  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;lectureAbort.current?.abort();};},[]);
   useEffect(()=>tenirEnrichissement(),[]);
   useEffect(()=>{const up=()=>setOnline(true),down=()=>setOnline(false);window.addEventListener('online',up);window.addEventListener('offline',down);return()=>{window.removeEventListener('online',up);window.removeEventListener('offline',down);};},[]);
   /*
@@ -323,50 +330,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     setQrRes(null);setQrOuvert(undefined);
     lireQrDuFichier(file).catch(():ResultatQr=>({statut:'non-verifie',motif:'lecture impossible'})).then(res=>{if(mounted.current&&qrJeton.current===jeton)setQrRes(res);});
   };
-  const applyOutcome=(outcome:ScanOutcome,documentHash?:string)=>{
-    setScan(outcome);
-    if(!outcome.ok || !outcome.result){setError(outcome.error||'Le scan n’a pas abouti. Les champs restent modifiables.');return;}
-    const result=outcome.result;
-    const total=invoiceTotalProposal(result);
-    const stockItems=[...stocks.rawMaterials,...stocks.cleaning];
-    proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setChoixGroupes(new Map());setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
-    /* D275 : le libellé est la base de la désignation (sans options ni suffixe d'unité), ou sa désignation française lue ; l'imprimé complet reste au brouillon et au plateau. */
-    /* Voie n1-nom-fr : le nom imprimé lu (base sans options) est gardé ICI, une fois : retaper le libellé ne le change pas, c'est lui qui s'écrit « Sur la facture ». */
-    const lues0:PurchaseLineDraft[]=result.items.map(item=>{const lu=libelleLu(item),nomLu=lireOptions(String(item.name??''),item.variant?String(item.variant):undefined,String(item.unit??'')).base.trim().slice(0,80);return {id:item.id,description:lu.description,...(nomLu?{nomLu}:{}),...(lu.imprime?{imprime:lu.imprime}:{}),kind:scanKind(item.kind),amount:result.currency==='CHF'?(item.amountTTC??undefined):undefined,quantity:item.quantity??undefined,unit:item.unit,unitPrice:result.currency==='CHF'?(item.price??undefined):undefined,stockAction:'none' as const,equipmentAction:'none' as const,stockCategory:item.stockCategory,sourceReference:item.reference,evidence:[item.reference?`Réf. ${item.reference}`:'',lu.imprime?`Imprimé : ${libelleDeLigne(item.name,item.variant)}`:'',item.evidence].filter(Boolean).join(' · ')};});
-    /* D306 : une ligne que la lecture dit « stock » (kind ingredient) et dont la famille est la Rénovation prend le kind « equipment » : le sélecteur dit Matériel, ses drapeaux sont ceux d'une ligne de matériel, aucun article. */
-    const estRenovation=(l:PurchaseLineDraft)=>groupeDe(donneesDeLigne(ligneDeBrouillon({...l,unit:uniteEffective(l)},result.vendor??undefined)).contexte,l.kind,l.description,l.stockCategory,undefined,result.category)==='renovation';
-    const lues:PurchaseLineDraft[]=lues0.map(l=>l.kind==='ingredient'&&estRenovation(l)?{...l,kind:'equipment' as const,stockAction:'none' as const}:l);
-    /* D277 : l'unité absente se déduit avant le rapprochement (« de base ça essaie d'auto remplir ») ; l'imprimé reste vide (D213). */
-    const existantsLus=sansCetteSaisie(stockItems,draft.submissionId);
-    const deduites=avecUnitesDeduites({lines:lues,vendor:result.vendor??'',amount:total.amount,category:result.category},stockItems).lines;
-    const lines=deduites.map(line=>{
-      /* S1 : une proposition, jamais une écriture. L'unité imprimée reste celle de la ligne (jamais réécrite, D213) ; ce que l'identité a lu (α, récolte,
-         poids du sachet) va dans l'extrait, avec sa source. */
-      const unit=uniteEffective(line);
-      /* D306 : une ligne de Rénovation ne crée jamais d'article de stock ni de mouvement, même lue « stock » : ni proposition, ni nouvel article d'office. */
-      if(groupeDe(donneesDeLigne(ligneDeBrouillon({...line,unit},result.vendor??undefined)).contexte,line.kind,line.description,line.stockCategory,undefined,result.category)==='renovation')return {...line,stockAction:'none' as const};
-      const match=STOCK_LINE_PROPOSALS_ENABLED&&(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?matchStockLine({description:line.description,unit,quantity:line.quantity,vendor:result.vendor??undefined,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind,...(line.nomLu?{nomLu:line.nomLu}:{})},stockItems):undefined;
-      if(!match){
-        const voisin=(STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind)?voisinEtMarque({...line,unit},stockItems,result.vendor??undefined):undefined;if(voisin)voisins.current.set(line.id,voisin);
-        /* D275d : un ingrédient qu'aucun article ne relie est d'office un nouvel article (plus de bouton « Créer » au repos) ; la règle est celle du choix « Créer » :
-           le même produit déjà au stock est relié, plusieurs articles du même nom attendent son choix (jamais une fiche de plus). Matériel, emballage, nettoyage : aucun mouvement. */
-        if(line.kind==='ingredient'&&line.description.trim()){
-          const regle=regleProduit(ligneDeBrouillon({...line,unit},result.vendor??undefined),existantsLus);
-          if(regle.cas==='meme'){relieAuto.current.set(line.id,regle.article.name);return {...line,stockAction:'existing' as const,stockRef:regle.article.ref};}
-          if(regle.cas!=='ambigu'){neufDOffice.current.add(line.id);return {...line,stockAction:'new' as const};}
-        }
-        return line;
-      }
-      proposedStock.current.add(line.id);proposedRef.current.set(line.id,match.item.ref);
-      if(match.weightUnconfirmed)proposedStock.current.add(line.id+PROPOSAL_WEIGHT_MARK);
-      return {...line,stockAction:'existing' as const,stockRef:match.item.ref,evidence:[line.evidence,...(match.deduced.length?[`Libellé : ${line.description}`,...match.deduced]:[])].filter(Boolean).join(' · ')};
-    });
-    manuallyClassified.current.clear();
-    setDraft(previous=>{const proposed=applyScannedDescription(previous,result),description=proposed.description??previous.description;return patchPurchaseDraft(previous,{vendor:result.vendor,date:result.date,...applyScannedPayment(previous,result,swissToday()),invoiceNumber:result.invoiceNumber,...proposed,category:result.category,amount:total.amount,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:total.amount}],sourceCurrency:result.currency,sourceAmount:result.amountTTC??undefined,sourceDocumentType:result.documentType,sourceOrderNumber:result.orderNumber,sourceTotalBasis:total.calculated?'line_sum':result.amountTTC!==null?'printed':undefined,sourceNetAmount:result.amountHT??undefined,sourceVatRate:result.tvaRate??undefined,sourceVatAmount:result.tvaAmount??undefined,scanModel:outcome.model,documentHash},swissToday());});
-    /* D280 : le français des noms de base, à part de la lecture, sans l'attendre ; apparié par id. Hors ligne, en échec ou en aperçu : le nom imprimé reste. */
-    const jeton=++nomsJeton.current;
-    lectureLigne.current=new Map(lines.map(l=>[l.id,`${l.quantity}|${l.unit}`]));
-    if(!apercu)void traduireLignes(lines.map(l=>({name:l.imprime?.nom??l.description,variant:l.imprime?.variante,unit:l.unit,kind:l.kind,stockCategory:l.stockCategory,stockAction:l.stockAction,stockRef:l.stockRef})),{stock:stockItems,enLigne:online}).then(noms=>{
+  /* Le français des noms de base, à part de la lecture, sans l'attendre ; apparié par id (D280). Hors ligne, en échec ou en aperçu : le nom imprimé reste. Lenteur D (M6, R5) : `traduireLignes` rend une `Map<rang, nameFr>` dont le rang est la position
+     dans la liste ENVOYÉE ; ce rang est reporté vers l'id. Une traduction du provisoire encore en vol, dont le final est arrivé entre-temps, est jetée par sa garde (`nomsJeton`). */
+  const traduire=(lines:PurchaseLineDraft[],jeton:number,stockItems:StockItem[])=>{
+    if(apercu||!lines.length)return;
+    void traduireLignes(lines.map(l=>({name:l.imprime?.nom??l.description,variant:l.imprime?.variante,unit:l.unit,kind:l.kind,stockCategory:l.stockCategory,stockAction:l.stockAction,stockRef:l.stockRef})),{stock:stockItems,enLigne:online}).then(noms=>{
       if(!mounted.current||nomsJeton.current!==jeton||!noms.size)return;
       const parId=new Map(lines.map((l,rang)=>[l.id,noms.get(rang)]));
       /* Voie n1-nom-fr (choix B) : le français peut relier une ligne `nouvel article` INTACTE (dans `neufDOffice`, sans nom tapé, ni nature changée, ni quantité ni unité retouchées) à un article du
@@ -381,8 +349,89 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         else if(regle.cas==='neuf'||regle.cas==='incertain'){const voisin=voisinEtMarque({...l,unit,nameFr:fr},existantsCourants.current,courant?.vendor||undefined);if(voisin)voisins.current.set(l.id,voisin);}
         else if(regle.cas==='ambigu'){const voisin=voisinEtMarque({...l,unit,nameFr:fr},existantsCourants.current,courant?.vendor||undefined);if(voisin)voisins.current.set(l.id,voisin);neufDOffice.current.delete(l.id);decisions.set(l.id,{stockAction:'none',stockRef:undefined});}
       }
+      /* Lenteur D (B1) : la traduction est la SEULE écriture du programme entre le provisoire et le final : l'instantané la reprend au même moment (ses cellules, et les « nouvel article » d'office qu'elle a tranchés). */
+      const prov=provRef.current;
+      if(prov){for(const l of courant?.lines??[]){const fr=parId.get(l.id),b=prov.base.lignes[l.id];if(fr&&b&&!l.nameFr){b.nameFr=fr;const d=decisions.get(l.id);if(d){Object.assign(b,d);prov.base.neufsOffice=prov.base.neufsOffice.filter(x=>x!==l.id);}}}}
       setDraft(previous=>({...previous,lines:previous.lines.map(l=>{const fr=parId.get(l.id);return fr&&!l.nameFr?{...l,nameFr:fr,...(decisions.get(l.id)??{})}:l;})}));
     });
+  };
+  /**
+   * Pose une lecture : le brouillon, les propositions, la traduction. Lenteur D : appelée par le PROVISOIRE (les deux premiers lecteurs : l'écran arrive) puis, sans morceau, par le final comme avant. Rend ce qu'il faut pour l'instantané de la base (B1) :
+   * le brouillon tel qu'il est posé, et les propositions de la lecture.
+   */
+  const applyOutcome=(outcome:ScanOutcome,documentHash?:string):{posee:PurchaseDraft;propositions:Propositions;nLignes:number}|null=>{
+    setScan(outcome);
+    if(!outcome.ok || !outcome.result){setError(outcome.error||'Le scan n’a pas abouti. Les champs restent modifiables.');return null;}
+    const result=outcome.result;
+    const stockItems=[...stocks.rawMaterials,...stocks.cleaning];
+    proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setChoixGroupes(new Map());setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
+    /* D275 : le libellé est la base de la désignation (sans options ni suffixe d'unité), ou sa désignation française lue ; l'imprimé complet reste au brouillon et au plateau. Le calcul des lignes est `lignesDeLecture` (finale.ts) : le même pour le provisoire et le final (B1). */
+    const {lines,propositions}=lignesDeLecture(result,stockItems,draft.submissionId);
+    for(const x of propositions.proposedStock)proposedStock.current.add(x);
+    for(const [id,ref] of propositions.proposedRef)proposedRef.current.set(id,ref);
+    for(const [id,v] of propositions.voisins)voisins.current.set(id,v);
+    for(const [id,nom] of propositions.relieAuto)relieAuto.current.set(id,nom);
+    for(const id of propositions.neufDOffice)neufDOffice.current.add(id);
+    manuallyClassified.current.clear();
+    const poser=(previous:PurchaseDraft):PurchaseDraft=>{const entete=enteteDeLecture(previous,result,swissToday()),description=entete.description??previous.description;return patchPurchaseDraft(previous,{...entete,lines:lines.length?lines:[{...newLine(),description:description||'Achat',amount:entete.amount}],scanModel:outcome.model,documentHash},swissToday());};
+    setDraft(poser);
+    const posee=poser(draftCourant.current??draft);
+    /* D280 : le français des noms de base ; la quantité et l'unité de chaque ligne telles que lues : une ligne que le brasseur a retouchée n'est jamais reprise. */
+    const jeton=++nomsJeton.current;
+    lectureLigne.current=new Map(lines.map(l=>[l.id,`${l.quantity}|${l.unit}`]));
+    traduire(lines,jeton,stockItems);
+    return {posee,propositions,nLignes:result.items.length};
+  };
+  /* ------- lenteur D (D308) : le provisoire arrive, puis le final se fusionne ------- */
+  /** Le morceau provisoire : l'écran arrive (lignes, drapeaux, « Lectures ●●◌ »), « Confirmer » attend (gris, roue). Le verrou de lecture reste : un seul fichier à la fois. */
+  const surProvisoire=(provisoire:ScanOutcome,documentHash?:string)=>{
+    const posee=applyOutcome(provisoire,documentHash);
+    if(!posee||!provisoire.jeton)return;
+    provRef.current={base:baseDeBrouillon(posee.posee,provisoire.jeton,posee.propositions,posee.nLignes),scan:provisoire};
+    setFusion(null);setPerdues([]);setPerduesIds([]);setNGardees(0);
+    setBusy(false);setShowForm(true);setVerif('attente');
+  };
+  /** La fin de partie (M2, R1) : le final n'arrive pas (délai, erreur, flux fermé) : les valeurs du provisoire restent, avec le point « lecture coupée » (`delai-saute`), comme une 3.8 coupée aujourd'hui. Ses saisies restent. */
+  const finDePartie=()=>{
+    const prov=provRef.current;if(!prov?.scan.result)return;
+    setScan({...prov.scan,result:provisoireCoupe(prov.scan.result)});setVerif('echec');
+  };
+  /** Le final : la fusion « sa saisie l'emporte » (finale.ts). Elle n'appelle jamais `applyOutcome` : `readCount`, `choixGroupes`, les plateaux ouverts, `manuallyClassified` restent. */
+  const surFinal=(final:ScanOutcome,documentHash?:string)=>{
+    const prov=provRef.current,courant=draftCourant.current;
+    if(!prov?.scan.result||!courant)return;
+    if(!final.ok||!final.result){finDePartie();return;}
+    const stockItems=courantRef.current.stockItems;
+    const focus=(()=>{const el=typeof document!=='undefined'?document.activeElement:null;return el&&form.current?.contains(el)?el.closest<HTMLElement>('[data-dp-ligne]')?.dataset.dpLigne??null:null;})();
+    const s=appliquerFinale({base:prov.base,courant,provisoire:prov.scan.result,final:final.result,stockItems,today:swissToday(),ligneVide:newLine,model:final.model,
+      registres:{reviewedFields:courantRef.current.reviewedFields,manuallyClassified:manuallyClassified.current,proposes:proposedStock.current,neufsOffice:neufDOffice.current,reglees:courantRef.current.reglees,focus}});
+    if(s.etat==='echec'){finDePartie();return;}
+    /* Les propositions (article lié, voisin…) des lignes dont il n'a pas touché le lien viennent du final ; les autres gardent les leurs. */
+    for(const id of s.reprises){proposedStock.current.delete(id);proposedStock.current.delete(id+PROPOSAL_WEIGHT_MARK);proposedRef.current.delete(id);voisins.current.delete(id);relieAuto.current.delete(id);neufDOffice.current.delete(id);}
+    for(const x of s.propositions.proposedStock)proposedStock.current.add(x);
+    for(const [id,ref] of s.propositions.proposedRef)proposedRef.current.set(id,ref);
+    for(const [id,v] of s.propositions.voisins)voisins.current.set(id,v);
+    for(const [id,nom] of s.propositions.relieAuto)relieAuto.current.set(id,nom);
+    for(const id of s.propositions.neufDOffice)neufDOffice.current.add(id);
+    for(const id of s.reprises){const l=s.draft.lines.find(x=>x.id===id);if(l)lectureLigne.current.set(id,`${l.quantity}|${l.unit}`);}
+    const jeton=++nomsJeton.current;
+    setDraft(()=>s.draft);
+    setScan({...final,result:s.result,...(documentHash?{documentHash}:{})});
+    setFusion({lignes:s.corrections.lignes,entete:s.corrections.entete,ajoutees:new Set(s.ajoutees),n:s.nCorrigees,avant:prov.base.lignes});
+    setPerdues(s.perdues);setPerduesIds(s.perdues.map(p=>p.ligne.id));setNGardees(0);
+    setVerif('finie');
+    /* M6 : la traduction du provisoire en vol est jetée (`nomsJeton`) ; les lignes sans français (nom changé, ligne ajoutée, traduction jetée) se traduisent à nouveau, ce seul appel. */
+    traduire(s.draft.lines.filter(l=>!l.nameFr),jeton,stockItems);
+  };
+  /** Ce que l'écran fait de la valeur rendue par `scanDocument` / `scanPages` : un morceau a été reçu → fusion ; sinon (cache, pièce sans 3.8, ancien serveur) → comme avant. */
+  const finLecture=(outcome:ScanOutcome,documentHash?:string)=>{
+    if(provRef.current){surFinal(outcome,documentHash);return;}
+    setVerif('aucune');applyOutcome(outcome,documentHash);
+  };
+  /** Les options du flux pour `scanDocument` / `scanPages` : le morceau provisoire, et le signal levé quand la feuille se ferme (le serveur finit et met en cache). */
+  const optionsFlux=(documentHash:string,pages?:boolean):ScanFluxOptions=>{
+    const jeton=++lectureJeton.current;lectureAbort.current?.abort();const ctrl=new AbortController();lectureAbort.current=ctrl;provRef.current=null;
+    return {signal:ctrl.signal,onProvisoire:p=>{if(!mounted.current||lectureJeton.current!==jeton||!p.ok||!p.result)return;if(pages)setNPagesLues(p.pagesLues??0);surProvisoire(p,documentHash);}};
   };
   /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
      il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
@@ -390,7 +439,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* La dépense lue d'avant, remise à zéro quand un nouveau document ou un nouveau lot de pages est choisi (la description tapée est gardée). */
   const remettreLaDepenseAZero=()=>patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
   /* La lecture d'avant s'efface : erreur, reçu, lecture, QR. */
-  const effacerLecture=()=>{setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
+  const effacerLecture=()=>{setFusion(null);setPerdues([]);setPerduesIds([]);setNGardees(0);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
   /* Les pages d'avant s'en vont (URL d'objet révoquées), avec leur PDF, leur lecture confirmée et l'entrée rouverte par « Changer ». */
   const libererPages=()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);pagesRef.current=[];pdfRef.current=null;setPages([]);setNPagesLues(0);setAssemblageEchoue(false);setEntreeOuverte(false);};
   const attach=async(file:File,lireQuandMeme=false)=>{
@@ -411,11 +460,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
       if(meme){setDeja(meme.id);return;}
       lancerQr(file);
-      const outcome=await GeminiScannerService.scanDocument(file);
+      const outcome=await GeminiScannerService.scanDocument(file,'fast',optionsFlux(documentHash));
       if(!mounted.current)return;
-      applyOutcome(outcome,documentHash);
+      finLecture(outcome,documentHash);
     }catch(e:any){if(mounted.current)setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');}
-    finally{scanLocked.current=false;if(mounted.current){setBusy(false);setShowForm(true);}}
+    finally{scanLocked.current=false;if(mounted.current){setBusy(false);setShowForm(true);if(verifRef.current==='attente')finDePartie();}}
   };
   /* ------- n2-pages : plusieurs images pour une dépense ------- */
   const urlDePage=(file:File)=>typeof URL.createObjectURL==='function'?URL.createObjectURL(file):'';
@@ -491,12 +540,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
       if(meme){setDeja(meme.id);return;}
       lancerQrPages(lot.map(p=>p.file));
-      const outcome=await GeminiScannerService.scanPages(lot.map(p=>p.file));
+      const outcome=await GeminiScannerService.scanPages(lot.map(p=>p.file),optionsFlux(documentHash,true));
       if(!mounted.current)return;
       setNPagesLues(outcome.ok?outcome.pagesLues??0:0);
-      applyOutcome(outcome,documentHash);
+      finLecture(outcome,documentHash);
     }catch(e:any){if(mounted.current){setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');if(!pose)setAssemblageEchoue(true);}}
-    finally{scanLocked.current=false;if(mounted.current){setBusy(false);if(pose)setShowForm(true);}}
+    finally{scanLocked.current=false;if(mounted.current){setBusy(false);if(pose)setShowForm(true);if(verifRef.current==='attente')finDePartie();}}
   };
   /* « Changer » sur des pages : l'entrée (« Un document » | « Plusieurs ») s'ouvre au-dessus de la dépense, qui ne bouge pas ; rien n'est remis à zéro avant le premier nouveau fichier. */
   const ouvrirEntree=()=>{const refus=refusDeFichier();if(refus){setError(refus);return;}setEntreeOuverte(true);};
@@ -508,16 +557,22 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const file=new File([''],apercu.fichier.name,{type:apercu.fichier.type});
     setAttachment(file);setShowForm(true);
     patch({proofDataUrl:'data:application/pdf;base64,JVBERi0xLjQK',proofFileName:apercu.fichier.name,proofType:apercu.fichier.type,documentHash:'simule'});
+    let minuteur:ReturnType<typeof setTimeout>|undefined;
     if(apercu.etat==='1'||apercu.etat==='qr-lecture')setBusy(true);
+    else if(apercu.provisoire){
+      /* Lenteur D : le provisoire à l'ouverture, puis le final `delaiMs` plus tard (jamais : l'attente reste). Le même chemin que la vraie lecture (`surProvisoire`, `finLecture`). */
+      scanLocked.current=true;lectureJeton.current++;surProvisoire(apercu.provisoire,'simule');
+      const fin=apercu.final;if(fin&&apercu.delaiMs!==null&&apercu.delaiMs!==undefined)minuteur=setTimeout(()=>{if(!mounted.current)return;scanLocked.current=false;finLecture(fin,'simule');},apercu.delaiMs);
+    }
     else applyOutcome(apercu.outcome,'simule');
     /* Le banc du QR : un vrai fichier fictif, lu par le vrai décodeur du navigateur (la lecture Gemini reste simulée). */
     if(apercu.qrSimule){qrJeton.current++;setQrRes(apercu.qrSimule);}
     else if(apercu.qrFichier){const q=apercu.qrFichier;fetch(q.url).then(r=>r.blob()).then(b=>lancerQr(new File([b],q.name,{type:q.type}))).catch(()=>undefined);}
-    const t=setTimeout(()=>{document.body.dataset.apercu=apercu.etat;},120);
-    return()=>clearTimeout(t);
+    const t=setTimeout(()=>{document.body.dataset.apercu=apercu.etat;},apercu.provisoire&&apercu.delaiMs?apercu.delaiMs+400:120);
+    return()=>{clearTimeout(t);if(minuteur)clearTimeout(minuteur);};
   },[]);
   const save=async()=>{
-    if(saveLocked.current||scanLocked.current)return;
+    if(saveLocked.current||scanLocked.current||verifRef.current==='attente')return;
     if(scan?.ok&&scan.result?.documentType==='credit_note'){setError('Ce document est un avoir. Enregistre-le comme remboursement dans Finances, ou joins la facture de l’achat.');return;}
     // Devant un achat peut-être déjà enregistré, le choix passe avant les champs : « même achat » n'en demande aucun.
     if(errors.length){setAttempted(true);setError('');focusIssue(shownErrors.find(message=>message.includes('doublon'))??shownErrors[0]);return;}
@@ -699,7 +754,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* S6 (T3, T4) : l'article neuf de chaque ligne non reliée, DÉRIVÉ de la ligne et du stock courants par la fonction même de l'enregistrement : ce qui est montré est ce qui
      est écrit. Seul le nom tapé (`articleName`) est gardé ; les lignes « neuves » plus haut comptent pour le suffixe (« bis », « bis 2 »). Mis en cache par ligne. */
   const existants=sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId);
-  existantsCourants.current=existants;draftCourant.current=draft;
+  existantsCourants.current=existants;draftCourant.current=draft;courantRef.current={reviewedFields,reglees,stockItems:[...stocks.rawMaterials,...stocks.cleaning]};
   const signatureStock=`${draft.vendor}§`+existants.map(item=>`${item.ref}|${item.name}|${item.category}|${item.unit}|${item.supplier??''}|${item.alphaPct??''}|${item.colorEbc??''}|${item.origin??''}|${item.fiche?.id??''}`).join(';');
   const neufParLigne=new Map<string,ArticleNeuf>();
   {
@@ -739,6 +794,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="flex gap-1.5"><button type="button" onClick={()=>setLaissees(true)} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-200">Laisser en service</button></div></div>:null;
   /* D277 : le contexte de la confiance (toutes les lignes avec leur unité déduite, le stock, le total, les points recalculés : une valeur corrigée baisse son drapeau). */
   const ctxConf=contexteConfiance(draftEff,articlesStock,points);
+  /* Lenteur D : les cellules d'une rangée que la 3.8 a corrigées (le bleu, l'ancienne valeur barrée sous le nom). Une correction que le brasseur a retapée depuis n'est plus montrée : la valeur est la sienne. */
+  const memeValeur=(a:unknown,b:unknown)=>JSON.stringify(a??null)===JSON.stringify(b??null);
+  const corrigeeDe=(line:PurchaseLineDraft)=>{
+    const cs=fusion?.lignes[line.id]?.filter(c=>memeValeur((line as unknown as Record<string,unknown>)[c.champ],c.apres));
+    if(!fusion||!cs?.length)return undefined;
+    const champs=new Set<string>(cs.map(c=>c.champ));
+    return {qte:champs.has('quantity')||champs.has('unit'),prix:champs.has('unitPrice'),montant:champs.has('amount'),nom:champs.has('description')||champs.has('imprime')||champs.has('nomLu'),avant:libelleAvant(fusion.avant[line.id]??{},cs,line)};
+  };
   const construire=(line:PurchaseLineDraft,index:number,simple:boolean):React.ReactNode=>{
     const mp=mouturesPropositions.find(p=>p.lineId===line.id),parentIdx=parentDeLaMouture(draft.lines,index),neuf=neufParLigne.get(line.id),nomRefuse=line.stockAction==='new'&&Boolean(line.articleName?.trim())&&nomPrisParAutre(line.id,line.articleName!);
     const isMouture=Boolean(mp)||parentIdx>=0;
@@ -860,7 +923,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
       douteux={douteux} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}
       fix={correction} fixNiveau={fixNiveau} lienNiveau={status.proposed?"repris":undefined} plateau={plateauEl} moutureArticles={enfant&&cestMoutureEnPastille?construire(enfant,enfantIdx,false):undefined}
-      onToggle={surToggle}/>;
+      onToggle={surToggle} corrigee={corrigeeDe(line)} neuve={fusion?.ajoutees.has(line.id)}/>;
   };
   const tvaLues=[...new Set((points??[]).filter(p=>p.code==='lectures-divergentes'&&/tva/i.test(p.champ)).flatMap(p=>(p.valeurs??[]).map(v=>v.valeur).filter((v):v is number=>typeof v==='number')))];
   const tvaPoint=(points??[]).find(p=>p.code==='tva-incoherente');
@@ -881,6 +944,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {scan?.ok?<button type="button" data-dp="tuile-tva" data-dp-chip="TVA|" data-dp-fait={tvaRegle?'1':undefined} aria-expanded={panel==='tva'} onClick={()=>setPanel(panel==='tva'?null:'tva')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nTva?'pl-8':'pl-2'} min-w-[80px] flex-1 basis-[80px] text-left ${nTva&&!tvaRegle?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nTva,tvaRegle)}<span className="block text-xs text-cave-400">TVA</span><span className="block font-mono text-sm text-cave-50">{tvaLues.length>1?tvaLues.map((v,i)=><React.Fragment key={v}>{i?' · ':''}<b className={`font-semibold ${tvaRegle&&draft.sourceVatAmount!==v?'text-cave-400 line-through':''}`}>{fr2(v)}</b></React.Fragment>):draft.sourceVatAmount!==undefined?fr2(draft.sourceVatAmount):'—'}{tvaRegle?<small className="ml-1 text-xs text-cave-200">{draft.sourceVatAmount===undefined?'vide':'gardée'}</small>:null}</span></button>:null}
     <button type="button" data-dp="tuile-paye" data-dp-chip={nPaye?'paye':undefined} data-dp-fait={nPaye&&!payeSuppose?'1':undefined} aria-expanded={panel==='paye'} onClick={()=>setPanel(panel==='paye'?null:'paye')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nPaye?'pl-8':'pl-2'} min-w-[156px] flex-1 basis-[156px] text-left ${payeSuppose?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nPaye,!payeSuppose)}<span className="flex items-center justify-between gap-1 whitespace-nowrap text-xs text-cave-400">Règlement{payeSuppose?<small className="text-xs text-attention">supposée</small>:null}{dateParDefaut&&draft.paymentStatus==='paid'?<small className="text-xs text-cave-400">par défaut</small>:null}</span><span className="block whitespace-nowrap text-[13px] text-cave-50">{draft.paymentStatus==='paid'?(draft.paymentDate?<span className="font-mono">Payé le {draft.paymentDate}</span>:<span>Payé{draft.date?null:<span data-dp-niveau="inconnu" className="font-mono text-alert"> · date ?</span>}</span>):draft.dueDate?<span className="font-mono">Échéance : {draft.dueDate}</span>:<span>À payer</span>}</span></button>
   </div>;
+  /* Lenteur D (défaut A, D315) : un champ d'en-tête que la 3.8 a corrigé (et que le brasseur n'a pas retapé depuis) : bleu, l'ancienne valeur barrée. */
+  const enteteCorrige=(()=>{const e=fusion?.entete;if(!e)return undefined;const sortie:{total?:string;date?:string;vendor?:string}={};
+    if(e.total&&memeValeur(draft.amount,e.total.apres)&&typeof e.total.avant==='number')sortie.total=fr2(e.total.avant);
+    if(e.date&&draft.date===e.date.apres&&typeof e.date.avant==='string')sortie.date=e.date.avant;
+    if(e.vendor&&draft.vendor===e.vendor.apres&&typeof e.vendor.avant==='string')sortie.vendor=e.vendor.avant;
+    return Object.keys(sortie).length?sortie:undefined;})();
   const boutonPlein='min-h-7 rounded-control border border-ebc-straw bg-ebc-straw px-2.5 text-sm font-semibold text-cave-950';
   const panneaux=<div className="space-y-2">
     {scan?.ok?<div data-dp="panneau-tva" className={`${panel==='tva'?'block':'hidden'} rounded-panel border-2 border-cave-50/80 p-2 space-y-1.5`}>
@@ -907,6 +976,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     form.current?.querySelectorAll<HTMLDetailsElement>('details[data-dp-plateau][open]').forEach(d=>{if(d.closest('[data-dp-ligne]')!==cible&&!(cible&&d.contains(cible)))d.open=false;});
   };
   const ligneEls=new Map<string,React.ReactNode>();
+  /* Lenteur D, son choix 2 D : les lignes que la 3.8 ne lit plus : barrées en fin de leur bande, hors des sommes (elles ne sont pas dans le brouillon). « Confirmer » sans trancher : elles partent. */
+  const perduesParBande=new Map<string,React.ReactNode[]>();
+  for(const p of perdues){const l=p.ligne,g=groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category),u=uniteEffective(l);
+    perduesParBande.set(g,[...(perduesParBande.get(g)??[]),<LignePerdue key={l.id} id={l.id} groupe={g} nom={nomAffiche(l.nameFr&&!articleDe(l)?l.nameFr:l.description,articleDe(l))} qte={texteQuantite(l,u,false)} prix={l.unitPrice!==undefined?prixImprime(l.unitPrice):'—'} montant={l.amount===undefined?'—':fr2c(Math.round(l.amount*100))} masquee={Boolean(visibles&&!visibles.has(l.id))}/>]);}
+  const perdueCourante=perdues[0];
+  const garderPerdue=()=>{const p=perdueCourante;if(!p)return;setDraft(previous=>({...previous,lines:rangerLaPerdue(previous.lines,p,p.ligne)}));setPerdues(ps=>ps.filter(x=>x.ligne.id!==p.ligne.id));setNGardees(n=>n+1);};
+  const retirerPerdue=()=>{const p=perdueCourante;if(p)setPerdues(ps=>ps.filter(x=>x.ligne.id!==p.ligne.id));};
+  const toutValider=()=>setPerdues([]);
   draft.lines.forEach((line,index)=>{ligneEls.set(line.id,construire(line,index,simplePurchase));});
   /* Les bandes, la barre, les comptes : tous sur le même ensemble de lignes (R2). */
   /* D277 : le niveau de chaque rangée (la quantité et son unité, le prix, le montant, le nom), une seule lecture pour les bandes et les comptes. */
@@ -952,6 +1029,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     compteDe('mouture',[...idsDe('mouture'),...concasses.map(x=>x.l.id)],n=>n>1?'moutures':'mouture','mouture',chips.filter(c=>c.source==='mouture'),centsMoutures>0?`+${eur(centsMoutures)}`:undefined),
     compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),
     compteDe('remplir',parNiveau('inconnu'),()=>'à remplir','precis',chips.filter(c=>c.codes.includes('unite-absente')),undefined,'inconnu'),
+    /* Lenteur D (sa maquette `d-lue`) : « ↻ N corrigées », au geste de filtre des autres puces. N compte les CIBLES (une rangée à deux cellules corrigées : 1 ; un champ d'en-tête : 1 ; une ligne ajoutée : 1) et, comme sa maquette `choix-valider`, les lignes pas retrouvées qui attendent encore. */
+    ...(()=>{const ids=[...Object.keys(fusion?.lignes??{}).filter(id=>draft.lines.some(l=>l.id===id)),...(fusion?[...fusion.ajoutees]:[]),...perdues.map(p=>p.ligne.id)],n=(fusion?.n??0)+perdues.length,mot=n>1?'corrigées':'corrigée';return n>0?[{cle:'corrigees',n,mot,lien:'aucun' as LienStock,ronds:[],fait:false,ids,actif:filtre?.mot===mot,corrigee:true} as CompteItem]:[];})(),
   ];
   const surCompte=(c:CompteItem)=>{
     if(!c.ids.length)return;
@@ -962,14 +1041,17 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const versListe=()=>{viser(form.current?.querySelector<HTMLElement>('[data-dp="liste"]'));};
   const versLigne=(id:string)=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id});
   /* La preuve (rangées chiffrées lues dans `controls` : rien d'affirmé sans contrôle). */
-  const ctl=result?.controls,lectures=result?.review?.readers;
+  /* Lenteur D : une ligne gardée (« Garder ») change la somme : les contrôles se lisent alors sur le brouillon (le recalcul), comme sa maquette (« Somme ≠ imprimé 48,10 »). */
+  const ctl=(nGardees>0&&recalcul?recalcul.controls:result?.controls) as NonNullable<typeof result>['controls'],lectures=result?.review?.readers;
+  /* Lenteur D (ses maquettes `q1-b`, `b-garder`) : une ligne ajoutée ou gardée change la somme : « Somme ≠ imprimé 48,10 » en attention, la somme des lignes à droite (jamais « = imprimé · non vérifiée »). */
+  const ecartLenteur=Boolean(ctl&&ctl.sum.statut==='ecart'&&(nGardees>0||(fusion?.ajoutees.size??0)>0));
   const ecartTotalQr=qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined;
   const rangees:Rang[]=result?[
-    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme non contrôlée',valeur:''},
+    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ecartLenteur?{ok:false,texte:'Somme ≠ imprimé',valeur:fr2c(sommeLignesCts)}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme non contrôlée',valeur:''},
     ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Qté × prix non contrôlé',valeur:''},
     /* n2-pages, sa maquette 6 : des lectures d'accord sur une pièce de plusieurs pages (le serveur en a confirmé N) disent « ✓ N pages lues », sans valeur à droite ; en désaccord,
        « Lectures · N pages » et « n lectures » ; un document seul : « Lectures » et « 2/2 », comme avant. Sans lectures annoncées rien n'est inventé. */
-    ...(lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeur:`${lectures} lectures`}:nPagesLues>1?{ok:true,texte:`${nPagesLues} pages lues`,valeur:''}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
+    ...(verif==='attente'?[{ok:null,texte:'Lectures',valeur:'',lectures:{faites:2,sur:3}}]:lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeur:`${lectures} lectures`}:nPagesLues>1?{ok:true,texte:`${nPagesLues} pages lues`,valeur:''}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
     ...((result.linesLost??0)>0?[{ok:false,texte:'Lignes non gardées',valeur:String(result.linesLost)}]:[]),
   ]:[];
   const corriges=[...new Set((result?.review?.correctedFields??[]).map(f=>f.startsWith('items')?'Articles':f))];
@@ -990,9 +1072,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* ------- le pied : le bouton principal garde tous les états d'aujourd'hui ------- */
   const bouton:BoutonPied=done||attached?{texte:'Terminé',aria:'Terminé',icone:'check',disabled:false,onClick:onClose}
     :dejaTx?{texte:onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer',aria:onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer',icone:onOpenExpense?'file':'x',disabled:false,onClick:()=>{onClose();onOpenExpense?.(dejaTx.id);}}
-    :sameChosen&&existing?{texte:attachable?(saving?'Rattachement…':'Rattacher le justificatif'):'Fermer sans rien enregistrer',aria:attachable?(saving?'Rattachement…':'Rattacher le justificatif'):'Fermer sans rien enregistrer',icone:saving?'spin':attachable?'check':'x',disabled:saving,onClick:()=>{if(attachable)void attachToExisting(existing.id);else onClose();}}
-    :!existing&&similarChoice==='same'&&similar?{texte:similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer',aria:similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer',icone:similarAttachable?'check':'x',disabled:saving,onClick:()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}}
-    :{texte:saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer':'Enregistrer',aria:busy?'Lecture en cours':saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer et enregistrer':'Enregistrer la dépense',icone:saving?'spin':'check',disabled:saving||busy,titre:busy?'Lecture en cours':undefined,onClick:()=>void save()};
+    :sameChosen&&existing?{texte:attachable?(saving?'Rattachement…':'Rattacher le justificatif'):'Fermer sans rien enregistrer',aria:attachable?(saving?'Rattachement…':'Rattacher le justificatif'):'Fermer sans rien enregistrer',icone:saving?'spin':attachable?'check':'x',disabled:saving||verif==='attente',onClick:()=>{if(attachable)void attachToExisting(existing.id);else onClose();}}
+    :!existing&&similarChoice==='same'&&similar?{texte:similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer',aria:similarAttachable?'Rattacher le justificatif':'Fermer sans rien enregistrer',icone:similarAttachable?'check':'x',disabled:saving||verif==='attente',onClick:()=>{if(similarAttachable)void attachToExisting(similar.tx.id);else onClose();}}
+    :{texte:saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer':'Enregistrer',aria:busy?'Lecture en cours':verif==='attente'?'Vérification en cours':saving?'Enregistrement…':pendingId?'Vérifier la synchronisation':scan?.ok?'Confirmer et enregistrer':'Enregistrer la dépense',icone:saving||verif==='attente'?'spin':'check',disabled:saving||busy||verif==='attente',titre:busy?'Lecture en cours':verif==='attente'?'Vérification en cours':undefined,onClick:()=>void save()};
   const statutPied=done||attached?null:dejaTx?(onOpenExpense?{texte:'Rien n’est enregistré'}:null)
     :saving&&draft.proofDataUrl&&!receipt&&(!proofQueueAvailable()||apercu)?{texte:`Envoi au Drive${tailleMo?` · ${fr(tailleMo)} Mo`:''}`}
     :saving?{texte:pendingId?'Confirmation…':'Enregistrement…'}
@@ -1108,7 +1190,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-1 flex flex-col gap-1.5 px-2 pt-1.5 lg:order-none lg:px-0">
         {doublons}
         <InvoiceScanReview bandeauRef={bandeauRef}
-          bandeau={{vendor:draft.vendor,date:draft.date,niveaux:niveauxEntete,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true)}}
+          bandeau={{vendor:draft.vendor,date:draft.date,niveaux:niveauxEntete,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true),corriges:enteteCorrige}}
           preuve={{rangees,corriges,remarques,cached:Boolean(scan.cached),visee:viseePreuve,onRangee:versListe,propositions:hints.items?"À vérifier":null}}
           comptes={<><Comptes items={comptesItems} onCompte={surCompte}/>{chips.some(c=>!aSaPlace(c))||tout?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={aSaPlace}/>:null}</>}/>
         {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
@@ -1118,7 +1200,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-3 lg:order-none lg:pb-0">{rubriquesScan}{phraseRecu}</div>
       </div>
       <div className="order-2 lg:order-none lg:col-start-2">
-        <Liste ordre={ordre} bandes={bandes} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
+        <Liste ordre={ordre} bandes={bandes} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
           pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,detail:draft.lines.length>1?detailListe:null}}
           onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={()=>patch({lines:[{...newLine(),description:draft.description,kind:'other',amount:draft.amount}]})}>
@@ -1142,8 +1224,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   return <ModalShell open onClose={()=>{if(!busy&&!saving)onClose();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl" plein>
     <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={onClose} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
       milieu={ordre==='cat'&&etatSeg.visible?<SegmentPlier plie={etatSeg.plie} deplie={etatSeg.deplie} onPlier={()=>toutPlierGroupes()} onDeplier={()=>toutDeplierGroupes()}/>:undefined}/>
+    {verif==='attente'?<FilVerification/>:null}
     <div ref={scroller} className="dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]">
-      <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)} pages={pagesJointes?pages.map(p=>({id:p.id,url:p.url,nom:p.file.name})):undefined} onChanger={pagesJointes?ouvrirEntree:()=>fileInput.current?.click()}/></div>
+      <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)||verif==='attente'} pages={pagesJointes?pages.map(p=>({id:p.id,url:p.url,nom:p.file.name})):undefined} onChanger={pagesJointes?ouvrirEntree:()=>fileInput.current?.click()}/></div>
       <div data-dp="alertes" className="space-y-1.5 px-2 pt-1.5 empty:hidden">{recu}{alertes}</div>
       <div ref={form} className="pb-2">
         <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
@@ -1155,10 +1238,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
       </div>
     </div>
+    {showForm&&perdueCourante?<BandeauPerdues nom={nomAffiche(perdueCourante.ligne.description)} montant={perdueCourante.ligne.amount===undefined?'—':fr2c(Math.round(perdueCourante.ligne.amount*100))} rang={perduesIds.indexOf(perdueCourante.ligne.id)+1} total={perduesIds.length} onGarder={garderPerdue} onRetirer={retirerPerdue} onToutValider={toutValider}/>:null}
     {showForm?<Pied ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
   </ModalShell>;
 }
 const fr2=(n:number)=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
-/** Le prix lu, au moins deux décimales (2,30 et non 2,3), trois sous 0,10 (0,040 · 0,080 · 0,045 : la colonne des prix au gramme reste homogène) : une mise en forme, jamais un chiffre ajouté. */
-const prixImprime=(p:number)=>{const d=(String(p).split('.')[1]??'').length;return p.toFixed(Math.max(Math.abs(p)<0.1?3:2,d)).replace('.',',');};
 function ScanHintTotal({message}:{message?:string}){return message?<span id="scan-hint-amountTTC" className="sr-only">À confirmer · {message}</span>:null;}

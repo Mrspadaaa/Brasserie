@@ -1,0 +1,39 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+Serveur 1/1 : npm run dev -- --port 3471 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-l8DqBX\serveur-1-3471.log)
+Attente du port 3471…
+Serveur prêt sur le port 3471
+
+Tous les serveurs sont prêts. Lancement : node C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/voies/e-ecran/capturer-lenteur.mjs --sortie=C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/voies/e-ecran/captures --etats=touchee
+
+ok tactile390 · touchee · le fil est parti
+ok tactile390 · touchee · Confirmer est actif (noir)
+ok tactile390 · touchee · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok tactile390 · touchee · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · touchee · la frappe a pris pendant l'attente (champ : « 12 »)
+ok tactile390 · touchee · la quantité de Pilsner vaut 12 après le final (champ « 12 », rangée « 12 Kg »)
+ok tactile390 · touchee · la quantité tapée n’a pas la marque bleue
+ECHEC tactile390 · touchee · l'ancienne quantité n'est pas barrée (avant : « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ECHEC tactile390 · touchee · la puce compte 2 corrigées, une de moins que « lue » (3 corrigées)
+ok tactile390 · touchee · aucun débordement horizontal (0 px)
+ok tactile390 · touchee · aucune erreur de console
+ok pc1280 · touchee · le fil est parti
+ok pc1280 · touchee · Confirmer est actif (noir)
+ok pc1280 · touchee · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok pc1280 · touchee · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · touchee · la frappe a pris pendant l'attente (champ : « 12 »)
+ok pc1280 · touchee · la quantité de Pilsner vaut 12 après le final (champ « 12 », rangée « 12 Kg »)
+ok pc1280 · touchee · la quantité tapée n’a pas la marque bleue
+ECHEC pc1280 · touchee · l'ancienne quantité n'est pas barrée (avant : « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ECHEC pc1280 · touchee · la puce compte 2 corrigées, une de moins que « lue » (3 corrigées)
+ok pc1280 · touchee · aucun débordement horizontal (0 px)
+ok pc1280 · touchee · aucune erreur de console
+ok aucune requête hors localhost
+ECRAN-D ECHEC 4
+ - tactile390 · touchee · l'ancienne quantité n'est pas barrée (avant : « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ - tactile390 · touchee · la puce compte 2 corrigées, une de moins que « lue » (3 corrigées)
+ - pc1280 · touchee · l'ancienne quantité n'est pas barrée (avant : « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ - pc1280 · touchee · la puce compte 2 corrigées, une de moins que « lue » (3 corrigées)
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…

@@ -8,6 +8,7 @@ import lectureS6 from './apercu/lecture-s6.reconciliee.json';
 import stockS6 from './apercu/stock-s6.json';
 import { articlesNeufsDe } from '../../services/purchaseEntry';
 import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
+import { ajouterCoupure, phraseCoupure } from './finale';
 import type { ScanOutcome, ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { ApercuDepense } from './types';
 import { parseSwissQr } from '../../services/qrFacture';
@@ -210,7 +211,80 @@ function apercuCommande(): ApercuDepense {
   };
 }
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Lenteur D (voie e-ecran) : la pièce FICTIVE « Brauhaus Ouest » de ses maquettes (`choix-lenteur/d-06`, `d-lue`, `choix-lignes-38`, `choix-valider`, `choix-cas-38`), en lecture SIMULÉE :
+// un provisoire (les deux premières lectures), puis le final (la 3.8). Aucune valeur d'une vraie pièce, Gemini jamais appelé, aucune écriture.
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+export type VarianteLenteur = 'lue' | 'ajoutee' | 'perdue' | 'perdues-2' | 'total' | 'echec' | 'sans-38' | 'touchee' | 'provisoire';
+const JETON_LENTEUR = 'jeton-lenteur';
+type LigneLenteur = { nom: string; kind: string; q: number | null; u: string; prix: number | null; montant: number; cat: string };
+const L = (nom: string, q: number | null, u: string, prix: number | null, montant: number, cat: string, kind = 'stock'): LigneLenteur => ({ nom, kind, q, u, prix, montant, cat });
+
+/** Le stock SIMULÉ de la pièce : six articles liés (« 6 reliés » de la maquette) ; Sucre candi reste sans article. */
+function stockLenteur(): ApercuDepense['stocks'] {
+  const art = (nom: string, unit: string, category: string) => ({ id: nom, ref: `MP-${nom}`, name: nom, unit, category, currentStock: 1, minStock: 0, reorder: false });
+  return { rawMaterials: [art('Malt Pilsner', 'kg', 'Malt'), art('Malt de Munich', 'kg', 'Malt'), art('Carapils', 'kg', 'Malt'), art('Sabro 13.4%', 'g', 'Houblon'), art('Citra 12.5%', 'g', 'Houblon'), art('Levure Ale sèche', 'sachet', 'Levure')], cleaning: [], equipment: [], kegs: [] } as unknown as ApercuDepense['stocks'];
+}
+
+/** Les lectures de la pièce : `provisoire` (les deux premiers lecteurs), `final` (la 3.8, avec `rangProvisoire` et le jeton du morceau). Les ids sont ceux de `normalizeResult` : `line-N` dans l'ordre de chaque lecture. */
+export function lecturesLenteur(variante: VarianteLenteur): { provisoire?: ScannedInvoiceResult; final: ScannedInvoiceResult; jeton: string } {
+  const perdue = variante === 'perdue' || variante === 'perdues-2', deux = variante === 'perdues-2';
+  const prov: LigneLenteur[] = [
+    L('Malt Pilsner', 10, 'Kg', 1.45, 14.5, 'malt'), L('Malt de Munich', 4, 'Kg', 1.8, 7.2, 'malt'), L('Carapils', 1, '', 2.4, 2.4, 'malt'),
+    ...(perdue ? [L('Avoine maltée', 0.5, 'Kg', 3.4, 1.7, 'malt')] : []),
+    L('Sabro 13.4%', 30, '', 0.07, 2.1, 'hop'), L('Citra 12.5%', 50, '', 0.09, 4.5, 'hop'),
+    ...(deux ? [L('Amarillo 9.2%', 25, 'g', 0.088, 2.2, 'hop')] : []),
+    L('Levure Ale sèche', 2, '', 4.9, 9.8, 'yeast'), L('Sucre candi', 1, '', 5.9, 5.9, 'sugar'),
+  ];
+  const base = (lignes: LigneLenteur[], imprime: number, readers: number, over: Record<string, unknown> = {}): ScannedInvoiceResult => {
+    const result = clone(lecture) as unknown as ScannedInvoiceResult;
+    const items = lignes.map((l, i) => ({ id: `line-${i + 1}`, name: l.nom, kind: l.kind, quantity: l.q, unit: l.u, price: l.prix, amountTTC: l.montant, reference: '', variant: '', stockCategory: l.cat, evidence: '', ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null }));
+    const somme = Math.round(lignes.reduce((a, l) => a + l.montant, 0) * 100) / 100;
+    Object.assign(result, {
+      proForma: false, vendor: 'Brauhaus Ouest', date: '21.10.2026', invoiceNumber: 'F-4410', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [], category: 'brassage', amountTTC: imprime,
+      items, printedLineCount: items.length, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Malts, houblons, levure (SIMULÉ)',
+      controls: { lines: { checked: items.length, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: Math.abs(somme - imprime) < 0.005 ? 'ok' : 'ecart', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+      review: { status: 'checked', findings: [], readers }, ...over,
+    });
+    return result;
+  };
+  const provisoire = base(prov, 46.4, 2);
+  if (variante === 'sans-38') return { final: base(prov, 46.4, 2), jeton: JETON_LENTEUR };
+  // Le final : chaque ligne dit son rang provisoire ; la 3.8 ne lit plus Avoine maltée ni Amarillo, et corrige les cellules de d-lue (Pilsner 5 Kg × 2,90, Sabro et Citra en g).
+  const corrige = (l: LigneLenteur): LigneLenteur => {
+    if (variante === 'echec' || variante === 'provisoire') return l;
+    if (l.nom === 'Malt Pilsner') return { ...l, q: 5, prix: 2.9 };
+    if (l.nom === 'Sabro 13.4%' || l.nom === 'Citra 12.5%') return { ...l, u: 'g' };
+    if (variante === 'total' && l.nom === 'Malt de Munich') return { ...l, prix: 2.2, montant: 8.8 };
+    return l;
+  };
+  const finales = prov.filter(l => !(perdue && (l.nom === 'Avoine maltée' || l.nom === 'Amarillo 9.2%'))).map(l => ({ l: corrige(l), rang: prov.indexOf(l) as number | null }));
+  if (variante === 'ajoutee') finales.splice(finales.findIndex(x => x.l.nom === 'Citra 12.5%') + 1, 0, { l: L('Mosaic 11.8%', 20, 'g', 0.08, 1.6, 'hop'), rang: null });
+  const final = base(finales.map(x => x.l), variante === 'total' ? 48 : 46.4, variante === 'echec' ? 2 : 3, { provisoireJeton: JETON_LENTEUR });
+  final.items = final.items.map((it, i) => ({ ...it, rangProvisoire: finales[i].rang }));
+  if (variante === 'echec') {
+    // La 3.8 en échec : le final porte les valeurs du provisoire et le point « lecture coupée » (invoiceScanVote.ts, `finalOfTwo`).
+    ajouterCoupure(final as any, 'delai-saute', phraseCoupure('delai-saute'));
+  }
+  return { provisoire, final, jeton: JETON_LENTEUR };
+}
+
+/** `lenteur-<variante>` : le provisoire à l'ouverture, puis le final 450 ms plus tard (7 s pour `touchee`, qui laisse le temps de taper ; jamais pour `provisoire`, l'attente de d-06). */
+function apercuLenteur(etat: string): ApercuDepense {
+  const nom = etat.slice('lenteur-'.length) as VarianteLenteur;
+  const { provisoire, final } = lecturesLenteur(nom);
+  const fichier = { name: 'capture-facture-lenteur.jpg', size: 412345, type: 'application/pdf' };
+  const sortie = (result: ScannedInvoiceResult, extra: Partial<ScanOutcome> = {}): ScanOutcome => ({ ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false, ...extra });
+  const outcomeFinal = sortie(final);
+  return {
+    outcome: provisoire ? sortie(provisoire) : outcomeFinal, fichier, stocks: stockLenteur(), transactions: [], etat, drive: 'ok', reseau: true,
+    ...(provisoire ? { provisoire: sortie(provisoire, { jeton: JETON_LENTEUR }), final: outcomeFinal, delaiMs: nom === 'provisoire' ? null : nom === 'touchee' ? 7000 : 450 } : {}),
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-21 Brauhaus Ouest F-4410.pdf', bytes: 412345, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
 export function apercuDepense(etat: string): ApercuDepense {
+  if (etat.startsWith('lenteur-')) return apercuLenteur(etat);
   if (etat === 'commande') return apercuCommande();
   if (etat === 'familles') return apercuFamilles();
   if (etat === 'renovation') return apercuRenovation();

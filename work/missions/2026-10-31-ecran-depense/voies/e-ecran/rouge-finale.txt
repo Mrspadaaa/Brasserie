@@ -1,0 +1,25 @@
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finale.test.ts[2m [ tests/unit/depense/lecture-d/finale.test.ts ][22m
+[31m[1mError[22m: Cannot find module '../../../../src/ui/depense/finale' imported from 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/tests/unit/depense/lecture-d/finale.test.ts'[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/finale.test.ts:[2m9:1[22m[39m
+    [90m  7| [39mimport type { PurchaseDraft, PurchaseLineDraft } from '../../../../src…
+    [90m  8| [39mimport type { ScannedInvoiceResult } from '../../../../src/services/ge…
+    [90m  9| [39mimport { appliquerFinale, baseDeBrouillon, brouillonDeLecture, libelle…
+    [90m   | [39m[31m^[39m
+    [90m 10| [39m
+    [90m 11| [39m[35mconst[39m [33mAUJOURDHUI[39m [33m=[39m [32m'02.11.2026'[39m[33m;[39m
+
+[31m[1mCaused by: Error[22m: Failed to load url ../../../../src/ui/depense/finale (resolved id: ../../../../src/ui/depense/finale) in C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/tests/unit/depense/lecture-d/finale.test.ts. Does the file exist?[39m
+[90m [2m❯[22m loadAndTransform ../../../../Documents/Brasserie/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:[2m35835:17[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 14:33:29
+[2m   Duration [22m 447ms[2m (transform 68ms, setup 218ms, collect 0ms, tests 0ms, environment 0ms, prepare 82ms)[22m
+

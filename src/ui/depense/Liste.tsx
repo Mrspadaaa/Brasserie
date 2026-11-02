@@ -76,6 +76,8 @@ export function Liste(p: {
   choixGroupes?: ChoixGroupes; forces?: ReadonlySet<string>; onBasculeGroupe?: (bande: string, sg: SousGroupe, ouvrir: boolean) => void;
   /** D307 : « tout plier, déplier » (toutes les bandes, ou une seule) ; sa forme visible est le choix de la voie r3-plier : aucun contrôle n'est posé ici. */
   onToutPlier?: (bande?: string) => void; onToutDeplier?: (bande?: string) => void;
+  /** Lenteur D, son choix 2 D : les rangées barrées des lignes pas retrouvées, par bande (`GroupeCle`) ; en fin de bande, hors des sommes et du compte. Sans bande à elle (toutes ses lignes sont pas retrouvées), la rangée vient en fin de liste. */
+  perdues?: ReadonlyMap<string, React.ReactNode>;
 }) {
   const nMasquees = p.filtre ? Math.max(0, p.nAffichees - p.filtre.ids.length) : 0;
   const vide = p.nAffichees === 0;
@@ -99,6 +101,7 @@ export function Liste(p: {
           <span data-dp-sous-montant style={reserveInconnu(fr2(b.cents), b.incomplet).montant} {...(b.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold ${b.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(b.cents)}{b.incomplet ? ' + ?' : null}</span>
         </div>
         <CorpsBande b={b} p={p}/>
+        {p.perdues?.get(b.cle)}
       </div>) : p.papier ? <div data-dp-bande="papier">
         <div data-dp-bande-entete className="dp-p3c-bande-entete flex items-center gap-1.5 dp-p3c-t-papier px-2.5 text-sm">
           <strong className="font-semibold text-cave-50">Ordre du papier</strong>
@@ -106,7 +109,9 @@ export function Liste(p: {
           <span data-dp-sous-montant {...(p.papier.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`ml-auto min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold ${p.papier.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(p.papier.cents)}{p.papier.incomplet ? ' + ?' : null}{p.papier.port ? <span data-dp-papier-port className="font-normal text-cave-400"> + port {fr2(p.papier.port)}</span> : null}</span>
         </div>
         <div>{p.papier.ids.map(id => <React.Fragment key={id}>{p.lignes.get(id)}</React.Fragment>)}</div>
+        {p.perdues ? [...p.perdues.values()].map((x, i) => <React.Fragment key={i}>{x}</React.Fragment>) : null}
       </div> : null}
+      {p.ordre === 'cat' && p.perdues ? [...p.perdues].filter(([cle]) => !p.bandes.some(b => b.cle === cle)).map(([cle, x]) => <div key={cle} data-dp-bande-perdues={cle}>{x}</div>) : null}
     </div>
     {p.children}
     <div data-dp="fin" className="flex flex-wrap items-center gap-1.5 px-2.5 py-2">

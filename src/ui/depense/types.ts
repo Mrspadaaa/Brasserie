@@ -19,6 +19,13 @@ export interface ApercuDepense {
   qrFichier?: { url: string; name: string; type: string };
   /** Banc du QR (développement seulement) : un résultat de lecture SIMULÉ (aucun décodage), pour un état qu'aucune pièce ne produit proprement (QR non conforme). */
   qrSimule?: import('../../services/qrLecture').ResultatQr;
+  /**
+   * Lenteur D (développement seulement, SIMULÉ) : le morceau provisoire (les deux premières lectures), puis le final `delaiMs` plus tard ; `delaiMs: null` : le final n'arrive jamais (l'attente reste).
+   * `final` peut être `ok:false` (la fin de partie). Sans `provisoire`, la lecture est celle d'aujourd'hui (`outcome`, un seul écran).
+   */
+  provisoire?: ScanOutcome;
+  final?: ScanOutcome;
+  delaiMs?: number | null;
   /** SIMULÉ : remplace l'enregistrement réel (aucune écriture, aucun Drive) ; rend un reçu fabriqué. */
   enregistrer: (draft: PurchaseDraft) => Promise<DriveProofReceipt | undefined>;
 }
