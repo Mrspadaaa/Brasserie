@@ -1298,3 +1298,4 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   d'achat se change, et la famille suit par une règle cachée. D364.)
 - **Un geste rare** (02.11, soir, juste après), mot pour mot : « C'est normalement une action assez rare » (lu : changer la famille d'une ligne
   reste discret, replié derrière le nom de sa bande, un toucher pour voir les choix ; jamais une rangée toujours visible. D364.)
+- (02.11, soir, à la suite), mot pour mot : « Donc pas besoin de mettre cette action en avant. » (lu : confirme D364 suite, le lien discret replié.)
