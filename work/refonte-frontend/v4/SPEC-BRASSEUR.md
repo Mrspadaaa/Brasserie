@@ -1142,3 +1142,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Passer à l'intégration** (02.11, vers 17 h, après D316), mot pour mot : « On peut pas passer directement à l'intégration dans l'app »
   (lu, L01, lecture étroite : plus de page de choix ni de mini maquette pour ce qui reste de la Dépense ; le reste se code dans l'app avec le
   défaut du pilote et il le juge dans l'app. D317.)
+- **Mise en ligne : oui** (02.11, vers 17 h, à « Je les mets en ligne dès qu'elles sont vérifiées : oui, ou pas encore ? »), mot pour mot : « Oui »
+  (lu : accord groupé pour déployer aiTask et l'hébergement une fois tout vérifié. D318.)
