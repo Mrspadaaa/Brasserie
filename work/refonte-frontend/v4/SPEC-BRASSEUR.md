@@ -1129,3 +1129,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu, au plus étroit : la ligne barrée dans la liste, la question au pouce au-dessus de Confirmer ; un toucher « Tout valider » applique ce que
   dit la lecture lente à toutes les lignes pas retrouvées, et chacune se tranche aussi seule, Garder ou Retirer. La question 1, la ligne ajoutée,
   reste ouverte. D313.)
+- **Lecture lente, la ligne ajoutée : son choix 1 B** (02.11, vers 16 h 30, en réponse à la question 1 de la même page, la seule posée),
+  mot pour mot : « B » (lu : la rangée ajoutée par la lecture lente sur le fond bleu des corrections, valeurs en bleu, « ↻ » devant le nom,
+  sans ancienne valeur ; comptée dans la puce « ↻ N corrigées ». D314.)
