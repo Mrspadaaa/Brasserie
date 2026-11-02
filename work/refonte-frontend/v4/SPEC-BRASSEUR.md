@@ -1315,3 +1315,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   l'app ??? Je peux faire 6000 test si c'est pas visible, ça sert à rien.... Seul les vrais tests d'intégration sur la vrai app avec la vision
   sert vraiment.... Et comment ça a pu être loupé ??? » (lu : une preuve, c'est le parcours depuis le menu de l'app en ligne, regardé ; un test
   qui monte l'écran ou un banc qui remplit d'office le sélecteur ne prouve pas qu'on y arrive. D367.)
+- **Filtres, quantité en un toucher** (02.11, soir ; captures `uploads/…/8dc06a23-image.jpg` (récap : « 1 à contrôler », « 1 à remplir », « Devise »,
+  « Lecture coupée »), `a5177adb-image.jpg` et `3e3ca91f-image.jpg` (plateau d'une ligne de rénovation : unité à remplir, quantité et prix à
+  remplir, montant lu)), mot pour mot : « Aussi, les filtres, fonctionne plus. Aussi choisir une unité est très simple. Mais une quantité il faut
+  entre 1, écrit 2 validé 3 action sur téléphone. Alors que dans certains cas, on a déjà des champs, on peut calculer facilement le reste. SI on
+  a un bouton comme les unités, avec quelques nombre. Pour les pièces 1,2,3,5,10 ( 1+10 ferait 11). Aussi pour les grame et houblons ça serait
+  d'autres nombre plus censé genre 1,5, 10, 100 ect... » (lu : (1) les pastilles du récap ne filtrent plus la liste ; (2) des boutons de
+  quantité comme les unités, qui s'additionnent, selon l'unité ; (3) le champ manquant se calcule des deux autres. D369.)

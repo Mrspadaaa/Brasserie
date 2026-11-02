@@ -74,3 +74,29 @@ export function apresReception(lignes: readonly PurchaseLineDraft[], idLigne: st
   const unite = motUnite(article.unit, apres);
   return { avant, apres, unite, texte: `${nombreFr(avant)} → ${nombreFr(apres)} ${unite}` };
 }
+
+/** D369 : les nombres d'un toucher sous la quantité, selon l'unité (« pièces 1, 2, 3, 5, 10 » ; « grammes 1, 5, 10, 100 »). Kg et L : hypothèse du pilote, réversible. */
+const NOMBRES: Record<CleUnite, readonly number[]> = { piece: [1, 2, 3, 5, 10], sachet: [1, 2, 3, 5, 10], g: [1, 5, 10, 100, 500], kg: [1, 5, 10, 25], l: [1, 5, 10, 20] };
+/** L'unité de la ligne d'abord ; illisible, la première unité de son genre (matériel : pièce). */
+export function nombresRapides(unite: string, genre: GenreUnite): readonly number[] {
+  return NOMBRES[cleUnite(unite) as CleUnite] ?? NOMBRES[PAR_GENRE[genre][0]];
+}
+
+export type ChampCalcul = 'quantity' | 'unitPrice' | 'amount';
+type Calcul = Partial<Record<ChampCalcul, number>>;
+/**
+ * D369 : `q × prix = montant`, le champ qui manque se calcule des deux autres. `calcule` est le champ que ce calcul a déjà posé : il suit les deux autres, une valeur lue
+ * ou posée par le brasseur n'est jamais écrasée. La quantité ne se déduit que si elle tombe juste (un entier, à 0,001 près). Rend le patch et le champ calculé après le geste.
+ */
+export function recalculer(ligne: Calcul, champ: ChampCalcul, valeur: number | undefined, calcule?: ChampCalcul): { patch: Calcul & { [k in ChampCalcul]?: number | undefined }; calcule?: ChampCalcul } {
+  const v: Calcul = { quantity: ligne.quantity, unitPrice: ligne.unitPrice, amount: ligne.amount, [champ]: valeur };
+  const libre = calcule && calcule !== champ ? calcule : undefined;
+  if (libre) v[libre] = undefined;
+  const { quantity: q, unitPrice: p, amount: m } = v;
+  let plus: Calcul = {};
+  if (q !== undefined && q > 0 && m !== undefined && p === undefined) plus = { unitPrice: Math.round((m / q) * 1e4) / 1e4 };
+  else if (q !== undefined && p !== undefined && m === undefined) plus = { amount: Math.round(q * p * 100) / 100 };
+  else if (m !== undefined && p !== undefined && p > 0 && q === undefined) { const r = m / p, e = Math.round(r); if (e > 0 && Math.abs(r - e) < 1e-3) plus = { quantity: e }; }
+  const pose = Object.keys(plus)[0] as ChampCalcul | undefined;
+  return { patch: { [champ]: valeur, ...(libre ? { [libre]: undefined } : {}), ...plus }, calcule: pose };
+}

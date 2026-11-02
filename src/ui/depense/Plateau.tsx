@@ -29,6 +29,13 @@ export function SegmentUnite({ index, choix, active, repris, onChoisir }: { inde
     {choix.map(c => <button key={c.valeur} type="button" aria-pressed={c.valeur === active} onClick={() => onChoisir(c.valeur)} className={`min-w-8 px-1.5 font-mono text-sm ${c.valeur === active ? ACTIF : 'text-cave-200'}`}>{c.label}</button>)}
   </span>;
 }
+/** D369 : la quantité en un toucher, comme l'unité. Chaque toucher s'ajoute (1 puis 10 : 11) ; ✕ remet à vide. Les nombres suivent l'unité (`nombresRapides`). */
+export function NombresRapides({ index, nombres, effacable, onAjouter, onEffacer }: { index: number; nombres: readonly number[]; effacable: boolean; onAjouter: (n: number) => void; onEffacer: () => void }) {
+  return <span data-dp-nombres role="group" aria-label={`Quantité en un toucher, ligne ${index}`} className="inline-flex h-9 divide-x divide-cave-700 overflow-hidden rounded-control border border-cave-600">
+    {nombres.map(n => <button key={n} type="button" data-val={n} aria-label={`ajouter ${n}`} onClick={() => onAjouter(n)} className="min-w-9 px-1.5 font-mono text-sm text-cave-200 active:bg-ebc-straw active:text-cave-950">+{n}</button>)}
+    {effacable ? <button type="button" aria-label="effacer la quantité" onClick={onEffacer} className="min-w-9 px-1.5 text-sm text-cave-400">✕</button> : null}
+  </span>;
+}
 /** L'unité qui manque n'a pas de champ : une boîte rouge tiretée, et ses cinq cases juste dessous. */
 export function BoiteUniteVide() {
   return <span data-dp-niveau="inconnu" aria-hidden className="inline-flex h-9 min-w-16 items-center justify-center rounded-control border-2 border-dashed border-alert bg-alert/10 font-mono text-base text-alert">▒</span>;

@@ -45,8 +45,8 @@ import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
-import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur } from '../depense/Plateau';
-import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr } from '../depense/calculPlateau';
+import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides } from '../depense/Plateau';
+import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,recalculer,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
 import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
@@ -143,6 +143,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const manuallyClassified=useRef(new Set<string>());
   /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
+  /* D369 : le champ de `q × prix = montant` que le calcul a posé, par ligne (il suit les deux autres) ; les lignes dont la quantité a été posée d'un toucher (ses nombres restent). */
+  const calcules=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
+  const [piedVise,setPiedVise]=useState(false);
   const famillesChoisies=useRef(new Map<string,GroupeCle>());
   /* p3c-3 : le plateau que le brasseur a ouvert ou fermé (par id) : il survit au changement de bande d'une ligne (la rangée est remontée ailleurs). */
   const ouvertesRef=useRef(new Map<string,boolean>());
@@ -936,13 +939,18 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const choixU=choixUnite(genreDeUnite(line.kind,lu?.contexte,article?.category),unite);
     const uniteActive=choixU.find(c=>cleUnite(c.valeur)===cleUnite(unite))?.valeur??'';
     const choisirUnite=(valeur:string)=>updateLine(line.id,{unit:valeur});
+    /* D369 : un champ du calcul posé ; celui qui manque se calcule des deux autres, jamais par-dessus une valeur lue ou posée. */
+    const poser=(champ:ChampCalcul,valeur:number|undefined)=>{const r=recalculer(line,champ,valeur,calcules.current.get(line.id));if(r.calcule)calcules.current.set(line.id,r.calcule);else calcules.current.delete(line.id);updateLine(line.id,r.patch);return r.patch;};
+    const montrerNombres=line.quantity===undefined||rougeDe('quantite')||nombresTouches.current.has(line.id);
+    const nombresEl=montrerNombres?<NombresRapides index={index+1} nombres={nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category))} effacable={line.quantity!==undefined}
+      onAjouter={n=>{nombresTouches.current.add(line.id);poser('quantity',Math.round(((line.quantity??0)+n)*1e6)/1e6);}} onEffacer={()=>poser('quantity',undefined)}/>:null;
     const BLEU_CH=' !border-2 !border-area-finances !bg-area-finances/15 !text-area-finances font-semibold';
     const montantTexte=line.amount===undefined?'':fr2c(Math.round(line.amount*100)),prixTexte=line.unitPrice===undefined?'':prixImprime(line.unitPrice);
     const calculEl=<RangeeCalcul avant={avantQte!==undefined?fr(avantQte):undefined}>
-      <span {...niv('quantite')} className="inline-flex"><NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={`${CHAMP_PU4D} ${largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
+      <span {...niv('quantite')} className="inline-flex"><NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>poser('quantity',quantity)} emptyValue={undefined} min={0} className={`${CHAMP_PU4D} ${largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
       {uniteManque?<BoiteUniteVide/>:horsStock&&!lisible?null:<SegmentUnite index={index+1} choix={choixU} active={uniteActive} repris={ud?.niveau==='repris'} onChoisir={choisirUnite}/>}<Op c="×"/>
-      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>updateLine(line.id,{unitPrice})} emptyValue={undefined} min={0} fractionDigits={decimalesAuRepos(line.unitPrice)} className={`${CHAMP_PU4D} ${largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
-      <span {...niv('montant')} className="inline-flex"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{updateLine(line.id,{amount});if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span>
+      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>poser('unitPrice',unitPrice)} emptyValue={undefined} min={0} fractionDigits={decimalesAuRepos(line.unitPrice)} className={`${CHAMP_PU4D} ${largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
+      <span {...niv('montant')} className="inline-flex"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{poser('amount',amount);if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span>
       {/* D351 : « au centime » ne se dit plus quand le calcul tombe juste ; seul un écart se dit. */}
       {calculOk===false?<span data-dp-centime data-dp-niveau="repris" className="text-xs text-attention underline decoration-dotted decoration-attention underline-offset-2">≠ montant, écart à vérifier</span>:null}
     </RangeeCalcul>;
@@ -1015,6 +1023,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <Imprime texte={`${imprimeTexte}${pieceImprimee}`} reference={line.sourceReference}/>
       {libelleChamp}
       {calculEl}
+      {nombresEl}
       {casesEl}
       {rouges.some(r=>r.champ!=='unite')?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.filter(r=>r.champ!=='unite').map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}
       {duelUniteEl}{duelCorrEl}{trioEl}
@@ -1175,13 +1184,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     compte('bis',()=>'bis','bis',chips.filter(c=>c.source==='voisin')),
     compteDe('mouture',[...idsDe('mouture'),...concasses.map(x=>x.l.id)],n=>n>1?'moutures':'mouture','mouture',chips.filter(c=>c.source==='mouture'),centsMoutures>0?`+${eur(centsMoutures)}`:undefined),
     /* A3 : un désaccord est une valeur reprise (jaune) : il compte dans « à contrôler » (ceux qui ne tombent pas sur une rangée s'y ajoutent) ; la file de D329 le traite. */
-    {...compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),n:parNiveau('repris').length+desaccordsRestants.filter(c=>c.ligne===null).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0)},
+    {...compteDe('controler',parNiveau('repris'),()=>'à contrôler','aucun',[],undefined,'repris'),...(piedVise?{actif:true}:{}),n:parNiveau('repris').length+desaccordsRestants.filter(c=>c.ligne===null).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0)},
     compteDe('remplir',parNiveau('inconnu'),()=>'à remplir','precis',chips.filter(c=>c.codes.includes('unite-absente')),undefined,'inconnu'),
     /* Lenteur D (sa maquette `d-lue`) : « ↻ N corrigées », au geste de filtre des autres puces. N compte les CIBLES (une rangée à deux cellules corrigées : 1 ; un champ d'en-tête : 1 ; une ligne ajoutée : 1) et, comme sa maquette `choix-valider`, les lignes pas retrouvées qui attendent encore. */
     ...(()=>{/* D354 : un changement accepté (Garder, Tout valider) ne se marque plus : ni la rangée, ni la puce ne le comptent. */const touchees=[...Object.keys(fusion?.lignes??{}).filter(id=>draft.lines.some(l=>l.id===id)),...(fusion?[...fusion.ajoutees]:[])],attendues=touchees.filter(id=>!tranchees.has(`corr:${id}`)&&!tranchees.has(`ajout:${id}`)),ids=[...attendues,...perdues.map(p=>p.ligne.id)],n=Math.max(0,(fusion?.n??0)-(touchees.length-attendues.length))+perdues.length,mot=n>1?'corrigées':'corrigée';return n>0?[{cle:'corrigees',n,mot,lien:'aucun' as LienStock,ronds:[],fait:false,ids,actif:filtre?.mot===mot,corrigee:true} as CompteItem]:[];})(),
   ];
   const surCompte=(c:CompteItem)=>{
-    if(c.cle==='controler'&&!c.ids.length&&desaccordsRestants[0]){aller(desaccordsRestants[0]);return;}
+    /* D369 : « à contrôler » dont les points ne sont sur aucune rangée (désaccord du document) : rien à filtrer ; le bandeau où il se règle s'éclaire, la puce s'allume. */
+    if(c.cle==='controler'&&!c.ids.length&&desaccordsRestants[0]){if(courantChg){setPiedVise(true);setTimeout(()=>{if(mounted.current)setPiedVise(false);},1600);}else aller(desaccordsRestants[0]);return;}
     if(!c.ids.length)return;
     if(filtre&&filtre.mot===c.mot){setFiltre(null);setGarde([]);return;}
     setFiltre({mot:c.mot,ids:c.ids});setGarde(c.ids);setTimeout(()=>{if(mounted.current)setGarde([]);},1600);
@@ -1395,7 +1405,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
       </div>
     </div>
-    {showForm&&courantChg&&chgSecond?<BandeauPerdues nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
+    {showForm&&courantChg&&chgSecond?<BandeauPerdues vise={piedVise} nom={chgNom} montant={chgMontant} mot={courantChg.mot} rang={nTranchees+1} total={nTranchees+fileChangements.length} restants={fileChangements.length} onGarder={garderCourant} second={chgSecond} onToutValider={toutValider}/>:null}
     {showForm?<Pied ordre={scan?.ok&&statutFinal&&!attached&&!dejaTx&&!done?ordre:null} onOrdre={o=>{setOrdre(o);setFiltre(null);setGarde([]);}} statut={statutPied} courant={courantIdx>=0?{numero:courantIdx+1,nom:chips[courantIdx].nom,niveau:rougeDe(chips[courantIdx])?'inconnu':'repris'}:null} tout={tout} onAllerCourant={()=>{if(courantIdx>=0)aller(chips[courantIdx]);}} bouton={bouton} cible={bandeauRef} racine={scroller} keyboardInset={Boolean(keyboardInset)} aPoints={chips.length>0}/>:null}
   </ModalShell>;
 }

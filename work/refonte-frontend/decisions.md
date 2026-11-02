@@ -1795,3 +1795,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   ont été construits sans la variable (`VITE_HOP_V4:void 0` dans le paquet en ligne) : l'ancienne étape Houblons et l'atelier V5.5 sont revenus
   sans que personne le voie. Remis : d14ff6cf construit avec `VITE_HOP_V4=on`, déployé (`--only hosting`), le paquet en ligne porte `"on"`.
   À mécaniser : la garde de déploiement refuse un `dist` sans `VITE_HOP_V4:"on"`.
+- D369 (le brasseur, 02.11, soir ; L13) : ses trois points du plateau et du récap (SPEC « Filtres, quantité en un toucher »). Une voie auteur
+  `q-filtres-qte` : (1) diagnostic et réparation des filtres, régression ; (2) des boutons de quantité sous le champ, comme le segment
+  d'unité : pièce et sachet 1, 2, 3, 5, 10 ; g 1, 5, 10, 100 ; Kg 1, 5, 10, 25 ; L 1, 5, 10, 20. Les touchers s'additionnent (1 puis 10 donnent 11),
+  et « effacer » remet à vide ; (3) le troisième champ se calcule des deux autres (prix = montant ÷ quantité, quantité = montant ÷ prix si le
+  résultat tombe juste), marqué comme calculé, jamais par-dessus une valeur lue. Les nombres par unité sont une hypothèse du pilote,
+  réversible. Preuve : le banc par le menu (puces et plateaux), captures regardées par le pilote ; puis le déploiement, puis la lecture en ligne.
