@@ -1304,3 +1304,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Intégrer et déployer** (02.11, soir), mot pour mot : « Pas besoin de tout retester ou rien, intégre le tout et deploye » (lu : le port de
   pu4d et le ticket partent ensemble dès que le port est fini ; ni rejeu du banc, ni test d'écran du critique, ni suite complète. Restent les
   gestes du déploiement lui-même : build, check-no-dev-auth, manifeste, puis la page servie relue en ligne. D365.)
+- **Son choix B des pages, absent de l'app** (02.11, soir ; captures `uploads/…/ae8499bf-image.jpg`, la page « Plusieurs captures pour une seule
+  dépense · 02.11 », et `692d5249-image.jpg`, « Nouvelle dépense » en ligne avec « Joindre un justificatif »), mot pour mot :
+  « https://claude.ai/artifact/7e5AuRChUtCuaAnCqu42ce Pourquoi ça a pas été porté ??? », puis « Ajoute ça encore » (lu : B était codé (n2-pages,
+  D303) mais aucune vraie entrée ne le montrait : « Lire un justificatif » ouvrait d'office le sélecteur d'un seul fichier, « Saisir une
+  dépense » gardait « Joindre un justificatif ». Les deux entrées offrent maintenant « Plusieurs ». D366.)

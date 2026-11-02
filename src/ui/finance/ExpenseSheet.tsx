@@ -233,18 +233,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
    * Si le navigateur refuse cette ouverture automatique, la zone de dépôt et son
    * bouton restent en place : on ne perd aucun chemin.
    */
-  const pickedOnOpen=useRef(false);
   useEffect(()=>{
     if(!draft.proofDataUrl||driveVerifie)return;
     let actif=true;
     FirebaseAuthService.ensureDriveAccessToken().catch(()=>null).finally(()=>{if(actif){setDriveVerifie(true);setDriveTick(t=>t+1);}});
     return()=>{actif=false;};
   },[draft.proofDataUrl,driveVerifie]);
-  useEffect(()=>{
-    if(!startWithScan||pickedOnOpen.current||apercu)return;
-    pickedOnOpen.current=true;
-    fileInput.current?.click();
-  },[startWithScan]);
+  /* D366 (D291 : « dans la première vue, pouvoir choisir entre envoyé 1 ou plusieurs documents ») : « Lire un justificatif » n’ouvre plus d’office le sélecteur d’un seul fichier ; la première vue montre « Un document » | « Plusieurs ». */
   useEffect(()=>{if(error)errorBox.current?.scrollIntoView?.({block:'nearest'});},[error]);
   /* S6 (T8) : le catalogue plein des houblons, chargé à la demande (fonction existante `chargerCataloguePlein` de l'index) dès qu'une ligne crée un article ; hors
      ligne ou échec : aucune fiche (le nom est proposé quand même). Jamais Gemini, jamais le réseau. */
@@ -1316,7 +1311,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
           onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}} onDragLeave={()=>setDropping(false)} onDrop={e=>deposer(e,'page')} depose={dropping} sansJustificatif={assemblageEchoue?saisirSansPages:undefined}/>
         <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"><FrisePages etat="repos" pages={pages.length}/></div>
         <ResteDeLecture/>
-      </>:showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:entree:busy?<div data-dp="lecture" className="space-y-1.5">
+      </>:showForm?<EntreeFendue discret mot="Joindre un justificatif" desactive={saving||Boolean(pendingId)} onUn={()=>fileInput.current?.click()} onPlusieurs={()=>pagesInput.current?.click()}/>:entree:busy?<div data-dp="lecture" className="space-y-1.5">
         {/* p3c-3, état « lecture » : la carte du fichier avec la frise « envoi ✓ · lecture · vérification », le cadre « Les lignes arrivent ici », puis « Pour quoi ? » et « Règlement » (verrouillés tant que la lecture écrit le brouillon). */}
         <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]">
           <div className="flex items-baseline justify-between gap-2"><span className="min-w-0 truncate text-base font-semibold leading-6 text-cave-50">{pages.length>1?(pagesJointes?`${pages.length} pages`:'Préparation des pages…'):attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}</span>{pages.length>1?(pagesJointes&&pdfRef.current?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round(pdfRef.current.octets/1e5)/10)} Mo{pdfRef.current.reduite?' · réduites':''}</span>:null):(attachment?.size||apercu?.fichier.size)?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo</span>:null}{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0 self-center">{sceauQr}</div>:null}</div>

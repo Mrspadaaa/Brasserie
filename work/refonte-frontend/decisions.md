@@ -1778,3 +1778,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   `functions/` inchangé depuis le dernier `aiTask` (D325). Après : la page servie en ligne charge `index-CiOKVLBh.js`, le même que `dist`.
   Ouvert : 46 anciens tests visent l'ancien formulaire (RESULTAT de p-port-pu4d) ; fiche matériel et libellé d'une ligne lue retirés avec lui.
   Retour arrière : redéployer 7945555e ou la version d'avant depuis la copie.
+- D366 (pilote, 02.11, soir ; D291, D303, L13, L11) : sa plainte « Pourquoi ça a pas été porté ??? » et « Ajoute ça encore ». Cause : n2-pages
+  (D303) a codé B (`Pages.tsx`), testé en montant l'écran sur sa première vue ; mais l'app n'y arrive jamais. « Lire un justificatif » cliquait
+  d'office le sélecteur d'un seul fichier (`startWithScan`), et « Saisir une dépense » montrait « Joindre un justificatif » seul. Correctif :
+  plus d'ouverture d'office, la première vue montre « Un document » | « Plusieurs » (ses mots de D291) ; la saisie sans justificatif garde son
+  bouton à contour, coupé de même (« Joindre un justificatif » | « Plusieurs »). Témoin `entree-reelle.test.tsx`, 2 rouges sur f6b29066, verts
+  après. Coût pour le cas à 99 % : un toucher de plus (« Un document ») ; retour arrière : remettre l'effet `pickedOnOpen`.

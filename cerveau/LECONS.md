@@ -65,9 +65,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
-- Erreur : 08.10, reçus, registres « qualifiés », couches V3/V4/V5.5 : l'air d'avancer, rien d'utilisable.
+- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366).
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
-- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (SPEC § 1).
+- Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (SPEC § 1).
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 

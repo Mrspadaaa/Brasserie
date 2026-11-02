@@ -5,11 +5,12 @@ import { FileText, Files, Plus, X } from 'lucide-react';
 
 export interface VignettePage { id: string; url: string; nom: string }
 
-/** Le bouton noir coupé en deux : « Un document » (large, le geste d'aujourd'hui : la lecture part tout de suite) | « Plusieurs » (étroit, picto pages). */
-export function EntreeFendue(p: { onUn: () => void; onPlusieurs: () => void }) {
-  return <div data-dp="entree" className="flex min-h-8 overflow-hidden rounded-control bg-ebc-straw text-cave-950">
-    <button data-primary type="button" onClick={p.onUn} className="flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] font-semibold"><FileText size={16}/>Un document</button>
-    <button type="button" onClick={p.onPlusieurs} style={{ borderLeftColor: 'color-mix(in srgb, currentColor 38%, transparent)' }} className="flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] font-semibold"><Files size={15}/>Plusieurs</button>
+/** Le bouton noir coupé en deux : « Un document » (large, le geste d'aujourd'hui : la lecture part tout de suite) | « Plusieurs » (étroit, picto pages).
+ *  D366 : `discret` (saisie sans justificatif, « Joindre un justificatif ») garde le contour d'aujourd'hui, coupé de même. */
+export function EntreeFendue(p: { onUn: () => void; onPlusieurs: () => void; mot?: string; discret?: boolean; desactive?: boolean }) {
+  return <div data-dp="entree" className={`flex min-h-8 overflow-hidden rounded-control ${p.discret ? 'border border-cave-700 text-cave-200' : 'bg-ebc-straw text-cave-950'}`}>
+    <button data-primary type="button" disabled={p.desactive} onClick={p.onUn} className={`flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] ${p.discret ? 'min-h-9' : 'font-semibold'}`}><FileText size={16}/>{p.mot ?? 'Un document'}</button>
+    <button type="button" disabled={p.desactive} onClick={p.onPlusieurs} style={{ borderLeftColor: 'color-mix(in srgb, currentColor 38%, transparent)' }} className={`flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] ${p.discret ? '' : 'font-semibold'}`}><Files size={15}/>Plusieurs</button>
   </div>;
 }
 
