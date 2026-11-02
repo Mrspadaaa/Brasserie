@@ -67,6 +67,9 @@ Par voie, `voies/<id>/VOIE.md` (gabarit `gabarits/VOIE.md`) et `voies/<id>/GATES
 gabarit `gabarits/GATES.md`). Chaque critère a une commande qui peut échouer ; une sortie décisive
 (`… OK`) ; un témoin négatif quand le contrôle est nouveau (L13). Passer chaque chemin cité par Glob
 (L09). Recopier dans VOIE.md les exigences transversales et les acquis concernés (L05, L06).
+Ce qu'il verra se prouve par la vision (D343) : le critère décisif est le test d'écran du critique sur de vraies pièces
+(`.claude/agents/critique.md`, mode « Test d'écran »), pas un test unitaire ; Vitest garde les règles de calcul, un test par
+règle, sans doublon ; peu de fixtures. Avant tout déploiement : `node scripts/agents/controle-avant-deploiement.mjs <sha>` (D342).
 Contrôler le format : `node .claude/skills/unlazy/scripts/gate-lint.mjs voies/<id>/GATES.md` → LINT OK.
 L'approbation des commandes (écrites par le pilote lui-même) se fait au premier
 `systeme.mjs voies … --approuver`.

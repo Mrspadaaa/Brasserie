@@ -72,9 +72,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ». 01.11 : Dépense testée au bureau ; au téléphone, l'écran sautille.
-- Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone entourée en plein format : un vert ne dit pas que c'est bien. Tester à 390 tactile, en défilant, chaque champ ouvert (`controle-bande.mjs`). Une reprise sur événement : rechargement et réseau rendu, joués dans Chrome (01.11).
+- Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px : « comment ça peut passer ça ??? ». 01.11 : l'écran sautille au téléphone. 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
+- Cause : aucune force minimale exigée, captures non ouvertes.
+- Faire : « sous le doigt / au loin » ×3 au moins. Ouvrir chaque capture avant de dire OK ; juger la zone en plein format : un vert ne dit pas que c'est bien. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, à la question ouverte « combien et quels problèmes ? », critique puis pilote (D342). Reprise sur événement : rechargement et réseau joués.
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 

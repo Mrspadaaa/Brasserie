@@ -135,3 +135,14 @@ registre `brewerAiCosts` n'est pas lisible ici).
 Essai 1 annulé par l'app à 16:28:15 (contre-écritures `VOID-…`), PDF du Drive à la corbeille non vidée (absent de son dossier, vérifié).
 Le ticket de l'essai 2 (photo du téléphone, 8,1 Mo) a d'abord été refusé par l'app, « 4 Mo maximum », **sans appel** (D324).
 Sous-total : environ **0,50 CHF**. Lectures en ligne : 20 sur 40. Cumul des appels payants : 13,393 + 0,50 ≈ **13,89 CHF sur 49**.
+
+## 02.11, soir — son ticket Bauhaus, lu par lui en ligne (pas un appel du pilote)
+
+| Heure (UTC) | Appel | Modèle | Pourquoi | CHF (estimé) |
+|---|---|---|---|---|
+| 16:53 | scanInvoice, lecture partielle | 3.5 Flash-Lite | sa photo du téléphone | 0,005 |
+| 16:55 | scanInvoice, lecture complète (3 lectures) | 3.5 Flash-Lite + 3.8 | la même photo | 0,013 |
+| 16:5x | traduireNoms (2 appels) | 3.8 | noms en français | 0,002 |
+| 17:07 | scanInvoice, servi par le cache | — | « Lecture déjà disponible · aucun nouvel appel IA » | 0 |
+
+Sous-total estimé : environ **0,02 CHF**. Cumul des appels payants ≈ **13,91 CHF sur 49**. Le rejeu du lot g se fait sans appel (lecture copiée).

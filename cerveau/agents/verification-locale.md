@@ -2,7 +2,7 @@
 name: verification-locale
 description: Comment vérifier localement l'app Brasserie L'Affinée — contournement auth en dev sous ?dev-local, et scripts de contrôle.
 type: agents
-maj: 2026-11-01
+maj: 2026-11-02
 sources: mémoire locale affinee-verification-locale.md ; src/App.tsx ; scripts/check-no-dev-auth.mjs ; scripts/check-water.mjs ; vite.config.ts ; firebase.json ; firestore.rules ; src/ui/useViewport.ts ; src/data/seedData.ts
 ---
 
@@ -23,6 +23,7 @@ L'app est verrouillée derrière une authentification Google Firebase : sans con
 ```
 rm -rf dist && npx tsc --noEmit && node scripts/check-water.mjs && npx vitest run
 npx vite build && node scripts/check-no-dev-auth.mjs
+node scripts/agents/controle-avant-deploiement.mjs <sha>   # D342 : la Dépense ne part pas sans AVANT-DEPLOIEMENT OK
 npx firebase deploy --only hosting -m "…"
 ```
 Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` dans le bundle servi ; ouvrir l'URL de production avec `?dev-local`, qui doit montrer la vraie page de connexion. Règle d'or de Gaëtan : tout se développe et se valide en local avant tout déploiement, et on ne touche jamais `firebase.json`, `.firebaserc`, `firestore.rules`, `firestore.indexes.json`.

@@ -102,11 +102,11 @@ Système complet : `docs/agents/systeme.md`.
   V3/V4/V5.5 ou un test vert ne le prouvent pas. Classer l'existant fini /
   inachevé récupérable (manque précis) / inutilisable ; finir ou brancher plutôt
   qu'ajouter une couche parallèle ; ne rien supprimer sans accord.
-- Les tests d'intégration et les validations se font sur un vrai rendu de page
-  dans Chrome (parcours joué, captures regardées), pas seulement avec
-  Vitest/jsdom ou en lisant le code. D'abord en local : fixtures (scripts
-  `puppeteer-core`), puis émulateurs Firebase ; l'app en ligne plus tard, en
-  lecture seule.
+- Tester d'abord par la vision (D343) : vraies pièces, chaque état et geste
+  dans Chrome, deux thèmes, 390 tactile et 1280, jugés par le critique
+  qui pense comme le brasseur (pratique, à sa place, réagit juste), puis le
+  pilote. Vitest pour les règles de calcul ; peu de fixtures. Local, puis
+  émulateurs, puis en ligne, lecture seule.
 - Gemini jamais dans un test unitaire ni dans `npm test` : toujours simulé.
   Appels réels seulement dans des tests spéciaux dédiés, lancés explicitement,
   très limités et journalisés.

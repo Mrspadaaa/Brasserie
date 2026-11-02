@@ -1164,3 +1164,63 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **« ÉNORMÉMENT de problème »** (02.11, soir, après avoir testé l'app en ligne), mot pour mot : « Je viens de tester l'app, il y a ÉNORMÉMENT de
   problème... ??? C'est quel version qui est déployé ?? » (lu : la version en ligne déçoit ; il veut savoir laquelle tourne. Réponse : l'hébergement
   et `aiTask` du commit b3ab392e, bundle `index-DTmoQW-7.js`, déployés le 02.11 à 17 h 11. Ses problèmes, à recueillir ; D327.)
+- **Son ticket Bauhaus en ligne : « un enfer »** (02.11, soir, vers 18 h, après l'avoir lu lui-même dans l'app en ligne, sans Confirmer ; la
+  photo du ticket et neuf captures de son téléphone, de 17 h 57 à 18 h 09), mot pour mot : « J'ai testé avec ce ticket, c'est un enfer... C'est
+  très peu fiable, il y a énormément de problème... » (lu, L01 : chaque écart visible sur ses captures, contre le ticket, est un défaut ; la
+  lecture a rendu les 17 lignes, les prix, le total, la TVA et les EAN justes ; ce qui trompe vient de l'écran : 15 lignes « à contrôler » pour
+  des pièces sûres, deux unités « ? », un produit de nettoyage en ingrédient à mettre en stock, un type d'achat qui contredit son groupe,
+  le bouton du filtre vide, des chiffres coupés. D328.)
+- **« Tout valider » absent** (02.11, soir, juste après), mot pour mot : « Pourquoi il y a pas Tout valider », et une à une : les lignes que la
+  3e lecture ne retrouve pas · 02.11 version B que j'ai voulu ??? » (lu : son « Tout valider les changements » de D313 couvre tout ce que la 3e
+  lecture change, les « ↻ corrigées » et les « désaccords », pas seulement les lignes pas retrouvées ; ma lecture de D313 était trop étroite. Sur
+  son ticket, aucune ligne n'était perdue : le bandeau B ne pouvait pas paraître. D329.)
+- **Le rouge jamais sur la ligne** (02.11, soir, vers 18 h 20, deux captures en thème sombre ; sur la première, entourés à la main, le « 1 ? »
+  rouge de la sous-famille Protection et le « 1 ? » gris de la rangée COMBINAISON JETABLE), mot pour mot : « Aussi le filtre d'erreur rouge
+  n'apparaît pas, et il est sur la famille et sous familles mais jamais sur l'item en question ??? La partie la plus importante n'est jamais
+  montré ??? Il y a des dizaines de problème de UX, UI de ce type.... » (lu : l'inconnu rouge se montre d'abord sur la rangée fautive, puis se
+  compte dans sa famille ; et un audit de tout l'écran sur son ticket rejoué, pas une liste au cas par cas. D330.)
+- **Le filtre choisi ne se voit pas** (02.11, soir, vers 18 h 25), mot pour mot : « Les filtre fonctionne assez bien, mais on voit pas lequel on
+  sélectionne. Tu as fait des vrais screenshots de l'app ? Comment ça peut passer ça ??? » (lu : la puce du récap qui filtre la liste ne se
+  distingue pas des autres une fois touchée ; et la question de méthode : les captures du banc n'ont couvert ni sa pièce, ni chaque état touché,
+  ni les deux thèmes. D331, L12.)
+- **« Regrouper en une dépense » irréversible ?** (02.11, soir, vers 18 h 30, sa capture du bouton sous la liste), mot pour mot : « Ce bouton est
+  irréversible ??? » (lu : oui, dans la fiche : un toucher remplace toutes les lignes par une seule, sans confirmation ni retour ; rien n'est écrit
+  avant « Confirmer ». Défaut : un geste qui détruit la saisie sans retour, posé à côté de « + Ajouter une ligne », sous le même aspect. D332.)
+- **Plié, déplié** (02.11, soir, vers 18 h 30), mot pour mot : « Plié, déplié ne fait rien » (lu : la bascule de l'en-tête ne plie ni ne déplie
+  les familles ; sur sa capture de 18 h 19, « Plié » est choisi et les sous-familles Peinture et sols, Outillage, Protection restent ouvertes.
+  Son choix E : « ce bouton lock rien, juste un shortcut ». D333.)
+- **Le champ à remplir introuvable** (02.11, soir, vers 18 h 25, sa capture du filtre « 1 à remplir » : Déboucheur POWER ouvert, le nom souligné
+  en rouge, « article « ? » · à choisir », « Chercher dans le stock »), mot pour mot : « J'ai un champs à remplir, je sais même pas lequel ???? »,
+  puis : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ?????????? » (lu : le champ qui manque n'est ni nommé ni marqué en rouge à sa place ; et la question de
+  méthode, la même que D331. D334, L12.)
+- **Le segment Nature vide** (02.11, soir, vers 18 h 30, sa capture en sombre : BAUHAUS grand sac ouvert, famille Emballage, « Type d'achat :
+  Emballages », le segment « Ingrédient · Service · Matériel » sans rien de choisi), mot pour mot : « C'est même pas mis au c'est ingrédient,
+  service ou matériel » (lu : la ligne n'est mise ni à Ingrédient, ni à Service, ni à Matériel ; le segment n'a que trois natures et un type
+  d'achat Emballages n'en allume aucune, alors que le menu dessous dit Emballages. D335.)
+- **Les vues loin de ses maquettes** (02.11, soir, vers 18 h 35), mot pour mot : « Et j'ai l'impression que les vue, ressemble assez peu aux
+  artifeacte choisir sur quelques points... » (lu : l'app en ligne s'écarte, par endroits, des maquettes qu'il a choisies dans les pages de choix ;
+  règle n° 1. D336, L03.)
+- **Tellement de problèmes** (02.11, soir, vers 18 h 35), mot pour mot : « Mais il y a TELLEMENT de problème ?? » (lu : la somme des défauts vus
+  en un test ; la même question de méthode que D331 et D334. D337, L12.)
+- **Des milliers de tests, dix défauts en deux minutes** (02.11, soir, vers 18 h 45), mot pour mot : « Tu as fait des milliers de test, et en 2min
+  j'ai trouvé une dizaine de problème flagrant.... » (lu : nos tests vérifient ce que nous avons écrit, sur nos pièces de brassage ; aucun ne
+  regarde l'écran comme lui, sur une pièce neuve. D338, L12.)
+- **Les bons outils, pas trop de tests inutiles** (02.11, soir, vers 18 h 50), mot pour mot : « Est ce que tu utilises les bon outil pour tester ?
+  Et tu fais pas trop de test inutile ?? » (lu : une question de méthode ; réponse dans D339 : 1 924 tests unitaires sur la Dépense et les finances,
+  presque tous sans rendu ; le banc Chrome lit le texte de la page, jamais le thème ni ce qui se voit. D339, L12.)
+- **L'analyse d'image** (02.11, soir, vers 18 h 52), mot pour mot : « Tu fais vraiment de l'analyse d'image ?? Comme demandé » (lu : les captures
+  doivent être regardées comme des images, pas lues par le texte de la page ; jusqu'ici le banc n'en jugeait aucune à l'œil, et le pilote n'a
+  regardé que les siennes. D339, L12.)
+- **Combien de problèmes sur cet écran** (02.11, soir, vers 18 h 55, sa capture en clair de 17 h 57 : filtre « 7 corrigées », Nettoyage et
+  Rénovation dépliés), mot pour mot : « Pour toi, sur cette écran, combien et quels problèmes il y a ? » (lu : une épreuve de l'analyse d'image du
+  pilote ; réponse dans le tour, liste numérotée. D340.)
+- **Enlever les tests inutiles** (02.11, soir, vers 18 h 57, à ma question « je dresse la liste des tests redondants à retirer ? »), mot pour mot :
+  « Non enlève les test inutiles on a bien vu que ça servait à rien et trouvais pas les vrais problèmes... » (lu : son accord pour retirer les tests
+  inutiles, sans liste à lui montrer d'abord ; ceux qui gardent une vraie règle restent. D341.)
+- **Pourquoi jamais fait ainsi** (02.11, soir, vers 19 h, après ma liste de 16 problèmes sur sa capture), mot pour mot : « J'en compte 16 sur cet
+  écran et bien super, / POURQUOI CA N'A JAMAIS ÉTÉ FAIT, TESTÉ ?????? AINSI » (lu : la question ouverte « combien et quels problèmes sur cet écran »,
+  posée sur une capture de l'app réelle, n'avait jamais été posée avant un déploiement ; elle devient une garde. D342, L12.)
+- **Le workflow : moins de fixtures, plus de vision** (02.11, soir, vers 19 h 05), mot pour mot : « C'est un ÉNORME PROBLÈME dans le workflow ça !!
+  Il faut passer moins de temps avec fixture et unit test mais beaucoup plus cas réel et test d'écran par vision sur une crique qui analyse et pense
+  comme un brasseur, et regarde si tout est vraiment pratique, au bon endroit, réagit correctement » (lu : une règle de méthode pour toute l'app ;
+  « crique » lu « critique » ; il précise aussitôt, mot pour mot : « Critique ». D343.)
