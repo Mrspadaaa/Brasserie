@@ -101,13 +101,14 @@ export interface IngredientFacts {
   /** Sheet duration in days, only from one published point; never a recipe step. */
   fermentDays?: number;
 
-  colorEbc?: number;
-  potentialPpg?: number;
+  /** D303 : la réponse d'un malt porte ces cinq nombres, `null` quand la fiche ne les publie pas. `null` se lit comme absent partout. */
+  colorEbc?: number | null;
+  potentialPpg?: number | null;
   /** Plage de couleur publiée par le malteur (EBC) : jamais une moyenne dans `colorEbc` côté modèle. */
-  colorEbcMin?: number;
-  colorEbcMax?: number;
+  colorEbcMin?: number | null;
+  colorEbcMax?: number | null;
   /** Extrait publié (fine grind, dry basis, %) : le client en déduit le potentiel. */
-  extractPct?: number;
+  extractPct?: number | null;
   grainType?: string;
   diastaticPower?: number;
 
@@ -304,6 +305,7 @@ export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
   };
   for (const [key, [min, max]] of Object.entries(limits)) {
     const v = out[key];
+    // `null` (un champ de malt que la fiche ne publie pas, D303) n'est pas un nombre : il tombe ici et se lit comme absent.
     if (typeof v !== 'number' || !Number.isFinite(v) || v < min || v > max) delete out[key];
   }
   // Une plage incohérente ne donne rien. Sinon le point manquant se déduit de ce que le malteur publie, et le dit dans la note (D302).

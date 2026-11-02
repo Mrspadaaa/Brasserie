@@ -51,6 +51,7 @@ export function valeursDeReponse(famille: Famille, brute: IngredientFacts | unde
   }
   // D302 : le malteur publie une plage et un extrait. Un point publié gagne ; sinon `sanitizeFacts` déduit (même fonction que « Compléter avec l'IA »)
   // et la valeur dit sa règle, avec la plage ou l'extrait d'origine, au lieu de passer pour lue.
+  // D303 : le schéma d'un malt exige cinq nombres nullables ; un `null` (fiche muette) se lit comme absent, ici comme dans `sanitizeFacts`.
   const deduites = deduireValeursMalt(brute);
   const facts = sanitizeFacts(brute);
   const valeurs: Partial<Record<ChampFiche, unknown>> = {};

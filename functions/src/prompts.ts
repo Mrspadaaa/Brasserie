@@ -1032,32 +1032,67 @@ Exemples inventés : « Flaschenbürste Neo-7 » → « Goupillon pour bouteille
 };
 
 /**
- * Malts et sucres (D302, 5 vrais appels du 02.11) : un malteur publie une PLAGE de couleur et un extrait, presque jamais un point. La règle
- * « valeurs ponctuelles » de la consigne est celle des levures ; appliquée aux malts, elle laissait colorEbc et potentialPpg absents et le modèle
- * rangeait les chiffres dans `usage` (champ des houblons). Le modèle rend donc la plage et l'extrait tels que publiés ; le client en déduit le
- * milieu et le potentiel (`deduireValeursMalt`, src/domain/ingredientFacts.ts) et le marque « déduit ». La consigne des levures n'est pas touchée.
+ * Malts et sucres (D302 puis D303, 5 vrais appels du 02.11 deux fois) : un malteur publie une PLAGE de couleur et un extrait, presque jamais un
+ * point. Avec le schéma de base (houblon, levure, fermentation) et trois champs facultatifs ajoutés en fin, le modèle ne remplissait ni plage ni
+ * extrait, et rendait pour BEST Red X `tempMinC` −5 et `tempMaxC` 60 (les bornes du schéma : des champs de levure dans un malt). Le malt a donc
+ * sa consigne et son schéma à lui, comme la levure : seulement les champs d'un malt ou d'un sucre, et cinq nombres EXIGÉS et nullables, placés
+ * juste après `sourceUrl`. Ce que la fiche ne publie pas vaut `null` (jamais une moyenne, jamais une valeur supposée). Le modèle rend la plage
+ * et l'extrait tels que publiés ; le client en déduit le milieu et le potentiel (`deduireValeursMalt`, src/domain/ingredientFacts.ts), lit
+ * `null` comme absent et marque la valeur « déduit ». La consigne et le schéma des levures et des houblons ne sont pas touchés.
  */
-const MALT_SORTIE = `
+const MALT_SORTIE = `On te donne le NOM d'un malt ou d'un sucre de brassage (sirop, candi, sucre
+brun, extrait) et son type. Retrouve ses caractéristiques PUBLIÉES par son
+malteur ou son fabricant, et remplis la fiche.
+
+Cherche la fiche officielle : Weyermann, Castle, Bestmalz, Simpsons, Crisp,
+Muntons pour les malts ; le fabricant lui-même pour un sucre ou un sirop.
+Les malteurs européens donnent l'EBC, les américains le degré Lovibond :
+EBC ≈ °L × 1.97 ; écris toujours l'EBC.
 
 SORTIE MALT ET SUCRE. Un malteur publie une plage de couleur et un extrait, pas
-un point. Ce qui est publié va dans son champ :
-- un point unique de couleur (une seule valeur publiée) va dans colorEbc, en
-  EBC (°L × 1.97) ; un potentiel publié en PPG va dans potentialPpg ;
-- une plage de couleur va dans colorEbcMin et colorEbcMax, en EBC (°L × 1.97),
-  jamais une moyenne dans colorEbc ;
-- l'extrait (fine grind, dry basis, en %) va dans extractPct, tel que publié ;
-  ne le convertis pas et n'écris pas potentialPpg à partir de lui : le client
-  calcule le milieu de la plage et le potentiel.
-La règle « valeurs ponctuelles » plus haut est celle des levures : elle ne
-s'applique ni aux malts ni aux sucres, dont la plage et l'extrait se remplissent.
-N'écris aucun nombre de malt ou de sucre dans usage, aroma ni note (usage est
-un champ de houblon), et rien sur la brasserie, la TVA ni la monnaie : seulement
+un point. La fiche a cinq champs numériques, toujours présents :
+- colorEbc : un point unique de couleur, seulement si la fiche n'en publie
+  qu'un, en EBC ;
+- colorEbcMin et colorEbcMax : les deux bornes de la plage de couleur publiée,
+  en EBC. Jamais la moyenne de la plage dans colorEbc ;
+- extractPct : l'extrait (fine grind, dry basis) en %, tel que publié, sans le
+  convertir ;
+- potentialPpg : un potentiel publié en PPG, seulement s'il l'est. Ne le calcule
+  pas depuis l'extrait : le client calcule le milieu de la plage et le potentiel.
+Ce que la fiche ne publie pas vaut null (c'est la seule règle d'absence ici),
+jamais 0, jamais une moyenne, jamais une valeur supposée.
+
+RÈGLE ABSOLUE. Le champ source est obligatoire et nomme d'où vient la donnée
+(« Bestmalz — fiche technique BEST Red X »), sourceUrl son adresse directe.
+Si tu ne trouves rien du tout, renvoie found false, explique dans note et mets
+les cinq nombres à null. Un nom générique sans malteur ne permet pas
+d'attribuer la fiche d'un produit précis : demande le fabricant dans note et
+mets les cinq nombres à null. Les faits connus en contexte servent à identifier
+le produit.
+
+N'écris aucun nombre de malt ou de sucre dans usage ni dans note (usage dit
+l'emploi en mots), et rien sur la brasserie, la TVA ni la monnaie : seulement
 la fiche du produit.`;
 
+/** Les clés d'une fiche de malt ou de sucre, dans l'ordre de la sortie : les cinq nombres juste après `sourceUrl`. */
+export const MALT_SCHEMA_ORDRE = ['found', 'name', 'source', 'sourceUrl', 'colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg',
+  'retrievedAt', 'note', 'grainType', 'diastaticPower', 'usage', 'substitutes'];
+/** Les cinq nombres exigés (nullables) d'une fiche de malt ou de sucre. */
+export const MALT_NOMBRES = ['colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg'];
+
 function maltLookupDefinition(base: TaskDef, fields: Record<string, unknown>): TaskDef {
-  return { ...base, system: `${base.system}${MALT_SORTIE}`,
-    schema: { ...base.schema, properties: { ...fields,
-      colorEbcMin: bounded('NUMBER', 0, 5000), colorEbcMax: bounded('NUMBER', 0, 5000), extractPct: bounded('NUMBER', 0, 100) } } };
+  const nombre = (type: 'NUMBER', min: number, max: number, description: string) => ({ ...bounded(type, min, max), nullable: true, description });
+  const neufs: Record<string, unknown> = {
+    colorEbc: nombre('NUMBER', 0, 5000, 'Couleur publiée comme un point unique, en EBC ; null si la fiche publie une plage ou rien.'),
+    colorEbcMin: nombre('NUMBER', 0, 5000, 'Plage de couleur publiée, borne basse, en EBC ; null si non publiée.'),
+    colorEbcMax: nombre('NUMBER', 0, 5000, 'Plage de couleur publiée, borne haute, en EBC ; null si non publiée.'),
+    extractPct: nombre('NUMBER', 0, 100, 'Extrait fine grind dry basis publié, en % ; null si non publié.'),
+    potentialPpg: nombre('NUMBER', 1, 50, 'Potentiel publié en PPG ; null si non publié (ne pas le calculer).')
+  };
+  const properties = Object.fromEntries(MALT_SCHEMA_ORDRE.map(key => [key, key in neufs ? neufs[key]
+    : key === 'usage' ? { ...str, description: 'Emploi du malt ou du sucre en mots, sans aucun nombre.' } : fields[key]]));
+  return { ...base, system: `${BRASSERIE}\n\n${MALT_SORTIE}`,
+    schema: { ...S(properties, ['found', 'name', 'source', ...MALT_NOMBRES]), propertyOrdering: MALT_SCHEMA_ORDRE } as TaskDef['schema'] };
 }
 
 /** Yeast lookup must produce fields the recipe can actually retain, rather than

@@ -1841,10 +1841,10 @@ function enrichirAnswer(c, context) {
   const name = String(context.name ?? ''), kind = String(context.kind ?? '');
   c.enrichir.appels.push({ kind, name, manquant: context.manquant, supplier: context.supplier, reference: context.reference });
   if (kind === 'malt' && /ambre/i.test(name))
-    // D302 : la forme RÉELLE d'une réponse de malt (5 vrais appels du 02.11) : un malteur publie une plage de couleur et un extrait, jamais de
-    // `colorEbc` ni de `potentialPpg` en champs, et un `usage` en texte sans chiffre. Le client en déduit 60 EBC et 36,8 PPG (80 % × 0,46).
+    // D302 puis D303 : la forme du schéma d'un malt (cinq nombres exigés et nullables) avec ce qu'un malteur publie : une plage de couleur et un
+    // extrait, `colorEbc` et `potentialPpg` à `null` (non publiés), un `usage` en texte sans chiffre. Le client en déduit 60 EBC et 36,8 PPG (80 % × 0,46).
     return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: true, name: 'Ambre 60', source: 'Fiche technique de la Malterie du Banc (banc)', sourceUrl: 'https://malterie-du-banc.test/ambre-60',
-      colorEbcMin: 55, colorEbcMax: 65, extractPct: 80, usage: 'Malt ambré pour bières ambrées et rousses, jusqu’à une part du mélange.' } };
+      colorEbc: null, colorEbcMin: 55, colorEbcMax: 65, extractPct: 80, potentialPpg: null, usage: 'Malt ambré pour bières ambrées et rousses, jusqu’à une part du mélange.' } };
   return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: false } };
 }
 const f4Ligne = (id, description, unit, quantity, more = {}) => ({ id, description, kind: 'ingredient', amount: 10, quantity, unit, stockAction: 'new', equipmentAction: 'none', ...more });

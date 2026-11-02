@@ -61,3 +61,43 @@ Rien d'appliqué ni d'écrit dans le stock.
 
 Total 1,171 CHF (D299 0,353 ; D302 0,818). Cumul des appels payants : 8,653 + 1,171 = **9,824 CHF sur 49**.
 Réponses brutes : `tests/unit/depense/enrichir/reponses-reelles-d302.json`.
+
+## 02.11 — mêmes 5 appels après le déploiement de f4-malts (D303, aiTask 4725e187)
+Même voie (son Chrome, son module `AiClient` du bundle `index-B9U_rN65.js`), mêmes requêtes que D302 sans `supplier`, en parallèle, 10:50 UTC. Rien d’appliqué.
+
+| Produit | Durée | Jetons (µCHF) | Recherches | Compté (µCHF) | Rendu |
+|---|---|---|---|---|---|
+| BEST Red X | 8,0 s | 3 994 | 20 provisionnées | 353 994 | trouvé ; ni plage ni extrait ; `tempMinC` −5 et `tempMaxC` 60 (les bornes du schéma) |
+| Château Cara Ruby | 7,9 s | 3 810 à 13 009 | 20 provisionnées | — | trouvé ; ni plage ni extrait |
+| Crisp Chevallier Heritage Malt | 6,7 s | idem | 20 provisionnées | — | trouvé ; ni plage ni extrait ; `tempMinC` 60 |
+| Candi Syrup D-180 | 7,5 s | idem | 20 provisionnées | — | trouvé ; ni plage ni extrait |
+| Bulldog B4 English Ale | 11,7 s | idem | 20 provisionnées | — | refusé par la garde des levures (« pas de sources documentaires exploitables ») |
+
+Le registre ne dit pas quel appel est lequel (5 lignes de 10:50) : 353 994, 353 810, 363 009, 353 987, 354 137 µCHF, total **1,779 CHF** (20 recherches provisionnées chacun). Cumul des appels payants : 9,824 + 1,779 = **11,603 CHF sur 49**.
+**Défaut** : le modèle obéit à « aucun nombre dans usage » mais ne remplit ni `colorEbcMin`, ni `colorEbcMax`, ni `extractPct` (facultatifs, ajoutés en fin d’un schéma qui garde tous les champs des houblons et des levures). Fiches des malts toujours vides en vrai. Suite : f4b-malts (schéma des malts restreint, champs exigés et nullables), sonde d’un appel avant les cinq.
+
+## 02.11 — lecture 17 : une pièce de trois pages par « Plusieurs » (n2, D297, aiTask et hébergement 4725e187)
+Son Chrome, l'app en ligne, Actions rapides › « Entrer une facture » › « Plusieurs ». Pièce : trois pages JPEG fabriquées pour le test
+(« TEST pilote Services Sàrl », F-TEST-0211, bruit de fond, environ 3,67 Mo chacune), aucune pièce du brasseur.
+
+| Heure (UTC) | Appel | Modèle | Compté (µCHF) |
+|---|---|---|---|
+| 10:56:21 | lecture des 3 pages | gemini-3.5-flash-lite | 4 131 |
+| 10:56:22 | lecture des 3 pages | gemini-3.5-flash-lite | 4 152 |
+| 10:56:26 | résolution | gemini-3.8-flash | 1 767 |
+
+Total **0,010 CHF** (10 050 µCHF, aucune recherche). Cumul des appels payants : 11,603 + 0,010 = **11,613 CHF sur 49**. Lectures : 17 sur 40.
+Au registre, `inputTokens` = 1 048 576 sur les deux lectures : c'est le devis de réservation (`MODEL_CONTEXT` pour un média,
+`geminiCosts.ts:112`), pas l'usage ; le compté vient de l'usage réel.
+
+Résultat : frise « 3 pages ✓ », lecture d'un corps d'environ 11 Mo acceptée en ligne, preuve « ✓ 3 pages lues ». « Confirmer » refusé :
+les lignes de la pièce sont HT et le client exige qu'elles fassent le total TTC (`purchaseEntry.ts:466`), alors que le serveur accepte la base HT
+(défaut noté dans D304). Enregistrée par « Regrouper en une dépense » : « À payer » 108,10. Drive : **un seul PDF de trois pages**
+(« 2026-11-02 TEST pilote Services Sàrl F-TEST-0211.pdf », 2 039 798 octets, « page 1/3 » à « page 3/3 » dans l'ordre).
+
+Suppression (même séance, vers 11 h 20 UTC) :
+- App : dépense non payée, donc « Corriger une erreur de saisie » › « Annuler cette écriture » › « Confirmer la correction ». Message de l'app :
+  « Écriture annulée. Justificatif et historique conservés. » ; Finances : « 0 opération ». L'écriture annulée reste au journal comptable
+  (aucun paiement) ; un effacement définitif du document Firestore reste au choix du brasseur.
+- Drive : le PDF mis à la corbeille ; vérifié sur la page Corbeille (présent) et dans le dossier « 2026 » (absent). Corbeille non vidée.
+- Stock : lignes « services, port », aucun article « TEST » parmi les 50 articles ; aucun mouvement.

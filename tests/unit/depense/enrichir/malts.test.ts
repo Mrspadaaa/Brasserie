@@ -16,6 +16,7 @@ import { confirmer, demonter, ligne, monter, saisie, type Banc } from './montage
 import { deduireValeursMalt, sanitizeFacts, type IngredientFacts } from '../../../../src/domain/ingredientFacts';
 import { DEDUIT_EBC, DEDUIT_PPG, valeursDeReponse } from '../../../../src/services/enrichissementCatalogues';
 import { TASKS, ingredientLookupDefinition } from '../../../../functions/src/prompts';
+import { encodeGeminiFunctionDeclarationForRest } from '../../../../functions/src/geminiRequestSchema';
 import reelles from './reponses-reelles-d302.json';
 
 const SOURCE = 'BESTMALZ — Fiche technique BEST Red X®';
@@ -126,20 +127,80 @@ describe('valeursDeReponse : les réponses réelles du 02.11', () => {
   it('le houblon n’en reçoit jamais', () => { expect(valeursDeReponse('houblon', BEST_RED_X)).toBeUndefined(); });
 });
 
+describe('D303 : null se lit comme absent', () => {
+  const NULS = { colorEbc: null, colorEbcMin: null, colorEbcMax: null, extractPct: null, potentialPpg: null } as unknown as IngredientFacts;
+  it('les cinq nombres à null (fiche muette) : rien de déduit, rien dans la note, aucune clé gardée', () => {
+    const f = sanitizeFacts({ found: true, name: 'Sucre D-180', source: 'Candi Syrup, Inc.', ...NULS });
+    for (const k of ['colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg']) expect(f, k).not.toHaveProperty(k);
+    expect(f.note).toBeUndefined();
+    expect(deduireValeursMalt(NULS)).toEqual({ deduit: {} });
+  });
+  it('colorEbc et potentialPpg à null avec une plage et un extrait : la déduction se fait comme sans le champ', () => {
+    const brute = { ...BEST_RED_X, colorEbc: null, potentialPpg: null } as unknown as IngredientFacts;
+    expect(deduireValeursMalt(brute)).toEqual(deduireValeursMalt(BEST_RED_X));
+    const f = sanitizeFacts(brute);
+    expect(f.colorEbc).toBe(30); expect(f.potentialPpg).toBe(36.3);
+    const v = valeursDeReponse('malt', brute)!;
+    expect(v.valeurs).toMatchObject({ colorEbc: 30, potentialPpg: 36.3 });
+    expect(v.deduit.colorEbc).toBe('EBC déduit : milieu de la plage publiée 28 à 32 EBC');
+  });
+  it('une borne à null, l’autre publiée : aucune plage, aucune couleur (jamais 0)', () => {
+    const f = { found: true, name: 'X', source: 's', colorEbcMin: 5, colorEbcMax: null } as unknown as IngredientFacts;
+    expect(deduireValeursMalt(f).colorEbc).toBeUndefined();
+    expect(sanitizeFacts(f).colorEbc).toBeUndefined();
+  });
+  it('un malt dont les cinq nombres sont null : la procédure n’écrit rien (valeursDeReponse)', () => {
+    expect(valeursDeReponse('malt', { found: true, name: 'Candi Syrup D-180', source: 'Candi Syrup, Inc.', sourceUrl: 'https://www.candisyrup.com', ...NULS })).toBeUndefined();
+  });
+  it('un point publié et le reste à null : le point gagne, sans règle « déduit » de plage', () => {
+    const v = valeursDeReponse('malt', { found: true, name: 'X', source: 's', colorEbc: 60, colorEbcMin: null, colorEbcMax: null, extractPct: null, potentialPpg: 33 } as unknown as IngredientFacts)!;
+    expect(v.valeurs).toMatchObject({ colorEbc: 60, potentialPpg: 33 });
+    expect(v.deduit.colorEbc).toBe(DEDUIT_EBC); expect(v.deduit.potentialPpg).toBe(DEDUIT_PPG);
+  });
+});
+
 describe('la consigne et le schéma de lookupIngredient', () => {
   const malt = ingredientLookupDefinition('malt');
   const proprietes = (def: { schema: any }) => Object.keys(def.schema.properties);
-  it('malt : la plage va dans min et max, jamais une moyenne dans colorEbc ; l’extrait dans extractPct ; rien sur la brasserie ni la TVA', () => {
-    expect(proprietes(malt)).toEqual(expect.arrayContaining(['colorEbc', 'potentialPpg', 'colorEbcMin', 'colorEbcMax', 'extractPct']));
-    expect(malt.schema.properties.colorEbcMin).toMatchObject({ type: 'NUMBER', minimum: 0, maximum: 5000 });
-    expect(malt.schema.properties.extractPct).toMatchObject({ type: 'NUMBER', minimum: 0, maximum: 100 });
-    expect(malt.schema.required).toEqual(['found', 'name', 'source']);
-    expect(malt.system).toContain('une plage de couleur va dans colorEbcMin et colorEbcMax');
-    expect(malt.system).toContain('jamais une moyenne dans colorEbc');
-    expect(malt.system).toContain('l\'extrait (fine grind, dry basis, en %) va dans extractPct');
-    expect(malt.system).toContain('« valeurs ponctuelles » plus haut est celle des levures');
-    expect(malt.system).toContain('N\'écris aucun nombre de malt ou de sucre dans usage');
+  const CINQ = ['colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg'];
+  it('malt : seulement les champs d’un malt ou d’un sucre, dans l’ordre, les cinq nombres juste après sourceUrl', () => {
+    expect(proprietes(malt)).toEqual(['found', 'name', 'source', 'sourceUrl', ...CINQ, 'retrievedAt', 'note', 'grainType', 'diastaticPower', 'usage', 'substitutes']);
+    expect(malt.schema.propertyOrdering).toEqual(proprietes(malt));
+  });
+  it('malt : aucun champ de levure ni de houblon (BEST Red X rendait tempMinC −5 et tempMaxC 60)', () => {
+    const interdits = ['lab', 'strain', 'form', 'attenuationPct', 'tempMinC', 'tempMaxC', 'flocculation', 'alcoholTolerancePct', 'technicalFacts', 'fermentation',
+      'alphaPct', 'betaPct', 'aroma'];
+    for (const k of interdits) expect(malt.schema.properties, k).not.toHaveProperty(k);
+    expect(malt.system).not.toMatch(/tempMinC|technicalFacts|attenuationPct|alphaPct|NOLO|LEVURE\./);
+  });
+  it('malt : les cinq nombres sont exigés, nullables, bornés et décrits ; found, name, source restent exigés', () => {
+    expect(malt.schema.required).toEqual(['found', 'name', 'source', ...CINQ]);
+    for (const k of CINQ) {
+      expect(malt.schema.properties[k], k).toMatchObject({ type: 'NUMBER', nullable: true });
+      expect(malt.schema.properties[k].description, k).toMatch(/null/);
+      expect(malt.schema.properties[k].description.length, k).toBeLessThan(120);
+    }
+    expect(malt.schema.properties.colorEbcMin).toMatchObject({ minimum: 0, maximum: 5000 });
+    expect(malt.schema.properties.colorEbcMax).toMatchObject({ minimum: 0, maximum: 5000 });
+    expect(malt.schema.properties.extractPct).toMatchObject({ minimum: 0, maximum: 100 });
+    expect(malt.schema.properties.potentialPpg).toMatchObject({ minimum: 1, maximum: 50 });
+    expect(malt.schema.properties.usage.description).toMatch(/sans aucun nombre/);
+  });
+  it('malt : le schéma passe l’encodeur Gemini, chaque nombre nullable devient « nombre ou null » borné', () => {
+    const encoded = encodeGeminiFunctionDeclarationForRest({ name: 'fiche_malt', description: 'fiche', parameters: malt.schema });
+    const schema = encoded.parametersJsonSchema as any;
+    expect(schema.required).toEqual(['found', 'name', 'source', ...CINQ]);
+    expect(schema.properties.extractPct.anyOf.map((b: any) => b.type).sort()).toEqual(['null', 'number']);
+    expect(schema.properties.extractPct.anyOf.find((b: any) => b.type === 'number')).toMatchObject({ minimum: 0, maximum: 100 });
+  });
+  it('malt : la plage va dans min et max, jamais une moyenne dans colorEbc ; l’extrait dans extractPct ; null quand non publié ; rien sur la brasserie ni la TVA', () => {
+    expect(malt.system).toContain('colorEbcMin et colorEbcMax : les deux bornes de la plage de couleur publiée');
+    expect(malt.system).toContain('Jamais la moyenne de la plage dans colorEbc');
+    expect(malt.system).toContain('extractPct : l\'extrait (fine grind, dry basis) en %, tel que publié');
+    expect(malt.system).toContain('Ce que la fiche ne publie pas vaut null');
+    expect(malt.system).toContain('N\'écris aucun nombre de malt ou de sucre dans usage ni dans note');
     expect(malt.system).toMatch(/rien sur la brasserie, la TVA ni la monnaie/);
+    expect(malt.system).not.toMatch(/doit rester ABSENT/);
   });
   it('la consigne de base et celle des houblons n’ont pas bougé : les champs neufs n’y sont pas', () => {
     expect(proprietes(TASKS.lookupIngredient)).not.toContain('colorEbcMin');
