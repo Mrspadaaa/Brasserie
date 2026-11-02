@@ -1,0 +1,107 @@
+// @vitest-environment jsdom
+/**
+ * Voie p-port-pu4d (D361, D364) : le plateau de sa maquette pu4d, porté. Peu de tests, ciblés :
+ *  - les règles pures : le stock avant → après réception, le choix d'unité avec la pièce (D353) ;
+ *  - la structure sur l'écran rendu : l'article relié montre « 1 → 7 Kg » (stock réel du banc simulé), la ligne hors stock porte « Suivre au stock » (greffe pa1d)
+ *    et ses types en pastilles, aucun menu ni « plus » dans le plateau (D350, D346) ;
+ *  - D364 : une ligne d'emballage sous « Local » se range dans la bande Rénovation par le champ « Famille », et y reste.
+ * Gemini jamais appelé ; stock SIMULÉ ; rien n'est écrit.
+ */
+import { createElement } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { webcrypto } from 'node:crypto';
+import lecture from '../stock/fixtures/lecture-372765.json';
+import stockJson from '../stock/fixtures/stock-simule.json';
+
+const state = vi.hoisted(() => ({ stocks: { rawMaterials: [] as any[], cleaning: [] as any[], equipment: [] as any[] }, writes: [] as any[], scanned: vi.fn() }));
+vi.mock('../../../../src/services/storage', () => ({ StorageService: { getStocks: () => state.stocks, getTransactions: () => [], getConfig: () => ({ fiscal: { isTvaRegistered: false } }), confirmPendingWrites: async () => undefined,
+  addTransaction: (tx: any) => state.writes.push(['transaction', tx]), addStockItem: (...a: any[]) => state.writes.push(['stock', ...a]), addEquipment: (i: any) => state.writes.push(['equipment', i]), updateTransaction: (tx: any) => state.writes.push(['update', tx]) } }));
+vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejection: () => false, FirestoreRepo: { find: () => undefined, documentWriteState: () => ({ status: 'unknown' }), waitForDocument: async () => undefined,
+  adjustNumber: (...a: any[]) => state.writes.push(['increment', ...a]), put: (...a: any[]) => state.writes.push(['put', ...a]) } }));
+vi.mock('../../../../src/services/financeService', () => ({ validateFinancialPayment: () => {}, FinanceService: { getPlans: () => [], stageNewTransactionPayment: (tx: any) => state.writes.push(['transaction', tx]) } }));
+vi.mock('../../../../src/services/financeDocuments', () => ({ prepareFinanceDocument: () => ({ id: 'proof' }), saveFinanceDocumentConfirmed: async () => undefined }));
+vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => state.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
+import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
+import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
+import { apresReception, choixUnite } from '../../../../src/ui/depense/calculPlateau';
+
+beforeEach(() => {
+  cleanup(); vi.restoreAllMocks(); state.writes = []; state.scanned.mockReset();
+  vi.spyOn(FirebaseAuthService, 'ensureDriveAccessToken').mockResolvedValue('synthetic-token'); vi.spyOn(FirebaseAuthService, 'hasDriveAccess').mockReturnValue(true); vi.spyOn(FirebaseAuthService, 'prepareGoogleLogin').mockResolvedValue();
+});
+afterEach(cleanup);
+
+describe('règles pures du plateau pu4d', () => {
+  const article: any = { id: 'a', ref: 'MP-Maris', name: 'Maris Otter', unit: 'kg', category: 'Malt', currentStock: 18 };
+  const ligne = (id: string, quantity: number, unit: string, stockRef = 'MP-Maris'): any => ({ id, description: 'Maris Otter', kind: 'ingredient', quantity, unit, stockAction: 'existing', stockRef, equipmentAction: 'none' });
+  it('le stock après réception : 18 → 24 Kg ; deux lignes du même article s’additionnent ; une unité illisible ne dit rien (jamais 0)', () => {
+    expect(apresReception([ligne('l1', 6, 'Kg')], 'l1', article, l => l.unit)?.texte).toBe('18 → 24 Kg');
+    expect(apresReception([ligne('l1', 6, 'Kg'), ligne('l2', 500, 'g')], 'l1', article, l => l.unit)?.texte).toBe('18 → 24,5 Kg');
+    expect(apresReception([ligne('l1', 6, '')], 'l1', article, l => l.unit)).toBeUndefined();
+    expect(apresReception([ligne('l1', 6, 'Kg', 'autre')], 'l1', article, l => l.unit)).toBeUndefined();
+  });
+  it('le choix d’unité offre toujours la pièce (D353) ; une unité lue hors liste passe en tête', () => {
+    expect(choixUnite('malt', 'Kg').map(c => c.label)).toEqual(['Kg', 'g', 'pièce']);
+    expect(choixUnite('houblon', 'g').map(c => c.label)).toEqual(['g', 'Kg', 'pièce']);
+    expect(choixUnite('levure', 'sachet').map(c => c.label)).toEqual(['sachets', 'g', 'pièce']);
+    expect(choixUnite('materiel', 'Stk').map(c => c.label)).toEqual(['pièce', 'L']);
+    expect(choixUnite('malt', 'L').map(c => c.label)).toEqual(['L', 'Kg', 'pièce']);
+  });
+});
+
+const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, stockCategory = '') =>
+  ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC: Math.round(quantity * price * 100) / 100, reference: '', variant: '', stockCategory, evidence: '', ambiguity: '' });
+const lire = async (category: string, items: Array<ReturnType<typeof ligne>>) => {
+  Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
+  state.stocks = { rawMaterials: JSON.parse(JSON.stringify(stockJson.articles)), cleaning: [], equipment: [] };
+  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  state.scanned.mockResolvedValueOnce({ ok: true, model: 'rejeu', result: { ...JSON.parse(JSON.stringify(lecture)), items, category, amountTTC: total, amountHT: null, tvaRate: null, tvaAmount: null, orderNumber: '', invoiceNumber: 'B-3003', vendor: 'Brico Fictif SA' } });
+  const view = render(createElement(ExpenseSheet, { onClose: () => {}, onSaved: () => {} }));
+  const file = new File(['%PDF-1.4\n'], 'facture.pdf', { type: 'application/pdf' });
+  Object.defineProperty(file, 'arrayBuffer', { value: async () => new TextEncoder().encode('%PDF-1.4\n').buffer });
+  fireEvent.change(view.container.querySelector('input[type="file"]')!, { target: { files: [file] } });
+  await screen.findByRole('region', { name: 'Vérification du justificatif' });
+  return view;
+};
+const ligneEl = (view: ReturnType<typeof render>, id: string) => view.container.querySelector(`[data-dp-ligne="${id}"]`) as HTMLElement;
+const bandeDe = (view: ReturnType<typeof render>, id: string) => ligneEl(view, id).closest('[data-dp-bande]')!.getAttribute('data-dp-bande');
+const ouvrir = (view: ReturnType<typeof render>, id: string) => { const d = ligneEl(view, id).querySelector('details')!; if (!d.open) fireEvent.click(d.querySelector('summary')!); return ligneEl(view, id); };
+
+describe('le plateau porté, sur l’écran rendu', () => {
+  it('une ligne reliée : « 1 → 7 Kg » à droite de la nature, ses unités en segment avec la pièce, aucun menu, ni « plus », ni « au centime »', async () => {
+    const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Détartrant express 1 L', 'stock', 1, 'Stk', 9.5, 'CIP acide')]);
+    const a = ouvrir(view, 'line-1');
+    expect(a.querySelector('[data-dp-apres]')?.textContent).toBe('1 → 7 Kg');
+    const seg = a.querySelector('[data-dp-unite-segments]')!;
+    expect([...seg.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Kg', 'g', 'pièce']);
+    expect(seg.querySelector('[aria-pressed="true"]')?.textContent).toBe('Kg');
+    expect(a.querySelector('[data-dp-pu4d] select:not([data-dp-famille])')).toBeNull();
+    expect(a.querySelector('[data-dp-plus]')).toBeNull();
+    expect(a.querySelector('[data-dp-centime]')).toBeNull();
+    expect(a.querySelector('[data-dp-stock]')?.textContent).toContain('Maris Otter');
+  });
+  it('une ligne hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d) et les quatre types en pastilles d’un toucher', async () => {
+    const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Tournevis cruciforme', 'equipment', 1, 'Stk', 9.5)]);
+    const c = ouvrir(view, 'line-2');
+    expect(c.querySelector('[data-dp-stock]')?.textContent).toContain('hors stock');
+    expect([...c.querySelectorAll('[data-dp-types] button')].map(b => b.textContent)).toEqual(['Nettoyage', 'Entretien', 'Emballages', 'Outillage']);
+    expect(c.querySelector('[data-dp-types] [aria-pressed="true"]')?.textContent).toBe('Outillage');
+    expect(c.querySelector('select:not([data-dp-famille])')).toBeNull();
+  });
+});
+
+describe('D364 — changer la famille d’une ligne', () => {
+  it('une ligne d’emballage sous « Local », ouverte : « Famille » → Rénovation, la ligne est dans la bande Rénovation, et elle y reste', async () => {
+    const view = await lire('renovation', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Peinture murale blanche mate 10 L', 'stock', 1, 'Stk', 64.9), ligne(3, 'Grand sac', 'stock', 1, 'Stk', 5, 'Emballage')]);
+    expect(bandeDe(view, 'line-3')).toBe('emballage');
+    const l = ouvrir(view, 'line-3');
+    const select = l.querySelector('select[data-dp-famille]') as HTMLSelectElement;
+    expect(select.value).toBe('emballage');
+    fireEvent.change(select, { target: { value: 'renovation' } });
+    expect(bandeDe(view, 'line-3')).toBe('renovation');
+    fireEvent.click(ligneEl(view, 'line-3').querySelector('[data-dp-nature] button:not([aria-pressed="true"])')!);
+    expect(bandeDe(view, 'line-3')).toBe('renovation'); // le choix tient contre la règle, même quand la nature change
+    expect(state.writes).toEqual([]);
+  });
+});

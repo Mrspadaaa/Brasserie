@@ -45,14 +45,17 @@ import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
+import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur } from '../depense/Plateau';
+import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr } from '../depense/calculPlateau';
+import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
 import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
-import { bandes as calculerBandes,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
+import { bandes as calculerBandes,ORDRE_GROUPES,NOMS_GROUPES,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
 import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
 import { confianceEntete,natureSansEnjeu,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
 import { arrondiDuTotal,uniteEffective } from '../../services/purchaseEntry';
-import { regleProduit,linkUnit } from '../../services/stockLineMatching';
+import { regleProduit,linkUnit,donneesDArticle } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
 import { EntreeFendue,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVerification } from '../depense/Pages';
@@ -65,6 +68,8 @@ const kinds:Array<{value:PurchaseLineDraft['kind'];label:string}>=[{value:'ingre
 type PurchaseCategory=Exclude<FinanceCategory,'apports'|'recettes'>;
 const categories:Array<{value:PurchaseCategory;label:string}>=[{value:'brassage',label:'Brassage'},{value:'materiel',label:'Matériel'},{value:'nettoyage',label:'Nettoyage'},{value:'chargesFixes',label:'Charges fixes'},{value:'renovation',label:'Local'},{value:'divers',label:'Autre'}];
 const money=(n:number)=>formatCHF(Math.round(n*100));
+/* D364 : la famille choisie par le brasseur porte aussi un type d’achat qui lui ressemble (une ligne rangée en Rénovation n’entre pas au stock des emballages). */
+const KIND_DE_FAMILLE:Record<GroupeCle,PurchaseLineDraft['kind']>={malt:'ingredient',houblon:'ingredient',levure:'ingredient',sucre:'ingredient',additif:'ingredient',materiel:'equipment',emballage:'packaging',nettoyage:'cleaning',consommable:'cleaning',renovation:'maintenance',service:'service',autres:'other'};
 const newLine=(intent='expense'):PurchaseLineDraft=>({id:crypto.randomUUID(),description:'',kind:intent==='equipment'?'equipment':'ingredient',unit:'',stockAction:'none',equipmentAction:intent==='equipment'?'new':'none'});
 const button='min-h-7 rounded-control px-2 text-[13px] font-medium border transition-colors';
 // D262b : « La date exacte est rarement important. Le mois l'est plus. »
@@ -136,6 +141,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),queuedRef=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
   const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null);
   const manuallyClassified=useRef(new Set<string>());
+  /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
+  const casesRefs=useRef(new Map<string,HTMLDivElement>());
+  const famillesChoisies=useRef(new Map<string,GroupeCle>());
   /* p3c-3 : le plateau que le brasseur a ouvert ou fermé (par id) : il survit au changement de bande d'une ligne (la rangée est remontée ailleurs). */
   const ouvertesRef=useRef(new Map<string,boolean>());
   /* VERDICT-f3-p2, détail 3 : la barre d'un bis se fond dans le plateau ouvert ; un toucher d'ouverture rend l'écran (une fois par geste). */
@@ -254,7 +262,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const occurrences=selectedPlan?.recurrence?planOccurrences(selectedPlan,`${new Date().getFullYear()-1}-01-01`,`${new Date().getFullYear()+2}-12-31`):[];
   const patch=(value:Partial<PurchaseDraft>)=>{setDraft(previous=>patchPurchaseDraft(previous,value,swissToday()));};
   /* Le prix unitaire lu vaut pour l'unité imprimée : une autre unité tapée le retire (la même, non). */
-  const updateLine=(id:string,value:Partial<PurchaseLineDraft>)=>{setDraft(previous=>({...previous,lines:previous.lines.map(line=>line.id===id?{...line,...value,...(value.unit!==undefined&&value.unit!==line.unit&&linkUnit(value.unit)!==linkUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))?{unitPrice:undefined}:{})}:line)}));};
+  const updateLine=(id:string,value:Partial<PurchaseLineDraft>)=>{setDraft(previous=>({...previous,lines:previous.lines.map(line=>line.id===id?{...line,...value,...(value.unit!==undefined&&value.unit!==line.unit&&isReadableUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))&&linkUnit(value.unit)!==linkUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))?{unitPrice:undefined}:{})}:line)}));};
   const simplePurchase=draft.lines.length===1&&!scan?.ok&&draft.lines[0].description===draft.description&&draft.lines[0].amount===draft.amount;
   const selectCategory=(category:PurchaseCategory)=>{
     const line=draft.lines[0];
@@ -368,7 +376,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(!outcome.ok || !outcome.result){setError(outcome.error||'Le scan n’a pas abouti. Les champs restent modifiables.');return null;}
     const result=outcome.result;
     const stockItems=[...stocks.rawMaterials,...stocks.cleaning];
-    proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setChoixGroupes(new Map());setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
+    proposedStock.current.clear();proposedRef.current.clear();voisins.current.clear();famillesChoisies.current.clear();lineStartsOpen.current.clear();neufDOffice.current.clear();relieAuto.current.clear();setChoixGroupes(new Map());setReadCount(count=>count+1);setReglees(new Set());setPanel(null);
     /* D275 : le libellé est la base de la désignation (sans options ni suffixe d'unité), ou sa désignation française lue ; l'imprimé complet reste au brouillon et au plateau. Le calcul des lignes est `lignesDeLecture` (finale.ts) : le même pour le provisoire et le final (B1). */
     const {lines,propositions}=lignesDeLecture(result,stockItems,draft.submissionId);
     for(const x of propositions.proposedStock)proposedStock.current.add(x);
@@ -761,7 +769,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     reveler(el);
     const d=el.querySelector<HTMLDetailsElement>('details');if(d)d.open=true;
     if(champ==='libelle'){const plus=el.querySelector<HTMLDetailsElement>('details[data-dp-plus]');if(plus)plus.open=true;}
-    const sel:Record<string,string>={quantite:`[aria-label="Quantité ligne ${n}"]`,unite:`[aria-label="Unité ligne ${n}"]`,prix:`[aria-label="Prix ligne ${n}"]`,montant:`[aria-label="Montant ligne ${n}"]`,article:'[data-dp-stock] [aria-label="Article"]',libelle:`[aria-label="Libellé ligne ${n}"]`};
+    const sel:Record<string,string>={quantite:`[aria-label="Quantité ligne ${n}"]`,unite:`[aria-label="Unité ligne ${n}"],[aria-label="Unité à remplir, ligne ${n}"]`,prix:`[aria-label="Prix ligne ${n}"]`,montant:`[aria-label="Montant ligne ${n}"]`,article:'[data-dp-stock] [aria-label="Article"]',libelle:`[aria-label="Libellé ligne ${n}"]`};
     const cible=el.querySelector<HTMLElement>(sel[champ]);cible?.scrollIntoView?.({block:'center'});cible?.focus?.({preventScroll:true});
   };
   const aller=(chip:Chip)=>{
@@ -820,8 +828,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const portTexte=(()=>{const c=portCents(draft.lines,port);return c===null?null:fr2c(c);})();
   const parentIdxDe=(i:number)=>i>=0&&i<draft.lines.length?millingParentIndex(draft.lines,i):-1;
   const contexteLigne=(line:PurchaseLineDraft)=>{const a=articleDe(line);return a?contexteDeArticle(a):donneesDeLigne(ligneDeBrouillon(line,draft.vendor)).contexte;};
-  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
-  const sousFamilleLigne=(i:number):string|undefined=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
+  const groupeDeLigne=(i:number):GroupeCle=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return famillesChoisies.current.get(l.id)??groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
+  const sousFamilleLigne=(i:number):string|undefined=>{const p=parentIdxDe(i),l=draft.lines[p>=0?p:i];return famillesChoisies.current.has(l.id)?undefined:sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
   const numeros=numerosPapier(draft.lines,port);
   const visibles=filtre?new Set(filtre.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
@@ -903,13 +911,15 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const stockBisEl=bisAConfirmer&&regle&&voisin?<span data-dp-stock-bis className="inline-flex items-center gap-1 text-xs text-cave-400 opacity-80"><Package size={14}/>stock : {etiquetteVoisin(regle,voisin)}</span>:null;
     const bisFondu=bisAConfirmer&&ouverte;
     const fixNiveau:Niveau|undefined=precisIds.has(line.id)?'inconnu':(bisAConfirmer&&!bisFondu)||ambigu?'repris':undefined;
-    const correction=precisIds.has(line.id)?<><span className="text-xs text-alert">imprimé {line.quantity===undefined?'—':fr(line.quantity)} ? ·</span>{['g','kg','Stk'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
+    const correctionBarre=precisIds.has(line.id)?<><span className="text-xs text-alert">imprimé {line.quantity===undefined?'—':fr(line.quantity)} ? ·</span>{['g','kg','Stk'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
       :bisAConfirmer&&regle&&voisin?(bisFondu?null:<>{stockBisEl}{garderBisEl}{autre}</>)
       :ambigu?<><span data-dp-ambigu className="text-xs text-attention">plusieurs articles « {voisin!.name} » : choisis</span>{autre}</>
       :null;
     const bis=bisAConfirmer||(!isMouture&&line.kind==='ingredient'&&line.stockAction==='none'&&Boolean(voisin||existant));
     const lien:LienStock=isMouture?'mouture':precisIds.has(line.id)?'precis':bis?'bis':lienDe(line);
-    const douteux=Boolean(correction)||bisAConfirmer||Boolean(mp&&!laissees);
+    /* D361 : plateau ouvert, la barre de l'unité (ses cases sont au plateau) et celle du choix d'article se fondent dans le plateau. */
+    const correction=ouverte&&(precisIds.has(line.id)||ambigu)?null:correctionBarre;
+    const douteux=Boolean(correctionBarre)||bisAConfirmer||Boolean(mp&&!laissees);
     if(douteux)douteuxIds.add(line.id);
     const enfantIdx=!isMouture&&parentIdxDe(index+1)===index?index+1:-1,enfant=enfantIdx>=0?draft.lines[enfantIdx]:undefined;
     const nomParent=parent?parent.description.split(',')[0]:'';
@@ -921,45 +931,104 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const etat=pastilleMouture?undefined:pastilleEtat(line,unite);
     const opts=optionsEnFrancais(line,unite);
     const nomArticle=line.stockAction==='new'?(nomRefuse?neuf?.nomPropose:neuf?.name)??line.description.trim():article?.name;
-    /* VERDICT-f3, défaut 1 : le plateau de p3c-3 tel quel (p3c-3-geste-plateau.png). Au premier plan : l'imprimé, l'état, `[q] u × [p] = [m]` et son verdict,
-       Ingrédient / Service / Matériel, la ligne « article » (ou la fiche matériel), la mouture. Le reste derrière un seul « plus ». */
-    const ud=eff.uniteDeduite;
-    const segmentsUnite=ud&&ud.niveau==='repris'?(()=>{const d=shortUnit(ud.unite),choix=[...new Set([d,'g','kg','Stk'])];return <span data-dp-unite-segments role="group" aria-label={`Confirmer l’unité, ligne ${index+1}`} className="ml-1 inline-flex overflow-hidden rounded-control border border-attention align-middle">{choix.map(u=><button key={u} type="button" aria-pressed={u===d} onClick={()=>updateLine(line.id,{unit:u})} className={`min-h-7 px-2 text-sm ${u===d?'bg-attention/15 font-semibold text-cave-50':'text-cave-200'}`}>{u}</button>)}</span>;})():null;
-    const calculEl=<div data-dp-calcul className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-cave-200">
-      <span {...niv('quantite')} className="inline-flex"><NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={`${CHAMP_P3C} w-16 text-right${rougeDe('quantite')?ROUGE:''}`}/></span>
-      {(()=>{const vide=(!isReadableUnit(uniteEffective(eff))&&!horsStock)||rougeDe('unite');return champUnite(`${CHAMP_P3C} w-11 text-center${vide?' !border-dashed !border-alert placeholder:text-alert':''}`,vide?'?':undefined,vide?'inconnu':undefined);})()}<span aria-hidden>×</span>
-      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>updateLine(line.id,{unitPrice})} emptyValue={undefined} min={0} fractionDigits={decimalesAuRepos(line.unitPrice)} className={`${CHAMP_P3C} w-[4.75rem] text-right${rougeDe('prix')?ROUGE:''}`}/></span><span aria-hidden>=</span>
-      <span {...niv('montant')} className="inline-flex"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{updateLine(line.id,{amount});if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_P3C} w-[4.75rem] text-right${rougeDe('montant')?ROUGE:''}`}/></span>
-      {calculOk===true?<span data-dp-centime className="inline-flex min-h-6 items-center rounded-control border border-cave-700 px-1.5 text-xs text-hop">✓ au centime</span>
-        :calculOk===false?<span data-dp-centime data-dp-niveau="repris" className="text-xs text-attention underline decoration-dotted decoration-attention underline-offset-2">≠ montant, écart à vérifier</span>:null}
-    </div>;
-    /* D335 : le segment garde ses trois mots et en allume toujours un (la nature fine reste au menu « Type d'achat ») ; une remise n'en montre aucun. */
-    const NATURES:Array<[NatureSegment,string]>=[['ingredient','Ingrédient'],['service','Service'],['equipment','Matériel']];
-    const segNature=natureDuSegment(line.kind);
-    const natureSegEl=segNature?<div data-dp-nature role="group" aria-label={`Type d’achat, ligne ${index+1}`} className="inline-flex overflow-hidden rounded-control border border-cave-600">{NATURES.map(([k,mot])=><button key={k} type="button" aria-pressed={segNature===k} onClick={()=>{if(segNature!==k)changerNature(k);}} className={`min-h-7 px-2.5 text-sm ${segNature===k?'bg-ebc-straw font-semibold text-cave-950':'text-cave-200'}`}>{mot}</button>)}</div>:null;
-    const pastilleEl=pastille?<span data-dp-pastille title={line.stockAction==='new'&&neuf?.fiche?`fiche ${neuf.nomFiche??'liée'}${neuf.fiche.approchee?' · approchée (pas exactement la bonne)':''}`:undefined} className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span>:null;
-    const retirerEl=<button type="button" aria-label={`Retirer l’article, ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'none'});}} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-200">Retirer</button>;
-    const articleEl=STOCK_KINDS.includes(line.kind)&&!isMouture?<div data-dp-stock className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-cave-200">{line.stockAction==='none'?<span>aucun stock</span>
-      :line.stockAction==='new'&&neuf?<><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>» · nouvel article</span>{autre}{(()=>{const v=[neuf.alphaPct!==undefined?`α ${fr(neuf.alphaPct)}`:'',neuf.colorEbc!==undefined?`${fr(neuf.colorEbc)} EBC`:'',neuf.origin?`origine ${neuf.origin}`:''].filter(Boolean).join(' · ');return v?<span data-dp-valeurs className="font-mono text-cave-200">{v}</span>:null;})()}</>
-      :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
-      :<><span>article « <b className="font-medium text-cave-50">{nomArticle||'à choisir'}</b> » · {line.stockAction==='new'?'nouvel article':status.proposed?<span data-dp-niveau="repris" className="text-attention">proposé</span>:'relié'}{status.notes.length?` · ${status.notes.join(' · ')}`:''}</span>
-        {/* D277 (« globalement pour tout ») : un lien proposé par la lecture reste jaune jusqu’à « Garder » ou ⇄. */}
-        {status.proposed?<button type="button" aria-label={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">Garder</button>:null}
-        {autre}{line.stockAction==='existing'?retirerEl:null}</>}{bisFondu?<>{stockBisEl}{garderBisEl}</>:null}{line.stockAction==='existing'&&!line.stockRef?null:pastilleEl}</div>:null;
-    const plusEl=<details data-dp-plus className="text-xs text-cave-400"><summary className="inline-flex min-h-7 cursor-pointer items-center rounded-control px-1 text-cave-200 underline decoration-dotted underline-offset-2">plus</summary>
-      {/* C5, C7 : « plus » ne s'ouvre jamais seul ; la fiche matériel y vit ; Le menu du stock est le seul contrôle (C7 : « Aucun mouvement de stock », « Ajouter à un article existant », « Nouvel article » ; plus d'interrupteur). Le menu « Type d'achat » reste le choix fin (D335). */}
-      <div className="mt-1 space-y-2">{libelleEl}{natureEl}{extraitEl}{materielEl}
-        {STOCK_KINDS.includes(line.kind)?<div className="space-y-2">{choixStockEl}{line.stockAction==='existing'&&line.stockRef?relieEl:null}</div>:null}</div></details>;
-    const plateauEl=<div className="space-y-1.5">
-      <p data-dp-imprime className="text-xs text-cave-400">imprimé « <span className="font-mono text-cave-200">{line.imprime?.nom??(line.description||'—')}</span> »{line.sourceReference?` · ${line.sourceReference}`:''}</p>
-      {opts.comprises.length||opts.restes.length?<p data-dp-options className="text-xs text-cave-200">{opts.comprises.join(' · ')}{opts.restes.length?<span className="text-cave-400">{opts.comprises.length?' · ':''}tel qu’imprimé : {opts.restes.join(' · ')}</span>:null}</p>:null}
-      {/* C2 : pas de phrase d'unité sous les champs (la raison est au survol de la rangée) ; le segment g / kg / Stk n'existe que pour une unité inconnue (la barre sous la rangée). */}
+    /* D361 (son choix pu4d, `plateau/v3/pu4d/`) : le plateau de la ligne ouverte, repris tel quel, et la greffe de pa1d (« article — · hors stock + Suivre au stock »). Dans l'ordre de sa maquette :
+       imprimé · référence ; `[q] [unité en segment] × [prix] = [montant]` ; une ligne en doute montre le face à face Facture | Stock, puis sa décision (un bis : ses trois sorties ; une unité qui manque : cinq cases ;
+       une correction de la 3e lecture : Garder / Remettre) ; la nature ; la ligne « article » ; la mouture ; « extrait · supprimer ». D350 : aucun menu. D355 : aucune autre ligne n'y est nommée. */
+    const ud=eff.uniteDeduite,lisible=isReadableUnit(unite),segNature=natureDuSegment(line.kind);
+    const corr=tranchees.has(`corr:${line.id}`)?undefined:corrigeeDe(line);
+    const avantQte=corr?.qte?fusion?.avant[line.id]?.quantity:undefined;
+    const uniteManque=(!lisible&&!horsStock)||rougeDe('unite');
+    const choixU=choixUnite(genreDeUnite(line.kind,lu?.contexte,article?.category),unite);
+    const uniteActive=choixU.find(c=>cleUnite(c.valeur)===cleUnite(unite))?.valeur??'';
+    const choisirUnite=(valeur:string)=>updateLine(line.id,{unit:valeur});
+    const BLEU_CH=' !border-2 !border-area-finances !bg-area-finances/15 !text-area-finances font-semibold';
+    const montantTexte=line.amount===undefined?'':fr2c(Math.round(line.amount*100)),prixTexte=line.unitPrice===undefined?'':prixImprime(line.unitPrice);
+    const calculEl=<RangeeCalcul avant={avantQte!==undefined?fr(avantQte):undefined}>
+      <span {...niv('quantite')} className="inline-flex"><NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>updateLine(line.id,{quantity})} emptyValue={undefined} min={0} className={`${CHAMP_PU4D} ${largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
+      {uniteManque?<BoiteUniteVide/>:horsStock&&!lisible?null:<SegmentUnite index={index+1} choix={choixU} active={uniteActive} repris={ud?.niveau==='repris'} onChoisir={choisirUnite}/>}<Op c="×"/>
+      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>updateLine(line.id,{unitPrice})} emptyValue={undefined} min={0} fractionDigits={decimalesAuRepos(line.unitPrice)} className={`${CHAMP_PU4D} ${largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
+      <span {...niv('montant')} className="inline-flex"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{updateLine(line.id,{amount});if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span>
+      {/* D351 : « au centime » ne se dit plus quand le calcul tombe juste ; seul un écart se dit. */}
+      {calculOk===false?<span data-dp-centime data-dp-niveau="repris" className="text-xs text-attention underline decoration-dotted decoration-attention underline-offset-2">≠ montant, écart à vérifier</span>:null}
+    </RangeeCalcul>;
+    /* Les cinq cases de l'unité qui manque : le prix par unité dessous, l'unité du stock proposée (jamais posée). */
+    const uniteStock=article&&isReadableUnit(article.unit)?CINQ_UNITES.find(u=>cleUnite(u.valeur)===cleUnite(article.unit))?.valeur:undefined;
+    const casesEl=uniteManque&&!(horsStock&&!STOCK_KINDS.includes(line.kind))?<CasesUnite ref={el=>{if(el)casesRefs.current.set(line.id,el);else casesRefs.current.delete(line.id);}} index={index+1} unites={CINQ_UNITES} propose={uniteStock} prix={prixTexte||undefined} onChoisir={choisirUnite}/>:null;
+    /* Le face à face de la ligne dont l'unité manque (son article est relié) : l'extrait à gauche, « compté en Kg » au stock. */
+    const duelUniteEl=uniteManque&&article?<Duel etat="inconnu" symbole="?" note="unité illisible"
+      facture={<><Petit>extrait · ligne {numeros.get(line.id)??index+1}</Petit><span className="whitespace-pre-wrap break-words rounded-control bg-cave-800 px-1 font-mono text-xs text-cave-50">{line.evidence??line.imprime?.nom??line.description}</span><Petit ton="alert">unité illisible</Petit></>}
+      stock={<><Nom>{article.name}</Nom><Petit>compté en <Marque>{motUnite(article.unit)}</Marque></Petit><Apres texte={`${nombreFr(article.currentStock)} ${motUnite(article.unit)}`}/><Petit>au stock</Petit></>}/>:null;
+    /* Une correction de la 3e lecture qui attend son geste : les deux lectures face à face, « Garder 3 » ou « Remettre 2 » (D354 : acceptée, elle ne se marque plus). */
+    const effetArticle=article&&!uniteManque?apresReception(draft.lines,line.id,article,uniteDe):undefined;
+    const corrigeeEnAttente=Boolean(corr&&(corr.qte||corr.prix||corr.montant));
+    const duelCorrEl=corrigeeEnAttente?<>
+      <Duel etat={calculOk===false?'repris':'sur'} symbole={calculOk===false?'≈':'='} note={calculOk===false?'le calcul ne tombe pas juste':'le calcul tombe juste'}
+        facture={<><Petit>1re lecture <s className="font-mono">{corr!.avant}</s></Petit><Petit ton="bleu">3e lecture <b className="font-mono font-semibold">{texteQuantite(line,unite,horsStock)} × {prixTexte||'—'}</b></Petit><Petit>{line.quantity===undefined?'—':fr(line.quantity)} × {prixTexte||'—'} = {montantTexte||'—'}{calculOk===false?' · écart à vérifier':''}</Petit></>}
+        stock={article?<><Nom>{article.name}</Nom>{effetArticle?<><Apres texte={effetArticle.texte}/><Petit>après réception</Petit></>:null}</>:<Petit>hors stock</Petit>}/>
+      <div className="flex justify-end gap-1.5"><BoutonTexte onClick={()=>{setTranchees(t=>new Set(t).add(`corr:${line.id}`));setNTranchees(n=>n+1);}}>{corr!.qte&&line.quantity!==undefined?`Garder ${fr(line.quantity)}`:'Garder'}</BoutonTexte>
+        <BoutonTexte onClick={()=>annulerCorrection(line.id)}>{corr!.qte&&avantQte!==undefined?`Remettre ${fr(avantQte)}`:'Remettre'}</BoutonTexte></div></>:null;
+    /* Un « bis » (D215) : la facture face au stock, et les trois sorties, chacune avec sa concordance. Le choix du brasseur reste visible après coup (la ligne reliée au voisin garde ses trois cases). */
+    const voisinDuel=!isMouture&&STOCK_KINDS.includes(line.kind)?(voisins.current.get(line.id)?.article??neuf?.voisin):undefined;
+    const enTrio=Boolean(voisinDuel)&&(line.stockAction==='new'||(line.stockAction==='existing'&&line.stockRef===voisinDuel!.ref));
+    const trioEl=enTrio&&voisinDuel?(()=>{
+      const vd=donneesDArticle(voisinDuel).donnees,luD=lu?.donnees??{},ecarts=ecartsEntre(luD,vd);
+      const valeur=(e:Ecart,d:DonneesProduit)=>e==='alpha'&&d.alpha!==undefined?`α ${fr(d.alpha)}`:e==='ebc'&&d.ebc!==undefined?`${fr(d.ebc)} EBC`:e==='origine'&&d.origine?`origine ${d.origine}`:e==='recolte'&&d.recolte!==undefined?`récolte ${d.recolte}`:e==='poids'&&d.poids?`poids ${d.poids}`:undefined;
+      const MOT_ECART:Record<Ecart,string>={alpha:'α',ebc:'EBC',origine:'origine',recolte:'récolte',poids:'poids'};
+      const meme=lu?.contexte==='Houblon'||lu?.contexte==='Malt'?'variété':'même produit';
+      const actifNeuf=line.stockAction==='new'&&line.articleName!==undefined,actifRelie=line.stockAction==='existing',actifBis=line.stockAction==='new'&&!actifNeuf;
+      const propose=neufDOffice.current.has(line.id);
+      const nomBis=neuf?.nomPropose??`${voisinDuel.name} bis`,valeursLues=ecarts.map(e=>valeur(e,luD)).filter((v):v is string=>Boolean(v));
+      const confirmer=()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);relieAuto.current.delete(line.id);};
+      const actif=actifRelie?'relie':actifNeuf?'neuf':'bis';
+      const apresRelie=apresReception(draft.lines.map(l=>l.id===line.id?{...l,stockAction:'existing' as const,stockRef:voisinDuel.ref}:l),line.id,voisinDuel,uniteDe);
+      const q=line.quantity,qTexte=q===undefined?undefined:`${nombreFr(q)} ${motUnite(unite,q)}`;
+      const facture=<><Nom mono>{line.imprime?.nom??line.description}</Nom>{ecarts.map(e=>{const v=valeur(e,luD);return <Petit key={e}>{v?<Marque>{v}</Marque>:<>{MOT_ECART[e]} <Petit ton="attention">inconnu</Petit></>}</Petit>;})}</>;
+      const stock=actif==='bis'?<><Nom>{nomBis}</Nom>{valeursLues.length?<Petit mono>{valeursLues.join(' · ')}</Petit>:null}<Petit ton="attention">à créer à la confirmation</Petit>{qTexte?<Apres texte={`0 → ${qTexte}`}/>:null}<Petit>à côté de « {voisinDuel.name} »{valeur('alpha',vd)?` ${valeur('alpha',vd)}`:''}</Petit></>
+        :actif==='relie'?<><Nom>{voisinDuel.name}</Nom><Petit>{ecarts.map(e=>valeur(e,vd)).filter(Boolean).join(' · ')||'mêmes données'}</Petit>{apresRelie?<><Apres texte={apresRelie.texte}/><Petit>après réception</Petit></>:null}</>
+        :<><Nom>nouvel article</Nom><Petit ton="alert">doublon de « {voisinDuel.name} »</Petit>{neuf?.fiche&&neuf.nomFiche?<Petit>fiche {neuf.nomFiche}{neuf.fiche.approchee?' · approchée':''}</Petit>:null}</>;
+      return <><Duel etat={actif==='bis'?'repris':actif==='relie'?'sur':'inconnu'} symbole={actif==='bis'?'≈':actif==='relie'?'=':'+'} note={actif==='bis'?'article voisin, à créer à côté':actif==='relie'?'relié à l’article du stock':'doublon du stock'} facture={facture} stock={stock}/>
+        <div role="radiogroup" aria-label={`Article de la ligne ${index+1}`} className="flex flex-col gap-1">
+          <Sortie id="bis" titre={`${nomBis}${valeursLues.length?` · ${valeursLues[0]}`:''}`} actif={actifBis} propose={actifBis&&propose} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:undefined});}}
+            concordances={[{mot:meme,ton:'ok'},...valeursLues.map(v=>({mot:v,ton:'ok' as const})),...(propose?[{mot:'proposé',ton:'propose' as const}]:[])]}/>
+          <Sortie id="relie" titre={`Relier à ${voisinDuel.name}`} actif={actifRelie} onChoisir={()=>{confirmer();relier(voisinDuel.ref);}}
+            concordances={[{mot:meme,ton:'ok'},...ecarts.map(e=>({mot:valeur(e,vd)??MOT_ECART[e],ton:'ecart' as const}))]}/>
+          <Sortie id="neuf" titre="Nouvel article" actif={actifNeuf} onChoisir={()=>{confirmer();updateLine(line.id,{stockAction:'new',stockRef:undefined,articleName:voisinDuel.name});}}
+            concordances={[{mot:`doublon de ${voisinDuel.name}`,ton:'alert'}]}
+            extra={actifNeuf&&neuf?<div className="flex flex-wrap items-center gap-1.5 px-2.5 pb-1 text-xs text-cave-400"><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>»</span></div>:undefined}/>
+        </div></>;})():null;
+    /* La nature, en segment ; le stock avant → après réception à sa droite (une ligne reliée, ou un article neuf). */
+    const effetDroite=!enTrio&&!corrigeeEnAttente&&!(uniteManque&&article)?(effetArticle?.texte??(line.stockAction==='new'&&line.quantity!==undefined&&lisible?`0 → ${nombreFr(line.quantity)} ${motUnite(unite,line.quantity)}`:undefined)):undefined;
+    const natureSegEl=segNature?<SegmentNature index={index+1} nature={segNature} onChoisir={changerNature} droite={effetDroite?<Apres texte={effetDroite}/>:undefined}/>:null;
+    /* Hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d), le type d'achat en pastilles d'un toucher (D350). */
+    const suivreAuStock=()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);const meme=lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu});if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:'new'});};
+    const TYPES_FINS=[{valeur:'cleaning',mot:'Nettoyage'},{valeur:'maintenance',mot:'Entretien'},{valeur:'packaging',mot:'Emballages'},{valeur:'equipment',mot:'Outillage'}];
+    const autrePlateau=<BoutonCarre aria="Choisir un autre article" onClick={choisirAutre}/>;
+    const retirerEl=<BoutonTexte aria={`Retirer l’article, ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);relieAuto.current.delete(line.id);updateLine(line.id,{stockAction:'none'});}}>Retirer</BoutonTexte>;
+    const stockable=STOCK_KINDS.includes(line.kind);
+    const articleEl=isMouture||enTrio||!segNature?null
+      :!stockable||line.stockAction==='none'?<HorsStock index={index+1} types={segNature==='equipment'?TYPES_FINS:[]} courant={line.kind} onType={k=>{if(k!==line.kind)changerNature(k as PurchaseLineDraft['kind']);}} onSuivre={suivreAuStock} peutSuivre={stockable} autre={stockable?autrePlateau:undefined}/>
+      :<LigneArticle>{line.stockAction==='new'&&neuf?<><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>» · nouvel article</span>{autrePlateau}{(()=>{const v=[neuf.alphaPct!==undefined?`α ${fr(neuf.alphaPct)}`:'',neuf.colorEbc!==undefined?`${fr(neuf.colorEbc)} EBC`:'',neuf.origin?`origine ${neuf.origin}`:''].filter(Boolean).join(' · ');return v?<span data-dp-valeurs className="font-mono text-cave-200">{v}</span>:null;})()}{pastille&&neuf.fiche&&neuf.nomFiche?<span data-dp-pastille className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span>:null}</>
+        :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
+        :<><span>article « <b className="font-medium text-cave-50">{nomArticle||'à choisir'}</b> » · {status.proposed?<span data-dp-niveau="repris" className="text-attention">proposé</span>:relieAuto.current.has(line.id)?`relié à « ${relieAuto.current.get(line.id)} », nom déjà au stock`:'relié'}{status.notes.length?` · ${status.notes.join(' · ')}`:''}</span>
+          {/* D277 : un lien proposé par la lecture reste jaune jusqu’à « Garder » ou ⇄. */}
+          {status.proposed?<BoutonTexte attention aria={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});}}>Garder</BoutonTexte>:null}{autrePlateau}{retirerEl}</>}</LigneArticle>;
+    const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
+    const uImp=line.unit.trim(),pieceImprimee=line.quantity!==undefined&&uImp!==''&&cleUnite(uImp)==='piece'&&uImp.toLowerCase()!=='pièce'?` · ${fr(line.quantity)} ${uImp}`:'';
+    const libelleChamp=!line.description.trim()?<span data-dp-niveau="inconnu" className="flex rounded-control border border-dashed border-alert"><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onChange={description=>updateLine(line.id,{description,nameFr:undefined})} placeholder="Article ou prestation" className={`${CHAMP_PU4D} w-full text-left font-sans`}/></span>:null;
+    const mouturePlateau=enfant&&cestMoutureEnPastille&&pastilleMouture?<RangeeMouture ligne={enfantIdx+1} liee={pastilleMouture.liee} aria={pastilleMouture.aria} onBascule={pastilleMouture.onBascule}
+      texte={`${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${shortUnit(enfant.unit)} × `}${enfant.unitPrice===undefined?'—':fr(enfant.unitPrice)} = ${enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100))}`}/>:null;
+    const plateauEl=<div data-dp-pu4d className="space-y-1.5">
+      <Imprime texte={`${imprimeTexte}${pieceImprimee}`} reference={line.sourceReference}/>
+      {libelleChamp}
       {calculEl}
-      {rouges.length?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}
+      {casesEl}
+      {rouges.some(r=>r.champ!=='unite')?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.filter(r=>r.champ!=='unite').map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}
+      {duelUniteEl}{duelCorrEl}{trioEl}
       {isMouture?null:natureSegEl}
       {articleEl}
+      {mouturePlateau}
       {line.id===mouturesPropositions[0]?.parentId?tableauEl:null}
-      {plusEl}
+      <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>patch({lines:draft.lines.filter(item=>item.id!==line.id)})}/>
     </div>;
     return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
       nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} groupe={groupeDeLigne(index)}
@@ -969,7 +1038,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       prixKg={pk?{texte:`✓ ${pk}`,aria:`${pk} avec mouture`}:undefined} pastilleMouture={pastilleMouture} etat={etat}
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
       douteux={douteux} filtree={Boolean(visibles&&visibles.has(line.id)&&!isMouture)} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}
-      fix={correction} fixNiveau={fixNiveau} lienNiveau={status.proposed?"repris":undefined} plateau={plateauEl} moutureArticles={enfant&&cestMoutureEnPastille?construire(enfant,enfantIdx,false):undefined}
+      fix={correction} fixNiveau={fixNiveau} lienNiveau={status.proposed?"repris":undefined} plateau={plateauEl} 
       onToggle={surToggle} corrigee={tranchees.has(`corr:${line.id}`)?undefined:corrigeeDe(line)} neuve={Boolean(fusion?.ajoutees.has(line.id))&&!tranchees.has(`ajout:${line.id}`)}/>;
   };
   const tvaLues=[...new Set((points??[]).filter(p=>p.code==='lectures-divergentes'&&/tva/i.test(p.champ)).flatMap(p=>(p.valeurs??[]).map(v=>v.valeur).filter((v):v is number=>typeof v==='number')))];
