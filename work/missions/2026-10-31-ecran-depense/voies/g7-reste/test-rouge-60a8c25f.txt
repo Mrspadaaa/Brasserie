@@ -20,11 +20,11 @@
 [31m   [31m×[31m D357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste[2m > [22mil n'est plus dans la rangée de « + Ajouter une ligne » : sans cadre, texte secondaire, 12 px, cible de 24 px, au bout de la ligne « Détail »[39m[32m 194[2mms[22m[39m
 [31m     → expected <div data-dp="fin" …(1)>…(3)</div> not to be <div data-dp="fin" …(1)>…(3)</div> // Object.is equality[39m
    [32m✓[39m D357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste[2m > [22mtoujours réversible : « Regrouper » puis « ↶ Rétablir » rend les deux lignes[32m 128[2mms[22m[39m
-[31m   [31m×[31m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 170,21, total imprimé 170,20 : une ligne « Arrondi à 5 centimes −0,01 » à la fin, le détail égale le total, aucune couleur d'alerte[39m[32m 90[2mms[22m[39m
+[31m   [31m×[31m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 120,21, total imprimé 120,20 : une ligne « Arrondi à 5 centimes −0,01 » à la fin, le détail égale le total, aucune couleur d'alerte[39m[32m 90[2mms[22m[39m
 [31m     → expected null not to be null[39m
 [31m   [31m×[31m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 124,48, total 124,50 : « +0,02 » (le sens suit l'écart)[39m[32m 87[2mms[22m[39m
 [31m     → Cannot read properties of null (reading 'textContent')[39m
-   [32m✓[39m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mtout autre écart reste signalé : 170,21 pour 171,20 : aucune ligne d'arrondi, le détail garde l'écart et la couleur d'attention[32m 88[2mms[22m[39m
+   [32m✓[39m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mtout autre écart reste signalé : 120,21 pour 121,20 : aucune ligne d'arrondi, le détail garde l'écart et la couleur d'attention[32m 88[2mms[22m[39m
    [32m✓[39m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mune somme exacte n'a aucune ligne d'arrondi[32m 86[2mms[22m[39m
 [31m   [31m×[31m D334, M11 — « ⇄ Choisir un autre article » sur un nettoyant, sans choisir[2m > [22mla puce « 1 à remplir » existe ; elle ouvre la rangée, le champ « Article » est rouge, nommé, et le focus y est[39m[33m 1068[2mms[22m[39m
 [31m     → expected null not to be null
@@ -336,10 +336,10 @@ null
 
 [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯[22m[39m
 
-[41m[1m FAIL [22m[49m tests/unit/depense/g7/ecran-g7.test.tsx[2m > [22mD358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 170,21, total imprimé 170,20 : une ligne « Arrondi à 5 centimes −0,01 » à la fin, le détail égale le total, aucune couleur d'alerte
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/ecran-g7.test.tsx[2m > [22mD358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 120,21, total imprimé 120,20 : une ligne « Arrondi à 5 centimes −0,01 » à la fin, le détail égale le total, aucune couleur d'alerte
 [31m[1mAssertionError[22m: expected null not to be null[39m
 [36m [2m❯[22m tests/unit/depense/g7/ecran-g7.test.tsx:[2m61:25[22m[39m
-    [90m 59| [39m    await lirePiece(state.scanned, deux, r => { r.amountTTC = 170.2; }…
+    [90m 59| [39m    await lirePiece(state.scanned, deux, r => { r.amountTTC = 120.2; }…
     [90m 60| [39m    [35mconst[39m arrondi [33m=[39m [34mq[39m([32m'[data-dp-arrondi]'[39m)[33m![39m[33m;[39m
     [90m 61| [39m    [34mexpect[39m(arrondi)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
     [90m   | [39m                        [31m^[39m

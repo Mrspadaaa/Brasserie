@@ -40,7 +40,7 @@ Aucun banc Chrome, aucun Gemini, aucune capture : le rendu reste à voir par le 
 ## D358 — fait par une ligne d'arrondi, sans retomber sur l'étiquette
 - `Liste.tsx` : ligne `data-dp-arrondi` « Arrondi à 5 centimes · −0,01 » après les rangées (hors filtre), neutre (`text-xs text-cave-400`). `ExpenseSheet.tsx` : `arrondiDuTotal(draft)` de `purchaseEntry.ts` (même règle que l'enregistrement : `sumCheck`, 5 ct, écart ≤ 2 ct, pas de ligne d'arrondi imprimée) ; le détail devient somme des lignes + arrondi = total, donc `ecart` faux, rien de jaune. Tout autre écart : inchangé (jaune).
 - Rien n'est compté deux fois : la ligne n'est pas dans `draft.lines` ; `purchaseEntry.ts` n'est pas touché et ajoute toujours la sienne à l'enregistrement (testé par `banc-k7/arrondi.test.ts`, vert).
-- Tests : 170,21 → 170,20 : « −0,01 », détail « 170,20 / 170,20 » sans classe attention/alert, ligne après la dernière rangée ; 124,48 → 124,50 : « +0,02 » ; 170,21 pour 171,20 : pas de ligne, détail « 170,21 / 171,20 » en attention ; somme exacte : pas de ligne. Rouge sur 60a8c25f (2 des 4 ; les deux témoins verts avant et après).
+- Tests : 120,21 → 120,20 : « −0,01 », détail « 120,20 / 120,20 » sans classe attention/alert, ligne après la dernière rangée ; 124,48 → 124,50 : « +0,02 » ; 120,21 pour 121,20 : pas de ligne, détail « 120,21 / 121,20 » en attention ; somme exacte : pas de ligne. Rouge sur 60a8c25f (2 des 4 ; les deux témoins verts avant et après).
 - Non fait : l'alignement exact de la colonne montant de la ligne d'arrondi sur celle des rangées (à voir en capture).
 
 ## Contrôles
