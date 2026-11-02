@@ -1136,3 +1136,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   lecture qui n'arrive pas · 02.11 », publiée minutes avant), mot pour mot : « Ce que j'attends de toi : une lettre pour chacune des deux
   questions des cas rares, par exemple « 1 A, 2 D ». ?? J'ai déjà donné mon avis » (lu : ne plus lui réclamer de lettre pour des cas rares ;
   leurs défauts A s'appliquent. D315, L24.)
+- **« Tout valider » : son choix B** (02.11, vers 17 h, devant la page « Lecture lente : « Tout valider » les lignes pas retrouvées · 02.11 »,
+  https://claude.ai/artifact/8ggW4mCuYfjgY85qQKsUP1, après « Sans réponse, je garde B »), mot pour mot : « Oui b » (lu : le bandeau au pouce
+  montre la ligne en cours, « pas retrouvée · 1/2 », Garder et Retirer, et « ↻ Tout valider » à côté. D316.)
