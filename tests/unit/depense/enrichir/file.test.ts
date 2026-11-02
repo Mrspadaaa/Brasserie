@@ -177,12 +177,14 @@ describe('R6 : échecs comptés et non comptés', () => {
 
 describe(`Plafond : ${PLAFOND_JOUR} recherches arrivées par jour`, () => {
   it('la suivante du jour attend le lendemain', async () => {
-    expect(PLAFOND_JOUR).toBe(30);
+    expect(PLAFOND_JOUR).toBe(200);
     const lignes = Array.from({ length: PLAFOND_JOUR + 1 }, (_, i) => ligne(`l${i}`, `Weyermann Essai${i} du Banc`, 'kg', 1, { stockCategory: 'Malt' }));
-    const d = saisie(lignes);
-    await confirmer(d);
+    // Une dépense porte 35 lignes au plus (`validatePurchaseCommit`) : les 201 lignes partent en plusieurs dépenses du même jour.
+    const TAILLE = 35;
+    let d = saisie([]);
+    for (let i = 0; i < lignes.length; i += TAILLE) { d = saisie(lignes.slice(i, i + TAILLE)); await confirmer(d); }
     expect(banc.recherche).toHaveBeenCalledTimes(PLAFOND_JOUR);
-    expect(await travail(banc, `MP-${d.submissionId}-${PLAFOND_JOUR}`)).toMatchObject({ etat: 'plafond' });
+    expect(await travail(banc, `MP-${d.submissionId}-${(lignes.length - 1) % TAILLE}`)).toMatchObject({ etat: 'plafond' });
     banc.horloge.ms += JOUR; await tourner();
     expect(banc.recherche).toHaveBeenCalledTimes(PLAFOND_JOUR + 1);
   });

@@ -1092,3 +1092,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   Puis, en citant « Le coût sera mesuré sur les premiers vrais appels ; je n'ai fabriqué aucun appel d'essai. », mot pour mot : « Fait en 1 ou 2
   et augmente à 30 appel Max par jour » (lu : faire 1 ou 2 appels réels pour mesurer le coût, et monter le plafond de l'IA de remplissage
   des fiches à 30 appels par jour. D299.)
+  Puis, sur le premier appel mesuré (0,35 CHF, dont 20 recherches comptées d'office), mot pour mot : « SI 20 recherche= 0.35chf c'est
+  tout bon alors on peut augmenter le cap à 200 » (lu : le coût lui convient, pas de second appel d'essai ; le plafond de l'IA de
+  remplissage des fiches passe de 30 à 200 appels par jour et par appareil. D300.)
