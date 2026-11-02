@@ -1288,3 +1288,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Le quota, encore** (02.11, soir), mot pour mot : « Va jusqu'à 95 de quota, mais ne lance pas de nouvelles tâche, on termine juste celle-ci
   proprement » (lu : le plafond passe à 95 % d'usage hebdomadaire ; on finit proprement ce qui est en cours, son ticket jusqu'au déploiement
   et le port de pu4d, sans rien lancer d'autre ; les restes attendent la semaine suivante. Remplace D356 sur le seuil. D362.)
+- **Les tests, allégés** (02.11, soir), mot pour mot : « Allège les test, passe à l'implémentation, puis teste Legé puis testé bout en bout sur la vrai app »
+  (lu : le port de pu4d d'abord, avec peu de tests ; puis un test léger (tests de la Dépense, build, une dizaine de captures) ; puis un
+  parcours de bout en bout sur l'app déployée. Le rejeu complet du banc et les 30 captures avant chaque déploiement tombent pour ce lot ;
+  un seul déploiement porte le ticket et le port. D363.)

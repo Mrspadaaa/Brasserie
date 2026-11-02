@@ -1752,3 +1752,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - le port de pu4d, avec le banc, le critique côte à côte, la garde et le déploiement.
   Les restes (doc6, doc14, menus déroulants de l'app, D326, Malt Vienne, écran vide de 18 h 04) ne sont pas lancés : ils restent listés
   pour la semaine suivante. À 95 % : l'état est écrit, le commit fait, le rapport rendu.
+- D363 (le brasseur, 02.11, soir) : « Allège les test, passe à l'implémentation, puis teste Legé puis testé bout en bout sur la vrai app ».
+  Le rejeu du banc sur 7945555e s'arrête (G1 à G3 faits, G4 coupé, A à D non joués). Le port pu4d passe d'abord, avec 3 à 5 tests ciblés.
+  Puis un seul déploiement (7945555e et le port) après un test léger : tests de la Dépense, build, check-no-dev-auth, une dizaine de captures
+  (deux thèmes, 390 et 1280, 8 états) jugées par le critique puis le pilote (D342 tenu au plus court). Puis le parcours de bout en bout
+  sur l'app en ligne, dans le cadre de D322. Lecture étroite (L01) : « allège » porte sur ce lot, pas sur la règle D342.
