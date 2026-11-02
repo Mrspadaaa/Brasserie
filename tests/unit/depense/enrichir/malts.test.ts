@@ -18,6 +18,7 @@ import { DEDUIT_EBC, DEDUIT_PPG, valeursDeReponse } from '../../../../src/servic
 import { TASKS, ingredientLookupDefinition } from '../../../../functions/src/prompts';
 import { encodeGeminiFunctionDeclarationForRest } from '../../../../functions/src/geminiRequestSchema';
 import reelles from './reponses-reelles-d302.json';
+import reellesF4b from './reponses-reelles-f4b.json';
 
 const SOURCE = 'BESTMALZ — Fiche technique BEST Red X®';
 /** Ce que le modèle rendra avec la consigne corrigée pour BEST Red X (D302 : 28 à 32 EBC, extrait 79,0 %). */
@@ -125,6 +126,25 @@ describe('valeursDeReponse : les réponses réelles du 02.11', () => {
     expect(valeursDeReponse('malt', { found: true, name: 'Candi Syrup D-180', source: 'Candi Syrup, Inc.', sourceUrl: 'https://www.candisyrup.com' })).toBeUndefined();
   });
   it('le houblon n’en reçoit jamais', () => { expect(valeursDeReponse('houblon', BEST_RED_X)).toBeUndefined(); });
+});
+
+describe('D303 suite : les 5 vraies réponses après le déploiement de f4b-malts (02.11, aiTask 670a2c1d)', () => {
+  const reponse = (nom: string) => (reellesF4b.calls.find(c => c.name === nom)!.data) as unknown as IngredientFacts;
+  it.each([['BEST Red X', 30, 36.3], ['Château Cara Ruby', 50, 34.5], ['Crisp Chevallier Heritage Malt', 8.3, 35.3]])('%s : plage et extrait publiés, EBC %s et PPG %s déduits, chacun avec sa règle', (nom, ebc, ppg) => {
+    const v = valeursDeReponse('malt', reponse(nom))!;
+    expect(v.valeurs).toMatchObject({ colorEbc: ebc, potentialPpg: ppg });
+    expect(v.deduit.colorEbc).toMatch(/^EBC déduit : milieu de la plage publiée /);
+    expect(v.deduit.potentialPpg).toMatch(/^PPG déduit : extrait publié .* × 0,46$/);
+  });
+  it('Candi Syrup D-180 : des points publiés (354,6 EBC, 32 PPG) gardés tels quels, la plage et l’extrait à null', () => {
+    expect(valeursDeReponse('malt', reponse('Candi Syrup D-180'))!.valeurs).toMatchObject({ colorEbc: 354.6, potentialPpg: 32 });
+  });
+  it('aucune réponse de malt ne porte un champ de levure ni de houblon, et chacune a ses cinq nombres', () => {
+    for (const c of reellesF4b.calls.filter(c => c.kind === 'malt')) {
+      for (const k of ['tempMinC', 'tempMaxC', 'lab', 'attenuationPct', 'alphaPct', 'aroma']) expect(c.data, `${c.name} ${k}`).not.toHaveProperty(k);
+      for (const k of ['colorEbc', 'colorEbcMin', 'colorEbcMax', 'extractPct', 'potentialPpg']) expect(c.data, `${c.name} ${k}`).toHaveProperty(k);
+    }
+  });
 });
 
 describe('D303 : null se lit comme absent', () => {

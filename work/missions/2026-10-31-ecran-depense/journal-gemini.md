@@ -101,3 +101,20 @@ Suppression (même séance, vers 11 h 20 UTC) :
   (aucun paiement) ; un effacement définitif du document Firestore reste au choix du brasseur.
 - Drive : le PDF mis à la corbeille ; vérifié sur la page Corbeille (présent) et dans le dossier « 2026 » (absent). Corbeille non vidée.
 - Stock : lignes « services, port », aucun article « TEST » parmi les 50 articles ; aucun mouvement.
+
+## 02.11 — les 5 appels après f4b-malts (D303 suite, aiTask 670a2c1d)
+Même voie que D303 (son Chrome, module `AiClient` du bundle en ligne, mêmes requêtes que D302 sans `supplier`). Une sonde d'abord (BEST Red X,
+11:11 UTC), puis les 4 autres en parallèle (11:11). Rien d'appliqué ni d'écrit dans le stock. Réponses brutes :
+`tests/unit/depense/enrichir/reponses-reelles-f4b.json` (rejouées par `malts.test.ts`, bloc « D303 suite »).
+
+| Produit | Durée | Rendu | Fiche déduite par l'app |
+|---|---|---|---|
+| BEST Red X (sonde) | 6,8 s | plage 28 à 32 EBC, extrait 79 %, `colorEbc` et `potentialPpg` à null | 30 EBC, 36,3 PPG, règles citées |
+| Château Cara Ruby | 7,2 s | plage 45 à 55 EBC, extrait 75 % | 50 EBC, 34,5 PPG |
+| Crisp Chevallier Heritage Malt | 6,5 s | plage 5,5 à 11 EBC, extrait 76,7 % | 8,3 EBC, 35,3 PPG |
+| Candi Syrup D-180 | 7,6 s | points publiés : 354,6 EBC (180 SRM × 1,97), 32 PPG ; plage et extrait à null | 354,6 EBC, 32 PPG (points gardés) |
+| Bulldog B4 English Ale | 10,2 s | trouvée cette fois : labo, souche B4, sèche, 16 à 21 °C, floculation haute, atténuation 65-70 % en plage | champs de levure remplis |
+
+Aucune réponse de malt ne porte plus de champ de levure ni de houblon (`tempMinC` disparu). Coût au registre : 354 334 (sonde), puis 354 422,
+354 073, 362 719, 354 589 µCHF, total **1,780 CHF** (20 recherches provisionnées chacun). Cumul des appels payants : 11,613 + 1,780 =
+**13,393 CHF sur 49**.

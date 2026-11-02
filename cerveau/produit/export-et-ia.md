@@ -2,8 +2,8 @@
 name: export-et-ia
 description: L'Affinée — persistance des fiches IA sur le stock, export texte de recette (avec l'eau), relecture IA consultative.
 type: produit
-maj: 2026-10-22
-sources: mémoire locale affinee-export-et-ia.md ; src/domain/recipeText.ts ; scripts/check-units.mjs ; functions/src/prompts.ts ; src/ui/RecipeReview.tsx
+maj: 2026-11-02
+sources: mémoire locale affinee-export-et-ia.md ; src/domain/recipeText.ts ; scripts/check-units.mjs ; functions/src/prompts.ts ; src/ui/RecipeReview.tsx ; D302, D303, D305 ; tests/unit/depense/enrichir/reponses-reelles-f4b.json
 ---
 
 Trois ajouts du 05.09.2026, demandés ensemble.
@@ -22,5 +22,10 @@ Trois ajouts du 05.09.2026, demandés ensemble.
 - Elle reçoit L'EXPORT TEXTE, pas un JSON reconstruit : le modèle lit ce que Gaëtan lit, donc chaque remarque se vérifie ligne à ligne. L'export gagne une section, l'analyse la voit sans recâblage.
 - **Elle ne modifie RIEN** : avis consultatif, dit explicitement à l'écran.
 - Trois garde-fous contre des dérives connues : interdiction de complimenter à vide ; chaque remarque cite un CHIFFRE de la recette ; une donnée manquante se signale comme manque au lieu d'être supposée. Résultat trié par gravité (bloquant / goût / détail), avec la liste de ce qui n'a pas pu être jugé.
+
+**Fiche d'un malt ou d'un sucre par l'IA (D302, D303, D305, 02.11).** Un malteur publie une PLAGE de couleur et un EXTRAIT (fine grind, dry basis), presque jamais un point. Le modèle rend la plage et l'extrait ; l'app en déduit l'EBC (milieu) et le PPG (extrait × 0,46), marqués « déduit » avec leur règle (`deduireValeursMalt`).
+- Une famille = sa consigne et son schéma entiers. Le schéma partagé (houblon, levure, malt) faisait remplir au malt les bornes d'une levure (`tempMinC` −5, `tempMaxC` 60) et ignorer les champs facultatifs ajoutés en fin.
+- Ce qui doit être rendu est EXIGÉ et `nullable` (Gemini `responseSchema` l'accepte avec `minimum`/`maximum`) : un `null` dit « non publié », une clé absente ne dit rien.
+- Une réponse rejouée au banc se copie d'une vraie (L28) : `reponses-reelles-d302.json` (avant), `reponses-reelles-f4b.json` (après).
 
 Voir [[design-system-historique]] et [[chimie-eau]].
