@@ -87,7 +87,8 @@ async function openWizardOnSavedRecipe() {
 }
 
 describe('App · pile de routes (#162)', () => {
-  it('wizard → quatre couches → retour niveau par niveau : même instance, même étape, brouillon intact, jamais DraftFreshnessChoice', async () => {
+  // D323 : retiré de la suite à sa demande (« enlève le », 02.11) ; échouait sous charge (attentes d'1 s), vert seul. À remettre : `it(`.
+  it.skip('wizard → quatre couches → retour niveau par niveau : même instance, même étape, brouillon intact, jamais DraftFreshnessChoice', async () => {
     await openWizardOnSavedRecipe();
     fireEvent.change(document.getElementById('wz-title')!, { target: { value: 'Pale du brouillon' } });
     allerEtape(/Houblons/);

@@ -1159,3 +1159,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   couvert, recherche IA d'un article pas encore en stock, MAJ du stock, facture à jour, finance à jour ect... », puis : « J'autorise d'enregistrer
   quelques exemples » (lu : accord pour écrire quelques dépenses d'essai dans son app en ligne, avec leurs effets sur le stock, les finances et
   le Drive. D322.)
+- **Le test fragile** (02.11, vers 19 h 30, à « Un seul test a échoué dans la suite complète… »), mot pour mot : « Un seul test a échoué dans
+  la suite complète, enlève le » (lu : le retirer de la suite ; désactivé, pas effacé, pour pouvoir le remettre. D323.)
