@@ -2,6 +2,7 @@ import type { FinanceCategory } from '../types';
 import { AiClient, type AiFluxEtape, type AiRequest, type AiResponse, type AiTier } from './aiClient';
 import { totalAdmis } from './pagesJustificatif';
 import { peserPoint, type InvoiceControls, type InvoicePoint } from '../domain/finance/invoicePoints';
+import { lignesHtAuTtc } from './lignesHt';
 
 export type ScannedLineKind = 'equipment'|'maintenance'|'stock'|'service'|'packaging'|'shipping'|'discount'|'other'|'unknown';
 export type InvoiceReviewStatus = 'checked'|'corrected'|'disputed'|'unavailable';
@@ -24,6 +25,8 @@ export interface ScannedInvoiceResult {
   /** l2 : tout est facultatif. `points`/`controls` absents = « non contrôlé » (jamais « aucun point »). */
   points?:InvoicePoint[]; controls?:InvoiceControls; vat?:Array<{code:string;rate:number|null;base:number|null;amount:number|null}>;
   remarques?:Array<{champ:string;ligne?:number;lectures:number[];message:string}>;
+  /** n3-ht : posé seulement quand les lignes, imprimées hors taxe, ont été passées au TTC par `lignesHtAuTtc` (les montants lus du pied restent ceux de la pièce). */
+  lignesPasseesAuTtc?:boolean;
   proForma?:boolean; documentTypeLu?:ScannedInvoiceResult['documentType']; documentTypeRetenu?:ScannedInvoiceResult['documentType'];
   linesLost?:number; printedLineCount?:number|null; rejets?:Array<{champ:string;ligne:number|null;luTexte:string;raison:string}>;
 }
@@ -169,7 +172,8 @@ export const GeminiScannerService = {
       ...(raw?.printedLineCount===null||int(raw?.printedLineCount)!==null?{printedLineCount:raw.printedLineCount}:{}),
       ...(Array.isArray(raw?.rejets)?{rejets:raw.rejets.slice(0,40).filter((r:any)=>typeof r?.champ==='string'&&typeof r?.luTexte==='string').map((r:any)=>({champ:text(r.champ,40),ligne:int(r.ligne,1),luTexte:text(r.luTexte,60),raison:text(r.raison,120)}))}:{}),
     };
-    return keepWeighingPoints(result,raw);
+    // n3-ht (D304, D317) : des lignes imprimées hors taxe passent au TTC, ici, pour que le provisoire du flux et le final (tous deux assainis par cette fonction) donnent les mêmes montants.
+    return keepWeighingPoints(lignesHtAuTtc(result),raw);
   },
   normalizeDate(raw:any):string {
     const value=text(raw), sw=/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/.exec(value), iso=/^(\d{4})-(\d{2})-(\d{2})$/.exec(value);

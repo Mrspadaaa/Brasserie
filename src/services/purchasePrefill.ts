@@ -4,6 +4,7 @@ import { canonicalStockCategory, STOCK_CATEGORIES } from './stockLineMatching';
 import { normalize } from './search';
 import { inferNature } from './ingredientIdentity';
 import { familleDe } from '../ui/depense/familles';
+import { LIGNES_HT_PASSEES_AU_TTC } from './lignesHt';
 
 const MILLING_WORDS = /\b(?:schrot\w*|mouture\w*|moulage|moulu\w*|crush\w*|milling|gemahlen)\b/;
 /** Une ligne de mouture : un service dont le libellé ou la référence porte un mot de mouture (liste fermée, sans accent ni casse). */
@@ -99,6 +100,8 @@ export function invoiceFieldHints(scan: ScannedInvoiceResult): Record<string, st
     hints.amountTTC ||= 'Vérification incomplète. Confirme ce montant sur le document.';
     hints.date ||= 'Vérification incomplète. Confirme la date imprimée.';
   }
+  // n3-ht : dit ce qui a été fait, sans jamais remplacer un indice plus grave déjà posé (d'où `||=`, en dernier).
+  if (scan.lignesPasseesAuTtc) hints.amountTTC ||= LIGNES_HT_PASSEES_AU_TTC;
   return hints;
 }
 
