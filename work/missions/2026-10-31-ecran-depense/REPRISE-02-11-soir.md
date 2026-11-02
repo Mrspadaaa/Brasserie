@@ -92,3 +92,21 @@ retirées de l'index, fichiers gardés sur le disque).
   inchangé depuis 60a8c25f). Build et check-no-dev-auth : voir `scratchpad/verif-7945555e.txt`.
 - Plateau : « Oui c'est très bien implémente ça », puis « Ah att il faut choisir » : il choisit sur la page v1 ; aucun port avant (D360).
 - Suite : rejeu banc `apres2` (agent g6, G1 à G4 puis A à D), captures regardées, `t-ecran-g7` (VOIE prête), garde, `--only hosting`.
+
+## Vers 21 h : son choix et le seuil (D361, D362)
+- **pu4d choisie** (D361), greffe « article — · hors stock + Suivre au stock » de pa1d. Voie **p-port-pu4d** (auteur, agent a30ad96d517b27e36)
+  en cours dans le worktree ; elle ne commite pas.
+- **Rejeu 2** du banc sur 7945555e : agent g6 (a7be8260f1eb498de), préfixe `apres2`, G1 à G4 puis A à D ; section « Rejeu 2 » de son RESULTAT.
+- D362 : jusqu'à 95 %, rien de neuf ; les restes attendent la semaine suivante. Usage 87 % à 21 h.
+- Suite, dans l'ordre :
+  1. Retour du rejeu 2 : le pilote ouvre les captures `apres2-*` (M5 sombre, Regrouper, arrondi, Tout valider). Puis la voie
+     `t-ecran-g7`, avec un critique neuf (VOIE prête, 7945555e). Puis « Pilote : vu », la garde, et
+     `npx firebase deploy --only hosting --project brasserie-l-affinee --non-interactive` depuis `deploy-hosting-qr`. Contrôle en ligne en
+     lecture seule.
+  2. Retour du port :
+     - relire le diff et l'inventaire, puis commiter ;
+     - détacher `deploy-hosting-qr` sur le nouveau sha, puis tests, build et check-no-dev-auth ;
+     - rejouer G2 et G4 (plateaux), puis A à D ;
+     - critique côte à côte avec pu4d ; `controle-plateau-ligne` sur pu4d au cas c ;
+     - la garde, puis le déploiement de l'hébergement.
+  3. À 95 % : l'état est écrit ici, le commit fait, le rapport rendu.
