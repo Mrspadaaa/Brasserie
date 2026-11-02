@@ -1805,3 +1805,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   « Article ou prestation » n'existait que tant que le libellé était vide ; la première lettre le retirait, le focus partait. Correctif : une ligne
   venue sans libellé garde son champ (sans le rouge une fois nommée) ; le texte d'attente aligné à gauche. Témoins rouges sur 5f83812f : banc
   `d370-temoin` (deux thèmes) et test unitaire `plateau.test.tsx` D370. Sa demande : le correctif seul, un test unitaire, le déploiement.
+- D371 (le brasseur, 02.11, soir ; L13) : ligne ajoutée « Idaho… » en pièce, l'article Idaho 7 compté en g. Causes : (1) l'unité ne se convertit
+  pas, donc ni effet au stock ni alerte, et « Confirmer » aurait refusé (« pièce ne se convertit pas en g ») ; (2) « + Suivre au stock » passe
+  l'unité à l'appariement, qui refuse pièce face au g : la ligne partait en nouvel article (doublon). La recherche « Idaho7 » et l'appariement
+  sans unité trouvent l'article (tests). Sur le banc, l'unité d'une ligne sans unité devient « pièce » après les boutons de quantité (D369) :
+  c'est par là que sa ligne y est arrivée, probablement. Correctif : alerte au plateau (« compté en g au stock : pièce ne s'y ajoute pas »,
+  « Compter en g » d'un toucher) ; « Suivre au stock » retombe sur le nom seul quand l'unité bloque, l'alerte suit. Témoin rouge sur c625a2c6
+  (test d'écran D371), vert après (96/96 Dépense). Déployé 27d12523.

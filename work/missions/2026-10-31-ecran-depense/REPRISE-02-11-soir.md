@@ -162,3 +162,10 @@ retirées de l'index, fichiers gardés sur le disque).
 - Témoins rouges sur 5f83812f : banc `d370-temoin` (D370 KO, deux thèmes), test `plateau.test.tsx` D370. Vert après : 90/90 Dépense.
 - Sa demande : le correctif seul, un test unitaire, le déploiement. Banc après correctif non rejoué ; restes de D369 en attente.
 - Déployé : `index-HV8VtptN.js` servi, drapeau Houblons « on », functions inchangé.
+
+## Vers 23 h 15 : D371, unité face à l'article relié (27d12523, déployé)
+- Alerte au plateau quand l'unité de la ligne reliée ne s'ajoute pas à l'article (`uniteHorsArticle`, `AlerteUnite`), « Compter en g ».
+- « Suivre au stock » : repli sur le nom seul si l'unité bloque l'appariement (pas de doublon).
+- Tests : `d371/liaison`, `d371/recherche`, `plateau.test.tsx` D371 (rouge sur c625a2c6). 96/96 Dépense. Servi : `index-BRPLnj3s.js`.
+- Non fait : banc par la vision de l'alerte ; la ligne de la liste ne se marque pas en rouge ; « à remplir » ne la compte pas ; l'unité
+  déduite « pièce » d'une ligne de houblon sans unité reste.
