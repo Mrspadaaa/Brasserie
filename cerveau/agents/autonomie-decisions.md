@@ -2,7 +2,7 @@
 name: autonomie-decisions
 description: L'utilisateur veut le moins d'intervention possible ; les décisions courantes sont tranchées par le pilote, les lourdes par le skill conseil ; le goût revient au brasseur, en variantes.
 type: agents
-maj: 2026-10-31
+maj: 2026-11-02
 sources: mémoire locale affinee-autonomie-decisions.md
 ---
 
@@ -19,3 +19,5 @@ Voir (leçon L11) et [[agents-sans-openai]].
 **Tests sur l'app déployée** (31.10) : « une fois implémente, jouer et faire des test sur la vrai application déployer. Tu peux modifier les données de recette, c'est pas trop gênant mais ne génère pas des quantités de données inutile ». Un écran porté se joue donc aussi sur l'app en ligne, après le déploiement de hosting.
 - On peut modifier une recette existante, de préférence un brouillon de test.
 - On ne crée pas de série de recettes : une seule recette de test, réutilisée, et rien d'autre (ni brassins, ni stock, ni comptes, ni réglages).
+
+**Dans le cadre d'une tâche qu'il a demandée** (02.11, sur « Rien ne sera déployé côté serveur sans votre accord », écran Dépense) : « Pourquoi ? Il faut deployé pour pouvoir testé... », puis « Non pas besoin de mon accord dans ce cadre de tâche là ». Les gestes externes qu'exige la tâche pour être finie et essayée ne s'annoncent pas en attente : redéployer la fonction et l'app qu'elle change, l'essai en ligne selon D210/D217, allumer en ligne ce qu'elle construit, dans le budget IA fixé. Ils se font après la vérification locale et se journalisent (D297, D298). Restent à lui : données réelles écrites ou supprimées (fusion de doublons), push, PR et merge non accordés, règles Firestore, autres fonctions, dépassement du budget.

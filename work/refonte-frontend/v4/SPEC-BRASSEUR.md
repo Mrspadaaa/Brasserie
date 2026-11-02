@@ -1082,3 +1082,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « Mais l'envoi au drive de fait en arrière plan ?? » (lu : une question. Il lit « envoi » comme l'envoi au Drive. Or la frise parle
   de l'envoi des pages à la lecture, au toucher de « Lire ». Le Drive part en arrière-plan après « Confirmer », et la frise ne l'attend pas.
   Le mot prête à confusion : à suivre.)
+  Puis, sur « Rien ne sera déployé côté serveur sans votre accord », mot pour mot : « Pourquoi ? Il faut deployé pour pouvoir testé... »
+  (lu : son accord pour redéployer aiTask avec la lecture de plusieurs pages, puis l'app, une fois n2 vérifié en local, afin de l'essayer
+  en ligne. Les règles d'essai en ligne restent : D210, D217. L'IA d'enrichissement en ligne n'est pas couverte. D297.)
+  Puis, mot pour mot : « Non pas besoin de mon accord dans ce cadre de tâche là ». Puis, en citant « L'IA qui remplit les fiches reste
+  éteinte en ligne. Je vous proposerai d'abord 3 appels réels mesurés. » : « Allume la » (lu : pour cette tâche, les gestes externes
+  qu'elle exige se font sans lui demander ; l'IA de remplissage des fiches s'allume en ligne dès le prochain déploiement, sans attendre
+  3 appels d'essai ; ses coûts se mesurent sur les premiers appels réels, dans le budget fixé. D298.)
