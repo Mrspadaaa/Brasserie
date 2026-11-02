@@ -4,7 +4,7 @@
 qui manque : l'article du stock, l'unité, la nature. Rien d'autre à l'écran.
 
 ## Ses mots (SPEC-BRASSEUR, mot pour mot)
-- 02.11, sur sa capture `C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/0da2b97e-image.jpg` (DURGOL EXPRESS ouvert,
+- 02.11, sur sa capture `C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/0da2b97e-image.jpg` (un détartrant ouvert,
   « plus » ouvert) : « Cette vue là de détails doit être refait, fait moi des mini maquettes pour résoudre les problèmes, rendre le
   workflow, process plus simple, sur téléphone notamment. Mapping peut utiliser l'ai su besoin » (« su » : « si »).
 - « J'ai un champs à remplir, je sais même pas lequel ???? » ; « C'est même pas mis au c'est ingrédient, service ou matériel » ;
@@ -20,7 +20,7 @@ qui manque : l'article du stock, l'unité, la nature. Rien d'autre à l'écran.
 stock », la pastille « article ? ». 8. « plus » rouvre l'ancien formulaire : libellé, « Type d'achat » (en double du segment), extrait,
 « Réception en stock », « Mettre en stock : oui », « Ajouter à un article existant ». Ce dernier contredit « à choisir ». 9. La corbeille
 est perdue dans « plus ». 10. Le plateau fait plus d'un écran ; « Confirmer » est en bas, alors que le détail continue. 11. Le rouge
-(article à choisir) est sur le nom, pas sur le champ à remplir. 12. Le nom barré (« DIRGOL ») ne dit pas si c'est une correction ou une
+(article à choisir) est sur le nom, pas sur le champ à remplir. 12. Le nom barré ne dit pas si c'est une correction ou une
 traduction. 13. Le pied porte en plus une puce « ⓵ Payé le ».
 
 ## Obligatoire, et rien d'autre
