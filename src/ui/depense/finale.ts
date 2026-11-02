@@ -1,7 +1,7 @@
 // Lenteur D (D308) : la fusion « sa saisie l'emporte » du final sur le provisoire. PURE : aucun état d'écran, aucun service, aucune écriture. Le contrat est `l1-plan/PLAN.md` § 4 bis.
 //   - la BASE de comparaison est le brouillon tel que `applyOutcome` du provisoire l'a posé (jamais la valeur brute de la lecture) : `baseDeBrouillon` ;
 //   - le final passe par les MÊMES transformations (`lignesDeLecture`, `enteteDeLecture`, extraites d'`applyOutcome`) avant toute comparaison ;
-//   - une cellule est « touchée » si `courant ≠ base`, si son registre la nomme, ou si elle a le focus : une cellule touchée ne change jamais, sans fond bleu ;
+//   - une cellule est « touchée » si `courant ≠ base` ou si son registre la nomme (jamais pour un simple focus : ouvrir une rangée ou y poser le curseur ne la fige pas, PLAN § 4 bis B2) : une cellule touchée ne change jamais, sans fond bleu ;
 //   - une seule table « rang final → id du brouillon » (B3) s'applique à tous les champs qui portent une ligne ;
 //   - la fusion n'appelle jamais `applyOutcome` (qui remet tout à zéro) : elle rend le brouillon, le résultat remappé, les corrections, les lignes ajoutées et pas retrouvées.
 import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
@@ -115,6 +115,8 @@ const GROUPES_ENTETE: Array<{ cle: string; champs: Array<keyof PurchaseDraft>; r
   { cle: 'category', champs: ['category'], registre: ['category'] }, { cle: 'currency', champs: ['sourceCurrency'], registre: ['currency'] },
   { cle: 'documentType', champs: ['sourceDocumentType'], registre: [] }, { cle: 'order', champs: ['sourceOrderNumber'], registre: [] },
 ];
+/** Les groupes d'en-tête qui ont une case à l'écran (bandeau : fournisseur, date, total ; tuiles : TVA, Règlement) : seuls ceux-là se marquent en bleu et entrent dans le compte de la puce. */
+export const CASES_ENTETE = ['vendor', 'date', 'total', 'tva', 'paiement'] as const;
 export interface BaseFusion {
   jeton: string; nProvisoire: number;
   lignes: Record<string, CellulesLigne>; entete: Partial<PurchaseDraft>;
@@ -138,8 +140,8 @@ export interface Registres {
   /** Les ids dont l'article est encore proposé, ou « nouvel article » d'office, MAINTENANT. */
   proposes: ReadonlySet<string>; neufsOffice: ReadonlySet<string>;
   reglees: ReadonlySet<string>;
-  /** La rangée dont une cellule a le focus à l'arrivée du final : traitée comme touchée (elle ne saute pas sous son doigt). */
-  focus: string | null;
+  /** IGNORÉ depuis e-finitions : un focus posé sans changer la valeur ne rend ni la rangée ni la cellule « touchée » (seule une valeur changée est gardée). Champ conservé pour les appelants et les tests d'avant. */
+  focus?: string | null;
 }
 export interface Correction { id: string; champ: Cellule; avant: unknown; apres: unknown }
 export interface Perdue { ligne: PurchaseLineDraft; /** La ligne gardée qui la précède dans le brouillon (`null` : en tête). */ apres: string | null }
@@ -205,11 +207,13 @@ function remapperPoints(points: any[] | undefined, table: ReadonlyMap<string, st
 export function libelleAvant(base: CellulesLigne, corrections: readonly Pick<Correction, 'champ'>[], courant?: Pick<PurchaseLineDraft, 'quantity' | 'unit' | 'uniteDeduite'>): string {
   const champs = new Set(corrections.map(c => c.champ));
   /* La quantité d'une rangée dont seul le prix est corrigé est celle d'aujourd'hui (celle qu'il a tapée, le cas échéant) : on ne barre jamais une valeur qui n'a pas été corrigée. */
-  const qteCorrigee = champs.has('quantity') || champs.has('unit'), source = qteCorrigee || !courant ? base : courant;
-  const ligne = { quantity: source.quantity, unit: source.unit ?? '', uniteDeduite: source.uniteDeduite } as PurchaseLineDraft;
-  const qte = texteQuantite(ligne, uniteEffective(ligne), true).replace(/^$/, '?');
+  const qteCorrigee = champs.has('quantity') || champs.has('unit');
+  /* e-finitions (mineur 2) : quand la quantité d'aujourd'hui n'est ni la lue ni une correction, elle est la sienne : le barré ne montre alors que le prix (« × 1,45 »), jamais un produit qui n'a pas existé (« 12 Kg × 1,45 »). */
+  const qteLaSienne = !qteCorrigee && courant !== undefined && !(memes(courant.quantity, base.quantity) && (courant.unit ?? '') === (base.unit ?? ''));
+  const ligne = { quantity: base.quantity, unit: base.unit ?? '', uniteDeduite: base.uniteDeduite } as PurchaseLineDraft;
+  const qte = qteLaSienne ? '' : texteQuantite(ligne, uniteEffective(ligne), true).replace(/^$/, '?');
   const parts: string[] = [];
-  if (champs.has('unitPrice')) parts.push(`${qte} × ${base.unitPrice === undefined ? '?' : prixImprime(base.unitPrice)}`);
+  if (champs.has('unitPrice')) parts.push(`${qte ? `${qte} ` : ''}× ${base.unitPrice === undefined ? '?' : prixImprime(base.unitPrice)}`);
   else if (champs.has('quantity') || champs.has('unit')) parts.push(qte);
   if (champs.has('amount')) parts.push(base.amount === undefined ? '?' : fr2(base.amount));
   if (NOM_CELLULES.some(c => champs.has(c)) && base.description) parts.unshift(base.description);
@@ -252,7 +256,6 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
   let precedente: string | null = null;
 
   const touchee = (id: string, c: Cellule, l: PurchaseLineDraft, b: CellulesLigne): boolean => {
-    if (reg.focus === id) return true;
     if (!memes(l[c], b[c])) return true;
     if (c === 'kind' && reg.manuallyClassified.has(id)) return true;
     if ((LIEN_CELLULES as readonly string[]).includes(c)) {
@@ -311,7 +314,8 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
     const registre = g.registre.some(r => reg.reviewedFields.includes(r)) || (g.cle === 'tva' && reg.reglees.has('TVA|')) || (g.cle === 'description' && courant.descriptionSource === 'typed');
     if (registre || !memes(maintenant, avant)) continue;
     Object.assign(patch, apres);
-    if (!memes(apres, avant)) corrections.entete[g.cle] = { avant: avant[g.champs[0] as string], apres: apres[g.champs[0] as string] };
+    /* Une correction se dit sur la valeur que la case MONTRE (le premier champ du groupe : le montant de TVA, l'état du règlement) ; un autre champ du groupe qui change seul s'applique sans marque et sans compte. */
+    if (!memes(apres[g.champs[0] as string], avant[g.champs[0] as string])) corrections.entete[g.cle] = { avant: avant[g.champs[0] as string], apres: apres[g.champs[0] as string] };
   }
   const draft = { ...patchPurchaseDraft(courant, { ...patch, lines: ordre, ...(e.model ? { scanModel: e.model } : {}) } as Partial<PurchaseDraft>, e.today), duplicateConfirmed: courant.duplicateConfirmed };
 
@@ -326,7 +330,8 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
     ...(final.rejets ? { rejets: final.rejets.map(r => ({ ...r, ligne: renumeroter(r.ligne, t.table) as number | null })) } : {}),
   };
 
-  const nCorrigees = Object.keys(corrections.lignes).length + Object.keys(corrections.entete).length + ajouteesIds.length;
+  // Le compte de la puce ne porte que ce qui a une marque à l'écran : une correction d'un champ sans case (n° de facture, HT, catégorie…) est appliquée mais n'entre pas dans le compte (VERDICT-e-ecran, majeur 2).
+  const nCorrigees = Object.keys(corrections.lignes).length + Object.keys(corrections.entete).filter(k => (CASES_ENTETE as readonly string[]).includes(k)).length + ajouteesIds.length;
   return { etat: 'finie', draft, result, table: t.table, corrections, ajoutees: ajouteesIds, perdues, nCorrigees, aRetraduire, reprises, propositions };
 }
 

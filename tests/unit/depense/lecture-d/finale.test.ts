@@ -197,12 +197,12 @@ describe('le total corrigé (défaut A, D315) et la puce (m2)', () => {
 });
 
 describe('l’ancienne valeur ne barre que ce qui a été corrigé', () => {
-  it('quantité tapée (12) et prix corrigé : « 12 Kg × 1,45 », jamais « 10 Kg × 1,45 »', () => {
+  it('quantité tapée (12) et prix corrigé : « × 1,45 » (e-finitions : jamais un produit qui n’a pas existé, ni « 10 Kg × 1,45 »)', () => {
     const provisoire = lecture([item(1, 'Malt Pilsner', 'stock', 10, 'Kg', 1.45, 14.5)]), p = poser(provisoire);
     const final = lecture([item(1, 'Malt Pilsner', 'stock', 5, 'Kg', 2.9, 14.5, { rangProvisoire: 0 })], { provisoireJeton: 'j1' });
     const courant = { ...p.draft, lines: p.draft.lines.map(l => ({ ...l, quantity: 12 })) };
     const s = fusion(p, provisoire, final, { courant });
-    expect(libelleAvant(p.base.lignes['line-1'], s.corrections.lignes['line-1'], ligne(s.draft, 'line-1'))).toBe('12 Kg × 1,45');
+    expect(libelleAvant(p.base.lignes['line-1'], s.corrections.lignes['line-1'], ligne(s.draft, 'line-1'))).toBe('× 1,45'); // e-finitions (mineur 2) : 12 est la sienne, on ne barre que le prix
   });
 });
 
@@ -217,12 +217,12 @@ describe('ce que la fusion ne fait jamais (m3) et la traduction (M6)', () => {
     expect(ligne(s.draft, 'line-1').nameFr).toBeUndefined(); expect(s.aRetraduire).toEqual(['line-1']);
     expect(ligne(s.draft, 'line-2').nameFr).toBe('fr-line-2');
   });
-  it('une ligne dont le focus est dans une cellule à l’arrivée est traitée comme touchée', () => {
+  it('e-finitions (B2, cellule par cellule) : un focus posé sans changer la valeur ne fige rien, la rangée est corrigée', () => {
     const provisoire = lecture([item(1, 'Malt Pilsner', 'stock', 10, 'Kg', 1.45, 14.5)]);
     const p = poser(provisoire);
     const final = lecture([item(1, 'Malt Pilsner', 'stock', 5, 'Kg', 2.9, 14.5, { rangProvisoire: 0 })], { provisoireJeton: 'j1' });
     const s = fusion(p, provisoire, final, { registres: { focus: 'line-1' } });
-    expect(ligne(s.draft, 'line-1')).toMatchObject({ quantity: 10, unitPrice: 1.45 }); expect(s.nCorrigees).toBe(0);
+    expect(ligne(s.draft, 'line-1')).toMatchObject({ quantity: 5, unitPrice: 2.9 }); expect(s.nCorrigees).toBe(1);
   });
   it('le final sans aucune différence : rien n’est corrigé, aucune puce', () => {
     const provisoire = prov3(), p = poser(provisoire);

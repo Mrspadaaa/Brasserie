@@ -1,0 +1,112 @@
+Serveur 1/1 : npm run dev -- --port 3471 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-XkllYI\serveur-1-3471.log)
+Attente du port 3471…
+Serveur prêt sur le port 3471
+
+Tous les serveurs sont prêts. Lancement : node C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/voies/e-ecran/capturer-lenteur.mjs --sortie=C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/voies/e-finitions/head --etats=touchee,entete,perdue,perdues-2
+
+ok tactile390 · touchee · le fil est parti
+ok tactile390 · touchee · Confirmer est actif (noir)
+ok tactile390 · touchee · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok tactile390 · touchee · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · touchee · la frappe a pris pendant l'attente (champ : « 12 »)
+ok tactile390 · touchee · la quantité de Pilsner vaut 12 après le final (champ « 12 », rangée « 12 Kg »)
+ok tactile390 · touchee · la quantité tapée n’a pas la marque bleue
+ECHEC tactile390 · touchee · le barré ne montre que le prix (avant : « 12 Kg × 1,45 » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ok tactile390 · touchee · la puce compte 3 : la rangée de Pilsner reste corrigée par son prix (1,45 → 2,90), seule sa quantité est la sienne (3 corrigées)
+ECHEC tactile390 · touchee · le récap dit « Qté × prix7/7 » (coche : true) : 6/7 attendu, sans coche
+ECHEC tactile390 · touchee · le barré de Pilsner ne montre que le prix : « 12 Kg × 1,45 » (attendu « × 1,45 »)
+ok tactile390 · touchee · aucun débordement horizontal (0 px)
+ok tactile390 · touchee · aucune erreur de console
+ok tactile390 · perdue · le fil est parti
+ok tactile390 · perdue · Confirmer est actif (noir)
+ok tactile390 · perdue · la puce « ↻ N corrigées » est là (« 4 corrigées »)
+ok tactile390 · perdue · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · perdue · le bandeau est au-dessus du pied (bas 786, pied 792, 51 px)
+ok tactile390 · perdue · 1 rangée(s) barrée(s)
+ok tactile390 · perdue · à 390 le bandeau est dans la feuille (8→382)
+ok tactile390 · perdue · aucun débordement horizontal (0 px)
+ok tactile390 · perdue · au bout du défilement (256/256), la dernière rangée (402→431) est entière au-dessus du bandeau (735), corps 40→735
+ECHEC tactile390 · perdue · nom long : montant « 1,70 » entier (688 ≤ 201), nom coupé avec « … » (true, true)
+ok tactile390 · perdue · aucune erreur de console
+ok tactile390 · perdues-2 · le fil est parti
+ok tactile390 · perdues-2 · Confirmer est actif (noir)
+ok tactile390 · perdues-2 · la puce « ↻ N corrigées » est là (« 5 corrigées »)
+ok tactile390 · perdues-2 · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · perdues-2 · le bandeau est au-dessus du pied (bas 786, pied 792, 84 px)
+ok tactile390 · perdues-2 · 2 rangée(s) barrée(s)
+ok tactile390 · perdues-2 · à 390 le bandeau est dans la feuille (8→382)
+ok tactile390 · perdues-2 · aucun débordement horizontal (0 px)
+ok tactile390 · perdues-2 · au bout du défilement (318/318), la dernière rangée (369→398) est entière au-dessus du bandeau (702), corps 40→702
+ECHEC tactile390 · perdues-2 · nom long : montant « 1,70 » entier (688 ≤ 252), nom coupé avec « … » (true, true)
+ok tactile390 · perdues-2 · aucune erreur de console
+ok tactile390 · entete · le fil est parti
+ok tactile390 · entete · Confirmer est actif (noir)
+ECHEC tactile390 · entete · la case TVA est corrigée, sur un fond bleu (null) : « TVA3,48 »
+ECHEC tactile390 · entete · l'ancienne TVA est barrée (« undefined », undefined)
+ok tactile390 · entete · la puce dit « 1 corrigée » (1 corrigée), la case Règlement n'est pas marquée
+ok tactile390 · entete · aucun débordement horizontal (0 px)
+ok tactile390 · entete · aucune erreur de console
+ok pc1280 · touchee · le fil est parti
+ok pc1280 · touchee · Confirmer est actif (noir)
+ok pc1280 · touchee · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok pc1280 · touchee · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · touchee · la frappe a pris pendant l'attente (champ : « 12 »)
+ok pc1280 · touchee · la quantité de Pilsner vaut 12 après le final (champ « 12 », rangée « 12 Kg »)
+ok pc1280 · touchee · la quantité tapée n’a pas la marque bleue
+ECHEC pc1280 · touchee · le barré ne montre que le prix (avant : « 12 Kg × 1,45 » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ok pc1280 · touchee · la puce compte 3 : la rangée de Pilsner reste corrigée par son prix (1,45 → 2,90), seule sa quantité est la sienne (3 corrigées)
+ECHEC pc1280 · touchee · le récap dit « Qté × prix7/7 » (coche : true) : 6/7 attendu, sans coche
+ECHEC pc1280 · touchee · le barré de Pilsner ne montre que le prix : « 12 Kg × 1,45 » (attendu « × 1,45 »)
+ok pc1280 · touchee · aucun débordement horizontal (0 px)
+ok pc1280 · touchee · aucune erreur de console
+ok pc1280 · perdue · le fil est parti
+ok pc1280 · perdue · Confirmer est actif (noir)
+ok pc1280 · perdue · la puce « ↻ N corrigées » est là (« 4 corrigées »)
+ok pc1280 · perdue · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · perdue · le bandeau est au-dessus du pied (bas 742, pied 748, 51 px)
+ok pc1280 · perdue · 1 rangée(s) barrée(s)
+ECHEC pc1280 · perdue · le bandeau (8→1272) est dans la colonne de la liste (478→1238)
+ok pc1280 · perdue · aucun débordement horizontal (0 px)
+ok pc1280 · perdue · au bout du défilement (0/0), la dernière rangée (384→413) est entière au-dessus du bandeau (691), corps 40→691
+ECHEC pc1280 · perdue · nom long : montant « 1,70 » entier (688 ≤ 1091), nom coupé avec « … » (false, true)
+ok pc1280 · perdue · aucune erreur de console
+ok pc1280 · perdues-2 · le fil est parti
+ok pc1280 · perdues-2 · Confirmer est actif (noir)
+ok pc1280 · perdues-2 · la puce « ↻ N corrigées » est là (« 5 corrigées »)
+ok pc1280 · perdues-2 · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · perdues-2 · le bandeau est au-dessus du pied (bas 742, pied 748, 84 px)
+ok pc1280 · perdues-2 · 2 rangée(s) barrée(s)
+ECHEC pc1280 · perdues-2 · le bandeau (8→1272) est dans la colonne de la liste (478→1238)
+ok pc1280 · perdues-2 · aucun débordement horizontal (0 px)
+ok pc1280 · perdues-2 · au bout du défilement (0/0), la dernière rangée (413→442) est entière au-dessus du bandeau (658), corps 40→658
+ECHEC pc1280 · perdues-2 · nom long : montant « 1,70 » entier (688 ≤ 1142), nom coupé avec « … » (false, true)
+ok pc1280 · perdues-2 · aucune erreur de console
+ok pc1280 · entete · le fil est parti
+ok pc1280 · entete · Confirmer est actif (noir)
+ECHEC pc1280 · entete · la case TVA est corrigée, sur un fond bleu (null) : « TVA3,48 »
+ECHEC pc1280 · entete · l'ancienne TVA est barrée (« undefined », undefined)
+ok pc1280 · entete · la puce dit « 1 corrigée » (1 corrigée), la case Règlement n'est pas marquée
+ok pc1280 · entete · aucun débordement horizontal (0 px)
+ok pc1280 · entete · aucune erreur de console
+ok aucune requête hors localhost
+ECRAN-D ECHEC 16
+ - tactile390 · touchee · le barré ne montre que le prix (avant : « 12 Kg × 1,45 » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ - tactile390 · touchee · le récap dit « Qté × prix7/7 » (coche : true) : 6/7 attendu, sans coche
+ - tactile390 · touchee · le barré de Pilsner ne montre que le prix : « 12 Kg × 1,45 » (attendu « × 1,45 »)
+ - tactile390 · perdue · nom long : montant « 1,70 » entier (688 ≤ 201), nom coupé avec « … » (true, true)
+ - tactile390 · perdues-2 · nom long : montant « 1,70 » entier (688 ≤ 252), nom coupé avec « … » (true, true)
+ - tactile390 · entete · la case TVA est corrigée, sur un fond bleu (null) : « TVA3,48 »
+ - tactile390 · entete · l'ancienne TVA est barrée (« undefined », undefined)
+ - pc1280 · touchee · le barré ne montre que le prix (avant : « 12 Kg × 1,45 » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ - pc1280 · touchee · le récap dit « Qté × prix7/7 » (coche : true) : 6/7 attendu, sans coche
+ - pc1280 · touchee · le barré de Pilsner ne montre que le prix : « 12 Kg × 1,45 » (attendu « × 1,45 »)
+ - pc1280 · perdue · le bandeau (8→1272) est dans la colonne de la liste (478→1238)
+ - pc1280 · perdue · nom long : montant « 1,70 » entier (688 ≤ 1091), nom coupé avec « … » (false, true)
+ - pc1280 · perdues-2 · le bandeau (8→1272) est dans la colonne de la liste (478→1238)
+ - pc1280 · perdues-2 · nom long : montant « 1,70 » entier (688 ≤ 1142), nom coupé avec « … » (false, true)
+ - pc1280 · entete · la case TVA est corrigée, sur un fond bleu (null) : « TVA3,48 »
+ - pc1280 · entete · l'ancienne TVA est barrée (« undefined », undefined)
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…

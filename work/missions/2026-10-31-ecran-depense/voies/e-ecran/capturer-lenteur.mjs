@@ -38,6 +38,8 @@ const ETATS = [
   ['perdue', 'choix-lignes-38/img/q2-d-arrivee.png', 'q2-d-arrivee : la ligne pas retrouvée, barrée, bandeau au pouce'],
   ['perdues-2', 'choix-valider/img/b-arrivee.png', 'b-arrivee : « Tout valider », bandeau 1/2'],
   ['total', 'choix-cas-38/img/q1-a.png', 'q1-a : le total corrigé (bleu, 46,40 barré)'],
+  // e-finitions (D312 forme A) : une 3.8 qui ne corrige que la TVA ; sa maquette ne dessine que le principe (valeur bleue, ancienne barrée) : la case TVA n'y existe pas.
+  ['entete', 'choix-lenteur/img/d-lue.png', 'd-lue : le principe (bleu, ancienne valeur barrée) ; la case TVA n’y est pas dessinée'],
 ];
 
 async function ouvrirApp(nav, mode, etat) {
@@ -107,7 +109,29 @@ const mesures = (p) => p.evaluate(() => {
     debord: Math.max(document.documentElement.scrollWidth - innerWidth, (dialog?.scrollWidth ?? 0) - (dialog?.clientWidth ?? 0)),
     principal: (() => { const b = document.querySelector('button[data-primary]'); return b ? { off: b.disabled, aria: b.getAttribute('aria-label') } : null; })(),
     lectures: document.querySelector('[data-dp="preuve"]')?.textContent?.slice(0, 120) ?? null,
+    // e-finitions : la rangée « Qté × prix n/n » du récap (texte et coche), la colonne de la liste, le bandeau (bords)
+    qtePrix: (() => { const b = [...document.querySelectorAll('[data-dp="preuve"] button')].find((x) => /Qté × prix/.test(x.textContent)); return b ? { texte: b.textContent, coche: Boolean(b.querySelector('svg')) } : null; })(),
+    liste: (() => { const l = r('[data-dp="liste"]'); return l ? { gauche: l.left, droite: l.right } : null; })(),
+    bandeauBords: bandeau ? { gauche: bandeau.left, droite: bandeau.right } : null,
   };
+});
+/** Au bout du défilement : la dernière rangée (ordinaire ou barrée) est ENTIÈRE, entre le haut du corps qui défile et le haut du bandeau (ou du pied). */
+const boutDuDefilement = (p) => p.evaluate(async () => {
+  const corps = document.querySelector('.dp-p3c-corps'), bandeau = document.querySelector('[data-dp="perdues"]'), pied = document.querySelector('footer');
+  corps.scrollTop = corps.scrollHeight; await new Promise((r) => setTimeout(r, 300));
+  const rangees = [...document.querySelectorAll('[data-dp-ligne], [data-dp-perdue]')].filter((x) => !x.hidden && x.getBoundingClientRect().height > 0);
+  const derniere = rangees.at(-1)?.getBoundingClientRect(), c = corps.getBoundingClientRect();
+  return { haut: derniere?.top, bas: derniere?.bottom, corpsHaut: c.top, corpsBas: c.bottom, bandeauHaut: bandeau?.getBoundingClientRect().top ?? pied?.getBoundingClientRect().top ?? null, scrollMax: corps.scrollHeight - corps.clientHeight, scrollTop: corps.scrollTop, n: rangees.length };
+});
+/** Un nom très long dans le bandeau (mesure seulement : le texte est remplacé dans le DOM, la page n'est pas enregistrée) : il se coupe avec « … » et le montant reste entier, dans le bandeau. */
+const nomLong = (p) => p.evaluate(() => {
+  const bandeau = document.querySelector('[data-dp="perdues"]'), b = bandeau?.querySelector('b'), montant = b?.lastElementChild;
+  if (!b || !montant) return null;
+  const long = 'Avoine maltée spéciale biologique torréfiée à basse température, sac de vingt-cinq kilos, lot 2026-10';
+  // même mesure sur l'arbre d'avant (un nœud texte puis le montant) et sur le nouveau (deux <span>)
+  if (b.firstChild.nodeType === 3) b.firstChild.nodeValue = long + ' '; else b.firstElementChild.textContent = long;
+  const m = montant.getBoundingClientRect(), cadre = b.getBoundingClientRect(), bd = bandeau.getBoundingClientRect(), nom = b.firstElementChild?.nodeType === 1 && b.firstElementChild !== montant ? b.firstElementChild : b;
+  return { montantTexte: montant.textContent, montantDroite: m.right, cadreDroite: cadre.right, bandeauDroite: bd.right, montantEntier: m.right <= cadre.right + 0.5 && m.right <= bd.right + 0.5 && m.width > 20, nomCoupe: nom.scrollWidth > nom.clientWidth, ellipse: getComputedStyle(nom).textOverflow === 'ellipsis', hauteur: cadre.height };
 });
 
 const FILTRE = valeur('etats')?.split(',');
@@ -141,7 +165,7 @@ try {
           noter(/^12/.test(app.qteTapee ?? ''), e(`la frappe a pris pendant l'attente (champ : « ${app.qteTapee} »)`));
           noter(/^12/.test(t.qte ?? '') && /^12/.test(t.qteAffichee ?? ''), e(`la quantité de Pilsner vaut 12 après le final (champ « ${t.qte} », rangée « ${t.qteAffichee} »)`));
           noter(!t.qteBleue, e('la quantité tapée n’a pas la marque bleue'));
-          noter(t.prixBleu && /12/.test(t.avant ?? '') && !/10 Kg/.test(t.avant ?? ''), e(`l'ancienne quantité n'est pas barrée (avant : « ${t.avant} » : 12 est la sienne, seul l'ancien prix est barré) ; le prix, lui, est corrigé`));
+          noter(t.prixBleu && t.avant === '× 1,45', e(`le barré ne montre que le prix (avant : « ${t.avant} » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé`));
           noter(/^3\D/.test(m.puce?.texte ?? ''), e(`la puce compte 3 : la rangée de Pilsner reste corrigée par son prix (1,45 → 2,90), seule sa quantité est la sienne (${m.puce?.texte})`));
         }
         if (nom === 'echec') noter(m.puce === null && /2 lectures/.test(m.lectures ?? ''), e(`aucune puce, « 2 lectures » : ${m.lectures}`));
@@ -150,10 +174,36 @@ try {
           noter(m.bandeau && m.bandeau.bas <= m.bandeau.hautPied + 1, e(`le bandeau est au-dessus du pied (bas ${m.bandeau?.bas}, pied ${m.bandeau?.hautPied}, ${m.bandeau?.h} px)`));
           const barrees = await app.evaluate(() => document.querySelectorAll('[data-dp-perdue]').length);
           noter(barrees === (nom === 'perdue' ? 1 : 2), e(`${barrees} rangée(s) barrée(s)`));
+          // e-finitions (mineur 1) : à 1280 le bandeau est borné à la colonne de la liste (la droite), pas étalé sur la feuille (tolérance : la barre de défilement du corps, 15 px, décale le centrage).
+          if (mode.l >= 1024) noter(m.liste && m.bandeauBords && m.bandeauBords.gauche >= m.liste.gauche - 16 && m.bandeauBords.droite <= m.liste.droite + 16, e(`le bandeau (${Math.round(m.bandeauBords?.gauche)}→${Math.round(m.bandeauBords?.droite)}) est dans la colonne de la liste (${Math.round(m.liste?.gauche)}→${Math.round(m.liste?.droite)})`));
+          else noter(m.bandeauBords && m.bandeauBords.gauche >= 0 && m.bandeauBords.droite <= mode.l, e(`à 390 le bandeau est dans la feuille (${Math.round(m.bandeauBords?.gauche)}→${Math.round(m.bandeauBords?.droite)})`));
+        }
+        if (nom === 'touchee') {
+          // e-finitions (majeur 1) : « Qté × prix » lit sa frappe : 12 × 2,90 ≠ 14,50 : « 6/7 », sans coche.
+          noter(Boolean(m.qtePrix) && /prix ?6[/]7/.test(m.qtePrix.texte) && !m.qtePrix.coche, e(`le récap dit « ${m.qtePrix?.texte} » (coche : ${m.qtePrix?.coche}) : 6/7 attendu, sans coche`));
+          const avant = await app.evaluate(() => document.querySelector('[data-dp-ligne="line-1"] [data-dp-avant]')?.textContent ?? null);
+          noter(avant === '× 1,45', e(`le barré de Pilsner ne montre que le prix : « ${avant} » (attendu « × 1,45 »)`));
+        }
+        if (nom === 'entete') {
+          // e-finitions (majeur 2) : la TVA seule corrigée : sa case en bleu, l'ancienne valeur barrée, « 1 corrigée » ; le règlement intact.
+          const t = await app.evaluate(() => { const c = document.querySelector('[data-dp="tuile-tva"]'), b = c?.querySelector('span span'), s = c?.querySelector('s'), pa = document.querySelector('[data-dp="tuile-paye"]'); return { corrige: c?.getAttribute('data-dp-corrige'), fond: b ? getComputedStyle(b).backgroundColor : null, barre: s ? { texte: s.textContent, trait: getComputedStyle(s).textDecorationLine } : null, texte: c?.textContent, payeIntact: pa?.getAttribute('data-dp-corrige') === null }; });
+          noter(t.corrige === '1' && t.fond && t.fond !== 'rgba(0, 0, 0, 0)', e(`la case TVA est corrigée, sur un fond bleu (${t.fond}) : « ${t.texte} »`));
+          noter(t.barre?.texte === '3,38' && /line-through/.test(t.barre.trait), e(`l'ancienne TVA est barrée (« ${t.barre?.texte} », ${t.barre?.trait})`));
+          noter(/^1 ?corrigée$/.test((m.puce?.texte ?? '').trim()) && t.payeIntact, e(`la puce dit « ${m.puce?.texte} » (1 corrigée), la case Règlement n'est pas marquée`));
         }
         noter(m.debord <= 1, e(`aucun débordement horizontal (${m.debord} px)`));
         await capturer(nav, app, mode, nom, 'clair', maquette, legende);
         if (nom === 'lue') { await theme(app, 'cave'); await capturer(nav, app, mode, nom, 'cave', maquette, `${legende} (la maquette est claire : le sombre se juge sur ses jetons)`); }
+        if (nom === 'perdue' || nom === 'perdues-2') {
+          // e-finitions (mineur 3) : au bout du défilement la dernière rangée est entière au-dessus du bandeau.
+          const bout = await boutDuDefilement(app);
+          noter(bout.haut !== undefined && bout.bas <= bout.bandeauHaut + 0.5 && bout.haut >= bout.corpsHaut - 0.5, e(`au bout du défilement (${Math.round(bout.scrollTop)}/${Math.round(bout.scrollMax)}), la dernière rangée (${Math.round(bout.haut)}→${Math.round(bout.bas)}) est entière au-dessus du bandeau (${Math.round(bout.bandeauHaut)}), corps ${Math.round(bout.corpsHaut)}→${Math.round(bout.corpsBas)}`));
+          await app.screenshot({ path: path.join(SORTIE, `${mode.id}-${nom}-bout-clair.png`) });
+          // e-finitions (mineur, bandeau à 390 avec un nom long) : le nom se coupe avec « … », le montant reste entier.
+          const nl = await nomLong(app);
+          noter(Boolean(nl) && nl.montantEntier && nl.nomCoupe && nl.ellipse, e(`nom long : montant « ${nl?.montantTexte} » entier (${Math.round(nl?.montantDroite)} ≤ ${Math.round(nl?.cadreDroite)}), nom coupé avec « … » (${nl?.nomCoupe}, ${nl?.ellipse})`));
+          await app.screenshot({ path: path.join(SORTIE, `${mode.id}-${nom}-nom-long-clair.png`) });
+        }
         noter(app.erreurs.length === 0, e(`aucune erreur de console${app.erreurs.length ? ' (' + app.erreurs.join(' / ') + ')' : ''}`));
       } catch (err) { noter(false, e(String(err.message).slice(0, 220))); }
       finally { await app?.close().catch(() => {}); }

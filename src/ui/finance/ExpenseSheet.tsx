@@ -39,6 +39,7 @@ import { nomDeFiche,type Catalogues } from '../../domain/stock/fiche';
 import { donneesDeLigne,nomsPris,pliee,type MembreVirtuel } from '../../services/stockLineMatching';
 import { ChipsBar,TITRES } from '../depense/Verdict';
 import { InvoiceScanReview } from './InvoiceScanReview';
+import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Interrupteur } from '../depense/Ticket';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
@@ -392,19 +393,35 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     setBusy(false);setShowForm(true);setVerif('attente');
   };
   /** La fin de partie (M2, R1) : le final n'arrive pas (délai, erreur, flux fermé) : les valeurs du provisoire restent, avec le point « lecture coupée » (`delai-saute`), comme une 3.8 coupée aujourd'hui. Ses saisies restent. */
-  const finDePartie=()=>{
+  const finDePartie=(message?:string)=>{
     const prov=provRef.current;if(!prov?.scan.result)return;
     setScan({...prov.scan,result:provisoireCoupe(prov.scan.result)});setVerif('echec');
+    /* e-finitions (b-lenteur, défaut 2) : le message du serveur (flux fermé sans résultat, coupé, délai) se dit, à côté de « Lecture coupée », comme une erreur de lecture d'aujourd'hui. */
+    if(message)setError(message);
+  };
+  /* e-finitions (b-lenteur, défaut 1 ; PLAN § 4, D312) : hors ligne PENDANT la 3.8, le fil et la roue restent ; au retour du réseau le client relance UNE fois le même appel (servi du cache du serveur, sans coût) ; si la relance échoue, la forme de la 3.8 coupée (A). */
+  const attendreRetour=(signal?:AbortSignal)=>new Promise<boolean>(fin=>{
+    if(signal?.aborted){fin(false);return;}
+    const rendre=(v:boolean)=>{window.removeEventListener('online',retour);signal?.removeEventListener('abort',stop);fin(v);};
+    const retour=()=>rendre(true),stop=()=>rendre(false);
+    window.addEventListener('online',retour);signal?.addEventListener('abort',stop,{once:true});
+  });
+  const horsLigne=()=>typeof navigator!=='undefined'&&navigator.onLine===false;
+  const lireEnFlux=async(lancer:(o:ScanFluxOptions)=>Promise<ScanOutcome>,options:ScanFluxOptions):Promise<ScanOutcome>=>{
+    const premier=await lancer(options);
+    if(premier.ok||!provRef.current||verifRef.current!=='attente'||!mounted.current||!horsLigne())return premier;
+    const retour=await attendreRetour(options.signal);
+    if(!retour||!mounted.current)return premier;
+    return lancer({signal:options.signal,onProvisoire:()=>undefined}); // une seule relance ; son éventuel morceau est ignoré (le provisoire est déjà à l'écran)
   };
   /** Le final : la fusion « sa saisie l'emporte » (finale.ts). Elle n'appelle jamais `applyOutcome` : `readCount`, `choixGroupes`, les plateaux ouverts, `manuallyClassified` restent. */
   const surFinal=(final:ScanOutcome,documentHash?:string)=>{
     const prov=provRef.current,courant=draftCourant.current;
     if(!prov?.scan.result||!courant)return;
-    if(!final.ok||!final.result){finDePartie();return;}
+    if(!final.ok||!final.result){finDePartie(final.error);return;}
     const stockItems=courantRef.current.stockItems;
-    const focus=(()=>{const el=typeof document!=='undefined'?document.activeElement:null;return el&&form.current?.contains(el)?el.closest<HTMLElement>('[data-dp-ligne]')?.dataset.dpLigne??null:null;})();
     const s=appliquerFinale({base:prov.base,courant,provisoire:prov.scan.result,final:final.result,stockItems,today:swissToday(),ligneVide:newLine,model:final.model,
-      registres:{reviewedFields:courantRef.current.reviewedFields,manuallyClassified:manuallyClassified.current,proposes:proposedStock.current,neufsOffice:neufDOffice.current,reglees:courantRef.current.reglees,focus}});
+      registres:{reviewedFields:courantRef.current.reviewedFields,manuallyClassified:manuallyClassified.current,proposes:proposedStock.current,neufsOffice:neufDOffice.current,reglees:courantRef.current.reglees}});
     if(s.etat==='echec'){finDePartie();return;}
     /* Les propositions (article lié, voisin…) des lignes dont il n'a pas touché le lien viennent du final ; les autres gardent les leurs. */
     for(const id of s.reprises){proposedStock.current.delete(id);proposedStock.current.delete(id+PROPOSAL_WEIGHT_MARK);proposedRef.current.delete(id);voisins.current.delete(id);relieAuto.current.delete(id);neufDOffice.current.delete(id);}
@@ -460,7 +477,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
       if(meme){setDeja(meme.id);return;}
       lancerQr(file);
-      const outcome=await GeminiScannerService.scanDocument(file,'fast',optionsFlux(documentHash));
+      const outcome=await lireEnFlux(o=>GeminiScannerService.scanDocument(file,'fast',o),optionsFlux(documentHash));
       if(!mounted.current)return;
       finLecture(outcome,documentHash);
     }catch(e:any){if(mounted.current)setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');}
@@ -540,7 +557,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
       if(meme){setDeja(meme.id);return;}
       lancerQrPages(lot.map(p=>p.file));
-      const outcome=await GeminiScannerService.scanPages(lot.map(p=>p.file),optionsFlux(documentHash,true));
+      const outcome=await lireEnFlux(o=>GeminiScannerService.scanPages(lot.map(p=>p.file),o),optionsFlux(documentHash,true));
       if(!mounted.current)return;
       setNPagesLues(outcome.ok?outcome.pagesLues??0:0);
       finLecture(outcome,documentHash);
@@ -744,7 +761,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* Sans cible propre : la preuve de la lecture, ouverte et amenée à l'écran. */
     flushSync(()=>setViseePreuve(true));viser(q('[data-dp="preuve"]'));setTimeout(()=>{if(mounted.current)setViseePreuve(false);},1600);
   };
-  const remarques=result?[...new Set([...result.issues,...(result.review?.findings??[]),...result.items.flatMap(item=>item.ambiguity?[`${item.name||'Article'} : ${item.ambiguity}`]:[])].map(p=>p.trim()).filter(Boolean))].filter(p=>!(points??[]).some(pt=>pt.message===p)):[];
+  const remarques=result?[...new Set([...result.issues,...(result.review?.findings??[]),...result.items.flatMap(item=>item.ambiguity?[`${item.name||'Article'} : ${item.ambiguity}`]:[]),/* e-finitions (b-lenteur, défaut 3) : la phrase de n3-ht ne disparaît jamais derrière un indice plus grave : elle est dite ici, après lui. */...(result.lignesPasseesAuTtc?[LIGNES_HT_PASSEES_AU_TTC]:[])].map(p=>p.trim()).filter(Boolean))].filter(p=>!(points??[]).some(pt=>pt.message===p)):[];
   const driveOk=apercu?apercu.drive==='ok':draft.proofDataUrl?FirebaseAuthService.hasDriveAccess():true;void driveTick;
   /* R1 : un prix « avec mouture » seulement si le catalogue l'écrira (latestBrewPrices) : malt relié au stock, mouture de genre service à montant positif, lien confirmé. */
   const eur=(cents:number)=>(cents/100).toFixed(2).replace('.',',');
@@ -939,10 +956,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const court=(date:string)=>date.replace(/^(\d{2}\.\d{2})\.\d{4}$/,(_m,jm)=>jm);
   const rond=(n:number|null,fait:boolean)=>n?<span className={`absolute left-1.5 top-1.5 inline-flex h-[18px] w-[18px] items-center justify-center rounded-full font-mono text-xs ${fait?'bg-hop text-cave-950':'border border-dashed border-attention text-attention bg-cave-950'}`}>{n}</span>:null;
   /* z2 : les chips du QR (« ① Total », « ① Date »…) sont des tuiles de CETTE rangée, avant TVA et Règlement ; flex-wrap : sur un écran étroit la dernière tuile passe dessous. */
+  /* e-finitions (majeur 2, D312 forme A) : les cases TVA et Règlement que la 3.8 a corrigées (et que le brasseur n'a pas retapées depuis) : fond bleu, ancienne valeur barrée, comme le total, la date et le fournisseur. */
+  const BLEU_CASE='rounded-control bg-area-finances/15 px-1 text-area-finances';
+  const tvaCorrigee=(()=>{const e=fusion?.entete.tva;return e&&memeValeur(draft.sourceVatAmount,e.apres)?{avant:typeof e.avant==='number'?fr2(e.avant):'—'}:undefined;})();
+  const payeCorrige=(()=>{const e=fusion?.entete.paiement;return e&&draft.paymentStatus===e.apres&&typeof e.avant==='string'?{avant:e.avant==='paid'?'Payé':'À payer'}:undefined;})();
   const tuiles=<div className="flex flex-wrap items-stretch gap-1.5">
     {chips.some(c=>c.source==='qr')?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={false} cacher={c=>c.source!=='qr'} enTuiles/>:null}
-    {scan?.ok?<button type="button" data-dp="tuile-tva" data-dp-chip="TVA|" data-dp-fait={tvaRegle?'1':undefined} aria-expanded={panel==='tva'} onClick={()=>setPanel(panel==='tva'?null:'tva')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nTva?'pl-8':'pl-2'} min-w-[80px] flex-1 basis-[80px] text-left ${nTva&&!tvaRegle?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nTva,tvaRegle)}<span className="block text-xs text-cave-400">TVA</span><span className="block font-mono text-sm text-cave-50">{tvaLues.length>1?tvaLues.map((v,i)=><React.Fragment key={v}>{i?' · ':''}<b className={`font-semibold ${tvaRegle&&draft.sourceVatAmount!==v?'text-cave-400 line-through':''}`}>{fr2(v)}</b></React.Fragment>):draft.sourceVatAmount!==undefined?fr2(draft.sourceVatAmount):'—'}{tvaRegle?<small className="ml-1 text-xs text-cave-200">{draft.sourceVatAmount===undefined?'vide':'gardée'}</small>:null}</span></button>:null}
-    <button type="button" data-dp="tuile-paye" data-dp-chip={nPaye?'paye':undefined} data-dp-fait={nPaye&&!payeSuppose?'1':undefined} aria-expanded={panel==='paye'} onClick={()=>setPanel(panel==='paye'?null:'paye')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nPaye?'pl-8':'pl-2'} min-w-[156px] flex-1 basis-[156px] text-left ${payeSuppose?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nPaye,!payeSuppose)}<span className="flex items-center justify-between gap-1 whitespace-nowrap text-xs text-cave-400">Règlement{payeSuppose?<small className="text-xs text-attention">supposée</small>:null}{dateParDefaut&&draft.paymentStatus==='paid'?<small className="text-xs text-cave-400">par défaut</small>:null}</span><span className="block whitespace-nowrap text-[13px] text-cave-50">{draft.paymentStatus==='paid'?(draft.paymentDate?<span className="font-mono">Payé le {draft.paymentDate}</span>:<span>Payé{draft.date?null:<span data-dp-niveau="inconnu" className="font-mono text-alert"> · date ?</span>}</span>):draft.dueDate?<span className="font-mono">Échéance : {draft.dueDate}</span>:<span>À payer</span>}</span></button>
+    {scan?.ok?<button type="button" data-dp="tuile-tva" data-dp-chip="TVA|" data-dp-fait={tvaRegle?'1':undefined} {...(tvaCorrigee?{'data-dp-corrige':'1'}:{})} aria-expanded={panel==='tva'} onClick={()=>setPanel(panel==='tva'?null:'tva')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nTva?'pl-8':'pl-2'} min-w-[80px] flex-1 basis-[80px] text-left ${nTva&&!tvaRegle?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nTva,tvaRegle)}<span className="block text-xs text-cave-400">TVA</span><span className="block font-mono text-sm text-cave-50">{tvaLues.length>1?tvaLues.map((v,i)=><React.Fragment key={v}>{i?' · ':''}<b className={`font-semibold ${tvaRegle&&draft.sourceVatAmount!==v?'text-cave-400 line-through':''}`}>{fr2(v)}</b></React.Fragment>):draft.sourceVatAmount!==undefined?(tvaCorrigee?<><span className={BLEU_CASE}>{fr2(draft.sourceVatAmount)}</span><s data-dp-avant className="ml-1.5 text-xs font-normal text-cave-400">{tvaCorrigee.avant}</s></>:fr2(draft.sourceVatAmount)):'—'}{tvaRegle?<small className="ml-1 text-xs text-cave-200">{draft.sourceVatAmount===undefined?'vide':'gardée'}</small>:null}</span></button>:null}
+    <button type="button" data-dp="tuile-paye" data-dp-chip={nPaye?'paye':undefined} data-dp-fait={nPaye&&!payeSuppose?'1':undefined} {...(payeCorrige?{'data-dp-corrige':'1'}:{})} aria-expanded={panel==='paye'} onClick={()=>setPanel(panel==='paye'?null:'paye')} className={`relative min-h-[42px] rounded-panel border px-1.5 pb-1 pt-[3px] ${nPaye?'pl-8':'pl-2'} min-w-[156px] flex-1 basis-[156px] text-left ${payeSuppose?'border-dashed border-attention bg-attention/5':'border-cave-800'}`}>{rond(nPaye,!payeSuppose)}<span className="flex items-center justify-between gap-1 whitespace-nowrap text-xs text-cave-400">Règlement{payeSuppose?<small className="text-xs text-attention">supposée</small>:null}{dateParDefaut&&draft.paymentStatus==='paid'?<small className="text-xs text-cave-400">par défaut</small>:null}</span><span className={`block ${payeCorrige?'':'whitespace-nowrap '}text-[13px] text-cave-50`}>{(()=>{const texte=draft.paymentStatus==='paid'?(draft.paymentDate?<span className="font-mono">Payé le {draft.paymentDate}</span>:<span>Payé{draft.date?null:<span data-dp-niveau="inconnu" className="font-mono text-alert"> · date ?</span>}</span>):draft.dueDate?<span className="font-mono">Échéance : {draft.dueDate}</span>:<span>À payer</span>;return payeCorrige?<><span className={BLEU_CASE}>{texte}</span><s data-dp-avant className="ml-1.5 text-xs font-normal text-cave-400">{payeCorrige.avant}</s></>:texte;})()}</span></button>
   </div>;
   /* Lenteur D (défaut A, D315) : un champ d'en-tête que la 3.8 a corrigé (et que le brasseur n'a pas retapé depuis) : bleu, l'ancienne valeur barrée. */
   const enteteCorrige=(()=>{const e=fusion?.entete;if(!e)return undefined;const sortie:{total?:string;date?:string;vendor?:string}={};
@@ -1042,13 +1063,17 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const versLigne=(id:string)=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id});
   /* La preuve (rangées chiffrées lues dans `controls` : rien d'affirmé sans contrôle). */
   /* Lenteur D : une ligne gardée (« Garder ») change la somme : les contrôles se lisent alors sur le brouillon (le recalcul), comme sa maquette (« Somme ≠ imprimé 48,10 »). */
-  const ctl=(nGardees>0&&recalcul?recalcul.controls:result?.controls) as NonNullable<typeof result>['controls'],lectures=result?.review?.readers;
+  /* e-finitions (majeur 1) : « Qté × prix n/n » lit le recalcul sur le brouillon (la règle du serveur, `invoicePoints.ts`) dès qu'il existe : une quantité tapée change le compte, comme les points. `sum` reste celui de la lecture tant qu'aucune ligne n'est gardée ni ajoutée. */
+  const sommeDuBrouillon=nGardees>0||(fusion?.ajoutees.size??0)>0;
+  /* Hors CHF les montants de lignes du brouillon n'existent pas (`unitPrice`, `amount` vides) : le recalcul ne contrôlerait rien (« 0/n ») ; le récap garde alors les contrôles de la lecture, comme avant. */
+  const enChf=result?.currency==='CHF';
+  const ctl=(!recalcul?result?.controls:!enChf?(nGardees>0?recalcul.controls:result?.controls):!result?.controls&&!sommeDuBrouillon?undefined:{...recalcul.controls,...(sommeDuBrouillon||!result?.controls?{}:{sum:result.controls.sum})}) as NonNullable<typeof result>['controls'],lectures=result?.review?.readers;
   /* Lenteur D (ses maquettes `q1-b`, `b-garder`) : une ligne ajoutée ou gardée change la somme : « Somme ≠ imprimé 48,10 » en attention, la somme des lignes à droite (jamais « = imprimé · non vérifiée »). */
   const ecartLenteur=Boolean(ctl&&ctl.sum.statut==='ecart'&&(nGardees>0||(fusion?.ajoutees.size??0)>0));
   const ecartTotalQr=qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined;
   const rangees:Rang[]=result?[
     ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ecartLenteur?{ok:false,texte:'Somme ≠ imprimé',valeur:fr2c(sommeLignesCts)}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme non contrôlée',valeur:''},
-    ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Qté × prix non contrôlé',valeur:''},
+    ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Qté × prix non contrôlé',valeur:''},
     /* n2-pages, sa maquette 6 : des lectures d'accord sur une pièce de plusieurs pages (le serveur en a confirmé N) disent « ✓ N pages lues », sans valeur à droite ; en désaccord,
        « Lectures · N pages » et « n lectures » ; un document seul : « Lectures » et « 2/2 », comme avant. Sans lectures annoncées rien n'est inventé. */
     ...(verif==='attente'?[{ok:null,texte:'Lectures',valeur:'',lectures:{faites:2,sur:3}}]:lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeur:`${lectures} lectures`}:nPagesLues>1?{ok:true,texte:`${nPagesLues} pages lues`,valeur:''}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
@@ -1190,7 +1215,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-1 flex flex-col gap-1.5 px-2 pt-1.5 lg:order-none lg:px-0">
         {doublons}
         <InvoiceScanReview bandeauRef={bandeauRef}
-          bandeau={{vendor:draft.vendor,date:draft.date,niveaux:niveauxEntete,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal message={hints.amountTTC}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true),corriges:enteteCorrige}}
+          bandeau={{vendor:draft.vendor,date:draft.date,niveaux:niveauxEntete,doutes:{date:qrEcarts.includes('date')&&!qrChoixChamps.date,vendor:qrEcarts.includes('creancier')&&!qrChoixChamps.creancier,devise:qrEcarts.includes('devise')&&!qrChoixChamps.devise},totalField:<>{totalField}<ScanHintTotal messages={[hints.amountTTC,...(hints.amountTTC&&result?.lignesPasseesAuTtc&&hints.amountTTC!==LIGNES_HT_PASSEES_AU_TTC?[LIGNES_HT_PASSEES_AU_TTC]:[])]}/></>,sommeDesLignes:draft.sourceTotalBasis==='line_sum',portCents:portTexte,portOuvert,onPort:surPort,statut:statutFinal,nLignes:lignesAff.length,onLignes:versListe,onDate:surDate,barre,onBarre:versLigne,sceau:sceauQr,sousTotal:sousTotalQr,drive:driveVerifie&&!driveOk&&draft.proofDataUrl?'a-connecter':null,onDrive:()=>setDriveAuthError(true),corriges:enteteCorrige}}
           preuve={{rangees,corriges,remarques,cached:Boolean(scan.cached),visee:viseePreuve,onRangee:versListe,propositions:hints.items?"À vérifier":null}}
           comptes={<><Comptes items={comptesItems} onCompte={surCompte}/>{chips.some(c=>!aSaPlace(c))||tout?<ChipsBar chips={chips} reglees={reglesSet} onAller={aller} tout={tout} cacher={aSaPlace}/>:null}</>}/>
         {draft.sourceCurrency&&draft.sourceCurrency!=='CHF'?<p className="text-attention text-sm">Original : {draft.sourceAmount??'montant absent'} {draft.sourceCurrency}. Montants à renseigner en CHF.</p>:null}
@@ -1243,4 +1268,4 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </ModalShell>;
 }
 const fr2=(n:number)=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
-function ScanHintTotal({message}:{message?:string}){return message?<span id="scan-hint-amountTTC" className="sr-only">À confirmer · {message}</span>:null;}
+function ScanHintTotal({messages}:{messages:Array<string|undefined>}){const dits=messages.filter((m):m is string=>Boolean(m));return dits.length?<span id="scan-hint-amountTTC" className="sr-only">À confirmer · {dits.join(' ')}</span>:null;}

@@ -40,12 +40,13 @@ export function BandeauPerdues(p: { nom: string; montant: string; rang: number; 
   const ch = 'inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border border-cave-600 bg-cave-950 px-2.5 text-[13px] font-semibold text-cave-50';
   const garder = <button type="button" data-dp-perdue-geste="garder" onClick={p.onGarder} className={ch}><Check size={14} strokeWidth={2.4}/>Garder</button>;
   const retirer = <button type="button" data-dp-perdue-geste="retirer" onClick={p.onRetirer} className={ch}><X size={13} strokeWidth={2.4}/>Retirer</button>;
-  const texte = <span className="flex min-w-0 flex-1 flex-col leading-[1.15]"><b className="truncate text-sm font-semibold text-cave-50">{p.nom} <span className="font-mono">{p.montant}</span></b>
+  const texte = <span className="flex min-w-0 flex-1 flex-col leading-[1.15]"><b className="flex min-w-0 items-baseline gap-1 text-sm font-semibold text-cave-50"><span data-dp-perdue-nom className="min-w-0 truncate">{p.nom}</span>{' '}<span data-dp-perdue-montant className="shrink-0 font-mono">{p.montant}</span></b>
     <small className="text-xs font-semibold text-attention">pas retrouvée{p.total > 1 ? <> · <span className="font-mono" data-dp-perdue-rang>{p.rang}/{p.total}</span></> : null}</small></span>;
-  return <div data-dp="perdues" role="group" aria-label="Lignes que la 3e lecture n’a pas retrouvées" className="mx-2 mb-1.5 shrink-0 space-y-1 rounded-panel border-[1.5px] border-dashed border-attention bg-attention/10 px-2.5 py-1.5">
+  return <div data-dp="perdues-cadre" className="shrink-0 lg:grid lg:grid-cols-[420px_minmax(0,760px)] lg:justify-center lg:gap-x-4 lg:px-3">{/* À 1280 le bandeau suit la colonne de la liste (la droite), comme la liste ; à 390 il est pleine largeur. */}
+  <div data-dp="perdues" role="group" aria-label="Lignes que la 3e lecture n’a pas retrouvées" className="mx-2 mb-1.5 min-w-0 space-y-1 rounded-panel border-[1.5px] border-dashed border-attention bg-attention/10 px-2.5 py-1.5 lg:col-start-2 lg:mx-0">
     {p.total > 1 ? <>
       <div className="flex min-h-7 items-center gap-1.5">{texte}<button type="button" data-dp-perdue-geste="tout" onClick={p.onToutValider} className="inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full border-[1.5px] border-attention bg-cave-950 px-2.5 text-[13px] font-bold text-attention"><RefreshCw size={15} strokeWidth={2.2}/>Tout valider</button></div>
       <div className="flex items-center gap-1.5">{garder}{retirer}</div></>
       : <div className="flex min-h-7 items-center gap-1.5">{texte}{garder}{retirer}</div>}
-  </div>;
+  </div></div>;
 }

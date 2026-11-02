@@ -215,7 +215,7 @@ function apercuCommande(): ApercuDepense {
 // Lenteur D (voie e-ecran) : la pièce FICTIVE « Brauhaus Ouest » de ses maquettes (`choix-lenteur/d-06`, `d-lue`, `choix-lignes-38`, `choix-valider`, `choix-cas-38`), en lecture SIMULÉE :
 // un provisoire (les deux premières lectures), puis le final (la 3.8). Aucune valeur d'une vraie pièce, Gemini jamais appelé, aucune écriture.
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-export type VarianteLenteur = 'lue' | 'ajoutee' | 'perdue' | 'perdues-2' | 'total' | 'echec' | 'sans-38' | 'touchee' | 'provisoire';
+export type VarianteLenteur = 'lue' | 'ajoutee' | 'perdue' | 'perdues-2' | 'total' | 'echec' | 'sans-38' | 'touchee' | 'provisoire' | 'entete';
 const JETON_LENTEUR = 'jeton-lenteur';
 type LigneLenteur = { nom: string; kind: string; q: number | null; u: string; prix: number | null; montant: number; cat: string };
 const L = (nom: string, q: number | null, u: string, prix: number | null, montant: number, cat: string, kind = 'stock'): LigneLenteur => ({ nom, kind, q, u, prix, montant, cat });
@@ -248,11 +248,12 @@ export function lecturesLenteur(variante: VarianteLenteur): { provisoire?: Scann
     });
     return result;
   };
-  const provisoire = base(prov, 46.4, 2);
+  // `entete` (e-finitions, D312 forme A) : une 3.8 qui ne corrige que la TVA (SIMULÉ : 3,38 lue par les deux premiers lecteurs, 3,48 par la 3.8 ; 8,1 % de 46,40 TTC = 3,48) ; aucune ligne ne change.
+  const provisoire = base(prov, 46.4, 2, variante === 'entete' ? { tvaAmount: 3.38 } : {});
   if (variante === 'sans-38') return { final: base(prov, 46.4, 2), jeton: JETON_LENTEUR };
   // Le final : chaque ligne dit son rang provisoire ; la 3.8 ne lit plus Avoine maltée ni Amarillo, et corrige les cellules de d-lue (Pilsner 5 Kg × 2,90, Sabro et Citra en g).
   const corrige = (l: LigneLenteur): LigneLenteur => {
-    if (variante === 'echec' || variante === 'provisoire') return l;
+    if (variante === 'echec' || variante === 'provisoire' || variante === 'entete') return l;
     if (l.nom === 'Malt Pilsner') return { ...l, q: 5, prix: 2.9 };
     if (l.nom === 'Sabro 13.4%' || l.nom === 'Citra 12.5%') return { ...l, u: 'g' };
     if (variante === 'total' && l.nom === 'Malt de Munich') return { ...l, prix: 2.2, montant: 8.8 };
@@ -260,7 +261,7 @@ export function lecturesLenteur(variante: VarianteLenteur): { provisoire?: Scann
   };
   const finales = prov.filter(l => !(perdue && (l.nom === 'Avoine maltée' || l.nom === 'Amarillo 9.2%'))).map(l => ({ l: corrige(l), rang: prov.indexOf(l) as number | null }));
   if (variante === 'ajoutee') finales.splice(finales.findIndex(x => x.l.nom === 'Citra 12.5%') + 1, 0, { l: L('Mosaic 11.8%', 20, 'g', 0.08, 1.6, 'hop'), rang: null });
-  const final = base(finales.map(x => x.l), variante === 'total' ? 48 : 46.4, variante === 'echec' ? 2 : 3, { provisoireJeton: JETON_LENTEUR });
+  const final = base(finales.map(x => x.l), variante === 'total' ? 48 : 46.4, variante === 'echec' ? 2 : 3, { provisoireJeton: JETON_LENTEUR, ...(variante === 'entete' ? { tvaAmount: 3.48 } : {}) });
   final.items = final.items.map((it, i) => ({ ...it, rangProvisoire: finales[i].rang }));
   if (variante === 'echec') {
     // La 3.8 en échec : le final porte les valeurs du provisoire et le point « lecture coupée » (invoiceScanVote.ts, `finalOfTwo`).
