@@ -290,7 +290,12 @@ function pageServices() {
       const file = data.file && typeof data.file.data === 'string'
         ? (bytes => ({ mimeType: data.file.mimeType, bytes: bytes.length }))(Uint8Array.from(atob(data.file.data), c => c.charCodeAt(0))) : null;
       if (file) file.sha256 = await digest(Uint8Array.from(atob(data.file.data), c => c.charCodeAt(0)));
-      body = { json: { ...data, file } };
+      // n2-pages : plusieurs pages (`files`) : type, octets et empreinte de CHAQUE page, dans l'ordre ; les base64 ne passent pas par le pont.
+      const files = Array.isArray(data.files) ? await Promise.all(data.files.map(async f => {
+        const bytes = Uint8Array.from(atob(f.data), c => c.charCodeAt(0));
+        return { mimeType: f.mimeType, bytes: bytes.length, sha256: await digest(bytes) };
+      })) : null;
+      body = { json: { ...data, file, ...(files ? { files } : {}) } };
     } else if (typeof init.body === 'string') body = { text: init.body };
     else if (init.body) body = { base64: toBase64(new Uint8Array(await new Response(init.body).arrayBuffer())) };
     const answer = await window.__jus0Bridge({ kind: match ? match[1] : 'drive', url, method: (init.method || 'GET').toUpperCase(), headers, body });
@@ -325,6 +330,14 @@ function callableAnswer(c, request) {
     return json({ ok: true, data: { noms }, model: 'rejeu-noms', elapsedMs: 900 });
   }
   if (data.task !== 'scanInvoice') return fail(400, 'FAILED_PRECONDITION', 'Banc : seule la lecture de justificatif est rejouée.');
+  // n2-pages : une lecture à plusieurs pages doit porter EXACTEMENT les pages fictives du cas (nombre, ordre, empreinte de chacune) et aucun `file` ; sinon le cas échoue (une seule image envoyée ne passe pas).
+  if (Array.isArray(data.files)) {
+    const attendues = c.pagesAttendues ?? [];
+    call.files = data.files;
+    call.expectedFiles = attendues.length > 1 && data.files.length === attendues.length && data.files.every((f, i) => f.sha256 === attendues[i]) && !data.file;
+    if (!call.expectedFiles || !doc) return fail(400, 'FAILED_PRECONDITION', 'Banc : pages inattendues pour ce cas.');
+    return json({ ok: true, data: doc.result, model: 'rejeu-pages', elapsedMs: 1200, pages: data.files.length, documentHash: 'banc-pages' });
+  }
   call.expectedFile = doc ? data.file?.sha256 === doc.sha256 : false;
   if (ai.mode === 'refus') return fail(429, 'RESOURCE_EXHAUSTED', 'Budget IA du mois atteint.');
   if (ai.mode === 'inutilisable') return json({ ok: true, data: 'La réponse du modèle ne contient aucun champ exploitable.', model: 'rejeu-jus0', elapsedMs: 900 });
@@ -539,17 +552,17 @@ async function openInvoiceEntry(c) {
   await c.page.waitForSelector('section[aria-label="Justificatif de la dépense"]', { visible: true, timeout: 60000 });
   return chooser;
 }
-/** Picks a document in an open chooser (or opens one with « Choisir le document »), then waits for the reading. */
+/** Picks a document in an open chooser (or opens one with « Un document »), then waits for the reading. */
 async function scan(c, docId, { mode = 'replay', chooser, delayMs = 0, loadingShot } = {}) {
   c.ai = { mode, doc: docId, delayMs };
   const doc = c.docs[docId];
   let picker = chooser ? await chooser : null;
   if (!picker) {
-    // « Choisir le document » before a reading, « Changer » (r2b : une icône dans l'en-tête, nom accessible « Changer ») after one:
+    // « Un document » before a reading, « Changer » (r2b : une icône dans l'en-tête, nom accessible « Changer ») after one:
     // find the visible one by its accessible name, then arm the chooser.
     const pickable = () => c.page.$$eval(`${sheet} button`, buttons => {
       const shown = buttons.filter(b => b.getClientRects().length && !b.disabled).map(b => (b.getAttribute('aria-label') || b.innerText).trim());
-      return shown.find(text => text.startsWith('Choisir le document')) ?? shown.find(text => text === 'Changer') ?? false;
+      return shown.find(text => text.startsWith('Un document')) ?? shown.find(text => text === 'Changer') ?? false;
     });
     // p3c-3 : « Changer » vit dans le petit panneau du picto du justificatif (en-tête), fermé au repos : le geste du brasseur est de toucher le picto d'abord.
     if (!(await waitFor(pickable, 'bouton pour choisir un justificatif', 3000).catch(() => false)))
@@ -1828,7 +1841,10 @@ function enrichirAnswer(c, context) {
   const name = String(context.name ?? ''), kind = String(context.kind ?? '');
   c.enrichir.appels.push({ kind, name, manquant: context.manquant, supplier: context.supplier, reference: context.reference });
   if (kind === 'malt' && /ambre/i.test(name))
-    return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: true, name: 'Ambre 60', source: 'Fiche technique de la Malterie du Banc (banc)', sourceUrl: 'https://malterie-du-banc.test/ambre-60', colorEbc: 60, potentialPpg: 33 } };
+    // D302 : la forme RÉELLE d'une réponse de malt (5 vrais appels du 02.11) : un malteur publie une plage de couleur et un extrait, jamais de
+    // `colorEbc` ni de `potentialPpg` en champs, et un `usage` en texte sans chiffre. Le client en déduit 60 EBC et 36,8 PPG (80 % × 0,46).
+    return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: true, name: 'Ambre 60', source: 'Fiche technique de la Malterie du Banc (banc)', sourceUrl: 'https://malterie-du-banc.test/ambre-60',
+      colorEbcMin: 55, colorEbcMax: 65, extractPct: 80, usage: 'Malt ambré pour bières ambrées et rousses, jusqu’à une part du mélange.' } };
   return { ok: true, model: 'rejeu-f4', elapsedMs: 300, data: { found: false } };
 }
 const f4Ligne = (id, description, unit, quantity, more = {}) => ({ id, description, kind: 'ingredient', amount: 10, quantity, unit, stockAction: 'new', equipmentAction: 'none', ...more });
@@ -1914,8 +1930,11 @@ async function caseEnrichir(c) {
   c.check(windsor?.fiche?.id === 'levure:lalbrew-windsor' && windsor.fiche.par === 'catalogue' && !!windsor.yeastLab && windsor.yeastLot === undefined,
     'enrichir : Windsor lié au catalogue des levures (laboratoire rempli, aucun lot)', { fiche: windsor?.fiche, yeastLab: windsor?.yeastLab });
   c.check(String(target?.fiche?.id).includes(fold(houblon[0])) && target?.alphaPct === houblon[1] && !!target?.fiche?.cle, `enrichir : ${houblon[0]} lié à sa variété, α du lot gardé`, { fiche: target?.fiche, alphaPct: target?.alphaPct });
-  c.check(ambre?.fiche?.par === 'en-ligne' && ambre.potentialPpg === 33 && ambre.fiche.remplis?.potentialPpg?.niveau === 'repris' && !!ambre.fiche.remplis.potentialPpg.deduit,
-    'enrichir : l’ambre rempli en ligne (repris, « peut être calculé », source citée)', { fiche: ambre?.fiche, potentialPpg: ambre?.potentialPpg });
+  // D302 : l'EBC et le PPG sont DÉDUITS de la plage (55 à 65 EBC) et de l'extrait (80 %) que la réponse porte : 60 et 36,8, chacun avec sa règle.
+  c.check(ambre?.fiche?.par === 'en-ligne' && ambre.colorEbc === 60 && ambre.potentialPpg === 36.8
+      && ambre.fiche.remplis?.colorEbc?.niveau === 'repris' && /plage publiée 55 à 65 EBC/.test(ambre.fiche.remplis.colorEbc.deduit ?? '')
+      && ambre.fiche.remplis?.potentialPpg?.niveau === 'repris' && /extrait publié 80 % × 0,46/.test(ambre.fiche.remplis.potentialPpg.deduit ?? ''),
+    'enrichir : l’ambre rempli en ligne (EBC 60 et PPG 36,8 déduits de la plage et de l’extrait, règle citée, source citée)', { fiche: ambre?.fiche, colorEbc: ambre?.colorEbc, potentialPpg: ambre?.potentialPpg });
   c.check(!banc7?.fiche && banc7?.yeastLab === undefined, 'enrichir : la levure du Banc introuvable : rien d’inventé', { article: banc7 });
   c.check(appels1 === 2 && c.enrichir.appels.every(a => !/montant|CHF|adresse/i.test(JSON.stringify(a))), 'enrichir : 2 appels `lookupIngredient` exactement, sans montant ni adresse', { appels: c.enrichir.appels });
   await click(c.page, 'nav button', 'Stocks');
@@ -2034,7 +2053,132 @@ async function caseNomB(c) {
   await c.page.keyboard.press('Escape'); await sleep(400);
 }
 
-const CASES = { 'nom-b': caseNomB, 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
+/**
+ * Voie n2-pages (son choix D291, forme 3) : une dépense de TROIS pages. Trois images FICTIVES (dessinées par un canvas dans la page, jamais une pièce à lui ; écrites sous `os.tmpdir()`), la page 2
+ * est une photo PAYSAGE à tag EXIF d'orientation 6 (un téléphone tenu en travers) : le PDF doit la redresser (sa MediaBox est portrait). Geste : « Plusieurs » (page 1), deux « + page » (pages 2 et 3),
+ * « Lire 3 pages », pile « 3 », « Confirmer », UN seul PDF de trois pages au Drive émulé.
+ * Ce cas prouve l'écran, le PDF et le Drive ; il ne prouve PAS `functions/src/ai.ts` (la lecture est rejouée dans la page) : l'envoi des N parts au modèle est prouvé par les tests unitaires du serveur.
+ * Se lance seul : `--cases pages`.
+ */
+async function casePages(c) {
+  const dossier = mkdtempSync(join(tmpdir(), 'pages-fictives-'));
+  const dessiner = (lourd) => c.page.evaluate(async (lourdQ) => {
+    const sortie = [];
+    for (const [n, w, h] of [[1, 600, 800], [2, 800, 600], [3, 600, 800]]) {
+      const cv = document.createElement('canvas'); cv.width = lourdQ ? w * 3 : w; cv.height = lourdQ ? h * 3 : h;
+      const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.fillStyle = '#222'; g.font = `bold ${28 * (lourdQ ? 3 : 1)}px sans-serif`;
+      g.fillText(`Malzhaus Fiktiv — page ${n}/3`, 30, 60 * (lourdQ ? 3 : 1));
+      for (let i = 0; i < 8; i++) g.fillText(`Article fictif ${n}.${i + 1}   ${(i + 1) * 1.5}`, 30, (140 + i * 50) * (lourdQ ? 3 : 1));
+      if (lourdQ) { const d = g.getImageData(0, 0, cv.width, cv.height); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 60 | 0; d.data[i] ^= v; d.data[i + 1] ^= v; d.data[i + 2] ^= v; } g.putImageData(d, 0, 0); }
+      sortie.push(cv.toDataURL('image/jpeg', lourdQ ? 0.55 : 0.92).split(',')[1]);
+    }
+    return sortie;
+  }, lourd);
+  const avecExif = (jpeg, orientation) => { // APP1 « Exif » minimal, juste après le SOI
+    const app1 = Buffer.from([0xff, 0xe1, 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0, 0, 0x4d, 0x4d, 0, 0x2a, 0, 0, 0, 8, 0, 1, 0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, orientation, 0, 0, 0, 0, 0, 0]);
+    return Buffer.concat([jpeg.subarray(0, 2), app1, jpeg.subarray(2)]);
+  };
+  const fabriquer = async (lourd) => {
+    const bruts = (await dessiner(lourd)).map(b => Buffer.from(b, 'base64'));
+    bruts[1] = avecExif(bruts[1], 6);
+    return bruts.map((b, i) => { const chemin = join(dossier, `${lourd ? 'lourde' : 'page'}-${i + 1}.jpg`); writeFileSync(chemin, b); return { chemin, octets: b, sha256: sha(b) }; });
+  };
+  const empreinteDesPages = pages => createHash('sha256').update(Buffer.concat(pages.map(p => createHash('sha256').update(p.octets).digest()))).digest('hex');
+  const modele = structuredClone((c.docs.doc14 ?? Object.values(c.docs)[0]).result);
+  c.docs['pages-fictif'] = { id: 'pages-fictif', image: '', fileName: 'pages', bytes: Buffer.alloc(0), sha256: 'pages', truth: null, mimeType: 'image/jpeg',
+    result: { ...modele, vendor: 'Malzhaus Fiktiv Pages', invoiceNumber: 'PAGES-3P', date: '14.10.2026', currency: 'CHF', amountTTC: 25, amountHT: null, tvaRate: null, tvaAmount: null, description: 'Pages fictives',
+      issues: [], points: undefined, controls: undefined, review: { status: 'checked', findings: [], readers: 2 },
+      items: [{ id: 'line-1', name: 'Wiener Malz fictif', variant: '', kind: 'stock', quantity: 10, unit: 'Kg', price: 1.5, amountTTC: 15, stockCategory: 'malt', reference: '', evidence: '', ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null },
+        { id: 'line-2', name: 'Levure fictive', variant: '', kind: 'stock', quantity: 1, unit: 'sachet', price: 10, amountTTC: 10, stockCategory: 'levure', reference: '', evidence: '', ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null }] } };
+  const nb = () => c.page.$$eval(`${sheet} [data-dp="rangee-pages"] [data-dp="page"]`, els => els.length).catch(() => 0);
+  const frise = () => c.page.$eval(`${sheet} [data-dp="frise"]`, e => e.textContent).catch(() => null);
+  const choisir = async (texte, fichier) => {
+    const [picker] = await Promise.all([c.page.waitForFileChooser({ timeout: 20000 }), click(c.page, `${sheet} button`, texte)]);
+    await picker.accept([fichier]);
+  };
+  const monter = async (pages, etiquette) => {
+    c.pagesAttendues = pages.map(p => p.sha256);
+    c.ai = { mode: 'replay', doc: 'pages-fictif', delayMs: etiquette === 'principal' ? 1500 : 0 };
+    const premier = await openInvoiceEntry(c); (await premier)?.cancel?.();
+    if (etiquette === 'principal') await shoot(c, 'pages-entree'); // l'entrée « Un document | Plusieurs », avant la première page
+    await choisir('Plusieurs', pages[0].chemin);
+    await waitFor(async () => (await nb()) === 1, 'première page de la rangée');
+    for (const [i, p] of pages.slice(1).entries()) { await choisir('+ page', p.chemin); await waitFor(async () => (await nb()) === i + 2, `page ${i + 2} de la rangée`); }
+  };
+  const attendreLecture = () => c.page.waitForFunction(() => !document.body.innerText.includes('Lecture et vérification') && !document.body.innerText.includes('Préparation des pages')
+    && (document.querySelector('section[aria-label="Vérification du justificatif"]') || document.querySelector('[role="dialog"] [role="alert"]') || document.querySelector('#purchase-total')), { timeout: 60000 });
+
+  // 1. La mesure : trois pages lourdes (~3 Mo chacune), CPU ralenti ×4 ; l'assemblage du PDF doit rester court. La dépense n'est pas confirmée.
+  const lourdes = await fabriquer(true);
+  c.record('pages-lourdes-octets', lourdes.map(p => p.octets.length));
+  await monter(lourdes, 'mesure');
+  const cdp = await c.page.createCDPSession();
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  const debut = Date.now();
+  await click(c.page, `${sheet} button`, 'Lire 3 pages');
+  await c.page.waitForFunction(() => document.body.innerText.includes('Préparation des pages'), { timeout: 5000 }).catch(() => null);
+  await c.page.waitForFunction(() => !document.body.innerText.includes('Préparation des pages'), { timeout: 120000 });
+  c.measure('assemblage-pages-cpu-x4-ms', Date.now() - debut);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  await attendreLecture(); await sleep(600);
+  await closeSheet(c);
+  const avantEnvois = c.drive.uploads.length;
+
+  // 2. Le parcours : trois pages fictives légères, « Confirmer », un seul PDF au Drive.
+  const pages = await fabriquer(false), hash = empreinteDesPages(pages);
+  const avant = await dbSnapshot(c.db);
+  await monter(pages, 'principal');
+  await shoot(c, 'pages-rangee-3');
+  // La frise au repos (maquettes 3 et 4) : la frise doit exister ; « 3 pages ✓ » plein, jamais « envoi », « lecture » ni pointillé.
+  const friseRepos = await frise();
+  const enCoursAuRepos = await c.page.$(`${sheet} [data-dp="frise"] .dp-p3c-frise-cours`);
+  c.check(friseRepos !== null && friseRepos.includes('3 pages ✓') && !friseRepos.includes('envoi') && !enCoursAuRepos, 'pages : la frise au repos dit « 3 pages ✓ » (jamais « envoi »), lecture et vérification grises', { frise: friseRepos });
+  await click(c.page, `${sheet} button`, 'Lire 3 pages');
+  // Après « Lire » : « 3 pages ✓ » reste, « lecture » passe en gras et pointillé (dès l'assemblage du PDF).
+  const lectureVue = await c.page.waitForFunction(sel => { const e = document.querySelector(sel); return !!e && e.textContent.includes('3 pages ✓') && !!e.querySelector('.dp-p3c-frise-cours'); }, { timeout: 20000, polling: 'mutation' },
+    `${sheet} [data-dp="frise"]`).then(() => true, () => false);
+  c.check(lectureVue, 'pages : après « Lire », « 3 pages ✓ » reste et « lecture » est en cours (pointillé)');
+  await shoot(c, 'pages-lecture');
+  await attendreLecture(); await sleep(600);
+  const appel = c.calls.ai.at(-1);
+  c.check(appel?.expectedFiles === true && !appel.file, 'pages : une seule lecture, les trois pages dans l\'ordre (empreinte de chacune), aucun fichier seul', { files: appel?.files?.length, expected: appel?.expectedFiles });
+  const lecture = await readSheet(c);
+  c.record('pages-revue', lecture);
+  await shoot(c, 'pages-lue-repos');
+  const pile = await c.page.$eval(`${sheet} header button[aria-label^="Justificatif, 3 pages"]`, e => e.textContent).catch(() => null);
+  c.check(pile?.includes('3'), 'pages : la pile « 3 » remplace l\'icône du document dans l\'en-tête', { pile });
+  const preuve = await c.page.$eval(`${sheet} section[aria-label="Preuve de la lecture"]`, e => e.innerText.replace(/\s+/g, ' ')).catch(() => '');
+  c.check(/3 pages lues/.test(preuve) && !/Lectures/.test(preuve), 'pages : la preuve dit « ✓ 3 pages lues » (lectures d\'accord, sa maquette 6)', { preuve });
+  // Aucune rangée de la preuve ne sort de sa case (« Qté × prix non contrôlé » débordait à 390 et à 1280).
+  const debordent = await c.page.$$eval(`${sheet} [data-dp="preuve"] button`, els => els.map(e => ({ texte: e.textContent.replace(/\s+/g, ' ').trim().slice(0, 40), scrollWidth: e.scrollWidth, clientWidth: e.clientWidth })).filter(x => x.scrollWidth > x.clientWidth + 1)).catch(() => null);
+  c.check(Array.isArray(debordent) && debordent.length === 0, 'pages : aucune rangée de la preuve ne sort de sa case (scrollWidth <= clientWidth + 1)', { debordent });
+  await click(c.page, `${sheet} header button[aria-label^="Justificatif, 3 pages"]`);
+  await sleep(400);
+  const vignettes = await c.page.$$eval(`${sheet} [data-dp="pages-panneau"] [data-dp="vignette"]`, els => els.length).catch(() => 0);
+  c.check(vignettes === 3, 'pages : le toucher de la pile ouvre le panneau (3 vignettes et « Changer »)', { vignettes });
+  await shoot(c, 'pages-panneau');
+  await click(c.page, `${sheet} header button[aria-label^="Justificatif, 3 pages"]`);
+  const outcome = await confirmSheet(c, 60000);
+  c.record('pages-confirmation', outcome);
+  if (outcome !== 'fermée') await shoot(c, 'pages-confirmation-refusee');
+  const mine = async () => (await all(c.db, 'transactions')).find(row => row.finance?.sourceDocumentHash === hash);
+  await waitFor(mine, 'la dépense des trois pages', 60000).catch(() => null);
+  await waitFor(async () => { const row = await mine(); return !row || !row.finance?.proofUpload || !!row.finance.proofDocumentId; }, 'le lien du justificatif des trois pages', 120000).catch(() => null);
+  const tx = await mine();
+  const proof = tx?.finance?.proofDocumentId ? (await c.db.doc(`financeDocuments/${tx.finance.proofDocumentId}`).get()).data() : null;
+  const fichier = proof?.driveFileId ? c.drive.files.get(proof.driveFileId) : null;
+  const pdf = fichier ? fichier.bytes.toString('latin1') : '';
+  const nbPagesPdf = (pdf.match(/\/Type \/Page\b/g) ?? []).length;
+  const boites = [...pdf.matchAll(/\/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]/g)].map(m => [Number(m[1]), Number(m[2])]);
+  c.record('pages-ecritures', businessWrites(dbWrites(avant, await dbSnapshot(c.db))));
+  c.check(outcome === 'fermée' && !!tx && tx.finance.sourceDocumentHash === hash, 'pages : « Confirmer » enregistre la dépense, son empreinte est celle des trois pages', { outcome, tx: !!tx });
+  c.check(c.drive.uploads.length - avantEnvois === 1 && fichier?.mimeType === 'application/pdf' && nbPagesPdf === 3, 'pages : UN seul justificatif au Drive, un PDF de trois pages', { envois: c.drive.uploads.length - avantEnvois, type: fichier?.mimeType, pages: nbPagesPdf });
+  c.check(proof && proof.sha256 === sha(fichier.bytes) && proof.bytes === fichier.bytes.length && fichier.bytes.length <= 4 * 1024 * 1024, 'pages : le PDF est rangé avec son empreinte, sous 4 Mo', { octets: fichier?.bytes.length });
+  c.check(boites.length === 3 && boites[1][0] < boites[1][1], 'pages : la photo paysage à tag EXIF 6 est redressée dans le PDF (page 2 en portrait)', { boites });
+  c.record('pages-pdf-octets', fichier?.bytes.length ?? null);
+}
+
+const CASES = { pages: casePages, 'nom-b': caseNomB, 'drive-fond': caseDriveFond, doc14: caseDoc14, doublon: caseDoublon, etats: caseEtats, doc5: caseDoc5, finances: caseFinances, doc6: caseDoc6, 'autre-numero': caseAutreNumero, doc1: caseDoc1, doc4: caseDoc4,
   'hors-ligne': caseHorsLigne, doc3: caseDoc3, doc2: caseDoc2, rattacher: caseRattacher, minuscules: caseMinuscules, enrichir: caseEnrichir };
 
 async function inner() {

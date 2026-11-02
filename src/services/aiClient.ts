@@ -58,6 +58,8 @@ export interface AiRequest {
   instruction?: string;
   /** Pièce jointe : photo ou PDF. */
   file?: File | Blob;
+  /** n2-pages : les pages d'un même justificatif (2 à 4 images), lues d'un seul appel ; jamais avec `file`. */
+  files?: Array<File | Blob>;
 }
 
 export interface AiResponse<T = any> {
@@ -70,6 +72,8 @@ export interface AiResponse<T = any> {
   error?: string;
   cached?: boolean;
   documentHash?: string;
+  /** n2-pages : le nombre de pages que le serveur dit avoir lues ; absent d'un serveur qui ne lit qu'un fichier. */
+  pages?: number;
 }
 
 /** Convertit un fichier en base64 sans le préfixe `data:`. */
@@ -114,7 +118,9 @@ export const AiClient = {
         instruction: req.task === 'scanInvoice' ? undefined : req.instruction
       };
 
-      if (req.file) {
+      if (req.files?.length) {
+        payload.files = await Promise.all(req.files.map(toBase64));
+      } else if (req.file) {
         payload.file = await toBase64(req.file);
       }
 

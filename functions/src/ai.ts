@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { onCall, HttpsError, CallableRequest } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
@@ -83,10 +84,14 @@ interface AiTaskPayload {
   instruction?: string;
   /** Pièce jointe encodée en base64, sans le préfixe `data:`. */
   file?: { data: string; mimeType: string };
+  /** n2-pages : les pages d'un même justificatif (2 à 4 images), lues d'un seul appel ; jamais avec `file`. */
+  files?: Array<{ data: string; mimeType: string }>;
 }
 
 interface AiTaskResult {
   ok: boolean;
+  /** n2-pages : le nombre de pages lues, seulement quand il y en a plusieurs ; le client exige qu'il soit celui des pages envoyées. */
+  pages?: number;
   data?: unknown;
   model?: string;
   tier?: AiTier;
@@ -96,17 +101,59 @@ interface AiTaskResult {
   documentHash?: string;
 }
 
+/** n2-pages : au plus 4 pages (la règle des PDF), 4 Mo chacune (`validateInvoiceFile`), 16 000 000 caractères de base64 pour toutes (≈ 12 Mo). */
+export const SCAN_MAX_PAGES = 4;
+export const MAX_PAGES_B64 = 16_000_000;
+/** La phrase du banc (`multiCaptureNote`, `scripts/banc-lecture-facture.ts`), mot pour mot : c'est la forme mesurée. */
+export const MULTI_PAGE_NOTE = (count: number): string =>
+  `Les ${count} images jointes sont des captures successives d’un même document, dans l’ordre de lecture ; elles peuvent se recouvrir. Chaque ligne imprimée ne se lit qu’une seule fois : si une ligne apparaît sur deux captures, ne la transcris qu’une fois.`;
+
+/** Les pages d'une lecture à plusieurs fichiers : 2 à 4 images valides, dans l'ordre reçu, pas plus de `MAX_PAGES_B64` caractères en tout. */
+export function pagesDeLecture(files: unknown): InvoiceFile[] {
+  if (!Array.isArray(files) || files.length < 2 || files.length > SCAN_MAX_PAGES) throw new Error(`Sélectionne de 2 à ${SCAN_MAX_PAGES} pages.`);
+  const pages = files.map(file => validateInvoiceFile(file));
+  if (pages.some(page => !page.mimeType.startsWith('image/'))) throw new Error('Plusieurs pages : des images seulement (JPG, PNG, WebP). Un PDF se lit seul.');
+  if (pages.reduce((total, page) => total + page.data.length, 0) > MAX_PAGES_B64) throw new Error('Les pages sont trop volumineuses (12 Mo au plus en tout).');
+  return pages;
+}
+
+/**
+ * La clé de cache et de budget d'une lecture à pages : un fichier de substitution fait de l'empreinte sha256 brute de chaque page, dans l'ordre.
+ * Le même contenu dans un autre ordre est une autre lecture ; `invoiceScanId` et `invoiceDocumentHash` s'y appliquent sans autre changement,
+ * et l'empreinte rendue au client (`sha256` de cette suite) est celle qu'il calcule lui-même.
+ */
+export function cleDePages(pages: InvoiceFile[]): InvoiceFile {
+  const empreintes = pages.map(page => createHash('sha256').update(Buffer.from(page.data, 'base64')).digest());
+  return { mimeType: 'application/x-pages', data: Buffer.concat(empreintes).toString('base64') };
+}
+
+/** Ce que la charge de la requête demande : rien, un fichier, ou des pages. `files` n'existe que pour `scanInvoice` et jamais avec `file`. */
+export type ChargeDeLecture = { kind: 'aucune' } | { kind: 'fichier'; file: unknown } | { kind: 'pages'; files: unknown[] };
+export function chargeDeLecture(data: { task?: unknown; file?: unknown; files?: unknown }, def: { acceptsFile?: boolean }): ChargeDeLecture {
+  const { task, file, files } = data;
+  const avecPages = files !== undefined && files !== null;
+  if (avecPages && task !== 'scanInvoice') throw new HttpsError('invalid-argument', 'Plusieurs fichiers ne sont acceptés que pour la lecture d’un justificatif.');
+  if (avecPages && file) throw new HttpsError('invalid-argument', 'Un fichier ou plusieurs pages, pas les deux.');
+  if (avecPages && !Array.isArray(files)) throw new HttpsError('invalid-argument', 'Les pages doivent être une liste de fichiers.');
+  if ((file || avecPages) && !def.acceptsFile) throw new HttpsError('invalid-argument', `La tâche ${String(task)} n'accepte pas de pièce jointe.`);
+  if (avecPages) return { kind: 'pages', files: files as unknown[] };
+  return file ? { kind: 'fichier', file } : { kind: 'aucune' };
+}
+
 /**
  * A separate, fixed-cost path: no model chain, no client tier/context/instruction.
  * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 5 100 jetons) sur désaccord
  * ou quand une Flash-Lite manque ; l'ordre des appels et le vote sont dans `invoiceScanVote.ts` (portage à l'identique du banc).
  */
-export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
+export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
   const started = Date.now();
   // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8.
   const override = evaluationOptions?.maxOutputTokens;
   if (override !== undefined && (!Number.isSafeInteger(override) || override < 1 || override > SCAN_MAX_OUTPUT)) throw new Error('Plafond de sortie invalide.');
-  const file: InvoiceFile = validateInvoiceFile(suppliedFile), model = SCAN_MODEL;
+  // n2-pages : un fichier (ou une liste d'un seul) se lit comme toujours ; 2 à 4 images se lisent d'un seul appel, une part `inlineData` par page, dans l'ordre.
+  const pages: InvoiceFile[] = !Array.isArray(suppliedFile) ? [validateInvoiceFile(suppliedFile)] : suppliedFile.length === 1 ? [validateInvoiceFile(suppliedFile[0])] : pagesDeLecture(suppliedFile);
+  const key: InvoiceFile = pages.length > 1 ? cleDePages(pages) : pages[0], model = SCAN_MODEL;
+  const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : prompt;
   assertGeminiModel(model);
   assertGeminiModel(GEMINI_LITE_MODEL);
   const provider = async (body: Record<string, unknown>, signal: AbortSignal, callModel: string = model) => {
@@ -130,11 +177,11 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
   };
   const body = (system: string, prompt: string, schema: Record<string, unknown>, maxOutputTokens: number) => ({
     systemInstruction:{ parts:[{ text:system }] },
-    contents:[{ role:'user', parts:[{ text:prompt }, { inlineData:file }] }],
+    contents:[{ role:'user', parts:[{ text:withNote(prompt) }, ...pages.map(page => ({ inlineData:page }))] }],
     generationConfig:{ responseMimeType:'application/json', responseSchema:schema, temperature:0, maxOutputTokens,
       mediaResolution:'MEDIA_RESOLUTION_HIGH', thinkingConfig:{ thinkingLevel:'LOW' } }
   });
-  const reviewed = await runBudgetedInvoiceScan(uid, file, async generate => {
+  const reviewed = await runBudgetedInvoiceScan(uid, key, async generate => {
     const deadline = AbortSignal.timeout(100_000);
     // LE4 : une ligne de journal par lecture (durée, jetons, finishReason, coupée ou non), écrite AVANT le parsing ; aucun contenu de facture.
     const cause = (reason: any): CauseCoupure | null => reason instanceof ScanReadCutError ? 'sortie' : reason?.name === 'AbortError' || reason?.name === 'TimeoutError' ? 'delai' : null;
@@ -153,7 +200,7 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
       deadlineReached: () => deadline.aborted
     });
   }, provider, { degraded: (result: any) => result?.review?.status === 'unavailable' && Array.isArray(result?.points) && result.points.some((p: any) => p.code === 'lecture-coupee') });
-  return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash };
+  return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash, ...(pages.length > 1 ? { pages:pages.length } : {}) };
 }
 
 /** Aussi lue par `hopReclasserIA` : une seule liste de comptes, une seule règle. */
@@ -256,15 +303,14 @@ export const aiTask = onCall(
   },
   async (request: CallableRequest<AiTaskPayload>): Promise<AiTaskResult> => {
     const email = assertAuthorized(request);
-    const { task, tier: requestedTier, context, instruction, file } = request.data ?? {};
+    const { task, tier: requestedTier, context, instruction, file, files } = request.data ?? {};
 
     const def = task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : TASKS[task];
     if (!def) {
       throw new HttpsError('invalid-argument', `Tâche inconnue : ${task}`);
     }
-    if (file && !def.acceptsFile) {
-      throw new HttpsError('invalid-argument', `La tâche ${task} n'accepte pas de pièce jointe.`);
-    }
+    // n2-pages : `file` ou `files` (2 à 4 pages), jamais les deux ; `files` seulement pour la lecture d'un justificatif.
+    const charge = chargeDeLecture({ task, file, files }, def);
     if (file && file.data.length > MAX_FILE_B64) {
       throw new HttpsError('invalid-argument', 'Fichier trop volumineux (8 Mo maximum).');
     }
@@ -284,7 +330,7 @@ export const aiTask = onCall(
 
     if (task === 'scanInvoice') {
       try {
-        return await scanInvoiceSafely(request.auth!.uid, file, apiKey);
+        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey);
       } catch (error: any) {
         return { ok:false, tier:'fast', error:error?.message || 'Lecture indisponible. Complète le justificatif manuellement.' };
       }

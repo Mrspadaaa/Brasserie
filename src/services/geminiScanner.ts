@@ -1,5 +1,6 @@
 import type { FinanceCategory } from '../types';
 import { AiClient, type AiTier } from './aiClient';
+import { totalAdmis } from './pagesJustificatif';
 import { peserPoint, type InvoiceControls, type InvoicePoint } from '../domain/finance/invoicePoints';
 
 export type ScannedLineKind = 'equipment'|'maintenance'|'stock'|'service'|'packaging'|'shipping'|'discount'|'other'|'unknown';
@@ -25,7 +26,13 @@ export interface ScannedInvoiceResult {
 export interface ScanOutcome {
   ok:boolean; result?:ScannedInvoiceResult; proofDataUrl:string; fileName:string; mimeType:string;
   model?:string; elapsedMs?:number; error?:string; documentHash?:string; cached?:boolean;
+  /** n2-pages : le nombre de pages que le serveur a lues, posé seulement quand il est celui des pages envoyées. */
+  pagesLues?:number;
 }
+/** n2-pages : ce qu'un serveur qui ne lit pas encore plusieurs pages (avant le redéploiement d'`aiTask`) fait dire à l'écran. */
+export const PLUSIEURS_PAGES_INDISPONIBLE='La lecture de plusieurs pages n’est pas encore disponible sur le serveur. Lis-les avec « Un document », ou saisis à la main.';
+/** Le refus exact de `validateInvoiceFile` quand un serveur d'avant reçoit `files` sans `file` : la signature du vieux serveur (aucun coût, rien n'est lu). */
+const REFUS_VIEUX_SERVEUR='Choisis une photo JPG, PNG, WebP ou un PDF de 4 pages maximum.';
 const number = (value:any):number|null => typeof value === 'number' && Number.isFinite(value) ? value : null;
 const text = (value:any,max=250) => typeof value === 'string' ? value.trim().slice(0,max) : '';
 const kinds:ScannedLineKind[]=['equipment','maintenance','stock','service','packaging','shipping','discount','other','unknown'];
@@ -88,6 +95,21 @@ export const GeminiScannerService = {
     const response=await AiClient.run({ task:'scanInvoice',tier:'fast',file });
     if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:response.error || 'Lecture indisponible. Complète les champs manuellement.' };
     return { ...base,proofDataUrl,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:response.documentHash,cached:response.cached };
+  },
+  /**
+   * n2-pages : les N images d'un même justificatif, lues d'un seul appel (comme le banc). Un serveur qui ne sait pas encore lire des pages n'a jamais le droit
+   * de rendre une lecture : `ok:true` sans `pages === N` et le refus exact de `validateInvoiceFile` disent « pas encore disponible » ; toute autre erreur
+   * (budget, délai, quota, lecture non exploitable) garde son message.
+   */
+  async scanPages(files:File[]):Promise<ScanOutcome> {
+    const base={ proofDataUrl:'',fileName:`${files.length} pages`,mimeType:files[0]?this.normalizeMimeType(files[0]):'' };
+    const types=['image/jpeg','image/png','image/webp'];
+    if (files.length<2||files.length>4||files.some(file=>!types.includes(this.normalizeMimeType(file))||file.size>4*1024*1024)||!totalAdmis(files.map(file=>file.size)))
+      return { ...base,ok:false,error:'Choisis de 2 à 4 images JPG, PNG ou WebP (4 Mo chacune, 12 Mo en tout).' };
+    const response=await AiClient.run({ task:'scanInvoice',tier:'fast',files });
+    if (!response.ok) return { ...base,ok:false,error:response.error===REFUS_VIEUX_SERVEUR?PLUSIEURS_PAGES_INDISPONIBLE:response.error||'Lecture indisponible. Complète les champs manuellement.' };
+    if (!response.data||response.pages!==files.length) return { ...base,ok:false,error:PLUSIEURS_PAGES_INDISPONIBLE };
+    return { ...base,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:response.documentHash,cached:response.cached,pagesLues:response.pages };
   },
   /** Preserve the original amounts, including foreign or mixed VAT and missing quantities. */
   normalizeResult(raw:any):ScannedInvoiceResult {

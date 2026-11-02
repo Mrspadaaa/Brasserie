@@ -54,6 +54,8 @@ import { uniteEffective } from '../../services/purchaseEntry';
 import { regleProduit,linkUnit } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
+import { EntreeFendue,RangeePages,FrisePages,ResteDeLecture,MiniPages } from '../depense/Pages';
+import { assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
   /** dp-doublon : ouvre la fiche d'une dépense déjà enregistrée (la feuille se ferme d'abord). Absent : « Fermer » seulement. */
@@ -189,6 +191,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const qrJeton=useRef(0),qrAvant=useRef<number|undefined>(undefined),qrPhoto=useRef<HTMLInputElement>(null),nomsJeton=useRef(0);
   const [reglees,setReglees]=useState<Set<string>>(new Set());
   const [done,setDone]=useState<DriveProofReceipt|null>(null);
+  /* n2-pages (D291) : plusieurs images pour une seule dépense. `pages` = la rangée (gardée après « Lire » pour le panneau et « Relire ») ; `pagesRef` = la même liste, lue par les plafonds
+     de chaque ajout (une file d'ajouts : deux choix d'un coup ne dépassent jamais 4 pages ni 12 Mo) ; `pdfRef` = le justificatif PDF assemblé pour ces pages (clé : leurs ids dans l'ordre) ;
+     `assemblageEchoue` = le PDF n'a pas pu être assemblé (le lien « Saisir sans justificatif » paraît dans la rangée) ; `nPagesLues` = le nombre que le serveur a confirmé ; `entreeOuverte` = « Changer »
+     a rouvert l'entrée au-dessus de la dépense, qui reste intacte tant qu'aucun nouveau fichier n'est choisi. */
+  const [pages,setPages]=useState<PageRangee[]>([]),[assemblageEchoue,setAssemblageEchoue]=useState(false),[nPagesLues,setNPagesLues]=useState(0),[entreeOuverte,setEntreeOuverte]=useState(false);
+  const pagesRef=useRef<PageRangee[]>([]),pdfRef=useRef<(PdfAssemble&{cle:string})|null>(null),fileAjouts=useRef<Promise<void>>(Promise.resolve()),pagesInput=useRef<HTMLInputElement>(null),etatRef=useRef({attachment:null as File|null,scanOk:false});
+  etatRef.current={attachment,scanOk:Boolean(scan?.ok)};
+  useEffect(()=>()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);},[]);
   const [online,setOnline]=useState(apercu?apercu.reseau:typeof navigator==='undefined'||navigator.onLine!==false);
   const hints=scan?.ok&&scan.result?Object.fromEntries(Object.entries(invoiceFieldHints(scan.result)).filter(([field])=>!reviewedFields.includes(field))):{};
   const reviewed=(field:string)=>setReviewedFields(previous=>previous.includes(field)?previous:[...previous,field]);
@@ -363,16 +373,22 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       setDraft(previous=>({...previous,lines:previous.lines.map(l=>{const fr=parId.get(l.id);return fr&&!l.nameFr?{...l,nameFr:fr,...(decisions.get(l.id)??{})}:l;})}));
     });
   };
+  /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
+     il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
+  const refusDeFichier=():string|null=>pendingRef.current?'L’enregistrement attend sa confirmation : le fichier ne peut plus être changé. Touche « Vérifier la synchronisation ».':proofAttached.current?'Le justificatif est déjà rattaché à cette dépense : le fichier ne peut plus être changé.':proofSent.current?'Ce fichier est déjà parti pour cette saisie. Pour en joindre un autre, ferme et rouvre : rien n’a été enregistré.':null;
+  /* La dépense lue d'avant, remise à zéro quand un nouveau document ou un nouveau lot de pages est choisi (la description tapée est gardée). */
+  const remettreLaDepenseAZero=()=>patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
+  /* La lecture d'avant s'efface : erreur, reçu, lecture, QR. */
+  const effacerLecture=()=>{setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
+  /* Les pages d'avant s'en vont (URL d'objet révoquées), avec leur PDF, leur lecture confirmée et l'entrée rouverte par « Changer ». */
+  const libererPages=()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);pagesRef.current=[];pdfRef.current=null;setPages([]);setNPagesLues(0);setAssemblageEchoue(false);setEntreeOuverte(false);};
   const attach=async(file:File,lireQuandMeme=false)=>{
     if(scanLocked.current||saveLocked.current)return;
-    /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
-       il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
-    if(pendingRef.current){setError('L’enregistrement attend sa confirmation : le fichier ne peut plus être changé. Touche « Vérifier la synchronisation ».');return;}
-    if(proofAttached.current){setError('Le justificatif est déjà rattaché à cette dépense : le fichier ne peut plus être changé.');return;}
-    if(proofSent.current){setError('Ce fichier est déjà parti pour cette saisie. Pour en joindre un autre, ferme et rouvre : rien n’a été enregistré.');return;}
+    const refus=refusDeFichier();if(refus){setError(refus);return;}
     if(file.size>4*1024*1024 || !['image/jpeg','image/png','image/webp','application/pdf'].includes(GeminiScannerService.normalizeMimeType(file))){setError('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');return;}
-    if(attachment&&scan?.ok)patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
-    scanLocked.current=true;setBusy(true);setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};
+    if(pagesRef.current.length)libererPages();
+    if(attachment&&scan?.ok)remettreLaDepenseAZero();
+    scanLocked.current=true;setBusy(true);effacerLecture();
     try {
       const proofDataUrl=await GeminiScannerService.fileToDataUrl(file);
       const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
@@ -390,6 +406,91 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     }catch(e:any){if(mounted.current)setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');}
     finally{scanLocked.current=false;if(mounted.current){setBusy(false);setShowForm(true);}}
   };
+  /* ------- n2-pages : plusieurs images pour une dépense ------- */
+  const urlDePage=(file:File)=>typeof URL.createObjectURL==='function'?URL.createObjectURL(file):'';
+  /* Une page de plus, dans la file des ajouts : les plafonds (4 pages, 4 Mo la page, 12 Mo en tout, jamais deux fois la même) se lisent sur `pagesRef` au moment où la page passe.
+     Quand une dépense est déjà jointe (« Changer » a rouvert l'entrée), la première page d'un nouveau lot remet tout à zéro, comme `attach` pour un document. */
+  const ajouterUnePage=async(file:File)=>{
+    if(!mounted.current||scanLocked.current||saveLocked.current)return;
+    const refus=refusDeFichier();if(refus){setError(refus);return;}
+    const nouveauLot=Boolean(etatRef.current.attachment);
+    const base=nouveauLot?[]:pagesRef.current;
+    const avant=refuserPage(file,base);if(avant){setError(avant);return;}
+    const empreinte=await empreinteDePage(file);
+    /* « Lire » a pu partir pendant l'empreinte : cette page n'est ni dans le PDF ni dans la lecture, elle n'entre pas non plus dans la pile ni dans « N pages ». */
+    if(!mounted.current||scanLocked.current)return;
+    const refusEmpreinte=refuserPage(file,nouveauLot?[]:pagesRef.current,empreinte);if(refusEmpreinte){setError(refusEmpreinte);return;}
+    if(nouveauLot){
+      libererPages();
+      if(etatRef.current.scanOk)remettreLaDepenseAZero();
+      effacerLecture();setAttachment(null);patch({proofDataUrl:undefined,proofFileName:undefined,proofType:undefined,documentHash:undefined});setJustifOuvert(false);
+    }
+    const page:PageRangee={id:crypto.randomUUID(),file,url:urlDePage(file),empreinte};
+    pagesRef.current=[...pagesRef.current,page];setPages(pagesRef.current);setError('');setAssemblageEchoue(false);setEntreeOuverte(false);setShowForm(false);
+  };
+  const ajouterPage=(file:File)=>{fileAjouts.current=fileAjouts.current.then(()=>ajouterUnePage(file)).catch(()=>undefined);};
+  const retirerPage=(id:string)=>{
+    const page=pagesRef.current.find(p=>p.id===id);
+    if(page?.url)URL.revokeObjectURL?.(page.url);
+    pagesRef.current=pagesRef.current.filter(p=>p.id!==id);setPages(pagesRef.current);setError('');setAssemblageEchoue(false);
+  };
+  /* Après un échec d'assemblage : saisir à la main, les pages retirées (le formulaire s'ouvre, rien n'est lu). */
+  const saisirSansPages=()=>{libererPages();setError('');setShowForm(true);};
+  /* Un fichier lâché : un seul = comme aujourd'hui (une page de plus quand la rangée est ouverte) ; plusieurs d'un coup : refusés, jamais la page 2 perdue en silence. */
+  const MESSAGE_DEPOT='Dépose un seul document à la fois. Pour plusieurs pages, touche « Plusieurs ».';
+  const deposer=(e:React.DragEvent,vers:'document'|'page')=>{
+    e.preventDefault();setDropping(false);
+    const fichiers=Array.from(e.dataTransfer.files??[]);
+    if(fichiers.length>1){setError(MESSAGE_DEPOT);return;}
+    if(fichiers[0])vers==='page'?ajouterPage(fichiers[0]):void attach(fichiers[0]);
+  };
+  /* Le bulletin de versement (QR-facture) est en dernière page : les pages se lisent de la dernière à la première, jusqu'au premier QR lu. */
+  const lancerQrPages=(fichiers:File[])=>{
+    const jeton=++qrJeton.current;
+    setQrRes(null);setQrOuvert(undefined);
+    void(async()=>{
+      let dernier:ResultatQr={statut:'non-verifie',motif:'lecture impossible'};
+      for(const fichier of [...fichiers].reverse()){
+        dernier=await lireQrDuFichier(fichier).catch(():ResultatQr=>({statut:'non-verifie',motif:'lecture impossible'}));
+        if(dernier.statut==='lu'||qrJeton.current!==jeton)break;
+      }
+      if(mounted.current&&qrJeton.current===jeton)setQrRes(dernier);
+    })();
+  };
+  /* « Lire N pages » : une seule lecture des N originales ; le justificatif est le PDF assemblé d'abord (un échec s'arrête avant toute lecture payante). Une page seule = « Un document ». */
+  const lirePages=async(lireQuandMeme=false)=>{
+    const lot=pagesRef.current;
+    if(lot.length===1){await attach(lot[0].file,lireQuandMeme);return;}
+    if(lot.length<2||scanLocked.current||saveLocked.current)return;
+    const refus=refusDeFichier();if(refus){setError(refus);return;}
+    scanLocked.current=true;setBusy(true);setAssemblageEchoue(false);setEntreeOuverte(false);
+    if(etatRef.current.attachment&&etatRef.current.scanOk)remettreLaDepenseAZero();
+    effacerLecture();
+    let pose=false;
+    try {
+      const cle=lot.map(p=>p.id).join('|');
+      if(pdfRef.current?.cle!==cle)pdfRef.current={cle,...await assemblerPdf(lot.map(p=>p.file))};
+      const pdf=pdfRef.current!;
+      const proofDataUrl=await GeminiScannerService.fileToDataUrl(pdf.file);
+      const documentHash=await empreinteDesPages(lot.map(p=>p.empreinte));
+      if(!mounted.current)return;
+      setAttachment(pdf.file);pose=true;
+      patch({proofDataUrl,proofFileName:pdf.file.name,proofType:'application/pdf',documentHash});
+      /* Les mêmes pages qu'une dépense saisie : certain, donc ni lecture ni coût ; « Lire quand même » le lève. */
+      const meme=lireQuandMeme?undefined:purchaseSameFile(documentHash,transactions,draft.submissionId);
+      if(meme){setDeja(meme.id);return;}
+      lancerQrPages(lot.map(p=>p.file));
+      const outcome=await GeminiScannerService.scanPages(lot.map(p=>p.file));
+      if(!mounted.current)return;
+      setNPagesLues(outcome.ok?outcome.pagesLues??0:0);
+      applyOutcome(outcome,documentHash);
+    }catch(e:any){if(mounted.current){setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');if(!pose)setAssemblageEchoue(true);}}
+    finally{scanLocked.current=false;if(mounted.current){setBusy(false);if(pose)setShowForm(true);}}
+  };
+  /* « Changer » sur des pages : l'entrée (« Un document » | « Plusieurs ») s'ouvre au-dessus de la dépense, qui ne bouge pas ; rien n'est remis à zéro avant le premier nouveau fichier. */
+  const ouvrirEntree=()=>{const refus=refusDeFichier();if(refus){setError(refus);return;}setEntreeOuverte(true);};
+  /* Le justificatif joint est-il le PDF de ces pages ? Alors la pile « N » et le panneau des pages sont dits, lue ou non. */
+  const pagesJointes=pages.length>1&&attachment&&pdfRef.current&&attachment===pdfRef.current.file?pages.length:0;
   /* Le banc de développement pose la lecture simulée sans appeler Gemini ni lire de fichier (état 1 : la lecture reste « en cours »). */
   useEffect(()=>{
     if(!apercu)return;
@@ -834,9 +935,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ctl=result?.controls,lectures=result?.review?.readers;
   const ecartTotalQr=qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined;
   const rangees:Rang[]=result?[
-    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme des lignes',valeur:'non contrôlée'},
-    ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Quantité × prix',valeur:'non contrôlé'},
-    ...(lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:'Lectures',valeur:`${lectures} lectures`}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
+    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme non contrôlée',valeur:''},
+    ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Qté × prix non contrôlé',valeur:''},
+    /* n2-pages, sa maquette 6 : des lectures d'accord sur une pièce de plusieurs pages (le serveur en a confirmé N) disent « ✓ N pages lues », sans valeur à droite ; en désaccord,
+       « Lectures · N pages » et « n lectures » ; un document seul : « Lectures » et « 2/2 », comme avant. Sans lectures annoncées rien n'est inventé. */
+    ...(lectures?[(result.points??[]).some(p=>p.origine==='lecture'&&p.pese!==false)?{ok:false,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeur:`${lectures} lectures`}:nPagesLues>1?{ok:true,texte:`${nPagesLues} pages lues`,valeur:''}:{ok:true,texte:'Lectures',valeur:`${lectures}/${lectures}`}]:[]),
     ...((result.linesLost??0)>0?[{ok:false,texte:'Lignes non gardées',valeur:String(result.linesLost)}]:[]),
   ]:[];
   const corriges=[...new Set((result?.review?.correctedFields??[]).map(f=>f.startsWith('items')?'Articles':f))];
@@ -921,36 +1024,40 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <p className="text-xs text-cave-400">{similarChoice==='same'?(similarAttachable?'Même achat : le justificatif rejoint la dépense existante, sans dépense, stock ni paiement en plus.':'Même achat : rien n’est enregistré, la dépense existante reste telle quelle.'):'Ce n’est qu’un signal : sans choix, l’achat s’enregistre normalement.'}</p>
       </section>:null}
   </>;
-  const capt=<>
-      {!attachment&&!busy?showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:<section
+  /* L'entrée : le bouton noir coupé en deux (« Un document » : le geste d'aujourd'hui | « Plusieurs » : la rangée de pages), puis « Photographier », la note, « Saisir sans justificatif ». */
+  const entree=<section
         aria-label="Justificatif de la dépense"
         className={`py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors ${dropping?'border-ebc-straw bg-ebc-straw/10':'border-cave-700'}`}
         onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}}
         onDragLeave={()=>setDropping(false)}
-        onDrop={e=>{e.preventDefault();setDropping(false);const file=e.dataTransfer.files?.[0];if(file)void attach(file);}}
+        onDrop={e=>deposer(e,'document')}
       >
-        <button data-primary type="button" onClick={()=>fileInput.current?.click()} className="w-full min-h-8 rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center gap-2 text-[13px] font-semibold"><FileText size={16}/>Choisir le document</button>
+        <EntreeFendue onUn={()=>fileInput.current?.click()} onPlusieurs={()=>pagesInput.current?.click()}/>
         {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
         <p className="text-xs text-center text-cave-400">PDF ou image{coarse?'':', ou dépose le fichier ici'} · lecture automatique · 4 Mo max.</p>
         {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
-      </section>:busy?<div data-dp="lecture" className="space-y-1.5">
+      </section>;
+  const capt=<>
+      {entreeOuverte?entree:null}
+      {!attachment&&!busy?pages.length>0?<>
+        <RangeePages pages={pages.map(p=>({id:p.id,url:p.url,nom:p.file.name}))} max={PAGES_MAX} onRetirer={retirerPage} onAjouter={()=>pagesInput.current?.click()} onLire={()=>void lirePages()}
+          onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}} onDragLeave={()=>setDropping(false)} onDrop={e=>deposer(e,'page')} depose={dropping} sansJustificatif={assemblageEchoue?saisirSansPages:undefined}/>
+        <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"><FrisePages etat="repos" pages={pages.length}/></div>
+        <ResteDeLecture/>
+      </>:showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:entree:busy?<div data-dp="lecture" className="space-y-1.5">
         {/* p3c-3, état « lecture » : la carte du fichier avec la frise « envoi ✓ · lecture · vérification », le cadre « Les lignes arrivent ici », puis « Pour quoi ? » et « Règlement » (verrouillés tant que la lecture écrit le brouillon). */}
         <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]">
-          <div className="flex items-baseline justify-between gap-2"><span className="min-w-0 truncate text-base font-semibold leading-6 text-cave-50">{attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}</span>{(attachment?.size||apercu?.fichier.size)?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo</span>:null}{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0 self-center">{sceauQr}</div>:null}</div>
+          <div className="flex items-baseline justify-between gap-2"><span className="min-w-0 truncate text-base font-semibold leading-6 text-cave-50">{pages.length>1?(pagesJointes?`${pages.length} pages`:'Préparation des pages…'):attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}</span>{pages.length>1?(pagesJointes&&pdfRef.current?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round(pdfRef.current.octets/1e5)/10)} Mo{pdfRef.current.reduite?' · réduites':''}</span>:null):(attachment?.size||apercu?.fichier.size)?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo</span>:null}{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0 self-center">{sceauQr}</div>:null}</div>
           {resumeQr(qrRes)?<p data-dp="qr-lecture" className="break-words font-mono text-xs text-cave-200">{resumeQr(qrRes)}</p>:null}
           <p role="status" className="sr-only">Lecture et vérification…</p>
-          <div data-dp="frise" aria-hidden className="mt-[3px] flex gap-1.5 text-xs text-cave-400">
-            <span className="flex flex-1 flex-col gap-[3px] text-cave-200"><i className="block h-1.5 rounded-control bg-cave-200"/>envoi ✓</span>
-            <span className="flex flex-1 flex-col gap-[3px] font-semibold text-cave-50"><i className="dp-p3c-frise-cours block h-1.5 rounded-control"/>lecture</span>
-            <span className="flex flex-1 flex-col gap-[3px]"><i className="block h-1.5 rounded-control bg-cave-800"/>vérification</span>
-          </div>
+          {pages.length>1?<MiniPages pages={pages.map(p=>({id:p.id,url:p.url,nom:p.file.name}))}/>:null}
+          <FrisePages etat="lecture" pages={pages.length>1?pages.length:undefined}/>
         </div>
         {ficheQr}
-        <div data-dp="lignes-arrivent" className="flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400">Les lignes arrivent ici</div>
-        <div className="px-1 pb-3 pt-1">{[['Pour quoi ?','après la lecture'],['Règlement','Déjà payé · À payer']].map(([titre,valeur])=><div key={titre} className="flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"><span>{titre}</span><em className="ml-auto truncate text-xs not-italic text-cave-400">{valeur}</em></div>)}</div>
-      </div>:dejaTx&&attachment?<PieceDejaSaisie tx={dejaTx} stocks={stocks} payments={FinanceService.getPayments?.()??[]} transactions={transactions} onLire={()=>void attach(attachment,true)}/>
-      :scan&&!scan.ok&&attachment?<div data-dp="erreur-lecture" className="flex flex-wrap items-center gap-1.5 border-t border-cave-700 py-2"><span className="min-w-0 flex-1 truncate text-xs text-cave-400">{attachment.name}</span>
-        <button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>void attach(attachment)} className={boutonPlein}>Relire</button>
+        <ResteDeLecture/>
+      </div>:dejaTx&&attachment?<PieceDejaSaisie tx={dejaTx} stocks={stocks} payments={FinanceService.getPayments?.()??[]} transactions={transactions} onLire={()=>void(pagesJointes?lirePages(true):attach(attachment,true))}/>
+      :scan&&!scan.ok&&attachment?<div data-dp="erreur-lecture" className="flex flex-wrap items-center gap-1.5 border-t border-cave-700 py-2"><span className="min-w-0 flex-1 truncate text-xs text-cave-400">{pagesJointes?`${pagesJointes} pages`:attachment.name}</span>
+        <button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>void(pagesJointes?lirePages():attach(attachment))} className={boutonPlein}>Relire</button>
         <button type="button" onClick={()=>{const champ=form.current?.querySelector<HTMLElement>('#purchase-total');champ?.focus();champ?.scrollIntoView?.({block:'center'});}} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Saisir à la main</button></div>:null}
   </>;
   const alertes=<>
@@ -1003,14 +1110,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </fieldset>;
   const enteteFichier=surFichier;
   return <ModalShell open onClose={()=>{if(!busy&&!saving)onClose();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl" plein>
-    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={onClose} onBasculer={()=>setJustifOuvert(o=>!o)}/>
+    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={onClose} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}/>
     <div ref={scroller} className="dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]">
-      <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)} onChanger={()=>fileInput.current?.click()}/></div>
+      <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)} pages={pagesJointes?pages.map(p=>({id:p.id,url:p.url,nom:p.file.name})):undefined} onChanger={pagesJointes?ouvrirEntree:()=>fileInput.current?.click()}/></div>
       <div data-dp="alertes" className="space-y-1.5 px-2 pt-1.5 empty:hidden">{recu}{alertes}</div>
       <div ref={form} className="pb-2">
         <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
         <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
         <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)lancerQr(file);e.target.value='';}}/>
+        {/* n2-pages : « Plusieurs » et « + page » ouvrent ce sélecteur d'images, SANS capture (le téléphone propose « Prendre une photo » à côté des fichiers). Un fichier à la fois ; placé après les trois d'avant. */}
+        <input hidden ref={pagesInput} aria-label="Ajouter une page" type="file" accept="image/*" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)ajouterPage(file);e.target.value='';}}/>
         <div className="space-y-2 px-2 pt-1.5 empty:hidden">{capt}</div>
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
       </div>

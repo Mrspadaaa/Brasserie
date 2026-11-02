@@ -4,7 +4,7 @@
  * catalogue plein des houblons sont chacun chargés par un second `import()`, seulement pour un travail de leur famille.
  */
 import type { StockItem } from '../types';
-import { adaptYeastLookupResult, factsForStock, sanitizeFacts, type IngredientFacts } from '../domain/ingredientFacts';
+import { adaptYeastLookupResult, deduireValeursMalt, factsForStock, sanitizeFacts, type IngredientFacts } from '../domain/ingredientFacts';
 import type { CatalogueHop } from '../domain/hopIndex/v4/data';
 import type { ReferenceLevure } from '../domain/stock/ficheLevure';
 import type { ChampFiche } from '../domain/stock/ficheValeurs';
@@ -49,11 +49,14 @@ export function valeursDeReponse(famille: Famille, brute: IngredientFacts | unde
     valeurs.technicalSource = `Trouvée en ligne — ${source}`;
     return { valeurs, source, ...(url ? { url } : {}), deduit: {}, ...(brute.name ? { nom: brute.name } : {}) };
   }
+  // D302 : le malteur publie une plage et un extrait. Un point publié gagne ; sinon `sanitizeFacts` déduit (même fonction que « Compléter avec l'IA »)
+  // et la valeur dit sa règle, avec la plage ou l'extrait d'origine, au lieu de passer pour lue.
+  const deduites = deduireValeursMalt(brute);
   const facts = sanitizeFacts(brute);
   const valeurs: Partial<Record<ChampFiche, unknown>> = {};
   const deduit: Partial<Record<ChampFiche, string>> = {};
-  if (facts.colorEbc !== undefined) { valeurs.colorEbc = facts.colorEbc; deduit.colorEbc = DEDUIT_EBC; }
-  if (facts.potentialPpg !== undefined) { valeurs.potentialPpg = facts.potentialPpg; deduit.potentialPpg = DEDUIT_PPG; }
+  if (facts.colorEbc !== undefined) { valeurs.colorEbc = facts.colorEbc; deduit.colorEbc = deduites.deduit.colorEbc ?? DEDUIT_EBC; }
+  if (facts.potentialPpg !== undefined) { valeurs.potentialPpg = facts.potentialPpg; deduit.potentialPpg = deduites.deduit.potentialPpg ?? DEDUIT_PPG; }
   if (!Object.keys(valeurs).length) return undefined;
   valeurs.technicalSource = `Trouvée en ligne — ${source}`;
   return { valeurs, source, ...(url ? { url } : {}), deduit, ...(brute.name ? { nom: brute.name } : {}) };

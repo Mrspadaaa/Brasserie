@@ -103,6 +103,11 @@ export interface IngredientFacts {
 
   colorEbc?: number;
   potentialPpg?: number;
+  /** Plage de couleur publiée par le malteur (EBC) : jamais une moyenne dans `colorEbc` côté modèle. */
+  colorEbcMin?: number;
+  colorEbcMax?: number;
+  /** Extrait publié (fine grind, dry basis, %) : le client en déduit le potentiel. */
+  extractPct?: number;
   grainType?: string;
   diastaticPower?: number;
 
@@ -237,6 +242,42 @@ const explicitReported = <T extends string>(facts: YeastTechnicalFact[] | undefi
   return distinct.size === 1 ? values[0] : undefined;
 };
 
+/** Facteur extrait (fine grind, dry basis, %) → points de densité par livre et par gallon : 80 % donne 36,8 PPG (la consigne : « PPG ≈ rendement × 46 »). */
+export const PPG_PAR_POINT_D_EXTRAIT = 0.46;
+const DIXIEME = (n: number) => Math.round((n + Number.EPSILON) * 10) / 10;
+const VIRGULE = (n: number) => String(n).replace('.', ',');
+const nombreEntre = (v: unknown, min: number, max: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max;
+
+export interface ValeursDeduitesMalt {
+  colorEbc?: number;
+  potentialPpg?: number;
+  /** La règle de chaque valeur déduite, avec la plage ou l'extrait d'origine ; absent quand rien n'est déduit. */
+  deduit: { colorEbc?: string; potentialPpg?: string };
+}
+
+/**
+ * Ce que le client déduit de ce qu'un malteur publie (D302), SEULEMENT quand le point publié manque (un point publié gagne toujours) :
+ * `colorEbc` = milieu de la plage de couleur (1 décimale), `potentialPpg` = extrait × 0,46 (1 décimale, de 1 à 50). Une plage incohérente
+ * (min > max, hors de 0 à 5000 EBC) ou un extrait hors de 0 à 100 % ne donne rien : l'inconnu n'est jamais un zéro ni une moyenne inventée.
+ * Fonction pure, partagée par `sanitizeFacts` (donc « Compléter avec l'IA ») et par la procédure d'enrichissement.
+ */
+export function deduireValeursMalt(facts: Pick<IngredientFacts, 'colorEbc' | 'potentialPpg' | 'colorEbcMin' | 'colorEbcMax' | 'extractPct'>): ValeursDeduitesMalt {
+  const out: ValeursDeduitesMalt = { deduit: {} };
+  const { colorEbcMin: min, colorEbcMax: max, extractPct: extrait } = facts;
+  if (!nombreEntre(facts.colorEbc, 0, 5000) && nombreEntre(min, 0, 5000) && nombreEntre(max, 0, 5000) && min <= max) {
+    out.colorEbc = DIXIEME((min + max) / 2);
+    out.deduit.colorEbc = `EBC déduit : milieu de la plage publiée ${VIRGULE(min)} à ${VIRGULE(max)} EBC`;
+  }
+  if (!nombreEntre(facts.potentialPpg, 1, 50) && nombreEntre(extrait, 0, 100)) {
+    const ppg = DIXIEME(extrait * PPG_PAR_POINT_D_EXTRAIT);
+    if (ppg >= 1 && ppg <= 50) {
+      out.potentialPpg = ppg;
+      out.deduit.potentialPpg = `PPG déduit : extrait publié ${VIRGULE(extrait)} % × ${VIRGULE(PPG_PAR_POINT_D_EXTRAIT)}`;
+    }
+  }
+  return out;
+}
+
 /** Only usable published values may reach calculations or the ingredient catalogue. */
 export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
   const out = { ...facts };
@@ -256,12 +297,22 @@ export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
     tempMinC: [-5, 60],
     tempMaxC: [-5, 60],
     alcoholTolerancePct: [0, 40],
-    diastaticPower: [0, 1000]
+    diastaticPower: [0, 1000],
+    colorEbcMin: [0, 5000],
+    colorEbcMax: [0, 5000],
+    extractPct: [0, 100]
   };
   for (const [key, [min, max]] of Object.entries(limits)) {
     const v = out[key];
     if (typeof v !== 'number' || !Number.isFinite(v) || v < min || v > max) delete out[key];
   }
+  // Une plage incohérente ne donne rien. Sinon le point manquant se déduit de ce que le malteur publie, et le dit dans la note (D302).
+  if (out.colorEbcMin != null && out.colorEbcMax != null && out.colorEbcMin > out.colorEbcMax) { delete out.colorEbcMin; delete out.colorEbcMax; }
+  const deduit = deduireValeursMalt(out);
+  if (deduit.colorEbc !== undefined) out.colorEbc = deduit.colorEbc;
+  if (deduit.potentialPpg !== undefined) out.potentialPpg = deduit.potentialPpg;
+  const regles = [deduit.deduit.colorEbc, deduit.deduit.potentialPpg].filter((r): r is string => !!r);
+  if (regles.length) out.note = [typeof out.note === 'string' ? out.note.trim() : '', `${regles.join(' ; ')}.`].filter(Boolean).join(' ');
   if (out.tempMinC != null && out.tempMaxC != null && out.tempMinC > out.tempMaxC) {
     delete out.tempMinC;
     delete out.tempMaxC;

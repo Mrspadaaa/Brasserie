@@ -1031,12 +1031,42 @@ Exemples inventés : « Flaschenbürste Neo-7 » → « Goupillon pour bouteille
   }
 };
 
+/**
+ * Malts et sucres (D302, 5 vrais appels du 02.11) : un malteur publie une PLAGE de couleur et un extrait, presque jamais un point. La règle
+ * « valeurs ponctuelles » de la consigne est celle des levures ; appliquée aux malts, elle laissait colorEbc et potentialPpg absents et le modèle
+ * rangeait les chiffres dans `usage` (champ des houblons). Le modèle rend donc la plage et l'extrait tels que publiés ; le client en déduit le
+ * milieu et le potentiel (`deduireValeursMalt`, src/domain/ingredientFacts.ts) et le marque « déduit ». La consigne des levures n'est pas touchée.
+ */
+const MALT_SORTIE = `
+
+SORTIE MALT ET SUCRE. Un malteur publie une plage de couleur et un extrait, pas
+un point. Ce qui est publié va dans son champ :
+- un point unique de couleur (une seule valeur publiée) va dans colorEbc, en
+  EBC (°L × 1.97) ; un potentiel publié en PPG va dans potentialPpg ;
+- une plage de couleur va dans colorEbcMin et colorEbcMax, en EBC (°L × 1.97),
+  jamais une moyenne dans colorEbc ;
+- l'extrait (fine grind, dry basis, en %) va dans extractPct, tel que publié ;
+  ne le convertis pas et n'écris pas potentialPpg à partir de lui : le client
+  calcule le milieu de la plage et le potentiel.
+La règle « valeurs ponctuelles » plus haut est celle des levures : elle ne
+s'applique ni aux malts ni aux sucres, dont la plage et l'extrait se remplissent.
+N'écris aucun nombre de malt ou de sucre dans usage, aroma ni note (usage est
+un champ de houblon), et rien sur la brasserie, la TVA ni la monnaie : seulement
+la fiche du produit.`;
+
+function maltLookupDefinition(base: TaskDef, fields: Record<string, unknown>): TaskDef {
+  return { ...base, system: `${base.system}${MALT_SORTIE}`,
+    schema: { ...base.schema, properties: { ...fields,
+      colorEbcMin: bounded('NUMBER', 0, 5000), colorEbcMax: bounded('NUMBER', 0, 5000), extractPct: bounded('NUMBER', 0, 100) } } };
+}
+
 /** Yeast lookup must produce fields the recipe can actually retain, rather than
  * using the hop-only `usage` field as an unstructured substitute for its dossier. */
 export function ingredientLookupDefinition(kind: unknown): TaskDef {
   const base = TASKS.lookupIngredient;
-  if (kind !== 'levure') return base;
   const fields = base.schema.properties as Record<string, unknown>;
+  if (kind === 'malt') return maltLookupDefinition(base, fields);
+  if (kind !== 'levure') return base;
   const keys = ['found', 'name', 'source', 'sourceUrl', 'retrievedAt', 'note', 'lab', 'strain', 'form',
     'attenuationPct', 'tempMinC', 'tempMaxC', 'flocculation', 'alcoholTolerancePct', 'technicalFacts', 'fermentation'];
   return { ...base, system: `${base.system}
