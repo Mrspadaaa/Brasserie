@@ -1,0 +1,183 @@
+{
+ "a-plie": 844,
+ "a-plie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "a-plie-sombre": 844,
+ "a-plie-sombre:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "a-deplie": 844,
+ "a-deplie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "a-mele": 844,
+ "a-mele:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "b-plie": 844,
+ "b-plie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "b-plie-sombre": 844,
+ "b-plie-sombre:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "b-deplie": 844,
+ "b-deplie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "b-mele": 844,
+ "b-mele:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "c-plie": 844,
+ "c-plie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "c-plie-sombre": 844,
+ "c-plie-sombre:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "c-deplie": 844,
+ "c-deplie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "c-mele": 844,
+ "c-mele:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "d-plie": 844,
+ "d-plie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "d-plie-sombre": 844,
+ "d-plie-sombre:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "d-deplie": 844,
+ "d-deplie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "d-mele": 844,
+ "d-mele:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "e-plie": 844,
+ "e-plie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "e-plie-sombre": 844,
+ "e-plie-sombre:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "e-deplie": 844,
+ "e-deplie:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "e-mele": 844,
+ "e-mele:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 0
+ },
+ "mesure-a-renovation": 277,
+ "mesure-pied-a-date": 844,
+ "mesure-pied-a-date:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 67
+ },
+ "mesure-pied-a-unite": 844,
+ "mesure-pied-a-unite:pied": {
+  "droite": 385,
+  "chev": 0,
+  "courant": 106
+ },
+ "mesure-pied-b-date": 844,
+ "mesure-pied-b-date:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 67
+ },
+ "mesure-pied-b-unite": 844,
+ "mesure-pied-b-unite:pied": {
+  "droite": 385,
+  "chev": 0,
+  "courant": 106
+ },
+ "mesure-pied-c-date": 844,
+ "mesure-pied-c-date:pied": {
+  "droite": 414,
+  "chev": 0,
+  "courant": 67
+ },
+ "mesure-pied-c-unite": 844,
+ "mesure-pied-c-unite:pied": {
+  "droite": 453,
+  "chev": 0,
+  "courant": 106
+ },
+ "mesure-pied-d-date": 844,
+ "mesure-pied-d-date:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 67
+ },
+ "mesure-pied-d-unite": 844,
+ "mesure-pied-d-unite:pied": {
+  "droite": 404,
+  "chev": 0,
+  "courant": 106
+ },
+ "mesure-pied-e-date": 844,
+ "mesure-pied-e-date:pied": {
+  "droite": 382,
+  "chev": 0,
+  "courant": 67
+ },
+ "mesure-pied-e-unite": 844,
+ "mesure-pied-e-unite:pied": {
+  "droite": 385,
+  "chev": 0,
+  "courant": 106
+ }
+}
