@@ -57,7 +57,7 @@ import { regleProduit,linkUnit } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
 import { EntreeFendue,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVerification } from '../depense/Pages';
-import { assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
+import { allegerPhoto,assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,PAGE_OCTETS_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
   /** dp-doublon : ouvre la fiche d'une dépense déjà enregistrée (la feuille se ferme d'abord). Absent : « Fermer » seulement. */
@@ -462,6 +462,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const attach=async(file:File,lireQuandMeme=false)=>{
     if(scanLocked.current||saveLocked.current)return;
     const refus=refusDeFichier();if(refus){setError(refus);return;}
+    /* Une photo de téléphone de plus de 4 Mo est allégée dans le téléphone avant la lecture (02.11) ; la roue tourne pendant. */
+    if(file.size>PAGE_OCTETS_MAX){
+      scanLocked.current=true;setBusy(true);
+      try{file=await allegerPhoto(file);}finally{scanLocked.current=false;setBusy(false);}
+      if(!mounted.current)return;
+    }
     if(file.size>4*1024*1024 || !['image/jpeg','image/png','image/webp','application/pdf'].includes(GeminiScannerService.normalizeMimeType(file))){setError('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');return;}
     if(pagesRef.current.length)libererPages();
     if(attachment&&scan?.ok)remettreLaDepenseAZero();
@@ -490,6 +496,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ajouterUnePage=async(file:File)=>{
     if(!mounted.current||scanLocked.current||saveLocked.current)return;
     const refus=refusDeFichier();if(refus){setError(refus);return;}
+    if(file.size>PAGE_OCTETS_MAX){file=await allegerPhoto(file);if(!mounted.current||scanLocked.current)return;}
     const nouveauLot=Boolean(etatRef.current.attachment);
     const base=nouveauLot?[]:pagesRef.current;
     const avant=refuserPage(file,base);if(avant){setError(avant);return;}

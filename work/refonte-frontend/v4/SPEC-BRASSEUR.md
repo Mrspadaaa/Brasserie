@@ -1161,3 +1161,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   le Drive. D322.)
 - **Le test fragile** (02.11, vers 19 h 30, à « Un seul test a échoué dans la suite complète… »), mot pour mot : « Un seul test a échoué dans
   la suite complète, enlève le » (lu : le retirer de la suite ; désactivé, pas effacé, pour pouvoir le remettre. D323.)
+- **« ÉNORMÉMENT de problème »** (02.11, soir, après avoir testé l'app en ligne), mot pour mot : « Je viens de tester l'app, il y a ÉNORMÉMENT de
+  problème... ??? C'est quel version qui est déployé ?? » (lu : la version en ligne déçoit ; il veut savoir laquelle tourne. Réponse : l'hébergement
+  et `aiTask` du commit b3ab392e, bundle `index-DTmoQW-7.js`, déployés le 02.11 à 17 h 11. Ses problèmes, à recueillir ; D327.)

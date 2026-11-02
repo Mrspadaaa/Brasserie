@@ -18,7 +18,7 @@ function controls(raw: any) {
 }
 /** `model` : le modèle de CET appel (défaut : la 3.8). Il fixe le tarif réservé, le plafond de sortie et l'URL du fournisseur. */
 type Generate = (body: Record<string, unknown>, signal: AbortSignal, model?: string) => Promise<any>;
-/** Le plafond de sortie de chaque modèle : la Flash-Lite a 8 192 jetons (C★v8), la 3.8 garde 5 100. */
+/** Le plafond de sortie de chaque modèle : la Flash-Lite a 8 192 jetons (C★v8), la 3.8 aussi depuis le 02.11. */
 const outputCap = (model: string) => model === GEMINI_LITE_MODEL ? LITE_SCAN_MAX_OUTPUT : SCAN_MAX_OUTPUT;
 
 /** Dedicated document ledger, shared global limits. Never touches brewerJobs.

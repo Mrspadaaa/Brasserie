@@ -1382,6 +1382,37 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D323 (le brasseur, 02.11, vers 19 h 30 ; SPEC « Le test fragile ») : « enlève le ». Le cas « wizard → quatre couches → retour niveau par niveau »
   de `tests/integration/AppRoutePile.test.tsx` (T3, #162) passe en `it.skip` : il échouait sous la charge de la suite complète (attentes d'1 s), vert
   seul. Le second cas du fichier reste. Lecture étroite et réversible : désactivé, pas effacé ; la pile de routes perd ce garde-fou tant qu'il est éteint.
+- D324 (pilote, 02.11, soir ; D322, L13) : en ligne, la photo de son ticket prise au téléphone (3072 × 4096, 8,1 Mo) est refusée
+  « 4 Mo maximum » par « Un document », sans appel IA ; une page de « Plusieurs » l'aurait été aussi (« 4 Mo au plus »). Une photo de téléphone
+  dépasse souvent 4 Mo : « Photographier le ticket » ne lisait pas ses tickets. Correctif réversible : `allegerPhoto` (`pagesJustificatif.ts`)
+  réencode en JPEG, dans le téléphone, toute image de plus de 4 Mo, au premier niveau qui tient (côté long 4096 à 0,85, puis 3200, puis les
+  niveaux du PDF), avant l'empreinte et la lecture ; la roue tourne pendant. Une image illisible ou trop lourde à tous les niveaux garde le refus
+  d'aujourd'hui, avec son poids. Le justificatif gardé au Drive est la photo allégée. Témoins `tests/unit/depense/pages/alleger.test.tsx` : 6 rouges
+  sur HEAD, verts après. Retour arrière : retirer les deux appels d'`ExpenseSheet`.
+- D325 (pilote, 02.11, soir ; D247, D318) : en ligne, la 3.8 coupée (MAX_TOKENS à 5 085 jetons sous le plafond de 5 100) sur une commande de
+  31 lignes en 3 pages : « Lecture coupée », le final perdu. Le pire cas estimé (4 050 jetons, l1) oubliait la réflexion, qui compte dans
+  `maxOutputTokens`, comme pour la Flash-Lite. `SCAN_MAX_OUTPUT` passe à 8 192, le plafond de la Flash-Lite : la réserve du budget monte, une
+  lecture ordinaire coûte pareil (seuls les jetons rendus se paient). Le banc garde 5 100 pour ses groupes mesurés avant (`BANC_MAX_OUT`) ; sa
+  3.8 suit la production. Témoins : `plafond-38.test.ts` et `invoiceReview` (8 192), rouges sur 5 100 ; l'instantané f5c change d'un champ (l'ancien
+  hachage reste vérifié à 5 100). Redéployé seul (`functions:aiTask`, cadre D318). Retour arrière : 5 100 et redéployer.
+- D326 (pilote, 02.11, soir ; D322) : bilan des essais en ligne. Vérifiés dans son app : doublon refusé (« Même facture n° », rien d'écrit) ; lecture
+  lente (provisoire vers 10 s, saisie gardée, « Fermer » sans écriture, reprise servie du cache sans appel) ; essai 1, une commande HT de 3 pages et
+  31 lignes, « TEST pilote » : indice HT, « Confirmer » accepté, deux articles existants mis à jour, un article créé avec sa fiche cherchée par l'IA
+  (EBC, PPG, source), PDF de 3 pages au Drive, Finances « À payer » ; annulé par l'app (« Écriture annulée. Justificatif et historique conservés. »),
+  stock ramené, PDF à la corbeille non vidée. Défauts vus, en voie suivante (défauts du pilote, réversibles) : (1) l'unité tirée de la contenance du
+  nom (un sachet « 11.5 g » lu 2 g au lieu de 2 sachets, deux autres lignes pareilles), d'où un second article proposé au lieu de l'existant ;
+  (2) un article existant non proposé (lactose) : une fiche en double — « on veut pas de retrouver avec plein de fiche du même produit » ; (3) deux
+  houblons proposés sur leur article d'un autre α, et la rangée montre l'α de l'article au lieu de l'imprimé ; (4) changer l'unité efface le prix
+  unitaire ; (5) le détail Finances garde les noms de la pièce en allemand ; (6) la provenance dit « 3.8 » quand la 3.8 a été coupée ; (7) l'article
+  doublon du 01.11 (Cryo Citra 25 g) reste à côté de l'existant ; (8) limite connue (b-lenteur, repli R1) : après une relance hors ligne, un final
+  sans jeton qui change le nombre de lignes ne s'applique pas. Restes de l'essai 1, à lui : l'article créé (stock 0, avec sa fiche), l'écriture annulée
+  au journal, un nom imprimé appris par l'article de levure (juste). Captures impossibles dans son Chrome (la fenêtre ne rend pas) : preuves par texte,
+  DOM et Firestore en lecture.
+- D327 (pilote, 02.11, soir ; SPEC « ÉNORMÉMENT de problème », L01, L24) : la version en ligne est l'hébergement et `aiTask` du commit
+  b3ab392e (branche claude/refonte-houblons-v4, bundle `index-DTmoQW-7.js`, servi depuis le 02.11 16:11:40 UTC) ; l'hébergement vient de cette branche
+  depuis le 01.11 (D255, D265, D287), et 31 fichiers de `src/` ont changé depuis D287. Lecture étroite et réversible : rien de plus n'est déployé tant
+  que ses problèmes ne sont pas recueillis ; les correctifs D324 et D325 sont prêts (tests, typage, build verts), pas en ligne. Chacun de ses problèmes
+  ira, avec ses mots, à DEFAUTS-RECURRENTS et à un contrôle qui échoue sur cette version (L13).
 - D279 (le pilote, 01.11, nuit ; mesure de D278) : la variante Csv8F (`nameFr` dans la lecture) mesurée au banc des 14 pièces, passe payante 0,55 CHF (cumul 8,53 CHF sur 49). **PERTE** contre la production : champs justes 148 contre 153 sur 165, lignes justes 203 contre 217 sur 224, faux verts 1 et 1. La lecture change avec le champ : un total HT rempli d'un sous-total non imprimé sur trois pièces, les prix unitaires omis sur une pièce, les unités tirées du nom sur une autre ; et la traduction est inégale (non faite sur deux pièces en allemand, une marque coupée : « CARAFA® Spezial 3 » devenu « CARAFA® »). D278 ne s'applique pas à cette forme : aiTask inchangé, rien redéployé. Suite (pilote, réversible) : traduire à part de la lecture, par un appel texte seul sur le nom de base de f1 (sans image, sans montant), qui ne peut rien changer à la lecture ; mesuré au banc (voie f5b-traduire) ; D278 couvre son ajout à aiTask si la lecture reste identique et la traduction juste.
 - D278 (le brasseur, 01.11, nuit) : « Pour ce dernier, il faudra modifier aiTask, à mesurer au banc j'autorise ce changement, hausse aussi le total à 49chd pour l'ia ». Accord : la désignation en français (`nameFr`, voie f5-noms-fr) entre dans la lecture d'aiTask et aiTask est redéployé, à condition que le banc des 14 pièces ne montre aucune perte (champs, lignes, faux verts, temps, coût) ; sinon rien ne change et le chiffre lui est rendu. Le plafond cumulé des appels IA payants (banc et essais en ligne) passe de 25 à 49 CHF (`journal-gemini.md`) ; une passe reste plafonnée à 3 CHF et lancée par le pilote seul.
 - D277 (le brasseur, 01.11, nuit) : « Pour les unités, c'est quand même facile à devenir ?? SI il y a un doute, ça me flag mais de base ça essaie d'auto remplir. Il y a 3 cas de figure: sûr ou quasiment sûr, rien. / Pas sûr mais repis, flag jaune. Je contrôle / Ne sait pas, aucune idée, flag rouge, je dois remplir ou corrigé », puis « pas que pour les unités mais globalement pour tout ». Règle de toute la Dépense : chaque valeur (unité, quantité, prix, montant, famille, article, date, fournisseur, total, TVA, numéro) a un niveau, sûr (rien d'affiché), repris (jaune, jeton `attention`, il contrôle) ou inconnu (rouge, jeton `alert`, il remplit). Une unité absente se déduit (prix × quantité, famille, contenance, article relié, sachet de levure) au lieu de rester « ? ». **Remplace** la phrase de D214 « sans unité devinée » ; reste de D214 : rien n'entre en stock tant qu'une unité est inconnue (rouge). Un seul langage de doute : les points de lecture, « unité ? » et la rangée douteuse s'y ramènent. Voie f2-confiance (module), puis f3 (écran).

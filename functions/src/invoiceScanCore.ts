@@ -15,11 +15,15 @@ export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCod
 export const INVOICE_SCAN_VERSION = 'invoice-v5';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
-/** Pire cas du schéma invoice-v5 (35 lignes, tous champs, 6 rangées de TVA) : 4 050 jetons, soit 80 % (l1, 31.10). */
-export const SCAN_MAX_OUTPUT = 5100;
+/**
+ * Plafond de la 3.8. Le pire cas estimé du schéma invoice-v5 (35 lignes : 4 050 jetons, l1, 31.10) oubliait la réflexion, qui compte dans
+ * `maxOutputTokens` : en ligne le 02.11, une commande de 31 lignes sur 3 pages a été coupée à 5 085 jetons sous l'ancien plafond de 5 100.
+ * Même plafond que la Flash-Lite.
+ */
+export const SCAN_MAX_OUTPUT = 8192;
 /**
  * Plafond de sortie des deux lectures Flash-Lite (C★v8, D247). La réflexion compte dans `maxOutputTokens` : à 5 100, les deux Flash-Lite
- * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 garde `SCAN_MAX_OUTPUT`.
+ * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 a le même depuis le 02.11.
  */
 export const LITE_SCAN_MAX_OUTPUT = 8192;
 export const SCAN_MAX_CALLS = 3;

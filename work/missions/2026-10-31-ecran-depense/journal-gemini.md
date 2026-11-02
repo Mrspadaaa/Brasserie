@@ -118,3 +118,20 @@ Même voie que D303 (son Chrome, module `AiClient` du bundle en ligne, mêmes re
 Aucune réponse de malt ne porte plus de champ de levure ni de houblon (`tempMinC` disparu). Coût au registre : 354 334 (sonde), puis 354 422,
 354 073, 362 719, 354 589 µCHF, total **1,780 CHF** (20 recherches provisionnées chacun). Cumul des appels payants : 11,613 + 1,780 =
 **13,393 CHF sur 49**.
+
+## 02.11 soir — essais en ligne D321 et D322 (son app déployée, son Chrome, bundle index-DTmoQW-7)
+Par l'entrée de l'app (« Entrer une facture »), sur ses vraies pièces ; heures UTC. Coûts estimés au tarif connu (le détail par appel du
+registre `brewerAiCosts` n'est pas lisible ici).
+
+| Heure | Geste | Modèles | Résultat | Coût estimé |
+|---|---|---|---|---|
+| 16:15:43 | doc9 (PDF), doublon | 2 Flash-Lite | « Même facture n° … », « Même achat / Autre achat » ; rien d'écrit, fermé | 0,045 |
+| 16:18:07 | doc14, lecture lente | 2 Flash-Lite + 3.8 | provisoire 10,0 s (16 lignes, Confirmer gris), saisie gardée, « Fermer » à 19,2 s | 0,045 |
+| 16:19:02 | doc14 rouvert | aucun | final en 2,7 s, « Lecture déjà disponible · aucun nouvel appel IA. » | 0 |
+| 16:20:19 | doc10, 3 pages HT, essai 1 « TEST pilote » | 2 Flash-Lite + 3.8 | provisoire 12,3 s, final 41,1 s ; **la 3.8 coupée** (MAX_TOKENS, 5 085 sur 5 100, D325) ; indice HT, Confirmer accepté | 0,05 |
+| 16:2x | traduireNoms (2 appels) | 3.8 | noms en français de l'essai 1 | 0,002 |
+| 16:25:59 | lookupIngredient, article créé par l'essai 1 | 3.8 + recherche | fiche : EBC, PPG, source | 0,354 |
+
+Essai 1 annulé par l'app à 16:28:15 (contre-écritures `VOID-…`), PDF du Drive à la corbeille non vidée (absent de son dossier, vérifié).
+Le ticket de l'essai 2 (photo du téléphone, 8,1 Mo) a d'abord été refusé par l'app, « 4 Mo maximum », **sans appel** (D324).
+Sous-total : environ **0,50 CHF**. Lectures en ligne : 20 sur 40. Cumul des appels payants : 13,393 + 0,50 ≈ **13,89 CHF sur 49**.

@@ -232,6 +232,8 @@ export const OPTION_MOTS: ReadonlySet<string> = new Set(['geschrotet', 'ungeschr
 /** La phrase du banc ajoutée à la consigne 3 d'Av : zoomer avant de lire les montants. */
 export const AV_NOTE = 'Tu disposes d’un outil d’exécution de code. Avant de lire les montants, zoome sur le tableau des lignes (recadre et agrandis l’image) pour lire chaque cellule ; puis réponds par le seul JSON demandé.';
 /** Le réglage d'un appel. La 3ᵉ lecture est la 3.8 de production (consigne 3), quel que soit le groupe qui la demande — sauf celle d'Av. */
+/** Les groupes du banc mesurés avant le 02.11 gardent le plafond de sortie de leur mesure ; la 3.8 de production suit `SCAN_MAX_OUTPUT`. */
+const BANC_MAX_OUT = 5100;
 export function callSpec(group: string, lecture: 1 | 2 | 3): CallSpec {
   // Csv8F : les trois lectures portent `nameFr`, et rien d'autre ne change (Flash-Lite à 8 192 jetons comme Csv8, 3.8 au plafond de production)
   if (group === 'Csv8F') return { model: lecture === 3 ? STRONG_MODEL : LITE_MODEL, prompt: INVOICE_SCAN_PROMPTS[lecture - 1], thinking: 'LOW', maxOut: lecture === 3 ? SCAN_MAX_OUTPUT : LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, nameFr: true };
@@ -239,21 +241,21 @@ export function callSpec(group: string, lecture: 1 | 2 | 3): CallSpec {
   if (lecture === 3) return { model: STRONG_MODEL, prompt: INVOICE_SCAN_PROMPTS[2], thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
   const prompt = INVOICE_SCAN_PROMPTS[lecture - 1];
   switch (group) {
-    case 'Hv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true };
+    case 'Hv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true };
     case 'Sv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true, svSchema: true };
     case 'Uv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true, svSchema: true, ultraHigh: true };
-    case 'Tv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true, tiles: true };
-    case 'A': return { model: STRONG_MODEL, prompt, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
-    case 'C': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
+    case 'Tv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS, promptAfter: true, noTemperature: true, tiles: true };
+    case 'A': return { model: STRONG_MODEL, prompt, thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS };
+    case 'C': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS };
     case 'Lm': return { model: LITE_MODEL, prompt, thinking: 'MEDIUM', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_THINKING_MS };
     case 'Lh': return { model: LITE_MODEL, prompt, thinking: 'HIGH', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_THINKING_MS };
-    case 'Lp': return { model: LITE_MODEL, prompt: liteConsigne(lecture), thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
+    case 'Lp': return { model: LITE_MODEL, prompt: liteConsigne(lecture), thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS };
     // k5 : Csv8 = C avec 8 192 jetons de sortie ; Avl = C avec l'outil d'exécution de code (le zoom intégré d'Av, sur Flash-Lite) ;
     // Pv et Bv = C, une lecture par page ou par bande (leur phrase de rang s'ajoute au corps, voir `partNote`).
     case 'Csv8': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_MS };
     case 'Avl': return { model: LITE_MODEL, prompt: `${prompt}\n\n${AV_NOTE}`, thinking: 'LOW', maxOut: LITE_RAISED_OUTPUT, timeoutMs: TIMEOUT_THINKING_MS, codeExecution: true };
     case 'Pv':
-    case 'Bv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, timeoutMs: TIMEOUT_MS };
+    case 'Bv': return { model: LITE_MODEL, prompt, thinking: 'LOW', maxOut: BANC_MAX_OUT, timeoutMs: TIMEOUT_MS };
     default: throw new Error(`Groupe inconnu : ${group}`);
   }
 }

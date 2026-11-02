@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 vi.mock('../../functions/src/invoiceScanBudget', () => ({ runBudgetedInvoiceScan: async (_uid: any, _file: any, work: any, provider: any) => ({ result: await work(provider), cached: false, documentHash: 'document-hash' }) }));
 import { scanInvoiceSafely } from '../../functions/src/ai';
-import { SCAN_MODEL } from '../../functions/src/invoiceScanCore';
+import { SCAN_MAX_OUTPUT, SCAN_MODEL } from '../../functions/src/invoiceScanCore';
 import { GEMINI_LITE_MODEL } from '../../functions/src/models';
 const fetchMock = vi.fn();
 const file = { mimeType: 'image/jpeg', data: Buffer.from([255, 216, 255, 217]).toString('base64') };
@@ -39,7 +39,7 @@ describe('Vision des justificatifs : fournisseur entièrement simulé', () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(result.data).toMatchObject({ items:[{ kind:'maintenance' }], review:{ status:'corrected', readers:3, correctedFields:['items.0.kind'] } });
     expect(fetchMock.mock.calls[2][0]).toContain(`${SCAN_MODEL}:generateContent`);
-    expect(JSON.parse(fetchMock.mock.calls[2][1].body).generationConfig.maxOutputTokens).toBe(5100);
+    expect(JSON.parse(fetchMock.mock.calls[2][1].body).generationConfig.maxOutputTokens).toBe(SCAN_MAX_OUTPUT);
     for (const [, options] of fetchMock.mock.calls.slice(1)) {
       const reviewer = JSON.parse(options.body);
       expect(reviewer.contents[0].parts[0].text).not.toContain('108.1');

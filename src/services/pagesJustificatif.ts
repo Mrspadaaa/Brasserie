@@ -93,6 +93,25 @@ export const encodeurCanvas: Encodeur = async (file, niveau) => {
   } finally { image.fermer(); }
 };
 
+/** Une photo trop lourde : d'abord sa taille entière (côté long 4096) à 0,85, puis les niveaux du PDF. Le premier qui tient sous 4 Mo gagne. */
+export const NIVEAUX_PHOTO: ReadonlyArray<{ cote: number; qualite: number }> = [{ cote: 4096, qualite: 0.85 }, { cote: 3200, qualite: 0.85 }, ...NIVEAUX];
+
+/**
+ * En ligne le 02.11 : son ticket photographié au téléphone (3072 × 4096, 8,1 Mo) était refusé, « 4 Mo maximum ». Une image de plus de
+ * `PAGE_OCTETS_MAX` est réencodée ici en JPEG, avant l'empreinte et la lecture. Une image légère, un PDF, ou une image qu'aucun niveau ne fait tenir
+ * (ou que ce navigateur ne lit pas) repartent tels quels : le refus d'aujourd'hui, avec son poids.
+ */
+export async function allegerPhoto(file: File, encoder: Encodeur = encodeurCanvas): Promise<File> {
+  if (file.size <= PAGE_OCTETS_MAX || !TYPES_IMAGE.includes(file.type)) return file;
+  try {
+    for (const niveau of NIVEAUX_PHOTO) {
+      const { octets } = await encoder(file, niveau);
+      if (octets.byteLength <= PAGE_OCTETS_MAX) return new File([octets as BlobPart], file.name.replace(/\.[^.]*$/, '') + '.jpg', { type: 'image/jpeg' });
+    }
+  } catch { /* illisible ici : la photo d'origine, refusée comme aujourd'hui */ }
+  return file;
+}
+
 export interface PdfAssemble { file: File; octets: number; reduite: boolean }
 
 /**

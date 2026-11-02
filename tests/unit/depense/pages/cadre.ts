@@ -9,7 +9,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { createElement } from 'react';
 
 export const etat = {
-  transactions: [] as any[], scanned: vi.fn(), pages: vi.fn(), save: vi.fn(), confirmed: vi.fn(), attach: vi.fn(), assembler: vi.fn(), qr: vi.fn(),
+  transactions: [] as any[], scanned: vi.fn(), pages: vi.fn(), save: vi.fn(), confirmed: vi.fn(), attach: vi.fn(), assembler: vi.fn(), qr: vi.fn(), encodeur: vi.fn(),
   onSaved: vi.fn(), onClose: vi.fn(), coarse: false
 };
 export const storageMock = () => ({ StorageService: { getStocks: () => ({ rawMaterials: [], cleaning: [], equipment: [] }), getTransactions: () => etat.transactions, getConfig: () => ({ fiscal: { isTvaRegistered: false } }), confirmPendingWrites: async () => undefined } });
@@ -20,7 +20,8 @@ export const scannerMock = () => ({ GeminiScannerService: {
   fileToDataUrl: async (f: File) => `data:${f.type || 'application/pdf'};base64,JVBERi0xLjQK`, normalizeMimeType: (f: File) => f.type } });
 export const purchaseMock = (original: any) => ({ ...original,
   savePurchaseWithProofReceipt: (...a: any[]) => etat.save(...a), confirmPurchase: (...a: any[]) => etat.confirmed(...a), attachProofToPurchase: (...a: any[]) => etat.attach(...a) });
-export const pagesMock = (original: any) => ({ ...original, assemblerPdf: (...a: any[]) => etat.assembler(...a) });
+/** `allegerPhoto` garde sa logique ; son encodeur est simulé (jsdom n'a pas de canvas : par défaut il refuse, d'où le refus d'aujourd'hui). */
+export const pagesMock = (original: any) => ({ ...original, assemblerPdf: (...a: any[]) => etat.assembler(...a), allegerPhoto: (f: File, encoder?: unknown) => original.allegerPhoto(f, encoder ?? etat.encodeur) });
 export const qrMock = () => ({ lireQrDuFichier: (...a: any[]) => etat.qr(...a) });
 export const viewportMock = (original: any) => ({ ...original, useCoarsePointer: () => etat.coarse });
 
@@ -46,7 +47,8 @@ export function preparer() {
   Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
   (URL as any).createObjectURL = vi.fn(() => 'blob:fictif'); (URL as any).revokeObjectURL = vi.fn();
   etat.transactions = []; etat.coarse = false;
-  for (const m of [etat.scanned, etat.pages, etat.save, etat.confirmed, etat.attach, etat.assembler, etat.qr, etat.onSaved, etat.onClose]) m.mockReset();
+  for (const m of [etat.scanned, etat.pages, etat.save, etat.confirmed, etat.attach, etat.assembler, etat.qr, etat.encodeur, etat.onSaved, etat.onClose]) m.mockReset();
+  etat.encodeur.mockRejectedValue(new Error('pas de canvas dans jsdom'));
   etat.qr.mockResolvedValue({ statut: 'sans' });
   etat.save.mockResolvedValue({ transactionId: 'TX-test', proof: RECEIPT });
   etat.confirmed.mockResolvedValue(undefined);

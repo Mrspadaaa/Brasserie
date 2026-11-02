@@ -532,25 +532,25 @@ describe('k2 — N : la devise en code ISO, rien d’autre', () => {
 });
 
 describe('k2 — les réglages d’appel : plafond relevé et réflexion pour Lm et Lh seuls', () => {
-  it('A, C et Lp gardent le plafond de production ; Lm et Lh le relèvent à 8 192, avec medium et high', () => {
+  it('A, C et Lp gardent le plafond de leur mesure (5 100) ; Lm et Lh le relèvent à 8 192, avec medium et high ; la 3.8 suit la production', () => {
     expect(callSpec('A', 1)).toMatchObject({ model: STRONG_MODEL, thinking: 'LOW', maxOut: 5100 });
     expect(callSpec('C', 2)).toMatchObject({ model: LITE_MODEL, thinking: 'LOW', maxOut: 5100 });
     expect(callSpec('Lp', 1)).toMatchObject({ model: LITE_MODEL, thinking: 'LOW', maxOut: 5100 });
     expect(callSpec('Lm', 1)).toMatchObject({ model: LITE_MODEL, thinking: 'MEDIUM', maxOut: LITE_RAISED_OUTPUT });
     expect(callSpec('Lh', 2)).toMatchObject({ model: LITE_MODEL, thinking: 'HIGH', maxOut: LITE_RAISED_OUTPUT });
     expect(LITE_RAISED_OUTPUT).toBe(8192);
-    for (const group of ['A', 'C', 'Lm', 'Lh', 'Lp']) expect(callSpec(group, 3)).toMatchObject({ model: STRONG_MODEL, thinking: 'LOW', maxOut: 5100, prompt: INVOICE_SCAN_PROMPTS[2] });
+    for (const group of ['A', 'C', 'Lm', 'Lh', 'Lp']) expect(callSpec(group, 3)).toMatchObject({ model: STRONG_MODEL, thinking: 'LOW', maxOut: SCAN_MAX_OUTPUT, prompt: INVOICE_SCAN_PROMPTS[2] });
     expect(() => callSpec('Z', 1)).toThrow('Groupe inconnu');
   });
-  it('le corps de production ne bouge pas : LOW et 5 100 par défaut ; la réflexion et le plafond ne changent que ces deux champs', () => {
+  it('le corps de production ne bouge pas : LOW et le plafond de production par défaut ; la réflexion et le plafond ne changent que ces deux champs', () => {
     const base = buildReadBody(file, INVOICE_SCAN_PROMPTS[0]) as any, high = buildReadBody(file, INVOICE_SCAN_PROMPTS[0], 8192, 'HIGH') as any;
-    expect(base.generationConfig).toMatchObject({ maxOutputTokens: 5100, thinkingConfig: { thinkingLevel: 'LOW' } });
+    expect(base.generationConfig).toMatchObject({ maxOutputTokens: SCAN_MAX_OUTPUT, thinkingConfig: { thinkingLevel: 'LOW' } });
     expect(high.generationConfig).toMatchObject({ maxOutputTokens: 8192, thinkingConfig: { thinkingLevel: 'HIGH' } });
-    expect({ ...high, generationConfig: { ...high.generationConfig, maxOutputTokens: 5100, thinkingConfig: base.generationConfig.thinkingConfig } }).toEqual(base);
+    expect({ ...high, generationConfig: { ...high.generationConfig, maxOutputTokens: SCAN_MAX_OUTPUT, thinkingConfig: base.generationConfig.thinkingConfig } }).toEqual(base);
   });
   it('la réserve du budget suit le plafond de CET appel', () => {
-    expect(reservationMicro(LITE_MODEL, LITE_RAISED_OUTPUT)).toBeGreaterThan(reservationMicro(LITE_MODEL));
-    expect(reservationMicro(LITE_MODEL)).toBe(reservationMicro(LITE_MODEL, 5100));
+    expect(reservationMicro(LITE_MODEL, LITE_RAISED_OUTPUT)).toBeGreaterThan(reservationMicro(LITE_MODEL, 5100));
+    expect(reservationMicro(LITE_MODEL)).toBe(reservationMicro(LITE_MODEL, SCAN_MAX_OUTPUT));
   });
 });
 
@@ -592,7 +592,7 @@ describe('k2 — la consigne propre à Flash-Lite (Lp)', () => {
     for (const name of readdirSync(path.join(__dirname, '../../functions/src'), { recursive: true }) as string[])
       if (/\.ts$/.test(name)) expect(readFileSync(path.join(__dirname, '../../functions/src', name), 'utf8')).not.toContain('banc-lecture-consignes-lite');
   });
-  it('seuls Lm et Lh relèvent le plafond de sortie et lisent en medium et en high ; la 3.8 reste LOW à 5 100', async () => {
+  it('seuls Lm et Lh relèvent le plafond de sortie et lisent en medium et en high ; la 3.8 reste LOW au plafond de production', async () => {
     const cases = [truthOf('doc2')];
     const seen = new Map<string, string>();
     const plan: Fault[] = ['m2', 'h2', 'p2', 'l2'].map(family => ({ id: family, doc: 'doc2', tirage: 1, families: [family as any], edits: [{ path: 'items.0.quantity', value: 7 }], note: '' }));
@@ -602,10 +602,10 @@ describe('k2 — la consigne propre à Flash-Lite (Lp)', () => {
       C1: `${LITE_MODEL}|LOW|5100`, C2: `${LITE_MODEL}|LOW|5100`, Lm1: `${LITE_MODEL}|MEDIUM|8192`, Lm2: `${LITE_MODEL}|MEDIUM|8192`,
       Lh1: `${LITE_MODEL}|HIGH|8192`, Lh2: `${LITE_MODEL}|HIGH|8192`, Lp1: `${LITE_MODEL}|LOW|5100`, Lp2: `${LITE_MODEL}|LOW|5100`
     });
-    // une seule 3.8 pour les quatre groupes qui divergent (partagée), toujours LOW à 5 100
+    // une seule 3.8 pour les quatre groupes qui divergent (partagée), toujours LOW au plafond de production
     const thirds = [...seen].filter(([id]) => /3$/.test(id));
     expect(thirds).toHaveLength(1);
-    expect(thirds[0][1]).toBe(`${STRONG_MODEL}|LOW|5100`);
+    expect(thirds[0][1]).toBe(`${STRONG_MODEL}|LOW|${SCAN_MAX_OUTPUT}`);
   });
 });
 
@@ -789,8 +789,8 @@ describe('k4 — la réserve de budget suit la taille réelle', () => {
     expect(inputReserveTokens([pdf(4)])).toBeGreaterThanOrEqual(inputReserveTokens([file]));
     expect(inputReserveTokens([pdf(4)])).toBeGreaterThan(inputReserveTokens([pdf(1)]));
     expect(inputReserveTokens([file, file, file])).toBeGreaterThan(inputReserveTokens([file]));
-    expect(reservationMicro(STRONG_MODEL, 5100, inputReserveTokens([pdf(4)]))).toBeGreaterThanOrEqual(reservationMicro(STRONG_MODEL));
-    expect(reservationMicro(STRONG_MODEL, 5100, 1)).toBe(reservationMicro(STRONG_MODEL));
+    expect(reservationMicro(STRONG_MODEL, SCAN_MAX_OUTPUT, inputReserveTokens([pdf(4)]))).toBeGreaterThanOrEqual(reservationMicro(STRONG_MODEL));
+    expect(reservationMicro(STRONG_MODEL, SCAN_MAX_OUTPUT, 1)).toBe(reservationMicro(STRONG_MODEL));
   });
   it('Uv : chaque image réserve au moins 2 240 jetons ; un PDF est inchangé', () => {
     const three = [file, file, file];
@@ -818,7 +818,7 @@ describe('k4 — Hv : la consigne après les images, aucune température', () =>
     expect(callSpec('Hv', 3).promptAfter).toBeUndefined();
   });
   it('le corps : les images d’abord, le texte en dernier, aucun champ temperature ; le reste est celui de la production', () => {
-    const production: any = buildReadBody([file, png], INVOICE_SCAN_PROMPTS[0]), body: any = buildReadBody([file, png], INVOICE_SCAN_PROMPTS[0], 5100, 'LOW', { promptAfter: true, temperature: false });
+    const production: any = buildReadBody([file, png], INVOICE_SCAN_PROMPTS[0]), body: any = buildReadBody([file, png], INVOICE_SCAN_PROMPTS[0], SCAN_MAX_OUTPUT, 'LOW', { promptAfter: true, temperature: false });
     const parts = body.contents[0].parts;
     expect(parts.map((part: any) => Object.keys(part)[0])).toEqual(['inlineData', 'inlineData', 'text']);
     expect('temperature' in body.generationConfig).toBe(false);

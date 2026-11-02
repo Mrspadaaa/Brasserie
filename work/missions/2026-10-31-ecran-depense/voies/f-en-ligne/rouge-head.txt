@@ -1,0 +1,1535 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/deploy-hosting-qr[39m
+
+ [31m❯[39m tests/unit/depense/lecture/plafond-38.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 3[2mms[22m[39m
+[31m   [31m×[31m le plafond de sortie de la 3.8[2m > [22mcouvre la coupe vue en ligne avec de la marge, au moins le plafond de la Flash-Lite[39m[32m 3[2mms[22m[39m
+[31m     → expected 5100 to be greater than or equal to 8192[39m
+ [31m❯[39m tests/unit/depense/pages/alleger.test.tsx [2m([22m[2m6 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 3050[2mms[22m[39m
+[31m   [31m×[31m T-A1 à T-A4 allegerPhoto[2m > [22mT-A1 : une photo de 8,1 Mo est réencodée au premier niveau qui tient sous 4 Mo, en JPEG, sous son nom[39m[32m 3[2mms[22m[39m
+[31m     → original.allegerPhoto is not a function[39m
+[31m   [31m×[31m T-A1 à T-A4 allegerPhoto[2m > [22mT-A2 : le premier niveau garde la taille de la photo (côté long 4096), la qualité baisse ensuite par paliers[39m[32m 2[2mms[22m[39m
+[31m     → [vitest] No "NIVEAUX_PHOTO" export is defined on the "../../../../src/services/pagesJustificatif" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[31m   [31m×[31m T-A1 à T-A4 allegerPhoto[2m > [22mT-A3 : une image de 4 Mo ou moins, et un PDF, repartent tels quels, sans encodage[39m[32m 0[2mms[22m[39m
+[31m     → original.allegerPhoto is not a function[39m
+[31m   [31m×[31m T-A1 à T-A4 allegerPhoto[2m > [22mT-A4 : trop lourde à tous les niveaux, ou illisible ici : la photo d'origine revient (le refus d'aujourd'hui, avec son poids)[39m[32m 0[2mms[22m[39m
+[31m     → [vitest] No "NIVEAUX_PHOTO" export is defined on the "../../../../src/services/pagesJustificatif" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+[31m   [31m×[31m T-A5 / T-A6 dans la fiche[2m > [22mT-A5 : « Un document » avec la photo de 8,1 Mo → lue une fois, allégée en JPEG, sans le refus « 4 Mo maximum »[39m[33m 1999[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Vérification du justificatif"
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_0_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_0_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+            [33mdata-dp[31m=[32m"alertes"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+              [33mrole[31m=[32m"alert"[31m
+              [33mtabindex[31m=[32m"-1"[31m
+            [36m>[31m
+              [0mChoisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.[0m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"pb-2"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier le QR"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Ajouter une page"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Justificatif de la dépense"[31m
+                [33mclass[31m=[32m"py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors border-cave-700"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-8 overflow-hidden rounded-control bg-ebc-straw text-cave-950"[31m
+                  [33mdata-dp[31m=[32m"entree"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] font-semibold"[31m
+                    [33mdata-primary[31m=[32m"true"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"16"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"16"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M10 9H8"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 13H8"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 17H8"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [0mUn document[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] font-semibold"[31m
+                    [33mstyle[31m=[32m"border-left-color: color-mix(in srgb, currentcolor 38%, transparent);"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-files"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"15"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"15"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [0mPlusieurs[0m
+                  [36m</button>[31m
+                [36m</div>[31m
+                [36m<p[31m
+                  [33mclass[31m=[32m"text-xs text-center text-cave-400"[31m
+                [36m>[31m
+                  [0mPDF ou image[0m
+                  [0m, ou dépose le fichier ici[0m
+                  [0m · lecture automatique · 4 Mo max.[0m
+                [36m</p>[31m
+                [36m<button[31m
+                  [33mclass[31m=[32m"min-h-7 w-full text-sm text-cave-200 underline underline-offset-4"[31m
+                  [33mtype[31m=[32m"button"[31m
+                [36m>[31m
+                  [0mSaisir sans justificatif[0m
+                [36m</button>[31m
+              [36m</section>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<body[31m
+  [33mstyle[31m=[32m"overflow: hidden;"[31m
+[36m>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-labelledby[31m=[32m"_r_0_"[31m
+        [33maria-modal[31m=[32m"true"[31m
+        [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+        [33mrole[31m=[32m"dialog"[31m
+        [33mtabindex[31m=[32m"-1"[31m
+      [36m>[31m
+        [36m<header[31m
+          [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33maria-label[31m=[32m"Fermer"[31m
+            [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+            [33mtype[31m=[32m"button"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"lucide lucide-x"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mheight[31m=[32m"20"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-linecap[31m=[32m"round"[31m
+              [33mstroke-linejoin[31m=[32m"round"[31m
+              [33mstroke-width[31m=[32m"2"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mwidth[31m=[32m"20"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M18 6 6 18"[31m
+              [36m/>[31m
+              [36m<path[31m
+                [33md[31m=[32m"m6 6 12 12"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+          [36m</button>[31m
+          [36m<h2[31m
+            [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+            [33mid[31m=[32m"_r_0_"[31m
+          [36m>[31m
+            [0mNouvelle dépense[0m
+          [36m</h2>[31m
+        [36m</header>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m""[31m
+          [36m/>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+            [33mdata-dp[31m=[32m"alertes"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+              [33mrole[31m=[32m"alert"[31m
+              [33mtabindex[31m=[32m"-1"[31m
+            [36m>[31m
+              [0mChoisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.[0m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"pb-2"[31m
+          [36m>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+              [33maria-label[31m=[32m"Importer un justificatif"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier un justificatif"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Photographier le QR"[31m
+              [33mcapture[31m=[32m"environment"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<input[31m
+              [33maccept[31m=[32m"image/*"[31m
+              [33maria-label[31m=[32m"Ajouter une page"[31m
+              [33mclass[31m=[32m"hidden"[31m
+              [33mhidden[31m=[32m""[31m
+              [33mtype[31m=[32m"file"[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+            [36m>[31m
+              [36m<section[31m
+                [33maria-label[31m=[32m"Justificatif de la dépense"[31m
+                [33mclass[31m=[32m"py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors border-cave-700"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-8 overflow-hidden rounded-control bg-ebc-straw text-cave-950"[31m
+                  [33mdata-dp[31m=[32m"entree"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] font-semibold"[31m
+                    [33mdata-primary[31m=[32m"true"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"16"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"16"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M10 9H8"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 13H8"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 17H8"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [0mUn document[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] font-semibold"[31m
+                    [33mstyle[31m=[32m"border-left-color: color-mix(in srgb, currentcolor 38%, transparent);"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-files"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"15"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"15"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                    [0mPlusieurs[0m
+                  [36m</button>[31m
+                [36m</div>[31m
+                [36m<p[31m
+                  [33mclass[31m=[32m"text-xs text-center text-cave-400"[31m
+                [36m>[31m
+                  [0mPDF ou image[0m
+                  [0m, ou dépose le fichier ici[0m
+                  [0m · lecture automatique · 4 Mo max.[0m
+                [36m</p>[31m
+                [36m<button[31m
+                  [33mclass[31m=[32m"min-h-7 w-full text-sm text-cave-200 underline underline-offset-4"[31m
+                  [33mtype[31m=[32m"button"[31m
+                [36m>[31m
+                  [0mSaisir sans justificatif[0m
+                [36m</button>[31m
+              [36m</section>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m×[31m T-A5 / T-A6 dans la fiche[2m > [22mT-A6 : « Plusieurs » avec une page de 8,1 Mo → la page entre dans la rangée, allégée[39m[33m 1044[2mms[22m[39m
+[31m     → expected 1 to be 2 // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body[31m
+    [33mstyle[31m=[32m"overflow: hidden;"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"_r_2_"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<header[31m
+            [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Fermer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-x"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M18 6 6 18"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m6 6 12 12"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+              [33mid[31m=[32m"_r_2_"[31m
+            [36m>[31m
+              [0mNouvelle dépense[0m
+            [36m</h2>[31m
+          [36m</header>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m""[31m
+            [36m/>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[31m
+              [33mdata-dp[31m=[32m"alertes"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[31m
+                [33mrole[31m=[32m"alert"[31m
+                [33mtabindex[31m=[32m"-1"[31m
+              [36m>[31m
+                [0mCette page pèse 8,0 Mo : 4 Mo au plus.[0m
+              [36m</div>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"pb-2"[31m
+            [36m>[31m
+              [36m<input[31m
+                [33maccept[31m=[32m"image/jpeg,image/png,image/webp,application/pdf"[31m
+                [33maria-label[31m=[32m"Importer un justificatif"[31m
+                [33mclass[31m=[32m"hidden"[31m
+                [33mhidden[31m=[32m""[31m
+                [33mtype[31m=[32m"file"[31m
+              [36m/>[31m
+              [36m<input[31m
+                [33maccept[31m=[32m"image/*"[31m
+                [33maria-label[31m=[32m"Photographier un justificatif"[31m
+                [33mcapture[31m=[32m"environment"[31m
+                [33mclass[31m=[32m"hidden"[31m
+                [33mhidden[31m=[32m""[31m
+                [33mtype[31m=[32m"file"[31m
+              [36m/>[31m
+              [36m<input[31m
+                [33maccept[31m=[32m"image/*"[31m
+                [33maria-label[31m=[32m"Photographier le QR"[31m
+                [33mcapture[31m=[32m"environment"[31m
+                [33mclass[31m=[32m"hidden"[31m
+                [33mhidden[31m=[32m""[31m
+                [33mtype[31m=[32m"file"[31m
+              [36m/>[31m
+              [36m<input[31m
+                [33maccept[31m=[32m"image/*"[31m
+                [33maria-label[31m=[32m"Ajouter une page"[31m
+                [33mclass[31m=[32m"hidden"[31m
+                [33mhidden[31m=[32m""[31m
+                [33mtype[31m=[32m"file"[31m
+              [36m/>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[31m
+              [36m>[31m
+                [36m<section[31m
+                  [33maria-label[31m=[32m"Pages du justificatif"[31m
+                  [33mclass[31m=[32m"space-y-2 rounded-panel border border-dashed px-2 py-2 transition-colors border-cave-700"[31m
+                  [33mdata-dp[31m=[32m"rangee-pages"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex gap-2 overflow-x-auto"[31m
+                  [36m>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"relative h-[116px] w-[62px] shrink-0 overflow-hidden rounded-control border border-cave-600 bg-cave-950"[31m
+                      [33mdata-dp[31m=[32m"page"[31m
+                      [33mdata-dp-nom[31m=[32m"a.jpg"[31m
+                    [36m>[31m
+                      [36m<img[31m
+                        [33malt[31m=[32m""[31m
+                        [33mclass[31m=[32m"size-full object-cover"[31m
+                        [33msrc[31m=[32m"blob:fictif"[31m
+                      [36m/>[31m
+                      [36m<button[31m
+                        [33maria-label[31m=[32m"Retirer la page 1"[31m
+                        [33mclass[31m=[32m"absolute right-0.5 top-0.5 flex size-5 items-center justify-center rounded-full border border-cave-600 bg-cave-950 text-cave-50"[31m
+                        [33mtype[31m=[32m"button"[31m
+                      [36m>[31m
+                        [36m<svg[31m
+                          [33maria-hidden[31m=[32m"true"[31m
+                          [33mclass[31m=[32m"lucide lucide-x"[31m
+                          [33mfill[31m=[32m"none"[31m
+                          [33mheight[31m=[32m"12"[31m
+                          [33mstroke[31m=[32m"currentColor"[31m
+                          [33mstroke-linecap[31m=[32m"round"[31m
+                          [33mstroke-linejoin[31m=[32m"round"[31m
+                          [33mstroke-width[31m=[32m"2"[31m
+                          [33mviewBox[31m=[32m"0 0 24 24"[31m
+                          [33mwidth[31m=[32m"12"[31m
+                          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                        [36m>[31m
+                          [36m<path[31m
+                            [33md[31m=[32m"M18 6 6 18"[31m
+                          [36m/>[31m
+                          [36m<path[31m
+                            [33md[31m=[32m"m6 6 12 12"[31m
+                          [36m/>[31m
+                        [36m</svg>[31m
+                      [36m</button>[31m
+                      [36m<span[31m
+                        [33maria-hidden[31m=[32m"true"[31m
+                        [33mclass[31m=[32m"absolute bottom-0.5 left-0.5 flex items-center justify-center rounded-full bg-ebc-straw font-mono font-bold text-cave-950 ring-2 ring-cave-950 size-5 text-xs"[31m
+                      [36m>[31m
+                        [0m1[0m
+                      [36m</span>[31m
+                    [36m</div>[31m
+                    [36m<button[31m
+                      [33mclass[31m=[32m"flex h-[116px] w-[62px] shrink-0 flex-col items-center justify-center gap-1 rounded-control border border-dashed border-cave-600 text-xs font-medium text-cave-200"[31m
+                      [33mtype[31m=[32m"button"[31m
+                    [36m>[31m
+                      [36m<span[31m
+                        [33mclass[31m=[32m"flex size-6 items-center justify-center rounded-full border border-cave-400"[31m
+                      [36m>[31m
+                        [36m<svg[31m
+                          [33maria-hidden[31m=[32m"true"[31m
+                          [33mclass[31m=[32m"lucide lucide-plus"[31m
+                          [33mfill[31m=[32m"none"[31m
+                          [33mheight[31m=[32m"14"[31m
+                          [33mstroke[31m=[32m"currentColor"[31m
+                          [33mstroke-linecap[31m=[32m"round"[31m
+                          [33mstroke-linejoin[31m=[32m"round"[31m
+                          [33mstroke-width[31m=[32m"2"[31m
+                          [33mviewBox[31m=[32m"0 0 24 24"[31m
+                          [33mwidth[31m=[32m"14"[31m
+                          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                        [36m>[31m
+                          [36m<path[31m
+                            [33md[31m=[32m"M5 12h14"[31m
+                          [36m/>[31m
+                          [36m<path[31m
+                            [33md[31m=[32m"M12 5v14"[31m
+                          [36m/>[31m
+                        [36m</svg>[31m
+                      [36m</span>[31m
+                      [0m+ page[0m
+                    [36m</button>[31m
+                  [36m</div>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"min-h-9 w-full rounded-control bg-ebc-straw text-[13px] font-semibold text-cave-950"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0mLire [0m
+                    [0m1[0m
+                    [0m page[0m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"text-center text-xs text-cave-400"[31m
+                  [36m>[31m
+                    [0majoute la suivante, puis Lire[0m
+                  [36m</p>[31m
+                [36m</section>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[31m
+                    [33mdata-dp[31m=[32m"frise"[31m
+                    [33mdata-etat[31m=[32m"repos"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-200"[31m
+                      [36m/>[31m
+                      [0m1 page ✓[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px] "[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-800"[31m
+                      [36m/>[31m
+                      [0mlecture[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"flex flex-1 flex-col gap-[3px]"[31m
+                    [36m>[31m
+                      [36m<i[31m
+                        [33mclass[31m=[32m"block h-1.5 rounded-control bg-cave-800"[31m
+                      [36m/>[31m
+                      [0mvérification[0m
+                    [36m</span>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[31m
+                  [33mdata-dp[31m=[32m"lignes-arrivent"[31m
+                [36m>[31m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"px-1 pb-3 pt-1"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mPour quoi ?[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0maprès la lecture[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[31m
+                  [36m>[31m
+                    [36m<span>[31m
+                      [0mRèglement[0m
+                    [36m</span>[31m
+                    [36m<em[31m
+                      [33mclass[31m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[31m
+                    [36m>[31m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</body>[31m
+[36m</html>[31m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture/plafond-38.test.ts[2m > [22mle plafond de sortie de la 3.8[2m > [22mcouvre la coupe vue en ligne avec de la marge, au moins le plafond de la Flash-Lite
+[31m[1mAssertionError[22m: expected 5100 to be greater than or equal to 8192[39m
+[36m [2m❯[22m tests/unit/depense/lecture/plafond-38.test.ts:[2m8:29[22m[39m
+    [90m  6| [39m[34mdescribe[39m([32m'le plafond de sortie de la 3.8'[39m[33m,[39m () [33m=>[39m {
+    [90m  7| [39m  it('couvre la coupe vue en ligne avec de la marge, au moins le plafo…
+    [90m  8| [39m    expect(SCAN_MAX_OUTPUT).toBeGreaterThanOrEqual(LITE_SCAN_MAX_OUTPU…
+    [90m   | [39m                            [31m^[39m
+    [90m  9| [39m    [34mexpect[39m([33mSCAN_MAX_OUTPUT[39m)[33m.[39m[34mtoBeGreaterThan[39m([34m5085[39m [33m*[39m [34m1.5[39m)[33m;[39m
+    [90m 10| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/alleger.test.tsx[2m > [22mT-A1 à T-A4 allegerPhoto[2m > [22mT-A1 : une photo de 8,1 Mo est réencodée au premier niveau qui tient sous 4 Mo, en JPEG, sous son nom
+[31m[1mTypeError[22m: original.allegerPhoto is not a function[39m
+[36m [2m❯[22m Proxy.allegerPhoto tests/unit/depense/pages/cadre.ts:[2m24:169[22m[39m
+
+[90m [2m❯[22m tests/unit/depense/pages/alleger.test.tsx:[2m34:26[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/alleger.test.tsx[2m > [22mT-A1 à T-A4 allegerPhoto[2m > [22mT-A2 : le premier niveau garde la taille de la photo (côté long 4096), la qualité baisse ensuite par paliers
+[31m[1mError[22m: [vitest] No "NIVEAUX_PHOTO" export is defined on the "../../../../src/services/pagesJustificatif" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+vi[33m.[39m[34mmock[39m([35mimport[39m([32m"../../../../src/services/pagesJustificatif"[39m)[33m,[39m [35masync[39m (importOriginal) [33m=>[39m {
+  [35mconst[39m actual [33m=[39m [35mawait[39m [34mimportOriginal[39m()
+  [35mreturn[39m {
+    [33m...[39mactual[33m,[39m
+    [90m// your mocked methods[39m
+  }
+})
+
+[36m [2m❯[22m tests/unit/depense/pages/alleger.test.tsx:[2m41:12[22m[39m
+    [90m 39| [39m  })[33m;[39m
+    [90m 40| [39m  it('T-A2 : le premier niveau garde la taille de la photo (côté long …
+    [90m 41| [39m    [34mexpect[39m([33mNIVEAUX_PHOTO[39m[[34m0[39m][33m.[39mcote)[33m.[39m[34mtoBeGreaterThanOrEqual[39m([34m4096[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 42| [39m    expect(NIVEAUX_PHOTO.map(n => n.cote)).toEqual([...NIVEAUX_PHOTO.m…
+    [90m 43| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/alleger.test.tsx[2m > [22mT-A1 à T-A4 allegerPhoto[2m > [22mT-A3 : une image de 4 Mo ou moins, et un PDF, repartent tels quels, sans encodage
+[31m[1mTypeError[22m: original.allegerPhoto is not a function[39m
+[36m [2m❯[22m Proxy.allegerPhoto tests/unit/depense/pages/cadre.ts:[2m24:169[22m[39m
+
+[90m [2m❯[22m tests/unit/depense/pages/alleger.test.tsx:[2m48:18[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/alleger.test.tsx[2m > [22mT-A1 à T-A4 allegerPhoto[2m > [22mT-A4 : trop lourde à tous les niveaux, ou illisible ici : la photo d'origine revient (le refus d'aujourd'hui, avec son poids)
+[31m[1mError[22m: [vitest] No "NIVEAUX_PHOTO" export is defined on the "../../../../src/services/pagesJustificatif" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+vi[33m.[39m[34mmock[39m([35mimport[39m([32m"../../../../src/services/pagesJustificatif"[39m)[33m,[39m [35masync[39m (importOriginal) [33m=>[39m {
+  [35mconst[39m actual [33m=[39m [35mawait[39m [34mimportOriginal[39m()
+  [35mreturn[39m {
+    [33m...[39mactual[33m,[39m
+    [90m// your mocked methods[39m
+  }
+})
+
+[36m [2m❯[22m tests/unit/depense/pages/alleger.test.tsx:[2m54:50[22m[39m
+    [90m 52| [39m  it('T-A4 : trop lourde à tous les niveaux, ou illisible ici : la pho…
+    [90m 53| [39m    [35mconst[39m lourde [33m=[39m [34mphoto[39m()[33m;[39m
+    [90m 54| [39m    expect(await allegerPhoto(lourde, encodeurDe(NIVEAUX_PHOTO.map(() …
+    [90m   | [39m                                                 [31m^[39m
+    [90m 55| [39m    expect(await allegerPhoto(lourde, vi.fn(async () => { throw new Er…
+    [90m 56| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/alleger.test.tsx[2m > [22mT-A5 / T-A6 dans la fiche[2m > [22mT-A5 : « Un document » avec la photo de 8,1 Mo → lue une fois, allégée en JPEG, sans le refus « 4 Mo maximum »
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find role="region" and name "Vérification du justificatif"
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_0_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_0_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+            [33mdata-dp[39m=[32m"alertes"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+              [33mrole[39m=[32m"alert"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0mChoisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.[0m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pb-2"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier le QR"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Ajouter une page"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Justificatif de la dépense"[39m
+                [33mclass[39m=[32m"py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors border-cave-700"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-8 overflow-hidden rounded-control bg-ebc-straw text-cave-950"[39m
+                  [33mdata-dp[39m=[32m"entree"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] font-semibold"[39m
+                    [33mdata-primary[39m=[32m"true"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M10 9H8"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 13H8"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 17H8"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [0mUn document[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] font-semibold"[39m
+                    [33mstyle[39m=[32m"border-left-color: color-mix(in srgb, currentcolor 38%, transparent);"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-files"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"15"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"15"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [0mPlusieurs[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-center text-cave-400"[39m
+                [36m>[39m
+                  [0mPDF ou image[0m
+                  [0m, ou dépose le fichier ici[0m
+                  [0m · lecture automatique · 4 Mo max.[0m
+                [36m</p>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"min-h-7 w-full text-sm text-cave-200 underline underline-offset-4"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mSaisir sans justificatif[0m
+                [36m</button>[39m
+              [36m</section>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mstyle[39m=[32m"overflow: hidden;"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"_r_0_"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+        [33mrole[39m=[32m"dialog"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+            [33mid[39m=[32m"_r_0_"[39m
+          [36m>[39m
+            [0mNouvelle dépense[0m
+          [36m</h2>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m""[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+            [33mdata-dp[39m=[32m"alertes"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+              [33mrole[39m=[32m"alert"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0mChoisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.[0m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"pb-2"[39m
+          [36m>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+              [33maria-label[39m=[32m"Importer un justificatif"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier un justificatif"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Photographier le QR"[39m
+              [33mcapture[39m=[32m"environment"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<input[39m
+              [33maccept[39m=[32m"image/*"[39m
+              [33maria-label[39m=[32m"Ajouter une page"[39m
+              [33mclass[39m=[32m"hidden"[39m
+              [33mhidden[39m=[32m""[39m
+              [33mtype[39m=[32m"file"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33maria-label[39m=[32m"Justificatif de la dépense"[39m
+                [33mclass[39m=[32m"py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors border-cave-700"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-8 overflow-hidden rounded-control bg-ebc-straw text-cave-950"[39m
+                  [33mdata-dp[39m=[32m"entree"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] font-semibold"[39m
+                    [33mdata-primary[39m=[32m"true"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"16"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"16"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M10 9H8"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 13H8"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 17H8"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [0mUn document[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] font-semibold"[39m
+                    [33mstyle[39m=[32m"border-left-color: color-mix(in srgb, currentcolor 38%, transparent);"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-files"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"15"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"15"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                    [0mPlusieurs[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-center text-cave-400"[39m
+                [36m>[39m
+                  [0mPDF ou image[0m
+                  [0m, ou dépose le fichier ici[0m
+                  [0m · lecture automatique · 4 Mo max.[0m
+                [36m</p>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"min-h-7 w-full text-sm text-cave-200 underline underline-offset-4"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mSaisir sans justificatif[0m
+                [36m</button>[39m
+              [36m</section>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m tests/unit/depense/pages/alleger.test.tsx:[2m74:18[22m[39m
+    [90m 72| [39m    [35mconst[39m view [33m=[39m [35mawait[39m [34mmonter[39m()[33m;[39m
+    [90m 73| [39m    fireEvent.change(champFichier(view), { target: { files: [photo()] …
+    [90m 74| [39m    await screen.findByRole('region', { name: 'Vérification du justifi…
+    [90m   | [39m                 [31m^[39m
+    [90m 75| [39m    [34mexpect[39m(etat[33m.[39mscanned)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m 76| [39m    [35mconst[39m lu [33m=[39m etat[33m.[39mscanned[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m0[39m] [35mas[39m [33mFile[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/pages/alleger.test.tsx[2m > [22mT-A5 / T-A6 dans la fiche[2m > [22mT-A6 : « Plusieurs » avec une page de 8,1 Mo → la page entre dans la rangée, allégée
+[31m[1mAssertionError[22m[39m: expected 1 to be 2 // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_2_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+              [33mid[39m=[32m"_r_2_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m""[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-1.5 px-2 pt-1.5 empty:hidden"[39m
+              [33mdata-dp[39m=[32m"alertes"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"rounded-panel bg-attention/10 border border-attention/25 p-3 text-sm text-attention whitespace-pre-line"[39m
+                [33mrole[39m=[32m"alert"[39m
+                [33mtabindex[39m=[32m"-1"[39m
+              [36m>[39m
+                [0mCette page pèse 8,0 Mo : 4 Mo au plus.[0m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"pb-2"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/jpeg,image/png,image/webp,application/pdf"[39m
+                [33maria-label[39m=[32m"Importer un justificatif"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Photographier un justificatif"[39m
+                [33mcapture[39m=[32m"environment"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Photographier le QR"[39m
+                [33mcapture[39m=[32m"environment"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<input[39m
+                [33maccept[39m=[32m"image/*"[39m
+                [33maria-label[39m=[32m"Ajouter une page"[39m
+                [33mclass[39m=[32m"hidden"[39m
+                [33mhidden[39m=[32m""[39m
+                [33mtype[39m=[32m"file"[39m
+              [36m/>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-2 px-2 pt-1.5 empty:hidden"[39m
+              [36m>[39m
+                [36m<section[39m
+                  [33maria-label[39m=[32m"Pages du justificatif"[39m
+                  [33mclass[39m=[32m"space-y-2 rounded-panel border border-dashed px-2 py-2 transition-colors border-cave-700"[39m
+                  [33mdata-dp[39m=[32m"rangee-pages"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex gap-2 overflow-x-auto"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"relative h-[116px] w-[62px] shrink-0 overflow-hidden rounded-control border border-cave-600 bg-cave-950"[39m
+                      [33mdata-dp[39m=[32m"page"[39m
+                      [33mdata-dp-nom[39m=[32m"a.jpg"[39m
+                    [36m>[39m
+                      [36m<img[39m
+                        [33malt[39m=[32m""[39m
+                        [33mclass[39m=[32m"size-full object-cover"[39m
+                        [33msrc[39m=[32m"blob:fictif"[39m
+                      [36m/>[39m
+                      [36m<button[39m
+                        [33maria-label[39m=[32m"Retirer la page 1"[39m
+                        [33mclass[39m=[32m"absolute right-0.5 top-0.5 flex size-5 items-center justify-center rounded-full border border-cave-600 bg-cave-950 text-cave-50"[39m
+                        [33mtype[39m=[32m"button"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mclass[39m=[32m"lucide lucide-x"[39m
+                          [33mfill[39m=[32m"none"[39m
+                          [33mheight[39m=[32m"12"[39m
+                          [33mstroke[39m=[32m"currentColor"[39m
+                          [33mstroke-linecap[39m=[32m"round"[39m
+                          [33mstroke-linejoin[39m=[32m"round"[39m
+                          [33mstroke-width[39m=[32m"2"[39m
+                          [33mviewBox[39m=[32m"0 0 24 24"[39m
+                          [33mwidth[39m=[32m"12"[39m
+                          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                        [36m>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M18 6 6 18"[39m
+                          [36m/>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"m6 6 12 12"[39m
+                          [36m/>[39m
+                        [36m</svg>[39m
+                      [36m</button>[39m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"absolute bottom-0.5 left-0.5 flex items-center justify-center rounded-full bg-ebc-straw font-mono font-bold text-cave-950 ring-2 ring-cave-950 size-5 text-xs"[39m
+                      [36m>[39m
+                        [0m1[0m
+                      [36m</span>[39m
+                    [36m</div>[39m
+                    [36m<button[39m
+                      [33mclass[39m=[32m"flex h-[116px] w-[62px] shrink-0 flex-col items-center justify-center gap-1 rounded-control border border-dashed border-cave-600 text-xs font-medium text-cave-200"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"flex size-6 items-center justify-center rounded-full border border-cave-400"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33maria-hidden[39m=[32m"true"[39m
+                          [33mclass[39m=[32m"lucide lucide-plus"[39m
+                          [33mfill[39m=[32m"none"[39m
+                          [33mheight[39m=[32m"14"[39m
+                          [33mstroke[39m=[32m"currentColor"[39m
+                          [33mstroke-linecap[39m=[32m"round"[39m
+                          [33mstroke-linejoin[39m=[32m"round"[39m
+                          [33mstroke-width[39m=[32m"2"[39m
+                          [33mviewBox[39m=[32m"0 0 24 24"[39m
+                          [33mwidth[39m=[32m"14"[39m
+                          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                        [36m>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M5 12h14"[39m
+                          [36m/>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M12 5v14"[39m
+                          [36m/>[39m
+                        [36m</svg>[39m
+                      [36m</span>[39m
+                      [0m+ page[0m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"min-h-9 w-full rounded-control bg-ebc-straw text-[13px] font-semibold text-cave-950"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0mLire [0m
+                    [0m1[0m
+                    [0m page[0m
+                  [36m</button>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-center text-xs text-cave-400"[39m
+                  [36m>[39m
+                    [0majoute la suivante, puis Lire[0m
+                  [36m</p>[39m
+                [36m</section>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"mt-[3px] flex gap-1.5 text-xs text-cave-400"[39m
+                    [33mdata-dp[39m=[32m"frise"[39m
+                    [33mdata-etat[39m=[32m"repos"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] text-cave-200"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-200"[39m
+                      [36m/>[39m
+                      [0m1 page ✓[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px] "[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-800"[39m
+                      [36m/>[39m
+                      [0mlecture[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"flex flex-1 flex-col gap-[3px]"[39m
+                    [36m>[39m
+                      [36m<i[39m
+                        [33mclass[39m=[32m"block h-1.5 rounded-control bg-cave-800"[39m
+                      [36m/>[39m
+                      [0mvérification[0m
+                    [36m</span>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex min-h-[118px] items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400"[39m
+                  [33mdata-dp[39m=[32m"lignes-arrivent"[39m
+                [36m>[39m
+                  [0mLes lignes arrivent ici[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-1 pb-3 pt-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mPour quoi ?[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0maprès la lecture[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex min-h-9 items-center gap-2 border-b border-cave-800 text-sm text-cave-200"[39m
+                  [36m>[39m
+                    [36m<span>[39m
+                      [0mRèglement[0m
+                    [36m</span>[39m
+                    [36m<em[39m
+                      [33mclass[39m=[32m"ml-auto truncate text-xs not-italic text-cave-400"[39m
+                    [36m>[39m
+                      [0mDéjà payé · À payer[0m
+                    [36m</em>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m tests/unit/depense/pages/alleger.test.tsx:[2m85:47[22m[39m
+    [90m 83| [39m    [35mawait[39m [34mouvrirRangee[39m(view[33m,[39m [[34mimage[39m([32m'a.jpg'[39m)])[33m;[39m
+    [90m 84| [39m    fireEvent.change(champPages(view), { target: { files: [photo('page…
+    [90m 85| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mnbPages[39m(view))[33m.[39m[34mtoBe[39m([34m2[39m))[33m;[39m
+    [90m   | [39m                                              [31m^[39m
+    [90m 86| [39m    [34mexpect[39m(screen[33m.[39m[34mqueryByText[39m([36m/4 Mo au plus/[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 87| [39m  })[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[90m (7)[39m
+[2m   Start at [22m 17:49:23
+[2m   Duration [22m 4.47s[2m (transform 620ms, setup 283ms, collect 110ms, tests 3.05s, environment 1.04s, prepare 168ms)[22m
+

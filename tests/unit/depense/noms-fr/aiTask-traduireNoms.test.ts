@@ -105,10 +105,12 @@ describe('f5c — la lecture de facture ne change pas d’un octet (instantané 
   it('scanInvoice : consigne, schéma, réglages', () => {
     expect(sha(TASKS.scanInvoice)).toBe('b219d6217e6d321a1dfd3e0c5a68f69a92680a380655dc953790560eaacb48fe');
   });
+  // 02.11 : seul le plafond de la 3.8 change, 5 100 → 8 192 (coupée en ligne à 5 085 jetons, 31 lignes sur 3 pages) ; consignes et modèle inchangés.
   it('les trois consignes de la lecture, les plafonds de sortie et le modèle', () => {
     expect(sha({ prompts: INVOICE_SCAN_PROMPTS, lite: LITE_SCAN_MAX_OUTPUT, strong: SCAN_MAX_OUTPUT, model: SCAN_MODEL }))
-      .toBe('66427dd87a6fa7aef5fd18b69b624b86c6eecb3bd9b6afa0132ccb2b306b5e50');
-    expect([LITE_SCAN_MAX_OUTPUT, SCAN_MAX_OUTPUT, SCAN_MODEL]).toEqual([8192, 5100, GEMINI_MODEL]);
+      .toBe('329a7ddaf5bf847cfa3e28e90b19dcbfa98536b63f0a0ab6826165a5f237465b');
+    expect(sha({ prompts: INVOICE_SCAN_PROMPTS, lite: LITE_SCAN_MAX_OUTPUT, strong: 5100, model: SCAN_MODEL })).toBe('66427dd87a6fa7aef5fd18b69b624b86c6eecb3bd9b6afa0132ccb2b306b5e50');
+    expect([LITE_SCAN_MAX_OUTPUT, SCAN_MAX_OUTPUT, SCAN_MODEL]).toEqual([8192, 8192, GEMINI_MODEL]);
   });
   it('les seize autres tâches d’aiTask sont inchangées', () => {
     const autres = Object.fromEntries(Object.entries(TASKS).filter(([id]) => id !== 'traduireNoms'));

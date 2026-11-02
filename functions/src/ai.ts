@@ -142,7 +142,7 @@ export function chargeDeLecture(data: { task?: unknown; file?: unknown; files?: 
 
 /**
  * A separate, fixed-cost path: no model chain, no client tier/context/instruction.
- * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 5 100 jetons) sur désaccord
+ * Lecture C★v8 + N (D247) : deux Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 8 192 jetons depuis le 02.11) sur désaccord
  * ou quand une Flash-Lite manque ; l'ordre des appels et le vote sont dans `invoiceScanVote.ts` (portage à l'identique du banc).
  */
 /**

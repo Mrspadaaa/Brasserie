@@ -20,7 +20,7 @@ beforeEach(()=>{state.docs.clear();state.watchers.clear();state.transactions=0;s
 describe('Budget scan isolé, fournisseur simulé',()=>{
   it('réserve avant génération, partage le quota global, conserve les jobs du compagnon',async()=>{
     state.docs.set('brewerJobs/chat',{budget:{usage:{calls:7,tokens:321}}});
-    const provider=vi.fn(async body=>{expect(daily().calls).toBe(1);expect(daily().tokens).toBeGreaterThan(65000);expect(body.generationConfig.maxOutputTokens).toBe(5100);expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');return {usageMetadata:{totalTokenCount:100}};});
+    const provider=vi.fn(async body=>{expect(daily().calls).toBe(1);expect(daily().tokens).toBeGreaterThan(65000);expect(body.generationConfig.maxOutputTokens).toBe(SCAN_MAX_OUTPUT);expect(body.generationConfig.mediaResolution).toBe('MEDIA_RESOLUTION_HIGH');return {usageMetadata:{totalTokenCount:100}};});
     await runBudgetedInvoiceScan('u',file,async gen=>{await gen(request,signal());return {amount:42};},provider);
     expect(daily()).toEqual({calls:1,proCalls:0,tokens:100});expect(state.docs.get('brewerJobs/chat')).toEqual({budget:{usage:{calls:7,tokens:321}}});expect(state.monthlyModels).toEqual([SCAN_MODEL]);expect(SCAN_MODEL).toBe('gemini-3.8-flash');
   });
@@ -219,7 +219,7 @@ describe('Budget scan isolé, fournisseur simulé',()=>{
   });
 });
 
-// Voie fn-csv8 (D247) : le modèle se décide PAR APPEL. Deux Flash-Lite (8 192 jetons) puis la 3.8 (5 100) partagent le même registre de trois lectures.
+// Voie fn-csv8 (D247) : le modèle se décide PAR APPEL. Deux Flash-Lite (8 192 jetons) puis la 3.8 (8 192 depuis le 02.11, D325) partagent le même registre de trois lectures.
 describe('Budget scan : un modèle par appel (C★v8)',()=>{
   const config=(max:number)=>({...request,generationConfig:{maxOutputTokens:max}});
   it('sans modèle donné, l\'appel reste celui de la 3.8 (comportement d\'avant)',async()=>{
@@ -235,13 +235,13 @@ describe('Budget scan : un modèle par appel (C★v8)',()=>{
     const ledger=[...state.docs.entries()].find(([path])=>path.startsWith('invoiceScans/'))![1];
     expect(ledger.calls).toBe(3);expect(Object.values(ledger.reservations).every((r:any)=>r.status==='completed')).toBe(true);
   });
-  it('le plafond de sortie suit le modèle : 8 192 pour la Flash-Lite, 5 100 pour la 3.8, jamais plus',async()=>{
+  it('le plafond de sortie suit le modèle : 8 192 pour la Flash-Lite, 8 192 pour la 3.8 (D325), jamais plus',async()=>{
     const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));
     await runBudgetedInvoiceScan('u',file,async gen=>{
-      await gen(config(8192),signal(),GEMINI_LITE_MODEL);await gen(config(8192),signal(),SCAN_MODEL);await gen(config(20000),signal(),GEMINI_LITE_MODEL);
+      await gen(config(8192),signal(),GEMINI_LITE_MODEL);await gen(config(20000),signal(),SCAN_MODEL);await gen(config(20000),signal(),GEMINI_LITE_MODEL);
     },provider);
     expect(provider.mock.calls.map((call:any)=>call[0].generationConfig.maxOutputTokens)).toEqual([LITE_SCAN_MAX_OUTPUT,SCAN_MAX_OUTPUT,LITE_SCAN_MAX_OUTPUT]);
-    expect([LITE_SCAN_MAX_OUTPUT,SCAN_MAX_OUTPUT]).toEqual([8192,5100]);
+    expect([LITE_SCAN_MAX_OUTPUT,SCAN_MAX_OUTPUT]).toEqual([8192,8192]);
   });
   it('le coût réservé est celui du modèle de l\'appel : une Flash-Lite coûte moins cher que la 3.8, à plafond de sortie plus haut',async()=>{
     const provider=vi.fn(async()=>({usageMetadata:{totalTokenCount:10}}));

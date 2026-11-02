@@ -3,7 +3,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { normalizeInvoiceScan, invoiceScanId, SCAN_MODEL } from '../../functions/src/invoiceScanCore';
 import { GEMINI_LITE_MODEL } from '../../functions/src/models';
-// Voie fn-csv8 (D247) : la lecture est C★v8 + N. Lectures 1 et 2 : Flash-Lite à 8 192 jetons ; lecture 3 : la 3.8 à 5 100, appelée sur désaccord
+// Voie fn-csv8 (D247) : la lecture est C★v8 + N. Lectures 1 et 2 : Flash-Lite à 8 192 jetons ; lecture 3 : la 3.8, appelée sur désaccord, à 8 192 aussi depuis le 02.11
 // ou quand une Flash-Lite manque ; ses valeurs et le statut du vote à trois. Ce fichier décrivait A (deux 3.8 puis une 3ᵉ) : adapté test par test (RESULTAT.md, Relance 1).
 
 const memory = vi.hoisted(() => ({ docs: new Map<string, any>(), provider: vi.fn(), transactions: Promise.resolve() as Promise<unknown> }));
@@ -63,7 +63,7 @@ function arrangeReadings(readings: unknown[], options: { finishReasons?: string[
     expect(monthly().reservedMicroChf).toBeGreaterThan(0);
     const request = JSON.parse(init.body);
     expect(request.contents[0].parts[1].inlineData).toEqual(file);
-    expect(request.generationConfig).toMatchObject({ maxOutputTokens: lite ? 8192 : 5100, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'LOW' } });
+    expect(request.generationConfig).toMatchObject({ maxOutputTokens: 8192, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'LOW' } });
     if (count > readings.length || count > 3) throw new Error('Unexpected additional vision call.');
     if (count === 2) releaseFirst();
     if (count === 1 && options.holdFirstUntilSecond) await secondStarted;

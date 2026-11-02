@@ -1,5 +1,5 @@
 // Voie fn-csv8 (mission 2026-11-01-bascule-lecture, D247) : la lecture de facture en production est C★v8 + N du banc.
-// Deux lectures Flash-Lite (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 5 100 jetons) sur désaccord OU quand une Flash-Lite manque ;
+// Deux lectures Flash-Lite (consignes 1 et 2, 8 192 jetons), la 3.8 (consigne 3, 8 192 jetons depuis le 02.11) sur désaccord OU quand une Flash-Lite manque ;
 // ses valeurs, le statut du vote ; la devise en code ISO (N). Fournisseur entièrement simulé : aucun appel réel.
 // Ces tests ont été écrits AVANT le code (L13) et échouaient sur A (deux lectures 3.8 en parallèle).
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
@@ -86,7 +86,7 @@ describe('fn-csv8 — deux Flash-Lite d\'accord : aucune 3.8', () => {
 });
 
 describe('fn-csv8 — désaccord : la 3.8 tranche, avec ses valeurs et le statut du vote', () => {
-  it('trois lectures toutes différentes : la 3.8 (consigne 3, 5 100 jetons) donne SES valeurs, le statut reste « disputed » (vote à trois)', async () => {
+  it('trois lectures toutes différentes : la 3.8 (consigne 3) donne SES valeurs, le statut reste « disputed » (vote à trois)', async () => {
     jouer({ l1: invoice('equipment'), l2: invoice('maintenance'), s3: invoice('service') });
     const { data } = await lire();
     expect(appels()).toEqual([{ lecture: 1, model: GEMINI_LITE_MODEL, max: 8192 }, { lecture: 2, model: GEMINI_LITE_MODEL, max: 8192 }, { lecture: 3, model: GEMINI_MODEL, max: SCAN_MAX_OUTPUT }]);
@@ -255,7 +255,7 @@ describe('fn-csv8 — garde-fous inchangés', () => {
     expect(appels().map((c: any) => c.max)).toEqual([2048, 2048, 2048]);
   });
   it('un plafond de test au-delà de la production est refusé avant tout appel', async () => {
-    await expect(scanInvoiceSafely('u', file, 'fake-test-key', { maxOutputTokens: 8192 })).rejects.toThrow('Plafond de sortie invalide');
+    await expect(scanInvoiceSafely('u', file, 'fake-test-key', { maxOutputTokens: SCAN_MAX_OUTPUT + 1 })).rejects.toThrow('Plafond de sortie invalide');
     expect(fetchMock).not.toHaveBeenCalled();
   });
   it('refuse un format non autorisé avant toute lecture', async () => {
