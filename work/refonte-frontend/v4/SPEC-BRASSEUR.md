@@ -1054,3 +1054,20 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   d'aiTask et la redéployer, si le banc ne montre aucune perte ; « 49chd » = 49 CHF : le plafond cumulé des appels IA payants du banc et
   des essais passe de 25 à 49 CHF. D278).
   Puis, mot pour mot : « Chf* » (lu : « 49chd » = 49 CHF, confirmé).
+- **Le nom d'un nouvel article venu d'une facture étrangère** (02.11), sur la page de choix c-nom
+  (https://claude.ai/artifact/5zPHv4HDbgPzhnwNchQmBg), à « Quelle option veux-tu : B seule, B + D, ou une autre combinaison ? », mot pour
+  mot : « Oui b c'est très bien » (lu : B seule. L'article entre au stock sous son nom français ; le nom imprimé est gardé et se lit à la
+  fiche, en petit, « Sur la facture : … » ; toute facture suivante du même produit, quelle que soit sa langue, se relie à cet article.
+  Ni C (deux noms dans la liste), ni D (fusion des doublons déjà là), ni E (nom proposé en jaune), ni F (lien d'une autre langue proposé
+  en jaune). D289).
+- **Les accords groupés** (02.11), sur ma liste, mot pour mot, chaque réponse après sa ligne :
+  « Format des fiches : tes articles de stock auraient un champ de plus pour leur fiche. Ce champ est le seul blocage avant de brancher le
+  remplissage automatique de la fiche d'un nouvel article après « Confirmer » ; le code est prêt. Ok » (lu : accord du schéma
+  `StockItem.fiche` élargi, f4 branchement 6 ; les branchements 1 à 5 se posent. D290) ;
+  « IA pour remplir les fiches : éteinte par défaut ; l'allumer en ligne te coûterait des appels Gemini. Combien en plus, c'est comme
+  l'autocomplete, non ? » (lu : une question, pas un accord ; l'IA de l'enrichissement reste éteinte en ligne jusqu'à sa réponse) ;
+  « Poids de l'app au démarrage : le remplissage des fiches ajoute environ 18 Ko ; je recommande d'accepter. Ok » (lu : +18 Ko acceptés) ;
+  « Push des commits sur GitHub. Ok » (lu : accord de pousser la branche ; pas de PR ni de fusion) ;
+  « Choix encore ouverts : D273b (version du cache de lecture) et D261c. Montre moi » (lu : les montrer en pages de choix. D273c, la
+  version du cache, est déjà tranchée par son « yes » de D274 ; le choix ouvert est D273b, plusieurs captures pour une dépense, et
+  D261c, la lenteur de la lecture).
