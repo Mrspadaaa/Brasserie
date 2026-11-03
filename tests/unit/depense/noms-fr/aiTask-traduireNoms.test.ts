@@ -55,7 +55,9 @@ describe('f5c — la tâche traduireNoms reprend le banc mesuré, sans retouche'
     expect(tache.tier).toBe('fast');
     expect(tache.defaultTier).toBe('fast');
     expect(tache.grounded).toBeUndefined();
-    expect(NOMS_MAX_ENTREES).toBe(SCAN_MAX_ITEMS);
+    // D379 : la lecture n'a plus de plafond (SCAN_MAX_ITEMS est un garde-fou) ; 35 est la taille d'une tranche de noms, au plafond de sortie du banc.
+    expect(NOMS_MAX_ENTREES).toBe(35);
+    expect(SCAN_MAX_ITEMS).toBeGreaterThan(1000);
     expect(tache.maxOutputTokens).toBe(maxSortie(NOMS_MAX_ENTREES));
     expect(tache.maxOutputTokens).toBe(600 + 36 * 35);
   });

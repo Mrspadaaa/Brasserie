@@ -83,9 +83,10 @@ describe('P1 n° 6 — un document réduit à son port s’enregistre',()=>{
 
 describe('P1 n° 7 — le port compte au plafond de 35 lignes',()=>{
   const lignes=(n:number)=>Array.from({length:n},(_,i)=>i===n-1?port({id:`l-${i}`,amount:1}):malt({id:`l-${i}`,description:`Article ${i}`,amount:1,quantity:undefined,unit:'',stockAction:'none',stockRef:undefined}));
-  it('35 lignes dont le port : accepté ; 36 : refusé',()=>{
+  it('D379 : 35, 36 et 200 lignes dont le port : acceptées (plus de plafond de 35)',()=>{
     expect(validatePurchase(brouillon('port-plafond-35-001',{amount:35,lines:lignes(35)}),state.stocks)).toEqual([]);
-    expect(validatePurchase(brouillon('port-plafond-36-001',{amount:36,lines:lignes(36)}),state.stocks).join(' ')).toContain('Prévois entre 1 et 35 lignes');
+    expect(validatePurchase(brouillon('port-plafond-36-001',{amount:36,lines:lignes(36)}),state.stocks)).toEqual([]);
+    expect(validatePurchase(brouillon('port-plafond-200-001',{amount:200,lines:lignes(200)}),state.stocks)).toEqual([]);
   });
 });
 

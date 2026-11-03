@@ -373,7 +373,7 @@ export function normalizeInvoiceScan(raw: any) {
   if (Array.isArray(raw?.items) && raw.items.length > SCAN_MAX_ITEMS) issues.push(`Plus de ${SCAN_MAX_ITEMS} lignes : compléter le détail manuellement.`);
   if (linesLost > 0) {
     say(makePoint('lignes-perdues', 'ecart', 'items', null, {
-      regle: 'toutes les lignes du document sont conservées (35 au plus)', unite: 'lignes', enjeu: 'argent', lu: items.length, calcule: items.length + linesLost,
+      regle: 'toutes les lignes du document sont conservées', unite: 'lignes', enjeu: 'argent', lu: items.length, calcule: items.length + linesLost,
       message: `Détail des lignes incomplet : ${linesLost} ligne(s) non conservée(s) (${SCAN_MAX_ITEMS} lignes au plus) ; le total des lignes n'est pas vérifié.`,
     }));
   }

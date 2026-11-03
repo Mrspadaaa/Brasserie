@@ -214,13 +214,11 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     expect(reconcileInvoiceVision([read({ ...base, amountTTC: 1.001 }), read({ ...base, amountTTC: 1.004 })]).review.status).toBe('disputed');
   });
 
-  it('conserve la limite de lignes visible après une seconde normalisation', () => {
+  it('D379 : 36 lignes, deux normalisations : les 36 restent, aucune phrase de perte', () => {
     const first = read({ amountHT: 350, amountTTC: 350, items: Array.from({ length: 36 }, (_, index) => item({ name: `Article ${index}` })) });
     const result = reconcileInvoiceVision([first, structuredClone(first)]);
-    expect(result.result.items).toHaveLength(35);
-    expect(result.result.issues.join(' ')).toContain('Plus de 35 lignes');
-    expect(result.review.status).toBe('disputed');
-    expect(result.needsCorrection).toBe(false);
+    expect(result.result.items).toHaveLength(36);
+    expect(result.result.issues.join(' ')).not.toMatch(/Plus de \d+ lignes/);
   });
 
   it('ne dépense pas une correction pour une devise étrangère lue à l’identique', () => {

@@ -411,7 +411,7 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
   const normalized = normalizeInvoiceScan(merged);
   // Normalization has already capped each independent reading. A second normalization cannot
   // rediscover omitted source lines, so that incompleteness warning must survive reconciliation.
-  const truncationWarnings = readings.flatMap(reading => reading.issues.filter(issue => /^Plus de d+ lignes/.test(issue)));
+  const truncationWarnings = readings.flatMap(reading => reading.issues.filter(issue => /^Plus de \d+ lignes/.test(issue)));
   normalized.issues.push(...new Set(truncationWarnings));
   const result = finirResultat(normalized, desaccords, readings, warnings);
   // N1 : un point qui ne pèse pas (désaccord résolu, type déduit) vit dans `points` seulement, ni dans `issues` ni dans `findings`.

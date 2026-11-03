@@ -64,7 +64,7 @@ describe('P2 — aucune ligne jetée en silence', () => {
       expect(r.linesLost).toBe(0);
       expect(trouve(r.points, 'lignes-perdues')).toHaveLength(0);
       expect(r.controls.sum.statut).toBe('ok');
-      expect(r.issues.some((m: string) => /^Plus de d+ lignes/.test(m))).toBe(false);
+      expect(r.issues.some((m: string) => /^Plus de \d+ lignes/.test(m))).toBe(false);
     }
   });
 

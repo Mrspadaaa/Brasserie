@@ -228,12 +228,12 @@ describe('fn-csv8 — N : la devise en code ISO', () => {
     jouer({ l1: { ...invoice(), currency: 'EUR' }, l2: { ...invoice(), currency: 'eur' } });
     expect((await lire()).data.currency).toBe('EUR');
   });
-  it('les lignes au-delà du plafond de 35 restent écartées, avec leur remarque', async () => {
+  it('D379 : 40 lignes lues, 40 rendues, sans remarque de perte (plus de plafond de 35)', async () => {
     const trop = { ...invoice(), items: Array.from({ length: 40 }, (_, i) => ({ name: `Article ${i}`, kind: 'stock', quantity: 1, unit: 'pièce', price: 1, amountTTC: 1 })) };
     jouer({ l1: trop, l2: trop });
     const { data } = await lire();
-    expect(data.items).toHaveLength(35);
-    expect(data.issues.join(' ')).toContain('Plus de 35 lignes');
+    expect(data.items).toHaveLength(40);
+    expect(data.issues.join(' ')).not.toMatch(/Plus de \d+ lignes/);
   });
 });
 

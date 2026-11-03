@@ -204,15 +204,16 @@ describe('f5c — dédoublonnage et réponses douteuses', () => {
     expect(noms.get(1)).toBe('Cloche de fermentation');
     expect(noms.get(2)).toHaveLength(160);
   });
-  it('un seul appel par pièce, même très grande : au plus 35 noms partent (autant que la lecture en rend), le reste garde son nom imprimé', async () => {
+  it('D379 : une très grande pièce part par tranches de 35 noms (« faire un take ») : les 50 lignes sont toutes nommées', async () => {
     const run = gabarit();
     const lignes = Array.from({ length: 50 }, (_, rang) => ligne(`Article numéro ${rang}`));
     const noms = await traduireLignes(lignes, { enLigne: true, run, table });
-    expect(run).toHaveBeenCalledTimes(1);
+    expect(run).toHaveBeenCalledTimes(2);
     expect(run.mock.calls[0][0].context.entrees).toHaveLength(NOMS_MAX_ENTREES);
-    expect(noms.size).toBe(NOMS_MAX_ENTREES);
+    expect(run.mock.calls[1][0].context.entrees).toHaveLength(50 - NOMS_MAX_ENTREES);
+    expect(noms.size).toBe(50);
     expect(noms.has(34)).toBe(true);
-    expect(noms.has(35)).toBe(false);
+    expect(noms.has(49)).toBe(true);
   });
 });
 

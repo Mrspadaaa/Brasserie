@@ -185,7 +185,7 @@ Garde les montants et la TVA imprimés même s'ils sont étrangers, anciens, mul
 tvaRate est une fraction (8.1 % = 0.081), null si plusieurs taux ou taux non écrit ; avec plusieurs taux, recopie chaque taux dans vat. Ne recalcule aucun total.
 vat est le récapitulatif de TVA IMPRIMÉ par taux, tel quel : code (premier mot de la colonne, sans le taux : "N", "R"), rate (fraction), base (montant imprimé de la base) et amount (montant de TVA imprimé). vat vaut [] s'il n'y en a pas. Ne le complète ni ne le corrige jamais, même s'il ne se recoupe pas.
 proForma vaut true si le document est intitulé pro-forma (Pro-Forma Rechnung, facture proforma), false sinon. Une pro-forma dont le paiement est imprimé est une facture réglée : documentType invoice et paymentEvidence paid, jamais quote.
-printedLineCount est le nombre de lignes d’articles imprimées sur le document (lignes d’articles seulement, ni les totaux ni la TVA), même si tu n'en transcris que 35 ; null s'il n'est pas clair.
+printedLineCount est le nombre de lignes d’articles imprimées sur le document (lignes d’articles seulement, ni les totaux ni la TVA) ; null s'il n'est pas clair.
 currency est la devise ISO explicitement lue, vide sinon. date au format JJ.MM.AAAA si complète.
 La date vient du document imprimé, jamais de l’horloge, de la galerie photo ou de la capture d’écran.
 documentType distingue facture, ticket, bordereau de livraison, devis, avoir et autre document.

@@ -895,7 +895,8 @@ describe('k4 — Sv : le schéma du banc et son convertisseur', () => {
   it('le corps de Sv : le schéma du banc, le plafond de 80 lignes dans la consigne système, la consigne après les images, aucune température', () => {
     const body: any = buildReadBody(file, INVOICE_SCAN_PROMPTS[0], 8192, 'LOW', { promptAfter: true, temperature: false, svSchema: true });
     expect(body.generationConfig.responseSchema).toBe(SV_SCHEMA);
-    expect(body.systemInstruction.parts[0].text).toContain('Maximum 80 lignes');
+    // D379 : la consigne de production n'a plus de plafond de lignes ; Sv n'a plus rien à relever.
+    expect(body.systemInstruction.parts[0].text).toContain('sans en omettre aucune');
     expect(body.systemInstruction.parts[0].text).not.toContain('Maximum 35 lignes');
     expect('temperature' in body.generationConfig).toBe(false);
     expect(callSpec('Sv', 1)).toMatchObject({ svSchema: true, promptAfter: true, noTemperature: true });
@@ -913,12 +914,12 @@ describe('k4 — Sv : le schéma du banc et son convertisseur', () => {
     expect(usesSvSchema(meta(3, STRONG_MODEL, 'Sv'))).toBe(false);
     expect(productionToSv(JSON.parse(JSON.stringify({ date: '', amountHT: null, tvaAmount: null, tvaRate: null, vat: [], currency: 'CHF', items: [] }))).vat).toEqual([]);
   });
-  it('les lignes au-delà de 35 sont comptées à part, par variante', () => {
+  it('D379 : 37 lignes lues sont toutes gardées, aucune n’est comptée au-delà d’un plafond', () => {
     const many = { ...invoice(), items: Array.from({ length: 37 }, (_, index) => ({ ...invoice().items[0], name: `L${index}` })) };
     const read = readingFromResponse(meta(1, LITE_MODEL, 'Sv'), answer(productionToSv(Object.assign({ amountHT: null, tvaAmount: null, tvaRate: null, vat: [] }, many))), 1000, 1000);
     expect(read.ok).toBe(true);
-    expect(read.overCap).toBe(2);
-    expect(read.normalized!.items).toHaveLength(35);
+    expect(read.overCap).toBe(0);
+    expect(read.normalized!.items).toHaveLength(37);
     expect(reading(1, invoice()).overCap).toBe(0);
   });
 });
@@ -1138,13 +1139,15 @@ describe('k4 — le jugement : listes, unités, prix, lignes invisibles, genres'
     expect(table).toContain('## Par genre de pièce');
     expect(table).toContain('Lignes perdues au plafond de 35');
   });
-  it('un document de 37 lignes : les lignes au-delà du plafond de 35 sont déclarées perdues, comptées à part, et ne sont pas une erreur du jugement (parcours propre)', async () => {
+  it('D379 : un document de 37 lignes garde ses 37 lignes, aucune n’est perdue (parcours propre)', async () => {
     const long: BenchCase = { ...truthOf('long'), expected: { ...truth.expected, orderNumber: [null, 'A1'], items: Array.from({ length: 37 }, (_, index) => ({ name: `ligne${index}`, kind: ['stock'], quantity: 1, unit: ['kg', ''], price: 1, amountTTC: 1 })) } };
     const { records } = await runBench({ mode: 'simuler', repeat: 1, out: path.join(work, 'long'), faults: false, variantes: ['C', 'Sv'] }, { cases: [long], log: () => {} });
     const { draws, stats } = judgeBench(records, [long]);
-    expect(records[0].variants.C.result.linesLost).toBe(2);
+    expect(records[0].variants.C.result.linesLost).toBe(0);
+    expect(records[0].variants.C.result.items).toHaveLength(37);
     expect(stats.C.draws).toBe(1);
-    expect(draws.find(item => item.variant === 'C')!.wrong).toEqual(expect.arrayContaining(['items.count', 'items.35', 'items.36']));
+    expect(draws.find(item => item.variant === 'C')!.wrong).not.toEqual(expect.arrayContaining(['items.count']));
+    expect(draws.find(item => item.variant === 'C')!.wrong).not.toEqual(expect.arrayContaining(['items.35']));
     const check = checkSimulation(records, draws, []);
     expect(check.cleanWrong).toEqual([]);
   });
