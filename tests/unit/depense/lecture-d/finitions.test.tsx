@@ -78,13 +78,17 @@ describe('(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur', 
     expect(rangee.textContent).toMatch(/Qté × prix\s*6\/7/);
     expect(rangee.querySelector('svg')).toBeNull(); // pas de coche : 12 × 2,90 ≠ 14,50
   });
-  it('(a’) le même geste sur une lecture ordinaire, sans lenteur : « 7/7 » coché avant, « 6/7 » sans coche après', async () => {
+  it('(a’) sur une lecture ordinaire : « 7/7 » coché ; 12 tapé, le montant suit (D373), toujours 7/7 ; le prix effacé, « 6/7 » sans coche', async () => {
     const { view, arrive } = await lire('sans-38', { sans: true });
     await arrive(); await attendre();
     expect(fil(view)).toBeNull();
     expect(rangeePreuve(view, 'Qté × prix').textContent).toMatch(/Qté × prix\s*7\/7/);
     expect(rangeePreuve(view, 'Qté × prix').querySelector('svg')).not.toBeNull();
+    // D373 : « SI j'entre ou modife un champs, genre le total doit être calculé » : un geste ne casse plus le calcul, le montant suit (12 × 1,45).
     taper('Quantité ligne 1', '12');
+    await waitFor(() => expect((screen.getByLabelText('Montant ligne 1') as HTMLTextAreaElement).value).toMatch(/^17[,.]40?$/));
+    expect(rangeePreuve(view, 'Qté × prix').textContent).toMatch(/Qté × prix\s*7\/7/);
+    taper('Prix ligne 1', '');
     await waitFor(() => expect(rangeePreuve(view, 'Qté × prix').textContent).toMatch(/Qté × prix\s*6\/7/));
     expect(rangeePreuve(view, 'Qté × prix').querySelector('svg')).toBeNull();
   });
