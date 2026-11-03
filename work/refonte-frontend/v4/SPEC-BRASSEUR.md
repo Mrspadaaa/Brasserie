@@ -1403,3 +1403,42 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Suite**, mot pour mot : « Pas besoin de toujours découper, on est d'accord ? Quand est-ce que ça trigger ça ? » (lu : jamais par défaut ; avant la lecture quand
   la pièce le dit (PDF à texte de plus de ~35 lignes par page ou de plusieurs pages, image plus de 3 fois plus haute que large) ; après une lecture normale coupée ou
   qui annonce plus de lignes qu'elle n'en rend. D380.)
+- **Suite**, mot pour mot : « Une fois tout en ordre, sur la vrai app, repasse toutes les pièces, en plus de tes test. Tout doit passer et ça doit pas être beaucoup
+  plus lent » (lu : après déploiement, chacune de ses pièces réelles relue dans l'app en ligne, lecture seule, rien enregistré, plus les deux fictives ; chaque
+  champ et chaque durée comparés à avant. D380.)
+- **Suite**, à « une bande de 1,4 × la largeur laisse encore 75 lignes », mot pour mot : « largeur, ce qui laisse encore 75 lignes . Mais l'ia peut lire en une fois
+  75 lignes ??? » puis « Faut pas abuser non plus... » (lu : non, ≈ 45 lignes au plus par réponse ; marge prise : 25 lignes au plus par bande. D380.)
+- **Suite**, à « marge prise : 25 lignes au plus par bande », mot pour mot : « Tu en es sûr ? C'est quoi la vrai métrique ??? » (lu : non, 45 et 25 étaient
+  estimés ; la vraie métrique est la justesse ligne par ligne contre la vérité, sans aucune coupure, puis durée et coût, mesurées par taille de bande sur la
+  pièce fictive de 300 lignes dans l'app en ligne. D380.)
+- **Suite**, à « 45 et 25 étaient estimés », mot pour mot : « Même si on remplace rapide par lent ? » (lu : la coupure vient du budget de 8 192 jetons donné aux
+  deux ; la 3.8 pourrait en recevoir plus, mais plusieurs minutes pour 300 lignes, sans contre-lecture ; mesurée aussi par bande. D380.)
+- **Suite**, mot pour mot : « Mais 8000 jetons ça doit faire dans les 200 lignes ?? » (lu : en texte simple oui ; une ligne JSON de 13 champs nommés, plus la
+  réflexion, coûte ≈ 160 jetons mesurés (424 pour en-tête + 1 ligne le 03.11, 31 lignes > 5 085 le 02.11) ; un schéma allégé serait un levier, à mesurer. D380.)
+- **Suite**, à « c'est ce budget qui coupe, pas le modèle », mot pour mot : « Dans ce cas ??? Le problème est vite résolu, alloué plus de budget » (lu : levier le plus
+  simple, mesuré contre les bandes sur la même pièce ; réserves mesurées : la lecture 2 s'est arrêtée seule après 1 ligne avec 7 700 jetons libres, et 300 lignes
+  d'une traite ≈ 50 000 jetons ≈ 100 s en rapide. Le plus simple qui passe gagne. D380.)
+- **Suite** (deux photos de son ticket Bauhaus, sur un tissu sombre), mot pour mot : « Comment il découpe ça alors ??? » (lu : ce ticket ne se découpe pas — 17 articles
+  tiennent dans une lecture, la photo n'est pas 3 × plus haute que large ; mais une photo à fond sombre ferait prendre le tissu pour le fond et couper à travers le
+  texte : trouver le papier d'abord, seuil local (ombre), pente tolérée. D380.)
+- **Suite**, mot pour mot : « Première image de trop mauvaise qualité désolé » ; puis, à « 17 articles tiennent largement dans une lecture, et la photo n'a rien
+  qui déclenche une coupe » : « Parfait alors c'est ce que je voulais » (accord : un ticket ordinaire garde la lecture d'aujourd'hui. D380.)
+- **Suite**, à « La bande de 25 (lignes 101 à 120) passe 20/20 sur les cinq champs, en 20 s », mot pour mot : « Donc pour 300 lignes il faut+ de 240 seconde ???? »
+  (lu : non, les bandes partent en parallèle ; journal : rapides 9 s pour 20 lignes, lente +26 s sur désaccord ; 300 lignes ≈ 30 s à 1 min 45. D380.)
+- **Suite**, mot pour mot : « Les bandes partent en parallèle, ah parfait alors » (accord. D380.)
+- **Suite**, à « chaque bande porte au plus 25 lignes, recouvrement d'environ 8 %, recollage », mot pour mot : « Mais avec cette découpe, on risque pas de
+  couper du contenu réels ??? Comment c'est checké ça ?  On s'assure de bien tout avoir ? Et pas non plus de doublon ? » ; puis : « Ça reste un processus de
+  facturation, c'est ultra critique. On peut pas se permettre de perdre ou "gagner" de l'information » ; puis : « Comment on peut s'assurer que rien ne se
+  perds ? Et être super robuste pour ce workflow critique ? » (lu : le recollage par le texte peut perdre ou doubler une ligne à la jonction ; chaque article
+  a un seul morceau propriétaire, chaque jonction est recoupée des deux côtés, la somme et le compte sur le tout, jamais silencieux. D381.)
+- **Suite**, mot pour mot : « Fait des piège aussi sur les images type " photos, avec des aberrations sur certains endroits notamment sur les
+  jonctions. Voir comment sa réagi. / SI il y a une tâche sur la facture, et que c'est pile sur une jonction. Qu'est-ce qui permet de garantir ces
+  cas ? » ; puis, à « la coupe se déplace vers un blanc voisin » : « SI la facture est pas balanche ? SI la tâche fait toute la facture ? SI la photo
+  est un peu floue m » (lu : l'encre se repère par contraste local, pas par le fond dominant ; onze pièces piégées fictives, vérité et masque, coupe
+  vérifiée hors ligne puis lecture réelle. D381.)
+- **Suite**, sur la phrase « quantité ou unité manquante; aucun stock automatique. », mot pour mot : « -> okay mais une fois la donnée réparé à la
+  main, ça fait bien le stock automatiquement ? » (lu : question ; l'enregistrement lit quantité et unité sur la ligne au moment d'enregistrer ; le
+  cas d'une ligne restée hors stock est vérifié par un test d'écran, voie s-stock.)
+- **Suite**, à « Je remplace aussi le détecteur de blanc par un contraste local », mot pour mot : « Okay mais il faut faire des vrais tests, car au
+  final un cas quasiment infin peut être fait » (lu : la sûreté tient à des invariants vrais pour toute image, éprouvés par des pièces tirées au
+  hasard — graine, centaines de pièces, vérité automatique — puis par des lectures réelles sur l'app et ses vraies pièces. D381.)

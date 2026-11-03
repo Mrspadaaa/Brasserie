@@ -10,6 +10,8 @@ import { ScanReadCutError, ligneJournalLecture, type CauseCoupure } from './invo
 import { isoCurrency, lireCsv8 } from './invoiceScanVote.js';
 import { INVOICE_SCAN_PROMPTS } from './invoiceScanPrompts.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
+import { ZONES_MORCEAU, morceauNote } from './invoiceMorceaux.js';
+import { MORCEAUX_MAX, assemblerMorceaux, morceauxRecus } from './invoiceAssemblage.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
 import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
@@ -86,6 +88,17 @@ interface AiTaskPayload {
   file?: { data: string; mimeType: string };
   /** n2-pages : les pages d'un même justificatif (2 à 4 images), lues d'un seul appel ; jamais avec `file`. */
   files?: Array<{ data: string; mimeType: string }>;
+  /** D380 : ce fichier est le morceau k sur n d'une longue pièce découpée par l'app (bande ou page) ; seulement avec `file`. */
+  morceau?: { k: number; n: number };
+}
+
+/** D380 : un morceau valide (entiers, 1 ≤ k ≤ n ≤ MORCEAUX_MAX) ou rien ; tout autre valeur est refusée. */
+export function morceauDeLecture(raw: unknown): { k: number; n: number } | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  const { k, n } = raw as { k?: unknown; n?: unknown };
+  if (!Number.isSafeInteger(k) || !Number.isSafeInteger(n) || (k as number) < 1 || (k as number) > (n as number) || (n as number) > MORCEAUX_MAX)
+    throw new HttpsError('invalid-argument', 'Morceau de lecture invalide.');
+  return { k: k as number, n: n as number };
 }
 
 interface AiTaskResult {
@@ -155,15 +168,25 @@ export interface FluxProvisoire {
   onProvisoire: (data: unknown, meta: { model: string; elapsedMs: number; pages?: number }) => unknown;
 }
 
-export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire): Promise<AiTaskResult> {
+/** D381 : le schéma de lecture d'un morceau : chaque article dit où est sa première ligne (`zone`, écrite d'abord). */
+const SCHEMA_MORCEAU = (() => {
+  const base: any = TASKS.scanInvoice.schema, item = base.properties.items.items;
+  return { ...base, properties: { ...base.properties, items: { ...base.properties.items, items: { ...item, properties: { zone: { type: 'STRING', enum: [...ZONES_MORCEAU] }, ...item.properties }, required: ['zone', ...item.required] } } } };
+})();
+
+export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire, morceau?: { k: number; n: number }): Promise<AiTaskResult> {
   const started = Date.now();
   // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8.
   const override = evaluationOptions?.maxOutputTokens;
   if (override !== undefined && (!Number.isSafeInteger(override) || override < 1 || override > SCAN_MAX_OUTPUT)) throw new Error('Plafond de sortie invalide.');
   // n2-pages : un fichier (ou une liste d'un seul) se lit comme toujours ; 2 à 4 images se lisent d'un seul appel, une part `inlineData` par page, dans l'ordre.
   const pages: InvoiceFile[] = !Array.isArray(suppliedFile) ? [validateInvoiceFile(suppliedFile)] : suppliedFile.length === 1 ? [validateInvoiceFile(suppliedFile[0])] : pagesDeLecture(suppliedFile);
-  const key: InvoiceFile = pages.length > 1 ? cleDePages(pages) : pages[0], model = SCAN_MODEL;
-  const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : prompt;
+  if (morceau && pages.length > 1) throw new Error('Un morceau est un seul fichier.');
+  // D380 : un morceau a sa propre clé (le même fichier lu entier ou comme morceau k/n n'a pas la même consigne, donc pas le même résultat).
+  const cleMorceau = (file: InvoiceFile, m: { k: number; n: number }): InvoiceFile =>
+    ({ mimeType: 'application/x-morceau', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`${m.k}/${m.n}`)]).toString('base64') });
+  const key: InvoiceFile = pages.length > 1 ? cleDePages(pages) : morceau ? cleMorceau(pages[0], morceau) : pages[0], model = SCAN_MODEL;
+  const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : morceau ? `${prompt}\n\n${morceauNote(morceau.k, morceau.n)}` : prompt;
   assertGeminiModel(model);
   assertGeminiModel(GEMINI_LITE_MODEL);
   const provider = async (body: Record<string, unknown>, signal: AbortSignal, callModel: string = model) => {
@@ -199,7 +222,7 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
     const cause = (reason: any): CauseCoupure | null => reason instanceof ScanReadCutError ? 'sortie' : reason?.name === 'AbortError' || reason?.name === 'TimeoutError' ? 'delai' : null;
     const read = (callModel: string, prompt: string, lecture: number, etape: 'parallele' | 'troisieme', maxOutputTokens: number) => {
       const started = Date.now();
-      return generate(body(TASKS.scanInvoice.system, prompt, TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(45_000)]), callModel).then(
+      return generate(body(TASKS.scanInvoice.system, prompt, morceau ? SCHEMA_MORCEAU : TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(45_000)]), callModel).then(
         response => { logger.info('Lecture de facture', { ...ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response }), model: callModel }); return normalizeInvoiceScan(parse(response)); },
         error => { logger.warn('Lecture de facture en échec', { lecture, etape, model: callModel, elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
     };
@@ -322,9 +345,16 @@ export const aiTask = onCall(
   },
   async (request: CallableRequest<AiTaskPayload>, response?: CallableResponse<unknown>): Promise<AiTaskResult> => {
     const email = assertAuthorized(request);
-    const { task, tier: requestedTier, context, instruction, file, files } = request.data ?? {};
+    const { task, tier: requestedTier, context, instruction, file, files, morceau } = request.data ?? {};
 
-    const def = task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : TASKS[task];
+    // D380 : l'assemblage des morceaux d'une longue pièce ; aucune IA, aucun coût, aucune pièce jointe.
+    if ((task as string) === 'assemblerLecture') {
+      const started = Date.now();
+      try { return { ok: true, data: assemblerMorceaux(morceauxRecus(context)), model: 'assemblage', tier: 'fast', elapsedMs: Date.now() - started }; }
+      catch (error: any) { return { ok: false, tier: 'fast', error: error?.message || 'Assemblage impossible.' }; }
+    }
+
+    const def =task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : TASKS[task];
     if (!def) {
       throw new HttpsError('invalid-argument', `Tâche inconnue : ${task}`);
     }
@@ -355,7 +385,9 @@ export const aiTask = onCall(
         const flux: FluxProvisoire | undefined = request.acceptsStreaming && response
           ? { jeton, onProvisoire: (data, meta) => response.sendChunk({ etape: 'provisoire', jeton, data, ...meta }).catch(() => false) }
           : undefined;
-        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey, undefined, flux);
+        const m = morceauDeLecture(morceau);
+        if (m && charge.kind === 'pages') throw new Error('Un morceau est un seul fichier.');
+        return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey, undefined, flux, m);
       } catch (error: any) {
         return { ok:false, tier:'fast', error:error?.message || 'Lecture indisponible. Complète le justificatif manuellement.' };
       }

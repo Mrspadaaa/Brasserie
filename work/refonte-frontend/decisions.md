@@ -1870,3 +1870,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   que large ; après une lecture normale coupée (MAX_TOKENS) ou qui annonce plus de lignes qu'elle n'en rend.
 - Fait tout de suite : message vrai (« N ligne(s) imprimée(s) non lue(s) », plus « (10000 lignes au plus) »). À construire : découpe côté app (pdf.js, canvas),
   lecture par morceaux côté serveur, plafond de 4 pages levé pour un PDF lu par pages, délais (3.8 à 45 s, lecture à 100 s, client à 150 s) adaptés aux morceaux.
+
+## D381 — 03.11 : chaque article a un seul morceau, chaque jonction est recoupée (pilote, ses mots)
+
+- **Ses mots** : « Ça reste un processus de facturation, c'est ultra critique. On peut pas se permettre de perdre ou "gagner" de l'information » ;
+  « Comment on peut s'assurer que rien ne se perds ? Et être super robuste pour ce workflow critique ? » (SPEC, 03.11).
+- **Défaut** (D380, jamais déployé) : le recollage des bandes retirait le recouvrement en comparant le texte ; 4 lignes identiques autour d'une
+  jonction → une perdue (témoin dans `tests/unit/depense/d381/jonctions.test.ts`) ; une ligne lue « 25kg » puis « 25 kg » → gardée deux fois.
+- **Décision** : aucun texte comparé pour retirer quoi que ce soit. Zones propres bord à bord, coupées dans le blanc (`planMorceaux`) ; l'image
+  montre 3 lignes des voisins, teintées, au-delà d'un trait rouge ; chaque article dit où est sa première ligne (`zone`, schéma du morceau) et
+  n'appartient qu'au morceau « dedans ». Les articles vus au-delà des traits recoupent la jonction des deux côtés (`jonctionConcorde`) ; un désaccord,
+  une coupe sans blanc (`coupeForcee`), un morceau manquant : point qui pèse ou refus, jamais silencieux. Sur le tout : somme = total imprimé, lignes
+  annoncées. L'encre se repère par contraste local (papier gris, tache, ombre, rangées grisées).
+- **Preuve attendue** : 11 pièces piégées fictives (vérité + masque) : aucune coupe dans une ligne hors ligne ; lecture réelle ligne par ligne ;
+  puis toutes ses pièces, temps avant/après.
