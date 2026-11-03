@@ -117,11 +117,12 @@ export function inkedCuts(bands: Band[], rows: number[], emptyMax = EMPTY_ROW_MA
 // ---------------------------------------------------------------------------------------------------------------------
 // D381 : des morceaux sans recouvrement de propriété (« On peut pas se permettre de perdre ou "gagner" de l'information »)
 // ---------------------------------------------------------------------------------------------------------------------
-/** Où est la PREMIÈRE ligne d'un article par rapport aux traits du morceau : au-dessus (morceau précédent), dans sa zone, au-dessous (suivant). */
-export const ZONES_MORCEAU = ['avant', 'dedans', 'apres'] as const;
-export type ZoneMorceau = typeof ZONES_MORCEAU[number];
-/** Lignes des voisins montrées au-dessus et au-dessous des traits, pour finir un article coupé et recouper la jonction. */
-export const CONTEXT_LINES = 3;
+/**
+ * Lignes des voisins montrées au-delà de la zone propre : 0. Mesure du 03.11 (300 lignes, 16 morceaux, en ligne) : avec 3 lignes de voisins et un
+ * article marqué « avant / dedans / apres », deux morceaux ont tout marqué « dedans » et 6 lignes ont été doublées. Sans voisins, une ligne n'est
+ * vue que par UN morceau : un doublon est impossible par construction, sans jugement de l'IA.
+ */
+export const CONTEXT_LINES = 0;
 /**
  * Un morceau : sa zone propre [top, bottom) et ce que l'image montre [viewTop, viewBottom). Les zones propres se suivent sans se recouvrir
  * (bottom du morceau k = top du k + 1) : chaque rangée de la pièce appartient à un seul morceau. Chaque bord tombe sur une rangée presque vide ;
@@ -146,30 +147,49 @@ export function planMorceaux(rows: number[], width: number, options: { maxLines?
   const ctx = Math.round((options.contextLines ?? CONTEXT_LINES) * pitch);
   return edges.slice(0, -1).map((top, k) => {
     const bottom = edges[k + 1];
-    const viewTop = k === 0 ? 0 : blankNear(rows, Math.max(0, top - ctx), -1, pitch, emptyMax);
-    const viewBottom = k === edges.length - 2 ? height : Math.min(height, blankNear(rows, Math.min(height - 1, bottom + ctx), 1, pitch, emptyMax) + 1);
+    const viewTop = k === 0 || !ctx ? top : blankNear(rows, Math.max(0, top - ctx), -1, pitch, emptyMax);
+    const viewBottom = k === edges.length - 2 || !ctx ? bottom : Math.min(height, blankNear(rows, Math.min(height - 1, bottom + ctx), 1, pitch, emptyMax) + 1);
     // Une frontière est propre si la rangée juste au-dessus est blanche : la ligne d'au-dessus est entière d'un côté, celle d'en dessous de l'autre.
     const forced = (k > 0 && rows[top - 1] > emptyMax) || (k < edges.length - 2 && rows[bottom - 1] > emptyMax);
     return { top, bottom, viewTop, viewBottom, forced };
   });
 }
 
-const cleNom = (value: unknown) => canon(value).replace(/[^a-z0-9]/g, '');
-const memeNombre = (a: unknown, b: unknown) => (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 0.005 : (a ?? null) === (b ?? null));
-/** Deux lectures du MÊME article (vu par deux morceaux voisins) : même montant de ligne, et la même désignation aux espaces et ponctuation près. */
-export function memeArticle(a: any, b: any): boolean {
-  if (!memeNombre(a?.amountTTC, b?.amountTTC)) return false;
-  const x = cleNom(a?.name), y = cleNom(b?.name);
-  return x === y || (Math.min(x.length, y.length) >= 6 && (x.includes(y) || y.includes(x)));
-}
+/** D381 : lignes de part et d'autre d'une coupe dans la bande de contrôle de la jonction. */
+export const JONCTION_LINES = 2;
 /**
- * D381 : la jonction entre deux morceaux, vue des deux côtés. Les articles que le morceau du haut voit SOUS son trait (« apres ») sont les premiers
- * du morceau du bas ; ceux que le morceau du bas voit AU-DESSUS de son trait (« avant ») sont les derniers du morceau du haut. Vrai si tout concorde.
+ * D381 : la bande de contrôle de chaque coupe intérieure : [haut, bas) à cheval sur la frontière, `JONCTION_LINES` lignes de chaque côté, bords
+ * dans le blanc. Elle est lue À PART et seulement comparée : elle peut lever une alerte, jamais changer, ajouter ni retirer une ligne.
  */
-export function jonctionConcorde(haut: { dedans: any[]; apres: any[] }, bas: { avant: any[]; dedans: any[] }): boolean {
-  const debut = bas.dedans.slice(0, haut.apres.length), fin = haut.dedans.slice(haut.dedans.length - bas.avant.length);
-  return debut.length === haut.apres.length && haut.apres.every((a, i) => memeArticle(a, debut[i]))
-    && fin.length === bas.avant.length && bas.avant.every((a, i) => memeArticle(a, fin[i]));
+export function planJonctions(morceaux: Morceau[], rows: number[], options: { lines?: number; emptyMax?: number } = {}): Array<{ k: number; top: number; bottom: number }> {
+  const emptyMax = options.emptyMax ?? EMPTY_ROW_MAX, pitch = linePitch(rows, emptyMax) ?? Math.max(1, Math.round(rows.length / 40));
+  const reach = Math.round((options.lines ?? JONCTION_LINES) * pitch);
+  return morceaux.slice(0, -1).map((m, i) => ({
+    k: i + 1,
+    top: blankNear(rows, Math.max(0, m.bottom - reach), -1, pitch, emptyMax),
+    bottom: Math.min(rows.length, blankNear(rows, Math.min(rows.length - 1, m.bottom + reach), 1, pitch, emptyMax) + 1),
+  }));
+}
+/** La consigne de la bande de contrôle d'une jonction. */
+export const jonctionNote = () =>
+  'Cette image est une bande de contrôle prise à cheval sur une coupe d’un long document. Transcris, dans l’ordre, toutes les lignes d’articles visibles,'
+  + ' sans en omettre aucune, avec suite = false ; laisse vides les champs d’en-tête (texte "", nombres null), null les totaux et vide le bloc TVA.';
+const cents = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? Math.round(value * 100) : null);
+/**
+ * D381 : la bande de contrôle concorde avec les lignes gardées de part et d'autre de la coupe : la suite de ses montants de ligne est une fin du
+ * haut suivie d'un début du bas, d'un seul tenant, dans l'ordre, ET À CHEVAL sur la coupe (la bande voit les deux côtés). Une ligne perdue ou
+ * doublée sur la coupe (même à 0.00), un article coupé mal recollé : la suite ne se retrouve pas. Un côté vide : la bande est un début du bas ou
+ * une fin du haut ; les deux vides : la bande doit être vide.
+ */
+export function jonctionConcorde(bande: any[], haut: any[], bas: any[], fenetre = JONCTION_LINES + 1): boolean {
+  const h = haut.slice(-fenetre), b = bas.slice(0, fenetre);
+  const s = bande.map(i => cents(i?.amountTTC)), e = [...h, ...b].map(i => cents(i?.amountTTC)), H = h.length;
+  if (!s.length) return !haut.length && !bas.length;
+  for (let o = 0; o + s.length <= e.length; o++) {
+    const aCheval = H === 0 ? o === 0 : !b.length ? o + s.length === H : o < H && o + s.length > H;
+    if (aCheval && s.every((v, i) => v === e[o + i])) return true;
+  }
+  return false;
 }
 
 /** Combien de bandes (estimation sans pixels) : même gabarit que `planBands`, bords supposés sur des rangées vides. */
@@ -196,17 +216,15 @@ export const bandNote = (k: number, n: number) =>
   `Cette image est la partie ${k} sur ${n} d’un même document, de haut en bas ; les parties voisines se recouvrent d’environ 8 % : une ligne du bord peut figurer aussi sur la partie voisine, transcris-la quand même ici. Ne transcris que les lignes d’articles visibles sur CETTE partie.${headerRule(k)}${totalsRule(k, n)}`;
 
 /**
- * D381 : la consigne du morceau k sur N (production). Les traits rouges sont tracés par l'app dans le blanc entre deux lignes ; la zone teintée
- * au-dessus et au-dessous montre les lignes des morceaux voisins. Chaque article a un seul propriétaire : le morceau où est sa PREMIÈRE ligne.
+ * D381 : la consigne du morceau k sur N (production). L'app coupe dans le blanc entre deux lignes, bord à bord, sans recouvrement : chaque ligne
+ * imprimée est sur une seule partie. Seul cas de jonction : un article sur plusieurs lignes coupé entre elles ; sa suite, en haut de la partie
+ * suivante, est marquée `suite` et l'assemblage la recolle en le signalant.
  */
 export const morceauNote = (k: number, n: number) =>
-  `Cette image est la partie ${k} sur ${n} d’un même document, de haut en bas. Un trait rouge horizontal marque le haut ou le bas de TA zone ;`
-  + ' sans trait, ta zone va jusqu’au bord de l’image. Au-delà d’un trait, sur fond teinté, quelques lignes des parties voisines restent visibles :'
-  + ' elles servent à finir un article coupé et à recouper la jonction.'
-  + ' Transcris, dans l’ordre, chaque article dont la PREMIÈRE ligne est visible sur l’image, avec zone : "avant" si cette première ligne est au-dessus du trait du haut,'
-  + ' "apres" si elle est au-dessous du trait du bas, "dedans" sinon. Un article qui commence dans ta zone et se poursuit au-delà du trait du bas est "dedans" :'
-  + ' complète-le avec la suite visible. Une ligne qui n’est que la suite d’un article commencé plus haut (quantité, prix, total, variante sans désignation'
-  + ' propre) n’est jamais un article à part. printedLineCount compte les articles "dedans" seulement.'
+  `Cette image est la partie ${k} sur ${n} d’un même document, coupée de haut en bas entre deux lignes ; aucune ligne n’est sur deux parties.`
+  + ' Transcris, dans l’ordre, toutes les lignes d’articles visibles sur CETTE partie, sans en omettre aucune, avec suite = false.'
+  + `${k > 1 ? ' Exception : si tout en haut de l’image, avant le premier article, une ou deux lignes ne sont que la suite d’un article commencé sur la partie précédente (quantité, prix, total ou variante, sans désignation propre), rends-les comme un article à part avec suite = true, name "" et les nombres lus.' : ''}`
+  + ' printedLineCount compte les lignes d’articles de cette partie.'
   + `${headerRule(k)}${totalsRule(k, n)}`;
 
 // ---------------------------------------------------------------------------------------------------------------------

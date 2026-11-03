@@ -1,13 +1,18 @@
 // D381 : « Ça reste un processus de facturation, c'est ultra critique. On peut pas se permettre de perdre ou "gagner" de l'information » (03.11).
-// Le recollage par le texte (D380, retiré) perdait une ligne répétée et doublait une ligne lue « 25kg » / « 25 kg » : le témoin le montre.
-// L'assemblage garde chaque article dans un seul morceau (celui de sa première ligne) et recoupe chaque jonction des deux côtés.
+// Le recollage par le texte (D380, retiré) perdait une ligne répétée : le témoin le montre. Les voisins visibles marqués par l'IA (retirés après la
+// mesure du 03.11 : 306 lignes sur 300) doublaient des lignes. Aujourd'hui : morceaux bord à bord sans voisins, rien n'est retiré, une suite
+// d'article coupé est recollée et signalée, chaque coupe est recoupée par une bande de contrôle lue à part, qui ne peut que lever une alerte.
 import { describe, expect, it } from 'vitest';
-import { assemblerMorceaux, morceauxRecus } from '../../../../functions/src/invoiceAssemblage';
-import { mergeDecoded, planMorceaux, linePitch } from '../../../../functions/src/invoiceMorceaux';
+import { assemblerMorceaux, jonctionsRecues, morceauxRecus } from '../../../../functions/src/invoiceAssemblage';
+import { CONTEXT_LINES, jonctionConcorde, linePitch, mergeDecoded, morceauNote, planJonctions, planMorceaux } from '../../../../functions/src/invoiceMorceaux';
 import { normalizeInvoiceScan } from '../../../../functions/src/invoiceScanCore';
 
-const art = (name: string, amountTTC: number | null, zone: 'avant' | 'dedans' | 'apres' = 'dedans') => ({ name, kind: 'stock', quantity: 1, unit: 'Stk', price: amountTTC, amountTTC, zone });
-const partie = (k: number, n: number, items: any[], extra: any = {}) => ({ vendor: k === 1 ? 'Fictif SA' : '', date: k === 1 ? '03.11.2026' : '', currency: k === 1 ? 'CHF' : '', documentType: 'invoice', amountTTC: null, items, morceau: { k, n }, review: { status: 'checked', readers: 2 }, points: [], ...extra });
+const art = (name: string, amountTTC: number | null, extra: any = {}) => ({ name, kind: 'stock', quantity: 1, unit: 'Stk', price: amountTTC, amountTTC, ...extra });
+const partie = (k: number, n: number, items: any[], extra: any = {}) => ({
+  vendor: k === 1 ? 'Fictif SA' : '', date: k === 1 ? '03.11.2026' : '', currency: k === 1 ? 'CHF' : '', documentType: 'invoice', amountTTC: null,
+  items, morceau: { k, n }, review: { status: 'checked', readers: 2 }, points: [], ...extra,
+});
+const bandes = (...liste: Array<[number, any[]]>) => jonctionsRecues({ jonctions: liste.map(([k, items]) => ({ k, items })) });
 const noms = (r: any) => r.items.map((i: any) => i.name);
 const pesent = (r: any) => r.points.filter((p: any) => p.pese);
 
@@ -18,108 +23,140 @@ describe('D381 : rien de perdu, rien de gagné aux jonctions', () => {
     expect(fusion.items).toHaveLength(5); // la vérité en a 6 : X A A A A B
   });
 
-  it('lignes identiques à la jonction : toutes rendues, jonction concordante', () => {
+  it('lignes identiques de part et d’autre de la coupe : toutes rendues, bande concordante, aucun point', () => {
     const r = assemblerMorceaux([
-      partie(1, 2, [art('X', 3.5), art('A', 3.5), art('A', 3.5), art('A', 3.5), art('A', 3.5, 'apres')]),
-      partie(2, 2, [art('A', 3.5, 'avant'), art('A', 3.5), art('B', 3.5)], { amountTTC: 21 }),
-    ]);
+      partie(1, 2, [art('X', 3.5), art('A', 3.5), art('A', 3.5)]),
+      partie(2, 2, [art('A', 3.5), art('A', 3.5), art('B', 3.5)], { amountTTC: 21 }),
+    ], bandes([1, [art('A', 3.5), art('A', 3.5), art('A', 3.5), art('A', 3.5)]]));
     expect(noms(r)).toEqual(['X', 'A', 'A', 'A', 'A', 'B']);
     expect(pesent(r)).toEqual([]);
     expect(r.review.status).toBe('checked');
   });
 
-  it('« 25kg » d’un côté, « 25 kg » de l’autre : une seule ligne, jonction concordante', () => {
+  it('une ligne à 0.00 perdue pile sur la coupe (la somme ne la voit pas) : la bande la voit, point qui pèse', () => {
     const r = assemblerMorceaux([
-      partie(1, 2, [art('Houblon Citra 1kg', 30), art('Malt Pilsner 25kg', 42), art('Levure US-05', 4, 'apres')]),
-      partie(2, 2, [art('Malt Pilsner 25 kg', 42, 'avant'), art('Levure US-05', 4)], { amountTTC: 76 }),
-    ]);
-    expect(noms(r)).toEqual(['Houblon Citra 1kg', 'Malt Pilsner 25kg', 'Levure US-05']);
-    expect(pesent(r)).toEqual([]);
-  });
-
-  it('les deux côtés ne voient pas le même article : point qui pèse, lecture à vérifier', () => {
-    const r = assemblerMorceaux([
-      partie(1, 2, [art('A', 1), art('B', 10, 'apres')]),
-      partie(2, 2, [art('C', 7)], { amountTTC: 8 }),
-    ]);
-    const jonction = pesent(r).find((p: any) => /Jonction des parties 1 et 2/.test(p.message));
-    expect(jonction?.lignes).toEqual([1, 2]);
+      partie(1, 2, [art('A', 10), art('B', 5)]),
+      partie(2, 2, [art('D', 7)], { amountTTC: 22 }),
+    ], bandes([1, [art('B', 5), art('Échantillon offert', 0), art('D', 7)]]));
+    expect(pesent(r).some((p: any) => p.code === 'somme-ecart')).toBe(false);
+    expect(pesent(r).find((p: any) => /bande de contrôle ne retrouve pas/.test(p.message))?.lignes).toEqual([2, 3]);
     expect(r.review.status).toBe('disputed');
-    expect(r.review.findings.join(' ')).toMatch(/manquer ou être doublée/);
   });
 
-  it('une suite d’article prise pour un article (gain) : la somme des lignes ne tombe plus sur le total, point qui pèse', () => {
+  it('une coupe sans bande de contrôle : signalée, jamais tenue pour vérifiée ; un saut de page n’en demande pas', () => {
+    const deux = [partie(1, 2, [art('A', 1)]), partie(2, 2, [art('B', 2)], { amountTTC: 3 })];
+    expect(pesent(assemblerMorceaux(deux)).some((p: any) => /non recoupée/.test(p.message))).toBe(true);
+    expect(pesent(assemblerMorceaux(deux, jonctionsRecues({ jonctions: [{ k: 1, sautDePage: true }] })))).toEqual([]);
+  });
+
+  it('un article coupé entre deux parties : la suite complète l’article, une ligne, point qui pèse', () => {
     const r = assemblerMorceaux([
-      partie(1, 2, [art('Article Y', 9.9)]),
-      partie(2, 2, [art('Article Y', 9.9, 'avant'), art('2 x 4.95', 9.9), art('Z', 5)], { amountTTC: 14.9 }),
-    ]);
-    expect(r.items).toHaveLength(3);
+      partie(1, 2, [art('Houblon Citra', 30), art('Malt Pilsner 25 kg', null, { quantity: null, price: null, unit: '' })]),
+      partie(2, 2, [art('', 63, { suite: true, quantity: 2, price: 31.5, unit: 'Stk' }), art('Levure US-05', 4)], { amountTTC: 97 }),
+    ], bandes([1, [art('Houblon Citra', 30), art('Malt Pilsner 25 kg', 63), art('Levure US-05', 4)]]));
+    expect(noms(r)).toEqual(['Houblon Citra', 'Malt Pilsner 25 kg', 'Levure US-05']);
+    expect(r.items[1]).toMatchObject({ quantity: 2, price: 31.5, amountTTC: 63 });
+    expect(pesent(r).find((p: any) => /coupé entre les parties 1 et 2, recollé/.test(p.message))?.lignes).toEqual([2]);
+    expect(pesent(r).some((p: any) => /bande de contrôle/.test(p.message))).toBe(false);
+  });
+
+  it('un article coupé que l’IA n’a pas marqué « suite » : la bande ne retrouve pas les lignes, point qui pèse', () => {
+    const r = assemblerMorceaux([
+      partie(1, 2, [art('Houblon Citra', 30), art('Malt Pilsner 25 kg', null, { quantity: null, price: null })]),
+      partie(2, 2, [art('2 x 31.50', 63), art('Levure US-05', 4)], { amountTTC: 97 }),
+    ], bandes([1, [art('Houblon Citra', 30), art('Malt Pilsner 25 kg', 63), art('Levure US-05', 4)]]));
+    expect(pesent(r).some((p: any) => /bande de contrôle ne retrouve pas/.test(p.message))).toBe(true);
+  });
+
+  it('une « suite » qui n’est pas en tête reste une ligne, et elle est signalée', () => {
+    const r = assemblerMorceaux([partie(1, 1, [art('A', 1), art('', 2, { suite: true })], { amountTTC: 3 })]);
+    expect(r.items).toHaveLength(2);
+    expect(pesent(r).some((p: any) => /sans article à compléter/.test(p.message))).toBe(true);
+  });
+
+  it('une ligne prise en trop : la somme et la bande la voient', () => {
+    const r = assemblerMorceaux([partie(1, 2, [art('Y', 9.9)]), partie(2, 2, [art('Y', 9.9), art('Z', 5)], { amountTTC: 14.9 })], bandes([1, [art('Y', 9.9), art('Z', 5)]]));
     expect(pesent(r).some((p: any) => p.code === 'somme-ecart')).toBe(true);
-    expect(r.review.status).toBe('disputed');
+    expect(pesent(r).some((p: any) => /bande de contrôle ne retrouve pas/.test(p.message))).toBe(true);
   });
 
   it('une coupe à travers une ligne est signalée', () => {
-    const r = assemblerMorceaux([partie(1, 2, [art('A', 1)], { coupeForcee: true }), partie(2, 2, [art('B', 2)], { amountTTC: 3 })]);
+    const r = assemblerMorceaux([partie(1, 2, [art('A', 1)], { coupeForcee: true }), partie(2, 2, [art('B', 2)], { amountTTC: 3 })], bandes([1, [art('A', 1), art('B', 2)]]));
     expect(pesent(r).some((p: any) => /sans espace blanc/.test(p.message))).toBe(true);
   });
 
   it('un morceau manquant ou déplacé : l’assemblage refuse, rien n’est rendu', () => {
-    expect(() => morceauxRecus({ parties: [partie(1, 3, []), partie(3, 3, [])] })).toThrow(/morceau 2 sur 2|n'est pas à sa place/);
+    expect(() => morceauxRecus({ parties: [partie(1, 3, []), partie(3, 3, [])] })).toThrow(/n'est pas à sa place/);
     expect(() => morceauxRecus({ parties: [partie(1, 2, [])] })).toThrow(/manque/);
   });
 
-  it('300 lignes en 12 morceaux avec voisins visibles : 300 lignes exactes, somme = total, aucun point', () => {
+  it('300 lignes en 12 morceaux et 11 bandes : 300 lignes exactes, somme = total, aucun point', () => {
     const vraies = Array.from({ length: 300 }, (_, i) => art(`Article ${i + 1}`, i + 1.5));
     const total = vraies.reduce((s, a) => s + (a.amountTTC as number), 0);
-    const parties = Array.from({ length: 12 }, (_, k) => {
-      const debut = k * 25, fin = debut + 25;
-      const items = [
-        ...vraies.slice(Math.max(0, debut - 2), debut).map(a => ({ ...a, zone: 'avant' })),
-        ...vraies.slice(debut, fin),
-        ...vraies.slice(fin, Math.min(300, fin + 2)).map(a => ({ ...a, zone: 'apres' })),
-      ];
-      return partie(k + 1, 12, items, k === 11 ? { amountTTC: total } : {});
-    });
-    const r = assemblerMorceaux(morceauxRecus({ parties }));
+    const parties = Array.from({ length: 12 }, (_, k) => partie(k + 1, 12, vraies.slice(k * 25, k * 25 + 25), k === 11 ? { amountTTC: total } : {}));
+    const jonctions = Array.from({ length: 11 }, (_, k) => [k + 1, vraies.slice((k + 1) * 25 - 2, (k + 1) * 25 + 2)] as [number, any[]]);
+    const r = assemblerMorceaux(morceauxRecus({ parties }), bandes(...jonctions));
     expect(noms(r)).toEqual(vraies.map(a => a.name));
     expect(r.amountTTC).toBe(total);
     expect(pesent(r)).toEqual([]);
     expect(r.review.status).toBe('checked');
   });
 
-  it('un désaccord de lecture d’une ligne suit sa ligne au rang global ; ceux des voisins (contexte) sont laissés', () => {
+  it('un désaccord de lecture d’une ligne suit sa ligne au rang global', () => {
     const point = (ligne: number) => ({ code: 'lectures-divergentes', origine: 'lecture', pese: true, champ: 'items', champs: [`items.${ligne}.amountTTC`], ligne, cle: `lectures-divergentes:${ligne}:items`, message: `désaccord ${ligne}` });
     const r = assemblerMorceaux([
-      partie(1, 2, [art('A', 1), art('B', 2), art('C', 3, 'apres')]),
-      partie(2, 2, [art('B', 2, 'avant'), art('C', 3), art('D', 4)], { amountTTC: 10, points: [point(1), point(3)] }),
-    ]);
-    const lus = r.points.filter((p: any) => p.origine === 'lecture');
-    expect(lus.map((p: any) => [p.ligne, p.champs[0]])).toEqual([[4, 'items.4.amountTTC']]);
+      partie(1, 2, [art('A', 1), art('B', 2)]),
+      partie(2, 2, [art('C', 3), art('D', 4)], { amountTTC: 10, points: [point(2)] }),
+    ], bandes([1, [art('B', 2), art('C', 3)]]));
+    expect(r.points.filter((p: any) => p.origine === 'lecture').map((p: any) => [p.ligne, p.champs[0]])).toEqual([[4, 'items.4.amountTTC']]);
   });
 
-  it('la zone d’un article survit à la normalisation ; une zone inconnue est ignorée', () => {
-    const n = normalizeInvoiceScan({ items: [{ name: 'A', amountTTC: 1, zone: 'apres' }, { name: 'B', amountTTC: 2, zone: 'ailleurs' }] });
-    expect(n.items.map((i: any) => i.zone)).toEqual(['apres', undefined]);
+  it('`suite` survit à la normalisation seulement quand elle vaut true ; la consigne n’en parle pas sur la première partie', () => {
+    const n = normalizeInvoiceScan({ items: [{ name: '', amountTTC: 1, suite: true }, { name: 'B', amountTTC: 2, suite: false }] });
+    expect(n.items.map((i: any) => i.suite)).toEqual([true, undefined]);
+    expect(morceauNote(1, 3)).not.toContain('suite = true');
+    expect(morceauNote(2, 3)).toContain('suite = true');
+  });
+
+  it('jonctionConcorde : la suite des montants de la bande, d’un seul tenant, dans l’ordre', () => {
+    const a = (m: number | null) => ({ amountTTC: m });
+    expect(jonctionConcorde([a(2), a(3)], [a(1), a(2)], [a(3), a(4)])).toBe(true);
+    expect(jonctionConcorde([a(3), a(2)], [a(1), a(2)], [a(3), a(4)])).toBe(false);
+    expect(jonctionConcorde([a(2), a(0), a(3)], [a(1), a(2)], [a(3), a(4)])).toBe(false);
+    expect(jonctionConcorde([], [a(1)], [a(2)])).toBe(false);
+    expect(jonctionConcorde([], [], [a(2)])).toBe(false);
+    expect(jonctionConcorde([], [], [])).toBe(true);
+    expect(jonctionConcorde([a(2)], [], [a(2), a(3)])).toBe(true);
+    expect(jonctionConcorde([a(1), a(2)], [a(1), a(2)], [a(3)])).toBe(false);
   });
 });
 
-describe('D381 : morceaux sans recouvrement de propriété', () => {
+describe('D381 : morceaux bord à bord, sans voisins, et bandes de contrôle', () => {
   const rangees = (() => { const rows: number[] = new Array(40).fill(0); for (let i = 0; i < 300; i++) rows.push(...new Array(14).fill(0.2), ...new Array(10).fill(0)); return rows; })();
-  it('les zones propres se suivent bord à bord, coupées dans le blanc ; les voisins visibles bordés de blanc', () => {
+  it('les zones se suivent bord à bord, coupées dans le blanc ; la vue est la zone seule', () => {
+    expect(CONTEXT_LINES).toBe(0);
     const m = planMorceaux(rangees, 1200);
     expect(m[0].top).toBe(0);
     expect(m.at(-1)!.bottom).toBe(rangees.length);
     m.slice(1).forEach((b, i) => expect(b.top).toBe(m[i].bottom));
+    const pas = linePitch(rangees)!;
     m.forEach(b => {
       expect(b.forced).toBe(false);
-      expect(b.viewTop).toBeLessThanOrEqual(b.top);
-      expect(b.viewBottom).toBeGreaterThanOrEqual(b.bottom);
-      if (b.viewTop > 0) expect(rangees[b.viewTop]).toBe(0);
-      if (b.viewBottom < rangees.length) expect(rangees[b.viewBottom - 1]).toBe(0);
+      expect([b.viewTop, b.viewBottom]).toEqual([b.top, b.bottom]);
+      if (b.bottom < rangees.length) expect(rangees[b.bottom - 1]).toBe(0);
+      expect((b.bottom - b.top) / pas).toBeLessThanOrEqual(25.5);
     });
-    // Au plus 25 lignes propres, environ 3 lignes de voisins de chaque côté.
-    const pas = linePitch(rangees)!;
-    m.forEach(b => expect((b.bottom - b.top) / pas).toBeLessThanOrEqual(25.5));
-    m.slice(1, -1).forEach(b => { expect(Math.round((b.top - b.viewTop) / pas)).toBeGreaterThanOrEqual(3); expect(Math.round((b.viewBottom - b.bottom) / pas)).toBeGreaterThanOrEqual(3); });
+  });
+  it('une bande par coupe intérieure, à cheval, bords dans le blanc, environ 2 lignes de chaque côté', () => {
+    const m = planMorceaux(rangees, 1200), j = planJonctions(m, rangees), pas = linePitch(rangees)!;
+    expect(j.map(b => b.k)).toEqual(m.slice(0, -1).map((_, i) => i + 1));
+    j.forEach((b, i) => {
+      expect(b.top).toBeLessThan(m[i].bottom);
+      expect(b.bottom).toBeGreaterThan(m[i].bottom);
+      expect(rangees[b.top]).toBe(0);
+      expect(rangees[b.bottom - 1]).toBe(0);
+      expect(Math.round((m[i].bottom - b.top) / pas)).toBeGreaterThanOrEqual(2);
+      expect(Math.round((b.bottom - m[i].bottom) / pas)).toBeGreaterThanOrEqual(2);
+    });
   });
 });

@@ -2,7 +2,6 @@ import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
 import { TIERS } from './models.js';
-import { ZONES_MORCEAU, type ZoneMorceau } from './invoiceMorceaux.js';
 import {
   INVOICE_FIELDS, SCAN_POINT_CODES, chf, defined, htEstUnSousTotalTTC, lineMathCheck, makePoint, sumCheck, toCents, totalsCheck, withinRounding,
   type ControlStatus, type InvoiceField, type ScanControls, type ScanPoint, type ScanPointCode, type ScanPointDetail, type ScanRejet, type ScanVatRow,
@@ -176,8 +175,8 @@ export function invoiceDate(value: unknown): string {
 type CoreItem = {
   id: string; name: string; kind: typeof SCAN_KINDS[number]; quantity: number | null; unit: string; price: number | null; amountTTC: number | null;
   reference: string; variant: string; stockCategory: string; evidence: string; ambiguity: string; vatCode: string; alphaPct: number | null; alphaPctLu: number | null;
-  /** D381 : seulement pour la lecture d'un morceau (première ligne avant le trait du haut, dans la zone, après le trait du bas). */
-  zone?: ZoneMorceau;
+  /** D381 : lecture d'un morceau seulement : la ligne n'est que la suite d'un article commencé sur la partie précédente. */
+  suite?: true;
 };
 
 type VatKey = { code: string; rate: number | null };
@@ -304,7 +303,7 @@ export function normalizeInvoiceScan(raw: any) {
       reference: text(item?.reference, 70), variant: text(item?.variant, 80),
       stockCategory: text(item?.stockCategory, 60), evidence: text(item?.evidence, 250), ambiguity: text(item?.ambiguity, 200),
       vatCode: code.slice(0, 10), alphaPct, alphaPctLu: alphaRead,
-      ...(ZONES_MORCEAU.includes(item?.zone) ? { zone: item.zone as ZoneMorceau } : {}),
+      ...(item?.suite === true ? { suite: true as const } : {}),
     };
   });
   const documentType: DocumentType = DOCUMENT_TYPES.includes(raw?.documentType) ? raw.documentType as DocumentType : 'other';

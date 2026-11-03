@@ -10,8 +10,8 @@ import { ScanReadCutError, ligneJournalLecture, type CauseCoupure } from './invo
 import { isoCurrency, lireCsv8 } from './invoiceScanVote.js';
 import { INVOICE_SCAN_PROMPTS } from './invoiceScanPrompts.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
-import { ZONES_MORCEAU, morceauNote } from './invoiceMorceaux.js';
-import { MORCEAUX_MAX, assemblerMorceaux, morceauxRecus } from './invoiceAssemblage.js';
+import { jonctionNote, morceauNote } from './invoiceMorceaux.js';
+import { MORCEAUX_MAX, assemblerMorceaux, jonctionsRecues, morceauxRecus } from './invoiceAssemblage.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
 import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
@@ -90,6 +90,8 @@ interface AiTaskPayload {
   files?: Array<{ data: string; mimeType: string }>;
   /** D380 : ce fichier est le morceau k sur n d'une longue pièce découpée par l'app (bande ou page) ; seulement avec `file`. */
   morceau?: { k: number; n: number };
+  /** D381 : ce fichier est la bande de contrôle à cheval sur la coupe entre les morceaux k et k + 1 (sur n) ; seulement avec `file`. */
+  jonction?: { k: number; n: number };
 }
 
 /** D380 : un morceau valide (entiers, 1 ≤ k ≤ n ≤ MORCEAUX_MAX) ou rien ; tout autre valeur est refusée. */
@@ -99,6 +101,12 @@ export function morceauDeLecture(raw: unknown): { k: number; n: number } | undef
   if (!Number.isSafeInteger(k) || !Number.isSafeInteger(n) || (k as number) < 1 || (k as number) > (n as number) || (n as number) > MORCEAUX_MAX)
     throw new HttpsError('invalid-argument', 'Morceau de lecture invalide.');
   return { k: k as number, n: n as number };
+}
+/** D381 : une bande de jonction valide (1 ≤ k < n ≤ MORCEAUX_MAX) ou rien. */
+export function jonctionDeLecture(raw: unknown): { k: number; n: number; jonction: true } | undefined {
+  const m = morceauDeLecture(raw);
+  if (m && m.k >= m.n) throw new HttpsError('invalid-argument', 'Morceau de lecture invalide.');
+  return m ? { ...m, jonction: true } : undefined;
 }
 
 interface AiTaskResult {
@@ -168,13 +176,13 @@ export interface FluxProvisoire {
   onProvisoire: (data: unknown, meta: { model: string; elapsedMs: number; pages?: number }) => unknown;
 }
 
-/** D381 : le schéma de lecture d'un morceau : chaque article dit où est sa première ligne (`zone`, écrite d'abord). */
+/** D381 : le schéma de lecture d'un morceau : chaque article dit s'il n'est que la suite d'un article de la partie précédente (`suite`, écrit d'abord). */
 const SCHEMA_MORCEAU = (() => {
   const base: any = TASKS.scanInvoice.schema, item = base.properties.items.items;
-  return { ...base, properties: { ...base.properties, items: { ...base.properties.items, items: { ...item, properties: { zone: { type: 'STRING', enum: [...ZONES_MORCEAU] }, ...item.properties }, required: ['zone', ...item.required] } } } };
+  return { ...base, properties: { ...base.properties, items: { ...base.properties.items, items: { ...item, properties: { suite: { type: 'BOOLEAN' }, ...item.properties }, required: ['suite', ...item.required] } } } };
 })();
 
-export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire, morceau?: { k: number; n: number }): Promise<AiTaskResult> {
+export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unknown[], apiKey: string, evaluationOptions?: { maxOutputTokens: number }, flux?: FluxProvisoire, morceau?: { k: number; n: number; jonction?: true }): Promise<AiTaskResult> {
   const started = Date.now();
   // Un test réel peut ABAISSER le plafond de sortie de chaque appel ; il ne peut pas dépasser celui de la 3.8.
   const override = evaluationOptions?.maxOutputTokens;
@@ -183,10 +191,10 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
   const pages: InvoiceFile[] = !Array.isArray(suppliedFile) ? [validateInvoiceFile(suppliedFile)] : suppliedFile.length === 1 ? [validateInvoiceFile(suppliedFile[0])] : pagesDeLecture(suppliedFile);
   if (morceau && pages.length > 1) throw new Error('Un morceau est un seul fichier.');
   // D380 : un morceau a sa propre clé (le même fichier lu entier ou comme morceau k/n n'a pas la même consigne, donc pas le même résultat).
-  const cleMorceau = (file: InvoiceFile, m: { k: number; n: number }): InvoiceFile =>
-    ({ mimeType: 'application/x-morceau', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`${m.k}/${m.n}`)]).toString('base64') });
+  const cleMorceau = (file: InvoiceFile, m: { k: number; n: number; jonction?: true }): InvoiceFile =>
+    ({ mimeType: 'application/x-morceau', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`${m.jonction ? 'j' : ''}${m.k}/${m.n}`)]).toString('base64') });
   const key: InvoiceFile = pages.length > 1 ? cleDePages(pages) : morceau ? cleMorceau(pages[0], morceau) : pages[0], model = SCAN_MODEL;
-  const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : morceau ? `${prompt}\n\n${morceauNote(morceau.k, morceau.n)}` : prompt;
+  const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : morceau ? `${prompt}\n\n${morceau.jonction ? jonctionNote() : morceauNote(morceau.k, morceau.n)}` : prompt;
   assertGeminiModel(model);
   assertGeminiModel(GEMINI_LITE_MODEL);
   const provider = async (body: Record<string, unknown>, signal: AbortSignal, callModel: string = model) => {
@@ -345,12 +353,12 @@ export const aiTask = onCall(
   },
   async (request: CallableRequest<AiTaskPayload>, response?: CallableResponse<unknown>): Promise<AiTaskResult> => {
     const email = assertAuthorized(request);
-    const { task, tier: requestedTier, context, instruction, file, files, morceau } = request.data ?? {};
+    const { task, tier: requestedTier, context, instruction, file, files, morceau, jonction } = request.data ?? {};
 
     // D380 : l'assemblage des morceaux d'une longue pièce ; aucune IA, aucun coût, aucune pièce jointe.
     if ((task as string) === 'assemblerLecture') {
       const started = Date.now();
-      try { return { ok: true, data: assemblerMorceaux(morceauxRecus(context)), model: 'assemblage', tier: 'fast', elapsedMs: Date.now() - started }; }
+      try { return { ok: true, data: assemblerMorceaux(morceauxRecus(context), jonctionsRecues(context)), model: 'assemblage', tier: 'fast', elapsedMs: Date.now() - started }; }
       catch (error: any) { return { ok: false, tier: 'fast', error: error?.message || 'Assemblage impossible.' }; }
     }
 
@@ -385,7 +393,9 @@ export const aiTask = onCall(
         const flux: FluxProvisoire | undefined = request.acceptsStreaming && response
           ? { jeton, onProvisoire: (data, meta) => response.sendChunk({ etape: 'provisoire', jeton, data, ...meta }).catch(() => false) }
           : undefined;
-        const m = morceauDeLecture(morceau);
+        const lu = morceauDeLecture(morceau), j = jonctionDeLecture(jonction);
+        if (lu && j) throw new Error('Un morceau ou une jonction, pas les deux.');
+        const m = lu ?? j;
         if (m && charge.kind === 'pages') throw new Error('Un morceau est un seul fichier.');
         return await scanInvoiceSafely(request.auth!.uid, charge.kind === 'pages' ? charge.files : file, apiKey, undefined, flux, m);
       } catch (error: any) {
