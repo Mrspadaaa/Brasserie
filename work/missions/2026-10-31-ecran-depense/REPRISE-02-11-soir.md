@@ -183,3 +183,9 @@ retirées de l'index, fichiers gardés sur le disque).
   sont filtrées « 1 à remplir · 34 masquées »).
 - D377 (« Item en rouge mais pas total ?? ») : le total de bande ne porte pas le rouge d'un montant de ligne « inconnu » ; à faire dans bandes (Liste.tsx, LigneBande).
 - Banc : cas g-unite, g-propose et D373 dans g-quantite (scripts du banc et du worktree, non commités).
+
+## 03.11, vers 5 h 20 — D375, D377 déployés (e23fe7c8, index-DAVLk2S7.js)
+- Fait : TVA lue toujours offerte, « sans TVA » neutre ; total de bande rouge quand un montant de ligne l'est. Tests verts, preuve inverse sur 27d63a46.
+- Pas fait : vision au banc de D375 et D377 (tuile TVA, total rouge), deux thèmes, 390 et 1280.
+- Ouverts : D376 sous-familles des ingrédients (choix neuf, en attente de son feu : « Non ne commence pas ça ») ; la lecture s'arrête à 35 lignes
+  (sa pièce en a plus : 43,00 manquent au détail) — chantier lecture (functions/aiTask, Gemini facturé), à son accord ; « montant à remplir » dit d'un montant présent.

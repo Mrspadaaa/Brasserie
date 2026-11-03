@@ -1833,3 +1833,11 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - Ses mots : « Là on voit pas la vue des stocks ? ». pu4d : « Ligne en doute : le duel Facture | Stock ». Proposé = doute : ≈ jaune, FACTURE l'imprimé et la quantité lue
   (unité marquée si elle diffère), STOCK l'article, « compté en … », « avant → après ». La décision reste sur la ligne article (Garder ⇄ Retirer) ; « Garder » referme.
 - Preuves : test d'écran pu4d D374 (malt et levure « 2 Stk »), rouge sur ddbabbfc ; banc g-propose 5 OK (stock fictif semé depuis l'écran), captures regardées.
+
+## D375, D377 — 03.11 : la TVA lue reste offerte ; le total de bande porte le rouge (déployé e23fe7c8)
+- D375, ses mots : « La TVA est pas compté dans le total? SI je click en ht, je peux plus revenir ? ». Sa pièce : lignes TTC, 16,10 de TVA comprise dans 261,65 ;
+  l'écart du détail (218,65) vient des lignes non lues (« Plus de 35 lignes »), pas de la TVA. Panneau TVA : la TVA lue et la valeur posée toujours offertes, la case posée
+  marquée (aria-pressed) ; « — » se nomme « sans TVA », jamais « proposé ». Test pu4d D375 ; tri R10 ajusté (nom de la case).
+- D377, ses mots : « Item en rouge mais pas total ?? ». `LigneBande.montantDoute` → `Bande`/`SousGroupe.montantDoute` → total tireté rouge (Liste.tsx). Test pu4d D377.
+- Dossier Dépense : 62 échecs anciens, aucun nouveau. Non vu au banc (vision) faute de contexte : à regarder au prochain tour.
+- D376 (sous-familles des malts, houblons, levures) : sa page D disait « aucune (Houblons) » ; c'est un choix neuf, à montrer en mini maquettes. Il a dit « Non ne commence pas ça ».

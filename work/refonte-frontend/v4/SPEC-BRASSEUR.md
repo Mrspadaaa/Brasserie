@@ -1357,3 +1357,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   toucher, Nettoyage → CIP alcalin, Désinfectant, Détergent), mot pour mot : « Pourquoi j'ai plus ça, ni des sous catégories ??? » (D376, à lire.)
 - **Le total pas en rouge** (03.11 ; même capture, cerclés : « Houblons 1/5 · 30 g · 1,10 » et le montant « 1,10 » rouge tireté de la ligne Aramis), mot pour mot :
   « Item en rouge mais pas total ?? » (lu : le total d'une bande porte le rouge du montant d'une de ses lignes. D377.)
+- **Suite** (même capture de sa page D), mot pour mot : « J'ai perdu cette fonctionnalité ?? » (D376.)
+- **Suite**, mot pour mot : « Et les sous catégories... » (D376.)
+- **Suite** (à « les sous-familles de malts, houblons et levures sont un choix nouveau… je te les montrerai en mini-maquettes »), mot pour mot :
+  « donc les sous-familles de malts, houblons et levures sont un choix nouveau que tu devras valider, et je te les montrerai en mini-maquettes. Non ne commence pas ça »
+  (lu : rien n'est lancé sur les sous-familles des ingrédients ; D376 reste ouvert, sans page.) Puis « /autocompact 500k » (réglage de Claude Code, hors de l'app).
