@@ -20,13 +20,12 @@ export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
  * `maxOutputTokens` : en ligne le 02.11, une commande de 31 lignes sur 3 pages a été coupée à 5 085 jetons sous l'ancien plafond de 5 100.
  * Même plafond que la Flash-Lite.
  */
-export const SCAN_MAX_OUTPUT = 32768;
+export const SCAN_MAX_OUTPUT = 8192;
 /**
  * Plafond de sortie des deux lectures Flash-Lite (C★v8, D247). La réflexion compte dans `maxOutputTokens` : à 5 100, les deux Flash-Lite
  * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 a le même depuis le 02.11.
  */
-/** D379 : 32 768 (≈ 200 lignes à 160 jetons, réflexion comprise) pour qu'une longue commande ne soit pas coupée en plein JSON ; un plafond ne coûte que s'il sert. Au-delà : la lecture par tranches (à faire). */
-export const LITE_SCAN_MAX_OUTPUT = 32768;
+export const LITE_SCAN_MAX_OUTPUT = 8192;
 export const SCAN_MAX_CALLS = 3;
 /** D379 : « Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » : aucune ligne lue n'est jetée. Garde-fou seulement contre une réponse folle. */
 export const SCAN_MAX_ITEMS = 10000;
