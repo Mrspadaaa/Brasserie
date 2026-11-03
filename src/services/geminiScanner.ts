@@ -3,6 +3,8 @@ import { AiClient, type AiFluxEtape, type AiRequest, type AiResponse, type AiTie
 import { totalAdmis } from './pagesJustificatif';
 import { peserPoint, type InvoiceControls, type InvoicePoint } from '../domain/finance/invoicePoints';
 import { lignesHtAuTtc } from './lignesHt';
+import type { Decoupe } from './decoupe';
+import { lireEnMorceaux } from './lectureMorceaux';
 
 export type ScannedLineKind = 'equipment'|'maintenance'|'stock'|'service'|'packaging'|'shipping'|'discount'|'other'|'unknown';
 export type InvoiceReviewStatus = 'checked'|'corrected'|'disputed'|'unavailable';
@@ -79,6 +81,11 @@ function scanPoint(raw:any):InvoicePoint|null{
     message:text(raw.message,250), ...(details?{details}:{}),
   };
 }
+/** D381, déclencheur « après » : la lecture a été coupée (point `lecture-coupee`), ou la pièce imprime plus de lignes de plus de 2 que la lecture n'en rend. */
+export function lectureIncomplete(data:any):boolean{
+  if(Array.isArray(data?.points)&&data.points.some((p:any)=>p?.code==='lecture-coupee'))return true;
+  return typeof data?.printedLineCount==='number'&&Array.isArray(data?.items)&&data.printedLineCount>data.items.length+2;
+}
 const MAX_POINTS=60;
 /** Plus de 60 points : les points qui pèsent passent d'abord ; si la coupe en perd un qui pèse, la lecture n'est plus jamais « vérifiée » (relecture l2, point 6). */
 function keepWeighingPoints(result:ScannedInvoiceResult,_raw:any):ScannedInvoiceResult{
@@ -115,11 +122,38 @@ export const GeminiScannerService = {
   async scanDocument(file:File,_tier:AiTier='fast',options?:ScanFluxOptions):Promise<ScanOutcome> {
     const mimeType=this.normalizeMimeType(file), base={ proofDataUrl:'',fileName:file.name,mimeType };
     if (!['image/jpeg','image/png','image/webp','application/pdf'].includes(mimeType) || file.size>4*1024*1024)
-      return { ...base,ok:false,error:'Choisis une image JPG, PNG, WebP ou un PDF de 4 Mo maximum (4 pages).' };
+      return { ...base,ok:false,error:'Choisis une image JPG, PNG, WebP ou un PDF de 4 Mo maximum.' };
     const proofDataUrl=await this.fileToDataUrl(file);
+    // D381, déclencheur « avant » : une pièce très haute, un PDF de plus de 4 pages ou très dense se lit en morceaux. Les autres gardent la lecture d'aujourd'hui, au même appel.
+    const avant=await this.decouper(file,false);
+    if (avant) return this.lireMorceaux(avant,file,base,proofDataUrl,options?.signal);
     const response=await this.appeler({ task:'scanInvoice',tier:'fast',file },options,etape=>({ ...base,proofDataUrl,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs }));
     if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:response.error || 'Lecture indisponible. Complète les champs manuellement.' };
+    // D381, déclencheur « après » : la lecture a été coupée ou a laissé des lignes imprimées → relue en morceaux, sans geste. Si cette relecture échoue, la première lecture (ses points disent ce qui manque) reste.
+    if (lectureIncomplete(response.data)) {
+      const apres=await this.decouper(file,true);
+      if (apres) { const relue=await this.lireMorceaux(apres,file,base,proofDataUrl,options?.signal); if (relue.ok) return relue; }
+    }
     return { ...base,proofDataUrl,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:response.documentHash,cached:response.cached };
+  },
+  /** D381 : les morceaux de la pièce, ou `null` (lecture d'aujourd'hui). Une découpe qui échoue (image illisible, pdf.js absent) ne bloque jamais la lecture : `null`. */
+  async decouper(file:File,force:boolean):Promise<Decoupe|null> {
+    // Chargé à la demande : le module de découpe (canvas, pdf.js) ne pèse pas sur le morceau principal.
+    try { return await (await import('./decoupe')).decouperPiece(file,{ force }); } catch { return null; }
+  },
+  /** L'empreinte SHA-256 du fichier d'origine, celle que le serveur calcule pour une lecture entière (« même fichier déjà joint ») ; `undefined` si le navigateur ne peut pas. */
+  async empreinte(file:File):Promise<string|undefined> {
+    try { return [...new Uint8Array(await crypto.subtle.digest('SHA-256',await file.arrayBuffer()))].map(b=>b.toString(16).padStart(2,'0')).join(''); } catch { return undefined; }
+  },
+  /** D381 : lit les morceaux puis les recolle ; même conversion en `ScanOutcome` qu'une lecture entière. Un morceau non lu = une erreur, jamais une lecture partielle. */
+  async lireMorceaux(decoupe:Decoupe,file:File,base:Pick<ScanOutcome,'proofDataUrl'|'fileName'|'mimeType'>,proofDataUrl:string,signal?:AbortSignal):Promise<ScanOutcome> {
+    try {
+      const response=await lireEnMorceaux(decoupe.parties,undefined,{ signal,jonctions:decoupe.jonctions });
+      if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:response.error || 'Lecture indisponible. Complète les champs manuellement.' };
+      return { ...base,proofDataUrl,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:await this.empreinte(file),cached:response.cached };
+    } catch (erreur) {
+      return { ...base,proofDataUrl,ok:false,error:erreur instanceof Error && erreur.message ? erreur.message : 'Lecture indisponible. Complète les champs manuellement.' };
+    }
   },
   /**
    * n2-pages : les N images d'un même justificatif, lues d'un seul appel (comme le banc). Un serveur qui ne sait pas encore lire des pages n'a jamais le droit

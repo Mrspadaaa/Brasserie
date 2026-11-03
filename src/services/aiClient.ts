@@ -37,7 +37,9 @@ export type AiTaskId =
   | 'lookupHopVariety'
   | 'readHopCoa'
   /** D280 : la désignation en français des noms de base d'une facture, texte seul (`src/services/nomsFr.ts`). */
-  | 'traduireNoms';
+  | 'traduireNoms'
+  /** D380 : recolle les lectures des morceaux d'une longue pièce (aucune IA, aucun coût). */
+  | 'assemblerLecture';
 
 export const TIER_LABEL: Record<AiTier, string> = {
   fast: '⚡ Rapide',
@@ -60,6 +62,10 @@ export interface AiRequest {
   file?: File | Blob;
   /** n2-pages : les pages d'un même justificatif (2 à 4 images), lues d'un seul appel ; jamais avec `file`. */
   files?: Array<File | Blob>;
+  /** D380 : ce `file` est le morceau k sur n d'une longue pièce découpée par l'app ; seulement avec `file`. */
+  morceau?: { k: number; n: number };
+  /** D381 : ce `file` est la bande de contrôle de la coupe entre les morceaux k et k + 1 d'une pièce en n morceaux (lue à part, seulement comparée). */
+  jonction?: { k: number; n: number };
 }
 
 export interface AiResponse<T = any> {
@@ -141,6 +147,8 @@ async function chargeDe(req: AiRequest): Promise<Record<string, unknown>> {
   } else if (req.file) {
     payload.file = await toBase64(req.file);
   }
+  if (req.morceau) payload.morceau = req.morceau;
+  if (req.jonction) payload.jonction = req.jonction;
   return payload;
 }
 

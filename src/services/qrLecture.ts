@@ -3,6 +3,7 @@
 // Le texte décodé passe par `parseSwissQr` (module pur, `qrFacture.ts`) ; la confrontation à la lecture de la facture est faite par l'écran.
 // Une lecture qui échoue ne bloque jamais la dépense : elle rend `non-verifie`, jamais une exception.
 import { parseSwissQr, type QrFacture } from './qrFacture';
+import { chargerPdfjs } from './pdfjs';
 
 /**
  * Le résultat d'une lecture de QR :
@@ -119,8 +120,7 @@ async function creerMoteurs(): Promise<MoteursQr> {
       return resultats.filter(r => r.format === 'QRCode').map(r => ({ texte: r.text ?? '', decode: r.isValid }));
     },
     async *pagesPdf(donnees, n, echelle) {
-      const [pdfjs, worker] = await Promise.all([import('pdfjs-dist'), import('pdfjs-dist/build/pdf.worker.min.mjs?url')]);
-      pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+      const pdfjs = await chargerPdfjs();
       // Piège mesuré au banc : ne PAS passer `standardFontDataUrl` (il effaçait le QR d'un PDF). `isEvalSupported: false` : aucune évaluation de code.
       const tache = pdfjs.getDocument({ data: new Uint8Array(donnees), isEvalSupported: false });
       const pdf = await tache.promise;
