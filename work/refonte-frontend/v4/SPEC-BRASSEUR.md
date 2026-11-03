@@ -1343,3 +1343,17 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   de l'alerte rouge de D371. D372.)
 - **Suite**, mot pour mot : « Et ça doit être générique, on est bien d'accord, pas juste sur ce cas précis ??? » (lu : toute ligne reliée dont l'unité
   ne s'ajoute pas à celle de l'article, quels que soient le produit et la paire d'unités ; le test en joue plusieurs. D372.)
+- **Le calcul pas dynamique** (03.11 ; capture d'une ligne de houblon de sa pièce PDF `bestellung` : `30 g × 0,037 = 1,10`, « ≠ montant, écart à vérifier »,
+  « montant à remplir » en rouge alors que 1,10 est là), mot pour mot : « Les calculs sont pas dynamique ??? SI j'entre ou modife un champs, genre le total doit être
+  calculé ?? Ça vient de ce fichier » (lu : un champ du calcul modifié recalcule l'autre, même lu ; le total d'abord. D373.)
+- **La vue des stocks absente** (03.11 ; captures : « Weizenmalz hell » article « proposé » + Garder ⇄ Retirer, « 8,5 → 9,5 Kg » à droite de la nature ;
+  « Levure Safale BE-256 » « 2 Stk » en pièce, « proposé · 2 Stk = 2 sachet · poids du sachet non confirmé », « 6 → 8 sachets »), mot pour mot :
+  « Là on voit pas la vue des stocks ? » (lu : une ligne dont l'article est proposé est en doute ; pu4d : « Ligne en doute : le duel Facture | Stock, le lien
+  entre les deux, puis la décision ». D374.)
+- **La TVA et le total** (03.11 ; capture de la même pièce `bestellung` : total 261,65 CHF, QR ✓, « Somme = imprimé non vérifiée », « Qté × prix 34/35 »,
+  « Plus de 35 lignes : compléter le détail manuellement », TVA 16,10, « Détail 218,65 / 261,65 »), mot pour mot : « La TVA est pas compté dans le total? SI je
+  click en ht, je peux plus revenir ?  Là du coup ça match pas. » (D375, à lire.)
+- **Les sous-catégories disparues** (03.11 ; capture de sa page de choix « Tout plier, déplier sur D · 02.11 » : A « son choix D », chaque sous-groupe s'ouvre d'un
+  toucher, Nettoyage → CIP alcalin, Désinfectant, Détergent), mot pour mot : « Pourquoi j'ai plus ça, ni des sous catégories ??? » (D376, à lire.)
+- **Le total pas en rouge** (03.11 ; même capture, cerclés : « Houblons 1/5 · 30 g · 1,10 » et le montant « 1,10 » rouge tireté de la ligne Aramis), mot pour mot :
+  « Item en rouge mais pas total ?? » (lu : le total d'une bande porte le rouge du montant d'une de ses lignes. D377.)

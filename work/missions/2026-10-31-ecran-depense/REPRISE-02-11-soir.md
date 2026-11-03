@@ -174,3 +174,12 @@ retirées de l'index, fichiers gardés sur le disque).
 - Sa plainte : l'alerte de D371 n'est pas sa vue ; il attendait le face à face pu4d, générique. Fait : règle dans `confianceLigne`, vue « unité à remplir » de pu4d.
 - Banc : cas `g-unite` ajouté (scripts/g-banc.mjs du banc et check-invoice-journey-emulator.mjs du worktree, non commités) ; 5 OK.
 - Prochaine action : rien d'ouvert sur D372 ; restes connus listés dans D369 et D371.
+
+## 03.11, vers 4 h 50 — D373, D374 déployés (27d63a46, index-xwDI-55z.js) ; ouverts : D375, D376, D377
+- D375 TVA (« La TVA est pas compté dans le total? SI je click en ht, je peux plus revenir ? ») : sa pièce a des lignes TTC (Belegbetrag 191,95 + 69,70 = 261,65,
+  dont 16,10 de TVA) ; l'écart du détail (218,65) vient des lignes non lues (« Plus de 35 lignes »). Bug : panneau TVA (ExpenseSheet ~l. 1092) sans valeur divergente
+  (`tvaLues` vide) n'offre que « proposé · HT vide — », qui efface la TVA sans retour. À faire : toujours offrir la TVA lue ; « HT vide » neutre, jamais « proposé ».
+- D376 sous-catégories (« Pourquoi j'ai plus ça, ni des sous catégories ??? », sa page D « Tout plier, déplier ») : à lire (groupes.ts, sousFamilleDeLigne ; ses captures
+  sont filtrées « 1 à remplir · 34 masquées »).
+- D377 (« Item en rouge mais pas total ?? ») : le total de bande ne porte pas le rouge d'un montant de ligne « inconnu » ; à faire dans bandes (Liste.tsx, LigneBande).
+- Banc : cas g-unite, g-propose et D373 dans g-quantite (scripts du banc et du worktree, non commités).

@@ -1822,3 +1822,14 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - Preuves : `tests/unit/depense/d372` (10, dont 4 paires refusées et 5 acceptées) et le test d'écran pu4d, rouges sur 27d12523, verts sur ddbabbfc ; dossier Dépense :
   62 échecs anciens avant comme après, aucun nouveau. Banc `g-unite` 390, clair et sombre : 5 OK, captures regardées. En ligne : `index-DHCDSPpx.js`, marqueur présent, alerte absente.
 - Reste : le libellé « article « X » · relié à « X », nom déjà au stock » répète le nom ; hors de ce correctif.
+
+## D373 — 03.11 : q × prix = montant dynamique (déployé 27d63a46)
+- Ses mots : « Les calculs sont pas dynamique ??? SI j'entre ou modife un champs, genre le total doit être calculé ?? » (pièce `bestellung`, ligne imprimée 0.036 × 30 = 1.10).
+- Règle (`recalculer`, calculPlateau.ts) : le champ qui manque se calcule ; les trois présents (lus compris), celui qu'il n'a pas touché suit : quantité ou prix → montant ;
+  montant → prix, ou quantité si le prix vient d'être posé. Le dernier champ touché tient (`derniers` dans ExpenseSheet). Remplace « une valeur lue n'est jamais écrasée » (D369).
+- Preuves : `tests/unit/depense/d373` (7), D369 ajustés (2, raison écrite), lecture-d (a') ajusté (le récap lit toujours la frappe) ; banc g-quantite D373 OK, deux thèmes.
+
+## D374 — 03.11 : la ligne à l'article proposé montre son face à face (déployé 27d63a46)
+- Ses mots : « Là on voit pas la vue des stocks ? ». pu4d : « Ligne en doute : le duel Facture | Stock ». Proposé = doute : ≈ jaune, FACTURE l'imprimé et la quantité lue
+  (unité marquée si elle diffère), STOCK l'article, « compté en … », « avant → après ». La décision reste sur la ligne article (Garder ⇄ Retirer) ; « Garder » referme.
+- Preuves : test d'écran pu4d D374 (malt et levure « 2 Stk »), rouge sur ddbabbfc ; banc g-propose 5 OK (stock fictif semé depuis l'écran), captures regardées.
