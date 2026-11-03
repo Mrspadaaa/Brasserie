@@ -1855,3 +1855,18 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   écritures (Firestore a levé le plafond de 500 par lot le 29.03.2023 ; reste 10 Mio par requête).
 - Reste : la lecture par tranches (« take ») quand une seule réponse de Gemini ne suffit pas (au-delà d'environ 200 lignes) : chantier lecture, banc Gemini facturé.
 - Leçon L11 : une donnée jetée n'est jamais un vert. Audit des limites : `work/missions/2026-10-31-ecran-depense/audit-limites/RAPPORT.md` (13, dont 3 graves).
+
+## D380 — 03.11 : une longue pièce se lit en morceaux (pages, bandes), jamais par « takes » comptées (pilote, ses mots)
+- Essai réel (pièces fictives, appels autorisés « pour ce cas particulier ») : 300 lignes sur une page → lecture 1 coupée à 8 176 jetons, lecture 2 de 424 jetons,
+  3.8 expirée à 45 s ; 1 ligne gardée sur 300, total et TVA justes, « Confirmer » actif. 600 lignes sur 8 pages → refus « 4 pages maximum », sans appel.
+- Ses mots : « 2 lecture paralelle qui font des "take". Puis du non concensus, lecture lente qui fait des take aussi » ; puis « ça me semble un peu bancale ? Comment
+  l'ia sait où elle en est ??? », « surtout sur les documents comme les ticket de caisse » ; « Pas besoin de toujours découper […] Quand est-ce que ça trigger ? ».
+- Décidé : pas de takes comptées (« lignes 26 à 50 » : l'IA compte, une jonction saute ou double). La pièce se découpe pour que chaque lecture ne voie que son morceau :
+  une page à la fois (Pv) ; une image ou une page trop haute en bandes coupées sur des rangées blanches avec recouvrement (Bv). Mesuré au banc k5 (01.11, ses pièces) :
+  Bv aussi juste que C★v (doc11 12/12 · 24/24), 0,005 CHF et 3,6 s la bande ; Pv égal à la production.
+- Chaque morceau garde son schéma : deux Flash-Lite en parallèle, la 3.8 sur désaccord. Recollage par le code : en-tête du premier, totaux du dernier, ligne du
+  recouvrement gardée une fois (même recopie, même montant). Garde-fous : lignes = lignes imprimées, somme = total imprimé, jonction non raccordée en rouge.
+- Déclencheurs (jamais par défaut) : avant la lecture, PDF à texte de plus de ~35 lignes d'articles par page ou de plusieurs pages, image plus de 3 fois plus haute
+  que large ; après une lecture normale coupée (MAX_TOKENS) ou qui annonce plus de lignes qu'elle n'en rend.
+- Fait tout de suite : message vrai (« N ligne(s) imprimée(s) non lue(s) », plus « (10000 lignes au plus) »). À construire : découpe côté app (pdf.js, canvas),
+  lecture par morceaux côté serveur, plafond de 4 pages levé pour un PDF lu par pages, délais (3.8 à 45 s, lecture à 100 s, client à 150 s) adaptés aux morceaux.

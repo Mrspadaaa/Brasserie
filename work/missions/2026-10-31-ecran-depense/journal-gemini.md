@@ -146,3 +146,15 @@ Sous-total : environ **0,50 CHF**. Lectures en ligne : 20 sur 40. Cumul des appe
 | 17:07 | scanInvoice, servi par le cache | — | « Lecture déjà disponible · aucun nouvel appel IA » | 0 |
 
 Sous-total estimé : environ **0,02 CHF**. Cumul des appels payants ≈ **13,91 CHF sur 49**. Le rejeu du lot g se fait sans appel (lecture copiée).
+
+## 03.11, matin — D380 : essai réel des pièces fictives de 300 et 600 lignes (appels autorisés par lui « pour ce cas particulier »)
+
+| Heure (UTC) | Appel | Modèle | Pourquoi | CHF (estimé) |
+|---|---|---|---|---|
+| 04:37 | scanInvoice, lecture 1 (coupée, MAX_TOKENS, 8 176 jetons de sortie) | 3.5 Flash-Lite | pièce fictive 300 lignes, une page | 0,004 |
+| 04:37 | scanInvoice, lecture 2 (424 jetons) | 3.5 Flash-Lite | la même | 0,001 |
+| 04:37 | scanInvoice, lecture 3 (expirée à 45 s) | 3.8 | la même | ≤ 0,03 |
+| 04:38 | traduireNoms | 3.8 | 1 nom | 0,001 |
+| 04:4x | scanInvoice, pièce de 600 lignes sur 8 pages | — | refusée « 4 pages maximum » avant tout appel | 0 |
+
+Sous-total estimé : environ **0,04 CHF**. Lectures en ligne : 21 sur 40. Cumul des appels payants ≈ **13,95 CHF sur 49**. Rien n'a été enregistré (feuilles fermées).

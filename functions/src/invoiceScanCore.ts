@@ -374,7 +374,8 @@ export function normalizeInvoiceScan(raw: any) {
   if (linesLost > 0) {
     say(makePoint('lignes-perdues', 'ecart', 'items', null, {
       regle: 'toutes les lignes du document sont conservées', unite: 'lignes', enjeu: 'argent', lu: items.length, calcule: items.length + linesLost,
-      message: `Détail des lignes incomplet : ${linesLost} ligne(s) non conservée(s) (${SCAN_MAX_ITEMS} lignes au plus) ; le total des lignes n'est pas vérifié.`,
+      // D380 : la cause est une lecture qui n'a pas tout rendu, jamais un plafond (« (10000 lignes au plus) » accusait un plafond qui n'existe plus).
+      message: `Détail des lignes incomplet : ${linesLost} ligne(s) imprimée(s) non lue(s) ; le total des lignes n'est pas vérifié.`,
     }));
   }
   summed.points.forEach(say);

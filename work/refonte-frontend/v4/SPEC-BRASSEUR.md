@@ -1386,3 +1386,20 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   large et aussi haute qu'il faut ; 600 sur 8 pages A4 ; tout le parcours, lecture réelle comprise ; noter ce qui casse. D379.)
 - **Suite**, mot pour mot : « J'autorise des vrai appel IA pour ce cas particulier » (lu : lectures Gemini réelles des deux pièces fictives de 300 et 600 lignes,
   dans l'app en ligne, journalisées ; rien d'autre. D379.)
+- **Suite** (03.11, après l'essai réel de la pièce fictive de 300 lignes sur une page : 1 ligne gardée, « Lignes non gardées 299 » ; la pièce de 600 lignes sur
+  8 pages refusée « 4 pages maximum »), à « lecture 1 coupée à 8 176 jetons, la 2 n'a donné que 424 jetons, la 3 a expiré après 45 s », mot pour mot :
+  « Le journal montre que la lecture 1 a été coupée à 8 176 jetons, la 2 n'a donné que 424 jetons, et la 3 a expiré après 45 s, donc l'écran ne garde qu'une ligne
+  okay mais tu vas fixer ça ??? » (lu : oui, maintenant ; une lecture coupée garde ce qu'elle a lu et reprend par tranches de rang de ligne jusqu'à la dernière
+  ligne imprimée ; plus de refus à 4 pages ; message vrai. D380.)
+- **Suite**, mot pour mot : « Mais il est pas censé y avoir 2 lecture paralelle rapide puis si non concensus, une lente ? » (lu : si, c'est ce qui a joué — 1 et 2
+  rapides en parallèle, la 3.8 lente sur désaccord ; aucune ne peut rendre 300 lignes d'un coup. Le même schéma s'applique par tranche de 30 lignes. D380.)
+- **Suite**, mot pour mot : « Donc il faudrait 2 lecture paralelle qui font des "take". Puis du non concensus, lecture lente qui fait des take aussi » (lu : chaque
+  tranche de lignes est lue par les deux rapides en parallèle ; la lente relit, par tranche aussi, celles où elles divergent. D380.)
+- **Suite**, à « Les takes comptées sont fragiles », mot pour mot : « Mais ça va vraiment marché de faire des take pour l'extraction ? Ça me semble un peu bancale?
+  Comment l'ia sait où elle en est ??? » puis, à « compter « lignes 26 à 50 » sur une page de 300 lignes reste fragile si l'IA se contente de compter » : « Oui surtout
+  sur les documents comme les ticket de caisse ou autre médium plus délicat » (lu : pas de takes comptées ; la pièce se découpe — une page à la fois, une image
+  haute en bandes coupées sur les rangées blanches, chaque morceau lu par les deux rapides puis la lente sur désaccord, recollé par le code ; mesuré au banc k5 le
+  01.11. D380.)
+- **Suite**, mot pour mot : « Pas besoin de toujours découper, on est d'accord ? Quand est-ce que ça trigger ça ? » (lu : jamais par défaut ; avant la lecture quand
+  la pièce le dit (PDF à texte de plus de ~35 lignes par page ou de plusieurs pages, image plus de 3 fois plus haute que large) ; après une lecture normale coupée ou
+  qui annonce plus de lignes qu'elle n'en rend. D380.)
