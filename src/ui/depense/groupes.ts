@@ -84,6 +84,8 @@ export interface LigneBande {
   sansQuantite?: boolean;
   /** D328b : la nature de la ligne ne passe pas en stock (service, port, remise, entretien, divers…). Sans unité lisible, sa quantité est « sans objet » pour l'en-tête : jamais un « ? ». */
   horsStock?: boolean;
+  /** D377 : « Item en rouge mais pas total ?? » : le montant de la ligne est là mais rouge (`confiance.ts`, rien ne le tranche) ; le total de sa bande et de son sous-groupe le porte. */
+  montantDoute?: boolean;
 }
 /** `niveau` : le pire des lignes additionnées (`repris` : au moins une unité déduite, le sous-total se marque en jaune). */
 export interface QteGroupe { unite: string; n: number; inconnue: boolean; niveau?: Niveau }
@@ -96,11 +98,15 @@ export interface SousGroupe {
   nom: string; ids: string[]; qte: QteGroupe[]; cents: number; incomplet: boolean;
   /** Au moins une ligne jaune ou rouge : le groupe s'ouvre d'office tant que le brasseur n'a rien choisi. */
   averifier: boolean; libre?: true;
+  /** D377 : un montant de ses lignes est rouge. */
+  montantDoute?: boolean;
 }
 export interface Bande {
   cle: GroupeCle; nom: string; ids: string[]; moutureIds: string[]; qte: QteGroupe[]; eqb?: string; cents: number;
   /** Au moins un montant absent : le sous-total n'est qu'un minimum (suffixe « + ? »). */
   incomplet: boolean;
+  /** D377 : un montant de ses lignes est rouge. */
+  montantDoute?: boolean;
   /** D307 : présents seulement quand les lignes de la bande se répartissent en deux sous-familles au moins ; sinon la bande est celle d'aujourd'hui. */
   sousGroupes?: SousGroupe[];
 }
@@ -159,7 +165,7 @@ function sousGroupesDe(cle: GroupeCle, dans: readonly LigneBande[]): SousGroupe[
     return {
       nom, ids: propres.map(l => l.id), qte: quantites(propres), averifier: propres.some(l => l.averifier === true),
       cents: lignes.reduce((s, l) => s + (l.amount === undefined || !Number.isFinite(l.amount) ? 0 : centimes(l.amount)), 0),
-      incomplet: lignes.some(l => l.amount === undefined || !Number.isFinite(l.amount)), ...(libre ? { libre } : {}),
+      incomplet: lignes.some(l => l.amount === undefined || !Number.isFinite(l.amount)), ...(lignes.some(l => l.montantDoute) ? { montantDoute: true } : {}), ...(libre ? { libre } : {}),
     };
   };
   const sortie = tries.map(n => faire(n, dans.filter(l => l.sousFamille === n)));
@@ -179,7 +185,7 @@ export function bandes(lignes: readonly LigneBande[]): Bande[] {
     const sachets = cle === 'levure' && propres.length > 0 && propres.every(l => l.sachets !== undefined) ? propres.reduce((s, l) => s + (l.sachets as number), 0) : undefined;
     sortie.push({
       cle, nom: NOMS_GROUPES[cle], ids: propres.map(l => l.id), moutureIds: dans.filter(l => l.mouture).map(l => l.id), qte: quantites(propres),
-      ...(sachets !== undefined ? { eqb: `= ${sachets} sachet${sachets > 1 ? 's' : ''}` } : {}), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)),
+      ...(sachets !== undefined ? { eqb: `= ${sachets} sachet${sachets > 1 ? 's' : ''}` } : {}), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)), ...(dans.some(l => l.montantDoute) ? { montantDoute: true } : {}),
       ...(() => { const sg = sousGroupesDe(cle, dans); return sg ? { sousGroupes: sg } : {}; })(),
     });
   }

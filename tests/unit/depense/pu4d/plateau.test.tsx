@@ -52,11 +52,11 @@ describe('règles pures du plateau pu4d', () => {
 
 const ligne = (id: number, name: string, kind: string, quantity: number, unit: string, price: number, stockCategory = '') =>
   ({ id: `line-${id}`, name, kind, quantity, unit, price, amountTTC: Math.round(quantity * price * 100) / 100, reference: '', variant: '', stockCategory, evidence: '', ambiguity: '' });
-const lire = async (category: string, items: Array<ReturnType<typeof ligne>>) => {
+const lire = async (category: string, items: Array<ReturnType<typeof ligne>>, tvaAmount: number | null = null, totalImpose?: number) => {
   Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
   state.stocks = { rawMaterials: JSON.parse(JSON.stringify(stockJson.articles)), cleaning: [], equipment: [] };
-  const total = Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
-  state.scanned.mockResolvedValueOnce({ ok: true, model: 'rejeu', result: { ...JSON.parse(JSON.stringify(lecture)), items, category, amountTTC: total, amountHT: null, tvaRate: null, tvaAmount: null, orderNumber: '', invoiceNumber: 'B-3003', vendor: 'Brico Fictif SA' } });
+  const total = totalImpose ?? Math.round(items.reduce((a, i) => a + i.amountTTC, 0) * 100) / 100;
+  state.scanned.mockResolvedValueOnce({ ok: true, model: 'rejeu', result: { ...JSON.parse(JSON.stringify(lecture)), items, category, amountTTC: total, amountHT: null, tvaRate: null, tvaAmount, orderNumber: '', invoiceNumber: 'B-3003', vendor: 'Brico Fictif SA' } });
   const view = render(createElement(ExpenseSheet, { onClose: () => {}, onSaved: () => {} }));
   const file = new File(['%PDF-1.4\n'], 'facture.pdf', { type: 'application/pdf' });
   Object.defineProperty(file, 'arrayBuffer', { value: async () => new TextEncoder().encode('%PDF-1.4\n').buffer });
@@ -184,5 +184,35 @@ describe('D374 — « Là on voit pas la vue des stocks ? » : une ligne à l’
     expect(malt.querySelector('[data-dp-duel]')).toBeNull();
     expect(malt.querySelector('[data-dp-apres]')?.textContent).toMatch(/→/);
     expect(state.writes).toEqual([]);
+  });
+});
+
+describe('D375 — « SI je click en ht, je peux plus revenir ? » : la TVA lue reste offerte', () => {
+  it('TVA lue 1,25 sans lectures divergentes : « sans TVA » la vide, la tuile rouverte offre encore 1,25 ; la reposer la remet', async () => {
+    const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3)], 1.25);
+    const tuile = view.container.querySelector('[data-dp="tuile-tva"]') as HTMLElement;
+    const panneau = () => view.container.querySelector('[data-dp="panneau-tva"]') as HTMLElement;
+    const cases = () => [...panneau().querySelectorAll('button')].map(b => ({ t: b.textContent ?? '', p: b.getAttribute('aria-pressed') }));
+    fireEvent.click(tuile);
+    expect(cases().some(c => /1,25/.test(c.t) && c.p === 'true')).toBe(true);
+    expect(panneau().textContent).not.toContain('proposé');
+    fireEvent.click([...panneau().querySelectorAll('button')].find(b => /sans TVA/.test(b.textContent ?? ''))!);
+    expect(tuile.textContent).not.toContain('1,25');
+    fireEvent.click(tuile);
+    const lue = [...panneau().querySelectorAll('button')].find(b => /1,25/.test(b.textContent ?? ''));
+    expect(lue).toBeTruthy();
+    fireEvent.click(lue!);
+    expect(tuile.textContent).toContain('1,25');
+    expect(state.writes).toEqual([]);
+  });
+});
+
+describe('D377 — « Item en rouge mais pas total ?? »', () => {
+  it('q × prix ≠ montant, le total ne tranche pas : le montant de la ligne est rouge, le total de sa bande aussi', async () => {
+    const view = await lire('brassage', [{ ...ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), amountTTC: 14.5 }], null, 20);
+    const l = ligneEl(view, 'line-1');
+    expect(l.querySelector('[data-dp-niveau="inconnu"]')).not.toBeNull();
+    const bande = l.closest('[data-dp-bande]')!;
+    expect(bande.querySelector('[data-dp-sous-montant]')?.getAttribute('data-dp-niveau')).toBe('inconnu');
   });
 });

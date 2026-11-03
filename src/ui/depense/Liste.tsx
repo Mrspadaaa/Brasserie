@@ -16,6 +16,8 @@ export interface FiltreListe { mot: string; ids: readonly string[] }
  * gauche (23 px à l'en-tête de bande, 15 px sur une ligne de sous-famille). Le montant réserve donc la largeur de son texte (en `ch` : le texte est en chasse fixe) et la
  * quantité rend d'autant sa marge : elle reste sur la colonne des rangées. Sans inconnu : rien (classes d'aujourd'hui).
  */
+/** D377 : le total d'une bande dont un montant de ligne est rouge : le même tireté rouge que la rangée. */
+const MONTANT_DOUTE = 'rounded-control border border-dashed border-alert px-1 text-cave-50';
 export function reserveInconnu(montant: string, incomplet: boolean): { qte?: React.CSSProperties; montant?: React.CSSProperties } {
   if (!incomplet) return {};
   const ch = montant.length + 4; // « + ? » : espace, plus, espace, point d'interrogation
@@ -60,7 +62,7 @@ function CorpsBande({ b, p }: { b: Bande; p: { lignes: ReadonlyMap<string, React
         <span className={`min-w-0 truncate ${ouvert ? 'font-semibold' : ''} text-cave-50`}>{sg.nom}</span>
         <span data-dp-sg-compte className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{p.visibles ? `${sg.ids.filter(x => p.visibles!.has(x)).length}/${sg.ids.length}` : sg.ids.length}</span>
         <span data-dp-sg-qte style={reserveInconnu(fr2(sg.cents), sg.incomplet).qte} className="ml-auto mr-[57px] whitespace-nowrap text-right font-mono text-xs font-semibold text-cave-200"><QteSousGroupe qte={sg.qte}/></span>
-        <span data-dp-sg-montant style={reserveInconnu(fr2(sg.cents), sg.incomplet).montant} {...(sg.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm ${sg.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(sg.cents)}{sg.incomplet ? ' + ?' : null}</span>
+        <span data-dp-sg-montant style={reserveInconnu(fr2(sg.cents), sg.incomplet).montant} {...(sg.incomplet || sg.montantDoute ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm ${sg.incomplet ? 'text-alert' : sg.montantDoute ? MONTANT_DOUTE : 'text-cave-50'}`}>{fr2(sg.cents)}{sg.incomplet ? ' + ?' : null}</span>
       </button>
       <div id={`${id}-corps`} data-dp-sg-corps={`${b.cle}/${sg.nom}`} hidden={!ouvert}>{rangees(sg.ids)}</div>
     </div>;
@@ -98,7 +100,7 @@ export function Liste(p: {
             ? <i data-dp-niveau="inconnu" className="rounded-control border border-dashed border-alert bg-cave-950 px-1 font-normal not-italic text-alert" title="Unité à remplir sur une ligne">{`${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?`}</i>
             : e.niveau === 'repris' ? <i data-dp-niveau="repris" className="not-italic text-attention underline decoration-dotted decoration-attention underline-offset-2" title="Unité déduite sur une ligne : à contrôler">{texteQte([e])}</i>
             : texteQte([e])}</React.Fragment>)}</span>
-          <span data-dp-sous-montant style={reserveInconnu(fr2(b.cents), b.incomplet).montant} {...(b.incomplet ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold ${b.incomplet ? 'text-alert' : 'text-cave-50'}`}>{fr2(b.cents)}{b.incomplet ? ' + ?' : null}</span>
+          <span data-dp-sous-montant style={reserveInconnu(fr2(b.cents), b.incomplet).montant} {...(b.incomplet || b.montantDoute ? { 'data-dp-niveau': 'inconnu' } : {})} className={`min-w-[54px] shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold ${b.incomplet ? 'text-alert' : b.montantDoute ? MONTANT_DOUTE : 'text-cave-50'}`}>{fr2(b.cents)}{b.incomplet ? ' + ?' : null}</span>
         </div>
         <CorpsBande b={b} p={p}/>
         {p.perdues?.get(b.cle)}
