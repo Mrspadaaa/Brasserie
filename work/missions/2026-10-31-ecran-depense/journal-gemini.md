@@ -158,3 +158,16 @@ Sous-total estimé : environ **0,02 CHF**. Cumul des appels payants ≈ **13,91 
 | 04:4x | scanInvoice, pièce de 600 lignes sur 8 pages | — | refusée « 4 pages maximum » avant tout appel | 0 |
 
 Sous-total estimé : environ **0,04 CHF**. Lectures en ligne : 21 sur 40. Cumul des appels payants ≈ **13,95 CHF sur 49**. Rien n'a été enregistré (feuilles fermées).
+
+## 03.11 matin, suite — D380, D381, lecture en morceaux (pilote ; pièces 100 % fictives, ses mots « J'autorise des vrai appel IA pour ce cas particulier »)
+
+Coûts ESTIMÉS (source : ≈ 0,002 CHF par lecture Flash-Lite d'une bande, ≈ 0,03 CHF par bande avec la 3.8, mesurés le 03.11 sur deux bandes) ; rien enregistré.
+
+| Heure | Appel | Modèles | Pièce | CHF estimés |
+|---|---|---|---|---|
+| ~05:30 | 2 bandes (20 et 39 lignes), mesure D380 | Flash-Lite ×2 + 3.8 chacune | fictive 300 lignes | ≈ 0,06 |
+| ~06:40 | 16 morceaux avec voisins marqués (essai rejeté : 306 lignes sur 300) + 1 import par l'écran | Flash-Lite ×2, 3.8 sur ≈ 8 morceaux | fictive 300 lignes | ≈ 0,30 |
+| ~07:20 | 16 morceaux bord à bord + 15 bandes de contrôle + 2 imports par l'écran (jeton) | Flash-Lite ×2, 3.8 sur ≈ 12 morceaux | fictive 300 lignes | ≈ 0,40 |
+
+Sous-total estimé : environ **0,76 CHF**. Cumul des appels payants ≈ **14,7 CHF sur 49** (estimé). Plafond de séance (3 CHF) : ≈ 0,8 utilisé.
+Résultat du dernier essai : 300 lignes sur 300, 299 exactes sur 5 champs, la 300e (montant 60,00 au lieu de 60,40) signalée par trois contrôles ; 59 s.

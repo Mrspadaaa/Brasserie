@@ -12,7 +12,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 » (tests) mis partout (G38). 31.10 : « modifier à la volée » lu « la masse » (D211). 01.11 : « sans clavier » lu « sans focus » (D230). 02.11 : « terminé tes tâches » lu « plus rien lancer » (D356).
+- Erreur : 12.10, « seul 3.8 » (tests) mis partout. 01.11 : « sans clavier » lu « sans focus » (D230). 02.11 : « terminé tes tâches » lu « plus rien lancer » (D356).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil
@@ -26,7 +26,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres sans les pistes. 23 au 25.10 : maquette hors de ses choix, vignette prise pour consigne. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 portée avec l'ancien formulaire sous « plus » : « Mais l'app » (D346). 02.11 : alerte d'unité inventée, l'état pu4d existait (D372).
+- Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346). 02.11 : alerte d'unité inventée, l'état pu4d existait (D372).
 - Cause : « X de la variante Y » lu au sens étroit.
 - Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
 - Rôles : pilote, auteur, concepteur
@@ -118,9 +118,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
-- Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
+- Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 03.11 : « ≈ 45 lignes » non mesuré ; tri confié à l'IA : 306 lignes sur 300 (D381).
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
+- Faire : un chiffre dit est mesuré, ou « estimé » avec sa source ; une garantie se bâtit sans jugement de l'IA (elle n'ajoute que des alertes). Chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
