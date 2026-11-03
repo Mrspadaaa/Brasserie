@@ -162,7 +162,9 @@ lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas 
 ## Les voies (skill `voies`)
 1. **Planifier une fois** : `work/missions/<date>-<sujet>/MISSION.md`, une voie par livrable qui se
    vérifie seul, des périmètres d'écriture disjoints, chaque décision routée.
-   `systeme.mjs mission` → MISSION OK.
+   Une mission qui écrit du code commence par « ## État de l'art » : le problème d'école, la méthode
+   standard et les bibliothèques examinées, la décision (L29 : la découpe des photos réécrite à la main
+   au lieu d'OpenCV). `systeme.mjs mission` → MISSION OK.
 2. **Contrats** : `voies/<id>/VOIE.md` (objectif, entrées vérifiées, « Possède », exigences
    transversales recopiées) et `voies/<id>/GATES.md` (critères au format unlazy : CHECK, EXPECT).
    La voie ne modifie jamais ses critères.

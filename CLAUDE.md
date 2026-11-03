@@ -16,6 +16,8 @@ un artefact neuf, jamais en mots seuls (24.10).
 - Partir de la demande et du code actuel. Préserver les changements en cours,
   le hors ligne et les données. Vérifier sur des fixtures ; pas de déploiement
   ni d'écriture sur les données réelles pour tester.
+- Avant tout algorithme non trivial : nommer le problème d'école, chercher la
+  méthode standard et les bibliothèques, écrire la décision (L29, « ## État de l'art »).
 - Lire les parties pertinentes de PRODUCT.md pour le métier. Les mémoires et
   anciens rapports sont des indices datés ; PRODUCT.md, DESIGN.md et les décisions
   récentes de l'utilisateur priment en cas de contradiction.

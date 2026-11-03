@@ -1442,3 +1442,64 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Suite**, à « Je remplace aussi le détecteur de blanc par un contraste local », mot pour mot : « Okay mais il faut faire des vrais tests, car au
   final un cas quasiment infin peut être fait » (lu : la sûreté tient à des invariants vrais pour toute image, éprouvés par des pièces tirées au
   hasard — graine, centaines de pièces, vérité automatique — puis par des lectures réelles sur l'app et ses vraies pièces. D381.)
+- **Suite**, en voyant la capture d'un ticket fictif piégé (ombre portée sur la droite, tache sur une ligne, papier gris), mot pour mot : « Ça c'est
+  top comme test » (lu : approbation des pièces piégées de type photo ; le banc de 200 pièces tirées au hasard reste le contrôle de la découpe. D381.)
+- **Suite** (ajout tardif, 03.11 : oublié au tour même), à « passe donc à une règle mécanique où chaque image ne montre que sa propre zone, avec le
+  seul risque restant signalé. », mot pour mot : « C'est pas un peu risqué ? Justement pour les vrai négatif ? » ; puis : « Fait l'implantation la
+  plus robuste qui soit sans pour autant rendre le processus lent » (lu : morceaux bord à bord sans voisins, suite d'article recollée et signalée,
+  bande de contrôle lue à part pour chaque coupe, somme et compte sur le tout ; le temps reste celui d'une lecture en parallèle. D381.)
+- **Suite**, sur ce qui se passe quand la lecture d'une longue pièce échoue malgré tout, mot pour mot : « Mais si à la fin ça échoué. Ça montre quand
+  même à l'utilisateur que, le total n'est les correct, que il manque des items (3) ou le vrai nombre. Ect ect... C'est pas des fail silencieux. Ou ça
+  montre aussi que un item est en trop et point sur le ou les potentiels coupable ? Ect... » (lu : question, puis demande : chaque échec se voit —
+  total, lignes manquantes et leur nombre — ET désigne les lignes coupables possibles : la ligne qui a le montant de l'écart, une remise au signe
+  inversé, les deux lignes d'une jonction douteuse, surlignées sur la ligne même. D381.)
+- **Suite**, avec la capture du ticket fictif à l'ombre portée, mot pour mot : « Peut être que là solution est de détouré la facture, et la remettre
+  droite ? Pas d'info parasites + bon angle ? » (lu : proposition ; c'est le principe de la découpe — papier détouré, angle redressé — mais le banc des
+  200 a montré que détourer à la clarté perd les lignes à l'ombre : le cadre garde désormais toute l'encre, les bords de table sont retirés de
+  l'analyse sans masque, l'angle vient des lignes de texte. D381.)
+- **Suite**, en envoyant cinq photos de tickets de magasin fictifs sur un tissu sombre (droits, penchés jusqu'à ≈ 18°, taches, plis), mot pour mot :
+  « Test avec ce ticket » ; « Et celui-ci » ; « Test ceux là aussi » ; « Ils sont pas tous juste, justem pour testé à fond » (lu : vraies photos de
+  test ; leurs erreurs de total sont voulues : la lecture doit le montrer et désigner les lignes coupables possibles ; la découpe doit tenir sur un
+  fond texturé et sur un ticket très penché. D381.)
+- **Suite**, pendant la correction des pièces piégées les plus dures (flou fort, encre pâle, ombre de téléphone), mot pour mot : « SI c'est vraiment
+  trop dur, ça peut indiquer à l'utilisateur, documents illisible,  entrer valeur à la main ou meilleure qualité de documents » (lu : accord pour une
+  sortie honnête : une pièce que la découpe ne peut pas garantir est dite illisible — saisie à la main ou meilleure photo — plutôt que coupée sans le
+  dire ; jamais une ligne coupée en silence. D381.)
+- **Suite**, aussitôt, mot pour mot : « Il faut pas que quelques petits cas rend le tout beaucoup plus complexe. Ou introduise de la lenteur, régression
+  pour la majorité des cas » (lu : règle de conduite de la découpe : un cas rare se traite par la sortie honnête (illisible, saisie à la main) ou par
+  un correctif simple ; jamais une couche de plus qui ralentit ou fait régresser les pièces ordinaires ; le banc des 200 et le temps médian en juge. D381.)
+- **Suite**, en citant la réponse du pilote (« Les cas extrêmes ne doivent ni compliquer l'ensemble ni ralentir les cas courants, c'est mon critère ;
+  je retire donc le remplissage à la couleur du fond au profit du correctif « bord étendu ». »), mot pour mot : « À part si grave à ces cas extrêmes
+  ça rend les cas normaux encore plus robuste » (lu : « grâce à » ; exception à la règle précédente : un correctif né d'un cas extrême est gardé s'il
+  rend aussi les pièces ordinaires plus sûres, mesuré sur le banc. D381.)
+- **Suite**, aussitôt, mot pour mot : « Fait très attention au silencieux. Ça doit être au pire des cas remonté à l'utilisateur. Au mieux éviter. La
+  robuste est le maître mot » (lu : aucune ligne coupée en silence ; au pire, la coupe douteuse est signalée et montrée, au mieux elle est évitée ; la
+  robustesse prime. Le banc des 200 exige 0 coupe silencieuse. D381.)
+- **Suite**, en voyant la carte d'encre vide d'un piège flou (capture barrée), mot pour mot : « Tu devrais pas juste, remettre droit, délimiter le
+  ticker,  quelques pixel en plus juste pour être sûr. Puis regarder un champs text, prendre sa couleur et environs. Puis un champs vide, couleur et
+  environs. Puis calque de contraste. Et on est bon. C'est quoi l'astuce Aujourd'hui ? / On est sur un cas d'école là. Je suis quasiment sûr qu'il
+  existe des third party gratuit ou lib ou git pour ça » ; puis : « Tu reinvte la roue là » (lu : critique juste : la chaîne standard d'un scanner de
+  document — contour du papier, redressement, marge, seuil adaptatif local, profil des rangées — existe dans OpenCV.js ; ne pas la réécrire à la main.
+  D381.)
+- **Suite**, sur la découpe réécrite à la main au lieu de la chaîne standard (OpenCV), mot pour mot : « C'est assez grave comme erreur, c'est une
+  erreur de junior ça. Regarde et modife le workflow en conséquence pour plus que ça arrive... » (lu : erreur de méthode grave : coder un algorithme
+  d'un problème connu sans chercher d'abord la méthode standard et les bibliothèques ; le déroulé de travail doit l'empêcher (leçon, étape « état de
+  l'art » obligatoire et contrôlée). D381.)
+- **Suite**, à « je passe la délimitation du ticket, le redressement et le seuil sur OpenCV.js (gratuit, environ 10 Mo chargés seulement pour une
+  longue pièce), en gardant nos coupes, bandes de contrôle et vote ? », mot pour mot : « Oui et tu pourras comparé avec Nos résultats, utilise ce que
+  on a mis en place, regarde aussi pour la vitesse d'exécution... » (lu : accord ; OpenCV.js jugé contre la version actuelle sur le même banc — 200
+  pièces tirées au hasard, 11 fixes, ses 5 tickets — et chronométré. D381.)
+- **Suite**, aussitôt, mot pour mot : « Continue avec l'implémentation utilise ce que on a trouvé, tout ce savoir pour mettre les choses robuste en
+  place » (lu : passer à OpenCV.js en gardant tout l'acquis mesuré — coupes dans le blanc, bandes de contrôle, vote, pièges, banc des 200, ses
+  tickets, rien de silencieux. D381.)
+- **Suite**, à « OpenCV.js génère du code à l'exécution, ce que la CSP de l'app interdit », mot pour mot : « Je peux l'autoriser pour ce cas
+  particulier. SI scanic est bien une vrai réf reconnu et prouver on continue, SI non opencv est mieux reconnu comme ref » (lu : la référence la
+  plus reconnue et éprouvée l'emporte ; il accepte d'ouvrir la CSP pour ce seul cas si c'est OpenCV. D381.)
+- **Suite**, aussitôt, mot pour mot : « Et les mask, claque et autre ? Opencv peut les géré bien plus facilement, non ? » (lu : passer aussi à
+  OpenCV les cartes d'encre — masques, calques de contraste, seuil, retrait des traits —, pas seulement la géométrie ; garder la version qui mesure
+  le mieux au banc. D381.)
+- **Suite**, à « le repli prend le relais sans perte de lignes », mot pour mot : « Est que c'est parce que opencv est encore mal fine tuné ou est-ce
+  que on a vraiment créé une meilleure version d'open cv ??? » (lu : demande de preuve honnête ; notre repli a été réglé sur les 200 pièces du banc,
+  OpenCV non : comparer les deux voies sur des pièces neuves, jamais vues au réglage (L20). D381.)
+- **Suite**, mot pour mot : « Ça semble être une trop grosse tâche pour notre quota actuel. Termine proprement, met à jour les registres. On en
+  reste là pour le moment » (lu : arrêt de D381 en l'état ; rien déployé ; état de reprise écrit ; commit local du seul travail fini. D381.)

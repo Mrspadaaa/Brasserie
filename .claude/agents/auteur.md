@@ -24,6 +24,9 @@ est la base : rien ne la remplace, et `controle-choix.mjs` le vérifie (D105).
    (`cerveau/produit/acquis-valides.md`) et les exigences transversales recopiées dans VOIE.md.
    La baseline est un plancher à enrichir (L07). Pense en brasseur (L04).
 3. Ne modifie jamais VOIE.md ni GATES.md.
+4. Avant d'écrire un algorithme (image, OCR, géométrie, analyse de texte, calcul numérique, dates) : relis « ## État de l'art » de
+   MISSION.md et suis sa décision (bibliothèque ou méthode standard). S'il manque, ou si ta voie demande une deuxième rustine sur un
+   même module, arrête-toi et rends `ECHEC — état de l'art à faire : <problème type>` (L29 : la découpe réécrite à la main).
 
 ## Faire
 - N'écris que dans « Possède » et dans RESULTAT.md (L17). Pas de push, de déploiement, de

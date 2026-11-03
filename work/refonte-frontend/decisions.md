@@ -1884,3 +1884,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   annoncées. L'encre se repère par contraste local (papier gris, tache, ombre, rangées grisées).
 - **Preuve attendue** : 11 pièces piégées fictives (vérité + masque) : aucune coupe dans une ligne hors ligne ; lecture réelle ligne par ligne ;
   puis toutes ses pièces, temps avant/après.
+- **Suite du 03.11 soir (arrêt demandé, rien déployé)** : la découpe d'une photo passe à la chaîne d'école sur OpenCV.js (build officielle 5.0.0,
+  Apache-2.0), préférée à scanic (80 étoiles, 15 mois, un auteur ; OpenCV : 91 000 étoiles, 14 ans) selon sa règle « SI non opencv est mieux reconnu
+  comme ref ». OpenCV tourne dans un worker à part dont la CSP seule autorise `'unsafe-eval'` (« Je peux l'autoriser pour ce cas particulier » ;
+  firebase.json, règle par fichier : Firebase applique la dernière règle clé par clé, vérifié en ligne). Mesuré : chargement ≈ 0,5 s, coins ≈ 40 ms ;
+  sur les 19 pièces les plus dures, coupes silencieuses 43 → 30 ; sur les 200 (réglées pour l'ancienne voie), 97 contre 82 : pas encore meilleur.
+  La voie OpenCV reste donc hors service dans l'app (`opencv: true` au banc seulement). Reprise : `work/missions/2026-11-03-lecture-longue/PLAN.md`.

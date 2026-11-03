@@ -48,3 +48,56 @@ Pièces fictives (hors Git) : scratchpad `beaucoup/` (`fabriquer.mjs` : 300 lign
 - Consigne de bande (`bandNote`) obligatoire : sans elle la 3.8 tranchait sur chaque bande (+26 s).
 - Ordre de travail : (a) serveur `morceau` + `assemblerLecture` ; (b) app `decoupe.ts` (pdf.js, canvas, papier d'une photo) + orchestration ;
   (c) tests ; (d) build, déploiement ; (e) en ligne : 300, 600, puis toutes ses pièces (temps avant/après).
+
+## Reprise du 03.11 soir (découpe d'une photo ; remplacée par « Reprise du 03.11, nuit » plus bas)
+- **Banc des 200 (masque exact)**, dernière version du travail : 25 pièces à coupes silencieuses (82 lignes), 2 à lignes perdues (h0065 : 37, h0101 :
+  45), plan médian 995 ms : DÉCOUPE ÉCHEC. Les 11 fixes : OK. Ses 5 tickets Bauhaus : coupes propres, cadres serrés (échelle 1). Vitest d381 vert (133).
+- **Causes trouvées** : (1) seuil d'Otsu global pollué par le bord de table (≈ 180) au-dessus d'un texte flou (≈ 70) → plus d'encre, plus d'angle
+  (corrigé : seuil sur l'intérieur du papier, `dedansDuPapier`) ; (2) carte d'encre inversée sur un tissu sombre (corrigé : `clair`) ; (3) hors-image
+  blanc d'un cadre redressé (corrigé : bord étendu) ; (4) profil par intervalle de rangée qui laissait le texte à l'ombre (retiré) ; (5) restent : zébrures,
+  ombre forte (h0065, h0101 : lignes perdues au recadrage), h0016 (flou + encre pâle + ombre).
+- **Critique du brasseur** (SPEC, 03.11 soir) : « Tu reinvte la roue là » — la chaîne standard (contour du papier, redressement par perspective, marge,
+  seuil adaptatif local de type Sauvola, profil des rangées) existe dans OpenCV.js (Apache-2.0, ≈ 10 Mo, chargé à la demande). Ses règles : rien de
+  silencieux (au pire signalé), pas plus lent, pas de régression des cas courants, cas extrême → « document illisible, saisie à la main ».
+- **Prochaine action** : prototype OpenCV.js sur la copie de banc (`deploy-hosting-qr`, son propre node_modules), en gardant nos coupes, bandes de
+  contrôle et votes ; jugé sur les 200 + ses 5 tickets + temps ; sinon Sauvola seul (formule standard). Puis tests, commit, déploiement, relectures en ligne.
+
+## État de l'art (L29, 03.11 soir)
+- Problème type : scanner de document sur une photo de ticket — contour du papier, redressement par perspective (4 coins), marge, binarisation
+  locale (Sauvola / seuil adaptatif), profil horizontal des rangées pour couper dans les blancs.
+- Examiné : OpenCV.js (Apache-2.0 ; `@techstark/opencv-js` 5.0.0, 14,7 Mo décompressé, WASM intégré, chargé à la demande) : `findContours`,
+  `approxPolyDP`, `minAreaRect`, `getPerspectiveTransform`, `warpPerspective` (BORDER_REPLICATE), `adaptiveThreshold`, `boxFilter` (Sauvola :
+  T = m·(1 + k·(s/R − 1)), ximgproc absent du build web). jscanify (MIT) : contour + perspective sur OpenCV, paquet npm lourd (canvas, jsdom),
+  rien de plus que les appels ci-dessus. Tesseract.js : boîtes de lignes fiables mais lecture de plusieurs secondes par ticket au téléphone :
+  écarté pour la découpe. Notre code maison (papier par blocs, Otsu global, angle par profil) : 25 pièces sur 200 en coupes silencieuses.
+- Décision (première version, corrigée le 03.11 nuit, voir plus bas) : OpenCV.js servi par l'app (fichier statique, chargé seulement quand une pièce se découpe) pour papier, perspective et seuil
+  (Sauvola sur boxFilter) ; on garde nos coupes (`planMorceaux`), bandes de contrôle, vote, garde-fous et banc. Juge : 200 pièces (0 silencieux,
+  0 perdue), 11 fixes, ses 5 tickets, temps médian du plan ≤ celui d'aujourd'hui (≈ 1 s). Repli : sans papier net (capture, PDF), pas de perspective.
+
+- Décision corrigée (03.11 nuit) : OpenCV.js 5.0.0 (build officielle docs.opencv.org, `src/vendor/opencv-5.0.0`, md5 ad24594c…) dans un worker
+  (`src/services/decoupePerspective.worker.ts`). OpenCV.js crée ses liaisons par `new Function` : la CSP de la page l'interdit ; seul le worker reçoit
+  `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'` (firebase.json, dernière règle ; accord du brasseur pour ce cas). scanic 1.7.1 (MIT, sans eval)
+  examiné puis écarté : pas une référence reconnue (80 étoiles, un auteur), sa règle : « SI non opencv est mieux reconnu comme ref ».
+
+## Reprise du 03.11, nuit (OpenCV ; arrêt demandé : « On en reste là pour le moment »)
+- **Fait, non commité, non déployé** : voie OpenCV complète et branchée derrière `planifierImage(image, force, { opencv: true })` ; par défaut
+  l'app garde la voie mesurée (variante F) : le comportement servi ne change pas. Fichiers : `src/services/decoupe.ts` (plan asynchrone, `PlanImage`,
+  `papierDuCadre`, `boiteTexte`, `partiesDe` par dessinateur), `src/services/decoupePerspective.ts` (client du worker, marges par côté triplées
+  quand le texte touche le bord, 15 % au plus, sinon refus), `src/services/decoupePerspective.worker.ts` (coins : Canny « auto » + Otsu, contours,
+  enveloppe, `approxPolyDP` ou `minAreaRect`, tri des coins par angle, forme plausible, côtés affinés par `fitLine` Huber ; redressement
+  `warpPerspective` par bandes, bord répliqué ; `sansOmbre` : gris ÷ fond (dilatation + médiane), ÉCRIT MAIS NON BRANCHÉ NI MESURÉ),
+  `src/vendor/opencv-5.0.0/` (13,3 Mo, LICENSE, README), firebase.json (règle CSP du worker), banc (`harnais.ts` : masque par la matrice
+  sortie → source, `__diagCv` ; `controler.mjs` : CSP de production servies, 4ᵉ argument `affine` ; `diag-final.mjs … cv`).
+- **Mesures** (copie de banc `deploy-hosting-qr`, Chrome sans écran, CSP de production) : OpenCV se charge sous la CSP du worker en 470 à 510 ms,
+  coins en 33 à 48 ms. 19 pièces les plus dures : variante F 43 coupes silencieuses ; OpenCV v1 43 et 254 lignes perdues (h0005 : coins mal
+  ordonnés, corrigé) ; v3 (tri par angle, `fitLine`, marges adaptées) 30 silencieuses, 37 perdues (h0065, repli), OpenCV sur 11 pièces.
+  200 pièces, v2 (sans `fitLine` ni marges adaptées) : 97 silencieuses contre 82 pour F, 82 perdues (repli, h0065 et h0101), OpenCV sur 30 pièces
+  seulement (refus : texte au bord 126, papier couché 18 — à comprendre —, plein cadre 16, sans 4 coins 17). v3 non jouée sur les 200.
+- **Biais à corriger** (sa question du 03.11 : « mal fine tuné ou … une meilleure version d'open cv ??? ») : la variante F a été réglée sur ces 200
+  pièces, OpenCV non ; juger les deux voies sur 200 pièces neuves (`generer.mjs <dossier> --hasard 200 --graine 2`, tirage arrêté avant la fin), L20.
+- **Ouvert** : (1) v3 sur les 200 et sur la graine 2 ; (2) « papier couché » sur 18 pièces debout (coins ou tri) ; (3) brancher `sansOmbre`
+  (option `fond` du rendu gris) et le mesurer contre la soustraction actuelle (h0023, h0062 : texte flou sous l'ombre) ; (4) lignes perdues du
+  repli (h0065, h0101) ; (5) issue « document illisible, saisie à la main ou meilleure photo » quand aucune voie ne garantit ; (6) vitest d381 à
+  mettre à jour (`planifierImage` asynchrone, `encreDetaillee(…, papier)`, `normaliser` à bord étendu) et non rejoué depuis la variante F ;
+  (7) indices de coupables (`invoiceControls.ts`, `confiance.ts`) non commités, sans tests ; (8) déploiement, relectures en ligne de ses
+  13 pièces et 5 tickets, contrôle visuel : rien fait. D376 non commencé ; la question des trous de stock (cas B et C) attend toujours sa réponse.

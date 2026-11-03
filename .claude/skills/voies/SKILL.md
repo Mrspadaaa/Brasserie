@@ -12,6 +12,10 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    `node scripts/agents/systeme.mjs chercher <mots>`.
 2. Créer `work/missions/<AAAA-MM-JJ>-<sujet>/MISSION.md` depuis `gabarits/MISSION.md`. Une voie par
    livrable qui se vérifie seul. Les périmètres d'écriture (« Possède ») sont disjoints.
+2 bis. **État de l'art avant le code** (L29) : nommer le problème d'école, chercher (WebSearch, npm, GitHub) la
+   méthode standard et les bibliothèques maintenues (licence, poids, vitesse), écrire « ## État de l'art » (problème
+   type, examiné, décision). Jamais d'algorithme connu réécrit à la main sans raison mesurée. À la deuxième
+   rustine sur un même module, revenir ici.
 3. Choisir le niveau de chaque voie :
    - **mécanique → `executant` (Haiku)** : lire, extraire, convertir au gabarit, lancer contrôles,
      tests, captures, régénérer ;

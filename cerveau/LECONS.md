@@ -3,8 +3,7 @@
 Erreurs de méthode déjà commises, leur cause, et ce qu'il faut faire à la place. Chargé à chaque
 session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défauts du produit vont dans
 `DEFAUTS-RECURRENTS.md`, les goûts du brasseur dans `SPEC-BRASSEUR.md` et `cerveau/brasseur/`.
-- **Quand** : après une correction, une voie rejetée, un contrôle raté par notre faute, une hypothèse
-  fausse, un travail refait. Avant de clore le tour.
+- **Quand** : après une correction, une voie rejetée, un contrôle raté par notre faute, une hypothèse fausse, un travail refait. Avant de clore le tour.
 - **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
 - **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
 - **Taille** : 170 lignes, 30 leçons et 8 mécanisées au plus. Au plafond, une entrée impose une sortie : fusion, ligne « Mécanisées », [[controles-mecanises]].
@@ -55,12 +54,12 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, relecteur
 - Contrôle : aucun
 
-### L10 — Un outil = un seul facteur libre, et la carte avant les variantes
-- Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. 22.10, le conseil a montré que « Quand ? » et « Quelle dose ? » laissaient libres houblon, dose et levure.
-- Cause : chaque écran faisait varier plusieurs facteurs. Un titre en forme de question ne suffisait pas à l'empêcher.
-- Faire : définir chaque outil par le seul facteur qui y varie, afficher les autres sur une ligne de contexte, et lister ses éléments admis. Montrer la carte en fil de fer avant tout lot. Voir [[outils-houblons]] et [[2026-10-22-carte-outils-houblons]].
-- Rôles : pilote, conseil, auteur, relecteur
-- Contrôle : `controle-une-question.mjs` (D98)
+### L29 — Un problème connu se résout par la méthode standard et ses bibliothèques, pas à la main
+- Erreur : 02 et 03.11, D381 : découpe des photos (papier, angle, seuil d'encre) réécrite à la main au lieu de la chaîne d'un scanner de document (OpenCV.js) ; deux jours de rustines, le banc des 200 en échec. « Tu reinvte la roue là » ; « c'est une erreur de junior ».
+- Cause : chaque cas raté du banc a reçu sa rustine, sans jamais nommer le problème type ni chercher ce qui existe ; aucune étape ne le demandait.
+- Faire : avant tout algorithme non trivial (image, OCR, géométrie, analyse de texte, calcul numérique, dates), nommer le problème d'école, chercher la méthode standard et les bibliothèques maintenues (licence, poids, vitesse), écrire la décision dans « ## État de l'art » de MISSION.md, puis coder. À la deuxième rustine sur un même module, s'arrêter et refaire cette étape. Chaque changement rejoue tout le banc, temps compris.
+- Rôles : pilote, auteur, conseil
+- Contrôle : `systeme.mjs mission` refuse une mission de code sans « ## État de l'art » (problème type, examiné, décision)
 
 ## Prouver
 
@@ -131,13 +130,6 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
-### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
-- Erreur : 22.10, la planche « épicé » de Sonnet, acceptée par relecteur et pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « trop d'usage de sonnet et hiku ».
-- Cause : les modèles étaient répartis par coût, et le critique Fable calibré du lot 21 (`fils21-choisir/critique/PORTRAIT.md`) avait été remplacé par un relecteur générique.
-- Faire : maquettes, pictos et cartes à l'agent `concepteur` (Opus), montrés dans une vraie carte de la base. Relecture d'interface à l'agent `critique` (Fable). Sonnet pour les diagnostics, les contrôles et le code.
-- Rôles : pilote
-- Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
-
 ### L26 — Une variante qui reprend un socle préfixe ses classes et assemble son code sans remplacement de chaîne
 - Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle (classes partagées, `$$` devenu `$`) ; contrôles verts.
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
@@ -161,4 +153,4 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- Toutes dans [[controles-mecanises]] (M16 sortie le 02.11).
+- Toutes dans [[controles-mecanises]] (M17 et M18, ex-L10 et ex-L25, sorties le 03.11).
