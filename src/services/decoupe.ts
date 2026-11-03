@@ -378,7 +378,7 @@ export function coupeBasseForcee(m: Morceau, rangees: number[], dernier: boolean
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Où est l'image normalisée dans la source : centre du recadrage, angle, échelle, taille de sortie. */
-interface Geometrie { cx: number; cy: number; angle: number; echelle: number; largeur: number; hauteur: number }
+export interface Geometrie { cx: number; cy: number; angle: number; echelle: number; largeur: number; hauteur: number }
 
 const creerCanevas = (w: number, h: number): HTMLCanvasElement => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
 const contexte2d = (c: HTMLCanvasElement, lecture = false): CanvasRenderingContext2D => {
@@ -392,12 +392,15 @@ function grisDe(pixels: ImageData): Uint8Array {
   return gris;
 }
 
-/** Dessine les rangées [y0, y0 + hauteur du canevas) de l'image normalisée : même transformation que `normaliser`. Fond blanc. */
-function dessinerNormalise(canevas: HTMLCanvasElement, source: CanvasImageSource, g: Geometrie, y0: number): CanvasRenderingContext2D {
+/**
+ * Dessine les rangées [y0, y0 + hauteur du canevas) de l'image normalisée : même transformation que `normaliser`. Fond blanc. `lisser` faux : plus proche
+ * voisin (le banc D381 y dessine le masque des pièges, couleurs exactes).
+ */
+export function dessinerNormalise(canevas: HTMLCanvasElement, source: CanvasImageSource, g: Geometrie, y0: number, lisser = true, fond = '#fff'): CanvasRenderingContext2D {
   const ctx = contexte2d(canevas, true);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canevas.width, canevas.height);
-  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  ctx.fillStyle = fond; ctx.fillRect(0, 0, canevas.width, canevas.height);
+  ctx.imageSmoothingEnabled = lisser; if (lisser) ctx.imageSmoothingQuality = 'high';
   ctx.translate(g.largeur / 2, g.hauteur / 2 - y0);
   ctx.scale(g.echelle, g.echelle);
   ctx.rotate(-g.angle * Math.PI / 180);
@@ -446,26 +449,36 @@ function partiesDe(source: CanvasImageSource, g: Geometrie, a: Analyse): { parti
 export interface Decoupe { parties: Partie[]; jonctions: JonctionPiece[] }
 export type JonctionPiece = { file: { data: string; mimeType: string }; jonction: { k: number; n: number } } | { k: number; sautDePage: true };
 
+/**
+ * Le plan d'une image : sa géométrie normalisée (papier, angle, échelle) et l'analyse finale, faite sur les pixels mêmes qui seront dessinés.
+ * `null` : rien à découper (pas assez haute sans `force`, ou un seul morceau). Exporté pour le banc D381 (masques des pièges).
+ */
+export function planifierImage(image: ImageBitmap, force: boolean): { g: Geometrie; finale: Analyse } | null {
+  const W = image.width, H = image.height;
+  // Coup d'œil : l'image réduite (côté court ≈ 1 200 px) suffit au papier et à l'angle.
+  const s = Math.min(1, 1200 / Math.min(W, H)), pw = Math.max(1, Math.round(W * s)), ph = Math.max(1, Math.round(H * s));
+  const petit = creerCanevas(pw, ph);
+  contexte2d(petit, true).drawImage(image, 0, 0, pw, ph);
+  const reduit: Bitmap = { width: pw, height: ph, gray: grisDe(contexte2d(petit, true).getImageData(0, 0, pw, ph)) };
+  petit.width = 0; petit.height = 0;
+  if (!force) {
+    const r = recadrageDe(trouverPapier(reduit), pw, ph);
+    if (r.h / r.w <= RAPPORT_DECOUPE) return null;
+  }
+  const coup = analyser(reduit, { maxLines: BAND_MAX_LINES });
+  const crop: Rect = { x: coup.crop.x / s, y: coup.crop.y / s, w: Math.min(W, coup.crop.w / s), h: Math.min(H, coup.crop.h / s) };
+  const echelle = Math.min(1, LARGEUR_MAX / crop.w);
+  const g: Geometrie = { cx: crop.x + crop.w / 2, cy: crop.y + crop.h / 2, angle: coup.angle, echelle, largeur: Math.max(1, Math.round(crop.w * echelle)), hauteur: Math.max(1, Math.round(crop.h * echelle)) };
+  const finale = analyser(grisNormalise(image, g), { redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
+  return finale.morceaux.length < 2 ? null : { g, finale };
+}
+
 async function decouperImage(file: File | Blob, force: boolean): Promise<Decoupe | null> {
   const image = await createImageBitmap(file);
   try {
-    const W = image.width, H = image.height;
-    // Coup d'œil : l'image réduite (côté court ≈ 1 200 px) suffit au papier et à l'angle.
-    const s = Math.min(1, 1200 / Math.min(W, H)), pw = Math.max(1, Math.round(W * s)), ph = Math.max(1, Math.round(H * s));
-    const petit = creerCanevas(pw, ph);
-    contexte2d(petit, true).drawImage(image, 0, 0, pw, ph);
-    const reduit: Bitmap = { width: pw, height: ph, gray: grisDe(contexte2d(petit, true).getImageData(0, 0, pw, ph)) };
-    petit.width = 0; petit.height = 0;
-    if (!force) {
-      const r = recadrageDe(trouverPapier(reduit), pw, ph);
-      if (r.h / r.w <= RAPPORT_DECOUPE) return null;
-    }
-    const coup = analyser(reduit, { maxLines: BAND_MAX_LINES });
-    const crop: Rect = { x: coup.crop.x / s, y: coup.crop.y / s, w: Math.min(W, coup.crop.w / s), h: Math.min(H, coup.crop.h / s) };
-    const echelle = Math.min(1, LARGEUR_MAX / crop.w);
-    const g: Geometrie = { cx: crop.x + crop.w / 2, cy: crop.y + crop.h / 2, angle: coup.angle, echelle, largeur: Math.max(1, Math.round(crop.w * echelle)), hauteur: Math.max(1, Math.round(crop.h * echelle)) };
-    const finale = analyser(grisNormalise(image, g), { redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
-    if (finale.morceaux.length < 2) return null;
+    const plan = planifierImage(image, force);
+    if (!plan) return null;
+    const { g, finale } = plan;
     const dessin = partiesDe(image, g, finale), n = dessin.parties.length;
     return {
       parties: dessin.parties.map((p, i) => ({ ...p, morceau: { k: i + 1, n } })),
