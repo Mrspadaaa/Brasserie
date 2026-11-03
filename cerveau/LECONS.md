@@ -33,7 +33,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
 ### L04 — Prioriser comme un brasseur, pas comme un tableur
-- Erreur : 18.10, recette « trop centré sur le ibu, pas d'info sur les AA », et le stock trop en avant.
+- Erreur : 18.10, recette « trop centré sur le ibu, pas d'info sur les AA », stock trop en avant.
 - Cause : les données étaient justes, mais pas dans l'ordre de la décision du brasseur.
 - Faire : sur une carte de houblon, dans cet ordre : nom, α, rôle, arômes en couleur, moment et dose, puis l'IBU. Le stock en icône seulement. Voir [[penser-brasseur]].
 - Rôles : auteur, relecteur, conseil
@@ -42,7 +42,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Préparer : briefs, données, architecture
 
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
-- Erreur : 19.10, « au style » n'a été contrôlé que sur Ma bière ; les autres écrans l'ont perdu. « commen ça a pu être oublié ? »
+- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? »
 - Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
 - Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md.
 - Rôles : pilote
@@ -65,9 +65,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
-- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366).
+- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366). 03.11 : lignes 36+ jetées, testé vert (D379).
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
-- Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368).
+- Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Une donnée jetée n'est jamais un vert : lire par tranches.
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
@@ -86,7 +86,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs mission` (portée), cablage (« OK 0/0 »)
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
-- Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
+- Erreur : 20.10, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable ».
 - Cause : 83 % de ses mots (vin blanc, groseille) sont hors des 12 familles et sortent du dessin ; nul n'a confronté le rendu à sa réputation ([[descripteurs-hors-familles]]).
 - Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (31.10 : EBC au menu, « ? » à côté). Un critère tiré de son attente, et la colonne « aujourd'hui » d'un choix, se testent d'abord sur la donnée et le code (27.10 : radar entier ; 02.11 : Pilsner déjà relié).
 - Rôles : relecteur, conseil, auteur
@@ -120,12 +120,12 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
-- Erreur : 22.10, questions fermées sans maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « Comprends pas ces 2 points » ; « ?? J'ai déjà donné mon avis » (cas rares).
+- Erreur : 22.10, questions fermées sans maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « ?? J'ai déjà donné mon avis ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
 - Faire : chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315).
 - Rôles : pilote, conseil
@@ -148,7 +148,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
 - Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
-- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement est une proposition ; le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. L'agent qui a lu ou enrichi le jeu ne refait jamais l'épreuve.
+- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement est une proposition ; le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. Qui a lu le jeu ne refait pas l'épreuve.
 - Rôles : pilote, critique, conseil
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 

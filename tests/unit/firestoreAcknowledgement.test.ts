@@ -52,3 +52,12 @@ describe('Acquittement ciblé : aucun succès provenant d’une autre écriture'
     await FirestoreRepo.waitForDocument('transactions','TX-1');expect(FirestoreRepo.documentWriteState('transactions','TX-1').status).toBe('confirmed');
   });
 });
+
+describe('D379 — un enregistrement n’échoue jamais pour sa taille', () => {
+  it('600 écritures d’un coup (une facture de 200 lignes) : un seul lot, confirmé, aucun refus « Plus de 450 modifications »', async () => {
+    for (let i = 0; i < 600; i++) FirestoreRepo.put('stockMovements', `M-${i}`, { id: `M-${i}` });
+    await vi.waitFor(() => expect(FirestoreRepo.documentWriteState('stockMovements', 'M-599').status).toBe('confirmed'));
+    expect(FirestoreRepo.documentWriteState('stockMovements', 'M-0').status).toBe('confirmed');
+    expect(sdk.commit).toHaveBeenCalledTimes(1);
+  });
+});

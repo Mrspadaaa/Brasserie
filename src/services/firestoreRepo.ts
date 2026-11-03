@@ -106,7 +106,8 @@ function flushWrites(): void {
   operations.forEach(op => updateWriteState(op, 'pending'));
   let dispatched = false;
   const promise = (async () => {
-    if (operations.length > 450) throw new Error('Plus de 450 modifications simultanées. Utilise la restauration serveur. Aucune de ces modifications n’a été enregistrée.');
+    /* D379 : « Ça doit jamais au grand jamais arrivé » : plus de garde à 450. Firestore a levé le plafond de 500 écritures par lot le 29.03.2023 (notes de version) ;
+       reste la taille d'une requête (10 Mio), loin d'une facture. Un enregistrement reste un seul lot atomique, quelle que soit sa taille. */
     const batch = writeBatch(db);
     for (const op of operations) {
       const ref = doc(db, op.name, op.id);

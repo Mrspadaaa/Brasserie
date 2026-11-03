@@ -54,6 +54,8 @@ function CorpsBande({ b, p }: { b: Bande; p: { lignes: ReadonlyMap<string, React
   return <div>{b.sousGroupes.map((sg, i) => {
     if (!pliable(sg)) return <React.Fragment key={`${i}-${sg.nom}`}>{rangees(sg.ids)}</React.Fragment>;
     const ouvert = groupeOuvert(b.cle, sg, choix, p.forces), id = `dp-sg-${b.cle}-${i}`;
+    /* D378 : la bande entière (sans sous-familles) : pas de ligne de sous-groupe, son en-tête porte le chevron (`EnteteBande`). */
+    if (sg.bande) return <div key={`${i}-${sg.nom}`} id={`dp-bande-${b.cle}-corps`} data-dp-sg={sg.nom} data-dp-sg-bande={b.cle} data-dp-sg-corps={`${b.cle}/${sg.nom}`} hidden={!ouvert}>{rangees(sg.ids)}</div>;
     const masque = p.visibles ? !sg.ids.some(x => p.visibles!.has(x)) : false;
     return <div key={`${i}-${sg.nom}`} data-dp-sg={sg.nom} data-dp-sg-bande={b.cle} hidden={masque}>
       <button type="button" id={id} data-dp-sg-ligne aria-expanded={ouvert} aria-controls={`${id}-corps`} onClick={() => p.onBasculeGroupe?.(b.cle, sg, !ouvert)}
@@ -91,6 +93,9 @@ export function Liste(p: {
       {vide ? <div data-dp="aucune-ligne" className="m-2 flex min-h-20 items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400">Aucune ligne</div> : null}
       {p.ordre === 'cat' ? p.bandes.map(b => <div key={b.cle} data-dp-bande={b.cle} hidden={p.visibles ? !b.ids.some(id => p.visibles!.has(id)) : false}>
         <div data-dp-bande-entete className={`dp-p3c-bande-entete flex items-center gap-1.5 px-2.5 text-sm dp-p3c-t-${b.cle}`}>
+          {(() => { const sg = b.sousGroupes?.length === 1 && b.sousGroupes[0].bande && pliable(b.sousGroupes[0]) ? b.sousGroupes[0] : undefined; if (!sg) return null;
+            const ouvert = groupeOuvert(b.cle, sg, p.choixGroupes ?? new Map(), p.forces);
+            return <button type="button" data-dp-bande-pli aria-expanded={ouvert} aria-controls={`dp-bande-${b.cle}-corps`} aria-label={`${ouvert ? 'Plier' : 'Déplier'} ${b.nom}`} onClick={() => p.onBasculeGroupe?.(b.cle, sg, !ouvert)} className="-ml-1 inline-flex min-h-7 w-6 shrink-0 items-center justify-center text-cave-400">{ouvert ? <ChevronDown size={14} strokeWidth={2.2}/> : <ChevronRight size={14} strokeWidth={2.2}/>}</button>; })()}
           <i aria-hidden className={`size-2.5 shrink-0 rounded-full ${POINT_GROUPE[b.cle]}`}/>
           <strong className="font-semibold text-cave-50">{b.nom}</strong>
           <span data-dp-bande-compte className="rounded-control border border-cave-600 bg-cave-950 px-1.5 font-mono text-xs leading-[18px] text-cave-200">{p.visibles ? `${b.ids.filter(id => p.visibles!.has(id)).length}/${b.ids.length}` : b.ids.length}{!p.visibles && b.moutureIds.length ? ` +${b.moutureIds.length} ↳` : ''}</span>

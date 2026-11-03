@@ -216,3 +216,21 @@ describe('D377 — « Item en rouge mais pas total ?? »', () => {
     expect(bande.querySelector('[data-dp-sous-montant]')?.getAttribute('data-dp-niveau')).toBe('inconnu');
   });
 });
+
+describe('D378 — « on peut toujours pas fermé les famille et les 2 boutons, plier déplier sont absent »', () => {
+  it('pièce de brassage (Malts sans sous-familles) : chevron sur l’en-tête, ouvert par défaut ; « Plié » cache ses rangées, « Déplié » les rend', async () => {
+    const view = await lire('brassage', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Pilsner Malz, Kg', 'stock', 5, 'Kg', 1.65)]);
+    const bande = ligneEl(view, 'line-1').closest('[data-dp-bande]') as HTMLElement;
+    const pli = bande.querySelector('[data-dp-bande-pli]') as HTMLButtonElement;
+    expect(pli).not.toBeNull();
+    expect(pli.getAttribute('aria-expanded')).toBe('true');
+    const corps = () => bande.querySelector('[data-dp-sg-corps]') as HTMLElement;
+    expect(corps().hidden).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: /^Plié$/ }));
+    expect(corps().hidden).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: /^Déplié$/ }));
+    expect(corps().hidden).toBe(false);
+    fireEvent.click(pli);
+    expect(corps().hidden).toBe(true);
+  });
+});

@@ -98,6 +98,8 @@ export interface SousGroupe {
   nom: string; ids: string[]; qte: QteGroupe[]; cents: number; incomplet: boolean;
   /** Au moins une ligne jaune ou rouge : le groupe s'ouvre d'office tant que le brasseur n'a rien choisi. */
   averifier: boolean; libre?: true;
+  /** D378 : « on peut toujours pas fermé les famille » : la bande entière, quand elle n'a pas deux sous-familles ; elle se plie par son en-tête, ouverte par défaut. */
+  bande?: true;
   /** D377 : un montant de ses lignes est rouge. */
   montantDoute?: boolean;
 }
@@ -186,7 +188,8 @@ export function bandes(lignes: readonly LigneBande[]): Bande[] {
     sortie.push({
       cle, nom: NOMS_GROUPES[cle], ids: propres.map(l => l.id), moutureIds: dans.filter(l => l.mouture).map(l => l.id), qte: quantites(propres),
       ...(sachets !== undefined ? { eqb: `= ${sachets} sachet${sachets > 1 ? 's' : ''}` } : {}), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)), ...(dans.some(l => l.montantDoute) ? { montantDoute: true } : {}),
-      ...(() => { const sg = sousGroupesDe(cle, dans); return sg ? { sousGroupes: sg } : {}; })(),
+      ...(() => { const sg = sousGroupesDe(cle, dans); if (sg) return { sousGroupes: sg };
+        return propres.length >= 2 ? { sousGroupes: [{ nom: NOMS_GROUPES[cle], ids: propres.map(l => l.id), qte: quantites(propres), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)), averifier: dans.some(l => l.averifier), bande: true as const }] } : {}; })(),
     });
   }
   return sortie;
@@ -207,7 +210,7 @@ export const pliable = (sg: SousGroupe): boolean => !sg.libre && sg.ids.length >
 export function groupeOuvert(bande: string, sg: SousGroupe, choix: ChoixGroupes, forces?: ReadonlySet<string>): boolean {
   if (!pliable(sg)) return true;
   if (forces && sg.ids.some(id => forces.has(id))) return true;
-  return choix.get(cleGroupe(bande, sg.nom)) ?? sg.averifier;
+  return choix.get(cleGroupe(bande, sg.nom)) ?? (sg.bande ? true : sg.averifier);
 }
 /** Le choix du brasseur sur un sous-groupe. */
 export function poserGroupe(choix: ChoixGroupes, bande: string, nom: string, ouvert: boolean): ChoixGroupes {
