@@ -1362,3 +1362,19 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Suite** (à « les sous-familles de malts, houblons et levures sont un choix nouveau… je te les montrerai en mini-maquettes »), mot pour mot :
   « donc les sous-familles de malts, houblons et levures sont un choix nouveau que tu devras valider, et je te les montrerai en mini-maquettes. Non ne commence pas ça »
   (lu : rien n'est lancé sur les sous-familles des ingrédients ; D376 reste ouvert, sans page.) Puis « /autocompact 500k » (réglage de Claude Code, hors de l'app).
+- **Les familles qu'on ne ferme pas, le total** (03.11, vers 5 h ; sa page D « Tout plier, déplier » et la pièce `bestellung` : cerclés le total 261,65, « TVA 16,10
+  gardée », « Détail 218,63 / 261,65 »), mot pour mot : « Mais on peut toujours pas fermé les famille et les 2 boutons, plier déplier sont absent. Le total est toujours
+  incorrect ?? » (lu : une bande sans sous-famille se plie aussi, et « Plié | Déplié » est là sur toute pièce qui a des bandes ; le total 261,65 est juste, le détail
+  manque de lignes non lues. D378, D379.)
+- **Les lignes jetées** (03.11, vers 5 h, à « Les lignes au-delà de 35 sont lues puis jetées par le serveur »), mot pour mot : « Le serveur ne garde que les 35
+  premières lignes et jette le reste ????? QUOOOI ?? » (lu : aucune ligne lue ne se jette ; le plafond de 35 part. D379.)
+- **Suite**, à « Il y a d'autres absurdité du genre ? » (audit lancé) puis au plafond porté à 80, mot pour mot : « Il y a d'autres absurdité du genre ? » ; « Mais quoi ???
+  Mais pourquoi un plafond ??? SI il y en a plus, il faut simplement faire un take. Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » (lu : aucun
+  plafond de lignes, nulle part ; ce que la lecture n'a pas rendu d'un coup se reprend par tranches. D379.)
+- **Suite**, mot pour mot : « Il y a d'autres limite debile de ce genre ??? » (audit des limites silencieuses en cours, D379.)
+- **Suite**, mot pour mot : « Mais si une facture à 200 itmes en une pagele take va pas fonctionner ?? Ça doit tout lire en une fois ?? Comment sur un système aussi
+  critique que la facturation, on aille ce genre de problème ??? Et pas de test rouge ??? » (lu : une seule page peut porter 200 lignes ; la reprise se fait par rang de
+  ligne, pas par page ; et un test affirmait la perte comme voulue. D379, L11.)
+- **Suite** (à « il échoue avec un message absurde, mais il échoue en le disant, au lieu de perdre en silence les lignes 36 et suivantes »), mot pour mot :
+  « puis échoue au-delà avec un message trompeur, au lieu de perdre silencieusement les lignes 36 et suivantes ???? Au lieu de ???? Ça doit jamais au grand jamais
+  arrivé ?? » (lu : un enregistrement n'échoue jamais pour sa taille ; le plafond de 450 écritures part aussi. D379.)

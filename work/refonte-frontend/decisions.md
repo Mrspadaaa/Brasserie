@@ -1841,3 +1841,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D377, ses mots : « Item en rouge mais pas total ?? ». `LigneBande.montantDoute` → `Bande`/`SousGroupe.montantDoute` → total tireté rouge (Liste.tsx). Test pu4d D377.
 - Dossier Dépense : 62 échecs anciens, aucun nouveau. Non vu au banc (vision) faute de contexte : à regarder au prochain tour.
 - D376 (sous-familles des malts, houblons, levures) : sa page D disait « aucune (Houblons) » ; c'est un choix neuf, à montrer en mini maquettes. Il a dit « Non ne commence pas ça ».
+
+## D378 — 03.11 : les familles se plient, « Plié | Déplié » sur toute pièce (9474f3b8, à déployer)
+- Ses mots : « Mais on peut toujours pas fermé les famille et les 2 boutons, plier déplier sont absent. » Une bande sans deux sous-familles devient un seul groupe
+  (`SousGroupe.bande`), plié par un chevron sur son en-tête, ouvert par défaut (lecture étroite : rien ne se cache à l'arrivée). « Plié | Déplié » (E) agit dessus ;
+  une ligne à vérifier garde sa bande ouverte (D307). Les sous-familles des ingrédients restent un choix à lui montrer (D376, « Non ne commence pas ça »).
+
+## D379 — 03.11 : aucune ligne lue n'est jetée, aucun enregistrement ne refuse sa taille (50782143, 9474f3b8, à déployer)
+- Ses mots : « Le serveur ne garde que les 35 premières lignes et jette le reste ????? QUOOOI ?? », « Pas de plafond du j'ai une facture à 1000 ligne je dois tout
+  avoir ??? », « Ça doit jamais au grand jamais arrivé ?? ».
+- Fait : serveur sans coupe (`SCAN_MAX_ITEMS` 10 000, garde-fou), consigne sans « Maximum 35 lignes », sortie de lecture 32 768 jetons ; app : enregistrement et
+  « + Ajouter une ligne » sans plafond (`LIGNES_MAX` 10 000), scanner client sans coupe, noms français par tranches de 35 ; `firestoreRepo` : plus de garde à 450
+  écritures (Firestore a levé le plafond de 500 par lot le 29.03.2023 ; reste 10 Mio par requête).
+- Reste : la lecture par tranches (« take ») quand une seule réponse de Gemini ne suffit pas (au-delà d'environ 200 lignes) : chantier lecture, banc Gemini facturé.
+- Leçon L11 : une donnée jetée n'est jamais un vert. Audit des limites : `work/missions/2026-10-31-ecran-depense/audit-limites/RAPPORT.md` (13, dont 3 graves).
