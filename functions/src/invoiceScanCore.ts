@@ -20,14 +20,16 @@ export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
  * `maxOutputTokens` : en ligne le 02.11, une commande de 31 lignes sur 3 pages a été coupée à 5 085 jetons sous l'ancien plafond de 5 100.
  * Même plafond que la Flash-Lite.
  */
-export const SCAN_MAX_OUTPUT = 8192;
+export const SCAN_MAX_OUTPUT = 32768;
 /**
  * Plafond de sortie des deux lectures Flash-Lite (C★v8, D247). La réflexion compte dans `maxOutputTokens` : à 5 100, les deux Flash-Lite
  * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 a le même depuis le 02.11.
  */
-export const LITE_SCAN_MAX_OUTPUT = 8192;
+/** D379 : 32 768 (≈ 200 lignes à 160 jetons, réflexion comprise) pour qu'une longue commande ne soit pas coupée en plein JSON ; un plafond ne coûte que s'il sert. Au-delà : la lecture par tranches (à faire). */
+export const LITE_SCAN_MAX_OUTPUT = 32768;
 export const SCAN_MAX_CALLS = 3;
-export const SCAN_MAX_ITEMS = 35;
+/** D379 : « Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » : aucune ligne lue n'est jetée. Garde-fou seulement contre une réponse folle. */
+export const SCAN_MAX_ITEMS = 10000;
 export const SCAN_MAX_VAT_ROWS = 6;
 export const SCAN_KINDS = ['equipment', 'maintenance', 'stock', 'service', 'packaging', 'shipping', 'discount', 'other', 'unknown'] as const;
 export interface InvoiceFieldWarning { field: InvoiceField; message: string }
@@ -369,11 +371,11 @@ export function normalizeInvoiceScan(raw: any) {
   }
   result.linesLost = linesLost;
   result.controls.sum = summed.sum;
-  if (Array.isArray(raw?.items) && raw.items.length > SCAN_MAX_ITEMS) issues.push('Plus de 35 lignes : compléter le détail manuellement.');
+  if (Array.isArray(raw?.items) && raw.items.length > SCAN_MAX_ITEMS) issues.push(`Plus de ${SCAN_MAX_ITEMS} lignes : compléter le détail manuellement.`);
   if (linesLost > 0) {
     say(makePoint('lignes-perdues', 'ecart', 'items', null, {
       regle: 'toutes les lignes du document sont conservées (35 au plus)', unite: 'lignes', enjeu: 'argent', lu: items.length, calcule: items.length + linesLost,
-      message: `Détail des lignes incomplet : ${linesLost} ligne(s) non conservée(s) (35 lignes au plus) ; le total des lignes n'est pas vérifié.`,
+      message: `Détail des lignes incomplet : ${linesLost} ligne(s) non conservée(s) (${SCAN_MAX_ITEMS} lignes au plus) ; le total des lignes n'est pas vérifié.`,
     }));
   }
   summed.points.forEach(say);

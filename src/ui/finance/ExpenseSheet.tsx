@@ -30,7 +30,7 @@ import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedD
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
 import { chipsDeLecture,compteLiens,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
-import { millingParentIndex,isMillingSurcharge } from '../../services/purchaseEntry';
+import { millingParentIndex,isMillingSurcharge,LIGNES_MAX } from '../../services/purchaseEntry';
 import { contexteDeArticle } from '../../services/stockLineMatching';
 import { vueQr,resumeQr,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
 import { Sceau,SansQr,DuelTotal,TemoinSomme,BoutonPhotoQr,FicheQr } from '../depense/Qr';
@@ -1268,7 +1268,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     <ScanHint field="items" message={hints.items}/>
     <div className="space-y-2 pt-2">{!scan?.ok?<div className="flex justify-between gap-2 items-center"><h3 className="font-semibold text-cave-50">Ce que tu achètes</h3>{draft.lines.length>1?<button type="button" className="text-xs text-cave-400 min-h-7" onClick={regrouper}>Regrouper en une dépense</button>:null}</div>:null}
       {draft.lines.map(l=><React.Fragment key={l.id}>{ligneEls.get(l.id)}</React.Fragment>)}
-      <div className="flex gap-2"><button type="button" disabled={draft.lines.length>=35} onClick={()=>patch({lines:[...draft.lines,newLine()]})} className={`${button} border-dashed border-cave-600 text-cave-200 flex-1 flex justify-center items-center gap-2`}><Plus size={17}/>Ajouter une ligne</button>{scan?.ok&&draft.lines.length>1?<button type="button" className={`${button} border-dashed border-cave-600 text-cave-200`} onClick={regrouper}>Regrouper en une dépense</button>:null}</div>
+      <div className="flex gap-2"><button type="button" disabled={draft.lines.length>=LIGNES_MAX} onClick={()=>patch({lines:[...draft.lines,newLine()]})} className={`${button} border-dashed border-cave-600 text-cave-200 flex-1 flex justify-center items-center gap-2`}><Plus size={17}/>Ajouter une ligne</button>{scan?.ok&&draft.lines.length>1?<button type="button" className={`${button} border-dashed border-cave-600 text-cave-200`} onClick={regrouper}>Regrouper en une dépense</button>:null}</div>
       {draft.lines.length>1?<p className={`text-sm text-right ${Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)-(draft.amount||0))>0.005?'text-attention':'text-cave-400'}`}>Détail : {money(draft.lines.reduce((sum,line)=>sum+(line.amount||0),0))} / {money(draft.amount||0)}</p>:null}
     </div></details>;
   /* ------- les rubriques (P16) : mêmes champs, mêmes id ------- */
@@ -1386,7 +1386,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-2 lg:order-none lg:col-start-2">
         <Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtre} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
-          pied={{ajouterOff:draft.lines.length>=35,ajouterTitre:draft.lines.length>=35?'35 lignes au plus, port compris':undefined,regrouper:draft.lines.length>1,arrondi:arrondiCents?{texte:`${arrondiCents<0?'−':'+'}${fr2c(Math.abs(arrondiCents))}`}:null,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,detail:draft.lines.length>1?{...detailListe,cache:Boolean(scan?.cached)}:null}}
+          pied={{ajouterOff:draft.lines.length>=LIGNES_MAX,ajouterTitre:draft.lines.length>=LIGNES_MAX?`${LIGNES_MAX} lignes au plus, port compris`:undefined,regrouper:draft.lines.length>1,arrondi:arrondiCents?{texte:`${arrondiCents<0?'−':'+'}${fr2c(Math.abs(arrondiCents))}`}:null,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,detail:draft.lines.length>1?{...detailListe,cache:Boolean(scan?.cached)}:null}}
           onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={regrouper}>
           {tiroirPort}
         </Liste>

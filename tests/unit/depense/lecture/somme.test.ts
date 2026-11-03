@@ -56,23 +56,22 @@ describe('C2 — somme des lignes = total, au centime', () => {
 });
 
 describe('P2 — aucune ligne jetée en silence', () => {
-  it('36 lignes : une perdue, dite en nombre ; la somme des 35 vaut le TTC mais n’est JAMAIS déclarée vérifiée', () => {
-    const r = lire(entete({ amountTTC: 35, items: plat(36) }));
-    expect(r.items).toHaveLength(35);
-    expect(r.linesLost).toBe(1);
-    const [p] = trouve(r.points, 'lignes-perdues');
-    expect(p).toMatchObject({ gravite: 'ecart', champ: 'items', unite: 'lignes', calcule: 36, lu: 35, ecart: -1 });
-    expect(r.controls.sum.statut).toBe('incomplet');
-    expect(r.issues.filter((m: string) => m.startsWith('Plus de 35 lignes'))).toHaveLength(1);
-    expect(r.issues.join(' ')).toMatch(/35 lignes/);
+  // D379 : « Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » : le serveur ne coupe plus à 35.
+  it('36, 120 lignes lues : toutes gardées, aucune dite perdue, aucune phrase « Plus de … lignes »', () => {
+    for (const n of [36, 120]) {
+      const r = lire(entete({ amountTTC: n, items: plat(n) }));
+      expect(r.items).toHaveLength(n);
+      expect(r.linesLost).toBe(0);
+      expect(trouve(r.points, 'lignes-perdues')).toHaveLength(0);
+      expect(r.controls.sum.statut).toBe('ok');
+      expect(r.issues.some((m: string) => /^Plus de d+ lignes/.test(m))).toBe(false);
+    }
   });
 
-  it('après le rapprochement, « Plus de 35 lignes » n’apparaît qu’une fois et linesLost est gardé', () => {
-    const a = lire(entete({ amountTTC: 35, items: plat(36) }));
-    const { result } = reconcileInvoiceVision([a, lire(entete({ amountTTC: 35, items: plat(36) }))]);
-    expect((result as any).linesLost).toBe(1);
-    expect((result as any).controls.sum.statut).toBe('incomplet');
-    expect(result.issues.filter((m: string) => m.startsWith('Plus de 35 lignes'))).toHaveLength(1);
+  it('après le rapprochement de deux lectures de 120 lignes : les 120 restent', () => {
+    const { result } = reconcileInvoiceVision([lire(entete({ amountTTC: 120, items: plat(120) })), lire(entete({ amountTTC: 120, items: plat(120) }))]);
+    expect((result as any).items).toHaveLength(120);
+    expect((result as any).linesLost).toBe(0);
   });
 
   it('le modèle annonce 25 lignes imprimées, en transcrit 23, somme exacte : seulement un point inverifiable, la somme reste ok', () => {

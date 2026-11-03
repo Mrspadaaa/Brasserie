@@ -18,6 +18,9 @@ import type { Catalogues } from '../domain/stock/fiche';
 import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
 import { isMillingSurcharge } from './purchasePrefill';
 
+/** D379 : « Pas de plafond » : une dépense porte toutes ses lignes ; garde-fou seulement contre une saisie folle (la limite d'un document Firestore, 1 Mio, vient bien après). */
+export const LIGNES_MAX = 10000;
+
 export interface PurchaseLineDraft {
   id:string; description:string; kind:FinanceLineKind|'maintenance'; amount?:number;
   quantity?:number; unit:string;
@@ -459,7 +462,7 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   if (!purchaseIsoDate(draft.date)) errors.push('Renseigne une date valide.');
   if (!draft.description.trim()) errors.push('Décris cette dépense.');
   if (!isMoney(draft.amount) || draft.amount<=0) errors.push('Renseigne le total payé ou facturé en CHF, avec deux décimales au maximum.');
-  if (!draft.lines.length || draft.lines.length>35) errors.push('Prévois entre 1 et 35 lignes.');
+  if (!draft.lines.length || draft.lines.length>LIGNES_MAX) errors.push(`Prévois entre 1 et ${LIGNES_MAX} lignes.`);
   if (new Set(draft.lines.map(line=>line.id)).size!==draft.lines.length || draft.lines.some(line=>!/^[A-Za-z0-9-]{1,80}$/.test(line.id))) errors.push('Les identifiants des lignes sont invalides. Rouvre la saisie.');
   if (draft.lines.some(line=>!line.description.trim() || !isMoney(line.amount))) errors.push('Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum.');
   if (draft.lines.some(line=>line.kind==='discount' ? line.amount>0 : line.amount<0)) errors.push('Une remise est négative; les autres lignes sont positives.');

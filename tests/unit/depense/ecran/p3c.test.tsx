@@ -218,8 +218,8 @@ describe('p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’
     });
     expect(qa('[data-dp-ligne]')).toHaveLength(35);
     const ajouter = screen.getByRole('button', { name: /Ajouter une ligne/ });
-    expect(ajouter).toBeDisabled();
-    expect(ajouter.getAttribute('title')).toMatch(/35 lignes au plus, port compris/);
+    // D379 : « Pas de plafond » : à 35 lignes, « + Ajouter une ligne » reste offert.
+    expect(ajouter).not.toBeDisabled();
     expect(q('[data-dp="port"]').textContent).toBe('dont port 8,50'); // le port est bien hors bandes : 34 lignes en bandes
     expect(qa('[data-dp-bande] [data-dp-ligne]')).toHaveLength(34);
     cleanup();

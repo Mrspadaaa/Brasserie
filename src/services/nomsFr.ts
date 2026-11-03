@@ -125,7 +125,7 @@ interface Groupe { cle: string; base: string; kind: string; stockCategory: strin
 
 /**
  * Le français des lignes d'une pièce : `Map<rang, nameFr>` (rang = position dans `lignes`). Une ligne absente de la Map garde son nom imprimé.
- * Un seul appel par pièce, au plus `NOMS_MAX_ENTREES` noms ; aucune exception ; aucun nouvel essai.
+ * D379 : par tranches de `NOMS_MAX_ENTREES` noms (« il faut simplement faire un take ») : toutes les lignes sont nommées, aucune n'est laissée ; aucune exception ; aucun nouvel essai.
  */
 export async function traduireLignes(lignes: readonly LigneANommer[], options: OptionsNoms): Promise<Map<number, string>> {
   const resultat = new Map<number, string>();
@@ -155,20 +155,21 @@ export async function traduireLignes(lignes: readonly LigneANommer[], options: O
     }
     if (!restantes.length || options.enLigne !== true) return resultat;
 
-    // 2. Un appel texte seul : l'entrée est { i, base, kind, stockCategory }, `i` le premier rang de la base.
-    const envoyees = restantes.slice(0, NOMS_MAX_ENTREES);
-    const parI = new Map(envoyees.map(groupe => [groupe.rangs[0], groupe]));
-    const entrees = envoyees.map(groupe => ({ i: groupe.rangs[0], base: groupe.base, kind: groupe.kind, stockCategory: groupe.stockCategory }));
+    // 2. Un appel texte seul par tranche : l'entrée est { i, base, kind, stockCategory }, `i` le premier rang de la base.
     const run = options.run ?? (req => AiClient.run(req));
-    const reponse = await run({ task: 'traduireNoms', tier: 'fast', context: { entrees } });
-    if (!reponse?.ok) return resultat;
-
-    // 3. Ce qui est valable est posé, et gardé pour la prochaine fois (jamais sur la traduction d'un brasseur).
     const maintenant = (options.maintenant ?? (() => new Date()))().toISOString();
-    for (const [i, nameFr] of lireReponse(reponse.data, new Set(parI.keys()))) {
-      const groupe = parI.get(i)!;
-      const gardee = table ? await sans(() => table.poser({ cle: groupe.cle, nameFr, le: maintenant, par: 'ia' })) : undefined;
-      poser(groupe, gardee?.nameFr?.trim() ? gardee.nameFr : nameFr);
+    for (let debut = 0; debut < restantes.length; debut += NOMS_MAX_ENTREES) {
+      const envoyees = restantes.slice(debut, debut + NOMS_MAX_ENTREES);
+      const parI = new Map(envoyees.map(groupe => [groupe.rangs[0], groupe]));
+      const entrees = envoyees.map(groupe => ({ i: groupe.rangs[0], base: groupe.base, kind: groupe.kind, stockCategory: groupe.stockCategory }));
+      const reponse = await run({ task: 'traduireNoms', tier: 'fast', context: { entrees } });
+      if (!reponse?.ok) continue;
+      // 3. Ce qui est valable est posé, et gardé pour la prochaine fois (jamais sur la traduction d'un brasseur).
+      for (const [i, nameFr] of lireReponse(reponse.data, new Set(parI.keys()))) {
+        const groupe = parI.get(i)!;
+        const gardee = table ? await sans(() => table.poser({ cle: groupe.cle, nameFr, le: maintenant, par: 'ia' })) : undefined;
+        poser(groupe, gardee?.nameFr?.trim() ? gardee.nameFr : nameFr);
+      }
     }
   } catch {
     // jamais d'exception vers l'appelant : ce qui est déjà posé reste, le reste garde le nom imprimé

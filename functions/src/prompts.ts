@@ -195,7 +195,7 @@ paymentEvidence vaut paid seulement si le paiement est explicitement établi, un
 fieldWarnings : un avertissement par champ au plus, et seulement pour une valeur illisible, absente alors qu’elle est essentielle (date, total TTC, fournisseur), ou confondable avec une autre (par exemple deux numéros proches) ; la raison courte donne les deux valeurs en cause.
 N'ajoute jamais d'avertissement pour une valeur lue sans hésitation, ni pour expliquer où elle est imprimée, ni pour un champ absent par nature : total HT non imprimé (amountHT = null), taux unique d'un document à plusieurs taux (porté par vat), intitulé pro-forma (porté par proForma).
 items : toutes les lignes, y compris matériel, entretien/réparation, ingrédients, service, emballage,
-transport et remise (montant négatif). Maximum 35 lignes. price est le prix unitaire imprimé;
+transport et remise (montant négatif), sans en omettre aucune, quel que soit leur nombre. price est le prix unitaire imprimé;
 amountTTC est le total TTC de la ligne uniquement s'il est imprimé, sinon null.
 name recopie exactement la désignation imprimée, sans la traduire, la résumer ni ajouter une explication.
 Conserve l'ordre des lignes et les lignes distinctes même si leurs désignations se répètent.

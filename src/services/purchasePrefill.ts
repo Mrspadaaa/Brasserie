@@ -64,7 +64,7 @@ export function invoiceTotalProposal(scan: ScannedInvoiceResult): { amount?: num
   if (typeof scan.amountTTC === 'number' && Number.isFinite(scan.amountTTC))
     return { amount: scan.amountTTC, calculated: false };
   const incomplete = [...scan.issues, ...(scan.review?.findings ?? []), ...(scan.fieldWarnings ?? []).filter(w => w.field === 'items').map(w => w.message)]
-    .some(message => /35 lignes|tronqu|incomplet|manquant|coup[ée]|illisible/i.test(message));
+    .some(message => /Plus de d+ lignes|lignes au plus|tronqu|incomplet|manquant|coup[ée]|illisible/i.test(message));
   if (!scan.items.length || incomplete || scan.items.some(item => typeof item.amountTTC !== 'number' || !Number.isFinite(item.amountTTC)))
     return { calculated: false };
   const amount = scan.items.reduce((sum, item) => sum + Math.round(item.amountTTC! * 100), 0) / 100;
