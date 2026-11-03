@@ -76,8 +76,8 @@ describe('D311 : l\'état allumé se calcule, il n\'est jamais gardé', () => {
 });
 
 describe('D311 : le segment n\'existe que s\'il a quelque chose à plier', () => {
-  it('sans bande à deux sous-familles : invisible', () => {
-    expect(etatSegment(bandes([L('a', 'renovation', 'Outillage', 100), L('b', 'renovation', 'Outillage', 100)]), new Map()).visible).toBe(false);
+  it('D378 : une bande de deux lignes sans deux sous-familles se plie : visible ; rien du tout : invisible', () => {
+    expect(etatSegment(bandes([L('a', 'renovation', 'Outillage', 100), L('b', 'renovation', 'Outillage', 100)]), new Map()).visible).toBe(true);
     expect(etatSegment([], new Map()).visible).toBe(false);
   });
   it('deux sous-familles d\'une ligne chacune : rien à plier, invisible (lecture du pilote, plus étroite que « deux sous-familles »)', () => {

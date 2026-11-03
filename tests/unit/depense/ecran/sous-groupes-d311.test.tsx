@@ -121,9 +121,9 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Catégorie' }));
     expect(segment(v)).not.toBeNull();
   });
-  it('segment absent sur une dépense sans bande à deux sous-familles pliables', async () => {
+  it('D378 : segment présent sur une dépense sans sous-familles : la bande de deux lignes se plie', async () => {
     const v = await lire([ligne(1, 'Ponceuse excentrique 125 mm', 'equipment', 1, 'Stk', 89, 89), ligne(2, 'Visseuse sans fil 18 V', 'equipment', 1, 'Stk', 99, 99)]);
-    expect(segment(v)).toBeNull();
+    expect(segment(v)).not.toBeNull();
   });
 });
 

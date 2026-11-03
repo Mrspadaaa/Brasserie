@@ -53,15 +53,19 @@ describe('D307 : les sous-groupes d\'une bande à sept sous-familles', () => {
 });
 
 describe('D307 : une bande sans deux sous-familles reste celle d\'aujourd\'hui', () => {
-  it('une seule sous-famille : aucun sous-groupe, la bande est identique à celle de lignes sans sous-famille', () => {
+  it('D378 : une seule sous-famille : la bande entière est un seul groupe pliable, identique à celle de lignes sans sous-famille', () => {
     const avec = bandes([R('1', 'Outillage', 2, 650), R('2', 'Outillage', 1, 890)]);
     const sans = bandes([L('1', 'renovation', undefined, 13, 2, 'Stk'), L('2', 'renovation', undefined, 8.9, 1, 'Stk')]);
-    expect(avec[0].sousGroupes).toBeUndefined();
+    expect(avec[0].sousGroupes).toHaveLength(1);
+    expect(avec[0].sousGroupes![0]).toMatchObject({ bande: true, ids: ['1', '2'] });
     expect(avec).toEqual(sans);
   });
-  it('Houblons et Malts (une catégorie de stock ou aucune) : aucun sous-groupe', () => {
+  it('D378 : Houblons (deux lignes) se plie en un seul groupe ; Malts (une ligne) n\'a rien à plier', () => {
     const b = bandes([L('1', 'houblon', 'Houblon', 5, 100, 'g'), L('2', 'houblon', 'Houblon', 6, 100, 'g'), L('3', 'malt', undefined, 9, 5, 'Kg')]);
-    expect(b.every(x => x.sousGroupes === undefined)).toBe(true);
+    const houblon = b.find(x => x.sousGroupes), autres = b.filter(x => x !== houblon);
+    expect(houblon!.sousGroupes).toHaveLength(1);
+    expect(houblon!.sousGroupes![0]).toMatchObject({ bande: true, ids: ['1', '2'] });
+    expect(autres.every(x => x.sousGroupes === undefined)).toBe(true);
   });
   it('aucune sous-famille : la bande n\'a pas le champ', () => {
     expect('sousGroupes' in bandes([L('1', 'autres', undefined, 5, 1, 'Stk')])[0]).toBe(false);

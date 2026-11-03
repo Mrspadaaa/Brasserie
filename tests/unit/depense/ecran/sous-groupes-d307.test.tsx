@@ -109,9 +109,10 @@ describe('D307 : la bande Rénovation de l\'aperçu, au repos', () => {
 });
 
 describe('D307 : bandes sans deux sous-familles, sous-groupe d\'une ligne, ligne à vérifier', () => {
-  it('une seule sous-famille (Outillage seul) : la bande est celle d\'aujourd\'hui, aucune ligne de sous-famille', async () => {
+  it('D378 : une seule sous-famille (Outillage seul) : la bande entière se plie par son en-tête, sans ligne de sous-famille, ouverte au repos', async () => {
     const v = await lire([ligne(1, 'Ponceuse excentrique 125 mm', 'equipment', 1, 'Stk', 89, 89), ligne(2, 'Visseuse sans fil 18 V', 'equipment', 1, 'Stk', 99, 99)]);
-    expect(nomsDe(v)).toEqual([]);
+    expect(nomsDe(v)).toEqual(['Rénovation']);
+    expect(bande(v, 'renovation').querySelectorAll('[data-dp-sg-ligne]')).toHaveLength(0);
     expect(visibles(v)).toHaveLength(2);
   });
   it('un sous-groupe d\'une ligne montre sa rangée sans chevron ni ligne', async () => {

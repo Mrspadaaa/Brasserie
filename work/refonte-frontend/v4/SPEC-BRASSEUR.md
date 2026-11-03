@@ -1378,3 +1378,11 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **Suite** (à « il échoue avec un message absurde, mais il échoue en le disant, au lieu de perdre en silence les lignes 36 et suivantes »), mot pour mot :
   « puis échoue au-delà avec un message trompeur, au lieu de perdre silencieusement les lignes 36 et suivantes ???? Au lieu de ???? Ça doit jamais au grand jamais
   arrivé ?? » (lu : un enregistrement n'échoue jamais pour sa taille ; le plafond de 450 écritures part aussi. D379.)
+- **Suite** (03.11 matin, pendant les tests de D379), mot pour mot : « Tu peux aussi testé avec beaucoup d'items ? » (lu : un parcours au banc avec une pièce de
+  200 et de 1000 lignes, lecture simulée : tout affiché, total juste, enregistrement complet, temps mesuré. La vraie lecture d'une telle pièce attend la lecture par
+  tranches. D379.)
+- **Suite**, mot pour mot : « Et génère un fichier avec 300 item, et un avec 600 et fait tout le processus bout en bout. Regarde ce qui se passe et casse ou pas »
+  puis, à « 300 lignes tenues sur 4 pages serrées », « Non non » ; « 300 sur une page, au c'est possible. 600 sur 8 » (lu : 300 lignes sur une seule page, A4 de
+  large et aussi haute qu'il faut ; 600 sur 8 pages A4 ; tout le parcours, lecture réelle comprise ; noter ce qui casse. D379.)
+- **Suite**, mot pour mot : « J'autorise des vrai appel IA pour ce cas particulier » (lu : lectures Gemini réelles des deux pièces fictives de 300 et 600 lignes,
+  dans l'app en ligne, journalisées ; rien d'autre. D379.)

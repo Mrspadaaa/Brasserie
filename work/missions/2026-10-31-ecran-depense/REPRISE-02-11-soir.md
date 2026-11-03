@@ -189,3 +189,13 @@ retirées de l'index, fichiers gardés sur le disque).
 - Pas fait : vision au banc de D375 et D377 (tuile TVA, total rouge), deux thèmes, 390 et 1280.
 - Ouverts : D376 sous-familles des ingrédients (choix neuf, en attente de son feu : « Non ne commence pas ça ») ; la lecture s'arrête à 35 lignes
   (sa pièce en a plus : 43,00 manquent au détail) — chantier lecture (functions/aiTask, Gemini facturé), à son accord ; « montant à remplir » dit d'un montant présent.
+
+## 03.11, matin — D378, D379 codés (9474f3b8, 50782143, d654ffd5, c8e7ea98), déploiement en cours
+- D378 : une bande sans sous-familles se plie par son en-tête (chevron `data-dp-bande-pli`), « Plié | Déplié » sur toute pièce.
+- D379 : plus aucune ligne jetée (serveur, enregistrement, ajout, consigne « sans en omettre aucune », règle « 35 au plus » retirée) ;
+  noms français par tranches de 35 ; garde des 450 écritures retirée (Firestore l'a levée le 29.03.2023). SCAN_MAX_ITEMS = 10 000 (garde-fou).
+- Plafond de sortie de la lecture resté à 8 192 jetons (32 768 cassait la réserve de budget D325) : une lecture tient environ 40 lignes.
+  Au-delà, la réponse est coupée ; il faut la lecture par tranches de rang de ligne (« take »), chantier à part, Gemini facturé au banc.
+- Audit des limites : `audit-limites/RAPPORT.md`, 13 constats, 3 graves (identifiants de tarifs en collision, budgets inconnus comptés 0,
+  constats du contrôle coupés à 35/50/40/20). Non commencés.
+- D376 sous-familles des ingrédients : ne pas commencer (ses mots).
