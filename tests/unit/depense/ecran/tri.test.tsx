@@ -85,7 +85,7 @@ describe('R10, D229 : un geste ne fait jamais monter le statut ; une valeur tap�
   it('« — » sur la TVA : le titre reste « Lecture à confirmer », la chip dit « points revus »', async () => {
     await lire();
     fireEvent.click(document.querySelector('[data-dp="tuile-tva"]')!);
-    fireEvent.click(screen.getByText('proposé · HT vide').closest('button')!);
+    fireEvent.click(screen.getByText('sans TVA').closest('button')!); // D375 : la case « — » se nomme « sans TVA », jamais « proposé »
     expect(screen.getByRole('button', { name: /^Lecture à confirmer/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Lecture vérifiée/ })).toBeNull();
   });
