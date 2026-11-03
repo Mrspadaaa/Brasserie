@@ -162,3 +162,27 @@ describe('D371, D372 — une ligne en pièce reliée à un houblon compté en g'
     expect(state.writes).toEqual([]);
   });
 });
+
+describe('D374 — « Là on voit pas la vue des stocks ? » : une ligne à l’article proposé montre son face à face', () => {
+  it('malt en Kg et levure « 2 Stk » proposés : FACTURE | STOCK, ≈ jaune, « avant → après » dans le stock ; « Garder » : le face à face part', async () => {
+    const view = await lire('brassage', [ligne(1, 'Weizenmalz hell, Kg', 'stock', 1, 'Kg', 1.55), ligne(2, 'Safale BE-256 (Abbaye) 11.5 g', 'stock', 2, 'Stk', 4)]);
+    for (const id of ['line-1', 'line-2']) {
+      const l = ouvrir(view, id);
+      expect(l.querySelector('[data-dp-stock]')?.textContent).toContain('proposé');
+      const duel = l.querySelector('[data-dp-duel]');
+      expect(duel?.getAttribute('data-dp-lien-etat')).toBe('repris');
+      expect(duel?.textContent).toContain('FACTURE');
+      expect(duel?.textContent).toContain('STOCK');
+      expect(duel?.querySelector('[data-dp-apres]')?.textContent).toMatch(/→/);
+    }
+    const levure = ligneEl(view, 'line-2').querySelector('[data-dp-duel]')!;
+    expect(levure.textContent).toContain('2 Stk');
+    expect(levure.textContent).toMatch(/compté en sachet/);
+    const garder = [...ligneEl(view, 'line-1').querySelectorAll('button')].find(b => b.textContent === 'Garder')!;
+    fireEvent.click(garder);
+    const malt = ligneEl(view, 'line-1');
+    expect(malt.querySelector('[data-dp-duel]')).toBeNull();
+    expect(malt.querySelector('[data-dp-apres]')?.textContent).toMatch(/→/);
+    expect(state.writes).toEqual([]);
+  });
+});

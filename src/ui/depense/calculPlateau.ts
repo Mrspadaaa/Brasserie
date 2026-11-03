@@ -85,21 +85,28 @@ export function nombresRapides(unite: string, genre: GenreUnite): readonly numbe
 export type ChampCalcul = 'quantity' | 'unitPrice' | 'amount';
 type Calcul = Partial<Record<ChampCalcul, number>>;
 /**
- * D369 : `q × prix = montant`, le champ qui manque se calcule des deux autres. `calcule` est le champ que ce calcul a déjà posé : il suit les deux autres, une valeur lue
- * ou posée par le brasseur n'est jamais écrasée. La quantité ne se déduit que si elle tombe juste (un entier, à 0,001 près). Rend le patch et le champ calculé après le geste.
+ * D369, D373 : `q × prix = montant`, dynamique. Le champ qui manque se calcule des deux autres ; quand les trois sont là (lus ou posés), celui que le brasseur n'a pas
+ * touché suit : la quantité ou le prix modifiés recalculent le montant (« le total doit être calculé »), le montant modifié recalcule le prix, ou la quantité si le prix
+ * vient d'être posé. `calcule` est le champ que ce calcul a déjà posé (il suit toujours) ; `dernier`, le champ que le brasseur a touché juste avant (il tient).
+ * La quantité ne se déduit que si elle tombe juste (un entier, à 0,001 près). Rend le patch et le champ calculé après le geste.
  */
-export function recalculer(ligne: Calcul, champ: ChampCalcul, valeur: number | undefined, calcule?: ChampCalcul): { patch: Calcul & { [k in ChampCalcul]?: number | undefined }; calcule?: ChampCalcul } {
+export function recalculer(ligne: Calcul, champ: ChampCalcul, valeur: number | undefined, calcule?: ChampCalcul, dernier?: ChampCalcul): { patch: Calcul & { [k in ChampCalcul]?: number | undefined }; calcule?: ChampCalcul } {
   const v: Calcul = { quantity: ligne.quantity, unitPrice: ligne.unitPrice, amount: ligne.amount, [champ]: valeur };
   const libre = calcule && calcule !== champ ? calcule : undefined;
   if (libre) v[libre] = undefined;
+  const manque = (['quantity', 'unitPrice', 'amount'] as const).filter(c => c !== champ && v[c] === undefined);
+  const cible: ChampCalcul | undefined = manque.length === 1 ? manque[0] : manque.length === 0 && valeur !== undefined ? suivant(champ, dernier) : undefined;
   const { quantity: q, unitPrice: p, amount: m } = v;
   let plus: Calcul = {};
-  if (q !== undefined && q > 0 && m !== undefined && p === undefined) plus = { unitPrice: Math.round((m / q) * 1e4) / 1e4 };
-  else if (q !== undefined && p !== undefined && m === undefined) plus = { amount: Math.round(q * p * 100) / 100 };
-  else if (m !== undefined && p !== undefined && p > 0 && q === undefined) { const r = m / p, e = Math.round(r); if (e > 0 && Math.abs(r - e) < 1e-3) plus = { quantity: e }; }
+  if (cible === 'unitPrice' && q !== undefined && q > 0 && m !== undefined) plus = { unitPrice: Math.round((m / q) * 1e4) / 1e4 };
+  else if (cible === 'amount' && q !== undefined && p !== undefined) plus = { amount: Math.round(q * p * 100) / 100 };
+  else if (cible === 'quantity' && m !== undefined && p !== undefined && p > 0) { const r = m / p, e = Math.round(r); if (e > 0 && Math.abs(r - e) < 1e-3) plus = { quantity: e }; }
   const pose = Object.keys(plus)[0] as ChampCalcul | undefined;
   return { patch: { [champ]: valeur, ...(libre ? { [libre]: undefined } : {}), ...plus }, calcule: pose };
 }
+/** D373 : les trois champs sont là ; celui qui suit le geste. Le montant d'abord, sauf quand c'est lui qu'on touche, ou qu'il vient d'être touché. */
+const suivant = (champ: ChampCalcul, dernier?: ChampCalcul): ChampCalcul =>
+  champ === 'amount' ? (dernier === 'unitPrice' ? 'quantity' : 'unitPrice') : dernier === 'amount' ? (champ === 'quantity' ? 'unitPrice' : 'quantity') : 'amount';
 
 /** D371 : l'unité lue ou choisie ne s'ajoute pas à l'article relié (« pièce » face à un houblon compté en g) ; « Confirmer » le refuserait. Rien tant qu'une des deux unités est illisible. */
 export function uniteHorsArticle(ligne: { description: string; quantity?: number; unit: string }, article: { name: string; unit: string; category?: string }): boolean {

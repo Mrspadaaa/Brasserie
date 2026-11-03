@@ -26,9 +26,9 @@ describe('D369 q × prix = montant', () => {
     expect(onze.patch.quantity).toBe(11);
     expect(onze.patch.unitPrice).toBeCloseTo(8.5 / 11, 4);
   });
-  it('un prix lu ne s’écrase jamais : le montant se calcule', () => {
+  it('un prix lu ne s’écrase jamais : le montant se calcule (D373 : même un montant lu suit la quantité modifiée)', () => {
     expect(recalculer({ unitPrice: 4.25 }, 'quantity', 2).patch).toEqual({ quantity: 2, amount: 8.5 });
-    expect(recalculer({ unitPrice: 4.25, amount: 9 }, 'quantity', 2).patch).toEqual({ quantity: 2 });
+    expect(recalculer({ unitPrice: 4.25, amount: 9 }, 'quantity', 2).patch).toEqual({ quantity: 2, amount: 8.5 });
   });
   it('la quantité ne se déduit que si elle tombe juste', () => {
     expect(recalculer({ amount: 8.5 }, 'unitPrice', 4.25).patch).toEqual({ unitPrice: 4.25, quantity: 2 });
@@ -39,9 +39,9 @@ describe('D369 q × prix = montant', () => {
     expect(r.patch).toEqual({ quantity: undefined, unitPrice: undefined });
     expect(r.calcule).toBeUndefined();
   });
-  it('le brasseur pose lui-même le champ calculé : il n’est plus calculé', () => {
+  it('le brasseur pose lui-même le champ calculé : il n’est plus calculé, le montant suit (D373)', () => {
     const r = recalculer({ amount: 8.5, quantity: 2, unitPrice: 4.25 }, 'unitPrice', 4, 'unitPrice');
-    expect(r.patch).toEqual({ unitPrice: 4 });
-    expect(r.calcule).toBeUndefined();
+    expect(r.patch).toEqual({ unitPrice: 4, amount: 8 });
+    expect(r.calcule).toBe('amount');
   });
 });

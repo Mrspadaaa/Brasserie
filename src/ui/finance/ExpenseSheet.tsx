@@ -144,7 +144,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
   /* D369 : le champ de `q × prix = montant` que le calcul a posé, par ligne (il suit les deux autres) ; les lignes dont la quantité a été posée d'un toucher (ses nombres restent). */
-  const calcules=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
+  const calcules=useRef(new Map<string,ChampCalcul>()),derniers=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
   /* D370 : une ligne venue sans libellé garde son champ pendant qu'on le tape (il ne part plus à la première lettre). */
   const libellesVides=useRef(new Set<string>());
   /* D370 : pendant la frappe du libellé, la ligne garde sa bande et son sous-groupe (sinon elle change de place à la première lettre, et le champ avec elle) ; elle se range au départ du champ. */
@@ -943,8 +943,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const choixU=choixUnite(genreDeUnite(line.kind,lu?.contexte,article?.category),unite);
     const uniteActive=choixU.find(c=>cleUnite(c.valeur)===cleUnite(unite))?.valeur??'';
     const choisirUnite=(valeur:string)=>updateLine(line.id,{unit:valeur});
-    /* D369 : un champ du calcul posé ; celui qui manque se calcule des deux autres, jamais par-dessus une valeur lue ou posée. */
-    const poser=(champ:ChampCalcul,valeur:number|undefined)=>{const r=recalculer(line,champ,valeur,calcules.current.get(line.id));if(r.calcule)calcules.current.set(line.id,r.calcule);else calcules.current.delete(line.id);updateLine(line.id,r.patch);return r.patch;};
+    /* D369, D373 : un champ du calcul posé ; celui qui manque se calcule, et quand les trois sont là, celui qu'il n'a pas touché suit (le montant d'abord). */
+    const poser=(champ:ChampCalcul,valeur:number|undefined)=>{const r=recalculer(line,champ,valeur,calcules.current.get(line.id),derniers.current.get(line.id));derniers.current.set(line.id,champ);if(r.calcule)calcules.current.set(line.id,r.calcule);else calcules.current.delete(line.id);updateLine(line.id,r.patch);return r.patch;};
     const montrerNombres=line.quantity===undefined||rougeDe('quantite')||nombresTouches.current.has(line.id);
     const nombresEl=montrerNombres?<NombresRapides index={index+1} nombres={nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category))} effacable={line.quantity!==undefined}
       onAjouter={n=>{nombresTouches.current.add(line.id);poser('quantity',Math.round(((line.quantity??0)+n)*1e6)/1e6);}} onEffacer={()=>poser('quantity',undefined)}/>:null;
@@ -1004,8 +1004,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
             concordances={[{mot:`doublon de ${voisinDuel.name}`,ton:'alert'}]}
             extra={actifNeuf&&neuf?<div className="flex flex-wrap items-center gap-1.5 px-2.5 pb-1 text-xs text-cave-400"><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>»</span></div>:undefined}/>
         </div></>;})():null;
+    /* D374 : « Là on voit pas la vue des stocks ? » : l'article proposé par la lecture (jaune, « Garder ») est un doute ; pu4d : la ligne en doute montre le face à face
+       Facture | Stock, ≈ tireté jaune. L'imprimé et sa quantité lue à gauche, l'article, son unité et « avant → après » à droite ; une unité qui diffère est marquée des deux côtés. */
+    const enProposition=Boolean(status.proposed&&article)&&!(uniteManque&&article)&&!corrigeeEnAttente&&!enTrio;
+    const uniteDiffere=article?cleUnite(line.unit.trim()||unite)!==cleUnite(article.unit):false;
+    const qLue=line.quantity===undefined?'—':`${fr(line.quantity)} ${line.unit.trim()||motUnite(unite,line.quantity)}`;
+    const duelProposeEl=enProposition&&article?<Duel etat="repris" symbole="≈" note="article proposé, à garder"
+      facture={<><Nom mono>{line.imprime?.nom??line.description}</Nom><Petit>{uniteDiffere?<Marque>{qLue}</Marque>:qLue}</Petit>{status.notes.length?<Petit ton="attention">{status.notes.join(' · ')}</Petit>:null}</>}
+      stock={<><Nom>{article.name}</Nom><Petit>compté en {uniteDiffere?<Marque>{motUnite(article.unit)}</Marque>:motUnite(article.unit)}</Petit>{effetArticle?<><Apres texte={effetArticle.texte}/><Petit>après réception</Petit></>:<><Apres texte={`${nombreFr(article.currentStock)} ${motUnite(article.unit)}`}/><Petit>au stock</Petit></>}</>}/>:null;
     /* La nature, en segment ; le stock avant → après réception à sa droite (une ligne reliée, ou un article neuf). */
-    const effetDroite=!enTrio&&!corrigeeEnAttente&&!(uniteManque&&article)?(effetArticle?.texte??(line.stockAction==='new'&&line.quantity!==undefined&&lisible?`0 → ${nombreFr(line.quantity)} ${motUnite(unite,line.quantity)}`:undefined)):undefined;
+    const effetDroite=!enTrio&&!corrigeeEnAttente&&!enProposition&&!(uniteManque&&article)?(effetArticle?.texte??(line.stockAction==='new'&&line.quantity!==undefined&&lisible?`0 → ${nombreFr(line.quantity)} ${motUnite(unite,line.quantity)}`:undefined)):undefined;
     const natureSegEl=segNature?<SegmentNature index={index+1} nature={segNature} onChoisir={changerNature} droite={effetDroite?<Apres texte={effetDroite}/>:undefined}/>:null;
     /* Hors stock : « article — · hors stock », « Suivre au stock » (greffe pa1d), le type d'achat en pastilles d'un toucher (D350). */
     const suivreAuStock=()=>{proposedStock.current.delete(line.id);neufDOffice.current.delete(line.id);/* D371b : une unité qui ne s'y ajoute pas (« pièce » face à l'article en g) n'en fait pas un autre produit : le nom seul relie, l'alerte d'unité suit (jamais un doublon). */const meme=lieAuStock(line.description,uniteDe(line),line.quantity,{nameFr:line.nameFr,nomLu:line.nomLu})??(isReadableUnit(uniteDe(line))?lieAuStock(line.description,'',undefined,{nameFr:line.nameFr,nomLu:line.nomLu}):undefined);if(meme)relieAuto.current.set(line.id,meme.name);else relieAuto.current.delete(line.id);updateLine(line.id,meme?{stockAction:'existing',stockRef:meme.ref}:{stockAction:'new'});};
@@ -1016,7 +1024,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       :!stockable||line.stockAction==='none'?<HorsStock index={index+1} types={[]/* D364 suite : le type fin vit dans « Famille », geste rare, plus de pastilles toujours visibles */} courant={line.kind} onType={k=>{if(k!==line.kind)changerNature(k as PurchaseLineDraft['kind']);}} onSuivre={suivreAuStock} peutSuivre={stockable} autre={stockable?autrePlateau:undefined}/>
       :<LigneArticle>{line.stockAction==='new'&&neuf?<><span>article «</span><NomArticle enLigne index={index} line={line} neuf={neuf} prisParAutre={nomRefuse} onNom={articleName=>updateLine(line.id,{articleName})}/><span>» · nouvel article</span>{autrePlateau}{(()=>{const v=[neuf.alphaPct!==undefined?`α ${fr(neuf.alphaPct)}`:'',neuf.colorEbc!==undefined?`${fr(neuf.colorEbc)} EBC`:'',neuf.origin?`origine ${neuf.origin}`:''].filter(Boolean).join(' · ');return v?<span data-dp-valeurs className="font-mono text-cave-200">{v}</span>:null;})()}{pastille&&neuf.fiche&&neuf.nomFiche?<span data-dp-pastille className={`rounded-control px-1.5 ${attention?'bg-attention/10 text-attention':'bg-cave-800 text-cave-200'}`}>{pastille}</span>:null}</>
         :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
-        :<><span>article « <b className="font-medium text-cave-50">{nomArticle||'à choisir'}</b> » · {status.proposed?<span data-dp-niveau="repris" className="text-attention">proposé</span>:relieAuto.current.has(line.id)?`relié à « ${relieAuto.current.get(line.id)} », nom déjà au stock`:'relié'}{status.notes.length?` · ${status.notes.join(' · ')}`:''}</span>
+        :<><span>article « <b className="font-medium text-cave-50">{nomArticle||'à choisir'}</b> » · {status.proposed?<span data-dp-niveau="repris" className="text-attention">proposé</span>:relieAuto.current.has(line.id)?`relié à « ${relieAuto.current.get(line.id)} », nom déjà au stock`:'relié'}{status.notes.length&&!enProposition?` · ${status.notes.join(' · ')}`:''}</span>
           {/* D277 : un lien proposé par la lecture reste jaune jusqu’à « Garder » ou ⇄. */}
           {status.proposed?<BoutonTexte attention aria={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});}}>Garder</BoutonTexte>:null}{autrePlateau}{retirerEl}</>}</LigneArticle>;
     const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
@@ -1032,7 +1040,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       {nombresEl}
       {casesEl}
       {rouges.some(r=>r.champ!=='unite')?<div data-dp-a-remplir-ligne className="flex flex-wrap gap-1.5">{rouges.filter(r=>r.champ!=='unite').map(r=><button key={r.champ} type="button" data-dp-a-remplir={r.champ} onClick={()=>focaliser(line.id,index+1,r.champ)} className="min-h-6 rounded-control border border-dashed border-alert px-1.5 text-xs text-alert">{r.mot}</button>)}</div>:null}
-      {duelUniteEl}{duelCorrEl}{trioEl}
+      {duelUniteEl}{duelCorrEl}{trioEl}{duelProposeEl}
       {isMouture?null:natureSegEl}
       {articleEl}
       {mouturePlateau}
