@@ -9,7 +9,7 @@ import type { ChoixUnite } from './calculPlateau';
 /** Un champ du plateau : 36 px, chiffres en mono, largeur de son contenu (maquette pu4d). */
 export const CHAMP_PU4D = 'h-9 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-2 text-right font-mono text-base text-cave-50 tabular-nums';
 /** La largeur d'un champ selon la longueur de son texte (classes statiques : Tailwind ne lit pas les classes composées). */
-export const largeur = (texte: string): string => { const n = texte.length; return n <= 2 ? 'w-12' : n <= 3 ? 'w-14' : n <= 4 ? 'w-16' : n <= 5 ? 'w-[4.75rem]' : 'w-24'; };
+export const largeur = (texte: string): string => { const n = texte.length; return n <= 2 ? 'w-12' : n <= 3 ? 'w-14' : n <= 4 ? 'w-16' : n <= 5 ? 'w-[4.375rem]' /* B2 n° 6 : 70 px tiennent cinq chiffres (« 3,333 », « 10,00 ») : la rangée de calcul reste sur une ligne à 390 */ : 'w-24'; };
 const BOUTON = 'inline-flex min-h-8 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50';
 const ACTIF = 'bg-ebc-straw font-semibold text-cave-950';
 
@@ -126,13 +126,15 @@ export function RangeeMouture({ ligne, texte, liee, aria, onBascule, attr }: { l
 /** La rangée discrète, sous un filet : `extrait · supprimer` (D332 : le reste du plateau ne bouge pas). L'extrait montre l'imprimé de la ligne, surligné. */
 export interface ChoixFamille { valeur: string; options: Array<{ valeur: string; mot: string }>; onChoisir: (valeur: string) => void }
 export function RangeeRare({ index, extrait, onSupprimer, supprimable, famille }: { index: number; extrait?: string; onSupprimer: () => void; supprimable: boolean; famille?: ChoixFamille }) {
-  const [ouvert, setOuvert] = useState(false);
+  const [ouvert, setOuvert] = useState(false), [plus, setPlus] = useState(false);
   return <>
     <div className="flex items-center gap-1 border-t border-cave-800 pt-1">
       {extrait ? <button type="button" data-dp-extrait aria-expanded={ouvert} onClick={() => setOuvert(o => !o)} className={`inline-flex min-h-7 items-center gap-1 rounded-control px-2 text-xs ${ouvert ? 'bg-cave-800 text-cave-50' : 'text-cave-400'}`}><FileText size={16} strokeWidth={2.25}/>extrait</button> : null}
-      {famille ? <label className="ml-auto inline-flex min-h-7 items-center gap-1 text-xs text-cave-400">Famille<select data-dp-famille aria-label={`Famille, ligne ${index}`} value={famille.valeur} onChange={e => famille.onChoisir(e.target.value)} className="h-7 rounded-control border border-cave-600 bg-cave-950 px-1 text-xs text-cave-50">{famille.options.map(o => <option key={o.valeur} value={o.valeur}>{o.mot}</option>)}</select></label> : null}
+      {/* B2 n° 19, D364 : le champ « Famille » (menu déroulant permis pour ce geste rare, seule exception à D350) vit sous « plus », jamais au premier plan du plateau. */}
+      {famille ? <button type="button" data-dp-voir-famille aria-expanded={plus} onClick={() => setPlus(o => !o)} className={`ml-auto inline-flex min-h-7 items-center gap-1 rounded-control px-2 text-xs ${plus ? 'bg-cave-800 text-cave-50' : 'text-cave-400'}`}>plus</button> : null}
       {supprimable ? <button type="button" aria-label={`Retirer la ligne ${index}`} onClick={onSupprimer} className="inline-flex min-h-7 items-center gap-1 rounded-control px-2 text-xs text-cave-400 active:text-alert"><Trash2 size={16} strokeWidth={2.25}/>supprimer</button> : null}
     </div>
+    {plus && famille ? <label className="flex min-h-7 items-center justify-end gap-1 text-xs text-cave-400">Famille<select data-dp-famille aria-label={`Famille, ligne ${index}`} value={famille.valeur} onChange={e => famille.onChoisir(e.target.value)} className="h-7 rounded-control border border-cave-600 bg-cave-950 px-1 text-xs text-cave-50">{famille.options.map(o => <option key={o.valeur} value={o.valeur}>{o.mot}</option>)}</select></label> : null}
     {ouvert && extrait ? <pre data-dp-extrait-texte className="overflow-hidden whitespace-pre-wrap rounded-control border border-cave-800 bg-cave-950 px-2 py-1 font-mono text-xs leading-normal text-cave-50"><mark className="bg-attention/15 text-cave-50 outline outline-[1.5px] outline-attention">{extrait}</mark></pre> : null}
   </>;
 }

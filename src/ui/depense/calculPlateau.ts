@@ -82,6 +82,37 @@ export function nombresRapides(unite: string, genre: GenreUnite): readonly numbe
   return NOMBRES[cleUnite(unite) as CleUnite] ?? NOMBRES[PAR_GENRE[genre][0]];
 }
 
+/**
+ * B2 n° 6 : le prix qu'on calcule d'un montant et d'une quantité s'écrit à trois décimales au plus (« 3,333 », pas « 3,3333 ») quand q × prix retombe sur le même montant au centime ;
+ * sinon (grande quantité, petit prix) il garde quatre décimales : jamais un prix qui ne rend plus le montant lu.
+ */
+export function prixCalcule(montant: number, quantite: number): number {
+  const brut = montant / quantite, p3 = Math.round(brut * 1e3) / 1e3;
+  return Math.round(quantite * p3 * 100) === Math.round(montant * 100) ? p3 : Math.round(brut * 1e4) / 1e4;
+}
+
+/** B2 n° 3 : le facteur d'une unité de masse à une autre (« Kg » → « g » : 1000), `undefined` hors masse (pièce, sachet, litre) : rien ne se convertit. */
+const MASSE: Record<string, number> = { kg: 1000, g: 1 };
+export function facteurMasse(de: string, vers: string): number | undefined {
+  const a = MASSE[cleUnite(de)], b = MASSE[cleUnite(vers)];
+  return a !== undefined && b !== undefined && a !== b ? a / b : undefined;
+}
+const arrondi6 = (n: number): number => Math.round(n * 1e6) / 1e6;
+/** La ligne après un changement d'unité de masse : quantité × facteur, prix ÷ facteur, montant inchangé (2 Kg × 1,55 = 3,10 → 2 000 g × 0,00155 = 3,10). Kg → g → Kg rend les mêmes valeurs. */
+export function convertirMasse(ligne: { quantity?: number; unitPrice?: number }, facteur: number): { quantity: number | undefined; unitPrice: number | undefined } {
+  return { quantity: ligne.quantity === undefined ? undefined : arrondi6(ligne.quantity * facteur), unitPrice: ligne.unitPrice === undefined ? undefined : arrondi6(ligne.unitPrice / facteur) };
+}
+/** B2 n° 7 : la mouture rattachée suit son malt : même quantité et même unité (la règle de `millingParentIndex`) ; son prix unitaire reste (changement de quantité : le montant suit, D373) ou suit l'unité (masse : montant inchangé). */
+export function moutureSuit(avant: { quantity?: number; unit: string }, apres: { quantity?: number; unit: string }, mouture: { quantity?: number; unitPrice?: number; amount?: number; unit: string }): Partial<{ quantity: number; unit: string; unitPrice: number; amount: number }> | undefined {
+  if (apres.quantity === undefined || !(apres.quantity > 0)) return undefined;
+  if (avant.quantity === apres.quantity && avant.unit === apres.unit) return undefined;
+  const f = cleUnite(avant.unit) !== cleUnite(apres.unit) ? facteurMasse(avant.unit, apres.unit) : undefined;
+  if (cleUnite(avant.unit) !== cleUnite(apres.unit) && f === undefined) return undefined;
+  const prix = mouture.unitPrice === undefined ? undefined : f === undefined ? mouture.unitPrice : arrondi6(mouture.unitPrice / f);
+  const montant = f !== undefined || prix === undefined ? mouture.amount : Math.round(apres.quantity * prix * 100) / 100;
+  return { quantity: apres.quantity, unit: apres.unit, ...(prix !== undefined ? { unitPrice: prix } : {}), ...(montant !== undefined ? { amount: montant } : {}) };
+}
+
 export type ChampCalcul = 'quantity' | 'unitPrice' | 'amount';
 type Calcul = Partial<Record<ChampCalcul, number>>;
 /**
@@ -98,7 +129,7 @@ export function recalculer(ligne: Calcul, champ: ChampCalcul, valeur: number | u
   const cible: ChampCalcul | undefined = manque.length === 1 ? manque[0] : manque.length === 0 && valeur !== undefined ? suivant(champ, dernier) : undefined;
   const { quantity: q, unitPrice: p, amount: m } = v;
   let plus: Calcul = {};
-  if (cible === 'unitPrice' && q !== undefined && q > 0 && m !== undefined) plus = { unitPrice: Math.round((m / q) * 1e4) / 1e4 };
+  if (cible === 'unitPrice' && q !== undefined && q > 0 && m !== undefined) plus = { unitPrice: prixCalcule(m, q) };
   else if (cible === 'amount' && q !== undefined && p !== undefined) plus = { amount: Math.round(q * p * 100) / 100 };
   else if (cible === 'quantity' && m !== undefined && p !== undefined && p > 0) { const r = m / p, e = Math.round(r); if (e > 0 && Math.abs(r - e) < 1e-3) plus = { quantity: e }; }
   const pose = Object.keys(plus)[0] as ChampCalcul | undefined;

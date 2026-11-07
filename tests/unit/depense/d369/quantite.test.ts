@@ -24,7 +24,7 @@ describe('D369 q × prix = montant', () => {
     const un = recalculer({ amount: 8.5 }, 'quantity', 1);
     const onze = recalculer({ amount: 8.5, quantity: 1, unitPrice: un.patch.unitPrice }, 'quantity', 11, un.calcule);
     expect(onze.patch.quantity).toBe(11);
-    expect(onze.patch.unitPrice).toBeCloseTo(8.5 / 11, 4);
+    expect(onze.patch.unitPrice).toBe(0.773); // B2 n° 6 : trois décimales quand 11 × 0,773 = 8,50 au centime (8,5 / 11 = 0,7727…)
   });
   it('un prix lu ne s’écrase jamais : le montant se calcule (D373 : même un montant lu suit la quantité modifiée)', () => {
     expect(recalculer({ unitPrice: 4.25 }, 'quantity', 2).patch).toEqual({ quantity: 2, amount: 8.5 });

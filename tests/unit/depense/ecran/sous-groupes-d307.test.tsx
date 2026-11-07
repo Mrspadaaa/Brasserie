@@ -56,15 +56,15 @@ const visibles = (v: Vue, cle = 'renovation') => [...bande(v, cle).querySelector
 
 // Les 17 lignes de la bande Rénovation de l'aperçu, par sous-famille (la fonction pure `sousFamilleDe` les a rangées ainsi, voir la voie r1).
 describe('D307 : la bande Rénovation de l\'aperçu, au repos', () => {
-  it('les sous-groupes pliables ont une ligne : bouton, aria-expanded=false, nombre ; leur corps est caché', async () => {
+  it('les sous-groupes pliables ont une ligne : bouton, aria-expanded=true à l\'arrivée (B2 n° 10, D378), nombre ; leur corps est visible', async () => {
     const v = await lire();
     const noms = nomsDe(v);
     expect(noms.length).toBeGreaterThanOrEqual(2);
     for (const g of groupes(v)) {
       const b = ligneDe(g);
       expect(b.tagName).toBe('BUTTON'); expect(b.getAttribute('type')).toBe('button');
-      expect(b.getAttribute('aria-expanded')).toBe('false');
-      expect(corpsDe(g).hidden).toBe(true);
+      expect(b.getAttribute('aria-expanded')).toBe('true');
+      expect(corpsDe(g).hidden).toBe(false);
       expect(b.querySelector('[data-dp-sg-compte]')!.textContent).toBe(String(corpsDe(g).querySelectorAll('article[data-dp-ligne]').length));
       expect(b.getAttribute('aria-controls')).toBe(corpsDe(g).id);
     }
@@ -80,12 +80,12 @@ describe('D307 : la bande Rénovation de l\'aperçu, au repos', () => {
   it('un toucher ouvre le groupe (aria-expanded=true, ses rangées apparaissent), un second le ferme', async () => {
     const v = await lire();
     const g = groupes(v)[0], n = corpsDe(g).querySelectorAll('article[data-dp-ligne]').length;
-    expect(visibles(v)).not.toContain(corpsDe(g).querySelector('article')!.getAttribute('data-dp-ligne'));
+    expect(visibles(v)).toContain(corpsDe(g).querySelector('article')!.getAttribute('data-dp-ligne')); // B2 n° 10 : ouvert à l'arrivée
+    fireEvent.click(ligneDe(g));
+    expect(ligneDe(g).getAttribute('aria-expanded')).toBe('false'); expect(corpsDe(g).hidden).toBe(true);
     fireEvent.click(ligneDe(g));
     expect(ligneDe(g).getAttribute('aria-expanded')).toBe('true'); expect(corpsDe(g).hidden).toBe(false);
     expect(corpsDe(g).querySelectorAll('article[data-dp-ligne]')).toHaveLength(n);
-    fireEvent.click(ligneDe(g));
-    expect(ligneDe(g).getAttribute('aria-expanded')).toBe('false'); expect(corpsDe(g).hidden).toBe(true);
   });
 
   it('replier un groupe ferme le plateau de ses rangées ; un plateau ouvert garde son groupe ouvert', async () => {
@@ -123,7 +123,7 @@ describe('D307 : bandes sans deux sous-familles, sous-groupe d\'une ligne, ligne
     expect(mitigeur.closest('[hidden]')).toBeNull();
     expect(bande(v, 'renovation').querySelectorAll('[data-dp-sg-ligne]')).toHaveLength(1);
   });
-  it('un groupe d\'une ligne jaune ou rouge s\'ouvre d\'office, les autres restent repliés', async () => {
+  it('un groupe d\'une ligne jaune ou rouge est ouvert, comme les autres (B2 n° 10, D378 : rien ne se cache à l\'arrivée)', async () => {
     const v = await lire([
       ligne(1, 'Ponceuse excentrique 125 mm', 'equipment', 1, 'Stk', 89, 89), ligne(2, 'Visseuse sans fil 18 V', 'equipment', 1, 'Stk', 99, 99),
       ligne(3, 'Mitigeur lavabo chromé', 'equipment', 1, 'Stk', 54, 54), ligne(4, 'Siphon de sol inox', 'equipment', 1, 'Stk', 46, 46),
@@ -131,8 +131,8 @@ describe('D307 : bandes sans deux sous-familles, sous-groupe d\'une ligne, ligne
     ]);
     const att = Object.fromEntries(groupes(v).map(g => [g.getAttribute('data-dp-sg'), ligneDe(g).getAttribute('aria-expanded')]));
     expect(att['Électricité']).toBe('true');
-    expect(att['Outillage']).toBe('false');
-    expect(att['Plomberie']).toBe('false');
+    expect(att['Outillage']).toBe('true');
+    expect(att['Plomberie']).toBe('true');
     expect(corpsDe(parNom(v, 'Électricité')).hidden).toBe(false);
     expect(visibles(v)).toContain('line-6');
     // Le brasseur peut le refermer : son choix prime.
@@ -155,6 +155,6 @@ describe('D307 : « tout plier, déplier » est prêt, aucun contrôle visible',
       pied={{ ajouterOff: false, regrouper: false, detail: null }} onAjouter={() => {}} onRegrouper={() => {}} onBasculeGroupe={surBascule}/>);
     fireEvent.click(r.container.querySelector('[data-dp-sg-ligne]')!);
     expect(surBascule).toHaveBeenCalledTimes(1);
-    expect(surBascule.mock.calls[0][0]).toBe('renovation'); expect(surBascule.mock.calls[0][1].nom).toBe('Outillage'); expect(surBascule.mock.calls[0][2]).toBe(true);
+    expect(surBascule.mock.calls[0][0]).toBe('renovation'); expect(surBascule.mock.calls[0][1].nom).toBe('Outillage'); expect(surBascule.mock.calls[0][2]).toBe(false); // ouvert à l'arrivée (B2 n° 10) : le toucher le ferme
   });
 });

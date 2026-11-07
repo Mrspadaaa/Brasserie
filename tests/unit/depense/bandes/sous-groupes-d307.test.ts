@@ -114,9 +114,9 @@ describe('D307 : une ligne à vérifier ouvre son groupe d\'office', () => {
   it('le groupe de la ligne jaune est marqué, les autres non', () => {
     expect(b.sousGroupes!.filter(g => g.averifier).map(g => g.nom)).toEqual(['Électricité']);
   });
-  it('sans choix du brasseur : Électricité ouvert, les autres repliés', () => {
+  it('sans choix du brasseur (B2 n° 10, D378 : rien ne se cache à l\'arrivée) : tous ouverts, Électricité aussi', () => {
     const ouvert = b.sousGroupes!.filter(g => pliable(g)).map(g => `${g.nom}:${groupeOuvert('renovation', g, new Map())}`);
-    expect(ouvert).toEqual(['Peinture et sols:false', 'Outillage:false', 'Quincaillerie:false', 'Électricité:true', 'Plomberie:false', 'Protection:false']);
+    expect(ouvert).toEqual(['Peinture et sols:true', 'Outillage:true', 'Quincaillerie:true', 'Électricité:true', 'Plomberie:true', 'Protection:true']);
   });
   it('son quantité porte le niveau « repris » (jaune pointillé à l\'écran)', () => {
     expect(b.sousGroupes![3].qte[0].niveau).toBe('repris');
@@ -136,7 +136,7 @@ describe('D307 : une ligne à vérifier ouvre son groupe d\'office', () => {
 describe('D307 : toutPlier / toutDeplier', () => {
   const liste = [...bandes([...brico(), L('n1', 'nettoyage', 'CIP acide', 1, 1, 'Stk'), L('n2', 'nettoyage', 'CIP acide', 1, 1, 'Stk'), L('n3', 'nettoyage', 'Détergent', 1, 1, 'Stk', { averifier: true }), L('n4', 'nettoyage', 'Détergent', 1, 1, 'Stk')])];
   const ouverts = (choix: ChoixGroupes) => liste.flatMap(b => (b.sousGroupes ?? []).filter(pliable).filter(g => groupeOuvert(b.cle, g, choix)).map(g => `${b.cle}/${g.nom}`));
-  it('au départ : seul le groupe à vérifier est ouvert', () => { expect(ouverts(new Map())).toEqual(['nettoyage/Détergent']); });
+  it('au départ (B2 n° 10) : tout est ouvert', () => { expect(ouverts(new Map())).toHaveLength(8); });
   it('toutDeplier (toutes les bandes) ouvre tous les groupes pliables : six en Rénovation, deux en Nettoyage', () => {
     expect(ouverts(toutDeplier(liste, new Map()))).toHaveLength(8);
   });
@@ -147,9 +147,11 @@ describe('D307 : toutPlier / toutDeplier', () => {
     expect(ouverts(toutPlier(liste, new Map()))).toEqual([]);
   });
   it('une seule bande : l\'autre ne bouge pas', () => {
-    const ouvertes = toutDeplier(liste, new Map(), 'renovation');
+    const fermee = toutPlier(liste, new Map(), 'renovation');
+    const ouvertes = toutDeplier(liste, fermee, 'renovation');
     expect(ouverts(ouvertes).filter(x => x.startsWith('renovation/'))).toHaveLength(6);
-    expect(ouverts(ouvertes).filter(x => x.startsWith('nettoyage/'))).toEqual(['nettoyage/Détergent']);
+    expect(ouverts(fermee).filter(x => x.startsWith('renovation/'))).toEqual([]);
+    expect(ouverts(ouvertes).filter(x => x.startsWith('nettoyage/'))).toHaveLength(2); // B2 n° 10 : Nettoyage reste ouvert (arrivée dépliée)
     const pliee = toutPlier(liste, toutDeplier(liste, new Map()), 'nettoyage');
     expect(ouverts(pliee).filter(x => x.startsWith('nettoyage/'))).toEqual([]); // D333 : tout plié, le groupe à vérifier aussi
     expect(ouverts(pliee).filter(x => x.startsWith('renovation/'))).toHaveLength(6);

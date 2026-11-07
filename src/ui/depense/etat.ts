@@ -147,6 +147,8 @@ export function pastilleConversion(conversion: string): string {
   if (egal) return `= ${egal[1]} sachet${Number(egal[1].replace(',', '.')) > 1 ? 's' : ''}`;
   return /[=→]/.test(conversion) ? conversion : `= ${conversion}`;
 }
+/** B2 n° 20 : un seul mot pour le geste : le message du service dit « Réessaie » (lecture en morceaux incomplète), le bouton dit « Relire » : le message nomme le bouton. */
+export const motRelire = (message: string): string => message.replace(/(Lecture en morceaux incomplète[^.]*\.) Réessaie\./, (_tout, debut: string) => `${debut} Touche « Relire ».`);
 /** B2 n° 5 : une seule casse d'unité à l'écran : « Kg » (le service écrit « kg »). */
 export const casseUnites = (texte: string): string => texte.replace(/\bkg\b/g, 'Kg');
 export const conversionDe = (line: PurchaseLineDraft, article: StockItem | undefined): string | undefined => {

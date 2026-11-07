@@ -39,8 +39,9 @@ const ligneN = (n: number) => q(`[data-dp-ligne="line-${n}"]`);
 describe('D330, D334 : le champ qui manque porte le rouge et son nom, au plateau', () => {
   it('une ligne sans unité ni prix : « unité à remplir » et « prix à remplir » au plateau, les deux champs marqués inconnu, la quantité qui est là non', async () => {
     await commande();
-    const mots = [...ligneN(13).querySelectorAll<HTMLElement>('[data-dp-a-remplir]')].map(e => `${e.getAttribute('data-dp-a-remplir')}:${e.textContent}`);
-    expect(mots).toEqual(['unite:unité à remplir', 'prix:prix à remplir']);
+    // B2 n° 18 : une marque rouge par champ manquant, sur le champ lui-même (son nom dedans) ; plus de puce en double dessous.
+    expect(ligneN(13).querySelectorAll('[data-dp-a-remplir]')).toHaveLength(0);
+    expect(ligneN(13).querySelector<HTMLInputElement>('[aria-label="Prix ligne 12"]')!.placeholder).toBe('prix');
     const niveau = (nom: string) => ligneN(13).querySelector<HTMLElement>(`[aria-label="${nom} ligne 12"]`)!.closest('[data-dp-niveau]')?.getAttribute('data-dp-niveau') ?? null;
     expect(niveau('Unité')).toBe('inconnu'); expect(niveau('Prix')).toBe('inconnu');
     expect(niveau('Quantité')).toBeNull(); expect(niveau('Montant')).toBeNull();
@@ -52,9 +53,8 @@ describe('D330, D334 : le champ qui manque porte le rouge et son nom, au plateau
   it('un article relié qu’on n’a pas choisi : « article à choisir », le choix marqué inconnu, et le nom de la rangée aussi', async () => {
     await commande();
     fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'existing' } });
-    await waitFor(() => expect(ligneN(1).querySelector('[data-dp-a-remplir="article"]')).not.toBeNull());
-    expect(ligneN(1).querySelector('[data-dp-a-remplir="article"]')!.textContent).toBe('article à choisir');
-    expect(ligneN(1).querySelector('[data-dp-stock] [data-dp-niveau="inconnu"]')).not.toBeNull();
+    await waitFor(() => expect(ligneN(1).querySelector('[data-dp-stock] [data-dp-niveau="inconnu"]')).not.toBeNull());
+    expect(ligneN(1).querySelector('[data-dp-stock]')!.textContent).toContain('à choisir');
     expect(ligneN(1).querySelector<HTMLElement>('summary [data-dp-nom]')!.getAttribute('data-dp-niveau')).toBe('inconnu');
   });
   it('sous le filtre « à remplir », la rangée s’ouvre et le focus va sur le premier champ qui manque', async () => {
@@ -64,10 +64,11 @@ describe('D330, D334 : le champ qui manque porte le rouge et son nom, au plateau
     await waitFor(() => expect(ligneN(13).querySelector<HTMLDetailsElement>('details')!.open).toBe(true));
     await waitFor(() => expect(document.activeElement).toBe(ligneN(13).querySelector('[aria-label="Unité ligne 12"]')));
   });
-  it('un toucher sur le mot rouge donne le focus au champ', async () => {
+  it('B2 n° 18 : un champ qui manque est un seul marquage, son nom en filigrane ; le toucher sur « à remplir » du bandeau lui donne le focus (test précédent)', async () => {
     await commande();
-    fireEvent.click(ligneN(13).querySelector('[data-dp-a-remplir="prix"]')!);
-    expect(document.activeElement).toBe(ligneN(13).querySelector('[aria-label="Prix ligne 12"]'));
+    const prix = ligneN(13).querySelector<HTMLInputElement>('[aria-label="Prix ligne 12"]')!;
+    expect(prix.placeholder).toBe('prix');
+    expect(prix.closest('[data-dp-niveau]')?.getAttribute('data-dp-niveau')).toBe('inconnu');
   });
 });
 

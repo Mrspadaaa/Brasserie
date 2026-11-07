@@ -211,7 +211,8 @@ export const pliable = (sg: SousGroupe): boolean => !sg.libre && (sg.ids.length 
 export function groupeOuvert(bande: string, sg: SousGroupe, choix: ChoixGroupes, forces?: ReadonlySet<string>): boolean {
   if (!pliable(sg)) return true;
   if (forces && sg.ids.some(id => forces.has(id))) return true;
-  return choix.get(cleGroupe(bande, sg.nom)) ?? (sg.bande ? true : sg.averifier);
+  /* B2 n° 10, D378 (« rien ne se cache à l'arrivée ») : sans choix du brasseur, tout est ouvert ; « Plié » replie, un toucher rouvre. */
+  return choix.get(cleGroupe(bande, sg.nom)) ?? true;
 }
 /** Le choix du brasseur sur un sous-groupe. */
 export function poserGroupe(choix: ChoixGroupes, bande: string, nom: string, ouvert: boolean): ChoixGroupes {

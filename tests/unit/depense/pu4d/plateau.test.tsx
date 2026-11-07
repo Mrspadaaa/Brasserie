@@ -87,6 +87,9 @@ describe('le plateau porté, sur l’écran rendu', () => {
     expect(c.querySelector('[data-dp-stock]')?.textContent).toContain('hors stock');
     expect(c.querySelector('[data-dp-types]')).toBeNull();
     expect(c.querySelector('[data-dp-suivre], button')).not.toBeNull();
+    // B2 n° 19, D364 : la famille vit sous « plus », jamais au premier plan du plateau.
+    expect(c.querySelector('select[data-dp-famille]')).toBeNull();
+    fireEvent.click(c.querySelector('[data-dp-voir-famille]')!);
     expect(c.querySelector('select[data-dp-famille]')).not.toBeNull();
     expect(c.querySelector('select:not([data-dp-famille])')).toBeNull();
   });
@@ -97,6 +100,7 @@ describe('D364 — changer la famille d’une ligne', () => {
     const view = await lire('renovation', [ligne(1, 'Maris Otter, Kg', 'stock', 6, 'Kg', 2.3), ligne(2, 'Peinture murale blanche mate 10 L', 'stock', 1, 'Stk', 64.9), ligne(3, 'Grand sac', 'stock', 1, 'Stk', 5, 'Emballage')]);
     expect(bandeDe(view, 'line-3')).toBe('emballage');
     const l = ouvrir(view, 'line-3');
+    fireEvent.click(l.querySelector('[data-dp-voir-famille]')!);
     const select = l.querySelector('select[data-dp-famille]') as HTMLSelectElement;
     expect(select.value).toBe('emballage');
     fireEvent.change(select, { target: { value: 'renovation' } });

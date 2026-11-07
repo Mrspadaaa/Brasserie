@@ -18,15 +18,16 @@ const ouverts = (choix: ReadonlyMap<string, boolean>, forces?: ReadonlySet<strin
   liste.flatMap(b => (b.sousGroupes ?? []).filter(pliable).filter(g => groupeOuvert(b.cle, g, choix, forces)).map(g => `${b.cle}/${g.nom}`));
 
 describe('D311, D333 : « Plié » ferme tout, même un groupe à vérifier', () => {
-  it('au repos d\'une lecture : seul le groupe à vérifier est ouvert', () => {
-    expect(ouverts(new Map())).toEqual(['nettoyage/Désinfectant']);
+  // B2 n° 10, D378 : rien ne se cache à l'arrivée : tous les groupes sont ouverts (le groupe à vérifier aussi).
+  it('au repos d\'une lecture : tout est ouvert', () => {
+    expect(ouverts(new Map())).toEqual(['nettoyage/CIP alcalin', 'nettoyage/Désinfectant', 'nettoyage/Détergent', 'renovation/Peinture et sols', 'renovation/Outillage']);
   });
   it('« Plié » après « Déplié » : tout replié, Désinfectant compris (D333 : « Plié, déplié ne fait rien »)', () => {
     expect(ouverts(toutPlier(liste, toutDeplier(liste, new Map())))).toEqual([]);
   });
   it('« Plié » laisse fermé un groupe à vérifier que le brasseur avait fermé', () => {
     const ferme = poserGroupe(new Map(), 'nettoyage', 'Désinfectant', false);
-    expect(ouverts(ferme)).toEqual([]);
+    expect(ouverts(ferme)).toEqual(['nettoyage/CIP alcalin', 'nettoyage/Détergent', 'renovation/Peinture et sols', 'renovation/Outillage']);
     expect(ouverts(toutPlier(liste, ferme))).toEqual([]);
   });
   it('« Déplié » ouvre tout', () => {
@@ -39,8 +40,9 @@ describe('D311, D333 : « Plié » ferme tout, même un groupe à vérifier', ()
 });
 
 describe('D311 : l\'état allumé se calcule, il n\'est jamais gardé', () => {
-  it('au repos d\'une lecture (le groupe à vérifier est ouvert d\'office, les autres repliés) : état mêlé, aucun des deux allumé', () => {
-    expect(etatSegment(liste, new Map())).toEqual({ visible: true, plie: false, deplie: false });
+  it('au repos d\'une lecture (B2 n° 10 : tout est ouvert) : « Déplié » allumé ; un groupe fermé par le brasseur : état mêlé, aucun des deux allumé', () => {
+    expect(etatSegment(liste, new Map())).toEqual({ visible: true, plie: false, deplie: true });
+    expect(etatSegment(liste, poserGroupe(new Map(), 'nettoyage', 'Désinfectant', false))).toEqual({ visible: true, plie: false, deplie: false });
   });
   it('après « Déplié » : « Déplié » allumé seul ; après « Plié » : « Plié » allumé seul', () => {
     expect(etatSegment(liste, toutDeplier(liste, new Map()))).toEqual({ visible: true, plie: false, deplie: true });

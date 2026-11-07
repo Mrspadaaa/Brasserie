@@ -65,8 +65,8 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
     expect(ordre.indexOf('titre')).toBeLessThan(ordre.indexOf('segment'));
     expect(ordre.indexOf('segment')).toBeLessThan(ordre.length - 1);
     expect([...s.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Plié', 'Déplié']);
-    // B2 n° 9 : la bande « Nettoyage » (une ligne) se plie désormais et arrive ouverte, les sous-familles de « Rénovation » repliées : l'état est mêlé, aucun des deux n'est allumé (D311 : calculé sur l'état réel).
-    expect(allume(v)).toEqual([]);
+    // B2 n° 10, D378 : rien ne se cache à l'arrivée : tout est ouvert, « Déplié » est allumé (D311 : calculé sur l'état réel) ; « Plié » replie tout (test suivant).
+    expect(allume(v)).toEqual(['deplie']);
   });
   it('« Déplié » ouvre tous les groupes et s\'allume seul ; « Plié » les replie et s\'allume seul', async () => {
     const v = await lire();
@@ -92,8 +92,8 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
   });
   it('D333 : « Plié » ferme aussi le groupe à vérifier ; un toucher le rouvre ; « Plié » le referme', async () => {
     const v = await lire(AVERIFIER());
-    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); // au repos : le groupe rouge est ouvert d'office
-    expect(allume(v)).toEqual([]); // mêlé
+    expect(etats(v)).toEqual(['Outillage=true', 'Électricité=true', 'Plomberie=true']); // au repos (B2 n° 10, D378) : tout est ouvert
+    expect(allume(v)).toEqual(['deplie']);
     fireEvent.click(bouton(v, 'deplie'));
     expect(etats(v).every(x => x.endsWith('=true'))).toBe(true);
     fireEvent.click(bouton(v, 'plie'));
@@ -101,15 +101,15 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
     expect(allume(v)).toEqual(['plie']);
     toucher(v, 'Électricité');
     expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); expect(allume(v)).toEqual([]);
+    // (le geste « Plié » ci-dessus a replié tout : le toucher rouvre Électricité seul)
     fireEvent.click(bouton(v, 'plie'));
     expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']); expect(allume(v)).toEqual(['plie']);
   });
   it('« Plié » ferme le plateau ouvert d\'une rangée d\'un groupe qu\'il replie (sinon la rangée garderait son groupe ouvert)', async () => {
     const v = await lire(AVERIFIER());
-    toucher(v, 'Outillage');
     const d = groupe(v, 'Outillage').querySelector<HTMLDetailsElement>('article details')!;
     d.open = true; fireEvent(d, new Event('toggle'));
-    await waitFor(() => expect(allume(v)).toEqual([]));
+    await waitFor(() => expect(allume(v)).toEqual(['deplie']));
     fireEvent.click(bouton(v, 'plie'));
     await waitFor(() => expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']));
     expect(groupe(v, 'Outillage').querySelector<HTMLDetailsElement>('article details')!.open).toBe(false);

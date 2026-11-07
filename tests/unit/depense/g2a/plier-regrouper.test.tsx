@@ -37,7 +37,7 @@ const groupe = (v: Vue, nom: string) => v.container.querySelector<HTMLElement>(`
 describe('D333 : « Plié » plie tout, « Déplié » déplie tout, un toucher bascule un groupe, le segment suit', () => {
   it('« Plié » ferme aussi le groupe qui porte une ligne à voir (son en-tête garde son compte) ; « Déplié » ouvre tout ; un toucher seul : état mêlé ; le groupe refermé redonne « Plié »', async () => {
     const v = await lirePiece(state.scanned, AVERIFIER());
-    expect(etats(v)).toEqual(['Outillage=false', 'Électricité=true', 'Plomberie=false']); // avant tout geste : le groupe à voir est ouvert d'office
+    expect(etats(v)).toEqual(['Outillage=true', 'Électricité=true', 'Plomberie=true']); // avant tout geste (B2 n° 10, D378) : tout est ouvert
     fireEvent.click(bouton(v, 'plie'));
     expect(etats(v)).toEqual(['Outillage=false', 'Électricité=false', 'Plomberie=false']);
     expect(allume(v)).toEqual(['plie']);
