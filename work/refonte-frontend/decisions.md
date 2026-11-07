@@ -1840,6 +1840,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   marquée (aria-pressed) ; « — » se nomme « sans TVA », jamais « proposé ». Test pu4d D375 ; tri R10 ajusté (nom de la case).
 - D377, ses mots : « Item en rouge mais pas total ?? ». `LigneBande.montantDoute` → `Bande`/`SousGroupe.montantDoute` → total tireté rouge (Liste.tsx). Test pu4d D377.
 - Dossier Dépense : 62 échecs anciens, aucun nouveau. Non vu au banc (vision) faute de contexte : à regarder au prochain tour.
+- **Vu au banc le 07.11** (`work/missions/2026-10-31-ecran-depense/banc-b2/vision-d375-d377.mjs`, build figé, 390 tactile, clair et cave) : D375 OK (après « sans TVA »,
+  la TVA lue 2,80 et « N + R » restent offertes, « sans TVA » marqué posé) ; D377 vu sur l'état `port-sans-montant` (ligne sans montant tiretée rouge,
+  total de bande « 0,00 + ? » rouge). Le chemin « montant contredit » (q × prix ≠ montant, rien ne corrobore) n'a pas d'état au banc : test pu4d seulement.
 - D376 (sous-familles des malts, houblons, levures) : sa page D disait « aucune (Houblons) » ; c'est un choix neuf, à montrer en mini maquettes. Il a dit « Non ne commence pas ça ».
 
 ## D378 — 03.11 : les familles se plient, « Plié | Déplié » sur toute pièce (9474f3b8, à déployer)
