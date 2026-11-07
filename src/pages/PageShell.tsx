@@ -682,8 +682,11 @@ export const PageShell: React.FC<PageShellProps> = ({
           }`}
         >
           {children}
+          {/* `marginBottom` 0,5 rem (en ligne : `mb-2` n'est pas généré par la feuille Tailwind du projet) : avec une rangée de fin, la réserve de 4,5 rem (48 px de bouton, 16 de décalage, 8 d'air ; floating-actions.css) n'est plus posée par la fin du
+              contenu. Rangée (44 px) + marge de la page (12) + espace entre blocs (8) ne faisaient que 64 px : le dernier bloc touchait le bouton (critique B1 n° 7, en bas de page). */}
           {endActions && (
-            <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}>
+            <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
+              style={launcherPresent && !dockInHeader ? { marginBottom: '0.5rem' } : undefined}>
               {endActions}
             </div>
           )}

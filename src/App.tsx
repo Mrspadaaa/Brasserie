@@ -14,6 +14,7 @@ import { ModalOpenerContext } from './ui/ModalShell';
 import type { WizardSeed } from './pages/BrewWizard';
 
 import { useFullScreenRoute, type LayerRoute, type Route } from './pages/useFullScreenRoute';
+import { readRecipeDraftState } from './services/recipeDraft';
 import { useHopPileDevHook } from './ui/hopIndex/devHook';
 import { CommandPalette, type CommandGroup } from './ui/CommandPalette';
 import { useStorageValue } from './hooks/useLiveData';
@@ -478,6 +479,30 @@ export const App: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDevLocal, isDataReady]);
+
+  /*
+   * Reprise après rechargement (critique B1 n° 14, 07.11) : la page ouverte au moment du rechargement était le wizard, et l'app retombait sur le tableau
+   * de bord, brouillon oublié. L'entrée d'historique garde sa route (`laffinee-route`) : si c'était le wizard ET que son brouillon existe sur cet appareil,
+   * on le rouvre à l'étape où il était (l'étape est dans le brouillon, `restoredDraft.step`). Sans brouillon (rien n'a été modifié), rien n'est rouvert :
+   * un wizard vide sous une clé de recette existante se prendrait pour sa modification. Une seule fois, au premier compte connu ; jamais sur un lien
+   * `?brewday=`, ni sur le banc local `?etape=` (qui ouvre sa propre page). `replaceTop` ne pousse aucune entrée : le retour ferme la page sur place.
+   */
+  const repriseTentee = useRef(false);
+  useEffect(() => {
+    if (!currentUser || repriseTentee.current) return;
+    repriseTentee.current = true;
+    if (route.pile?.length !== 1) return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('etape') || q.get('brewday')) return;
+    // La clé « laffinee-route » est celle qu'écrit `useFullScreenRoute.ts` dans l'état de l'entrée d'historique (« pour une future reprise en avant »).
+    const state = window.history.state as Record<string, unknown> | null;
+    const stored = state && typeof state === 'object' ? state['laffinee-route'] as Route | undefined : undefined;
+    if (!stored || stored.view !== 'wizard') return;
+    const id = stored.recipeId ? `${stored.duplicate ? 'duplicate:' : ''}${stored.recipeId}` : stored.title ? `idea:${stored.title}` : 'new';
+    if (readRecipeDraftState(`${currentUser.uid}:${id}`).status !== 'available') return;
+    route.replaceTop(stored);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   /**
    * Le bouton + conserve l'action de création de l'écran courant
