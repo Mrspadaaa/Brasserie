@@ -64,9 +64,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
-- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366). 03.11 : lignes 36+ jetées, testé vert (D379).
+- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366). 03.11 : lignes 36+ jetées, testé vert (D379). 07.11 : « 2 115 verts » : 27 fichiers non chargés, non comptés.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
-- Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Une donnée jetée n'est jamais un vert : lire par tranches.
+- Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Une donnée jetée n'est jamais un vert : lire par tranches. Compter aussi les fichiers de test non chargés.
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
