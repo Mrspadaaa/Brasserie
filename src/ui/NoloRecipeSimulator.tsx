@@ -62,7 +62,7 @@ function SimulationRange({ bound, target, current }: { bound: NoloBound; target:
   const position = (n: number) => Math.min(100, Math.max(0, n / limit * 100));
   const crosses = bound.max != null && bound.min <= target && bound.max > target;
   return <figure className="nolo-simulation-range" aria-label="Résultat de la simulation NOLO" data-nolo-min={bound.min} data-nolo-max={bound.max ?? 'unknown'}>
-    <figcaption><span>Alcool estimé</span><strong>{noloDisplayRangeLabel(bound)}</strong></figcaption>
+    <figcaption><span>Alcool simulé</span><strong>{noloDisplayRangeLabel(bound)}</strong></figcaption>
     {bound.max != null && <>
       <div className="nolo-simulation-track" role="img" aria-label={`${noloDisplayRangeLabel(bound)} ; cible au maximum ${number(target)} % vol.`}>
         <span className="nolo-simulation-safe" style={{ width: position(target) + '%' }}/>
@@ -162,14 +162,14 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
     {proposal && s && <>
       <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current}/>
       <div className="nolo-solver-knobs" aria-label="Réglages préremplis de la simulation">
-        <Setting label="Densité initiale visée" value={s.ogSg} unit="SG" min={1} max={1.3} digits={4} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .0005 }} onChange={ogSg => adjust({ ogSg })}/>
+        <Setting label="Densité initiale visée" value={s.ogSg} min={1} max={1.3} digits={4} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .0005 }} onChange={ogSg => adjust({ ogSg })}/>
         {process !== 'secondRunnings' && <Setting label="Charge de grain" value={baseGrainKg * s.grainScale} unit="kg" max={100000} digits={3} onChange={value => { if (baseGrainKg > 0) adjust({ grainScale: value / baseGrainKg }); }}/ >}
         <RangeSetting label="Atténuation envisagée" value={s.attenuationPct} unit="%" onChange={attenuationPct => adjust({ attenuationPct })}/>
         <Setting label="Température de fermentation" value={s.fermentationTempC} unit="°C" max={50} digits={1} onChange={fermentationTempC => adjust({ fermentationTempC })}/>
         <Setting label="Variation de l’extrait" value={s.extractTolerancePct} unit="± %" max={80} digits={1} onChange={extractTolerancePct => adjust({ extractTolerancePct })}/>
         {process === 'arrested' && s.stopSg && <RangeSetting label="Densité d’arrêt" value={s.stopSg} unit="SG" min={1} max={1.3} digits={4} onChange={stopSg => adjust({ stopSg })}/>}
         {process === 'dealcoholized' && <>
-          {s.removedPct && <RangeSetting label="Retrait de l’alcool" value={s.removedPct} unit="%" onChange={removedPct => adjust({ removedPct })}/>}
+          {s.removedPct && <RangeSetting label="Retrait de l’alcool" value={s.removedPct} unit="%" digits={1} onChange={removedPct => adjust({ removedPct })}/>}
           <Setting label="Volume après traitement" value={s.finalVolumeL} unit="L" max={100000} onChange={finalVolumeL => adjust({ finalVolumeL })}/>
         </>}
         {process === 'coldContact' && <Setting label="Contact à froid" value={s.contactHours} unit="h" max={1000} onChange={contactHours => adjust({ contactHours })}/>}

@@ -70,8 +70,8 @@ describe('alertesDeMateriel', () => {
 });
 
 describe('resumeVolumes', () => {
-  it('« Volumes · 34,7 / 35 L avant ébullition »', () => {
-    expect(resumeVolumes({ avantL: 34.7, cuveL: 35 })).toBe('Volumes · 34,7 / 35 L avant ébullition');
+  it('« Volumes · 34,7 / 35 L à chaud avant ébullition »', () => {
+    expect(resumeVolumes({ avantL: 34.7, cuveL: 35 })).toBe('Volumes · 34,7 / 35 L à chaud avant ébullition');
   });
   it('sans moût d\'avant ébullition : le fermenteur, jamais un 0', () => {
     expect(resumeVolumes({ avantL: null, cuveL: 35, volumeL: 20, capaciteL: 30 })).toBe('Volumes · 20 / 30 L au fermenteur');

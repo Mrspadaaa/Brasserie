@@ -1,4 +1,4 @@
-import { hasBrewStarted } from '../../domain/batchSchedule';
+import { hasBrewStarted, plannedDateIsPast } from '../../domain/batchSchedule';
 import React from 'react';
 import { Check, Pencil, ChevronRight, Archive } from 'lucide-react';
 import { FavoriteToggle } from '../EntityList';
@@ -27,6 +27,9 @@ const number = (value: number | null | undefined, digits = 1) => {
   }
   return format.format(value);
 };
+/** Une mesure avec son unité ; inconnue, elle s'écrit « — » seule (n° 21 : jamais « — % » ni « 0 % » pour le même inconnu). */
+const avecUnite = (value: number | null | undefined, unit: string, digits = 1) =>
+  value == null || !Number.isFinite(value) ? '—' : `${number(value, digits)} ${unit}`;
 function Measure({
   label,
   value,
@@ -77,7 +80,7 @@ export function RecipeCard({
         <span className={`w-1 self-stretch rounded-full shrink-0 ${entry.swatch ?? 'bg-cave-700'}`} aria-hidden="true"/>
         <span className="min-w-0"><strong className="block text-sm font-semibold text-cave-50 leading-snug">{entry.name}</strong>
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-cave-400 mt-1"><BeerStyleTag style={entry.style}/><span>V{entry.version}{entry.archivedAt ? ' · Archivée' : ''}</span></span>
-          <span className="block text-sm text-cave-200 mt-1 tabular-nums">{number(entry.volumeL)} L · {recipe.nolo?.enabled ? `NOLO ≤ ${number(recipe.nolo.targetAbvPct)} %` : `${number(entry.abv)} %`} · {number(entry.ibu)} IBU</span>
+          <span className="block text-sm text-cave-200 mt-1 tabular-nums">{number(entry.volumeL)} L · {recipe.nolo?.enabled ? `NOLO ≤ ${number(recipe.nolo.targetAbvPct)} %` : avecUnite(entry.abv, '%')} · {avecUnite(entry.ibu, 'IBU')}</span>
         </span>
       </button>
       {comparing ? <button type="button" role="checkbox" aria-checked={selected} aria-label={`Comparer ${entry.name}, V${entry.version}`} disabled={disabled} onClick={onSelect}
@@ -159,8 +162,8 @@ export function RecipeCard({
         )}
       </div>
       <dl className="grid grid-cols-3 gap-3 mx-2 mt-2 pb-2 border-b border-cave-800">
-        <Measure label={recipe.nolo?.enabled ? 'Cible NOLO' : 'Alcool cible'} value={recipe.nolo?.enabled ? `≤ ${number(recipe.nolo.targetAbvPct)} %` : `${number(entry.abv)} %`} />
-        <Measure label="Amertume" value={`${number(entry.ibu)} IBU`} />
+        <Measure label={recipe.nolo?.enabled ? 'Cible NOLO' : 'Alcool cible'} value={recipe.nolo?.enabled ? `≤ ${number(recipe.nolo.targetAbvPct)} %` : avecUnite(entry.abv, '%')} />
+        <Measure label="Amertume" value={avecUnite(entry.ibu, 'IBU')} />
         <Measure label="À cru" value={`${number(signature.dryHopPerL, 2)} g/L`} />
       </dl>
       <div className="px-2 pt-2 pb-1 space-y-1 text-sm">
@@ -227,11 +230,11 @@ export function BatchCard({
     planned = batch.status === 'planifie',
     active = batch.status === 'fermentation' || batch.status === 'garde';
   const target = batch.recipeSnapshot;
-  const volumeReadout = planned || batch.status === 'annule' ? `${number(entry.volumeL)} L visés` : active ? `${number(batch.volumeBrewedL)} L en cuve` : `${number(batch.volumePackagedL)} L conditionnés`;
+  const volumeReadout = planned || batch.status === 'annule' ? `${number(entry.volumeL)} L visés` : active ? (batch.volumeBrewedL == null ? 'Volume en cuve à renseigner' : `${number(batch.volumeBrewedL)} L en cuve`) : `${number(batch.volumePackagedL)} L conditionnés`;
   const dayLabel =
     days !== undefined && days >= 0 && active
       ? `J+${days} depuis brassage`
-      : planned && !hasBrewStarted(batch) ? entry.date ? `Prévu le ${entry.date}` : 'Date à définir' : entry.date || 'Date à renseigner';
+      : planned && !hasBrewStarted(batch) ? entry.date ? `Prévu le ${entry.date}${plannedDateIsPast(batch) ? ' · date dépassée' : ''}` : 'Date à définir' : entry.date || 'Date à renseigner';
   const context = missing.length
     ? `${missing.join(' et ')} à renseigner`
     : planned
@@ -251,7 +254,7 @@ export function BatchCard({
       <button type="button" className="min-w-0 flex-1 text-left min-h-touch" aria-label={`Ouvrir le brassin ${entry.id}`} onClick={() => onOpen(batch)}>
         <span className="flex flex-wrap items-center justify-between gap-1"><span className="text-xs text-cave-400">{entry.id}{entry.archivedAt ? ' · Archivé' : ''}</span><span className={`text-xs rounded-full px-2 py-0.5 border ${status.chip}`}>{status.label}</span></span>
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1"><strong className="text-sm font-semibold text-cave-50 leading-snug">{entry.name}</strong>{entry.style && <BeerStyleTag style={entry.style}/>}</span>
-        <span className="block text-sm text-cave-200 mt-1">{volumeReadout} · {active && readings.latest !== undefined ? `SG ${number(readings.latest,3)} · ` : ''}{dayLabel}</span>
+        <span className="block text-sm text-cave-200 mt-1">{volumeReadout} · {active && readings.latest !== undefined ? `Densité ${number(readings.latest,3)} · ` : ''}{dayLabel}</span>
       </button>
       <FavoriteToggle active={entry.favorite} onToggle={() => onFavorite(entry)} label={`le brassin ${entry.id}`}/>
     </div>
@@ -307,7 +310,7 @@ export function BatchCard({
             <>
               <Measure label="Volume visé" value={`${number(entry.volumeL)} L`} />
               <Measure label="OG cible" value={number(target?.ogTarget, 3)} />
-              <Measure label="Alcool cible" value={(batch.nolo??target?.nolo)?.enabled ? `NOLO ≤ ${number((batch.nolo??target?.nolo)?.targetAbvPct)} %` : `${number(target?.abvTarget)} %`} />
+              <Measure label="Alcool cible" value={(batch.nolo??target?.nolo)?.enabled ? `NOLO ≤ ${number((batch.nolo??target?.nolo)?.targetAbvPct)} %` : avecUnite(target?.abvTarget, '%')} />
             </>
           ) : active ? (
             <>

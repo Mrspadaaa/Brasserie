@@ -5,7 +5,11 @@ const puppeteer = createRequire('C:/Users/mrspa/.codex/worktrees/openai-clean-st
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.wasm': 'application/wasm', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
 export const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function ouvrir(construit, { etat = 'maquette', theme = 'clair', largeur = 390, hauteur, extra = '' } = {}) {
+/**
+ * Ouvre un navigateur sur le build figé. `url` (par exemple '/?dev-local') : la page seule, sans le banc `?malts=` ; l'appelant attend alors ses propres éléments.
+ * Sans `url` : le banc de l'étape (`?dev-local&etape=houblons&recette=vide&malts=<etat>`), prêt quand l'étape est montée.
+ */
+export async function ouvrir(construit, { etat = 'maquette', theme = 'clair', largeur = 390, hauteur, extra = '', url } = {}) {
   const tactile = largeur < 700;
   const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
   const p = await nav.newPage();
@@ -20,7 +24,9 @@ export async function ouvrir(construit, { etat = 'maquette', theme = 'clair', la
     r.respond({ status: 200, contentType: TYPES[path.extname(f)] ?? 'application/octet-stream', body: fs.readFileSync(f) });
   });
   await p.evaluateOnNewDocument((t) => { try { localStorage.setItem('laffinee.theme', t); } catch { /* sans stockage */ } }, theme === 'cave' ? 'cave' : 'clair');
-  await p.goto(`http://localhost:4319/?dev-local&etape=houblons&recette=vide&malts=${etat}${extra}`, { waitUntil: 'networkidle0' });
+  p.hote = 'http://localhost:4319';
+  await p.goto(`${p.hote}${url ?? `/?dev-local&etape=houblons&recette=vide&malts=${etat}${extra}`}`, { waitUntil: 'networkidle0' });
+  if (url) return { nav, p, dormir };
   await p.waitForSelector('[data-etape="fermentescibles"] [data-role="ajout"]', { timeout: 60000 });
   await p.waitForFunction(() => !!document.body.dataset.apercu, { timeout: 30000 });
   await p.evaluate(() => document.fonts.ready);

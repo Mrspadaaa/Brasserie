@@ -507,7 +507,7 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
       {expired && started && <p role="alert" className="text-sm text-alert-strong">L’échéance de transfert est passée. La préparation reste consignée ; vérifie les conditions de la notice, sans supposer qu’elle fournit assez de cellules.</p>}
       <div className="space-y-1 text-xs text-cave-400">
         <p><span className="text-cave-200">Produit</span> · {productLabel}{snapshotProduct?.id === plan.productId ? ` · ${plan.productId}` : ''}</p>
-        <p><span className="text-cave-200">Prévu</span> · Culture {plan.volumeL.toLocaleString('fr-CH')} L · SG cible {plan.protocol.targetSg.toFixed(3)} · inoculum {plan.inoculum}</p>
+        <p><span className="text-cave-200">Prévu</span> · Culture {plan.volumeL.toLocaleString('fr-CH')} L · densité cible {plan.protocol.targetSg.toFixed(3)} · inoculum {plan.inoculum}</p>
         <p><span className="text-cave-200">{startBasisLabel}</span> · {preparationDate(plan.startAt)} → <span className="text-cave-200">Ensemencement cible</span> · {preparationDate(plan.targetPitchAt)}</p>
       </div>
       {execution?.status !== 'transferred' && execution?.status !== 'cancelled' && <p className="text-xs text-cave-400">Repères indicatifs. Garde une marge pour l’activation de l’inoculum et le refroidissement selon la notice.</p>}
@@ -597,7 +597,7 @@ function YeastPreparationPanel({ batch, onSave }: { batch: Batch; onSave: (patch
           <p className="font-medium">{plan.protocol.label}</p>
           <p>{plan.protocol.method}</p>
           <p className="text-xs text-cave-400">{plan.protocol.conditions}</p>
-          <p className="text-xs text-cave-400">{plan.protocol.medium === 'malt-extract' ? 'Milieu documenté · extrait de malt' : plan.protocol.medium} · {plan.volumeL.toLocaleString('fr-CH')} L · SG cible {plan.protocol.targetSg.toFixed(3)} · inoculum prévu : {plan.inoculum}</p>
+          <p className="text-xs text-cave-400">{plan.protocol.medium === 'malt-extract' ? 'Milieu documenté · extrait de malt' : plan.protocol.medium} · {plan.volumeL.toLocaleString('fr-CH')} L · densité cible {plan.protocol.targetSg.toFixed(3)} · inoculum prévu : {plan.inoculum}</p>
           <p className="text-xs text-cave-400">Matériel prévu · {plan.equipment}</p>
           <ol className="list-decimal space-y-1 pl-5" aria-label="Étapes de la notice">
             {plan.steps.map(step => <li key={step.id}>{step.label}{stepCue(step) && <small className="block text-xs text-cave-400">{stepCue(step)}</small>}</li>)}

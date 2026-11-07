@@ -6,6 +6,8 @@ import { noloDecimal, noloProcessLabels } from '../domain/noloPresentation';
 import { BoundGraph } from './NoloAlcoholChart';
 import { NoloOperationList } from './NoloOperationList';
 
+/** Un volume se lit au décilitre (test en ligne n° 15 : « 24,012 L »). */
+const litresNolo = (value: number) => value.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
 const emptyKnowledge: HopKnowledge[] = [];
 /** The saved plan, including applied operations. Calculator drafts never enter this summary. */
 export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe: TrialRecipe; saved?: HopKnowledge[] }) {
@@ -35,8 +37,8 @@ export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe:
     {simulation && <p className="text-xs text-cave-200">Atténuation {noloDecimal(simulation.settings.attenuationPct.min)}–{noloDecimal(simulation.settings.attenuationPct.max)} % · extrait ±{noloDecimal(simulation.settings.extractTolerancePct)} % · hypothèses de pilote.</p>}
     {config.planning?.simulation && !simulation && <p className="text-xs text-attention">Simulation à recalculer : la recette ou le procédé ont changé.</p>}
     <dl className="grid grid-cols-2 gap-2 border-t border-cave-800 pt-1 text-xs">
-      <div><dt className="text-cave-400">{config.process === 'secondRunnings' ? simulation ? 'Récupération visée' : 'Moût récupéré' : 'Volume de base'}</dt><dd className="reading text-sm">{baseVolume > 0 ? noloDecimal(baseVolume) + ' L' : 'À mesurer'}</dd></div>
-      <div><dt className="text-cave-400">Après opérations</dt><dd className="reading text-sm">{result?.volumeL != null ? noloDecimal(result.volumeL) + ' L' : 'À compléter'}</dd></div>
+      <div><dt className="text-cave-400">{config.process === 'secondRunnings' ? simulation ? 'Récupération visée' : 'Moût récupéré' : 'Volume de base'}</dt><dd className="reading text-sm">{baseVolume > 0 ? litresNolo(baseVolume) + ' L' : 'À mesurer'}</dd></div>
+      <div><dt className="text-cave-400">Après opérations</dt><dd className="reading text-sm">{result?.volumeL != null ? litresNolo(result.volumeL) + ' L' : 'À compléter'}</dd></div>
     </dl>
     {result && <p className="text-xs text-cave-200 leading-snug">{result.nextAction}</p>}
     {!!result?.activeOperations.length && <details>

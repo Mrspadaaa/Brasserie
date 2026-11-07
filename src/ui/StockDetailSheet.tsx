@@ -71,6 +71,9 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             <Button onClick={() => onCorrectInventory(item)}>Corriger l’inventaire</Button>
           </div>
           <LevelGauge level={level}/>
+          {level.band === 'inconnu' && <button type="button" className="text-xs text-ebc-straw underline underline-offset-2 self-start" data-role="fixer-seuil"
+            onClick={() => { const champ = document.getElementById('stock-min'); champ?.scrollIntoView({ block: 'center' }); champ?.focus(); }}>
+            Niveau inconnu : fixer le seuil minimum</button>}
           {pending.known && pending.knownQuantity > 0 && <dl className="grid grid-cols-2 gap-2 text-xs">
             <div><dt className="text-cave-400">Réservé en fermentation</dt><dd className="font-mono text-water">{Units.format(pending.knownQuantity, item.unit)}</dd></div>
             <div><dt className="text-cave-400">Libre hors réserve</dt><dd className="font-mono text-cave-50">{available === null ? 'Inconnu' : Units.format(available, item.unit)}</dd></div>

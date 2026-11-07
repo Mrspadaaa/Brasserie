@@ -148,7 +148,7 @@ describe('adaptation compacte de la production', () => {
       fireEvent.click(within(card).getByRole('button', { name: `Ouvrir le brassin ${batch.id}` }));
       expect(onOpen).toHaveBeenCalledWith(batch);
     }
-    expect(view.container).toHaveTextContent('Alcool cible— %');
+    expect(view.container).toHaveTextContent('Alcool cible—');
     expect(view.container).toHaveTextContent('FG visée —');
   });
 });

@@ -766,7 +766,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     {formatReading(water.ra)}
                   </span>{' '}
                   {water.raSaltTarget != null
-                    ? `— repère pour les malts ≈ ${formatReading(water.raSaltTarget)} ppm (estimation du mash)`
+                    ? `— repère pour les malts ≈ ${formatReading(water.raSaltTarget)} ppm (estimation de l’empâtage)`
                     : `— repère des malts ${formatReading(water.raBand.min)} à ${formatReading(water.raBand.max)} (${water.raBand.label})`}
                 </span>
                 <span className="text-cave-400">

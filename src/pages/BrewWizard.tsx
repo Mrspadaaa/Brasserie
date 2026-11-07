@@ -61,6 +61,8 @@ import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossie
 import { keepIndependentPitchingWort, yeastPlannedInFormat } from '../domain/yeastPitching';
 import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
+import { fgRecette, formatDensite } from '../domain/recipeMetrics';
+import { oublierRepere } from '../ui/hopIndex/maBiere/repere';
 import { yeastReferences } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
 import { NoloPanel as SyncNoloPanel } from '../ui/NoloPanel';
@@ -591,6 +593,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [yeastChange, setYeastChange] = useState<YeastChoiceChange>();
   const base = restoredDraft?.recipe ?? seed?.recipe;
   const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
+  // Fermer l'assistant efface le « repère » de Ma bière (ce qui a changé depuis qu'elle a été quittée) : il ne doit pas passer dans la recette suivante (test en ligne n° 4).
+  useEffect(() => () => oublierRepere(), []);
   const [details, setDetailsRaw] = useState<Partial<Recipe>>(restoredDraft?.details ?? base ?? {});
   const configuredBrewhouse = useMemo(() => {
     const profile=config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -950,6 +954,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     [fermentables, volumeL, efficiency,details.efficiencyPct,brewhouse?.efficiencyPct,details.nolo?.enabled,details.nolo?.process,details.nolo?.secondRunnings?.sg,details.nolo?.planning?.exactExtract]
   );
   const og = (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? 0;
+  // Option A (décision du pilote, test en ligne n° 5/6) : la cible retenue gagne PARTOUT (bandeau, alertes, fiche) ; si elle diffère du calcul en direct, l'écran
+  // le dit en une ligne courte, au lieu de montrer 1,068 à une étape et 1,066 à l'autre. Règle unique : `recipeMetrics.ts`.
+  const ogRetenue = keepOgTarget && typeof details.ogTarget === 'number' && details.ogTarget > 1 ? details.ogTarget : null;
+  const ecartOg = ogRetenue != null && ogPredicted != null && formatDensite(ogRetenue) !== formatDensite(ogPredicted)
+    ? `OG retenue ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)}` : null;
 
   const boilOg = useMemo(() => details.nolo?.enabled ? og || null : yeastRecipeBoilOg({ fermentables, volumeL, efficiencyPct: efficiency } as Recipe, { og: og || null }).og,
     [details.nolo?.enabled, og, fermentables, volumeL, efficiency]);
@@ -2311,7 +2320,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">OG</span>
             <span className="reading text-sm sm:text-base text-ebc-straw">
-              {(step === 'levure' ? og : ogPredicted) ? (step === 'levure' ? og : ogPredicted)!.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
+              {formatDensite(og) || '—'}
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:items-center">
@@ -2333,6 +2342,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           </div>
         </div>
       )}
+      {hasMetrics && ecartOg && step !== 'eau' && <p data-role="ecart-og" className="px-2.5 -mt-1 text-xs text-cave-400">{ecartOg}</p>}
 
       {!localOnly && <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
         onDraftApply={value => {
@@ -2436,7 +2446,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               recipe={recette}
               style={styleRepere}
               styles={styles}
-              valeurs={{ og: ogPredicted, ibu, fg: fgPredicted, abv: abvPredicted, ebc: color?.ebc }}
+              valeurs={{ og: og > 1 ? og : null, ibu, fg: fgPredicted, abv: abvPredicted, ebc: color?.ebc }}
               onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}
             />
 
@@ -2518,7 +2528,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             onCreateStockItem={creerArticleEtape}
             onLearnIngredient={onLearnIngredient}
             nolo={!!details.nolo?.enabled}
-            og={ogPredicted ?? null}
+            og={og > 1 ? og : null}
             teinteBiere={color ? { ebc: color.ebc, label: color.label } : null}
             rendementPct={efficiency}
             rendementDeclare={details.efficiencyPct != null || brewhouse?.efficiencyPct != null}
@@ -3031,7 +3041,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 <p className="text-sm text-cave-400 leading-relaxed">
                   Atténuation retenue pour ce moût :{' '}
                   <span className="reading text-ebc-straw">{attenuation} %</span>
-                  {fgPredicted ? ` · FG estimée ${fgPredicted.toFixed(3).replace('.', ',')}.` : '.'}
+                  {(() => {
+                    // FG retenue (la cible de la recette, entrées inchangées) ou estimée ; si elles diffèrent, l'écart est dit.
+                    const retenue = fgRecette({ fgTarget: keepTargets ? details.fgTarget : undefined }, null);
+                    if (retenue != null && fgPredicted && formatDensite(retenue) !== formatDensite(fgPredicted)) return ` · FG retenue ${formatDensite(retenue)} · calculée ${formatDensite(fgPredicted)}.`;
+                    const fg = retenue ?? fgPredicted;
+                    return fg ? ` · FG ${retenue != null ? 'retenue' : 'estimée'} ${formatDensite(fg)}.` : '.';
+                  })()}
                 </p>
               )}
             </div>

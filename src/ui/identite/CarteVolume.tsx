@@ -154,7 +154,7 @@ export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, c
           <div className="idn-ih" style={{ justifyContent: 'space-between', marginTop: 3 }}>
             <span className="idn-k">cuve <b className="idn-m" style={{ color: 'rgb(var(--cave-texte-50))' }}>{fr(cuveL!)}</b> L</span>
             <span className="idn-cv">
-              {avantEbullition ? <><b data-role="preb">~{fr(avantEbullition.litres)} L</b> avant ébullition</> : <><b data-role="preb">—</b> avant ébullition · sans malts</>}
+              {avantEbullition ? <><b data-role="preb">~{fr(avantEbullition.litres)} L</b> à chaud avant ébullition</> : <><b data-role="preb">—</b> avant ébullition · sans malts</>}
               {barre?.deborde && (
                 <> · <span className="idn-trop" role="alert" data-role="debordement"><b>+{fr(barre.depasseL)} L</b> de trop</span></>
               )}

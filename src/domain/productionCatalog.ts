@@ -149,7 +149,8 @@ export function recipeEntries(recipes: Recipe[], batches: Batch[], defaultEffici
       volumeL: recipe.volumeL,
       date: recipe.brewDate,
       timestamp: catalogDate(recipe.brewDate),
-      abv: catalogNumber(recipe.nolo?.enabled ? recipe.nolo.targetAbvPct : recipe.abvTarget),
+      // Un degré d'alcool de 0 sur une bière non NOLO est un champ jamais rempli, pas une mesure : l'inconnu n'est jamais 0 (n° 21).
+      abv: recipe.nolo?.enabled ? catalogNumber(recipe.nolo.targetAbvPct) : (catalogNumber(recipe.abvTarget) || undefined),
       // Le même IBU que la fiche (calculé), pas l'IBU « annoncé » de la recette (test en ligne du 07.11, n° 3).
       ibu: catalogNumber(ibuListe(recipe, recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? defaultEfficiencyPct)),
       ebc: color?.ebc ?? recipe.colorEbc,

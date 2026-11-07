@@ -109,7 +109,10 @@ const Metric: React.FC<{
         {note && <dd className="text-xs text-cave-400 leading-tight">{note}</dd>}
       </>
     ) : (
-      <dd className="text-xs text-cave-400 leading-tight">{hint ?? 'incalculable'}</dd>
+      // Une case de chiffre ne porte jamais une consigne : « — », et la raison en une ligne sous la carte (test en ligne n° 11).
+      <dd className="reading text-sm text-cave-500" title={hint ?? 'incalculable'}>
+        —<span className="sr-only"> {hint ?? 'incalculable'}</span>
+      </dd>
     )}
   </div>
 );
@@ -202,6 +205,21 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const projectedAbv = projection?.abv.range?.min === projection?.abv.range?.max ? projection?.abv.range?.min ?? null : null;
   const abv = recipe.nolo?.enabled ? null : recipe.abvTarget ?? projectedAbv;
+
+  /** Les mesures de tête sans chiffre, groupées par raison : une ligne sous la carte, jamais du texte dans une case (n° 11). */
+  const raisonsDeTete = (() => {
+    const nolo = !!recipe.nolo?.enabled;
+    const brut: [string, string][] = [];
+    if (!(og > 1)) brut.push(['OG', nolo ? 'moût à caractériser' : 'potentiel des malts à renseigner']);
+    if (!nolo && !fg) brut.push(['FG', projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure']);
+    if (ibuTotal === null) brut.push(['IBU', 'ajouts de houblon à vérifier']);
+    if (!color && colorMissing.length === 0) brut.push(['EBC', measuredExtraction ? 'extraction à caractériser' : 'couleur des malts à renseigner']);
+    if (!nolo && !abv) brut.push(['ABV', projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure']);
+    if (!nolo && abv && !projection?.abv.range && recipe.abvTarget != null) brut.push(['ABV', 'cible conservée, projection indisponible · voir Levure']);
+    const parRaison = new Map<string, string[]>();
+    for (const [nom, raison] of brut) parRaison.set(raison, [...(parRaison.get(raison) ?? []), nom]);
+    return [...parRaison].map(([raison, noms]) => `${noms.join(', ')} : ${raison}`);
+  })();
 
   const relatedBatches = batches.filter(
     (b) => b.recipeRef === recipe.id || b.recipeSnapshot?.sourceRecipeId === recipe.id
@@ -300,7 +318,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             label="ABV"
             value={abv ? `${formatDecimal(abv, 1)} %` : null}
             hint={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}
-            note={!projection?.abv.range && recipe.abvTarget != null ? 'Cible conservée · projection indisponible' : undefined}
+            note={!projection?.abv.range && recipe.abvTarget != null ? 'cible' : undefined}
             tone="text-ebc-amber"
           />}
         </dl>
@@ -328,6 +346,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           </div>
         )}
 
+        {raisonsDeTete.length > 0 && (
+          <p className="mt-1 text-xs text-cave-400" data-role="raisons-tete">{raisonsDeTete.join(' · ')}</p>
+        )}
         {color && (
           <p className="mt-1 text-xs text-cave-400">
             Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {color.srm}.

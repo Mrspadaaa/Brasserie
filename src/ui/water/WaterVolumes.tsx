@@ -123,8 +123,13 @@ export function WaterVolumes({
             </div>
             {check && hasSparge && (
               <p className="text-cave-200" role="status">
-                <strong>Rinçage à chaud : {litres(check.spargeHotL)} L.</strong>{' '}
-                {litres(check.spargeMainHotL)} L dans le récipient principal{check.spargeAuxiliaryHotL > .01 ? ` + ${litres(check.spargeAuxiliaryHotL)} L avec la bouilloire annexe` : ''}.
+                {/* Une seule phrase quand tout va dans le récipient principal (test en ligne n° 29 : « 13,9 L. 13,9 L dans le récipient principal »). */}
+                {check.spargeAuxiliaryHotL > .01 ? (
+                  <><strong>Rinçage à chaud : {litres(check.spargeHotL)} L.</strong>{' '}
+                    {litres(check.spargeMainHotL)} L dans le récipient principal + {litres(check.spargeAuxiliaryHotL)} L avec la bouilloire annexe.</>
+                ) : (
+                  <><strong>Rinçage à chaud : {litres(check.spargeHotL)} L</strong> dans le récipient principal.</>
+                )}
               </p>
             )}
             {check?.spargeTooMuch && <p role="alert" className="text-ebc-amber">Au-dessus des {check.spargeMaximumHotL} L exceptionnels à chaud. Augmente l’eau d’empâtage si la cuve le permet, ou réduis le brassin.</p>}
@@ -167,7 +172,7 @@ export function WaterVolumes({
                 Épaisseur de maische
               </label>
               <span className="reading text-sm text-cave-50 flex items-center gap-1 shrink-0">
-                <NumberInput aria-label="Rapport eau grain exact en litres par kilogramme" value={Number(mashRatioLPerKg.toPrecision(15))} onValue={onMashRatioChange} min={0.1} className="w-16 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-1 text-base"/>
+                <NumberInput aria-label="Rapport eau grain exact en litres par kilogramme" value={Number(mashRatioLPerKg.toPrecision(15))} fractionDigits={2} onValue={onMashRatioChange} min={0.1} className="w-16 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-1 text-base"/>
                 <span className="reading-unit"> L/kg</span>
               </span>
             </div>

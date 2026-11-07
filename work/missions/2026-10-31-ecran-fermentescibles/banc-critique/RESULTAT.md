@@ -1,5 +1,35 @@
 OK — lot 4 : B1 n° 1, 10, 11, 13, 15 et N3 corrigés (rouge sur HEAD puis vert, clair et cave, 390 et 1280) ; N4 : rien de plus ; tous les contrôles rejoués verts
 
+## LOT 5 (test en ligne du 07.11) ; contrôles dans `work/missions/2026-11-07-test-en-ligne/`
+
+**Suite du lot 5 (gênants), état :**
+
+| n° | État | Fichiers | Contrôle (rouge → vert) |
+|----|------|----------|-------------------------|
+| 5 (deux volumes) | corrigé | `ui/identite/CarteVolume.tsx`, `alertes.ts` : « ~31,1 L **à chaud** avant ébullition » (Eau et sels dit « à froid » : les deux sont vrais, l'un chaud l'autre froid) ; test `alertes.test.ts` mis à jour | `controle-eau.mjs` : ECHEC → OK, clair et cave |
+| 15 (précisions) | corrigé pour la maische | `ui/water/WaterVolumes.tsx` (`fractionDigits={2}` : « 4,20 L/kg » à l'écran, la valeur exacte reste en mémoire) | `controle-eau.mjs` : « 4,19672131147541 » → « 4,20 » ; `caps-eau-apres-cave.png` regardée. Non fait : « 24,012 L » et « 91,73 – 93,73 % » (NOLO, pas de fixture NOLO au banc) |
+| 29 (rinçage doublé) | corrigé | `WaterVolumes.tsx` : « Rinçage à chaud : 5 L dans le récipient principal. » (la forme à deux volumes reste quand la bouilloire annexe sert) ; test `waterVolumeExplanation.test.tsx` mis à jour (il fixait la phrase doublée) | `controle-eau.mjs` : ECHEC (« 5 L. 5 L dans… ») → OK |
+| 13 (« SG ») | partiel | `YeastPitchingPanel.tsx` : « Densité ? » / « Densité 1,050 » et « à estimer » au lieu de « inconnu » (3 tests mis à jour) ; `NoloRecipeSimulator.tsx` : plus d'unité « SG » à côté de « Densité initiale visée » | tests verts ; **pas de preuve Chrome** (pas de recette NOLO ni de levure à l'étape dans le banc). Non fait : « SG » de `BatchDetailSheet`/Bord (hors possession), `PlanningEditor`/`RecipeCopyPanel` (hopV55), identifiant de levure à la place du nom (`yeastCompanion.ts`) |
+| 14 (« Volume ? inconnu ») | partiel : mots seulement | `YeastPitchingPanel.tsx` (« à estimer » + le bouton « Estimer depuis la recette » qui était déjà là) | la logique est voulue (« ni la densité initiale ni le volume de recette ne les remplacent ») : pas de valeur posée en silence. DÉCISION À PRENDRE : estimer d'office depuis la recette ? (recommandation : non, garder le bouton ; la valeur pourrait être fausse à l'ensemencement) |
+| 7 (« SG ») | fait en partie | voir 13 | — |
+| 6 (deux projections d'alcool NOLO) | partiel | `NoloRecipeSimulator.tsx` : le résultat de la simulation s'appelle « Alcool **simulé** » (la « Recette actuelle » reste dessous) : les deux projections sont voulues (variante simulée / recette actuelle), elles ne se confondent plus | pas de preuve Chrome (pas de fixture NOLO). Bloc NOLO répété trois fois (Identité, Levure, Récap) : **non fait** |
+| 16 (alerte d'eau à l'ouverture) | **pas fait, par choix** | — | l'alerte est vraie : `recipeInstallation.ts` compare le plan d'eau ENREGISTRÉ au plan que la formule actuelle calcule (> 0,3 L d'écart). La corriger = recalculer le plan d'une recette enregistrée sans geste, donc écrire en silence. DÉCISION À PRENDRE : recalculer à l'ouverture (avec « Annuler ») ou garder l'alerte |
+| 18 (assistant monté deux fois) | **pas fait** | — | `PageShell` rend les deux en-têtes (mobile `sm:hidden` et ordinateur) : deux « Fermer » et deux fils dans l'arbre, un seul visible ; le test en ligne a cliqué la copie cachée. Ne les rendre que selon `matchMedia` casse les tests jsdom (pas de `matchMedia` : seul l'en-tête mobile existerait). À faire avec un `matchMedia` simulé dans les tests |
+| 30 (nom tronqué à 500 px) | **pas fait, par choix** | — | le nom et la pastille du style partagent une ligne dans l'écran Identité choisi (r4-a) ; passer la pastille sous le nom change son écran (règle n° 1). À lui montrer |
+| 10 (pastilles de malts sans couleur) | **pas fait** | — | l'app n'a aucune table de couleurs de malts ; en écrire une = inventer des données sans source. Le « ? à renseigner » est l'état honnête. DÉCISION À PRENDRE : une table sourcée (fiches malterie) pour les malts proposés ? |
+
+`controle-repos-houblons` : **ECHEC en octets** après ce lot (Houblons et Identité, clair et cave) ; à Identité le changement est voulu (« à chaud »), à Houblons les deux captures (`caps/repos-houblons-clair-head.png` et `-apres.png`, ouvertes) sont **visuellement identiques**, la différence d'octets n'est pas localisée (pas de bibliothèque PNG au poste). Les 17 autres contrôles de la voie : OK.
+
+Tests rejoués verts : `tests/unit/fermentescibles`, `tests/unit/identite`, `brewWizard*`, `recipeEditing`, `dataEntry`, `Yeast*`, `yeast*`, `noloRecipeSolver`, `waterVolumeExplanation`, `water*`, `brewingMath*`. Contrôles `controle-*.mjs` de la voie et `controle-repos-houblons` rejoués sur le dernier build.
+
+**Premier jet du lot 5 :**
+
+| n° | État | Fichiers | Contrôle (rouge → vert) | Capture |
+|----|------|----------|-------------------------|---------|
+| 1 (OG) | corrigé, option A | `BrewWizard.tsx` (`ogRetenue`, `ecartOg` : « OG retenue 1,066 · calculée 1,068 » sous le bandeau ; bandeau = `formatDensite(og)` à toutes les étapes ; repère OG de Malts/sucres et plages du style lisent la même `og`), `brewingMath.ts` (« À 1,085, le moût sature » : virgule ; `formatDensite` importé ferait une boucle recipeMetrics → yeastProjection → brewingMath, donc même `toLocaleString('fr-FR')`) | `controle-og-bandeau.mjs` (fixture « Stout export » avec grains, ogTarget 1,066, calcul 1,068) : ECHEC (1,068 à cinq étapes, 1,066 à Levure) → OG OK (1,066 aux cinq) | `caps-og-levure.png` |
+| 1 (FG) | corrigé, non rejoué en Chrome | `BrewWizard.tsx` (phrase « Atténuation retenue… » : `fgRecette`, « FG retenue 1,024 · calculée 1,021 » si elles diffèrent, virgule) | aucun contrôle Chrome (l'état exige une levure avec atténuation) ; tsc propre | — |
+| 2 (fuite) | corrigé à la cause | `src/ui/hopIndex/maBiere/repere.ts` (l'instantané « avant » n'avait pas de propriétaire : la première recette qui montait le reprenait ; il porte l'id de sa recette, `prendre` ne rend que le sien), `BrewWizard.tsx` (`oublierRepere` à la fermeture) | `controle-fuite-recette.mjs` — **exige un build `VITE_HOP_V4=on`** (sans le drapeau l'étape Ma bière n'existe pas : vert à tort sur le build du banc) : ECHEC (« à la place de », « US-05 » dans la recette B) → FUITE OK, clair et cave | `caps-fuite-apres-cave.png` |
+
 ## LOT 4 (« Juste régler le problème » : les « à montrer » deviennent des correctifs)
 
 | n° | Correctif (le plus proche de sa maquette) | Fichiers | Contrôle (HEAD → après) | Captures ouvertes (`caps/`) |

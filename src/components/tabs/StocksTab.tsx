@@ -3,7 +3,7 @@ import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucid
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
-import { compareRecipeWithStock, computeStockLevel, shortfall, type RecipeStockComparison } from '../../domain/stockLevel';
+import { articlesACommander, compareRecipeWithStock, computeStockLevel, type RecipeStockComparison } from '../../domain/stockLevel';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
@@ -157,7 +157,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       '',
       ...shoppingBySupplier.flatMap(([supplier, list]) => [
         `${supplier} :`,
-        ...list.map((l) => `  - ${l.item.name} : ${Units.format(l.missing, l.item.unit)}`),
+        ...list.map((l) => `  - ${l.item.name} : ${l.missing > 0 ? Units.format(l.missing, l.item.unit) : 'seuil atteint, quantité à définir'}`),
         ''
       ])
     ].join('\n');
@@ -254,15 +254,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const shoppingBySupplier = useMemo(() => {
     const map = new Map<string, Array<{ item: StockItem; missing: number }>>();
 
-    allItems.forEach((item) => {
-      const missing = shortfall(item, batches, allItems);
-      const belowMin = item.minStock > 0 && item.currentStock <= item.minStock;
-      if (missing <= 0 && !belowMin) return;
-
-      const toOrder =
-        missing > 0 ? missing : Units.round(item.minStock - item.currentStock, item.unit);
-      if (toOrder <= 0) return;
-
+    articlesACommander(allItems, batches).forEach(({ item, missing: toOrder }) => {
       const supplier = item.supplier?.trim() || 'Fournisseur à préciser';
       const arr = map.get(supplier) ?? [];
       arr.push({ item, missing: toOrder });
@@ -282,7 +274,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       `Commande — Brasserie L'Affinée`,
       `Fournisseur : ${supplier}`,
       '',
-      ...list.map((l) => `- ${l.item.name} : ${Units.format(l.missing, l.item.unit)}`)
+      ...list.map((l) => `- ${l.item.name} : ${l.missing > 0 ? Units.format(l.missing, l.item.unit) : 'seuil atteint, quantité à définir'}`)
     ].join('\n');
     navigator.clipboard.writeText(text);
     setCopiedSupplier(supplier);
@@ -508,7 +500,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                     >
                       <span className="text-sm text-cave-200 min-w-0 break-words">{item.name}</span>
                       <span className="font-mono text-sm text-ebc-straw shrink-0">
-                        {Units.format(missing, item.unit)}
+                        {missing > 0 ? Units.format(missing, item.unit) : 'à définir'}
                       </span>
                     </li>
                   ))}

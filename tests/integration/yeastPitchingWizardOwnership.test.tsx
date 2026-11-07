@@ -58,9 +58,9 @@ describe('Moût opérationnel et propriétaire documentaire du Wizard', () => {
     const hypothesis = within(group).getByRole('radio', { name: 'Hypothèse' });
     hypothesis.focus(); fireEvent.keyDown(hypothesis, { key: 'ArrowLeft' });
     expect(within(group).getByRole('radio', { name: 'Mesuré' })).toHaveAttribute('aria-checked', 'true');
-    const density = within(wort).getByRole('textbox', { name: 'Densité du moût à ensemencer en SG' });
+    const density = within(wort).getByRole('textbox', { name: 'Densité du moût à ensemencer' });
     fireEvent.change(density, { target: { value: '1.050' } }); fireEvent.blur(density);
-    expect(wort).toHaveTextContent('SG 1,050');
+    expect(wort).toHaveTextContent('Densité 1,050');
     fireEvent.click(screen.getAllByRole('button', { name: 'Récapitulatif' })[0]);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved = save.mock.lastCall?.[0] as Recipe;

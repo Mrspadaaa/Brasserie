@@ -315,7 +315,8 @@ export const BrewingMath = {
     return {
       correctedPct: corrected,
       lostPoints: lost,
-      note: `À ${og.toFixed(3)}, le moût sature : compte plutôt ${corrected} % de rendement que ${nominalPct} %. Prévois plus de grain ou moins de volume.`
+      // Virgule et trois décimales (« 1,085 »), comme `formatDensite` : importé de `recipeMetrics`, il ferait une boucle (recipeMetrics → yeastProjection → ce fichier).
+      note: `À ${og.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}, le moût sature : compte plutôt ${corrected} % de rendement que ${nominalPct} %. Prévois plus de grain ou moins de volume.`
     };
   },
 

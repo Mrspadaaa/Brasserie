@@ -23,6 +23,7 @@ import type { HopIngredient, MaltIngredient, Recipe as RecetteApp, YeastSpec } f
 import { computeBeerColor } from '../../beerColor';
 import type { RecipeWizardDraft } from '../../../services/recipeDraft';
 import protoData from '../../../data/hopV4/proto-data.json';
+import { varieteProche } from './nomProche';
 import { CATALOGUE, MOMENTS, STOCK, hopRef, yeastInfo, type Addition, type MomentId, type Recipe as RecetteMoteur } from './index';
 
 /** Un ajout de houblon du parcours : un Addition du moteur et ce que le parcours règle librement (même forme que
@@ -75,7 +76,7 @@ export interface LienAjout {
   /** Position dans `recipe.hops` (null : ajout neuf, posé par un outil). */
   index: number | null;
   /** Comment le houblon a été relié à une variété du moteur : l'identifiant de l'index, le nom exact, ou rien. */
-  relie: 'hopVarietyId' | 'nom' | null;
+  relie: 'hopVarietyId' | 'nom' | 'nom proche' | null;
   /** Ce que la conversion a supposé pour cet ajout (moment de dry hop, durée de contact…). */
   suppositions: string[];
 }
@@ -105,12 +106,15 @@ for (const h of CATALOGUE) for (const n of [h.name, ...h.aliases]) if (!PAR_NOM.
 // Styles BJCP du moteur par code, identifiant et nom pliés.
 const STYLES = protoData.styles as unknown as { id: string; code: string; name: string }[];
 
-function cleDe(h: HopIngredient): { cle: string; relie: LienAjout['relie'] } {
+function cleDe(h: HopIngredient): { cle: string; relie: LienAjout['relie']; proche?: string } {
   if (h.hopVarietyId && hopRef(h.hopVarietyId)) return { cle: h.hopVarietyId, relie: 'hopVarietyId' };
   const nom = plier(h.name);
   const cryo = /\bcryo\b/.test(nom);
   const id = PAR_NOM.get(cryo ? nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim() : nom);
   if (id) return { cle: cryo ? `${id}:cryo` : id, relie: 'nom' };
+  // Faute de frappe ou forme voisine (« Nuget », « Hallertauer Mittelfruh ») : la variété la plus proche, si elle est seule, et dite comme telle (n° 9).
+  const proche = varieteProche(nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim(), CATALOGUE);
+  if (proche) return { cle: cryo ? `${proche.id}:cryo` : proche.id, relie: 'nom proche', proche: proche.nom };
   return { cle: `inconnu:${nom.split(' ').join('-')}`, relie: null };
 }
 
@@ -130,9 +134,10 @@ function styleDe(r: RecetteApp): { code: string; supposition: string | null } {
 const alphaDuLot = (a: number) => (fini(a) && a > 0 && a <= 100 ? a : undefined);
 
 function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutParcours; lien: LienAjout } {
-  const { cle, relie } = cleDe(h);
+  const { cle, relie, proche } = cleDe(h);
   const suppositions: string[] = [];
-  if (!relie) suppositions.push(`« ${h.name} » n'est relié à aucune variété du moteur (ni hopVarietyId, ni nom exact) : arôme non simulé`);
+  if (!relie) suppositions.push(`« ${h.name} » n'est relié à aucune variété du moteur (ni hopVarietyId, ni nom exact, aucun nom proche) : arôme non simulé`);
+  if (relie === 'nom proche') suppositions.push(`« ${h.name} » lu comme « ${proche} » (nom très proche, une seule variété) : à confirmer`);
   const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, ...(alphaDuLot(h.alpha) !== undefined ? { alphaLot: alphaDuLot(h.alpha) } : {}) };
   let ajout: AjoutParcours;
   switch (h.stage) {
