@@ -43,6 +43,11 @@ export function hotBitterness(hops: HopIngredient[], volumeL: number, og: number
     return { ibu: missing.length ? null : BrewingMath.hopIbu(h, volumeL, og!, boilMin), missing };
   });
   const known = additions.reduce((sum, h) => sum + (h.ibu ?? 0), 0);
-  const missing = additions.flatMap((h, i) => h.missing.map(reason => `${hops[i].name} : ${reason}`));
+  // Une donnée de LA RECETTE (volume, densité, durée d'ébullition) manque une seule fois, pas une fois par houblon (n° 27 :
+  // « Galaxy : durée d'ébullition · Citra : durée d'ébullition… » laissait croire que chaque ajout n'avait pas sa durée).
+  const DE_LA_RECETTE = ['volume final', 'densité initiale', 'durée d’ébullition'];
+  const recipeLevel = DE_LA_RECETTE.filter(reason => additions.some(h => h.missing.includes(reason)))
+    .map(reason => `${reason} de la recette`);
+  const missing = [...recipeLevel, ...additions.flatMap((h, i) => h.missing.filter(reason => !DE_LA_RECETTE.includes(reason)).map(reason => `${hops[i].name} : ${reason}`))];
   return { total: missing.length ? null : known, known, additions, missing };
 }

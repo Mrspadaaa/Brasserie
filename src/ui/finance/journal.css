@@ -16,11 +16,14 @@
 .journal-select:focus-visible { outline:2px solid rgb(var(--area-finances)); outline-offset:1px; }
 /* Périmètre et état sur une seule glissière : deux rangées de puces
    repoussaient la première écriture sous la moitié de l'écran. */
+/* Test en ligne n° 45 : à 500 px la dernière puce sortait du rail sans repère (« À com »). Le rail reste une seule glissière (densité, ci-dessus) ;
+   un fondu au bord droit dit qu'il y a une suite, et le compte « 0 » (qui ne dit rien) ne prend plus de place. */
 .journal-rail { display:flex; align-items:center; gap:4px; min-width:0; overflow-x:auto; overscroll-behavior-x:contain;
-  scrollbar-width:none; padding:1px 0; }
+  scrollbar-width:none; padding:1px 0; -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 20px), transparent); mask-image:linear-gradient(to right, #000 calc(100% - 20px), transparent); }
 .journal-rail::-webkit-scrollbar { display:none; }
 .journal-rail > * { flex:0 0 auto; }
 .journal-rail .journal-scopes, .journal-rail .journal-filters, .journal-rail .journal-active-filter { flex-wrap:nowrap; }
+.journal-chip-count[data-empty] { display:none; }
 .journal-rail-split { width:1px; align-self:stretch; background:rgb(var(--cave-700)); margin:2px 2px; }
 /* En-tête de jour : la date une fois, avec ce que le jour a coûté ou rapporté. */
 .journal-day-group + .journal-day-group { margin-top:2px; }
@@ -53,7 +56,7 @@
 .journal-chip[data-urgent] .journal-chip-count { color:rgb(var(--attention-texte)); }
 .journal-chip[data-urgent][aria-pressed=true] { background:rgb(var(--c-302719)); }
 .journal-active-filter .journal-chip { display:flex; align-items:center; gap:6px; }
-.journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 0; color:rgb(var(--cave-texte-200)); font-size:13px; line-height:20px; }
+.journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 1.75rem 2px 0; color:rgb(var(--cave-texte-200)); font-size:13px; line-height:20px; }
 .journal-extra > div { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:4px 0 6px; }
 .journal-text-action { display:inline-flex; align-items:center; justify-content:flex-start; gap:4px; min-height:28px; color:var(--finance-accent,rgb(var(--area-finances-texte))); font-size:13px; line-height:18px; text-align:left; }
 .journal-text-action:hover { text-decoration:underline; text-underline-offset:3px; }

@@ -19,6 +19,12 @@ describe('IBU courants, sans masquer les données absentes', () => {
   it.each([{timeMin:undefined},{timeMin:95},{alpha:101},{stage:'whirlpool',tempC:undefined},{weightG:NaN}])('refuse le repli plausible : %j', patch=>{
     expect(hotBitterness([{...hop,...patch} as HopIngredient],24,1.05,60).total).toBeNull();
   });
+  it('n° 27 : la durée d’ébullition de la recette manque UNE fois, sans accuser chaque houblon',()=>{
+    const trois=[{...hop,name:'Galaxy',timeMin:20},{...hop,name:'Citra',timeMin:60},{...hop,name:'Nelson Sauvin',timeMin:20}];
+    const result=hotBitterness(trois,24,1.05,Number.NaN);
+    expect(result.total).toBeNull();
+    expect(result.missing).toEqual(['durée d’ébullition de la recette']);
+  });
   it('distingue durée zéro, absence de durée et absence d’OG',()=>{
     expect(hotBitterness([{...hop,timeMin:0}],24,1.05,60).total).toBe(0);
     expect(hotBitterness([hop],24,null,60).total).toBeNull();

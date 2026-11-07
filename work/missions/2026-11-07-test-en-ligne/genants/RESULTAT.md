@@ -43,3 +43,32 @@ Build figé : `vite.ferm.config.mjs` (+ `VITE_HOP_V4=on` pour n° 9 : l'étape H
 
 CONNAISSANCE : le « Ma bière » v4 (`EtapeHoublons`) n'est monté que si `VITE_HOP_V4=on` au build ; le banc `?dev-local` par défaut montre l'atelier V5.5. Les entrées de houblon se relient par `cleDe` (v4/recipeConversion), pas par `findRecipeHopMatches` (index exact de recipeGuide.ts).
 LEÇON PROPOSÉE : aucune.
+
+---
+
+# Dernier lot (27, 28, 45, 48)
+
+Bilan : 45 corrigé (Chrome rouge → vert) ; 27 corrigé au domaine (message), non reproduit en Chrome ; 28 non fait (DÉCISION) ; 48 non reproduit (noms présents).
+Builds : `vite.ferm.config.mjs` + `VITE_HOP_V4=on` (`$TEMP/gen-apres2`), manifeste `21dd75b3…` avant et après.
+
+| n° | Fichiers | Contrôle avant → après | Capture ouverte |
+|---|---|---|---|
+| 45 | `src/ui/finance/journal.css` : le rail des filtres passe à la ligne au lieu de défiler sans repère (`flex-wrap`, `max-width:100%`) ; le compte « 0 » des puces est masqué ; `summary` « Autres filtres » garde son `padding-right` (le chevron global recouvrait le mot) | `genants/controle-45.mjs` : avant FILTRES ECHEC (« À compléter » coupée à 500 px, chevron sur « filtres ») → après FILTRES OK (clair 500, cave 500, clair 1280) | `g45-avant/c45-clair-500.png` (« À com », chevron sur le mot) ; `g45-apres/c45-cave-500.png` (puces entières, chevron dégagé) |
+| 27 | `src/domain/hopBitterness.ts` : une donnée de la recette (volume, densité, durée d'ébullition) manque **une fois** (« durée d'ébullition de la recette »), plus une fois par houblon ; `tests/unit/hopBitterness.test.ts` (+1) | Vitest vert (3 fichiers, 37 tests). `controle-27.mjs` : **non reproduit** : l'assistant réécrit la durée d'ébullition de la recette à l'enregistrement (60 par défaut), la fiche calcule 55,4 IBU, que `boilMin` soit absent ou le texte « 60 ». Le message n'apparaît donc qu'avec une recette dont `boilMin` est invalide dans les données enregistrées. Hypothèse : donnée importée ou ancienne (à lire en lecture seule sur « NEIPA Test multi-houblons » : `boilMin`). Le message a au moins cessé d'accuser chaque houblon | `g27-avant/c27-clair-390.png` (cas calculable) |
+| 28 | rien | `controle-28.mjs` lit l'ordre réel des suggestions : sans stock en dev-local, une seule suggestion (« Fantasia Blend, 10 g, 10′ ») | — |
+| 48 | rien | `controle-48.mjs` (arbre d'accessibilité de Chrome, `page.accessibility.snapshot`) : la barre du bas porte Bord, Finances, Brassins, Stocks, Clients ; les 6 `menuitem` du « + » portent leur nom (« Nouvelle écriture Dépense saisie à la main », « Créer une recette »…) : NOMS OK à 390 clair et 1280 cave | `g48-avant/c48-clair-390.png` |
+
+## DÉCISION À PRENDRE (n° 28, suggestions hors style)
+Le classement d'« Ajouter » est une règle écrite et décidée (D107, `QUICK_ADD_RULE` dans `src/domain/hopIndex/v4/quickAdd.ts`) : usage attesté, cohérent, peu documenté, non documenté, hors style ; le stock informe sans limiter. Elle n'est pas un bogue de code : sans usage attesté ni stock, des variétés « non documenté » passent devant. Les corrections possibles changent une décision du brasseur : (A) ne montrer en tête que les usages attestés et cohérents, le reste derrière « autres » ; (B) garder le classement et dire « non documenté pour ce style » sur la pastille ; (C) ne rien changer. Recommandation : B (rien ne se cache, l'écran dit pourquoi) ; l'affichage est dans `src/ui/hopIndex/maBiere/Ajouter.tsx` (à l'autre auteur). À montrer en mini maquettes si le brasseur doit choisir. Non fait ici.
+
+## Réserves du dernier lot
+- n° 45 : la ligne de filtres peut prendre deux rangées à 500 px (l'ancien commentaire de `journal.css` préférait une glissière pour ne pas repousser la première écriture) : arbitrage densité contre lisibilité, à valider ; la glissière revient en remettant `flex-wrap:nowrap`, `overflow-x:auto`.
+- `financeArchives.test.tsx` ne se charge pas (import `zxing-wasm/reader`, paquet non installé) : fichier non compté dans le vert. 11 fichiers Journal/Houblons lancés : 105 tests verts, 1 fichier non chargé. `tsc` : seules erreurs `pdfjs-dist` et `zxing-wasm`.
+CONNAISSANCE : un `summary` de l'app reçoit un chevron global en fond (`src/index.css`, `padding-right: 1.75rem`) : une règle locale qui remet `padding` à 0 fait recouvrir le mot ; garder le `padding-right`.
+
+## Pilote, 07.11 : n° 45 repris
+Le passage à la ligne contredisait la décision de densité du journal (« deux rangées de puces repoussaient la première écriture », 5fad4fa2) :
+à 390, deux rangées. Repris : une seule glissière, fondu de 20 px au bord droit (repère de suite), compte « 0 » masqué, chevron dégagé.
+`controle-45.mjs` accepte une puce coupée seulement si le rail défile avec ce fondu : ECHEC sur le build d'avant (« À compléter » coupée,
+sans repère) → OK clair 500, cave 390, clair 1280 ; capture c45-clair-500 regardée. n° 28 : option B (« non documenté pour ce style »)
+confiée à l'auteur de maBiere.
