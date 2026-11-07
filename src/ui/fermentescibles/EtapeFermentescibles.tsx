@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import type { Dispatch, SetStateAction } from 'react';
 import type { Fermentable, FermentableKind, StockItem } from '../../types';
 import type { LearnIngredient } from '../../domain/ingredientFacts';
+import './correctifs.css';
 import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
@@ -56,7 +57,9 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const [neuf, setNeuf] = useState<number | null>(null);
   const [couleurLigne, setCouleurLigne] = useState(-1);
   const chaine = useRef(false);
-  const [annule, setAnnule] = useState<{ f: Fermentable; i: number; sel: number } | null>(null);
+  // Les retraits en cours d'annulation, du plus ancien au dernier : « Annuler » rend le dernier, puis le précédent (B1 n° 6 : le second retrait ne perd plus le premier).
+  const [annules, setAnnules] = useState<Array<{ f: Fermentable; i: number; sel: number }>>([]);
+  const annule = annules.length ? annules[annules.length - 1] : null;
   const [annMom, setAnnMom] = useState<AnnMoment | null>(null);
   const minutRetrait = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const minutMoment = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -68,7 +71,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const n = fermentables.length;
   const selI = n ? Math.min(sel, n - 1) : -1;
   const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null).length;
-  useEffect(() => () => { clearTimeout(minutRetrait.current); clearTimeout(minutMoment.current); }, []);
+  useEffect(() => () => { clearTimeout(minutRetrait.current); clearTimeout(minutMoment.current); clearTimeout(minutPlafond.current); }, []);
 
   // L'ajout mène à la masse de la ligne, sur la ligne (le focus est donné quand la ligne est montée).
   useLayoutEffect(() => {
@@ -78,8 +81,13 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const patch = useCallback((i: number, p: Partial<Fermentable>) =>
     onFermentables((l) => l.map((f, k) => (k === i ? { ...f, ...p } : f))), [onFermentables]);
+  // Le plafond de la masse (10 t) est dit : « 99999 » devient 10 000 kg et l'écran l'écrit sous la recette, jusqu'à la masse suivante ou 6 s (B1 n° 12).
+  const [plafond, setPlafond] = useState(false);
+  const minutPlafond = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setKg = useCallback((i: number, brut: number) => {
     const kg = Math.min(MASSE_MAX_KG, brut);
+    clearTimeout(minutPlafond.current);
+    if (brut > MASSE_MAX_KG) { setPlafond(true); minutPlafond.current = setTimeout(() => setPlafond(false), 6000); } else setPlafond(false);
     onFermentables((l) => (l[i] && l[i].weightKg !== kg ? l.map((f, k) => (k === i ? { ...f, weightKg: kg } : f)) : l));
   }, [onFermentables]);
 
@@ -92,22 +100,23 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const versAjout = () => { focus('[data-role="ajout"]'); };
 
-  // Retirer : sans dialogue ; la place reste 6 s avec « Annuler » ; un nouveau retrait remplace le précédent.
+  // Retirer : sans dialogue ; la place reste 6 s avec « Annuler » ; un nouveau retrait s'empile sur le précédent (6 s après le dernier geste).
   const retirer = (i: number) => {
     const f = fermentables[i];
     if (!f) return;
     clearTimeout(minutRetrait.current);
-    setAnnule({ f, i, sel });
+    setAnnules((a) => [...a, { f, i, sel }]);
     onFermentables((l) => l.filter((_, k) => k !== i));
     if (sel > i) setSel(sel - 1);
     retour.current = -1; setCouleurLigne(-1); setAnnMom(null);
-    minutRetrait.current = setTimeout(() => setAnnule(null), 6000);
+    minutRetrait.current = setTimeout(() => setAnnules([]), 6000);
   };
   const rendreLigne = () => {
     const a = annule;
     if (!a) return;
     clearTimeout(minutRetrait.current);
-    setAnnule(null);
+    setAnnules((l) => l.slice(0, -1));
+    if (annules.length > 1) minutRetrait.current = setTimeout(() => setAnnules([]), 6000);
     onFermentables((l) => [...l.slice(0, a.i), a.f, ...l.slice(a.i)]);
     setSel(a.sel); setNeuf(a.i);
     requestAnimationFrame(() => focus(`[data-ret="${a.i}"]`));
@@ -161,17 +170,18 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   };
 
   // Le champ d'ajout : un candidat de la recherche. Il ne crée pas de doublon.
-  const ajouterLigne = (nom: string, article: StockItem | undefined, kg: number | null) => {
-    const def = defs[famille];
+  // `fam` : la famille de la ligne. Celle du champ, sauf pour un article trouvé dans un autre rayon (« dext » en Grain → Dextrose, famille Sucre ; B1 n° 4).
+  const ajouterLigne = (nom: string, article: StockItem | undefined, kg: number | null, fam: FermentableKind = famille) => {
+    const def = defs[fam];
     const nouvelle: Fermentable = {
       name: nom,
       stockItemRef: article?.ref,
       // Zéro, pas une quantité plausible : c'est au brasseur de la poser.
       weightKg: kg ?? 0,
-      kind: famille,
+      kind: fam,
       use: def.use,
       fermentabilityPct: def.fermentability,
-      colorEbc: article?.colorEbc ?? (famille === 'grain' ? undefined : 0),
+      colorEbc: article?.colorEbc ?? (fam === 'grain' ? undefined : 0),
       potentialPpg: article?.potentialPpg ?? def.ppg,
       ...(def.use === 'fermentation' ? { dayOffset: JOUR_PAR_DEFAUT } : {}),
     };
@@ -189,7 +199,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
       if (kg == null) { retour.current = c.ligne; focus(`[data-kl="${c.ligne}"]`); } else versAjout();
       return;
     }
-    ajouterLigne(c.nom, c.article, kg);
+    ajouterLigne(c.nom, c.article, kg, c.famille);
     if (kg != null) requestAnimationFrame(versAjout);
   };
   const creer = (nom: string, kg: number | null) => {
@@ -207,8 +217,9 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const lignes: React.ReactNode[] = [...ticket];
   if (annule) {
     lignes.splice(Math.min(annule.i, lignes.length), 0, (
-      <li className="fer-ote" key="ote" aria-live="polite">
+      <li className="fer-ote" key={`ote-${annules.length}`} aria-live="polite">
         <s>{annule.f.name}</s> retiré
+        {annules.length > 1 && <span className="fer-ote-n">· {annules.length - 1} de plus</span>}
         <button type="button" className="fer-ann" data-role="annuler" onClick={rendreLigne}>Annuler</button>
         <i className="fer-file" aria-hidden="true" />
       </li>
@@ -268,6 +279,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
           onRenseigner={() => { const i = fermentables.findIndex((f) => f.kind === 'grain' && f.colorEbc == null); if (i >= 0) ouvrirEbc(i, true); }} />
       )}
       <div data-role="alertes">
+        {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}
       </div>

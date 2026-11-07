@@ -4,7 +4,7 @@ import { Units } from '../../services/units';
 import { proposerFermentables } from '../../domain/fermentables/proposition';
 import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
-import { chercher, decouper, kgTxt, lireAjout, memeArticle, nomPossible, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
+import { chercher, chercherAilleurs, decouper, kgTxt, lireAjout, memeArticle, nomPossible, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
 
 export interface DefFamille {
@@ -118,7 +118,14 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   const s = lireAjout(valeur, (nom) => chercher(nom, articles, lignes).some((c) => c.rang <= 1));
   const t = s.nom;
   const on = ouvert || !!t;
-  const trouves = useMemo(() => (t ? chercher(t, articles, lignes) : []), [t, articles, lignes]);
+  // Les autres rayons comptent : « dext » en Grain propose Dextrose (rayon Sucre), qui s'ajoute dans sa famille. Les noms de la famille du champ restent devant
+  // (le brasseur a choisi sa famille) ; un rang 4 (faute d'une lettre) ne passe jamais devant un nom trouvé ailleurs (critique B1 n° 4).
+  const trouves = useMemo(() => {
+    if (!t) return [];
+    const propres = chercher(t, articles, lignes);
+    const ailleurs = chercherAilleurs(t, famille, familles, defs, stockItems, fermentables);
+    return [...propres.filter((c) => c.rang <= 3), ...ailleurs, ...propres.filter((c) => c.rang > 3)];
+  }, [t, articles, lignes, famille, familles, defs, stockItems, fermentables]);
   const affiches = t ? trouves.slice(0, 6) : [];
   const propositions = useMemo(
     () => proposerFermentables({
@@ -163,9 +170,9 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
     } else if (flechee && liste[iCible]) choisir(liste[iCible], null);
   };
 
-  const sousNom = (a?: StockItem) => {
+  const sousNom = (a?: StockItem, autre?: FermentableKind) => {
     const dup = a && (doublons.get(a.name.trim().toLocaleLowerCase('fr')) ?? 0) > 1;
-    return `${stockTxt(a)}${dup ? ` · réf. ${a!.ref}` : ''}`;
+    return `${stockTxt(a)}${dup ? ` · réf. ${a!.ref}` : ''}${autre ? ` · ${defs[autre].label.toLowerCase()}` : ''}`;
   };
 
   return (
@@ -234,13 +241,13 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
             );
           }
           const a = c.article;
-          const ebc = famille === 'grain' && a?.colorEbc != null ? a.colorEbc : null;
+          const ebc = (c.famille ?? famille) === 'grain' && a?.colorEbc != null ? a.colorEbc : null;
           return (
             <button key={a?.ref ?? c.nom} type="button" role="option" aria-selected={pr} className={`fer-tu${pr ? ' fer-prem' : ''}${a && !(a.currentStock > 0) ? ' fer-epuise' : ''}`} data-role="resultat"
-              data-nom={c.nom} data-pu={c.nom} aria-label={`Ajouter ${c.nom} : ${sousNom(a)}${ebc != null ? ` · ${qteTxt(ebc)} EBC` : ''}`} onClick={() => choisir(c, s.kg)}>
+              data-nom={c.nom} data-pu={c.nom} data-ailleurs={c.famille} aria-label={`Ajouter ${c.nom}${c.famille ? ` (${defs[c.famille].label})` : ''} : ${sousNom(a)}${ebc != null ? ` · ${qteTxt(ebc)} EBC` : ''}`} onClick={() => choisir(c, s.kg)}>
               <span className="fer-l1">{etoile}{nom}
                 {ebc != null && <i className="fer-ebcp" style={{ background: teinte(ebc), color: texteSurTeinte(ebc) }}>{qteTxt(ebc)}</i>}</span>
-              <span className="fer-l2">{sousNom(a)}</span>{fin}
+              <span className="fer-l2">{sousNom(a, c.famille)}</span>{fin}
             </button>
           );
         })}

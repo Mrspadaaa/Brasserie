@@ -28,9 +28,13 @@ export function lit(s: string): number | null {
   const v = parseFloat(String(s).replace(',', '.').replace(/[^0-9.]/g, ''));
   return Number.isFinite(v) ? v : null;
 }
-/** La masse la plus grande qu'une ligne accepte (10 t) : au-delà, la saisie est ramenée là (fuzzSaisie : 999999999999). */
+/** La masse la plus grande qu'une ligne accepte (10 t) : au-delà, la saisie est ramenée là (fuzzSaisie : 999999999999) et l'écran le dit (B1 n° 12). */
 export const MASSE_MAX_KG = 10000;
-export const arrondiKg = (v: number) => (Number.isFinite(v) ? Math.min(MASSE_MAX_KG, Math.round(v * 1000) / 1000) : MASSE_MAX_KG);
+/**
+ * Une masse tapée, au centième de kg (10 g : la précision d'une balance de brasserie ; « 0,004 » devient 0, à compléter, au lieu d'un bandeau à trois décimales).
+ * Le plafond n'est PAS appliqué ici : `setKg` de l'étape le fait et le dit. Illisible ou infini : le plafond.
+ */
+export const arrondiKg = (v: number) => (Number.isFinite(v) ? Math.round(v * 100) / 100 : MASSE_MAX_KG);
 
 // ---------------------------------------------------------------------------------------------------------------- crans
 /** Le cran de la masse : 50 g sous 1 kg, 100 g au-dessus (la piste du plateau). */
@@ -57,12 +61,21 @@ export function pmax(kg: number): number {
   return Math.ceil((kg * 1.5) / 10) * 10;
 }
 
-/** Les graduations de la piste du plateau (0 à `m` kg) : un pas de 0,1 sous 2 kg, 0,5 sous 6, 1 au-delà ; jamais plus de 200 (le pas s'élargit). */
+/** Le nombre de graduations au plus sur la piste du plateau : au-delà, sur 330 px, le trait fait une barre noire (B1 n° 12). */
+export const GRADUATIONS_MAX = 60;
+/**
+ * Les graduations de la piste du plateau (0 à `m` kg) : un pas de 0,1 sous 2 kg, 0,5 sous 6, 1 au-delà ; jamais plus de 60 intervalles.
+ * Au-delà, le pas monte sur une suite ronde (1, 2, 5, 10, 20, 50…) et le gros trait tombe sur une valeur ronde (tous les 5 pas, tous les 2 pour un pas de 5).
+ */
 export function graduationsPiste(m: number): Array<{ v: number; grosse: boolean }> {
-  const gros = m <= 6 ? 1 : m <= 12 ? 2 : 5;
+  let gros = m <= 6 ? 1 : m <= 12 ? 2 : 5;
   let pas = m <= 2 ? 0.1 : m <= 6 ? 0.5 : 1;
-  if (m / pas > 200) pas = m / 200;
-  const n = Math.min(200, Math.round(m / pas));
+  if (m / pas > GRADUATIONS_MAX) {
+    pas = Math.pow(10, Math.floor(Math.log10(m / GRADUATIONS_MAX)));
+    for (const f of [1, 2, 5, 10]) if (m / (pas * f) <= GRADUATIONS_MAX) { pas *= f; break; }
+    gros = pas * (Math.round(pas / Math.pow(10, Math.floor(Math.log10(pas)))) === 5 ? 2 : 5);
+  }
+  const n = Math.floor(m / pas + 1e-9);
   const g: Array<{ v: number; grosse: boolean }> = [];
   for (let k = 0; k <= n; k++) {
     const v = k * pas;
@@ -142,6 +155,36 @@ export interface Candidat {
   article?: StockItem;
   /** L'indice de la ligne de la recette, quand l'article y est déjà. */
   ligne: number;
+  /** La famille de l'article quand il vient d'un autre rayon que celle du champ (« dext » en Grain trouve Dextrose, rayon Sucre) ; absent : celle du champ. */
+  famille?: FermentableKind;
+}
+
+/**
+ * Les autres rayons : pour chaque article trouvé hors de la famille du champ, la famille qui l'accueille (critique B1 n° 4, 07.11).
+ * Une famille par article : la première, dans l'ordre des familles, dont le rayon le contient, mais celle qui porte son nom d'abord (Lactose → famille Lactose).
+ */
+export function chercherAilleurs(
+  texte: string,
+  courante: FermentableKind,
+  familles: readonly FermentableKind[],
+  rayons: Record<FermentableKind, { label: string; stock: string[] }>,
+  stockItems: readonly StockItem[],
+  fermentables: readonly Fermentable[],
+): Candidat[] {
+  const dans = (k: FermentableKind, a: StockItem) => rayons[k].stock.some((c) => c.toLowerCase() === a.category.toLowerCase());
+  const autres = familles.filter((k) => k !== courante);
+  const familleDe = (a: StockItem): FermentableKind | undefined => {
+    const ks = autres.filter((k) => dans(k, a));
+    return ks.find((k) => nu(rayons[k].label) === nu(a.name)) ?? ks[0];
+  };
+  const o: Candidat[] = [];
+  for (const k of autres) {
+    const articles = stockItems.filter((a) => !dans(courante, a) && familleDe(a) === k);
+    const lignes = fermentables.map((f, i) => ({ f, i })).filter(({ f }) => f.kind === k);
+    // Pas de faute d'une lettre dans un autre rayon (rang 4) : trop de bruit.
+    for (const c of chercher(texte, articles, lignes)) if (c.rang <= 3) o.push({ ...c, famille: k });
+  }
+  return o.sort((x, y) => x.rang - y.rang);
 }
 
 /** Cette ligne de la recette est-elle cet article du stock ? Par le lien `stockItemRef`, sinon par le nom (les recettes importées). */
