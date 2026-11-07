@@ -9,7 +9,7 @@ import stockS6 from './apercu/stock-s6.json';
 import { articlesNeufsDe } from '../../services/purchaseEntry';
 import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
 import { ajouterCoupure, phraseCoupure } from './finale';
-import type { ScanOutcome, ScannedInvoiceResult } from '../../services/geminiScanner';
+import { PIECE_DIFFICILE, type ScanOutcome, type ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { ApercuDepense } from './types';
 import { parseSwissQr } from '../../services/qrFacture';
 import type { ResultatQr } from '../../services/qrLecture';
@@ -319,8 +319,9 @@ export function apercuDepense(etat: string): ApercuDepense {
     else { ajuste([base(12.5)], 12.5); result.points = []; result.fieldWarnings = []; result.issues = []; result.tvaAmount = null; result.vat = []; }
   }
   const fichier = { name: 'capture-facture.jpg', size: 735721, type: 'application/pdf' };
-  const outcome: ScanOutcome = etat === '5'
-    ? { ok: false, error: 'Lecture impossible · service IA. Le fichier est gardé, rien n’est perdu.', proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type }
+  // `difficile` (D381) : une longue pièce lue en morceaux dont une partie manque ; le message propose une photo plus nette ou la saisie à la main.
+  const outcome: ScanOutcome = etat === '5' || etat === 'difficile'
+    ? { ok: false, error: etat === '5' ? 'Lecture impossible · service IA. Le fichier est gardé, rien n’est perdu.' : `Lecture en morceaux incomplète : la partie 2 sur 3 n'a pas été lue. Réessaie. ${PIECE_DIFFICILE}`, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type }
     : { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false };
   return {
     outcome, fichier, stocks: stockSimule(), transactions: etat === '8' ? [doublon380001()] : [], etat,
