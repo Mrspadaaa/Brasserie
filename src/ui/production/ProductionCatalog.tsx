@@ -104,7 +104,12 @@ export function ProductionCatalog({
     if (kind === 'batches') StorageService.setUiState('catalog-batches-work', work);
   }, [work, kind]);
   const entries = useMemo(
-    () => (kind === 'recipes' ? recipeEntries(recipes, batches) : batchEntries(batches)),
+    () => {
+      if (kind !== 'recipes') return batchEntries(batches);
+      const config = StorageService.getConfig();
+      const cuverie = config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
+      return recipeEntries(recipes, batches, cuverie?.efficiencyPct ?? 75);
+    },
     [kind, recipes, batches]
   );
   const filtered = useMemo(() => {

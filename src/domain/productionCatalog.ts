@@ -4,6 +4,7 @@ import { bandForEbc, computeBeerColor } from './beerColor';
 import { statusOf } from './batchStatus';
 import { DateUtils } from '../services/dateUtils';
 import { BrewingMath } from '../services/brewingMath';
+import { ibuListe } from './recipeMetrics';
 import { inCatalogFolder, type CatalogFolder } from './catalogOrganization';
 
 export type CatalogKind = 'batches' | 'recipes';
@@ -134,7 +135,8 @@ function familyOf(recipe: Recipe, recipes: Recipe[]): string {
   }
   return item.id;
 }
-export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry[] {
+/** `defaultEfficiencyPct` : le rendement de la cuverie active, celui que la fiche applique à une recette qui n'a pas le sien. */
+export function recipeEntries(recipes: Recipe[], batches: Batch[], defaultEfficiencyPct = 75): CatalogEntry[] {
   return recipes.map((recipe) => {
     const color = recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process) ? null : computeBeerColor(
       (recipe.fermentables ?? recipe.malts ?? []).filter((f) => !f.kind || f.kind === 'grain'),
@@ -148,7 +150,8 @@ export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry
       date: recipe.brewDate,
       timestamp: catalogDate(recipe.brewDate),
       abv: catalogNumber(recipe.nolo?.enabled ? recipe.nolo.targetAbvPct : recipe.abvTarget),
-      ibu: catalogNumber(recipe.ibuTarget),
+      // Le même IBU que la fiche (calculé), pas l'IBU « annoncé » de la recette (test en ligne du 07.11, n° 3).
+      ibu: catalogNumber(ibuListe(recipe, recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? defaultEfficiencyPct)),
       ebc: color?.ebc ?? recipe.colorEbc,
       swatch:
         color?.swatch ?? (recipe.colorEbc != null ? bandForEbc(recipe.colorEbc).swatch : undefined),

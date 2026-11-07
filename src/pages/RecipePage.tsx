@@ -1,5 +1,7 @@
 import { batchDisplayDate } from '../domain/batchSchedule';
 import { hotBitterness } from '../domain/hopBitterness';
+import { amertumeRecette, fgRecette, formatDensite, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
+import { formatDecimal } from '../ui/numericInput';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { mashPhDiagnostic } from '../domain/water/readiness';
 import React, { useMemo, useState } from 'react';
@@ -181,10 +183,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct, recipe.nolo?.enabled]
   );
 
-  const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : recipe.ogTarget || ogPredicted || 0;
+  // Règle unique de la liste, de la fiche et de l'assistant : domain/recipeMetrics.ts (test en ligne du 07.11).
+  const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : ogRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75) || ogPredicted || 0;
 
   const boilOg = useMemo(() => recipe.nolo?.enabled ? og || null : yeastRecipeBoilOg({ ...recipe, efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og: og || null }).og, [recipe, og, brewhouse?.efficiencyPct]);
-  const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, boilOg, recipe.boilMin ?? 60), [hops, recipe.volumeL, boilOg, recipe.boilMin]);
+  const bitterness = useMemo(() => amertumeRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75, { og: og || null, nolo: !!recipe.nolo?.enabled }),
+    [recipe, og, brewhouse?.efficiencyPct]);
   const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, boilOg, recipe.boilMin ?? 60).additions[0].ibu;
   const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
 
@@ -194,7 +198,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og,
     reference: resolveFermentationYeast(recipe, yeastReferences(knowledge)) }), [recipe, brewhouse?.efficiencyPct, knowledge, og]);
   const fgPredicted = projection?.fg.range?.min === projection?.fg.range?.max ? projection?.fg.range?.min ?? null : null;
-  const fg = recipe.nolo?.enabled ? null : recipe.fgTarget || fgPredicted;
+  const fg = recipe.nolo?.enabled ? null : fgRecette(recipe, fgPredicted);
 
   const projectedAbv = projection?.abv.range?.min === projection?.abv.range?.max ? projection?.abv.range?.min ?? null : null;
   const abv = recipe.nolo?.enabled ? null : recipe.abvTarget ?? projectedAbv;
@@ -262,11 +266,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         <dl aria-label="Repères de la recette" className="grid gap-x-2 gap-y-1" style={{gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,3.5rem),1fr))'}}>
           <Metric
             label={recipe.nolo?.enabled ? og > 1 ? noloWort?.origin === 'measurement' ? 'OG mesurée' : 'OG calculée' : 'OG à mesurer' : 'OG'}
-            value={og > 1 ? recipe.nolo?.enabled ? og.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3}) : og.toFixed(3) : null}
+            value={og > 1 ? formatDensite(og) : null}
             hint={recipe.nolo?.enabled ? 'moût à caractériser' : 'renseigne le potentiel des malts'}
             tone="text-ebc-straw"
           />
-          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'} />}
+          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? formatDensite(fg) : null} hint={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'} />}
           {/*
             L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un
             houblon. Quand la recette d'origine en annonce un autre, on montre
@@ -288,13 +292,13 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           />
           <Metric
             label="EBC"
-            value={color ? String(color.ebc) : null}
+            value={color ? formatDecimal(color.ebc) : null}
             hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'}
             swatch={color?.swatch}
           />
           {!recipe.nolo?.enabled&&<Metric
             label="ABV"
-            value={abv ? `${abv.toFixed(1)} %` : null}
+            value={abv ? `${formatDecimal(abv, 1)} %` : null}
             hint={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}
             note={!projection?.abv.range && recipe.abvTarget != null ? 'Cible conservée · projection indisponible' : undefined}
             tone="text-ebc-amber"
@@ -413,7 +417,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         hint={
           dryHopTotal > 0
             ? `dont ${Units.format(dryHopTotal, 'g')} à cru · effet simulé séparément`
-            : `${hops.length} ajout(s) · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
+            : `${nombreAccorde(hops.length, 'ajout')} · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
         }
       >
         <HopBitternessPanel hops={hops} volumeL={recipe.volumeL} og={og || null} boilMin={recipe.boilMin ?? 60} hot={bitterness}/>
@@ -456,7 +460,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             </span>
                             {style.bitters && (
                               <span className="block reading text-sm text-cave-400">
-                                {ibu != null ? `${ibu.toFixed(1)} IBU` : '— IBU'}
+                                {ibu != null ? `${formatDecimal(ibu, 1)} IBU` : '— IBU'}
                               </span>
                             )}
                           </span>
@@ -761,7 +765,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <p className="text-sm text-cave-50">Maintenir {coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C pendant {coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h, puis filtrer.</p>
               <p className="text-xs text-cave-200">Consignes du pilote ; relever la température, le volume, la densité et le pH réellement obtenus.</p>
             </Section> :
-              <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={`${recipe.mash.steps.length} paliers`}>
+              <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={nombreAccorde(recipe.mash.steps.length, 'palier')}>
                 {measuredExtraction && <p className="text-xs text-cave-200">Ce programme enregistré ne définit pas le protocole de {recipe.nolo?.process === 'coldExtraction' ? 'l’extraction à froid' : 'la seconde extraction'}.</p>}
                 <h3 className="text-sm text-cave-400 mb-1.5">
                   Empâtage
@@ -789,7 +793,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             {recipe.fermentation && recipe.fermentation.length > 0 && (
-              <Section title="Fermentation" hint={`${recipe.fermentation.length} étapes`}>
+              <Section title="Fermentation" hint={nombreAccorde(recipe.fermentation.length, 'étape')}>
                 <h3 className="text-sm text-cave-400 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {recipe.fermentation.map((s, i) => {
