@@ -51,3 +51,9 @@ DÉCISION À PRENDRE (n° 4, état d'une recette dans l'autre) : cause non diagn
 
 CONNAISSANCE : une facture à lignes est une seule écriture ; le journal ne somme jamais ses lignes ; un « 27 opérations · −220,79 » = 26 écritures saisies à part (sans `paymentStatus`, autre nom de fournisseur) plus la facture.
 LEÇON PROPOSÉE : une valeur « retenue » et la même valeur « recalculée » vivent côte à côte dans l'app ; chaque écran choisissait la sienne. Toute valeur affichée à plusieurs endroits passe par une fonction unique de `src/domain/`, et un test compare l'affichage des écrans entre eux.
+
+## Pilote, 07.11 : doublon du journal confirmé (lecture seule, Firestore `transactions`, date « 27.04.2026 »)
+- 27 documents : `B-001` à `B-026` (ancienne saisie ligne à ligne : `proofNotes` « Cmd 686863 Brau-Rauchshop », ni `finance.lines` ni `paymentStatus` ; `B-001` porte un paiement `PAI-d5b16e0b…`) et `TX-6770960b-d6da-4840-929e-4b44ae641865` (facture lue le 01.11 par gemini-3.8-flash, n° 372765, `sourceOrderNumber` « Onlinebestellung-686863 », 26 lignes, 110,40, `paymentStatus` paid).
+- Même commande saisie deux fois : le code du journal est juste. Rien n'a été écrit ni supprimé.
+- Accord groupé (utilisateur) : retirer ou archiver `B-001` à `B-026` (et le paiement lié à `B-001`), ou garder la facture et marquer les anciennes. Geste sur données réelles : à lui.
+- Gênant produit (à suivre) : la lecture d'une facture ne signale pas une commande déjà saisie (même n° de commande dans `proofNotes`) ; candidat à un avertissement de doublon.
