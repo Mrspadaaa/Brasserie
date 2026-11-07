@@ -147,8 +147,12 @@ export function pastilleConversion(conversion: string): string {
   if (egal) return `= ${egal[1]} sachet${Number(egal[1].replace(',', '.')) > 1 ? 's' : ''}`;
   return /[=→]/.test(conversion) ? conversion : `= ${conversion}`;
 }
-export const conversionDe = (line: PurchaseLineDraft, article: StockItem | undefined): string | undefined =>
-  article && line.quantity !== undefined && isReadableUnit(line.unit) ? formatUnitLink(line.quantity, line.unit, article.unit, article.category) : undefined;
+/** B2 n° 5 : une seule casse d'unité à l'écran : « Kg » (le service écrit « kg »). */
+export const casseUnites = (texte: string): string => texte.replace(/\bkg\b/g, 'Kg');
+export const conversionDe = (line: PurchaseLineDraft, article: StockItem | undefined): string | undefined => {
+  const c = article && line.quantity !== undefined && isReadableUnit(line.unit) ? formatUnitLink(line.quantity, line.unit, article.unit, article.category) : undefined;
+  return c === undefined ? undefined : casseUnites(c);
+};
 
 /** Le malt dont `lines[index]` est la mouture, SEULEMENT si le service l'écrira : parent juste au-dessus ET lien confirmé (Conception 7). */
 export function parentDeLaMouture(lines: readonly PurchaseLineDraft[], index: number): number {

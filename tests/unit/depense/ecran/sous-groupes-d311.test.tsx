@@ -65,7 +65,8 @@ describe('D311 : le segment « Plié | Déplié » de son choix E', () => {
     expect(ordre.indexOf('titre')).toBeLessThan(ordre.indexOf('segment'));
     expect(ordre.indexOf('segment')).toBeLessThan(ordre.length - 1);
     expect([...s.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Plié', 'Déplié']);
-    expect(allume(v)).toEqual(['plie']);
+    // B2 n° 9 : la bande « Nettoyage » (une ligne) se plie désormais et arrive ouverte, les sous-familles de « Rénovation » repliées : l'état est mêlé, aucun des deux n'est allumé (D311 : calculé sur l'état réel).
+    expect(allume(v)).toEqual([]);
   });
   it('« Déplié » ouvre tous les groupes et s\'allume seul ; « Plié » les replie et s\'allume seul', async () => {
     const v = await lire();

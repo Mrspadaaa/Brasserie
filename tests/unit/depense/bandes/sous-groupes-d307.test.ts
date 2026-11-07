@@ -60,15 +60,20 @@ describe('D307 : une bande sans deux sous-familles reste celle d\'aujourd\'hui',
     expect(avec[0].sousGroupes![0]).toMatchObject({ bande: true, ids: ['1', '2'] });
     expect(avec).toEqual(sans);
   });
-  it('D378 : Houblons (deux lignes) se plie en un seul groupe ; Malts (une ligne) n\'a rien à plier', () => {
+  it('D378, B2 n° 9 : Houblons (deux lignes) se plie en un seul groupe ; Malts (une ligne) aussi (« on peut toujours pas fermé les famille »)', () => {
     const b = bandes([L('1', 'houblon', 'Houblon', 5, 100, 'g'), L('2', 'houblon', 'Houblon', 6, 100, 'g'), L('3', 'malt', undefined, 9, 5, 'Kg')]);
-    const houblon = b.find(x => x.sousGroupes), autres = b.filter(x => x !== houblon);
-    expect(houblon!.sousGroupes).toHaveLength(1);
-    expect(houblon!.sousGroupes![0]).toMatchObject({ bande: true, ids: ['1', '2'] });
-    expect(autres.every(x => x.sousGroupes === undefined)).toBe(true);
+    const houblon = b.find(x => x.cle === 'houblon')!, malt = b.find(x => x.cle === 'malt')!;
+    expect(houblon.sousGroupes).toHaveLength(1);
+    expect(houblon.sousGroupes![0]).toMatchObject({ bande: true, ids: ['1', '2'] });
+    expect(malt.sousGroupes).toHaveLength(1);
+    expect(malt.sousGroupes![0]).toMatchObject({ bande: true, ids: ['3'] });
+    expect(pliable(malt.sousGroupes![0])).toBe(true);
   });
-  it('aucune sous-famille : la bande n\'a pas le champ', () => {
-    expect('sousGroupes' in bandes([L('1', 'autres', undefined, 5, 1, 'Stk')])[0]).toBe(false);
+  it('B2 n° 9 : une bande d\'une ligne est pliable (chevron, « Plié »), ouverte à l\'arrivée', () => {
+    const sg = bandes([L('1', 'autres', undefined, 5, 1, 'Stk')])[0].sousGroupes!;
+    expect(sg).toHaveLength(1); expect(pliable(sg[0])).toBe(true);
+    expect(groupeOuvert('autres', sg[0], new Map())).toBe(true);
+    expect(groupeOuvert('autres', sg[0], new Map([[cleGroupe('autres', sg[0].nom), false]]))).toBe(false);
   });
 });
 

@@ -110,9 +110,11 @@ export function optionsEnFrancais(line: PurchaseLineDraft, unite: string): { com
 }
 
 /** Le texte de la quantité d'une rangée : « 85 g » (unité effective), « 2 » sans unité connue, vide pour une ligne hors stock sans quantité (le port). */
+/** B2 n° 5 : une seule casse d'unité à l'écran, « Kg » et « L » comme les segments (la ligne garde l'écriture de l'imprimé ou du geste, « kg » ou « Kg » : elle ne change jamais ce qui s'écrit au stock). */
+export const uniteAffichee = (unite: string): string => { const s = shortUnit(unite); return /^kg$/i.test(s) ? 'Kg' : /^l$/i.test(s) ? 'L' : s; };
 export function texteQuantite(line: PurchaseLineDraft, unite: string, horsStock: boolean): string {
   if (line.quantity === undefined) return horsStock ? '' : '?';
-  const u = shortUnit(unite);
+  const u = uniteAffichee(unite);
   return `${virgule(line.quantity)}${u ? ` ${u === 'sachet' && line.quantity > 1 ? 'sachets' : u}` : horsStock ? '' : ' ?'}`;
 }
 

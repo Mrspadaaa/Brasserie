@@ -29,7 +29,7 @@ import { lireOptions } from '../depense/optionsDuNom';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
-import { chipsDeLecture,compteLiens,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
+import { casseUnites,chipsDeLecture,compteLiens,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
 import { millingParentIndex,isMillingSurcharge,LIGNES_MAX } from '../../services/purchaseEntry';
 import { contexteDeArticle } from '../../services/stockLineMatching';
 import { vueQr,resumeQr,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
@@ -52,7 +52,7 @@ import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libe
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { bandes as calculerBandes,ORDRE_GROUPES,NOMS_GROUPES,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
-import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
+import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,uniteAffichee,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
 import { confianceEntete,natureSansEnjeu,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
 import { arrondiDuTotal,uniteEffective } from '../../services/purchaseEntry';
 import { regleProduit,linkUnit,donneesDArticle } from '../../services/stockLineMatching';
@@ -145,6 +145,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
   /* D369 : le champ de `q × prix = montant` que le calcul a posé, par ligne (il suit les deux autres) ; les lignes dont la quantité a été posée d'un toucher (ses nombres restent). */
   const calcules=useRef(new Map<string,ChampCalcul>()),derniers=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
+  /* B2 n° 2 : la ligne telle qu'elle était avant un changement d'unité (quantité, prix, unité écrite) : le retour à cette unité la rend. */
+  const uniteQuittee=useRef(new Map<string,{unit:string;quantity:number|undefined;unitPrice:number|undefined;amount:number|undefined}>());
   /* D370 : une ligne venue sans libellé garde son champ pendant qu'on le tape (il ne part plus à la première lettre). */
   const libellesVides=useRef(new Set<string>());
   /* D370 : pendant la frappe du libellé, la ligne garde sa bande et son sous-groupe (sinon elle change de place à la première lettre, et le champ avec elle) ; elle se range au départ du champ. */
@@ -264,7 +266,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const occurrences=selectedPlan?.recurrence?planOccurrences(selectedPlan,`${new Date().getFullYear()-1}-01-01`,`${new Date().getFullYear()+2}-12-31`):[];
   const patch=(value:Partial<PurchaseDraft>)=>{setDraft(previous=>patchPurchaseDraft(previous,value,swissToday()));};
   /* Le prix unitaire lu vaut pour l'unité imprimée : une autre unité tapée le retire (la même, non). */
-  const updateLine=(id:string,value:Partial<PurchaseLineDraft>)=>{setDraft(previous=>({...previous,lines:previous.lines.map(line=>line.id===id?{...line,...value,...(value.unit!==undefined&&value.unit!==line.unit&&isReadableUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))&&linkUnit(value.unit)!==linkUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))?{unitPrice:undefined}:{})}:line)}));};
+  const updateLine=(id:string,value:Partial<PurchaseLineDraft>)=>{setDraft(previous=>({...previous,lines:previous.lines.map(line=>line.id===id?{...line,...value,...(!('unitPrice' in value)&&value.unit!==undefined&&value.unit!==line.unit&&isReadableUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))&&linkUnit(value.unit)!==linkUnit(uniteEffective(draftEff.lines.find(l=>l.id===line.id)??line))?{unitPrice:undefined}:{})}:line)}));};
   const simplePurchase=draft.lines.length===1&&!scan?.ok&&draft.lines[0].description===draft.description&&draft.lines[0].amount===draft.amount;
   const selectCategory=(category:PurchaseCategory)=>{
     const line=draft.lines[0];
@@ -672,7 +674,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const proposed=line.stockAction==='existing'&&proposedStock.current.has(line.id);
     const target=articleDe(line),unite=uniteEffective(effDe(line));
     /* D213/D214 : la conversion se voit (« 25 kg → 25 000 g »), une unité illisible se dit (« unité à préciser »), le poids d'un sachet non confirmé aussi. */
-    const notes=target?[line.quantity!==undefined&&isReadableUnit(unite)?formatUnitLink(line.quantity,unite,target.unit,target.category):'',isReadableUnit(unite)?'':'unité à préciser',proposed&&proposedStock.current.has(line.id+PROPOSAL_WEIGHT_MARK)?'poids du sachet non confirmé':''].filter(Boolean):[];
+    const notes=target?[line.quantity!==undefined&&isReadableUnit(unite)?casseUnites(formatUnitLink(line.quantity,unite,target.unit,target.category)??''):'',isReadableUnit(unite)?'':'unité à préciser',proposed&&proposedStock.current.has(line.id+PROPOSAL_WEIGHT_MARK)?'poids du sachet non confirmé':''].filter(Boolean):[];
     return {meta:[kinds.find(kind=>kind.value===line.kind)?.label,line.quantity!==undefined?`${String(line.quantity).replace('.',',')} ${line.unit}`.trim():''].filter(Boolean).join(' · '),linked:[stock||equipment,...notes].filter(Boolean).join(' · '),notes,proposed};
   };
   /* ------- r2b : le statut, les chips, les liens ------- */
@@ -909,12 +911,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* VERDICT-f3-p2, détail 3 : plateau ouvert, la barre d’un bis se fond dans la ligne « article » (un seul ⇄) ; fermée, la barre reste. */
     const ouverte=ouvertesRef.current.has(line.id)?Boolean(ouvertesRef.current.get(line.id)):Boolean(startsOpen(line));
     if(ouverte)plateauxOuverts.add(line.id);
-    const garderBisEl=bisAConfirmer&&regle&&voisin?<button type="button" aria-label={`Garder le nouvel article « ${neuf?.name??line.description.trim()} »`} onClick={()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">{neuf?.name??line.description.trim()}</button>:null;
-    const stockBisEl=bisAConfirmer&&regle&&voisin?<span data-dp-stock-bis className="inline-flex items-center gap-1 text-xs text-cave-400 opacity-80"><Package size={14}/>stock : {etiquetteVoisin(regle,voisin)}</span>:null;
+    const garderBisEl=bisAConfirmer&&regle&&voisin?<button type="button" aria-label={`Garder le nouvel article « ${neuf?.name??line.description.trim()} »`} onClick={()=>{neufDOffice.current.delete(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{stockAction:'new'});}} className="min-h-7 min-w-0 truncate rounded-control border border-dashed border-attention px-2 text-sm font-semibold text-attention">{neuf?.name??line.description.trim()}</button>:null;
+    const stockBisEl=bisAConfirmer&&regle&&voisin?<span data-dp-stock-bis className="inline-flex items-center gap-1 whitespace-nowrap text-xs text-cave-400 opacity-80"><Package size={14}/>stock : {etiquetteVoisin(regle,voisin)}</span>:null;
     const bisFondu=bisAConfirmer&&ouverte;
     const fixNiveau:Niveau|undefined=precisIds.has(line.id)?'inconnu':(bisAConfirmer&&!bisFondu)||ambigu?'repris':undefined;
     const correctionBarre=precisIds.has(line.id)?<><span className="text-xs text-alert">imprimé {line.quantity===undefined?'—':fr(line.quantity)} ? ·</span>{['g','kg','Stk'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
-      :bisAConfirmer&&regle&&voisin?(bisFondu?null:<>{stockBisEl}{garderBisEl}{autre}</>)
+      :bisAConfirmer&&regle&&voisin?(bisFondu?null:<>{stockBisEl}{/* B2 n° 16 : « Garder » et ⇄ vont ensemble à la ligne (jamais le ⇄ seul en bas) */}<span className="inline-flex min-w-0 max-w-full items-center gap-1.5">{garderBisEl}{autre}</span></>)
       :ambigu?<><span data-dp-ambigu className="text-xs text-attention">plusieurs articles « {voisin!.name} » : choisis</span>{autre}</>
       :null;
     const bis=bisAConfirmer||(!isMouture&&line.kind==='ingredient'&&line.stockAction==='none'&&Boolean(voisin||existant));
@@ -942,7 +944,25 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const uniteManque=(!lisible&&!horsStock)||rougeDe('unite');
     const choixU=choixUnite(genreDeUnite(line.kind,lu?.contexte,article?.category),unite);
     const uniteActive=choixU.find(c=>cleUnite(c.valeur)===cleUnite(unite))?.valeur??'';
-    const choisirUnite=(valeur:string)=>updateLine(line.id,{unit:valeur});
+    /* B2 n° 2, 3, 5 : la quantité imprimée vaut pour l'unité imprimée, jamais pour une autre (« 2 Kg » ne devient pas « 2 g ») : une autre unité vide la quantité (« à remplir ») et le prix, le montant reste ;
+       le retour à l'unité quittée, tant que rien n'a été retapé, rend la ligne telle qu'elle était (D373 : aucune valeur lue n'est perdue par un aller-retour). Un toucher sur l'unité déjà posée ne change rien. */
+    const choisirUnite=(valeur:string)=>{
+      const posee=isReadableUnit(line.unit);
+      if(posee&&cleUnite(valeur)===cleUnite(line.unit))return;
+      const quittee=uniteQuittee.current.get(line.id);
+      if(quittee&&line.quantity===undefined&&line.unitPrice===undefined&&line.amount===quittee.amount&&cleUnite(quittee.unit)===cleUnite(valeur)){
+        uniteQuittee.current.delete(line.id);calcules.current.delete(line.id);derniers.current.delete(line.id);
+        updateLine(line.id,{unit:quittee.unit,quantity:quittee.quantity,unitPrice:quittee.unitPrice});
+        return;
+      }
+      if(posee&&isReadableUnit(unite)){
+        uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
+        calcules.current.delete(line.id);derniers.current.delete(line.id);
+        updateLine(line.id,{unit:valeur,quantity:undefined});
+        return;
+      }
+      updateLine(line.id,{unit:valeur});
+    };
     /* D369, D373 : un champ du calcul posé ; celui qui manque se calcule, et quand les trois sont là, celui qu'il n'a pas touché suit (le montant d'abord). */
     const poser=(champ:ChampCalcul,valeur:number|undefined)=>{const r=recalculer(line,champ,valeur,calcules.current.get(line.id),derniers.current.get(line.id));derniers.current.set(line.id,champ);if(r.calcule)calcules.current.set(line.id,r.calcule);else calcules.current.delete(line.id);updateLine(line.id,r.patch);return r.patch;};
     const montrerNombres=line.quantity===undefined||rougeDe('quantite')||nombresTouches.current.has(line.id);
@@ -953,7 +973,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const calculEl=<RangeeCalcul avant={avantQte!==undefined?fr(avantQte):undefined}>
       <span {...niv('quantite')} className="inline-flex"><NumberInput aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>poser('quantity',quantity)} emptyValue={undefined} min={0} className={`${CHAMP_PU4D} ${largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
       {uniteManque?<BoiteUniteVide/>:horsStock&&!lisible?null:<SegmentUnite index={index+1} choix={choixU} active={uniteActive} repris={ud?.niveau==='repris'} onChoisir={choisirUnite}/>}<Op c="×"/>
-      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>poser('unitPrice',unitPrice)} emptyValue={undefined} min={0} fractionDigits={decimalesAuRepos(line.unitPrice)} className={`${CHAMP_PU4D} ${largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
+      <span {...niv('prix')} className="inline-flex"><NumberInput aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>poser('unitPrice',unitPrice)} emptyValue={undefined} min={0} fractionDigits={/* B2 n° 14 : le même format que la rangée (`prixImprime` : 0,040 sous 0,10) */line.unitPrice===undefined?2:(prixTexte.split(',')[1]??'').length} className={`${CHAMP_PU4D} ${largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
       <span {...niv('montant')} className="inline-flex"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{poser('amount',amount);if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span>
       {/* D351 : « au centime » ne se dit plus quand le calcul tombe juste ; seul un écart se dit. */}
       {calculOk===false?<span data-dp-centime data-dp-niveau="repris" className="text-xs text-attention underline decoration-dotted decoration-attention underline-offset-2">≠ montant, écart à vérifier</span>:null}
@@ -1008,7 +1028,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
        Facture | Stock, ≈ tireté jaune. L'imprimé et sa quantité lue à gauche, l'article, son unité et « avant → après » à droite ; une unité qui diffère est marquée des deux côtés. */
     const enProposition=Boolean(status.proposed&&article)&&!(uniteManque&&article)&&!corrigeeEnAttente&&!enTrio;
     const uniteDiffere=article?cleUnite(line.unit.trim()||unite)!==cleUnite(article.unit):false;
-    const qLue=line.quantity===undefined?'—':`${fr(line.quantity)} ${line.unit.trim()||motUnite(unite,line.quantity)}`;
+    const qLue=line.quantity===undefined?'—':`${fr(line.quantity)} ${line.unit.trim()?uniteAffichee(line.unit):motUnite(unite,line.quantity)}`;
     const duelProposeEl=enProposition&&article?<Duel etat="repris" symbole="≈" note="article proposé, à garder"
       facture={<><Nom mono>{line.imprime?.nom??line.description}</Nom><Petit>{uniteDiffere?<Marque>{qLue}</Marque>:qLue}</Petit>{status.notes.length?<Petit ton="attention">{status.notes.join(' · ')}</Petit>:null}</>}
       stock={<><Nom>{article.name}</Nom><Petit>compté en {uniteDiffere?<Marque>{motUnite(article.unit)}</Marque>:motUnite(article.unit)}</Petit>{effetArticle?<><Apres texte={effetArticle.texte}/><Petit>après réception</Petit></>:<><Apres texte={`${nombreFr(article.currentStock)} ${motUnite(article.unit)}`}/><Petit>au stock</Petit></>}</>}/>:null;
@@ -1026,7 +1046,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         :line.stockAction==='existing'&&!line.stockRef?<><span className="text-alert">article « ? » · à choisir</span><div data-dp-niveau="inconnu" className="min-w-[12rem] flex-1 rounded-control border border-dashed border-alert">{comboArticleEl}</div></>
         :<><span>article « <b className="font-medium text-cave-50">{nomArticle||'à choisir'}</b> » · {status.proposed?<span data-dp-niveau="repris" className="text-attention">proposé</span>:relieAuto.current.has(line.id)?`relié à « ${relieAuto.current.get(line.id)} », nom déjà au stock`:'relié'}{status.notes.length&&!enProposition?` · ${status.notes.join(' · ')}`:''}</span>
           {/* D277 : un lien proposé par la lecture reste jaune jusqu’à « Garder » ou ⇄. */}
-          {status.proposed?<BoutonTexte attention aria={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});}}>Garder</BoutonTexte>:null}{autrePlateau}{retirerEl}</>}</LigneArticle>;
+          {status.proposed?<BoutonTexte attention aria={`Garder l’article « ${nomArticle??''} », ligne ${index+1}`} onClick={()=>{proposedStock.current.delete(line.id);proposedStock.current.delete(line.id+PROPOSAL_WEIGHT_MARK);updateLine(line.id,{stockRef:line.stockRef});/* B2 n° 8, D374 : « Garder » referme la ligne. */ouvertesRef.current.set(line.id,false);setPlateaux(n=>n+1);}}>Garder</BoutonTexte>:null}{autrePlateau}{retirerEl}</>}</LigneArticle>;
     const imprimeTexte=line.imprime?libelleDeLigne(line.imprime.nom,line.imprime.variante):(line.description||'—');
     const uImp=line.unit.trim(),pieceImprimee=line.quantity!==undefined&&uImp!==''&&cleUnite(uImp)==='piece'&&uImp.toLowerCase()!=='pièce'?` · ${fr(line.quantity)} ${uImp}`:'';
     const libelleVide=!line.description.trim();if(libelleVide)libellesVides.current.add(line.id);
@@ -1162,7 +1182,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const niveauLigne=new Map(draft.lines.map(l=>{const c=confianceLigne(ligneConfianceDe(effDe(l)),ctxConf),n=niveauxRangee(l,c),vide=!l.description.trim();return [l.id,{unite:c.unite.niveau,montant:c.montant.niveau,pire:vide?'inconnu' as Niveau:n.pire}];}));
   const ligneBandes:LigneBande[]=lignesAff.map(l=>{const i=draft.lines.indexOf(l),u=uniteDe(l),art=articleDe(l),cv=art?conversionDe({...l,unit:u},art):undefined,m=cv?/=\s*(\d+)\s*sachet/.exec(cv):null,nu=niveauLigne.get(l.id)?.unite;
     const sf=sousFamilleLigne(i),pire=niveauLigne.get(l.id)?.pire;
-    return {id:l.id,groupe:groupeDeLigne(i),...(sf?{sousFamille:sf}:{}),...((pire&&pire!=='sur')||douteuxIds.has(l.id)?{averifier:true}:{}),amount:l.amount,quantity:l.quantity,unit:shortUnit(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{}),...(HORS_STOCK_KINDS.includes(l.kind)?{horsStock:true}:{}),...(l.amount!==undefined&&niveauLigne.get(l.id)?.montant==='inconnu'?{montantDoute:true}:{})};});
+    return {id:l.id,groupe:groupeDeLigne(i),...(sf?{sousFamille:sf}:{}),...((pire&&pire!=='sur')||douteuxIds.has(l.id)?{averifier:true}:{}),amount:l.amount,quantity:l.quantity,unit:uniteAffichee(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{}),...(HORS_STOCK_KINDS.includes(l.kind)?{horsStock:true}:{}),...(l.amount!==undefined&&niveauLigne.get(l.id)?.montant==='inconnu'?{montantDoute:true}:{})};});
   const bandes=calculerBandes(ligneBandes);
   /* D2 : sous un filtre, les quantités et montants des en-têtes (bande et sous-groupe) sont ceux des rangées MONTRÉES ; la structure (ids, plis) reste celle de toutes les lignes. */
   const bandesMontrees=visibles?(()=>{const vues=calculerBandes(ligneBandes.filter(l=>visibles.has(l.id)));return bandes.map(b=>{const v=vues.find(x=>x.cle===b.cle);return {...b,qte:v?.qte??[],cents:v?.cents??0,incomplet:v?.incomplet??false,eqb:v?.eqb,sousGroupes:b.sousGroupes?.map(sg=>{const w=v?.sousGroupes?.find(x=>x.nom===sg.nom);return {...sg,qte:w?.qte??[],cents:w?.cents??0,incomplet:w?.incomplet??false};})};});})():bandes;
@@ -1262,9 +1282,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     :saving?{texte:pendingId?'Confirmation…':'Enregistrement…'}
     :nUnite&&attempted?{texte:`${nUnite} unité${nUnite>1?'s':''} à préciser`,attention:true}:null;
   const surFichier:{nom:string;url:string;type:string}|null=draft.proofDataUrl&&!busy?{nom:draft.proofFileName??'justificatif',url:draft.proofDataUrl,type:draft.proofType??''}:null;
+  const nArticlesSaisis=draft.lines.filter(l=>l.description.trim()||l.quantity!==undefined||l.unitPrice!==undefined||l.amount!==undefined).length;
   const lignesBloc=<details data-purchase-lines {...(scan?.ok?{open:true}:{'data-purchase-options':true,open:initialIntent==='equipment'})} className="order-2 border-t border-cave-800 py-1 lg:col-start-2 lg:row-start-1">
     {scan?.ok?<summary className="list-none cursor-pointer min-h-7 flex flex-wrap items-center gap-x-2 text-xs text-cave-200">Lignes de la facture · {draft.lines.length}{proposedCount?<span className="text-attention">{proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}{hints.items?<span className="text-attention">À vérifier</span>:null}</summary>
-    :<summary className="list-none relative pr-6 min-h-7 cursor-pointer text-sm text-cave-200"><ChevronDown size={14} className="absolute right-0 top-1.5"/><span className="block">Articles, stock et matériel · {draft.lines.length}{hints.items?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</span><span className="block text-xs text-cave-400 mt-1">{[...new Set(draft.lines.map(line=>kinds.find(kind=>kind.value===line.kind)?.label))].join(' · ')}</span>{linkedSummary?<span className="block mt-1 text-cave-200">{linkedSummary}{proposedCount?<span className="text-attention"> · {proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}</span>:null}</summary>}
+    :<summary className="list-none relative pr-6 min-h-7 cursor-pointer text-sm text-cave-200"><ChevronDown size={14} className="absolute right-0 top-1.5"/><span className="block">Articles, stock et matériel{/* B2 n° 17 : la ligne vide du formulaire manuel n'est pas un article lu : pas de compte tant qu'elle est vide */}{nArticlesSaisis>0?` · ${nArticlesSaisis}`:''}{hints.items?<span className="ml-2 text-attention text-xs">À vérifier</span>:null}</span><span className="block text-xs text-cave-400 mt-1">{[...new Set(draft.lines.map(line=>kinds.find(kind=>kind.value===line.kind)?.label))].join(' · ')}</span>{linkedSummary?<span className="block mt-1 text-cave-200">{linkedSummary}{proposedCount?<span className="text-attention"> · {proposedCount} proposée{proposedCount>1?'s':''} par la lecture, à vérifier</span>:null}</span>:null}</summary>}
     <ScanHint field="items" message={hints.items}/>
     <div className="space-y-2 pt-2">{!scan?.ok?<div className="flex justify-between gap-2 items-center"><h3 className="font-semibold text-cave-50">Ce que tu achètes</h3>{draft.lines.length>1?<button type="button" className="text-xs text-cave-400 min-h-7" onClick={regrouper}>Regrouper en une dépense</button>:null}</div>:null}
       {draft.lines.map(l=><React.Fragment key={l.id}>{ligneEls.get(l.id)}</React.Fragment>)}

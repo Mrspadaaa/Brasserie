@@ -189,7 +189,8 @@ export function bandes(lignes: readonly LigneBande[]): Bande[] {
       cle, nom: NOMS_GROUPES[cle], ids: propres.map(l => l.id), moutureIds: dans.filter(l => l.mouture).map(l => l.id), qte: quantites(propres),
       ...(sachets !== undefined ? { eqb: `= ${sachets} sachet${sachets > 1 ? 's' : ''}` } : {}), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)), ...(dans.some(l => l.montantDoute) ? { montantDoute: true } : {}),
       ...(() => { const sg = sousGroupesDe(cle, dans); if (sg) return { sousGroupes: sg };
-        return propres.length >= 2 ? { sousGroupes: [{ nom: NOMS_GROUPES[cle], ids: propres.map(l => l.id), qte: quantites(propres), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)), averifier: dans.some(l => l.averifier), bande: true as const }] } : {}; })(),
+        /* B2 n° 9, D378 (« on peut toujours pas fermé les famille ») : une bande d'une seule ligne se plie aussi (chevron, « Plié »), comme les autres. */
+        return propres.length >= 1 ? { sousGroupes: [{ nom: NOMS_GROUPES[cle], ids: propres.map(l => l.id), qte: quantites(propres), cents, incomplet: dans.some(l => l.amount === undefined || !Number.isFinite(l.amount)), averifier: dans.some(l => l.averifier), bande: true as const }] } : {}; })(),
     });
   }
   return sortie;
@@ -202,7 +203,7 @@ export function bandes(lignes: readonly LigneBande[]): Bande[] {
 export type ChoixGroupes = ReadonlyMap<string, boolean>;
 export const cleGroupe = (bande: string, nom: string): string => `${bande}/${nom}`;
 /** Un sous-groupe se plie s'il porte une ligne de sous-famille et au moins deux rangées ; un sous-groupe d'une ligne n'a ni chevron ni ligne. */
-export const pliable = (sg: SousGroupe): boolean => !sg.libre && sg.ids.length >= 2;
+export const pliable = (sg: SousGroupe): boolean => !sg.libre && (sg.ids.length >= 2 || (sg.bande === true && sg.ids.length >= 1));
 /**
  * Ouvert à l'écran ? Un sous-groupe non pliable : toujours. `forces` : les rangées qu'on doit voir (plateau ouvert, filtre des comptes) ouvrent leur sous-groupe
  * quel que soit le choix. Sinon le choix du brasseur, à défaut l'ouverture d'office d'une ligne à vérifier.

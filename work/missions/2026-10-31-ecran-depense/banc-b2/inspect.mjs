@@ -1,0 +1,12 @@
+import { ouvrirEtat, dormir } from 'file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/banc-b2/scenes.mjs';
+import { createRequire } from 'node:module';
+const puppeteer = createRequire('C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/package.json')('puppeteer-core');
+const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const p = await ouvrirEtat(nav, process.env.TEMP + '/depense-b2', '3', 't390', 'clair');
+await p.evaluate(() => { const a = [...document.querySelectorAll('[data-dp-ligne]')].find(a => a.querySelector('summary')?.innerText.includes('Weizenmalz')); a.querySelector('summary').click(); }); await dormir(500);
+console.log(JSON.stringify(await p.evaluate(() => { const a = [...document.querySelectorAll('[data-dp-ligne]')].find(a => a.querySelector('summary')?.innerText.includes('Weizenmalz')); const d = a.querySelector('details');
+  const els = [...d.querySelectorAll('*')].filter(e => e.children.length === 0 && /^(2|1,55|3,10)$/.test(e.textContent.trim()) || e.value === '1,55' || e.value === '2' || e.value === '3,10');
+  return els.map(e => ({ tag: e.tagName, text: e.textContent.trim(), value: e.value, ce: e.contentEditable, attrs: [...e.attributes].map(x => x.name + '=' + x.value.slice(0, 40)).join(' '), parent: e.parentElement.tagName + ' ' + [...e.parentElement.attributes].map(x => x.name + '=' + x.value.slice(0, 30)).join(' ') }));
+}), null, 1));
+console.log('inputs total', await p.evaluate(() => document.querySelectorAll('input, textarea, [contenteditable]').length), await p.evaluate(() => [...document.querySelectorAll('input, textarea, [contenteditable]')].map(e => e.tagName + ':' + (e.getAttribute('aria-label') || e.id || e.type)).slice(0, 40)));
+await nav.close();
