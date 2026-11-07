@@ -1,5 +1,22 @@
 OK partiel — B1 n° 4, 5, 6, 7 (bas de page), 8, 9, 12, 14 corrigés (rouge sur HEAD puis vert) ; n° 10 hors périmètre, n° 11 à montrer
 
+## LOT 3 (banc d'actionneurs, N1 à N7) : N1, N2, N4 (refus), N5, N6, N7 corrigés ; N3 et N4 (le reste) à montrer
+
+| N | État | Fichiers | Contrôle (HEAD → après) | Captures ouvertes (`caps/`) |
+|---|------|----------|-------------------------|------------------------------|
+| N1 | corrigé | `EtapeFermentescibles.tsx` (`rendreLigne` rend toute la pile, du dernier au premier ; « · 1 de plus » sur la pastille) | `controle-n1-n2-doubles.mjs` : ECHEC sur HEAD **et** sur mon build du lot 2 (mon n° 6 rendait un retrait à la fois : double toucher sur la corbeille → 2 retirés, 1 « Annuler » n'en rend qu'1) → DOUBLES OK (un « Annuler » rend les 3 lignes dans l'ordre). Le geste de sa maquette (un toucher = un retrait) n'a pas changé. `controle-6-retraits.mjs` mis à jour : un « Annuler » après deux retraits rend les deux | `n1-apres.png` |
+| N2 | corrigé | `Ajout.tsx` (`cliquer` : un 2e clic dans les 400 ms après un choix est ignoré ; tuiles, sacs, « Créer ») | même contrôle : ECHEC (même article ajouté deux fois, `Carahell` en double) → OK. Le clavier (Entrée) n'est pas concerné. Limite : je n'ai pas pu reproduire le double toucher au doigt (la ligne ajoutée pousse les tuiles et le 2e toucher tombe à côté) ; le cas rejoué est le plus dur (2 clics dans le même tour) + deux touchers à 90 ms | — |
+| N4 (refus) | corrigé | `ChampLigne.tsx` (« -1 » refusé : `aria-invalid`, infobulle, la valeur d'avant revient en quittant le champ), `correctifs.css` | `controle-n4-n5-bornes.mjs` : ECHEC (« -1 » → masse 1) → OK (masse reste 5, « -1 » lisible en rouge), clair et cave | `n45-apres-n4.png`, `n45-cave-n4.png` |
+| N5 | corrigé | `Fiche.tsx` (champ borné local `ChampFiche`, plus `NumberInput` ici ; couleur 1–1500 EBC comme la saisie sur la ligne, PPG 1–50 ; 0, 0,004 et -1 refusés ; vide = non renseigné) | même contrôle : ECHEC ×5 → OK ; « PPG 37 » retenu | `n45-apres-n5.png`, `n45-cave-n5.png` |
+| N6 | corrigé (le recouvrement) ; reste « à montrer » | `correctifs.css` (déjà posé au n° 9 : 12 px d'air entre « J+ » et la piste) | `controle-n6-cibles.mjs` : ECHEC sur HEAD (la boîte du curseur recouvre 4 px des 24 du champ J+ plateau, `INPUT.fer-jr` sous le bord droit) → OK. Mesurées : `.fer-jin` 24 × 28, `.fer-jl` 24 × 24 : pas de 20 px à reproduire ; ≥ 24 tenu | `n6-apres-fruit.png`, `n6-cave-fruit.png` |
+| N7 | corrigé | `src/ui/finance/DriveConnection.tsx` (le seul message d'erreur : `text-amber-300` → `text-attention`, le jeton de texte d'attention des deux thèmes) | `controle-n7-vente.mjs` : ECHEC clair 1,32 → OK clair 5,65 et cave 9,45 | `n7-head-clair.png`, `n7-apres-clair.png` |
+| N3 | à montrer | — | — | sa maquette a le même nom sans coupe (voir le rapport du banc) |
+| N4 (le reste) | à montrer | — | — | `-1` devenait `1,0` : le refus visible est fait ; qu'un nom, une masse à trois décimales, etc. se comportent comme sa maquette reste à lui montrer |
+
+- **N6, « Annuler » couvre « du grain » : non reproduit comme un recouvrement.** Sur les 8 lignes de « huit » (clair), la pastille ne couvre ni le moment, ni la part, ni « ferm. », la barre garde ≥ 100 px. Le texte « du grain » **disparaît** quand la pastille est là : c'est la forme de sa maquette (`ann ? '' : ' du grain'`). À montrer si la disparition le gêne.
+- **N7** : `DriveConnection.tsx` n'avait pas de modification d'un autre lot ; `ExpenseSheet.tsx` (modifié ailleurs) n'est pas touché.
+- Tout rejoué sur le dernier build : AJOUT, DEXT, COULEUR, RETRAITS, MASSE, JOURS, CONTRASTE, FAB, REPRISE, DOUBLES, BORNES, CIBLES, VENTE : OK ; REPOS (Houblons, Identité, 2 thèmes) : OK. `tests/unit/fermentescibles` 50/50 ; intégration touchée (AppRoutePile, floatingActionsShellLayout, brewWizardDraftFreshness, fix114, AppQuickActionReturn) verte. `tsc` : 0 erreur dans les fichiers touchés.
+
 ## SUITE (message du pilote, même jour) : n° 7 et n° 14
 
 | n° | État | Fichiers | Contrôle (HEAD → après) | Captures ouvertes (`caps/`) |

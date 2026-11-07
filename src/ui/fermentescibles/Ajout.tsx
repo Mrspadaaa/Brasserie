@@ -163,6 +163,14 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
 
   const reinit = () => { setValeur(''); setCible(0); setFlechee(false); };
   const choisir = (c: Candidat, kg: number | null) => { reinit(); onChoisir(c, kg); };
+  // Un double toucher sur une tuile ou un sac ajoutait deux fois (banc d'actionneurs N2) : un 2e CLIC dans les 400 ms qui suivent un choix est ignoré. Le clavier (Entrée) n'est pas concerné.
+  const dernierClic = useRef(0);
+  const cliquer = (c: Candidat, kg: number | null) => {
+    const t = Date.now();
+    if (t - dernierClic.current < 400) return;
+    dernierClic.current = t;
+    choisir(c, kg);
+  };
   const entree = () => {
     if (t.length >= 2) {
       if (trouves.length) choisir(trouves[Math.min(cible, trouves.length - 1)], s.kg);
@@ -220,7 +228,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
         onPointerDown={(e) => e.preventDefault()} onMouseDown={(e) => e.preventDefault()}>
         {!on && prete && propositions.slice(0, 5).map((p) => (
           <button key={p.article.ref} type="button" className="fer-pu" data-pu={p.article.name} data-role="resultat" data-nom={p.article.name}
-            onClick={() => choisir({ nom: p.article.name, rang: 1, article: p.article, ligne: -1 }, s.kg)}>
+            onClick={() => cliquer({ nom: p.article.name, rang: 1, article: p.article, ligne: -1 }, s.kg)}>
             <Sac famille={famille} ebc={p.article.colorEbc} />{p.article.name}
           </button>
         ))}
@@ -234,7 +242,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
             const f = fermentables[c.ligne];
             return (
               <button key={`l${c.ligne}`} type="button" role="option" aria-selected={pr} className={`fer-tu fer-large${pr ? ' fer-prem' : ''}`} data-role="resultat" data-nom={f.name} data-deja={c.ligne}
-                aria-label={`${f.name} : déjà ${kgTxt(f.weightKg)} kg dans la recette, ${stockTxt(c.article)}`} onClick={() => choisir(c, s.kg)}>
+                aria-label={`${f.name} : déjà ${kgTxt(f.weightKg)} kg dans la recette, ${stockTxt(c.article)}`} onClick={() => cliquer(c, s.kg)}>
                 <span className="fer-l1">{etoile}{nom}</span>
                 <span className="fer-l2"><b>déjà {kgTxt(f.weightKg)} kg</b> · {stockTxt(c.article)}</span>{fin}
               </button>
@@ -244,7 +252,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           const ebc = (c.famille ?? famille) === 'grain' && a?.colorEbc != null ? a.colorEbc : null;
           return (
             <button key={a?.ref ?? c.nom} type="button" role="option" aria-selected={pr} className={`fer-tu${pr ? ' fer-prem' : ''}${a && !(a.currentStock > 0) ? ' fer-epuise' : ''}`} data-role="resultat"
-              data-nom={c.nom} data-pu={c.nom} data-ailleurs={c.famille} aria-label={`Ajouter ${c.nom}${c.famille ? ` (${defs[c.famille].label})` : ''} : ${sousNom(a)}${ebc != null ? ` · ${qteTxt(ebc)} EBC` : ''}`} onClick={() => choisir(c, s.kg)}>
+              data-nom={c.nom} data-pu={c.nom} data-ailleurs={c.famille} aria-label={`Ajouter ${c.nom}${c.famille ? ` (${defs[c.famille].label})` : ''} : ${sousNom(a)}${ebc != null ? ` · ${qteTxt(ebc)} EBC` : ''}`} onClick={() => cliquer(c, s.kg)}>
               <span className="fer-l1">{etoile}{nom}
                 {ebc != null && <i className="fer-ebcp" style={{ background: teinte(ebc), color: texteSurTeinte(ebc) }}>{qteTxt(ebc)}</i>}</span>
               <span className="fer-l2">{sousNom(a, c.famille)}</span>{fin}
@@ -252,7 +260,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           );
         })}
         {on && creer && (
-          <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { reinit(); onCreer(t, s.kg); }}>
+          <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { const now = Date.now(); if (now - dernierClic.current < 400) return; dernierClic.current = now; reinit(); onCreer(t, s.kg); }}>
             <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} » (stock à zéro)</span></span>
             <span className="fer-l2">{def.label.toLowerCase()} : {QUAND[def.use]}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
           </button>

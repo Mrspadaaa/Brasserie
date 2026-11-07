@@ -50,6 +50,7 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
   const touche = useRef(false);
   // « frais » : la valeur d'avant, lisible en gris et sélectionnée (invisiblement) : la frappe la remplace, un champ vidé puis quitté vaut 0 (D228).
   const [frais, setFrais] = useState(false);
+  const [negatif, setNegatif] = useState(false);
   const zeroValide = zeroValideProp || zeroAttention;
   const connu = valeur !== null && (zeroValide || valeur !== 0);
   const vide = !connu || (zeroAttention && valeur === 0);
@@ -63,13 +64,14 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
   const fin = () => {
     if (echap.current) { echap.current = false; if (avant.current !== null) garder(avant.current); }
     else if (texte !== null) {
-      const v = lit(texte);
+      const v = /^\s*[-−–]/.test(texte) ? null : lit(texte);
       if (v === null) {
         if (videVaut0 && touche.current && texte.trim() === '') garder(0);
         else if (avant.current !== null) garder(avant.current);
       }
     }
     setTexte(null);
+    setNegatif(false);
   };
 
   return (
@@ -80,10 +82,11 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
       inputMode={entier ? 'numeric' : 'decimal'}
       enterKeyHint="done"
       aria-label={libelle}
-      aria-invalid={invalide || undefined}
+      aria-invalid={invalide || negatif || undefined}
+      title={negatif ? 'Pas de valeur négative' : undefined}
       aria-describedby={decrit}
       placeholder={repere}
-      className={`${className}${vide && (texte === null || frais) && (!connu || zeroAttention) ? ' fer-zero' : ''}${texte !== null && frais ? ' fer-frais' : ''}`}
+      className={`${className}${vide && (texte === null || frais) && (!connu || zeroAttention) ? ' fer-zero' : ''}${texte !== null && frais ? ' fer-frais' : ''}${negatif ? ' fer-ko' : ''}`}
       style={largeur}
       value={affiche}
       onFocus={(e) => { avant.current = valeur ?? null; echap.current = false; touche.current = false; setFrais(true); setTexte(connu ? format(valeur as number) : ''); e.currentTarget.select(); }}
@@ -92,8 +95,11 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
         touche.current = true;
         setFrais(false);
         setTexte(t);
+        // Un nombre négatif n'existe pas ici (masse, jour) : « -1 » n'est plus lu « 1 » (banc d'actionneurs N4). Refus visible, rien de retenu ; la valeur d'avant revient en quittant le champ.
+        const negatif = /^\s*[-−–]/.test(t);
+        setNegatif(negatif);
         const v = lit(t);
-        if (v !== null) garder(arrondi(entier ? Math.round(v) : v));
+        if (v !== null && !negatif) garder(arrondi(entier ? Math.round(v) : v));
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {

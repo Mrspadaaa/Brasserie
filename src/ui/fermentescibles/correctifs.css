@@ -9,6 +9,11 @@
   border-color: #F29289; color: #F29289;
 }
 
+/* N4 et N5 (banc d'actionneurs) : un nombre refusé (négatif, hors bornes) dans une masse, un jour ou la fiche : trait et chiffre rouges, comme la couleur du n° 5. */
+.recipe-wizard .fer :is(.fer-kgin, .fer-bin, .fer-jl, .fer-jin, .fer-fi-in).fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { color: #A8291F; border-color: #C8382F; }
+[data-theme='cave'] .recipe-wizard .fer :is(.fer-kgin, .fer-bin, .fer-jl, .fer-jin, .fer-fi-in).fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { color: #F29289; border-color: #F29289; }
+.recipe-wizard .fer .fer-kgin.fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { border-bottom: 1.5px solid #C8382F; }
+
 /* n° 6 : plusieurs retraits en attente d'annulation : « 1 de plus » sous le nom barré, sans pousser « Annuler ». */
 .fer .fer-ote .fer-ote-n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
 

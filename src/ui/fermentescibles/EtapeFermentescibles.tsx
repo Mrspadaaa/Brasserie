@@ -111,15 +111,20 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     retour.current = -1; setCouleurLigne(-1); setAnnMom(null);
     minutRetrait.current = setTimeout(() => setAnnules([]), 6000);
   };
+  // « Annuler » rend TOUS les retraits en attente, du dernier au premier (banc d'actionneurs N1 : un double toucher sur la corbeille en retire deux, et un seul « Annuler » en rendait un).
   const rendreLigne = () => {
-    const a = annule;
-    if (!a) return;
+    const pile = annules;
+    if (!pile.length) return;
     clearTimeout(minutRetrait.current);
-    setAnnules((l) => l.slice(0, -1));
-    if (annules.length > 1) minutRetrait.current = setTimeout(() => setAnnules([]), 6000);
-    onFermentables((l) => [...l.slice(0, a.i), a.f, ...l.slice(a.i)]);
-    setSel(a.sel); setNeuf(a.i);
-    requestAnimationFrame(() => focus(`[data-ret="${a.i}"]`));
+    setAnnules([]);
+    onFermentables((l) => {
+      let r = [...l];
+      for (let k = pile.length - 1; k >= 0; k--) r = [...r.slice(0, pile[k].i), pile[k].f, ...r.slice(pile[k].i)];
+      return r;
+    });
+    const premier = pile[0];
+    setSel(premier.sel); setNeuf(premier.i);
+    requestAnimationFrame(() => focus(`[data-ret="${premier.i}"]`));
   };
 
   // Un toucher fait tourner le moment ; « Annuler » rend celui d'avant la série de touchers (6 s, comme le retrait).
