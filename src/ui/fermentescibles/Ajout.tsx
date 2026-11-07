@@ -4,7 +4,7 @@ import { Units } from '../../services/units';
 import { proposerFermentables } from '../../domain/fermentables/proposition';
 import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
-import { chercher, decouper, kgTxt, lireAjout, memeArticle, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
+import { chercher, decouper, kgTxt, lireAjout, memeArticle, nomPossible, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
 
 export interface DefFamille {
@@ -114,7 +114,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
     return n;
   }, [articles]);
 
-  const s = lireAjout(valeur);
+  // Une masse entière sans « kg » seulement derrière un nom déjà là (en tête de nom) : « Crystal 60 » reste un nom (critique B1 n° 2).
+  const s = lireAjout(valeur, (nom) => chercher(nom, articles, lignes).some((c) => c.rang <= 1));
   const t = s.nom;
   const on = ouvert || !!t;
   const trouves = useMemo(() => (t ? chercher(t, articles, lignes) : []), [t, articles, lignes]);
@@ -128,10 +129,10 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [articles, lignes, styleCode, ebcVise, ebcMax, typicite],
   );
-  const creer = t.length >= 2 && trouves.length === 0;
+  const creer = t.length >= 2 && trouves.length === 0 && nomPossible(t);
   const liste = t ? affiches : !prete ? [] : propositions.map((p): Candidat => ({ nom: p.article.name, rang: 1, article: p.article, ligne: -1 }));
   const iCible = Math.min(cible, Math.max(0, liste.length - 1));
-  const nomCible = t.length >= 2 ? (trouves.length ? trouves[Math.min(cible, trouves.length - 1)].nom : t) : flechee && liste[iCible] ? liste[iCible].nom : '';
+  const nomCible = t.length >= 2 ? (trouves.length ? trouves[Math.min(cible, trouves.length - 1)].nom : nomPossible(t) ? t : '') : flechee && liste[iCible] ? liste[iCible].nom : '';
 
   // Les sacs du repos : une seule rangée, des sacs entiers (jamais un sac coupé au bord). Ceux qui ne tiennent pas dans la largeur passent à la ligne,
   // hors de la rangée (masquée) : trois à 390, cinq à 1280. Un sac masqué ne prend plus le focus.
@@ -158,7 +159,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   const entree = () => {
     if (t.length >= 2) {
       if (trouves.length) choisir(trouves[Math.min(cible, trouves.length - 1)], s.kg);
-      else { reinit(); onCreer(t, s.kg); }
+      else if (nomPossible(t)) { reinit(); onCreer(t, s.kg); }
     } else if (flechee && liste[iCible]) choisir(liste[iCible], null);
   };
 

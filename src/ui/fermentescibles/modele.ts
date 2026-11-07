@@ -175,11 +175,19 @@ export function chercher(texte: string, articles: readonly StockItem[], lignes: 
     .map(({ k: _k, ...c }) => c);
 }
 
-/** « cara 0,3 » : le nom, puis la masse si elle est tapée. */
-export function lireAjout(v: string): { nom: string; kg: number | null } {
+/**
+ * « cara 0,3 » : le nom, puis la masse si elle est tapée. Un nombre ENTIER sans « kg » n'est une masse que derrière un nom connu (`connu`) qui ne
+ * le contient pas lui-même : « Crystal 60 », « Munich 10 » sont des noms (critique B1 n° 2, 07.11 : « Crystal 60 » devenait 60 kg).
+ */
+export function lireAjout(v: string, connu?: (nom: string) => boolean): { nom: string; kg: number | null } {
   const s = v.trim(), m = s.match(/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(kg)?$/);
-  return m ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
+  if (!m) return { nom: s, kg: null };
+  const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
+  return masse ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
 }
+
+/** Un nom d'ingrédient a au moins une lettre : « 0,2 » ou « 60 » seuls ne créent rien (critique B1 n° 3, 07.11). */
+export const nomPossible = (t: string) => /\p{L}/u.test(t);
 
 /** Les lettres tapées, en gras dans le nom (rien en gras si le nom courant ou une faute l'a trouvé). */
 export function decouper(nom: string, texte: string): [string, string, string] {
