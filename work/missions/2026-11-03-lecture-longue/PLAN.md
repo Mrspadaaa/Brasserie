@@ -115,3 +115,13 @@ Pièces fictives (hors Git) : scratchpad `beaucoup/` (`fabriquer.mjs` : 300 lign
   sur 15 pièces signalées). À voir à l'écran au banc Dépense (B2).
 - **Son ticket du 07.11** (métal gaufré à reflets) : ni F ni OpenCV ne trouvent le papier ; lu entier, comme avant.
 - **Reste pour la demande groupée** : déploiement (aiTask et hébergement) ; relecture en ligne de ses 13 pièces et 5 tickets (Gemini facturé).
+
+## Remesure du 07.11, critère corrigé (réserve du monitoring)
+- Le masque peignait toute la tranche d'une ligne : une coupe dans le blanc d'une tranche haute comptait « silencieuse ». Critère corrigé dans
+  `harnais.ts` : une ligne n'occupe que les rangées où elle a de l'encre (30 niveaux sous la médiane de sa tranche). Les rognées restent jugées sur la
+  tranche (la mesure à l'encre, essayée, compte 1 157 fausses rognées : traits fins lissés).
+- 200 pièces neuves (graine 2) : **F** (dd5cf826) 24 silencieuses, 1 signalée, 0 perdue, 0 rognée, 1 124 à 1 239 ms ; **base** (202506bb) 3 silencieuses,
+  92 signalées, 0 perdue, 6 rognées (tranche), 659 à 714 ms. 11 fixes : F OK ; base 4 rognées.
+- **Verdict** : F fait plus de coupes silencieuses que la base et elle est plus lente : selon sa règle (« rien de silencieux », « pas plus lent »), F ne part
+  pas au déploiement. La base a moins de silencieuses mais rogne des tranches (6, et 4 sur les fixes) et signale 92 coupes. Aucune des deux ne tient le
+  juge (0 silencieux, 0 perdu, 0 rogné). La découpe D381 reste donc hors de la demande de déploiement : le doute est écrit, la décision est au brasseur.

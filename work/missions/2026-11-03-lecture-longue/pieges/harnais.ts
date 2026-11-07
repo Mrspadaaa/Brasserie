@@ -31,11 +31,22 @@ const etiquettes = (data: Uint8ClampedArray) => { const e = new Uint32Array(data
       if (sx >= 0 && sx < c0.width && sy >= 0 && sy < c0.height) e[v * L + u] = e0[sy * c0.width + sx];
     }
   }
-  const rangs = new Map<number, number[]>(), aire = new Map<number, number>();
+  // Le masque peint toute la TRANCHE d'une ligne (interligne compris, toute la largeur), et sur une rangée zébrée la bande grisée entière : une coupe
+  // dans le blanc d'une tranche haute comptait « silencieuse » (07.11, graine 2). Une ligne n'occupe donc que les rangées où elle a de l'ENCRE : des
+  // pixels de la photo normalisée nettement plus sombres (30 niveaux) que le fond de sa propre tranche (sa médiane). L'aire (perdue, rognée) reste celle de la tranche.
+  const cg = document.createElement('canvas'); cg.width = L; cg.height = Hn;
+  const rgba = dessinerNormalise(cg, photo, g, 0).getImageData(0, 0, L, Hn).data, gris = new Uint8Array(L * Hn);
+  for (let i = 0, j = 0; i < gris.length; i++, j += 4) gris[i] = (rgba[j] * 77 + rgba[j + 1] * 150 + rgba[j + 2] * 29) >> 8;
+  cg.width = 0; cg.height = 0;
+  const histos = new Map<number, Uint32Array>(), aire = new Map<number, number>();
+  for (let i = 0; i < e.length; i++) { const id = e[i]; if (!id) continue; aire.set(id, (aire.get(id) ?? 0) + 1); let h = histos.get(id); if (!h) histos.set(id, (h = new Uint32Array(256))); h[gris[i]]++; }
+  const fond = new Map<number, number>();
+  for (const [id, h] of histos) { const n = aire.get(id)!; let c = 0, v = 0; for (; v < 255; v++) { c += h[v]; if (c >= n / 2) break; } fond.set(id, v); }
+  const rangs = new Map<number, number[]>();
   for (let y = 0; y < Hn; y++) {
-    const vus = new Set<number>();
-    for (let x = 0; x < L; x++) { const id = e[y * L + x]; if (id) { vus.add(id); aire.set(id, (aire.get(id) ?? 0) + 1); } }
-    for (const id of vus) { const l = rangs.get(id) ?? []; l.push(y); rangs.set(id, l); }
+    const encre = new Map<number, number>();
+    for (let x = 0, i = y * L; x < L; x++, i++) { const id = e[i]; if (id && gris[i] < fond.get(id)! - 30) encre.set(id, (encre.get(id) ?? 0) + 1); }
+    for (const [id, n] of encre) if (n >= 2) { const l = rangs.get(id) ?? []; l.push(y); rangs.set(id, l); }
   }
   const m = finale.morceaux, coupes = m.slice(0, -1).map(b => b.bottom);
   const forcees = m.map((b, i) => coupeBasseForcee(b, finale.rangees, i === m.length - 1));
@@ -45,7 +56,8 @@ const etiquettes = (data: Uint8ClampedArray) => { const e = new Uint32Array(data
     const haut = ys.filter(y => y < cut).length, bas = ys.length - haut;
     if (Math.min(haut, bas) >= Math.max(1, 0.25 * ys.length)) coupees.push({ ligne: id - 1, coupe: i + 1, signalee: forcees[i] });
   });
-  // Une ligne perdue ou rognée : absente du masque normalisé, ou moins de 80 % de son aire (à l'échelle près).
+  // Une ligne perdue ou rognée : absente du masque normalisé, ou moins de 80 % de l'aire de sa TRANCHE (à l'échelle près). Une mesure à l'encre a été
+  // essayée le 07.11 et écartée : réduite et lissée, l'image perd des pixels sombres de traits fins sans rien perdre de lisible (1 157 « rognées »).
   const e2 = g.echelle * g.echelle, perdues: number[] = [], rognees: number[] = [];
   for (const [id, a] of aire0) { const b = aire.get(id) ?? 0; if (!b) perdues.push(id - 1); else if (b < 0.8 * a * e2) rognees.push(id - 1); }
   return {
