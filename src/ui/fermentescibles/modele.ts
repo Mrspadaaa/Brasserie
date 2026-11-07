@@ -175,7 +175,7 @@ export function chercherAilleurs(
   const autres = familles.filter((k) => k !== courante);
   const familleDe = (a: StockItem): FermentableKind | undefined => {
     const ks = autres.filter((k) => dans(k, a));
-    return ks.find((k) => nu(rayons[k].label) === nu(a.name)) ?? ks[0];
+    return ks.find((k) => nu(k) === nu(a.name)) ?? ks[0]; // « Lactose » (l'article) va dans la famille `lactose`
   };
   const o: Candidat[] = [];
   for (const k of autres) {

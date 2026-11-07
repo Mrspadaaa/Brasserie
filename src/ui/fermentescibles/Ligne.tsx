@@ -4,7 +4,7 @@ import { ChampLigne } from './ChampLigne';
 import { CouleurChamp } from './CouleurChamp';
 import { Croix, Cube, Tour } from './icones';
 import {
-  arrondiKg, autresKg, cran, cranPas, grainKg, kgPourPart, kgTxt, MOMENT_SUIVANT, MOT_MOMENT, pas, partN, teinte, voile,
+  arrondiKg, autresKg, cran, cranPas, grainKg, kgPourPart, kgTxt, MOMENT_SUIVANT, MOT_MOMENT, nu, pas, partN, teinte, voile,
 } from './modele';
 
 export interface AnnMoment { i: number; use: Fermentable['use']; dayOffset?: number; t: number }
@@ -107,7 +107,8 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
       <span className="fer-nm">
         <button type="button" id={`fer-nom-${i}`} className="fer-nom" data-role="nom" data-booster="nom-detail" aria-expanded={selectionnee} aria-controls="fer-bal"
           onClick={() => a.selectionner(i)}><b>{f.name}</b></button>
-        {!grain && <span className="fer-tag">{etiquetteFamille}</span>}
+        {/* Une étiquette de famille ne répète jamais le nom de la ligne (B1 n° 11 : « Lactose · Lactose »). */}
+        {!grain && nu(etiquetteFamille) !== nu(f.name) && <span className="fer-tag">{etiquetteFamille}</span>}
       </span>
       <label className="fer-kg fer-kgl" data-tk={i}>
         <ChampLigne valeur={f.weightKg} onValeur={(v) => a.setKg(i, v)} format={kgTxt} arrondi={arrondiKg} cran={(v, d) => pas(v, d)}

@@ -417,7 +417,8 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
       config={{ ...defaultConfig, brewhouses: [brewhouse], activeBrewhouseId: brewhouse.id }}
       stockItems={[]} knownStyles={['Pale Ale']} onClose={vi.fn()} onSave={save}
       onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
-    expect(screen.getAllByText('Nouvelle recette').length).toBeGreaterThan(0);
+    // Le titre dit l'étape et sa place, comme sa maquette (B1 n° 10) : plus « Nouvelle recette ».
+    expect(screen.getAllByText('Identité 1/7').length).toBeGreaterThan(0);
     fireEvent.change(document.getElementById('wz-title') as HTMLInputElement, { target: { value: 'Brouillon inédit V5.5' } });
     allerEtape(/^Houblons$/);
 

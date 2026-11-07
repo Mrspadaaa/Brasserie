@@ -14,6 +14,11 @@
 [data-theme='cave'] .recipe-wizard .fer :is(.fer-kgin, .fer-bin, .fer-jl, .fer-jin, .fer-fi-in).fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { color: #F29289; border-color: #F29289; }
 .recipe-wizard .fer .fer-kgin.fer-ko[aria-invalid='true']:is(input, textarea):not([type='range']):not([type='radio']):not([type='checkbox']):not([type='x']) { border-bottom: 1.5px solid #C8382F; }
 
+/* N3 (banc d'actionneurs) : un nom très long passe à la ligne, dans la ligne comme dans le plateau, au lieu de filer sous « kg » et hors de l'écran. */
+.recipe-wizard .fer .fer-nm b { white-space: normal; overflow-wrap: anywhere; }
+.recipe-wizard .fer button.fer-nom { height: auto; min-height: 24px; text-align: left; }
+.recipe-wizard .fer .fer-bh b { white-space: normal; flex-shrink: 1; min-width: 0; overflow-wrap: anywhere; }
+
 /* n° 6 : plusieurs retraits en attente d'annulation : « 1 de plus » sous le nom barré, sans pousser « Annuler ». */
 .fer .fer-ote .fer-ote-n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
 

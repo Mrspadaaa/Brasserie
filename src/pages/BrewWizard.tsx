@@ -389,7 +389,8 @@ const KIND_DEF: Record<
     newCat: 'Sucre'
   },
   lactose: {
-    label: 'Lactose',
+    // « Sucre de lait » : la famille ne porte pas le nom d'un produit (B1 n° 11 : « Lactose · Lactose » ; l'article Lactose du stock s'y range).
+    label: 'Sucre de lait',
     use: 'ebullition',
     fermentability: 0,
     ppg: 35,
@@ -2217,7 +2218,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   return (
     <PageShell
-      title={draftReadOnly ? 'Brouillon en lecture seule' : seed?.recipe ? `Modifier « ${seed.recipe.name} »` : 'Nouvelle recette'}
+      // Un seul nom d'écran, celui de sa maquette, à toutes les largeurs (B1 n° 10) : « Fermentescibles 2/7 » (le même haut d'écran qu'au téléphone, `WizardStepName`),
+      // et le fil dit « Malts/sucres » (libellés courts, comme au téléphone). Avant : « Nouvelle recette » ou « Modifier « … » » au-dessus de 640 px.
+      title={draftReadOnly ? 'Brouillon en lecture seule' : `${STEPS[stepIndex].label} ${stepIndex + 1}/${STEPS.length}`}
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
@@ -2234,7 +2237,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
        * pas en visant une barre de 6 px.
        */
       progress={
-        <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy || saving} showLabels />
+        <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy || saving} showLabels compactLabels />
       }
       footer={
         step === 'recap' ? (

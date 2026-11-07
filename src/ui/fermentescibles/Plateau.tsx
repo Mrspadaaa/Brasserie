@@ -4,8 +4,8 @@ import type { LearnIngredient } from '../../domain/ingredientFacts';
 import { ChampLigne } from './ChampLigne';
 import { Fiche } from './Fiche';
 import { CouleurChamp } from './CouleurChamp';
-import { Chevron, Corbeille, Cube, Moins, Plus16, Croix } from './icones';
-import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOT_MOMENT, pas, pmax, teinte } from './modele';
+import { Corbeille, Cube, Moins, Plus16, Croix, Tour } from './icones';
+import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOMENT_SUIVANT, MOT_MOMENT, pas, pmax, teinte } from './modele';
 
 /**
  * Le plateau (D212 : toujours visible, clair) : le détail de la ligne choisie. Sa couleur, son moment, la corbeille ; la lecture de la
@@ -63,8 +63,9 @@ export const Plateau: React.FC<{
     <section className="fer-bal" id="fer-bal" data-role="bal" aria-label="Détail de l’ingrédient" data-booster="balance">
       <div className="fer-bh" data-role="bh">
         {sw}<b>{f.name}</b>{saisieEbc && <span className="fer-mo2">EBC, Entrée</span>}
-        <button type="button" className="fer-bmo" data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle" aria-label={`Moment de ${f.name}`}
-          onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Chevron /></button>
+        <button type="button" className="fer-bmo" data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle"
+          aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}. Toucher : ${MOT_MOMENT[MOMENT_SUIVANT(f.use)]}`}
+          onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Tour /></button>
         <button type="button" className="fer-del" data-del={i} aria-label={`Supprimer ${f.name} de la recette`} onClick={() => retirer(i)}><Corbeille /></button>
       </div>
       <div className="fer-lect" data-role="lect">

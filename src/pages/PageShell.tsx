@@ -362,6 +362,15 @@ export const PageShell: React.FC<PageShellProps> = ({
    * prend que de la largeur. Clavier fermé, le lanceur flotte (voir en tête).
    */
   const launcherPresent = useActionLauncherPresent();
+  // Au-dessus de 640 px la rangée de fin est collante (`sm:sticky`) : la marge qui dégage le bouton flottant ne vaut qu'au téléphone.
+  const [largeur, setLargeur] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 640px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia?.('(min-width: 640px)');
+    if (!mq) return;
+    const maj = () => setLargeur(mq.matches);
+    mq.addEventListener?.('change', maj);
+    return () => mq.removeEventListener?.('change', maj);
+  }, []);
   const [dockPriority] = useState(nextActionDockPriority);
   const headerRef = useRef<HTMLElement>(null);
   /*
@@ -685,8 +694,10 @@ export const PageShell: React.FC<PageShellProps> = ({
           {/* `marginBottom` 0,5 rem (en ligne : `mb-2` n'est pas généré par la feuille Tailwind du projet) : avec une rangée de fin, la réserve de 4,5 rem (48 px de bouton, 16 de décalage, 8 d'air ; floating-actions.css) n'est plus posée par la fin du
               contenu. Rangée (44 px) + marge de la page (12) + espace entre blocs (8) ne faisaient que 64 px : le dernier bloc touchait le bouton (critique B1 n° 7, en bas de page). */}
           {endActions && (
-            <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
-              style={launcherPresent && !dockInHeader ? { marginBottom: '0.5rem' } : undefined}>
+            // Au-dessus de 640 px (écran d'ordinateur, 800 px de haut), la rangée Retour / Suivant reste collée en bas de la zone qui défile : sortie de l'écran dès
+            // qu'une étape dépassait la page (B1 n° 15 : 911 / 800 au champ ouvert, 926 / 800 à huit lignes). Au téléphone elle suit le contenu (T12b : 56 px confisqués sinon).
+            <div data-page-end-actions className={`pb-safe sm:sticky sm:bottom-0 sm:z-10 sm:bg-cave-950 ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
+              style={launcherPresent && !dockInHeader && !largeur ? { marginBottom: '0.5rem' } : undefined}>
               {endActions}
             </div>
           )}

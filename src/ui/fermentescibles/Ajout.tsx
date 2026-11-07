@@ -58,6 +58,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   const champ = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const rangee = useRef<HTMLDivElement | null>(null);
   const def = defs[famille];
+  // La bascule dit où elle va (B1 n° 13 : cinq familles parcourues à l'aveugle) : « Toucher : Sucre » en infobulle et pour le lecteur d'écran.
+  const suivante = familles[(familles.indexOf(famille) + 1) % familles.length];
 
   // Le repli des tuiles ne se fait jamais pendant l'appui qui prend le focus : replié au `mousedown`, la grille (trois rangées) redevient une rangée de 32 px,
   // la page remonte sous la souris et le `mouseup` tombe ailleurs, sans `click` (p9-clic, 01.11). Souris tenue : on attend son `pointerup`, puis le tour suivant.
@@ -186,9 +188,9 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   return (
     <section className={`fer-aj${on ? ' fer-on' : ''}`} aria-label="Ajouter">
       <label className="fer-champ">
-        <button type="button" className="fer-fam" data-role="fam" data-booster="familles" aria-label={`Famille de l’ajout : ${def.label}`}
-          title={def.hint} onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => { e.preventDefault(); onFamille(familles[(familles.indexOf(famille) + 1) % familles.length]); reinit(); }}>
+        <button type="button" className="fer-fam" data-role="fam" data-booster="familles" aria-label={`Famille de l’ajout : ${def.label}. Toucher : ${defs[suivante].label}`}
+          title={`${def.hint ? `${def.hint} ` : ''}Toucher : ${defs[suivante].label}`} onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => { e.preventDefault(); onFamille(suivante); reinit(); }}>
           {def.label} <Bascule />
         </button>
         <Input
