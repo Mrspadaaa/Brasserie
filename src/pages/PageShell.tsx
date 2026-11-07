@@ -678,7 +678,9 @@ export const PageShell: React.FC<PageShellProps> = ({
       {/* Le pied est hors de cette zone défilante. Le lanceur flotte au-dessus :
           `data-floating-actions-gap="page"` lui réserve la fin du contenu. */}
       <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
-        className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw focus-visible:-outline-offset-2">
+        // Le conteneur (tabIndex -1) ne prend le focus que par programme (changement d'étape, ouverture) : aucun anneau autour de tout le contenu (cadre de 2 px noir en
+        // clair, jaune en cave, vu sur la fiche et l'assistant). Les commandes gardent le leur.
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain outline-none focus:outline-none focus-visible:outline-none">
         <div
           // Avec une rangée de fin, c'est elle qui laisse le coin au lanceur : la fin du contenu ne réserve plus sa hauteur.
           data-floating-actions-gap={endActions ? 'page-row' : 'page'}

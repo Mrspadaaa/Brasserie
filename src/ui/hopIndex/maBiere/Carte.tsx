@@ -11,7 +11,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Minus, Plus, RotateCw, X } from 'lucide-react';
 import { COULEURS, COURT, Inconnu, nombre } from './commun';
-import { useOuvrir } from './hote';
+import { useLectures, useOuvrir } from './hote';
 import { useNavigation } from './hote';
 import { useGestes } from './hote';
 import { placer, quandDe } from '../parcours/operations';
@@ -76,6 +76,8 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
   const gestes = useGestes();
   const modifier = useModifier();
   const h = houblon(a.hopKey);
+  const { lectures, lireNom } = useLectures();
+  const lecture = lectures?.[a.id];
   const sc = style(recette.styleCode);
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
   const q = quandDe(a, recette);
@@ -150,6 +152,14 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
     <div data-element="etape-carte-ajout" data-voie={a.id} data-houblon-ligne={a.hopKey} data-etat={premier ? 'etat-fiche-appui-long-carte etat-fiche-appui-en-cours etat-fiche-survol-1280' : undefined}
       {...gesteCarte}
       className={`pq-mb-corps pq-ma-biere-carte pq-ma-biere-sans-selection relative min-w-0 px-2.5 pt-1.5 pb-2 space-y-1 rounded-lg ${repere ? 'pq-ma-biere-change' : ''}`}>
+      {/* Test en ligne n° 9 : le mot du brasseur et la lecture qu'on en fait, avec un toucher pour confirmer ou refuser ; jamais un nom remplacé en silence. */}
+      {lecture && lireNom && (
+        <p data-role="lecture-nom" className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-attention">
+          <span><b className="font-semibold">{lecture.saisi}</b> · lu comme {lecture.lu}</span>
+          <button type="button" data-role="lecture-confirmer" onClick={() => { onGeste(); lireNom(a.id, true); }} className="underline underline-offset-2">Confirmer</button>
+          <button type="button" data-role="lecture-refuser" onClick={() => { onGeste(); lireNom(a.id, false); }} className="underline underline-offset-2">Refuser</button>
+        </p>
+      )}
       {repere && <p data-role="vient-de-changer" className="pq-mb-l2 pq-ma-biere-repere text-xs leading-none">{repere}</p>}
       {/* « Ça créé un slider horizontal ??? À enlever » (24.10, soir, Falconer's Flight) : un nom long renvoie la dose à la
           ligne, jamais au-delà de la carte. */}

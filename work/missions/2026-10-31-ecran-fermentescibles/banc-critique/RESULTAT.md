@@ -1,5 +1,22 @@
 OK — lot 4 : B1 n° 1, 10, 11, 13, 15 et N3 corrigés (rouge sur HEAD puis vert, clair et cave, 390 et 1280) ; N4 : rien de plus ; tous les contrôles rejoués verts
 
+## LOT 6 (dernier lot ; n° du TRI du test en ligne ; contrôles dans `work/missions/2026-11-07-test-en-ligne/`)
+
+| n° | État | Fichiers | Contrôle (rouge → vert) | Capture ouverte |
+|----|------|----------|-------------------------|-----------------|
+| 9 (lecture dite) | corrigé | `maBiere/Carte.tsx` (« **Nuget** · lu comme Nugget » + « Confirmer » / « Refuser » sur la carte), `EtapeHoublons.tsx` (`lectures`, `lireNom`), `hote.tsx`, `domain/hopIndex/v4/recipeConversion.ts` (`hopVarietyId` vide = lecture refusée : jamais relue). Confirmer relie la variété à la ligne sans renommer (le mot du brasseur reste) ; refuser laisse la ligne sans variété | `controle-lecture-nom.mjs` (build `VITE_HOP_V4=on`) : ECHEC (carte « Nuget … α ? » sans lecture, sur le build d'avant le lot 5 : un build de 22a89d5f n'a pas pu être refait sans écraser mon travail) → OK ; confirmer : la lecture part, α lu ; refuser : non reproposée | `caps-lecture-apres.png` |
+| 13 (levure) | corrigé | `maBiere/Base.tsx` : `nomLevureBase` rend le nom (base, puis catalogue de l'app), sinon « levure inconnue », jamais l'identifiant | tsc, tests hopIndex verts ; pas de contrôle Chrome (il faut une recette avec une levure hors base) |
+| 49 (badge) | corrigé | `App.tsx` : `criticalStockCount = articlesACommander(…).length`, la fonction de Stocks et du Bord | tests verts ; pas de contrôle Chrome (pas de stock réel au banc) |
+| 15 (Récap) | déjà fait au lot 5 | `WaterVolumes.tsx` (« 4,20 L/kg ») : je n'ai trouvé aucun autre affichage à 4 décimales dans le Récap de `BrewWizard` ; le NOLO (« 24,012 L », « 91,73 – 93,73 % ») reste non joué (pas de fixture NOLO) | — | — |
+| cadre de focus | corrigé | `pages/PageShell.tsx` : le `main` (tabIndex -1, focus par programme) n'a plus d'anneau ; les commandes gardent le leur (contrôlé) | `controle-anneau.mjs` : ECHEC (2 px rgb(17,17,17) en clair, rgb(242,193,78) en cave) → OK, clair et cave | `caps-anneau-apres-cave.png` |
+| 10 (pastilles de malts) | **rien à dériver, pas de changement** | — | — | — |
+| 28 (hors style) | corrigé, option B | `maBiere/Ajouter.tsx` : une suggestion sans donnée pour le style (ni usage attesté ni famille attendue citée : `styleFit` = « non documenté » ou « peu documenté ») porte « non documenté pour ce style » ; le classement D107 n'a pas bougé | `controle-non-documente.mjs` (build `VITE_HOP_V4=on`, recette en Imperial Stout) : ECHEC (Fantasia Blend sans mention) → OK, clair et cave | `caps-nondoc-apres-cave.png` |
+
+- **n° 10, pourquoi** : la pastille et la ligne lisent déjà `StockItem.colorEbc`, converti en teinte par `teinte()` (table EBC → RGB de `modele.ts`, déjà la même que le bandeau). `StockItem` n'a **aucun** autre champ de couleur (pas de plage `colorEbcMin/Max` : elle n'existe que sur les faits d'ingrédient), et l'app n'a pas de table de couleurs de malts. Un malt sans EBC mesuré garde donc la pastille neutre « ? », comme demandé. Un premier essai (teinte au milieu d'une plage) a été défait : le champ n'existe pas sur le stock.
+- n° 16, 18, 30 : laissés (décision du pilote).
+- Rejoués sur le dernier build (`%TEMP%/ferm-apres`) : les 17 contrôles de la voie : OK ; `controle-og-bandeau`, `controle-eau`, `controle-fuite-recette` (build `-apres4`), `controle-anneau`, `controle-lecture-nom`, `controle-non-documente` : OK. `controle-repos-houblons` : voir le lot 5 (différence d'octets sans différence visible, non relancé ici). Vitest : `tests/unit/fermentescibles`, `hopIndexV4`, `brewWizard*`, `AppQuickActionReturn`, `fix114`, `recipeAccessibility` + 117 fichiers hopIndex/wizard : 1 160 verts.
+- Honnêteté : `recipeConversion.ts` (domaine hopIndex) a reçu une ligne (lecture refusée) ; un autre auteur tient le reste de hopIndex, rien d'autre n'y est écrit.
+
 ## LOT 5 (test en ligne du 07.11) ; contrôles dans `work/missions/2026-11-07-test-en-ligne/`
 
 **Suite du lot 5 (gênants), état :**

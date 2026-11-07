@@ -17,6 +17,7 @@ import { useGestes } from './hote';
 import { nouvelId, placer } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { donnees, houblon, ibuAjout, style } from '../parcours/adaptateur';
+import { styleFit } from '../../../domain/hopIndex/v4/hops';
 import type { QuickAdd } from '../../../domain/hopIndex/v4';
 import { buildFromEmpty, hopRole, quickAdds } from '../parcours/v4';
 import { AlphaLu, StockIcone, titreUsage } from './briques';
@@ -152,6 +153,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                   <span data-houblon={h.cle} {...fiche.nom(h.cle)} className="shrink-0 font-semibold text-[15px] leading-5 text-cave-50 underline decoration-dotted decoration-cave-600 underline-offset-4">{h.nom}</span>
                   <AlphaLu h={h} mode="court" />
                   <UsageMot cle={h.cle} />
+                  {sansDonneeStyle(p.cle, sc) && <span data-role="non-documente" title="Ni usage attesté ni famille attendue citée pour ce style : le classement reste celui du moteur" className="text-xs text-attention whitespace-nowrap rounded-full border border-dashed border-cave-600 px-1.5">non documenté pour ce style</span>}
                   {p.statut === 'catalogue' ? <ShoppingCart role="img" aria-label="à acheter" className="w-3.5 h-3.5 text-cave-400 shrink-0" /> : <StockIcone h={h} />}
                   <MarquesCatalogue cle={h.cle} />
                 </span>
@@ -233,6 +235,15 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
       )}
     </section>
   );
+}
+
+/**
+ * Test en ligne n° 28 (option B du pilote) : le classement D107 reste ; une suggestion SANS donnée pour le style de la recette (ni usage attesté par un fournisseur, ni famille
+ * attendue citée dans sa fiche) le dit sur sa ligne, au lieu de passer pour une proposition du style. Un style sans plages (code vide ou inconnu) ne marque rien : tout y serait « non documenté ».
+ */
+function sansDonneeStyle(cle: string, sc: ReturnType<typeof style>): boolean {
+  if (!sc.documented) return false;
+  try { const fit = styleFit([cle], sc)[0]?.fit; return fit === 'non documenté' || fit === 'peu documenté'; } catch { return false; }
 }
 
 /** L'usage en mot, comme les ajouts de sa base (« double », « aromatique », « amérisant ») : D90. */

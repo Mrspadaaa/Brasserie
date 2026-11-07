@@ -27,6 +27,7 @@ import { batchDisplayDate } from './domain/batchSchedule';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
+import { articlesACommander } from './domain/stockLevel';
 
 import { Units } from './services/units';
 import { saveRecipeConfirmed } from './services/recipeSave';
@@ -426,10 +427,8 @@ export const App: React.FC = () => {
   }, [activeTab, route.route]);
 
   // Critical stock count
-  const criticalStockCount = [
-    ...stocks.rawMaterials.filter((s) => s.currentStock <= s.minStock),
-    ...stocks.cleaning.filter((s) => s.currentStock <= s.minStock)
-  ].length;
+  // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
+  const criticalStockCount = articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches).length;
 
   // Pending To-Do count from Creative Lab
   const pendingTodosCount = creativeItems.filter(

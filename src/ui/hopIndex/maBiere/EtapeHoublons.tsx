@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Recipe } from '../../../types';
 import { toHopRecipe, versPatch, type ChangementHoublonsV4 } from '../../../domain/hopIndex/v4/recipeConversion';
-import { configurerDonnees, lireBiere, type BiereLue } from '../parcours/adaptateur';
+import { configurerDonnees, houblon, lireBiere, type BiereLue } from '../parcours/adaptateur';
 import { activerWorker } from '../parcours/clientWorker';
 import { ajouter, changerDose, changerMoment, retirer } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
@@ -126,7 +126,25 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
     if (couche) ouvrirCouche(couche);
   }, [draftId, vider]);
 
+  // Les noms lus comme une variété voisine : le mot du brasseur, la lecture, et le geste qui la confirme ou la refuse (n° 9). Rien n'est remplacé : seul le lien de la ligne change.
+  const lectures = useMemo(() => {
+    const r: Record<string, { saisi: string; lu: string }> = {};
+    for (const a of conversion.recette.additions) {
+      const lien = conversion.ajouts[a.id];
+      if (lien?.relie === 'nom proche' && lien.index != null && !a.hopKey.includes(':')) r[a.id] = { saisi: conversion.origine.hops[lien.index].name, lu: houblon(a.hopKey).nom };
+    }
+    return r;
+  }, [conversion]);
+  const lireNom = useCallback((ajoutId: string, accepter: boolean) => {
+    const lien = conversion.ajouts[ajoutId];
+    const a = conversion.recette.additions.find((x) => x.id === ajoutId);
+    if (!lien || lien.index == null || !a) return;
+    const hops = conversion.origine.hops.map((h, i) => (i === lien.index ? { ...h, hopVarietyId: accepter ? a.hopKey : '' } : h));
+    onChange({ draftId, patch: { hops } });
+  }, [conversion, draftId, onChange]);
+
   const valeur = useMemo<HoteEtape>(() => ({
+    lectures, lireNom,
     recette,
     route: { ecran: fiche ? 'fiche' : 'ma-biere' },
     aller: ouvrir,
@@ -148,7 +166,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
       if (minuterie.current != null) window.clearTimeout(minuterie.current);
       minuterie.current = window.setTimeout(vider, 400);
     },
-  }), [recette, fiche, ouvrir, geste, vider, onAller]);
+  }), [recette, fiche, ouvrir, geste, vider, onAller, lectures, lireNom]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
 
   return (

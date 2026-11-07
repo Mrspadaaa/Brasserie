@@ -7,12 +7,19 @@ import type { BiereLue, FamilleLue } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { FAMILY_NAMES } from '../parcours/v4';
 import { raisonIbuIncalculable } from '../../../domain/hopIndex/v4/recipeConversion';
+import { yeastReferences } from '../../../domain/yeastReferences';
+import { StorageService } from '../../../services/storage';
 
 /** Noms de levure de la base (« SafAle US-05 ») ; toutes celles-ci sont caractérisées par le moteur (biotransformation). */
 const LEVURES: Record<string, string> = {
   'fermentis-us05': 'SafAle US-05', 'lalbrew-pomona': 'LalBrew Pomona', 'lalbrew-verdant-ipa': 'LalBrew Verdant IPA', 'lalbrew-diamond': 'LalBrew Diamond',
 };
-export const nomLevureBase = (id: string | null | undefined) => (id ? LEVURES[id] ?? id : 'levure ?');
+/** Le nom d'une levure, jamais son identifiant (test en ligne n° 13 : « lallemand-munich-classic ») : la base de l'étape, sinon le catalogue de l'app, sinon « levure inconnue ». */
+export const nomLevureBase = (id: string | null | undefined) => {
+  if (!id) return 'levure ?';
+  if (LEVURES[id]) return LEVURES[id];
+  try { return yeastReferences(StorageService.getHopKnowledge()).find((y) => y.id === id)?.name ?? 'levure inconnue'; } catch { return 'levure inconnue'; }
+};
 /** Le moteur caractérise-t-il cette levure ? Sans levure, ou hors de ces fiches : non, et rien ne le prétend. */
 export const levureCaracterisee = (id: string | null | undefined) => !!id && Object.prototype.hasOwnProperty.call(LEVURES, id);
 

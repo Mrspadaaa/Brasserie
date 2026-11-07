@@ -113,7 +113,8 @@ function cleDe(h: HopIngredient): { cle: string; relie: LienAjout['relie']; proc
   const id = PAR_NOM.get(cryo ? nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim() : nom);
   if (id) return { cle: cryo ? `${id}:cryo` : id, relie: 'nom' };
   // Faute de frappe ou forme voisine (« Nuget », « Hallertauer Mittelfruh ») : la variété la plus proche, si elle est seule, et dite comme telle (n° 9).
-  const proche = varieteProche(nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim(), CATALOGUE);
+  // Un brasseur qui a refusé la lecture (hopVarietyId vide, écrit par le geste « Refuser » de la carte) garde sa ligne sans variété : jamais relue une seconde fois.
+  const proche = h.hopVarietyId === '' ? null : varieteProche(nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim(), CATALOGUE);
   if (proche) return { cle: cryo ? `${proche.id}:cryo` : proche.id, relie: 'nom proche', proche: proche.nom };
   return { cle: `inconnu:${nom.split(' ').join('-')}`, relie: null };
 }
