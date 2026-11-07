@@ -30,6 +30,11 @@ export const QUALITE_JPEG = 0.85;
 export const PLANCHER_ENCRE = 25;
 const ANGLE_MAX = 5;
 const ANGLE_PAS = 0.25;
+/** Affinage de l'angle : ±0,4° autour de l'estimation grossière, par pas de 0,05°. */
+const ANGLE_AFFINE = 0.4;
+const ANGLE_PAS_FIN = 0.05;
+/** Un papier posé de travers : l'angle du texte se cherche aussi autour de sa pente, jusqu'à ±30°. */
+const ANGLE_PAPIER_MAX = 30;
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -85,12 +90,24 @@ export function otsu(histogramme: ArrayLike<number>): { seuil: number; bas: numb
   return { seuil, bas, haut };
 }
 
-/** L'encre de chaque pixel (0 ou 1) : fond local − pixel au-delà du seuil adaptatif, sans point isolé (bruit de capteur). */
-function marquerEncre(gris: Uint8Array, w: number, h: number, demi: number): Uint8Array {
+/**
+ * Le contraste local de chaque pixel (fond local − pixel) et le seuil adaptatif (Otsu, jamais sous le plancher). `dedans` : le seuil se choisit sur ces
+ * pixels seulement (l'intérieur du papier), s'ils sont assez nombreux ; tous les pixels gardent leur contraste. Le bord d'une table sombre (contraste
+ * ≈ 180 tout le long du papier) haussait le seuil au-dessus d'un texte flou (≈ 70) : plus d'encre, plus d'angle (pièges h0040, h0053, h0066).
+ */
+function contrasteLocal(gris: Uint8Array, w: number, h: number, demi: number, dedans: Uint8Array | null = null): { contraste: Uint8Array; seuil: number } {
   const fond = fondLocal(gris, w, h, demi);
-  const contraste = new Uint8Array(w * h), histogramme = new Uint32Array(256);
-  for (let i = 0; i < contraste.length; i++) { const c = fond[i] - gris[i]; contraste[i] = c; histogramme[c]++; }
-  const seuil = Math.max(PLANCHER_ENCRE, otsu(histogramme).seuil);
+  const contraste = new Uint8Array(w * h), histogramme = new Uint32Array(256), interieur = new Uint32Array(256);
+  let n = 0;
+  for (let i = 0; i < contraste.length; i++) {
+    const c = fond[i] - gris[i]; contraste[i] = c; histogramme[c]++;
+    if (dedans && dedans[i]) { interieur[c]++; n++; }
+  }
+  return { contraste, seuil: Math.max(PLANCHER_ENCRE, otsu(n >= 0.05 * w * h ? interieur : histogramme).seuil) };
+}
+
+/** L'encre de chaque pixel (0 ou 1) : contraste au-delà du seuil, sans point isolé (bruit de capteur). */
+function binariser(contraste: Uint8Array, w: number, h: number, seuil: number): Uint8Array {
   const brut = new Uint8Array(w * h);
   for (let i = 0; i < brut.length; i++) brut[i] = contraste[i] > seuil ? 1 : 0;
   const net = new Uint8Array(w * h);
@@ -102,42 +119,93 @@ function marquerEncre(gris: Uint8Array, w: number, h: number, demi: number): Uin
   return net;
 }
 
-function partParRangee(ink: Uint8Array, w: number, h: number): number[] {
-  const rangees: number[] = [];
+/** Sans les traits horizontaux plus longs que `longueur` : un mot ne court jamais sur la moitié de la page sans espace. */
+export function sansTraitsHorizontaux(ink: Uint8Array, w: number, h: number, longueur: number): Uint8Array {
+  const sortie = ink.slice();
+  for (let y = 0; y < h; y++) {
+    const ligne = y * w;
+    for (let x = 0; x < w;) {
+      if (!ink[ligne + x]) { x++; continue; }
+      let fin = x;
+      while (fin < w && ink[ligne + fin]) fin++;
+      if (fin - x >= longueur) sortie.fill(0, ligne + x, ligne + fin);
+      x = fin;
+    }
+  }
+  return sortie;
+}
+
+/**
+ * Sans les traits verticaux plus longs que `longueur` (bord du papier sur la table, ombre du bord, filet de tableau) : ils ne portent aucune ligne de
+ * texte, mais encreraient toutes les rangées et empêcheraient toute coupe propre. Un trait de lettre ne dépasse jamais la hauteur d'une ligne.
+ */
+export function sansTraitsVerticaux(ink: Uint8Array, w: number, h: number, longueur: number): Uint8Array {
+  const sortie = ink.slice();
+  for (let x = 0; x < w; x++) {
+    for (let y = 0; y < h;) {
+      if (!ink[y * w + x]) { y++; continue; }
+      let fin = y;
+      while (fin < h && ink[fin * w + x]) fin++;
+      if (fin - y >= longueur) for (let t = y; t < fin; t++) sortie[t * w + x] = 0;
+      y = fin;
+    }
+  }
+  return sortie;
+}
+
+/** La part d'encre de chaque rangée, mesurée sur les colonnes [x0, x1) seulement (par défaut toute la largeur). */
+function partParRangee(ink: Uint8Array, w: number, h: number, x0 = 0, x1 = w): number[] {
+  const rangees: number[] = [], large = Math.max(1, x1 - x0);
   for (let y = 0; y < h; y++) {
     let n = 0;
-    for (let x = 0, i = y * w; x < w; x++, i++) n += ink[i];
-    rangees.push(n / w);
+    for (let x = x0, i = y * w + x0; x < x1; x++, i++) n += ink[i];
+    rangees.push(n / large);
   }
   return rangees;
 }
 
-export interface Encre { ink: Uint8Array; rangees: number[]; pas: number | null }
+/**
+ * `ink` : l'encre nette (seuil adaptatif), pour l'angle et le recadrage. `coupe` : l'encre SENSIBLE (moitié du seuil : un texte pâli, sous une tache
+ * ou flou compte), pour décider où couper ; `rangees` est sa part par rangée. Les deux sont sans traits verticaux.
+ */
+export interface Encre { ink: Uint8Array; coupe: Uint8Array; rangees: number[]; pas: number | null; seuil: number }
 
 /**
  * L'encre d'une image par CONTRASTE LOCAL. Le fond d'un pixel est le plus clair de son voisinage (fenêtre ≈ 2 pas de ligne) : un papier gris, un dégradé
  * d'ombre, une tache lisse ne sont pas de l'encre, un texte sur la tache l'est. Le pas des lignes est d'abord estimé avec une fenêtre large, puis la
- * fenêtre est resserrée à 2 pas. Un thème sombre (moyenne < 70) est inversé d'abord.
+ * fenêtre est resserrée à 2 pas. Un thème sombre (moyenne < 70) est inversé d'abord, sauf `clair` (un papier est connu) : le papier est la région claire, et
+ * le fond sombre autour n'est que la table (ses tickets du 03.11 sur un tissu sombre : inversés, le papier devenait de l'encre et le texte du blanc).
+ * Avec un papier, le seuil se choisit sur son intérieur (voir `contrasteLocal`) ; `(dx, dy)` : la position de l'image dans le repère du papier. Aucun
+ * masque : rien de la pièce n'est caché à l'analyse.
  */
-export function encreDetaillee(bitmap: Bitmap): Encre {
+export function encreDetaillee(bitmap: Bitmap, papier: Papier | null = null, dx = 0, dy = 0, clair = papier !== null): Encre {
   const { width: w, height: h } = bitmap;
   let gris = bitmap.gray;
   let somme = 0;
   for (let i = 0; i < gris.length; i++) somme += gris[i];
-  if (gris.length && somme / gris.length < 70) gris = gris.map(v => 255 - v);
+  if (!clair && gris.length && somme / gris.length < 70) gris = gris.map(v => 255 - v);
+  const longueur = Math.max(48, Math.round(w / 8)), dedans = papier ? dedansDuPapier(papier, w, h, dx, dy) : null;
+  const marquer = (demi: number) => {
+    const { contraste, seuil } = contrasteLocal(gris, w, h, demi, dedans);
+    // L'encre de l'angle perd aussi les longs traits horizontaux (pli, filet, bord haut du papier) : un pli penché de 0,65° tirait l'angle à lui
+    // (piège h0145). La carte des coupes les garde : une coupe les évite.
+    const ink = sansTraitsHorizontaux(sansTraitsVerticaux(binariser(contraste, w, h, seuil), w, h, longueur), w, h, Math.max(64, Math.round(w / 2)));
+    // La carte des coupes : la moitié du seuil net (jamais sous le plancher). Plus bas, le grain d'un vrai papier photographié (reflets, JPEG) encre
+    // 10 à 23 % des rangées blanches (ses tickets du 03.11) ; à la moitié, une ligne pâlie au tiers de son contraste compte encore.
+    const seuilCoupe = Math.max(PLANCHER_ENCRE, Math.round(seuil / 2));
+    return { ink, seuil, coupe: seuilCoupe < seuil ? sansTraitsVerticaux(binariser(contraste, w, h, seuilCoupe), w, h, longueur) : ink };
+  };
   const demi1 = Math.max(3, Math.round(w / 40));
-  let ink = marquerEncre(gris, w, h, demi1);
-  let rangees = partParRangee(ink, w, h);
-  let pas = linePitch(rangees);
+  let m = marquer(demi1);
+  let pas = linePitch(partParRangee(m.ink, w, h));
   if (pas) {
     const demi2 = clamp(Math.round(pas), 3, 300);
     if (Math.abs(demi2 - demi1) > 0.2 * demi1) {
-      ink = marquerEncre(gris, w, h, demi2);
-      rangees = partParRangee(ink, w, h);
-      pas = linePitch(rangees) ?? pas;
+      m = marquer(demi2);
+      pas = linePitch(partParRangee(m.ink, w, h)) ?? pas;
     }
   }
-  return { ink, rangees, pas };
+  return { ...m, rangees: partParRangee(m.coupe, w, h), pas };
 }
 
 /** La part d'encre de chaque rangée, par contraste local (voir `encreDetaillee`). Remplace `inkRows` (fond global) pour une photo. */
@@ -158,6 +226,10 @@ export interface Papier {
   f: number;
   bw: number;
   bh: number;
+  /** Long côté / court côté du papier, quelle que soit sa pente (moments de la région claire : un rectangle penché garde sa forme). */
+  rapport: number;
+  /** La pente du papier en degrés (convention en tête de fichier), ou `null` s'il est presque carré : une piste pour l'angle du texte. */
+  angle: number | null;
 }
 
 /**
@@ -165,9 +237,10 @@ export interface Papier {
  * l'intervalle qu'elle couvre. PRUDENT : au moindre doute (pas de fond sombre net, du texte hors de la région claire, autre objet clair) la réponse est
  * `null` et l'image n'est ni recadrée ni masquée : on ne perd jamais une partie de la pièce pour la découper mieux.
  */
-export function trouverPapier(bitmap: Bitmap): Papier | null {
+export function trouverPapierDetaille(bitmap: Bitmap): { papier: Papier | null; raison: string } {
+  const refus = (raison: string) => ({ papier: null, raison });
   const { width: W, height: H, gray } = bitmap;
-  if (W < 8 || H < 8) return null;
+  if (W < 8 || H < 8) return refus('image trop petite');
   const f = Math.max(2, Math.round(Math.min(W, H) / 150));
   const bw = Math.ceil(W / f), bh = Math.ceil(H / f), nb = bw * bh;
   const moyenne = new Uint8Array(nb), ecart = new Uint8Array(nb), histogramme = new Uint32Array(256);
@@ -182,7 +255,7 @@ export function trouverPapier(bitmap: Bitmap): Papier | null {
     }
   }
   const { seuil, bas, haut } = otsu(histogramme);
-  if (haut - bas < 60) return null;
+  if (haut - bas < 60) return refus(`pas de fond sombre net (${Math.round(bas)} / ${Math.round(haut)})`);
   // La plus grande région claire (4-connexe).
   const etiquette = new Int32Array(nb), file = new Int32Array(nb);
   let meilleurId = 0, meilleureAire = 0, id = 0;
@@ -199,7 +272,7 @@ export function trouverPapier(bitmap: Bitmap): Papier | null {
     }
     if (aire > meilleureAire) { meilleureAire = aire; meilleurId = id; }
   }
-  if (!meilleurId) return null;
+  if (!meilleurId) return refus('aucune région claire');
   const intervalles = new Int32Array(2 * bh).fill(0);
   let gauche = bw, droite = -1, haute = bh, basse = -1, couvert = 0;
   for (let by = 0; by < bh; by++) {
@@ -208,8 +281,9 @@ export function trouverPapier(bitmap: Bitmap): Papier | null {
     intervalles[2 * by] = l; intervalles[2 * by + 1] = r;
     if (r >= l) { couvert += r - l + 1; gauche = Math.min(gauche, l); droite = Math.max(droite, r); haute = Math.min(haute, by); basse = by; }
   }
-  if (couvert < 0.25 * nb) return null;
-  if (couvert < 0.45 * (droite - gauche + 1) * (basse - haute + 1)) return null;
+  // Un ticket étroit sur une grande table ne couvre que quelques pour cent de la photo (ses tickets du 03.11 : 19 %).
+  if (couvert < 0.03 * nb) return refus(`papier trop petit (${Math.round(100 * couvert / nb)} % de l'image)`);
+  if (couvert < 0.45 * (droite - gauche + 1) * (basse - haute + 1)) return refus('région claire trop creuse');
   // Hors du papier : un vrai fond (assez de blocs, sombre, sans texte, sans autre objet clair).
   let dehors = 0, textes = 0, clairs = 0;
   const ecartTexte = Math.max(70, 0.45 * (haut - bas));
@@ -222,10 +296,42 @@ export function trouverPapier(bitmap: Bitmap): Papier | null {
       if (moyenne[by * bw + bx] > seuil) clairs++;
     }
   }
-  if (dehors < 0.03 * nb || textes > 0.03 * dehors || clairs > 0.25 * dehors) return null;
+  if (dehors < 0.03 * nb) return refus('presque pas de fond');
+  if (clairs > 0.25 * dehors) return refus(`autre objet clair (${Math.round(100 * clairs / dehors)} % du fond)`);
+  // La forme et la pente du papier : moments d'ordre 2 de la région claire (un rectangle de côtés a ≥ b : variances a²/12 et b²/12).
+  let n = 0, mx = 0, my = 0;
+  for (let b = 0; b < nb; b++) if (etiquette[b] === meilleurId) { n++; mx += b % bw; my += Math.floor(b / bw); }
+  mx /= n; my /= n;
+  let sxx = 0, syy = 0, sxy = 0;
+  for (let b = 0; b < nb; b++) if (etiquette[b] === meilleurId) { const dx = b % bw - mx, dy = Math.floor(b / bw) - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
+  const demiTrace = (sxx + syy) / 2, racine = Math.sqrt(((sxx - syy) / 2) ** 2 + sxy * sxy);
+  const rapport = Math.sqrt((demiTrace + racine) / Math.max(1e-9, demiTrace - racine));
+  // L'axe long (y vers le bas) : 90° + pente pour un papier haut, la pente elle-même pour un papier large ; ramenée dans [−90°, 90°).
+  const axe = 0.5 * Math.atan2(2 * sxy, sxx - syy) * 180 / Math.PI;
+  const pente = (((syy >= sxx ? axe - 90 : axe) % 180) + 270) % 180 - 90;
   const x = gauche * f, y = haute * f;
-  return { boite: { x, y, w: Math.min(W, (droite + 1) * f) - x, h: Math.min(H, (basse + 1) * f) - y }, intervalles, f, bw, bh };
+  return {
+    papier: { boite: { x, y, w: Math.min(W, (droite + 1) * f) - x, h: Math.min(H, (basse + 1) * f) - y }, intervalles, f, bw, bh, rapport, angle: rapport >= 1.3 && Math.abs(pente) <= 45 ? Number(pente.toFixed(2)) : null },
+    raison: 'papier trouvé',
+  };
 }
+/** Le papier, ou `null` (voir `trouverPapierDetaille`, qui dit pourquoi). */
+export function trouverPapier(bitmap: Bitmap): Papier | null {
+  return trouverPapierDetaille(bitmap).papier;
+}
+
+/** L'intérieur du papier (un bloc retiré de chaque bord, rangées de blocs pleines entre deux pleines) sur une image w × h placée en (dx, dy) de son repère. */
+function dedansDuPapier(papier: Papier, w: number, h: number, dx: number, dy: number): Uint8Array {
+  const dedans = new Uint8Array(w * h), f = papier.f, plein = (by: number) => by >= 0 && by < papier.bh && papier.intervalles[2 * by + 1] >= papier.intervalles[2 * by];
+  for (let by = 1; by < papier.bh - 1; by++) {
+    if (!plein(by - 1) || !plein(by) || !plein(by + 1)) continue;
+    const a = (papier.intervalles[2 * by] + 1) * f - dx, b = papier.intervalles[2 * by + 1] * f - dx;
+    if (b <= a) continue;
+    for (let y = Math.max(0, by * f - dy); y < Math.min(h, (by + 1) * f - dy); y++) dedans.fill(1, y * w + clamp(a, 0, w), y * w + clamp(b, 0, w));
+  }
+  return dedans;
+}
+
 
 /** Le recadrage autour du papier (boîte + marge de 1,5 %), ou l'image entière si elle n'enlève pas au moins 8 % de la surface. */
 export function recadrageDe(papier: Papier | null, width: number, height: number): Rect {
@@ -252,51 +358,72 @@ export function remplirHorsPapier(bitmap: Bitmap, papier: Papier): Uint8Array {
   return sortie;
 }
 
+/** Largeur d'une colonne de l'estimation de l'angle, en pixels. */
+const COLONNE_ANGLE = 250;
+
 /**
- * L'angle du texte, en degrés dans [−5, 5], par pas de 0,25 : celui qui rend le profil d'encre des rangées le plus contrasté (somme des carrés des
- * rangées). Image réduite (blocs) pour rester rapide. Sans gain net sur 0° (moins de 2 %), ou sans encre, rend 0 : jamais un redressement sans preuve.
+ * L'angle du texte, en degrés dans [−5, 5], au 0,05° : d'abord, par pas de 0,25, celui qui rend le plus contrasté le profil d'encre des rangées, calculé COLONNE PAR
+ * COLONNE (≈ 250 px) puis sommé. Un profil global alignerait à tort deux colonnes du document décalées d'une ligne (le nom sur une ligne, les montants
+ * sur la suivante : facture droite vue « penchée », pièges du 03.11) ; dans une colonne, seule la pente des lignes elles-mêmes compte. Image réduite
+ * (blocs) pour rester rapide. Puis l'affinage sur toute la largeur (voir plus bas). Sans encre, ou sans gain sur 0°, rend 0 : jamais un redressement sans preuve.
  */
-export function estimerAngle(ink: Uint8Array, w: number, h: number): number {
+export function estimerAngle(ink: Uint8Array, w: number, h: number, autour: number | null = null): number {
   const r = Math.max(1, Math.floor(w / 400));
-  const bw = Math.ceil(w / r), bh = Math.ceil(h / r);
-  const xs: number[] = [], ys: number[] = [], ps: number[] = [];
+  const bw = Math.ceil(w / r), bh = Math.ceil(h / r), colonnes = Math.max(1, Math.round(w / COLONNE_ANGLE));
+  const xs: number[] = [], ys: number[] = [], ps: number[] = [], cs: number[] = [];
   for (let by = 0; by < bh; by++) {
     for (let bx = 0; bx < bw; bx++) {
       let n = 0;
       for (let y = by * r; y < Math.min(h, (by + 1) * r); y++) for (let x = bx * r, i = y * w + bx * r; x < Math.min(w, (bx + 1) * r); x++, i++) n += ink[i];
-      if (n) { xs.push(bx * r + r / 2 - w / 2); ys.push(by * r + r / 2 - h / 2); ps.push(n); }
+      if (n) { xs.push(bx * r + r / 2 - w / 2); ys.push(by * r + r / 2 - h / 2); ps.push(n); cs.push(Math.min(colonnes - 1, Math.floor((bx * r * colonnes) / w))); }
     }
   }
   if (xs.length < 20) return 0;
   const bacs = Math.ceil(Math.hypot(w, h) / r) + 4, decalage = Math.hypot(w, h) / 2;
-  const score = (degres: number) => {
-    const rad = degres * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad), profil = new Float64Array(bacs);
-    for (let i = 0; i < xs.length; i++) profil[Math.floor((-xs[i] * s + ys[i] * c + decalage) / r)] += ps[i];
+  const score = (degres: number, parColonne: boolean) => {
+    const k = parColonne ? colonnes : 1, rad = degres * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad), profil = new Float64Array(bacs * k);
+    for (let i = 0; i < xs.length; i++) profil[Math.floor((-xs[i] * s + ys[i] * c + decalage) / r) * k + (parColonne ? cs[i] : 0)] += ps[i];
     let total = 0;
-    for (let i = 0; i < bacs; i++) total += profil[i] * profil[i];
+    for (let i = 0; i < profil.length; i++) total += profil[i] * profil[i];
     return total;
   };
-  const zero = score(0);
-  let meilleur = 0, meilleurScore = zero;
-  for (let a = -ANGLE_MAX; a <= ANGLE_MAX + 1e-9; a += ANGLE_PAS) {
-    const s = score(a);
-    if (s > meilleurScore * (1 + 1e-9)) { meilleur = a; meilleurScore = s; }
+  // 1. Grossier, par colonnes, sur ±5° et, si le papier lui-même penche davantage (`autour`, sa pente), sur ±5° autour de sa pente (ticket posé de
+  // travers, jusqu'à ±30° : ses photos du 03.11) : aucune fausse pente entre colonnes décalées.
+  const plages: Array<[number, number]> = [[-ANGLE_MAX, ANGLE_MAX]];
+  if (autour !== null && Math.abs(autour) > ANGLE_MAX - 1 && Math.abs(autour) <= ANGLE_PAPIER_MAX) plages.push([Math.round(autour / ANGLE_PAS) * ANGLE_PAS - ANGLE_MAX, Math.round(autour / ANGLE_PAS) * ANGLE_PAS + ANGLE_MAX]);
+  const limite = Math.max(...plages.map(([a, b]) => Math.max(Math.abs(a), Math.abs(b))));
+  let grossier = 0, meilleurGrossier = score(0, true);
+  for (const [debut, fin] of plages) for (let a = debut; a <= fin + 1e-9; a += ANGLE_PAS) {
+    const s = score(a, true);
+    if (s > meilleurGrossier * (1 + 1e-9)) { grossier = a; meilleurGrossier = s; }
   }
-  return meilleurScore > zero * 1.02 ? Math.round(meilleur / ANGLE_PAS) * ANGLE_PAS : 0;
+  // 2. Fin, au 0,05°, sur toute la largeur mais à ±0,4° du grossier seulement : la largeur entière mesure les petites pentes (0,5° sur 1 100 px
+  // décalent la ligne de 10 px : pièges du 03.11, une ligne coupée à chaque coupe), et une fausse pente entre colonnes (≥ 0,6° pour un pas de 12 px
+  // sur 1 200 px) reste hors de portée.
+  let fin = grossier, meilleurFin = score(grossier, false);
+  for (let a = grossier - ANGLE_AFFINE; a <= grossier + ANGLE_AFFINE + 1e-9; a += ANGLE_PAS_FIN) {
+    if (Math.abs(a) > limite + 1e-9) continue;
+    const s = score(a, false);
+    if (s > meilleurFin * (1 + 1e-9)) { fin = a; meilleurFin = s; }
+  }
+  const arrondi = Math.round(fin / ANGLE_PAS_FIN) * ANGLE_PAS_FIN;
+  return Math.abs(arrondi) < ANGLE_PAS_FIN / 2 || meilleurFin <= score(0, false) ? 0 : Number(arrondi.toFixed(2));
 }
-
 /**
  * Applique à un canal (gris, ou masque) la même transformation que le dessin des morceaux : recadrage `crop` puis rotation de `angle` autour de son centre
- * (convention en tête de fichier). Sortie de taille crop.w × crop.h. Hors de l'image : `vide` (255 par défaut ; 0 pour un masque). `plusProche` : plus
- * proche voisin (masques, jamais de valeur intermédiaire) ; sinon interpolation bilinéaire.
+ * (convention en tête de fichier). Sortie de taille crop.w × crop.h. Hors de l'image : le BORD ÉTENDU (le pixel de bord le plus proche), comme le dessin ;
+ * `vide` donné (0 pour un masque) : cette valeur. Un remplissage uni ferait de faux bords de papier ou d'encre là où le cadre redressé déborde (piège
+ * h0005 : des coins blancs sur la table, le seuil d'encre de 27 à 77, le texte pâle perdu). `plusProche` : plus proche voisin (masques, jamais de valeur
+ * intermédiaire) ; sinon interpolation bilinéaire.
  */
 export function normaliser(canal: Uint8Array, w: number, h: number, analyse: { crop: Rect; angle: number }, options: { plusProche?: boolean; vide?: number } = {}): Uint8Array {
-  const { crop, angle } = analyse, cw = crop.w, ch = crop.h, vide = options.vide ?? 255;
+  const { crop, angle } = analyse, cw = crop.w, ch = crop.h, vide = options.vide;
   const sortie = new Uint8Array(cw * ch);
+  const hors = (x: number, y: number) => (vide !== undefined ? vide : canal[clamp(y, 0, h - 1) * w + clamp(x, 0, w - 1)]);
   if (angle === 0) {
     for (let v = 0; v < ch; v++) {
       const y = crop.y + v;
-      for (let u = 0; u < cw; u++) { const x = crop.x + u; sortie[v * cw + u] = x >= 0 && x < w && y >= 0 && y < h ? canal[y * w + x] : vide; }
+      for (let u = 0; u < cw; u++) { const x = crop.x + u; sortie[v * cw + u] = x >= 0 && x < w && y >= 0 && y < h ? canal[y * w + x] : hors(x, y); }
     }
     return sortie;
   }
@@ -308,10 +435,10 @@ export function normaliser(canal: Uint8Array, w: number, h: number, analyse: { c
       const du = u - ox, x = cx + du * c - dv * s, y = cy + du * s + dv * c, i = v * cw + u;
       if (options.plusProche) {
         const xi = Math.round(x), yi = Math.round(y);
-        sortie[i] = xi >= 0 && xi < w && yi >= 0 && yi < h ? canal[yi * w + xi] : vide;
+        sortie[i] = xi >= 0 && xi < w && yi >= 0 && yi < h ? canal[yi * w + xi] : hors(xi, yi);
         continue;
       }
-      if (x < -0.5 || x > w - 0.5 || y < -0.5 || y > h - 0.5) { sortie[i] = vide; continue; }
+      if (vide !== undefined && (x < -0.5 || x > w - 0.5 || y < -0.5 || y > h - 0.5)) { sortie[i] = vide; continue; }
       const xc = clamp(x, 0, w - 1), yc = clamp(y, 0, h - 1), x0 = Math.floor(xc), y0 = Math.floor(yc), x1 = Math.min(w - 1, x0 + 1), y1 = Math.min(h - 1, y0 + 1), fx = xc - x0, fy = yc - y0;
       const haut = canal[y0 * w + x0] * (1 - fx) + canal[y0 * w + x1] * fx, bas = canal[y1 * w + x0] * (1 - fx) + canal[y1 * w + x1] * fx;
       sortie[i] = Math.round(haut * (1 - fy) + bas * fy);
@@ -331,8 +458,10 @@ export interface Analyse {
   rangees: number[];
   largeur: number;
   hauteur: number;
-  /** Vrai si un fond sombre autour du papier a été reconnu (et masqué dans l'analyse). */
+  /** Vrai si un fond sombre autour du papier a été reconnu. */
   papier: boolean;
+  /** Les colonnes [x0, x1) où les rangées blanches ont été mesurées (la largeur du papier), ou `null` : toute la largeur. */
+  colonnes: [number, number] | null;
 }
 export interface OptionsAnalyse {
   /** Chercher le papier sur un fond sombre et masquer ce fond (défaut : oui). */
@@ -344,20 +473,164 @@ export interface OptionsAnalyse {
   maxLines?: number;
 }
 
-/** Examine une image : papier, angle, puis les morceaux (`planMorceaux` sur l'encre locale de l'image normalisée). */
+/**
+ * Le recadrage SÛR : la boîte du papier, puis, côté par côté, chaque bande voisine (2 pas de ligne) où l'encre nette est aussi dense qu'un texte (au
+ * moins le quart de la densité du papier) rejoint le cadre, jusqu'à ce qu'aucun côté ne grandisse ; puis la marge (voir `recadrageDe`). Une ombre forte
+ * prise pour la table, un coin de la pièce hors de la région claire : leur texte continue celui du papier et reste dans le cadre (pièges du 03.11 : 15
+ * à 45 lignes perdues). La texture d'un tissu ou d'une table, clairsemée, reste dehors (ses tickets du 03.11, posés sur un tissu sombre).
+ */
+export function recadrageSur(papier: Papier | null, ink: Uint8Array, width: number, height: number, pas: number | null = null, coupe: Uint8Array = ink): Rect {
+  if (!papier) return { x: 0, y: 0, w: width, h: height };
+  return recadrageDe({ ...papier, boite: boiteGrandie(papier, ink, width, height, pas, coupe) }, width, height);
+}
+
+/** La boîte du papier grandie, côté par côté, des bandes voisines d'encre dense comme un texte (voir `recadrageSur`), sans marge. */
+/** L'image intégrale d'une carte d'encre (0/1) et la densité d'un rectangle en O(1). */
+function densites(carte: Uint8Array, width: number, height: number): (ax: number, ay: number, bx: number, by: number) => number {
+  const W1 = width + 1, integrale = new Uint32Array(W1 * (height + 1));
+  for (let y = 0; y < height; y++) {
+    let ligne = 0;
+    for (let x = 0; x < width; x++) { ligne += carte[y * width + x]; integrale[(y + 1) * W1 + x + 1] = integrale[y * W1 + x + 1] + ligne; }
+  }
+  return (ax, ay, bx, by) => {
+    ax = clamp(Math.round(ax), 0, width); bx = clamp(Math.round(bx), 0, width); ay = clamp(Math.round(ay), 0, height); by = clamp(Math.round(by), 0, height);
+    const aire = (bx - ax) * (by - ay);
+    return aire > 0 ? (integrale[by * W1 + bx] - integrale[ay * W1 + bx] - integrale[by * W1 + ax] + integrale[ay * W1 + ax]) / aire : 0;
+  };
+}
+
+/** La densité d'une carte sur le papier lui-même (ses intervalles par rangée de blocs), jamais sur le fond de sa boîte (papier penché). */
+function densiteDuPapier(papier: Papier, densite: (ax: number, ay: number, bx: number, by: number) => number): number {
+  let encre = 0, aire = 0;
+  for (let by = 0; by < papier.bh; by++) {
+    const l = papier.intervalles[2 * by], r = papier.intervalles[2 * by + 1];
+    if (r < l) continue;
+    const a = (r + 1 - l) * papier.f * papier.f;
+    encre += densite(l * papier.f, by * papier.f, (r + 1) * papier.f, (by + 1) * papier.f) * a; aire += a;
+  }
+  return aire ? encre / aire : 0;
+}
+
+export function boiteGrandie(papier: Papier, ink: Uint8Array, width: number, height: number, pas: number | null = null, coupe: Uint8Array = ink): Rect {
+  const nette = densites(ink, width, height), sensible = coupe === ink ? nette : densites(coupe, width, height);
+  // Le profil des rangées [ay, by) de l'encre SENSIBLE sur les colonnes [ax, bx) : une ombre baisse le contraste sous le seuil net, pas sa forme.
+  const profil = (ax: number, ay: number, bx: number, by: number) => {
+    ax = clamp(Math.round(ax), 0, width); bx = clamp(Math.round(bx), 0, width); ay = clamp(Math.round(ay), 0, height); by = clamp(Math.round(by), 0, height);
+    const p: number[] = [];
+    for (let y = ay; y < by; y++) { let n = 0; for (let x = ax, i = y * width + ax; x < bx; x++, i++) n += coupe[i]; p.push(bx > ax ? n / (bx - ax) : 0); }
+    return p;
+  };
+  const correlation = (a: number[], b: number[]) => {
+    const n = Math.min(a.length, b.length);
+    if (n < 4) return 0;
+    let ma = 0, mb = 0;
+    for (let i = 0; i < n; i++) { ma += a[i]; mb += b[i]; }
+    ma /= n; mb /= n;
+    let sab = 0, saa = 0, sbb = 0;
+    for (let i = 0; i < n; i++) { const da = a[i] - ma, db = b[i] - mb; sab += da * db; saa += da * da; sbb += db * db; }
+    return saa > 1e-12 && sbb > 1e-12 ? sab / Math.sqrt(saa * sbb) : 0;
+  };
+  // Des lignes de texte, vues de haut en bas : des rangées encrées ET des rangées blanches qui alternent (un tissu, une table : tout encré ; une marge :
+  // tout blanc).
+  const desLignes = (p: number[]) => {
+    if (!p.length) return false;
+    const encrees = p.filter(v => v > EMPTY_ROW_MAX).length / p.length;
+    return encrees >= 0.25 && encrees <= 0.85;
+  };
+  let x0 = papier.boite.x, y0 = papier.boite.y, x1 = x0 + papier.boite.w, y1 = y0 + papier.boite.h;
+  const d = Math.max(8, Math.round(2 * (pas ?? Math.max(width, height) / 60)));
+  // Les densités du texte du papier : une bande voisine doit en approcher (le quart au moins) ; des grains de tissu clairsemés, jamais.
+  const seuilNet = Math.max(0.008, 0.25 * densiteDuPapier(papier, nette)), seuilSensible = Math.max(0.008, 0.25 * densiteDuPapier(papier, sensible));
+  // Un côté grandit si la bande voisine a la densité d'un texte (encre nette), ou si, assez dense en encre sensible, elle continue les lignes du papier :
+  // sur un côté, mêmes rangées encrées que la bande intérieure ; en haut ou en bas, des lignes qui alternent avec des blancs.
+  const lateral = (dehors: [number, number], dedans: [number, number]) =>
+    nette(dehors[0], y0, dehors[1], y1) >= seuilNet
+    || (sensible(dehors[0], y0, dehors[1], y1) >= seuilSensible && correlation(profil(dehors[0], y0, dehors[1], y1), profil(dedans[0], y0, dedans[1], y1)) >= 0.5);
+  const vertical = (ay: number, by: number) => nette(x0, ay, x1, by) >= seuilNet || (sensible(x0, ay, x1, by) >= seuilSensible && desLignes(profil(x0, ay, x1, by)));
+  for (let tour = 0; tour < 400; tour++) {
+    let grandi = false;
+    if (x0 > 0 && lateral([x0 - d, x0], [x0, x0 + d])) { x0 = Math.max(0, x0 - d); grandi = true; }
+    if (x1 < width && lateral([x1, x1 + d], [x1 - d, x1])) { x1 = Math.min(width, x1 + d); grandi = true; }
+    if (y0 > 0 && vertical(y0 - d, y0)) { y0 = Math.max(0, y0 - d); grandi = true; }
+    if (y1 < height && vertical(y1, y1 + d)) { y1 = Math.min(height, y1 + d); grandi = true; }
+    if (!grandi) break;
+  }
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+}
+
+
+/**
+ * Le cadre (largeur, hauteur, au moins w × h) qui garde TOUTE l'encre `ink` (image w × h) une fois tournée de `angle` autour du centre : redresser ne
+ * rogne jamais un coin de texte (pièges du 03.11 : 61 lignes rognées par un faux angle de 5°).
+ */
+export function cadrePourAngle(ink: Uint8Array, w: number, h: number, angle: number): { w: number; h: number } {
+  const rad = angle * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad), ox = (w - 1) / 2, oy = (h - 1) / 2;
+  let du = 0, dv = 0;
+  for (let y = 0; y < h; y++) {
+    const dy = y - oy;
+    for (let x = 0, i = y * w; x < w; x++, i++) {
+      if (!ink[i]) continue;
+      const dx = x - ox;
+      du = Math.max(du, Math.abs(dx * c + dy * s)); dv = Math.max(dv, Math.abs(-dx * s + dy * c));
+    }
+  }
+  // Deux pixels de plus quand le cadre grandit : l'interpolation du dessin déborde d'un pixel.
+  const besoin = (d: number, n: number) => (Math.ceil(2 * d + 1) > n ? Math.ceil(2 * d + 1) + 2 : n);
+  return { w: besoin(du, w), h: besoin(dv, h) };
+}
+
+/** Le cadre (pixels de la source) du rectangle `sous` de la vue redressée `crop` (tournée de `angle`) : même centre de rotation que `normaliser`. */
+export function sousCadre(crop: Rect, angle: number, sous: Rect): Rect {
+  const rad = angle * Math.PI / 180, c = Math.cos(rad), s = Math.sin(rad);
+  const du = sous.x + (sous.w - 1) / 2 - (crop.w - 1) / 2, dv = sous.y + (sous.h - 1) / 2 - (crop.h - 1) / 2;
+  const cx = crop.x + (crop.w - 1) / 2 + du * c - dv * s, cy = crop.y + (crop.h - 1) / 2 + du * s + dv * c;
+  return { x: cx - (sous.w - 1) / 2, y: cy - (sous.h - 1) / 2, w: sous.w, h: sous.h };
+}
+
+/** Examine une image : papier (recadrage seulement, jamais de masque), angle, puis les morceaux (`planMorceaux` sur l'encre de l'image normalisée). */
 export function analyser(bitmap: Bitmap, options: OptionsAnalyse = {}): Analyse {
   const { width: W, height: H } = bitmap;
-  const papier = options.papier === false ? null : trouverPapier(bitmap);
-  const crop = options.recadrer === false ? { x: 0, y: 0, w: W, h: H } : recadrageDe(papier, W, H);
-  const gris = papier ? remplirHorsPapier(bitmap, papier) : bitmap.gray;
-  const vue = (angle: number) => ({ width: crop.w, height: crop.h, gray: normaliser(gris, W, H, { crop, angle }) });
-  let normal = vue(0), encre = encreDetaillee(normal), angle = 0;
+  const papier = options.papier === false ? null : trouverPapier(bitmap), clair = papier !== null || options.papier === true;
+  const vue = (c: Rect, angle: number): Bitmap => ({ width: c.w, height: c.h, gray: normaliser(bitmap.gray, W, H, { crop: c, angle }) });
+  const entiere = encreDetaillee(bitmap, papier, 0, 0, clair);
+  let crop = options.recadrer === false ? { x: 0, y: 0, w: W, h: H } : recadrageSur(papier, entiere.ink, W, H, entiere.pas, entiere.coupe);
+  let encre = crop.w === W && crop.h === H ? entiere : encreDetaillee(vue(crop, 0), papier, crop.x, crop.y, clair), angle = 0;
   if (options.redresser !== false) {
-    angle = estimerAngle(encre.ink, crop.w, crop.h);
-    if (angle !== 0) { normal = vue(angle); encre = encreDetaillee(normal); }
+    angle = estimerAngle(encre.ink, crop.w, crop.h, papier?.angle ?? null);
+    if (angle !== 0) {
+      const cadre = cadrePourAngle(encre.coupe, crop.w, crop.h, angle);
+      crop = { x: crop.x - Math.floor((cadre.w - crop.w) / 2), y: crop.y - Math.floor((cadre.h - crop.h) / 2), w: cadre.w, h: cadre.h };
+      // Redressée, la pièce se recadre comme une pièce droite : son papier y est cherché de nouveau, et la boîte grandit sur des lignes de texte enfin
+      // horizontales. Penchée, sa boîte droite contenait le tissu des coins, et le cadre l'avalait (ses tickets du 03.11 : 1 600 px de large pour un
+      // ticket de 560, le texte réduit à 0,69).
+      const droite = vue(crop, angle), papierDroit = papier ? trouverPapier(droite) : null;
+      encre = encreDetaillee(droite, papierDroit, 0, 0, clair);
+      if (papierDroit && options.recadrer !== false) {
+        const sous = recadrageSur(papierDroit, encre.ink, crop.w, crop.h, encre.pas, encre.coupe);
+        if (sous.w < crop.w || sous.h < crop.h) {
+          crop = sousCadre(crop, angle, sous);
+          encre = encreDetaillee(vue(crop, angle), papierDroit, sous.x, sous.y, clair);
+        }
+      }
+    }
   }
-  const morceaux = planMorceaux(encre.rangees, crop.w, { maxLines: options.maxLines ?? BAND_MAX_LINES });
-  return { crop, angle, morceaux, rangees: encre.rangees, largeur: crop.w, hauteur: crop.h, papier: papier !== null };
+  // Sans recadrage (la passe finale, sur l'image déjà droite) : les rangées blanches se mesurent sur la largeur du papier seulement (bord intérieur d'un
+  // bloc retiré), jamais sur la table ou le tissu autour, dont la texture encrerait toutes les rangées (ses tickets du 03.11).
+  // Le pas des lignes, pour la taille des morceaux : celui de l'encre nette, dont les interlignes restent blancs. Sur la carte des coupes, plus sensible,
+  // des interlignes serrés s'encrent et le pas double (ses tickets du 03.11 : 42 à 46 px pour 25 à 28), donc des morceaux de 40 lignes et plus.
+  let rangees = encre.rangees, colonnes: [number, number] | null = null, pas = encre.pas;
+  if (papier && options.recadrer === false) {
+    // Toute la largeur de la boîte grandie, bord retiré : jamais l'intervalle du papier rangée par rangée, qui laisse dehors le texte à l'ombre (le
+    // papier y est trop sombre pour la région claire : pièges h0016, h0062… coupés en silence).
+    const b = boiteGrandie(papier, encre.ink, crop.w, crop.h, encre.pas, encre.coupe), retrait = papier.f + 2;
+    const x0 = Math.max(0, b.x + retrait), x1 = Math.min(crop.w, b.x + b.w - retrait);
+    if (x1 - x0 >= 0.2 * crop.w) {
+      rangees = partParRangee(encre.coupe, crop.w, crop.h, x0, x1); colonnes = [x0, x1];
+      pas = linePitch(partParRangee(encre.ink, crop.w, crop.h, x0, x1)) ?? pas;
+    }
+  }
+  const morceaux = planMorceaux(rangees, crop.w, { maxLines: options.maxLines ?? BAND_MAX_LINES, pitch: pas });
+  return { crop, angle, morceaux, rangees, largeur: crop.w, hauteur: crop.h, papier: papier !== null, colonnes };
 }
 
 /** Le nombre de rangées de texte d'une page PDF : les ordonnées distinctes des morceaux de texte (écart de plus de `tolerance` points = autre rangée). */
@@ -393,24 +666,31 @@ function grisDe(pixels: ImageData): Uint8Array {
 }
 
 /**
- * Dessine les rangées [y0, y0 + hauteur du canevas) de l'image normalisée : même transformation que `normaliser`. Fond blanc. `lisser` faux : plus proche
+ * Dessine les rangées [y0, y0 + hauteur du canevas) de l'image normalisée : même transformation que `normaliser`, bord étendu hors de l'image (ses
+ * pixels de bord, étirés, puis l'image par-dessus : aucune couture). `lisser` faux : plus proche
  * voisin (le banc D381 y dessine le masque des pièges, couleurs exactes).
  */
-export function dessinerNormalise(canevas: HTMLCanvasElement, source: CanvasImageSource, g: Geometrie, y0: number, lisser = true, fond = '#fff'): CanvasRenderingContext2D {
+export function dessinerNormalise(canevas: HTMLCanvasElement, source: ImageBitmap | HTMLCanvasElement, g: Geometrie, y0: number, lisser = true): CanvasRenderingContext2D {
   const ctx = contexte2d(canevas, true);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = fond; ctx.fillRect(0, 0, canevas.width, canevas.height);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canevas.width, canevas.height);
   ctx.imageSmoothingEnabled = lisser; if (lisser) ctx.imageSmoothingQuality = 'high';
   ctx.translate(g.largeur / 2, g.hauteur / 2 - y0);
   ctx.scale(g.echelle, g.echelle);
   ctx.rotate(-g.angle * Math.PI / 180);
   ctx.translate(-g.cx, -g.cy);
+  // Le bord étendu : les colonnes et rangées de bord, puis les coins, étirés au loin (même transformation) ; l'image par-dessus, sans couture.
+  const W = source.width, H = source.height, L = 4 * Math.max(W, H);
+  ctx.drawImage(source, 0, 0, 1, H, -L, 0, L, H); ctx.drawImage(source, W - 1, 0, 1, H, W, 0, L, H);
+  ctx.drawImage(source, 0, 0, W, 1, 0, -L, W, L); ctx.drawImage(source, 0, H - 1, W, 1, 0, H, W, L);
+  ctx.drawImage(source, 0, 0, 1, 1, -L, -L, L, L); ctx.drawImage(source, W - 1, 0, 1, 1, W, -L, L, L);
+  ctx.drawImage(source, 0, H - 1, 1, 1, -L, H, L, L); ctx.drawImage(source, W - 1, H - 1, 1, 1, W, H, L, L);
   ctx.drawImage(source, 0, 0);
   return ctx;
 }
 
 /** Le gris de toute l'image normalisée, par bandes (jamais un canevas de la hauteur d'un ticket entier : limite mémoire des téléphones). */
-function grisNormalise(source: CanvasImageSource, g: Geometrie): Bitmap {
+function grisNormalise(source: ImageBitmap | HTMLCanvasElement, g: Geometrie): Bitmap {
   const gris = new Uint8Array(g.largeur * g.hauteur), bande = 1024;
   const canevas = creerCanevas(g.largeur, Math.min(bande, g.hauteur));
   for (let y0 = 0; y0 < g.hauteur; y0 += bande) {
@@ -427,7 +707,7 @@ function grisNormalise(source: CanvasImageSource, g: Geometrie): Bitmap {
  * Un morceau : sa zone propre [top, bottom) de l'image normalisée, seule (pilote, 03.11 : l'IA ne marque pas fiablement la zone des voisins, donc ni
  * voisins, ni teinte, ni trait). Les coupes tombent sur des rangées blanches ; une coupe qui traverse une ligne est signalée par `coupeForcee`.
  */
-function dessinerZone(source: CanvasImageSource, g: Geometrie, top: number, bottom: number): string {
+function dessinerZone(source: ImageBitmap | HTMLCanvasElement, g: Geometrie, top: number, bottom: number): string {
   const canevas = creerCanevas(g.largeur, Math.max(1, bottom - top));
   dessinerNormalise(canevas, source, g, top);
   const url = canevas.toDataURL('image/jpeg', QUALITE_JPEG);
@@ -437,11 +717,16 @@ function dessinerZone(source: CanvasImageSource, g: Geometrie, top: number, bott
 
 /** Une bande de contrôle brute : `k` est le rang LOCAL (dans l'image ou la page) de la coupe sous le morceau k ; `data` seul (le rang global vient après). */
 type JonctionBrute = { k: number; data: string };
+/** Dessine des zones [top, bottom) de l'image normalisée en JPEG (base64), dans l'ordre (une image, ou une page de PDF). */
+type Dessinateur = (zones: Array<[number, number]>) => Promise<string[]>;
+const parCanevas = (source: ImageBitmap | HTMLCanvasElement, g: Geometrie): Dessinateur => async zones => zones.map(([t, b]) => dessinerZone(source, g, t, b));
 /** Les parties d'une image normalisée (rang à compléter par l'appelant : plusieurs pages se suivent) et ses bandes de contrôle (D381 : une par coupe intérieure). */
-function partiesDe(source: CanvasImageSource, g: Geometrie, a: Analyse): { parties: Array<Omit<Partie, 'morceau'>>; jonctions: JonctionBrute[] } {
+async function partiesDe(a: Analyse, dessiner: Dessinateur): Promise<{ parties: Array<Omit<Partie, 'morceau'>>; jonctions: JonctionBrute[] }> {
+  const bandes = planJonctions(a.morceaux, a.rangees).filter(j => j.bottom > j.top);
+  const images = await dessiner([...a.morceaux.map((m): [number, number] => [m.top, m.bottom]), ...bandes.map((j): [number, number] => [j.top, j.bottom])]);
   return {
-    parties: a.morceaux.map((m, i) => ({ file: { data: dessinerZone(source, g, m.top, m.bottom), mimeType: 'image/jpeg' }, coupeForcee: coupeBasseForcee(m, a.rangees, i === a.morceaux.length - 1) })),
-    jonctions: planJonctions(a.morceaux, a.rangees).filter(j => j.bottom > j.top).map(j => ({ k: j.k, data: dessinerZone(source, g, j.top, j.bottom) })),
+    parties: a.morceaux.map((m, i) => ({ file: { data: images[i], mimeType: 'image/jpeg' }, coupeForcee: coupeBasseForcee(m, a.rangees, i === a.morceaux.length - 1) })),
+    jonctions: bandes.map((j, i) => ({ k: j.k, data: images[a.morceaux.length + i] })),
   };
 }
 
@@ -452,8 +737,16 @@ export type JonctionPiece = { file: { data: string; mimeType: string }; jonction
 /**
  * Le plan d'une image : sa géométrie normalisée (papier, angle, échelle) et l'analyse finale, faite sur les pixels mêmes qui seront dessinés.
  * `null` : rien à découper (pas assez haute sans `force`, ou un seul morceau). Exporté pour le banc D381 (masques des pièges).
+ * La voie d'OpenCV (coins du papier, redressement 4 points) a été essayée le 07.11 et écartée : sur 200 pièces neuves, 143 lignes perdues contre 0
+ * (`work/missions/2026-11-03-lecture-longue/opencv-essai/`).
  */
-export function planifierImage(image: ImageBitmap, force: boolean): { g: Geometrie; finale: Analyse } | null {
+export interface PlanImage { finale: Analyse; g: Geometrie }
+export async function planifierImage(image: ImageBitmap, force: boolean): Promise<PlanImage | null> {
+  const plan = await planifierImageDetaille(image, force);
+  return plan && plan.finale.morceaux.length >= 2 ? plan : null;
+}
+/** Comme `planifierImage`, même avec un seul morceau (`null` : le déclencheur ne part pas) : pour le banc. */
+export async function planifierImageDetaille(image: ImageBitmap, force: boolean): Promise<PlanImage | null> {
   const W = image.width, H = image.height;
   // Coup d'œil : l'image réduite (côté court ≈ 1 200 px) suffit au papier et à l'angle.
   const s = Math.min(1, 1200 / Math.min(W, H)), pw = Math.max(1, Math.round(W * s)), ph = Math.max(1, Math.round(H * s));
@@ -462,24 +755,26 @@ export function planifierImage(image: ImageBitmap, force: boolean): { g: Geometr
   const reduit: Bitmap = { width: pw, height: ph, gray: grisDe(contexte2d(petit, true).getImageData(0, 0, pw, ph)) };
   petit.width = 0; petit.height = 0;
   if (!force) {
-    const r = recadrageDe(trouverPapier(reduit), pw, ph);
-    if (r.h / r.w <= RAPPORT_DECOUPE) return null;
+    // Haute : l'image recadrée, ou le papier lui-même (sa forme, même posé de travers : ses tickets penchés du 03.11).
+    const papier = trouverPapier(reduit), r = recadrageDe(papier, pw, ph);
+    if (Math.max(r.h / r.w, papier?.rapport ?? 0) <= RAPPORT_DECOUPE) return null;
   }
   const coup = analyser(reduit, { maxLines: BAND_MAX_LINES });
-  const crop: Rect = { x: coup.crop.x / s, y: coup.crop.y / s, w: Math.min(W, coup.crop.w / s), h: Math.min(H, coup.crop.h / s) };
+  // Le cadre peut déborder de l'image (redressement sans rognure, `cadrePourAngle`) : le dessin y étend le bord (voir `normaliser`).
+  const crop: Rect = { x: coup.crop.x / s, y: coup.crop.y / s, w: coup.crop.w / s, h: coup.crop.h / s };
   const echelle = Math.min(1, LARGEUR_MAX / crop.w);
   const g: Geometrie = { cx: crop.x + crop.w / 2, cy: crop.y + crop.h / 2, angle: coup.angle, echelle, largeur: Math.max(1, Math.round(crop.w * echelle)), hauteur: Math.max(1, Math.round(crop.h * echelle)) };
-  const finale = analyser(grisNormalise(image, g), { redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
-  return finale.morceaux.length < 2 ? null : { g, finale };
+  // Le papier est cherché de nouveau dans l'image normalisée, pour mesurer les rangées blanches sur sa seule largeur.
+  const finale = analyser(grisNormalise(image, g), { papier: coup.papier, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
+  return { finale, g };
 }
 
 async function decouperImage(file: File | Blob, force: boolean): Promise<Decoupe | null> {
   const image = await createImageBitmap(file);
   try {
-    const plan = planifierImage(image, force);
+    const plan = await planifierImage(image, force);
     if (!plan) return null;
-    const { g, finale } = plan;
-    const dessin = partiesDe(image, g, finale), n = dessin.parties.length;
+    const dessin = await partiesDe(plan.finale, parCanevas(image, plan.g)), n = dessin.parties.length;
     return {
       parties: dessin.parties.map((p, i) => ({ ...p, morceau: { k: i + 1, n } })),
       jonctions: dessin.jonctions.map(j => ({ file: { data: j.data, mimeType: 'image/jpeg' }, jonction: { k: j.k, n } })),
@@ -517,7 +812,7 @@ async function decouperPdf(file: File | Blob, force: boolean): Promise<Decoupe |
       const g: Geometrie = { cx: canevas.width / 2, cy: canevas.height / 2, angle: 0, echelle, largeur: Math.max(1, Math.round(canevas.width * echelle)), hauteur: Math.max(1, Math.round(canevas.height * echelle)) };
       // Une page rendue est blanche et droite : ni papier à chercher, ni redressement. Aucun voisin d'une page à l'autre.
       const a = analyser(grisNormalise(canevas, g), { papier: false, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
-      const dessin = partiesDe(canevas, g, a), decalage = toutes.length;
+      const dessin = await partiesDe(a, parCanevas(canevas, g)), decalage = toutes.length;
       toutes.push(...dessin.parties);
       coupes.push(...dessin.jonctions.map(j => ({ k: decalage + j.k, data: j.data })));
       if (p < pages) coupes.push({ k: toutes.length, sautDePage: true });

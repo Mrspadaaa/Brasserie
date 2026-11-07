@@ -1503,3 +1503,11 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   OpenCV non : comparer les deux voies sur des pièces neuves, jamais vues au réglage (L20). D381.)
 - **Suite**, mot pour mot : « Ça semble être une trop grosse tâche pour notre quota actuel. Termine proprement, met à jour les registres. On en
   reste là pour le moment » (lu : arrêt de D381 en l'état ; rien déployé ; état de reprise écrit ; commit local du seul travail fini. D381.)
+- **07.11**, à la session de monitoring, mot pour mot : « okay, tu vas continuellement mettre à jour ta todo et recardé l'autre session. première
+  étape, refaire les tests sur l'importde document et finir ça et faire ça au propre. ensuite on va utiliser notre meilleur worflow pour les test ui,
+  et faire ça sur la vrai app notmaent les partie refaite récament, malt/sucre ectt. il y a pas mal de petit problème là dessus. à toi aussi d'adapter
+  le workflow en […] » ; puis : « économise tes token et celle de l'autre session pas besoin de feedback, énocmie au max sans perdre en qualité tout
+  doit aller des les test, prog ect.. » (lu : D381 repris et fini au propre, tests d'abord ; peu de messages entre sessions. D381.)
+- **07.11**, une photo d'un ticket Bauhaus réel (posé sur un métal gaufré à reflets), mot pour mot : « Un autre vrai test » (lu : à passer dans la
+  découpe ; résultat : ni la voie actuelle — « autre objet clair », les reflets — ni OpenCV ne trouvent le papier ; le ticket se lit entier, comme
+  aujourd'hui. D381.)

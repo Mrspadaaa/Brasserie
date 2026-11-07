@@ -3,7 +3,7 @@
 // Témoin : `inkRows` (fond global, `invoiceMorceaux`) échoue sur la tache et le dégradé : c'est la version rejetée.
 import { describe, expect, it } from 'vitest';
 import { EMPTY_ROW_MAX, inkRows, planMorceaux, BAND_MAX_LINES, type Bitmap } from '../../../../functions/src/invoiceMorceaux';
-import { analyser, compterRangees, encreLocale, estimerAngle, encreDetaillee, normaliser, otsu, trouverPapier } from '../../../../src/services/decoupe';
+import { analyser, cadrePourAngle, compterRangees, encreLocale, estimerAngle, encreDetaillee, normaliser, otsu, recadrageDe, sansTraitsVerticaux, trouverPapier } from '../../../../src/services/decoupe';
 
 interface Spec {
   largeur?: number; lignes: number; pas?: number; hauteurLigne?: number; marge?: number;
@@ -101,11 +101,16 @@ describe('encreLocale : où sont les blancs entre les lignes', () => {
     expect(ancien.some(m => m.forced)).toBe(true);
   });
 
-  it('des rangées grisées une sur deux (225) ne sont pas de l’encre', () => {
-    const { bitmap, hauteur, estLigne } = fabriquer({ lignes: 100, grises: 225 });
+  it('des rangées grisées une sur deux, claires (235, sous le plancher), ne sont pas de l’encre', () => {
+    const { bitmap, hauteur, estLigne } = fabriquer({ lignes: 100, grises: 235 });
     const rangees = encreLocale(bitmap);
     verifierRangees(rangees, hauteur, estLigne);
     verifierCoupes(rangees, bitmap.width, estLigne);
+  });
+
+  it('des rangées grisées plus foncées (215) comptent pour la coupe : les coupes tombent dans les rangées blanches, jamais dans une ligne ni forcées', () => {
+    const { bitmap, estLigne } = fabriquer({ lignes: 100, grises: 215 });
+    verifierCoupes(encreLocale(bitmap), bitmap.width, estLigne);
   });
 
   it('une photo un peu floue (boîte de rayon 2) : les blancs sont trouvés, aucune coupe dans une ligne', () => {
@@ -215,8 +220,9 @@ describe('le papier sur son fond (photo posée sur une table)', () => {
     expect(a.crop.y).toBeLessThanOrEqual(py);
     expect(a.crop.x + a.crop.w).toBeGreaterThanOrEqual(px + pw);
     expect(a.crop.y + a.crop.h).toBeGreaterThanOrEqual(py + ph);
-    expect(a.crop.w).toBeLessThan(pw + 40);
-    expect(a.crop.h).toBeLessThan(ph + 40);
+    // Le cadre garde aussi le liseré du bord (encre de contraste côté table) : quelques pas de ligne de plus, jamais la table entière.
+    expect(a.crop.w).toBeLessThan(pw + 80);
+    expect(a.crop.h).toBeLessThan(ph + 80);
   });
 
   it('le fond n’est pas de l’encre : coupes dans les blancs, jamais forcées ; TÉMOIN `inkRows` : il prend la table pour le fond et le papier pour de l’encre', () => {
@@ -243,6 +249,111 @@ describe('le papier sur son fond (photo posée sur une table)', () => {
     const { bitmap } = fabriquer({ lignes: 60, fond: x => (x < 150 ? 120 : 255) });
     const a = analyser(bitmap, { redresser: false });
     expect(a.crop).toEqual({ x: 0, y: 0, w: bitmap.width, h: bitmap.height });
+  });
+});
+
+describe('pièges du 03.11 (banc de 200 pièces tirées au hasard : 449 lignes coupées en silence, 117 perdues, 66 rognées)', () => {
+  /** L'ancien estimateur (un seul profil sur toute la largeur), recopié pour témoin. */
+  function angleGlobal(ink: Uint8Array, w: number, h: number): number {
+    const r = Math.max(1, Math.floor(w / 400)), bw = Math.ceil(w / r), bh = Math.ceil(h / r), xs: number[] = [], ys: number[] = [], ps: number[] = [];
+    for (let by = 0; by < bh; by++) for (let bx = 0; bx < bw; bx++) {
+      let n = 0;
+      for (let y = by * r; y < Math.min(h, (by + 1) * r); y++) for (let x = bx * r; x < Math.min(w, (bx + 1) * r); x++) n += ink[y * w + x];
+      if (n) { xs.push(bx * r + r / 2 - w / 2); ys.push(by * r + r / 2 - h / 2); ps.push(n); }
+    }
+    const bacs = Math.ceil(Math.hypot(w, h) / r) + 4, dec = Math.hypot(w, h) / 2;
+    const score = (d: number) => {
+      const rad = d * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad), p = new Float64Array(bacs);
+      for (let i = 0; i < xs.length; i++) p[Math.floor((-xs[i] * s + ys[i] * c + dec) / r)] += ps[i];
+      let t = 0; for (const v of p) t += v * v; return t;
+    };
+    const zero = score(0); let m = 0, ms = zero;
+    for (let a = -5; a <= 5 + 1e-9; a += 0.25) { const s = score(a); if (s > ms * (1 + 1e-9)) { m = a; ms = s; } }
+    return ms > zero * 1.02 ? m : 0;
+  }
+  /** Une facture DROITE de 1 000 px : le nom sur une ligne (à gauche), les montants sur la suivante (à droite). */
+  function factureDecalee(): Bitmap {
+    const w = 1000, pas = 18, lignes = 200, h = 40 + lignes * pas, g = new Uint8Array(w * h).fill(250);
+    for (let li = 0; li < lignes; li++) {
+      const [a, b] = li % 2 ? [600, 960] : [40, 400];
+      for (let y = 20 + li * pas; y < 30 + li * pas; y++) for (let x = a; x < b; x++) if ((x - a) % 9 < 6) g[y * w + x] = 30;
+    }
+    return { width: w, height: h, gray: g };
+  }
+
+  it('une facture droite dont les montants sont sur la ligne sous le nom : angle 0 ; TÉMOIN : le profil global la voit penchée', () => {
+    const b = factureDecalee(), e = encreDetaillee(b);
+    expect(estimerAngle(e.ink, b.width, b.height)).toBe(0);
+    expect(analyser(b).angle).toBe(0);
+    expect(Math.abs(angleGlobal(e.ink, b.width, b.height))).toBeGreaterThanOrEqual(1);
+  });
+
+  for (const vrai of [0.6, -0.75, 1.2]) {
+    it(`une petite pente de ${vrai}° sur une page large (1 100 px) est mesurée au 0,1° près (0,5° y décalent une ligne de 10 px)`, () => {
+      const { bitmap } = fabriquer({ lignes: 80, angle: vrai, largeur: 1100, marge: 60 });
+      const e = encreDetaillee(bitmap);
+      expect(Math.abs(estimerAngle(e.ink, bitmap.width, bitmap.height) - vrai)).toBeLessThanOrEqual(0.1);
+    });
+  }
+
+  it('une ombre forte sur le bas du papier, avec du texte : le cadre garde toutes les lignes ; TÉMOIN : la boîte du papier seule les perd', () => {
+    // Table 60, papier 300 × 600 à (100, 80) ; ses 240 dernières rangées à l'ombre (110), texte 45 dessus.
+    const w = 520, h = 760, px = 100, py = 80, pw = 300, ph = 600, g = new Uint8Array(w * h).fill(60);
+    let derniere = 0;
+    for (let y = py; y < py + ph; y++) for (let x = px; x < px + pw; x++) {
+      const ombre = y >= py + ph - 240;
+      let v = ombre ? 110 : 250;
+      const li = Math.floor((y - py - 20) / 18);
+      if (li >= 0 && li < 31 && (y - py - 20) - li * 18 < 8 && x >= px + 20 && x < px + pw - 20 && (x - px - 20) % 28 < 20) { v = ombre ? 45 : 25; derniere = Math.max(derniere, y); }
+      g[y * w + x] = v;
+    }
+    const bitmap: Bitmap = { width: w, height: h, gray: g };
+    const papier = trouverPapier(bitmap);
+    expect(papier).not.toBeNull();
+    const temoin = recadrageDe(papier, w, h);
+    expect(temoin.y + temoin.h).toBeLessThan(derniere);
+    const a = analyser(bitmap, { redresser: false });
+    expect(a.crop.y + a.crop.h).toBeGreaterThan(derniere);
+  });
+
+  it('redresser ne rogne jamais un coin de texte : le cadre grandit pour garder toute l’encre', () => {
+    const w = 300, h = 1200, ink = new Uint8Array(w * h);
+    for (const [x0, y0] of [[0, 0], [w - 20, 0], [0, h - 8], [w - 20, h - 8]]) for (let y = y0; y < y0 + 8; y++) for (let x = x0; x < x0 + 20; x++) ink[y * w + x] = 1;
+    const cadre = cadrePourAngle(ink, w, h, 5);
+    expect(cadre.w).toBeGreaterThan(w);
+    expect(cadre.h).toBeGreaterThan(h);
+    // L'encre tournée tient dans le cadre : rien ne sort.
+    const crop = { x: -Math.floor((cadre.w - w) / 2), y: -Math.floor((cadre.h - h) / 2), w: cadre.w, h: cadre.h };
+    const sortie = normaliser(ink.map(v => v * 255), w, h, { crop, angle: 5 }, { plusProche: true, vide: 0 });
+    expect(sortie.filter(v => v === 255).length).toBeGreaterThanOrEqual(0.9 * 4 * 160);
+    // TÉMOIN : dans le cadre d'origine, des coins sortent.
+    const rogne = normaliser(ink.map(v => v * 255), w, h, { crop: { x: 0, y: 0, w, h }, angle: 5 }, { plusProche: true, vide: 0 });
+    expect(rogne.filter(v => v === 255).length).toBeLessThan(0.5 * 4 * 160);
+    // Sans encre près des bords, le cadre ne change pas.
+    expect(cadrePourAngle(new Uint8Array(w * h), w, h, 5)).toEqual({ w, h });
+  });
+
+  it('une ligne pâlie (contraste 35) entre des lignes franches compte pour la coupe ; TÉMOIN : l’encre nette (seuil d’Otsu) ne la voit pas', () => {
+    const { bitmap, estLigne } = fabriquer({ lignes: 100 });
+    const g = bitmap.gray.slice(), w = bitmap.width;
+    // La ligne 50 pâlie : son encre passe de 20 à 220.
+    const y0 = 24 + 50 * 16;
+    for (let y = y0; y < y0 + 7; y++) for (let x = 0; x < w; x++) if (g[y * w + x] === ENCRE) g[y * w + x] = 220;
+    const e = encreDetaillee({ ...bitmap, gray: g });
+    for (let y = y0; y < y0 + 7; y++) expect(e.rangees[y]).toBeGreaterThan(EMPTY_ROW_MAX);
+    const nette = (y: number) => { let n = 0; for (let x = 0; x < w; x++) n += e.ink[y * w + x]; return n / w; };
+    expect(nette(y0 + 3)).toBeLessThanOrEqual(EMPTY_ROW_MAX);
+    verifierCoupes(e.rangees, w, estLigne);
+  });
+
+  it('un trait vertical sur toute la hauteur (bord du papier, filet) est retiré ; un trait de lettre reste', () => {
+    const w = 50, h = 400, ink = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) ink[y * w + 5] = 1;
+    for (let y = 100; y < 110; y++) ink[y * w + 30] = 1;
+    expect(sansTraitsVerticaux(ink, w, h, 48).reduce((s, v) => s + v, 0)).toBe(10);
+    // Une page avec un bord sombre sur toute la hauteur : les coupes restent propres.
+    const { bitmap, estLigne } = fabriquer({ lignes: 100, fond: x => (x < 6 ? 40 : 255) });
+    verifierCoupes(encreLocale(bitmap), bitmap.width, estLigne);
   });
 });
 

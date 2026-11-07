@@ -117,7 +117,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
-- Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 03.11 : « ≈ 45 lignes » non mesuré ; tri confié à l'IA : 306 lignes sur 300 (D381).
+- Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 03.11 : « ≈ 45 lignes » non mesuré ; tri confié à l'IA : 306 lignes sur 300 (D381). 07.11 : découpe réglée et jugée sur les mêmes 200 pièces ; sur 200 neuves, pire que HEAD (88 silencieuses contre 57).
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
 - Faire : un chiffre dit est mesuré, ou « estimé » avec sa source ; une garantie se bâtit sans jugement de l'IA (elle n'ajoute que des alertes). Chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
 - Rôles : pilote, conseil, auteur, exécutant

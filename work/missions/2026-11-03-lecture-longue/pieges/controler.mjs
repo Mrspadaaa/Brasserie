@@ -1,13 +1,37 @@
 // D381, banc hors ligne : passe chaque pièce piégée (jpg + masque) dans `harnais.html` (servi par Vite depuis la copie de banc) et compte, pour
 // TOUTES les pièces : lignes coupées en silence (doit être 0), lignes coupées mais signalées, lignes perdues ou rognées par le recadrage (doit être 0).
-// Usage : node controler.mjs <url de harnais.html> <dossier de pièces> [<rapport.json>]
+// Usage : node controler.mjs <dossier construit par vite.banc.config.mjs> <dossier de pièces> [<rapport.json>] (aucun serveur : Chrome est servi par interception)
 import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module';
 
-const [url, dossier, rapport = path.join(dossier, 'controle.json')] = process.argv.slice(2);
+const [construit, dossier, rapport = path.join(dossier, 'controle.json')] = process.argv.slice(2);
+// Les CSP de production (firebase.json : la dernière règle qui correspond gagne, clé par clé), servies telles quelles : le banc refuse ce que l'app refuserait.
+const regles = JSON.parse(fs.readFileSync(new URL('../../../../firebase.json', import.meta.url), 'utf8')).hosting.headers;
+const motif = glob => {
+  let r = '';
+  for (let i = 0; i < glob.length; i++) {
+    if (glob.startsWith('**/', i)) { r += '(?:.*/)?'; i += 2; }
+    else if (glob.startsWith('**', i)) { r += '.*'; i += 1; }
+    else if (glob[i] === '*') r += '[^/]*';
+    else if (glob.startsWith('@(', i)) { const j = glob.indexOf(')', i); r += '(?:' + glob.slice(i + 2, j) + ')'; i = j; }
+    else r += glob[i].replace(/[.+^${}()|[\]\\?]/g, '\\$&');
+  }
+  return new RegExp('^' + r + '$');
+};
+const csp = chemin => { let v = null; for (const r of regles) if (motif(r.source).test(chemin)) for (const h of r.headers) if (h.key === 'Content-Security-Policy') v = h.value; return v; };
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.wasm': 'application/wasm' };
 const puppeteer = createRequire('C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/package.json')('puppeteer-core');
 const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const page = await nav.newPage();
-await page.goto(url, { waitUntil: 'networkidle0' });
+await page.setRequestInterception(true);
+page.on('request', req => {
+  const u = new URL(req.url());
+  if (u.host !== 'banc.test') return req.abort();
+  const f = path.join(construit, decodeURIComponent(u.pathname));
+  if (!fs.existsSync(f)) return req.respond({ status: 404, body: '' });
+  const politique = csp(decodeURIComponent(u.pathname));
+  req.respond({ status: 200, contentType: TYPES[path.extname(f)] ?? 'application/octet-stream', headers: politique ? { 'Content-Security-Policy': politique } : {}, body: fs.readFileSync(f) });
+});
+await page.goto('http://banc.test/harnais.html', { waitUntil: 'networkidle0' });
 await page.waitForFunction(() => window.__pret === true, { timeout: 60_000 });
 const pieces = fs.readdirSync(dossier).filter(f => f.endsWith('.jpg')).map(f => f.slice(0, -4)).filter(n => fs.existsSync(path.join(dossier, `${n}.masque.png`)));
 const lignes = [];

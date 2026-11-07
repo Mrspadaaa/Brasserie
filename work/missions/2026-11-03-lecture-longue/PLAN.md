@@ -101,3 +101,17 @@ Pièces fictives (hors Git) : scratchpad `beaucoup/` (`fabriquer.mjs` : 300 lign
   mettre à jour (`planifierImage` asynchrone, `encreDetaillee(…, papier)`, `normaliser` à bord étendu) et non rejoué depuis la variante F ;
   (7) indices de coupables (`invoiceControls.ts`, `confiance.ts`) non commités, sans tests ; (8) déploiement, relectures en ligne de ses
   13 pièces et 5 tickets, contrôle visuel : rien fait. D376 non commencé ; la question des trous de stock (cas B et C) attend toujours sa réponse.
+
+## Fin de D381, étape 1 (07.11) : OpenCV écarté, voie F gardée
+- **Juge sans biais** (L20, sa question du 03.11) : 200 pièces NEUVES (graine 2), jamais vues au réglage. Voie F : 88 coupes silencieuses, 0 perdue,
+  0 rognée, 980 ms ; OpenCV : 114, 143 perdues, 78 rognées ; OpenCV + division par le fond : 73, 219 perdues ; HEAD (202506bb) : 57 silencieuses mais
+  6 lignes rognées et 198 coupes signalées, 575 ms. 11 fixes : DÉCOUPE OK. Archive et tableau : `opencv-essai/README.md`.
+- **Décision** : la voie F reste. Une coupe silencieuse est relue par sa bande de contrôle ; une ligne rognée ou perdue ne revient jamais (F : 0 et 0).
+  Le réglage de F était en partie collé aux 200 premières pièces (silencieuses 82 → 88 sur des pièces neuves, HEAD 57) : biais avoué, à ne plus refaire.
+- **Doute noté** : sur les rangées zébrées, la boîte d'une ligne du masque englobe toute la bande grisée ; une coupe dans la bande, sous le texte,
+  compte « silencieuse » (h0124 : 9). Le critère du banc surestime donc les échecs ; à corriger dans `controler.mjs` (boîte = encre, pas la bande).
+- **Message d'échec** : une lecture en morceaux qui échoue ajoute « Pièce peu lisible ? Reprends une photo plus nette, ou saisis les valeurs à la
+  main. » (`geminiScanner.ts`, `PIECE_DIFFICILE`) ; aucun signal fiable ne prédit une découpe ratée avant lecture (part de coupes forcées : 1 échec
+  sur 15 pièces signalées). À voir à l'écran au banc Dépense (B2).
+- **Son ticket du 07.11** (métal gaufré à reflets) : ni F ni OpenCV ne trouvent le papier ; lu entier, comme avant.
+- **Reste pour la demande groupée** : déploiement (aiTask et hébergement) ; relecture en ligne de ses 13 pièces et 5 tickets (Gemini facturé).

@@ -54,7 +54,8 @@ export function linePitch(rows: number[], emptyMax = EMPTY_ROW_MAX, minRun = 3):
 }
 
 export interface Band { top: number; bottom: number; forcedTop: boolean; forcedBottom: boolean }
-export interface BandOptions { maxRatio?: number; overlapRatio?: number; emptyMax?: number; maxLines?: number }
+/** `pitch` : le pas des lignes mesuré ailleurs (encre nette), à la place de celui des rangées `rows`, que des interlignes encrés gonflent. */
+export interface BandOptions { maxRatio?: number; overlapRatio?: number; emptyMax?: number; maxLines?: number; pitch?: number | null }
 
 /**
  * Où couper dans [from, to) : le milieu de la plus longue série de rangées presque vides (la plus proche de `target` à longueur égale).
@@ -86,7 +87,7 @@ export function pickCut(rows: number[], from: number, to: number, emptyMax: numb
  */
 export function planBands(rows: number[], width: number, options: BandOptions = {}): Band[] {
   const emptyMax = options.emptyMax ?? EMPTY_ROW_MAX, height = rows.length;
-  const pitch = options.maxLines ? linePitch(rows, emptyMax) : null;
+  const pitch = options.maxLines ? (options.pitch ?? linePitch(rows, emptyMax)) : null;
   const byRatio = Math.max(2, Math.floor((options.maxRatio ?? BAND_MAX_RATIO) * width));
   const maxH = pitch ? Math.max(2, Math.min(byRatio, Math.floor(options.maxLines! * pitch))) : byRatio;
   const overlap = Math.max(1, Math.round((options.overlapRatio ?? BAND_OVERLAP_RATIO) * maxH));
@@ -137,9 +138,9 @@ function blankNear(rows: number[], from: number, step: 1 | -1, reach: number, em
 }
 
 /** Les morceaux d'une image haute : zones propres de `maxLines` lignes au plus, coupées dans le blanc, et `contextLines` lignes de voisins visibles. */
-export function planMorceaux(rows: number[], width: number, options: { maxLines?: number; contextLines?: number; emptyMax?: number } = {}): Morceau[] {
+export function planMorceaux(rows: number[], width: number, options: { maxLines?: number; contextLines?: number; emptyMax?: number; pitch?: number | null } = {}): Morceau[] {
   const emptyMax = options.emptyMax ?? EMPTY_ROW_MAX, height = rows.length;
-  const bands = planBands(rows, width, { maxLines: options.maxLines ?? BAND_MAX_LINES, overlapRatio: 0, emptyMax });
+  const bands = planBands(rows, width, { maxLines: options.maxLines ?? BAND_MAX_LINES, overlapRatio: 0, emptyMax, pitch: options.pitch });
   // Sans recouvrement, le bas d'une bande est le haut de la suivante : la coupe de `planBands` (le bas) devient la frontière.
   const cuts = bands.slice(0, -1).map(b => b.bottom);
   const edges = [0, ...cuts, height];

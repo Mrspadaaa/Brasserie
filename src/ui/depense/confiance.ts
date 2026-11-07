@@ -295,7 +295,7 @@ export const TABLE_POINTS: Record<ScanPointCode, ReglePoint> = {
   'devise-non-chf': () => [cible('total', 'repris', 'montant dans une autre devise')],
   'lignes-perdues': () => [cible('lignes', 'inconnu', 'des lignes n\'ont pas été conservées')],
   'lignes-annoncees': () => [cible('lignes', 'repris', 'plus de lignes annoncées que transcrites')],
-  'lignes-non-rapprochees': () => [cible('lignes', 'repris', 'des lignes n\'ont pas de vis-à-vis dans l\'autre lecture')],
+  'lignes-non-rapprochees': () => [cible('lignes', 'repris', 'des lignes à recouper sur le document')],
   'lecture-coupee': () => [cible('lignes', 'repris', 'une lecture a été coupée')],
   'pro-forma-non-payee': () => [cible('document', 'repris', 'pro-forma sans paiement imprimé')],
   devis: () => [cible('document', 'repris', 'un devis')],
@@ -311,6 +311,22 @@ export function ciblesDuPoint(p: InvoicePoint, corrobore = false): Cible[] {
   return cibles.map(x => (x.niveau === 'sur' ? x : { ...x, raison: `${x.raison} (${phrase(p)})` }));
 }
 export const CODES_SANS_NIVEAU = SCAN_POINT_CODES.filter(code => !(code in TABLE_POINTS));
+
+/**
+ * D381 : les points qui désignent des lignes (`lignes`) sans être d'une seule ligne : l'écart du total (les coupables possibles) et la jonction d'une
+ * longue pièce (les deux lignes de part et d'autre de la coupe, une suite recollée). Ils marquent la ligne même, pas seulement le total ou la liste.
+ */
+const SUR_LES_LIGNES: Partial<Record<string, () => Cible>> = {
+  'somme-ecart': () => cible('montant', 'repris', 'son montant expliquerait l\'écart du total : en trop, doublée ou signe inversé ?'),
+  'lignes-non-rapprochees': () => cible('article', 'repris', 'ligne au bord d\'une coupe du document : à vérifier'),
+};
+function ciblesSurLaLigne(p: InvoicePoint, rang: number, corrobore: boolean): Cible[] {
+  const surLesLignes = SUR_LES_LIGNES[p.code];
+  if (!surLesLignes) return p.ligne === rang ? ciblesDuPoint(p, corrobore) : [];
+  if (!peserPoint(p) || !p.lignes?.includes(rang)) return [];
+  const x = surLesLignes();
+  return [{ ...x, raison: `${x.raison} (${phrase(p)})` }];
+}
 
 const baisser = <T>(v: Valeur<T>, cibles: ReadonlyArray<Cible>): Valeur<T> => {
   let r = v;
@@ -350,7 +366,7 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
   const kind = kindDe(l.kind), horsStock = HORS_STOCK.has(kind);
   const rang = ligneDepuisId(l.id) ?? (c.lignes.findIndex(x => x.id === l.id) + 1);
   const corrobore = totalCorrobore(c);
-  const cibles = (c.points ?? []).filter(p => p.ligne === rang && !natureSansEnjeu(p, c)).flatMap(p => ciblesDuPoint(p, corrobore));
+  const cibles = (c.points ?? []).filter(p => !natureSansEnjeu(p, c)).flatMap(p => ciblesSurLaLigne(p, rang, corrobore));
   const de = (champ: ChampLigne) => cibles.filter(x => x.champ === champ);
 
   let unite = ((): ValeurUnite => {
@@ -413,7 +429,8 @@ const plein = (s: string | undefined) => (s ?? '').trim() !== '';
 export function confianceEntete(lecture: LectureConfiance, brouillon: BrouillonEntete, lignes: readonly LigneConfiance[] = []): ConfianceEntete {
   const tapes = brouillon.tapes ?? new Set<ChampEntete>();
   const corrobore = brouillon.amount !== undefined && sumCheck(lignes.map(l => ({ amountTTC: nombre(l.amount) ?? null })), brouillon.amount, null, 0).sum.statut === 'ok';
-  const cibles = (lecture.points ?? []).filter(p => p.ligne === null || p.ligne === undefined).flatMap(p => ciblesDuPoint(p, corrobore));
+  // Une jonction douteuse (D381) porte le rang de sa première ligne, mais marque aussi la liste entière.
+  const cibles = (lecture.points ?? []).filter(p => p.ligne === null || p.ligne === undefined || p.code === 'lignes-non-rapprochees').flatMap(p => ciblesDuPoint(p, corrobore));
   const finir = <T>(champ: ChampEntete, v: Valeur<T>): Valeur<T> => (tapes.has(champ) && v.valeur !== undefined ? { ...v, niveau: 'sur', raison: 'tapé par lui' } : baisser(v, cibles.filter(x => x.champ === champ)));
   const absent = (raison: string, facultatif = false): Valeur<never> => ({ niveau: 'inconnu', raison, ...(facultatif ? { facultatif: true as const } : {}) });
 

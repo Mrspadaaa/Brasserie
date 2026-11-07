@@ -50,6 +50,8 @@ export interface ScanFluxOptions {
 /** n2-pages : ce qu'un serveur qui ne lit pas encore plusieurs pages (avant le redéploiement d'`aiTask`) fait dire à l'écran. */
 export const PLUSIEURS_PAGES_INDISPONIBLE='La lecture de plusieurs pages n’est pas encore disponible sur le serveur. Lis-les avec « Un document », ou saisis à la main.';
 /** Le refus exact de `validateInvoiceFile` quand un serveur d'avant reçoit `files` sans `file` : la signature du vieux serveur (aucun coût, rien n'est lu). */
+/** D381 : une longue pièce lue en morceaux qui échoue (brasseur, 03.11 : « documents illisible, entrer valeur à la main ou meilleure qualité de documents »). */
+export const PIECE_DIFFICILE='Pièce peu lisible ? Reprends une photo plus nette, ou saisis les valeurs à la main.';
 const REFUS_VIEUX_SERVEUR='Choisis une photo JPG, PNG, WebP ou un PDF de 4 pages maximum.';
 const number = (value:any):number|null => typeof value === 'number' && Number.isFinite(value) ? value : null;
 const text = (value:any,max=250) => typeof value === 'string' ? value.trim().slice(0,max) : '';
@@ -149,10 +151,10 @@ export const GeminiScannerService = {
   async lireMorceaux(decoupe:Decoupe,file:File,base:Pick<ScanOutcome,'proofDataUrl'|'fileName'|'mimeType'>,proofDataUrl:string,signal?:AbortSignal):Promise<ScanOutcome> {
     try {
       const response=await lireEnMorceaux(decoupe.parties,undefined,{ signal,jonctions:decoupe.jonctions });
-      if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:response.error || 'Lecture indisponible. Complète les champs manuellement.' };
+      if (!response.ok || !response.data) return { ...base,proofDataUrl,ok:false,error:`${response.error || 'Lecture indisponible.'} ${PIECE_DIFFICILE}` };
       return { ...base,proofDataUrl,ok:true,result:this.normalizeResult(response.data),model:response.model,elapsedMs:response.elapsedMs,documentHash:await this.empreinte(file),cached:response.cached };
     } catch (erreur) {
-      return { ...base,proofDataUrl,ok:false,error:erreur instanceof Error && erreur.message ? erreur.message : 'Lecture indisponible. Complète les champs manuellement.' };
+      return { ...base,proofDataUrl,ok:false,error:`${erreur instanceof Error && erreur.message ? erreur.message : 'Lecture indisponible.'} ${PIECE_DIFFICILE}` };
     }
   },
   /**

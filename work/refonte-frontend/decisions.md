@@ -1890,3 +1890,6 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   firebase.json, règle par fichier : Firebase applique la dernière règle clé par clé, vérifié en ligne). Mesuré : chargement ≈ 0,5 s, coins ≈ 40 ms ;
   sur les 19 pièces les plus dures, coupes silencieuses 43 → 30 ; sur les 200 (réglées pour l'ancienne voie), 97 contre 82 : pas encore meilleur.
   La voie OpenCV reste donc hors service dans l'app (`opencv: true` au banc seulement). Reprise : `work/missions/2026-11-03-lecture-longue/PLAN.md`.
+- **Fin de l'étape 1 (07.11)** : sur 200 pièces neuves, OpenCV perd des lignes (143 ; avec division par le fond, 219), la voie F aucune (0 perdue,
+  0 rognée ; HEAD : 6 rognées). OpenCV est retiré de l'app (archive : `work/missions/2026-11-03-lecture-longue/opencv-essai/`) ; firebase.json revient
+  à sa CSP d'avant. Une lecture en morceaux qui échoue propose une photo plus nette ou la saisie à la main (ses mots du 03.11).

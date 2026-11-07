@@ -298,3 +298,4 @@ Générée par `node scripts/agents/systeme.mjs defauts` depuis `DEFAUTS-RECURRE
 | D379 | 03.11 | « Le serveur ne garde que les 35 premières lignes et jette le reste ????? QUOOOI ?? » | `invoiceScanCore` : `sourceItems.slice(0, 35)` jette les lignes lues au-delà de 35 (« … |
 | D380 | 03.11 | « l'écran ne garde qu'une ligne okay mais tu vas fixer ça ??? » | Pièce de 300 lignes sur une page : la lecture coupée (MAX_TOKENS) est jetée entière, la … |
 | D381 | 03.11 | « On peut pas se permettre de perdre ou "gagner" de l'information » | Le recollage des bandes retire le recouvrement en comparant le texte : 4 lignes … |
+| D381 | 03.11 | « un item est en trop et point sur le ou les potentiels coupable ? » | L'écart de la somme des lignes au total ne disait pas quelle ligne l'explique : ligne … |

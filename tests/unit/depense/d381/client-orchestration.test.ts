@@ -249,7 +249,8 @@ describe('scanDocument : branchement', () => {
     const r = await GeminiScannerService.scanDocument(fichier());
     expect(r.ok).toBe(false);
     expect(r.result).toBeUndefined();
-    expect(r.error).toBe('Lecture en morceaux incomplète : la partie 2 sur 3 n\'a pas été lue. Réessaie.');
+    // Et ce qu'il peut faire (brasseur, 03.11 : « entrer valeur à la main ou meilleure qualité de documents »).
+    expect(r.error).toBe('Lecture en morceaux incomplète : la partie 2 sur 3 n\'a pas été lue. Réessaie. Pièce peu lisible ? Reprends une photo plus nette, ou saisis les valeurs à la main.');
     expect(run.mock.calls.some(([q]) => q.task === 'assemblerLecture')).toBe(false);
   });
 
