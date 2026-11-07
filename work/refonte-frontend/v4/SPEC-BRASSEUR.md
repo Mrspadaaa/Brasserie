@@ -1511,3 +1511,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **07.11**, une photo d'un ticket Bauhaus réel (posé sur un métal gaufré à reflets), mot pour mot : « Un autre vrai test » (lu : à passer dans la
   découpe ; résultat : ni la voie actuelle — « autre objet clair », les reflets — ni OpenCV ne trouvent le papier ; le ticket se lit entier, comme
   aujourd'hui. D381.)
+- **07.11**, à la session de monitoring (relayé), mot pour mot : « Pas besoin de mini maquettes si c'est vraiment un bug, ou problème visuel. Juste
+  régler le problème... » (lu : les points « à montrer » d'un test d'écran qui sont des bugs ou des défauts visuels se corrigent, au plus près de sa
+  maquette ; les mini maquettes restent pour un vrai choix de goût sans bonne réponse.)
+- **07.11**, à la session de monitoring (relayé), mot pour mot : « Attention aux utilisations de tokens, les utiliser et les maximiser pour la
+  qualité » (lu : pas de jetons sur l'outillage ni sur une exploration refaite ; un agent par lot, réutilisé ; rejeux là où le diff touche ; Haiku
+  pour rejeux et captures, Sonnet pour le code ; les jetons vont à ce qui trouve ou corrige un vrai défaut.)
