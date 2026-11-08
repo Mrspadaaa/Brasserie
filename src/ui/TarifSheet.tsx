@@ -36,8 +36,10 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [invalidMoney, setInvalidMoney] = useState<Partial<Record<MoneyKey, string>>>({});
+  // TE-6 : un montant jamais touché reste vide, sans reproche ; l'erreur vient à la frappe ou à l'enregistrement.
+  const [touched, setTouched] = useState<Partial<Record<MoneyKey, boolean>>>({});
   const form = useRef<HTMLDivElement>(null);
-  useEffect(() => { setConfirmDelete(false); setAttempted(false); setInvalidMoney({}); }, [item?.product]);
+  useEffect(() => { setConfirmDelete(false); setAttempted(false); setInvalidMoney({}); setTouched({}); }, [item?.product]);
   if (!item || !draft) return null;
 
   const isNew = !item.product;
@@ -57,6 +59,8 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
   const productError = duplicate ? 'Ce produit a déjà un tarif. Choisis un autre nom.'
     : attempted && (draft.product.trim().length < 2 || !productKey(draft.product)) ? 'Indique un nom de produit d’au moins 2 caractères, avec des lettres ou des chiffres.' : undefined;
   const moneyErrors = (['costIngredients', 'costFixed', 'priceHT'] as const).filter(key => invalidMoney[key] || !validAmount(draft[key]));
+
+  const montrerErreur = (key: MoneyKey) => moneyErrors.includes(key) && (attempted || Boolean(touched[key]) || Boolean(invalidMoney[key]));
 
   const save = () => {
     setAttempted(true);
@@ -92,12 +96,12 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
         setInvalidMoney(current => ({ ...current, [key]: entered.trim() && parseDecimal(entered) === null ? entered : undefined }));
       }}>
         <NumberInput id={`tf-${key}`} value={draft[key]} emptyValue={undefined}
-          onValue={(value: number | undefined) => setDraft(current => current && ({ ...current, [key]: value }))}
+          onValue={(value: number | undefined) => { setTouched(current => ({ ...current, [key]: true })); setDraft(current => current && ({ ...current, [key]: value })); }}
           pad required className={`${inputClass} font-mono text-right`}
-          aria-invalid={moneyErrors.includes(key)}
-          aria-describedby={moneyErrors.includes(key) ? `tf-${key}-error` : undefined} />
+          aria-invalid={montrerErreur(key)}
+          aria-describedby={montrerErreur(key) ? `tf-${key}-error` : undefined} />
       </div>
-      {moneyErrors.includes(key) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : 'Indique un montant positif ou nul.'}</p>}
+      {montrerErreur(key) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : 'Indique un montant positif ou nul.'}</p>}
     </Field>
   );
 

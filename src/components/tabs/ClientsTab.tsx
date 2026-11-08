@@ -73,15 +73,17 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   /** Fiche tarif ouverte. Un tarif sans produit vaut création. */
   const [tarifSheet, setTarifSheet] = useLiveSelection(tarifs, 'product');
 
+  // TE-6 : un coût ou un prix qu'on ne connaît pas encore n'est pas « 0 ». NaN s'affiche vide dans la feuille (« À renseigner ») et ne s'enregistre jamais :
+  // la feuille exige les trois montants.
   const blankTarif = (): PricingItem => ({
     product: '',
-    costIngredients: 0,
+    costIngredients: Number.NaN,
     costLabor: 0,
-    costFixed: 0,
-    costTotal: 0,
-    priceHT: 0,
-    marginCHF: 0,
-    marginPercent: 0
+    costFixed: Number.NaN,
+    costTotal: Number.NaN,
+    priceHT: Number.NaN,
+    marginCHF: Number.NaN,
+    marginPercent: Number.NaN
   });
 
   const blankClient = (): Client => ({
