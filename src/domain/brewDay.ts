@@ -72,6 +72,9 @@ export function parseReading(raw: string, kind: ReadingKind): number | null {
   return Number.isFinite(n) && n >= READING[kind].min && n <= READING[kind].max ? n : null;
 }
 
+/** Une densité s'écrit « 1,069 » à l'écran, trois décimales, virgule (BR-29, 08.11 : « Cible 1.069 »). */
+export const sg = (n: number) => n.toFixed(3).replace('.', ',');
+
 /** Au-delà, la levure ne survit pas à l'ensemencement (AM-43). */
 export const PITCH_TEMPERATURE_MAX_C = 30;
 
@@ -111,6 +114,21 @@ export function measuredReadingFeedback(
       };
   }
   return readingFeedback(reading.kind, reading.value, step, recipe);
+}
+/** Le volume attendu à cette étape (fermenteur : volume de la recette ; avant ébullition : eau moins absorption), ou `undefined` : l'inconnu n'est pas 25 (TE-44). */
+export function volumeTarget(step: BrewDayStep, recipe?: RecipeSnapshot): number | undefined {
+  const plan = recipe?.waterPlan;
+  const grain =
+    recipe?.totalGristKg ??
+    recipe?.fermentables
+      ?.filter((f) => f.kind === 'grain')
+      .reduce((sum, f) => sum + f.weightKg, 0) ??
+    0;
+  return step.id === 'ensemencement'
+    ? recipe?.volumeL
+    : step.id === 'preboil' && plan
+      ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
+      : undefined;
 }
 export function readingFeedback(
   kind: ReadingKind,
@@ -167,7 +185,7 @@ export function readingFeedback(
       const points = Math.round((value - target) * 1000);
       return {
         tone: Math.abs(points) <= 2 ? 'ok' : 'watch',
-        title: `${points > 0 ? '+' : ''}${points} points / OG ${target.toFixed(3)}`,
+        title: `${points > 0 ? '+' : ''}${points} points / OG ${sg(target)}`,
         detail:
           Math.abs(points) <= 2
             ? 'Densité proche de la recette.'
@@ -176,7 +194,7 @@ export function readingFeedback(
     }
     return {
       tone: 'neutral',
-      title: `Densité ${value.toFixed(3)}`,
+      title: `Densité ${sg(value)}`,
       detail: 'Ce relevé suit cette étape. L’OG sera la densité du moût refroidi, avant levure.'
     };
   }
@@ -189,19 +207,7 @@ export function readingFeedback(
         title: `${Math.round(value * 10) / 10} L : plus que ${vessel.label} (${vessel.capacityL} L)`,
         detail: `Ce volume ne tient pas dans ${vessel.label} du profil d’installation. Vérifie la saisie (des litres, pas des décilitres), ou corrige la capacité dans l’installation.`
       };
-    const plan = recipe?.waterPlan;
-    const grain =
-      recipe?.totalGristKg ??
-      recipe?.fermentables
-        ?.filter((f) => f.kind === 'grain')
-        .reduce((sum, f) => sum + f.weightKg, 0) ??
-      0;
-    const target =
-      step.id === 'ensemencement'
-        ? recipe?.volumeL
-        : step.id === 'preboil' && plan
-          ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
-          : undefined;
+    const target = volumeTarget(step, recipe);
     if (target && target > 0)
       return {
         tone: Math.abs(value - target) <= target * 0.05 ? 'ok' : 'watch',

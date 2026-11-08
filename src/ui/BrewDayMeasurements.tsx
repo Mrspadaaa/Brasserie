@@ -10,6 +10,8 @@ import {
   READING,
   measuredReadingFeedback,
   readingKey,
+  volumeTarget,
+  sg,
   ReadingKind
 } from '../domain/brewDay';
 import { acidCorrectionFromMeasuredPh, ACIDS } from '../domain/water';
@@ -21,6 +23,15 @@ export const brewControl =
   'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
 export const brewInput =
   'w-full min-w-0 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-2 text-base text-cave-50 reading outline-none focus:border-ebc-straw';
+/** Texte d'aide du champ : jamais un exemple qui passe pour la valeur de CE brassin (TE-44 : « 25 » à côté d'une eau d'empâtage de 33,6 L). Volume : la cible de l'étape, sinon rien. */
+function placeholderFor(kind: ReadingKind, step: BrewDayStep, recipe?: RecipeSnapshot): string {
+  if (kind === 'volume') {
+    const t = volumeTarget(step, recipe);
+    return t && t > 0 ? String(Math.round(t * 10) / 10).replace('.', ',') : '';
+  }
+  if (kind === 'temperature') return step.tempC != null ? String(step.tempC).replace('.', ',') : '';
+  return READING[kind].placeholder;
+}
 export type BrewUpdate = (update: (state: BrewDayState) => BrewDayState) => void;
 export interface BrewReadingDraft {
   kind: ReadingKind;
@@ -338,7 +349,7 @@ export function BrewDayMeasurements({
     setRaw('');
     setEditing(null);
     setNotice(
-      `${READING[kind].label} ${kind === 'densite' ? value.toFixed(3) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
+      `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
     );
   };
   return (
@@ -377,7 +388,7 @@ export function BrewDayMeasurements({
                 recent && (
                   <span className="block reading text-2xs font-semibold">
                     {k === 'densite'
-                      ? recent.value.toFixed(3)
+                      ? sg(recent.value)
                       : String(recent.value).replace('.', ',')}
                     {recent.unit && ` ${recent.unit}`}
                   </span>
@@ -409,7 +420,7 @@ export function BrewDayMeasurements({
               setRaw(e.target.value);
               setNotice('');
             }}
-            placeholder={last ? 'Nouveau relevé' : READING[kind].placeholder}
+            placeholder={last ? 'Nouveau relevé' : placeholderFor(kind, step, recipe)}
             className={`${brewInput} flex-1`}
           />
           <button

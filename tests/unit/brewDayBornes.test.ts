@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseReading, readingFeedback } from '../../src/domain/brewDay';
+import { parseReading, readingFeedback, volumeTarget } from '../../src/domain/brewDay';
 import type { BrewDayStep, RecipeSnapshot } from '../../src/types';
 
 // Voie b du 08.11 : AM-41 (pH 0,1 à 14, 120 °C, 100 000 L), AM-42 (volume > cuve ou fermenteur), AM-43 (ensemencement jusqu'à 120 °C).
@@ -43,6 +43,22 @@ describe('volume plus grand que le récipient (AM-42)', () => {
   });
   it('capacité inconnue : aucune alerte inventée', () => {
     expect(readingFeedback('volume', 500, etape('preboil'), { } as RecipeSnapshot).title).not.toMatch(/plus que/);
+  });
+});
+
+describe('densité écrite avec la virgule (BR-29)', () => {
+  it('« points / OG 1,069 » et « Densité 1,056 », jamais de point', () => {
+    const f = readingFeedback('densite', 1.058, etape('ensemencement'), { ogTarget: 1.069 } as RecipeSnapshot);
+    expect(f.title).toBe('-11 points / OG 1,069');
+    expect(readingFeedback('densite', 1.056, etape('preboil')).title).toBe('Densité 1,056');
+  });
+});
+
+describe('volume attendu (TE-44)', () => {
+  it('connu seulement quand la recette le dit ; jamais un « 25 » par défaut', () => {
+    expect(volumeTarget(etape('ensemencement'), { volumeL: 20 } as RecipeSnapshot)).toBe(20);
+    expect(volumeTarget(etape('mash-0'), { volumeL: 20 } as RecipeSnapshot)).toBeUndefined();
+    expect(volumeTarget(etape('ensemencement'), undefined)).toBeUndefined();
   });
 });
 

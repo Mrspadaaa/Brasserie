@@ -13,7 +13,7 @@ import {
   X
 } from 'lucide-react';
 import { BrewDayState, RecipeSnapshot } from '../types';
-import { READING, parseReading, readingKey } from '../domain/brewDay';
+import { READING, parseReading, readingKey, sg } from '../domain/brewDay';
 import { formatAmount, roundAmount } from '../../functions/src/brewAmount';
 import { brewIngredients, isBoilStep } from '../domain/brewCompanion';
 import { ACIDS } from '../domain/water';
@@ -87,7 +87,7 @@ export function BrewJournal({
     ...entry,
     value:
       entry.kind === 'densite'
-        ? Number(entry.value).toFixed(3)
+        ? sg(Number(entry.value))
         : entry.type === 'notes'
           ? entry.value
           : entry.value.replace('.', ','),
