@@ -28,6 +28,7 @@ import { Chevron, IconeGoutte, IconeCible, IconeEgal, IconeFiole, IconeFrise, Ic
 import { Radar } from './Radar';
 import { AideEtapes, EtapesEnsemble } from './Ensemble';
 import './comparer.css';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const MAX_COLONNES = 4;
 /** cmb : les glyphes des boutons dessinés au trait (⇄, ×, +, ↑, ↓) : la même lecture, sans compter pour des mots. */
@@ -589,7 +590,7 @@ function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, remplacable
 // d'un houblon plus "fade" type saaz »). Le nombre dans l'aria-label et dans Valeurs ; inconnue : « ? », jamais 0.
 function HuileTete({ cle, nom, couleur }: { cle: string; nom: string; couleur: string }) {
   const v = huileDe(cle), saaz = huileDe(SAAZ);
-  const x = (n: number) => `${(Math.min(n, HUILE_MAX) / HUILE_MAX * 100).toFixed(1)}%`;
+  const x = (n: number) => `${nombreFr((Math.min(n, HUILE_MAX) / HUILE_MAX * 100), 1)}%`;
   return (
     <span className="cmb-huile" data-greffe="rpz2-huiles" data-role="huile" data-houblon={cle}
       aria-label={v ? `${nom} : huile totale ${v.texte} mL/100 g${saaz ? `, Saaz ${saaz.texte}` : ''}` : `${nom} : huile totale inconnue`}>

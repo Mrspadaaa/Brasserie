@@ -29,6 +29,7 @@ import { nomLevureBase } from './Base';
 import { WP_MINUTES, J_MAX } from './rail';
 import { useModifier } from './Frise';
 import { MarquesCatalogue } from '../fiche/marques';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const SEUIL = 0.5;
 const COURT_SIGNAL: Partial<Record<FamilyId, string>> = { resin: 'résine', herbal: 'herbe', earthy: 'terre', spice: 'épice', stoneFruit: 'noyau', pomeFruit: 'pépins', tropical: 'tropical', citrus: 'agrumes' };
@@ -176,10 +177,10 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
           </button>
         </span>
         <span className="pq-mb-pas ml-auto inline-flex items-center gap-1 shrink-0" {...stop}>
-          <button type="button" data-role="dose-moins" data-etat={premier ? 'etat-etape-dose-moins' : undefined} aria-label={`Retirer ${PAS_DOSE} g de ${h.nom}`} {...repeterMoins} className={bouton}>
+          <button type="button" data-role="dose-moins" data-etat={premier ? 'etat-etape-dose-moins' : undefined} aria-label={`Retirer ${nombreFr(PAS_DOSE, 1)} g de ${h.nom}`} {...repeterMoins} className={bouton}>
             <Minus className="w-4 h-4" aria-hidden="true" /></button>
           <output data-role="dose" className="min-w-[2.5rem] text-center font-mono font-semibold text-base text-cave-50 tabular-nums">{nombre(a.grams, a.grams % 1 ? 1 : 0)}<span className="font-sans font-normal text-sm text-cave-400">{' '}g</span></output>
-          <button type="button" data-role="dose-plus" data-etat={premier ? 'etat-etape-dose-plus' : undefined} aria-label={`Ajouter ${PAS_DOSE} g de ${h.nom}`} {...repeterPlus} className={bouton}>
+          <button type="button" data-role="dose-plus" data-etat={premier ? 'etat-etape-dose-plus' : undefined} aria-label={`Ajouter ${nombreFr(PAS_DOSE, 1)} g de ${h.nom}`} {...repeterPlus} className={bouton}>
             <Plus className="w-4 h-4" aria-hidden="true" /></button>
           <button type="button" data-role="retirer" data-etat={premier ? 'etat-etape-retirer' : undefined} aria-label={`Retirer ${h.nom} de la recette`} onClick={() => { onGeste(); gestes.retirer('recette', a.id); }}
             className="w-6 h-7 inline-flex items-center justify-center text-cave-400"><X className="w-4 h-4" aria-hidden="true" /></button>
@@ -276,7 +277,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
       <div id={idLegende} data-role="legende" hidden={!legende} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} className="pq-mb-lg-legende">
         <p className="pq-mb-lg-reste">
           <span><RotateCw className="w-3.5 h-3.5" aria-hidden="true" /> type</span>
-          <span><b>− g +</b> {PAS_DOSE} g</span>
+          <span><b>− g +</b> {nombreFr(PAS_DOSE, 1)} g</span>
           <span><b>×</b> retirer</span>
           <span><b className="pq-mb-lg-pill">{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} {signal ? `${h.familles[signal].fiches}/${h.familles[signal].sur}` : ''}</b> la plus citée</span>
           <span><b>α</b> du lot</span>

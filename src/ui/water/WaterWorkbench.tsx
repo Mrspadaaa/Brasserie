@@ -24,6 +24,7 @@ import { WaterTargetStatus } from "./WaterTargetStatus";
 import { WaterDoseImpact } from "./WaterDoseImpact";
 import { PRACTICAL_RATIO_TOLERANCE } from "../../domain/water/saltFit";
 import { useWaterControlsLayout } from "./useWaterControlsLayout";
+import { nombreFr } from '../../domain/nombreAffiche';
 type Props = Pick<
   WaterWorkshopModel,
   | "state"
@@ -126,8 +127,8 @@ export function WaterWorkbench({
     const unknown = unknownIons.includes(selectedIon) || !Number.isFinite(before) || !Number.isFinite(current);
     if (unknown) return {
       value: `${ION_SYMBOL_SHORT[selectedIon]} inconnu`,
-      detail: targeted ? `Analyse manquante · cible ${range.min}–${range.max} mg/L` : 'Analyse source manquante',
-      accessibleName: `${ION_LABEL[selectedIon]} inconnu; analyse source manquante${targeted ? `; cible ${range.min} à ${range.max} mg/L` : ''}`,
+      detail: targeted ? `Analyse manquante · cible ${range.min}–${nombreFr(range.max, 1)} mg/L` : 'Analyse source manquante',
+      accessibleName: `${ION_LABEL[selectedIon]} inconnu; analyse source manquante${targeted ? `; cible ${range.min} à ${nombreFr(range.max, 1)} mg/L` : ''}`,
     };
     const delta = Math.round((current - before) * 10) / 10;
     const difference = `${delta > 0 ? '+' : ''}${formatDecimal(delta)}`;
@@ -136,7 +137,7 @@ export function WaterWorkbench({
     return {
       value: `${ION_SYMBOL_SHORT[selectedIon]} ${formatDecimal(current)} mg/L`,
       detail: `Δ ${difference} · départ ${formatDecimal(before)} · ${targeted ? `cible ${range.min}–${range.max}` : status}`,
-      accessibleName: `${ION_LABEL[selectedIon]}; départ ${formatDecimal(before)} mg/L; calcul ${formatDecimal(current)} mg/L; écart ${difference} mg/L; ${status}${targeted ? `; cible ${range.min} à ${range.max} mg/L` : ''}`,
+      accessibleName: `${ION_LABEL[selectedIon]}; départ ${formatDecimal(before)} mg/L; calcul ${formatDecimal(current)} mg/L; écart ${difference} mg/L; ${status}${targeted ? `; cible ${range.min} à ${nombreFr(range.max, 1)} mg/L` : ''}`,
     };
   })() : undefined;
   const focusSalt = (id: SaltId) => {

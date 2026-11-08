@@ -66,6 +66,7 @@ import { Sheet } from './ui/Sheet';
 import { ActionDock, PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
+import { montantChf } from './domain/finance/ledger';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
@@ -725,7 +726,7 @@ export const App: React.FC = () => {
       items: [...transactions].sort((a, b) => (isoDate(b.date) ?? '').localeCompare(isoDate(a.date) ?? '') || b.id.localeCompare(a.id)).map((t) => ({
         id: `tx-${t.id}`,
         label: t.description,
-        detail: `${t.date} · ${t.amountTTC.toFixed(2)} CHF · ${t.subcategory}`,
+        detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
         keywords: [t.id, t.category, t.subcategory, t.finance?.vendor ?? '', t.finance?.invoiceNumber ?? ''],
         archived: isTransactionArchived(t, financialArchiveIndex),

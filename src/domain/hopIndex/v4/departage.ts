@@ -10,6 +10,7 @@ import { hopRef, type CatalogueHop } from './data';
 import { cites, describeFamilies } from './hops';
 import type { FamilyId } from './families';
 import { palierDansLaCle, typiciteDe } from './typicite-acces';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** `k3k1` (D118, f8) : DÉFAUT de Suggérer. Le radar Beer Maverick de la famille (k3) d'abord ; à radar égal, et pour une variété sans radar (l'inconnu passe après le connu), la cascade k1.
  * `aucun` : le comportement d'avant D118 (ordre alphabétique à distance égale), à l'octet près. */
@@ -58,7 +59,7 @@ export function radarDe(h: CatalogueHop, f: FamilyId): number | null {
 export function cleHoublon(mode: Exclude<Departage, 'aucun'>, varietyId: string, f: FamilyId, styleCode = ''): { cle: Cle; origine: (string | null)[] } {
   if (mode === 'k3k1t') {
     const base = cleHoublon('k3k1', varietyId, f), t = typiciteDe(varietyId, styleCode);
-    const pct = (x: number) => `${Math.round(x * 1000) / 10} %`;
+    const pct = (x: number) => `${nombreFr(Math.round(x * 1000) / 10, 1)} %`;
     // a4 (D125), biais 3 : une typicité inconnue mais BORNÉE prend la place `PALIER_INCONNU_DANS_LA_CLE` (entre courant et rare), jamais derrière un rare connu ; sans aucune donnée, la clé reste `null` (après le connu, rare compris).
     // Le texte dit ce qui est connu : inconnue, la borne s'il y en a une, et où elle est placée.
     const lib = t.palier === null

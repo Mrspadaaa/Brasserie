@@ -15,6 +15,7 @@ import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
 import { Button } from '../components/ui/Button';
 import { FermentationResearchSheet } from './FermentationResearchSheet';
+import { nombreFr } from '../domain/nombreAffiche';
 const confidence={low:'faible',medium:'moyenne',high:'élevée'};
 const phase={preparation:'Avant brassage',growth:'Début de fermentation',active:'Fermentation active',finish:'Fin de fermentation',conditioning:'Maturation'};
 const fmt=(n:number,digits=1)=>n.toLocaleString('fr-CH',{minimumFractionDigits:digits,maximumFractionDigits:digits});
@@ -50,7 +51,7 @@ export function FermentationPlanningCalculations({science,guide,ogInitial}:{scie
     <p className="text-sm text-cave-200">{rest.trigger.range?<>Préparer le repos vers <strong>{fermentationRangeLabel(rest.trigger.range,'SG',3)}</strong> · confiance faible. Hausse documentée de {fermentationRangeLabel(science!.lagerRest.riseC,'°C',0)}, dans la fenêtre fabricant.</>:rest.trigger.reasons[0]}</p>
     <HopField label="Densité actuelle pour situer la progression (SG)" hint="Facultative ; densimètre corrigé ou valeur déjà corrigée du réfractomètre."><NumberInput className={inputClass} value={sg} emptyValue={undefined} onValue={setSg}/></HopField>
     {sg!==undefined&&<p role="status" className="text-sm text-cave-200">{rest.progress.range?<>Progression vers la DF estimée : {fermentationRangeLabel(rest.progress.range,'%',1)} · confiance faible.</>:rest.progress.reasons[0]}</p>}
-    <p className="text-sm text-cave-400">Le repère {science!.lagerRest.progressPct.min}–{science!.lagerRest.progressPct.max} % concerne le chemin DI → DF attendue. Vérifier le ralentissement réel, puis la stabilité et les VDK. Aucune action automatique.</p>
+    <p className="text-sm text-cave-400">Le repère {science!.lagerRest.progressPct.min}–{nombreFr(science!.lagerRest.progressPct.max, 1)} % concerne le chemin DI → DF attendue. Vérifier le ralentissement réel, puis la stabilité et les VDK. Aucune action automatique.</p>
     <HopSourceLink source={science!.lagerRest.source}/>
    </>}
    <div className="flex flex-wrap gap-3">{fg.sources.map((s,i)=><HopSourceLink key={i} source={s}/>)}</div>
@@ -74,7 +75,7 @@ function PhenolStudyLab({science}:{science:FermentationScience}){
   <label className="flex items-start gap-3 text-sm text-cave-200 min-h-touch"><input type="checkbox" className="mt-1" checked={scenario.protocolMatched} onChange={e=>setScenario({...scenario,protocolMatched:e.target.checked})}/>Simuler le protocole complet de l’étude avec DM303</label>
   <div className="grid sm:grid-cols-2 gap-3">
    {(['wheatPct','boilMin','fermentC'] as const).map(k=><HopField key={k} label={{wheatPct:'Blé (%)',boilMin:'Ébullition (min)',fermentC:'Fermentation (°C)'}[k]} hint={'Domaine publié : '+study.levels[k][0]+'–'+study.levels[k][2]}><NumberInput className={inputClass} value={scenario[k]??undefined} emptyValue={undefined} onValue={n=>setScenario({...scenario,[k]:n??null})}/></HopField>)}
-   <HopField label="Protocole de mash-in"><select className={inputClass} value={scenario.mashInC??''} onChange={e=>setScenario({...scenario,mashInC:Number(e.target.value)})}>{study.levels.mashInC.map((t,i)=><option key={t} value={t}>{t} °C pendant {study.mashHoldMin[i]} min</option>)}</select></HopField>
+   <HopField label="Protocole de mash-in"><select className={inputClass} value={scenario.mashInC??''} onChange={e=>setScenario({...scenario,mashInC:Number(e.target.value)})}>{study.levels.mashInC.map((t,i)=><option key={t} value={t}>{nombreFr(t, 1)} °C pendant {study.mashHoldMin[i]} min</option>)}</select></HopField>
   </div>
   <div aria-live="polite" className="space-y-3">
    {bars.map(b=><div key={b.label} className="space-y-2" data-compound={b.label}><p className="text-sm text-cave-50">{b.label} : {b.estimate.range?<strong>{fermentationRangeLabel(b.estimate.range,'mg/L',2)}</strong>:'non quantifiable'} · confiance {confidence[b.estimate.confidence]}</p>

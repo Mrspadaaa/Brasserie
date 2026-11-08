@@ -7,6 +7,7 @@
 import { alphaAConfirmer, alphaProbable } from '../../hopAlpha';
 import { BORNES, frBorne, messageHoublonParLitre, ogHorsBornes } from '../../bornesMetier';
 import { kettleHopGrams } from '../../../services/brewingMath';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Ce que la règle lit d'un ajout du parcours. */
 export interface AjoutBorne { grams: number; alphaLot?: number | null; alphaConfirme?: number }
@@ -22,7 +23,7 @@ export function raisonBornesAjout(a: AjoutBorne, recette: RecetteBornee): string
   const exces = messageHoublonParLitre(houblonTotalG(recette.additions), recette.volumeL);
   if (exces) return exces;
   if (typeof a.alphaLot === 'number' && alphaAConfirmer({ alpha: a.alphaLot, alphaConfirme: a.alphaConfirme })) {
-    return `alpha de ${String(a.alphaLot).replace('.', ',')} % à confirmer (${alphaProbable(a.alphaLot)} % ?), au-delà de ${BORNES.alphaPct.max} %`;
+    return `alpha de ${String(a.alphaLot).replace('.', ',')} % à confirmer (${alphaProbable(a.alphaLot)} % ?), au-delà de ${nombreFr(BORNES.alphaPct.max, 1)} %`;
   }
   if (ogHorsBornes(recette.og)) return `densité initiale ${frBorne(recette.og, 3)} au-delà de ${frBorne(BORNES.og.max, 3)} : IBU incalculable`;
   return null;

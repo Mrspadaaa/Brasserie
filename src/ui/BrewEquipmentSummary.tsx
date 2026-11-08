@@ -6,6 +6,7 @@ import { fermenterRecommendation } from '../domain/fermenterPlanning';
 import { actualWater } from '../domain/brewAssist';
 import { effectiveFermentables } from '../domain/brewCompanion';
 import './brew-equipment.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const litres = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
 
@@ -78,7 +79,7 @@ export function BrewEquipmentSummary({ recipe, profile, state, stepId, onAcceptS
       {finalStage && check.fermenterTooFull && <p className="equipment-plan-warning" role="alert">Le volume atteint la capacité totale. Répartis le surplus dans un autre fermenteur ou réduis la recette avant brassage.</p>}
       {finalStage && !check.fermenterTooFull && check.fermenterAboveRecommendation && <p className="equipment-plan-warning">Remplissage au-dessus du repère de {litres(check.maxFermenterL)} L. Ajuste la réserve pour cette recette ou réduis le remplissage.</p>}
       {finalStage && recommendation && <p className="equipment-plan-note">Réserve {litres(recommendation.headspacePct)} % · {recommendation.basis === 'manufacturer' ? 'notice de la levure' : recommendation.basis === 'manual' ? 'choix de la recette' : recommendation.basis === 'profile' ? 'repère personnel' : 'repère provisoire ajustable'}.</p>}
-      {finalStage && recommendation?.belowDocumentedRecommendation && <p className="equipment-plan-warning">Ton choix est inférieur aux {recommendation.documentedHeadspacePct} % conseillés pour cette levure.</p>}
+      {finalStage && recommendation?.belowDocumentedRecommendation && <p className="equipment-plan-warning">Ton choix est inférieur aux {nombreFr(recommendation.documentedHeadspacePct, 1)} % conseillés pour cette levure.</p>}
       <details className="equipment-plan-details">
         <summary><span>Repères et osmosée</span><ChevronDown size={14} aria-hidden="true" /></summary>
         <div>

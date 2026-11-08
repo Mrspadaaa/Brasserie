@@ -1,5 +1,6 @@
 import { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import { GRAVITY_CEILING, GRAVITY_FLOOR } from './gravityBounds';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export type ReadingKind = BrewDayReading['kind'];
 export const brewAdviceKey = (s: BrewDayState) =>
@@ -161,14 +162,14 @@ export function readingFeedback(
   if (kind === 'temperature' && step.id === 'ensemencement' && value > PITCH_TEMPERATURE_MAX_C)
     return {
       tone: 'watch',
-      title: `${Math.round(value * 10) / 10} °C : trop chaud pour la levure`,
-      detail: `Au-dessus de ${PITCH_TEMPERATURE_MAX_C} °C la levure souffre ou meurt (ale 18–24 °C, lager 8–14 °C). Refroidis le moût avant d’ensemencer, ou vérifie la sonde.`
+      title: `${nombreFr(Math.round(value * 10) / 10, 1)} °C : trop chaud pour la levure`,
+      detail: `Au-dessus de ${nombreFr(PITCH_TEMPERATURE_MAX_C, 1)} °C la levure souffre ou meurt (ale 18–24 °C, lager 8–14 °C). Refroidis le moût avant d’ensemencer, ou vérifie la sonde.`
     };
   if (kind === 'temperature' && step.tempC != null) {
     const delta = value - step.tempC;
     return {
       tone: Math.abs(delta) <= 1 ? 'ok' : 'watch',
-      title: `Écart ${delta > 0 ? '+' : ''}${Math.round(delta * 10) / 10} °C · cible ${step.tempC} °C`,
+      title: `Écart ${delta > 0 ? '+' : ''}${nombreFr(Math.round(delta * 10) / 10, 1)} °C · cible ${nombreFr(step.tempC, 1)} °C`,
       detail:
         Math.abs(delta) <= 1
           ? 'Température proche de la consigne.'
@@ -204,14 +205,14 @@ export function readingFeedback(
     if (vessel && value > vessel.capacityL)
       return {
         tone: 'watch',
-        title: `${Math.round(value * 10) / 10} L : plus que ${vessel.label} (${vessel.capacityL} L)`,
+        title: `${nombreFr(Math.round(value * 10) / 10, 1)} L : plus que ${vessel.label} (${nombreFr(vessel.capacityL, 1)} L)`,
         detail: `Ce volume ne tient pas dans ${vessel.label} du profil d’installation. Vérifie la saisie (des litres, pas des décilitres), ou corrige la capacité dans l’installation.`
       };
     const target = volumeTarget(step, recipe);
     if (target && target > 0)
       return {
         tone: Math.abs(value - target) <= target * 0.05 ? 'ok' : 'watch',
-        title: `${Math.round((value - target) * 10) / 10 > 0 ? '+' : ''}${Math.round((value - target) * 10) / 10} L / ${step.id === 'preboil' ? 'repère ≈' : 'cible'} ${Math.round(target * 10) / 10} L`,
+        title: `${Math.round((value - target) * 10) / 10 > 0 ? '+' : ''}${nombreFr(Math.round((value - target) * 10) / 10, 1)} L / ${step.id === 'preboil' ? 'repère ≈' : 'cible'} ${nombreFr(Math.round(target * 10) / 10, 1)} L`,
         detail:
           step.id === 'preboil'
             ? 'Repère eau moins absorption du grain ; le fond de cuve et le volume à chaud peuvent créer un écart.'
@@ -346,14 +347,14 @@ export function recordPitch(state: BrewDayState, now: number, temperatureC: numb
   else delete additions.yeast;
   const quantityNote = choice.mode === 'measured' ? `${quantity!.amount} ${quantity!.unit} mesurés`
     : choice.mode === 'planned' ? `${quantity!.amount} ${quantity!.unit} · quantité prévue effectivement ajoutée`
-      : choice.mode === 'starter-transferred' ? `culture de starter transférée${quantity ? ` · ${quantity.amount} L relevés` : ' · volume non relevé'}`
+      : choice.mode === 'starter-transferred' ? `culture de starter transférée${quantity ? ` · ${nombreFr(quantity.amount, 1)} L relevés` : ' · volume non relevé'}`
         : 'quantité non mesurée · consommation de stock à régulariser';
   return { ...state, additions, pitchQuantityConfirmation: choice.mode, phase: 'brewing', pitchedAt: now, finishedAt: now,
     ...(temperature == null ? {} : { pitchTemperatureC: temperature }),
     steps: state.steps.map(s => s.id === 'ensemencement' ? { ...s, doneAt: now } : s),
     thermalSegments: state.thermalSegments?.map(s => s.endedAt == null ? { ...s, endedAt: now } : s),
     notes: [...state.notes ?? [], { id: crypto.randomUUID(), at: now, stepId: 'ensemencement',
-      text: `Levure ajoutée · ${quantityNote}${temperature == null ? ' · température non relevée' : ` · moût à ${temperature} °C`}. Début de fermentation consigné.` }] };
+      text: `Levure ajoutée · ${quantityNote}${temperature == null ? ' · température non relevée' : ` · moût à ${nombreFr(temperature, 1)} °C`}. Début de fermentation consigné.` }] };
 }
 
 export interface QualifiedFinalBrewReading {

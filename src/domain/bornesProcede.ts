@@ -9,6 +9,7 @@
 import type { Recipe, SaltId, WaterIons } from '../types';
 import { frBorne } from './bornesMetier';
 import { ionsFromSalts } from './water/substances';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export interface IssueProcede { field: string; step: 'identite' | 'levure' | 'paliers' | 'eau' | 'recap'; message: string; live: true }
 /** Un conseil : une valeur possible mais inhabituelle, ou deux valeurs qui se contredisent. Il ne bloque jamais l'enregistrement. */
@@ -99,7 +100,7 @@ export function empatageIssues(steps: ReadonlyArray<{ name?: string; tempC: numb
     const nom = s.name?.trim() ? `Palier ${i + 1} (${s.name.trim().slice(0, 40)})` : `Palier ${i + 1}`;
     if (finite(s.tempC) && (s.tempC < T.min || s.tempC > T.max))
       out.push({ field: `wz-mash-temp-${i}`, step: 'paliers', live: true,
-        message: `${nom} : ${fr(s.tempC, 1)} °C n’existe pas à l’empâtage. Entre ${T.min} et ${T.max} °C : les enzymes ne travaillent pas sous ${T.min} °C et meurent au-dessus de ${T.max} °C.` });
+        message: `${nom} : ${fr(s.tempC, 1)} °C n’existe pas à l’empâtage. Entre ${T.min} et ${nombreFr(T.max, 1)} °C : les enzymes ne travaillent pas sous ${nombreFr(T.min, 1)} °C et meurent au-dessus de ${nombreFr(T.max, 1)} °C.` });
     if (finite(s.durationMin) && s.durationMin > D.max)
       out.push({ field: `wz-mash-duration-${i}`, step: 'paliers', live: true,
         message: `${nom} : ${fr(s.durationMin)} min de maintien, soit plus de ${D.max / 60} h. Vérifie la durée (au plus ${D.max} min).` });
@@ -116,7 +117,7 @@ export function fermentationIssues(phases: ReadonlyArray<{ name?: string; tempC:
     const nom = s.name?.trim() ? s.name.trim().slice(0, 40) : `Phase ${i + 1}`;
     if (finite(s.tempC) && (s.tempC < T.min || s.tempC > T.max))
       out.push({ field: `wz-ferment-temp-${i}`, step: 'paliers', live: true,
-        message: `${nom} : ${fr(s.tempC, 1)} °C. Entre ${T.min} et ${T.max} °C : la levure dort sous ${T.min} °C (la bière gèle) et meurt au-dessus de 45 °C.` });
+        message: `${nom} : ${fr(s.tempC, 1)} °C. Entre ${T.min} et ${nombreFr(T.max, 1)} °C : la levure dort sous ${nombreFr(T.min, 1)} °C (la bière gèle) et meurt au-dessus de 45 °C.` });
     if (finite(s.days) && s.days > J.max)
       out.push({ field: `wz-ferment-days-${i}`, step: 'paliers', live: true,
         message: `${nom} : ${fr(s.days)} j, soit plus d’un an. Durée attendue : ${J.max} j au plus.` });
@@ -131,17 +132,17 @@ export function levureIssues(yeast: Recipe['yeast'] | undefined, volumeL: number
   const P = BORNES_PROCEDE.ensemencementTempC, A = BORNES_PROCEDE.attenuationPct, Q = BORNES_PROCEDE.doseLevure;
   if (finite(yeast.pitchTempC) && (yeast.pitchTempC < P.min || yeast.pitchTempC > P.max))
     out.push({ field: 'wz-yeast-pitch', step: 'levure', live: true,
-      message: `Température d’ensemencement ${fr(yeast.pitchTempC, 1)} °C : entre ${P.min} et ${P.max} °C (lager 8–12 °C, ale 15–24 °C, kveik jusqu’à ${P.max} °C).` });
+      message: `Température d’ensemencement ${fr(yeast.pitchTempC, 1)} °C : entre ${P.min} et ${nombreFr(P.max, 1)} °C (lager 8–12 °C, ale 15–24 °C, kveik jusqu’à ${nombreFr(P.max, 1)} °C).` });
   if (finite(yeast.attenuationPct) && (yeast.attenuationPct < A.min || yeast.attenuationPct > A.max))
     out.push({ field: 'wz-yeast-range', step: 'levure', live: true,
-      message: `Atténuation de la levure ${fr(yeast.attenuationPct, 1)} % : entre ${A.min} et ${A.max} %. 0 % ou 100 % n’existent pas (aucune souche publiée).` });
+      message: `Atténuation de la levure ${fr(yeast.attenuationPct, 1)} % : entre ${A.min} et ${nombreFr(A.max, 1)} %. 0 % ou 100 % n’existent pas (aucune souche publiée).` });
   if (finite(yeast.qty) && yeast.qty > 0 && finite(volumeL) && volumeL > 0) {
     const unite = (yeast.unit ?? '').trim().toLowerCase();
     let max: number | null = null, par = '';
-    if (unite === 'g') { max = Q.gParL * volumeL; par = `${Q.gParL} g/L`; }
-    else if (unite === 'kg') { max = Q.gParL * volumeL / 1000; par = `${Q.gParL} g/L`; }
-    else if (unite === 'ml') { max = Q.mlParL * volumeL; par = `${Q.mlParL} mL/L`; }
-    else if (unite === 'l') { max = Q.mlParL * volumeL / 1000; par = `${Q.mlParL} mL/L`; }
+    if (unite === 'g') { max = Q.gParL * volumeL; par = `${nombreFr(Q.gParL, 1)} g/L`; }
+    else if (unite === 'kg') { max = Q.gParL * volumeL / 1000; par = `${nombreFr(Q.gParL, 1)} g/L`; }
+    else if (unite === 'ml') { max = Q.mlParL * volumeL; par = `${nombreFr(Q.mlParL, 1)} mL/L`; }
+    else if (unite === 'l') { max = Q.mlParL * volumeL / 1000; par = `${nombreFr(Q.mlParL, 1)} mL/L`; }
     else if (['sachet', 'sachets', 'paquet', 'paquets', 'pack', 'packs', 'flacon', 'flacons'].includes(unite)) { max = Math.max(1, Q.sachetsParL * volumeL); par = `${Q.sachetsParL} sachet par litre`; }
     if (max != null && yeast.qty > max + 1e-9)
       out.push({ field: 'wz-yeast-qty', step: 'levure', live: true,
@@ -155,7 +156,7 @@ export function rendementIssue(pct: number | undefined): IssueProcede | null {
   const R = BORNES_PROCEDE.rendementPct;
   if (!finite(pct) || (pct >= R.min && pct <= R.max)) return null;
   return { field: 'wz-efficiency', step: 'recap', live: true,
-    message: `Rendement ${fr(pct, 1)} % : entre ${R.min} et ${R.max} %. Au-delà de ${R.max} %, aucune installation ne tire autant d’extrait du grain ; 65 à 80 % est la pratique.` };
+    message: `Rendement ${fr(pct, 1)} % : entre ${R.min} et ${nombreFr(R.max, 1)} %. Au-delà de ${nombreFr(R.max, 1)} %, aucune installation ne tire autant d’extrait du grain ; 65 à 80 % est la pratique.` };
 }
 
 /** Eau d'empâtage et de rinçage : rapport eau/grain, eau totale par litre de bière, doses de sels et d'acide, pH visé. */
@@ -177,15 +178,15 @@ export function eauIssues(recipe: Pick<Recipe, 'waterPlan' | 'totalGristKg' | 'v
     if (mash <= 0)
       out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage 0 L pour ${fr(grain, 1)} kg de grain : sans eau, pas d’empâtage. Prévois au moins ${fr(grain * R.min, 1)} L.` });
     else if (rapport < R.min)
-      out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage ${fr(mash, 1)} L pour ${fr(grain, 1)} kg de grain, soit ${fr(rapport, 2)} L/kg : sous ${R.min} L/kg le grain n’est pas détrempé (il en retient ~1). Prévois au moins ${fr(grain * R.min, 1)} L.` });
+      out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage ${fr(mash, 1)} L pour ${fr(grain, 1)} kg de grain, soit ${fr(rapport, 2)} L/kg : sous ${nombreFr(R.min, 1)} L/kg le grain n’est pas détrempé (il en retient ~1). Prévois au moins ${fr(grain * R.min, 1)} L.` });
     else if (rapport > R.max)
-      out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage ${fr(mash, 1)} L pour ${fr(grain, 1)} kg de grain, soit ${fr(rapport, 1)} L/kg : au-delà de ${R.max} L/kg ce n’est plus une maische (pratique : 2,5 à 4 L/kg). Erreur de saisie probable.` });
+      out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage ${fr(mash, 1)} L pour ${fr(grain, 1)} kg de grain, soit ${fr(rapport, 1)} L/kg : au-delà de ${nombreFr(R.max, 1)} L/kg ce n’est plus une maische (pratique : 2,5 à 4 L/kg). Erreur de saisie probable.` });
   }
   if (finite(mash) && finite(sparge) && finite(recipe.volumeL) && recipe.volumeL > 0) {
     const max = T.max * recipe.volumeL + 1.5 * grain;
     if (mash + sparge > max)
       out.push({ field: finite(sparge) && sparge > mash ? 'wz-sparge-water' : 'wz-mash-water', step: 'eau', live: true,
-        message: `Eau totale ${fr(mash + sparge, 1)} L pour ${fr(recipe.volumeL, 1)} L de bière : au-delà de ${fr(max, 0)} L (${T.max} L d’eau par litre de bière), erreur de saisie probable.` });
+        message: `Eau totale ${fr(mash + sparge, 1)} L pour ${fr(recipe.volumeL, 1)} L de bière : au-delà de ${fr(max, 0)} L (${nombreFr(T.max, 1)} L d’eau par litre de bière), erreur de saisie probable.` });
   }
   // Sels : chaque ion apporté, dans l'eau où le sel se dissout (empâtage ou rinçage), a un plafond.
   const ceilings = BORNES_PROCEDE.ionsSels;
@@ -195,7 +196,7 @@ export function eauIssues(recipe: Pick<Recipe, 'waterPlan' | 'totalGristKg' | 'v
     for (const ion of ['ca', 'mg', 'na', 'so4', 'cl', 'hco3'] as const) {
       if (apport[ion] > ceilings[ion]) {
         out.push({ field: 'wz-salts', step: 'eau', live: true,
-          message: `Sels de l’eau d’${nom === 'mash' ? 'empâtage' : 'rinçage'} : ${fr(apport[ion])} ppm de ${ION_NOM[ion]} apportés pour ${fr(litres, 1)} L, au-delà de ${ceilings[ion]} ppm. C’est plus que l’eau de Burton, la plus dure de toutes : erreur de saisie probable (des grammes pour des dixièmes ?).` });
+          message: `Sels de l’eau d’${nom === 'mash' ? 'empâtage' : 'rinçage'} : ${fr(apport[ion])} ppm de ${ION_NOM[ion]} apportés pour ${fr(litres, 1)} L, au-delà de ${nombreFr(ceilings[ion], 1)} ppm. C’est plus que l’eau de Burton, la plus dure de toutes : erreur de saisie probable (des grammes pour des dixièmes ?).` });
         return;
       }
     }
@@ -208,7 +209,7 @@ export function eauIssues(recipe: Pick<Recipe, 'waterPlan' | 'totalGristKg' | 'v
     for (const [nom, mL, litres] of [['empâtage', acide.mash, mash], ['rinçage', acide.sparge, sparge]] as const) {
       if (finite(mL) && mL > 0 && finite(litres) && litres > 0 && mL / litres > A.max)
         out.push({ field: 'wz-acid', step: 'eau', live: true,
-          message: `Acide de l’${nom} : ${fr(mL, 1)} mL pour ${fr(litres, 1)} L, soit ${fr(mL / litres, 1)} mL/L. Au-delà de ${A.max} mL/L, c’est plus d’acide que n’importe quelle alcalinité n’en demande (0,2 à 1 mL/L). Erreur de saisie probable.` });
+          message: `Acide de l’${nom} : ${fr(mL, 1)} mL pour ${fr(litres, 1)} L, soit ${fr(mL / litres, 1)} mL/L. Au-delà de ${nombreFr(A.max, 1)} mL/L, c’est plus d’acide que n’importe quelle alcalinité n’en demande (0,2 à 1 mL/L). Erreur de saisie probable.` });
     }
   }
   const ph = BORNES_PROCEDE.phEmpatage;

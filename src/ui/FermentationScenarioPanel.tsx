@@ -13,6 +13,7 @@ import { HopField } from './hopIndex/HopFactsEditor';
 import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
 import { fermentationDose } from '../domain/fermentationGuide';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /** Real recipe inputs, local calculations only; manufacturer prose is never
  * converted to an invented radar or an ester concentration. */
@@ -42,7 +43,7 @@ export function FermentationScenarioPanel({ recipe, yeasts, guides, science, goa
     {!programOnly && <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Arômes, chimie et portée de l’estimation</summary><div className="space-y-3 py-2">
       <FermentationLeversPanel science={science} goal={goal} guide={result.guide} yeastId={result.yeast?.id}/>
       <p className="text-sm text-cave-400">{result.fg.reasons[0]}</p>
-      {recipe.yeast.attenuationPct != null && <p className="text-sm text-cave-400">Atténuation saisie : {recipe.yeast.attenuationPct} % · {recipe.yeast.attenuationBasis === 'measured' ? 'retour mesuré' : recipe.yeast.attenuationBasis === 'declared' ? 'donnée annoncée' : 'hypothèse de recette'}. La base retenue et ses limites sont indiquées ci-dessus.</p>}
+      {recipe.yeast.attenuationPct != null && <p className="text-sm text-cave-400">Atténuation saisie : {nombreFr(recipe.yeast.attenuationPct, 1)} % · {recipe.yeast.attenuationBasis === 'measured' ? 'retour mesuré' : recipe.yeast.attenuationBasis === 'declared' ? 'donnée annoncée' : 'hypothèse de recette'}. La base retenue et ses limites sont indiquées ci-dessus.</p>}
       {dose && <p className="text-sm text-cave-200">Dose fabricant au volume : {fermentationRangeLabel(dose.range, 'g', 1)} · confiance faible pour ce brassin. Masse de sachet et viabilité non supposées.<HopSourceLink source={dose.source}/></p>}
       <p className="text-sm text-cave-400">Les descriptions documentent un potentiel. Température, durée, pression et dose ne permettent pas ici de calculer les concentrations finales d’esters, phénols ou thiols.</p>
       {result.temperature?.source && <HopSourceLink source={result.temperature.source}/>}

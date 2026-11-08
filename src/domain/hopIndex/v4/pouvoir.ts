@@ -11,6 +11,7 @@ import bandsFile from '../../../data/hopV4/style-bands.json';
 import { POLICY, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { MOMENTS, additionIbu, type Addition, type MomentId, type Recipe } from './recipe';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 // ---------- Types publics ----------
 export type Niveau = 'P' | 'F' | 'S' | 'H';
@@ -307,7 +308,7 @@ function categorie(a: AjoutPouvoir, r: Recipe): { cat: Categorie; hypotheses: st
   if (a.moment === 'dryActive' || a.moment === 'dryPost') return { cat: { id: 'dryHop', actif: a.moment === 'dryActive' }, hypotheses: [] };
   if (a.moment === 'wp') {
     const t = a.temperatureC ?? POLICY.defaults.whirlpool.temperatureC.central;
-    return { cat: { id: 'tardif', minutes: null, temperatureC: t, whirlpool: true }, hypotheses: a.temperatureC == null ? [`température du whirlpool non renseignée : préréglage du prototype (${t} °C, jugement L’Affinée)`] : [] };
+    return { cat: { id: 'tardif', minutes: null, temperatureC: t, whirlpool: true }, hypotheses: a.temperatureC == null ? [`température du whirlpool non renseignée : préréglage du prototype (${nombreFr(t, 1)} °C, jugement L’Affinée)`] : [] };
   }
   const minutes = a.moment === 'fwh' ? r.boilMin : MOMENTS[a.moment].minutes!;
   return { cat: minutes <= 10 ? { id: 'tardif', minutes, temperatureC: 100, whirlpool: false } : { id: 'ebullition', minutes }, hypotheses: [] };
@@ -335,7 +336,7 @@ function transferts(c: ComposeId, cat: Categorie, dose: number): { parBase: Gran
       let p = e.plage;
       if (e.selonDose) {
         const r = selonDose(e.selonDose, dose);
-        if (!r) { horsPlage.push(`${e.base} : mesuré de ${e.selonDose[0][0]} à ${e.selonDose[1][0]} g/L, non appliqué à ${fr(dose)} g/L`); continue; }
+        if (!r) { horsPlage.push(`${e.base} : mesuré de ${e.selonDose[0][0]} à ${nombreFr(e.selonDose[1][0], 1)} g/L, non appliqué à ${fr(dose)} g/L`); continue; }
         p = r;
       }
       const hyp = [...emprunt];
@@ -358,7 +359,7 @@ function transferts(c: ComposeId, cat: Categorie, dose: number): { parBase: Gran
   const plusLong = minutes != null ? [`à ${minutes}′ : part non mesurée dans H ; un ajout plus long n’en garde pas plus qu’un ajout tardif [H]`] : [];
   if (c === 'linalol') {
     const e = t.tardif![0];
-    return un(minutes == null ? pct(e.plage![0], e.plage![1], e.base!, e.sources, niveauDe(e.sources)) : pct(null, e.plage![1], `au plus la part d’un ajout tardif (${e.plage![0]}–${e.plage![1]} %)`, e.sources, 'H', plusLong));
+    return un(minutes == null ? pct(e.plage![0], e.plage![1], e.base!, e.sources, niveauDe(e.sources)) : pct(null, e.plage![1], `au plus la part d’un ajout tardif (${e.plage![0]}–${nombreFr(e.plage![1], 1)} %)`, e.sources, 'H', plusLong));
   }
   if (c === 'geraniol' || HYDROCARBURES.has(c)) {
     const e = t.tardif![0];
@@ -371,8 +372,8 @@ function transferts(c: ComposeId, cat: Categorie, dose: number): { parBase: Gran
     if (cat.id === 'tardif' && cat.whirlpool) {
       const T = cat.temperatureC;
       const base = T === 90 ? `thiol libre restant dans le moût : ${a90.texte}` : T > 90
-        ? `thiol libre restant : entre ${a90.texte} et ${a100.texte} ; whirlpool à ${T} °C non mesuré`
-        : `thiol libre restant : repère le plus proche, ${a90.texte} ; whirlpool à ${T} °C non mesuré`;
+        ? `thiol libre restant : entre ${a90.texte} et ${a100.texte} ; whirlpool à ${nombreFr(T, 1)} °C non mesuré`
+        : `thiol libre restant : repère le plus proche, ${a90.texte} ; whirlpool à ${nombreFr(T, 1)} °C non mesuré`;
       return un(pct(null, 100 - a90.perte, base, a90.sources, 'H', hyps));
     }
     if (cat.id === 'ebullition' && cat.minutes >= a100.minutes) return un(pct(null, 100 - a100.perte, `thiol libre restant dans le moût : ${a100.texte}`, a100.sources, 'H', hyps));
@@ -584,10 +585,10 @@ function drapeauxAjout(a: AjoutPouvoir, r: RecettePouvoir, v: Variete | null, co
     `${D.duree.auDela.texte} Végétal : ${D.duree.vegetal.texte} Hop creep : le risque monte avec la durée si la levure est vivante. ${D.duree.oxydation.texte}`, [...D.duree.auDela.sources, ...D.duree.vegetal.sources, 'H68', 'H85'], a.id));
   // Hop creep (H §6.1, §6.5).
   out.push(drapeau('hop-creep', 'Hop creep : refermentation, atténuation, diacétyle', cat.actif ? 'risque : levure vivante' : 'risque si la levure est encore présente',
-    `${D.hopCreep.texte} ${D.hopCreep.chiffres.map(dit).join(' ; ')}. ${['Galaxy', 'Idaho 7'].includes(nomH) ? D.hopCreep.nonTrouve : ''}${a.temperatureC != null ? ` Contact à ${a.temperatureC} °C : plus rapide au chaud.` : ''} Ampleur pour ce brassin non chiffrée.`,
+    `${D.hopCreep.texte} ${D.hopCreep.chiffres.map(dit).join(' ; ')}. ${['Galaxy', 'Idaho 7'].includes(nomH) ? D.hopCreep.nonTrouve : ''}${a.temperatureC != null ? ` Contact à ${nombreFr(a.temperatureC, 1)} °C : plus rapide au chaud.` : ''} Ampleur pour ce brassin non chiffrée.`,
     D.hopCreep.chiffres.flatMap((c) => c.sources), a.id));
   // Saturation (Cascade seulement).
-  if (dose >= D.saturation.zone[0]) out.push(drapeau('saturation', 'Les agrumes plafonnent, l’herbacé monte', dose <= D.saturation.zone[1] ? `${fr(dose)} g/L : dans la zone ${D.saturation.zone[0]}–${D.saturation.zone[1]} g/L` : `${fr(dose)} g/L : au-delà de ${D.saturation.zone[1]} g/L`,
+  if (dose >= D.saturation.zone[0]) out.push(drapeau('saturation', 'Les agrumes plafonnent, l’herbacé monte', dose <= D.saturation.zone[1] ? `${fr(dose)} g/L : dans la zone ${D.saturation.zone[0]}–${nombreFr(D.saturation.zone[1], 1)} g/L` : `${fr(dose)} g/L : au-delà de ${nombreFr(D.saturation.zone[1], 1)} g/L`,
     `${D.saturation.texte} Preuve : ${D.saturation.portee}.`, D.saturation.sources, a.id));
   // Géraniol → citronellol (H §6.2, §8.4).
   const ger = composes.geraniol.teneur;
@@ -715,7 +716,7 @@ export function pouvoirRecette(recette: RecettePouvoir): PouvoirRecette {
     texte: !froids.length ? 'aucun ajout à cru' : debut == null ? 'jours de début non renseignés' : fin == null ? `à partir de J+${debut}, durée non renseignée` : `houblon au contact du J+${debut} au J+${fin} (${fin - debut} j)` };
   const levure = D.levures[recette.yeastId ?? ''] ?? null;
   const drapeaux: Drapeau[] = [];
-  if (froids.length && doseACruGL >= D.saturation.zone[0]) drapeaux.push(drapeau('saturation', 'Les agrumes plafonnent, l’herbacé monte', `dose totale à cru ${fr(doseACruGL)} g/L${doseACruGL <= D.saturation.zone[1] ? ` : dans la zone ${D.saturation.zone[0]}–${D.saturation.zone[1]} g/L` : ` : au-delà de ${D.saturation.zone[1]} g/L`}`,
+  if (froids.length && doseACruGL >= D.saturation.zone[0]) drapeaux.push(drapeau('saturation', 'Les agrumes plafonnent, l’herbacé monte', `dose totale à cru ${fr(doseACruGL)} g/L${doseACruGL <= D.saturation.zone[1] ? ` : dans la zone ${D.saturation.zone[0]}–${nombreFr(D.saturation.zone[1], 1)} g/L` : ` : au-delà de ${nombreFr(D.saturation.zone[1], 1)} g/L`}`,
     `${D.saturation.texte} Preuve : ${D.saturation.portee}. ${D.ajoutsSuccessifs.saturationSecondAjout.texte} ${D.saturation.complement.texte}`, [...D.saturation.sources, ...D.saturation.complement.sources]));
   const aromes = ajouts.filter((p) => MOMENTS[p.moment].kind === 'arôme');
   drapeaux.push(drapeau('ordre', 'Ordre des ajouts : inconnu', 'inconnu', `${D.ajoutsSuccessifs.ordre.texte}${aromes.length > 1 ? ` ${D.ajoutsSuccessifs.deuxAjouts.texte}` : ''}`, [...D.ajoutsSuccessifs.ordre.sources, ...(aromes.length > 1 ? D.ajoutsSuccessifs.deuxAjouts.sources : [])]));
@@ -730,7 +731,7 @@ export function pouvoirRecette(recette: RecettePouvoir): PouvoirRecette {
     levure ? `β-lyase : ${levure.betaLyase} ; β-glucosidase : ${levure.betaGlucosidase} ; POF : ${levure.pof} ; esters : ${levure.esters} ; diastaticus : ${levure.diastaticus} ; atténuation : ${levure.attenuation} ; biotransformation : ${levure.biotransformation}.${levure.notes.length ? ' ' + levure.notes.join(' ') : ''} ${(D.levures as unknown as { aucune: string }).aucune}` : 'Souche absente de H §8.4 : biotransformation non documentée.',
     levure?.sources ?? []));
   const g = recette.garde;
-  drapeaux.push(drapeau('vieillissement', 'Vieillissement : pertes par famille, selon la température', g ? `garde à ${g.temperatureC} °C, ${g.mois} mois : non chiffrée pour ce brassin` : 'garde non renseignée',
+  drapeaux.push(drapeau('vieillissement', 'Vieillissement : pertes par famille, selon la température', g ? `garde à ${nombreFr(g.temperatureC, 1)} °C, ${g.mois} mois : non chiffrée pour ce brassin` : 'garde non renseignée',
     `${D.vieillissement.map((x) => `${x.famille} (${x.conditions}) : ${x.texte}`).join(' ; ')}. Aucune courbe : chaque chiffre vaut pour ses conditions.`, D.vieillissement.flatMap((x) => x.sources)));
   return { recette: recette.name, style: recette.styleCode, abv, levure: { id: recette.yeastId, nom: levure?.nom ?? null, documentee: !!levure },
     ajouts, composes, familles, pouvoir: lirePouvoir(recette.styleCode, composes, familles), doseACruGL, contact, drapeaux, mention: MENTION_RAPPORT };

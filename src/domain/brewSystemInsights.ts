@@ -1,6 +1,7 @@
 import type { Batch, BrewDayReading, BrewDayState, BrewhouseProfile, Recipe, RecipeSnapshot } from '../types';
 import type { SystemCalibrationEvent, SystemParameter } from '../types/brewSystem';
 import { BrewingMath } from '../services/brewingMath';
+import { nombreFr } from '../domain/nombreAffiche';
 
 type BrewRecipe = Recipe | RecipeSnapshot;
 type Stage = 'preboil' | 'postboil' | 'ensemencement';
@@ -158,7 +159,7 @@ const PLAUSIBLE: Partial<Record<SystemParameter, [number, number]>> = { boilOffL
 export function plausibilite(m: SystemMetric): SystemMetric {
   const range = m.parameter ? PLAUSIBLE[m.parameter] : undefined;
   if (!range || m.value == null || (m.value >= range[0] && m.value <= range[1])) return m;
-  return { ...m, calibrationEligible: false, reason: `Valeur invraisemblable (${rounded(m.value)} ${m.unit}, attendu entre ${range[0]} et ${range[1]}) : vérifie les volumes et les durées avant de calibrer.` };
+  return { ...m, calibrationEligible: false, reason: `Valeur invraisemblable (${nombreFr(m.value, 2)} ${m.unit}, attendu entre ${range[0]} et ${range[1]}) : vérifie les volumes et les durées avant de calibrer.` };
 }
 
 export interface SystemMetric {
@@ -204,7 +205,7 @@ function evaporation(recipe: BrewRecipe, state: BrewDayState): SystemMetric {
   return { ...result, value: (a.value - b.value) * 60 / minutes, approximate: a.approximate || b.approximate,
     parameter: 'boilOffLPerHour', calibrationEligible: true, sourceIds: [readingId(before), readingId(after)],
     context: { initialHotL: rounded(a.value, 1) },
-    reason: `${rounded(minutes, 1)} min d’ébullition réellement enregistrées.${a.approximate || b.approximate ? ' Volumes convertis avec le retrait du profil figé.' : ' Volumes mesurés à ébullition.'}` };
+    reason: `${nombreFr(minutes, 1)} min d’ébullition réellement enregistrées.${a.approximate || b.approximate ? ' Volumes convertis avec le retrait du profil figé.' : ' Volumes mesurés à ébullition.'}` };
 }
 
 function absorption(recipe: BrewRecipe, state: BrewDayState): SystemMetric {
@@ -237,7 +238,7 @@ function absorption(recipe: BrewRecipe, state: BrewDayState): SystemMetric {
     sourceIds: [readingId(volume), ...waters.map(([id]) => `addition:${id}`), ...grains.map(g => g.sourceId)],
     parameter: 'grainAbsorptionLPerKg', calibrationEligible: separated,
     reason: otherExtract ? 'Un autre fermentescible a modifié le volume collecté. L’absorption des grains ne peut pas être isolée.'
-      : separated ? `Moût libre restant après filtration : ${rounded(retained)} L, retiré du bilan d’absorption.`
+      : separated ? `Moût libre restant après filtration : ${nombreFr(retained, 2)} L, retiré du bilan d’absorption.`
       : finite(retained) ? 'Le moût libre restant doit être compris entre zéro et la perte totale. Corrige ce relevé avant calibration.'
         : 'Inclut le moût libre laissé dans la cuve. Mesure ce reste, même nul, pour isoler l’absorption des grains.' };
 }
@@ -273,7 +274,7 @@ function heating(recipe: BrewRecipe, state: BrewDayState): SystemMetric {
       parameter: 'heatingRateCPerMin', calibrationEligible: finite(segment.volumeL) && segment.volumeL > 0,
       context: { method: segment.method, vessel: segment.vesselRef ?? null, volumeL: segment.volumeL ?? null,
         fromC: Math.round(first.value), toC: Math.round(last.value), targetC: segment.targetC },
-      reason: `Moyenne observée de ${rounded(first.value, 1)} à ${rounded(last.value, 1)} °C sur ${rounded(minutes, 1)} min ; elle ne décrit pas chaque instant de la montée.${!finite(segment.volumeL) || segment.volumeL <= 0 ? ' Confirme le volume de ce segment pour comparer les brassins.' : ''}` };
+      reason: `Moyenne observée de ${nombreFr(first.value, 1)} à ${nombreFr(last.value, 1)} °C sur ${nombreFr(minutes, 1)} min ; elle ne décrit pas chaque instant de la montée.${!finite(segment.volumeL) || segment.volumeL <= 0 ? ' Confirme le volume de ce segment pour comparer les brassins.' : ''}` };
   }
   return result;
 }
@@ -287,7 +288,7 @@ export function brewSystemInsights(recipe: BrewRecipe, state: BrewDayState): { m
     expected: stage === 'ensemencement' && yieldResult.scope !== 'global' ? recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? null : null,
     approximate: yieldResult.approximate, sourceIds: yieldResult.sourceIds,
     reason: yieldResult.pair && yieldResult.value != null
-      ? `${rounded(yieldResult.pair.volumeColdL)} L à froid · densité ${yieldResult.pair.gravity.value.toFixed(3)}. ${yieldResult.reason}` : yieldResult.reason,
+      ? `${nombreFr(yieldResult.pair.volumeColdL, 2)} L à froid · densité ${nombreFr(yieldResult.pair.gravity.value, 3)}. ${yieldResult.reason}` : yieldResult.reason,
     nextStepId: stage,
     missingIngredients: yieldResult.missingIngredients,
     calibrationEligible: yieldResult.calibrationEligible, ...(stage === 'ensemencement' ? { parameter: 'efficiencyPct' as const } : {}),
@@ -350,10 +351,10 @@ function observations(batch: Batch): SystemObservation[] {
       lauterRetainedL: m.id === 'absorption' ? state.lauterRetainedL : undefined,
       segments: m.id === 'heating' ? state.thermalSegments : undefined,
     });
-    const mashProgram = baseContext.mash.length ? baseContext.mash.map(([temp, duration]) => `${temp ?? '?'} °C/${duration} min`).join(' + ') : 'programme non documenté';
-    const waterContext = baseContext.actualWater.every(v => v == null) ? 'eau non confirmée' : `eau ${baseContext.actualWater.map(v => v == null ? '?' : v).join('/')} L`;
+    const mashProgram = baseContext.mash.length ? baseContext.mash.map(([temp, duration]) => `${temp == null ? '?' : nombreFr(temp, 1)} °C/${duration} min`).join(' + ') : 'programme non documenté';
+    const waterContext = baseContext.actualWater.every(v => v == null) ? 'eau non confirmée' : `eau ${baseContext.actualWater.map(v => v == null ? '?' : nombreFr(v, 1)).join('/')} L`;
     return { batchId: batch.id, batchName: batch.name, at: Math.max(0, ...selectedReadings.map(r => r.at)), parameter: m.parameter!, value: m.value!,
-      contextKey, contextLabel: `${recipe.volumeL} L · ${process} · ${rounded(grainKg)} kg · ${m.context?.fromC != null ? `${m.context.fromC}–${m.context.toC} °C` : mashProgram} · ${waterContext}`,
+      contextKey, contextLabel: `${nombreFr(recipe.volumeL, 1)} L · ${process} · ${nombreFr(grainKg, 2)} kg · ${m.context?.fromC != null ? `${m.context.fromC}–${nombreFr(Number(m.context.toC), 1)} °C` : mashProgram} · ${waterContext}`,
       sourceIds: m.sourceIds, evidence, approximate: m.approximate };
   });
 }

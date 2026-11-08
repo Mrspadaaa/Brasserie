@@ -5,6 +5,7 @@ import { resizeWaterPlan } from './resizeWaterPlan';
 import { fermenterRecommendation } from './fermenterPlanning';
 import { snapshotBrewhouse } from './brewPreferences';
 import { replanRecipeWater } from './recipeWater';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /** A deliberate recipe resize. Recorded batches and their snapshots are never touched. */
 export function adaptRecipeEquipment(
@@ -71,8 +72,8 @@ export function adaptRecipeEquipment(
     installation: { ...recipe.installation, manualWaterSplit: !!recipe.installation?.manualWaterSplit, spargeExceptionAccepted: false },
     notesCreation: [
       recipe.notesCreation,
-      `Matériel : ${recipe.volumeL} → ${targetL} L ; les quantités structurées sont recalculées. Vérifier les volumes des notes libres de la source.`
-      , ...(previousEfficiency !== profile.efficiencyPct ? [`Rendement adopté : ${previousEfficiency} → ${profile.efficiencyPct} % ; grains ajustés pour conserver l’extrait prévu.`] : [])
+      `Matériel : ${recipe.volumeL} → ${nombreFr(targetL, 1)} L ; les quantités structurées sont recalculées. Vérifier les volumes des notes libres de la source.`
+      , ...(previousEfficiency !== profile.efficiencyPct ? [`Rendement adopté : ${previousEfficiency} → ${nombreFr(profile.efficiencyPct, 1)} % ; grains ajustés pour conserver l’extrait prévu.`] : [])
     ]
       .filter(Boolean)
       .join('\n'),

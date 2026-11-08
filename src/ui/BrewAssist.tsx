@@ -26,6 +26,7 @@ import { effectiveThermalTarget } from '../domain/brewThermal';
 import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
 import { NumberInput } from './NumberInput';
+import { nombreFr } from '../domain/nombreAffiche';
 
 function NumberField({
   label,
@@ -196,13 +197,13 @@ export function BrewAssist({
                     setNotice('');
                   }}
                 >
-                  {s === 'mash' ? 'Empâtage' : `Rinçage · ${recipe.mash?.spargeTempC ?? 76} °C`}
+                  {s === 'mash' ? 'Empâtage' : `Rinçage · ${nombreFr(recipe.mash?.spargeTempC ?? 76, 1)} °C`}
                 </button>
               ))}
             </div>
             <p className="brew-muted">
               {roundFr(actualWater(recipe, state, side).litres)} L au total · coupe prévue{' '}
-              {actualWater(recipe, state, side).plannedPct} % osmosée. Modifie le volume total dans
+              {nombreFr(actualWater(recipe, state, side).plannedPct, 1)} % osmosée. Modifie le volume total dans
               les ingrédients si nécessaire.
             </p>
             <NumberField
@@ -320,7 +321,7 @@ export function BrewAssist({
                 <div className="brew-assist-result">
                   <strong>
                     {simulation.bitterness
-                      ? `≈ ${simulation.bitterness.projected} IBU · recette ${simulation.bitterness.planned}`
+                      ? `≈ ${nombreFr(simulation.bitterness.projected, 1)} IBU · recette ${simulation.bitterness.planned}`
                       : 'Volume et OG cibles requis pour estimer les IBU'}
                   </strong>
                   <p>{simulation.message}</p>

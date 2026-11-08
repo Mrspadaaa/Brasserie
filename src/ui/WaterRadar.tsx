@@ -3,6 +3,7 @@ import { WaterIons } from '../types';
 import { ION_LABEL, ION_ROLE, ION_SYMBOL, radarScaleMax } from '../domain/water';
 import { StyleWater, styleIonRange } from '../domain/waterStyles';
 import { formatIonReading } from './waterReadings';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /** Profil ionique des deux eaux traitées face aux repères du style. */
 
@@ -224,7 +225,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   const résumé = axes
     .map(
       (a) =>
-        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${a.reading} ppm ${a.targeted ? `pour ${a.band.min} à ${a.band.max}` : 'sans cible renseignée'}`
+        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${a.reading} ppm ${a.targeted ? `pour ${a.band.min} à ${a.band.max}` : 'sans cible renseignée'}` // virgule-ok : reading est le texte déjà formaté par formatIonReading
     )
     .join(', ');
 
@@ -238,7 +239,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           ? 'max-h-[var(--water-radar-max-height,24rem)] sm:max-h-none sm:max-w-[30rem]'
           : 'max-w-[30rem]'}`}
         role="img"
-        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}. Échelle fixe en racine carrée de 0 à ${scale} ppm ; valeurs supérieures au bord.`}
+        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}. Échelle fixe en racine carrée de 0 à ${nombreFr(scale, 1)} ppm ; valeurs supérieures au bord.`}
       >
         {/* Les anneaux et les rayons — le repère, jamais la donnée. */}
         {rings.map((ppm) => (
@@ -262,7 +263,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
             fill={GREEN}
             fillOpacity={lit.has(a.ion) ? 0.5 : lit.size ? 0.14 : 0.28}
           >
-            <title>{`${ION_SYMBOL[a.ion]} : ${a.band.min}–${a.band.max} ppm`}</title>
+            <title>{`${ION_SYMBOL[a.ion]} : ${a.band.min}–${nombreFr(a.band.max, 1)} ppm`}</title>
           </path>
         ))}
 

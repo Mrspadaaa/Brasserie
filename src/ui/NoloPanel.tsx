@@ -24,6 +24,7 @@ import { noloProcessLabels } from '../domain/noloPresentation';
 import { NoloRecipeOverview } from './NoloRecipeOverview';
 import { NoloOperationList } from './NoloOperationList';
 import { NoloRecipeSimulator } from './NoloRecipeSimulator';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const decimal = (n: number) => n.toLocaleString('fr-FR',{maximumFractionDigits:3});
 /** Outward rounding: a narrow interval across 0.5 must never display as 0.5–0.5. */
@@ -122,7 +123,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
         {editable&&!measurementOnly?<div className="grid grid-cols-2 gap-3">
           <Num label="Volume récupéré" unit="L" value={c.secondRunnings?.recoveredL} onChange={n=>update({secondRunnings:{...emptyRunnings,...c.secondRunnings,recoveredL:n}})}/>
           <Num label="Densité récupérée" unit="SG" value={c.secondRunnings?.sg} onChange={n=>update({secondRunnings:{...emptyRunnings,...c.secondRunnings,sg:n}})}/>
-        </div>:<p className="text-sm text-cave-200">Volume : {c.secondRunnings?.recoveredL??'à renseigner'} L · densité : {c.secondRunnings?.sg??'à renseigner'} SG</p>}
+        </div>:<p className="text-sm text-cave-200">Volume : {c.secondRunnings?.recoveredL == null ? 'à renseigner' : nombreFr(c.secondRunnings?.recoveredL, 1)} L · densité : {c.secondRunnings?.sg == null ? 'à renseigner' : nombreFr(c.secondRunnings?.sg, 3)} SG</p>}
       </div>}
       {!result?<p role="alert" className="text-sm text-ebc-straw">{outcome.error||'Référence NOLO absente ou désactivée. Complète les références pour calculer ce scénario.'}</p>:<>
         {editable&&<BoundGraph compact bound={result.projection.max!==null?result.projection:result.motherBeer.max!==null?result.motherBeer:result.packagedAbv.max!==null?result.packagedAbv:result.projection} target={c.targetAbvPct} label={result.projection.max!==null?'Projection au conditionnement':result.motherBeer.max!==null?'Bière mère · avant traitement':result.packagedAbv.max!==null?'Plafond physique · pas une prédiction':'Projection à compléter'}/>}
@@ -186,7 +187,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
           </>}
         </div></details>
       </div></details>
-      {!editable&&!!c.trials?.length&&<details><summary className="min-h-touch cursor-pointer text-water">Essais sur fractions · {c.trials.length}</summary><div className="space-y-3 text-xs text-cave-200">{c.trials.map(t=><div key={t.id}><p>{t.name} · {t.volumeL??'—'} L · {t.product||'Produit non renseigné'} · {t.dosageML??'—'} mL</p><p>{t.composition} · {t.moment}</p><p>Témoin : {t.comparator||'Non renseigné'}</p><p>{t.tasting||'Pas encore dégusté.'}</p></div>)}</div></details>}
+      {!editable&&!!c.trials?.length&&<details><summary className="min-h-touch cursor-pointer text-water">Essais sur fractions · {c.trials.length}</summary><div className="space-y-3 text-xs text-cave-200">{c.trials.map(t=><div key={t.id}><p>{t.name} · {t.volumeL == null ? '—' : nombreFr(t.volumeL, 1)} L · {t.product||'Produit non renseigné'} · {t.dosageML == null ? '—' : nombreFr(t.dosageML, 1)} mL</p><p>{t.composition} · {t.moment}</p><p>Témoin : {t.comparator||'Non renseigné'}</p><p>{t.tasting||'Pas encore dégusté.'}</p></div>)}</div></details>}
       {editable&&<details><summary className="cursor-pointer min-h-touch text-water">Essais de restitution sur fractions</summary><div className="space-y-3"><p className="text-xs text-cave-400">Fractions du même brassin, sans modifier la recette entière. Garder un témoin et une hefeweisse alcoolisée comme comparaison. Aucun dosage prérempli.</p>
         {(c.trials??[]).map((t,i)=><details key={t.id}><summary className="min-h-touch cursor-pointer text-sm text-cave-200">{t.name}</summary><div className="space-y-2">
           {(['name','product','composition','moment','comparator','tasting'] as const).map(k=><label key={k} className="block text-xs">{({name:'Nom de la fraction',product:'Produit',composition:'Composition connue',moment:'Moment de l’ajout',comparator:'Témoin comparé',tasting:'Dégustation et écart au témoin'})[k]}<Input className={inputClass} value={t[k]} onChange={e=>update({trials:c.trials!.map((v,j)=>j===i?{...v,[k]:e.target.value}:v)})}/></label>)}

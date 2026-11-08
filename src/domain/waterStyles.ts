@@ -1,4 +1,5 @@
 import { WaterIons, IonBand } from '../types';
+import { nombreFr } from './nombreAffiche';
 
 /** Profils indicatifs de l’eau de traitement, avant extraction du malt et ébullition. */
 
@@ -525,7 +526,7 @@ export function styleFromTargetIons(ions: Partial<WaterIons>, name = 'Cible de l
       ions[k] == null ? { min: 0, max: Math.max(...STYLE_WATERS.map(style => style.ions[k].max)) } : band(ions[k])
     ])) as Record<keyof WaterIons, IonRange>,
     ratio,
-    note: `Cible saisie : ${Object.entries(ions).filter(([, v]) => v != null).map(([k, v]) => `${k} ${v}`).join(' · ')} ppm, à ±20 %. Les ions non renseignés restent sans cible minimale.`
+    note: `Cible saisie : ${Object.entries(ions).filter(([, v]) => v != null).map(([k, v]) => `${k} ${nombreFr(Number(v), 1)}`).join(' · ')} ppm, à ±20 %. Les ions non renseignés restent sans cible minimale.`
   };
 }
 

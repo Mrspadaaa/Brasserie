@@ -18,6 +18,7 @@ import { acidCorrectionFromMeasuredPh, ACIDS } from '../domain/water';
 import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
 import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export const brewControl =
   'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
@@ -125,7 +126,7 @@ function MashCorrection({
           )}
           <details open={!contextValid || ctx.acid === 'maltAcidule'} className="text-sm">
             <summary className="cursor-pointer min-h-9 flex items-center gap-1 text-cave-200">
-              Maische · {ctx.waterL || '—'} L · {ctx.gristKg || '—'} kg ·{' '}
+              Maische · {ctx.waterL ? nombreFr(ctx.waterL, 1) : '—'} L · {ctx.gristKg ? nombreFr(ctx.gristKg, 2) : '—'} kg ·{' '}
               {ctx.acid === 'phosphorique'
                 ? 'phosphorique 75 %'
                 : ctx.acid === 'lactique'
@@ -188,11 +189,11 @@ function MashCorrection({
           {canDose && (
             <>
               <div className="flex items-baseline gap-2">
-                <strong className="reading text-2xl text-ebc-straw">≈ {partial} mL</strong>
+                <strong className="reading text-2xl text-ebc-straw">≈ {nombreFr(partial, 1)} mL</strong>
                 <span className="text-sm text-cave-200">pour commencer</span>
               </div>
               <p className="text-2xs text-cave-200">
-                Moitié de l’estimation totale ({fix.amount} mL d’
+                Moitié de l’estimation totale ({nombreFr(fix.amount, 1)} mL d’
                 {ACIDS[ctx.acid].name.toLowerCase()}). Mélange puis remesure après 10 minutes. C’est
                 une correction supplémentaire, après les ajouts déjà faits.
               </p>
@@ -246,7 +247,7 @@ function MashCorrection({
                       }))
                     }
                   >
-                    J’ai ajouté {dose} mL
+                    J’ai ajouté {nombreFr(dose, 1)} mL
                   </button>
                   {dose > partial && (
                     <p className="text-2xs text-ebc-straw">

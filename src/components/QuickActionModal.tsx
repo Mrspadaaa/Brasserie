@@ -56,6 +56,7 @@ import { TextInput } from '../ui/TextInput';
 import { Field, inputClass } from '../ui/FormNav';
 import { BrewScheduleField } from '../ui/production/BrewScheduleField';
 import { normalizeBrewDate } from '../domain/batchSchedule';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -1277,7 +1278,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 >
                   {recipes.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.name} · {r.volumeL} L · {r.style}
+                      {r.name} · {nombreFr(r.volumeL, 1)} L · {r.style}
                     </option>
                   ))}
                 </select>

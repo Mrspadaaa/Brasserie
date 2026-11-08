@@ -48,7 +48,7 @@ export const libelleDe = (v: string) => (v === 'fwh' ? 'moût' : /^b/.test(v) ? 
 export function momentLong(v: string, ebu: number, minutesWp = 20) {
   if (v === 'fwh') return `premier moût, ${ebu} minutes d'ébullition`;
   if (/^b/.test(v)) { const m = Number(v.slice(1)); return m === 0 ? "fin d'ébullition" : `${m} minutes d'ébullition`; }
-  if (/^wp/.test(v)) return `whirlpool à ${v.slice(2)} °C pendant ${minutesWp} minutes`;
+  if (/^wp/.test(v)) return `whirlpool à ${v.slice(2).replace('.', ',')} °C pendant ${minutesWp} minutes`;
   return `à froid, jour ${v.slice(1)}${v[0] === 'f' ? ', en fermentation active' : ', après fermentation'}`;
 }
 

@@ -20,6 +20,7 @@ import guides from '../data/fermentationGuideBootstrap.json';
 import { YEAST_RECIPE_PROFILES, YEAST_RECIPE_SOURCES, YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS, type YeastRecipeGoal, type YeastStyleId } from '../data/yeastRecipeProfiles';
 import type { YeastBeerTarget } from './yeastBeerTarget';
 import { effectiveYeastTechnicalFacts } from './yeastReferences';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export { YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS };
 export type { YeastRecipeGoal, YeastStyleId };
@@ -690,7 +691,7 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
     state: positive(draft.pressureBar) && (draft.goal === 'banana' || draft.goal === 'fruit') ? 'warning' : 'conditional', source: YEAST_RECIPE_SOURCES.pressure });
   if (diastatic.value !== undefined) effect({ id: 'diastatic', label: 'Finition', impact: diastatic.value ? 'Souche diastatique / STA1 positif documenté' : 'Souche non diastatique / STA1 négatif documenté',
     detail: diastatic.value ? 'La baisse de densité peut continuer après l’activité principale. Suivre sa stabilité et maîtriser la contamination croisée ; aucun jour de fin automatique.' : 'Ce caractère ne dispense pas du contrôle de fin, notamment après un houblonnage à cru.', state: diastatic.value ? 'warning' : 'documented', source: diastatic.source });
-  if (profile?.headspacePct) effect({ id: 'headspace', label: 'Cuve et mousse', impact: `${profile.headspacePct} % d’espace libre demandé`, detail: 'Wyeast signale une fermentation haute vigoureuse. Vérifie la capacité utile de la cuve face au volume réellement ensemencé.', state: 'documented', source });
+  if (profile?.headspacePct) effect({ id: 'headspace', label: 'Cuve et mousse', impact: `${nombreFr(profile.headspacePct, 1)} % d’espace libre demandé`, detail: 'Wyeast signale une fermentation haute vigoureuse. Vérifie la capacité utile de la cuve face au volume réellement ensemencé.', state: 'documented', source });
   if (candidate?.doseG) {
     const dose = candidate.doseG.range, q = draft.quantityG;
     effect({ id: 'dose', label: 'Dose sèche', impact: `${format(dose.min)}–${format(dose.max, 'g')} pour ${format(recipe.volumeL, 'L')}`,
@@ -708,7 +709,7 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
   const wheatVariant = /\b(dunkles|dunkelweizen|weizenbock)\b/.test(textKey(resolveBrewingStyle(recipe.style, recipe.styleRef)?.name ?? recipe.styleRef?.styleId ?? `${recipe.style} ${recipe.name}`));
   const currentIbu = hotBitterness(recipe.hops, recipe.volumeL, recipe.ogTarget, recipe.boilMin).total;
   if (draft.styleId === 'weissbier' && (hops.additions.length || !wheatVariant && (finite(currentIbu) && currentIbu > 15 || finite(recipe.ibuTarget) && recipe.ibuTarget > 15))) effect({ id: 'style-hops', label: 'Weizen · équilibre', impact: 'Houblonnage à comparer à l’expression levure',
-    detail: `${wheatVariant ? 'Le repère d’amertume dépend du style exact : Dunkles Weissbier et Weizenbock ont leurs propres plages.' : 'Le repère BJCP Weissbier clair donne 8–15 IBU et privilégie le caractère de fermentation.'} IBU calculés à chaud : ${format(currentIbu)} ; cible saisie : ${format(recipe.ibuTarget)}. Un dry-hop modifie aussi la lecture aromatique, même sans IBU élevés ; aucune pénalité de banane calculée.`, state: 'conditional', source: YEAST_RECIPE_SOURCES.weissbier });
+    detail: `${wheatVariant ? 'Le repère d’amertume dépend du style exact : Dunkles Weissbier et Weizenbock ont leurs propres plages.' : 'Le repère BJCP Weissbier clair donne 8–15 IBU et privilégie le caractère de fermentation.'} IBU calculés à chaud : ${format(currentIbu)} ; cible saisie : ${format(recipe.ibuTarget)}. Un dry-hop modifie aussi la lecture aromatique, même sans IBU élevés ; aucune pénalité de banane calculée.`, state: 'conditional', source: YEAST_RECIPE_SOURCES.weissbier }); // virgule-ok : texte seul, « IBU » suit une phrase, pas un nombre
   if (draft.styleId === 'witbier' && recipe.adjuncts?.length) effect({ id: 'wit-adjuncts', label: 'Wit · ingrédients', impact: 'Comparer épices ajoutées et phénols de la souche', detail: `Ajouts présents : ${recipe.adjuncts.map(a => a.name).join(', ')}. Leur présence ne mesure pas l’intensité finale ; régler les apports dans leur étape.`, state: 'conditional', source });
   const proposed = !errors.length ? withTrialYeast(proposedRecipe(recipe, draft, candidate, refs, 'settings'), trialYeast, draft) : recipe;
   const projection = projectYeastRecipe(proposed, { reference, process: draft.process, cultureRoles: draft.cultureRoles ?? [] });

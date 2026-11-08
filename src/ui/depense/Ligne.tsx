@@ -10,6 +10,7 @@ import { pastilleConversion } from './etat';
 import type { Niveau } from './confiance';
 import type { PastilleEtat } from './rangees';
 import './p3c.css';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface PastilleMouture { id: string; montant: string; liee: boolean; parent: string; aria: string; onBascule: () => void }
 export interface BoutonMouture { liee: boolean; parent: string; onBascule: () => void; attr: boolean }
@@ -57,7 +58,7 @@ export function LigneP3c(p: LigneP3cProps) {
             onClick={e => { stop(e); mout.onBascule(); }} className={`min-h-6 rounded-control border px-1.5 text-xs ${mout.liee ? 'border-cave-600 text-cave-200' : 'border-dashed border-attention font-semibold text-attention'}`}>{mout.liee ? `✓ ${mout.parent}` : 'mouture'}</button> : null}
           {p.prixKg ? <span data-dp-prixkg aria-label={p.prixKg.aria} className="rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-hop">{p.prixKg.texte}</span> : null}
           {p.alpha ? <span data-dp-alpha className="font-mono text-xs text-cave-400">α {p.alpha}</span> : null}
-          {p.ebc ? <span data-dp-ebc className="font-mono text-xs text-cave-400">{p.ebc} EBC</span> : null}
+          {p.ebc ? <span data-dp-ebc className="font-mono text-xs text-cave-400">{p.ebc} EBC</span> : null}{/* virgule-ok : p.ebc est le texte déjà formaté par le plateau */}
           {c?.avant ? <s data-dp-avant className="basis-full font-mono text-xs font-normal text-cave-400">{c.avant}</s> : null}
           {mout && p.conversion ? <span data-dp-conversion className="whitespace-nowrap rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-cave-200">{pastilleConversion(p.conversion)}</span> : null}
         </span>

@@ -26,6 +26,7 @@ import type { RecipeWizardDraft } from '../../../services/recipeDraft';
 import protoData from '../../../data/hopV4/proto-data.json';
 import { varieteProche } from './nomProche';
 import { CATALOGUE, MOMENTS, STOCK, hopRef, yeastInfo, type Addition, type MomentId, type Recipe as RecetteMoteur } from './index';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Un ajout de houblon du parcours : un Addition du moteur et ce que le parcours règle librement (même forme que
  * `AjoutParcours` de prototypes/houblons-v4/parcours/src/etat/types.ts, qui peut la réexporter d'ici). */
@@ -272,7 +273,7 @@ export function versPatch(conv: Conversion, recette: RecetteParcours): { patch: 
 /** Ce que perd une ligne remplacée ou retirée : son lot au stock, son lot de réception et son α. */
 function perdu(h: HopIngredient): string {
   const morceaux = [h.stockItemRef ? `stockItemRef ${h.stockItemRef}` : null, h.hopLotId ? `hopLotId ${h.hopLotId}` : null,
-    fini(h.alpha) && h.alpha > 0 ? `α ${h.alpha} %` : null].filter((x): x is string => !!x);
+    fini(h.alpha) && h.alpha > 0 ? `α ${nombreFr(h.alpha, 1)} %` : null].filter((x): x is string => !!x);
   return morceaux.length ? morceaux.join(', ') : 'aucun lien de lot ni α';
 }
 

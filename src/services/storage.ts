@@ -36,6 +36,7 @@ import { mergeYeastTechnicalFacts } from '../domain/ingredientFacts';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { readYeastProductDocument, type YeastProductDocument } from '../../functions/src/yeastSupplySchema';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * Façade de données de l'application.
@@ -920,7 +921,7 @@ export const StorageService = {
       'Création',
       'Fûts',
       keg.id,
-      `Fût ajouté : ${keg.id} (${keg.capacityL} L)`,
+      `Fût ajouté : ${keg.id} (${nombreFr(keg.capacityL, 1)} L)`,
       `État initial : [${keg.state}]`
     );
   },
@@ -959,7 +960,7 @@ export const StorageService = {
       'Création',
       'Production',
       batch.id,
-      `Nouveau lot créé : ${batch.id} - ${batch.name} (${batch.volumeL}L)`,
+      `Nouveau lot créé : ${batch.id} - ${batch.name} (${nombreFr(batch.volumeL, 1)}L)`,
       `Style : ${batch.style} · Statut : ${batch.status}`
     );
   },
@@ -978,7 +979,7 @@ export const StorageService = {
       'Production',
       batch.id,
       `Brassin ${batch.id} mis à jour : Statut [${batch.status}] · OG ${batch.og || '—'} · FG ${batch.fg || '—'}`,
-      old ? `Ancien statut : ${old.status} · Vol : ${batch.volumeL}L` : undefined
+      old ? `Ancien statut : ${old.status} · Vol : ${nombreFr(batch.volumeL, 1)}L` : undefined
     );
   },
 
@@ -1104,7 +1105,7 @@ export const StorageService = {
       'Création',
       'Production',
       recipe.id,
-      `Nouvelle fiche recette : ${recipe.name} (${recipe.volumeL}L)`
+      `Nouvelle fiche recette : ${recipe.name} (${nombreFr(recipe.volumeL, 1)}L)`
     );
   },
 
@@ -1152,7 +1153,7 @@ export const StorageService = {
         'Suppression',
         'Fûts',
         id,
-        `Fût supprimé : ${target.id} (${target.capacityL} L)`,
+        `Fût supprimé : ${target.id} (${nombreFr(target.capacityL, 1)} L)`,
         target.beerName ? `Contenait : ${target.beerName}` : undefined
       );
     }
@@ -1201,7 +1202,7 @@ export const StorageService = {
       i >= 0 ? 'Modification' : 'Création',
       'Clients',
       tarif.product,
-      `Tarif ${tarif.product} : ${tarif.priceHT.toFixed(2)} CHF HT · marge ${tarif.marginPercent.toFixed(1)} %`
+      `Tarif ${tarif.product} : ${montantChf(tarif.priceHT)} CHF HT · marge ${nombreFr(tarif.marginPercent, 1)} %`
     );
   },
 

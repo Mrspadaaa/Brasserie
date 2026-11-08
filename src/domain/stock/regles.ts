@@ -172,7 +172,4 @@ export function resumeIndexHoublon(references: number, lots: number, analyses: n
 }
 
 /** Une quantité, un seuil ou une valeur d'EBC avec la virgule suisse (BR-71) : « 3,5 », jamais « 3.5 ». */
-export function nombreFr(valeur: number, decimales = 2): string {
-  if (!Number.isFinite(valeur)) return '';
-  return String(Math.round(valeur * 10 ** decimales) / 10 ** decimales).replace('.', ',');
-}
+export { nombreFr } from '../nombreAffiche';

@@ -1,3 +1,4 @@
+import { nombreFr } from '../domain/nombreAffiche';
 // Les bornes métier d'une recette : une seule table, lue par la validation (`recipeValidation.ts`), les calculs (`hopBitterness.ts`,
 // `brewingMath.efficiencyAtGravity`) et les écrans (étape Malts/sucres, champ α des houblons). À côté de la table famille × moment
 // (`fermentables/moments.ts`). Audit métier du 08.11 : AM 3, AM 9, MV-44 à MV-47 (10 000 kg ou 50 kg de Pale Ale dans 20 L : OG 116,808 ;
@@ -83,7 +84,7 @@ export function messageHoublonParLitre(totalG: number, volumeL: number): string 
   if (!(Number.isFinite(totalG) && Number.isFinite(volumeL) && volumeL > 0)) return null;
   const parL = totalG / volumeL;
   if (parL <= BORNES.houblonGParL.max) return null;
-  return `${frBorne(totalG)} g de houblon pour ${frBorne(volumeL)} L, soit ${frBorne(parL)} g/L : au-delà de ${BORNES.houblonGParL.max} g/L, erreur de saisie probable (des kg tapés en g ?).`;
+  return `${frBorne(totalG)} g de houblon pour ${frBorne(volumeL)} L, soit ${frBorne(parL)} g/L : au-delà de ${nombreFr(BORNES.houblonGParL.max, 1)} g/L, erreur de saisie probable (des kg tapés en g ?).`;
 }
 
 export const ogHorsBornes = (og: number | null | undefined): boolean => typeof og === 'number' && Number.isFinite(og) && og > BORNES.og.max;
@@ -152,7 +153,7 @@ export function problemesLigneHoublon(h: LigneHoublonBornes, ctx: ContexteHoublo
     if (nombre(h.timeMin) && h.timeMin > BORNES.whirlpoolMin.max)
       o.push({ champ: 'time', message: `${nom} : un whirlpool de ${frBorne(h.timeMin)} min dépasse ${BORNES.whirlpoolMin.max} min : erreur de saisie probable.` });
     if (nombre(h.tempC) && (h.tempC < BORNES.whirlpoolTempC.min || h.tempC > BORNES.whirlpoolTempC.max))
-      o.push({ champ: 'temp', message: `${nom} : un whirlpool se fait de ${BORNES.whirlpoolTempC.min} à ${BORNES.whirlpoolTempC.max} °C, pas à ${frBorne(h.tempC)} °C.` });
+      o.push({ champ: 'temp', message: `${nom} : un whirlpool se fait de ${BORNES.whirlpoolTempC.min} à ${nombreFr(BORNES.whirlpoolTempC.max, 1)} °C, pas à ${frBorne(h.tempC)} °C.` });
   }
   if (h.stage === 'dryHop') {
     if (nombre(h.dayOffset)) {
@@ -164,7 +165,7 @@ export function problemesLigneHoublon(h: LigneHoublonBornes, ctx: ContexteHoublo
     if (nombre(h.aromaContactHours) && h.aromaContactHours > BORNES.dryHopContactH.max)
       o.push({ champ: 'contact', message: `${nom} : un contact à cru de ${frBorne(h.aromaContactHours)} h dépasse ${BORNES.dryHopContactH.max} h (30 jours) : erreur de saisie probable.` });
     if (nombre(h.aromaTemperatureC) && (h.aromaTemperatureC < BORNES.dryHopTempC.min || h.aromaTemperatureC > BORNES.dryHopTempC.max))
-      o.push({ champ: 'temp', message: `${nom} : un houblonnage à cru à ${frBorne(h.aromaTemperatureC)} °C n’existe pas (de ${BORNES.dryHopTempC.min} à ${BORNES.dryHopTempC.max} °C).` });
+      o.push({ champ: 'temp', message: `${nom} : un houblonnage à cru à ${frBorne(h.aromaTemperatureC)} °C n’existe pas (de ${BORNES.dryHopTempC.min} à ${nombreFr(BORNES.dryHopTempC.max, 1)} °C).` });
     // La phase dit la même chose que le jour : « fermentation active » après la fin de la fermentation, ou « après fermentation » à J0.
     if (nombre(h.dayOffset) && h.aromaTiming === 'fermentation' && nombre(ctx.actifJours) && h.dayOffset > ctx.actifJours)
       o.push({ champ: 'phase', message: `${nom} : « fermentation active » à J+${frBorne(h.dayOffset)}, alors que la fermentation active finit à J+${frBorne(ctx.actifJours)}.` });

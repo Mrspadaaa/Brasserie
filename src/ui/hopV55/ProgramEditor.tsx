@@ -6,6 +6,7 @@ import { deriveHopProgramDraft } from '../../domain/hopDecision/programs';
 import { programDelta } from '../../services/hopV55/programOverlay';
 import { HopV55ExactInput } from './ExactInput';
 import { Input } from '../Input';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export const hopV55Uses: Array<{ value: HopUse; label: string }> = [
   { value: 'firstWort', label: 'Premier moût' }, { value: 'boil', label: 'Ébullition' },
@@ -80,7 +81,7 @@ export function HopV55ProgramEditor({ prepared, referenceProgram, editableProgra
       <option value="replace">Régler, déplacer ou remplacer</option><option value="append">Ajouter</option><option value="remove">Retirer</option>
     </select></label>
     {kind !== 'append' ? <label className="hv-field"><span>Ajout prévu</span><select aria-label="Ajout prévu" value={additionId} onChange={e => selectAddition(e.target.value)}>
-      <option value="">Choisir un ajout</option>{future.map(row => <option key={row.id} value={row.id}>{prepared.runtime.materials.find(m => m.id === row.materialId)?.name ?? row.materialId} · {row.grams ?? '?'} g</option>)}
+      <option value="">Choisir un ajout</option>{future.map(row => <option key={row.id} value={row.id}>{prepared.runtime.materials.find(m => m.id === row.materialId)?.name ?? row.materialId} · {row.grams == null ? '?' : nombreFr(row.grams, 1)} g</option>)}
     </select></label> : null}
     <label className="hv-field"><span>Nom du scénario</span><Input aria-label="Nom du scénario" value={label} onChange={e => setLabel(e.target.value)} /></label></div>
     {kind !== 'remove' ? <div className="hv-fields"><label className="hv-field hv-wide"><span>Matière et forme</span><select aria-label="Matière du réglage" value={materialId} onChange={e => setMaterialId(e.target.value)}>

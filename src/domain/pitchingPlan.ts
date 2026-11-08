@@ -3,6 +3,7 @@ import type { BrewThermalChoices } from '../types/brewSystem';
 import { YEAST_PRACTICAL_GUIDES } from '../data/yeastPracticalGuides';
 import { readFermentationGuide } from './fermentationGuide';
 import { documentedDirectPitchProtocol } from '../../functions/src/yeastPitchingProtocol';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const known = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 export type PitchingChoiceId = NonNullable<BrewThermalChoices['pitchingMode']>;
@@ -62,7 +63,7 @@ export function pitchTemperatureFeedback(recipe: RecipeSnapshot, temperature: nu
   if (plan.documentedWarmSelected && plan.warmValid &&
     plan.warmProtocol && temperature >= plan.warmProtocol.min && temperature <= plan.warmProtocol.max &&
     Math.abs(temperature - plan.targetC) <= 1)
-    return `Température dans la plage d’ajout direct documentée. Confirme l’homogénéité, applique la méthode de la notice et suis ensuite la consigne principale (${plan.primaryC ?? 'à préciser'} °C).`;
+    return `Température dans la plage d’ajout direct documentée. Confirme l’homogénéité, applique la méthode de la notice et suis ensuite la consigne principale (${plan.primaryC == null ? 'à préciser' : nombreFr(plan.primaryC, 1)} °C).`;
   if (plan.fermentationRange.max != null && temperature > plan.fermentationRange.max)
     return 'Au-dessus de la plage de fermentation renseignée : continue le refroidissement ou sélectionne un protocole d’ajout direct documenté. La température de réhydratation ne convient pas au moût entier.';
   if (temperature > plan.targetC + 1)

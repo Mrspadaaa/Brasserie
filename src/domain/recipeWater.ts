@@ -24,6 +24,7 @@ import { recipeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { BrewingMath } from '../services/brewingMath';
 import { noloScience } from './noloScience';
+import { nombreFr } from '../domain/nombreAffiche';
 type WaterRecipe = Pick<
   Recipe,
   | 'style'
@@ -195,7 +196,7 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
   const warnings = describeTreatmentIssues(solved.issues ?? [], treatment, band);
   const assessment = assessWaterProfile(treatment.treatedTotal, ranges, PROFILE_IONS.filter(ion => !style.untargetedIons?.includes(ion)));
   for (const item of assessment.deviations)
-    warnings.push(`Profil non atteint : ${item.ion.toUpperCase()} à ${item.value} ppm pour ${item.min}–${item.max}. Vérifier les doses manuelles, les sels autorisés et la dilution.`);
+    warnings.push(`Profil non atteint : ${item.ion.toUpperCase()} à ${nombreFr(item.value, 1)} ppm pour ${item.min}–${item.max}. Vérifier les doses manuelles, les sels autorisés et la dilution.`);
   if (!p.acid)
     warnings.push(
       'Acidifiant non choisi : les sels sont calculés, l’acidification reste à préparer.'
@@ -249,7 +250,7 @@ export function recipeWaterSummary(recipe: WaterRecipe) {
         range = style.ions[ion];
       if (value < range.min || value > range.max)
         warnings.push(
-          `Profil non atteint : ${ion.toUpperCase()} à ${value} mg/L, cible ${range.min}–${range.max}.`
+          `Profil non atteint : ${ion.toUpperCase()} à ${nombreFr(value, 1)} mg/L, cible ${range.min}–${range.max}.`
         );
     }
   } catch {
