@@ -1559,3 +1559,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **08.11**, mot pour mot (relayé par la pilote) : « Économie de token.... Tout va en qualité pour toutes les sessions... » (lu : pas de rejeu qui piétine, de relance ni de rapport répété ; les jetons vont aux constats utiles, aux corrections et au registre juste).
 - **08.11**, mot pour mot, sur sa capture de la Dépense (ticket Bauhaus, ligne « Idaho7 » 5 g × 1,00 rangée dans « Autres », « article — · hors stock », bouton « + Suivre au stock ») :
   « SI je mets suivre au stock, ça devrait faire le mapping automatique... »
+- **08.11**, mot pour mot, sur la même capture (pied de la liste : « Détail 56,80 / 51,80 · Regrouper en une dépense », lignes Bauhaus 51,80 et « Idaho7 » 5,00) :
+  « Et Détail 56,80 / 51,80 c'est assez trompeur et donne pas d'info.... Mettre des informations cooreante. On a l'impression que c'est faux alors que c'est juste »
