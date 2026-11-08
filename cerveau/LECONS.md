@@ -55,7 +55,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L29 — Un problème connu se résout par la méthode standard et ses bibliothèques, pas à la main
-- Erreur : 02 et 03.11, D381 : découpe des photos (papier, angle, seuil d'encre) réécrite à la main au lieu de la chaîne d'un scanner de document (OpenCV.js) ; deux jours de rustines, le banc des 200 en échec. « Tu reinvte la roue là » ; « c'est une erreur de junior ».
+- Erreur : 02 et 03.11, D381 : découpe des photos réécrite à la main sans nommer le problème type ; deux jours de rustines. « Tu reinvte la roue là » ; « c'est une erreur de junior ».
 - Cause : chaque cas raté du banc a reçu sa rustine, sans jamais nommer le problème type ni chercher ce qui existe ; aucune étape ne le demandait.
 - Faire : avant tout algorithme non trivial (image, OCR, géométrie, analyse de texte, calcul numérique, dates), nommer le problème d'école, chercher la méthode standard et les bibliothèques maintenues (licence, poids, vitesse), écrire la décision dans « ## État de l'art » de MISSION.md, puis coder. À la deuxième rustine sur un même module, s'arrêter et refaire cette étape. Chaque changement rejoue tout le banc, temps compris.
 - Rôles : pilote, auteur, conseil
@@ -120,7 +120,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 07.11 : découpe réglée et jugée sur les mêmes 200 pièces ; sur 200 neuves, pire que HEAD (88 silencieuses contre 57).
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : un chiffre dit est mesuré, ou « estimé » avec sa source ; une garantie se bâtit sans jugement de l'IA (elle n'ajoute que des alertes). Chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond.
+- Faire : un chiffre dit est mesuré, ou « estimé » avec sa source ; une garantie se bâtit sans jugement de l'IA (elle n'ajoute que des alertes). Chronométrer `simulerCas` (léger, complet) sur le cas réel et le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi à froid, entrée changeante. Avant une architecture de calcul, profiler (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Une garde se prouve sur chaque variante de lecture, pas sur le tirage (LO-1).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
@@ -148,7 +148,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
 - Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ».
 - Cause : pièces fictives ou réduites, écran jamais jugé contre la pièce ; réponse IA rejouée inventée.
-- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Une réponse IA rejouée se copie d'une vraie, anonymisée avant Git. Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels).
+- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Une réponse IA rejouée se copie d'une vraie, anonymisée avant Git. Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels). Défaut en ligne : rejouer le banc serveur puis écran, noter le geste du testeur (LO-3).
 - Rôles : pilote, exécutant, relecteur
 - Contrôle : au banc (D261 à D263)
 
