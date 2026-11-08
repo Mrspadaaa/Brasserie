@@ -12,7 +12,8 @@ import {
 const number = (value: number, digits = 1) =>
   value.toLocaleString('fr-CH', {
     minimumFractionDigits: digits === 3 ? 3 : 0,
-    maximumFractionDigits: digits === 3 ? 5 : digits
+    // BR-116, BE-87 : « Cible 1,0647 → 1,065 mesuré » : une densité s'écrit à trois décimales, cible comprise (la mesure n'en a pas plus).
+    maximumFractionDigits: digits
   });
 export function BatchOutcomeAnalysis({
   entries,

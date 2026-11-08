@@ -14,6 +14,7 @@ import { prepareNoloRecipe, adjustNoloRecipe, applyNoloRecipeProposal, noloRecip
   type NoloRecipeSettings, type NoloRecipeProposal } from '../domain/noloRecipeSolver';
 import { Input } from './Input';
 import { parseDecimal, useNumericDraft } from './numericInput';
+import { BORNES_PROCEDE } from '../domain/bornesProcede';
 import { noloDisplayRangeLabel } from './NoloAlcoholChart';
 import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
 import './nolo-simulator.css';
@@ -165,7 +166,7 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
         <Setting label="Densité initiale visée" value={s.ogSg} min={1} max={1.3} digits={4} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .0005 }} onChange={ogSg => adjust({ ogSg })}/>
         {process !== 'secondRunnings' && <Setting label="Charge de grain" value={baseGrainKg * s.grainScale} unit="kg" max={100000} digits={3} onChange={value => { if (baseGrainKg > 0) adjust({ grainScale: value / baseGrainKg }); }}/ >}
         <RangeSetting label="Atténuation envisagée" value={s.attenuationPct} unit="%" onChange={attenuationPct => adjust({ attenuationPct })}/>
-        <Setting label="Température de fermentation" value={s.fermentationTempC} unit="°C" max={50} digits={1} onChange={fermentationTempC => adjust({ fermentationTempC })}/>
+        <Setting label="Température de fermentation" value={s.fermentationTempC} unit="°C" max={BORNES_PROCEDE.fermentationTempC.max} digits={1} onChange={fermentationTempC => adjust({ fermentationTempC })}/>
         <Setting label="Variation de l’extrait" value={s.extractTolerancePct} unit="± %" max={80} digits={1} onChange={extractTolerancePct => adjust({ extractTolerancePct })}/>
         {process === 'arrested' && s.stopSg && <RangeSetting label="Densité d’arrêt" value={s.stopSg} unit="SG" min={1} max={1.3} digits={4} onChange={stopSg => adjust({ stopSg })}/>}
         {process === 'dealcoholized' && <>
@@ -197,13 +198,13 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
       <details className="nolo-solver-details"><summary>Programme prérempli · {number(s.yeastQty)} {s.yeastUnit} · {number(s.fermentationDays)} j</summary>
         <div className="nolo-solver-knobs">
           <Setting label="Quantité de levure" value={s.yeastQty} unit={s.yeastUnit} max={100000} onChange={yeastQty => adjust({ yeastQty })}/>
-          <Setting label="Durée de fermentation prévue" value={s.fermentationDays} unit="j" max={1000} onChange={fermentationDays => adjust({ fermentationDays })}/>
+          <Setting label="Durée de fermentation prévue" value={s.fermentationDays} unit="j" max={BORNES_PROCEDE.fermentationJours.max} onChange={fermentationDays => adjust({ fermentationDays })}/>
           {!['coldExtraction', 'secondRunnings'].includes(process) && <>
-            <Setting label="Palier d’empâtage" value={s.mashTempC} unit="°C" max={100} onChange={mashTempC => adjust({ mashTempC })}/>
-            <Setting label="Durée du palier" value={s.mashMinutes} unit="min" max={1000} onChange={mashMinutes => adjust({ mashMinutes })}/>
-            <Setting label="Eau d’empâtage par kg" value={s.mashRatioLKg} unit="L/kg" max={100} onChange={mashRatioLKg => adjust({ mashRatioLKg })}/>
+            <Setting label="Palier d’empâtage" value={s.mashTempC} unit="°C" max={BORNES_PROCEDE.empatageTempC.max} onChange={mashTempC => adjust({ mashTempC })}/>
+            <Setting label="Durée du palier" value={s.mashMinutes} unit="min" max={BORNES_PROCEDE.empatageDureeMin.max} onChange={mashMinutes => adjust({ mashMinutes })}/>
+            <Setting label="Eau d’empâtage par kg" value={s.mashRatioLKg} unit="L/kg" max={BORNES_PROCEDE.rapportEmpatage.max} onChange={mashRatioLKg => adjust({ mashRatioLKg })}/>
           </>}
-          <Setting label="Efficacité envisagée" value={s.efficiencyPct} unit="%" min={1} max={100} onChange={efficiencyPct => adjust({ efficiencyPct })}/>
+          <Setting label="Efficacité envisagée" value={s.efficiencyPct} unit="%" min={1} max={BORNES_PROCEDE.rendementPct.max} onChange={efficiencyPct => adjust({ efficiencyPct })}/>
           <Setting label="Réserve pour les ajouts" value={s.reserveAbvPct} unit="% vol." max={.5} onChange={reserveAbvPct => adjust({ reserveAbvPct })}/>
         </div>
         <p>Température et durée sont des consignes de conduite. Leur modification ne donne pas artificiellement un taux d’alcool.</p>
