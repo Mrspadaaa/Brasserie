@@ -270,7 +270,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
                 <dl className="grid grid-cols-3 gap-2 text-xs">
                   <div>
-                    <dt className="text-cave-400">Rendement</dt>
+                    <dt className="text-cave-400" title="Rendement en fermenteur : l’extrait mesuré dans le fermenteur, rapporté au potentiel des grains">Rendement fermenteur</dt>
                     <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.efficiencyPct}%</dd>
                   </div>
                   <div>
