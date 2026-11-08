@@ -39,4 +39,18 @@ describe('AM n° 8 : changer l’unité d’un article en stock', () => {
     expect(r.ok && r.item.currentStock).toBe(25);
     expect(r.ok && r.note).toBe('');
   });
+  it('RF-6 : le prix par unité est converti dans l’autre sens (1,20 CHF/kg = 0,0012 CHF/g), jamais laissé tel quel', () => {
+    const r = changerUniteArticle(malt({ pricePerUnit: 1.2 }), 'g', false);
+    expect(r.ok && r.item.pricePerUnit).toBeCloseTo(0.0012, 10);
+    const retour = changerUniteArticle(malt({ unit: 'g', currentStock: 250, minStock: 0, maxStock: undefined, pricePerUnit: 0.0012 }), 'kg', false);
+    expect(retour.ok && retour.item.pricePerUnit).toBeCloseTo(1.2, 10);
+  });
+  it('RF-6 : sans prix connu, il reste inconnu (pas 0) ; article vide : converti dans la famille, effacé (inconnu) entre familles', () => {
+    const r = changerUniteArticle(malt(), 'g', false);
+    expect(r.ok && r.item.pricePerUnit).toBeUndefined();
+    const vide = changerUniteArticle(malt({ currentStock: 0, minStock: 0, maxStock: undefined, pricePerUnit: 1.2 }), 'sachet', false);
+    expect(vide.ok && vide.item.pricePerUnit).toBeUndefined();
+    const videG = changerUniteArticle(malt({ currentStock: 0, minStock: 0, maxStock: undefined, pricePerUnit: 1.2 }), 'g', false);
+    expect(videG.ok && videG.item.pricePerUnit).toBeCloseTo(0.0012, 10);
+  });
 });
