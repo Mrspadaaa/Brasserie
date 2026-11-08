@@ -1,5 +1,6 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
+import { RecapEtat } from '../ui/RecapEtat';
 import './recipe-wizard.css';
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -3316,11 +3317,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       */}
       {step === 'recap' && (
         <>
-        <div role="status" aria-label="État de la recette" className={`px-2 py-1 text-xs border rounded-control ${readiness.status === 'invalid' ? 'border-alert-strong/50 text-alert-strong' : readiness.status === 'incomplete' ? 'border-attention/50 text-attention' : 'border-hop/50 text-cave-200'}`}>
-          {readiness.status === 'invalid' ? `${readiness.invalid.length} valeur${readiness.invalid.length > 1 ? 's' : ''} à corriger avant enregistrement`
-            : readiness.status === 'incomplete' ? `À compléter · ${readiness.missing.length} repère${readiness.missing.length > 1 ? 's' : ''} avant brassin · enregistrement possible`
-            : 'Données prêtes pour le brassin'}
-        </div>
+        <RecapEtat readiness={readiness} etape={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
+          onCorriger={issue => requestCorrection([issue])} />
         {waterSourceNotice}
         {/*
           Un seul geste pour aller chercher tout ce qui manque encore — couleurs,
