@@ -25,6 +25,7 @@ import { Units } from '../services/units';
 import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
 import { BatchSchedule } from './production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
+import { fermenterConflict, fermenterConflictMessage } from '../domain/batchFermenter';
 import { BrewSystemFeedback } from './BrewSystemFeedback';
 import { yeastPreparationState } from '../domain/yeastPitching';
 import type { YeastPreparationPlan } from '../../functions/src/yeastSupplySchema';
@@ -229,6 +230,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             onCancel={() => setPackaging(null)}
             onConfirm={values => { const target = packaging.target; setPackaging(null); if (target) applyStatus(target, { ...draft, ...values }); else save(values); }}/>}
           {stockMessage && <p role="status" className="text-sm text-hop flex items-start gap-2"><PackageCheck className="w-4 h-4 shrink-0 mt-0.5" />{stockMessage}</p>}
+          {draft.status === 'fermentation' && (() => {
+            const conflict = fermenterConflict(draft, StorageService.getBatches());
+            return conflict ? <p role="alert" className="text-sm text-attention">{fermenterConflictMessage(conflict)}</p> : null;
+          })()}
           {section === 'overview' && (
             <>
               <BrewBudgetButton batch={draft} />

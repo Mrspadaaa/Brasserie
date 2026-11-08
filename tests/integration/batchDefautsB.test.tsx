@@ -32,6 +32,26 @@ describe('BR-122 / BE-48 : « Jour réellement brassé » refuse le futur', () =
   });
 });
 
+describe('AM-46 : occupation du fermenteur', () => {
+  const equipment = { fermenterCapacityL: 30 };
+  const avecFermenteur = (over: Partial<Batch>): Batch => base({ recipeSnapshot: { brewhouse: { equipment } } as unknown as Batch['recipeSnapshot'], ...over });
+  it('un second brassin en fermentation dans l’unique fermenteur de 30 L : alerte nommant le premier', () => {
+    const autre = base({ id: 'B0', name: 'Stout', volumeL: 20 });
+    vi.spyOn(StorageService, 'getBatches').mockReturnValue([autre]);
+    render(<BatchDetailSheet batch={avecFermenteur({ volumeL: 20 })} onClose={vi.fn()} />);
+    expect(screen.getByRole('alert')).toHaveTextContent(/Fermenteur occupé : Stout \(B0\).*40 L pour un fermenteur de 30 L/);
+  });
+  it('deux petits brassins qui tiennent, ou une capacité inconnue : rien', () => {
+    vi.spyOn(StorageService, 'getBatches').mockReturnValue([base({ id: 'B0', volumeL: 8 })]);
+    render(<BatchDetailSheet batch={avecFermenteur({ volumeL: 20 })} onClose={vi.fn()} />);
+    expect(screen.queryByText(/Fermenteur occupé/)).not.toBeInTheDocument();
+    cleanup();
+    vi.spyOn(StorageService, 'getBatches').mockReturnValue([base({ id: 'B0', volumeL: 30 })]);
+    render(<BatchDetailSheet batch={base({ volumeL: 30 })} onClose={vi.fn()} />);
+    expect(screen.queryByText(/Fermenteur occupé/)).not.toBeInTheDocument();
+  });
+});
+
 describe('TE-40 : pas de « brassé le » à côté de « date illisible »', () => {
   it('quand une date réelle est connue, l’ancien texte devient une note, pas une alerte', () => {
     const brewDay = { currentIndex: 0, steps: [], startedAt: Date.parse('2026-09-03T08:00:00Z') } as Batch['brewDay'];
