@@ -87,6 +87,20 @@ describe('Business filters and honest production summaries', () => {
     expect(catalogDate('31.02.2026')).toBeUndefined();
     expect(catalogDate('08.09.2026')).toBe(catalogDate('2026-09-08'));
   });
+  it('PD-3 / PD-7 : un brassin planifié sans date reste visible sous une période (« Ce mois »), un autre sans date mais déjà brassé non', () => {
+    const rows = batchEntries([
+      batch('SANS-DATE', { brewDate: '', plannedBrewDate: undefined }),
+      batch('EN-COURS', { brewDate: '', status: 'fermentation' }),
+      batch('DANS-LE-MOIS', {})
+    ]);
+    const ids = (patch: object) => apply(patch, rows).map((e) => e.id).sort();
+    expect(ids({ period: 'global' })).toContain('SANS-DATE');
+    expect(ids({ period: '30' })).toContain('SANS-DATE');
+    expect(ids({ period: 'year' })).toContain('SANS-DATE');
+    expect(ids({ period: 'global' })).toContain('DANS-LE-MOIS');
+    expect(ids({ period: 'global' })).not.toContain('EN-COURS');
+    expect(ids({ period: 'custom', from: '2026-09-01', to: '2026-09-30' })).not.toContain('SANS-DATE');
+  });
   it('never reads changed recipe ingredients into an existing lot', () => {
     const frozen = captureSnapshot(first);
     const lot = batchEntries([batch('LOT', { recipeSnapshot: frozen, recipeRef: first.id })]);
