@@ -9,7 +9,7 @@ import { DriveService } from '../services/driveService';
 import { ReceiptService } from '../services/receiptService';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
-import { montantChf } from '../domain/finance/ledger';
+import { montantChf, sensDeCategorie } from '../domain/finance/ledger';
 
 interface EditTransactionModalProps {
   isOpen: boolean;
@@ -137,14 +137,17 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               onChange={(e) => field('category', e.target.value as FinanceCategory)}
               className={inputClass}
             >
-              <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
-              <option value="materiel">⚙️ Matériel & Équipement</option>
-              <option value="nettoyage">🧼 Produits Nettoyage (CIP/Hygiène)</option>
-              <option value="chargesFixes">🏢 Charges Fixes (Élec/Assurance)</option>
-              <option value="renovation">🔨 Local & Rénovation</option>
-              <option value="divers">📦 Frais Divers</option>
-              <option value="apports">💎 Apport Personnel</option>
-              <option value="recettes">💰 Recettes Ventes</option>
+              {/* AM-62 : seules les catégories du même sens que l'écriture d'origine ; une charge ne devient pas une recette. */}
+              {sensDeCategorie(transaction.category) === 'charge' && <>
+                <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
+                <option value="materiel">⚙️ Matériel & Équipement</option>
+                <option value="nettoyage">🧼 Produits Nettoyage (CIP/Hygiène)</option>
+                <option value="chargesFixes">🏢 Charges Fixes (Élec/Assurance)</option>
+                <option value="renovation">🔨 Local & Rénovation</option>
+                <option value="divers">📦 Frais Divers</option>
+              </>}
+              {sensDeCategorie(transaction.category) === 'apport' && <option value="apports">💎 Apport Personnel</option>}
+              {sensDeCategorie(transaction.category) === 'recette' && <option value="recettes">💰 Recettes Ventes</option>}
             </select>
           </div>
 

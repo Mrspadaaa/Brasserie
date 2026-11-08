@@ -22,6 +22,27 @@ export function isoDate(value?: string): string | null {
 export function todayISO(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 }
+/**
+ * AM-62 : le sens d'une écriture (charge, recette, apport) ne se change pas en changeant sa catégorie. Une charge ne devient pas une recette : ce serait
+ * inverser l'effet sur la trésorerie et sur le résultat. Les catégories se rangent par sens ; on ne passe d'une catégorie qu'à une autre du même sens.
+ */
+export const CATEGORIES_PAR_SENS = {
+  charge: ['brassage', 'materiel', 'nettoyage', 'chargesFixes', 'renovation', 'divers'],
+  recette: ['recettes'],
+  apport: ['apports'],
+} as const;
+export const sensDeCategorie = (category: string): keyof typeof CATEGORIES_PAR_SENS =>
+  category === 'recettes' ? 'recette' : category === 'apports' ? 'apport' : 'charge';
+export const categorieChangeLeSens = (avant: string, apres: string): boolean => sensDeCategorie(avant) !== sensDeCategorie(apres);
+
+/** La ventilation HT / TVA d'un avoir, au prorata de sa facture d'origine (même taux, même part de TVA). Facture sans TVA : tout en HT. */
+export function ventilationAvoir(original: FinanceTransaction, avoirCents: number): { amountHT: number; tvaRate: number; tvaAmount: number } {
+  const ttc = avoirCents / 100;
+  const part = original.amountTTC > 0 && Number.isFinite(original.tvaAmount) && original.tvaAmount > 0 ? original.tvaAmount / original.amountTTC : 0;
+  const tvaAmount = Math.round(ttc * part * 100) / 100;
+  return { amountHT: Math.round((ttc - tvaAmount) * 100) / 100, tvaRate: tvaAmount > 0 ? original.tvaRate : 0, tvaAmount };
+}
+
 export function transactionKind(tx: FinanceTransaction): FinanceKind {
   return tx.finance?.kind ?? (tx.category === 'recettes' ? 'income' : tx.category === 'apports' ? 'contribution' : 'expense');
 }

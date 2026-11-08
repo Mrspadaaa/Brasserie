@@ -1,4 +1,4 @@
-import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction, montantChf } from '../domain/finance/ledger';
+import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction, montantChf, categorieChangeLeSens } from '../domain/finance/ledger';
 import type { FinancialPayment } from '../domain/finance/types';
 import { apprendreSurFicheRetenue } from './enrichissementRecette';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
@@ -520,9 +520,9 @@ export const StorageService = {
   },
 
   // 1. ÉCRITURES COMPTABLES
+  /** AM-63 : une écriture à 0 CHF reste visible (on peut la corriger ou l'annuler) ; seules les illisibles (montant absent ou non numérique) sont écartées. */
   getTransactions(): Transaction[] {
-    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) =>
-      Number.isFinite(t.amountTTC ?? t.amountHT) && (t.amountTTC ?? t.amountHT) !== 0);
+    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) => Number.isFinite(t.amountTTC ?? t.amountHT));
   },
 
   saveTransactions(transactions: Transaction[]) {
@@ -543,6 +543,7 @@ export const StorageService = {
   updateTransaction(tx: Transaction) {
     const old = this.getTransactions().find((t) => t.id === tx.id);
     if (old?.finance?.voidedAt) throw new Error('Cette écriture est annulée. Crée une nouvelle opération pour la remplacer.');
+    if (old && categorieChangeLeSens(old.category, tx.category)) throw new Error('Une charge, une recette et un apport ne se transforment pas l’un en l’autre : annule l’écriture et crée-en une nouvelle.');
     if (tx.finance) validateFinanceTransaction(tx);
     FirestoreRepo.put('transactions', tx.id, tx);
     this.logAction(
