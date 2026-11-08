@@ -144,7 +144,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
             <Field label="Prix payé (CHF)" htmlFor="eq-price" error={priceError}>
               <NumberInput
                 id="eq-price"
-                min={0}
+                /* Pas de `min` : il ramenait « -1 » à « 0 » à la sortie du champ, en silence (TE-47, rejeu ff0f822e). Le refus se dit (priceError) et bloque Enregistrer. */
                 aria-invalid={Boolean(priceError)}
                 value={draft.purchasePrice}
                 onValue={(v) =>
