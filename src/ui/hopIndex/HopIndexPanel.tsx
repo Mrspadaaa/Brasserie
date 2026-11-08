@@ -17,6 +17,7 @@ import { HopTechnicalPanel } from './HopTechnicalPanel';
 import { MobileDetails } from '../ViewNavigation';
 import { useMobileLayout } from '../useViewport';
 import { resumeIndexHoublon } from '../../domain/stock/regles';
+import { nomPourNouvelleVariete } from './nomNouvelleVariete';
 
 type Editor = { kind: 'variety'; value: HopVariety } | { kind: 'lot'; value: HopLot };
 const newVariety = (name = ''): HopVariety => ({ id: crypto.randomUUID(), name, aliases: [], form: 'unknown', descriptions: [], analysis: [] });
@@ -176,8 +177,8 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     <div className="flex flex-wrap gap-2">
       <Button onClick={() => { requestEpoch.current++; setBusy(false); setTried(false);
         // TE-51 : le texte cherché ne devient le nom d'une fiche neuve que s'il n'en désigne aucune déjà ; sinon la fiche naîtrait avec un nom qui existe.
-        const demande = query.trim(), existe = !!demande && varieties.some(v => [v.name, ...v.aliases].some(n => n.trim().toLocaleLowerCase('fr') === demande.toLocaleLowerCase('fr')));
-        setEditor({ kind: 'variety', value: newVariety(existe ? '' : demande) }); setError(''); }} intent="primary">Nouvelle variété</Button>
+        // Rejeu ff0f822e : « Nelson » désigne déjà Nelson Sauvin (début de nom) ; le nom proche aussi laisse le champ vide.
+        setEditor({ kind: 'variety', value: newVariety(nomPourNouvelleVariete(query, varieties)) }); setError(''); }} intent="primary">Nouvelle variété</Button>
       {query.trim() && <Button onClick={lookup} disabled={busy || !!editor}>{busy && !editor ? 'Recherche en cours…' : 'Rechercher une fiche publiée'}</Button>}
     </div>
     <details className="text-sm text-cave-400"><summary className="cursor-pointer min-h-touch flex items-center">Import, export et archives</summary><div className="flex flex-wrap gap-2 py-2">
