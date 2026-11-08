@@ -101,9 +101,9 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
       const wp80 = BrewingMath.hopIbu({ ...hopWp, tempC: 80 }, 20, 1.050);
       const wp70 = BrewingMath.hopIbu({ ...hopWp, tempC: 70 }, 20, 1.050);
 
-      expect(wp90 / wp100).toBeCloseTo(0.50, 2);
-      expect(wp80 / wp100).toBeCloseTo(0.25, 2);
-      expect(wp70 / wp100).toBeCloseTo(0.125, 2);
+      expect(wp90 / wp100).toBeCloseTo(0.417, 2);
+      expect(wp80 / wp100).toBeCloseTo(0.165, 2);
+      expect(wp70 / wp100).toBeCloseTo(0.062, 2);
     });
 
     it('le houblonnage à cru (dry hop) ne produit rigoureusement aucun IBU isomérisé', () => {

@@ -16,6 +16,14 @@ import { alcoholByVolume } from '../domain/alcohol';
  * on ne conseille jamais d'ajouter du grain (audit métier du 08.11, AM 3).
  */
 export const OG_PLAUSIBLE_MAX = BORNES.og.max;
+
+/**
+ * Part de l'isomérisation de l'alpha-acide à `tempC`, par rapport à 100 °C. Malowicki et Shellhammer (2005, J. Agric. Food Chem. 53) :
+ * k(T) = 7,9e11 · exp(−11858 / T), T en kelvin. Le facteur est k(T) / k(373,15 K). Aucun standard n'existe pour un whirlpool ; c'est
+ * la cinétique publiée, qui remplace l'ancien « moitié par 10 °C » (0,25 à 80 °C, 0,17 ici).
+ */
+export const whirlpoolIsomerisationFactor = (tempC: number): number =>
+  Math.exp(-11858 / (tempC + 273.15)) / Math.exp(-11858 / 373.15);
 export const OG_PLAUSIBLE_MAX_TXT = '1,130';
 
 export interface WaterVolumeOptions {
@@ -99,8 +107,9 @@ export const BrewingMath = {
    *                  d'environ 10 % que la pratique lui reconnaît.
    *   Ébullition   — Tinseth, sur la durée restante.
    *   Whirlpool    — Tinseth sur la durée de contact, atténué par la
-   *                  température : l'isomérisation ralentit de moitié environ
-   *                  tous les 10 °C sous l'ébullition.
+   *                  température selon la cinétique d'isomérisation de
+   *                  Malowicki et Shellhammer (2005) : 0,42 à 90 °C, 0,17 à
+   *                  80 °C, 0,06 à 70 °C du taux à 100 °C (CF-7, 08.11).
    *   À cru        — aucune contribution Tinseth. L’extraction des humulinones
    *                  et les pertes d’iso-alpha relèvent du modèle séparé à cru.
    */
@@ -137,7 +146,7 @@ export const BrewingMath = {
         // 80 °C est la température de whirlpool conventionnelle ; l'assistant
         // la demande explicitement, cette valeur n'est qu'un repli.
         const tempC = Number.isFinite(hop.tempC) ? Math.max(0, Math.min(hop.tempC!, 100)) : 80;
-        const slowdown = Math.pow(2, (tempC - 100) / 10);
+        const slowdown = whirlpoolIsomerisationFactor(tempC);
         const timeMin = Number.isFinite(hop.timeMin) ? Math.max(0, hop.timeMin!) : 20;
         utilization = gravityFactor * tinseth(timeMin) * slowdown;
         break;
