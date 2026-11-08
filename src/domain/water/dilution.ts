@@ -166,7 +166,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       const lactate = lactateInBeer(mash + sparge, input.beerVolumeL);
       if (lactate > LACTATE_TASTE_THRESHOLD) {
         reasons.push(
-          `acide lactique à ${nombreFr(lactate, 1)} g/L de bière (seuil ${LACTATE_TASTE_THRESHOLD}) — ou passe au phosphorique, qui ne se goûte pas`
+          `acide lactique à ${nombreFr(lactate, 2)} g/L de bière (seuil ${nombreFr(LACTATE_TASTE_THRESHOLD, 2)}) — ou passe au phosphorique, qui ne se goûte pas`
         );
       }
     }
