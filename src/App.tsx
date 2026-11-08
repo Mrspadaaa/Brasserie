@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useContext, lazy } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContext, lazy } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
@@ -482,15 +482,20 @@ export const App: React.FC = () => {
   }, [isDevLocal, isDataReady]);
 
   /*
-   * Reprise après rechargement (critique B1 n° 14, 07.11) : la page ouverte au moment du rechargement était le wizard, et l'app retombait sur le tableau
-   * de bord, brouillon oublié. L'entrée d'historique garde sa route (`laffinee-route`) : si c'était le wizard ET que son brouillon existe sur cet appareil,
-   * on le rouvre à l'étape où il était (l'étape est dans le brouillon, `restoredDraft.step`). Sans brouillon (rien n'a été modifié), rien n'est rouvert :
-   * un wizard vide sous une clé de recette existante se prendrait pour sa modification. Une seule fois, au premier compte connu ; jamais sur un lien
-   * `?brewday=`, ni sur le banc local `?etape=` (qui ouvre sa propre page). `replaceTop` ne pousse aucune entrée : le retour ferme la page sur place.
+   * Reprise après rechargement (critique B1 n° 14, 07.11 ; rejeu ff0f822e, B1-14 et B1-NOTE-5) : la page ouverte au moment du rechargement était le
+   * wizard, et l'app retombait sur le carnet, brouillon oublié. L'entrée d'historique garde sa route (`laffinee-route`) : si c'était le wizard ET que son
+   * brouillon existe sur cet appareil, on le rouvre à l'étape où il était (l'étape est dans le brouillon, `restoredDraft.step`). Sans brouillon (rien n'a
+   * été modifié), rien n'est rouvert : un wizard vide sous une clé de recette existante se prendrait pour sa modification.
+   * La reprise attend les données (elle lit la recette enregistrée) et se joue avant la première peinture (`useLayoutEffect`) : pas de carnet entrevu.
+   * - Recette modifiée : la fiche enregistrée redevient la base du wizard (`seed.recipe`), comme après « Modifier » ; elle donne l'empreinte (`serverBase`)
+   *   et laisse le wizard dire si la recette a changé ailleurs. Une recette supprimée entre-temps ne rouvre rien : le brouillon l'enregistrerait de nouveau.
+   * - Idée : titre et description de la route sont la base ; copie : le brouillon seul (la copie n'existe pas ailleurs).
+   * Une seule fois ; jamais sur un lien `?brewday=`, ni sur le banc local `?etape=` (qui ouvre sa propre page). Rien n'est écrit sur le serveur.
+   * `replaceTop` ne pousse aucune entrée : le retour ferme la page sur place.
    */
   const repriseTentee = useRef(false);
-  useEffect(() => {
-    if (!currentUser || repriseTentee.current) return;
+  useLayoutEffect(() => {
+    if (!currentUser || !isDataReady || repriseTentee.current) return;
     repriseTentee.current = true;
     if (route.pile?.length !== 1) return;
     const q = new URLSearchParams(window.location.search);
@@ -501,9 +506,14 @@ export const App: React.FC = () => {
     if (!stored || stored.view !== 'wizard') return;
     const id = stored.recipeId ? `${stored.duplicate ? 'duplicate:' : ''}${stored.recipeId}` : stored.title ? `idea:${stored.title}` : 'new';
     if (readRecipeDraftState(`${currentUser.uid}:${id}`).status !== 'available') return;
+    const modification = !!stored.recipeId && !stored.duplicate;
+    const modifiee = modification ? StorageService.getRecipes().find(r => r.id === stored.recipeId) : undefined;
+    if (modification && !modifiee) return;
+    if (modifiee) setWizardSeed({ recipe: modifiee });
+    else if (!stored.recipeId) setWizardSeed({ title: stored.title, description: stored.description });
     route.replaceTop(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, [currentUser, isDataReady]);
 
   /**
    * Le bouton + conserve l'action de création de l'écran courant
