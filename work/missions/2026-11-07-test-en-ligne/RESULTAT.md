@@ -99,3 +99,5 @@ LEÇON PROPOSÉE : une valeur « retenue » et la même valeur « recalculée »
   facture `TX-6770960b…` (372765, 110,40) et `PAY-6770960b…` (110,40, 27.04) intactes. Aucun stock touché (aucun mouvement ni impact de stock sur ces 26).
 - Journal en ligne : 27 avr. passe de « 27 opérations · − 220,79 » à « 1 opération · − 110,40 » ; solde courant + 2 370,61 → + 2 478,60
   (+ 107,99 = les 25 lignes restantes ; la 1re, 2,40, avant). Captures : `en-ligne/doublons-avant.jpg`, `en-ligne/doublons-apres.jpg`.
+- Captures `en-ligne/*.jpg` : données réelles (IBAN, journal) → hors de Git (retirées du suivi en 5bbdc385). **Avant tout push** : purger
+  l'historique local de 346d3625 et 96acd0fe, qui les contiennent (branche non poussée, 146 commits d'avance au 08.11).
