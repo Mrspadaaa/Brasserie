@@ -202,7 +202,17 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     if (kg == null) { retour.current = n; aFocaliser.current = n; } else retour.current = -1;
     onFermentables((l) => [...l, nouvelle]);
   };
+  // RJ-9 : « Pilsner Malz 1,8 » tapé dans la famille Sucre ne réécrit pas en silence la masse du grain déjà là (6,6 → 1,8 kg, OG 1,080 → 1,034) :
+  // la ligne est sélectionnée, l'écran dit ce qui va se passer et demande. Dans sa propre famille, taper un nom et une masse reste le geste de mise à jour.
+  const [aRemplacer, setARemplacer] = useState<{ ligne: number; kg: number } | null>(null);
+  const remplacer = aRemplacer && fermentables[aRemplacer.ligne] && fermentables[aRemplacer.ligne].kind !== famille ? aRemplacer : null;
   const choisir = (c: Candidat, kg: number | null) => {
+    const existante = c.ligne >= 0 ? fermentables[c.ligne] : undefined;
+    if (existante && kg != null && existante.kind !== famille && existante.weightKg > 0 && existante.weightKg !== kg) {
+      setSel(c.ligne); setARemplacer({ ligne: c.ligne, kg });
+      return;
+    }
+    setARemplacer(null);
     if (c.ligne >= 0) {
       setSel(c.ligne);
       if (kg != null) setKg(c.ligne, kg);
@@ -289,6 +299,20 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
           onRenseigner={() => { const i = fermentables.findIndex((f) => f.kind === 'grain' && f.colorEbc == null); if (i >= 0) ouvrirEbc(i, true); }} />
       )}
       <div data-role="alertes">
+        {remplacer && (
+          <div className="fer-alerte" role="alert" data-role="remplacer">
+            <p style={{ margin: 0 }}>
+              « {fermentables[remplacer.ligne].name} » est déjà dans la recette ({defs[fermentables[remplacer.ligne].kind].label.toLowerCase()}, {kgTxt(fermentables[remplacer.ligne].weightKg)} kg), pas un {defs[famille].label.toLowerCase()} à ajouter.
+              Remplacer sa masse par {kgTxt(remplacer.kg)} kg ?
+            </p>
+            <div className="fer-remp">
+              <button type="button" className="fer-ann" data-role="remplacer-oui"
+                onClick={() => { setKg(remplacer.ligne, remplacer.kg); setARemplacer(null); versAjout(); }}>Remplacer par {kgTxt(remplacer.kg)} kg</button>
+              <button type="button" className="fer-ann fer-ann-non" data-role="remplacer-non"
+                onClick={() => { setARemplacer(null); versAjout(); }}>Garder {kgTxt(fermentables[remplacer.ligne].weightKg)} kg</button>
+            </div>
+          </div>
+        )}
         {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
         {/* Une donnée ancienne mal placée (grain bouilli ou au fermenteur) : dite ici, en clair, tout de suite ; la ligne porte « compté 0 ». */}
