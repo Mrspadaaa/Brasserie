@@ -166,7 +166,7 @@ export function WaterDilution({
             )}
           </p>
         )}
-        {justEnough?.proposal&&<details className="text-xs text-cave-400"><summary className="min-h-touch cursor-pointer">Compromis de la proposition</summary><p>{formatDecimal(justEnough.proposal.volumes.totalRoL)} L osmosée · {formatDecimal(justEnough.proposal.volumes.tapL)} L réseau. Mg {formatDecimal(justEnough.proposal.treatment.treatedTotal.mg)} ppm · Na {formatDecimal(justEnough.proposal.treatment.treatedTotal.na)} ppm. Les sels autorisés peuvent apporter magnésium ou sodium pour économiser l’osmosée. Le pH d’empâtage est vérifié séparément.</p></details>}
+        {justEnough?.proposal&&<details className="text-xs text-cave-400"><summary className="min-h-touch cursor-pointer">Compromis de la proposition</summary><p>{formatDecimal(Math.round(justEnough.proposal.volumes.totalRoL * 10) / 10)} L osmosée · {formatDecimal(Math.round(justEnough.proposal.volumes.tapL * 10) / 10)} L réseau. Mg {formatDecimal(justEnough.proposal.treatment.treatedTotal.mg)} ppm · Na {formatDecimal(justEnough.proposal.treatment.treatedTotal.na)} ppm. Les sels autorisés peuvent apporter magnésium ou sodium pour économiser l’osmosée. Le pH d’empâtage est vérifié séparément.</p></details>}
 
         <DilutionField
           label={hasSparge ? "Osmosée — empâtage" : "Part d’eau osmosée"}

@@ -77,7 +77,7 @@ describe('daily brew budget sheet', () => {
     expect(saved.cashRequiredTTC).toBe(9);
   });
 
-  it.each(['60', '0', '-3', ''])('does not save ingredients for 30 L as a budget for %s L without scaling', value => {
+  it.each(['60', '0', '-3', '', '99999'])('does not save ingredients for 30 L (BR-97, BE-50 : 99999 L refusé avec sa borne) as a budget for %s L without scaling', value => {
     const save = vi.fn();
     renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '3' } });

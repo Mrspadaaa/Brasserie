@@ -79,8 +79,8 @@ describe('AM-27, AM-28, BR-32, BR-33, MV-28, MV-29 : fermentation', () => {
 describe('AM-21, AM-22, AM-23, BR-26, MV-34 : levure', () => {
   const y = (patch: Partial<Recipe['yeast']>): Recipe['yeast'] => ({ name: 'US-05', form: 'sèche', ...patch });
   it('refuse −50 °C et 400 °C d’ensemencement', () => {
-    for (const t of [-50, 400, 1, 41]) expect(champs(levureIssues(y({ pitchTempC: t }), 20))).toEqual(['wz-yeast-pitch']);
-    for (const t of [2, 10, 18, 26.5, 40]) expect(levureIssues(y({ pitchTempC: t }), 20)).toEqual([]);
+    for (const t of [-50, 400, -1, 41]) expect(champs(levureIssues(y({ pitchTempC: t }), 20))).toEqual(['wz-yeast-pitch']);
+    for (const t of [0, 1, 2, 10, 18, 26.5, 40]) expect(levureIssues(y({ pitchTempC: t }), 20)).toEqual([]);
   });
   it('refuse une atténuation de 0 % ou 100 %', () => {
     for (const a of [0, 100, 150, 0.4]) expect(champs(levureIssues(y({ attenuationPct: a }), 20))).toEqual(['wz-yeast-range']);

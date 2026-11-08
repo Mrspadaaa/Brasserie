@@ -15,6 +15,11 @@ export interface IssueProcede { field: string; step: 'identite' | 'levure' | 'pa
 export interface ConseilProcede { field: string; step: 'paliers' | 'eau'; message: string }
 
 export const BORNES_PROCEDE = {
+  /** Volume d'un brassin adapté (fiche Volumes) : du plus petit essai à la plus grande cuve d'une micro-brasserie. */
+  volumeBrassinL: {
+    min: 0.5, max: 2000, unite: 'L',
+    source: 'Estimée : 0,5 L = un essai de laboratoire ; 20 hL = la plus grande cuve de brassage d’une micro-brasserie (Brewers Association : micro < 15 000 barils/an).',
+  },
   /** Température d'un palier d'empâtage. */
   empatageTempC: {
     min: 35, max: 80, unite: '°C',
@@ -37,8 +42,8 @@ export const BORNES_PROCEDE = {
   },
   /** Température d'ensemencement. */
   ensemencementTempC: {
-    min: 2, max: 40, unite: '°C',
-    source: 'Lager : 8–12 °C ; ale : 15–24 °C ; kveik : jusqu\'à 40 °C ; sous 2 °C la levure ne repart pas.',
+    min: 0, max: 40, unite: '°C',
+    source: 'Lager : 8–12 °C ; ale : 15–24 °C ; kveik : jusqu\'à 40 °C ; contact à froid NOLO : ~1 °C ; sous 0 °C le moût gèle.',
   },
   /** Atténuation apparente d'une levure (avec laquelle la FG se prédit). */
   attenuationPct: {
@@ -260,14 +265,17 @@ export function normaliserAdditif<T extends { unit: string; step: string }>(a: T
 
 /** Toutes les erreurs de procédé d'une recette (bloquantes à l'enregistrement, visibles dès la frappe). */
 export function procedeIssues(recipe: Recipe): IssueProcede[] {
+  // Une recette NOLO suit son propre modèle (extraction froide à 10 °C pendant 24 h, rendement de 25 %, volumes d'eau d'une relance) :
+  // les bornes d'un empâtage, du rendement et de l'eau de brassage ne s'y appliquent pas.
+  const nolo = !!recipe.nolo?.enabled;
   const out: IssueProcede[] = [
-    ...empatageIssues(recipe.mash?.steps),
+    ...(nolo ? [] : empatageIssues(recipe.mash?.steps)),
     ...fermentationIssues(recipe.fermentation),
     ...levureIssues(recipe.yeast, recipe.volumeL),
-    ...eauIssues(recipe),
+    ...(nolo ? [] : eauIssues(recipe)),
     ...additifsIssues(recipe.adjuncts),
   ];
-  const r = rendementIssue(recipe.efficiencyPct);
+  const r = nolo ? null : rendementIssue(recipe.efficiencyPct);
   if (r) out.push(r);
   return out;
 }

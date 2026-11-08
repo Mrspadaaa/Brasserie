@@ -1,8 +1,8 @@
 import { Input, type InputElement } from './Input';
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { Units } from '../services/units';
-import { formatDecimal, useNumericDraft } from './numericInput';
+import { formatDecimal, parseDecimal, useNumericDraft } from './numericInput';
 import { useCoarsePointer } from './useViewport';
 
 /**
@@ -84,6 +84,8 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
   );
 
   const { draft, push, settle } = useNumericDraft(value, onChange, { emptyValue: emptyValue ?? min });
+  // BR-102, BE-55, BE-101 : « 0 » tapé devenait « 1 » ou « 0,5 » sans un mot. La borne est dite, avec la valeur retenue.
+  const [refused, setRefused] = useState<string | null>(null);
 
   /**
    * ⚠️ LA VALEUR VIVANTE, dans une ref.
@@ -237,8 +239,13 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
             autoFocus={!coarse && autoFocus}
             aria-label={label || `Quantité en ${unit}`}
             onFocus={(e) => e.currentTarget.select()}
-            onBlur={() => settle({ min, max })}
-            onChange={(e) => push(e.target.value)}
+            onBlur={() => {
+              const typed = parseDecimal(draft);
+              const kept = typed === null ? null : clamp(typed);
+              setRefused(typed !== null && kept !== typed ? `${formatDecimal(typed)} ${unit} est hors bornes : ${max !== undefined ? `de ${formatDecimal(min)} à ${formatDecimal(max)}` : `au moins ${formatDecimal(min)}`} ${unit}. ${formatDecimal(kept!)} ${unit} retenu.` : null);
+              settle({ min, max });
+            }}
+            onChange={(e) => { setRefused(null); push(e.target.value); }}
             className="w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"
           />
           <span className="reading-unit shrink-0 text-xs">{unit}</span>
@@ -255,6 +262,8 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
           <Plus className="w-4 h-4" />
         </button>
       </div>
+
+      {refused && <p role="status" data-role="borne-refusee" className="text-xs text-ebc-amber leading-snug">{refused}</p>}
 
       {/*
         Paliers : le geste courant du brasseur, adapté à l'unité.
