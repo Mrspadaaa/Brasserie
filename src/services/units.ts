@@ -57,8 +57,6 @@ const ALIASES: Record<string, string> = {
   lt: 'l',
   lts: 'l',
   ltr: 'l',
-  liter: 'l',
-  liters: 'l',
   millilitre: 'ml',
   millilitres: 'ml',
   centilitre: 'cl',
@@ -69,8 +67,6 @@ const ALIASES: Record<string, string> = {
   kilogrammes: 'kg',
   kilogram: 'kg',
   kilograms: 'kg',
-  kilo: 'kg',
-  kilos: 'kg',
   kgs: 'kg',
   gramme: 'g',
   grammes: 'g',
@@ -85,8 +81,9 @@ const ALIASES: Record<string, string> = {
 };
 
 function normalizeKey(unit: string): string {
-  // Casse, accents (« décilitre ») et point final (« kg. », « cl. ») ne distinguent pas deux écritures de la même unité.
-  const k = (unit || '').trim().toLowerCase().normalize('NFD').split('̀').join('').split('́').join('').split('̂').join('').replace(/\.+$/, '');
+  // Casse et accents (« décilitre ») ne distinguent pas deux écritures de la même unité. « Kilo », « Kg. » et « Liter » restent hors d'ici :
+  // D214, tests/unit/depense/stock/relecture.test.ts (la lecture des liens de stock a sa propre table).
+  const k = (unit || '').trim().toLowerCase().normalize('NFD').split('̀').join('').split('́').join('').split('̂').join('');
   return ALIASES[k] ?? k;
 }
 

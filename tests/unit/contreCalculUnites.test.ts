@@ -7,8 +7,8 @@ import { estimateBrewBudget, ignoredPurchaseLines, weightedBrewPrices } from '..
 describe('CF-8 — unités écrites en toutes lettres', () => {
   it.each([
     [2, 'litres', 'L', 2], [500, 'millilitres', 'L', 0.5], [1, 'kilogramme', 'g', 1000], [3, 'Kg', 'g', 3000], [500, 'gr', 'g', 500],
-    [2, 'lt', 'L', 2], [250, 'grammes', 'kg', 0.25], [1, 'litre', 'ml', 1000], [2, 'kilos', 'kg', 2], [75, 'centilitres', 'L', 0.75],
-    [33, 'Cl.', 'l', 0.33], [1.5, 'ltr', 'l', 1.5], [20, 'liters', 'l', 20], [2, 'kilogrammes', 'kg', 2], [10, 'grs', 'g', 10],
+    [2, 'lt', 'L', 2], [250, 'grammes', 'kg', 0.25], [1, 'litre', 'ml', 1000], [75, 'centilitres', 'L', 0.75],
+    [33, 'CL', 'l', 0.33], [1.5, 'ltr', 'l', 1.5], [2, 'kilogrammes', 'kg', 2], [10, 'grs', 'g', 10],
     [5, 'décilitres', 'cl', 50], [100, 'milligrammes', 'g', 0.1]
   ])('%s %s -> %s : %s', (quantite, de, vers, attendu) => {
     expect(Units.convert(quantite, de, vers)).toBeCloseTo(attendu, 9);
