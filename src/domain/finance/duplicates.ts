@@ -53,7 +53,8 @@ export function ledgerDuplicates(transactions: FinanceTransaction[]): LedgerDupl
     if (!finance) continue;
     const vendor = vendorKey(finance.vendor ?? ''), invoice = invoiceKey(finance.invoiceNumber), reference = paymentReferenceKey(finance.paymentReference);
     if (vendor && invoice) byInvoice.set(`${vendor}|${invoice}`, [...(byInvoice.get(`${vendor}|${invoice}`) ?? []), tx]);
-    if (reference) byReference.set(reference, [...(byReference.get(reference) ?? []), tx]);
+    // RF-2 : la référence n'identifie une facture qu'avec le même fournisseur normalisé et le même n° (ou aucun n° des deux côtés) : un créancier à référence constante n'est pas un doublon.
+    if (reference) { const cle = `${reference}|${vendor}|${invoice}`; byReference.set(cle, [...(byReference.get(cle) ?? []), tx]); }
   }
   for (const [key, list] of byInvoice) if (list.length > 1) add(`facture|${key}`, `Même facture n° ${(list[0].finance?.invoiceNumber ?? '').trim()} chez le même fournisseur`, ...list.map(tx => tx.id));
   for (const [key, list] of byReference) if (list.length > 1) add(`reference|${key}`, 'Même référence de paiement QR', ...list.map(tx => tx.id));

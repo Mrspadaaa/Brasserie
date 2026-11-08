@@ -109,7 +109,11 @@ function duplicateMatch(draft:PurchaseDraft,tx:FinanceTransaction,today:()=>stri
   // AM n° 7 : la facture s'identifie par (fournisseur normalisé, n°), quel que soit le total ; ou par sa référence QR de paiement.
   if (tx.finance?.kind==='expense' && tx.finance.sourceDocumentType!=='credit_note') {
     if (invoice && vendorId && invoiceKey(tx.finance.invoiceNumber)===invoice && purchaseVendorKey(tx.finance.vendor??'')===vendorId) return {reasons:[`Même facture n° ${draft.invoiceNumber.trim()}`],rank:1,gap:gap()};
-    if (reference && paymentReferenceKey(tx.finance.paymentReference)===reference) return {reasons:['Même référence de paiement QR'],rank:1,gap:gap()};
+    // RF-2 : une référence QR n'identifie une facture qu'avec le même fournisseur normalisé ; un créancier à référence constante n'est pas un doublon (deux n° différents = deux factures).
+    if (reference && paymentReferenceKey(tx.finance.paymentReference)===reference && !otherInvoice(draft,tx)) {
+      if (vendorId && purchaseVendorKey(tx.finance.vendor??'')===vendorId) return {reasons:['Même référence de paiement QR'],rank:1,gap:gap()};
+      return {reasons:['Même référence de paiement QR','Fournisseur différent ou absent : à vérifier'],rank:3,gap:gap()};
+    }
   }
   if (vendor && tx.date===draft.date && cents(tx.amountTTC)===cents(draft.amount??0) && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:['Même fournisseur, même date et même total'],rank:2,gap:gap()};
   // Seule une dépense au même total est comparée plus loin : une vente au nom d'un client homonyme n'est pas un achat.

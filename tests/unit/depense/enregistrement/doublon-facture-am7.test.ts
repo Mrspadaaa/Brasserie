@@ -38,6 +38,25 @@ describe('AM n° 7 : la facture s’identifie par (fournisseur normalisé, n°),
   });
 });
 
+describe('RF-2 : une référence QR n’identifie une facture qu’avec le même fournisseur',()=>{
+  const ref='210000000003139471430009017';
+  it('même référence, autre fournisseur : signalé « à vérifier » (rang bas), pas une facture identique',()=>{
+    const tx=recorded({invoiceNumber:undefined,paymentReference:ref});
+    const lue=draft({invoiceNumber:'',vendor:'Autre créancier',paymentReference:ref,amount:5});
+    expect(entry.purchaseDuplicates(lue,[tx])).toHaveLength(1);
+    expect(entry.purchaseDuplicateReasons(lue,tx)).toEqual(['Même référence de paiement QR','Fournisseur différent ou absent : à vérifier']);
+  });
+  it('créancier à référence constante : deux factures de n° différents ne sont pas un doublon',()=>{
+    const tx=recorded({invoiceNumber:'100',paymentReference:ref});
+    expect(entry.purchaseDuplicates(draft({invoiceNumber:'101',paymentReference:ref,amount:5}),[tx])).toEqual([]);
+  });
+  it('au grand livre : même référence chez deux créanciers différents, ou deux n° différents chez le même : aucun groupe',()=>{
+    const a=recorded({invoiceNumber:undefined,sourceOrderNumber:undefined,paymentReference:ref});
+    expect(ledgerDuplicates([a,recorded({invoiceNumber:undefined,sourceOrderNumber:undefined,vendor:'Autre créancier',paymentReference:ref},{id:'TX-2'})])).toEqual([]);
+    expect(ledgerDuplicates([recorded({invoiceNumber:'100',sourceOrderNumber:undefined,paymentReference:ref}),recorded({invoiceNumber:'101',sourceOrderNumber:undefined,paymentReference:ref},{id:'TX-3'})])).toEqual([]);
+  });
+});
+
 describe('TR-NOTE-1 : une commande déjà saisie à l’ancienne est reconnue à la lecture de sa facture',()=>{
   it('la facture lue porte la commande Onlinebestellung-686863 ; B-001 à B-026 « Cmd 686863 » sont déjà au registre : signalé avec la raison',()=>{
     const anciens=Array.from({length:26},(_,i)=>legacy(i+1));
@@ -69,7 +88,7 @@ describe('AM n° 7 : le grand livre existant est contrôlé, rien n’est suppri
   });
   it('même référence QR : signalées',()=>{
     const ref='210000000003139471430009017';
-    const groups=ledgerDuplicates([recorded({invoiceNumber:undefined,sourceOrderNumber:undefined,paymentReference:ref}),recorded({invoiceNumber:undefined,sourceOrderNumber:undefined,vendor:'X',paymentReference:ref},{id:'TX-2'})]);
+    const groups=ledgerDuplicates([recorded({invoiceNumber:undefined,sourceOrderNumber:undefined,paymentReference:ref}),recorded({invoiceNumber:undefined,sourceOrderNumber:undefined,paymentReference:ref},{id:'TX-2'})]);
     expect(groups).toHaveLength(1);expect(groups[0].reason).toMatch(/référence/i);
   });
   it('annulée, vente, autre n°, autre fournisseur, avoir : rien',()=>{
