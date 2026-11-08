@@ -38,7 +38,8 @@ const lignes = [];
 let silencieuses = 0, signalees = 0, perdues = 0, rognees = 0, sansDecoupe = 0;
 for (const nom of pieces) {
   const photo = fs.readFileSync(path.join(dossier, `${nom}.jpg`)).toString('base64'), masque = fs.readFileSync(path.join(dossier, `${nom}.masque.png`)).toString('base64');
-  const r = await page.evaluate((a, b) => window.__controler(a, b), photo, masque);
+  const verite = fs.existsSync(path.join(dossier, `${nom}.verite.json`)) ? JSON.parse(fs.readFileSync(path.join(dossier, `${nom}.verite.json`), 'utf8')) : null;
+  const r = await page.evaluate((a, b, v) => window.__controler(a, b, v), photo, masque, verite);
   lignes.push({ nom, ...r });
   if (r.rien) { sansDecoupe++; continue; }
   silencieuses += r.coupeesSilencieuses.length; signalees += r.coupeesSignalees; perdues += r.perdues.length; rognees += r.rognees.length;
@@ -49,4 +50,11 @@ fs.writeFileSync(rapport, JSON.stringify(lignes, null, 1));
 const ms = lignes.filter(l => !l.rien).map(l => l.msPlan).sort((a, b) => a - b);
 console.log(`${pieces.length} pièces : sans découpe ${sansDecoupe} ; lignes coupées en silence ${silencieuses} ; coupées signalées ${signalees} ; perdues ${perdues} ; rognées ${rognees} ; plan médian ${ms[Math.floor(ms.length / 2)] ?? '-'} ms, max ${ms.at(-1) ?? '-'} ms`);
 console.log(silencieuses === 0 && perdues === 0 && rognees === 0 ? 'DÉCOUPE OK' : 'DÉCOUPE ÉCHEC');
+// (c), 08.11 : les pièces que le déclencheur « avant » coupe encore (haute ET plus de LIGNES_ENTIERES lignes), et le bilan sur elles seules.
+const coupees = lignes.filter(l => l.avant), somme = (f) => coupees.reduce((s, l) => s + f(l), 0);
+console.log(`avant (sans force) : ${coupees.length}/${pieces.length} pièces coupées ; sur elles : silencieuses ${somme(l => l.coupeesSilencieuses.length)}, signalées ${somme(l => l.coupeesSignalees)}, perdues ${somme(l => l.perdues.length)}, rognées ${somme(l => l.rognees.length)} ; lues entières : ${pieces.length - coupees.length} (lignes estimées ${Math.min(...lignes.filter(l => !l.avant && l.lignesTexte).map(l => l.lignesTexte))} à ${Math.max(...lignes.filter(l => !l.avant && l.lignesTexte).map(l => l.lignesTexte))})`);
+// (a), 08.11 : la bande de contrôle, lecteur parfait simulé.
+const b = { justes: 0, faussesAlertes: 0, montantTranche: 0, doubleAttrape: 0, perteAttrapee: 0, sansMontantTranche: 0 };
+for (const l of lignes) if (l.bande) for (const k of Object.keys(b)) b[k] += l.bande[k];
+console.log(`bande (toutes coupes, lecteur parfait) : coupes justes ${b.justes}, fausses alertes ${b.faussesAlertes} ; lignes à montant tranchées ${b.montantTranche} : doublées attrapées ${b.doubleAttrape}, perdues attrapées ${b.perteAttrapee} ; lignes sans montant tranchées ${b.sansMontantTranche}`);
 await nav.close();

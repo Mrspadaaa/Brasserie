@@ -467,6 +467,8 @@ export interface Analyse {
   papier: boolean;
   /** Les colonnes [x0, x1) où les rangées blanches ont été mesurées (la largeur du papier), ou `null` : toute la largeur. */
   colonnes: [number, number] | null;
+  /** Le pas des lignes sur l'encre nette (celui qui borne les morceaux), ou `null`. */
+  pas?: number | null;
 }
 export interface OptionsAnalyse {
   /** Chercher le papier sur un fond sombre et masquer ce fond (défaut : oui). */
@@ -635,7 +637,7 @@ export function analyser(bitmap: Bitmap, options: OptionsAnalyse = {}): Analyse 
     }
   }
   const morceaux = planMorceaux(rangees, crop.w, { maxLines: options.maxLines ?? BAND_MAX_LINES, pitch: pas });
-  return { crop, angle, morceaux, rangees, largeur: crop.w, hauteur: crop.h, papier: papier !== null, colonnes };
+  return { crop, angle, morceaux, rangees, largeur: crop.w, hauteur: crop.h, papier: papier !== null, colonnes, pas };
 }
 
 /** Le nombre de rangées de texte d'une page PDF : les ordonnées distinctes des morceaux de texte (écart de plus de `tolerance` points = autre rangée). */
@@ -745,13 +747,41 @@ export type JonctionPiece = { file: { data: string; mimeType: string }; jonction
  * La voie d'OpenCV (coins du papier, redressement 4 points) a été essayée le 07.11 et écartée : sur 200 pièces neuves, 143 lignes perdues contre 0
  * (`work/missions/2026-11-03-lecture-longue/opencv-essai/`).
  */
-export interface PlanImage { finale: Analyse; g: Geometrie }
-export async function planifierImage(image: ImageBitmap, force: boolean): Promise<PlanImage | null> {
-  const plan = await planifierImageDetaille(image, force);
-  return plan && plan.finale.morceaux.length >= 2 ? plan : null;
+export interface PlanImage { finale: Analyse; g: Geometrie; /** Plus de 3 × plus haute que large ; `null` : non mesuré (relecture forcée). */ haute: boolean | null }
+
+/**
+ * (c), 08.11 : une photo de LIGNES_ENTIERES lignes de texte au plus se lit ENTIÈRE, même haute : chaque coupe est un risque (banc des 200 : coupes
+ * « propres » qui tranchent une ligne pâle ou penchée), et une lecture entière n'en a aucun. Mesure (MESURE-BANDES.md, 03.11) : Flash-Lite rend
+ * ≈ 195 jetons par ligne d'article ; le plafond de 8 192 jetons tient ≈ 41 lignes (39 lignes = 93 %). Marge : voir ETAT-DE-L-ART.md, section 6.
+ * Une lecture entière coupée quand même est relue en morceaux par le déclencheur « après », qui est exact.
+ */
+export const LIGNES_ENTIERES = 35;
+/**
+ * Le nombre de lignes de texte d'un profil de rangées (estimation prudente : le plus grand de deux comptes). Les séries encrées (une ligne chacune ;
+ * deux lignes floues fondues n'en font qu'une) et la hauteur du texte divisée par le pas (une ligne pâle invisible y compte quand même).
+ */
+export function lignesDeTexte(rangees: number[], pasNet: number | null = null): number {
+  let series = 0, premier = -1, dernier = -1;
+  for (let y = 0; y < rangees.length; y++) {
+    if (rangees[y] <= EMPTY_ROW_MAX) continue;
+    if (premier < 0) premier = y;
+    if (y === 0 || rangees[y - 1] <= EMPTY_ROW_MAX) series++;
+    dernier = y;
+  }
+  // Le plus petit pas connu : sur la carte des coupes, des rangées grisées fondent plusieurs lignes en une série (graine 2, h0122 : pas de 450 px pour 32).
+  const pas = Math.min(...[linePitch(rangees), pasNet].filter((p): p is number => !!p && p > 0));
+  return Math.max(series, Number.isFinite(pas) && premier >= 0 ? Math.ceil((dernier - premier + 1) / pas) : 0);
 }
-/** Comme `planifierImage`, même avec un seul morceau (`null` : le déclencheur ne part pas) : pour le banc. */
-export async function planifierImageDetaille(image: ImageBitmap, force: boolean): Promise<PlanImage | null> {
+/** Le déclencheur « avant » d'une photo : haute ET plus de `LIGNES_ENTIERES` lignes. */
+export const decoupeAvant = (plan: PlanImage | null): boolean => !!plan && plan.haute === true && lignesDeTexte(plan.finale.rangees, plan.finale.pas ?? null) > LIGNES_ENTIERES;
+
+export async function planifierImage(image: ImageBitmap, force: boolean, options: { mesurerHaute?: boolean } = {}): Promise<PlanImage | null> {
+  const plan = await planifierImageDetaille(image, force, options);
+  if (!plan || plan.finale.morceaux.length < 2) return null;
+  return force || decoupeAvant(plan) ? plan : null;
+}
+/** Comme `planifierImage`, même avec un seul morceau ou peu de lignes (`null` : pas haute, sans `force`) : pour le banc. */
+export async function planifierImageDetaille(image: ImageBitmap, force: boolean, options: { mesurerHaute?: boolean } = {}): Promise<PlanImage | null> {
   const W = image.width, H = image.height;
   // Coup d'œil : l'image réduite (côté court ≈ 1 200 px) suffit au papier et à l'angle.
   const s = Math.min(1, 1200 / Math.min(W, H)), pw = Math.max(1, Math.round(W * s)), ph = Math.max(1, Math.round(H * s));
@@ -759,10 +789,12 @@ export async function planifierImageDetaille(image: ImageBitmap, force: boolean)
   contexte2d(petit, true).drawImage(image, 0, 0, pw, ph);
   const reduit: Bitmap = { width: pw, height: ph, gray: grisDe(contexte2d(petit, true).getImageData(0, 0, pw, ph)) };
   petit.width = 0; petit.height = 0;
-  if (!force) {
+  let haute: boolean | null = null;
+  if (!force || options.mesurerHaute) {
     // Haute : l'image recadrée, ou le papier lui-même (sa forme, même posé de travers : ses tickets penchés du 03.11).
     const papier = trouverPapier(reduit), r = recadrageDe(papier, pw, ph);
-    if (Math.max(r.h / r.w, papier?.rapport ?? 0) <= RAPPORT_DECOUPE) return null;
+    haute = Math.max(r.h / r.w, papier?.rapport ?? 0) > RAPPORT_DECOUPE;
+    if (!force && !haute) return null;
   }
   const coup = analyser(reduit, { maxLines: BAND_MAX_LINES });
   // Le cadre peut déborder de l'image (redressement sans rognure, `cadrePourAngle`) : le dessin y étend le bord (voir `normaliser`).
@@ -771,7 +803,7 @@ export async function planifierImageDetaille(image: ImageBitmap, force: boolean)
   const g: Geometrie = { cx: crop.x + crop.w / 2, cy: crop.y + crop.h / 2, angle: coup.angle, echelle, largeur: Math.max(1, Math.round(crop.w * echelle)), hauteur: Math.max(1, Math.round(crop.h * echelle)) };
   // Le papier est cherché de nouveau dans l'image normalisée, pour mesurer les rangées blanches sur sa seule largeur.
   const finale = analyser(grisNormalise(image, g), { papier: coup.papier, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
-  return { finale, g };
+  return { finale, g, haute };
 }
 
 async function decouperImage(file: File | Blob, force: boolean): Promise<Decoupe | null> {

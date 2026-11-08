@@ -1,16 +1,16 @@
 // D381, banc hors ligne : le VRAI plan de découpe de l'app (`planifierImage`) sur une pièce piégée, et la même transformation jouée sur son masque
 // (plus proche voisin). Une ligne visuelle (couleur du masque) ne doit jamais être sur deux morceaux sans que la coupe soit signalée (`coupeForcee`),
 // et aucune ligne ne doit disparaître du recadrage. Servi par Vite (copie de banc) ; piloté par `controler.mjs`.
-import { analyser, boiteGrandie, coupeBasseForcee, normaliser, recadrageSur, decouperPiece, dessinerNormalise, encreDetaillee, planifierImage, planifierImageDetaille, trouverPapierDetaille } from '../../../../src/services/decoupe';
-import { linePitch as linePitchDe, planJonctions } from '../../../../functions/src/invoiceMorceaux';
+import { analyser, boiteGrandie, coupeBasseForcee, decoupeAvant, lignesDeTexte, normaliser, recadrageSur, decouperPiece, dessinerNormalise, encreDetaillee, planifierImage, planifierImageDetaille, trouverPapierDetaille } from '../../../../src/services/decoupe';
+import { jonctionConcorde, linePitch as linePitchDe, planJonctions } from '../../../../functions/src/invoiceMorceaux';
 
 const decoder = async (b64: string, type: string) => createImageBitmap(new Blob([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], { type }));
 const etiquettes = (data: Uint8ClampedArray) => { const e = new Uint32Array(data.length / 4); for (let i = 0, j = 0; i < e.length; i++, j += 4) e[i] = data[j] + data[j + 1] * 256; return e; };
 
-(window as any).__controler = async (photo64: string, masque64: string) => {
+(window as any).__controler = async (photo64: string, masque64: string, verite: any = null) => {
   const photo = await decoder(photo64, 'image/jpeg'), masque = await decoder(masque64, 'image/png');
   const t0 = performance.now();
-  const plan = await planifierImage(photo, true), msPlan = Math.round(performance.now() - t0);
+  const plan = await planifierImage(photo, true, { mesurerHaute: true }), msPlan = Math.round(performance.now() - t0);
   // Les lignes du masque d'origine et leur aire.
   const c0 = document.createElement('canvas'); c0.width = masque.width; c0.height = masque.height;
   const x0 = c0.getContext('2d', { willReadFrequently: true })!; x0.drawImage(masque, 0, 0);
@@ -69,7 +69,36 @@ const etiquettes = (data: Uint8ClampedArray) => { const e = new Uint32Array(data
   });
   const e2 = g.echelle * g.echelle, perdues: number[] = [], rognees: number[] = [];
   for (const [id, a] of aire0) { const b = aire.get(id) ?? 0; if (!b) perdues.push(id - 1); else if (b < 0.8 * a * e2) rognees.push(id - 1); }
+  // (a), 08.11 : la bande de contrôle attrape-t-elle une ligne perdue ou doublée à la coupe ? LECTEUR PARFAIT simulé (aucune IA) : une ligne
+  // ENTIÈRE d'un côté est lue de ce côté ; la bande lit les lignes entières dans ses rangées. Un article = sa ligne qui porte le montant (« | »).
+  // Pour chaque coupe : juste (aucune ligne à montant tranchée) → la bande concorde-t-elle (sinon : fausse alerte) ; ligne à montant tranchée →
+  // les deux pires lectures (lue des deux côtés : doublée ; d'aucun : perdue) sont-elles attrapées ? Ligne tranchée sans montant : comptée à part.
+  let bande: any = null;
+  if (verite) {
+    const montantDe = new Map<number, number>();
+    verite.lignes.forEach((art: number | null, i: number) => { if (art !== null && String(verite.lignesTexte[i]).includes(' | ')) montantDe.set(i + 1, verite.articles[art].amountTTC); });
+    const lignesMontant = [...montantDe.keys()].filter(id => rangs.has(id)).map(id => ({ id, a: Math.min(...rangs.get(id)!), b: Math.max(...rangs.get(id)!), item: { amountTTC: montantDe.get(id) } })).sort((x, y) => x.a - y.a);
+    const jonctions = planJonctions(m, finale.rangees);
+    bande = { justes: 0, faussesAlertes: 0, montantTranche: 0, doubleAttrape: 0, perteAttrapee: 0, sansMontantTranche: 0 };
+    coupes.forEach((cut, i) => {
+      const j = jonctions[i], lue = lignesMontant.filter(l => l.a >= j.top && l.b < j.bottom).map(l => l.item);
+      const haut = lignesMontant.filter(l => l.b < cut).map(l => l.item), bas = lignesMontant.filter(l => l.a >= cut).map(l => l.item);
+      const tranchees = lignesMontant.filter(l => l.a < cut && l.b >= cut && coupees.some(c => c.coupe === i + 1 && c.ligne === l.id - 1));
+      const autres = coupees.filter(c => c.coupe === i + 1 && !montantDe.has(c.ligne + 1)).length;
+      bande.sansMontantTranche += autres;
+      if (!tranchees.length) {
+        const entiers = lignesMontant.filter(l => l.a < cut && l.b >= cut).map(l => l.item);   // à cheval sans être tranchées (< 25 %) : lues en haut
+        bande.justes++; if (!jonctionConcorde(lue, [...haut, ...entiers], bas)) bande.faussesAlertes++;
+        return;
+      }
+      bande.montantTranche += tranchees.length;
+      const t = tranchees.map(l => l.item);
+      if (!jonctionConcorde(lue, [...haut, ...t], [...t, ...bas])) bande.doubleAttrape += tranchees.length;
+      if (!jonctionConcorde(lue, haut, bas)) bande.perteAttrapee += tranchees.length;
+    });
+  }
   return {
+    bande, haute: plan.haute, lignesTexte: lignesDeTexte(finale.rangees, finale.pas ?? null), avant: decoupeAvant(plan),
     morceaux: m.length, lignes: aire0.size, msPlan, angleGeo: g.angle, diagCoupes, echelle: g.echelle, largeur: L, hauteur: Hn,
     forcees: forcees.filter(Boolean).length, jonctions: planJonctions(m, finale.rangees).length,
     coupeesSilencieuses: coupees.filter(x => !x.signalee).map(x => ({ ...x, rangees: [Math.min(...rangs.get(x.ligne + 1)!), Math.max(...rangs.get(x.ligne + 1)!)], cut: coupes[x.coupe - 1] })), coupeesSignalees: coupees.filter(x => x.signalee).length, perdues, rognees,
@@ -120,6 +149,7 @@ const etiquettes = (data: Uint8ClampedArray) => { const e = new Uint32Array(data
   let normalise: string | null = null;
   if (plan) { const c = document.createElement('canvas'); c.width = plan.g.largeur; c.height = plan.g.hauteur; dessinerNormalise(c, image, plan.g, 0); const d = c.toDataURL('image/jpeg', 0.8); normalise = d.slice(d.indexOf(',') + 1); }
   return {
+    lignesTexte: plan ? lignesDeTexte(plan.finale.rangees, plan.finale.pas ?? null) : null, haute: plan?.haute ?? null, coupee: !!decoupe,
     normalise, largeur: image.width, hauteur: image.height, msPlan, msDecoupe, g: plan?.g ?? null, morceaux: plan?.finale.morceaux ?? null, papierFinal: plan?.finale.papier ?? null, colonnes: plan?.finale.colonnes ?? null,
     pas: plan ? linePitchDe(plan.finale.rangees) : null, minCoupes: plan ? plan.finale.morceaux.slice(0, -1).map(m => { let v = 1; for (let y = Math.max(0, m.bottom - 30); y < Math.min(plan.finale.rangees.length, m.bottom + 30); y++) v = Math.min(v, plan.finale.rangees[y]); return Number(v.toFixed(4)); }) : null,
     parties: decoupe?.parties.map(p => ({ k: p.morceau.k, n: p.morceau.n, coupeForcee: p.coupeForcee, data: p.file.data })) ?? null,

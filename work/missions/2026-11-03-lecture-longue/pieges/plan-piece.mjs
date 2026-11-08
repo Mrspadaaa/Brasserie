@@ -24,5 +24,5 @@ fs.mkdirSync(sortie, { recursive: true });
 if (r.normalise) fs.writeFileSync(path.join(sortie, 'normalise.jpg'), Buffer.from(r.normalise, 'base64'));
 for (const p of r.parties ?? []) fs.writeFileSync(path.join(sortie, `m${String(p.k).padStart(2, '0')}.jpg`), Buffer.from(p.data, 'base64'));
 for (const j of r.jonctions ?? []) if (j.data) fs.writeFileSync(path.join(sortie, `j${String(j.k).padStart(2, '0')}.jpg`), Buffer.from(j.data, 'base64'));
-console.log(JSON.stringify({ image: `${r.largeur}×${r.hauteur}`, msPlan: r.msPlan, msDecoupe: r.msDecoupe, g: r.g, morceaux: r.morceaux?.map(m => [m.top, m.bottom, m.forced]), forcees: (r.parties ?? []).filter(p => p.coupeForcee).length, bandes: (r.jonctions ?? []).length, papierFinal: r.papierFinal, colonnes: r.colonnes, pas: r.pas, minCoupes: r.minCoupes }));
+console.log(JSON.stringify({ coupee: r.coupee, parties: (r.parties ?? []).length, lignesTexte: r.lignesTexte, haute: r.haute, image: `${r.largeur}×${r.hauteur}`, msPlan: r.msPlan, msDecoupe: r.msDecoupe, g: r.g, morceaux: r.morceaux?.map(m => [m.top, m.bottom, m.forced]), forcees: (r.parties ?? []).filter(p => p.coupeForcee).length, bandes: (r.jonctions ?? []).length, papierFinal: r.papierFinal, colonnes: r.colonnes, pas: r.pas, minCoupes: r.minCoupes }));
 await nav.close();
