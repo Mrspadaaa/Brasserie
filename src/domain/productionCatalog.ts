@@ -3,7 +3,7 @@ import type { Batch, Recipe, TimeFilterPeriod } from '../types';
 import { bandForEbc, computeBeerColor } from './beerColor';
 import { statusOf } from './batchStatus';
 import { DateUtils } from '../services/dateUtils';
-import { BrewingMath } from '../services/brewingMath';
+import { abvFromGravities, plausibleAbv } from './gravityBounds';
 import { ibuListe } from './recipeMetrics';
 import { inCatalogFolder, type CatalogFolder } from './catalogOrganization';
 
@@ -190,9 +190,10 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       timestamp: catalogDate(batchDisplayDate(batch)),
       // NOLO alcohol is an analysis with its own context and uncertainty.
       // Neither an old scalar nor OG–FG can replace that reading in charts.
+      // Un alcool absurde (hors 0–18 % vol.) ou tiré de densités hors bornes ne part jamais au catalogue.
       abv: (batch.nolo ?? recipe?.nolo)?.enabled ? undefined :
-        catalogNumber(batch.abv) ??
-        (og && fg && og > 1 && fg >= 1 && og >= fg ? BrewingMath.calculateABV(og, fg) : undefined),
+        (plausibleAbv(catalogNumber(batch.abv)) ? catalogNumber(batch.abv) : undefined) ??
+        abvFromGravities(og ?? null, fg ?? null) ?? undefined,
       ibu: catalogNumber(recipe?.ibuTarget),
       ebc: color?.ebc ?? recipe?.colorEbc,
       swatch:

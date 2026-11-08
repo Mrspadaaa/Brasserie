@@ -1,5 +1,6 @@
 import type { Batch } from '../../types';
 import { isoDate } from './ledger';
+import { gravityProblem, plausibleAbv } from '../gravityBounds';
 
 export const BEER_TAX_SOURCE = 'https://www.bazg.admin.ch/dam/fr/sd-web/Ls9uMLNtgql4/Imp%C3%B4t%20sur%20la%20bi%C3%A8re%20directives%20brasseries%20indig%C3%A8nes.pdf';
 export function beerTaxBracket(plato: number): number { return plato <= 10 ? 16.88 : plato <= 14 ? 25.32 : 33.76; }
@@ -23,9 +24,12 @@ export function estimateSwissBeerTax(batches: Batch[], options?: {
   for (const batch of eligible) {
     const volume = Number(batch.volumePackagedL), abv = batch.abv == null || batch.abv === '' ? null : Number(String(batch.abv).replace(',', '.'));
     totalVolumeL += volume;
-    if (abv != null && Number.isFinite(abv) && abv >= 0 && abv <= 0.5) continue;
     const sg = Number(String(batch.og ?? '').replace(',', '.'));
-    const plato = sg >= 1 && sg < 1.3 ? Math.round((-616.868 + 1111.14 * sg - 630.272 * sg * sg + 135.997 * sg * sg * sg) * 10) / 10 : null;
+    // Une OG hors 1,020–1,130 est une saisie à vérifier : elle n'ouvre ni l'exonération « sans alcool » ni un palier Plato.
+    const ogPlausible = gravityProblem('og', sg) === null;
+    const ogEntered = Number.isFinite(sg) && sg > 0;
+    if (abv != null && plausibleAbv(abv) && abv <= 0.5 && (!ogEntered || ogPlausible)) continue;
+    const plato = ogPlausible ? Math.round((-616.868 + 1111.14 * sg - 630.272 * sg * sg + 135.997 * sg * sg * sg) * 10) / 10 : null;
     if (plato == null) missingPlatoCount++;
     const min = plato == null ? 16.88 : beerTaxBracket(plato), max = plato == null ? 33.76 : min;
     low += volume / 100 * min * multiplier; high += volume / 100 * max * multiplier; full += volume / 100 * max;

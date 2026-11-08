@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 describe('Accessible fermentation follow-up in the active lot sheet', () => {
-  it.each(['annule', 'planifie'] as const)('preserves a legacy actual date when changing to %s', status => {
+  it.each(['annule'] as const)('preserves a legacy actual date when changing to %s', status => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
     render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: status } });

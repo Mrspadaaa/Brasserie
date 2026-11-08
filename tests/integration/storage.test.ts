@@ -254,6 +254,26 @@ describe('Recettes et brassins', () => {
     expect(fakeRepo.all('movements')).toHaveLength(2);
   });
 
+  it('AM 4 : un déstockage refusé ne fait pas passer le brassin en fermentation (relevés gardés, étape inchangée)', () => {
+    // Aucun article de stock : « Pale » ne se rapproche de rien, la consommation est à revoir.
+    const planned = StorageService.planRecipeBatch(recipe, 'LOT-REFUS');
+    const pitched = { ...planned, status: 'fermentation' as const, og: '1.061', brewDay: { currentIndex: 0, pitchedAt: 1, steps: [], readings: [] } };
+    const result = StorageService.completeBrewStock(pitched);
+    expect(result.success).toBe(false);
+    const stored = StorageService.getBatches().find(b => b.id === 'LOT-REFUS')!;
+    expect(stored.status).toBe('planifie');
+    expect(stored.stockReviewIssues).toEqual(result.issues);
+    expect(stored.og).toBe('1.061');
+    expect(stored.brewDay?.pitchedAt).toBe(1);
+  });
+
+  it('AM 4 : un brassin historique refusé garde aussi son étape', () => {
+    const historical = { id: 'LOT-OLD2', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'fermentation' as const };
+    StorageService.addBatch(historical);
+    expect(StorageService.completeBrewStock({ ...historical, status: 'conditionne' }).success).toBe(false);
+    expect(StorageService.getBatches().find(b => b.id === 'LOT-OLD2')?.status).toBe('fermentation');
+  });
+
   it('ne reconstruit pas automatiquement le stock d’un brassin historique', () => {
     const historical = { id: 'LOT-OLD', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'fermentation' as const, recipeSnapshot: captureSnapshot(recipe) };
     StorageService.addBatch(historical);
