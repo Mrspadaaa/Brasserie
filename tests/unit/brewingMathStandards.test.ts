@@ -284,7 +284,7 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
       const dextroseG = BrewingMath.calculatePrimingSugarG(2.5, 20, 20, 'dextrose');
       const saccharoseG = BrewingMath.calculatePrimingSugarG(2.5, 20, 20, 'saccharose');
 
-      expect(dextroseG).toBe(131);
+      expect(dextroseG).toBe(144); // 4,4 g/L/vol : le dextrose du commerce est un monohydrate (CF-NOTE-1, 131 g avant)
       expect(saccharoseG).toBe(127);
       expect(saccharoseG).toBeLessThan(dextroseG);
     });

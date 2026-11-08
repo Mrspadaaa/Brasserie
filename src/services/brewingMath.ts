@@ -828,7 +828,8 @@ export const BrewingMath = {
   },
 
   // 8.b Sucre de refermentation (priming) nécessaire, en grammes.
-  // 1 volume de CO2 par litre demande ~4.0 g/L de dextrose (3.86 g/L pour du saccharose).
+  // 1 volume de CO2 par litre demande 4,4 g/L de dextrose du commerce (monohydrate, M 198,17 : 2 CO2 par molécule) et 3,86 g/L de saccharose
+  // (CF-NOTE-1, 08.11 : 4,0 g/L comptait le dextrose anhydre et donnait 10 % de sucre en moins).
   calculatePrimingSugarG(
     targetCo2Vol: number,
     packagedVolumeL: number,
@@ -838,7 +839,7 @@ export const BrewingMath = {
     if (!Number.isFinite(targetCo2Vol) || targetCo2Vol <= 0) return 0;
     if (!Number.isFinite(packagedVolumeL) || packagedVolumeL <= 0) return 0;
     const residual = this.calculateResidualCo2Vol(maxFermentTempC);
-    const gramsPerLPerVol = sugarType === 'saccharose' ? 3.86 : 4.0;
+    const gramsPerLPerVol = sugarType === 'saccharose' ? 3.86 : 4.4;
     const delta = Math.max(0, targetCo2Vol - residual);
     const sugar = Math.round(delta * gramsPerLPerVol * Math.max(0, packagedVolumeL));
     return Number.isFinite(sugar) ? Math.max(0, sugar) : 0;

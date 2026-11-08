@@ -146,8 +146,8 @@ describe('Refermentation et carbonatation', () => {
   });
 
   it('déduit le CO₂ déjà dissous du sucre de refermentation', () => {
-    // 2.4 vol visés, 20 L, fin de fermentation à 20 °C ➔ (2.4 − 0.86) × 4 × 20.
-    expect(BrewingMath.calculatePrimingSugarG(2.4, 20, 20)).toBe(123);
+    // 2.4 vol visés, 20 L, fin de fermentation à 20 °C ➔ (2.4 − 0.86) × 4,4 × 20 : dextrose monohydrate (CF-NOTE-1).
+    expect(BrewingMath.calculatePrimingSugarG(2.4, 20, 20)).toBe(136);
   });
 
   it('demande moins de saccharose que de dextrose, à carbonatation égale', () => {
