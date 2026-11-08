@@ -88,7 +88,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
 
   // BE-98 (rejeu 649bcc54) : le message d'enregistrement dit la vraie raison (au-delà du plafond, négatif, ou champ vide), pas toujours « positif ou nul ».
   const raisonMontant = (value: number | undefined) => value === undefined || !Number.isFinite(value)
-    ? 'Indique un montant entre 0 et 10 000 CHF.'
+    ? 'Indique un montant positif ou nul.'
     : raisonHorsBornes(value, { min: 0, max: PRIX_UNITAIRE_MAX, unite: 'CHF' });
 
   const money = (label: string, key: MoneyKey) => (
