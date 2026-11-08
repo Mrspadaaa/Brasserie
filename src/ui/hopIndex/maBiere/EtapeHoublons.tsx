@@ -147,16 +147,37 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
   const [retrait, setRetrait] = useState<Retrait<AjoutParcours> | null>(null);
   const avis = useRef<number | null>(null);
   useEffect(() => () => { if (avis.current != null) window.clearTimeout(avis.current); }, []);
+  // TE-24, BR-2 (rejeu 649bcc54) : l'id d'un ajout est sa POSITION dans recipe.hops (a1, a2…). Après un retrait, l'ajout suivant prend l'id du
+  // retiré : retrouver la carte par son id retirait l'autre Lotus. On garde donc la ligne de la recette de l'app (avec son lot au stock, son α,
+  // son moment) et son rang, et l'annulation la rend à ce rang dans le brouillon courant.
+  const lignePerdue = useRef<{ hop: Recipe['hops'][number]; rang: number; avant: Recipe['hops'] } | null>(null);
   const annulerRetrait = useCallback(() => {
     if (!retrait) return;
-    geste((r) => {
-      const additions = r.additions.filter((a) => a.id !== retrait.item.id);
-      additions.splice(Math.min(retrait.index, additions.length), 0, retrait.item);
-      return { ...r, additions };
-    });
+    const perdue = lignePerdue.current;
+    if (perdue) {
+      vider();
+      const actuelles = conversion.origine.hops;
+      // Le brouillon n'a pas encore pris le retrait : il est déjà tel qu'avant. Sinon on rend la ligne à son rang.
+      const hops = JSON.stringify(actuelles) === JSON.stringify(perdue.avant)
+        ? perdue.avant
+        : [...actuelles.slice(0, Math.min(perdue.rang, actuelles.length)), perdue.hop, ...actuelles.slice(Math.min(perdue.rang, actuelles.length))];
+      try { onChange({ draftId, patch: { hops } }); setErreur(null); } catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
+      setLocale(null);
+    } else {
+      // Ajout jamais écrit dans le brouillon : on le remet sous un id libre, à son rang.
+      geste((r) => {
+        const pris = new Set(r.additions.map((a) => a.id));
+        let n = r.additions.length + 1;
+        while (pris.has(`a${n}`)) n += 1;
+        const additions = [...r.additions];
+        additions.splice(Math.min(retrait.index, additions.length), 0, pris.has(retrait.item.id) ? { ...retrait.item, id: `a${n}` } : retrait.item);
+        return { ...r, additions };
+      });
+    }
+    lignePerdue.current = null;
     setRetrait(null);
     if (avis.current != null) window.clearTimeout(avis.current);
-  }, [retrait, geste]);
+  }, [retrait, geste, vider, conversion, onChange, draftId]);
 
   const valeur = useMemo<HoteEtape>(() => ({
     lectures, lireNom,
@@ -174,6 +195,10 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
         if (rang < 0) return;
         const ajout = recetteRef.current.additions[rang];
         const nom = houblon(ajout.hopKey).nom;
+        const lien = conversion.ajouts[id];
+        lignePerdue.current = lien?.index != null && conversion.origine.hops[lien.index]
+          ? { hop: conversion.origine.hops[lien.index], rang: lien.index, avant: conversion.origine.hops }
+          : null;
         geste((r) => retirer(r, id));
         setRetrait({ item: ajout, index: rang, nom });
         if (avis.current != null) window.clearTimeout(avis.current);
@@ -191,7 +216,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
       if (minuterie.current != null) window.clearTimeout(minuterie.current);
       minuterie.current = window.setTimeout(vider, 400);
     },
-  }), [recette, fiche, ouvrir, geste, vider, onAller, lectures, lireNom]);
+  }), [recette, fiche, ouvrir, geste, vider, onAller, lectures, lireNom, conversion]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
 
   return (
