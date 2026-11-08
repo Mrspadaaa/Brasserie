@@ -290,7 +290,7 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
     if (!unanime && settledHeader.has(field)) {
       const key = comparisonKey(field, decision.value);
       desaccords.push(pointDesaccord({ field, ligne: null, vals, lectures: numeros, retenues: vals.map(v => comparisonKey(field, v) === key), pese: false, enjeu,
-        message: `${labels[field]} : une lecture sur trois diffère (${vals.map(v => montrer(field, v)).join(' / ')}).` }));
+        message: `${labels[field]} : une lecture diffère des autres (${vals.map(v => montrer(field, v)).join(' / ')}).` }));
     }
   }
   // This free-form editorial suggestion is not source transcription or a financial classification.
@@ -395,7 +395,7 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
         if (!unanime && settledItem.has(field)) {
           const key = comparisonKey(field, decision.value);
           desaccords.push(pointDesaccord({ ...commun, retenues: vals.map(v => comparisonKey(field, v) === key), pese: false,
-            message: `${baseItem.name || baseItem.id} — ${(field === 'amountTTC' ? 'montant de la ligne' : labels[field].toLowerCase())} : une lecture sur trois diffère.` }));
+            message: `${baseItem.name || baseItem.id} — ${(field === 'amountTTC' ? 'montant de la ligne' : labels[field].toLowerCase())} : une lecture diffère des autres.` }));
         }
       }
     }
