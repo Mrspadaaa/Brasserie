@@ -982,8 +982,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* B2 n° 2, 3, 5 : la quantité imprimée vaut pour l'unité imprimée, jamais pour une autre (« 2 Kg » ne devient pas « 2 g ») : une autre unité vide la quantité (« à remplir ») et le prix, le montant reste ;
        le retour à l'unité quittée, tant que rien n'a été retapé, rend la ligne telle qu'elle était (D373 : aucune valeur lue n'est perdue par un aller-retour). Un toucher sur l'unité déjà posée ne change rien. */
     const choisirUnite=(valeur:string)=>{
-      const posee=isReadableUnit(line.unit);
-      if(posee&&cleUnite(valeur)===cleUnite(line.unit))return;
+      /* Rejeu ff0f822e B2-2, B2-3 : « posée » est l'unité que l'écran MONTRE (`unite` : écrite, ou déduite du prix et jaune), pas seulement l'unité écrite sur la ligne : « Malt Munich 2 Kg × 4,20 » dont le Kg est déduit se
+         convertit comme une ligne au Kg imprimé (2 000 g × 0,0042), au lieu de garder « 2 » et d'effacer le prix. Un toucher sur l'unité déduite la confirme (elle s'écrit), sans rien changer d'autre. */
+      const posee=isReadableUnit(unite);
+      if(posee&&cleUnite(valeur)===cleUnite(unite)){if(!isReadableUnit(line.unit))updateLine(line.id,{unit:valeur});return;}
       const quittee=uniteQuittee.current.get(line.id);
       if(quittee&&line.quantity===undefined&&line.unitPrice===undefined&&line.amount===quittee.amount&&cleUnite(quittee.unit)===cleUnite(valeur)){
         uniteQuittee.current.delete(line.id);calcules.current.delete(line.id);derniers.current.delete(line.id);
@@ -991,14 +993,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         return;
       }
       /* B2 n° 3 (lot 2) : d'une masse à l'autre la quantité se convertit (2 Kg → 2 000 g), le prix suit (÷ 1000), le montant reste ; Kg → g → Kg rend les mêmes valeurs. Pièce, sachet, litre : rien ne se convertit, la quantité est « à remplir ». */
-      const f=posee&&isReadableUnit(unite)?facteurMasse(line.unit,valeur):undefined;
+      const f=posee?facteurMasse(unite,valeur):undefined;
       if(f!==undefined){
         calcules.current.delete(line.id);derniers.current.delete(line.id);
         updateLine(line.id,{unit:valeur,...convertirMasse(line,f)});
         return;
       }
-      if(posee&&isReadableUnit(unite)){
-        uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
+      if(posee){
+        uniteQuittee.current.set(line.id,{unit:unite,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
         calcules.current.delete(line.id);derniers.current.delete(line.id);
         updateLine(line.id,{unit:valeur,quantity:undefined});
         return;
