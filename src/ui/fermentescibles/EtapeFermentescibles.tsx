@@ -62,6 +62,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const chaine = useRef(false);
   // Les retraits en cours d'annulation, du plus ancien au dernier : « Annuler » rend le dernier, puis le précédent (B1 n° 6 : le second retrait ne perd plus le premier).
   const [annules, setAnnules] = useState<Array<{ f: Fermentable; i: number; sel: number }>>([]);
+  const retiresEnAttente = useRef(new Set<Fermentable>());
   const annule = annules.length ? annules[annules.length - 1] : null;
   const [annMom, setAnnMom] = useState<AnnMoment | null>(null);
   const minutRetrait = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -109,18 +110,22 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const retirer = (i: number) => {
     const f = fermentables[i];
     if (!f) return;
+    // N-1 : un retrait = une annulation. Un double toucher lit deux fois la même ligne avant le rendu : la ligne déjà retirée (même objet) ne s'empile pas deux fois.
+    if (retiresEnAttente.current.has(f)) return;
+    retiresEnAttente.current.add(f);
     clearTimeout(minutRetrait.current);
     setAnnules((a) => [...a, { f, i, sel }]);
-    onFermentables((l) => l.filter((_, k) => k !== i));
+    onFermentables((l) => l.filter((x) => x !== f));
     if (sel > i) setSel(sel - 1);
     retour.current = -1; setCouleurLigne(-1); setAnnMom(null);
-    minutRetrait.current = setTimeout(() => setAnnules([]), 6000);
+    minutRetrait.current = setTimeout(() => { retiresEnAttente.current.clear(); setAnnules([]); }, 6000);
   };
   // « Annuler » rend TOUS les retraits en attente, du dernier au premier (banc d'actionneurs N1 : un double toucher sur la corbeille en retire deux, et un seul « Annuler » en rendait un).
   const rendreLigne = () => {
     const pile = annules;
     if (!pile.length) return;
     clearTimeout(minutRetrait.current);
+    retiresEnAttente.current.clear();
     setAnnules([]);
     onFermentables((l) => {
       let r = [...l];
