@@ -104,3 +104,11 @@ LEÇON PROPOSÉE : aucune.
 - C★v8 : champs 188 / 201, lignes 240 / 260, **faux verts 0**, alertes justes 11, inutiles 5, échecs 0, durée médiane 9,8 s.
 - Ajouts : 6, dont **3 non signalés, 0 sous « vérifié »** ; doc1 date maintenant **signalée** ; non signalés : doc3 (n° de commande, 1 ligne en plus),
   doc6 (TVA rendue sur une page qui n'en imprime pas). Moins de 40 pièces : un indice, pas une mesure.
+
+## Passe payante k8 (08.11, pilote, accord du brasseur « Je l'autorise ») — production du dépôt à 013d5188, mêmes 17 pièces, 1 tirage
+
+- Coût 0,6566 CHF (journal : 9,9767 CHF cumulés). Sortie : `H13-reels/banc-k8-prod` (hors Git).
+- C★v8 : champs 190 / 201 (k7 : 188), lignes 239 / 260 (k7 : 240), **faux verts 0** (k7 : 0), alertes justes 10, inutiles 6, échecs 0, durée médiane 11,1 s.
+- Ajouts : 3 (k7 : 6), **1 non signalé** (k7 : 3), **0 sous « vérifié »** : doc3, une ligne en plus, sur une pièce déjà « à trancher » (deux bulletins QR ;
+  à l'écran, LO-1 dit « somme des 2 bulletins », à confirmer). doc6 TVA et doc12 HT : ajoutés mais signalés. Moins de 40 pièces : un indice, pas une mesure.
+- Verdict du pilote : aucune erreur silencieuse sous « vérifié » ; point « robustesse de lecture » clos sur ce banc. Reste suivi au registre : DC-1 (découpe des très longues photos), LO-4, LO-5, LT-5.
