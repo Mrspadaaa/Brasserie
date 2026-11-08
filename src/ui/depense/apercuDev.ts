@@ -307,6 +307,13 @@ export function apercuDepense(etat: string): ApercuDepense {
     const point = makePoint('date-absente', 'ecart', 'date', null, { regle: 'le code relève ce que la lecture ne permet pas de tenir pour sûr', message: 'Date absente ou invalide : à saisir.', unite: 'texte', enjeu: 'info' });
     result.points = [{ ...point, source: 'contrôle', pese: true, signature: signerPoint(point) }];
   }
+  if (etat === 'deux-taux') {
+    // 08.11 (doc2, vétérinaire à deux taux) : aucun total de TVA imprimé (`tvaAmount` null) mais le bloc par taux, chaque montant lu : la tuile doit dire la somme, 0,50 + 5,00 = 5,50 (SIMULÉ, montants inventés).
+    // Sans les points de la lecture « 3 » (leurs lectures divergentes de TVA, 2,80 · 4,15, masqueraient la tuile) : la facture « lue, sans point ».
+    result.points = []; result.fieldWarnings = []; result.issues = []; result.review = { status: 'checked', findings: [], readers: 2 };
+    Object.assign(result, { tvaAmount: null, tvaRate: null, vat: [{ code: 'TVA', rate: 0.026, base: 19.2, amount: 0.5 }, { code: 'TVA', rate: 0.081, base: 61.73, amount: 5 }] });
+    result.controls = { ...result.controls!, vat: { statut: 'ok', base: 'HT' } };
+  }
   if (etat === 'port' || etat === 'port-sans-montant' || etat === 'tout-port') {
     // p3c-port (P21, D249) : états du port, SIMULÉS, dérivés ici (le JSON épinglé de `fixture.test.ts` ne change pas). Une ligne « Port » `shipping` :
     // 8,50 (état `port`, total 95,00), sans montant (`port-sans-montant`, la rangée reste visible : l'inconnu n'est jamais 0), ou seule (`tout-port`, 12,50 : une rangée).

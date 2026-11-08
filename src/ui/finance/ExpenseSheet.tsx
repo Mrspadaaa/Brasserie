@@ -21,6 +21,7 @@ import type { FinanceCategory,StockItem } from '../../types';
 import { FinanceService } from '../../services/financeService';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { lineMathCheck } from '../../domain/finance/invoicePoints';
+import { tvaImprimee } from '../depense/tva';
 import { DriveConnection } from './DriveConnection';
 import { PieceDejaSaisie,LienDepense } from './PieceDejaSaisie';
 import { confronterQr } from '../../services/qrFacture';
@@ -1109,7 +1110,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const tvaLues=[...new Set((points??[]).filter(p=>p.code==='lectures-divergentes'&&/tva/i.test(p.champ)).flatMap(p=>(p.valeurs??[]).map(v=>v.valeur).filter((v):v is number=>typeof v==='number')))];
   const tvaPoint=(points??[]).find(p=>p.code==='tva-incoherente');
   const tvaDet=tvaPoint?.details??[];
-  const tvaLue=typeof result?.tvaAmount==='number'?result.tvaAmount:undefined,tvaChoix=[...new Set([...(tvaLue!==undefined?[tvaLue]:[]),...tvaLues,...(draft.sourceVatAmount!==undefined?[draft.sourceVatAmount]:[])])];
+  /* 08.11 (doc2, deux taux) : le total de TVA lu, sinon la somme du bloc imprimé par taux quand chaque taux a son montant (`tvaImprimee`) ; sans bloc lu, « — » reste. */
+  const tvaDeLecture=tvaImprimee(result),tvaLue=tvaDeLecture?.montant,tvaChoix=[...new Set([...(tvaLue!==undefined?[tvaLue]:[]),...tvaLues,...(draft.sourceVatAmount!==undefined?[draft.sourceVatAmount]:[])])];
   const tvaRegle=reglees.has('TVA|');
   const numero=(pred:(c:Chip)=>boolean)=>{const i=chips.findIndex(pred);return i>=0?i+1:null;};
   const nTva=numero(c=>c.nom==='TVA'),nPaye=numero(c=>c.source==='paiement');
@@ -1140,9 +1142,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const panneaux=<div className="space-y-2">
     {scan?.ok?<div data-dp="panneau-tva" className={`${panel==='tva'?'block':'hidden'} rounded-panel border-2 border-cave-50/80 p-2 space-y-1.5`}>
       {/* D375 : « SI je click en ht, je peux plus revenir ? » : la TVA lue (et la valeur posée) reste toujours offerte, la case posée est marquée ; « sans TVA » n'est jamais « proposé ». */}
-      <div className="flex flex-wrap gap-1.5">{tvaChoix.map((v,i)=>{const col=tvaDet.find(d=>d.relation==='somme-tva'),cents=Math.round(v*100);const prov=col&&col.lu===cents?'colonne MWST · lu':col&&col.calcule===cents?'N + R':tvaLues.length>1&&tvaLues.includes(v)?`lecture ${tvaLues.indexOf(v)+1}`:v===tvaLue?'lu':'posée';return <button key={v} type="button" aria-pressed={memeValeur(draft.sourceVatAmount,v)} onClick={()=>{patch({sourceVatAmount:v});setReglees(s=>new Set(s).add('TVA|'));setPanel(null);}} className={`min-h-9 rounded-control border px-3 text-left ${memeValeur(draft.sourceVatAmount,v)?'border-2 border-cave-50':'border-cave-600'}`}><small className="block text-xs text-cave-400">{prov}</small><b className="font-mono text-lg text-cave-50">{fr2(v)}</b></button>;})}
+      <div className="flex flex-wrap gap-1.5">{tvaChoix.map((v,i)=>{const col=tvaDet.find(d=>d.relation==='somme-tva'),cents=Math.round(v*100);const prov=col&&col.lu===cents?'colonne MWST · lu':col&&col.calcule===cents?'N + R':tvaLues.length>1&&tvaLues.includes(v)?`lecture ${tvaLues.indexOf(v)+1}`:v===tvaLue?(tvaDeLecture?.source==='bloc'?'somme des taux':'lu'):'posée';return <button key={v} type="button" aria-pressed={memeValeur(draft.sourceVatAmount,v)} onClick={()=>{patch({sourceVatAmount:v});setReglees(s=>new Set(s).add('TVA|'));setPanel(null);}} className={`min-h-9 rounded-control border px-3 text-left ${memeValeur(draft.sourceVatAmount,v)?'border-2 border-cave-50':'border-cave-600'}`}><small className="block text-xs text-cave-400">{prov}</small><b className="font-mono text-lg text-cave-50">{fr2(v)}</b></button>;})}
         <button type="button" aria-pressed={draft.sourceVatAmount===undefined} onClick={()=>{patch({sourceVatAmount:undefined});setReglees(s=>new Set(s).add('TVA|'));setPanel(null);}} className={`min-h-9 rounded-control border px-3 text-left ${draft.sourceVatAmount===undefined?'border-2 border-cave-50':'border-cave-600'}`}><small className="block text-xs text-cave-400">sans TVA</small><b className="font-mono text-lg text-cave-50">—</b></button></div>
       {tvaDet.length?<ul className="text-xs text-cave-200 space-y-0.5">{tvaDet.slice(0,4).map((d,i)=><li key={i}>{phraseRelation(d)}</li>)}</ul>:null}
+      {tvaDeLecture&&tvaDeLecture.taux.length>1?<p data-dp="tva-taux" className="font-mono text-xs text-cave-200">{tvaDeLecture.taux.map(t=>`${fr2(t.amount)}${t.rate!==null?` à ${tauxFr(t.rate)} %`:''}`).join(' + ')}</p>:null}
       <p className="text-xs text-cave-400">— HT non imprimé{draft.sourceNetAmount!==undefined?` : ${fr2(draft.sourceNetAmount)}`:''}. Aucune valeur n’est déduite.</p></div>:null}
     <div data-purchase-payment data-dp="panneau-paye" className={`${panel==='paye'?'block':'hidden'} rounded-panel border-2 border-cave-50/80 p-2 space-y-2 text-sm text-cave-200`}>
       {payeSuppose?<><div className="grid grid-cols-2 gap-1.5"><div className="rounded-control border border-cave-700 p-1.5"><small className="block text-xs text-attention">payé le · supposée</small><b className="font-mono text-lg text-attention">{court(draft.paymentDate)}</b></div><div className="rounded-control border border-cave-700 p-1.5"><small className="block text-xs text-cave-400">facture</small><b className="font-mono text-lg text-cave-50">{court(draft.date)}</b></div></div>
@@ -1484,4 +1487,6 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   </ModalShell>;
 }
 const fr2=(n:number)=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
+/** 0.026 → « 2,6 », 0.081 → « 8,1 », 0.077 → « 7,7 », 0.19 → « 19 » (au dixième de point, virgule suisse). */
+const tauxFr=(rate:number)=>String(Math.round(rate*1000)/10).replace('.',',');
 function ScanHintTotal({messages}:{messages:Array<string|undefined>}){const dits=messages.filter((m):m is string=>Boolean(m));return dits.length?<span id="scan-hint-amountTTC" className="sr-only">À confirmer · {dits.join(' ')}</span>:null;}

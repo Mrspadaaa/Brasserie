@@ -14,6 +14,7 @@ import { lireOptions } from './optionsDuNom';
 import { libelleDeLigne, voisinEtMarque } from './etat';
 import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
 import { groupeDe } from './groupes';
+import { tvaImprimee } from './tva';
 import { familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
 import type { StockItem } from '../../types';
 
@@ -105,7 +106,7 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
 /** Ce que la lecture propose pour l'en-tête (sans les lignes) : le patch que `applyOutcome` passe à `patchPurchaseDraft`. */
 export function enteteDeLecture(previous: PurchaseDraft, result: ScannedInvoiceResult, today: string): Partial<PurchaseDraft> {
   const total = invoiceTotalProposal(result), proposed = applyScannedDescription(previous, result);
-  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: result.category, amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: result.tvaAmount ?? undefined };
+  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: result.category, amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: tvaImprimee(result)?.montant };
 }
 
 export interface OptionsLecture { stockItems: readonly StockItem[]; today: string; model?: string; documentHash?: string; ligneVide: () => PurchaseLineDraft }

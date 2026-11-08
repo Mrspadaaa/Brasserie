@@ -16,15 +16,19 @@ const PLURAL_FAMILIES: Record<string, string> = { Malt: 'malts', Houblon: 'houbl
 const KIND_FAMILIES: Record<string, string> = { stock: 'ingrédients', packaging: 'emballages', shipping: 'port', equipment: 'matériel', service: 'services' };
 const DESCRIPTION_MAX = 60;
 const FAMILLES_MATIERES = new Set(['malts', 'houblons', 'levures', 'sucres', 'additifs', 'ingrédients']);
-const MATIERES_PREMIERES = 'matières premières';
+const INGREDIENTS = 'ingrédients';
 
 /**
  * « Pour quoi ? » proposé par le code : `Fournisseur · N° · familles`, 60 caractères au plus, sans la prose du modèle.
- * Les familles viennent de la catégorie de stock lue, sinon de la nature de la ligne, uniques, dans l'ordre de première apparition ;
- * une ligne de mouture n'ajoute rien. Rien n'est inventé : fournisseur, numéro ou familles absents sont omis.
+ * Les familles viennent de la catégorie de stock lue, sinon de la nature de la ligne, uniques ; une ligne de mouture n'ajoute rien.
+ * Elles reflètent la majorité des lignes (lecture en ligne du 08.11, doc8 et doc10 : « matériel, emballages » sur une facture de malts et de houblons) :
+ *  - les matières (malts, houblons, levures, sucres, additifs, ingrédients) passent devant, ce pour quoi on achète (LP-4) ;
+ *  - dans chaque groupe, la famille qui a le plus de lignes vient d'abord, la première apparition ne départageant que les égalités ;
+ *  - des matières de plusieurs familles qui ne tiennent pas en 60 caractères se disent « ingrédients », le mot de l'app pour les lignes de stock.
+ * Rien n'est inventé : fournisseur, numéro ou familles absents sont omis.
  */
 export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
-  const families: string[] = [];
+  const nombres = new Map<string, number>();
   for (const item of scan.items) {
     if (isMillingSurcharge({ kind: item.kind, description: item.name, sourceReference: item.reference })) continue;
     // k7 (D271) : une catégorie lue dans une autre langue (« yeast », « Hefe ») est ramenée à son nom français ; une catégorie inconnue n'est jamais recopiée
@@ -35,24 +39,25 @@ export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
     // D306 : une ligne de la famille Rénovation dit « travaux », un nettoyant sans catégorie lue « nettoyage », jamais « ingrédients » (lus `stock`).
     const famille = familleDe({ nom: item.name, kind: item.kind, stockCategory: item.stockCategory, categorie: scan.category });
     const family = famille === 'renovation' ? 'travaux' : !known && famille === 'nettoyage' ? 'nettoyage' : known ? (PLURAL_FAMILIES[category] ?? category.toLowerCase()) : deduced && PLURAL_FAMILIES[deduced] ? PLURAL_FAMILIES[deduced] : (KIND_FAMILIES[item.kind] ?? '');
-    if (family && !families.includes(family)) families.push(family);
+    if (family) nombres.set(family, (nombres.get(family) ?? 0) + 1);
   }
+  // Le tri est stable : à nombre de lignes égal, l'ordre de première apparition (celui des clés de la Map) reste.
+  const parNombre = (liste: string[]) => [...liste].sort((a, b) => nombres.get(b)! - nombres.get(a)!);
+  const families = [...nombres.keys()];
   const vendor = (scan.vendor ?? '').replace(/\s+/g, ' ').trim(), number = (scan.invoiceNumber ?? '').replace(/\s+/g, ' ').trim();
   const join = (parts: string[]) => parts.filter(Boolean).join(' · ');
   // LP-4 : une commande commence souvent par du matériel et finit par les malts, houblons et levures ; au plafond de 60 caractères, les ingrédients, ce pour quoi
-  // on achète, ne doivent pas être coupés avant le matériel. Les matières premières passent devant (ordre d'apparition gardé dans chaque groupe).
-  const matieres = families.filter(family => FAMILLES_MATIERES.has(family)), autres = families.filter(family => !FAMILLES_MATIERES.has(family));
-  const ordonnees = [...matieres, ...autres];
-  for (let kept = ordonnees.length; kept >= 0; kept--) {
-    const text = join([vendor, number, ordonnees.slice(0, kept).join(', ')]);
-    if (text.length <= DESCRIPTION_MAX) {
-      // Plusieurs familles de matières premières coupées par le plafond : elles se disent ensemble plutôt que d'en garder une seule.
-      if (matieres.length > 1 && kept < ordonnees.length) {
-        const groupees = join([vendor, number, [MATIERES_PREMIERES, ...autres].slice(0, Math.max(1, kept - matieres.length + 1)).join(', ')]);
-        if (groupees.length <= DESCRIPTION_MAX) return groupees;
-      }
-      return text;
-    }
+  // on achète, ne doivent pas être coupés avant le matériel. Les matières passent devant, chaque groupe par nombre de lignes décroissant.
+  // « ingrédients » (lignes de stock sans catégorie lue) englobe malts, houblons, levures… : à côté d'eux, il les dit tous.
+  const matieres = parNombre(families.filter(family => FAMILLES_MATIERES.has(family))), autres = parNombre(families.filter(family => !FAMILLES_MATIERES.has(family)));
+  const matieresDites = matieres.includes(INGREDIENTS) ? [INGREDIENTS] : matieres;
+  const complete = [...matieresDites, ...autres];
+  // Tout tient : chaque famille nommée. Sinon, plusieurs familles de matières se disent ensemble (« ingrédients ») plutôt que d'en garder une seule, et les autres
+  // familles suivent tant qu'elles tiennent, les plus nombreuses d'abord.
+  const retenues = join([vendor, number, complete.join(', ')]).length <= DESCRIPTION_MAX || matieresDites.length < 2 ? complete : [INGREDIENTS, ...autres];
+  for (let kept = retenues.length; kept >= 0; kept--) {
+    const text = join([vendor, number, retenues.slice(0, kept).join(', ')]);
+    if (text.length <= DESCRIPTION_MAX) return text;
   }
   // Trop long même sans familles : le fournisseur est coupé à un mot pour que le numéro reste lisible.
   const room = DESCRIPTION_MAX - (number ? number.length + 3 : 0);

@@ -4,7 +4,7 @@ import type { ScannedInvoiceResult } from '../../src/services/geminiScanner';
 
 // LP-4 (lecture en ligne du 08.11, doc8 et doc10) : « Pour quoi ? : matériel, emballages » sur une commande de malts, houblons et levures de B&R.
 // Cause : les familles étaient gardées dans l'ordre de première apparition ; la commande commence par du matériel (cuve, robinet, sacs) et le plafond de 60 caractères
-// coupait les ingrédients, qui viennent en dernier. Les matières premières passent devant, et se disent « matières premières » quand les familles ne tiennent pas.
+// coupait les ingrédients, qui viennent en dernier. Les matières premières passent devant, et se disent « ingrédients » quand les familles ne tiennent pas (08.11, point 2 : « matières premières » remplacé, voir tests/unit/depense/h13-0811/pour-quoi.test.ts).
 // Lecture imitée d'une vraie commande (types de lignes de doc8, cas-4.json), aucun appel à Gemini.
 const ligne = (id: string, name: string, kind: string, stockCategory?: string) => ({ id, name, kind, quantity: 1, unit: kind === 'stock' ? 'Kg' : '', amountTTC: 10, stockCategory }) as any;
 const commande = (items: any[], more: Partial<ScannedInvoiceResult> = {}): ScannedInvoiceResult => ({
@@ -15,11 +15,12 @@ const EMBALLAGE = [ligne('d', 'Kronkorken 100 Kapseln', 'packaging')];
 const MATIERES = [ligne('e', 'Pilsner Malz', 'stock', 'Malt'), ligne('f', 'Aramis 7.9%', 'stock', 'Houblon'), ligne('g', 'Wyeast 3944', 'stock', 'Levure')];
 
 describe('LP-4 : « Pour quoi ? » d’une commande qui mêle matériel, emballages et matières premières', () => {
-  it('doc8 : le matériel vient d’abord sur la facture, les matières premières passent devant et tiennent en 60 caractères', () => {
+  it('doc8 : le matériel vient d’abord sur la facture, les matières passent devant (« ingrédients » quand les familles ne tiennent pas) et le matériel suit', () => {
     const texte = invoicePurchaseDescription(commande([...MATERIEL, ...EMBALLAGE, ...MATIERES]));
-    expect(texte).toBe('Brau- und Rauchshop GmbH · 652093 · matières premières');
+    // 08.11 (point 2) : « matières premières » est devenu « ingrédients » (le mot de l'app), plus court : le matériel, 3 lignes sur 7, tient à côté.
+    expect(texte).toBe('Brau- und Rauchshop GmbH · 652093 · ingrédients, matériel');
     expect(texte.length).toBeLessThanOrEqual(60);
-    expect(texte).not.toMatch(/matériel|emballages/);
+    expect(texte).not.toMatch(/emballages|matières premières/);
   });
   it('quand tout tient, les matières premières sont nommées par famille et passent avant le matériel', () => {
     const texte = invoicePurchaseDescription(commande([...MATERIEL, ...MATIERES.slice(0, 1)], { vendor: 'B&R', invoiceNumber: '1' }));
