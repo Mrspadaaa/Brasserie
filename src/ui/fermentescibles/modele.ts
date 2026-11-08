@@ -69,7 +69,8 @@ export function cranPas(x: number, dir: number): number {
 }
 /** La plage de la piste du plateau : 0–2 kg sous 1 kg, sinon la graduation ronde au-dessus d'une fois et demie la masse. */
 export function pmax(kg: number): number {
-  if (kg < 1) return 2;
+  // Une masse absente (champ vidé au récapitulatif : NaN, « à renseigner ») garde la piste de 0 à 2 kg, jamais « NaN › » (monkey, graine 3, 08.11).
+  if (!(kg >= 1)) return 2;
   const N = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50];
   for (const n of N) if (n >= kg * 1.5) return n;
   return Math.ceil((kg * 1.5) / 10) * 10;

@@ -28,6 +28,7 @@ describe('N5 — « Sur la facture : … » sous « Nom »', () => {
   it('« Enregistrer » garde le champ', () => {
     const onSave = ouvrir(art('A', 'Malt de Vienne', 'Malt', 'kg', { nomsFacture: ['Wiener Malz'] }));
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
-    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ nomsFacture: ['Wiener Malz'] }));
+    // `onSave(article, base)` depuis la voie Stocks du 08.11 (la base sert aux règles d'inventaire) : l'article enregistré est le premier argument.
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ nomsFacture: ['Wiener Malz'] }), expect.anything());
   });
 });

@@ -278,9 +278,11 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   const tight = useDensity() === 'tight';
 
   const patchFerm = (i: number, patch: Partial<Fermentable>) => {
-    // Même règle que l'étape Malts/sucres (BR-21) : une masse négative ne se retient pas, un champ vidé vaut 0, 10 t au plus ; jamais `undefined` ni NaN dans la recette.
+    // BR-21 : une masse négative ne se retient pas, 10 t au plus. Un champ VIDÉ du récapitulatif reste une absence (NaN, « à renseigner »), comme tous ses
+    // champs : jamais un 0 inventé ; `undefined` devient cette même absence.
     if ('weightKg' in patch) {
-      const kg = masseLigneRetenue(patch.weightKg);
+      const vide = patch.weightKg === undefined || Number.isNaN(patch.weightKg);
+      const kg = vide ? Number.NaN : masseLigneRetenue(patch.weightKg);
       if (kg === null) return;
       patch = { ...patch, weightKg: kg };
     }

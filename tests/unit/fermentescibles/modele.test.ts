@@ -39,6 +39,8 @@ describe('formats et crans de la masse', () => {
     expect(pmax(0.4)).toBe(2);
     expect(pmax(5)).toBe(8);
     expect(pmax(7)).toBe(12);
+    // Une masse absente (NaN, champ vidé au récapitulatif) garde la piste ordinaire : jamais « NaN › » sous la piste.
+    expect(pmax(Number.NaN)).toBe(2);
     expect(pmax(60)).toBe(90);
   });
 });
