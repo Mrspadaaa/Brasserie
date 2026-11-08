@@ -321,6 +321,7 @@ export const BrewingMath = {
     }
     const points = (og - 1) * 1000;
     const ogTxt = og.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    const pctTxt = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
     // Audit du 08.11 (AM 3) : à 1,290, le conseil « prévois plus de grain » était l'inverse du vrai. Au-delà du plafond, c'est une saisie à vérifier.
     if (og > OG_PLAUSIBLE_MAX) {
       return {
@@ -338,7 +339,8 @@ export const BrewingMath = {
       correctedPct: corrected,
       lostPoints: lost,
       // Virgule et trois décimales (« 1,085 »), comme `formatDensite` : importé de `recipeMetrics`, il ferait une boucle (recipeMetrics → yeastProjection → ce fichier).
-      note: `À ${ogTxt}, le moût sature : compte plutôt ${corrected} % de rendement que ${nominalPct} %. Prévois plus de grain ou moins de volume.`
+      // RJ-8 : « 71.9 % » avait son point décimal ; un rendement se lit à 0,1 % près, à la virgule.
+      note: `À ${ogTxt}, le moût sature : compte plutôt ${pctTxt(corrected)} % de rendement que ${pctTxt(nominalPct)} %. Prévois plus de grain ou moins de volume.`
     };
   },
 
