@@ -103,6 +103,25 @@ export function computeBeerColor(lignes: MaltIngredient[], volumeL: number): Bee
   };
 }
 
+/**
+ * La couleur d'une RECETTE : la seule fonction que tous les écrans appellent (contre-calcul du 08.11, CF-1 et CF-3).
+ *
+ * Tout ce qui colore le moût compte, comme dans BeerSmith et Brewfather : le grain empâté, mais aussi un sirop candi, un sucre
+ * caramélisé ou un extrait coloré, qu'ils entrent à l'ébullition ou en fermentation (cas réel : dubbel au sirop D-180 à 355 EBC,
+ * 22,3 EBC affichés pour 38,9 attendus). Un fermentescible qui n'est pas un grain et dont la couleur n'est pas saisie ne colore
+ * pas : l'app écrit 0 EBC sur toute ligne neuve de sucre, de lactose ou de fruit, et un sucre sans couleur ne doit pas effacer
+ * la couleur de tous les grains. Un GRAIN sans couleur reste bloquant (`null`) : sans elle, le chiffre serait faux.
+ */
+export function recipeBeerColor(
+  fermentables: readonly MaltIngredient[] | null | undefined,
+  volumeL: number
+): BeerColor | null {
+  const colorants = (fermentables ?? []).filter(
+    (f) => f.kind == null || f.kind === 'grain' || Number.isFinite(f.colorEbc)
+  );
+  return computeBeerColor(colorants, volumeL);
+}
+
 /** Ce qui manque pour pouvoir calculer la couleur — pour le dire précisément. */
 export function missingColorData(malts: MaltIngredient[]): string[] {
   return malts.filter((m) => m.colorEbc == null).map((m) => m.name);
