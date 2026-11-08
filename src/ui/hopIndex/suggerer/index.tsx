@@ -17,6 +17,7 @@ import { Heart } from 'lucide-react';
 import { COULEURS, COURT, Legende, nombre, Picto, ROUE, type Echelle } from './commun';
 import { CadreOutil, FicheHote as Fiche, useBiere, useCas, useComparaison, useGestes, useNavigation, useOuvrir, useRecette, useVisee, type RouteSuggerer } from './hote';
 import { nomLevure } from '../comparer/cas';
+import { CONDITIONS } from '../parcours/conditions';
 import { poolSuggerer, style } from '../parcours/adaptateur';
 import type { FamilyId, Voie } from '../../../domain/hopIndex/v4';
 import { offModelLeads } from '../parcours/v4';
@@ -316,7 +317,7 @@ export default function Suggerer() {
             </ul>
           </details>
         )}
-        <p className="text-xs text-cave-400 px-1">{nomLevure(recette.yeastId)} · les voies viennent du moteur ; « ~ » simulé.</p>
+        <p className="text-xs text-cave-400 px-1">{recette.yeastId ? nomLevure(recette.yeastId) : `levure non reconnue, ${nomLevure(CONDITIONS.levure)} supposée`} · les voies viennent du moteur ; « ~ » simulé.</p>
 
         <div className="pq-suggerer-barre-bas" data-element="q2b-comparer-n">
           <button type="button" data-role="pont-comparer" data-etat="etat-sugg-comparer-n" disabled={aComparer.length < 1} onClick={() => ouvrir({ ecran: 'comparer', houblons: aComparer })}
