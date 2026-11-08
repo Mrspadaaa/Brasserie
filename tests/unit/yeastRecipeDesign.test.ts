@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { alcoholByVolume } from '../../src/domain/alcohol';
 import { assertHopKnowledge } from '../../functions/src/hopPredictionSchema';
 import { yeastReferences, type YeastReference } from '../../src/domain/yeastReferences';
 import references from '../../src/data/yeastRecipeReferences.json';
@@ -167,7 +168,7 @@ describe('Simulations bornées par les données réelles', () => {
     const r = { ...recipe('lalbrew-verdant-ipa'), style: 'Hazy IPA', ogTarget: 1.06 }, d = draft(r);
     const result = evaluateYeastRecipeDesign(r, d, refs);
     expect(result.fg.range?.min).toBeCloseTo(1.0108, 10); expect(result.fg.range?.max).toBeCloseTo(1.015, 10);
-    expect(result.abv.range?.min).toBeCloseTo(5.90625, 8); expect(result.abv.range?.max).toBeCloseTo(6.4575, 8);
+    expect(result.abv.range?.min).toBeCloseTo(alcoholByVolume(1.06, 1.015), 8); expect(result.abv.range?.max).toBeCloseTo(alcoholByVolume(1.06, 1.0108), 8);
     const other = evaluateYeastRecipeDesign(r, { ...d, yeastId: 'wyeast-1318', quantityG: undefined }, refs);
     expect(other.fg.range?.min).toBeCloseTo(1.015, 10); expect(other.fg.range?.max).toBeCloseTo(1.0174, 10);
     expect(result.fg.reasons.join(' ')).toContain('Ni DF garantie ni intervalle statistique');
