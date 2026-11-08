@@ -89,4 +89,6 @@ Deux défauts neufs trouvés par ces preuves, rouges sur `605a3bc3` puis corrig�
 `formatLitres` dans `recipeMetrics.ts`, aussi recherche, liste de Stocks et fiche de brassin) et la pastille « Stock (1) » qui comptait les ruptures
 au-dessus de « À commander · 0 » (`articlesACommander`, le même compte que le badge). Vitest : `recipeMetrics`, `recetteMemeChiffre`, `compactProduction`,
 `brewWortPair`, `compactStocks`, `stockLineMatching`, `dashboardNavigation`, `articlesACommander`, `stockLevel`, `dashboard*`, `fix114*` verts ; `tsc` sans erreur
-sur les fichiers touchés. Restent sans Chrome : n° 33, 34, 50 (brassin planifié ou en fermentation).
+sur les fichiers touchés. n° 50, même jour : `controle-50` (article créé, inventaire corrigé à 500 g, seuil vide) : avant `5cf2f99d` SEUIL ECHEC (aucun geste) ;
+sur `3db67392` SEUIL ECHEC (« Niveau inconnu » écrit deux fois dans la fiche) ; après « Fixer le seuil minimum » : SEUIL OK en clair 390 et cave 1280,
+focus sur « Seuil minimum », captures `head4/c50-seuil-*.png` regardées. Restent sans Chrome : n° 33, 34 (il faut un brassin planifié ou en fermentation).
