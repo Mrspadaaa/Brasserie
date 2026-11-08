@@ -1,4 +1,4 @@
-import { formatAmount } from './brewAmount';
+import { formatAmount } from './brewAmount.js';
 
 /** Shared pure rules: no browser clock, SDK or network dependency. */
 export interface SessionStep {
