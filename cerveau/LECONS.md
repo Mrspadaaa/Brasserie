@@ -125,9 +125,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes ; ni choix ni accord ne bloquent
-- Erreur : 22.10, questions fermées sans maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « ?? J'ai déjà donné mon avis ». 07.11 : « Pourquoi tu attends mon accord ??? ».
+- Erreur : 22.10, questions fermées sans maquette. 02.11 : « ?? J'ai déjà donné mon avis ». 07.11 : « Pourquoi tu attends mon accord ??? ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
-- Faire : chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête.
+- Faire : un mot ou un détail mineur se tranche sans maquette ([[micro-correctifs]]). Chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête.
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 

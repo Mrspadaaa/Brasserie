@@ -1546,3 +1546,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « b » (lu : la ligne arrivée avec la lecture complète se marque « 2ᵉ lecture · n/N » au lieu de « ajoutée » ; seul le mot change).
   Avant, sur « Shipping 15,00 » : « si on l'enlève, le total est plus correct ?? » ; « Tu va fixer tout ces problèmes et rendre le truc encore plus
   fiable et robuste ??? » ; « Okay, fair ça et en paralelle, rend le truc fiable » ; « Montre les mini maquettes » ; « Envoie une notification quand c'est fait ».
+- **08.11**, dans le fil de la pilote, mot pour mot : « Mais refait pas des mini maquettes pour des choses aussi mineur... La variante A était vraiment
+  bien de base... » (lu : le mot « ajoutée » reste, le « b » précédent est annulé ; un mot ou un libellé mineur ne se montre pas en maquettes : on garde
+  l'actuel ou on tranche, et on le dit).
