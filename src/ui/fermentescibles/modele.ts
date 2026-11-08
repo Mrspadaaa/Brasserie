@@ -4,6 +4,7 @@
 import type { Fermentable, FermentableKind, FermentableUse, StockItem } from '../../types';
 // Les noms courants (« Munich » → Münchner Malz) viennent de la voie a1 (D220, D222) : une seule table, celle des tuiles aussi.
 import { nomsParAlias, normaliser } from '../../domain/fermentables/noms';
+import { BORNES } from '../../domain/bornesMetier';
 import {
   grainEmpate, grainHorsEmpatage, messageMoment, momentParDefaut, momentPermis, momentsPermis, momentSuivant, momentTourne,
 } from '../../domain/fermentables/moments';
@@ -31,13 +32,18 @@ export function kgTxt(x: number): string {
   return s.replace('.', ',');
 }
 export const qteTxt = (x: number) => String(Math.round(x * 100) / 100).replace('.', ',');
-/** Un nombre tapé : « 2,5 », « 2.5 kg ». Rien de lisible : `null` (jamais 0). */
+/**
+ * Un nombre tapé : « 2,5 », « 2.5 kg », « J+3 ». Rien de lisible : `null` (jamais 0). Seule une unité (kg, g, EBC, PPG, °C) ou le « J+ » d'un jour
+ * s'accepte autour du nombre : « Crystal 60 » tapé dans un jour n'est PAS 60 (BR-18 : « J+60 » depuis du texte).
+ */
 export function lit(s: string): number | null {
-  const v = parseFloat(String(s).replace(',', '.').replace(/[^0-9.]/g, ''));
+  const t = String(s).trim().replace(/^j\s*\+?\s*/i, '').replace(/\s*(kg|g|ebc|ppg|°\s*c)\s*$/i, '').replace(/(\d)[\s  ](?=\d)/g, '$1').replace(',', '.');
+  if (!/^(\d+(\.\d*)?|\.\d+)$/.test(t)) return null;
+  const v = parseFloat(t);
   return Number.isFinite(v) ? v : null;
 }
 /** La masse la plus grande qu'une ligne accepte (10 t) : au-delà, la saisie est ramenée là (fuzzSaisie : 999999999999) et l'écran le dit (B1 n° 12). */
-export const MASSE_MAX_KG = 10000;
+export const MASSE_MAX_KG = BORNES.masseLigneKg.max;
 /**
  * Une masse tapée, au centième de kg (10 g : la précision d'une balance de brasserie ; « 0,004 » devient 0, à compléter, au lieu d'un bandeau à trois décimales).
  * Le plafond n'est PAS appliqué ici : `setKg` de l'étape le fait et le dit. Illisible ou infini : le plafond.
@@ -232,7 +238,8 @@ export function chercher(texte: string, articles: readonly StockItem[], lignes: 
  * le contient pas lui-même : « Crystal 60 », « Munich 10 » sont des noms (critique B1 n° 2, 07.11 : « Crystal 60 » devenait 60 kg).
  */
 /**
- * `sucre` : en mode Sucre, un entier de 1 à 25 au bout d'un nom inconnu est une masse (RO-2, 08.11 : « sirop candi 1 » créait un sucre à 0 kg).
+ * `sucre` : hors du grain (sucre, sucre de lait, fruit, extrait), un entier de 1 à 25 au bout d'un nom inconnu est une masse (RO-2, 08.11 : « sirop candi 1 » créait un sucre
+ * à 0 kg ; MV-10 : « Mangue 20 » créait un fruit « Mangue 20 » à 0 kg).
  * Les noms de sucre ne finissent pas par un petit entier (« Candi D-180 », « Candi D 90 » : au-delà de 25) ; ceux des malts si (« Caramunich 2 »).
  */
 export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = false): { nom: string; kg: number | null } {

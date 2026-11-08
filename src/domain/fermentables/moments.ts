@@ -8,7 +8,8 @@
 //    par les enzymes de la maische, à 62–72 °C. Bouilli, il donne des tanins et de l'amidon non converti ; à froid au fermenteur, ni extrait ni
 //    couleur, seulement un risque d'infection (Palmer, How to Brew, ch. 12 et 14 ; Briggs, Brewing Science and Practice, ch. 4).
 //    Le modèle n'a pas de moment « trempage » : un grain n'a donc qu'un moment, et jamais de jour J+.
-//  - Sucre, sucre de lait, fruit, extrait : à l'ébullition ou en fermentation (le modèle existant ; jour J+ en fermentation seulement).
+//  - Sucre, sucre de lait, fruit : à l'ébullition ou en fermentation (le modèle existant ; jour J+ en fermentation seulement).
+//    Un fruit bouilli existe (purée pasteurisée en fin d'ébullition) : il reste permis. Extrait : à l'ébullition seulement (AM-4).
 //    Le premier moment de chaque liste est celui d'une ligne neuve (les familles de l'assistant : sucre, lactose, extrait à l'ébullition,
 //    fruit en fermentation).
 //
@@ -21,7 +22,8 @@ export const MOMENTS_PERMIS: Readonly<Record<FermentableKind, readonly Fermentab
   grain: ['empatage'],
   sucre: ['ebullition', 'fermentation'],
   lactose: ['ebullition', 'fermentation'],
-  extrait: ['ebullition', 'fermentation'],
+  // Un extrait se dissout à chaud : à l'ébullition (ou en fin d'ébullition). Versé cru au fermenteur, il n'est ni dissous ni stérile (AM-4, 08.11).
+  extrait: ['ebullition'],
   fruit: ['fermentation', 'ebullition'],
 };
 

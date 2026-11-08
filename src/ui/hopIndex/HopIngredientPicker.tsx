@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import type { StockItem } from '../../types';
 import type { HopVariety } from '../../../functions/src/hopIndexSchema';
-import { Units } from '../../services/units';
-import { nombreFr, refAffichable } from '../../domain/stock/regles';
 import { Combobox } from '../Combobox';
 import { useHopCatalogue } from './useHopCatalogue';
-import { HOP_FORM_LABELS, hopReferenceSource } from '../../domain/hopIndex/labels';
+import { CLES_RECHERCHE, optionsReference, optionsStock } from './pickerOptions';
 import { hopFitsStyle, hopRecipeStyle } from '../../domain/hopRecipeDesign';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 
@@ -23,12 +21,9 @@ export function HopIngredientPicker({ items, onChange, onReference, onCreate, pl
   const byStyle = style && style.family !== 'unknown';
   const fitsStyle = (v: HopVariety) => !!style && hopFitsStyle(v.name, style.family, v.aliases, recipe?.style);
   const stock = items.filter(i => i.category.toLocaleLowerCase('fr') === 'houblon');
-  const options = [...stock.map(i => ({ value: `stock:${i.ref}`, label: i.name, group: 'Mes articles',
-    // TE-23 : jamais l'identifiant interne d'une fiche apprise (FICHE-Houblon%3A…), la virgule suisse, « α » et non « AA ».
-    detail: [refAffichable(i.ref), i.supplier, i.currentStock > 0 ? `${Units.format(i.currentStock, i.unit)} en stock` : 'stock épuisé', i.alphaPct ? `${nombreFr(i.alphaPct, 2)} % α` : null].filter(Boolean).join(' · '), favorite: i.favorite })),
-    ...varieties.filter(v => !v.archived && (!byStyle || all || fitsStyle(v))).map(v => ({ value: `ref:${v.id}`, label: v.name, group: byStyle && fitsStyle(v) ? `Repères · ${style.name}` : 'Catalogue · autres usages',
-      detail: `${hopReferenceSource(v)} · ${HOP_FORM_LABELS[v.form]} · ${v.aliases.join(', ')} · disponibilité non renseignée` }))];
-  return <div className="space-y-1"><Combobox compact value="" disabled={busy} options={options} ariaLabel={ariaLabel} placeholder={placeholder}
+  const options = [...optionsStock(stock),
+    ...optionsReference(varieties.filter(v => !v.archived && (!byStyle || all || fitsStyle(v))), v => byStyle && fitsStyle(v) ? `Repères · ${style.name}` : 'Catalogue · autres usages')];
+  return <div className="space-y-1"><Combobox compact value="" disabled={busy} options={options} searchKeys={CLES_RECHERCHE} ariaLabel={ariaLabel} placeholder={placeholder}
     allowCreate onCreate={onCreate} createLabel={name => `Créer « ${name} » (stock à zéro)`} onChange={value => {
       const item = stock.find(i => `stock:${i.ref}` === value);
       if (item) { onChange(item.name, item); return; }

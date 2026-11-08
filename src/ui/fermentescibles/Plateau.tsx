@@ -75,7 +75,7 @@ export const Plateau: React.FC<{
         <button type="button" className="fer-del" data-del={i} aria-label={`Supprimer ${f.name} de la recette`} onClick={() => retirer(i)}><Corbeille /></button>
       </div>
       <div className="fer-lect" data-role="lect">
-        <button type="button" className="fer-sb" data-pas="-1" aria-label="Retirer un cran" onClick={() => setKg(i, pas(f.weightKg, -1))}><Moins /></button>
+        <button type="button" className="fer-sb" data-pas="-1" aria-label="Retirer un cran" disabled={!(f.weightKg > 0)} onClick={() => setKg(i, pas(f.weightKg, -1))}><Moins /></button>
         <label className="fer-num">
           <ChampLigne valeur={f.weightKg} onValeur={(v) => setKg(i, v)} format={kgTxt} arrondi={arrondiKg} cran={(v, d) => pas(v, d)}
             libelle={`Masse de ${f.name}, en kg`} className="fer-bin" auContenu videVaut0 zeroAttention marques={{ 'data-role': 'bin' }}
@@ -115,7 +115,8 @@ export const Plateau: React.FC<{
           </div>
         )}
       </div>
-      {grain && <Fiche malt={f} onChange={(p) => patch(i, p)} onLearnIngredient={onLearnIngredient} />}
+      {/* Tout ingrédient a sa fiche : un fruit ou un extrait sans PPG n'a pas d'OG, et le PPG se renseigne ici (AM-6 : plus de potentiel inventé). */}
+      <Fiche malt={f} onChange={(p) => patch(i, p)} onLearnIngredient={onLearnIngredient} />
     </section>
   );
 };

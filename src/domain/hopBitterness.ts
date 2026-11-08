@@ -1,7 +1,7 @@
 import { BrewingMath } from '../services/brewingMath';
 import type { HopIngredient } from '../types';
 import { alphaAConfirmer, alphaProbable } from './hopAlpha';
-import { BORNES, frBorne, messageHoublonParLitre, ogHorsBornes } from './bornesMetier';
+import { BORNES, frBorne, messageEbullition, messageHoublonParLitre, ogHorsBornes, problemesLigneHoublon } from './bornesMetier';
 import bootstrap from '../data/hopBitternessBootstrap.json';
 import { assertHopBitternessScience, type HopBitternessScience } from '../../functions/src/hopBitternessSchema';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
@@ -56,11 +56,15 @@ export function hotBitterness(hops: HopIngredient[], volumeL: number, og: number
     // MV-44/45 : une OG de 116,808 (10 000 kg dans 20 L) ne nourrit pas un IBU : au-delà de la borne, l'IBU attend la correction.
     else if (ogHorsBornes(og)) missing.push(`densité initiale au-delà de ${frBorne(BORNES.og.max, 3)}`);
     if (!Number.isFinite(boilMin) || boilMin < 0) missing.push('durée d’ébullition');
+    // AM-19 : 1 440 min d'ébullition n'existent pas ; à 0 min, un houblon d'ébullition ou de premier moût n'isomérise pas, et « 0 IBU » serait un faux nombre.
+    else if (messageEbullition(boilMin) && (boilMin > 0 || h.stage === 'boil' || h.stage === 'firstWort')) missing.push('durée d’ébullition plausible');
     if (h.stage === 'boil' || h.stage === 'whirlpool') {
       if (!Number.isFinite(h.timeMin) || h.timeMin! < 0) missing.push('durée de contact');
       else if (h.stage === 'boil' && h.timeMin! > boilMin) missing.push(`ajout à ${h.timeMin} min, supérieur aux ${boilMin} min d’ébullition`);
     }
     if (h.stage === 'whirlpool' && (!Number.isFinite(h.tempC) || h.tempC! < 0 || h.tempC! > 100)) missing.push('température de whirlpool');
+    // AM-17, AM-18 : un whirlpool de 600 min ou à 0 °C n'existe pas ; l'IBU attend la correction (une seule règle : `problemesLigneHoublon`).
+    else if (h.stage === 'whirlpool' && problemesLigneHoublon(h).length) missing.push('durée ou température de whirlpool plausibles');
     if (!['firstWort', 'boil', 'whirlpool'].includes(h.stage)) missing.push('moment d’ajout');
     return { ibu: missing.length ? null : BrewingMath.hopIbu(h, volumeL, og!, boilMin), missing };
   });
@@ -72,4 +76,14 @@ export function hotBitterness(hops: HopIngredient[], volumeL: number, og: number
     .map(reason => `${reason} de la recette`);
   const missing = [...(exces ? [exces] : []), ...recipeLevel,...additions.flatMap((h, i) => h.missing.filter(reason => !DE_LA_RECETTE.includes(reason)).map(reason => `${hops[i].name} : ${reason}`))];
   return { total: missing.length ? null : known, known, additions, missing };
+}
+
+/**
+ * L'IBU du bandeau : un tiret quand rien ne l'a produit. « IBU 0 » sans aucun houblon à chaud dit un nombre là où OG et EBC disent « — » (B1-NOTE-1, PD-1 :
+ * « Mets un tiret comme pour l'OG ») : un inconnu n'est jamais 0. Un houblon à chaud dosé qui donne vraiment 0 reste écrit 0.
+ */
+export function ibuEnTete(ibu: number | null, hops: ReadonlyArray<Pick<HopIngredient, 'stage' | 'weightG'>>): string {
+  if (ibu == null) return '—';
+  if (ibu === 0 && !hops.some(h => h.stage !== 'dryHop' && h.weightG > 0)) return '—';
+  return String(ibu);
 }

@@ -28,6 +28,7 @@ import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
 import { RecipeReview } from './RecipeReview';
 import { formatDecimal } from './numericInput';
+import { masseLigneRetenue } from '../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from './identite/regles';
 
 /** Preserve Units' conversion and rounding; only localize the displayed number. */
@@ -276,8 +277,15 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
 }) => {
   const tight = useDensity() === 'tight';
 
-  const patchFerm = (i: number, patch: Partial<Fermentable>) =>
+  const patchFerm = (i: number, patch: Partial<Fermentable>) => {
+    // Même règle que l'étape Malts/sucres (BR-21) : une masse négative ne se retient pas, un champ vidé vaut 0, 10 t au plus ; jamais `undefined` ni NaN dans la recette.
+    if ('weightKg' in patch) {
+      const kg = masseLigneRetenue(patch.weightKg);
+      if (kg === null) return;
+      patch = { ...patch, weightKg: kg };
+    }
     onFermentables(fermentables.map((f, j) => (j === i ? { ...f, ...patch } : f)));
+  };
   const patchHop = (i: number, patch: Partial<HopIngredient>) =>
     onHops(hops.map((h, j) => (j === i ? patchIndexedHop(h, patch) : h)));
 

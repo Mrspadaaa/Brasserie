@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { Fermentable, FermentableKind, StockItem } from '../../types';
 import type { LearnIngredient } from '../../domain/ingredientFacts';
 import './correctifs.css';
+import { messageSansMaltDeBase } from '../../domain/fermentables/base';
 import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
@@ -87,6 +88,8 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const [plafond, setPlafond] = useState(false);
   const minutPlafond = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setKg = useCallback((i: number, brut: number) => {
+    // Un nombre illisible (curseur sur une piste sans largeur : 0 ÷ 0) n'est pas une masse : rien n'est retenu, jamais NaN dans la recette.
+    if (!Number.isFinite(brut)) return;
     const kg = Math.min(MASSE_MAX_KG, brut);
     clearTimeout(minutPlafond.current);
     if (brut > MASSE_MAX_KG) { setPlafond(true); minutPlafond.current = setTimeout(() => setPlafond(false), 6000); } else setPlafond(false);
@@ -247,6 +250,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   }
 
   const lactose = fermentables.some((f) => f.kind === 'lactose' && f.weightKg > 0);
+  const sansBase = messageSansMaltDeBase(fermentables);
   const selF = selI >= 0 ? fermentables[selI] : undefined;
   // `ajuster()` de la maquette (D212, D228 : le critère de la maquette) : les repères se replient d'eux-mêmes quand le pied (« Suivant ») sortirait du
   // premier écran avec eux ouverts, et se rouvrent quand il y tient ; jamais si le brasseur les a ouverts ou fermés à la main. Le calcul projette le pied
@@ -320,6 +324,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
           const m = messageMoment(f);
           return m ? <p key={`mom-${i}`} className="fer-alerte" data-hors="moment" data-ah={i}>{m} Touche son moment pour le remettre.</p> : null;
         })}
+        {sansBase && <p className="fer-alerte" data-hors="base" role="status">{sansBase}</p>}
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}
       </div>
       <Plateau f={selF} i={selI} setKg={setKg} setJour={a.setJour} tourner={tourner} retirer={retirer}
