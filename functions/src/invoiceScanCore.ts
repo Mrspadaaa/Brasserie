@@ -447,6 +447,14 @@ export function normalizeInvoiceScan(raw: any) {
       message: `Détail des lignes incomplet : ${linesLost} ligne(s) imprimée(s) non lue(s) ; le total des lignes n'est pas vérifié.`,
     }));
   }
+  // LO-3 (08.11) : un total imprimé et AUCUNE ligne lue, sans qu'aucune ligne ait été annoncée (sinon « lignes-perdues » parle déjà). Une lecture d'en-tête seul (une capture sur trois d'une commande :
+  // fournisseur, date, n° et total, sans le tableau des articles ni le bloc de TVA) sortait « checked », sans un mot. L'absence de lignes n'est pas « zéro ligne » : elle est dite, la lecture reste à confirmer.
+  if (items.length === 0 && sourceItems.length === 0 && linesLost === 0 && result.amountTTC !== null && result.amountTTC > 0) {
+    say(makePoint('lignes-absentes', 'inverifiable', 'items', null, {
+      regle: 'un document qui imprime un montant porte au moins une ligne lue', unite: 'lignes', enjeu: 'argent',
+      message: "Aucune ligne lue : seul l'en-tête du document l'est, le détail des lignes manque. Une page ou une partie manque peut-être : à vérifier sur le document.",
+    }));
+  }
   summed.points.forEach(say);
 
   // C3 / A10 — TVA par taux.

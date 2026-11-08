@@ -209,9 +209,10 @@ describe('Deux visions indépendantes et correction par majorité', () => {
   });
 
   it('ignore uniquement le bruit binaire et ne masque pas un vrai écart inférieur au centime', () => {
-    const base = { amountHT: null, tvaAmount: null, items: [] };
-    expect(reconcileInvoiceVision([read({ ...base, amountTTC: .1 + .2 }), read({ ...base, amountTTC: .3 })]).review.status).toBe('checked');
-    expect(reconcileInvoiceVision([read({ ...base, amountTTC: 1.001 }), read({ ...base, amountTTC: 1.004 })]).review.status).toBe('disputed');
+    // Une ligne par lecture, au montant du total : un total sans aucune ligne dit « aucune ligne lue » (LO-3) et ne prouve plus rien ici.
+    const lu = (total: number) => ({ amountHT: null, tvaAmount: null, amountTTC: total, items: [item({ quantity: 1, price: total, amountTTC: total })] });
+    expect(reconcileInvoiceVision([read(lu(.1 + .2)), read(lu(.3))]).review.status).toBe('checked');
+    expect(reconcileInvoiceVision([read(lu(1.001)), read(lu(1.004))]).review.status).toBe('disputed');
   });
 
   it('D379 : 36 lignes, deux normalisations : les 36 restent, aucune phrase de perte', () => {

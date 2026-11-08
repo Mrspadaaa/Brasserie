@@ -13,7 +13,8 @@ import { chargerPdfjs } from './pdfjs';
  * - `non-verifie` : la lecture n'a pas pu se faire (bibliothèque non chargée, hors ligne, erreur, délai) : on ne sait pas.
  */
 export type ResultatQr =
-  | { statut: 'lu'; qr: QrFacture; ms: number; /** LP-1 : présent seulement quand la pièce porte plusieurs bulletins QR-facture ; le QR gardé est le premier. */ bulletins?: number }
+  | { statut: 'lu'; qr: QrFacture; ms: number; /** LP-1 : présent seulement quand la pièce porte plusieurs bulletins QR-facture ; le QR gardé est le premier. */ bulletins?: number;
+      /** LO-1 : avec `bulletins`, le montant de CHAQUE bulletin dans l'ordre de lecture (`null` : sans montant, non conforme ou dans une autre devise que le premier). Sert à reconnaître un total qui n'est que leur somme. */ montantsBulletins?: Array<number | null> }
   | { statut: 'illisible' }
   | { statut: 'sans' }
   | { statut: 'non-verifie'; motif: string };
@@ -40,31 +41,38 @@ const estPdf = (fichier: File): boolean => fichier.type === 'application/pdf' ||
 const estImage = (fichier: File): boolean => /^image\//.test(fichier.type) || /\.(jpe?g|png|webp)$/i.test(fichier.name);
 
 /** Range les symboles lus : le premier QR-facture, sinon « vu mais pas décodé », sinon rien. */
-export function classer(codes: readonly CodeLu[]): { qr: QrFacture | null; vuNonDecode: boolean; bulletins?: number } {
-  let vuNonDecode = false, premier: QrFacture | null = null, bulletins = 0;
+export function classer(codes: readonly CodeLu[]): { qr: QrFacture | null; vuNonDecode: boolean; bulletins?: number; montantsBulletins?: Array<number | null> } {
+  let vuNonDecode = false, premier: QrFacture | null = null;
+  const montants: Array<number | null> = [], vus = new Set<string>();
   for (const code of codes) {
     if (!code.decode) { vuNonDecode = true; continue; }
     const qr = parseSwissQr(code.texte);
     if (!qr) continue;
+    // Le même bulletin vu deux fois (même texte décodé) n'est qu'un bulletin.
+    if (vus.has(code.texte)) continue;
+    vus.add(code.texte);
     premier ??= qr;
-    bulletins += 1;
+    montants.push(qr.valid && qr.montant !== null && qr.devise === premier.devise ? qr.montant : null);
   }
   // LP-1 : plusieurs bulletins QR-facture sur une même photo : le premier est gardé, leur nombre est dit (absent s'il n'y en a qu'un).
-  return { qr: premier, vuNonDecode, ...(bulletins > 1 ? { bulletins } : {}) };
+  // LO-1 : et le montant de chacun, pour reconnaître un total de page qui n'est que leur somme (jamais imprimé).
+  return { qr: premier, vuNonDecode, ...(montants.length > 1 ? { bulletins: montants.length, montantsBulletins: montants } : {}) };
 }
 
+type Trouve = ReturnType<typeof classer>;
+
 /** Lit un QR-facture sur une image : une passe, puis (si rien) une seconde passe sur l'image agrandie. */
-async function lireImage(image: Blob, moteurs: MoteursQr): Promise<{ qr: QrFacture | null; vuNonDecode: boolean; bulletins?: number }> {
+async function lireImage(image: Blob, moteurs: MoteursQr): Promise<Trouve> {
   const premiere = classer(await moteurs.lireCodes(image));
   if (premiere.qr) return premiere;
   const grande = await moteurs.agrandir(image);
   if (!grande) return premiere;
   const seconde = classer(await moteurs.lireCodes(grande));
-  return { qr: seconde.qr, vuNonDecode: premiere.vuNonDecode || seconde.vuNonDecode, ...(seconde.bulletins ? { bulletins: seconde.bulletins } : {}) };
+  return { ...seconde, vuNonDecode: premiere.vuNonDecode || seconde.vuNonDecode };
 }
 
 /** Lit un QR-facture sur les deux dernières pages d'un PDF ; arrêt au premier QR-facture. */
-async function lirePdf(fichier: File, moteurs: MoteursQr): Promise<{ qr: QrFacture | null; vuNonDecode: boolean; bulletins?: number }> {
+async function lirePdf(fichier: File, moteurs: MoteursQr): Promise<Trouve> {
   let vuNonDecode = false;
   for await (const page of moteurs.pagesPdf(await fichier.arrayBuffer(), PAGES_PDF, ECHELLE_PDF)) {
     const trouve = classer(await moteurs.lireCodes(page));
@@ -88,7 +96,7 @@ export async function lireQrDuFichier(fichier: File, moteurs?: MoteursQr, delaiM
     const travail = (async (): Promise<ResultatQr> => {
       const m = moteurs ?? await moteursParDefaut();
       const trouve = estPdf(fichier) ? await lirePdf(fichier, m) : await lireImage(fichier, m);
-      if (trouve.qr) return { statut: 'lu', qr: trouve.qr, ms: Math.round(maintenant() - debut), ...(trouve.bulletins ? { bulletins: trouve.bulletins } : {}) };
+      if (trouve.qr) return { statut: 'lu', qr: trouve.qr, ms: Math.round(maintenant() - debut), ...(trouve.bulletins ? { bulletins: trouve.bulletins, ...(trouve.montantsBulletins ? { montantsBulletins: trouve.montantsBulletins } : {}) } : {}) };
       return trouve.vuNonDecode ? { statut: 'illisible' } : { statut: 'sans' };
     })();
     const delai = new Promise<ResultatQr>(resolve => { minuterie = setTimeout(() => resolve({ statut: 'non-verifie', motif: 'délai dépassé' }), delaiMs); });

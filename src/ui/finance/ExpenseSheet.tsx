@@ -34,7 +34,7 @@ import { useCoarsePointer,useKeyboardInset } from '../useViewport';
 import { casseUnites,motRelire,chipsDeLecture,compteLiens,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
 import { millingParentIndex,isMillingSurcharge,LIGNES_MAX } from '../../services/purchaseEntry';
 import { contexteDeArticle } from '../../services/stockLineMatching';
-import { vueQr,resumeQr,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
+import { vueQr,resumeQr,sommeDesBulletins,fr2 as fr2Qr,type ChampTranchable,type ChoixChamps } from '../depense/qrVue';
 import { Sceau,SansQr,DuelTotal,TemoinSomme,BoutonPhotoQr,FicheQr } from '../depense/Qr';
 import { articleNeufDe,ligneDeBrouillon,type ArticleNeuf } from '../../domain/stock/articleNeuf';
 import { nomDeFiche,type Catalogues } from '../../domain/stock/fiche';
@@ -232,7 +232,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   etatRef.current={attachment,scanOk:Boolean(scan?.ok)};
   useEffect(()=>()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);},[]);
   const [online,setOnline]=useState(apercu?apercu.reseau:typeof navigator==='undefined'||navigator.onLine!==false);
-  const hints=scan?.ok&&scan.result?Object.fromEntries(Object.entries(invoiceFieldHints(scan.result)).filter(([field])=>!reviewedFields.includes(field))):{};
+  /* LO-1 : un total de page qui n'est que la somme des bulletins QR de la pièce (aucun n'imprime ce montant) est un total CALCULÉ : dit sous le total, marqué « somme des lignes » à l'enregistrement. */
+  const sommeBulletins=scan?.ok&&scan.result?sommeDesBulletins(qrRes,scan.result):null;
+  const hints:Record<string,string>=scan?.ok&&scan.result?Object.fromEntries(Object.entries({...invoiceFieldHints(scan.result),...(sommeBulletins?{amountTTC:`Somme des ${sommeBulletins.n} bulletins QR (${sommeBulletins.detail}). Le total n’est pas imprimé sur la pièce.`}:{})}).filter(([field])=>!reviewedFields.includes(field))):{};
+  const sommeBulletinsCts=sommeBulletins?Math.round(sommeBulletins.somme*100):null;
+  useEffect(()=>{if(sommeBulletinsCts!==null&&draft.sourceTotalBasis==='printed')setDraft(previous=>previous.sourceTotalBasis==='printed'?{...previous,sourceTotalBasis:'line_sum'}:previous);},[sommeBulletinsCts,draft.sourceTotalBasis]);
   const reviewed=(field:string)=>setReviewedFields(previous=>previous.includes(field)?previous:[...previous,field]);
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;lectureAbort.current?.abort();};},[]);
   useEffect(()=>tenirEnrichissement(),[]);
@@ -817,7 +821,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     }
     if(chip.codes.includes('date-absente')&&viser(q('[data-purchase-date]'),{focus:q('[data-purchase-date] input[type="date"]')}))return;
     if(chip.codes.some(c=>c==='somme-ecart'||c==='somme-incomplete'||c==='total-absent')){const champ=q('#purchase-total');if(viser(champ,{focus:champ,block:'center'}))return;}
-    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-non-rapprochees')&&viser(q('[data-dp="liste"]')??q('[data-purchase-lines]')))return;
+    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-absentes'||c==='lignes-non-rapprochees')&&viser(q('[data-dp="liste"]')??q('[data-purchase-lines]')))return;
     /* Sans cible propre : la preuve de la lecture, ouverte et amenée à l'écran. */
     flushSync(()=>setViseePreuve(true));viser(q('[data-dp="preuve"]'));setTimeout(()=>{if(mounted.current)setViseePreuve(false);},1600);
   };
@@ -1282,7 +1286,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ecartLenteur=Boolean(ctl&&ctl.sum.statut==='ecart'&&(nGardees>0||(fusion?.ajoutees.size??0)>0));
   const ecartTotalQr=qrContredit&&vue?.duel&&sommeLignesCts!==Math.round(vue.duel.luNombre*100)?{lignes:fr2Qr(sommeLignesCts/100),lu:vue.duel.lu}:undefined;
   const rangees:Rang[]=result?[
-    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ecartLenteur?{ok:false,texte:'Somme ≠ imprimé',valeur:fr2c(sommeLignesCts)}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme non contrôlée',valeur:''},
+    ecartTotalQr?{ok:false,texte:'Somme = imprimé',valeur:`${ecartTotalQr.lignes} ≠ ${ecartTotalQr.lu}`}:ecartLenteur?{ok:false,texte:'Somme ≠ imprimé',valeur:fr2c(sommeLignesCts)}:sommeBulletins?{ok:false,texte:'Total non imprimé',valeur:`somme de ${sommeBulletins.n} bulletins`}:ctl?{ok:ctl.sum.statut==='ok',texte:'Somme = imprimé',valeur:ctl.sum.statut==="ok"?fr2c(Math.round((result.amountTTC??0)*100)):'non vérifiée'}:{ok:null,texte:'Somme non contrôlée',valeur:''},
     ctl?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)),texte:'Qté × prix',valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:{ok:null,texte:'Qté × prix non contrôlé',valeur:''},
     /* n2-pages, sa maquette 6 : des lectures d'accord sur une pièce de plusieurs pages (le serveur en a confirmé N) disent « ✓ N pages lues », sans valeur à droite ; en désaccord,
        « Lectures · N pages » et « n lectures » ; un document seul : « Lectures » et « 2/2 », comme avant. Sans lectures annoncées rien n'est inventé. */

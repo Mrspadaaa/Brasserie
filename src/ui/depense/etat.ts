@@ -21,7 +21,7 @@ const NOMS: Partial<Record<Code, ChipDef>> = {
   'ligne-montant': { nom: 'Ligne', enjeu: 'argent' }, 'ligne-prix-par-lot': { nom: 'Prix par lot', enjeu: 'argent' },
   'somme-ecart': { nom: 'Total', enjeu: 'argent' }, 'somme-incomplete': { nom: 'Total', enjeu: 'argent' }, 'total-absent': { nom: 'Total', enjeu: 'argent' },
   'tva-incoherente': { nom: 'TVA', enjeu: 'argent' }, 'ht-tva-ttc': { nom: 'TVA', enjeu: 'argent' }, 'taux-tva-hors-plage': { nom: 'TVA', enjeu: 'argent' },
-  'lignes-perdues': { nom: 'Lignes', enjeu: 'argent' }, 'lignes-annoncees': { nom: 'Lignes', enjeu: 'argent' }, 'lignes-non-rapprochees': { nom: 'Lignes', enjeu: 'argent' },
+  'lignes-perdues': { nom: 'Lignes', enjeu: 'argent' }, 'lignes-annoncees': { nom: 'Lignes', enjeu: 'argent' }, 'lignes-absentes': { nom: 'Lignes', enjeu: 'argent' },'lignes-non-rapprochees': { nom: 'Lignes', enjeu: 'argent' },
   'pro-forma-non-payee': { nom: 'Pro-forma', enjeu: 'argent' }, devis: { nom: 'Devis', enjeu: 'argent' }, 'document-livraison': { nom: 'Document', enjeu: 'argent' },
   avoir: { nom: 'Avoir', enjeu: 'argent' }, 'devise-non-chf': { nom: 'Devise', enjeu: 'argent' }, 'date-absente': { nom: 'Date', enjeu: 'argent' },
   'alpha-libelle': { nom: 'α', enjeu: 'stock' }, 'unite-absente': { nom: 'Unité', enjeu: 'stock' }, 'nature-a-preciser': { nom: 'Nature', enjeu: 'stock' }, 'ambiguite-ligne': { nom: 'Ligne ?', enjeu: 'stock' },
