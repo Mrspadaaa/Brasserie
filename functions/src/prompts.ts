@@ -258,7 +258,7 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
           )
         )
       },
-      ['vendor', 'documentType', 'paymentEvidence', 'paymentMethod', 'fieldWarnings', 'date', 'currency', 'invoiceNumber', 'orderNumber', 'proForma', 'vat', 'printedLineCount', 'amountHT', 'tvaRate', 'tvaAmount', 'amountTTC', 'category', 'description', 'items']
+      ['vendor', 'documentType', 'paymentEvidence', 'fieldWarnings', 'date', 'currency', 'invoiceNumber', 'orderNumber', 'proForma', 'vat', 'printedLineCount', 'amountHT', 'tvaRate', 'tvaAmount', 'amountTTC', 'category', 'description', 'items']
     )
   },
 

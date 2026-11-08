@@ -16,7 +16,7 @@ describe('RL-8 : le moyen de paiement imprimé arrive jusqu\'au règlement', () 
   it('le schéma et la consigne du serveur demandent le moyen imprimé (TWINT compris), sans le deviner', () => {
     const schema: any = (TASKS.scanInvoice as any).schema;
     expect(schema.properties.paymentMethod.enum).toEqual(expect.arrayContaining(['twint', 'cash', 'card', 'bank_transfer', 'unknown']));
-    expect(schema.required).toContain('paymentMethod');
+    expect(schema.required).not.toContain('paymentMethod'); // facultatif : une lecture sans lui reste exploitable (banc Av)
     expect((TASKS.scanInvoice as any).system).toMatch(/paymentMethod[^.]*IMPRIMÉ[^]*TWINT/);
   });
   it('serveur : le moyen lu est gardé, une valeur inconnue du schéma devient unknown, les morceaux gardent le dernier moyen lu', () => {
