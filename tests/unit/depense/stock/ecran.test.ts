@@ -18,6 +18,7 @@ vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejec
 vi.mock('../../../../src/services/financeService', () => ({ validateFinancialPayment: () => {}, FinanceService: { getPlans: () => [], stageNewTransactionPayment: (tx: any) => state.writes.push(['transaction', tx]) } }));
 vi.mock('../../../../src/services/financeDocuments', () => ({ prepareFinanceDocument: () => ({ id: 'proof' }), saveFinanceDocumentConfirmed: async () => undefined }));
 vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => state.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
+import { stockDe, retirerStock } from '../aide-plateau';
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 
@@ -49,39 +50,45 @@ describe('S1 : la feuille propose l’article à la lecture de la facture 372765
     expect(lineOf(1).name).toBe('Maris Otter, Kg');
     expect(ligne1.querySelector('[data-dp-stock]')!.textContent).toContain('proposé');
     expect(ligne1.querySelector('[data-dp-nom]')!.textContent).toContain('Maris Otter');
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('existing');
+    expect(stockDe(1)).toBe('existing'); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le menu « Stock ligne n » est lu sur la ligne « article » du plateau
     expect(state.writes).toEqual([]);
   });
 
   it('les lignes de mouture (service) n’ont ni sélecteur de stock ni proposition ; Goldings et Hallertauer, absents, sont nouveaux d’office (D275, voie f3 ; HEAD : « aucun mouvement »)', async () => {
     await lire();
-    for (const n of [2, 5, 7, 14, 16]) expect(screen.queryByLabelText(`Stock ligne ${n}`), `ligne ${n}`).toBeNull();
-    for (const n of [9, 22]) expect((screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value, `ligne ${n}`).toBe('new');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : une mouture n'est plus une rangée (pastille de son malt) : ni rangée, ni ligne « article » ; le menu « Stock ligne n » est lu sur le plateau.
+    for (const n of [2, 5, 7, 14, 16]) expect(document.querySelector(`[data-dp-ligne="line-${n}"]`), `ligne ${n}`).toBeNull();
+    for (const n of [9, 22]) expect(stockDe(n), `ligne ${n}`).toBe('new');
   });
 
   it('Caramünch, Target, Galaxy et les quatre levures sont proposées sur leur article', async () => {
     await lire();
-    for (const n of [1, 3, 4, 6, 8, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21, 23]) expect((screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value, `ligne ${n}`).toBe('existing');
+    for (const n of [1, 3, 4, 6, 8, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21, 23]) expect(stockDe(n), `ligne ${n}`).toBe('existing');
   });
 
   it('la description est la base du libellé, l’imprimé reste à côté (D275, voie f3 ; HEAD : le libellé brut) ; l’α, la récolte et le poids sont déduits en clair dans l’extrait, avec leur source', async () => {
     const view = await lire();
-    expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter');
-    expect((screen.getByLabelText('Libellé ligne 8') as HTMLInputElement).value).toBe('Target 11.3%');
-    const texte8 = summaries(view)[7].textContent ?? '';
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : plus de champ « Libellé ligne n » : le libellé est le nom de la rangée.
+    expect(summaries(view)[0].querySelector('[data-dp-nom]')!.textContent).toBe('Maris Otter');
+    expect(summaries(view)[7].querySelector('[data-dp-nom]')!.textContent).toContain('Target');
+    // 28c98cba (pu4d) : « Libellé : … », « α … (libellé) » sont l'extrait de la ligne, derrière « extrait » (RangeeRare, `data-dp-extrait`) : on l'ouvre.
+    const extrait = (row: HTMLElement) => { fireEvent.click(row.querySelector('[data-dp-extrait]')!); return row.querySelector('[data-dp-extrait-texte]')!.textContent ?? ''; };
+    const texte8 = extrait(summaries(view)[7]);
     expect(texte8).toContain('Libellé : Target 11.3%');
     expect(texte8).toContain('α 11,3 % (libellé)');
-    const levure = Array.from(summaries(view)).find(row => (row.textContent ?? '').includes('Safale US-05'))!;
-    expect(levure.textContent).toContain('poids du sachet 11,5 g (libellé)');
-    expect(levure.querySelector('[data-dp-stock]')!.textContent).toContain('poids du sachet non confirmé');
+    const levure = Array.from(summaries(view)).filter(Boolean).find(row => (row.textContent ?? '').includes('Safale US-05'))!;
+    expect(extrait(levure)).toContain('poids du sachet 11,5 g (libellé)');
+    // 28c98cba (pu4d, D374) : une ligne à l'article proposé montre son face à face Facture | Stock : la note « poids du sachet non confirmé » y est dite (plus sur la ligne « article »).
+    expect(levure.querySelector('[data-dp-duel]')!.textContent).toContain('poids du sachet non confirmé');
   });
 
   it('un choix du brasseur n’est jamais remplacé : écarter la proposition la laisse écartée, même après d’autres modifications', async () => {
     const view = await lire();
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'none' } });
+    retirerStock(1); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : « Stock ligne 1 → aucun mouvement » est « Retirer »
     fireEvent.change(view.container.querySelector('#purchase-total')!, { target: { value: '90' } });
-    fireEvent.change(screen.getByLabelText('Libellé ligne 1'), { target: { value: 'Maris Otter (sac)' } });
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('none');
+    // L'édition du libellé d'une ligne lue est retirée du plateau (« Retiré sans équivalent ») : une autre modification de la ligne la remplace (la quantité).
+    fireEvent.change(screen.getByLabelText('Quantité ligne 1'), { target: { value: '7' } });
+    expect(stockDe(1)).toBe('none');
     expect(summaries(view)[0].textContent).not.toContain('proposé'); // toute la rangée (HEAD : tout le summary), pas seulement l'effet de stock
     expect(state.writes).toEqual([]);
   });

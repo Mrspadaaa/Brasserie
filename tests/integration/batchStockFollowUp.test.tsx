@@ -61,7 +61,7 @@ describe('production stock reconciliation', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Le stock attend les vérifications');
   });
   it('a direct planned-to-fermentation transition follows the stock service', () => {
-    render(<BatchDetailSheet batch={base({ status: 'planifie', stockAccountingVersion: 1 })} initialSection="overview" onClose={vi.fn()} />);
+    render(<BatchDetailSheet batch={base({ status: 'planifie', stockAccountingVersion: 1, brewDay: { steps: [], currentIndex: 0, startedAt: 1, pitchedAt: 2 } })} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Passer en « Fermentation »' }));
     expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'fermentation' }), 'brewday', false);
   });
@@ -72,8 +72,9 @@ describe('production stock reconciliation', () => {
     expect(screen.getByRole('option', { name: 'En attente d’ensemencement' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Passer en « Fermentation »' })).not.toBeInTheDocument();
     const status = screen.getByRole('combobox', { name: 'Étape du brassin' });
-    fireEvent.change(status, { target: { value: 'fermentation' } });
-    expect(screen.getByRole('status')).toHaveTextContent('consigner l’ajout réel de levure');
+    // AM 4 : la fermentation n'est même pas offerte avant l'ajout réel de levure ; la raison est écrite.
+    expect(screen.queryByRole('option', { name: 'Fermentation' })).not.toBeInTheDocument();
+    expect(screen.getByText(/consigner l’ajout réel de levure/)).toBeInTheDocument();
     expect(status).toHaveValue('planifie');
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();

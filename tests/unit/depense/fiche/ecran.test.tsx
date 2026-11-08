@@ -16,6 +16,7 @@ vi.mock('../../../../src/services/financeService', () => ({ FinanceService: { ge
 vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejection: () => false }));
 vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => state.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
 vi.mock('../../../../src/services/purchaseEntry', async importOriginal => ({ ...await importOriginal<any>(), savePurchaseWithProofReceipt: async (d: any) => { state.saved(structuredClone(d)); return { transactionId: 'TX-test' }; }, confirmPurchase: async () => undefined, purchaseDuplicates: () => [] }));
+import { stockDe, suivreAuStock, toucherNature } from '../aide-plateau';
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 
@@ -36,6 +37,8 @@ const lire = async (items: Record<number, Record<string, unknown>> = {}, stock: 
   return view;
 };
 const ligne = (view: { container: HTMLElement }, n: number) => (view.container.querySelector('[data-dp-ligne="line-' + n + '"]')) as HTMLElement; // R1 : par id, jamais par rang (les bandes réordonnent le DOM)
+/** 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : « Créer » d'un bis ouvre le champ « Nom de l'article » ; au plateau pu4d ce champ n'est plus qu'à la sortie « Nouvel article · doublon » (il se pré-remplit du nom, déjà pris, de l'article voisin). Un toucher sur cette sortie. */
+const choisirNeuf = (view: { container: HTMLElement }, n: number) => fireEvent.click(ligne(view, n).querySelector('[data-dp-sortie="neuf"]')!);
 beforeEach(() => {
   cleanup(); vi.restoreAllMocks(); state.saved.mockReset(); state.scanned.mockReset(); state.transactions = [];
   vi.spyOn(FirebaseAuthService, 'ensureDriveAccessToken').mockResolvedValue('synthetic-token'); vi.spyOn(FirebaseAuthService, 'hasDriveAccess').mockReturnValue(true); vi.spyOn(FirebaseAuthService, 'prepareGoogleLogin').mockResolvedValue();
@@ -62,28 +65,31 @@ describe('R2, R3, R4 : le bouton dit le nom qui sera écrit', () => {
 describe('R9 : un nom tapé n’est jamais écrasé', () => {
   it('« Créer » ouvre le champ « Nom de l’article » pré-rempli ; ce qu’on y tape reste après un changement de libellé, et part dans le brouillon enregistré', async () => {
     const view = await lire();
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
+    choisirNeuf(view, 8);
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
-    expect(champ).toHaveValue('Target bis');
+    expect(champ).toHaveValue('Target 11.8%'); // le nom du voisin, déjà pris
     fireEvent.change(champ, { target: { value: 'Target du Banc' } });
-    fireEvent.change(screen.getByLabelText('Libellé ligne 8'), { target: { value: 'Target 11.4%' } });
+    // L'édition du libellé est retirée du plateau (« Retiré sans équivalent ») : une autre modification de la ligne la remplace (la quantité).
+    fireEvent.change(screen.getByLabelText('Quantité ligne 8'), { target: { value: '41' } });
     expect(screen.getByLabelText('Nom de l’article, ligne 8')).toHaveValue('Target du Banc');
   });
   it('vider le champ rend la main au nom proposé', async () => {
     const view = await lire();
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
+    choisirNeuf(view, 8);
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
     fireEvent.change(champ, { target: { value: 'Autre' } });
     fireEvent.change(champ, { target: { value: '' } });
-    await waitFor(() => expect(screen.getByLabelText('Nom de l’article, ligne 8')).toHaveValue('Target bis'));
+    // Le champ vidé rend la main au nom proposé : la sortie « Target bis » reprend la main (le champ n'est plus qu'à « Nouvel article »).
+    await waitFor(() => expect(ligne(view, 8).querySelector('[data-dp-sortie="bis"]')!.getAttribute('aria-checked')).toBe('true'));
+    expect(ligne(view, 8).querySelector('[data-dp-sortie="bis"]')!.textContent).toContain('Target bis');
   });
 });
 
 describe('R12, R13 : le menu « Créer un nouvel article »', () => {
   it('R12 : Maris Otter (déjà au stock) relie ; retiré du stock, le menu donne le nom propre « Maris Otter » dans le champ', async () => {
     const view = await lire({}, [], ['Maris Otter']);
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'none' } });
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'new' } });
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : plus de menu « Créer un nouvel article » : un ingrédient sans article est nouvel article d'office, son nom propre est dans le champ de la ligne « article ».
+    expect(stockDe(1)).toBe('new');
     expect(await screen.findByLabelText('Nom de l’article, ligne 1')).toHaveValue('Maris Otter');
     expect(view.container).toBeTruthy();
   });
@@ -91,8 +97,9 @@ describe('R12, R13 : le menu « Créer un nouvel article »', () => {
     const view = await lire({ 7: { name: 'Target', alphaPct: null, alphaPctLu: null } }, [article('MP-T', 'Target', 'Houblon', 'g', { alphaPct: 11.8 }), article('MP-Tbis', 'Target bis', 'Houblon', 'g', { alphaPct: 11.3 })], ['Target 11.8%']);
     expect(within(ligne(view, 8)).queryByRole('button', { name: /^Créer «/ })).toBeNull();
     expect(ligne(view, 8).textContent).toMatch(/plusieurs articles « Target » : choisis/);
-    fireEvent.change(screen.getByLabelText('Stock ligne 8'), { target: { value: 'new' } });
-    expect(await screen.findByLabelText('Nom de l’article, ligne 8')).toHaveValue('Target bis 2');
+    suivreAuStock(8); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le menu « Créer un nouvel article » est « Suivre au stock »
+    expect(stockDe(8)).toBe('new');
+    expect(ligne(view, 8).textContent).toContain('Target bis 2');
   });
   it('Cascade CH 8% (déjà de la famille « Cascade US ») : l’α et l’origine sont ceux du libellé, le nom tapé part dans le brouillon enregistré', async () => {
     const enregistrer = vi.fn(async () => undefined);
@@ -103,7 +110,7 @@ describe('R12, R13 : le menu « Créer un nouvel article »', () => {
     const apercu = { outcome: { ok: true, result: resultat, proofDataUrl: '', fileName: 'f.pdf', mimeType: 'application/pdf' }, fichier: { name: 'f.pdf', size: 1000, type: 'application/pdf' }, stocks, transactions: [], etat: '3', drive: 'ok', reseau: true, enregistrer } as any;
     const view = render(<ExpenseSheet onClose={() => {}} onSaved={() => {}} apercu={apercu}/>);
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
+    choisirNeuf(view, 9);
     fireEvent.change(await screen.findByLabelText('Nom de l’article, ligne 9'), { target: { value: 'Cascade du Banc' } });
     // D275 (voie f3) : Sabro « 30 » prend l'unité de ses voisines (g, jaune) ; plus de « g » à toucher avant d'enregistrer.
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
@@ -117,12 +124,12 @@ describe('R12, R13 : le menu « Créer un nouvel article »', () => {
 describe('la pastille dit la fiche et sa marque', () => {
   it('une ligne nouvelle sans fiche reste « nouveau » ; Cascade CH : « fiche Cascade US · approchée » ; Target bis : « fiche Target UK » ; le plateau le redit', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-Cascade', 'Cascade US', 'Houblon', 'g')]);
-    fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
-    await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('fiche Cascade US · approchée'), { timeout: 5000 });
-    expect(ligne(view, 8).querySelector('[data-dp-pastille]')?.textContent).toBe('fiche Target UK');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : la fiche d'un nouvel article voisin d'un article du stock se dit au face à face de la sortie « Nouvel article » (plus par `data-dp-pastille`, réservée aux nouveaux articles sans voisin).
+    choisirNeuf(view, 9); choisirNeuf(view, 8);
+    await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-duel]')?.textContent).toContain('fiche Cascade US · approchée'), { timeout: 5000 });
+    expect(ligne(view, 8).querySelector('[data-dp-duel]')?.textContent).toContain('fiche Target UK');
     // VERDICT-f3 défaut 1 (voie f3) : la fiche ne se dit qu'une fois, par la pastille ; sa phrase entière est son titre (HEAD : un [data-dp-fiche] en plus).
-    expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.getAttribute('title')).toBe('fiche Cascade US · approchée (pas exactement la bonne)');
+    // (Le titre « … (pas exactement la bonne) » de l'ancienne pastille n'a plus d'élément : pastille absente d'un nouvel article voisin, voir le rapport, doute.)
     expect(ligne(view, 20).querySelector('[data-dp-pastille]')?.textContent ?? '').not.toMatch(/fiche/);
   });
 });
@@ -133,8 +140,8 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     expect(ligne(view, 8).querySelector('[data-dp-qte]')?.textContent).toMatch(/40 g/); expect(ligne(view, 8).querySelector('[data-dp-alpha]')?.textContent).toMatch(/α.*11,3/);
     expect(ligne(view, 8).textContent).toContain('Target α 11,8');
     fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
-    await screen.findByLabelText('Nom de l’article, ligne 8');
-    expect(ligne(view, 8).querySelector('[data-dp-valeurs]')?.textContent).toBe('α 11,3');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : les valeurs lues du bis (`data-dp-valeurs`) sont dans le titre de sa sortie « Target bis · α 11,3 ».
+    await waitFor(() => expect(ligne(view, 8).querySelector('[data-dp-sortie="bis"]')!.textContent).toContain('Target bis · α 11,3'));
     expect(ligne(view, 8).querySelector('[data-dp-alpha]')?.textContent).toMatch(/α.*11,3/);
   });
   it('n° 5 : l’origine et l’EBC lus, jamais une valeur inconnue (Cascade CH sans α : pas d’α)', async () => {
@@ -144,8 +151,7 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     expect(ligne(view, 9).textContent).not.toMatch(/α/);
     expect(ligne(view, 9).textContent).toContain('Cascade US');
     fireEvent.click(within(ligne(view, 9)).getByRole('button', { name: 'Garder le nouvel article « Cascade CH »' }));
-    await screen.findByLabelText('Nom de l’article, ligne 9');
-    expect(ligne(view, 9).querySelector('[data-dp-valeurs]')?.textContent).toBe('origine CH');
+    await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-sortie="bis"]')!.textContent).toContain('Cascade CH · origine CH')); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md)
   });
 
 
@@ -156,7 +162,7 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
     expect(ligne(view, 9).querySelector('[data-dp-creer]')).toBeNull();
     expect(within(ligne(view, 9)).queryByRole('button', { name: /^Relier à/ })).toBeNull();
     expect(ligne(view, 9).querySelector('summary svg[aria-label="nouvel article"]')).not.toBeNull();
-    expect(screen.getByLabelText('Stock ligne 9')).toHaveValue('new');
+    expect(stockDe(9)).toBe('new');
     expect(await screen.findByLabelText('Nom de l’article, ligne 9')).toHaveValue('Goldings East Kent');
   });
 });
@@ -164,7 +170,7 @@ describe('tri n° 5 à 9 : les vraies valeurs, le bouton court, la pastille d’
 describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, les accords, « origine CH »', () => {
   it('n° 13 : tant que le nom tapé est refusé, la tête de ligne garde le nom proposé ; le nom tapé reste dans son champ avec le message', async () => {
     const view = await lire({}, [], []);
-    fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
+    choisirNeuf(view, 8);
     const champ = await screen.findByLabelText('Nom de l’article, ligne 8');
     fireEvent.change(champ, { target: { value: 'Galaxy' } });
     expect(ligne(view, 8).querySelector('[data-dp-nom]')?.textContent).toBe('Target bis');
@@ -177,13 +183,14 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
   it('n° 14 : ⇄ « Choisir un autre article » ouvre le plateau sur le choix de l’article et ne relie rien ; l’article se choisit dans le plateau', async () => {
     const view = await lire({ 8: { name: 'Cascade CH', alphaPct: null, alphaPctLu: null } }, [article('MP-Cascade', 'Cascade US', 'Houblon', 'g')]);
     fireEvent.click(within(ligne(view, 9)).getAllByRole('button', { name: 'Choisir un autre article' })[0]); // D275 (voie f3) : le ⇄ de la barre et celui du plateau (« article « … » · nouvel article ⇄ »)
-    expect(screen.getByLabelText('Stock ligne 9')).toHaveValue('existing');
+    expect(stockDe(9)).toBe('existing');
     expect(ligne(view, 9).querySelector('[data-dp-pastille]')).toBeNull(); // C1 (g2a) : une seule pastille, « article « ? » · à choisir »
     expect(within(ligne(view, 9)).getByLabelText('Article')).toBeInTheDocument();
     expect(within(ligne(view, 9)).queryByText(/^\+20 g$/)).toBeNull();
     fireEvent.change(within(ligne(view, 9)).getByLabelText('Article'), { target: { value: 'Cascade US' } });
     fireEvent.click(await within(ligne(view, 9)).findByRole('option', { name: /Cascade US/ }));
-    await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-pastille]')?.textContent).toBe('+20 g'));
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : la pastille « +20 g » est « avant → après » au plateau (`data-dp-apres`) : 10 + 20.
+    await waitFor(() => expect(ligne(view, 9).querySelector('[data-dp-apres]')?.textContent).toBe('10 → 30 g'));
   });
 
   it('n° 16 : le compteur accorde le nombre', async () => {
@@ -198,7 +205,7 @@ describe('tri n° 13 à 17 : le nom refusé, le ⇄ de r2b, la bande collante, l
     expect(compte()).toMatch(new RegExp(`${avant} ${avant > 1 ? 'nouveaux' : 'nouveau(?!x)'}`));
     fireEvent.click(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' }));
     await waitFor(() => expect(n()).toBe(avant + 1));
-    fireEvent.change(screen.getByLabelText('Stock ligne 9'), { target: { value: 'none' } });
+    toucherNature(9, 'Service'); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : « Stock ligne 9 → aucun mouvement » : une ligne d'office nouvelle n'a plus de « Retirer » ; la nature Service la met hors stock
     await waitFor(() => expect(n()).toBe(avant));
     expect(compte()).not.toMatch(/hors stock/); // A3 (g2a) : « hors stock » n'est dans aucune maquette
   });

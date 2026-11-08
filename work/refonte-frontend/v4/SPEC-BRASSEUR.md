@@ -1527,3 +1527,16 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   corriger et redéployer, retirer les 26 doublons après copie de secours). Puis, sur sa capture de la pièce 8 (PDF B&R 333258, total « 0,00 »
   entouré) : « Il y a pas le total ?? ». Puis : « Ah et si j'entre 2x quasiment la même facture. Est-ce que tout de met à jour. En gros seul les
   numéros unique de la facture change tout le reste est identique à une autre. Ça met tout à jour comme il faut ? »
+- **08.11**, suite, mot pour mot : « Les 60 échecs de l'écran Dépense sont déjà présents avant mon correctif, Euh oui mais tu vas résoudre ça, non ??? » ;
+  « et si il y a pas de qr code ? Les totaux de fond correctement ?? » ; sur la capture 1264 px de la pièce 12 : « Pourquoi sur la vrai app, j'ai pas
+  EXACTEMENT cette même vue??? C'est ce que je voulais pourtant » ; « Ah okay et sur mobile c'est bon aussi ? » ; « Continue ensuite dans les tests et
+  fix... Ça doit être hyper robuste ».
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Pourquoi tu écoutes rien... Fait en sorte de retenir correctement mes informations » ;
+  « Donc sur la vrai app il doit faire ça » (lu : sur l'app déployée, chaque actionneur se joue sur des données « ZZ TEST — … », cf. 07.11 « Non non
+  justement il doit! Juste faire ça sur des données de test, flaggé comme telle ») ; sur sa capture de Fermentescibles 2/7 (téléphone) : « Donc le fait
+  que on puisse mettre du malt après la fermentation, ça a pas posé de problème ???? » ; « Mais surtout niveau business ça fait aucun sens ??? » ;
+  « COMMENT CA A JAMAIS ÉTÉ FLAGGÉ ? JAI VU CA EN 2S ???? » ; « Il faut pas perdre les bug finding » ; « Il faut pas que ça se reproduise c'est critique
+  met en place un mécanisme pour plus perdre ce genre d'opération » (lu : registre unique `work/missions/BUGS.md`, contrôle `controle-bugs.mjs`, hook Stop).
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Le temps perdu alors que j'ai donné explicitement mon autorisation .. »
+  (lu par le monitoring : couvre l'intégration des branches de correcteurs puis le déploiement ; la pilote garde la fusion d'une branche d'agent
+  pour un oui écrit dans son propre fil, question posée le 08.11).

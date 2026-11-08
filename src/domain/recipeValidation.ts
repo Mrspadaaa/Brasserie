@@ -1,5 +1,8 @@
 import type { Recipe } from '../types';
 import { readYeastDocumentaryView } from '../services/recipeDraft';
+import { messageMoment } from './fermentables/moments';
+import { messageAlpha } from './hopAlpha';
+import { BORNES, frBorne, messageHoublonParLitre, messageMasseParLitre, ogHorsBornes } from './bornesMetier';
 
 export type RecipeStepId = 'identite' | 'fermentescibles' | 'houblons' | 'levure' | 'paliers' | 'eau' | 'recap';
 export interface RecipeFieldIssue {
@@ -43,12 +46,27 @@ export function recipeSaveIssues(recipe: Recipe): RecipeFieldIssue[] {
   if (typeof recipe.name !== 'string' || recipe.name.trim().length < 2) add('wz-title', 'identite', 'Donne un nom à la recette (au moins 2 caractères).');
   number(recipe.volumeL, 1, 'wz-volume', 'identite', 'Volume en fermenteur');
   number(recipe.boilMin, 0, 'wz-boil', 'identite', 'Durée d’ébullition');
-  (recipe.fermentables ?? recipe.malts ?? []).forEach((item, i) =>
-    number(item.weightKg, 0, `wz-fermentable-${i}`, 'fermentescibles', `Quantité de ${item.name || `l’ingrédient ${i + 1}`}`));
+  (recipe.fermentables ?? recipe.malts ?? []).forEach((item, i) => {
+    const before = issues.length;
+    number(item.weightKg, 0, `wz-fermentable-${i}`, 'fermentescibles', `Quantité de ${item.name || `l’ingrédient ${i + 1}`}`);
+    // Table famille × moment (domain/fermentables/moments.ts, audit du 08.11, AM 1 et 2) : un grain bouilli ou au fermenteur ne s'enregistre pas.
+    const moment = issues.length === before ? messageMoment({ name: item.name, kind: item.kind ?? 'grain', use: item.use ?? 'empatage' }) : null;
+    if (moment) add(`wz-fermentable-${i}`, 'fermentescibles', moment);
+  });
+  // Bornes métier (bornesMetier.ts, MV-44 à MV-47) : masse par litre, houblon par litre, OG retenue. Erreur claire, jamais un calcul silencieux.
+  const fermentablesKg = (recipe.fermentables ?? recipe.malts ?? []).reduce((s, f) => s + (Number.isFinite(f.weightKg) && f.weightKg > 0 ? f.weightKg : 0), 0);
+  const masse = messageMasseParLitre(fermentablesKg, recipe.volumeL);
+  if (masse) add('wz-fermentable-list', 'fermentescibles', masse);
+  const houblon = messageHoublonParLitre((recipe.hops ?? []).reduce((s, h) => s + (Number.isFinite(h.weightG) && h.weightG > 0 ? h.weightG : 0), 0), recipe.volumeL);
+  if (houblon) add('wz-hop-list', 'houblons', houblon);
+  if (ogHorsBornes(recipe.ogTarget)) add('wz-og', 'fermentescibles', `OG retenue ${frBorne(recipe.ogTarget!, 3)} : au-delà de ${frBorne(BORNES.og.max, 3)}, erreur de saisie probable.`);
   (recipe.hops ?? []).forEach((item, i) => {
     number(item.weightG, 0, `wz-hop-${i}`, 'houblons', `Quantité de ${item.name || `houblon ${i + 1}`}`);
     // 0 means this lot's alpha is unknown; it is not a fabricated estimate.
     if (item.alpha != null) number(item.alpha, 0, `wz-hop-alpha-${i}`, 'houblons', `Alpha de ${item.name}`, 100);
+    // « 80 » pour 8,0 (AM 9) : au-delà de 30 %, la valeur se confirme avant d'enregistrer.
+    const alpha = messageAlpha(item);
+    if (alpha) add(`wz-hop-alpha-${i}`, 'houblons', alpha);
     if ((item.stage === 'boil' || item.stage === 'whirlpool') && item.timeMin != null)
       number(item.timeMin, 0, `wz-hop-time-${i}`, 'houblons', `Durée de ${item.name}`);
     if (item.stage === 'boil' && Number.isFinite(item.timeMin) && Number.isFinite(recipe.boilMin) && item.timeMin! > recipe.boilMin)

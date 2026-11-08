@@ -60,9 +60,15 @@ describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
     const view = await lire();
     const lignes = Array.from(view.container.querySelectorAll('[data-purchase-line]')) as HTMLElement[];
     const ligneId = (id: string) => view.container.querySelector('[data-dp-ligne="' + id + '"]') as HTMLElement; // R1 : par id
-    expect(lignes).toHaveLength(23);
-    expect(within(ligneId('line-1')).getByText('+6 kg')).toBeInTheDocument();
-    expect(ligneId('line-2').querySelector('[data-dp-pastille]')).toBeNull();
+    expect(lignes).toHaveLength(18); // 28c98cba (pu4d, p-port-pu4d/RESULTAT.md) : la mouture est une pastille de sa ligne, plus une rangée imbriquée : 23 → 18
+    // 28c98cba (pu4d, p-port-pu4d/RESULTAT.md) : la pastille « +6 kg » est devenue « avant → après » au plateau (`[data-dp-apres]`, Plateau.tsx) : 6 kg reçus = 6 de plus.
+    const apres = (ligneId('line-1').querySelector('[data-dp-apres]')!.textContent ?? '').match(/^([0-9 ]+(?:,[0-9]+)?) → ([0-9 ]+(?:,[0-9]+)?) Kg$/)!;
+    const nb = (t: string) => Number(t.replace(/[^0-9,]/g, '').replace(',', '.'));
+    expect(nb(apres[2]) - nb(apres[1])).toBe(6);
+    // La mouture (line-2) n'est plus une rangée (28c98cba) : elle est la pastille « 0,60 » de son malt, sans pastille de stock.
+    expect(ligneId('line-2')).toBeNull();
+    expect(ligneId('line-1').querySelector('[data-dp-mouture="line-2"]')).not.toBeNull();
+    expect(ligneId('line-1').querySelector('[data-dp-pastille]')).toBeNull();
     // D275 (voie f3) : Sabro n'est plus « unité à préciser » : le plateau dit l'unité déduite et pourquoi, à contrôler (HEAD : « unité à préciser »).
     expect(within(ligneId('line-20')).queryAllByText(/unité à préciser/)).toHaveLength(0);
     expect(ligneId('line-20').querySelector('[data-dp-unite-deduite]')).toBeNull(); // C2 (g2a, critique g3) : aucune phrase d'unité sous les champs ; la raison est au survol de la rangée (titre)
@@ -77,7 +83,7 @@ describe('r2b : les points qui pèsent, la pastille, l’interrupteur', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('À corriger');
     expect(screen.getByText('1 unité à préciser')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Confirmer et enregistrer' })).toBeEnabled();
-    expect(screen.getByLabelText('Unité ligne 1')).toHaveFocus();
+    expect(screen.getByLabelText('Unité à remplir, ligne 1')).toHaveFocus(); // 28c98cba (pu4d, D350) : l'unité qui manque est un groupe de cinq cases « Unité à remplir », plus un champ « Unité ligne n »
   });
   it('S8 : même commande sous un autre numéro = un signal, jamais un blocage ; « Même achat · ne rien enregistrer » n’écrit rien', async () => {
     state.transactions = [{ id: 'TX-380001', date: '30.04.2026', amountTTC: 86.5, description: 'Brau- und Rauchshop · 380001', category: 'brassage', finance: { kind: 'expense', version: 1, amountCents: 8650, vendor: 'Brau- und Rauchshop GmbH', invoiceNumber: '380001', sourceOrderNumber: 'Onlinebestellung-686863', recordedAt: '2026-04-30T10:00:00.000Z', lines: [] } }];
@@ -101,7 +107,7 @@ describe('le banc de développement n’atteint jamais l’enregistrement réel'
     render(<ExpenseSheet onClose={onClose} onSaved={() => {}} apercu={apercu}/>);
     await screen.findByRole('region', { name: 'Vérification du justificatif' });
     expect(state.scanned).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByLabelText('Stock ligne 20'), { target: { value: 'none' } }); // C7 : le menu du stock, plus d'interrupteur
+    // C7 (menu « Stock ligne 20 » → aucun mouvement) : supprimé par 28c98cba (pu4d, D350 : aucun menu) ; la ligne 20 reste un nouvel article, le test vérifie la fermeture du banc.
     // D275 (voie f3) : Sabro « 30 » prend le g de ses voisines ; plus de « g » à toucher (HEAD : clic sur « g »).
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
     await waitFor(() => expect(enregistrer.mock.calls.length + (screen.queryByRole('alert') ? 1 : 0)).toBeGreaterThan(0));

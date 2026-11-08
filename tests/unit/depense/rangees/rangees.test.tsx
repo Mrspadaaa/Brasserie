@@ -14,6 +14,7 @@ vi.mock('../../../../src/services/financeService', () => ({ FinanceService: { ge
 vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejection: () => false }));
 vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => state.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
 vi.mock('../../../../src/services/purchaseEntry', async importOriginal => ({ ...await importOriginal<any>(), savePurchaseWithProofReceipt: async (d: any) => { state.saved(structuredClone(d)); return { transactionId: 'TX-test' }; }, confirmPurchase: async () => undefined, purchaseDuplicates: () => [] }));
+import { stockDe } from '../aide-plateau';
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 import { apercuDepense } from '../../../../src/ui/depense/apercuDev';
@@ -59,7 +60,7 @@ describe('zone 2 : nouvel article d’office, aucun « Créer » au repos', () =
     expect(document.querySelectorAll('[data-dp-creer]')).toHaveLength(0);
     expect(screen.queryAllByRole('button', { name: /^Créer/ })).toHaveLength(0);
     for (const n of [1, 4, 5, 6, 7, 8]) {
-      expect((screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value, `ligne ${n}`).toBe('new');
+      expect(stockDe(n), `ligne ${n}`).toBe('new'); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le menu « Stock ligne n » est lu sur la ligne « article » du plateau
       expect(resume(n).querySelector('svg[aria-label="nouvel article"]'), `ligne ${n}`).not.toBeNull();
     }
     for (const n of [2, 3, 9]) {
@@ -72,10 +73,14 @@ describe('zone 2 : nouvel article d’office, aucun « Créer » au repos', () =
     expect(ligne(4).querySelector('[data-dp-stock]')!.textContent).toMatch(/^article «.*» · nouvel article/);
     expect((ligne(4).querySelector('[data-dp-stock] input[aria-label^="Nom de l’article"]') as HTMLInputElement).value).toMatch(/^Carafa Spezial I/);
     expect(within(ligne(4)).getAllByRole('button', { name: 'Choisir un autre article' }).length).toBeGreaterThan(0);
-    expect(ligne(4).querySelector('[data-dp-imprime]')!.textContent).toBe('imprimé « Carafa Spezial I®, Kg » · MA0301');
-    const options = ligne(4).querySelector('[data-dp-options]')!.textContent!;
-    expect(options).toMatch(/concass/);
-    expect(options).not.toMatch(/Schrotung|geschrotet/);
+    // Imprime (Plateau.tsx) sépare par des espaces insécables. 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : l'imprimé est le texte du papier, tel quel, options allemandes comprises
+    // (« Mischung: …, Schrotung: geschrotet »), et la ligne d'options en français (`data-dp-options`, « concassé ») est retirée du plateau (« Retiré sans équivalent »).
+    const imprime = ligne(4).querySelector('[data-dp-imprime]')!.textContent!.split(String.fromCharCode(160)).join(' ');
+    expect(imprime).toMatch(/^imprimé « Carafa Spezial I®, Kg.*» · MA0301$/);
+    expect(ligne(4).querySelector('[data-dp-options]')).toBeNull();
+    // Le papier n'est cité qu'à l'imprimé : nulle part ailleurs de la ligne (rangée, plateau) l'allemand ne passe pour du français.
+    const reste = ligne(4).cloneNode(true) as HTMLElement; reste.querySelector('[data-dp-imprime]')!.remove();
+    expect(reste.textContent).not.toMatch(/Schrotung|geschrotet/);
   });
 });
 
@@ -134,7 +139,7 @@ describe('zone 7 : « + Ajouter une ligne » reste ; une ligne vide se dit en ro
 const premierPlan = (n: number) => {
   const d = ligne(n).querySelector('details')!.cloneNode(true) as HTMLElement;
   d.querySelector('summary')?.remove();
-  d.querySelectorAll('[data-dp-plus]').forEach(e => e.remove());
+  d.querySelectorAll('[data-dp-voir-famille]').forEach(e => e.remove()); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : « plus » (champ Famille, D364) remplace l'ancien `data-dp-plus`
   return d;
 };
 describe('VERDICT-f3 défaut 1 : le plateau ouvert est celui de p3c-3 (p3c-3-geste-plateau.png)', () => {
@@ -144,15 +149,16 @@ describe('VERDICT-f3 défaut 1 : le plateau ouvert est celui de p3c-3 (p3c-3-ges
     const p = premierPlan(4);
     expect(p.textContent).not.toMatch(ANCIEN);
     expect(p.querySelector('[data-dp-imprime]')).not.toBeNull();
-    expect(p.querySelector('[data-dp-options]')!.textContent).toMatch(/concass/);
+    expect(p.querySelector('[data-dp-options]')).toBeNull(); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : ligne d'options retirée
     const calc = p.querySelector('[data-dp-calcul]')!;
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : l'unité est le groupe « Unité ligne 4 » (segment) ; D351 : « ✓ au centime » ne se dit plus quand le calcul tombe juste, seul un écart se dit.
     for (const champ of ['Quantité ligne 4', 'Unité ligne 4', 'Prix ligne 4', 'Montant ligne 4']) expect(calc.querySelector(`[aria-label="${champ}"]`), champ).not.toBeNull();
-    expect(calc.textContent).toMatch(/✓ au centime/);
+    expect(calc.querySelector('[data-dp-centime]')).toBeNull();
     const segments = Array.from(p.querySelectorAll('[data-dp-nature] button')).map(b => `${b.textContent}${b.getAttribute('aria-pressed') === 'true' ? '*' : ''}`);
     expect(segments).toEqual(['Ingrédient*', 'Service', 'Matériel']);
     expect(p.querySelector('[data-dp-stock]')!.textContent).toMatch(/^article «.*» · nouvel article/); // le nom est le champ, dans la ligne
     expect(p.querySelector('[data-dp-stock] input[aria-label="Nom de l’article, ligne 4"]')).not.toBeNull();
-    expect(ligne(4).querySelectorAll('[data-dp-plus]')).toHaveLength(1);
+    expect(ligne(4).querySelectorAll('[data-dp-voir-famille]')).toHaveLength(1);
   });
 
 
@@ -161,7 +167,8 @@ describe('VERDICT-f3 défaut 1 : le plateau ouvert est celui de p3c-3 (p3c-3-ges
 describe('VERDICT-f3 défaut 8 : le jaune « à contrôler » a son geste au plateau', () => {
   it('C2 (g2a, critique g3) : l’unité déduite reste jaune à la rangée (raison au survol), sans phrase ni segment sous les champs ; le segment g / kg / Stk n’existe que pour une unité inconnue', async () => {
     await ouvrir();
-    expect(ligne(7).querySelector('[data-dp-unite-segments]')).toBeNull(); expect(ligne(7).querySelector('[data-dp-unite-deduite]')).toBeNull();
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le segment d'unité est au plateau de toute ligne (pu4d) ; l'unité déduite y est allumée en jaune « repris », sans phrase.
+    expect(ligne(7).querySelector('[data-dp-unite-segments]')!.getAttribute('data-dp-niveau')).toBe('repris'); expect(ligne(7).querySelector('[data-dp-unite-deduite]')).toBeNull();
     expect(resume(7).querySelector('[data-dp-qte]')!.getAttribute('data-dp-niveau')).toBe('repris');
     expect(resume(7).getAttribute('title')).toMatch(/./);
     expect(within(ligne(13)).getAllByRole('button', { name: 'kg' }).length).toBeGreaterThan(0); // l'unité inconnue garde son segment

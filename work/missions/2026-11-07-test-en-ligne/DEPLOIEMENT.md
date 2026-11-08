@@ -4,7 +4,7 @@ Ce qui part : l'app (hosting) et les 40 fonctions qui tournent déjà en ligne (
 Firebase saute celles qui n'ont pas changé. Ne part pas : les 9 fonctions du conseil houblon V1, jamais déployées (`dispatchBrewerHopAdviceV1` et
 `notifyBrewerHopAdviceAnswerV1` exclues par consigne ; `askBrewerHopAdviceV1`, `getBrewerHopAdviceActivityV1`, `getBrewerHopAdviceConversationV1`,
 `markBrewerHopAdviceReadV1`, `processBrewerHopAdviceV1`, `resetBrewerHopAdviceConversationV1`, `retryBrewerHopAdviceQuestionV1` neuves, hors périmètre) ;
-ni Firestore (règles, index), ni la découpe D381 F (non committée, dans `%TEMP%\deploy-hosting-qr` seulement).
+ni Firestore (règles, index). Correction (08.11) : la découpe D381 F (`dd5cf826`) est un ancêtre de `65d3c645`, elle est donc partie en ligne.
 
 Contenu : D378, D379, corrections du test en ligne (commits `19a0d538` à `65d3c645`), en-tête « · 24 L », pastille « Stock » alignée, « Fixer le seuil minimum ».
 
@@ -23,3 +23,8 @@ Set-Location "$env:TEMP\deploy-2bfe5dc3"; firebase deploy --project brasserie-l-
 1. Lire la version servie (`index.html` en ligne = `dist/index.html`) et les journaux des fonctions.
 2. Relecture Gemini des 13 vraies pièces par l'app déployée (facturée, journalisée) ; gestes d'écriture sur « ZZ TEST — … » ; corriger, redéployer.
 3. 26 écritures B-001 à B-026 : copie de secours lisible d'abord, retrait par la voie de l'app, facture 372765 intacte, journal et totaux relus.
+
+## Fait (08.11)
+
+- Hébergement : `65d3c645`, puis `92de7371` (total des pièces lues en morceaux), puis `1927152d` (avis « Nouvelle version · Recharger »), servi = `dist/index.html`.
+- Fonctions : les 40 à `65d3c645` (40 « Successful update »), puis `aiTask` à `92de7371`. Déployées depuis le dépôt principal : `%TEMP%deploy-2bfe5dc3` n'a pas `functions/.env` (comptes autorisés).

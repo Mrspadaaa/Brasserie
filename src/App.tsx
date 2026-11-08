@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useContext, lazy } from 'r
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
+import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
 import { startProofQueue } from './services/proofQueue';
 import { startEnrichissement } from './services/enrichissement';
@@ -883,6 +884,7 @@ export const App: React.FC = () => {
 
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
       <PersistenceStatus />
+      <NouvelleVersion />
       {/* L'envoi des justificatifs au Drive se fait en arrière-plan : un échec reste ici, avec ses deux gestes (D235). */}
       <ProofUploadNotice hidden={view.view === 'wizard' || view.view === 'hopV55'} onResend={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }} />
       <Header

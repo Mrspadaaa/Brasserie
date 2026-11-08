@@ -966,7 +966,7 @@ export const StorageService = {
     }
     if (batch.stockAccountingVersion !== 1 && !confirmHistorical) {
       const issues = ['Brassin historique : confirmer si les ingrédients ont déjà été retirés avant de modifier le stock.'];
-      this.updateBatch({ ...batch, stockReviewIssues: issues });
+      this.updateBatch({ ...batch, status: live?.status ?? batch.status, stockReviewIssues: issues });
       return { success: false, issues };
     }
     const stocks = this.getStocks();
@@ -975,7 +975,8 @@ export const StorageService = {
       .sort((a,b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0];
     const proposal = prepareBrewStockConsumption(batch, all, { stage, bindings: plan?.brewEstimate?.bindings });
     if (proposal.status === 'needs-review') {
-      this.updateBatch({ ...batch, stockReviewIssues: proposal.issues });
+      // Stock refusé : les relevés sont gardés, mais l'étape du brassin reste celle d'avant (jamais « fermentation » sans déstockage).
+      this.updateBatch({ ...batch, status: live?.status ?? batch.status, stockReviewIssues: proposal.issues });
       return { success: false, issues: proposal.issues };
     }
     if (proposal.status === 'ready') {

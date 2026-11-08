@@ -43,6 +43,16 @@ describe('Fiche brassin : passage en Conditionné', () => {
     fireEvent.click(form.getByRole('button', { name: 'Passer en « Conditionné »' }));
     expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne', volumePackagedL: 20.4, bottlingDate: expect.stringMatching(/^\d{2}\.\d{2}\.\d{4}$/) }), 'remaining', false);
   });
+  it('RF-8 : un retour en arrière (Terminé vers Conditionné) sur un lot sans volume ne rouvre pas le formulaire', () => {
+    render(<BatchDetailSheet batch={base({ status: 'termine' })} initialSection="overview" onClose={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: 'conditionne' } });
+    // Le retour en arrière demande d'abord sa confirmation (HEAD) ; le volume n'est jamais demandé, ni avant ni après.
+    expect(screen.queryByLabelText('Conditionnement du brassin')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir à « Conditionné »' }));
+    expect(screen.queryByLabelText('Conditionnement du brassin')).toBeNull();
+    expect(StorageService.updateBatch).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne' }));
+    expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
+  });
   it('Annuler : rien ne change', () => {
     const form = ouvrir(base());
     fireEvent.click(form.getByRole('button', { name: 'Annuler' }));

@@ -66,6 +66,10 @@ clément devant un radar à plusieurs couleurs, et un picto composé jugé « pa
 ## Juger
 Lis VOIE.md, puis RESULTAT.md, puis le livrable. Ouvre chaque capture en image : une capture non
 regardée ne compte pas (L12). Pour chaque capture :
+0. **Sens métier, avant le visuel** (08.11, « COMMENT CA A JAMAIS ÉTÉ FLAGGÉ ? JAI VU CA EN 2S ???? ») : chaque
+   combinaison proposée ou acceptée existe-t-elle chez un brasseur (un malt en fermentation, une OG de 1,290, un
+   alpha de 80 %) ? Chaque nombre est-il plausible ? Une absurdité est un REJET, même si la maquette choisie la montre :
+   une maquette ne valide aucune règle de brassage.
 1. **Trois secondes** : comprend-on ce que montre l'écran, ou ce qu'est le picto, sans lire ?
 2. **Disposition et habillage, pris à part** : la structure tient-elle ? L'habillage est-il
    moderne, net, à la hauteur des meilleurs outils (Beer Maverick est le plancher) ?

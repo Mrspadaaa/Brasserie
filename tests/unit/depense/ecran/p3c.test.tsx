@@ -162,7 +162,8 @@ describe('p3c-3 : le picto du justificatif, les propositions, le changement de b
     const l8 = ligne('line-8');
     (l8.querySelector('details') as HTMLDetailsElement).open = true;
     fireEvent(l8.querySelector('details')!, new Event('toggle')); // jsdom l'émet plus tard : on le joue tout de suite
-    fireEvent.change(screen.getByLabelText('Nature ligne 8'), { target: { value: 'packaging' } });
+    // 28c98cba (pu4d, p-port-pu4d/RESULTAT.md) : le menu « Nature ligne 8 » est le segment « Ingrédient | Service | Matériel » (D350, D335) ; « Matériel » = equipment.
+    fireEvent.click(within(l8.querySelector('[data-dp-nature]') as HTMLElement).getByRole('button', { name: 'Matériel' }));
     const apres = ligne('line-8');
     expect(apres.closest('[data-dp-bande]')!.getAttribute('data-dp-bande')).not.toBe('houblon');
     expect((apres.querySelector('details') as HTMLDetailsElement).open).toBe(true);
@@ -172,11 +173,15 @@ describe('p3c-3 : le picto du justificatif, les propositions, le changement de b
     const qte = () => ligne('line-20').querySelector('[data-dp-qte]')!;
     expect(qte().textContent).toBe('30 g');
     expect(qte().hasAttribute('data-dp-niveau')).toBe(false);
-    expect(within(ligne('line-20')).queryByRole('button', { name: 'g' })).toBeNull(); // la barre rouge n'est que pour une unité qui ne se déduit pas
-    expect(screen.getByLabelText('Unité ligne 20')).toHaveValue(''); // l'unité déduite n'est jamais écrite dans le champ (D213)
+    // 28c98cba (pu4d) : le bouton « g » existe au segment d'unité du plateau ; la barre rouge (cinq cases « unité à remplir ») n'est que pour une unité qui ne se déduit pas.
+    expect(ligne('line-20').querySelector('[data-dp-cases-unite]')).toBeNull();
+    expect(ligne('line-20').textContent).not.toMatch(/imprimé [0-9,]+ \?/);
+    // 28c98cba (pu4d, p-port-pu4d/RESULTAT.md) : plus de champ « Unité ligne 20 » : le segment d'unité allume l'unité déduite (en jaune « repris »), D213 : elle n'est pas écrite avant un toucher.
+    const unite = () => ligne('line-20').querySelector('[data-dp-unite-segments]') as HTMLElement;
+    expect([...unite().querySelectorAll('button[aria-pressed="true"]')].map(b => b.textContent)).toEqual(['g']);
     const prix = ligne('line-20').querySelector('[data-dp-prix]')!.textContent;
     expect(prix).not.toBe('—');
-    fireEvent.change(screen.getByLabelText('Unité ligne 20'), { target: { value: 'g' } });
+    fireEvent.click(within(unite()).getByRole('button', { name: 'g' })); // « taper g » devient un toucher sur « g »
     expect(qte().hasAttribute('data-dp-niveau')).toBe(false);
     expect(ligne('line-20').querySelector('[data-dp-prix]')!.textContent).toBe(prix);
   });
@@ -216,12 +221,12 @@ describe('p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’
       const extra = Array.from({ length: 34 - autres.length }, (_, i) => ({ ...JSON.parse(JSON.stringify(autres[0])), id: `line-${100 + i}`, name: `Malt extra ${i}`, reference: `EXTRA-${i}` }));
       (ap.outcome as any).result.items = [...autres, ...extra, port];
     });
-    expect(qa('[data-dp-ligne]')).toHaveLength(35);
+    expect(qa('[data-dp-ligne]')).toHaveLength(30); // 28c98cba (pu4d, p-port-pu4d/RESULTAT.md) : 35 lignes du brouillon, dont 5 moutures qui sont des pastilles de leur malt, plus des rangées : 35 → 30
     const ajouter = screen.getByRole('button', { name: /Ajouter une ligne/ });
     // D379 : « Pas de plafond » : à 35 lignes, « + Ajouter une ligne » reste offert.
     expect(ajouter).not.toBeDisabled();
     expect(q('[data-dp="port"]').textContent).toBe('dont port 8,50'); // le port est bien hors bandes : 34 lignes en bandes
-    expect(qa('[data-dp-bande] [data-dp-ligne]')).toHaveLength(34);
+    expect(qa('[data-dp-bande] [data-dp-ligne]')).toHaveLength(29); // 34 → 29 (moutures en pastille)
     cleanup();
     await ouvrirAvec('3', () => {});
     expect(screen.getByRole('button', { name: /Ajouter une ligne/ })).toBeEnabled();
@@ -230,19 +235,22 @@ describe('p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’
     await ouvrir(etat);
     const bandes = qa('[data-dp-bande] [data-dp-sous-montant]').reduce((s, e) => s + cts(e.textContent ?? ''), 0);
     const port = q('[data-dp="port"]') ? cts(q('[data-dp="port"]').textContent ?? '') : 0;
-    const brouillon = (Array.from(document.querySelectorAll('input[aria-label^="Montant ligne"]')) as HTMLInputElement[]).reduce((s, i) => s + cts(i.value), 0);
+    // 28c98cba (pu4d, p-port-pu4d/RESULTAT.md) : une mouture n'a plus de champ « Montant ligne n » (pastille de son malt, `[data-dp-mouture]`) : son montant se lit sur la pastille.
+    const champs = (Array.from(document.querySelectorAll('input[aria-label^="Montant ligne"]')) as HTMLInputElement[]).reduce((s, i) => s + cts(i.value), 0);
+    const moutures = qa('[data-dp-mouture]').reduce((s, e) => s + cts(e.textContent ?? ''), 0);
+    const brouillon = champs + moutures;
     expect(etat === 'port' ? port : 0).toBe(etat === 'port' ? 850 : 0);
     expect(bandes + port).toBe(brouillon);
     expect(brouillon).toBe(cts((screen.getByLabelText('Total TTC en CHF') as HTMLInputElement).value));
     expect(q('[data-dp="fin"]').textContent).toContain(`Détail ${(brouillon / 100).toFixed(2).replace('.', ',')} / ${(brouillon / 100).toFixed(2).replace('.', ',')}`);
-    expect(qa('[data-dp-ligne]').length).toBe(etat === 'port' ? 24 : 23);
+    expect(qa('[data-dp-ligne]').length).toBe(etat === 'port' ? 19 : 18); // moutures en pastille : 24 → 19, 23 → 18
   });
   it('D12 : « Qté × prix » compte les lignes LUES hors port : 23/23 avec ou sans la ligne de port (VERDICT-f3 détail 5 : « ✓ Qté × prix 23/23 » comme la base ; HEAD : « 23/23 lues »)', async () => {
     await ouvrir('3');
     expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23/);
     cleanup();
     await ouvrir('port');
-    expect(qa('[data-dp-ligne]')).toHaveLength(24); // 24 lignes dans le brouillon, dont le port
+    expect(qa('[data-dp-ligne]')).toHaveLength(19); // 24 lignes dans le brouillon, dont le port ; 5 moutures en pastille (28c98cba (pu4d, p-port-pu4d/RESULTAT.md))
     expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23/);
     expect(q('[data-dp="preuve"]').textContent).not.toMatch(/24/);
   });

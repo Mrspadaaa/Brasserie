@@ -7,7 +7,9 @@ import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
 import { Reperes } from './Reperes';
-import { FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, MOMENT_SUIVANT, pmax, teinte, type Candidat } from './modele';
+import {
+  FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, messageMoment, MOMENT_SUIVANT, momentParDefaut, momentsPermis, pmax, teinte, type Candidat,
+} from './modele';
 
 /**
  * L'étape Malts/sucres (s1 : la maquette `v7/s1`, sur p6-b2). Le ticket (une ligne par ingrédient, la barre porte la masse, le moment sans
@@ -130,12 +132,13 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   // Un toucher fait tourner le moment ; « Annuler » rend celui d'avant la série de touchers (6 s, comme le retrait).
   const tourner = (i: number) => {
     const f = fermentables[i];
-    if (!f) return;
+    // Le moment suivant parmi ceux que la famille permet (AM 1 et 2) : un grain bien placé ne bouge pas ; un grain mal placé revient à l'empâtage, sans jour J+.
+    const use = f ? MOMENT_SUIVANT(f) : undefined;
+    if (!f || use === undefined || use === f.use) return;
     clearTimeout(minutMoment.current);
     setCouleurLigne(-1);
     setAnnMom((a) => ({ ...(a && a.i === i ? a : { i, use: f.use, dayOffset: f.dayOffset }), t: Date.now() }));
-    const use = MOMENT_SUIVANT(f.use);
-    patch(i, { use, ...(use === 'fermentation' && f.dayOffset == null ? { dayOffset: JOUR_PAR_DEFAUT } : {}) });
+    patch(i, { use, ...(f.kind === 'grain' ? { dayOffset: undefined } : use === 'fermentation' && f.dayOffset == null ? { dayOffset: JOUR_PAR_DEFAUT } : {}) });
     requestAnimationFrame(() => focus(`[data-ml="${i}"]`));
     minutMoment.current = setTimeout(() => setAnnMom(null), 6000);
   };
@@ -178,17 +181,19 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   // `fam` : la famille de la ligne. Celle du champ, sauf pour un article trouvé dans un autre rayon (« dext » en Grain → Dextrose, famille Sucre ; B1 n° 4).
   const ajouterLigne = (nom: string, article: StockItem | undefined, kg: number | null, fam: FermentableKind = famille) => {
     const def = defs[fam];
+    // Le moment de la famille, s'il est permis par la table ; sinon le premier permis (jamais un grain hors de l'empâtage).
+    const use = momentsPermis(fam).includes(def.use) ? def.use : momentParDefaut(fam);
     const nouvelle: Fermentable = {
       name: nom,
       stockItemRef: article?.ref,
       // Zéro, pas une quantité plausible : c'est au brasseur de la poser.
       weightKg: kg ?? 0,
       kind: fam,
-      use: def.use,
+      use,
       fermentabilityPct: def.fermentability,
       colorEbc: article?.colorEbc ?? (fam === 'grain' ? undefined : 0),
       potentialPpg: article?.potentialPpg ?? def.ppg,
-      ...(def.use === 'fermentation' ? { dayOffset: JOUR_PAR_DEFAUT } : {}),
+      ...(use === 'fermentation' ? { dayOffset: JOUR_PAR_DEFAUT } : {}),
     };
     echelles.current.clear();
     setSel(n); setNeuf(n);
@@ -286,6 +291,11 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
       <div data-role="alertes">
         {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
+        {/* Une donnée ancienne mal placée (grain bouilli ou au fermenteur) : dite ici, en clair, tout de suite ; la ligne porte « compté 0 ». */}
+        {fermentables.map((f, i) => {
+          const m = messageMoment(f);
+          return m ? <p key={`mom-${i}`} className="fer-alerte" data-hors="moment" data-ah={i}>{m} Touche son moment pour le remettre.</p> : null;
+        })}
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}
       </div>
       <Plateau f={selF} i={selI} setKg={setKg} setJour={a.setJour} tourner={tourner} retirer={retirer}

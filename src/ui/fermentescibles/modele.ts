@@ -4,11 +4,19 @@
 import type { Fermentable, FermentableKind, FermentableUse, StockItem } from '../../types';
 // Les noms courants (« Munich » → Münchner Malz) viennent de la voie a1 (D220, D222) : une seule table, celle des tuiles aussi.
 import { nomsParAlias, normaliser } from '../../domain/fermentables/noms';
+import {
+  grainEmpate, grainHorsEmpatage, messageMoment, momentParDefaut, momentPermis, momentsPermis, momentSuivant, momentTourne,
+} from '../../domain/fermentables/moments';
 
 export const MOMENTS: readonly FermentableUse[] = ['empatage', 'ebullition', 'fermentation'];
 /** Le mot du moment sur la ligne (D218, forme m1 : sans pilule). */
 export const MOT_MOMENT: Record<FermentableUse, string> = { empatage: 'empâtage', ebullition: 'ébullition', fermentation: 'fermentation' };
-export const MOMENT_SUIVANT = (u: FermentableUse): FermentableUse => MOMENTS[(MOMENTS.indexOf(u) + 1) % MOMENTS.length];
+/**
+ * Le moment suivant d'une ligne, dans les moments que sa famille permet (table unique `domain/fermentables/moments.ts`, audit du 08.11, AM 1 et 2) :
+ * un grain reste à l'empâtage, un sucre tourne entre ébullition et fermentation. Un moment interdit (donnée ancienne) revient au premier permis.
+ */
+export const MOMENT_SUIVANT = (f: Pick<Fermentable, 'kind' | 'use'>): FermentableUse => momentSuivant(f);
+export { grainEmpate, grainHorsEmpatage, momentPermis, momentTourne, messageMoment, momentParDefaut, momentsPermis };
 export const JOUR_PAR_DEFAUT = 3;
 
 export const FAMILLES: readonly FermentableKind[] = ['grain', 'sucre', 'fruit'];
@@ -85,10 +93,11 @@ export function graduationsPiste(m: number): Array<{ v: number; grosse: boolean 
 }
 
 // ---------------------------------------------------------------------------------------------------------------- part du grain
-export const grainsDe = (l: readonly Fermentable[]) => l.filter((f) => f.kind === 'grain');
+// La part se calcule sur le grain EMPÂTÉ : un grain mal placé (donnée ancienne, au fermenteur ou bouilli) n'est pas dans la maische (A10, 08.11).
+export const grainsDe = (l: readonly Fermentable[]) => l.filter(grainEmpate);
 export const grainKg = (l: readonly Fermentable[]) => grainsDe(l).reduce((s, f) => s + f.weightKg, 0);
-/** Masse des autres grains que la ligne i. */
-export const autresKg = (l: readonly Fermentable[], i: number) => l.reduce((s, f, k) => s + (k !== i && f.kind === 'grain' ? f.weightKg : 0), 0);
+/** Masse des autres grains empâtés que la ligne i. */
+export const autresKg = (l: readonly Fermentable[], i: number) => l.reduce((s, f, k) => s + (k !== i && grainEmpate(f) ? f.weightKg : 0), 0);
 /** La masse qui donne la part p (en %) à la ligne i, les autres grains restant ce qu'ils sont ; `null` si impossible. */
 export function kgPourPart(l: readonly Fermentable[], i: number, p: number | null): number | null {
   const o = autresKg(l, i);

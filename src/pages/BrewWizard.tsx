@@ -80,6 +80,8 @@ import { hopV4Enabled } from '../ui/hopIndex/flags';
 import { poserPorteEtape } from '../ui/hopIndex/comparer/porte';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { hotBitterness } from '../domain/hopBitterness';
+import { alphaAConfirmer, alphaProbable } from '../domain/hopAlpha';
+import { grainEmpate } from '../domain/fermentables/moments';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -876,7 +878,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // --- Calculs en direct ----------------------------------------------------
 
   /** Le grain seul. Un brasseur ne met pas le sucre dans sa facture de grain. */
-  const grains = useMemo(() => fermentables.filter((f) => f.kind === 'grain'), [fermentables]);
+  // Le grain EMPÂTÉ : un grain bouilli ou au fermenteur (donnée ancienne) ne donne ni couleur ni absorption d'eau (AM 1, 2 et A7, 08.11).
+  const grains = useMemo(() => fermentables.filter(grainEmpate), [fermentables]);
   const totalGrist = useMemo(() => grains.reduce((s, f) => s + f.weightKg, 0), [grains]);
 
   // La couleur ne vient que du grain : le sucre clair n'en apporte pas.
@@ -2721,6 +2724,16 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 onValue={(v) => patchHop(i, { alpha: v })}
                                 missing={style.bitters && !h.alpha}
                               />
+                              {/* AM 9 (08.11) : « 80 » pour 8,0. Au-delà de 30 %, l'IBU attend : corriger d'un toucher, ou confirmer (un extrait). */}
+                              {alphaAConfirmer(h) && (
+                                <p role="status" data-role="alpha-a-confirmer" className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-attention">
+                                  <span>α {String(h.alpha).replace('.', ',')} % ?</span>
+                                  <button type="button" className="rounded-full border border-current px-2 py-0.5"
+                                    onClick={() => patchHop(i, { alpha: Math.round(h.alpha * 10) / 100 })}>{alphaProbable(h.alpha)} %</button>
+                                  <button type="button" className="rounded-full px-2 py-0.5 underline"
+                                    onClick={() => patchHop(i, { alphaConfirme: h.alpha } as Partial<HopIngredient>)}>Confirmer {String(h.alpha).replace('.', ',')} %</button>
+                                </p>
+                              )}
                             </div>
                           )}
 

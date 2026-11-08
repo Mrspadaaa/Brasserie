@@ -28,6 +28,7 @@ const T0 = [0, 2, 4, 7, 12, 20, 35, 40].map((x) => `${teinte(x)} ${(x / 40) * 10
 export const Reperes: React.FC<PropsReperes> = ({ rendementPct, rendementDeclare, og, ogPlage, teinteBiere, ebcPlage, aRenseigner, ouvert, onBascule, onRenseigner }) => {
   const e = teinteBiere?.ebc ?? null;
   const ogMilieu = ogPlage ? (pc(ogPlage.min, A, B) + pc(ogPlage.max, A, B)) / 2 : 0;
+  const horsOg = og == null ? null : og > B ? 'haut' : og < A ? 'bas' : null;
   return (
     <section className="fer-reps" data-role="reps" aria-label="Repères de la recette" data-booster="reperes">
       <div className="fer-rh">
@@ -46,11 +47,18 @@ export const Reperes: React.FC<PropsReperes> = ({ rendementPct, rendementDeclare
       </div>
       {ouvert && (
         <>
-          <div className="fer-ech" role="img" aria-label={`OG attendue ${ogTxt(og)}${ogPlage ? `, plage du style de ${fr(ogPlage.min, 3)} à ${fr(ogPlage.max, 3)}` : ''}`}>
+          <div className="fer-ech" role="img" aria-label={`OG attendue ${ogTxt(og)}${horsOg ? ', hors de l’échelle 1,040–1,100' : ''}${ogPlage ? `, plage du style de ${fr(ogPlage.min, 3)} à ${fr(ogPlage.max, 3)}` : ''}`}>
             <div className="fer-tr" style={{ background: 'linear-gradient(90deg,#F2F2F2,#C9C9C9)' }} />
             {ogPlage && <div className="fer-zone" style={{ left: `${pc(ogPlage.min, A, B)}%`, width: `${pc(ogPlage.max, A, B) - pc(ogPlage.min, A, B)}%` }} />}
             {ogPlage && <span className="fer-zl" style={{ left: `${ogMilieu}%` }}>style {fr(ogPlage.min, 3)}–{fr(ogPlage.max, 3)}</span>}
-            {og != null && (<><b className="fer-mk" style={{ left: `${pc(og, A, B)}%` }} /><span className="fer-ebcl fer-ogl" style={{ left: `${pc(og, A, B)}%` }}>{ogTxt(og)}</span></>)}
+            {og != null && (
+              // Hors de l'échelle (1,040–1,100), le repère reste au bord mais le dit : « ~1,290 › » (AM 3 et A11 du 08.11 : rien ne se borne en silence).
+              <><b className="fer-mk" style={{ left: `${pc(og, A, B)}%` }} />
+                <span className={`fer-ebcl fer-ogl${horsOg ? ' fer-hors' : ''}`} data-hors={horsOg ? 'og' : undefined}
+                  style={{ left: `${pc(og, A, B)}%`, ...(horsOg === 'haut' ? { transform: 'translateX(-100%)' } : horsOg === 'bas' ? { transform: 'none' } : {}) }}>
+                  {horsOg === 'bas' ? '‹ ' : ''}{ogTxt(og)}{horsOg === 'haut' ? ' ›' : ''}
+                </span></>
+            )}
           </div>
           <div className="fer-rh">
             <span className="fer-lb"><Verre /></span>

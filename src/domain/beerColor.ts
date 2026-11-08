@@ -1,4 +1,5 @@
 import { MaltIngredient } from '../types';
+import { grainHorsEmpatage } from './fermentables/moments';
 
 /**
  * Couleur de la bière, calculée depuis la facture de grain.
@@ -58,8 +59,10 @@ export function bandForEbc(ebc: number): { band: ColorBand; label: string; swatc
  *
  * Renvoie `null` dès qu'une couleur de malt manque, ou que le volume est nul.
  */
-export function computeBeerColor(malts: MaltIngredient[], volumeL: number): BeerColor | null {
+export function computeBeerColor(lignes: MaltIngredient[], volumeL: number): BeerColor | null {
   if (!volumeL || volumeL <= 0 || !Number.isFinite(volumeL)) return null;
+  // Un grain hors de l'empâtage (bouilli, au fermenteur) ne donne pas sa couleur : il compte 0 et la validation le dit (AM 1 et 2, 08.11).
+  const malts = (lignes ?? []).filter((m) => !grainHorsEmpatage(m));
   if (!malts || malts.length === 0) return null;
   if (
     malts.some(

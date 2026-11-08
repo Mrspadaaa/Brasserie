@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { webcrypto } from 'node:crypto';
 
 const state = vi.hoisted(() => ({ stocks: { rawMaterials: [] as any[], cleaning: [] as any[], equipment: [] as any[], kegs: [] as any[] }, transactions: [] as any[], scanned: vi.fn(), traduire: vi.fn() }));
@@ -43,7 +43,8 @@ describe('D330, D334 : le champ qui manque porte le rouge et son nom, au plateau
     expect(ligneN(13).querySelectorAll('[data-dp-a-remplir]')).toHaveLength(0);
     expect(ligneN(13).querySelector<HTMLInputElement>('[aria-label="Prix ligne 12"]')!.placeholder).toBe('prix');
     const niveau = (nom: string) => ligneN(13).querySelector<HTMLElement>(`[aria-label="${nom} ligne 12"]`)!.closest('[data-dp-niveau]')?.getAttribute('data-dp-niveau') ?? null;
-    expect(niveau('Unité')).toBe('inconnu'); expect(niveau('Prix')).toBe('inconnu');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : l'unité qui manque n'est plus un champ « Unité ligne n » mais cinq cases « Unité à remplir, ligne n » (marquées inconnu).
+    expect(niveau('Unité à remplir,')).toBe('inconnu'); expect(niveau('Prix')).toBe('inconnu');
     expect(niveau('Quantité')).toBeNull(); expect(niveau('Montant')).toBeNull();
   });
   it('une ligne qui n’a rien à remplir ne porte aucun mot rouge au plateau', async () => {
@@ -52,7 +53,8 @@ describe('D330, D334 : le champ qui manque porte le rouge et son nom, au plateau
   });
   it('un article relié qu’on n’a pas choisi : « article à choisir », le choix marqué inconnu, et le nom de la rangée aussi', async () => {
     await commande();
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'existing' } });
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le menu « Stock ligne 1 → existing » est le ⇄ « Choisir un autre article » (article « ? » · à choisir).
+    fireEvent.click(within(ligneN(1)).getByRole('button', { name: 'Choisir un autre article' }));
     await waitFor(() => expect(ligneN(1).querySelector('[data-dp-stock] [data-dp-niveau="inconnu"]')).not.toBeNull());
     expect(ligneN(1).querySelector('[data-dp-stock]')!.textContent).toContain('à choisir');
     expect(ligneN(1).querySelector<HTMLElement>('summary [data-dp-nom]')!.getAttribute('data-dp-niveau')).toBe('inconnu');
@@ -62,7 +64,7 @@ describe('D330, D334 : le champ qui manque porte le rouge et son nom, au plateau
     expect(ligneN(13).querySelector<HTMLDetailsElement>('details')!.open).toBe(false);
     fireEvent.click(q('[data-va="remplir"]'));
     await waitFor(() => expect(ligneN(13).querySelector<HTMLDetailsElement>('details')!.open).toBe(true));
-    await waitFor(() => expect(document.activeElement).toBe(ligneN(13).querySelector('[aria-label="Unité ligne 12"]')));
+    await waitFor(() => expect(document.activeElement).toBe(ligneN(13).querySelector('[aria-label="Unité à remplir, ligne 12"]'))); // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le focus va sur les cinq cases « Unité à remplir »
   });
   it('B2 n° 18 : un champ qui manque est un seul marquage, son nom en filigrane ; le toucher sur « à remplir » du bandeau lui donne le focus (test précédent)', async () => {
     await commande();
@@ -102,8 +104,8 @@ describe('D335 : le segment Nature allume toujours l’un de ses trois mots', ()
     for (const [kind, seg] of NATURES) expect(natureDuSegment(kind as any), kind).toBe(seg);
   });
   it.each(NATURES)('une ligne « %s » : exactement un segment pressé (%s)', async (kind, seg) => {
-    const v = await lirePiece(state.scanned, [ligne(1, 'Rouleau mousse 12 cm', 'equipment', 1, 'Stk', 3, 3), ligne(2, 'Seau 12 L', 'equipment', 1, 'Stk', 4, 4)]);
-    fireEvent.change(screen.getByLabelText('Nature ligne 1'), { target: { value: kind } });
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : plus de menu « Nature ligne 1 » à changer : la nature est lue avec la pièce, le segment doit l'allumer.
+    const v = await lirePiece(state.scanned, [ligne(1, kind === 'ingredient' ? 'Malt Pilsner' : 'Rouleau mousse 12 cm', kind, 1, kind === 'ingredient' ? 'Kg' : 'Stk', 3, 3), ligne(2, 'Seau 12 L', 'equipment', 1, 'Stk', 4, 4)]);
     const groupe = ligneDe(v, 1).querySelector('[data-dp-nature]');
     if (seg === undefined) { expect(groupe).toBeNull(); return; }
     expect(groupe!.querySelectorAll('button')).toHaveLength(3);
@@ -112,13 +114,16 @@ describe('D335 : le segment Nature allume toujours l’un de ses trois mots', ()
   });
   it('toucher le segment déjà allumé ne change rien ; toucher un autre pose ingredient, service ou equipment', async () => {
     const v = await lirePiece(state.scanned, [ligne(1, 'Rouleau mousse 12 cm', 'other', 1, 'Stk', 3, 3), ligne(2, 'Seau 12 L', 'equipment', 1, 'Stk', 4, 4)]);
-    const sel = () => (screen.getByLabelText('Nature ligne 1') as HTMLSelectElement).value;
-    expect(sel()).toBe('other');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : plus de menu « Nature ligne 1 » : la nature se lit à la bande où la ligne est rangée (une nature = une bande).
+    const bande = () => ligneDe(v, 1).closest('[data-dp-bande]')?.getAttribute('data-dp-bande');
+    const autre = bande();
+    const presse = () => [...ligneDe(v, 1).querySelectorAll<HTMLButtonElement>('[data-dp-nature] button[aria-pressed="true"]')].map(b => b.textContent);
     const bouton = (mot: string) => [...ligneDe(v, 1).querySelectorAll<HTMLButtonElement>('[data-dp-nature] button')].find(b => b.textContent === mot)!;
-    fireEvent.click(bouton('Matériel')); expect(sel()).toBe('other');
-    fireEvent.click(bouton('Service')); expect(sel()).toBe('service');
-    fireEvent.click(bouton('Ingrédient')); expect(sel()).toBe('ingredient');
-    fireEvent.click(bouton('Matériel')); expect(sel()).toBe('equipment');
+    expect(presse()).toEqual(['Matériel']);
+    fireEvent.click(bouton('Matériel')); expect(presse()).toEqual(['Matériel']); expect(bande()).toBe(autre);
+    fireEvent.click(bouton('Service')); expect(presse()).toEqual(['Service']);
+    fireEvent.click(bouton('Ingrédient')); expect(presse()).toEqual(['Ingrédient']);
+    fireEvent.click(bouton('Matériel')); expect(presse()).toEqual(['Matériel']);
   });
 });
 

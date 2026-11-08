@@ -149,7 +149,8 @@ describe('Extrait et densités', () => {
       potentialPpg: 46
     };
     const pointsSucre = BrewingMath.extractPoints([sucre], 30, 50)!;
-    const pointsGrain = BrewingMath.extractPoints([{ ...sucre, kind: 'grain' }], 30, 50)!;
+    // Le grain de comparaison est empâté : un grain bouilli ne compte pas (table domain/fermentables/moments.ts, audit du 08.11, AM 2).
+    const pointsGrain = BrewingMath.extractPoints([{ ...sucre, kind: 'grain', use: 'empatage' }], 30, 50)!;
     expect(pointsSucre.total).toBeCloseTo(pointsGrain.total * 2, 1);
   });
 

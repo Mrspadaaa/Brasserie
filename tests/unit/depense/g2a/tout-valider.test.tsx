@@ -76,7 +76,7 @@ describe('D329 : les valeurs corrigées passent par le bandeau', () => {
     expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/2\s*corrigées/);
     fireEvent.click(geste(v, 'annuler'));
     await waitFor(() => expect(nom(v)).toBe('Citra'));
-    expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).toBeNull(); expect((ligne(v, 'line-4')!.querySelector('[aria-label="Unité ligne 4"]') as HTMLInputElement).value).toBe('');
+    expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).toBeNull(); /* 28c98cba (pu4d, D350) : plus de champ « Unité ligne 4 » ; l'unité déduite (g) est allumée au segment et jaune « repris » : elle n'est pas écrite (D213). */ expect(ligne(v, 'line-4')!.querySelector('[data-dp-unite-segments]')!.getAttribute('data-dp-niveau')).toBe('repris');
     expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/1\s*corrigée(?!s)/);
     expect(rang(v)).toBe('3/3');
     fireEvent.click(geste(v, 'garder'));

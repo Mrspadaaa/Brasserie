@@ -1,11 +1,21 @@
 import { estimateSwissBeerTax } from '../domain/finance/swissBeerTax';
-import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind,
+import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind, FermentableUse,
   Fermentable
 } from '../types';
 import { equipmentErrors, brewingPreferenceErrors, equipmentCheck, MASH_WATER_EXPANSION } from '../domain/brewEquipment';
 import { resizeWaterPlan } from '../domain/resizeWaterPlan';
 import { snapshotBrewhouse } from '../domain/brewPreferences';
 import { replanRecipeWater } from '../domain/recipeWater';
+import { grainHorsEmpatage } from '../domain/fermentables/moments';
+import { BORNES } from '../domain/bornesMetier';
+
+/**
+ * L'OG la plus haute qu'une bière atteint : 1,130. Les styles les plus forts du BJCP 2021 (English Barleywine, Wheatwine, Eisbock)
+ * s'arrêtent à 1,120 ; la marge couvre une bière hors style. Au-delà, l'OG prédite trahit une saisie fausse (masse, volume) : on la signale,
+ * on ne conseille jamais d'ajouter du grain (audit métier du 08.11, AM 3).
+ */
+export const OG_PLAUSIBLE_MAX = BORNES.og.max;
+export const OG_PLAUSIBLE_MAX_TXT = '1,130';
 
 export interface WaterVolumeOptions {
   /** Cold preparation quantities explicitly chosen by the brewer. */
@@ -178,6 +188,7 @@ export const BrewingMath = {
       weightKg: number;
       potentialPpg?: number;
       kind?: FermentableKind;
+      use?: FermentableUse;
       fermentabilityPct?: number;
     }>,
     volumeL: number,
@@ -186,7 +197,7 @@ export const BrewingMath = {
   ): { total: number; unfermentable: number } | null {
     if (!volumeL || !Number.isFinite(volumeL) || volumeL <= 0 || !fermentables.length) return null;
     if (!Number.isFinite(efficiencyPct) || efficiencyPct <= 0) return null;
-    if (fermentables.some((f) => (precision !== 'full' || f.weightKg !== 0) && (f.potentialPpg == null || !Number.isFinite(f.potentialPpg)))) {
+    if (fermentables.some((f) => !grainHorsEmpatage(f) && (precision !== 'full' || f.weightKg !== 0) && (f.potentialPpg == null || !Number.isFinite(f.potentialPpg)))) {
       return null;
     }
 
@@ -196,6 +207,8 @@ export const BrewingMath = {
 
     fermentables.forEach((f) => {
       if (precision === 'full' && f.weightKg === 0) return;
+      // Un grain hors de l'empâtage ne donne pas d'extrait (table domain/fermentables/moments.ts, AM 1 et 2) : il compte 0.
+      if (grainHorsEmpatage(f)) return;
       const weightKg = Number.isFinite(f.weightKg) ? Math.max(0, f.weightKg) : 0;
       const isGrain = (f.kind ?? 'grain') === 'grain';
       // Le rendement d'empâtage ne concerne que ce qui passe par la maische.
@@ -307,6 +320,15 @@ export const BrewingMath = {
       return { correctedPct: safeNominal, lostPoints: 0, note: null };
     }
     const points = (og - 1) * 1000;
+    const ogTxt = og.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    // Audit du 08.11 (AM 3) : à 1,290, le conseil « prévois plus de grain » était l'inverse du vrai. Au-delà du plafond, c'est une saisie à vérifier.
+    if (og > OG_PLAUSIBLE_MAX) {
+      return {
+        correctedPct: nominalPct,
+        lostPoints: 0,
+        note: `OG ${ogTxt} : aucune bière ne monte au-delà de ${OG_PLAUSIBLE_MAX_TXT} (BJCP 2021 : 1,120 au plus). Erreur de saisie probable : vérifie les masses et le volume.`
+      };
+    }
     if (points <= 65) {
       return { correctedPct: nominalPct, lostPoints: 0, note: null };
     }
@@ -316,7 +338,7 @@ export const BrewingMath = {
       correctedPct: corrected,
       lostPoints: lost,
       // Virgule et trois décimales (« 1,085 »), comme `formatDensite` : importé de `recipeMetrics`, il ferait une boucle (recipeMetrics → yeastProjection → ce fichier).
-      note: `À ${og.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}, le moût sature : compte plutôt ${corrected} % de rendement que ${nominalPct} %. Prévois plus de grain ou moins de volume.`
+      note: `À ${ogTxt}, le moût sature : compte plutôt ${corrected} % de rendement que ${nominalPct} %. Prévois plus de grain ou moins de volume.`
     };
   },
 

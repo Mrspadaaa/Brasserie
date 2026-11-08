@@ -2,9 +2,10 @@ import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
 import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
 import { Batch, StockItem } from '../types';
-import { BATCH_STATUS, BATCH_STATUSES, nextStatus, statusOfBatch } from '../domain/batchStatus';
+import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
+import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
+import { abvFromGravities, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
 import { StorageService } from '../services/storage';
-import { BrewingMath } from '../services/brewingMath';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { InventoryCorrectionSheet } from './InventoryCorrectionSheet';
 import { NumberInput } from './NumberInput';
@@ -64,26 +65,32 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [stockMessage, setStockMessage] = useState('');
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
   const [packaging, setPackaging] = useState<{ target: Batch['status'] | null } | null>(null);
+  const [pendingStatus, setPendingStatus] = useState<Batch['status'] | null>(null);
+  const [gravityAlert, setGravityAlert] = useState<{ field: 'og' | 'fg'; problem: GravityProblem | 'unreadable'; value: number | null } | null>(null);
   useEffect(() => {
     setPackaging(null);
     setSection(initialSection);
     setConfirmDelete(false);
     setConfirmStock(null);
     setStockMessage('');
+    setPendingStatus(null);
+    setGravityAlert(null);
   }, [batch?.id, initialSection]);
 
   if (!batch || !draft) return null;
 
   const style = statusOfBatch(draft);
   const awaitingPitch = draft.brewDay?.phase === 'awaiting-pitch' && draft.brewDay.pitchedAt == null;
-  const suivant = awaitingPitch ? null : nextStatus(draft.status);
+  const suivant = suggestedNextStatus(draft);
+  const options = statusOptions(draft);
+  const blockedReason = fermentationBlockedReason(draft);
 
   const og = parseDecimal(draft.og || '');
   const fg = parseDecimal(draft.fg || '');
-  const abv =
-    !noloRecipeForBatch(draft) && og !== null && fg !== null && og > 1 && fg > 0 && og >= fg
-      ? BrewingMath.calculateABV(og, fg)
-      : null;
+  // Un alcool n'est montré, écrit et transmis que si l'OG et la FG sont plausibles et dans l'ordre.
+  const nolo = !!noloRecipeForBatch(draft);
+  const abv = nolo ? null : abvFromGravities(og, fg);
+  const abvUnavailable = !nolo && og !== null && fg !== null && abv === null;
 
   const field =
     'w-full min-h-touch-lg px-2 rounded-control bg-cave-950 border border-cave-700 ' +
@@ -104,22 +111,52 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const synchronizeStock = (updated: Batch, stage: 'brewday' | 'remaining' | 'historical-already' | 'historical-unconsumed', confirmHistorical = false) => {
     const result = StorageService.completeBrewStock(updated, stage, confirmHistorical);
     const saved = StorageService.getBatches().find(b => b.id === updated.id);
-    setDraft({ ...updated, ...(result.success ? { stockAccountingVersion: 1 } : {}), ...(saved?.stockConsumption ? { stockConsumption: saved.stockConsumption, stockAccountingVersion: saved.stockAccountingVersion } : {}), stockReviewIssues: result.issues });
-    setStockMessage(result.success ? stage === 'historical-already' ? 'Confirmation conservée : les quantités de stock sont restées inchangées.' : stage === 'historical-unconsumed' ? 'Suivi confirmé : aucun stock retiré. Les ingrédients seront déstockés lors de la réalisation du brassin.' : stage === 'remaining' ? 'Ajouts de fermentation déstockés. Aucun ingrédient ne sera déduit une seconde fois.' : 'Ingrédients du brassage déstockés. Les ajouts de fermentation restent réservés.' : 'La production est enregistrée. Le stock attend les vérifications ci-dessous.');
+    // Déstockage refusé : l'étape ne change pas, ni à l'écran ni dans le stockage.
+    const keptStatus = result.success ? updated.status : (saved?.status ?? draft.status);
+    setDraft({ ...updated, status: keptStatus, ...(result.success ? { stockAccountingVersion: 1 } : {}), ...(saved?.stockConsumption ? { stockConsumption: saved.stockConsumption, stockAccountingVersion: saved.stockAccountingVersion } : {}), stockReviewIssues: result.issues });
+    setStockMessage(!result.success && keptStatus !== updated.status ? `Le statut reste « ${BATCH_STATUS[keptStatus]?.label ?? keptStatus} » : le déstockage est refusé. Le stock attend les vérifications ci-dessous.` : result.success ? stage === 'historical-already' ? 'Confirmation conservée : les quantités de stock sont restées inchangées.' : stage === 'historical-unconsumed' ? 'Suivi confirmé : aucun stock retiré. Les ingrédients seront déstockés lors de la réalisation du brassin.' : stage === 'remaining' ? 'Ajouts de fermentation déstockés. Aucun ingrédient ne sera déduit une seconde fois.' : 'Ingrédients du brassage déstockés. Les ajouts de fermentation restent réservés.' : 'La production est enregistrée. Le stock attend les vérifications ci-dessous.');
   };
-  const changeStatus = (status: Batch['status'], base: Batch = draft) => {
-    if (status === draft.status) return;
-    if (awaitingPitch && status !== 'planifie' && status !== 'annule') { setStockMessage('Reprends le jour de brassage pour consigner l’ajout réel de levure avant de passer en fermentation.'); return; }
-    // AM n° 6 : « Conditionné » et « Terminé » demandent d'abord le volume conditionné (assiette de la taxe sur la bière).
-    if (needsPackagingVolume({ status, volumePackagedL: base.volumePackagedL })) { setPackaging({ target: status }); return; }
+  const applyStatus = (status: Batch['status'], base: Batch = draft) => {
     const updated = { ...base, ...preserveBrewDates(base), status };
-    if (status === 'annule' || status === 'planifie') { save(updated); return; }
+    // Abandon, retour en arrière : le statut seul change, le stock n'est jamais touché ici.
+    if (status === 'annule' || status === 'planifie' || options.find(o => o.status === status)?.kind === 'back') { save(updated); return; }
+    // AM n° 6 : un passage en avant vers « Conditionné » ou « Terminé » demande d'abord le volume conditionné (assiette de la taxe sur la bière) ; un retour en arrière ne le demande pas (RF-8).
+    if (needsPackagingVolume({ status, volumePackagedL: base.volumePackagedL })) { setPackaging({ target: status }); return; }
     if (status === 'conditionne' || status === 'termine') {
       synchronizeStock(updated, draft.stockConsumption?.appliedAt ? 'remaining' : 'brewday');
     } else if (!draft.stockConsumption?.appliedAt && (draft.status === 'planifie' || draft.stockAccountingVersion === 1)) {
       synchronizeStock(updated, 'brewday');
     } else save(updated);
   };
+  const changeStatus = (status: Batch['status']) => {
+    if (status === draft.status) return;
+    if (!canMoveTo(draft, status)) {
+      setStockMessage(status === 'fermentation' && blockedReason ? blockedReason : `« ${BATCH_STATUS[status]?.label ?? status} » n’est pas une étape permise depuis « ${style.label} ».`);
+      return;
+    }
+    if (needsConfirmation(draft, status)) { setPendingStatus(status); return; }
+    applyStatus(status);
+  };
+  // Après un déstockage refusé, un brassin ensemencé mais encore « planifié » repart vers la fermentation.
+  const retryDraft: Batch = draft.status === 'planifie' && draft.brewDay?.pitchedAt != null
+    ? { ...draft, ...preserveBrewDates(draft), status: 'fermentation' } : draft;
+  const saveGravity = (field: 'og' | 'fg', force = false) => {
+    const text = draft[field] || '';
+    if (text.trim() === '') { setGravityAlert(null); save({ [field]: '' }); return; }
+    const value = parseDecimal(text);
+    if (value === null) { setGravityAlert({ field, problem: 'unreadable', value: null }); return; }
+    const problem = gravityProblem(field, value, field === 'fg' ? og : null);
+    if (problem && !force) { setGravityAlert({ field, problem, value }); return; }
+    setGravityAlert(null);
+    const pair = { og: field === 'og' ? value : og, fg: field === 'fg' ? value : fg };
+    // Les deux densités connues : l'alcool suit le couple. Hors bornes ou FG > OG, l'ancien alcool est effacé.
+    const abvPatch: Partial<Batch> = nolo || pair.og === null || pair.fg === null ? {}
+      : { abv: abvFromGravities(pair.og, pair.fg) !== null ? `${abvFromGravities(pair.og, pair.fg)}%` : '' };
+    save({ [field]: text, ...abvPatch });
+  };
+  const gravityText = (alert: NonNullable<typeof gravityAlert>) => alert.problem === 'unreadable'
+    ? 'Valeur illisible : tape un nombre, par exemple 1,048.'
+    : gravityMessage(alert.problem, alert.value!, alert.field === 'fg' ? og : null);
 
   return (
     <>
@@ -170,7 +207,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {stockIssues.length > 0 && <ul className="list-disc pl-5 text-sm text-ebc-amber space-y-1">{stockIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
               {pending.length > 0 && <ul className="text-sm text-cave-200 space-y-1">{pending.map((item, i) => <li key={`${item.stockItemRef}-${i}`}>{stockNames.get(item.stockItemRef) ?? item.stockItemRef} · {Units.format(item.quantity, item.unit)}</li>)}</ul>}
               {historicalStock ? <div className="grid gap-2 sm:grid-cols-2"><Button intent="secondary" full onClick={() => setConfirmStock('already')}>Tout est déjà déstocké</Button>{stockNotDue ? <Button intent="primary" full onClick={() => synchronizeStock(draft, 'historical-unconsumed', true)}>Le stock n’a pas été déduit</Button> : <Button intent="primary" full onClick={() => setConfirmStock('consume')}>Déstocker le brassage maintenant</Button>}</div> : <>
-                {(needsBrewStock || stockIssues.length > 0) && <Button intent="primary" full onClick={() => synchronizeStock(draft, draft.stockConsumption?.appliedAt ? 'remaining' : 'brewday')}>Revérifier et déstocker</Button>}
+                {(needsBrewStock || stockIssues.length > 0) && <Button intent="primary" full onClick={() => synchronizeStock(retryDraft, draft.stockConsumption?.appliedAt ? 'remaining' : 'brewday')}>Revérifier et déstocker</Button>}
                 {pending.length > 0 && <Button intent="secondary" full onClick={() => setConfirmStock('remaining')}>Confirmer les ajouts de fermentation</Button>}
               </>}
               {stockIssues.length > 0 && <p className="text-xs text-cave-400 leading-relaxed">Associez les articles dans le budget du brassin, ou corrigez les quantités comptées dans Stocks, puis revenez vérifier ici.</p>}
@@ -179,7 +216,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           {packaging && <BatchPackagingForm batch={draft}
             confirmLabel={packaging.target ? `Passer en « ${BATCH_STATUS[packaging.target].label} »` : 'Enregistrer le volume'}
             onCancel={() => setPackaging(null)}
-            onConfirm={values => { const target = packaging.target; setPackaging(null); if (target) changeStatus(target, { ...draft, ...values }); else save(values); }}/>}
+            onConfirm={values => { const target = packaging.target; setPackaging(null); if (target) applyStatus(target, { ...draft, ...values }); else save(values); }}/>}
           {stockMessage && <p role="status" className="text-sm text-hop flex items-start gap-2"><PackageCheck className="w-4 h-4 shrink-0 mt-0.5" />{stockMessage}</p>}
           {section === 'overview' && (
             <>
@@ -206,9 +243,11 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
 
               <label className="block space-y-1 text-xs text-cave-400">Étape du brassin
                 <select className={field} value={draft.status} onChange={event => changeStatus(event.target.value as Batch['status'])}>
-                  {BATCH_STATUSES.map(status => <option key={status} value={status}>{status === draft.status ? style.label : BATCH_STATUS[status].label}</option>)}
+                  <option value={draft.status}>{style.label}</option>
+                  {options.map(({ status, kind }) => <option key={status} value={status}>{kind === 'back' ? `Revenir à « ${BATCH_STATUS[status].label} »` : kind === 'cancel' ? 'Annulé (abandon)' : BATCH_STATUS[status].label}</option>)}
                 </select>
               </label>
+              {blockedReason && <p className="text-2xs text-cave-400 leading-snug">{blockedReason}</p>}
             </>
           )}
           {section === 'measurements' && (
@@ -241,9 +280,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                       placeholder="À mesurer"
                       value={draft.og || ''}
                       onChange={(e) => setDraft({ ...draft, og: e.target.value })}
-                      onBlur={() =>
-                        save({ og: draft.og, ...(abv !== null ? { abv: `${abv}%` } : {}) })
-                      }
+                      aria-invalid={gravityAlert?.field === 'og' || undefined}
+                      onBlur={() => saveGravity('og')}
                     />
                   </label>
 
@@ -271,17 +309,31 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                       placeholder="Non confirmée"
                       value={draft.fg || ''}
                       onChange={(e) => setDraft({ ...draft, fg: e.target.value })}
-                      onBlur={() =>
-                        save({ fg: draft.fg, abv: abv !== null ? `${abv}%` : draft.abv })
-                      }
+                      aria-invalid={gravityAlert?.field === 'fg' || undefined}
+                      onBlur={() => saveGravity('fg')}
                     />
                   </label>
                 </div>
+
+                {gravityAlert && (
+                  <div role="alert" className="rounded-control border border-alert/40 bg-cave-950 p-2 space-y-1.5">
+                    <p className="text-sm text-alert-strong">{gravityText(gravityAlert)}</p>
+                    <div className="flex gap-2">
+                      {gravityAlert.problem !== 'unreadable' && (
+                        <Button intent="secondary" onClick={() => saveGravity(gravityAlert.field, true)}>Garder cette valeur</Button>
+                      )}
+                      <Button intent="secondary" onClick={() => { setDraft({ ...draft, [gravityAlert.field]: batch[gravityAlert.field] ?? '' }); setGravityAlert(null); }}>Annuler la saisie</Button>
+                    </div>
+                  </div>
+                )}
 
                 {abv !== null && (
                   <p className="text-sm text-cave-400">
                     Alcool calculé : <span className="font-mono text-hop">{abv} % vol</span>
                   </p>
+                )}
+                {abvUnavailable && !gravityAlert && (
+                  <p className="text-sm text-cave-400">Alcool non calculé : densités hors bornes, ou finale au-dessus de l’initiale.</p>
                 )}
 
                 {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={actualBrewDate(draft) ?? ''} onChange={brewDate => save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' })} shortcuts={[]} />}
@@ -312,7 +364,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 </p>
               </div>
               {needsPackagingVolume(draft) && <p role="status" className="text-xs text-attention">Volume conditionné manquant : ce lot échappe au calcul de la taxe sur la bière et au bilan de pertes.</p>}
-              <FermentationCurveChart batch={draft} />
+              {/* Une densité en attente de confirmation n'est pas encore une mesure : la courbe garde la valeur enregistrée. */}
+              <FermentationCurveChart batch={gravityAlert ? { ...draft, [gravityAlert.field]: batch[gravityAlert.field] } : draft} />
               {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${draft.brewDay.pitchTemperatureC} °C` : ' · température non relevée'}.</p>}
               {awaitingPitch && <p role="status" className="text-sm text-water">En attente d’ensemencement. Reprends le jour de brassage depuis le carnet des brassins.</p>}
               {draft.recipeSnapshot && draft.brewDay && <BrewSystemFeedback recipe={draft.recipeSnapshot} state={draft.brewDay}/>}
@@ -391,6 +444,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         }
         confirmLabel="Supprimer le brassin"
       />
+      <ConfirmSheet open={pendingStatus !== null} onClose={() => setPendingStatus(null)}
+        title={pendingStatus === 'annule' ? 'Abandonner ce brassin ?' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} » ?`}
+        what={`${draft.id} — ${draft.name} · actuellement « ${style.label} »`}
+        consequence={pendingStatus ? transitionConsequence(draft, pendingStatus) : undefined}
+        confirmLabel={pendingStatus === 'annule' ? 'Abandonner le brassin' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} »`}
+        onConfirm={() => { const status = pendingStatus; setPendingStatus(null); if (status) applyStatus(status); }} />
       <ConfirmSheet open={confirmStock !== null} onClose={() => setConfirmStock(null)}
         title={confirmStock === 'already' ? 'Tout a déjà été déstocké ?' : confirmStock === 'remaining' ? 'Les ajouts de fermentation sont faits ?' : 'Retirer les ingrédients du brassage ?'}
         what={`${draft.id} — ${draft.name}`}

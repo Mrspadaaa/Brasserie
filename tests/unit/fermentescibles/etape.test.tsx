@@ -208,21 +208,24 @@ describe('l\'étape Malts/sucres (s1)', () => {
     expect(lignes()[1].querySelector('[data-role="retirer"]')).not.toBeNull();
   });
 
-  it('le moment tourne d\'un toucher, J+3 en fermentation, et « Annuler » rend celui d\'avant', async () => {
+  // Audit métier du 08.11 (AM 1 et 2) : le moment tourne dans ceux que la famille permet. Un sucre : ébullition ⇄ fermentation ; un grain : l'empâtage seul.
+  it('le moment d\'un sucre tourne d\'un toucher, J+3 en fermentation, et « Annuler » rend celui d\'avant ; un grain reste à l\'empâtage', async () => {
     const u = userEvent.setup();
-    render(<Banc />);
-    const moment = () => lignes()[1].querySelector<HTMLElement>('[data-role="moment-ligne"]')!;
-    await u.click(moment());
-    expect(courant[1].use).toBe('ebullition');
+    render(<Banc depart="sucre" />);
+    const moment = (i = 3) => lignes()[i].querySelector<HTMLElement>('[data-role="moment-ligne"]')!;
     expect(moment().textContent).toBe('ébullition');
     await u.click(moment());
-    expect(courant[1].use).toBe('fermentation');
-    expect(courant[1].dayOffset).toBe(3);
+    expect(courant[3].use).toBe('fermentation');
+    expect(courant[3].dayOffset).toBe(3);
     expect(moment().textContent).toBe('J+');
-    const jour = lignes()[1].querySelector<HTMLInputElement>('[data-role="jour-ligne"]')!;
+    const jour = lignes()[3].querySelector<HTMLInputElement>('[data-role="jour-ligne"]')!;
     expect(jour.value).toBe('3');
-    await u.click(lignes()[1].querySelector('[data-role="annuler-moment"]')!);
+    await u.click(lignes()[3].querySelector('[data-role="annuler-moment"]')!);
+    expect(courant[3].use).toBe('ebullition');
+    expect(lignes()[3].querySelector('[data-role="annuler-moment"]')).toBeNull();
+    await u.click(moment(1));
     expect(courant[1].use).toBe('empatage');
+    expect(moment(1).tagName).toBe('SPAN');
     expect(lignes()[1].querySelector('[data-role="annuler-moment"]')).toBeNull();
   });
 
