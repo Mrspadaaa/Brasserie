@@ -121,7 +121,9 @@ export function resumeQr(resultat: ResultatQr | null | undefined): string | null
   const qr = resultat.qr;
   const morceaux = [qr.montant === null ? '' : `${fr2(qr.montant)} ${qr.devise}`, qr.s1?.date?.debut ? dateSuisse(qr.s1.date.debut) : '', qr.creancier.nom];
   const dit = morceaux.filter(Boolean);
-  return dit.length ? `QR : ${dit.join(' · ')}` : null;
+  if (!dit.length) return null;
+  // LP-1 : plusieurs bulletins sur la pièce : le total de la page peut les additionner, le QR n'en lit qu'un (le premier).
+  return `QR : ${dit.join(' · ')}${resultat.bulletins && resultat.bulletins > 1 ? ` · ${resultat.bulletins} bulletins QR sur la pièce : le total de la page peut les additionner, ce QR n’en lit qu’un` : ''}`;
 }
 
 /** Les lignes avant que la lecture de la facture ne soit là : ce que le QR dit seul, « lu en 0,5 s ». */
