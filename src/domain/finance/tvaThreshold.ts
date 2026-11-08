@@ -54,10 +54,13 @@ export function tvaThresholdStatus(transactions: FinanceTransaction[], asOf: str
   const ratio = turnoverCents / thresholdCents;
   const level: TvaThresholdLevel = ratio >= 1 ? 'over' : ratio >= TVA_WARN_RATIO ? 'warn' : 'ok';
   const percent = `${Math.floor(ratio * 100)} %`;
+  const suisse = (iso: string) => iso.split('-').reverse().join('.');
+  // RF-10 : la fenêtre utilisée est dite, et l'effet juridique n'est pas affirmé : la LTVA raisonne sur le chiffre d'affaires annuel et, pour une entreprise qui démarre, sur le prévisible.
+  const fenetre = `sur 12 mois glissants (du ${suisse(from)} au ${suisse(to)})`;
   const message = level === 'over'
-    ? `Seuil de TVA franchi : ${formatCHF(turnoverCents)} de chiffre d’affaires sur 12 mois, soit ${percent} du seuil de ${formatCHF(thresholdCents)}. L’assujettissement est obligatoire : annonce-toi à l’AFC dans les 30 jours (art. 66 LTVA).`
+    ? `Seuil de TVA franchi ${fenetre} : ${formatCHF(turnoverCents)} de chiffre d’affaires hors taxe, soit ${percent} du seuil de ${formatCHF(thresholdCents)}. L’assujettissement peut devenir obligatoire (art. 10 LTVA) et l’annonce à l’AFC se fait dans les 30 jours (art. 66) : à vérifier avec l’AFC ou ta fiduciaire.`
     : level === 'warn'
-      ? `Chiffre d’affaires de ${formatCHF(turnoverCents)} sur 12 mois, soit ${percent} du seuil de TVA de ${formatCHF(thresholdCents)} : il reste ${formatCHF(thresholdCents - turnoverCents)}. Au-delà, l’assujettissement est obligatoire (art. 10 LTVA).`
+      ? `Chiffre d’affaires hors taxe de ${formatCHF(turnoverCents)} ${fenetre}, soit ${percent} du seuil de TVA de ${formatCHF(thresholdCents)} : il reste ${formatCHF(thresholdCents - turnoverCents)}. Au-delà, l’assujettissement peut devenir obligatoire (art. 10 LTVA) : à vérifier avec l’AFC ou ta fiduciaire.`
       : '';
   return { level, turnoverCents, thresholdCents, ratio, from, to, message };
 }
