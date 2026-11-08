@@ -193,7 +193,7 @@ export function HopV55RecipeStep({ ownerKey, recipe, localOnly = false, onApply,
   if (identityError) {
     return <div className="recipe-hop-v55-closed" role="alert">
       <p>{identityError}</p>
-      <p>Les lignes de houblon restent modifiables dans « Corriger les lignes de houblon ».</p>
+      <p>Les lignes de houblon restent modifiables dans « Mes ajouts de houblons ».</p>
     </div>;
   }
 

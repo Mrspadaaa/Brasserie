@@ -366,7 +366,7 @@ describe('Étape Houblons V5.5 — application explicite au brouillon', () => {
     const runtime = memoryRuntime();
     render(<HopV55RecipeStep recipe={initialDraft()} localOnly onApply={vi.fn()} createServices={runtime.createServices} storage={stores} />);
     expect(screen.getByRole('alert')).toHaveTextContent('Le profil propriétaire de ce brouillon n’est pas fourni explicitement');
-    expect(screen.getByText('Les lignes de houblon restent modifiables dans « Corriger les lignes de houblon ».')).toBeInTheDocument();
+    expect(screen.getByText('Les lignes de houblon restent modifiables dans « Mes ajouts de houblons ».')).toBeInTheDocument();
     expect(screen.queryByTestId('hop-v55')).toBeNull();
     expect(runtime.createServices).not.toHaveBeenCalled();
   });

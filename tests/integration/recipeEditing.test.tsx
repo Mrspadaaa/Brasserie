@@ -735,9 +735,10 @@ describe('Recipe data entry regressions', () => {
     change(bitter, '');
     fireEvent.blur(bitter);
     expect(bitter).toHaveValue('');
-    // V4: the lines toggle no longer repeats the IBU the balance just above already shows.
-    const toggle = document.querySelector('#recipe-hop-lines > summary')!;
-    expect(toggle.textContent).toMatch(/^Corriger les lignes de houblon · 2/u);
+    // V4: the lines heading no longer repeats the IBU the balance just above already shows. RX-4: the lines are not folded.
+    const toggle = document.getElementById('recipe-hop-additions')!;
+    expect(toggle.closest('details')).toBeNull();
+    expect(toggle.textContent).toMatch(/^Mes ajouts de houblons · 2/u);
     expect(toggle.textContent).not.toMatch(/IBU/u);
   });
   it('remplace une levure homonyme quand sa référence de stock change', () => {

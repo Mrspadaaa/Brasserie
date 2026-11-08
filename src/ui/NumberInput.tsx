@@ -1,6 +1,6 @@
 import { Input, type InputElement } from './Input';
 import React, { useRef } from 'react';
-import { useNumericDraft } from './numericInput';
+import { parseDecimal, useNumericDraft } from './numericInput';
 import { useCoarsePointer } from './useViewport';
 
 /**
@@ -43,6 +43,11 @@ interface NumberInputProps {
   emptyValue?: number | undefined;
   /** Ouvre le pavé intégré au lieu du clavier du système, sur téléphone. */
   pad?: boolean;
+  /**
+   * Dit qu'une valeur tapée hors bornes a été ramenée (`{ saisi, retenu }`, à la sortie du champ), puis `null` à la frappe suivante.
+   * Une valeur refusée ne disparaît jamais en silence ; l'appelant choisit où l'écrire.
+   */
+  onRefus?: (refus: { saisi: number; retenu: number } | null) => void;
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
@@ -62,6 +67,7 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
     max,
     integer = false,
     pad: _pad = false,
+    onRefus,
     placeholder,
     disabled,
     required,
@@ -101,10 +107,14 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
       value={draft}
       onFocus={(e) => { onFocusChange(true); e.currentTarget.select(); }}
       onBlur={() => {
-        settle({ min, max, integer });
+        // Une valeur ramenée dans les bornes se dit (RX-2) : le nombre tapé (arrondi si l'entier est demandé) et celui que la recette retient.
+        const saisi = parseDecimal(draft);
+        const retenu = settle({ min, max, integer });
+        const voulu = saisi === null ? null : integer ? Math.round(saisi) : saisi;
+        if (onRefus && saisi !== null && retenu !== null && retenu !== undefined && voulu !== retenu) onRefus({ saisi, retenu });
         onFocusChange(false);
       }}
-      onChange={(e) => push(e.target.value)}
+      onChange={(e) => { onRefus?.(null); push(e.target.value); }}
       className={className}
     />
   );

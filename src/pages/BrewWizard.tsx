@@ -1891,7 +1891,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const fieldIssues = [...readiness.invalid, ...readiness.missing];
   // Une valeur hors bornes (`live`) se dit dès la frappe ; le reste attend « Suivant » ou « Enregistrer ».
   const visibleIssues = validationRequested ? fieldIssues : fieldIssues.filter(issue => issue.live);
-  const hopIssueCount = visibleIssues.filter(issue => issue.step === 'houblons').length;
   const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
   // AM-25, AM-28 : ordre des paliers, mash-out, ordre des phases. Des conseils : ils ne bloquent rien.
   const advice = step === 'paliers' ? recipeAdvice({ mash: { steps: mashSteps }, fermentation: ferment }) : [];
@@ -2606,43 +2605,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               ligne sans défiler sous tout l'atelier V5.5.
             */}
             <HopRecipeSnapshot recipe={{ ...build(), ogTarget: boilOg ?? undefined }} />
-            {/*
-              Les lignes écrites à la main restent le geste de correction : un
-              alpha de lot, une durée ou une phase à cru que la V5.5 refuse
-              d'inventer se corrigent ici, sans quitter la recette. Une
-              demande de correction ouvre ce volet par sa bascule native.
-            */}
-            <details id="recipe-hop-lines" className="recipe-hop-lines border-t border-cave-700 pt-2 scroll-mt-20" open={hopLinesOpen} onToggle={e => setHopLinesOpen(e.currentTarget.open)}>
-              <summary className="flex items-center justify-between gap-2 cursor-pointer min-h-touch text-cave-200" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>
-                <span>Corriger les lignes de houblon · {hops.length}{hopIssueCount ? ` · ${hopIssueCount} à corriger` : ''}</span>
-              </summary>
-              <div className="space-y-2 sm:space-y-3 pt-2">
-            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons</h3>
-            <SegmentedControl
-              label="Moment d’ajout"
-              layout="row"
-              className="hop-stage-tabs"
-              value={hopStage}
-              onChange={setHopStage}
-              options={HOP_STAGES.map((s) => ({ value: s, label: s === 'dryHop' ? 'À cru' : HOP_STAGE[s].label }))}
-            />
-            {!tight && <p className="text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
-
-            <HopIngredientPicker
-              items={stockItems}
-              recipe={build()}
-              onChange={addHop}
-              onBusyChange={setHopGuideBusy}
-              onReference={variety => addHop(variety.name, undefined, variety)}
-              onCreate={(n) => {
-                const created = onCreateStockItem(n, 'Houblon', 'g');
-                addHop(created.name, created);
-              }}
-              // « en houblonnage à cru… » passait sous le chevron à 320 px.
-              placeholder={hopStage === 'dryHop' ? 'Ajouter un houblon à cru…' : `Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
-              ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
-            />
-
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons · {hops.length}</h3>
             {hopsRetires.length > 0 && (
               <p role="status" data-role="hop-retire" className="flex flex-wrap items-center gap-2 text-sm text-cave-200">
                 <span><s>{hopsRetires[hopsRetires.length - 1].h.name}</s> retiré{hopsRetires.length > 1 ? ` · ${hopsRetires.length - 1} de plus` : ''}</span>
@@ -2770,6 +2733,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 max={100}
                                 value={h.alpha === 0 ? undefined : h.alpha}
                                 onValue={(v) => patchHop(i, { alpha: v })}
+                                refus={(saisi, retenu) => saisi < 0
+                                  ? `α ${String(saisi).replace('.', ',')} % : un alpha négatif n’existe pas. Champ ramené à ${String(retenu).replace('.', ',')} % : à renseigner depuis le sachet.`
+                                  : `α ${String(saisi).replace('.', ',')} % : au-delà de 100 %, impossible ; au-delà de ${BORNES.alphaPct.max} %, aucun houblon du commerce (seuls les extraits). ${String(retenu).replace('.', ',')} % retenu : corrige-le d’après le sachet.`}
                                 missing={style.bitters && !h.alpha}
                               />
                               {/* AM 9 (08.11) : « 80 » pour 8,0. Au-delà de 30 %, l'IBU attend : corriger d'un toucher, ou confirmer (un extrait). */}
@@ -2880,6 +2846,42 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 })}
               </ul>
             )}
+            {/*
+              RX-4 (08.11) : les lignes de la recette sont au premier plan, jamais
+              dans un repli — un brasseur ne devine pas qu'un houblon l'attend sous
+              un volet. Seul l'outillage d'ajout (moment, recherche, lots, COA) se
+              replie ; une demande de correction ouvre ce volet par sa bascule native.
+            */}
+            <details id="recipe-hop-lines" className="recipe-hop-lines border-t border-cave-700 pt-2 scroll-mt-20" open={hopLinesOpen} onToggle={e => setHopLinesOpen(e.currentTarget.open)}>
+              <summary className="flex items-center justify-between gap-2 cursor-pointer min-h-touch text-cave-200" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>
+                <span>Ajouter un houblon · lots et conditions de contact</span>
+              </summary>
+              <div className="space-y-2 sm:space-y-3 pt-2">
+            <SegmentedControl
+              label="Moment d’ajout"
+              layout="row"
+              className="hop-stage-tabs"
+              value={hopStage}
+              onChange={setHopStage}
+              options={HOP_STAGES.map((s) => ({ value: s, label: s === 'dryHop' ? 'À cru' : HOP_STAGE[s].label }))}
+            />
+            {!tight && <p className="text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
+
+            <HopIngredientPicker
+              items={stockItems}
+              recipe={build()}
+              onChange={addHop}
+              onBusyChange={setHopGuideBusy}
+              onReference={variety => addHop(variety.name, undefined, variety)}
+              onCreate={(n) => {
+                const created = onCreateStockItem(n, 'Houblon', 'g');
+                addHop(created.name, created);
+              }}
+              // « en houblonnage à cru… » passait sous le chevron à 320 px.
+              placeholder={hopStage === 'dryHop' ? 'Ajouter un houblon à cru…' : `Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
+              ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
+            />
+
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des fiches de houblon…</p>}>
               <RecipeAutoComplete active nolo={details.nolo?.enabled} scope="houblon"
                 onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}

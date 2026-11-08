@@ -1,5 +1,6 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { NumberInput } from './NumberInput';
+import { formatDecimal } from './numericInput';
 
 /**
  * Navigation au clavier dans un formulaire.
@@ -187,24 +188,38 @@ export const InlineNum: React.FC<{
   required?: boolean;
   'aria-invalid'?: React.AriaAttributes['aria-invalid'];
   'aria-describedby'?: string;
-}> = ({ label, name, unit, value, onValue, min, max, integer, missing, ...emptyOption }) => (
-  <label className="flex items-center gap-1 min-w-0">
-    <span className={`text-sm shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>
-      {label}
-    </span>
-    <NumberInput
-      {...emptyOption}
-      aria-label={name}
-      value={value}
-      onValue={onValue}
-      min={min}
-      max={max}
-      integer={integer}
-      pad
-      className={`w-14 shrink-0 min-h-touch-sm px-1 rounded-control bg-cave-950 border
-                  reading text-base text-center text-cave-50 focus:outline-none focus:border-ebc-straw
-                  ${missing ? 'border-ebc-amber/60' : 'border-cave-700'}`}
-    />
-    {unit && <span className="reading-unit text-sm shrink-0">{unit}</span>}
-  </label>
-);
+  /** Le message d'une valeur ramenée dans les bornes ; absent : la forme commune (« 777 min est hors bornes : de 0 à 240 min. 240 min retenu. »). */
+  refus?: (saisi: number, retenu: number) => string;
+}> = ({ label, name, unit, value, onValue, min, max, integer, missing, refus, ...emptyOption }) => {
+  // RX-2 : une valeur tapée hors bornes est ramenée à la sortie du champ ; elle ne disparaît jamais en silence (même forme que QuantityStepper).
+  const [dit, setDit] = useState<string | null>(null);
+  const nb = (x: number) => formatDecimal(x);
+  const u = unit ? ` ${unit}` : '';
+  const forme = (saisi: number, retenu: number) =>
+    `${nb(saisi)}${u} est hors bornes : ${min !== undefined && max !== undefined ? `de ${nb(min)} à ${nb(max)}` : max !== undefined ? `au plus ${nb(max)}` : `au moins ${nb(min ?? 0)}`}${u}. ${nb(retenu)}${u} retenu.`;
+  return (
+    <>
+      <label className="flex items-center gap-1 min-w-0">
+        <span className={`text-sm shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>
+          {label}
+        </span>
+        <NumberInput
+          {...emptyOption}
+          aria-label={name}
+          value={value}
+          onValue={onValue}
+          min={min}
+          max={max}
+          integer={integer}
+          pad
+          onRefus={(r) => setDit(r ? (refus ?? forme)(r.saisi, r.retenu) : null)}
+          className={`w-14 shrink-0 min-h-touch-sm px-1 rounded-control bg-cave-950 border
+                      reading text-base text-center text-cave-50 focus:outline-none focus:border-ebc-straw
+                      ${missing ? 'border-ebc-amber/60' : 'border-cave-700'}`}
+        />
+        {unit && <span className="reading-unit text-sm shrink-0">{unit}</span>}
+      </label>
+      {dit && <p role="status" data-role="borne-refusee" className="basis-full w-full text-xs text-ebc-amber leading-snug">{dit}</p>}
+    </>
+  );
+};
