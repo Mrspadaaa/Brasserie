@@ -97,3 +97,10 @@ DÉCISION À PRENDRE : doc15 et doc21 (> 4 Mo) : (a) lancer la passe sur 15 piè
 DÉCISION À PRENDRE : date de doc1 : garder la vérité « pas de date » (recommandé : aucune date de facture imprimée ; une date de période ou de galerie doit être signalée), ou accepter `["", "15.10.2026"]`.
 CONNAISSANCE : doc1 (Infomaniak, photo d'écran) n'a pas de QR-facture et aucune date de facture imprimée ; sa « date » lue est le début de période (15/10/2026) ou l'en-tête de la galerie du téléphone. Les photos de plus de 4 Mo sont refusées par le serveur : l'app les allège, le banc non.
 LEÇON PROPOSÉE : aucune.
+
+## Passe payante (08.11, pilote) — production du dépôt à 0c3f4d41, 17 vraies pièces, 1 tirage
+
+- Coût 0,6668 CHF (journal : 9,3201 CHF cumulés). doc15 et doc21 allégés comme l'app.
+- C★v8 : champs 188 / 201, lignes 240 / 260, **faux verts 0**, alertes justes 11, inutiles 5, échecs 0, durée médiane 9,8 s.
+- Ajouts : 6, dont **3 non signalés, 0 sous « vérifié »** ; doc1 date maintenant **signalée** ; non signalés : doc3 (n° de commande, 1 ligne en plus),
+  doc6 (TVA rendue sur une page qui n'en imprime pas). Moins de 40 pièces : un indice, pas une mesure.
