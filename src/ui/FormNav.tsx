@@ -199,7 +199,7 @@ export const InlineNum: React.FC<{
     `${nb(saisi)}${u} est hors bornes : ${min !== undefined && max !== undefined ? `de ${nb(min)} à ${nb(max)}` : max !== undefined ? `au plus ${nb(max)}` : `au moins ${nb(min ?? 0)}`}${u}. ${nb(retenu)}${u} retenu.`;
   return (
     <>
-      <label className="flex items-center gap-1 min-w-0">
+      <label className="flex items-center gap-2 min-w-0">
         <span className={`text-sm shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>
           {label}
         </span>
