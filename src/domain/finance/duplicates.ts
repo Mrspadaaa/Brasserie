@@ -28,7 +28,13 @@ export const paymentReferenceKey = (reference: string | undefined): string => {
 /** Chiffres d'un numéro de commande : « Onlinebestellung-686863 » donne 686863. Moins de 5 chiffres : trop courant pour identifier. */
 export const orderNumbers = (order: string | undefined): string[] => (order ?? '').match(/\d{5,}/g) ?? [];
 
-export interface LedgerDuplicate { ids: string[]; reason: string }
+export interface LedgerDuplicate {
+  ids: string[]; reason: string;
+  /** Clé stable du groupe (« facture|…», « reference|… », « commande|686863 ») : sert à écarter un avertissement (« Ce n'est pas un doublon »). */
+  key: string;
+  /** « commande » : de petites lignes anciennes d'une même commande déjà reprise par une facture saisie. */
+  kind: 'facture' | 'reference' | 'commande';
+}
 
 const isExpense = (tx: FinanceTransaction): boolean => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.sourceDocumentType !== 'credit_note';
 
@@ -62,8 +68,8 @@ export function ledgerDuplicates(transactions: FinanceTransaction[]): LedgerDupl
   for (const tx of expenses) for (const number of orderNumbers(tx.finance?.sourceOrderNumber)) ordered.set(number, [...(ordered.get(number) ?? []), tx]);
   for (const [number, invoices] of ordered) {
     const old = expenses.filter(tx => !tx.finance?.sourceOrderNumber && !invoices.includes(tx) && new RegExp(`(^|\\D)${number}(\\D|$)`).test(tx.description ?? ''));
-    if (old.length) add(`commande|${number}`, `Même commande ${number} : ${old.length} ${old.length > 1 ? 'écritures anciennes' : 'écriture ancienne'} et ${invoices.length > 1 ? 'des factures saisies' : 'une facture saisie'}`, ...invoices.map(tx => tx.id), ...old.map(tx => tx.id));
+    if (old.length) add(`commande|${number}`, `Même commande ${number} : ${old.length} ${old.length > 1 ? 'petites lignes anciennes' : 'petite ligne ancienne'} (libellé « Cmd ${number} ») et ${invoices.length > 1 ? 'les factures saisies' : 'la facture saisie'} qui la reprend`, ...invoices.map(tx => tx.id), ...old.map(tx => tx.id));
   }
-  return [...groups.values()].map(({ ids, reason }) => ({ ids: [...ids], reason }));
+  return [...groups.entries()].map(([key, { ids, reason }]) => ({ ids: [...ids], reason, key, kind: key.split('|')[0] as LedgerDuplicate['kind'] }));
 }
 export const ledgerDuplicateIds = (transactions: FinanceTransaction[]): Set<string> => new Set(ledgerDuplicates(transactions).flatMap(group => group.ids));

@@ -49,6 +49,10 @@ export function createJournalState(overrides: Partial<JournalState> = {}): Journ
     allDates: false, archiveYear: '', year: '', page: 1, ...overrides };
 }
 const PAGE_SIZE = 50;
+const CLE_DOUBLONS_ECARTES = 'laffinee.doublons-ecartes';
+const lireEcartes = (): Set<string> => {
+  try { const valeur = JSON.parse(window.localStorage.getItem(CLE_DOUBLONS_ECARTES) ?? '[]'); return new Set(Array.isArray(valeur) ? valeur.filter((x): x is string => typeof x === 'string') : []); } catch { return new Set(); }
+};
 const FOLLOW_UP_FILTERS = new Set(['due', 'late', 'payable', 'receivable', 'review', 'unknown', 'proof', 'undated', 'doublon']);
 const FILTER_LABELS: Record<string, string> = {
   all: 'Toutes', due: 'À payer et encaisser', late: 'En retard', payable: 'À payer', receivable: 'À encaisser',
@@ -132,7 +136,14 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   }), [transactions, payments]);
   const classified = useMemo(() => entries.map(entry => ({ ...entry, archived: isTransactionArchived(entry.transaction, index) })), [entries, index]);
   /** AM n° 7 : les achats déjà inscrits plus d'une fois. Un avertissement : rien n'est supprimé ni annulé d'office. */
-  const duplicateGroups = useMemo(() => ledgerDuplicates(transactions), [transactions]);
+  // RF-3 : un avertissement écarté (« Ce n'est pas un doublon ») reste écarté sur cet appareil ; aucune écriture n'est modifiée.
+  const [ecartes, setEcartes] = useState<Set<string>>(lireEcartes);
+  const ecarter = (key: string) => {
+    const next = new Set(ecartes).add(key);
+    setEcartes(next);
+    try { window.localStorage.setItem(CLE_DOUBLONS_ECARTES, JSON.stringify([...next])); } catch { /* stockage indisponible : l'écart ne dure que pour cette session */ }
+  };
+  const duplicateGroups = useMemo(() => ledgerDuplicates(transactions).filter(group => !ecartes.has(group.key)), [transactions, ecartes]);
   const duplicateIds = useMemo(() => new Set(duplicateGroups.flatMap(group => group.ids)), [duplicateGroups]);
   const archivedCount = useMemo(() => classified.reduce((n, entry) => entry.archived ? n + 1 : n, 0), [classified]);
 
@@ -321,9 +332,10 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       </div></details>
     </div>
     {duplicateGroups.length > 0 && <div className="journal-duplicates" role="note" data-testid="journal-duplicates">
-      <p><strong>{compte(duplicateIds.size, 'écriture')} possiblement en double.</strong> Rien n’est supprimé : vérifie, puis annule celle en trop.
+      <p><strong>{compte(duplicateIds.size, 'écriture')} possiblement en double.</strong> Rien n’est supprimé : vérifie, puis annule les écritures en trop, ou écarte l’avertissement s’il se trompe.
         {filter !== 'doublon' && <> <button type="button" className="journal-text-action" onClick={() => change({ filter: 'doublon' })}>Voir ces écritures</button></>}</p>
-      {filter === 'doublon' && <ul>{duplicateGroups.map(group => <li key={group.reason}>{group.reason} · {compte(group.ids.length, 'écriture')}</li>)}</ul>}
+      <ul>{duplicateGroups.map(group => <li key={group.key}>{group.reason} · {compte(group.ids.length, 'écriture')}
+        {' '}<button type="button" className="journal-text-action" onClick={() => ecarter(group.key)}>Ce n’est pas un doublon</button></li>)}</ul>
     </div>}
     <div className="finance-list">{days.map(day => {
       const label = day.date ? shortDate(day.date) : 'Date à vérifier';

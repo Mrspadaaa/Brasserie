@@ -36,6 +36,20 @@ describe('Journal : les doublons déjà inscrits sont signalés', () => {
     expect(screen.getAllByTestId('ligne')).toHaveLength(27);
     expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/Même commande 686863/);
   });
+  it('RF-3 : le texte dit ce que c’est (petites lignes anciennes d’une commande) et « Ce n’est pas un doublon » écarte l’avertissement, durablement et sans toucher aux écritures', () => {
+    window.localStorage.removeItem('laffinee.doublons-ecartes');
+    const livre = [facture(), ...Array.from({ length: 26 }, (_, i) => ancien(i + 1))];
+    const { unmount } = rendre(livre);
+    expect(screen.getByTestId('journal-duplicates').textContent).toMatch(/26 petites lignes anciennes \(libellé « Cmd 686863 »\) et la facture saisie qui la reprend/);
+    fireEvent.click(screen.getByRole('button', { name: 'Ce n’est pas un doublon' }));
+    expect(screen.queryByTestId('journal-duplicates')).toBeNull();
+    expect(screen.queryByRole('button', { name: /Doublons possibles/ })).toBeNull();
+    expect(JSON.parse(window.localStorage.getItem('laffinee.doublons-ecartes') ?? '[]')).toEqual(['commande|686863']);
+    unmount();
+    rendre(livre);
+    expect(screen.queryByTestId('journal-duplicates')).toBeNull();
+    window.localStorage.removeItem('laffinee.doublons-ecartes');
+  });
   it('rien d’anormal : ni bandeau ni puce', () => {
     rendre([facture(), ancien(1)].map(t => t.id === 'B-001' ? { ...t, description: 'Cmd 111111 autre' } : t));
     expect(screen.queryByTestId('journal-duplicates')).toBeNull();
