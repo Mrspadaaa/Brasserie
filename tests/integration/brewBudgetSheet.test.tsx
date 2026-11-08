@@ -142,8 +142,8 @@ describe('daily brew budget sheet', () => {
     await waitFor(() => expect(save).toHaveBeenCalledTimes(2));
     const doubled = save.mock.calls[1][0];
     expect(doubled.recipeId).toBe(recipe.id);
-    expect(doubled.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: recipe.id, volumeL: 60, adjuncts: [{ ...frozen.adjuncts[0], amount: 4 }], waterPlan: expect.objectContaining({ sourceId: 'tap', mashWaterL: 30, spargeWaterL: 42, mash: { gypse: 2 }, sparge: { gypse: 4 }, acid: { id: 'lactique', mash: 4, sparge: 6 } }) }));
-    expect(doubled.lines.find(line => line.name === 'Eau du réseau').quantity).toBe(72);
+    expect(doubled.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: recipe.id, volumeL: 60, adjuncts: [{ ...frozen.adjuncts[0], amount: 4 }], waterPlan: expect.objectContaining({ sourceId: 'tap', mashWaterL: 30, spargeWaterL: 39.6, mash: { gypse: 1.93 }, sparge: { gypse: 3.77 }, acid: { id: 'lactique', mash: 4, sparge: 5.66 } }) }));
+    expect(doubled.lines.find(line => line.name === 'Eau du réseau').quantity).toBe(69.6); // 30 + 39,6 : CF-9, le volume avant ébullition est à froid (72 avant)
     expect(doubled.lines.find(line => line.name === 'Pils').quantity).toBe(10);
     expect(source).toEqual(frozen);
   });
