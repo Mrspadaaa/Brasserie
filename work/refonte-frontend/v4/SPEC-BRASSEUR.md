@@ -1540,3 +1540,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **08.11**, à la session de monitoring (relayé), mot pour mot : « Le temps perdu alors que j'ai donné explicitement mon autorisation .. »
   (lu par le monitoring : couvre l'intégration des branches de correcteurs puis le déploiement ; la pilote garde la fusion d'une branche d'agent
   pour un oui écrit dans son propre fil, question posée le 08.11).
+- **08.11**, dans le fil de la pilote, mot pour mot : « Oui ... » (fusion de la branche Finances), puis « Le relais de l'autre branche suffit.... »
+  (lu : un accord donné dans le fil du monitoring et relayé mot pour mot vaut pour la pilote ; ne plus lui faire répéter).
