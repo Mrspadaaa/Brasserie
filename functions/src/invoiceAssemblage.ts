@@ -6,7 +6,7 @@
  * visibles : chaque ligne imprimée n'est vue que par un morceau. Rien n'est donc jamais retiré ni dédoublonné : les lignes sont mises bout à bout.
  * Seul recollage : une ligne marquée `suite` en haut d'un morceau (un article sur plusieurs lignes coupé entre elles) complète le dernier article
  * du morceau précédent, et c'est toujours signalé. Une coupe sans blanc, un morceau manquant : point qui pèse ou refus, jamais silencieux.
- * L'en-tête vient du premier morceau, les totaux du dernier ; les contrôles (somme des lignes = total imprimé, q × prix, lignes annoncées) tournent
+ * L'en-tête vient du premier morceau, les totaux du dernier qui en porte ; les contrôles (somme des lignes = total imprimé, q × prix, lignes annoncées) tournent
  * sur le tout ; les désaccords de lecture d'une ligne suivent sa ligne au rang global.
  */
 import { normalizeInvoiceScan } from './invoiceScanCore.js';
@@ -107,12 +107,14 @@ export function assemblerMorceaux(parties: any[], jonctions: Map<number, { items
   }
   const fusion = mergeDecoded(parties.map(part => ({ ...part, items: [] })), { dedupe: false });
   const lu: any = finirUneLecture(normalizeInvoiceScan({ ...fusion, items: gardees }));
-  // Les désaccords de lecture : ceux d'une ligne suivent sa ligne ; l'en-tête vient du premier morceau, les totaux du dernier, le reste de tous.
+  // Les désaccords de lecture : ceux d'une ligne suivent sa ligne ; l'en-tête vient du premier morceau, les totaux du dernier qui en porte
+  // (celui que garde `mergeDecoded`), le reste de tous.
+  const partieDesTotaux = (() => { for (let k = parties.length - 1; k >= 0; k--) if (parties[k]?.amountTTC != null) return k; return parties.length - 1; })();
   const cles = new Set<string>();
   const desaccords: ScanPoint[] = parties.flatMap((part, k) => (Array.isArray(part.points) ? part.points : []).flatMap((p: ScanPoint) => {
     if (p.origine !== 'lecture') return [];
     if (p.ligne === null) {
-      const garde = EN_TETE.has(p.champ) ? k === 0 : TOTAUX.has(p.champ) ? k === parties.length - 1 : true;
+      const garde = EN_TETE.has(p.champ) ? k === 0 : TOTAUX.has(p.champ) ? k === partieDesTotaux : true;
       if (!garde || cles.has(p.cle)) return [];
       cles.add(p.cle);
       return [p];

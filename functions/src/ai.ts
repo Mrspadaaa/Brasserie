@@ -191,8 +191,9 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
   const pages: InvoiceFile[] = !Array.isArray(suppliedFile) ? [validateInvoiceFile(suppliedFile)] : suppliedFile.length === 1 ? [validateInvoiceFile(suppliedFile[0])] : pagesDeLecture(suppliedFile);
   if (morceau && pages.length > 1) throw new Error('Un morceau est un seul fichier.');
   // D380 : un morceau a sa propre clé (le même fichier lu entier ou comme morceau k/n n'a pas la même consigne, donc pas le même résultat).
+  // « t2 » (08.11) : les totaux se lisent sur chaque partie ; un morceau lu avant, sans total, n'est pas resservi.
   const cleMorceau = (file: InvoiceFile, m: { k: number; n: number; jonction?: true }): InvoiceFile =>
-    ({ mimeType: 'application/x-morceau', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`${m.jonction ? 'j' : ''}${m.k}/${m.n}`)]).toString('base64') });
+    ({ mimeType: 'application/x-morceau', data: Buffer.concat([createHash('sha256').update(Buffer.from(file.data, 'base64')).digest(), Buffer.from(`${m.jonction ? 'j' : 't2:'}${m.k}/${m.n}`)]).toString('base64') });
   const key: InvoiceFile = pages.length > 1 ? cleDePages(pages) : morceau ? cleMorceau(pages[0], morceau) : pages[0], model = SCAN_MODEL;
   const withNote = (prompt: string) => pages.length > 1 ? `${prompt}\n\n${MULTI_PAGE_NOTE(pages.length)}` : morceau ? `${prompt}\n\n${morceau.jonction ? jonctionNote() : morceauNote(morceau.k, morceau.n)}` : prompt;
   assertGeminiModel(model);

@@ -1523,3 +1523,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « N'attends pas mon accord pour déployer, tu dois itérer dessus en fixant les bugs ??? » ; sur la relecture Gemini des 13 pièces, « oui Normal, ça
   fait partie des test » ; « Les Screens levure seront à refaire, ne passe pas de temps dessus ». (Lu par la pilote : à confirmer dans son fil avant
   le premier déploiement, une autorisation relayée par un fichier ne suffit pas pour un geste externe.)
+- **08.11**, dans le fil de la pilote, mot pour mot : « Oui » (à « Je lance ? » : déployer, relire les 13 pièces avec Gemini, gestes ZZ TEST,
+  corriger et redéployer, retirer les 26 doublons après copie de secours). Puis, sur sa capture de la pièce 8 (PDF B&R 333258, total « 0,00 »
+  entouré) : « Il y a pas le total ?? ». Puis : « Ah et si j'entre 2x quasiment la même facture. Est-ce que tout de met à jour. En gros seul les
+  numéros unique de la facture change tout le reste est identique à une autre. Ça met tout à jour comme il faut ? »

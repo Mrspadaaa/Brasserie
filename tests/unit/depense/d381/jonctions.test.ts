@@ -160,3 +160,23 @@ describe('D381 : morceaux bord à bord, sans voisins, et bandes de contrôle', (
     });
   });
 });
+
+// Test en ligne du 08.11 (« Il y a pas le total ?? ») : ses factures B&R en PDF, coupées en 14 morceaux, finissaient sur le bulletin de paiement ;
+// seule la dernière partie avait le droit de lire les totaux, et le total imprimé plus haut n'était lu par personne (0,00 à l'écran).
+describe('Test en ligne 08.11 : le total imprimé ailleurs que sur la dernière partie', () => {
+  it('chaque partie lit les totaux qu’elle porte (la consigne ne les réserve plus à la dernière)', () => {
+    for (const [k, n] of [[1, 14], [11, 14], [14, 14]]) {
+      expect(morceauNote(k, n)).toContain('Si les totaux du document');
+      expect(morceauNote(k, n)).not.toContain('ils sont lus sur la dernière partie');
+    }
+  });
+  it('un total lu sur une partie du milieu reste le total de la pièce quand la dernière (le bulletin) n’en porte pas', () => {
+    const r = assemblerMorceaux([
+      partie(1, 3, [art('A', 100)]),
+      partie(2, 3, [art('B', 161.65)], { amountTTC: 261.65, tvaAmount: 16.1 }),
+      partie(3, 3, []),
+    ], bandes([1, [art('A', 100), art('B', 161.65)]], [2, []]));
+    expect(r.amountTTC).toBe(261.65);
+    expect(r.tvaAmount).toBe(16.1);
+  });
+});

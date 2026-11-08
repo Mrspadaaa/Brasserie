@@ -206,9 +206,10 @@ export function estimateBandCount(width: number, height: number): number {
 const headerRule = (k: number) => (k === 1
   ? ' Lis aussi l’en-tête (fournisseur, date, numéros, devise) de cette première partie.'
   : ' Laisse vides les champs d’en-tête (texte "", nombres null) : ils sont lus sur la première partie.');
-const totalsRule = (k: number, n: number) => (k === n
-  ? ' Lis aussi les totaux imprimés (HT, TVA, TTC, bloc TVA) de cette dernière partie.'
-  : ' Laisse null les totaux et vide le bloc TVA : ils sont lus sur la dernière partie.');
+// Test en ligne du 08.11 : sur une facture B&R en PDF, la dernière partie est le bulletin de paiement ; le total, imprimé plus haut, n'était lu par
+// aucune partie (« Il y a pas le total ?? »). Chaque partie lit donc les totaux qu'elle porte ; l'assemblage garde le dernier rempli.
+const totalsRule = (_k: number, _n: number) =>
+  ' Si les totaux du document (HT, TVA, TTC, bloc TVA) sont imprimés sur cette partie, lis-les ; sinon laisse-les null et le bloc TVA vide. Un sous-total de page n’est pas un total.';
 /** Pv : la consigne de la page k sur N. */
 export const pageNote = (k: number, n: number) =>
   `Ce PDF compte ${n} pages. Ne transcris que les lignes d’articles imprimées sur la page ${k}, dans leur ordre ; les lignes des autres pages sont lues à part, n’en recopie aucune.${headerRule(k)}${totalsRule(k, n)}`;
