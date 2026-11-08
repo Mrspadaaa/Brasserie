@@ -4,7 +4,7 @@ Ce qui part : l'app (hosting) et les 40 fonctions qui tournent déjà en ligne (
 Firebase saute celles qui n'ont pas changé. Ne part pas : les 9 fonctions du conseil houblon V1, jamais déployées (`dispatchBrewerHopAdviceV1` et
 `notifyBrewerHopAdviceAnswerV1` exclues par consigne ; `askBrewerHopAdviceV1`, `getBrewerHopAdviceActivityV1`, `getBrewerHopAdviceConversationV1`,
 `markBrewerHopAdviceReadV1`, `processBrewerHopAdviceV1`, `resetBrewerHopAdviceConversationV1`, `retryBrewerHopAdviceQuestionV1` neuves, hors périmètre) ;
-ni Firestore (règles, index), ni la découpe D381 F (non committée, dans `%TEMP%\deploy-hosting-qr` seulement).
+ni Firestore (règles, index). Correction (08.11) : la découpe D381 F (`dd5cf826`) est un ancêtre de `65d3c645`, elle est donc partie en ligne.
 
 Contenu : D378, D379, corrections du test en ligne (commits `19a0d538` à `65d3c645`), en-tête « · 24 L », pastille « Stock » alignée, « Fixer le seuil minimum ».
 
