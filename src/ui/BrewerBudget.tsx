@@ -4,7 +4,7 @@ import { BrewerChat as api } from '../services/brewerChat';
 import { NumberInput } from './NumberInput';
 import { BREWER_LIMIT_BOUNDS } from '../../functions/src/brewerLimits';
 import type { BrewerAiBudget, BrewerAiLimits } from '../../functions/src/brewerLimits';
-import { montantChf } from '../domain/finance/ledger';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const format = (n: number) => new Intl.NumberFormat('fr-CH').format(n);
 type LimitKey = keyof BrewerAiLimits;
@@ -149,7 +149,7 @@ export function BrewerBudget() {
               {status.monthly?.pricing === 'expired' && <p role="status">Révision des tarifs conseillée. Le budget continue avec les derniers tarifs de provision connus, sans garantie du montant exact facturé par Google.</p>}
               <form autoComplete="off" onSubmit={event => { event.preventDefault(); if (monthlyChf != null && Number.isFinite(monthlyChf)) void save(undefined, undefined, Math.round(Math.max(0, Math.min(100, monthlyChf)) * 1_000_000)); }}>
                 <div className="flex gap-2" role="group" aria-label="Budgets mensuels proposés">
-                  {[5, 10, 20].map(amount => <button key={amount} type="button" aria-pressed={monthlyChf === amount} disabled={busy} onClick={() => setMonthlyChf(amount)} className="min-h-11 flex-1">{montantChf(amount)} CHF</button>)}
+                  {[5, 10, 20].map(amount => <button key={amount} type="button" aria-pressed={monthlyChf === amount} disabled={busy} onClick={() => setMonthlyChf(amount)} className="min-h-11 flex-1">{nombreFr(amount, 0)} CHF</button>)}
                 </div>
                 <div className="brewer-budget-field"><div><label htmlFor={`${field}-monthly`}>Maximum mensuel estimé · CHF</label><small>0 à 100 CHF · renouvelé le 1er, heure de Zurich</small></div><NumberInput id={`${field}-monthly`} value={monthlyChf} onValue={setMonthlyChf} min={0} max={100} required disabled={busy} /></div>
                 <button type="submit" disabled={busy || monthlyChf == null}>Enregistrer le budget mensuel</button>

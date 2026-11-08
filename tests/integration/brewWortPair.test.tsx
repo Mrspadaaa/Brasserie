@@ -69,7 +69,7 @@ describe('couple volume et densité mesuré', () => {
     expect(saved.readings![0]).toMatchObject({ ...readings[0], value: 23.5 });
     expect(saved.readings![1]).toEqual(readings[1]);
     // A deliberate basis correction must remove an incompatible old numeric temperature.
-    fireEvent.click(screen.getByRole('button', { name: 'Corriger le dernier couple · 23.5 L' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Corriger le dernier couple · 23,5 L' }));
     fireEvent.change(screen.getByLabelText('Référence de température du volume'), { target: { value: 'hot' } });
     fireEvent.click(screen.getByRole('button', { name: 'Corriger le couple' }));
     const changedBasis = update.mock.calls.at(-1)![0] as BrewDayState;
