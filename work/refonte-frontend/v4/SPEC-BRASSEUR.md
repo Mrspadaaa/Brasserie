@@ -1552,3 +1552,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **08.11**, à la session de monitoring (relayé), mot pour mot, à « tout ce qui a été corrigé depuis attend son prochain déploiement » :
   « pourquoi ? pourquoi ça attends `??? » (lu : les preuves locales, captures ou suites de tests, ne retiennent pas un déploiement ; on déploie
   ce qui est commité et vert à ses tests, puis on rejoue en ligne).
+- **08.11**, mot pour mot, pendant la correction des défauts du registre (cinq voies, revue à l'image, voie VI) :
+  « Reserve tes token pour la qualité » (lu : pas de tour gaspillé en réglages de banc, relances ou suivi ; les jetons vont aux corrections, aux tests et au regard).
