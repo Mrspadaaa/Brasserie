@@ -328,17 +328,17 @@ describe('Volumes d’eau', () => {
   it('compte l’absorption du grain, l’évaporation, le volume mort et la rétraction', () => {
     const v = BrewingMath.waterVolumes(6, 30);
     expect(v.grainAbsorptionL).toBeCloseTo(5.8, 1); // 6 × 0.96
-    expect(v.preBoilVolumeL).toBe(36.2); // 30 + 3 + 2 + 1.2
+    expect(v.preBoilVolumeL).toBe(35.6); // (30 + 2) / 0,96 / (1 − 10 %) × 0,96 : volume froid, comme le mode équipement (CF-9)
     expect(v.mashWaterL).toBe(25.2); // 6 × 4.2, l'épaisseur d'un monocuve
-    expect(v.spargeWaterL).toBe(16.8); // 36.2 − (25.2 − 5.8)
+    expect(v.spargeWaterL).toBe(16.2); // 35.6 − (25.2 − 5.8)
     expect(v.mashWaterL).toBeGreaterThan(v.spargeWaterL);
   });
 
-  it('⚠️ l’ancien calcul de l’assistant sous-estimait l’eau totale de 4.5 L', () => {
+  it('⚠️ l’ancien calcul de l’assistant sous-estimait l’eau totale de 3.9 L', () => {
     const v = BrewingMath.waterVolumes(6, 30);
     const ancien = 18 + (30 * 1.25 - 18); // 37.5 L
-    expect(v.mashWaterL + v.spargeWaterL).toBeCloseTo(42, 1);
-    expect(v.mashWaterL + v.spargeWaterL - ancien).toBeCloseTo(4.5, 1);
+    expect(v.mashWaterL + v.spargeWaterL).toBeCloseTo(41.4, 1);
+    expect(v.mashWaterL + v.spargeWaterL - ancien).toBeCloseTo(3.9, 1);
   });
 
   /*
@@ -364,9 +364,9 @@ describe('Volumes d’eau', () => {
   it('⚠️ l’évaporation suit la DURÉE d’ébullition, pas un forfait', () => {
     const court = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 30);
     const long = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 90);
-    expect(court.boilOffL).toBe(1.5); // 30 × 10 % × 0.5 h
-    expect(long.boilOffL).toBe(4.5); // 30 × 10 % × 1.5 h
-    expect(long.preBoilVolumeL - court.preBoilVolumeL).toBeCloseTo(3, 1);
+    expect(court.boilOffL).toBe(1.7); // 10 % × 0,5 h du volume avant ébullition, ramené à froid (CF-9)
+    expect(long.boilOffL).toBe(5.6); // 10 % × 1,5 h du volume avant ébullition, ramené à froid
+    expect(long.preBoilVolumeL - court.preBoilVolumeL).toBeCloseTo(3.9, 1);
   });
 
   /* Le houblon boit — 6 mL par gramme resté dans la cuve. Le cru n'y est pas. */
@@ -374,7 +374,7 @@ describe('Volumes d’eau', () => {
     const sans = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 60, 0);
     const avec = BrewingMath.waterVolumes(6, 30, undefined, 'batch', 60, 300);
     expect(avec.hopLossL).toBe(1.8);
-    expect(avec.preBoilVolumeL - sans.preBoilVolumeL).toBeCloseTo(1.8, 1);
+    expect(avec.preBoilVolumeL - sans.preBoilVolumeL).toBeCloseTo(2.0, 1); // 1,8 L de houblon, plus l'évaporation de 10 % qu'il entraîne
     expect(kettleHopGrams([
       { weightG: 50, stage: 'boil' },
       { weightG: 80, stage: 'whirlpool' },
@@ -405,7 +405,7 @@ describe('Volumes d’eau', () => {
   it('⚠️ sans rinçage, toute l’eau va à l’empâtage', () => {
     const v = BrewingMath.waterVolumes(6, 30, undefined, 'none');
     expect(v.spargeWaterL).toBe(0);
-    expect(v.mashWaterL).toBeCloseTo(42, 1); // 36.2 + 5.76
+    expect(v.mashWaterL).toBeCloseTo(41.4, 1); // 35.6 + 5.8
   });
 
   it('suit le profil de l’installation', () => {
@@ -415,7 +415,7 @@ describe('Volumes d’eau', () => {
       deadSpaceL: 1
     });
     expect(v.mashWaterL).toBe(24); // 6 × 4
-    expect(v.preBoilVolumeL).toBe(36.7); // 30 + 4.5 + 1 + 1.2
+    expect(v.preBoilVolumeL).toBe(36.5); // (30 + 1) / 0,96 / (1 − 15 %) × 0,96
   });
 
   it('ne rend rien sans grain ni volume, au lieu de diviser dans le vide', () => {

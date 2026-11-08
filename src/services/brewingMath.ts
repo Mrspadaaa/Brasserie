@@ -520,7 +520,9 @@ export const BrewingMath = {
     const grainAbsorptionL = round1(totalGristKg * 0.96);
     const boilOffRate = Number.isFinite(brewhouse?.boilOffRatePct) ? Math.max(0, brewhouse!.boilOffRatePct!) : 10;
     const safeBoilMin = Number.isFinite(boilMin) && boilMin >= 0 ? boilMin : 60;
-    const boilOffL = round1(volumeL * (boilOffRate / 100) * (safeBoilMin / 60));
+    // Sans profil d'équipement l'évaporation est un % par heure du volume AVANT ébullition (convention Brewfather et BeerSmith), puis tout se
+    // calcule comme le mode équipement : un volume à chaud, rapporté à froid par la rétraction de 4 % (CF-9, 08.11).
+    const boilOffFraction = Math.min(0.9, (boilOffRate / 100) * (safeBoilMin / 60));
     /*
      * Le houblon boit. Six millilitres par gramme est la valeur de la pratique
      * pour du cône ou du pellet resté dans la cuve — whirlpool compris, où les
@@ -585,15 +587,18 @@ export const BrewingMath = {
         ...(check.spargeMaximumHotL != null ? { spargeMaximumHotL: check.spargeMaximumHotL } : {})
       };
     }
-    const coolingShrinkageL = volumeL * 0.04;
-    const preBoilVolumeL = round1(
-      Math.max(0, volumeL + boilOffL + deadSpaceL + hopLossL + coolingShrinkageL)
-    );
+    const legacyColdFactor = 0.96;
+    const legacyPostBoilHotL = (volumeL + deadSpaceL + hopLossL) / legacyColdFactor;
+    const legacyPreBoilHotL = legacyPostBoilHotL / (1 - boilOffFraction);
+    const boilOffL = round1((legacyPreBoilHotL - legacyPostBoilHotL) * legacyColdFactor);
+    const preBoilVolumeL = round1(Math.max(0, legacyPreBoilHotL * legacyColdFactor));
+    const preBoilHotL = round1(legacyPreBoilHotL);
 
     const plein: WaterVolumePlan = {
       mashWaterL: round1(preBoilVolumeL + grainAbsorptionL),
       spargeWaterL: 0,
       preBoilVolumeL,
+      preBoilHotL,
       grainAbsorptionL,
       boilOffL,
       hopLossL,
@@ -632,6 +637,7 @@ export const BrewingMath = {
       mashWaterL,
       spargeWaterL: round1(Math.max(0, preBoilVolumeL - firstRunningsL)),
       preBoilVolumeL: round1(Math.max(0, preBoilVolumeL)),
+      preBoilHotL,
       grainAbsorptionL: round1(Math.max(0, grainAbsorptionL)),
       boilOffL: round1(Math.max(0, boilOffL)),
       hopLossL: round1(Math.max(0, hopLossL)),

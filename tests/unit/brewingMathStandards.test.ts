@@ -226,12 +226,12 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
     it('respecte la conservation de la masse et du volume à 100 %', () => {
       const v = BrewingMath.waterVolumes(6, 30, brewhouse, 'batch', 60, 100);
 
-      expect(v.boilOffL).toBe(3.0);
+      expect(v.boilOffL).toBe(3.6); // 10 % du volume avant ébullition, ramené à froid (CF-9)
       expect(v.grainAbsorptionL).toBe(5.8);
       expect(v.hopLossL).toBe(0.6);
-      expect(v.preBoilVolumeL).toBe(36.3);
+      expect(v.preBoilVolumeL).toBe(35.7); // (30 + 1,5 + 0,6) / 0,96 / 0,9 × 0,96
       expect(v.mashWaterL).toBe(21.0);
-      expect(v.spargeWaterL).toBe(21.1);
+      expect(v.spargeWaterL).toBe(20.5);
 
       // (Eau empâtage + Eau rinçage) - Rétention drêches === Pré-ébullition
       expect(v.mashWaterL + v.spargeWaterL - v.grainAbsorptionL).toBeCloseTo(v.preBoilVolumeL, 1);
