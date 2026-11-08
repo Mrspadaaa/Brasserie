@@ -82,7 +82,9 @@ describe('k5 — Pv : un PDF lu page par page', () => {
       expect(call.parts).toHaveLength(2);
       expect(call.parts[1].inlineData.mimeType).toBe('application/pdf');
       expect(call.text.includes('Lis aussi l’en-tête')).toBe(k === 1);
-      expect(call.text.includes('Lis aussi les totaux')).toBe(k === 3);
+      // 92de7371 (08.11) : chaque partie lit les totaux qu'elle porte (le total d'un PDF B&R n'est pas sur sa dernière page) ; plus de « Lis aussi les totaux » réservé à la dernière
+      expect(call.text).toContain('Si les totaux du document (HT, TVA, TTC, bloc TVA) sont imprimés sur cette partie, lis-les');
+      expect(call.text).not.toContain('Lis aussi les totaux');
     }
     // la lecture 1 et la lecture 2 partent ensemble : la durée est la plus longue des six, pas leur somme
     const pv = records[0].variants.Pv;
@@ -224,7 +226,8 @@ describe('k5 — Bv : les bandes sur des rangées vides', () => {
     expect(texts).toHaveLength(6);
     expect(texts.filter(text => text.includes('partie 2 sur 3'))).toHaveLength(2);
     expect(texts.filter(text => text.includes('Lis aussi l’en-tête'))).toHaveLength(2);
-    expect(texts.filter(text => text.includes('Lis aussi les totaux'))).toHaveLength(2);
+    expect(texts.filter(text => text.includes('sont imprimés sur cette partie, lis-les'))).toHaveLength(6);
+    expect(texts.filter(text => text.includes('Lis aussi les totaux'))).toHaveLength(0);
     const bv = records[0].variants.Bv;
     expect(bv.result.items.map((line: any) => line.name)).toEqual(['Article un', 'Article deux', 'Article trois']);
     expect(judgeResult(bv.result, truthCase('tdoc', 'image/jpeg').expected).wrong).toEqual([]);
@@ -246,8 +249,10 @@ describe('k5 — Bv : les bandes sur des rangées vides', () => {
   it('les phrases de rang : en-tête sur la première, totaux sur la dernière, aucune valeur', () => {
     expect(bandNote(1, 3)).toContain('partie 1 sur 3');
     expect(bandNote(1, 3)).toContain('en-tête');
-    expect(bandNote(1, 3)).toContain('Laisse null les totaux');
-    expect(bandNote(3, 3)).toContain('Lis aussi les totaux');
+    // 92de7371 : la même phrase de totaux sur toutes les parties (lis-les s'ils sont imprimés sur la partie, sinon null) ; seul l'en-tête dépend du rang
+    expect(bandNote(1, 3)).toContain('lis-les ; sinon laisse-les null');
+    expect(bandNote(3, 3)).toContain('lis-les ; sinon laisse-les null');
+    expect(bandNote(2, 3)).toContain('Un sous-total de page n’est pas un total');
     expect(bandNote(2, 3)).toContain('Laisse vides les champs d’en-tête');
     expect(pageNote(2, 3)).toContain('page 2');
     expect(pageNote(1, 1)).toContain('en-tête');

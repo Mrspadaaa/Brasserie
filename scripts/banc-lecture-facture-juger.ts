@@ -727,6 +727,13 @@ function main() {
     const s = stats[v];
     console.log(`${variantLabel(v)} : champs ${ratio(s.right, s.judged)}, lignes ${ratio(s.lineRight, s.lineJudged)}, faux verts ${s.fauxVerts}, alertes justes ${s.alertesJustes}, inutiles ${s.alertesInutiles}, échecs ${s.failures}, durée médiane ${sec(median(s.ms))}, coût total ${francs(s.costMicro.reduce((a, b) => a + b, 0))} CHF`);
   }
+  // k7 (08.11) : les ajouts non signalés — une valeur rendue que la vérité n'a pas, sans doute affiché sur l'écran. Import tardif : le module lit `src/` (règle de l'écran).
+  if (args.includes('--ajouts')) {
+    void import('./banc-lecture-ajouts').then(({ ajoutsDuBanc, compterAjouts }) => {
+      const compte = compterAjouts(ajoutsDuBanc(file.records, cases));
+      for (const v of variantIds(file.records)) if (compte[v]) console.log(`${variantLabel(v)} : ajouts ${compte[v].ajouts}, NON signalés ${compte[v].nonSignales} (sous « vérifié » ${compte[v].sousVert}), en-tête ${compte[v].parGenre.entete.join('/')}, lignes en plus ${compte[v].parGenre.ligne.join('/')}, valeurs de ligne ${compte[v]['parGenre']['valeur-ligne'].join('/')}`);
+    });
+  }
   // HORS-LIGNE.md : le recalcul sans appel (sortie `--hors-ligne`), écrit où on le demande
   const horsLigneAt = args.indexOf('--hors-ligne-md');
   if (horsLigneAt >= 0) {

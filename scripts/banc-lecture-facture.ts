@@ -79,6 +79,7 @@ import {
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
 import { phrasesDuVote } from '../functions/src/invoiceScanVote';
 import { liteConsigne } from './banc-lecture-consignes-lite';
+import { ALLEGEES, preparerAllegement } from './banc-lecture-alleger';
 import {
   OutilManquant, bandNote, imageSize, jimpBander, estimateBandCount, isTall, loadJimp, loadPdfRenderer, mergeDecoded, pageNote, sizeBander, type BandPart, type Bander
 } from './banc-lecture-bandes';
@@ -947,6 +948,11 @@ export const FAULT_PLAN: Fault[] = [
   { id: 'total-diverge-schema', doc: 'doc3', tirage: 3, families: ['w2'], edits: [{ path: 'amountTTC', delta: 5 }], note: 'une lecture au schéma du banc lit un autre total : la 3.8 tranche, le vote garde « disputed »' },
   // k5 : les gestes de vision (sortie relevée, exécution de code, pages, bandes, zoom ciblé)
   { id: 'unite-x-k5', doc: 'doc9', tirage: 1, families: ['e1', 'e2', 'g1', 'g2', 'q1', 'q2'], edits: [{ path: 'items.*.unit', value: 'x' }], note: 'les deux lectures de Csv8, Avl et Pv inventent l’unité « x » (faux vert : la 3.8 n’est pas appelée)' },
+  // k7 (08.11) : BANC SIMULE ECHEC — la simulation ne produisait plus aucun faux vert. Cause : les vérités des pièces (dates non imprimées, lignes sans prix, totaux avec port)
+  // fabriquent des réponses « propres » que la production déclare déjà à confirmer (`date-absente`, `somme-ecart`, `somme-incomplete`) : 13 pièces sur 14 sont `disputed` sans faute,
+  // et les fautes des autres variantes tombent sur ces pièces déjà en alerte (doc9, doc5). Seule doc13 reste « vérifiée » à l'état propre. Cette faute y glisse une date fausse
+  // MAIS plausible, la même dans les deux lectures : aucun contrôle de la production ne peut la voir (elle ne vérifie que l'absence ou la forme d'une date, jamais sa valeur).
+  { id: 'date-plausible-propre', doc: 'doc13', tirage: 1, families: ['f1', 'f2', 'l1', 'l2', 'm1', 'm2', 'h1', 'h2', 'p1', 'p2', 'v1', 'v2', 'w1', 'w2', 'u1', 'u2', 't1', 't2', 'e1', 'e2', 'g1', 'g2', 'q1', 'q2', 'b1', 'b2'], edits: [{ path: 'date', value: '14.03.2026' }], note: 'les deux lectures de chaque variante lisent la même date plausible mais fausse sur une pièce par ailleurs « vérifiée » (faux vert que nul contrôle ne voit)' },
   { id: 'unite-x-bandes', doc: 'doc5', tirage: 3, families: ['b1', 'b2'], edits: [{ path: 'items.*.unit', value: 'x' }], note: 'les deux lectures par bandes inventent l’unité « x » sur chaque bande (faux vert en Bv)' },
   { id: 'coupure-sortie-relevee', doc: 'doc8', tirage: 1, families: ['e1'], edits: [], cut: true, note: 'une lecture à 8 192 jetons est coupée : la 3.8 est appelée (repli de finalOfLite)' },
   { id: 'coupure-page', doc: 'doc8', tirage: 2, families: ['q2'], edits: [], cut: true, note: 'les pages de la lecture 2 de Pv sont coupées : une page manquante rend la lecture entière inexploitable' },
@@ -1142,7 +1148,8 @@ export function loadCaseFiles(c: BenchCase, fake: boolean): InvoiceFile[] {
     const mimeType = mimeOfPath(name, c.mimeType);
     if (fake && !existsSync(full))
       return mimeType === 'application/pdf' ? { mimeType, data: Buffer.from('%PDF-1.4\n<< /Type /Pages /Count 2 >>\n<< /Type /Page >>\n<< /Type /Page >>\n').toString('base64') } : { mimeType, data: Buffer.from([255, 216, 255, 217]).toString('base64') };
-    return validateInvoiceFile({ mimeType, data: readFileSync(full).toString('base64') });
+    // k7 : une photo de plus de 4 Mo est envoyée allégée comme l'app le fait (`preparerAllegement`, banc-lecture-alleger.ts) ; sinon le fichier tel quel.
+    return validateInvoiceFile(ALLEGEES.get(full) ?? { mimeType, data: readFileSync(full).toString('base64') });
   });
 }
 
@@ -1195,6 +1202,7 @@ export async function runBench(options: BenchOptions, deps: BenchDeps = {}): Pro
   const log = deps.log ?? (line => console.log(line));
   const cases = (deps.cases ?? loadCases(options.cas?.map(casPath))).filter(c => !options.docs || options.docs.includes(c.id));
   if (!cases.length) throw new Error('Aucun cas à lire.');
+  if (!deps.readFile) await preparerAllegement(cases, undefined, log);
   const wanted: VariantId[] = options.variantes?.length ? [...options.variantes] : [...K1_VARIANTS];
   // B se déduit des lectures de A : demander B, c'est lire A.
   const want = new Set<string>(wanted);
@@ -1557,13 +1565,17 @@ const isMain = () => !process.env.VITEST && !/banc-noms-fr/.test(process.argv[1]
 if (isMain()) {
   const options = parseArgs(process.argv.slice(2));
   if (options.estimer) {
-    try {
-      const cases = loadCases(options.cas?.map(casPath)).filter(c => !options.docs || options.docs.includes(c.id));
-      const lender = options.reprendre ? loadLender(reprendreDirs(options.reprendre)) : undefined;
-      console.log(estimateBench(options, cases, lender, spentInJournal(MISSION_JOURNAL), options.reprendre ? observedAverages(reprendreDirs(options.reprendre)[0]) : undefined).text.join('\n'));
-      process.exit(0);
-    } catch (error) { console.error(`BANC ECHEC : ${error instanceof Error ? error.message : String(error)}`); process.exit(1); }
+    void (async () => {
+      try {
+        const cases = loadCases(options.cas?.map(casPath)).filter(c => !options.docs || options.docs.includes(c.id));
+        await preparerAllegement(cases);
+        const lender = options.reprendre ? loadLender(reprendreDirs(options.reprendre)) : undefined;
+        console.log(estimateBench(options, cases, lender, spentInJournal(MISSION_JOURNAL), options.reprendre ? observedAverages(reprendreDirs(options.reprendre)[0]) : undefined).text.join('\n'));
+        process.exit(0);
+      } catch (error) { console.error(`BANC ECHEC : ${error instanceof Error ? error.message : String(error)}`); process.exit(1); }
+    })();
+  } else {
+    const out = options.out ?? (options.mode === 'simuler' ? path.join(tmpdir(), `k4-sim-${stamp()}`) : undefined);
+    runBench({ ...options, out }).then(() => process.exit(0), error => { console.error(`BANC ECHEC : ${error instanceof Error ? error.message : String(error)}`); process.exit(1); });
   }
-  const out = options.out ?? (options.mode === 'simuler' ? path.join(tmpdir(), `k4-sim-${stamp()}`) : undefined);
-  runBench({ ...options, out }).then(() => process.exit(0), error => { console.error(`BANC ECHEC : ${error instanceof Error ? error.message : String(error)}`); process.exit(1); });
 }
