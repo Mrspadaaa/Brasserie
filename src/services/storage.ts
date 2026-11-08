@@ -240,8 +240,9 @@ export const defaultConfig: AppConfig = {
     tvaReducedRate: 0.026,
     tvaNormalRate: 0.081,
     tvaThresholdTurnover: 100000,
-    // ⚠️ À vérifier contre le tarif OFDF en vigueur avant toute déclaration.
-    beerTaxFullRatePerHl: 25.2,
+    // Taux plein de la bière normale (10,1 à 14,0 °P) : 25,32 CHF/hL, celui de `swissBeerTax.ts` (CF-NOTE-2, 08.11 ; 25,2 était l'ancien taux).
+    // Le calcul de l'impôt ne lit plus ce champ ; les réglages déjà stockés gardent leur valeur. À vérifier contre le tarif OFDF avant toute déclaration.
+    beerTaxFullRatePerHl: 25.32,
     beerTaxSmallBrewerMaxHl: 55000,
     beerTaxReliefTiersHl: [
       { upToHl: 15000, reductionPct: 40 },
