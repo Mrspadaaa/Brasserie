@@ -44,6 +44,7 @@ import { InvoiceScanReview } from './InvoiceScanReview';
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
+import { ajoutsALaMain,phraseDuPied } from '../depense/phrasePied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
@@ -1434,7 +1435,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const rubriquesScan=<Rubriques items={[itemQuoi,...itemsRub]}/>;
   /* D358 : l'arrondi suisse à 5 centimes est SA ligne neutre (celle que l'enregistrement ajoute, `arrondiDuTotal` : même règle) ; avec elle le détail égale le total et rien n'est signalé. Tout autre écart reste signalé. Elle n'est pas dans le brouillon : rien n'est compté deux fois. */
   const arrondiCents=arrondiDuTotal(draft)||0,sommeCents=draft.lines.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
-  const detailListe={lignes:fr2c(sommeCents+arrondiCents),total:fr2c(Math.round((draft.amount||0)*100)),ecart:Math.abs(draft.lines.reduce((s,line)=>s+(line.amount||0),0)+arrondiCents/100-(draft.amount||0))>0.005};
+  /* SM (08.11, « Détail 56,80 / 51,80 c'est assez trompeur… On a l'impression que c'est faux alors que c'est juste ») : le pied dit ce que sont les nombres et d'où vient l'écart ; une ligne ajoutée à la main qui l'explique exactement n'est pas une erreur. */
+  const phrasePied=phraseDuPied(sommeCents+arrondiCents,Math.round((draft.amount||0)*100),ajoutsALaMain(draft.lines),fr2c);
+  const detailListe={lignes:fr2c(sommeCents+arrondiCents),total:fr2c(Math.round((draft.amount||0)*100)),ecart:phrasePied.attention,texte:phrasePied.texte};
   const scanLayout=scan?.ok&&result&&statutFinal?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0">
     {/* 1280 : la colonne de gauche (récap, tuiles, rubriques) est COLLANTE comme `.p3a3-gauche` de la maquette (sticky top 0, hauteur du corps, défilement propre) ; sur téléphone
         l'enveloppe disparaît (`contents`) et `order` garde l'ordre d'avant : récap, liste, rubriques. */}

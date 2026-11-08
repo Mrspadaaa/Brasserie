@@ -27,8 +27,8 @@ afterEach(cleanup);
 const q = (sel: string) => document.querySelector<HTMLElement>(sel);
 const fin = () => q('[data-dp="fin"]')!;
 const deux = [ligne(1, 'Fermenteur 30 L fictif', 'equipment', 1, 'Stk', 100.10, 100.10), ligne(2, 'Brosse plate fictive', 'equipment', 1, 'Stk', 20.11, 20.11)];
-/** Le texte « Détail a / b » seul (pas son enveloppe, qui porte aussi le lien « Regrouper »). */
-const detailDe = () => [...fin().querySelectorAll<HTMLElement>('span')].find(s => /^Détail/.test(s.textContent ?? '') && !/Regrouper/.test(s.textContent ?? ''))!;
+/** Le texte du pied seul (« Lignes = total a », « Lignes a · total b · c de plus » ; SM 08.11, avant « Détail a / b »), pas son enveloppe, qui porte aussi le lien « Regrouper ». */
+const detailDe = () => [...fin().querySelectorAll<HTMLElement>('span')].find(s => /^Lignes/.test(s.textContent ?? '') && !/Regrouper/.test(s.textContent ?? ''))!;
 const bouton = (parent: ParentNode, texte: RegExp) => [...parent.querySelectorAll<HTMLButtonElement>('button')].find(b => texte.test(b.textContent ?? ''))!;
 
 describe('D357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste', () => {
@@ -37,7 +37,7 @@ describe('D357 — « Regrouper en une dépense » : un lien discret au bout du 
     const ajouter = bouton(fin(), /Ajouter une ligne/), regrouper = bouton(fin(), /Regrouper en une dépense/);
     expect(regrouper).toBeTruthy();
     expect(regrouper.parentElement).not.toBe(ajouter.parentElement);
-    expect(regrouper.parentElement!.textContent).toMatch(/Détail/);
+    expect(regrouper.parentElement!.textContent).toMatch(/Lignes/); // SM (08.11) : le pied ne s'appelle plus « Détail »
     const cls = regrouper.className.split(/\s+/);
     expect(cls).toContain('text-xs'); expect(cls).toContain('text-cave-400'); expect(cls).toContain('min-h-6');
     expect(cls.filter(c => /^(border|rounded|bg-)/.test(c))).toEqual([]); // ni cadre, ni fond
@@ -61,7 +61,7 @@ describe('D358 — l\'arrondi suisse à 5 centimes est sa propre ligne neutre', 
     expect(arrondi).not.toBeNull();
     expect(arrondi.textContent).toMatch(/Arrondi à 5 centimes/); expect(arrondi.textContent).toMatch(/−0,01/);
     const detail = detailDe();
-    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('Détail 120,20 / 120,20');
+    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('Lignes = total 120,20');
     expect(detail.className).not.toMatch(/attention|alert/);
     expect(arrondi.className).not.toMatch(/attention|alert/);
     // à la fin des lignes : après la dernière rangée
@@ -76,7 +76,7 @@ describe('D358 — l\'arrondi suisse à 5 centimes est sa propre ligne neutre', 
     await lirePiece(state.scanned, deux, r => { r.amountTTC = 121.2; });
     expect(q('[data-dp-arrondi]')).toBeNull();
     const detail = detailDe();
-    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('Détail 120,21 / 121,20');
+    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('Lignes 120,21 · total 121,20 · 0,99 de moins');
     expect(detail.className).toMatch(/text-attention/);
   });
   it('une somme exacte n\'a aucune ligne d\'arrondi', async () => {

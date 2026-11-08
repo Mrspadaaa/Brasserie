@@ -74,7 +74,7 @@ describe('p3c-3 : le port « Total seulement » (D249)', () => {
     fireEvent.click(q('[data-dp="port"]'));
     expect(q('[data-dp="port-tiroir"]').className).not.toMatch(/(^|\s)hidden(\s|$)/);
     expect((screen.getByLabelText('Montant ligne 24') as HTMLInputElement).value).toMatch(/^8[,.]5/);
-    expect(q('[data-dp="fin"]').textContent).toContain('95,00 / 95,00');
+    expect(q('[data-dp="fin"]').textContent).toContain('Lignes = total 95,00'); // SM (08.11) : l'ancien « Détail 95,00 / 95,00 » dit maintenant ce que sont les nombres
   });
   it('T4 : un port sans montant reste une rangée (Autres), « dont port » se tait, et Confirmer mène au champ de la ligne 24', async () => {
     await ouvrir('port-sans-montant');
@@ -242,7 +242,7 @@ describe('p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’
     expect(etat === 'port' ? port : 0).toBe(etat === 'port' ? 850 : 0);
     expect(bandes + port).toBe(brouillon);
     expect(brouillon).toBe(cts((screen.getByLabelText('Total TTC en CHF') as HTMLInputElement).value));
-    expect(q('[data-dp="fin"]').textContent).toContain(`Détail ${(brouillon / 100).toFixed(2).replace('.', ',')} / ${(brouillon / 100).toFixed(2).replace('.', ',')}`);
+    expect(q('[data-dp="fin"]').textContent).toContain(`Lignes = total ${(brouillon / 100).toFixed(2).replace('.', ',')}`); // SM (08.11) : était « Détail a / a »
     expect(qa('[data-dp-ligne]').length).toBe(etat === 'port' ? 19 : 18); // moutures en pastille : 24 → 19, 23 → 18
   });
   it('D12 : « Qté × prix » compte les lignes LUES hors port : 23/23 avec ou sans la ligne de port (VERDICT-f3 détail 5 : « ✓ Qté × prix 23/23 » comme la base ; HEAD : « 23/23 lues »)', async () => {
