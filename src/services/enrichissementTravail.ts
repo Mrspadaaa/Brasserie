@@ -2,14 +2,15 @@ import type { StockItem } from '../types';
 import type { AiResponse } from './aiClient';
 import type { IngredientFacts } from '../domain/ingredientFacts';
 import type { CatalogueHop } from '../domain/hopIndex/v4/data';
-import type { ModuleCatalogues, RechercheFiche, RequeteFiche } from './enrichissement';
+import type { ModuleCatalogues, RechercheFiche } from './enrichissement';
 import { StorageService } from './storage';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { ficheLaPlusProche } from '../domain/stock/fiche';
 import { ficheLevureDe, type FicheLevure, type ReferenceLevure } from '../domain/stock/ficheLevure';
-import { cleDeLArticle, cleFiche, fabricantEcrit, generique, lireCle, marqueDe, memeProduitDeFiche, type Parente } from '../domain/stock/ficheCle';
+import { cleDeLArticle, cleFiche, generique, lireCle, memeProduitDeFiche, type Parente } from '../domain/stock/ficheCle';
 import { ficheDe, patchDeTrous, rempliDe, trousDe, type ChampFiche, type Lien, type ParFiche, type ResultatPatch } from '../domain/stock/ficheValeurs';
 import type { EtatTravail, MagasinFiches, TravailFiche } from './enrichissementStore';
+import { identifiable, requeteDe } from './enrichissementRequete';
 import {
   ATTENTE_ARTICLE_MS, ECART_ESSAIS_MS, JOURS_ECHEC, PLAFOND_JOUR, PLAFOND_TENTATIVES, REESSAI_INTROUVABLE_MS, SUITE_ECHEC,
   classerEchec, iaPermise,
@@ -150,28 +151,8 @@ function retenueDe(t: TravailFiche, tour: Tour, cle = t.cle): Retenue | undefine
 }
 const lienDeSource = (s: StockItem, par: ParFiche): Lien => ({ id: ficheDe(s)!.id, approchee: ficheDe(s)!.approchee, par });
 
-/** Le produit est-il assez nommé pour une recherche (PLAN § 3.5) ? */
-function identifiable(t: TravailFiche, levure?: FicheLevure): boolean {
-  if (t.famille === 'levure') return levure?.cas === 'aucun';
-  if (t.famille !== 'malt') return false;
-  return Boolean(fabricantEcrit(t.ligne.nomPropre) || marqueDe(t.ligne.nomPropre) || (t.ligne.fournisseur && t.ligne.reference));
-}
-const MANQUANT: Readonly<Record<'malt' | 'levure', Partial<Record<ChampFiche, string>>>> = {
-  malt: { colorEbc: 'couleur EBC', potentialPpg: 'potentiel PPG' },
-  levure: { yeastAttenuationPct: 'atténuation', yeastTempMinC: 'température minimale', yeastTempMaxC: 'température maximale', yeastLab: 'laboratoire' },
-};
-/** La requête : jamais son nom, son adresse ni un montant ; seulement le produit, le fournisseur et le code imprimé. */
-export function requeteDe(t: TravailFiche, trous: readonly ChampFiche[]): RequeteFiche {
-  const kind = t.famille === 'levure' ? 'levure' as const : 'malt' as const;
-  const manquant = trous.map(c => MANQUANT[kind][c]).filter((x): x is string => Boolean(x));
-  const type = kind === 'malt' ? (t.ligne.stockCategory?.toLowerCase().startsWith('suc') || /sucre|zucker|sugar|dextrose|candi/i.test(t.ligne.description) ? 'sucre' : 'grain') : undefined;
-  const known = { ...(t.ligne.lu.origine ? { origin: t.ligne.lu.origine } : {}), ...(t.ligne.lu.ebc !== undefined ? { colorEbc: t.ligne.lu.ebc } : {}) };
-  return {
-    kind, name: t.ligne.nomPropre, instruction: `${kind} : ${t.ligne.nomPropre}`,
-    context: { kind, ...(type ? { type } : {}), name: t.ligne.nomPropre, manquant, ...(t.ligne.fournisseur ? { supplier: t.ligne.fournisseur } : {}),
-      ...(t.ligne.reference ? { reference: t.ligne.reference } : {}), known },
-  };
-}
+// La requête et la porte « identifiable » vivent dans enrichissementRequete.ts (pures, partagées avec le banc) ; réexportées ici pour les importeurs.
+export { requeteDe } from './enrichissementRequete';
 
 /** M1 : un travail qui a levé. L'essai est noté (un jour d'échec, l'heure, la vie de page) ; trois jours → `echec`. La file passe au suivant. */
 export function essaiQuiALeve(t: TravailFiche, tour: Pick<Tour, 'ms' | 'le' | 'jour'>): TravailFiche {

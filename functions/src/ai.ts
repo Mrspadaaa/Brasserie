@@ -5,6 +5,7 @@ import { logger } from 'firebase-functions';
 import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
+import { geminiBody, userTextOf } from './geminiBody.js';
 import { validateInvoiceFile, normalizeInvoiceScan, LITE_SCAN_MAX_OUTPUT, SCAN_MAX_OUTPUT, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
 import { ScanReadCutError, ligneJournalLecture, type CauseCoupure } from './invoiceVisionReview.js';
 import { isoCurrency, lireCsv8 } from './invoiceScanVote.js';
@@ -273,9 +274,6 @@ export function assertAuthorized(request: CallableRequest): string {
 /** Limite de taille de pièce jointe : ~8 Mo une fois décodée. */
 const MAX_FILE_B64 = 11_000_000;
 
-/** Sortie minimale du niveau Max : la réflexion haute et la réponse se partagent ce plafond. */
-const HIGH_REASONING_OUTPUT_TOKENS = 12000;
-
 async function callGemini(
   model: string,
   apiKey: string,
@@ -295,25 +293,8 @@ async function callGemini(
   inspect: (response: any) => GeminiUnusableOutputError | undefined = unusableGeminiOutput
 ): Promise<unknown> {
   assertGeminiModel(model);
-  const parts: unknown[] = [{ text: userText }];
-  if (file) {
-    parts.push({ inlineData: { mimeType: file.mimeType, data: file.data } });
-  }
-
-  const body = {
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      contents: [{ role: 'user', parts }],
-      ...(grounded ? { tools: [{ googleSearch: {} }] } : {}),
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: schema,
-        temperature: settings.temperature,
-        // High reasoning shares maxOutputTokens with the JSON answer: on 3.8, a one-page COA read
-        // at Max spent 4486 of 4500 tokens and its answer was cut (real call of 13 October 2026).
-        maxOutputTokens: settings.thinkingLevel === 'high' ? Math.max(maxOutputTokens, HIGH_REASONING_OUTPUT_TOKENS) : maxOutputTokens,
-        thinkingConfig: { thinkingLevel: settings.thinkingLevel }
-      }
-    };
+  // Le corps est construit par `geminiBody.ts`, que le banc de l'enrichissement envoie tel quel.
+  const body = geminiBody({ systemPrompt, userText, schema, settings, file, grounded, maxOutputTokens });
   // A cut or looping answer is billed, settled as unusable and never parsed (#100, geminiResponse.ts); aiTask retries only a Flash-Lite one, on 3.8.
   const json = await runWithMonthlyAiBudget(model, body, async normalized => {
     const res = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
@@ -404,14 +385,8 @@ export const aiTask = onCall(
       }
     }
 
-    const userText = [
-      instruction?.trim() ? `Demande : ${instruction.trim()}` : '',
-      context !== undefined && context !== null
-        ? `Données :\n${typeof context === 'string' ? context : JSON.stringify(context)}`
-        : ''
-    ]
-      .filter(Boolean)
-      .join('\n\n');
+    // Le texte de l'utilisateur est celui du banc de l'enrichissement (`geminiBody.ts`) : une seule écriture.
+    const userText = userTextOf(instruction, context);
 
     if (!userText && !file) {
       throw new HttpsError('invalid-argument', 'Ni données ni pièce jointe à traiter.');
