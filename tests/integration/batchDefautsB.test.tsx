@@ -58,6 +58,6 @@ describe('TE-40 : pas de « brassé le » à côté de « date illisible »', ()
     render(<BatchDetailSheet batch={base({ brewDate: 'Planifié ~06,2026', brewDay })} onClose={vi.fn()} />);
     expect(screen.getByText(/Brassé le 03.09.2026/)).toBeInTheDocument();
     expect(screen.queryByText(/Date réelle illisible/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Ancienne indication de date, conservée : Planifié ~06,2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Ancienne indication de date, conservée : Planifié ~06.2026/)).toBeInTheDocument();
   });
 });
