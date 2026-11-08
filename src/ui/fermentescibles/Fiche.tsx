@@ -12,7 +12,7 @@ import { lit } from './modele';
  * et se marque invalide (`aria-invalid`, trait et chiffre rouges, infobulle des bornes). Quitter le champ rend la valeur retenue. Vide : « non renseigné », jamais 0.
  * Jamais `type="number"` : le composant protégé `Input`.
  */
-const ChampFiche: React.FC<{ valeur: number | undefined; min: number; max: number; unite: string; libelle: string; onValue: (v: number | undefined) => void }> = ({ valeur, min, max, unite, libelle, onValue }) => {
+const ChampFiche: React.FC<{ valeur: number | undefined; min: number; max: number; unite: string; libelle: string; onValue: (v: number | undefined) => void; onDit: (message: string | null) => void }> = ({ valeur, min, max, unite, libelle, onValue, onDit }) => {
   const [texte, setTexte] = useState<string | null>(null);
   const [ko, setKo] = useState(false);
   // La valeur d'avant la frappe : « 99 » passe par « 9 » (valide), puis « 99 » (hors bornes). Une saisie refusée ne laisse pas le préfixe « 9 » dans la fiche (MV-11 :
@@ -24,14 +24,17 @@ const ChampFiche: React.FC<{ valeur: number | undefined; min: number; max: numbe
       type="text" inputMode="decimal" enterKeyHint="next" autoComplete="off" aria-label={libelle}
       aria-invalid={ko || undefined} title={ko ? `De ${min} à ${max} ${unite}` : undefined}
       value={affiche}
-      onFocus={(e) => { avant.current = valeur; setTexte(affiche); e.currentTarget.select(); }}
+      onFocus={(e) => { avant.current = valeur; onDit(null); setTexte(affiche); e.currentTarget.select(); }}
       onChange={(e) => {
         const t = e.target.value, s = t.trim();
         setTexte(t);
-        if (!s) { setKo(false); onValue(undefined); return; }
+        if (!s) { setKo(false); onDit(null); onValue(undefined); return; }
         const v = lit(s);
         const bon = v !== null && !/^[-−–]/.test(s) && v >= min && v <= max;
         setKo(!bon);
+        // RX-1 : le refus s'écrit sous les champs (une infobulle ne se lit pas au toucher) ; il reste après la sortie, où la valeur d'avant revient.
+        const gardee = avant.current != null ? `${formatDecimal(avant.current)} gardé` : 'rien de gardé : valeur inconnue';
+        onDit(bon ? null : `${unite} ${v === null ? `« ${s} » n’est pas un nombre` : formatDecimal(v)} : de ${min} à ${max} ${unite}. ${gardee}.`);
         if (bon) onValue(Math.round((v as number) * 10) / 10);
         else if (valeur !== avant.current) onValue(avant.current);
       }}
@@ -52,6 +55,7 @@ export const Fiche: React.FC<{
   onLearnIngredient?: LearnIngredient;
 }> = ({ malt, onChange, onLearnIngredient }) => {
   const [ouverte, setOuverte] = useState(false);
+  const [dit, setDit] = useState<string | null>(null);
   // La couleur et l'assistant de fiche sont ceux d'un malt ; un sucre, un fruit ou un extrait n'a ici que son potentiel (PPG).
   const grain = malt.kind === 'grain';
   const grade = grain ? maltGrade(malt.colorEbc) : null;
@@ -73,12 +77,13 @@ export const Fiche: React.FC<{
               <label key={c.key}>
                 {c.label}
                 <ChampFiche valeur={malt[c.key]} min={c.min} max={c.max} unite={c.unit} libelle={`${c.label} de ${malt.name} en ${c.unit}`}
-                  onValue={(v) => onChange({ [c.key]: v })} />
+                  onValue={(v) => onChange({ [c.key]: v })} onDit={setDit} />
                 {c.unit}
               </label>
             ))}
             {grade && <span className="fer-fi-classe">{grade.label}</span>}
           </div>
+          {dit && <p className="fer-alerte" role="status" data-role="fiche-refus">{dit}</p>}
           {grain && <AiAssist
             kind="malt" name={malt.name} missing={manque} sansExplication
             onApply={(facts) => {

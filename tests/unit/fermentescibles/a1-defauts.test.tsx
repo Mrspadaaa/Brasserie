@@ -80,6 +80,24 @@ describe('MV-11 — un PPG hors bornes ne laisse pas son préfixe', () => {
     await u.type(champ, '38');
     expect(courant[0].potentialPpg).toBe(38);
   });
+  it('RX-1 : « 99 » refusé est dit en clair (valeur tapée, bornes, valeur gardée), avant comme après la sortie du champ ; une saisie valable l’efface', async () => {
+    const u = userEvent.setup();
+    render(<Banc depart={[pale]} />);
+    await u.click(document.querySelector<HTMLElement>('[data-role="fiche"]')!);
+    const champ = screen.getByLabelText(/Potentiel de Pale Ale Malz en PPG/);
+    await u.clear(champ);
+    await u.type(champ, '99');
+    const dit = () => screen.queryAllByRole('status').map((n) => n.textContent).join(' | ');
+    expect(dit()).toMatch(/PPG 99 : de 1 à 50 PPG/);
+    expect(dit()).toMatch(/37 gardé/);
+    await u.tab();
+    // Le champ revient à 37 : le message reste, il dit que c'est revenu.
+    expect(courant[0].potentialPpg).toBe(37);
+    expect(dit()).toMatch(/PPG 99 : de 1 à 50 PPG.*37 gardé/);
+    await u.clear(champ);
+    await u.type(champ, '38');
+    expect(dit()).not.toMatch(/99/);
+  });
   it('un fruit a sa fiche : son PPG se renseigne (inconnu : « — », jamais 8)', async () => {
     const u = userEvent.setup();
     render(<Banc depart={[pale, fruit]} />);
