@@ -22,7 +22,7 @@ const number = (value: number | null | undefined, digits = 1) => {
   let format = numberFormats.get(digits);
   if (!format) {
     format = new Intl.NumberFormat('fr-CH', { minimumFractionDigits: digits === 3 ? 3 : 0,
-      maximumFractionDigits: digits === 3 ? 5 : digits });
+      maximumFractionDigits: digits });
     numberFormats.set(digits, format);
   }
   return format.format(value);
