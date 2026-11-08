@@ -1,14 +1,14 @@
-# Déploiement prêt (08.11) — commit `2bfe5dc3`
+# Déploiement prêt (08.11) — commit `65d3c645`
 
-Ce qui part : l'app (hosting) et les 40 fonctions qui tournent déjà en ligne (liste lue en lecture seule le 08.11), à leur version de `2bfe5dc3`.
+Ce qui part : l'app (hosting) et les 40 fonctions qui tournent déjà en ligne (liste lue en lecture seule le 08.11), à leur version de `65d3c645`.
 Firebase saute celles qui n'ont pas changé. Ne part pas : les 9 fonctions du conseil houblon V1, jamais déployées (`dispatchBrewerHopAdviceV1` et
 `notifyBrewerHopAdviceAnswerV1` exclues par consigne ; `askBrewerHopAdviceV1`, `getBrewerHopAdviceActivityV1`, `getBrewerHopAdviceConversationV1`,
 `markBrewerHopAdviceReadV1`, `processBrewerHopAdviceV1`, `resetBrewerHopAdviceConversationV1`, `retryBrewerHopAdviceQuestionV1` neuves, hors périmètre) ;
 ni Firestore (règles, index), ni la découpe D381 F (non committée, dans `%TEMP%\deploy-hosting-qr` seulement).
 
-Contenu : D378, D379, corrections du test en ligne (commits `19a0d538` à `3db67392`), en-tête « · 24 L », pastille « Stock » alignée.
+Contenu : D378, D379, corrections du test en ligne (commits `19a0d538` à `65d3c645`), en-tête « · 24 L », pastille « Stock » alignée, « Fixer le seuil minimum ».
 
-Préparé dans `%TEMP%\deploy-2bfe5dc3` (worktree détaché, modules reliés à `deploy-hosting-qr`, `.env` public copié, `seedData.ts` = exemple) :
+Préparé dans `%TEMP%\deploy-2bfe5dc3` (nom historique ; worktree détaché sur `65d3c645`, modules reliés à `deploy-hosting-qr`, `.env` public copié, `seedData.ts` = exemple) :
 `npm run build` vert (tsc, vite, contrôle du rapport privé), `npm --prefix functions run build` vert, aucune trace de `dev-local` dans `dist`,
 CSP : `'wasm-unsafe-eval'` seul, aucun `'unsafe-eval'`. Manifeste du dépôt inchangé (`21dd75b3`).
 
