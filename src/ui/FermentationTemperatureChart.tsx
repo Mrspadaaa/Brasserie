@@ -341,7 +341,9 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
           {step.index > 0 && Number.isFinite(segments[step.index - 1].tempC) && <line x1={x(step.start!)} x2={x(step.start!)} y1={y(segments[step.index - 1].tempC!)} y2={y(step.tempC!)} stroke="currentColor" className="text-ebc-straw" strokeWidth="2" />}
           <line data-setpoint="true" x1={x(step.start!)} x2={x(step.end!)} y1={y(step.tempC!)} y2={y(step.tempC!)} stroke="currentColor" className="text-ebc-straw" strokeWidth="3" />
           {x(step.end!) - x(step.start!) > 42 && !(drag?.axis === 'temperature' && drag.index === step.index) && <text x={(x(step.start!) + x(step.end!)) / 2} y={setpointLabelY(step.index, step.tempC!)}
-            textAnchor="middle" fill="currentColor" className="text-cave-50" fontSize="11" fontWeight="600" data-setpoint-label={step.index}>{number(step.tempC!)} °C</text>}
+            textAnchor="middle" fill="currentColor" className="text-cave-50" fontSize="11" fontWeight="600" data-setpoint-label={step.index}
+            // BR-61 (08.11) : « 20,5 °C » posée sur le trait de 20 °C, barrée. Un liseré de la couleur du fond la détache des traits de la grille.
+            style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>{number(step.tempC!)} °C</text>}
         </g>)}
         {currentTransitions.map(transition => <g key={`transition-${transition.phaseIndex}`} data-transition-day={transition.day} data-transition-kind={transition.kind}>
           <line x1={x(transition.day!)} x2={x(transition.day!)} y1={top} y2={bottom} stroke="currentColor" className="text-ebc-straw" strokeDasharray="3 4" />

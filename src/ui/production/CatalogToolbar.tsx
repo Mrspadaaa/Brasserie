@@ -243,7 +243,7 @@ export function CatalogToolbar({
       </div>
       <div className="flex gap-2">
         <div
-          className="flex flex-1 min-w-0 gap-1.5 overflow-x-auto pb-1 scrollbar-none"
+          className="flex flex-1 min-w-0 gap-1.5 overflow-x-auto pb-1 scrollbar-none lg:flex-wrap lg:overflow-visible"
           aria-label={kind === 'batches' ? 'Avancement des brassins' : 'Usage des recettes'}
         >
           {quick.map(([value, label]) => {

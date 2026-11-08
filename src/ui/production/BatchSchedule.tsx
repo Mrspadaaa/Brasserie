@@ -33,7 +33,11 @@ export function BatchSchedule({ batch, onSave }: { batch: Batch; onSave: (batch:
     </div>
     {started && planned && <p className="text-xs text-cave-400">Initialement prévu le {planned}.</p>}
     {invalidPlan && <p role="alert" className="text-xs text-alert-strong break-words">Date prévue illisible, conservée : {invalidPlan}</p>}
-    {started && batch.brewDate?.trim() && !normalizeBrewDate(batch.brewDate) && <p role="alert" className="text-xs text-alert-strong break-words">Date réelle illisible, conservée : {batch.brewDate}</p>}
+    {/* TE-40 (08.11) : « Brassé le 03.09.2026 » (lu des minuteurs) puis, en rouge, « Date réelle illisible » : deux phrases qui se contredisent. Quand une date réelle
+        est connue par ailleurs, l'ancien texte n'est plus une alerte, seulement une note conservée ; sans autre date, il reste l'alerte rouge. */}
+    {started && batch.brewDate?.trim() && !normalizeBrewDate(batch.brewDate) && (actual
+      ? <p className="text-xs text-cave-400 break-words">Ancienne indication de date, conservée : {batch.brewDate}</p>
+      : <p role="alert" className="text-xs text-alert-strong break-words">Date réelle illisible, conservée : {batch.brewDate}</p>)}
     {!started && batch.status === 'annule' && batch.plannedBrewDate === undefined && batch.brewDate && <p className="text-xs text-cave-400">Date historique : {batch.brewDate} · prévue ou réelle à préciser.</p>}
     {editing && editable && <>
       <BrewScheduleField value={date} onChange={setDate} disabled={busy} />

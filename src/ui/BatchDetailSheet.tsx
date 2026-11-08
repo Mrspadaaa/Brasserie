@@ -22,9 +22,10 @@ import { noloRecipeForBatch } from '../domain/nolo';
 import { BrewBudgetButton } from './finance/BrewBudgetDialog';
 import { DateField, toIsoDate } from './DateField';
 import { Units } from '../services/units';
-import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates } from '../domain/batchSchedule';
+import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
 import { BatchSchedule } from './production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
+import { fermenterConflict, fermenterConflictMessage } from '../domain/batchFermenter';
 import { BrewSystemFeedback } from './BrewSystemFeedback';
 import { yeastPreparationState } from '../domain/yeastPitching';
 import type { YeastPreparationPlan } from '../../functions/src/yeastSupplySchema';
@@ -59,6 +60,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
 }) => {
   const [draft, setDraft] = useSyncedDraft(batch, batch?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [brewDayDraft, setBrewDayDraft] = useState<string | null>(null);
+  const [brewDayError, setBrewDayError] = useState('');
   const [section, setSection] = useState<BatchDetailSection>(initialSection);
   const [noloNotice,setNoloNotice]=useState('');
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
@@ -227,6 +230,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             onCancel={() => setPackaging(null)}
             onConfirm={values => { const target = packaging.target; setPackaging(null); if (target) applyStatus(target, { ...draft, ...values }); else save(values); }}/>}
           {stockMessage && <p role="status" className="text-sm text-hop flex items-start gap-2"><PackageCheck className="w-4 h-4 shrink-0 mt-0.5" />{stockMessage}</p>}
+          {draft.status === 'fermentation' && (() => {
+            const conflict = fermenterConflict(draft, StorageService.getBatches());
+            return conflict ? <p role="alert" className="text-sm text-attention">{fermenterConflictMessage(conflict)}</p> : null;
+          })()}
           {section === 'overview' && (
             <>
               <BrewBudgetButton batch={draft} />
@@ -347,7 +354,18 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                     : 'Alcool non calculé : densités impossibles, ou finale au-dessus de l’initiale.'}</p>
                 )}
 
-                {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={actualBrewDate(draft) ?? ''} onChange={brewDate => save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' })} shortcuts={[]} />}
+                {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={brewDayDraft ?? actualBrewDate(draft) ?? ''} error={brewDayError || undefined} shortcuts={[]} onChange={brewDate => {
+                  // BR-122, BE-48 : un jour « réellement brassé » ne peut pas être demain. La saisie reste affichée avec son message, rien n'est écrit.
+                  const day = normalizeBrewDate(brewDate);
+                  if (day && toIsoDate(day) > toIsoDate(breweryDay(Date.now()))) {
+                    setBrewDayDraft(brewDate);
+                    setBrewDayError('Ce jour est dans le futur : un brassage déjà fait ne peut pas être daté après aujourd’hui.');
+                    return;
+                  }
+                  setBrewDayDraft(null);
+                  setBrewDayError('');
+                  save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' });
+                }} />}
               </section>
 
               {(draft.status === 'fermentation' || draft.status === 'garde') && (
@@ -457,7 +475,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       />
       <ConfirmSheet open={pendingStatus !== null} onClose={() => setPendingStatus(null)}
         title={pendingStatus === 'annule' ? 'Abandonner ce brassin ?' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} » ?`}
-        what={`${draft.id} — ${draft.name} · actuellement « ${style.label} »`}
+        what={`${draft.id} — ${draft.name} · actuellement « ${style.label} »`}
         consequence={pendingStatus ? transitionConsequence(draft, pendingStatus) : undefined}
         confirmLabel={pendingStatus === 'annule' ? 'Abandonner le brassin' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} »`}
         onConfirm={() => { const status = pendingStatus; setPendingStatus(null); if (status) applyStatus(status); }} />

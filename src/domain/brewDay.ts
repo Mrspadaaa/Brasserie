@@ -1,4 +1,5 @@
 import { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
+import { GRAVITY_CEILING, GRAVITY_FLOOR } from './gravityBounds';
 
 export type ReadingKind = BrewDayReading['kind'];
 export const brewAdviceKey = (s: BrewDayState) =>
@@ -17,27 +18,34 @@ export const brewAdviceKey = (s: BrewDayState) =>
     s.pitchedAt,
     s.pitchQuantityConfirmation
   ]);
+/**
+ * Bornes d'une mesure à la cuve : au-delà, ce n'est plus une mesure mais une faute de frappe (AM-41, AM-43, 08.11 : pH 0,1 à 14, 120 °C, 100 000 L).
+ * pH : moût et maische 5 à 6, eau alcaline jusqu'à ~9, moût acidifié (kettle sour) ~3 ; hors de 3 à 9, aucune cuve de brasserie.
+ * Température : de la cave froide (−5 °C, glycol) à l'ébullition (100 °C, 105 °C de marge pour l'altitude et la sonde).
+ * Densité : celles de `gravityBounds` (0,990 à 1,200), une seule table.
+ * Volume : 2 000 L, qu'aucune micro-brasserie ne dépasse ; la capacité réelle de la cuve ou du fermenteur se vérifie à part (`readingFeedback`).
+ */
 export const READING = {
-  ph: { label: 'pH', unit: '', min: 0.1, max: 14, placeholder: '5,4' },
+  ph: { label: 'pH', unit: '', min: 3, max: 9, placeholder: '5,4' },
   temperature: {
     label: 'Température',
     unit: '°C',
-    min: -10,
-    max: 120,
+    min: -5,
+    max: 105,
     placeholder: '67'
   },
   densite: {
     label: 'Densité',
     unit: 'SG',
-    min: 0.98,
-    max: 1.2,
+    min: GRAVITY_FLOOR,
+    max: GRAVITY_CEILING,
     placeholder: '1,056'
   },
   volume: {
     label: 'Volume',
     unit: 'L',
     min: 0.1,
-    max: 100000,
+    max: 2000,
     placeholder: '25'
   }
 } as const;
@@ -60,8 +68,23 @@ export function parseReading(raw: string, kind: ReadingKind): number | null {
   const str = raw.trim().replace(',', '.');
   if (!/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(str)) return null;
   let n = Number(str);
-  if (kind === 'densite' && n >= 980 && n <= 1200) n /= 1000;
+  if (kind === 'densite' && n >= GRAVITY_FLOOR * 1000 && n <= GRAVITY_CEILING * 1000) n /= 1000;
   return Number.isFinite(n) && n >= READING[kind].min && n <= READING[kind].max ? n : null;
+}
+
+/** Une densité s'écrit « 1,069 » à l'écran, trois décimales, virgule (BR-29, 08.11 : « Cible 1.069 »). */
+export const sg = (n: number) => n.toFixed(3).replace('.', ',');
+
+/** Au-delà, la levure ne survit pas à l'ensemencement (AM-43). */
+export const PITCH_TEMPERATURE_MAX_C = 30;
+
+/** Le récipient qui contient le moût à cette étape, avec sa capacité : cuve avant le transfert, fermenteur à l'ensemencement. `null` si l'installation ne la dit pas. */
+export function vesselOfStep(stepId: string, recipe?: RecipeSnapshot): { label: string; capacityL: number } | null {
+  const e = recipe?.brewhouse?.equipment;
+  if (!e) return null;
+  const ok = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v > 0;
+  if (stepId === 'ensemencement') return ok(e.fermenterCapacityL) ? { label: 'le fermenteur', capacityL: e.fermenterCapacityL } : null;
+  return ok(e.kettleCapacityL) ? { label: 'la cuve', capacityL: e.kettleCapacityL } : null;
 }
 
 export interface ReadingFeedback {
@@ -92,6 +115,21 @@ export function measuredReadingFeedback(
   }
   return readingFeedback(reading.kind, reading.value, step, recipe);
 }
+/** Le volume attendu à cette étape (fermenteur : volume de la recette ; avant ébullition : eau moins absorption), ou `undefined` : l'inconnu n'est pas 25 (TE-44). */
+export function volumeTarget(step: BrewDayStep, recipe?: RecipeSnapshot): number | undefined {
+  const plan = recipe?.waterPlan;
+  const grain =
+    recipe?.totalGristKg ??
+    recipe?.fermentables
+      ?.filter((f) => f.kind === 'grain')
+      .reduce((sum, f) => sum + f.weightKg, 0) ??
+    0;
+  return step.id === 'ensemencement'
+    ? recipe?.volumeL
+    : step.id === 'preboil' && plan
+      ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
+      : undefined;
+}
 export function readingFeedback(
   kind: ReadingKind,
   value: number,
@@ -119,6 +157,13 @@ export function readingFeedback(
         'Une correction peut être utile. Le calcul ci-dessous part du pH mesuré et de ta maische.'
     };
   }
+  // AM-43 : à l'ensemencement la levure meurt bien avant l'ébullition ; ale 18–24 °C, lager 8–14 °C, jamais au-delà de 30 °C.
+  if (kind === 'temperature' && step.id === 'ensemencement' && value > PITCH_TEMPERATURE_MAX_C)
+    return {
+      tone: 'watch',
+      title: `${Math.round(value * 10) / 10} °C : trop chaud pour la levure`,
+      detail: `Au-dessus de ${PITCH_TEMPERATURE_MAX_C} °C la levure souffre ou meurt (ale 18–24 °C, lager 8–14 °C). Refroidis le moût avant d’ensemencer, ou vérifie la sonde.`
+    };
   if (kind === 'temperature' && step.tempC != null) {
     const delta = value - step.tempC;
     return {
@@ -140,7 +185,7 @@ export function readingFeedback(
       const points = Math.round((value - target) * 1000);
       return {
         tone: Math.abs(points) <= 2 ? 'ok' : 'watch',
-        title: `${points > 0 ? '+' : ''}${points} points / OG ${target.toFixed(3)}`,
+        title: `${points > 0 ? '+' : ''}${points} points / OG ${sg(target)}`,
         detail:
           Math.abs(points) <= 2
             ? 'Densité proche de la recette.'
@@ -149,24 +194,20 @@ export function readingFeedback(
     }
     return {
       tone: 'neutral',
-      title: `Densité ${value.toFixed(3)}`,
+      title: `Densité ${sg(value)}`,
       detail: 'Ce relevé suit cette étape. L’OG sera la densité du moût refroidi, avant levure.'
     };
   }
   if (kind === 'volume') {
-    const plan = recipe?.waterPlan;
-    const grain =
-      recipe?.totalGristKg ??
-      recipe?.fermentables
-        ?.filter((f) => f.kind === 'grain')
-        .reduce((sum, f) => sum + f.weightKg, 0) ??
-      0;
-    const target =
-      step.id === 'ensemencement'
-        ? recipe?.volumeL
-        : step.id === 'preboil' && plan
-          ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
-          : undefined;
+    // AM-42 : un volume plus grand que le récipient où il se trouve est une erreur (cuve, ou fermenteur après transfert).
+    const vessel = vesselOfStep(step.id, recipe);
+    if (vessel && value > vessel.capacityL)
+      return {
+        tone: 'watch',
+        title: `${Math.round(value * 10) / 10} L : plus que ${vessel.label} (${vessel.capacityL} L)`,
+        detail: `Ce volume ne tient pas dans ${vessel.label} du profil d’installation. Vérifie la saisie (des litres, pas des décilitres), ou corrige la capacité dans l’installation.`
+      };
+    const target = volumeTarget(step, recipe);
     if (target && target > 0)
       return {
         tone: Math.abs(value - target) <= target * 0.05 ? 'ok' : 'watch',

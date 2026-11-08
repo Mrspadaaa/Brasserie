@@ -278,22 +278,28 @@ export function filterCatalog(
       !inRange(e.ebc, filters.colorMin, filters.colorMax)
     )
       return false;
+    // PD-3, PD-7 (08.11) : « Je viens de le créer et il n'est pas là ». Un brassin planifié sans date (« Date à définir ») est un travail à faire :
+    // une période ne peut pas le juger, sa date est inconnue. Il reste dans la liste sous toute période, sauf un intervalle choisi à la main.
+    const pendingUndated = e.batch?.status === 'planifie' && e.timestamp === undefined && filters.period !== 'custom';
     if (
       filters.period === 'global' &&
       globalPeriod !== 'all' &&
+      !pendingUndated &&
       (e.timestamp === undefined || !DateUtils.isDateInPeriod(e.date ?? '', globalPeriod))
     )
       return false;
     if (filters.period === '30' || filters.period === '90') {
       if (
-        e.timestamp === undefined ||
-        e.timestamp < today - (Number(filters.period) - 1) * 86400000 ||
-        e.timestamp > today
+        !pendingUndated &&
+          (e.timestamp === undefined ||
+            e.timestamp < today - (Number(filters.period) - 1) * 86400000 ||
+            e.timestamp > today)
       )
         return false;
     }
     if (
       filters.period === 'year' &&
+      !pendingUndated &&
       (e.timestamp === undefined || new Date(e.timestamp).getUTCFullYear() !== day.getFullYear())
     )
       return false;

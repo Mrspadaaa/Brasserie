@@ -1,7 +1,7 @@
 import React from 'react';
 import { Check, CircleAlert, Thermometer } from 'lucide-react';
 import { BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
-import { measuredReadingFeedback, READING, ReadingKind } from '../domain/brewDay';
+import { measuredReadingFeedback, READING, ReadingKind, sg } from '../domain/brewDay';
 
 export function BrewReadingsSummary({
   state,
@@ -38,7 +38,7 @@ export function BrewReadingsSummary({
                 <span>{READING[reading.kind].label}</span>
                 <strong>
                   {reading.kind === 'densite'
-                    ? reading.value.toFixed(3)
+                    ? sg(reading.value)
                     : String(reading.value).replace('.', ',')}{' '}
                   <small>{reading.unit}</small>
                 </strong>
