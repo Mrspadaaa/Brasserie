@@ -68,3 +68,25 @@ LEÇON PROPOSÉE : une valeur « retenue » et la même valeur « recalculée »
 - Fait : 1 sur 26 — MA0027 Gerstenflocken 1 kg (2,40) ; journal 35 → 34 opérations, solde + 2 369,21 → + 2 371,61. Capture avant : `en-ligne/doublons-avant.jpg`.
 - Arrêté : la boucle sur les 24 suivantes a été refusée par le contrôle d'autorisation de l'outil (modification en lot de données financières réelles).
   Reste : 24 retraits par le même geste, puis B-001 après correction de son paiement ; facture 372765 intacte.
+
+## Relecture en ligne des 13 pièces (08.11, pilote, Gemini facturé, app 65d3c645 puis 92de7371)
+
+- doc1 Infomaniak : 29,65 OK, TVA 2,20 OK, n° 8429031 OK, 7 lignes OK ; date 15.10.2026 (vérité vide) ; 3/3 lectures ; 12 corrigées (noms FR, imprimé barré dessous = voulu)
+- doc2 Gauderon : 768,55 OK, 25.06.2026 OK, 22826 OK, 6 lignes OK ; TVA « — » (attendu 56,61, deux taux) ÉCART ; fournisseur « lectures divergentes » à confirmer ; 1 ligne sans montant (Sédation) ; 3/3
+- doc3 Helvetia (2 bulletins QR) : en-tête 300,00 « lu sur la page » contre QR 150,00, conflit signalé (pastille Total à trancher) ; vérité 150 ; 2 lignes de 150 + 1 « pas retrouvée » ; 3/3. À trancher par le brasseur, signalé, pas faux vert
+- n°40 EN LIGNE OK : fermer une saisie lue demande « Abandonner cette saisie — Rien n'est enregistré »
+- doc4 vertbaudet (bordereau) : « Achat peut-être déjà enregistré » (même fournisseur, date, total) OK ; 132,00 = somme des lignes, « Total TTC absent : à saisir » OK ; 30.08.2026 OK ; 3 lignes OK ; non brassicole OK ; Règlement « Payé le 30.08.2026 supposée » sur un bordereau (à voir) ; 2/2
+- doc5 B&R 372765 (image 3 pages) : « Déjà enregistré · même fichier », non relu (aucun coût) OK ; « Lire quand même » : 110,40 OK, 27.04.2026 OK, 372765 OK, 25 lignes OK, Qté×prix 25/25, 20 reliés au stock, 5 moutures (+1,50) rattachées aux malts ; « Achat déjà enregistré · même fichier » OK ; « Devise : une lecture sur trois diffère (CHF / CHF / absent) » alors que « Lectures 2/2 » (mot à revoir, détail)
+- doc6 B&R capture commande : 110,40 OK, 20 lignes OK (Qté×prix 20/20), date absente « date ? » OK (vérité vide), « Achat peut-être déjà enregistré » (20 références communes) avec 372765 OK ; shipping 15,00 ajouté à garder ; « Galaxy bis » (deux lots au stock) ; 3/3
+- doc7 Infomaniak (autre capture) : 29,65 OK, TVA 2,20 OK, 8429031 OK, 7 lignes OK, date « date ? » OK (vérité vide) ; Infomaniak · Charges fixes ; 3/3 ; <20 s
+- doc8 B&R PDF 333258 : DÉFAUT total « 0,00 » souligné rouge, « Total TTC absent ou non positif : à saisir », alors que « Ce que dit le QR · Montant 261,65 CHF · non lu » (vérité 261,65) ; 333258 OK, 17.10.2024 OK, 36 lignes OK (Qté×prix 35/36), dont port 30,00 ; TVA « — » (vérité 16,10) ÉCART ; « Pour quoi : matériel, emballages » sur une facture de malts et houblons (à voir) ; 2/2 ; ≈ 35 s
+- doc9 B&R PDF 372765 (avant correctif) : DÉFAUT total « 0,00 » (même cause que doc8). Le brasseur : « Il y a pas le total ?? »
+- CAUSE (journal fetch en ligne, doc8) : PDF de 4 pages lu en 14 morceaux ; 14 × amountTTC null ; seule la dernière partie (bulletin) pouvait lire les totaux. Correctif 92de7371 (totaux lus sur chaque partie, clé cache t2, total vide « — »), redéployé (hosting + aiTask)
+- doc8 APRÈS : 261,65 OK (= QR, « QR ✓ », Somme = imprimé 261,65), TVA 16,10 OK, 36 lignes, 35/36 ; capture en-ligne/piece8-total-corrige.jpg
+- doc9 APRÈS : 110,40 OK, TVA 4,15 OK, 25 lignes 25/25, « Achat peut-être déjà enregistré · même facture n° 372765 » OK
+- doc10 B&R commande 652093 (3 captures, « Plusieurs ») : 261,45 OK, 16.10.2024 OK, 652093 OK, 31 lignes OK (31/31), TVA 13,90 OK ; « Sac à houblon fin » rangé sous Houblons avec désaccord de catégorie signalé ; « Pour quoi : matériel, emb… » alors que catégorie Brassage (même remarque que doc8) ; 2/2 ; ≈ 40 s
+- doc11 B&R commande 632135 (3 captures dont une longue, sans QR) : 151,25 OK, 28.12.2023 OK, 24 lignes OK, TVA 7,00 OK ; Qté×prix 19/24, « Somme = imprimé non vérifiée » ; 23 corrigées, 11 moutures ; 3/3
+- Brasseur : « et si il y a pas de qr code ? Les totaux de fond correctement ?? » → oui : doc9 (QR illisible) 110,40, doc10 et doc11 (sans QR) 261,45 et 151,25 justes
+- doc12 B&R commande 647304 (3 captures, sans QR) : 203,95 OK, 06.08.2024 OK, 23 lignes OK, TVA 12,25 OK ; Référence « — » (n° de commande 647304 non repris ; doc10 l'avait) ÉCART mineur ; Qté×prix 21/23 ; 3/3
+- doc13 CFF (photo tournée) : 170,00 OK, 20.07.2026 OK, 4015545938 OK, 1 ligne OK ; TVA « — » (vérité : taux 8,1 %, montant non imprimé) ; fournisseur « lectures divergentes » à confirmer ; 3/3 ; <30 s
+- BILAN après correctif : total juste 12/13 (doc3 : 300 lu contre 150 au QR, signalé à trancher, vérité 150) ; n° et date justes partout où imprimés ; lignes justes 13/13 ; TVA manquante : doc2 (deux taux), doc3 et doc13 (non imprimée) ; doublons détectés : doc4, doc5, doc6, doc9
