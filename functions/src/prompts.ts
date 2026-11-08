@@ -203,7 +203,7 @@ kind : equipment = bien durable, maintenance = réparation/entretien, stock = in
 service = prestation, packaging = bouteille/capsule/emballage acheté, shipping = frais de livraison,
 discount = remise, other = article clairement identifié hors de ces catégories, unknown = nature incertaine. Un fût durable peut être equipment; un service de location reste service.
 Des vêtements ou achats personnels ne deviennent jamais du stock ou du matériel de brasserie : kind=other et category=divers.
-reference recopie la référence de chaque article et variant ses caractéristiques imprimées (taille, couleur), sans les ajouter artificiellement à name. orderNumber recopie le numéro de commande, séparément de invoiceNumber.
+reference recopie la référence de chaque article et variant ses caractéristiques imprimées (taille, couleur), sans les ajouter artificiellement à name. orderNumber recopie le numéro de commande, séparément de invoiceNumber, où qu’il soit imprimé : titre ou en-tête d’une page web de commande (« Commande 647304 », « Bestellung 647304 », « Onlinebestellung-686863 »), bandeau d’une capture d’écran, référence d’un récapitulatif ; sur plusieurs captures d’une même commande, recopie-le dès qu’une capture le montre.
 evidence contient un court extrait exact et la page. ambiguity expose uniquement une incertitude réelle
 de lecture ou de nature, jamais une simple explication affirmative; sinon ambiguity vaut "".
 unit recopie l'unité imprimée telle quelle (Kg, Stk, g), sans la convertir ni la normaliser ; "" si aucune unité n'est lisible. price est le prix tel qu'imprimé, pour l'unité imprimée : recopie-le même s'il est donné par 100 g ou par kg, sans le convertir.
