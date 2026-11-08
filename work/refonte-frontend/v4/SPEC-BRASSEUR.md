@@ -1549,3 +1549,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **08.11**, dans le fil de la pilote, mot pour mot : « Mais refait pas des mini maquettes pour des choses aussi mineur... La variante A était vraiment
   bien de base... » (lu : le mot « ajoutée » reste, le « b » précédent est annulé ; un mot ou un libellé mineur ne se montre pas en maquettes : on garde
   l'actuel ou on tranche, et on le dit).
+- **08.11**, à la session de monitoring (relayé), mot pour mot, à « tout ce qui a été corrigé depuis attend son prochain déploiement » :
+  « pourquoi ? pourquoi ça attends `??? » (lu : les preuves locales, captures ou suites de tests, ne retiennent pas un déploiement ; on déploie
+  ce qui est commité et vert à ses tests, puis on rejoue en ligne).

@@ -24,5 +24,6 @@ Voir (leçon L11) et [[agents-sans-openai]].
 
 **Boucle de déploiement** (08.11) : « Pourquoi tu attends mon accord ??? », « N'attends pas mon accord pour déployer, tu dois itérer dessus en fixant les bugs ??? », puis « Oui » dans le fil de la pilote. Déployer l'app et les fonctions qu'un correctif change, relire ses pièces avec Gemini (facturé, journalisé), corriger et redéployer en boucle : sans attendre. Les fonctions partent du dépôt principal (seul lui a ). Une seule session déploie à la fois, depuis le dernier commit, et le dit à l'autre.
 - Tests en ligne (07.11 : « Non non justement il doit! Juste faire ça sur des données de test, flaggé comme telle ») : chaque actionneur se joue sur des données « ZZ TEST — … » créées pour l'essai, Enregistrer compris, puis retirées ; regarder seul = non couvert.
+- Rien ne retient un déploiement prêt (08.11 : « pourquoi ? pourquoi ça attends `??? ») : les captures locales et les suites longues se font après, en ligne.
 - Relais (08.11, dans le fil de la pilote : « Le relais de l'autre branche suffit.... ») : son accord relayé mot pour mot par la session de monitoring vaut accord écrit ; ne pas lui faire répéter un oui déjà donné ailleurs.
 - Restent à son oui (direct ou relayé) : modifier ou retirer ses vraies écritures (en lot surtout : l'outil le refuse sans accord explicite), push, PR, merge, règles Firestore.
