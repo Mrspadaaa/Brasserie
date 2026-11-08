@@ -8,6 +8,7 @@ import { FinanceService } from '../../services/financeService';
 import { FinancialArchiveService } from '../../services/financialArchiveService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue, useLiveSelection } from '../../hooks/useLiveData';
+import { tvaThresholdStatus } from '../../domain/finance/tvaThreshold';
 import { formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionDirection, transactionVendor, isActiveTransaction, paymentState, summarizeLedger } from '../../domain/finance/ledger';
 import { buildForecast, forecastHorizonEnd, type ForecastItem } from '../../domain/finance/forecast';
 import { buildAnnualReport } from '../../domain/finance/annual';
@@ -74,6 +75,8 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile,undefined,{includeScheduled:true}),[transactions,data.payments,data.profile]);
+  /* AM n° 10 : le seuil d'assujettissement à la TVA (100 000 CHF sur 12 mois glissants) est surveillé tant que l'app est non assujettie. */
+  const tvaThreshold=useMemo(()=>tvaThresholdStatus(transactions,todayISO(),config.fiscal.tvaThresholdTurnover,config.fiscal.isTvaRegistered||!!data.profile.vatRegistered),[transactions,config.fiscal.tvaThresholdTurnover,config.fiscal.isTvaRegistered,data.profile.vatRegistered]);
   const openingCashReady=!!(data.profile.openingCash?.confirmed && isoDate(data.profile.openingCash.date) && isoDate(data.profile.openingCash.date)!<=todayISO() && Number.isSafeInteger(data.profile.openingCash.amountCents));
   const active=useMemo(()=>transactions.filter(isActiveTransaction),[transactions]);
   const undated=useMemo(()=>active.filter(t=>!isoDate(t.date)),[active]);
@@ -161,7 +164,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     </div>
     {notice&&<div className="finance-notice" role="status">{notice}<button className="finance-link" onClick={()=>setNotice('')}>Fermer</button></div>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
-      {view==='overview'&&overviewPart==='situation'&&<><FinanceOverview ledger={ledger} openingCashReady={openingCashReady} undatedCount={undated.length} onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}/>{financeAssistant}</>}
+      {view==='overview'&&overviewPart==='situation'&&<><FinanceOverview ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} undatedCount={undated.length} onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}/>{financeAssistant}</>}
       {view==='overview'&&overviewPart==='costs'&&<>
         {/* La période commande, son total répond : les deux sur la même rangée. */}
         <FinancePeriodBar lead total={formatCHF(sum)} totalLabel="Dépenses nettes enregistrées sur la période"
