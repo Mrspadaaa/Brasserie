@@ -1531,3 +1531,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « et si il y a pas de qr code ? Les totaux de fond correctement ?? » ; sur la capture 1264 px de la pièce 12 : « Pourquoi sur la vrai app, j'ai pas
   EXACTEMENT cette même vue??? C'est ce que je voulais pourtant » ; « Ah okay et sur mobile c'est bon aussi ? » ; « Continue ensuite dans les tests et
   fix... Ça doit être hyper robuste ».
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Pourquoi tu écoutes rien... Fait en sorte de retenir correctement mes informations » ;
+  « Donc sur la vrai app il doit faire ça » (lu : sur l'app déployée, chaque actionneur se joue sur des données « ZZ TEST — … », cf. 07.11 « Non non
+  justement il doit! Juste faire ça sur des données de test, flaggé comme telle ») ; sur sa capture de Fermentescibles 2/7 (téléphone) : « Donc le fait
+  que on puisse mettre du malt après la fermentation, ça a pas posé de problème ???? » ; « Mais surtout niveau business ça fait aucun sens ??? » ;
+  « COMMENT CA A JAMAIS ÉTÉ FLAGGÉ ? JAI VU CA EN 2S ???? » ; « Il faut pas perdre les bug finding » ; « Il faut pas que ça se reproduise c'est critique
+  met en place un mécanisme pour plus perdre ce genre d'opération » (lu : registre unique `work/missions/BUGS.md`, contrôle `controle-bugs.mjs`, hook Stop).

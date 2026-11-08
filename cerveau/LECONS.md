@@ -11,7 +11,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 » (tests) mis partout. 01.11 : « sans clavier » lu « sans focus » (D230). 02.11 : « terminé tes tâches » lu « plus rien lancer » (D356).
+- Erreur : 12.10, « seul 3.8 » (tests) mis partout. 01.11 : « sans clavier » lu « sans focus » (D230).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil
@@ -27,7 +27,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
 - Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -43,7 +43,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
 - Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? »
 - Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
-- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md.
+- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md et dans chaque brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`.
 - Rôles : pilote
 - Contrôle : `controle-au-style.mjs` (D75)
 
@@ -64,16 +64,16 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
-- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366). 07.11 : « 2 115 verts » : 27 fichiers non chargés, non comptés.
+- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 07.11 : « 2 115 verts » : 27 fichiers non chargés, non comptés.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
 - Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Une donnée jetée n'est jamais un vert : lire par tranches. Compter aussi les fichiers de test non chargés.
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px : « comment ça peut passer ça ??? ». 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
+- Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
 - Cause : aucune force minimale exigée, captures non ouvertes.
-- Faire : « sous le doigt / au loin » ×3 au moins. Ouvrir chaque capture avant de dire OK ; juger la zone en plein format : un vert ne dit pas que c'est bien. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, à la question ouverte « combien et quels problèmes ? », critique puis pilote (D342). Reprise sur événement : rechargement et réseau joués.
+- Faire : « sous le doigt / au loin » ×3 au moins. Ouvrir chaque capture avant de dire OK ; juger la zone en plein format : un vert ne dit pas que c'est bien. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, à la question ouverte « combien et quels problèmes ? », critique puis pilote (D342).
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
@@ -87,7 +87,8 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable ».
 - Cause : 83 % de ses mots (vin blanc, groseille) sont hors des 12 familles et sortent du dessin ; nul n'a confronté le rendu à sa réputation ([[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (31.10 : EBC au menu, « ? » à côté). Un critère tiré de son attente, et la colonne « aujourd'hui » d'un choix, se testent d'abord sur la donnée et le code (27.10 : radar entier ; 02.11 : Pilsner déjà relié).
+- Erreur (bis) : 08.11, malt en fermentation J+4 compté dans l'OG, vu trois fois, mal lu. « JAI VU CA EN 2S ???? ».
+- Faire : chaque constat se relit d'abord à la question « est-ce que ça existe en vrai ? » ; une maquette choisie ne valide aucune règle de brassage. Avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra…), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (31.10 : EBC au menu, « ? » à côté). Un critère tiré de son attente, et la colonne « aujourd'hui » d'un choix, se testent d'abord sur la donnée et le code (27.10 : radar entier ; 02.11 : Pilsner déjà relié).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100)
 
@@ -103,7 +104,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Petite suite : Haiku neuf. Un long livrable s'écrit section par section. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Un long livrable s'écrit section par section. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns (01.11)
 
@@ -117,7 +118,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
-- Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 03.11 : « ≈ 45 lignes » non mesuré ; tri confié à l'IA : 306 lignes sur 300 (D381). 07.11 : découpe réglée et jugée sur les mêmes 200 pièces ; sur 200 neuves, pire que HEAD (88 silencieuses contre 57).
+- Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 07.11 : découpe réglée et jugée sur les mêmes 200 pièces ; sur 200 neuves, pire que HEAD (88 silencieuses contre 57).
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
 - Faire : un chiffre dit est mesuré, ou « estimé » avec sa source ; une garantie se bâtit sans jugement de l'IA (elle n'ajoute que des alertes). Chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples. Un banc ne juge ni un artefact de l'ordre, ni les données de la clé (g1), ni sur une référence au plafond. Un champ neuf d'une passe payante se sonde sur une image d'un pixel ; un refus garde son motif.
 - Rôles : pilote, conseil, auteur, exécutant
@@ -145,7 +146,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
-- Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ». 02.11 : fiches de malt vides (D302), sa photo refusée (D324).
+- Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ».
 - Cause : pièces fictives ou réduites, écran jamais jugé contre la pièce ; réponse IA rejouée inventée.
 - Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local se dit « non déployé ». Une réponse IA rejouée se copie d'une vraie.
 - Rôles : pilote, exécutant, relecteur
