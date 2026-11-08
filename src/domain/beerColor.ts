@@ -55,6 +55,8 @@ const EBC_PER_SRM = 1.97;
  * conversion 76 ; Carafa III à 1 300 EBC : environ 490 °L, ancienne conversion 660).
  */
 export function ebcToLovibond(ebc: number): number {
+  // Un sucre blanc ou un fruit à 0 EBC ne colore pas : le décalage de 0,76 de Daniels corrige la mesure d'un malt, il n'est pas dû à 0 EBC.
+  if (!(ebc > 0)) return 0;
   return (ebc / EBC_PER_SRM + 0.76) / 1.3546;
 }
 
