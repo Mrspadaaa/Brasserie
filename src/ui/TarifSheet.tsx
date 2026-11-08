@@ -6,7 +6,7 @@ import { Sheet, ConfirmSheet } from './Sheet';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Trash2, AlertTriangle, ChevronDown } from 'lucide-react';
 import { useSyncedDraft } from '../hooks/useLiveData';
-import { messageRefus, parseDecimal } from './numericInput';
+import { messageRefus, parseDecimal, raisonHorsBornes } from './numericInput';
 import './clients.css';
 
 interface TarifSheetProps {
@@ -86,6 +86,11 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
     onClose();
   };
 
+  // BE-98 (rejeu 649bcc54) : le message d'enregistrement dit la vraie raison (au-delà du plafond, négatif, ou champ vide), pas toujours « positif ou nul ».
+  const raisonMontant = (value: number | undefined) => value === undefined || !Number.isFinite(value)
+    ? 'Indique un montant entre 0 et 10 000 CHF.'
+    : raisonHorsBornes(value, { min: 0, max: PRIX_UNITAIRE_MAX, unite: 'CHF' });
+
   const money = (label: string, key: MoneyKey) => (
     <Field label={`${label} (CHF)`} htmlFor={`tf-${key}`}>
       <div className="tarif-money-input" data-tarif-money onChangeCapture={event => {
@@ -105,7 +110,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
           aria-invalid={montrerErreur(key) || Boolean(refusMoney[key])}
           aria-describedby={montrerErreur(key) || refusMoney[key] ? `tf-${key}-error` : undefined} />
       </div>
-      {(montrerErreur(key) || refusMoney[key]) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{refusMoney[key] ?? (invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : 'Indique un montant positif ou nul.')}</p>}
+      {(montrerErreur(key) || refusMoney[key]) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{refusMoney[key] ?? (invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : raisonMontant(draft[key]))}</p>}
     </Field>
   );
 

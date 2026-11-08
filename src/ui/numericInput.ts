@@ -167,8 +167,14 @@ export function messageRefus(saisi: number, avant: number | undefined, bornes: {
   const raison = bornes.min !== undefined && saisi < bornes.min
     ? (bornes.min === 0 ? 'une valeur négative n’existe pas ici' : `en dessous de ${nb(bornes.min)}${u}`)
     : `au-delà de ${nb(bornes.max ?? 0)}${u}`;
-  const gardee = avant === undefined ? 'Le champ reste vide.' : `La valeur précédente (${nb(avant)}${u}) est conservée.`;
+  // BE-98 (rejeu 649bcc54) : une valeur précédente vide (undefined, null, NaN) ne se dit pas « La valeur précédente ( CHF) » : le champ reste vide.
+  const gardee = avant === undefined || avant === null || !Number.isFinite(avant) ? 'Le champ reste vide.' : `La valeur précédente (${nb(avant)}${u}) est conservée.`;
   return `${nb(saisi)}${u} : ${raison}. ${gardee}`;
+}
+
+/** Pourquoi une valeur est hors bornes, sans parler de valeur gardée : « 99 999 CHF : au-delà de 10 000 CHF. » (BE-98 : le message d'enregistrement). */
+export function raisonHorsBornes(saisi: number, bornes: { min?: number; max?: number; unite?: string }): string {
+  return messageRefus(saisi, undefined, bornes).replace(/ Le champ reste vide\.$/, '');
 }
 
 /**
