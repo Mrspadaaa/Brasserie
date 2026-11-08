@@ -47,7 +47,10 @@ export function DuelTotal({ duel, choix, onChoix }: { duel: Duel; choix: 'lu' | 
       {titre}<b className={`font-mono text-lg font-semibold tabular-nums ${pris ? 'text-white' : 'text-cave-50'}`}>{duel.prefixe}<u className={`no-underline ${pris ? 'border-b-2 border-dotted border-white' : 'border-b-2 border-dotted border-attention text-attention'}`}>{reste}</u></b>
     </button>;
   };
-  return <div data-dp="duel" role="group" aria-label="Le total : la page ou le QR ?" className="grid grid-cols-2 gap-1.5">{tuile('lu', 'lu sur la page', duel.resteLu)}{tuile('qr', 'QR-facture', duel.resteQr)}</div>;
+  // LO-1 : plusieurs bulletins QR sur la pièce. Le QR du duel est le premier bulletin ; un total égal à leur somme n'est pas « lu sur la page » (la pièce ne l'imprime pas).
+  const b = duel.bulletins;
+  const titreLu = b?.somme ? `somme des ${b.n} bulletins` : 'lu sur la page', titreQr = b ? '1er bulletin QR' : 'QR-facture';
+  return <div data-dp="duel" role="group" aria-label={b ? `Le total : ${b.somme ? `la somme des ${b.n} bulletins` : 'la page'} ou le premier bulletin QR ?` : 'Le total : la page ou le QR ?'} className="grid grid-cols-2 gap-1.5">{tuile('lu', titreLu, duel.resteLu)}{tuile('qr', titreQr, duel.resteQr)}</div>;
 }
 
 /**
