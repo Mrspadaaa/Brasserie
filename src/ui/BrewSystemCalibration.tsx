@@ -67,7 +67,7 @@ export function BrewSystemCalibration({ profile, batches, onChange, onOpenBatch 
     {message && <p className="brew-system-message" role="status">{message}</p>}
     <details className="brew-system-details">
       <summary>Pourquoi un brassin peut manquer</summary>
-      <p>Il faut des mesures au même stade, leur température de référence, les quantités réellement ajoutées et le profil matériel figé. Les sucres ou extraits ne calibrent pas le rendement des grains. L’absorption demande aussi le moût libre restant après filtration.</p>
+      <p>Il faut des mesures au même stade, leur température de référence, les quantités réellement ajoutées et le profil matériel figé. Les sucres ou extraits ne calibrent pas le rendement en fermenteur (celui des grains). L’absorption demande aussi le moût libre restant après filtration.</p>
       <p>Une perte totale au transfert ne devient pas un fond de cuve : les houblons seraient comptés deux fois.</p>
       <ul className="brew-system-sources">{batches.filter(b => b.status !== 'annule' && b.brewDay).map(batch => {
         const snapshot = batch.recipeSnapshot;

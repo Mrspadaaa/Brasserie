@@ -8,7 +8,7 @@ import React, { useMemo, useState } from 'react';
 import { Recipe, Batch, HopIngredient, AppConfig } from '../types';
 import { Units } from '../services/units';
 import { BrewingMath } from '../services/brewingMath';
-import { computeBeerColor, missingColorData } from '../domain/beerColor';
+import { recipeBeerColor, missingColorData } from '../domain/beerColor';
 import { HOP_STAGE, groupByStage, describeMoment, normalizeHop } from '../domain/hopStage';
 import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS, savedWaterDisplay } from '../domain/water';
 import { styleByCode, styleFromTargetIons } from '../domain/waterStyles';
@@ -168,10 +168,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   const others = useMemo(() => fermentables.filter((f) => f.kind !== 'grain'), [fermentables]);
   const totalGrist = useMemo(() => grains.reduce((s, f) => s + f.weightKg, 0), [grains]);
 
-  // La couleur ne vient que du grain — un sucre clair n'en apporte pas.
+  // La couleur vient de tout ce qui colore le moût, sirop candi compris (CF-1) : la même fonction que l'assistant et la liste.
   const color = useMemo(
-    () => measuredExtraction ? null : computeBeerColor(grains, recipe.volumeL),
-    [grains, recipe.volumeL, measuredExtraction]
+    () => measuredExtraction ? null : recipeBeerColor(fermentables, recipe.volumeL),
+    [fermentables, recipe.volumeL, measuredExtraction]
   );
   const colorMissing = useMemo(() => missingColorData(grains), [grains]);
 

@@ -8,6 +8,7 @@ import { snapshotBrewhouse } from '../domain/brewPreferences';
 import { replanRecipeWater } from '../domain/recipeWater';
 import { grainHorsEmpatage } from '../domain/fermentables/moments';
 import { BORNES } from '../domain/bornesMetier';
+import { alcoholByVolume } from '../domain/alcohol';
 
 /**
  * L'OG la plus haute qu'une bière atteint : 1,130. Les styles les plus forts du BJCP 2021 (English Barleywine, Wheatwine, Eisbock)
@@ -15,6 +16,14 @@ import { BORNES } from '../domain/bornesMetier';
  * on ne conseille jamais d'ajouter du grain (audit métier du 08.11, AM 3).
  */
 export const OG_PLAUSIBLE_MAX = BORNES.og.max;
+
+/**
+ * Part de l'isomérisation de l'alpha-acide à `tempC`, par rapport à 100 °C. Malowicki et Shellhammer (2005, J. Agric. Food Chem. 53) :
+ * k(T) = 7,9e11 · exp(−11858 / T), T en kelvin. Le facteur est k(T) / k(373,15 K). Aucun standard n'existe pour un whirlpool ; c'est
+ * la cinétique publiée, qui remplace l'ancien « moitié par 10 °C » (0,25 à 80 °C, 0,17 ici).
+ */
+export const whirlpoolIsomerisationFactor = (tempC: number): number =>
+  Math.exp(-11858 / (tempC + 273.15)) / Math.exp(-11858 / 373.15);
 export const OG_PLAUSIBLE_MAX_TXT = '1,130';
 
 export interface WaterVolumeOptions {
@@ -62,8 +71,8 @@ export const BrewingMath = {
   // 1. ABV Calculator
   calculateABV(og: number, fg: number): number {
     if (!og || !fg || !Number.isFinite(og) || !Number.isFinite(fg) || og <= fg || og <= 1.0 || fg <= 0) return 0;
-    // Standard formula used in craft brewing & Swiss customs: (OG - FG) * 131.25
-    return Math.round((og - fg) * 131.25 * 10) / 10;
+    // Méthode ASBC (Balling), au dixième : l'ancienne formule (OG - FG) * 131.25 sous-estimait les bières fortes (CF-6, 08.11).
+    return Math.round(alcoholByVolume(og, fg) * 10) / 10;
   },
 
   // 2. Plato Conversion (Swiss OFDF official standard)
@@ -98,8 +107,9 @@ export const BrewingMath = {
    *                  d'environ 10 % que la pratique lui reconnaît.
    *   Ébullition   — Tinseth, sur la durée restante.
    *   Whirlpool    — Tinseth sur la durée de contact, atténué par la
-   *                  température : l'isomérisation ralentit de moitié environ
-   *                  tous les 10 °C sous l'ébullition.
+   *                  température selon la cinétique d'isomérisation de
+   *                  Malowicki et Shellhammer (2005) : 0,42 à 90 °C, 0,17 à
+   *                  80 °C, 0,06 à 70 °C du taux à 100 °C (CF-7, 08.11).
    *   À cru        — aucune contribution Tinseth. L’extraction des humulinones
    *                  et les pertes d’iso-alpha relèvent du modèle séparé à cru.
    */
@@ -136,7 +146,7 @@ export const BrewingMath = {
         // 80 °C est la température de whirlpool conventionnelle ; l'assistant
         // la demande explicitement, cette valeur n'est qu'un repli.
         const tempC = Number.isFinite(hop.tempC) ? Math.max(0, Math.min(hop.tempC!, 100)) : 80;
-        const slowdown = Math.pow(2, (tempC - 100) / 10);
+        const slowdown = whirlpoolIsomerisationFactor(tempC);
         const timeMin = Number.isFinite(hop.timeMin) ? Math.max(0, hop.timeMin!) : 20;
         utilization = gravityFactor * tinseth(timeMin) * slowdown;
         break;
@@ -512,7 +522,9 @@ export const BrewingMath = {
     const grainAbsorptionL = round1(totalGristKg * 0.96);
     const boilOffRate = Number.isFinite(brewhouse?.boilOffRatePct) ? Math.max(0, brewhouse!.boilOffRatePct!) : 10;
     const safeBoilMin = Number.isFinite(boilMin) && boilMin >= 0 ? boilMin : 60;
-    const boilOffL = round1(volumeL * (boilOffRate / 100) * (safeBoilMin / 60));
+    // Sans profil d'équipement l'évaporation est un % par heure du volume AVANT ébullition (convention Brewfather et BeerSmith), puis tout se
+    // calcule comme le mode équipement : un volume à chaud, rapporté à froid par la rétraction de 4 % (CF-9, 08.11).
+    const boilOffFraction = Math.min(0.9, (boilOffRate / 100) * (safeBoilMin / 60));
     /*
      * Le houblon boit. Six millilitres par gramme est la valeur de la pratique
      * pour du cône ou du pellet resté dans la cuve — whirlpool compris, où les
@@ -577,15 +589,18 @@ export const BrewingMath = {
         ...(check.spargeMaximumHotL != null ? { spargeMaximumHotL: check.spargeMaximumHotL } : {})
       };
     }
-    const coolingShrinkageL = volumeL * 0.04;
-    const preBoilVolumeL = round1(
-      Math.max(0, volumeL + boilOffL + deadSpaceL + hopLossL + coolingShrinkageL)
-    );
+    const legacyColdFactor = 0.96;
+    const legacyPostBoilHotL = (volumeL + deadSpaceL + hopLossL) / legacyColdFactor;
+    const legacyPreBoilHotL = legacyPostBoilHotL / (1 - boilOffFraction);
+    const boilOffL = round1((legacyPreBoilHotL - legacyPostBoilHotL) * legacyColdFactor);
+    const preBoilVolumeL = round1(Math.max(0, legacyPreBoilHotL * legacyColdFactor));
+    const preBoilHotL = round1(legacyPreBoilHotL);
 
     const plein: WaterVolumePlan = {
       mashWaterL: round1(preBoilVolumeL + grainAbsorptionL),
       spargeWaterL: 0,
       preBoilVolumeL,
+      preBoilHotL,
       grainAbsorptionL,
       boilOffL,
       hopLossL,
@@ -624,6 +639,7 @@ export const BrewingMath = {
       mashWaterL,
       spargeWaterL: round1(Math.max(0, preBoilVolumeL - firstRunningsL)),
       preBoilVolumeL: round1(Math.max(0, preBoilVolumeL)),
+      preBoilHotL,
       grainAbsorptionL: round1(Math.max(0, grainAbsorptionL)),
       boilOffL: round1(Math.max(0, boilOffL)),
       hopLossL: round1(Math.max(0, hopLossL)),
@@ -814,7 +830,8 @@ export const BrewingMath = {
   },
 
   // 8.b Sucre de refermentation (priming) nécessaire, en grammes.
-  // 1 volume de CO2 par litre demande ~4.0 g/L de dextrose (3.86 g/L pour du saccharose).
+  // 1 volume de CO2 par litre demande 4,4 g/L de dextrose du commerce (monohydrate, M 198,17 : 2 CO2 par molécule) et 3,86 g/L de saccharose
+  // (CF-NOTE-1, 08.11 : 4,0 g/L comptait le dextrose anhydre et donnait 10 % de sucre en moins).
   calculatePrimingSugarG(
     targetCo2Vol: number,
     packagedVolumeL: number,
@@ -824,7 +841,7 @@ export const BrewingMath = {
     if (!Number.isFinite(targetCo2Vol) || targetCo2Vol <= 0) return 0;
     if (!Number.isFinite(packagedVolumeL) || packagedVolumeL <= 0) return 0;
     const residual = this.calculateResidualCo2Vol(maxFermentTempC);
-    const gramsPerLPerVol = sugarType === 'saccharose' ? 3.86 : 4.0;
+    const gramsPerLPerVol = sugarType === 'saccharose' ? 3.86 : 4.4;
     const delta = Math.max(0, targetCo2Vol - residual);
     const sugar = Math.round(delta * gramsPerLPerVol * Math.max(0, packagedVolumeL));
     return Number.isFinite(sugar) ? Math.max(0, sugar) : 0;

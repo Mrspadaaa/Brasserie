@@ -1,6 +1,6 @@
 import { batchDisplayDate } from './batchSchedule';
 import type { Batch, Recipe, TimeFilterPeriod } from '../types';
-import { bandForEbc, computeBeerColor } from './beerColor';
+import { bandForEbc, recipeBeerColor } from './beerColor';
 import { statusOf } from './batchStatus';
 import { DateUtils } from '../services/dateUtils';
 import { abvFromGravities, plausibleAbv } from './gravityBounds';
@@ -138,8 +138,8 @@ function familyOf(recipe: Recipe, recipes: Recipe[]): string {
 /** `defaultEfficiencyPct` : le rendement de la cuverie active, celui que la fiche applique à une recette qui n'a pas le sien. */
 export function recipeEntries(recipes: Recipe[], batches: Batch[], defaultEfficiencyPct = 75): CatalogEntry[] {
   return recipes.map((recipe) => {
-    const color = recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process) ? null : computeBeerColor(
-      (recipe.fermentables ?? recipe.malts ?? []).filter((f) => !f.kind || f.kind === 'grain'),
+    const color = recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process) ? null : recipeBeerColor(
+      recipe.fermentables ?? recipe.malts ?? [],
       recipe.volumeL
     );
     return {
@@ -178,7 +178,7 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       (f) => !f.kind || f.kind === 'grain'
     );
     const nolo = batch.nolo ?? recipe?.nolo;
-    const color = nolo?.enabled && ['coldExtraction','secondRunnings'].includes(nolo.process) ? null : computeBeerColor(grain, recipe?.volumeL ?? batch.volumeL);
+    const color = nolo?.enabled && ['coldExtraction','secondRunnings'].includes(nolo.process) ? null : recipeBeerColor(recipe?.fermentables ?? recipe?.malts ?? batch.malts ?? [], recipe?.volumeL ?? batch.volumeL);
     const og = catalogNumber(batch.og),
       fg = catalogNumber(batch.fg);
     return {

@@ -16,18 +16,18 @@ afterEach(() => { cleanup(); mocked.call.mockReset(); });
 const BEST = { found: true, name: 'BEST Red X', source: 'BESTMALZ — Fiche technique BEST Red X®', sourceUrl: 'https://bestmalz.de', colorEbcMin: 28, colorEbcMax: 32, extractPct: 79 };
 
 describe('Compléter avec l’IA : un malt publié en plage et en extrait', () => {
-  it('montre 30 EBC et 36.3 PPG, dit leur règle (plage, extrait), et reprend ces deux valeurs', async () => {
+  it('montre 30 EBC et 34.7 PPG, dit leur règle (plage, extrait), et reprend ces deux valeurs', async () => {
     mocked.call.mockResolvedValue({ data: { ok: true, model: 'rejeu', tier: 'fast', data: BEST } });
     const onApply = vi.fn();
     render(<AiAssist kind="malt" name="BEST Red X" missing={['couleur EBC', 'potentiel PPG']} onApply={onApply} />);
     fireEvent.click(screen.getByRole('button', { name: /Compléter avec l’IA/ }));
     expect(await screen.findByText('30 EBC')).toBeTruthy();
-    expect(screen.getByText('36.3 PPG')).toBeTruthy();
+    expect(screen.getByText('34.7 PPG')).toBeTruthy();
     expect(screen.getByText(/EBC déduit : milieu de la plage publiée 28 à 32 EBC ; PPG déduit : extrait publié 79 % × 0,46/)).toBeTruthy();
     expect(mocked.call.mock.calls[0][0]).toMatchObject({ task: 'lookupIngredient', context: { kind: 'malt', name: 'BEST Red X' } });
     fireEvent.click(screen.getByRole('button', { name: /Reprendre ces valeurs/ }));
     expect(onApply).toHaveBeenCalledTimes(1);
-    expect(onApply.mock.calls[0][0]).toMatchObject({ colorEbc: 30, potentialPpg: 36.3 });
+    expect(onApply.mock.calls[0][0]).toMatchObject({ colorEbc: 30, potentialPpg: 34.7 });
   });
 
   it('une plage incohérente et sans point : « Aucune caractéristique exploitable », rien de proposé', async () => {

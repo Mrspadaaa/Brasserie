@@ -243,8 +243,14 @@ const explicitReported = <T extends string>(facts: YeastTechnicalFact[] | undefi
   return distinct.size === 1 ? values[0] : undefined;
 };
 
-/** Facteur extrait (fine grind, dry basis, %) → points de densité par livre et par gallon : 80 % donne 36,8 PPG (la consigne : « PPG ≈ rendement × 46 »). */
+/**
+ * Facteur extrait (fine grind, dry basis, %) → points de densité par livre et par gallon SUR SEC : 80 % donne 36,8 PPG sur sec
+ * (« PPG ≈ rendement × 46 »). Le malt arrive à la brasserie avec son humidité : le PPG utile est celui « tel quel »,
+ * 46,2 × extrait sur sec × (1 − humidité) (Palmer, How to Brew, ch. 18 ; contre-calcul du 08.11, CF-4).
+ */
 export const PPG_PAR_POINT_D_EXTRAIT = 0.46;
+/** Humidité supposée d'un malt quand la fiche ne la publie pas : les fiches de malteurs donnent 4 à 5 % (4,5 % max sur un malt de base). */
+export const HUMIDITE_MALT_SUPPOSEE_PCT = 4.5;
 const DIXIEME = (n: number) => Math.round((n + Number.EPSILON) * 10) / 10;
 const VIRGULE = (n: number) => String(n).replace('.', ',');
 const nombreEntre = (v: unknown, min: number, max: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max;
@@ -262,7 +268,9 @@ export interface ValeursDeduitesMalt {
  * (min > max, hors de 0 à 5000 EBC) ou un extrait hors de 0 à 100 % ne donne rien : l'inconnu n'est jamais un zéro ni une moyenne inventée.
  * Fonction pure, partagée par `sanitizeFacts` (donc « Compléter avec l'IA ») et par la procédure d'enrichissement.
  */
-export function deduireValeursMalt(facts: Pick<IngredientFacts, 'colorEbc' | 'potentialPpg' | 'colorEbcMin' | 'colorEbcMax' | 'extractPct'>): ValeursDeduitesMalt {
+export function deduireValeursMalt(
+  facts: Pick<IngredientFacts, 'colorEbc' | 'potentialPpg' | 'colorEbcMin' | 'colorEbcMax' | 'extractPct'> & { moisturePct?: number }
+): ValeursDeduitesMalt {
   const out: ValeursDeduitesMalt = { deduit: {} };
   const { colorEbcMin: min, colorEbcMax: max, extractPct: extrait } = facts;
   if (!nombreEntre(facts.colorEbc, 0, 5000) && nombreEntre(min, 0, 5000) && nombreEntre(max, 0, 5000) && min <= max) {
@@ -270,10 +278,12 @@ export function deduireValeursMalt(facts: Pick<IngredientFacts, 'colorEbc' | 'po
     out.deduit.colorEbc = `EBC déduit : milieu de la plage publiée ${VIRGULE(min)} à ${VIRGULE(max)} EBC`;
   }
   if (!nombreEntre(facts.potentialPpg, 1, 50) && nombreEntre(extrait, 0, 100)) {
-    const ppg = DIXIEME(extrait * PPG_PAR_POINT_D_EXTRAIT);
+    // L'extrait publié est sur sec : le PPG « tel quel » retire l'humidité (publiée, sinon supposée).
+    const humidite = nombreEntre(facts.moisturePct, 0, 30) ? facts.moisturePct : HUMIDITE_MALT_SUPPOSEE_PCT;
+    const ppg = DIXIEME(extrait * PPG_PAR_POINT_D_EXTRAIT * (1 - humidite / 100));
     if (ppg >= 1 && ppg <= 50) {
       out.potentialPpg = ppg;
-      out.deduit.potentialPpg = `PPG déduit : extrait publié ${VIRGULE(extrait)} % × ${VIRGULE(PPG_PAR_POINT_D_EXTRAIT)}`;
+      out.deduit.potentialPpg = `PPG déduit : extrait publié ${VIRGULE(extrait)} % × ${VIRGULE(PPG_PAR_POINT_D_EXTRAIT)} × (1 − ${VIRGULE(humidite)} % d’humidité)`;
     }
   }
   return out;

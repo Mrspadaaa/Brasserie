@@ -1,7 +1,7 @@
 import { recipeIbu } from './hopBitterness';
 import type { Recipe, SaltId } from '../types';
 import { BrewingMath } from '../services/brewingMath';
-import { computeBeerColor } from './beerColor';
+import { recipeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { styleByCode, styleFromTargetIons, styleWaterForName } from './waterStyles';
 import { dilute } from './water/ions';
@@ -30,7 +30,7 @@ export function describeSavedRecipeWater(recipe: WaterReadingsRecipe) {
   const grains = fermentables.filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage');
   const grainKg = grains.reduce((sum, grain) => sum + grain.weightKg, 0);
   const mashRatio = grainKg > 0 ? plan.mashWaterL / grainKg : 0;
-  const beerEbc = computeBeerColor(grains, recipe.volumeL)?.ebc ?? null;
+  const beerEbc = recipeBeerColor(fermentables, recipe.volumeL)?.ebc ?? null;
   const raBand = targetRaForGrist(beerEbc, grains, mashRatio);
   const doses = Object.fromEntries(SALT_IDS.map((id: SaltId) =>
     [id, (mash[id] ?? 0) + (sparge[id] ?? 0)]));

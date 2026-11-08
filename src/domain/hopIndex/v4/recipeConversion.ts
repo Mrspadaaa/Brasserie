@@ -19,8 +19,8 @@
 // - l'EBC vient du brouillon, sinon des grains (computeBeerColor) ;
 // - un moment incomplet (durée d'ébullition, de whirlpool ou température de whirlpool absentes) rend l'IBU de l'ajout
 //   inconnu, comme hotBitterness ; une DI d'ébullition inconnue rend l'IBU à chaud de toute la recette inconnu.
-import type { HopIngredient, MaltIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
-import { computeBeerColor } from '../../beerColor';
+import type { HopIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
+import { recipeBeerColor } from '../../beerColor';
 import type { RecipeWizardDraft } from '../../../services/recipeDraft';
 import protoData from '../../../data/hopV4/proto-data.json';
 import { varieteProche } from './nomProche';
@@ -206,7 +206,7 @@ export function toHopRecipe(app: RecetteApp, options: OptionsConversion = {}): C
   // EBC : celui du brouillon s'il est posé, sinon celui des grains (Morey, comme l'étape Fermentescibles) ; null si une couleur
   // de grain manque (computeBeerColor), jamais 0.
   const ebc = fini(app.colorEbc) ? app.colorEbc
-    : computeBeerColor((app.fermentables ?? []).filter((f) => f.kind === 'grain') as MaltIngredient[], app.volumeL)?.ebc ?? null;
+    : recipeBeerColor(app.fermentables, app.volumeL)?.ebc ?? null;
   const yeastId = app.yeast?.hopIndexId ?? null;
   if (!yeastId) suppositions.push(`levure « ${app.yeast?.name ?? '?'} » sans identifiant de l’index (yeast.hopIndexId) : le moteur suppose US-05 pour l’arôme`);
   const ajouts: Record<string, LienAjout> = {};

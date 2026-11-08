@@ -3,7 +3,7 @@ import { Chevron, Rendement, Verre } from './icones';
 import { fr, pc, teinte } from './modele';
 
 export interface PropsReperes {
-  /** Rendement d'empâtage retenu par la recette (profil, recette ou 75 % par défaut). */
+  /** Rendement en fermenteur retenu par la recette (profil, recette ou 75 % par défaut). */
   rendementPct: number;
   /** Faux : personne ne l'a déclaré, 75 % est un repère, pas une mesure. */
   rendementDeclare: boolean;

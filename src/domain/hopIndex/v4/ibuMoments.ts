@@ -19,7 +19,7 @@ export function momentCatalogue(boilMin = 60): MomentInfo[] {
       when: { unit: 'minutes d’ébullition', minutes: boilMin, note: 'Présent toute l’ébullition de la recette.' } };
     if (m.timing === 'boil') return { code, label: m.label, type: 'ébullition', v55Timing: m.timing, ibuModel: 'Tinseth (BrewingMath.hopIbu)',
       when: { unit: 'minutes d’ébullition restantes', minutes: m.minutes, note: code === 'b0' ? 'Ajout à l’arrêt du feu : Tinseth à 0 min ne compte aucune isomérisation ; l’amertume pendant le refroidissement n’est pas modélisée.' : 'Durée d’ébullition restante après l’ajout.' } };
-    if (code === 'wp') return { code, label: m.label, type: 'whirlpool', v55Timing: m.timing, ibuModel: 'Tinseth atténué par la température : moitié moins d’isomérisation tous les 10 °C sous l’ébullition (BrewingMath.hopIbu)',
+    if (code === 'wp') return { code, label: m.label, type: 'whirlpool', v55Timing: m.timing, ibuModel: 'Tinseth atténué par la température selon la cinétique d’isomérisation de Malowicki et Shellhammer (2005) : 0,17 de l’isomérisation à 100 °C à 80 °C (BrewingMath.hopIbu)',
       when: { unit: '°C et minutes de whirlpool', temperatureC: wp.temperatureC!.central, minutes: Math.round(wp.contactHours!.central * 60), note: 'Valeurs supposées : 80 °C et 20 min, repli de BrewingMath et préréglage du solveur V5.5.' } };
     const d = code === 'dryActive' ? dry : post;
     return { code, label: m.label, type: 'à froid', v55Timing: m.timing, ibuModel: 'aucun : houblonnage à cru sans IBU Tinseth. L’amertume des humulinones relève d’un modèle séparé (hopBitternessCore, Maye 2016), non branché ici ; aucun chiffre n’est donné.',
@@ -55,7 +55,7 @@ export const TABLES_RULE = [
   'IBU à la dose de l’ajout et à l’alpha retenu (BrewingMath.hopIbu : volume de la recette pris comme volume d’ébullition, densité initiale de la recette). L’IBU est proportionnel à l’alpha : la plage d’alpha donne la plage d’IBU.',
   'Ébullition (ibuParMinute5) : minutes restantes de 0 à 240 par 5, sans borne : la page borne avec la durée d’ébullition choisie. Tinseth ne dépend que des minutes restantes, pas de la durée totale.',
   'Premier moût (ibuPremierMout) : une valeur par durée d’ébullition, de 5 à 240 par 5 (alignée sur dureesPremierMout). Relation exacte de BrewingMath : premier moût pour la durée d = 1,10 × ibuParMinute5 à la minute d (arrondis à part).',
-  'Whirlpool (ibuWhirlpool) : 60 à 100 °C par 5 et 5 à 60 min par 5. Relation exacte : whirlpool(T, m) = ibuParMinute5[m] × 2^((T − 100) / 10).',
+  'Whirlpool (ibuWhirlpool) : 60 à 100 °C par 5 et 5 à 60 min par 5. Relation exacte : whirlpool(T, m) = ibuParMinute5[m] × exp(−11858 / (T + 273,15)) / exp(−11858 / 373,15) (Malowicki et Shellhammer 2005).',
   'Volume : à g/L égal, l’IBU ne dépend pas du volume (BrewingMath : IBU ∝ g/L) ; les tables valent pour la dose en g/L de l’ajout.',
   'Densité : facteurDensite donne, de 1,030 à 1,120 par 0,005, le rapport d’IBU à la densité de la recette (facteur de Tinseth) ; IBU à une autre densité = valeur de table × facteur.',
   'BrewingMath ne fait varier ni la densité ni le volume pendant l’ébullition.',

@@ -4,10 +4,11 @@
  * OG d'une bière : 1,020 à 1,130 (BJCP 2021 : Imperial Stout et Eisbock ≤ 1,120). Au-delà, c'est une
  * erreur de saisie probable (« 1048 » pour 1,048, « 5 » pour 1,050), jamais une bière.
  * FG : de 0,995 (bière très sèche) jusqu'à l'OG. Une FG au-dessus de l'OG est une atténuation négative.
- * L'alcool qui en découle reste sous 18 % vol. : (1,130 − 0,995) × 131,25 = 17,7.
+ * L'alcool qui en découle est plausible sous 18 % vol. (`ABV_MAX`) : seul le coin extrême 1,130 vers 0,995 le dépasse (18,6 par la méthode ASBC, 17,7 par l'ancienne formule simple) et n'est alors pas calculé.
  */
 
 import { BORNES } from './bornesMetier';
+import { alcoholByVolume } from './alcohol';
 
 export const OG_MIN = 1.02;
 // Source unique de la borne haute d'OG : la table des bornes métier de la recette (08.11, pas de seconde copie).
@@ -80,7 +81,7 @@ export function plausibleAbv(abv: number | null | undefined): abv is number {
 export function abvFromGravities(og: number | null, fg: number | null): number | null {
   if (og === null || fg === null) return null;
   if (gravityProblem('og', og) || gravityProblem('fg', fg, og)) return null;
-  // Même formule que BrewingMath.calculateABV (non importée : brewingMath importe la taxe, qui importe ce module).
-  const abv = Math.round((og - fg) * 131.25 * 10) / 10;
+  // Même formule que BrewingMath.calculateABV : `alcohol.ts`, sans import (brewingMath importe la taxe, qui importe ce module).
+  const abv = Math.round(alcoholByVolume(og, fg) * 10) / 10;
   return plausibleAbv(abv) ? abv : null;
 }

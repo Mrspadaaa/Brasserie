@@ -101,9 +101,9 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
       const wp80 = BrewingMath.hopIbu({ ...hopWp, tempC: 80 }, 20, 1.050);
       const wp70 = BrewingMath.hopIbu({ ...hopWp, tempC: 70 }, 20, 1.050);
 
-      expect(wp90 / wp100).toBeCloseTo(0.50, 2);
-      expect(wp80 / wp100).toBeCloseTo(0.25, 2);
-      expect(wp70 / wp100).toBeCloseTo(0.125, 2);
+      expect(wp90 / wp100).toBeCloseTo(0.417, 2);
+      expect(wp80 / wp100).toBeCloseTo(0.165, 2);
+      expect(wp70 / wp100).toBeCloseTo(0.062, 2);
     });
 
     it('le houblonnage à cru (dry hop) ne produit rigoureusement aucun IBU isomérisé', () => {
@@ -130,9 +130,9 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
   });
 
   describe('3. Titre Alcoométrique Volumique (ABV)', () => {
-    it('applique la formule des douanes suisses (OG - FG) * 131.25', () => {
+    it('applique la méthode ASBC (Balling), au dixième ; l’ancienne formule (OG - FG) * 131.25 donnait 8,4 à 1,080 (CF-6)', () => {
       expect(BrewingMath.calculateABV(1.050, 1.010)).toBe(5.3);
-      expect(BrewingMath.calculateABV(1.080, 1.016)).toBe(8.4);
+      expect(BrewingMath.calculateABV(1.080, 1.016)).toBe(8.6);
     });
 
     it('refuse toute inversion physique de densité (FG >= OG)', () => {
@@ -226,12 +226,12 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
     it('respecte la conservation de la masse et du volume à 100 %', () => {
       const v = BrewingMath.waterVolumes(6, 30, brewhouse, 'batch', 60, 100);
 
-      expect(v.boilOffL).toBe(3.0);
+      expect(v.boilOffL).toBe(3.6); // 10 % du volume avant ébullition, ramené à froid (CF-9)
       expect(v.grainAbsorptionL).toBe(5.8);
       expect(v.hopLossL).toBe(0.6);
-      expect(v.preBoilVolumeL).toBe(36.3);
+      expect(v.preBoilVolumeL).toBe(35.7); // (30 + 1,5 + 0,6) / 0,96 / 0,9 × 0,96
       expect(v.mashWaterL).toBe(21.0);
-      expect(v.spargeWaterL).toBe(21.1);
+      expect(v.spargeWaterL).toBe(20.5);
 
       // (Eau empâtage + Eau rinçage) - Rétention drêches === Pré-ébullition
       expect(v.mashWaterL + v.spargeWaterL - v.grainAbsorptionL).toBeCloseTo(v.preBoilVolumeL, 1);
@@ -284,7 +284,7 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
       const dextroseG = BrewingMath.calculatePrimingSugarG(2.5, 20, 20, 'dextrose');
       const saccharoseG = BrewingMath.calculatePrimingSugarG(2.5, 20, 20, 'saccharose');
 
-      expect(dextroseG).toBe(131);
+      expect(dextroseG).toBe(144); // 4,4 g/L/vol : le dextrose du commerce est un monohydrate (CF-NOTE-1, 131 g avant)
       expect(saccharoseG).toBe(127);
       expect(saccharoseG).toBeLessThan(dextroseG);
     });

@@ -44,8 +44,21 @@ const BANDS: Array<{ band: ColorBand; maxEbc: number; label: string; swatch: str
 
 const LB_PER_KG = 2.2046226;
 const GAL_PER_L = 0.26417205;
-/** L'EBC vaut 1.97 fois le SRM ; le degré Lovibond des malteurs suit le SRM. */
+/** L'EBC vaut 1.97 fois le SRM. */
 const EBC_PER_SRM = 1.97;
+
+/**
+ * Le degré Lovibond d'un malt, depuis sa couleur EBC (contre-calcul du 08.11, CF-2).
+ *
+ * Le °L n'est PAS le SRM : Daniels (Designing Great Beers) donne °L = (SRM + 0,76) / 1,3546, avec SRM = EBC / 1,97. Compter °L = SRM
+ * surestimait les malts colorés de 15 à 22 % (CaraMunich III à 150 EBC : 57 °L au catalogue du malteur, Daniels 57, ancienne
+ * conversion 76 ; Carafa III à 1 300 EBC : environ 490 °L, ancienne conversion 660).
+ */
+export function ebcToLovibond(ebc: number): number {
+  // Un sucre blanc ou un fruit à 0 EBC ne colore pas : le décalage de 0,76 de Daniels corrige la mesure d'un malt, il n'est pas dû à 0 EBC.
+  if (!(ebc > 0)) return 0;
+  return (ebc / EBC_PER_SRM + 0.76) / 1.3546;
+}
 
 export function bandForEbc(ebc: number): { band: ColorBand; label: string; swatch: string } {
   return BANDS.find((b) => ebc <= b.maxEbc) ?? BANDS[BANDS.length - 1];
@@ -81,7 +94,7 @@ export function computeBeerColor(lignes: MaltIngredient[], volumeL: number): Bee
   const volumeGal = volumeL * GAL_PER_L;
 
   const mcu = malts.reduce((sum, m) => {
-    const lovibond = (m.colorEbc as number) / EBC_PER_SRM;
+    const lovibond = ebcToLovibond(m.colorEbc as number);
     const weightLb = m.weightKg * LB_PER_KG;
     return sum + (lovibond * weightLb) / volumeGal;
   }, 0);
@@ -101,6 +114,25 @@ export function computeBeerColor(lignes: MaltIngredient[], volumeL: number): Bee
     label,
     swatch
   };
+}
+
+/**
+ * La couleur d'une RECETTE : la seule fonction que tous les écrans appellent (contre-calcul du 08.11, CF-1 et CF-3).
+ *
+ * Tout ce qui colore le moût compte, comme dans BeerSmith et Brewfather : le grain empâté, mais aussi un sirop candi, un sucre
+ * caramélisé ou un extrait coloré, qu'ils entrent à l'ébullition ou en fermentation (cas réel : dubbel au sirop D-180 à 355 EBC,
+ * 22,3 EBC affichés pour 38,9 attendus). Un fermentescible qui n'est pas un grain et dont la couleur n'est pas saisie ne colore
+ * pas : l'app écrit 0 EBC sur toute ligne neuve de sucre, de lactose ou de fruit, et un sucre sans couleur ne doit pas effacer
+ * la couleur de tous les grains. Un GRAIN sans couleur reste bloquant (`null`) : sans elle, le chiffre serait faux.
+ */
+export function recipeBeerColor(
+  fermentables: readonly MaltIngredient[] | null | undefined,
+  volumeL: number
+): BeerColor | null {
+  const colorants = (fermentables ?? []).filter(
+    (f) => f.kind == null || f.kind === 'grain' || Number.isFinite(f.colorEbc)
+  );
+  return computeBeerColor(colorants, volumeL);
 }
 
 /** Ce qui manque pour pouvoir calculer la couleur — pour le dire précisément. */

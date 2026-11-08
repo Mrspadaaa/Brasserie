@@ -47,7 +47,7 @@ import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume } from '../ui
 import { aAdopter, alertesDeMateriel, lignePremierPlan, resumeVolumes } from '../ui/identite/alertes';
 import { teinteDuStyle } from '../ui/identite/teinteStyle';
 import { fermenterRecommendation } from '../domain/fermenterPlanning';
-import { computeBeerColor } from '../domain/beerColor';
+import { recipeBeerColor } from '../domain/beerColor';
 import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
@@ -883,8 +883,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const grains = useMemo(() => fermentables.filter(grainEmpate), [fermentables]);
   const totalGrist = useMemo(() => grains.reduce((s, f) => s + f.weightKg, 0), [grains]);
 
-  // La couleur ne vient que du grain : le sucre clair n'en apporte pas.
-  const color = useMemo(() => Number.isFinite(volumeL) ? computeBeerColor(grains, volumeL) : null, [grains, volumeL]);
+  // La couleur vient de tout ce qui colore le moût, sirop candi compris (CF-1) : la même fonction que sur la fiche et la liste.
+  const color = useMemo(() => Number.isFinite(volumeL) ? recipeBeerColor(fermentables, volumeL) : null, [fermentables, volumeL]);
 
   const efficiency = details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75;
   // Preserve the author's stated targets until the recipe they describe changes.

@@ -20,7 +20,7 @@ import { styleByCode, styleWaterForName, styleFromTargetIons } from './waterStyl
 import { waterProfileTarget, waterTreatmentTarget } from './water/profileTarget';
 import { describeTreatmentIssues } from './water/solverMessages';
 import { assessWaterProfile, PROFILE_IONS } from './water/profileAssessment';
-import { computeBeerColor } from './beerColor';
+import { recipeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { BrewingMath } from '../services/brewingMath';
 import { noloScience } from './noloScience';
@@ -106,7 +106,7 @@ export function recipeWaterCalculation(recipe: WaterRecipe) {
   if(recipe.nolo?.enabled && ratio>(recipe.nolo.scienceSnapshot??noloScience())!.waterMashMaxLKg.value)
     throw Error('Empâtage NOLO très dilué : mesurer ou titrer le moût. Le modèle de pH et sa marge standard ne sont pas validés ici.');
   const band = targetRaForGrist(
-    computeBeerColor(grains, recipe.volumeL)?.ebc ?? null,
+    recipeBeerColor(recipe.fermentables, recipe.volumeL)?.ebc ?? null,
     grains,
     ratio
   );

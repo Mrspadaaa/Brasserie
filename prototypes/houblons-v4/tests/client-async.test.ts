@@ -45,7 +45,8 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // First Gold, Strisselspalt, Liberty (Pekko et Barbe Rouge sont des rares connus en stout ; Strisselspalt et Liberty, bornés, passent devant). Les trois autres empreintes ne bougent pas.
 // D195 (s3, 27.10) : proposer d6e084ff0c95 → 89b74f788939. La demande prime sur la bande (chaque dépassement porte `voulu` et `minuscule`, le rang ne les compte plus) et les remplacements qui font baisser une famille à baisser gardent leur place (REMPLACEMENTS_RESERVES) : voir saturationD195.test.ts.
 // t3 (D195 R4, 137d3d17, 31.10) : proposer 89b74f788939 → 57176985632c. Au whirlpool et au dry hop, la part d'usage au frais (Beer Analytics) départage à rang égal.
-const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '57176985632c', remplacants: '5c602de7c804' };
+// CF-7 (08.11) : proposer 57176985632c → ede3ac8c7211. Le facteur de température du whirlpool suit Malowicki et Shellhammer (0,17 à 80 °C au lieu de 0,25).
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: 'ede3ac8c7211', remplacants: '5c602de7c804' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

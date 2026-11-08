@@ -29,17 +29,17 @@ beforeEach(() => { remettre(); ia.run.mockClear(); });
 afterEach(() => demonter());
 
 describe('TEMOIN AVANT : la procédure reçoit la forme réelle (plage, extrait) et remplit la fiche', () => {
-  it('BEST Red X : EBC 30 et PPG 36,3, chacun marqué « déduit » avec sa plage ou son extrait', async () => {
+  it('BEST Red X : EBC 30 et PPG 34,7, chacun marqué « déduit » avec sa plage ou son extrait', async () => {
     banc = monter({ recherche: async () => ({ ok: true, model: 'rejeu-f4', data: BEST_RED_X }) });
     const d = saisie([ligne('l1', 'BEST Red X', 'kg', 25, { stockCategory: 'Malt', sourceReference: 'BRX-25' })]);
     await confirmer(d);
     const malt = lu(`MP-${d.submissionId}-0`)!;
     expect(banc.recherche).toHaveBeenCalledTimes(1);
     expect(malt.colorEbc).toBe(30);
-    expect(malt.potentialPpg).toBe(36.3);
+    expect(malt.potentialPpg).toBe(34.7);
     expect(malt.fiche).toMatchObject({ par: 'en-ligne' });
     expect(malt.fiche.remplis.colorEbc).toMatchObject({ par: 'en-ligne', niveau: 'repris', source: SOURCE, deduit: 'EBC déduit : milieu de la plage publiée 28 à 32 EBC', valeur: 30 });
-    expect(malt.fiche.remplis.potentialPpg).toMatchObject({ par: 'en-ligne', niveau: 'repris', source: SOURCE, deduit: 'PPG déduit : extrait publié 79 % × 0,46', valeur: 36.3 });
+    expect(malt.fiche.remplis.potentialPpg).toMatchObject({ par: 'en-ligne', niveau: 'repris', source: SOURCE, deduit: 'PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité)', valeur: 34.7 });
     expect(ia.run).not.toHaveBeenCalled();
   });
 
@@ -66,19 +66,19 @@ describe('TEMOIN AVANT : la procédure reçoit la forme réelle (plage, extrait)
 });
 
 describe('deduireValeursMalt : une fonction pure, partagée', () => {
-  it('BEST Red X : 28 à 32 EBC → 30 ; 79 % → 36,3 ; la règle dit la plage et l’extrait', () => {
-    expect(deduireValeursMalt(BEST_RED_X)).toEqual({ colorEbc: 30, potentialPpg: 36.3,
-      deduit: { colorEbc: 'EBC déduit : milieu de la plage publiée 28 à 32 EBC', potentialPpg: 'PPG déduit : extrait publié 79 % × 0,46' } });
+  it('BEST Red X : 28 à 32 EBC → 30 ; 79 % → 34,7 ; la règle dit la plage et l’extrait', () => {
+    expect(deduireValeursMalt(BEST_RED_X)).toEqual({ colorEbc: 30, potentialPpg: 34.7,
+      deduit: { colorEbc: 'EBC déduit : milieu de la plage publiée 28 à 32 EBC', potentialPpg: 'PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité)' } });
   });
-  it('une décimale : 5,5 à 11 → 8,3 ; 80 % → 36,8 ; 81,5 % → 37,5', () => {
+  it('une décimale : 5,5 à 11 → 8,3 ; 80 % → 35,1 ; 81,5 % → 35,8', () => {
     expect(deduireValeursMalt({ colorEbcMin: 5.5, colorEbcMax: 11 }).colorEbc).toBe(8.3);
-    expect(deduireValeursMalt({ extractPct: 80 }).potentialPpg).toBe(36.8);
-    expect(deduireValeursMalt({ extractPct: 81.5 }).potentialPpg).toBe(37.5);
+    expect(deduireValeursMalt({ extractPct: 80 }).potentialPpg).toBe(35.1);
+    expect(deduireValeursMalt({ extractPct: 81.5 }).potentialPpg).toBe(35.8);
   });
   it('un point publié gagne toujours, valeur par valeur', () => {
     const d = deduireValeursMalt({ colorEbc: 12, colorEbcMin: 28, colorEbcMax: 32, extractPct: 79 });
     expect(d.colorEbc).toBeUndefined(); expect(d.deduit.colorEbc).toBeUndefined();
-    expect(d.potentialPpg).toBe(36.3);
+    expect(d.potentialPpg).toBe(34.7);
     const e = deduireValeursMalt({ potentialPpg: 33, colorEbcMin: 28, colorEbcMax: 32, extractPct: 79 });
     expect(e.potentialPpg).toBeUndefined(); expect(e.colorEbc).toBe(30);
   });
@@ -91,10 +91,10 @@ describe('deduireValeursMalt : une fonction pure, partagée', () => {
 });
 
 describe('sanitizeFacts (donc « Compléter avec l’IA ») déduit et le dit dans la note', () => {
-  it('BEST Red X : colorEbc 30, potentialPpg 36,3, la note garde la règle ; la note du modèle est conservée', () => {
+  it('BEST Red X : colorEbc 30, potentialPpg 34,7, la note garde la règle ; la note du modèle est conservée', () => {
     const f = sanitizeFacts({ ...BEST_RED_X, note: 'Fiche consultée.' });
-    expect(f.colorEbc).toBe(30); expect(f.potentialPpg).toBe(36.3);
-    expect(f.note).toBe('Fiche consultée. EBC déduit : milieu de la plage publiée 28 à 32 EBC ; PPG déduit : extrait publié 79 % × 0,46.');
+    expect(f.colorEbc).toBe(30); expect(f.potentialPpg).toBe(34.7);
+    expect(f.note).toBe('Fiche consultée. EBC déduit : milieu de la plage publiée 28 à 32 EBC ; PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité).');
   });
   it('idempotent : un second passage ne double ni la valeur ni la note', () => {
     const une = sanitizeFacts(BEST_RED_X), deux = sanitizeFacts(une);
@@ -115,11 +115,11 @@ describe('valeursDeReponse : les réponses réelles du 02.11', () => {
     expect(valeursDeReponse('malt', reponse('Crisp Chevallier Heritage Malt'))).toBeUndefined();
     expect(valeursDeReponse('malt', reponse('Candi Syrup D-180'))).toBeUndefined();
   });
-  it('la forme attendue : BEST Red X rend 30 et 36,3, chacun avec sa règle, la source et l’URL', () => {
+  it('la forme attendue : BEST Red X rend 30 et 34,7, chacun avec sa règle, la source et l’URL', () => {
     const v = valeursDeReponse('malt', BEST_RED_X)!;
-    expect(v.valeurs).toMatchObject({ colorEbc: 30, potentialPpg: 36.3 });
+    expect(v.valeurs).toMatchObject({ colorEbc: 30, potentialPpg: 34.7 });
     expect(v.deduit.colorEbc).toBe('EBC déduit : milieu de la plage publiée 28 à 32 EBC');
-    expect(v.deduit.potentialPpg).toBe('PPG déduit : extrait publié 79 % × 0,46');
+    expect(v.deduit.potentialPpg).toBe('PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité)');
     expect(v.source).toBe(SOURCE); expect(v.url).toBe('https://bestmalz.de');
   });
   it('un sucre sans chiffre publié : rien d’écrit', () => {
@@ -130,11 +130,11 @@ describe('valeursDeReponse : les réponses réelles du 02.11', () => {
 
 describe('D303 suite : les 5 vraies réponses après le déploiement de f4b-malts (02.11, aiTask 670a2c1d)', () => {
   const reponse = (nom: string) => (reellesF4b.calls.find(c => c.name === nom)!.data) as unknown as IngredientFacts;
-  it.each([['BEST Red X', 30, 36.3], ['Château Cara Ruby', 50, 34.5], ['Crisp Chevallier Heritage Malt', 8.3, 35.3]])('%s : plage et extrait publiés, EBC %s et PPG %s déduits, chacun avec sa règle', (nom, ebc, ppg) => {
+  it.each([['BEST Red X', 30, 34.7], ['Château Cara Ruby', 50, 32.9], ['Crisp Chevallier Heritage Malt', 8.3, 33.7]])('%s : plage et extrait publiés, EBC %s et PPG %s déduits (humidité 4,5 % supposée), chacun avec sa règle', (nom, ebc, ppg) => {
     const v = valeursDeReponse('malt', reponse(nom))!;
     expect(v.valeurs).toMatchObject({ colorEbc: ebc, potentialPpg: ppg });
     expect(v.deduit.colorEbc).toMatch(/^EBC déduit : milieu de la plage publiée /);
-    expect(v.deduit.potentialPpg).toMatch(/^PPG déduit : extrait publié .* × 0,46$/);
+    expect(v.deduit.potentialPpg).toMatch(/^PPG déduit : extrait publié .* × 0,46 × \(1 − 4,5 % d’humidité\)$/);
   });
   it('Candi Syrup D-180 : des points publiés (354,6 EBC, 32 PPG) gardés tels quels, la plage et l’extrait à null', () => {
     expect(valeursDeReponse('malt', reponse('Candi Syrup D-180'))!.valeurs).toMatchObject({ colorEbc: 354.6, potentialPpg: 32 });
@@ -159,9 +159,9 @@ describe('D303 : null se lit comme absent', () => {
     const brute = { ...BEST_RED_X, colorEbc: null, potentialPpg: null } as unknown as IngredientFacts;
     expect(deduireValeursMalt(brute)).toEqual(deduireValeursMalt(BEST_RED_X));
     const f = sanitizeFacts(brute);
-    expect(f.colorEbc).toBe(30); expect(f.potentialPpg).toBe(36.3);
+    expect(f.colorEbc).toBe(30); expect(f.potentialPpg).toBe(34.7);
     const v = valeursDeReponse('malt', brute)!;
-    expect(v.valeurs).toMatchObject({ colorEbc: 30, potentialPpg: 36.3 });
+    expect(v.valeurs).toMatchObject({ colorEbc: 30, potentialPpg: 34.7 });
     expect(v.deduit.colorEbc).toBe('EBC déduit : milieu de la plage publiée 28 à 32 EBC');
   });
   it('une borne à null, l’autre publiée : aucune plage, aucune couleur (jamais 0)', () => {

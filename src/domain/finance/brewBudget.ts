@@ -211,9 +211,22 @@ export function latestBrewPrices(transactions: FinanceTransaction[], beforeDate?
   return catalog;
 }
 
+/** A purchase line the weighted average could not use: its unit does not convert to the stock unit (CF-8, 08.11). */
+export interface IgnoredPurchaseLine { stockRef: string; name: string; unit: string; stockUnit: string; description: string; date: string }
+
 /** Documentary valuation estimate: weighted known purchases, never presented as a certified opening stock value. */
 export function weightedBrewPrices(transactions: FinanceTransaction[], stock: StockItem[], beforeDate?: string): Record<string, BrewPrice> {
+  return weightedPurchases(transactions, stock, beforeDate).prices;
+}
+
+/** The linked purchase lines the weighted average of `weightedBrewPrices` leaves out because their unit cannot become the stock unit. */
+export function ignoredPurchaseLines(transactions: FinanceTransaction[], stock: StockItem[], beforeDate?: string): IgnoredPurchaseLine[] {
+  return weightedPurchases(transactions, stock, beforeDate).ignored;
+}
+
+function weightedPurchases(transactions: FinanceTransaction[], stock: StockItem[], beforeDate?: string): { prices: Record<string, BrewPrice>; ignored: IgnoredPurchaseLine[] } {
   const totals = new Map<string, { cost: number; quantity: number; unit: string; count: number; date: string; netCost: number }>();
+  const ignored: IgnoredPurchaseLine[] = [];
   for (const tx of transactions) {
     const date = brewBudgetDateKey(tx.date);
     if (tx.finance?.kind !== 'expense' || tx.finance.voidedAt || !date || (beforeDate && date > beforeDate)) continue;
@@ -221,7 +234,8 @@ export function weightedBrewPrices(transactions: FinanceTransaction[], stock: St
       const item = stock.find(s => s.ref === line.stockItemRef);
       if (!item || !(line.quantity > 0) || !line.unit || !finite(line.amountCents)) continue;
       const qty = Units.convert(line.quantity, line.unit, item.unit);
-      if (qty === null || !(qty > 0)) continue;
+      if (qty === null) { ignored.push({ stockRef: item.ref, name: item.name, unit: line.unit, stockUnit: item.unit, description: line.description, date }); continue; }
+      if (!(qty > 0)) continue;
       const prior = totals.get(item.ref) ?? { cost: 0, quantity: 0, unit: item.unit, count: 0, date, netCost: 0 };
       const cents = linkedLineCost(tx.finance.lines, line).cents;
       prior.cost += cents / 100; prior.quantity += qty; prior.count++; prior.date = prior.date > date ? prior.date : date;
@@ -229,9 +243,14 @@ export function weightedBrewPrices(transactions: FinanceTransaction[], stock: St
       totals.set(item.ref, prior);
     }
   }
-  return Object.fromEntries([...totals].map(([ref, value]) => [ref, { amount: money(value.cost), quantity: value.quantity, unit: value.unit, basis: 'TTC',
-    tvaRate: value.netCost > 0 ? value.cost / value.netCost - 1 : 0, source: 'invoice', date: value.date,
-    note: `Moyenne pondérée de ${value.count} achat${value.count > 1 ? 's' : ''} renseigné${value.count > 1 ? 's' : ''} · valeur de stock estimée` } as BrewPrice]));
+  const prices = Object.fromEntries([...totals].map(([ref, value]) => {
+    const skipped = ignored.filter(line => line.stockRef === ref).length;
+    return [ref, { amount: money(value.cost), quantity: value.quantity, unit: value.unit, basis: 'TTC',
+      tvaRate: value.netCost > 0 ? value.cost / value.netCost - 1 : 0, source: 'invoice', date: value.date,
+      note: `Moyenne pondérée de ${value.count} achat${value.count > 1 ? 's' : ''} renseigné${value.count > 1 ? 's' : ''} · valeur de stock estimée`
+        + (skipped ? ` · ${skipped} achat${skipped > 1 ? 's' : ''} en unité non convertible ignoré${skipped > 1 ? 's' : ''}` : '') } as BrewPrice];
+  }));
+  return { prices, ignored };
 }
 
 export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSnapshot {
@@ -240,7 +259,7 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
   const issues: string[] = [];
   const dateKey = brewBudgetDateKey(brewDate);
   const catalog = latestBrewPrices(input.transactions ?? [], dateKey ?? undefined);
-  const inventoryCatalog = weightedBrewPrices(input.transactions ?? [], stockItems, dateKey ?? undefined);
+  const { prices: inventoryCatalog, ignored: ignoredPurchases } = weightedPurchases(input.transactions ?? [], stockItems, dateKey ?? undefined);
   if (!dateKey) issues.push('Date de brassage à corriger');
   if (!(recipe.volumeL > 0) || !Number.isFinite(recipe.volumeL)) issues.push('Volume à brasser invalide');
   const normalized = normalizeRecipe(recipe);
@@ -294,6 +313,8 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
     if (item && inDemandUnit !== null) available.set(item.ref, Math.max(0, (available.get(item.ref) ?? 0) - (Units.convert(used, demand.unit, item.unit) ?? 0)));
     const price = prices[demand.key] ?? (item ? catalog[item.ref] : undefined);
     const inventoryPrice = item ? inventoryCatalog[item.ref] : undefined;
+    const skippedPurchases = item ? ignoredPurchases.filter(line => line.stockRef === item.ref).length : 0;
+    if (skippedPurchases) lineIssues.push(`${skippedPurchases} achat${skippedPurchases > 1 ? 's' : ''} en unité non convertible ignoré${skippedPurchases > 1 ? 's' : ''} du prix moyen du stock`);
     // Even network water has a bill. Only an explicit confirmation may move its cash into a recurring plan.
     const cashTreatment = input.cashTreatments?.[demand.key] ?? 'additional';
     let consumedCost: number | null = null, purchaseTTC: number | null = missing === 0 ? 0 : null, purchaseQuantity = missing;
