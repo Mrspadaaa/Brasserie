@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import type { Batch } from '../../src/types';
 import { BatchDetailSheet } from '../../src/ui/BatchDetailSheet';
 import { StorageService } from '../../src/services/storage';
@@ -46,7 +46,11 @@ describe('production stock reconciliation', () => {
     const stockConsumption = { appliedAt: '2026-09-01', eventId: 'brew', completedStages: ['brewday'] as const, items: [], pendingItems: [{ stockItemRef: 'H', quantity: 60, unit: 'g' }] };
     render(<BatchDetailSheet batch={base({ status: 'garde', stockAccountingVersion: 1, stockConsumption: { ...stockConsumption, completedStages: ['brewday'] } })} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Passer en « Conditionné »' }));
-    expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne' }), 'remaining', false);
+    // AM n° 6 : le passage en Conditionné demande d'abord le volume conditionné ; sans lui, rien ne part.
+    expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText('Volume conditionné (L)'), { target: { value: '27,5' } });
+    fireEvent.click(within(screen.getByLabelText('Conditionnement du brassin')).getByRole('button', { name: 'Passer en « Conditionné »' }));
+    expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'conditionne', volumePackagedL: 27.5 }), 'remaining', false);
     expect(screen.getByRole('button', { name: 'Estimer le budget de ce brassin' })).toBeInTheDocument();
   });
   it('keeps actionable stock issues visible when an attempted deduction needs review', () => {

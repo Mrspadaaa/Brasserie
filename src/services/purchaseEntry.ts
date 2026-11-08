@@ -9,8 +9,8 @@ import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
 import type { FinanceLine, FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
 import { sumCheck } from '../domain/finance/invoicePoints';
 import { planOccurrences } from '../domain/finance/forecast';
-import { isoDate, todayISO } from '../domain/finance/ledger';
-import { normalize } from './search';
+import { isoDate, todayISO, transactionKind } from '../domain/finance/ledger';
+import { invoiceKey, orderNumbers, paymentReferenceKey, vendorKey } from '../domain/finance/duplicates';
 import { canonicalStockCategory, categorieArticleNeuf, linkUnit, memeNom, nomsPris, pliee, SACHET_MAX_G, STOCK_CATEGORIES, type MembreVirtuel } from './stockLineMatching';
 import { articleNeufDe, ligneDeBrouillon, nomImprimeDe, type ArticleNeuf } from '../domain/stock/articleNeuf';
 import { contexteDe } from './stockLineMatching';
@@ -71,6 +71,8 @@ export interface PurchaseDraft {
   proofDataUrl?:string; proofFileName?:string; proofType?:string; documentHash?:string;
   sourceCurrency?:string; sourceAmount?:number; sourceVatRate?:number; sourceVatAmount?:number; sourceNetAmount?:number;
   scanModel?:string; duplicateConfirmed?:boolean;
+  /** Référence de paiement du QR-facture (QRR ou SCOR), quand le document en porte une : elle identifie la facture (AM n° 7). */
+  paymentReference?:string;
   sourceDocumentType?:string; sourceOrderNumber?:string; sourceTotalBasis?:'printed'|'line_sum';
   planId?:string; occurrenceId?:string;
 }
@@ -82,18 +84,8 @@ export function purchaseIsoDate(raw:string):string {
   const date=new Date(Date.UTC(+match[3],+match[2]-1,+match[1]));
   return date.getUTCFullYear()===+match[3] && date.getUTCMonth()===+match[2]-1 && date.getUTCDate()===+match[1] ? `${match[3]}-${match[2]}-${match[1]}` : '';
 }
-const LEGAL_FORMS=new Set(['sa','ag','gmbh','sarl','sagl','snc','sas','srl','spa','ltd','llc','inc','kg','co','cie','ohg','ug','se','bv','nv','plc']);
-/** « MALTERIE DU BANC » et « Malterie du Banc SA » désignent le même fournisseur : casse, accents, ponctuation et
- * forme juridique finale ne comptent pas (« Moulin Co Brasserie » garde son « co »). Les initiales séparées (« S.à r.l. »)
- * forment une seule forme juridique. */
-export function purchaseVendorKey(vendor:string):string {
-  const tokens=normalize(vendor).split(/[^a-z0-9]+/).filter(Boolean);
-  const merged=tokens.reduce<string[]>((out,token,index)=>{if(token.length===1&&index>0&&tokens[index-1].length===1)out[out.length-1]+=token;else out.push(token);return out;},[]);
-  while(merged.length>1&&LEGAL_FORMS.has(merged[merged.length-1]))merged.pop();
-  return merged.join(' ');
-}
-/** « MB-131 », « mb 131 » et « MB.131 » sont le même numéro de facture ; une lecture « MB-1O1 » vaut « MB-101 ». */
-const invoiceKey=(invoice:string|undefined)=>normalize(invoice??'').replace(/[^a-z0-9]/g,'').replace(/o/g,'0').replace(/[il]/g,'1');
+/** « MALTERIE DU BANC » et « Malterie du Banc SA » désignent le même fournisseur (domain/finance/duplicates : casse, accents, ponctuation, forme juridique finale). */
+export const purchaseVendorKey=vendorKey;
 /** Deux numéros renseignés et différents : deux factures, donc deux achats (abonnement, commande répétée). */
 const otherInvoice=(draft:PurchaseDraft,tx:FinanceTransaction)=>{const mine=invoiceKey(draft.invoiceNumber),theirs=invoiceKey(tx.finance?.invoiceNumber);return Boolean(mine&&theirs&&mine!==theirs);};
 const DAY=86_400_000;
@@ -109,12 +101,20 @@ interface DuplicateMatch { reasons:string[]; rank:number; gap:number }
  */
 function duplicateMatch(draft:PurchaseDraft,tx:FinanceTransaction,today:()=>string):DuplicateMatch|undefined {
   if (tx.id===`TX-${draft.submissionId}` || tx.finance?.voidedAt) return undefined;
-  const vendor=draft.vendor.trim().toLowerCase(), invoice=invoiceKey(draft.invoiceNumber);
+  const vendor=draft.vendor.trim().toLowerCase(), vendorId=purchaseVendorKey(draft.vendor), invoice=invoiceKey(draft.invoiceNumber), reference=paymentReferenceKey(draft.paymentReference);
   const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
   // Sans date lue, l'âge de la dépense (saisie, sinon date) borne le rapprochement : une commande d'il y a un an n'est pas ce récapitulatif.
   const since=(tx.finance?.recordedAt??'').slice(0,10)||to, gap=()=>days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
   if (draft.documentHash && tx.finance?.sourceDocumentHash===draft.documentHash) return {reasons:['Même fichier déjà joint'],rank:0,gap:gap()};
-  if (invoice && invoiceKey(tx.finance?.invoiceNumber)===invoice && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:[`Même facture n° ${draft.invoiceNumber.trim()}`],rank:1,gap:gap()};
+  // AM n° 7 : la facture s'identifie par (fournisseur normalisé, n°), quel que soit le total ; ou par sa référence QR de paiement.
+  if (tx.finance?.kind==='expense' && tx.finance.sourceDocumentType!=='credit_note') {
+    if (invoice && vendorId && invoiceKey(tx.finance.invoiceNumber)===invoice && purchaseVendorKey(tx.finance.vendor??'')===vendorId) return {reasons:[`Même facture n° ${draft.invoiceNumber.trim()}`],rank:1,gap:gap()};
+    // RF-2 : une référence QR n'identifie une facture qu'avec le même fournisseur normalisé ; un créancier à référence constante n'est pas un doublon (deux n° différents = deux factures).
+    if (reference && paymentReferenceKey(tx.finance.paymentReference)===reference && !otherInvoice(draft,tx)) {
+      if (vendorId && purchaseVendorKey(tx.finance.vendor??'')===vendorId) return {reasons:['Même référence de paiement QR'],rank:1,gap:gap()};
+      return {reasons:['Même référence de paiement QR','Fournisseur différent ou absent : à vérifier'],rank:3,gap:gap()};
+    }
+  }
   if (vendor && tx.date===draft.date && cents(tx.amountTTC)===cents(draft.amount??0) && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:['Même fournisseur, même date et même total'],rank:2,gap:gap()};
   // Seule une dépense au même total est comparée plus loin : une vente au nom d'un client homonyme n'est pas un achat.
   if (tx.finance?.kind!=='expense' || !isMoney(draft.amount) || draft.amount<=0 || cents(tx.amountTTC)!==cents(draft.amount) || otherInvoice(draft,tx)) return undefined;
@@ -166,6 +166,23 @@ function historicDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[
   }
   return found;
 }
+/**
+ * TR-NOTE-1 : la facture lue porte un n° de commande (« Onlinebestellung-686863 ») et le registre a déjà, sous forme ancienne, des écritures dont le libellé
+ * le porte (« Cmd 686863 … », B-001…) et qui n'ont pas de n° de commande lu : c'est la même commande. Une entrée par n° de commande : sa première écriture.
+ */
+function legacyOrderDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):Array<{tx:FinanceTransaction;match:DuplicateMatch}> {
+  const found:Array<{tx:FinanceTransaction;match:DuplicateMatch}>=[];
+  for (const number of orderNumbers(draft.sourceOrderNumber)) {
+    const pattern=new RegExp(`(^|\\D)${number}(\\D|$)`);
+    const group=transactions.filter(tx=>tx.id!==`TX-${draft.submissionId}` && !tx.finance?.voidedAt && transactionKind(tx)==='expense' && !tx.finance?.sourceOrderNumber && pattern.test(tx.description??''));
+    if (!group.length) continue;
+    const ordered=[...group].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+    const reasons=[`Même commande ${number} déjà au registre`,`${ordered.length} ${ordered.length>1?'écritures anciennes':'écriture ancienne'} (${ordered[0].id}${ordered.length>1?` à ${ordered[ordered.length-1].id}`:''})`];
+    raisonsHistoriques.set(ordered[0],{draft,reasons});
+    found.push({tx:ordered[0],match:{reasons,rank:3,gap:0}});
+  }
+  return found;
+}
 export function purchaseDuplicateReasons(draft:PurchaseDraft,tx:FinanceTransaction):string[] {
   const historic=raisonsHistoriques.get(tx);
   return duplicateMatch(draft,tx,todayISO)?.reasons??(historic?.draft===draft?historic.reasons:[]);
@@ -174,7 +191,8 @@ export function purchaseDuplicateReasons(draft:PurchaseDraft,tx:FinanceTransacti
 export function purchaseDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):FinanceTransaction[] {
   let day='';
   const today=()=>day||(day=todayISO());
-  return [...transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];}),...historicDuplicates(draft,transactions)]
+  const all=[...transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];}),...historicDuplicates(draft,transactions),...legacyOrderDuplicates(draft,transactions)];
+  return all.filter((entry,index)=>all.findIndex(other=>other.tx===entry.tx)===index)
     .sort((a,b)=>a.match.rank-b.match.rank||a.match.gap-b.match.gap).map(entry=>entry.tx);
 }
 /** Règle écrite sur le paiement quand sa date est supposée : la date de paiement n'est pas imprimée sur le document. */
@@ -698,7 +716,7 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   const amount=draft.amount!,registered=StorageService.getConfig().fiscal.isTvaRegistered;
   const vat=registered && draft.sourceCurrency==='CHF' && Number.isFinite(draft.sourceVatAmount) ? draft.sourceVatAmount : 0;
   const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:storedProofName,proofType:draft.proofType,
-    finance:{version:1,kind:'expense',amountCents:cents(amount),lines:[...lines,...ligneArrondi(draft)],vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:inQueue?undefined:proof?.id,...(inQueue&&queued?{proofUpload:{state:'queued' as const,uid:queued.uid,at}}:{}),proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
+    finance:{version:1,kind:'expense',amountCents:cents(amount),lines:[...lines,...ligneArrondi(draft)],vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,paymentReference:paymentReferenceKey(draft.paymentReference)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:inQueue?undefined:proof?.id,...(inQueue&&queued?{proofUpload:{state:'queued' as const,uid:queued.uid,at}}:{}),proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v6'}:undefined}}
   const payment=purchasePayment(draft,at);
   // All validation and material preparation above precede the first synchronous write.
   if (payment) FinanceService.stageNewTransactionPayment(tx,payment);

@@ -12,7 +12,7 @@ export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCod
 
 /** v5 (31.10.2026) : le résultat porte `points`, `controls`, `vat`, `proForma`, `linesLost`… Le hachage de la lecture en dépend :
  * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. Le moteur, lui, entre par son empreinte (`invoiceScanIdFor`, D273c). */
-export const INVOICE_SCAN_VERSION = 'invoice-v5';
+export const INVOICE_SCAN_VERSION = 'invoice-v6';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
 /**
@@ -334,6 +334,20 @@ export function montantDeLigne(amountTTC: number | null, price: number | null, q
   return quantity === null || quantity === 1 ? price : null;
 }
 
+/**
+ * LT-3 : sur un ticket de caisse, le « 1 » imprimé après le prix est la quantité (1 = 1 pièce). Quand le modèle a laissé la quantité vide, on la reprend de l'extrait imprimé de la ligne
+ * (`evidence`, « désignation 86.95 1 p. 1 ») si, et seulement si, un entier de 1 à 99 suit EXACTEMENT le prix lu ou le montant lu de la ligne. Une quantité déjà lue n'est jamais réécrite,
+ * un autre type de document ni un extrait sans ce motif ne changent rien : jamais une quantité qui n'est pas imprimée.
+ */
+export function quantiteDeTicket(quantity: number | null, documentType: unknown, evidence: string, price: number | null, amountTTC: number | null): number | null {
+  if (quantity !== null || documentType !== 'receipt') return quantity;
+  const m = /(\d+[.,]\d{2})\s+(\d{1,2})(?:\s+p\.?\s*\d+)?\s*$/i.exec(evidence.trim());
+  if (!m) return quantity;
+  const imprime = toCents(Number(m[1].replace(',', '.'))), entier = Number(m[2]);
+  const lus = [price, amountTTC].flatMap(v => (v === null ? [] : [toCents(v)]));
+  return entier >= 1 && lus.includes(imprime) ? entier : quantity;
+}
+
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
 export function normalizeInvoiceScan(raw: any) {
   const issues: string[] = [];
@@ -348,7 +362,7 @@ export function normalizeInvoiceScan(raw: any) {
     if (alphaRead !== null && alphaPct === null) reject('alphaPct', index + 1, String(alphaRead), 'α hors de ]0 ; 30] %');
     const code = text(item?.vatCode, 60);
     if (code.length > 10) reject('vatCode', index + 1, code, 'code de TVA coupé à 10 caractères');
-    const quantity = number(item?.quantity), price = number(item?.price);
+    const price = number(item?.price), quantity = quantiteDeTicket(number(item?.quantity), raw?.documentType, text(item?.evidence, 250), price, number(item?.amountTTC));
     return {
       id: `line-${index + 1}`, name: text(item?.name), kind: SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const,
       quantity, unit: text(item?.unit, 30), price, amountTTC: montantDeLigne(number(item?.amountTTC), price, quantity),

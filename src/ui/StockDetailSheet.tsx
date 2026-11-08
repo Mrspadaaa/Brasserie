@@ -12,6 +12,7 @@ import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Combobox } from './Combobox';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { canonicalStockCategory, memeNom } from '../services/stockLineMatching';
+import { changerUniteArticle } from '../domain/stock/changerUnite';
 import './stocks.css';
 
 interface StockDetailSheetProps {
@@ -32,6 +33,8 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
 }) => {
   const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [uniteRefus, setUniteRefus] = useState('');
+  const [uniteNote, setUniteNote] = useState('');
   if (!item || !draft) return null;
 
   const level = computeStockLevel(draft, batches, stockItems);
@@ -44,6 +47,13 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
     if (!canSave) return;
     onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.currentStock <= draft.minStock });
     onClose();
+  };
+  /* AM n° 8 : l'unité ne se change pas sans convertir le stock, le seuil et le maximum ; d'une famille à l'autre, le changement est refusé et dit pourquoi. */
+  const changeUnit = (unit: string) => {
+    const changement = changerUniteArticle(draft, unit, allocated.length > 0);
+    if ('refus' in changement) { setUniteRefus(changement.refus); setUniteNote(''); return; }
+    setUniteRefus(''); setUniteNote(changement.note ? `${changement.note} Enregistre pour l’appliquer.` : '');
+    setDraft(changement.item);
   };
   const unitOptions = Suggestions.knownUnits().map(value => ({ value, label: value }));
   const categoryOptions = Suggestions.knownCategories().map(value => ({ value, label: value }));
@@ -120,9 +130,10 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
               <Combobox id="stock-category" ariaLabel="Catégorie" value={draft.category} onChange={category => setDraft({ ...draft, category })}
                 options={categoryOptions} placeholder="Malt, Houblon…" allowCreate onCreate={category => setDraft({ ...draft, category })}/>
             </Field>
-            <Field label="Unité" htmlFor="stock-unit">
-              <Combobox id="stock-unit" ariaLabel="Unité" value={draft.unit} onChange={unit => setDraft({ ...draft, unit })}
-                options={unitOptions} placeholder="kg, g…" allowCreate onCreate={unit => setDraft({ ...draft, unit })}/>
+            <Field label="Unité" htmlFor="stock-unit" error={uniteRefus || undefined}>
+              <Combobox id="stock-unit" ariaLabel="Unité" value={draft.unit} onChange={changeUnit}
+                options={unitOptions} placeholder="kg, g…" allowCreate onCreate={changeUnit}/>
+              {uniteNote && !uniteRefus && <p data-stock-unite-note className="mt-1 text-xs text-cave-400">{uniteNote}</p>}
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-2">

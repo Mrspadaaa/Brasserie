@@ -15,6 +15,8 @@ export function isMillingSurcharge(line: { kind?: string; description?: string; 
 const PLURAL_FAMILIES: Record<string, string> = { Malt: 'malts', Houblon: 'houblons', Levure: 'levures', Sucre: 'sucres', Additif: 'additifs', Emballage: 'emballages', Consommable: 'consommables' };
 const KIND_FAMILIES: Record<string, string> = { stock: 'ingrédients', packaging: 'emballages', shipping: 'port', equipment: 'matériel', service: 'services' };
 const DESCRIPTION_MAX = 60;
+const FAMILLES_MATIERES = new Set(['malts', 'houblons', 'levures', 'sucres', 'additifs', 'ingrédients']);
+const MATIERES_PREMIERES = 'matières premières';
 
 /**
  * « Pour quoi ? » proposé par le code : `Fournisseur · N° · familles`, 60 caractères au plus, sans la prose du modèle.
@@ -37,9 +39,20 @@ export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
   }
   const vendor = (scan.vendor ?? '').replace(/\s+/g, ' ').trim(), number = (scan.invoiceNumber ?? '').replace(/\s+/g, ' ').trim();
   const join = (parts: string[]) => parts.filter(Boolean).join(' · ');
-  for (let kept = families.length; kept >= 0; kept--) {
-    const text = join([vendor, number, families.slice(0, kept).join(', ')]);
-    if (text.length <= DESCRIPTION_MAX) return text;
+  // LP-4 : une commande commence souvent par du matériel et finit par les malts, houblons et levures ; au plafond de 60 caractères, les ingrédients, ce pour quoi
+  // on achète, ne doivent pas être coupés avant le matériel. Les matières premières passent devant (ordre d'apparition gardé dans chaque groupe).
+  const matieres = families.filter(family => FAMILLES_MATIERES.has(family)), autres = families.filter(family => !FAMILLES_MATIERES.has(family));
+  const ordonnees = [...matieres, ...autres];
+  for (let kept = ordonnees.length; kept >= 0; kept--) {
+    const text = join([vendor, number, ordonnees.slice(0, kept).join(', ')]);
+    if (text.length <= DESCRIPTION_MAX) {
+      // Plusieurs familles de matières premières coupées par le plafond : elles se disent ensemble plutôt que d'en garder une seule.
+      if (matieres.length > 1 && kept < ordonnees.length) {
+        const groupees = join([vendor, number, [MATIERES_PREMIERES, ...autres].slice(0, Math.max(1, kept - matieres.length + 1)).join(', ')]);
+        if (groupees.length <= DESCRIPTION_MAX) return groupees;
+      }
+      return text;
+    }
   }
   // Trop long même sans familles : le fournisseur est coupé à un mot pour que le numéro reste lisible.
   const room = DESCRIPTION_MAX - (number ? number.length + 3 : 0);

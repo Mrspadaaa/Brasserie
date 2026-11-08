@@ -62,6 +62,12 @@
 .journal-text-action:hover { text-decoration:underline; text-underline-offset:3px; }
 .journal-text-action svg { flex-shrink:0; }
 .finance-journal .finance-archive-followup { font-size:12px; line-height:16px; padding-top:6px; color:rgb(var(--cave-texte-200)); }
+/* AM n° 7 : l'avertissement de doublon tient en une ligne ; il ne ressemble pas à une erreur (rien n'est cassé tant qu'on ne signe pas). */
+.journal-duplicates { margin:6px 0; padding:6px 8px; border-left:3px solid rgb(var(--attention)); background:rgb(var(--c-302719)); font-size:13px; line-height:18px; color:rgb(var(--cave-texte-200)); }
+.journal-duplicates strong { color:rgb(var(--attention-texte)); font-weight:600; }
+.journal-duplicates p { margin:0; }
+.journal-duplicates .journal-text-action { display:inline; min-height:0; }
+.journal-duplicates ul { margin:4px 0 0; padding-left:16px; list-style:disc; }
 .finance-journal .finance-pagination { margin:8px 0; gap:8px; font-size:13px; }
 .finance-journal .finance-pagination button { display:grid; place-items:center; min-width:28px; }
 .journal-empty { border-bottom:1px solid rgb(var(--cave-700)); padding:10px 0; }

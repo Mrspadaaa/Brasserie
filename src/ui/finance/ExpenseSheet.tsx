@@ -298,12 +298,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* D277 : le brouillon tel que l'enregistrement le lit, avec l'unité déduite de chaque ligne à l'unité illisible (dérivée du brouillon et du stock courants,
      jamais gardée seule) : ce que l'écran montre est ce qui est validé et écrit. */
   const articlesStock=[...stocks.rawMaterials,...stocks.cleaning];
-  const draftEff=avecUnitesDeduites(draft,articlesStock);
+  /* AM n° 7 : la référence du QR-facture (valide) identifie la facture ; elle rejoint le brouillon lu par l'enregistrement et la détection de doublon. */
+  const qrReference=qrRes?.statut==='lu'&&qrRes.qr.valid&&qrRes.qr.typeReference!=='NON'?qrRes.qr.reference:undefined;
+  const draftEff={...avecUnitesDeduites(draft,articlesStock),...(qrReference?{paymentReference:qrReference}:{})};
   const effParId=new Map(draftEff.lines.map(l=>[l.id,l]));
   /* La ligne avec son unité déduite (même objet que l'enregistrement) ; l'unité que le stock lit. */
   const effDe=(line:PurchaseLineDraft)=>effParId.get(line.id)??line;
   const uniteDe=(line:PurchaseLineDraft)=>uniteEffective(effDe(line));
-  const errors=validatePurchase(draftEff,stocks,transactions),duplicates=purchaseDuplicates(draft,transactions);
+  const errors=validatePurchase(draftEff,stocks,transactions),duplicates=purchaseDuplicates(draftEff,transactions);
   if(selectedPlan?.recurrence&&!draft.occurrenceId)errors.push('Sélectionne l’échéance de la dépense prévue.');
   // Une ligne simple reprend déjà montant et motif : une seule correction doit
   // être demandée, sans ouvrir les options de stock qui n’y changent rien.
@@ -669,7 +671,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const proposedCount=draft.lines.filter(line=>line.stockAction==='existing'&&proposedStock.current.has(line.id)).length;
   const linkedSummary=[stockCount?stockCount+' entrée'+(stockCount>1?'s':'')+' en stock':'',equipmentCount?equipmentCount+' fiche'+(equipmentCount>1?'s':'')+' de matériel':''].filter(Boolean).join(' · ');
   // La candidate la plus forte vient en tête (règle exacte, puis date la plus proche).
-  const existing=duplicates[0],existingReasons=existing?purchaseDuplicateReasons(draft,existing):[],attachable=Boolean(existing&&purchaseProofAttachable(draft,existing));
+  const existing=duplicates[0],existingReasons=existing?purchaseDuplicateReasons(draftEff,existing):[],attachable=Boolean(existing&&purchaseProofAttachable(draft,existing));
   const sameChosen=Boolean(existing&&sameAs===`${existing.id}|${draft.documentHash??''}`);
   const similar=useMemo(()=>{const id=existing?.id;const order=purchaseSimilarOrders(draft,transactions).find(item=>item.tx.id!==id);if(order)return {...order,gapCents:0};return purchaseSameOrder(draft,transactions).find(item=>item.tx.id!==id);},[draft,transactions,existing?.id]);
   const dejaTx=deja?transactions.find(tx=>tx.id===deja):undefined;

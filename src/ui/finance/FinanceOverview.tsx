@@ -2,10 +2,13 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { formatCHF, todayISO, type LedgerSummary } from '../../domain/finance/ledger';
 import type { JournalRequest } from './TransactionJournal';
+import type { TvaThresholdStatus } from '../../domain/finance/tvaThreshold';
 import { compte } from '../../services/plural';
 
 interface Props {
   ledger: LedgerSummary;
+  /** AM n° 10 : chiffre d'affaires sur 12 mois contre le seuil d'assujettissement à la TVA ; `null` si déjà assujettie ou seuil inconnu. */
+  tvaThreshold?: TvaThresholdStatus | null;
   openingCashReady: boolean;
   undatedCount: number;
   onProfile: () => void;
@@ -14,7 +17,7 @@ interface Props {
   onPayment: (id: string) => void;
 }
 
-export function FinanceOverview({ ledger, openingCashReady, undatedCount, onProfile, onJournal, onTransaction, onPayment }: Props) {
+export function FinanceOverview({ ledger, tvaThreshold, openingCashReady, undatedCount, onProfile, onJournal, onTransaction, onPayment }: Props) {
   const reviewPayments = () => onJournal({ scope: 'all', allDates: true, filter: 'unknown' });
   const mixedDirections = ledger.payablesCents > 0 && ledger.receivablesCents > 0;
   const dueLabel = (date: string | null) => !date ? 'Échéance à préciser'
@@ -37,6 +40,14 @@ export function FinanceOverview({ ledger, openingCashReady, undatedCount, onProf
         <button type="button" className="finance-position-open" aria-label="Renseigner le solde de trésorerie" onClick={onProfile}><ChevronRight size={15}/></button>
       </div>
     </dl>
+
+    {tvaThreshold && tvaThreshold.level !== 'ok' && <section className="finance-section finance-tva-threshold" aria-label="Seuil de TVA" data-level={tvaThreshold.level}
+      role={tvaThreshold.level === 'over' ? 'alert' : 'status'}>
+      <h3>{tvaThreshold.level === 'over' ? 'Seuil de TVA franchi' : 'Seuil de TVA bientôt atteint'}</h3>
+      <p>{tvaThreshold.message}</p>
+      <div className="finance-tva-bar" aria-hidden="true"><span style={{ width: `${Math.min(100, Math.round(tvaThreshold.ratio * 100))}%` }}/></div>
+      <button type="button" className="finance-link" onClick={() => onJournal({ scope: 'all', allDates: true, category: 'recettes' })}>Voir les ventes<ChevronRight size={14}/></button>
+    </section>}
 
     {(!openingCashReady || ledger.unknownPaymentCount > 0 || undatedCount > 0) && <section className="finance-section finance-completion" aria-label="Données à compléter">
       <h3>Pour une situation fiable</h3>
