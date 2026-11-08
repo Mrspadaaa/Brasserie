@@ -1554,3 +1554,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   ce qui est commité et vert à ses tests, puis on rejoue en ligne).
 - **08.11**, mot pour mot, pendant la correction des défauts du registre (cinq voies, revue à l'image, voie VI) :
   « Reserve tes token pour la qualité » (lu : pas de tour gaspillé en réglages de banc, relances ou suivi ; les jetons vont aux corrections, aux tests et au regard).
+- **08.11**, mot pour mot (relayé par la pilote), à « le rejeu est bloqué : ton Chrome reste à 525 px » :
+  « À tester en 525px c'est pas grave... » (lu : un rejeu en ligne se joue à la largeur que son Chrome donne, 525 px compris ; on ne bloque pas sur la largeur).
+- **08.11**, mot pour mot (relayé par la pilote) : « Économie de token.... Tout va en qualité pour toutes les sessions... » (lu : pas de rejeu qui piétine, de relance ni de rapport répété ; les jetons vont aux constats utiles, aux corrections et au registre juste).
+- **08.11**, mot pour mot, sur sa capture de la Dépense (ticket Bauhaus, ligne « Idaho7 » 5 g × 1,00 rangée dans « Autres », « article — · hors stock », bouton « + Suivre au stock ») :
+  « SI je mets suivre au stock, ça devrait faire le mapping automatique... »
