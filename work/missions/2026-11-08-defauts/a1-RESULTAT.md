@@ -62,7 +62,7 @@ TR-NOTE-3 | reste (fiche écrit « 0 » pour un dry hop seul ; la liste du recet
 ## D
 TL-25, TL-31, TE-13, TE-33, RJ-10, RJ-12, PD-4, PD-10, PD-9, BR-13, BR-14, BR-17, BR-19, BR-39, BR-44, BR-45, BR-46, BR-62, BE-16, BR-84, BE-8, BR-98, BR-99, BE-52, BR-101, BE-54, BE-79, BE-81, RO-4, PI-NOTE-3 | reste (non traité : visuel, mot ou autre écran)
 TE-19 | non reproduit (l'ajout par pastille place le focus dans la masse, versMasse D230)
-TE-25, BR-41 | reste (écriture « g/L exacts » : affichage de l'étape V5.5)
+TE-25, BR-41 | goût (HopRecipeSnapshot écrit la dose « au millième avec sa valeur exacte » par la décision 34c ; options : A garder le millième et la fraction, B arrondir à 0,1 g/L et retirer la fraction « exacts »)
 TE-26 | corrigé 97a4c6cd (= BR-3)
 AM-9 | reste (rendement 75 % par défaut : décision produit)
 AM-10 | déjà corrigé (4f063301 : la part compte le grain empâté, A10)
