@@ -290,6 +290,7 @@ export function mergeDecoded(parts: any[], options: { dedupe: boolean }): any {
     vendor: firstFilled(parts, 'vendor') ?? '', documentType: first.documentType ?? 'other', date: firstFilled(parts, 'date') ?? '', currency: firstFilled(parts, 'currency') ?? '',
     invoiceNumber: firstFilled(parts, 'invoiceNumber') ?? '', orderNumber: firstFilled(parts, 'orderNumber') ?? '',
     paymentEvidence: [...parts].reverse().map(part => part?.paymentEvidence).find(value => value && value !== 'unknown') ?? 'unknown',
+    paymentMethod: [...parts].reverse().map(part => part?.paymentMethod).find(value => value && value !== 'unknown') ?? 'unknown',
     proForma: parts.some(part => part?.proForma === true),
     amountHT: nullable('amountHT'), tvaAmount: nullable('tvaAmount'), amountTTC: nullable('amountTTC'), tvaRate: nullable('tvaRate'), vat,
     printedLineCount: counted.length ? counted.reduce((a, b) => a + b, 0) : null,

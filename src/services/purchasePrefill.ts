@@ -149,7 +149,13 @@ export function patchPurchaseDraft(previous: PurchaseDraft, value: Partial<Purch
  * Le statut vient de la preuve de paiement lue ; la date de paiement n'est jamais imprimée : elle reprend la date du document et
  * est marquée `document_date` (supposée). Sans date lue, pas de base (la clé reste présente pour que le patch la prenne en compte).
  */
-export function scannedPayment(scan: ScannedInvoiceResult, today: string): Pick<PurchaseDraft, 'paymentStatus' | 'paymentDate' | 'paymentDateBasis'> {
+/** RL-8 : le moyen lu sur le document (« TWINT ») → le moyen du règlement ; une carte et un virement passent par le compte (« Compte bancaire / carte »). `unknown` : rien (le défaut du brouillon reste, jamais une valeur devinée). */
+export const MOYEN_LU: Record<string, PurchaseDraft['paymentMethod'] | undefined> = { twint: 'twint', cash: 'cash', card: 'bank', bank_transfer: 'bank', other: 'other' };
+export function scannedPayment(scan: ScannedInvoiceResult, today: string): Pick<PurchaseDraft, 'paymentStatus' | 'paymentDate' | 'paymentDateBasis'> & Partial<Pick<PurchaseDraft, 'paymentMethod'>> {
+  const base = scannedPaymentStatus(scan, today), moyen = MOYEN_LU[scan.paymentMethod ?? 'unknown'];
+  return base.paymentStatus === 'paid' && moyen ? { ...base, paymentMethod: moyen } : base;
+}
+function scannedPaymentStatus(scan: ScannedInvoiceResult, today: string): Pick<PurchaseDraft, 'paymentStatus' | 'paymentDate' | 'paymentDateBasis'> {
   // Une pro-forma sans preuve de paiement imprimée est une demande de paiement : jamais préremplie comme payée (relecture l2, point 7).
   // Le type RETENU décide (l2, relais n° 3) : une pro-forma payée lue « devis » est une facture réglée ; sans lui (ancien résultat), le type lu.
   const type = scan.documentTypeRetenu ?? scan.documentType;

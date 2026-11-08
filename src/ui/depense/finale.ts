@@ -131,7 +131,7 @@ export type CellulesLigne = Partial<Pick<PurchaseLineDraft, Cellule | 'evidence'
 const GROUPES_ENTETE: Array<{ cle: string; champs: Array<keyof PurchaseDraft>; registre: string[] }> = [
   { cle: 'vendor', champs: ['vendor'], registre: ['vendor'] }, { cle: 'date', champs: ['date'], registre: ['date'] }, { cle: 'invoiceNumber', champs: ['invoiceNumber'], registre: ['invoiceNumber'] },
   { cle: 'total', champs: ['amount', 'sourceAmount', 'sourceTotalBasis'], registre: ['amountTTC'] }, { cle: 'tva', champs: ['sourceVatAmount', 'sourceVatRate'], registre: ['tvaAmount'] },
-  { cle: 'ht', champs: ['sourceNetAmount'], registre: ['amountHT'] }, { cle: 'paiement', champs: ['paymentStatus'], registre: ['paymentEvidence'] }, { cle: 'description', champs: ['description', 'descriptionSource'], registre: [] },
+  { cle: 'ht', champs: ['sourceNetAmount'], registre: ['amountHT'] }, { cle: 'paiement', champs: ['paymentStatus', 'paymentMethod'], registre: ['paymentEvidence'] }, { cle: 'description', champs: ['description', 'descriptionSource'], registre: [] },
   { cle: 'category', champs: ['category'], registre: ['category'] }, { cle: 'currency', champs: ['sourceCurrency'], registre: ['currency'] },
   { cle: 'documentType', champs: ['sourceDocumentType'], registre: [] }, { cle: 'order', champs: ['sourceOrderNumber'], registre: [] },
 ];

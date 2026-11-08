@@ -11,6 +11,8 @@ export type InvoiceReviewStatus = 'checked'|'corrected'|'disputed'|'unavailable'
 export interface ScannedInvoiceResult {
   documentType?:'invoice'|'receipt'|'delivery_note'|'quote'|'credit_note'|'other';
   paymentEvidence?:'paid'|'unpaid'|'unknown';
+  /** RL-8 : le moyen de paiement IMPRIMÉ (« TWINT CHF 165.20 Paye ») ; absent ou `unknown` : jamais deviné. */
+  paymentMethod?:'twint'|'cash'|'card'|'bank_transfer'|'other'|'unknown';
   fieldWarnings?:Array<{field:string;message:string}>;
   orderNumber?:string;
   vendor:string; date:string; currency:string; invoiceNumber:string;
@@ -179,6 +181,7 @@ export const GeminiScannerService = {
     const result:ScannedInvoiceResult={
       documentType:['invoice','receipt','delivery_note','quote','credit_note','other'].includes(raw?.documentType)?raw.documentType:'other',
       paymentEvidence:['paid','unpaid','unknown'].includes(raw?.paymentEvidence)?raw.paymentEvidence:'unknown',
+      paymentMethod:['twint','cash','card','bank_transfer','other','unknown'].includes(raw?.paymentMethod)?raw.paymentMethod:'unknown',
       fieldWarnings:(Array.isArray(raw?.fieldWarnings)?raw.fieldWarnings:[]).slice(0,25).filter((item:any)=>typeof item?.field==='string'&&typeof item?.message==='string').map((item:any)=>({field:text(item.field,40),message:text(item.message,200)})),
       orderNumber:text(raw?.orderNumber,70),
       vendor:text(raw?.vendor),date:this.normalizeDate(raw?.date),currency:text(raw?.currency,5),invoiceNumber:text(raw?.invoiceNumber,70),

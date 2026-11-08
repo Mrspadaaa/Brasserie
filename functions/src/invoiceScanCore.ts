@@ -374,6 +374,8 @@ export function normalizeInvoiceScan(raw: any) {
   });
   const documentType: DocumentType = DOCUMENT_TYPES.includes(raw?.documentType) ? raw.documentType as DocumentType : 'other';
   const paymentEvidence = ['paid', 'unpaid', 'unknown'].includes(raw?.paymentEvidence) ? raw.paymentEvidence as 'paid'|'unpaid'|'unknown' : 'unknown' as const;
+  /** RL-8 : le moyen de paiement imprimé (« TWINT »). Non voté entre les lectures : celle qui passe en tête le porte. */
+  const paymentMethod = ['twint', 'cash', 'card', 'bank_transfer', 'other', 'unknown'].includes(raw?.paymentMethod) ? raw.paymentMethod as 'twint'|'cash'|'card'|'bank_transfer'|'other'|'unknown' : 'unknown' as const;
   const proForma = raw?.proForma === true;
   const rawVat: any[] = Array.isArray(raw?.vat) ? raw.vat : [];
   if (rawVat.length > SCAN_MAX_VAT_ROWS) reject('vat', null, `${rawVat.length} rangées`, `bloc TVA coupé à ${SCAN_MAX_VAT_ROWS} rangées`);
@@ -392,7 +394,7 @@ export function normalizeInvoiceScan(raw: any) {
   const result = {
     documentType, documentTypeLu: DOCUMENT_TYPES.includes(raw?.documentTypeLu) ? raw.documentTypeLu as DocumentType : documentType,
     documentTypeRetenu: (proForma && paymentEvidence === 'paid' && documentType === 'quote' ? 'invoice' : documentType) as DocumentType, proForma,
-    paymentEvidence,
+    paymentEvidence, paymentMethod,
     fieldWarnings: (Array.isArray(raw?.fieldWarnings) ? raw.fieldWarnings : []).filter((warning: any) => INVOICE_FIELDS.includes(warning?.field) && text(warning?.message)).slice(0, 20).map((warning: any): InvoiceFieldWarning => ({ field: warning.field, message: text(warning.message, 200) })),
     vendor: text(raw?.vendor), date: invoiceDate(raw?.date), ...(dateCourteLue(raw?.date) ? { dateCourte: dateCourteLue(raw?.date) } : {}), currency: text(raw?.currency, 5).toUpperCase(), invoiceNumber: text(raw?.invoiceNumber, 70),
     orderNumber: text(raw?.orderNumber, 70),
