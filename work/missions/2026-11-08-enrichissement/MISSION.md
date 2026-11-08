@@ -124,3 +124,17 @@ La passe écrit `appels.json`, `jugement.json`, `JUGEMENT.md` et `raw/` dans `wo
 - Fiches lues le 08.11.2026 : fermentis.com (US-05, S-04, W-34/70), lallemandbrewing.com (Nottingham, Verdant IPA, Voss), weyermann.de (dix malts), nzhops.co.nz (Nelson Sauvin, Motueka).
 - Plan d'origine : `work/missions/2026-10-31-ecran-depense/voies/f4-enrichir/PLAN.md` § 3.5 (commits c032e1a2, 95b91193).
 - Banc modèle : `scripts/banc-lecture-facture.ts` ; garde : `scripts/paid-ai-test-guard.mjs`, `scripts/gemini-usage-bench-guard.mjs`.
+
+## Passes payantes (08.11, pilote, accord « Bien tester ça budget 10chf »)
+
+Trois passes, 27 appels, **9,33 CHF** (journal à part). Dossiers : `passes/20261108161023`, `…161056`, `…161257`.
+- **0 valeur inventée, 0 α écrit sur un houblon (M2)** ; les 9 pièges rendent « introuvable » à raison (Zorbax, XQ-99, Levure Maison 42,
+  levure de boulanger, Citra Zeta, « Malt Munich » et « Pilsner Malz » trop vagues, sucre cristal, « houblon amer 12 % »).
+- Malts : EBC juste 10/12, 1 dans la plage (Maris Otter ★), Carafa Special II rendu en plage 1050–1250 (weyermann.de) contre 1100–1200 attendu : plage large, pas inventée.
+- Levures : atténuation, température, tolérance, laboratoire, forme justes 4/4. La floculation est jugée « faux » 3/4 par le juge, à tort : la réponse est
+  en français (« moyenne », « haute ») et la vérité en anglais ; une fois « Very High » (Nottingham, « High » chez Lallemand). À normaliser.
+- Échecs : Nelson Sauvin, réponse tronquée (42 s, 0,39 CHF), pas de nouvel essai ; Idaho7 (chemin assistant houblon, vérité ★) « introuvable » à tort.
+- **Coût réel 0,35 CHF par appel** (×5 l'estimation : la recherche web), 5 à 20 s. Avec le plafond actuel `PLAFOND_JOUR = 200`, le pire est ≈ 70 CHF par jour.
+
+Verdict du pilote : fiable sur ce banc (rien d'inventé, pièges tenus). À faire avant d'allumer en production : plafond journalier bas, un nouvel essai
+sur réponse tronquée, floculation normalisée. L'allumage (`VITE_ENRICHISSEMENT_IA=production`) est un geste facturé : il attend l'accord du brasseur.
