@@ -15,7 +15,7 @@ import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
 import { articlesACommander } from '../../domain/stockLevel';
 import { fermentationReadings } from '../../domain/fermentationReadings';
-import { daysSincePitch } from '../../domain/productionInsights';
+import { joursDepuisBrassage } from '../../domain/productionInsights';
 
 interface DashboardTabProps {
   transactions: Transaction[];
@@ -55,7 +55,7 @@ function StockThreshold({ item }: { item: StockItem }) {
 function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => void }) {
   const status = statusOfBatch(batch);
   const reading = fermentationReadings(batch);
-  const days = daysSincePitch(batch);
+  const days = joursDepuisBrassage(batch);
   const planned = batch.status === 'planifie';
   return <button type="button" onClick={() => onOpen(batch.id)} className={rowAction}>
     <span className="min-w-0 flex-1">

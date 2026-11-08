@@ -10,7 +10,7 @@ import { statusOfBatch } from '../../domain/batchStatus';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import {
   batchNextAction,
-  daysSincePitch,
+  joursDepuisBrassage,
   missingBatchMeasurements,
   recipeSignature,
   type BatchDetailSection
@@ -226,7 +226,7 @@ export function BatchCard({
   const readings = fermentationReadings(batch),
     latest = readings.points.at(-1),
     missing = missingBatchMeasurements(batch);
-  const days = daysSincePitch(batch),
+  const days = joursDepuisBrassage(batch),
     planned = batch.status === 'planifie',
     active = batch.status === 'fermentation' || batch.status === 'garde';
   const target = batch.recipeSnapshot;

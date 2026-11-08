@@ -1,7 +1,7 @@
 import type { Batch, Recipe, RecipeSnapshot } from '../types';
 import { catalogDate, catalogNumber, catalogText, type CatalogEntry } from './productionCatalog';
 import { normalizeHop } from './hopStage';
-import { actualBrewDate, hasBrewStarted } from './batchSchedule';
+import { actualBrewDate, hasBrewStarted, normalizeBrewDate } from './batchSchedule';
 
 const dayMs = 86_400_000;
 export type BatchDetailSection = 'measurements' | 'tasting' | 'overview';
@@ -48,6 +48,13 @@ export function fermentationStartedAt(batch: Batch): { at: number; measured: boo
 export function daysSincePitch(batch: Batch, now = Date.now()): number | undefined {
   const start = fermentationStartedAt(batch);
   return start ? Math.floor((now - start.at) / dayMs) : undefined;
+}
+/**
+ * Le « J+n » d'une carte ou d'une ligne (RX-3, 08.11) : seulement quand le brassin porte une date de brassage. Un ensemencement chronométré
+ * sans date de brassage (« brewDate » vide) faisait dire « J+66 depuis brassage » à une carte qui n'écrivait aucune date : sans date, aucun « J+ ».
+ */
+export function joursDepuisBrassage(batch: Batch, now = Date.now()): number | undefined {
+  return normalizeBrewDate(batch.brewDate) === undefined ? undefined : daysSincePitch(batch, now);
 }
 export function batchNextAction(batch: Batch): {
   label: string;
