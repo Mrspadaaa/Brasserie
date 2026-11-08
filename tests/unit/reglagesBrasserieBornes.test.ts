@@ -12,11 +12,12 @@ const mesure = (parameter: SystemMetric['parameter'], value: number): SystemMetr
 });
 
 describe('Volume habituel du profil', () => {
-  it('24 L dans un fermenteur de 30 L à 20 % de réserve passe (repère 24 L)', () => {
+  it('24 L, et 30 L (la capacité), dans un fermenteur de 30 L passent : le repère de mousse n’est pas une limite dure', () => {
     expect(profileVolumeErrors(profil(24))).toEqual([]);
+    expect(profileVolumeErrors(profil(30))).toEqual([]);
   });
-  it('25 L ou 99 999 L dépassent le repère du fermenteur, avec le chiffre', () => {
-    expect(profileVolumeErrors(profil(25))[0]).toMatch(/repère du fermenteur \(24 L/);
+  it('31 L ou 99 999 L dépassent la capacité du fermenteur, avec le chiffre', () => {
+    expect(profileVolumeErrors(profil(31))[0]).toMatch(/capacité du fermenteur \(30 L\)/);
     expect(profileVolumeErrors(profil(99999))[0]).toMatch(/99999 L/);
   });
   it('0, négatif ou inconnu sont refusés sans être pris pour un volume', () => {
