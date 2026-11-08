@@ -227,6 +227,9 @@ export const morceauNote = (k: number, n: number) =>
   + ' Transcris, dans l’ordre, toutes les lignes d’articles visibles sur CETTE partie, sans en omettre aucune, avec suite = false.'
   + `${k > 1 ? ' Exception : si tout en haut de l’image, avant le premier article, une ou deux lignes ne sont que la suite d’un article commencé sur la partie précédente (quantité, prix, total ou variante, sans désignation propre), rends-les comme un article à part avec suite = true, name "" et les nombres lus.' : ''}`
   + ' printedLineCount compte les lignes d’articles de cette partie.'
+  // Rejeu en ligne du 08.11 (RL-6, RL-7) : « Total TTC non présent sur cette première partie », « Ligne tronquée en bas de page » : des avertissements vrais d'une partie, faux du document recollé.
+  + ' Une ligne dont le montant ou la suite est sur la partie voisine se rend telle quelle, sans avertissement : l’assemblage la recolle et la signale.'
+  + ' Dans fieldWarnings, n’avertis jamais qu’un total, une date ou un fournisseur manque sur CETTE partie : ils sont lus sur les autres parties.'
   + `${headerRule(k)}${totalsRule(k, n)}`;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -287,6 +290,7 @@ export function mergeDecoded(parts: any[], options: { dedupe: boolean }): any {
     vendor: firstFilled(parts, 'vendor') ?? '', documentType: first.documentType ?? 'other', date: firstFilled(parts, 'date') ?? '', currency: firstFilled(parts, 'currency') ?? '',
     invoiceNumber: firstFilled(parts, 'invoiceNumber') ?? '', orderNumber: firstFilled(parts, 'orderNumber') ?? '',
     paymentEvidence: [...parts].reverse().map(part => part?.paymentEvidence).find(value => value && value !== 'unknown') ?? 'unknown',
+    paymentMethod: [...parts].reverse().map(part => part?.paymentMethod).find(value => value && value !== 'unknown') ?? 'unknown',
     proForma: parts.some(part => part?.proForma === true),
     amountHT: nullable('amountHT'), tvaAmount: nullable('tvaAmount'), amountTTC: nullable('amountTTC'), tvaRate: nullable('tvaRate'), vat,
     printedLineCount: counted.length ? counted.reduce((a, b) => a + b, 0) : null,

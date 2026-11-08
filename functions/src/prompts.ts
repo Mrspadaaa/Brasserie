@@ -192,6 +192,7 @@ documentType distingue facture, ticket, bordereau de livraison, devis, avoir et 
 Sur un bordereau, la somme des lignes n’est PAS un total final imprimé : amountTTC reste null si aucun total n’est écrit.
 Ne prends pas une quantité totale, une taille de vêtement, un numéro client ou un numéro de commande pour un montant ou un numéro de facture.
 paymentEvidence vaut paid seulement si le paiement est explicitement établi, unpaid si un solde à payer est explicite, unknown sinon. Un document livré n’atteste pas son paiement.
+paymentMethod est le moyen de paiement IMPRIMÉ sur le document (rejeu du 08.11, RL-8 : « TWINT CHF 165.20 Paye ») : twint, cash (espèces), card (carte, Maestro, Visa, Postcard), bank_transfer (virement, bulletin payé), other (un autre moyen écrit) ; unknown s’il n’est pas imprimé. Ne le devine jamais d’après le type de commerce.
 fieldWarnings : un avertissement par champ au plus, et seulement pour une valeur illisible, absente alors qu’elle est essentielle (date, total TTC, fournisseur), ou confondable avec une autre (par exemple deux numéros proches) ; la raison courte donne les deux valeurs en cause.
 N'ajoute jamais d'avertissement pour une valeur lue sans hésitation, ni pour expliquer où elle est imprimée, ni pour un champ absent par nature : total HT non imprimé (amountHT = null), taux unique d'un document à plusieurs taux (porté par vat), intitulé pro-forma (porté par proForma).
 items : toutes les lignes, y compris matériel, entretien/réparation, ingrédients, service, emballage,
@@ -217,6 +218,7 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
         vendor: str,
         documentType: { type:'STRING', enum:['invoice','receipt','delivery_note','quote','credit_note','other'] },
         paymentEvidence: { type:'STRING', enum:['paid','unpaid','unknown'] },
+        paymentMethod: { type:'STRING', enum:['twint','cash','card','bank_transfer','other','unknown'] },
         fieldWarnings: arr(S({field:{type:'STRING',enum:['vendor','date','currency','invoiceNumber','amountHT','amountTTC','tvaRate','tvaAmount','category','items','documentType','paymentEvidence']},message:str},['field','message'])),
         date: { ...str, description: 'Format JJ.MM.AAAA' },
         currency: str,
@@ -256,7 +258,7 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
           )
         )
       },
-      ['vendor', 'documentType', 'paymentEvidence', 'fieldWarnings', 'date', 'currency', 'invoiceNumber', 'orderNumber', 'proForma', 'vat', 'printedLineCount', 'amountHT', 'tvaRate', 'tvaAmount', 'amountTTC', 'category', 'description', 'items']
+      ['vendor', 'documentType', 'paymentEvidence', 'paymentMethod', 'fieldWarnings', 'date', 'currency', 'invoiceNumber', 'orderNumber', 'proForma', 'vat', 'printedLineCount', 'amountHT', 'tvaRate', 'tvaAmount', 'amountTTC', 'category', 'description', 'items']
     )
   },
 

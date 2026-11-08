@@ -58,6 +58,7 @@ import type { LienStock } from '../depense/Pictos';
 import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,uniteAffichee,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
 import { confianceEntete,natureSansEnjeu,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
 import { arrondiDuTotal,uniteEffective } from '../../services/purchaseEntry';
+import { illisibleSiVide,lectureSansRien } from '../../services/lectureIllisible';
 import { regleProduit,linkUnit,donneesDArticle } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
@@ -491,12 +492,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /** Ce que l'écran fait de la valeur rendue par `scanDocument` / `scanPages` : un morceau a été reçu → fusion ; sinon (cache, pièce sans 3.8, ancien serveur) → comme avant. */
   const finLecture=(outcome:ScanOutcome,documentHash?:string)=>{
     if(provRef.current){surFinal(outcome,documentHash);return;}
-    setVerif('aucune');applyOutcome(outcome,documentHash);
+    /* LL-5, B2-17 : une lecture « ok » sans rien d'exploitable est un document illisible, dit une fois ; aucune ligne n'est fabriquée à sa place. */
+    setVerif('aucune');applyOutcome(illisibleSiVide(outcome),documentHash);
   };
   /** Les options du flux pour `scanDocument` / `scanPages` : le morceau provisoire, et le signal levé quand la feuille se ferme (le serveur finit et met en cache). */
   const optionsFlux=(documentHash:string,pages?:boolean):ScanFluxOptions=>{
     const jeton=++lectureJeton.current;lectureAbort.current?.abort();const ctrl=new AbortController();lectureAbort.current=ctrl;provRef.current=null;
-    return {signal:ctrl.signal,onProvisoire:p=>{if(!mounted.current||lectureJeton.current!==jeton||!p.ok||!p.result)return;if(pages)setNPagesLues(p.pagesLues??0);surProvisoire(p,documentHash);}};
+    /* LL-5 : un provisoire sans rien d'exploitable n'est pas posé (ni ligne « Achat » fabriquée, ni écran de confirmation) : le final décide, et dit « document illisible » s'il est vide aussi. */
+    return {signal:ctrl.signal,onProvisoire:p=>{if(!mounted.current||lectureJeton.current!==jeton||!p.ok||!p.result||lectureSansRien(p.result))return;if(pages)setNPagesLues(p.pagesLues??0);surProvisoire(p,documentHash);}};
   };
   /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
      il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
@@ -982,8 +985,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* B2 n° 2, 3, 5 : la quantité imprimée vaut pour l'unité imprimée, jamais pour une autre (« 2 Kg » ne devient pas « 2 g ») : une autre unité vide la quantité (« à remplir ») et le prix, le montant reste ;
        le retour à l'unité quittée, tant que rien n'a été retapé, rend la ligne telle qu'elle était (D373 : aucune valeur lue n'est perdue par un aller-retour). Un toucher sur l'unité déjà posée ne change rien. */
     const choisirUnite=(valeur:string)=>{
-      const posee=isReadableUnit(line.unit);
-      if(posee&&cleUnite(valeur)===cleUnite(line.unit))return;
+      /* Rejeu ff0f822e B2-2, B2-3 : « posée » est l'unité que l'écran MONTRE (`unite` : écrite, ou déduite du prix et jaune), pas seulement l'unité écrite sur la ligne : « Malt Munich 2 Kg × 4,20 » dont le Kg est déduit se
+         convertit comme une ligne au Kg imprimé (2 000 g × 0,0042), au lieu de garder « 2 » et d'effacer le prix. Un toucher sur l'unité déduite la confirme (elle s'écrit), sans rien changer d'autre. */
+      const posee=isReadableUnit(unite);
+      if(posee&&cleUnite(valeur)===cleUnite(unite)){if(!isReadableUnit(line.unit))updateLine(line.id,{unit:valeur});return;}
       const quittee=uniteQuittee.current.get(line.id);
       if(quittee&&line.quantity===undefined&&line.unitPrice===undefined&&line.amount===quittee.amount&&cleUnite(quittee.unit)===cleUnite(valeur)){
         uniteQuittee.current.delete(line.id);calcules.current.delete(line.id);derniers.current.delete(line.id);
@@ -991,13 +996,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         return;
       }
       /* B2 n° 3 (lot 2) : d'une masse à l'autre la quantité se convertit (2 Kg → 2 000 g), le prix suit (÷ 1000), le montant reste ; Kg → g → Kg rend les mêmes valeurs. Pièce, sachet, litre : rien ne se convertit, la quantité est « à remplir ». */
-      const f=posee&&isReadableUnit(unite)?facteurMasse(line.unit,valeur):undefined;
+      const f=posee?facteurMasse(unite,valeur):undefined;
       if(f!==undefined){
         calcules.current.delete(line.id);derniers.current.delete(line.id);
         updateLine(line.id,{unit:valeur,...convertirMasse(line,f)});
         return;
       }
-      if(posee&&isReadableUnit(unite)){
+      /* Hors masse, une unité seulement DÉDUITE (jaune) est un doute que le brasseur corrige (la quantité imprimée reste, B2 doute n° 2) ; une unité ÉCRITE qui change vide la quantité (« à remplir »). */
+      if(isReadableUnit(line.unit)){
         uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
         calcules.current.delete(line.id);derniers.current.delete(line.id);
         updateLine(line.id,{unit:valeur,quantity:undefined});

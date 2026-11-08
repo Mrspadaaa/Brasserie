@@ -64,9 +64,36 @@ function pointAssemblage(quoi: string, lignes: number[], message: string): ScanP
   return { ...p, signature: signerPoint(p) };
 }
 
+/** Un avertissement de ligne qui dit qu'une ligne est coupée ou que sa suite est ailleurs (le seul genre que la coupe fabrique). */
+const DIT_UNE_COUPE = /tronqu|coup[ée]|suite|continu|partie suivante|page suivante|document suivant|autre partie/i;
+const CHAMP_PAIEMENT = 'paymentEvidence';
+
+/**
+ * RL-6, RL-7 (rejeu ff0f822e) : les avertissements d'UNE partie parlent de cette partie (« Total TTC non présent sur cette première partie »). Une fois les parties recollées, ne restent que
+ * ceux qui sont encore vrais, avec la règle des points de lecture (plus bas) :
+ *   - en-tête (fournisseur, date, devise, numéro, type, catégorie) : ceux de la première partie seulement (les autres laissent l'en-tête vide, par consigne) ;
+ *   - totaux et paiement : seulement si la valeur fusionnée manque encore, et ceux de la partie qui porte les totaux ;
+ *   - lignes : ceux qui disent « tronquée / suite ailleurs » tombent quand l'assemblage a recollé la suite à cette coupe (il la signale déjà, par un point) ; les autres restent.
+ * Aucun avertissement vrai n'est jeté : un total absent partout, une ligne peu lisible, une ligne vraiment coupée restent dits. Chacun une seule fois.
+ */
+function avertissementsRestants(parties: any[], fusion: any, partieDesTotaux: number, completees: Set<number>): any[] {
+  const manque = (champ: string) => champ === 'vat' ? !(Array.isArray(fusion.vat) && fusion.vat.length) : champ === CHAMP_PAIEMENT ? (fusion.paymentEvidence ?? 'unknown') === 'unknown' : fusion[champ] === null || fusion[champ] === undefined || fusion[champ] === '';
+  const gardes: any[] = [];
+  parties.forEach((part, k) => (Array.isArray(part?.fieldWarnings) ? part.fieldWarnings : []).forEach((w: any) => {
+    const champ = String(w?.field ?? '');
+    const vrai = champ === 'items' ? !(completees.has(k) && DIT_UNE_COUPE.test(String(w?.message ?? '')))
+      : TOTAUX.has(champ) || champ === CHAMP_PAIEMENT ? manque(champ) && k === partieDesTotaux
+      : EN_TETE.has(champ) ? k === 0 : true;
+    if (vrai && !gardes.some(old => old.field === w.field && old.message === w.message)) gardes.push(w);
+  }));
+  return gardes;
+}
+
 export function assemblerMorceaux(parties: any[], jonctions: Map<number, { items?: any[]; sautDePage?: boolean }> = new Map()): any {
   // Les lignes de chaque morceau mises bout à bout, et leur rang global ; une suite en tête complète le dernier article déjà gardé.
   const gardees: any[] = [], rangs: Array<Map<number, number>> = [], signales: ScanPoint[] = [];
+  /** Les rangs (0-based) des parties dont la dernière ligne a reçu sa suite de la partie suivante : leurs avertissements « ligne tronquée » ne sont plus vrais (RL-7). */
+  const completees = new Set<number>();
   parties.forEach((part, k) => {
     const carte = new Map<number, number>();
     part.items.forEach((item: any, j: number) => {
@@ -75,6 +102,7 @@ export function assemblerMorceaux(parties: any[], jonctions: Map<number, { items
         const cible = gardees[gardees.length - 1], rang = gardees.length;
         CHAMPS_DE_SUITE.forEach(champ => { if (vide(cible[champ]) && !vide(item[champ])) cible[champ] = item[champ]; });
         carte.set(j + 1, rang);
+        completees.add(k - 1);
         signales.push(pointAssemblage(`suite-${k + 1}`, [rang],
           `Ligne ${rang} : article coupé entre les parties ${k} et ${k + 1}, recollé (${String(cible.name || 'sans désignation').slice(0, 60)}) : à vérifier sur le document.`));
         return;
@@ -106,10 +134,10 @@ export function assemblerMorceaux(parties: any[], jonctions: Map<number, { items
       `Coupe entre les parties ${k + 1} et ${k + 2} sans espace blanc entre deux lignes${autour.length ? ` (lignes ${autour.join(' et ')})` : ''} : une ligne peut manquer ou être doublée, à vérifier sur le document.`));
   }
   const fusion = mergeDecoded(parties.map(part => ({ ...part, items: [] })), { dedupe: false });
-  const lu: any = finirUneLecture(normalizeInvoiceScan({ ...fusion, items: gardees }));
+  const partieDesTotaux = (() => { for (let k = parties.length - 1; k >= 0; k--) if (parties[k]?.amountTTC != null) return k; return parties.length - 1; })();
+  const lu: any = finirUneLecture(normalizeInvoiceScan({ ...fusion, fieldWarnings: avertissementsRestants(parties, fusion, partieDesTotaux, completees), items: gardees }));
   // Les désaccords de lecture : ceux d'une ligne suivent sa ligne ; l'en-tête vient du premier morceau, les totaux du dernier qui en porte
   // (celui que garde `mergeDecoded`), le reste de tous.
-  const partieDesTotaux = (() => { for (let k = parties.length - 1; k >= 0; k--) if (parties[k]?.amountTTC != null) return k; return parties.length - 1; })();
   const cles = new Set<string>();
   const desaccords: ScanPoint[] = parties.flatMap((part, k) => (Array.isArray(part.points) ? part.points : []).flatMap((p: ScanPoint) => {
     if (p.origine !== 'lecture') return [];
