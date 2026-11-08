@@ -7,6 +7,8 @@ import { mashPhDiagnostic } from '../domain/water/readiness';
 import React, { useMemo, useState } from 'react';
 import { Recipe, Batch, HopIngredient, AppConfig } from '../types';
 import { Units } from '../services/units';
+import { nombreFr } from '../domain/stock/regles';
+import { deNom } from '../domain/elision';
 import { BrewingMath } from '../services/brewingMath';
 import { recipeBeerColor, missingColorData } from '../domain/beerColor';
 import { HOP_STAGE, groupByStage, describeMoment, normalizeHop } from '../domain/hopStage';
@@ -351,7 +353,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
         {color && (
           <p className="mt-1 text-xs text-cave-400">
-            Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {color.srm}.
+            Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {nombreFr(color.srm, 1)}.
           </p>
         )}
       </section>
@@ -379,7 +381,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-cave-50 break-words">{m.name}</span>
                     {m.colorEbc != null && (
-                      <span className="block text-sm text-cave-400">{m.colorEbc} EBC</span>
+                      <span className="block text-sm text-cave-400">{nombreFr(m.colorEbc, 1)} EBC</span>
                     )}
                   </span>
                   <span className="reading text-sm text-cave-50 shrink-0">
@@ -472,7 +474,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             <span className="block text-sm text-cave-50 break-words">{h.name}</span>
                             <span className="block text-sm text-cave-400">
                               {describeMoment(h)}
-                              {h.alpha ? ` · ${h.alpha} % AA` : ' · alpha inconnu'}
+                              {h.alpha ? ` · ${nombreFr(h.alpha, 2)} % α` : ' · alpha inconnu'}
                             </span>
                           </span>
                           <span className="text-right shrink-0">
@@ -532,7 +534,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <dt className="text-sm text-cave-400">Ensemencement</dt>
                 <dd className="reading text-sm">
-                  {recipe.yeast.pitchTempC != null ? `${recipe.yeast.pitchTempC} °C` : '—'}
+                  {recipe.yeast.pitchTempC != null ? `${nombreFr(recipe.yeast.pitchTempC, 1)} °C` : '—'}
                 </dd>
               </div>
             </dl>
@@ -648,10 +650,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                         )}
                       </th>
                       <td className="py-1.5 px-2 reading text-right">
-                        {recipe.waterPlan!.mash[id] ?? 0} g
+                        {nombreFr(recipe.waterPlan!.mash[id] ?? 0, 2)} g
                       </td>
                       <td className="py-1.5 pl-2 reading text-cave-400 text-right">
-                        {recipe.waterPlan!.sparge[id] ?? 0} g
+                        {nombreFr(recipe.waterPlan!.sparge[id] ?? 0, 2)} g
                       </td>
                     </tr>
                   ))}
@@ -671,27 +673,27 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   {recipe.waterPlan.mashWaterL > 0 && (retainedMashAcid == null
                     ? <p>Acidification de l’empâtage à déterminer après mesure ou titrage du pH.</p>
                     : <p>Dose d’acide d’empâtage retenue : <span className="reading text-water">
-                        {retainedMashAcid}{acidUnit ? ` ${acidUnit}` : ''}
-                      </span>{acidProduct ? ` de ${ACIDS[acidProduct].name}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
+                        {nombreFr(retainedMashAcid, 2)}{acidUnit ? ` ${acidUnit}` : ''}
+                      </span>{acidProduct ? ` ${deNom(ACIDS[acidProduct].name)}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
                   {recipe.waterPlan.spargeWaterL > 0 && (retainedSpargeAcid == null
                     ? <p>Acidification de l’eau de rinçage à déterminer après mesure ou titrage du pH.</p>
                     : <p>Dose d’acide de rinçage retenue : <span className="reading text-water">
-                        {retainedSpargeAcid}{acidUnit ? ` ${acidUnit}` : ''}
-                      </span>{acidProduct ? ` de ${ACIDS[acidProduct].name}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
+                        {nombreFr(retainedSpargeAcid, 2)}{acidUnit ? ` ${acidUnit}` : ''}
+                      </span>{acidProduct ? ` ${deNom(ACIDS[acidProduct].name)}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
                 </> : <>
                   {recipe.waterPlan.acid && recipe.waterPlan.acid.mash > 0 && (
                     <p>
                       <span className="reading text-water">
-                        {recipe.waterPlan.acid.mash} {ACIDS[recipe.waterPlan.acid.id].unit}
+                        {nombreFr(recipe.waterPlan.acid.mash, 2)} {ACIDS[recipe.waterPlan.acid.id].unit}
                       </span>{' '}
-                      de {ACIDS[recipe.waterPlan.acid.id].name} dans l’eau d’empâtage, pour
+                      {deNom(ACIDS[recipe.waterPlan.acid.id].name)} dans l’eau d’empâtage, pour
                       l’alcalinité résiduelle.
                     </p>
                   )}
                   {recipe.waterPlan.acid && recipe.waterPlan.acid.sparge > 0 && (
                     <p>
                       <span className="reading text-water">
-                        {recipe.waterPlan.acid.sparge} {ACIDS[recipe.waterPlan.acid.id].unit}
+                        {nombreFr(recipe.waterPlan.acid.sparge, 2)} {ACIDS[recipe.waterPlan.acid.id].unit}
                       </span>{' '}
                       dans l’eau de rinçage, pour ne pas extraire les tanins des drêches.
                     </p>
@@ -756,19 +758,19 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <dl className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
               <dt className="text-sm text-cave-400">Gypse</dt>
-              <dd className="reading text-sm">{recipe.water.salts.gypseG} g</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.gypseG, 2)} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">CaCl₂</dt>
-              <dd className="reading text-sm">{recipe.water.salts.cacl2G} g</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.cacl2G, 2)} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">MgSO₄</dt>
-              <dd className="reading text-sm">{recipe.water.salts.mgso4G} g</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.mgso4G, 2)} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">Acide lactique</dt>
-              <dd className="reading text-sm">{recipe.water.salts.acidLacticMl} mL</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.acidLacticMl, 2)} mL</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">pH visé</dt>
@@ -801,7 +803,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   {[...recipe.mash.steps, ...(recipe.mash.mashoutEnabled !== false && recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
                     <li key={i} className="py-1.5 flex items-baseline gap-2">
                       <span className="flex-1 text-base text-cave-50">{s.name}</span>
-                      <span className="reading text-sm text-water">{s.tempC} °C</span>
+                      <span className="reading text-sm text-water">{nombreFr(s.tempC, 1)} °C</span>
                       <span className="reading text-sm text-cave-400 w-16 text-right">
                         {s.durationMin} min
                       </span>
@@ -809,7 +811,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   ))}
                 </ul>
                 <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
-                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {recipe.mash.heatingRateCPerMin.toFixed(2)} °C/min. La montée est suivie séparément dans le journal.</p>}
+                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {nombreFr(recipe.mash.heatingRateCPerMin, 2)} °C/min. La montée est suivie séparément dans le journal.</p>}
               </Section>
             )}
 
@@ -836,7 +838,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             )}
                           </span>
                         </span>
-                        <span className="reading text-sm text-water shrink-0">{s.tempC} °C</span>
+                        <span className="reading text-sm text-water shrink-0">{nombreFr(s.tempC, 1)} °C</span>
                         <span className="reading text-sm text-cave-400 w-16 text-right shrink-0">
                           {Number.isFinite(s.days) ? `${s.days} j` : '—'}
                         </span>

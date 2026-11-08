@@ -62,7 +62,7 @@ export const IngredientPicker: React.FC<IngredientPickerProps> = ({
           i.currentStock > 0
             ? `${Units.format(i.currentStock, i.unit)} en stock`
             : 'stock épuisé',
-          i.alphaPct ? `${nombreFr(i.alphaPct, 2)} % AA` : null,
+          i.alphaPct ? `${nombreFr(i.alphaPct, 2)} % α` : null,
           i.colorEbc != null ? `${nombreFr(i.colorEbc, 1)} EBC` : null,
           i.supplier
         ]
