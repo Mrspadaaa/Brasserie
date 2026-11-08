@@ -64,10 +64,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   /* AM-66 : un IBAN saisi doit être un IBAN ; vide, la facture dit que les coordonnées manquent. */
   const ibanSaisi = formData.company.iban || COMPANY_FALLBACK.iban;
   const ibanErreur = ibanCompact(ibanSaisi) && !ibanValide(ibanSaisi) ? MESSAGE_IBAN : '';
+  /* Le message se montre toujours (un IBAN faux sur les factures doit se voir), mais seul un IBAN TAPÉ dans ce formulaire bloque l'enregistrement :
+     un IBAN déjà là (enregistré, ou celui de la configuration de l'app) ne doit jamais empêcher de sauver la cuverie ou un autre réglage (08.11). */
+  const ibanModifie = (formData.company.iban ?? '') !== (config.company?.iban ?? '');
 
   const handleSave = async () => {
     if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length || profileVolumeErrors(b).length)) return;
-    if (ibanErreur) { setActiveTab('fiscal'); setDataError(true); setDataMessage(ibanErreur); return; }
+    if (ibanErreur && ibanModifie) { setActiveTab('fiscal'); setDataError(true); setDataMessage(ibanErreur); return; }
     setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
     try {
     StorageService.saveConfig(formData);
