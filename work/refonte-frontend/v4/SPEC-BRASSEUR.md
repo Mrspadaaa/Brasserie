@@ -1561,3 +1561,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « SI je mets suivre au stock, ça devrait faire le mapping automatique... »
 - **08.11**, mot pour mot, sur la même capture (pied de la liste : « Détail 56,80 / 51,80 · Regrouper en une dépense », lignes Bauhaus 51,80 et « Idaho7 » 5,00) :
   « Et Détail 56,80 / 51,80 c'est assez trompeur et donne pas d'info.... Mettre des informations cooreante. On a l'impression que c'est faux alors que c'est juste »
+- **08.11**, mot pour mot, sur le test de l'enrichissement IA (27 appels, 0,35 CHF par appel ; proposé : 10 recherches par jour) : « Baisse à 20 et go » (lu : plafond de 20 par jour, allumé en production ; D378).
+- **08.11**, mot pour mot, sur ses captures des outils Houblons (Comparer : pastille « Ta bière » superposée, rangées « ~0,1 » sans barre ; Suggestions : « Plus agrumes — Aucune voie houblon », « Comparer (0) ») :
+  « Suggestions et comparez ne fonctionne plus ??? »
+  puis « Mais les test ont bien été fait sur la prod ??? C'est ce que j'ai demandé. En 10s je trouve plein de problème... »
+  puis « Mais la partie houblon fonctionnait super bien fut un temps ??? »
