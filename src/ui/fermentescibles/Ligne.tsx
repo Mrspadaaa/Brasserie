@@ -84,7 +84,7 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
 
   const poser = (x: number) => {
     const g = geste.current;
-    if (!g) return;
+    if (!g || !(g.w > 0) || !Number.isFinite(x)) return;
     const kg = g.part ? kgPourPart(fermentables, i, Math.round(Math.min(0.95, x) * 100)) : x * echelle;
     if (kg != null) a.setKg(i, cran(kg));
   };
@@ -101,7 +101,7 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
 
   const bouton = !tourne ? (
     <span className="fer-mo fer-mo-fixe" data-role="moment-ligne" data-ml={i} data-m={MOT_MOMENT[f.use]}
-      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}, le seul pour un grain`}>{MOT_MOMENT[f.use]}</span>
+      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}, le seul permis pour ${f.kind === 'grain' ? 'un grain' : 'cet ingrédient'}`}>{MOT_MOMENT[f.use]}</span>
   ) : (
     <button type="button" className={`fer-mo${hors ? ' fer-mo-hors' : ''}`} data-role="moment-ligne" data-ml={i} data-m={ferm ? undefined : MOT_MOMENT[f.use]}
       data-hors={hors ? 'moment' : undefined} data-booster="moment-tourne"
@@ -113,7 +113,9 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
 
   return (
     <li className={`fer-li${neuf ? ' fer-neuf' : ''}${couleurOuverte ? ' fer-ebcon' : ''}${tire ? ' fer-tire' : ''}`}
-      data-sel={i} aria-current={selectionnee ? 'true' : undefined} style={fond} onClick={clic}>
+      data-sel={i} aria-current={selectionnee ? 'true' : undefined} style={fond} onClick={clic}
+      // Toute entrée dans la ligne (masse, moment, curseur, couleur) la choisit : au 1280, un toucher sur la masse ou le moment laissait le plateau sur une autre ligne (BR-12).
+      onFocusCapture={() => { if (!selectionnee) a.selectionner(i); }}>
       <Pastille f={f} i={i} ouverte={couleurOuverte} a={a} />
       <span className="fer-nm">
         <button type="button" id={`fer-nom-${i}`} className="fer-nom" data-role="nom" data-booster="nom-detail" aria-expanded={selectionnee} aria-controls="fer-bal"

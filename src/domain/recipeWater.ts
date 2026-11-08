@@ -284,7 +284,7 @@ export function reconcileRecipeWater(recipe: Recipe, paths: string[], sources: W
       throw Error('Choisis le rapport eau/grain ou les volumes, pas les deux commandes ensemble.');
     const total = p.mashWaterL + p.spargeWaterL;
     const kg = next.fermentables
-      .filter((f) => f.kind === 'grain')
+      .filter((f) => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage') // AM-7 : seul le grain empâté boit l'eau de la maische
       .reduce((sum, f) => sum + f.weightKg, 0);
     const mashL = kg * next.mash!.ratioLPerKg!;
     if (!(kg > 0) || mashL > total)
