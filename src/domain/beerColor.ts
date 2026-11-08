@@ -44,8 +44,19 @@ const BANDS: Array<{ band: ColorBand; maxEbc: number; label: string; swatch: str
 
 const LB_PER_KG = 2.2046226;
 const GAL_PER_L = 0.26417205;
-/** L'EBC vaut 1.97 fois le SRM ; le degré Lovibond des malteurs suit le SRM. */
+/** L'EBC vaut 1.97 fois le SRM. */
 const EBC_PER_SRM = 1.97;
+
+/**
+ * Le degré Lovibond d'un malt, depuis sa couleur EBC (contre-calcul du 08.11, CF-2).
+ *
+ * Le °L n'est PAS le SRM : Daniels (Designing Great Beers) donne °L = (SRM + 0,76) / 1,3546, avec SRM = EBC / 1,97. Compter °L = SRM
+ * surestimait les malts colorés de 15 à 22 % (CaraMunich III à 150 EBC : 57 °L au catalogue du malteur, Daniels 57, ancienne
+ * conversion 76 ; Carafa III à 1 300 EBC : environ 490 °L, ancienne conversion 660).
+ */
+export function ebcToLovibond(ebc: number): number {
+  return (ebc / EBC_PER_SRM + 0.76) / 1.3546;
+}
 
 export function bandForEbc(ebc: number): { band: ColorBand; label: string; swatch: string } {
   return BANDS.find((b) => ebc <= b.maxEbc) ?? BANDS[BANDS.length - 1];
@@ -81,7 +92,7 @@ export function computeBeerColor(lignes: MaltIngredient[], volumeL: number): Bee
   const volumeGal = volumeL * GAL_PER_L;
 
   const mcu = malts.reduce((sum, m) => {
-    const lovibond = (m.colorEbc as number) / EBC_PER_SRM;
+    const lovibond = ebcToLovibond(m.colorEbc as number);
     const weightLb = m.weightKg * LB_PER_KG;
     return sum + (lovibond * weightLb) / volumeGal;
   }, 0);
