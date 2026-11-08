@@ -9,6 +9,7 @@ import { DriveService } from '../services/driveService';
 import { ReceiptService } from '../services/receiptService';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
+import { montantChf } from '../domain/finance/ledger';
 
 interface EditTransactionModalProps {
   isOpen: boolean;
@@ -230,7 +231,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             >
               <option value={0.0}>0.0% (Exonéré)</option>
               <option value={0.026}>2.6% (Réduit)</option>
-              <option value={0.081}>8.1% (Matériel)</option>
+              <option value={0.081}>8,1 % (Matériel, services, bière alcoolisée)</option>
             </select>
           </div>
         </div>
@@ -239,11 +240,11 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         <div className="p-3 bg-cave-950/70 border border-cave-800 rounded-2xl flex justify-between items-center text-sm">
           <div>
             <span className="text-cave-400">TVA : </span>
-            <strong className="text-ebc-straw font-mono">{tvaAmount.toFixed(2)} CHF</strong>
+            <strong className="text-ebc-straw font-mono">{montantChf(tvaAmount)} CHF</strong>
           </div>
           <div className="text-right">
             <span className="text-cave-400">Total TTC : </span>
-            <strong className="text-base text-hop font-mono">{amountTTC.toFixed(2)} CHF</strong>
+            <strong className="text-base text-hop font-mono">{montantChf(amountTTC)} CHF</strong>
           </div>
         </div>
 

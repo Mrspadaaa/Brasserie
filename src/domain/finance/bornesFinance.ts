@@ -18,6 +18,8 @@ export const BORNES_FINANCE = {
     valeur: 25_000_000, unite: 'centimes',
     source: 'Estimée : l’achat le plus lourd d’une micro-brasserie est une installation de brassage (ordre de grandeur : 50 000 à 150 000 CHF pour une salle de brassage de 5 à 10 hl) ; marge de moitié, soit 250 000 CHF.',
   },
+  /** Un taux de TVA saisi dans les Réglages, en %. */
+  tauxTvaPct: { valeur: 15, unite: '%', source: 'Taux suisses en vigueur : 8,1 % normal, 3,8 % hébergement, 2,6 % réduit (AFC) ; marge jusqu’à 15 % pour une hausse future, bien au-dessous de « 0 à 100 % ».' },
   /** Année de la date de pièce, au plus ancien. */
   anneeMin: { valeur: 2000, unite: 'année', source: 'Aucune brasserie suisse de l’outil n’a de pièce comptable antérieure à 2000.' },
   /** Date de pièce, au plus tard : combien de jours après aujourd'hui. */

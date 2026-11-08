@@ -15,6 +15,8 @@ import { StorageService } from '../../services/storage';
 import { BrewingMath } from '../../services/brewingMath';
 import { BEER_TAX_SOURCE } from '../../domain/finance/swissBeerTax';
 import { ClientStatsService } from '../../services/clientStats';
+import { lireTelephone } from '../../services/clientPhone';
+import { montantChf } from '../../domain/finance/ledger';
 import { EditClientModal } from '../EditClientModal';
 import { TarifSheet } from '../../ui/TarifSheet';
 import { nextClientId } from '../../services/refs';
@@ -63,7 +65,7 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
     StorageService.getUiState('clients_subtab', 'crm')
   );
 
-  const [copiedTax, setCopiedTax] = useState(false);
+  const [copiedTax, setCopiedTax] = useState<'idle' | 'ok' | 'failed'>('idle');
   const [editingClient, setEditingClient] = useLiveSelection(clients, 'id');
   const [invoiceClient, setInvoiceClient] = useLiveSelection(clients, 'id');
   const [taxYear, setTaxYear] = useState(new Date().getFullYear());
@@ -152,18 +154,19 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   const handleCopyOfdfValues = () => {
     const text = `RÉSERVE INDICATIVE IMPÔT SUR LA BIÈRE — ${taxYear}
 Entreprise : ${config.company.name}
-Volume conditionné : ${taxReport.totalHectoliters.toFixed(2)} hl (${taxReport.totalVolumeL} L)
-Taux plein : ${taxReport.fullRatePerHl.toFixed(2)} CHF/hl
+Volume conditionné : ${montantChf(taxReport.totalHectoliters)} hl (${taxReport.totalVolumeL} L)
+Taux plein : ${montantChf(taxReport.fullRatePerHl)} CHF/hl
 Réduction petit brasseur : ${taxReport.reductionPct}%
-Taux appliqué : ${taxReport.ratePerHl.toFixed(2)} CHF/hl
-Réserve : ${taxReport.estimateLowCHF.toFixed(2)} à ${taxReport.estimateHighCHF.toFixed(2)} CHF
+Taux appliqué : ${montantChf(taxReport.ratePerHl)} CHF/hl
+Réserve : ${montantChf(taxReport.estimateLowCHF)} à ${montantChf(taxReport.estimateHighCHF)} CHF
 
 ${taxReport.warning}
 Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirmée : calcul au taux plein'}.`;
 
-    navigator.clipboard.writeText(text);
-    setCopiedTax(true);
-    setTimeout(() => setCopiedTax(false), 2500);
+    /* TE-8 : le retour est visible dans les deux cas ; une copie refusée par le navigateur le dit au lieu de se taire. */
+    void Promise.resolve(navigator.clipboard?.writeText(text)).then(() => setCopiedTax('ok'), () => setCopiedTax('failed'));
+    if (!navigator.clipboard) setCopiedTax('failed');
+    setTimeout(() => setCopiedTax('idle'), 4000);
   };
 
   const handleGenerateInvoicePdf = (client: Client) => {
@@ -206,7 +209,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
             <div className="clients-filters">
               {((proCount > 0 && privateCount > 0) || clientType !== 'all') && (
                 <SegmentedControl label="Type de client" value={clientType} onChange={setClientType} className="clients-segments"
-                  options={[{ value: 'all', label: `Tous ${clients.length}` }, { value: 'Pro', label: `Pro ${proCount}` }, { value: 'Privé', label: `Privés ${privateCount}` }]} />
+                  options={[{ value: 'all', label: 'Tous' }, { value: 'Pro', label: `Pro ${proCount}` }, { value: 'Privé', label: `Privés ${privateCount}` }]} />
               )}
               {(statusCounts.filter(entry => entry.count > 0).length > 1 || clientStatus !== 'all') && (
                 <label className="clients-status-filter">
@@ -236,7 +239,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
                     <span className="client-metadata"><span>{client.type}</span><span className="client-status" data-status={stats.status}>{stats.status}</span></span>
                   </span>
                   <span className="client-sales">
-                    <span className="font-mono">{amount(stats.totalSales)} CHF</span>
+                    <span className="font-mono">{stats.orderCount ? `${amount(stats.totalSales)} CHF` : '—'}</span>
                     <span className="client-metadata">{stats.orderCount ? `${stats.orderCount} vente${stats.orderCount > 1 ? 's' : ''}` : 'Aucune vente'}</span>
                   </span>
                   <ChevronDown size={15} className="client-chevron" aria-hidden="true" />
@@ -252,10 +255,14 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
                   </dl>
                   <div className="client-actions">
                     <button type="button" className="clients-action" aria-label={`Modifier ${client.name}`} onClick={() => setEditingClient(client)}><Edit3 size={14} aria-hidden="true" />Modifier</button>
-                    {client.phone && <>
-                      <a href={`tel:${client.phone}`} className="clients-action"><Phone size={14} aria-hidden="true" />Appeler</a>
-                      <a href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="clients-action"><MessageSquare size={14} aria-hidden="true" />WhatsApp</a>
-                    </>}
+                    {(() => {
+                      /* TE-2 : un lien ne part que d'un numéro lisible ; WhatsApp veut l'indicatif du pays. */
+                      const tel = client.phone ? lireTelephone(client.phone) : null;
+                      return tel?.ok ? <>
+                        <a href={`tel:${tel.tel}`} className="clients-action"><Phone size={14} aria-hidden="true" />Appeler</a>
+                        {tel.whatsapp && <a href={`https://wa.me/${tel.whatsapp}`} target="_blank" rel="noreferrer" className="clients-action"><MessageSquare size={14} aria-hidden="true" />WhatsApp</a>}
+                      </> : null;
+                    })()}
                     <button type="button" onClick={() => handleGenerateInvoicePdf(client)} className="clients-action clients-action-emphasis"><FileText size={14} aria-hidden="true" />Facturer</button>
                   </div>
                 </div>
@@ -279,8 +286,9 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
           <p>{taxReport.warning}</p>
           <dl className="clients-tax-reading">
             <div>
-              <dt>Pour {taxReport.totalVolumeL} litres conditionnés</dt>
-              <dd className="font-mono">{taxReport.estimateLowCHF === taxReport.estimateHighCHF ? taxReport.estimateHighCHF.toFixed(2) : `${taxReport.estimateLowCHF.toFixed(2)} – ${taxReport.estimateHighCHF.toFixed(2)}`} CHF</dd>
+              {/* MV-42 : sans litre conditionné, il n'y a pas de réserve à chiffrer — pas un « 0.00 CHF » qui ressemble à un calcul. */}
+              <dt>{taxReport.totalVolumeL > 0 ? `Pour ${taxReport.totalVolumeL} litres conditionnés` : `Aucun litre conditionné en ${taxYear}`}</dt>
+              <dd className="font-mono">{taxReport.totalVolumeL > 0 ? `${taxReport.estimateLowCHF === taxReport.estimateHighCHF ? montantChf(taxReport.estimateHighCHF) : `${montantChf(taxReport.estimateLowCHF)} – ${montantChf(taxReport.estimateHighCHF)}`} CHF` : '—'}</dd>
             </div>
           </dl>
           <p className="text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${taxReport.reductionPct} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>
@@ -295,7 +303,8 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
             </div>
           </details>
           <div className="clients-tax-actions">
-            <button type="button" onClick={handleCopyOfdfValues} className="clients-action clients-tax-copy">{copiedTax ? 'Estimation copiée' : 'Copier cette estimation'}</button>
+            <button type="button" onClick={handleCopyOfdfValues} className="clients-action clients-tax-copy">{copiedTax === 'ok' ? 'Estimation copiée' : 'Copier cette estimation'}</button>
+            <span role="status" className="text-xs text-cave-400">{copiedTax === 'ok' ? 'Copiée dans le presse-papiers.' : copiedTax === 'failed' ? 'Copie refusée par le navigateur : l’estimation reste à lire ci-dessus.' : ''}</span>
             <a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="clients-tax-link">Ouvrir Taxas</a>
             <a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer" className="clients-tax-link">Directives OFDF</a>
           </div>

@@ -1062,8 +1062,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                     onChange={(e) => setTvaRate(parseFloat(e.target.value))}
                     className="w-full min-h-touch bg-cave-850 border border-cave-700 rounded-xl px-3 text-cave-50 font-medium"
                   >
-                    <option value={0.026}>2.6% (Bière / Aliments)</option>
-                    <option value={0.081}>8.1% (Matériel / Services)</option>
+                    <option value={0.026}>2,6 % (Denrées : malt, houblon, levure)</option>
+                    <option value={0.081}>8,1 % (Matériel, services, bière alcoolisée)</option>
                     <option value={0.0}>0.0% (Exonéré)</option>
                   </select>
                 </div>

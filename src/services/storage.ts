@@ -1,4 +1,4 @@
-import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction } from '../domain/finance/ledger';
+import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction, montantChf } from '../domain/finance/ledger';
 import type { FinancialPayment } from '../domain/finance/types';
 import { apprendreSurFicheRetenue } from './enrichissementRecette';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
@@ -419,9 +419,17 @@ export const StorageService = {
   },
 
   // 0. JOURNAL D'AUDIT
+  /**
+   * Du plus récent au plus ancien (TE-58). L'identifiant ne suffit pas : d'anciennes entrées portent un identifiant d'un autre format
+   * (suffixe aléatoire) qui se classait au-dessus des récentes. La date écrite fait foi ; l'identifiant départage deux écritures de la même seconde.
+   */
   getAuditLogs(): AuditLog[] {
+    const instant = (log: AuditLog): number => {
+      const m = /(\d{1,2})\.(\d{1,2})\.(\d{4})\D+(\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(log.timestamp || '');
+      return m ? Date.UTC(Number(m[3]), Number(m[2]) - 1, Number(m[1]), Number(m[4]), Number(m[5]), Number(m[6] || 0)) : Number.NEGATIVE_INFINITY;
+    };
     return clean<AuditLog>(FirestoreRepo.all('auditLogs')).sort((a, b) =>
-      (b.id || '').localeCompare(a.id || '')
+      (instant(b) - instant(a)) || (b.id || '').localeCompare(a.id || '')
     );
   },
 
@@ -527,8 +535,8 @@ export const StorageService = {
       'Création',
       'Finances',
       tx.id,
-      `Nouvelle écriture : ${tx.description} (${tx.amountTTC.toFixed(2)} CHF)`,
-      `Catégorie : ${tx.category} · TVA : ${(tx.tvaRate * 100).toFixed(1)}%`
+      `Nouvelle écriture : ${tx.description} (${montantChf(tx.amountTTC)} CHF)`,
+      `Catégorie : ${tx.category} · TVA : ${(tx.tvaRate * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`
     );
   },
 
@@ -541,9 +549,9 @@ export const StorageService = {
       'Modification',
       'Finances',
       tx.id,
-      `Écriture ${tx.id} modifiée : ${tx.description} (${tx.amountTTC.toFixed(2)} CHF)`,
+      `Écriture ${tx.id} modifiée : ${tx.description} (${montantChf(tx.amountTTC)} CHF)`,
       old
-        ? `Ancien : ${old.description} (${old.amountTTC.toFixed(2)} CHF) [${old.category}] ➔ Nouveau : [${tx.category}]`
+        ? `Ancien : ${old.description} (${montantChf(old.amountTTC)} CHF) [${old.category}] ➔ Nouveau : [${tx.category}]`
         : undefined
     );
   },

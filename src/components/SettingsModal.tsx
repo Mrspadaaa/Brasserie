@@ -2,6 +2,9 @@ import { Input } from '../ui/Input';
 import React, { useEffect, useState } from 'react';
 import { COMPANY_FALLBACK } from '../domain/companyDefaults';
 import { NumberInput } from '../ui/NumberInput';
+import { ChampNombre } from '../ui/depense/ChampNombre';
+import { BORNES_FINANCE } from '../domain/finance/bornesFinance';
+import { ibanCompact, ibanValide, MESSAGE_IBAN } from '../domain/finance/iban';
 import { 
   X, 
   Settings, 
@@ -58,8 +61,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!isOpen) return null;
 
+  /* AM-66 : un IBAN saisi doit être un IBAN ; vide, la facture dit que les coordonnées manquent. */
+  const ibanSaisi = formData.company.iban || COMPANY_FALLBACK.iban;
+  const ibanErreur = ibanCompact(ibanSaisi) && !ibanValide(ibanSaisi) ? MESSAGE_IBAN : '';
+
   const handleSave = async () => {
     if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length)) return;
+    if (ibanErreur) { setActiveTab('fiscal'); setDataError(true); setDataMessage(ibanErreur); return; }
     setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
     try {
     StorageService.saveConfig(formData);
@@ -160,16 +168,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div>
                 <label htmlFor="settings-vat-reduced" className="text-cave-200 font-semibold block mb-1 text-xs">TVA réduite (denrées admissibles)</label>
                 <div className="flex items-center space-x-1">
-                  <NumberInput
+                  {/* AM-59 : un taux entre 0 et 15 %, refus visible au-delà ; un champ vidé garde son taux (plus de remplissage silencieux). */}
+                  <ChampNombre
                     id="settings-vat-reduced"
                     value={Math.round(formData.fiscal.tvaReducedRate * 1000) / 10}
-                    onValue={(v) =>
-                      setFormData({
-                        ...formData,
-                        fiscal: { ...formData.fiscal, tvaReducedRate: v / 100 }
-                      })}
-                    emptyValue={2.6}
-                    pad
+                    onValue={(v) => { if (v !== undefined) setFormData({ ...formData, fiscal: { ...formData.fiscal, tvaReducedRate: v / 100 } }); }}
+                    max={BORNES_FINANCE.tauxTvaPct.valeur}
                     className={`${inputClass} font-mono font-bold`}
                   />
                   <span className="text-cave-400 text-xs">%</span>
@@ -179,16 +183,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div>
                 <label htmlFor="settings-vat-normal" className="text-cave-200 font-semibold block mb-1 text-xs">TVA normale (bière alcoolisée, matériel)</label>
                 <div className="flex items-center space-x-1">
-                  <NumberInput
+                  <ChampNombre
                     id="settings-vat-normal"
                     value={Math.round(formData.fiscal.tvaNormalRate * 1000) / 10}
-                    onValue={(v) =>
-                      setFormData({
-                        ...formData,
-                        fiscal: { ...formData.fiscal, tvaNormalRate: v / 100 }
-                      })}
-                    emptyValue={8.1}
-                    pad
+                    onValue={(v) => { if (v !== undefined) setFormData({ ...formData, fiscal: { ...formData.fiscal, tvaNormalRate: v / 100 } }); }}
+                    max={BORNES_FINANCE.tauxTvaPct.valeur}
                     className={`${inputClass} font-mono font-bold`}
                   />
                   <span className="text-cave-400 text-xs">%</span>
@@ -240,6 +239,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 data-1p-ignore="true"
                 data-bwignore="true"
                 value={formData.company.iban || COMPANY_FALLBACK.iban}
+                aria-invalid={ibanErreur ? true : undefined}
+                aria-describedby={ibanErreur ? 'settings-company-iban-erreur' : undefined}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -248,6 +249,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 }
                 className={`${inputClass} font-mono`}
               />
+              {ibanErreur && <p id="settings-company-iban-erreur" role="alert" className="text-xs text-alert-strong">{ibanErreur}</p>}
             </div>
           </div>
         )}

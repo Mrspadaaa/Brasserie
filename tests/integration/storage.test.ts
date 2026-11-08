@@ -451,4 +451,12 @@ describe('Journal d’audit', () => {
     StorageService.addStockItem('rawMaterials', stockItem());
     expect(['Gaëtan', 'Aricia']).toContain(StorageService.getAuditLogs()[0].user);
   });
+
+  it('TE-58 : une ancienne entrée à identifiant d’un autre format ne passe pas devant les récentes', () => {
+    store.set('auditLogs', new Map([['LOG-zzzz-ancien', { id: 'LOG-zzzz-ancien', timestamp: '03.09.2026, 23:15:15', action: 'Création', category: 'Finances', entityId: 'OLD', summary: 'ancienne', user: 'Gaëtan' }]]));
+    StorageService.addStockItem('rawMaterials', stockItem());
+    const logs = StorageService.getAuditLogs();
+    expect(logs[0].summary).not.toBe('ancienne');
+    expect(logs[logs.length - 1].summary).toBe('ancienne');
+  });
 });
