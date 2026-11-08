@@ -4,6 +4,8 @@
 // Une lecture qui échoue ne bloque jamais la dépense : elle rend `non-verifie`, jamais une exception.
 import { parseSwissQr, type QrFacture } from './qrFacture';
 import { chargerPdfjs } from './pdfjs';
+import { facteurAgrandi, OPTIONS_ZXING } from './qrOptions';
+import { lireAgrandieHorsFil, lireCodesHorsFil } from './qrTravail';
 
 /**
  * Le résultat d'une lecture de QR :
@@ -28,6 +30,11 @@ export interface MoteursQr {
   pagesPdf(donnees: ArrayBuffer, n: number, echelle: number): AsyncIterable<ImageData>;
   /** L'image agrandie (seconde passe) ; `null` si elle ne peut pas l'être. */
   agrandir(image: Blob): Promise<ImageData | null>;
+  /**
+   * LO-2, facultatif : la seconde passe entière (agrandir, puis décoder) faite hors du fil de la page. Rend les codes lus, `null` (pas d'agrandissement utile : pas de
+   * seconde passe) ou `undefined` (impossible ici : l'appelant fait `agrandir` puis `lireCodes`, comme avant).
+   */
+  lireAgrandie?(image: Blob): Promise<CodeLu[] | null | undefined>;
 }
 
 /** Les deux dernières pages, à l'échelle 3 (mesuré au banc). */
@@ -53,13 +60,21 @@ export function classer(codes: readonly CodeLu[]): { qr: QrFacture | null; vuNon
   return { qr: premier, vuNonDecode, ...(bulletins > 1 ? { bulletins } : {}) };
 }
 
+/** Les codes de la seconde passe (image agrandie), ou `null` si l'image ne peut pas l'être. Hors du fil de la page quand le moteur le sait (LO-2). */
+async function secondePasse(image: Blob, moteurs: MoteursQr): Promise<CodeLu[] | null> {
+  const horsFil = await moteurs.lireAgrandie?.(image);
+  if (horsFil !== undefined) return horsFil;
+  const grande = await moteurs.agrandir(image);
+  return grande ? moteurs.lireCodes(grande) : null;
+}
+
 /** Lit un QR-facture sur une image : une passe, puis (si rien) une seconde passe sur l'image agrandie. */
 async function lireImage(image: Blob, moteurs: MoteursQr): Promise<{ qr: QrFacture | null; vuNonDecode: boolean; bulletins?: number }> {
   const premiere = classer(await moteurs.lireCodes(image));
   if (premiere.qr) return premiere;
-  const grande = await moteurs.agrandir(image);
-  if (!grande) return premiere;
-  const seconde = classer(await moteurs.lireCodes(grande));
+  const codes = await secondePasse(image, moteurs);
+  if (!codes) return premiere;
+  const seconde = classer(codes);
   return { qr: seconde.qr, vuNonDecode: premiere.vuNonDecode || seconde.vuNonDecode, ...(seconde.bulletins ? { bulletins: seconde.bulletins } : {}) };
 }
 
@@ -116,12 +131,15 @@ async function creerMoteurs(): Promise<MoteursQr> {
   const adresseWasm = wasm.default;
   // Le wasm est servi par l'app : `locateFile` ne rend jamais une adresse du CDN par défaut de zxing-wasm.
   zxing.prepareZXingModule({ overrides: { locateFile: (chemin: string, prefixe: string) => (chemin.endsWith('.wasm') ? adresseWasm : prefixe + chemin) } });
-  const options = { formats: ['QRCode' as const], tryHarder: true, tryRotate: true, tryInvert: true, tryDownscale: true, maxNumberOfSymbols: 4, returnErrors: true };
+  const options = OPTIONS_ZXING;
   return {
     async lireCodes(entree) {
+      // LO-2 : un fichier (Blob) se décode dans le Worker, hors du fil de la page ; des pixels déjà en main (page de PDF) ou un Worker impossible : ici, comme avant.
+      if (entree instanceof Blob) { const horsFil = await lireCodesHorsFil(entree); if (horsFil) return horsFil; }
       const resultats = await zxing.readBarcodes(entree, options);
       return resultats.filter(r => r.format === 'QRCode').map(r => ({ texte: r.text ?? '', decode: r.isValid }));
     },
+    lireAgrandie: image => lireAgrandieHorsFil(image),
     async *pagesPdf(donnees, n, echelle) {
       const pdfjs = await chargerPdfjs();
       // Piège mesuré au banc : ne PAS passer `standardFontDataUrl` (il effaçait le QR d'un PDF). `isEvalSupported: false` : aucune évaluation de code.
@@ -148,9 +166,8 @@ async function creerMoteurs(): Promise<MoteursQr> {
       if (typeof createImageBitmap === 'undefined') return null;
       const bitmap = await createImageBitmap(image);
       try {
-        // Au plus ×2, et jamais au-delà de 4 000 px de côté (mémoire d'un téléphone).
-        const facteur = Math.min(2, 4000 / Math.max(bitmap.width, bitmap.height));
-        if (facteur <= 1.05) return null;
+        const facteur = facteurAgrandi(bitmap.width, bitmap.height);
+        if (facteur === null) return null;
         const canevas = document.createElement('canvas');
         canevas.width = Math.round(bitmap.width * facteur); canevas.height = Math.round(bitmap.height * facteur);
         const contexte = canevas.getContext('2d', { willReadFrequently: true });
