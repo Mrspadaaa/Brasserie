@@ -1542,3 +1542,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   pour un oui écrit dans son propre fil, question posée le 08.11).
 - **08.11**, dans le fil de la pilote, mot pour mot : « Oui ... » (fusion de la branche Finances), puis « Le relais de l'autre branche suffit.... »
   (lu : un accord donné dans le fil du monitoring et relayé mot pour mot vaut pour la pilote ; ne plus lui faire répéter).
+- **08.11**, dans le fil de la pilote, sur les mini maquettes « Mot « ajoutée » » (https://claude.ai/artifact/X9y2sCuYsLDRvfDwLR9hRD), mot pour mot :
+  « b » (lu : la ligne arrivée avec la lecture complète se marque « 2ᵉ lecture · n/N » au lieu de « ajoutée » ; seul le mot change).
+  Avant, sur « Shipping 15,00 » : « si on l'enlève, le total est plus correct ?? » ; « Tu va fixer tout ces problèmes et rendre le truc encore plus
+  fiable et robuste ??? » ; « Okay, fair ça et en paralelle, rend le truc fiable » ; « Montre les mini maquettes » ; « Envoie une notification quand c'est fait ».
