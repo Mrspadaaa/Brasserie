@@ -128,9 +128,64 @@ const fmt = (n: number) => String(n).replace('.', ',');
 const isCode = (t: string) => /^[a-z]{1,4}\d{2,4}$/.test(t) && !GENERIC.has(t);
 const detachMalt = (w: string) => w.replace(/^(.{4,}?)(malz|malt)$/, '$1');
 
+/**
+ * SM (08.11, « SI je mets suivre au stock, ça devrait faire le mapping automatique... ») : UNE règle de nom pour la lecture et pour « Suivre au stock ».
+ * Un nom de houblon à plusieurs mots du catalogue (`HOP_LIST`, alias compris), écrit collé ou avec des tirets (« Idaho7 », « ElDorado », « Bru-1 »), se réécrit
+ * avec ses espaces (« Idaho 7 », « El Dorado ») avant toute lecture : le contexte, les jetons d'appariement et le nom propre en dépendent, jamais le libellé imprimé.
+ * Exact seulement : les mots du libellé, joints, égaux au nom joint du catalogue (casse et accents ignorés). Aucun rapprochement flou : « Citra » et « Citra Cryo »
+ * restent deux noms ; une clé jointe commune à deux écritures différentes du catalogue n'est pas retenue.
+ */
+const MOTS_DE_NOM = /[\p{L}\p{N}]+/gu;
+const ECART_DE_NOM = /^[\s\-–‑]+$/u;
+const MOTS_PETITS = new Set(['of', 'for', 'de']);
+const sansAccent = (mot: string) => mot.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/ß/g, 'ss');
+let nomsCollesDuCatalogue: Map<string, string> | undefined;
+const NOMS_COLLES = (): Map<string, string> => {
+  if (nomsCollesDuCatalogue) return nomsCollesDuCatalogue;
+  const table = new Map<string, string | null>();
+  const simples = new Set(HOP_LIST.split('|').filter(nom => !nom.includes(' ')));
+  for (const nom of HOP_LIST.split('|')) {
+    const mots = nom.split(' ');
+    if (mots.length < 2) continue;
+    const cle = mots.join(''), ecrit = mots.map(mot => (MOTS_PETITS.has(mot) ? mot : mot.charAt(0).toUpperCase() + mot.slice(1))).join(' ');
+    table.set(cle, simples.has(cle) || (table.has(cle) && table.get(cle) !== ecrit) ? null : ecrit);
+  }
+  nomsCollesDuCatalogue = new Map([...table].filter((entree): entree is [string, string] => entree[1] !== null));
+  return nomsCollesDuCatalogue;
+};
+const MEMO_ESPACES = new Map<string, string>();
+export function espacerNomsHoublons(texte: string): string {
+  const memo = MEMO_ESPACES.get(texte);
+  if (memo !== undefined) return memo;
+  const mots = [...texte.matchAll(MOTS_DE_NOM)];
+  let sortie = texte;
+  if (mots.length) {
+    const table = NOMS_COLLES();
+    let rendu = '', curseur = 0;
+    for (let i = 0; i < mots.length;) {
+      let retenu = 0;
+      for (let n = Math.min(5, mots.length - i); n >= 1 && !retenu; n--) {
+        let suite = true;
+        for (let k = i; k < i + n - 1 && suite; k++) suite = ECART_DE_NOM.test(texte.slice(mots[k].index! + mots[k][0].length, mots[k + 1].index));
+        if (!suite) continue;
+        const ecrit = table.get(mots.slice(i, i + n).map(m => sansAccent(m[0])).join(''));
+        if (!ecrit) continue;
+        retenu = n;
+        const debut = mots[i].index!, fin = mots[i + n - 1].index! + mots[i + n - 1][0].length;
+        if (sansAccent(texte.slice(debut, fin)) !== sansAccent(ecrit)) { rendu += texte.slice(curseur, debut) + ecrit; curseur = fin; }
+      }
+      i += retenu || 1;
+    }
+    sortie = rendu + texte.slice(curseur);
+  }
+  if (MEMO_ESPACES.size > 4000) MEMO_ESPACES.clear();
+  MEMO_ESPACES.set(texte, sortie);
+  return sortie;
+}
+
 /** Mots du libellé (au pluriel près) qui disent « houblon » : un nom du catalogue, ou son premier mot. */
 export function hasHopWord(label: string): boolean {
-  return scan(fold(label)).some(tok => tok.kind === 'word' && (HOP_WORDS.has(tok.t) || HOP_WORDS.has(tok.t.replace(/s$/, ''))));
+  return scan(fold(espacerNomsHoublons(label))).some(tok => tok.kind === 'word' && (HOP_WORDS.has(tok.t) || HOP_WORDS.has(tok.t.replace(/s$/, ''))));
 }
 /** Mots du libellé qui disent « levure » (liste fermée de marques de souche, de codes et de souches nommées). */
 export function hasYeastWord(label: string): boolean {
@@ -148,7 +203,8 @@ function divides(value: number, from: string, lineUnit: string, quantity: number
 
 export function readProductLabel(label: string, o: ReadOptions = {}): ProductIdentity {
   const raw = label ?? '';
-  const nfc = raw.normalize('NFC');
+  // SM : un nom de houblon collé (« Idaho7 ») se lit avec ses espaces ; `rawLabel` garde l'imprimé.
+  const nfc = espacerNomsHoublons(raw.normalize('NFC'));
   const folded = fold(nfc);
   const toks = scan(folded);
   const family = o.unit ? Units.familyOf(o.unit) : 'piece';
