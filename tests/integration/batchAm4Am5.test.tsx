@@ -61,6 +61,21 @@ describe('AM 4 · le sélecteur d’étape n’offre que ce qui est permis', () 
     expect(confirmSpy).not.toHaveBeenCalled();
   });
 
+  it('RJ-15 · « Annulé (abandon) » se confirme dans la page, comme le retour en arrière, sans confirm()', () => {
+    open(base({ status: 'planifie' }));
+    fireEvent.change(selector(), { target: { value: 'annule' } });
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', { name: 'Abandonner ce brassin ?' })).toBeInTheDocument();
+    expect(screen.getByText(/Rien n’a été déstocké/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    expect(selector()).toHaveValue('planifie');
+    fireEvent.change(selector(), { target: { value: 'annule' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
+    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ status: 'annule' }));
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
   it('annuler la confirmation laisse le brassin tel quel', () => {
     open(base({ status: 'termine' }));
     fireEvent.change(selector(), { target: { value: 'conditionne' } });
@@ -98,14 +113,14 @@ const fg = () => screen.getByPlaceholderText('Non confirmée');
 const typeBlur = (el: HTMLElement, value: string) => { fireEvent.change(el, { target: { value } }); fireEvent.blur(el); };
 
 describe('AM 5 · OG et FG bornées', () => {
-  it('OG 1,290 : saisie à confirmer, rien n’est écrit tant qu’elle n’est pas gardée', () => {
+  it('OG 1,150 : improbable mais possible, à confirmer ; rien n’est écrit tant qu’elle n’est pas gardée', () => {
     open(base(), 'measurements');
-    typeBlur(og(), '1,290');
-    expect(screen.getByRole('alert')).toHaveTextContent('OG 1,290');
+    typeBlur(og(), '1,150');
+    expect(screen.getByRole('alert')).toHaveTextContent('OG 1,150');
     expect(screen.getByRole('alert')).toHaveTextContent('1,130');
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Garder cette valeur' }));
-    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ og: '1,290' }));
+    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ og: '1,150' }));
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
@@ -125,33 +140,51 @@ describe('AM 5 · OG et FG bornées', () => {
     expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ fg: '1.010', abv: '5.3%' }));
   });
 
-  it('FG 0,5 : sous la borne, à confirmer, et jamais un alcool de plusieurs centaines de %', () => {
+  it('FG 0,992 : improbable mais possible, à confirmer, et jamais un alcool de plusieurs centaines de %', () => {
     open(base({ og: '1.050' }), 'measurements');
-    typeBlur(fg(), '0,5');
-    expect(screen.getByRole('alert')).toHaveTextContent('FG 0,500');
-    expect(screen.queryByText(/Alcool calculé/)).not.toBeInTheDocument();
+    typeBlur(fg(), '0,992');
+    expect(screen.getByRole('alert')).toHaveTextContent('FG 0,992');
     fireEvent.click(screen.getByRole('button', { name: 'Garder cette valeur' }));
     const written = vi.mocked(StorageService.updateBatch).mock.calls[0][0];
-    expect(written.fg).toBe('0,5');
-    expect(written.abv).toBe('');
+    expect(written.fg).toBe('0,992');
   });
 
-  it('FG au-dessus de l’OG efface l’ancien alcool au lieu de le laisser', () => {
+  it('RJ-2 · une densité impossible ne s’enregistre pas et n’offre pas « Garder cette valeur »', () => {
+    open(base({ og: '1.050' }), 'measurements');
+    for (const [champ, saisie] of [[fg, '0,5'], [og, '-5'], [og, '5'], [og, '1,300'], [og, '0'], [fg, '1,060']] as const) {
+      typeBlur(champ(), saisie);
+      expect(screen.getByRole('alert')).toHaveTextContent('ne s’enregistre pas');
+      expect(screen.queryByRole('button', { name: 'Garder cette valeur' })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Annuler la saisie' }));
+    }
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+  });
+
+  it('RJ-2 · FG au-dessus de l’OG : refusée, l’ancien alcool reste', () => {
     open(base({ og: '1.050', fg: '1.010', abv: '5.3%' }), 'measurements');
-    expect(screen.getByText(/Alcool calculé/)).toHaveTextContent('5.3');
+    expect(screen.getByText(/Alcool calculé/)).toHaveTextContent('5');
     typeBlur(fg(), '1.060');
     expect(screen.getByRole('alert')).toHaveTextContent('au-dessus de l’OG 1,050');
-    fireEvent.click(screen.getByRole('button', { name: 'Garder cette valeur' }));
-    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ fg: '1.060', abv: '' }));
-    expect(screen.queryByText(/Alcool calculé/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Alcool non calculé/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Garder cette valeur' })).not.toBeInTheDocument();
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
   });
 
-  it('une OG changée sous la FG efface aussi l’alcool', () => {
+  it('RJ-2 · une saisie refusée n’est pas emportée par l’enregistrement de l’autre champ', () => {
+    open(base({ og: '1.050' }), 'measurements');
+    typeBlur(og(), '-5');
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    typeBlur(fg(), '1.010');
+    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ og: '1.050', fg: '1.010' }));
+  });
+
+  it('RJ-2 · une OG sous la FG déjà notée est refusée', () => {
     open(base({ og: '1.050', fg: '1.030', abv: '2.6%' }), 'measurements');
     typeBlur(og(), '1.025');
-    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ og: '1.025', abv: '' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('sous la FG 1,030');
+    expect(screen.queryByRole('button', { name: 'Garder cette valeur' })).not.toBeInTheDocument();
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
   });
+
 
   it('un texte illisible n’est pas enregistré', () => {
     open(base(), 'measurements');

@@ -357,6 +357,10 @@
 @media (max-width: 440px) { .fer button.fer-arens-court .fer-long { display: none; } }
 .fer .fer-alerte { font-size: 14px; color: var(--f-attt); background: rgb(var(--attention) / 0.14); border-radius: 10px; padding: 6px 10px; margin: 0; }
 .fer .fer-alerte + .fer-alerte { margin-top: 4px; }
+/* RJ-9 : la question « remplacer la masse ? » : deux boutons de la taille du doigt, le second sans fond. */
+.fer .fer-remp { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.fer .fer-remp button.fer-ann { margin-left: 0; height: 40px; padding: 0 14px; }
+.fer .fer-remp button.fer-ann-non { background: transparent; color: var(--f-t0); border: 1px solid var(--f-bordm); }
 
 /* Le plateau (clair, toujours visible) : le détail de la ligne choisie. */
 .fer .fer-bal { background: var(--f-panel); border: 1.5px solid var(--f-t0); border-radius: 16px; padding: 6px 10px 2px; display: flex; flex-direction: column; gap: 0; }

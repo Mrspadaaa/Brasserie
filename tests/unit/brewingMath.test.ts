@@ -256,6 +256,13 @@ describe('Rendement à haute densité', () => {
     expect(r.note).toContain('%');
   });
 
+  it('RJ-8 : la note écrit le rendement à la virgule, jamais « 71.9 % »', () => {
+    const r = BrewingMath.efficiencyAtGravity(75, 1.08048);
+    expect(r.correctedPct).toBeCloseTo(71.9, 5);
+    expect(r.note).toContain('À 1,080, le moût sature : compte plutôt 71,9 % de rendement que 75 %');
+    expect(r.note).not.toMatch(/\d\.\d/);
+  });
+
   it('ne descend jamais sous 40 % de rendement', () => {
     expect(BrewingMath.efficiencyAtGravity(50, 1.2).correctedPct).toBeGreaterThanOrEqual(40);
   });

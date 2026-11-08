@@ -79,6 +79,8 @@ describe('production stock reconciliation', () => {
     expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
     fireEvent.change(status, { target: { value: 'annule' } });
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
       status: 'annule', plannedBrewDate: '27.09.2026', brewDate: '20.09.2026', brewDay: pending.brewDay
     }));

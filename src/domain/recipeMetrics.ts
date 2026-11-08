@@ -14,6 +14,7 @@
  */
 import type { HopIngredient, Recipe } from '../types';
 import { hotBitterness, type HotBitterness } from './hopBitterness';
+import { ogHorsBornes } from './bornesMetier';
 import { normalizeHop } from './hopStage';
 import { yeastRecipeBoilOg, yeastRecipeComputedOg } from './yeastProjection';
 
@@ -27,6 +28,14 @@ export function formatLitres(l: number | null | undefined): string {
 export function formatDensite(sg: number | null | undefined): string {
   if (sg == null || !Number.isFinite(sg) || sg <= 1) return '';
   return sg.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+}
+
+/**
+ * L'OG du bandeau de mesures : « — » quand elle est hors bornes (RJ-4 : « OG 97,511 » pour 10 000 kg de grain). Le nombre n'est pas une valeur
+ * de la recette mais l'effet d'une erreur de saisie ; l'alerte de l'étape le dit, avec ce nombre, et l'IBU est déjà « — » pour la même raison.
+ */
+export function formatOgEnTete(og: number | null | undefined): string {
+  return ogHorsBornes(og) ? '—' : formatDensite(og) || '—';
 }
 
 const valide = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n > 1;

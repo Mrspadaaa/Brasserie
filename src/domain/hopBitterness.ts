@@ -19,6 +19,18 @@ export interface HotBitterness {
   missing: string[];
 }
 
+/**
+ * L'IBU d'une ligne de la liste : celui de l'ajout DANS la recette, pas seul. Calculé seul, 30 g/L passent la borne de houblon par litre alors
+ * que la recette entière la dépasse : la ligne montrerait un nombre que l'en-tête refuse (RJ-3). `hop` est un élément de `hops` ; sinon il est pris seul.
+ */
+export function ibuDeLAjout(hops: HopIngredient[], hop: HopIngredient, volumeL: number, og: number | null, boilMin: number): number | null {
+  const i = hops.indexOf(hop);
+  return hotBitterness(i >= 0 ? hops : [hop], volumeL, og, boilMin).additions[Math.max(i, 0)].ibu;
+}
+
+/** Les raisons d'un IBU incomplet, en une phrase qui ne finit que par un point : certaines raisons (« … des kg tapés en g ?). ») portent déjà le leur (RJ-11, « .. »). */
+export const phraseIbuIncomplet = (missing: readonly string[]): string => `${missing.join(' · ').replace(/[.\s]+$/, '')}.`;
+
 /** Rounded total for existing scalar recipe fields. Only round a complete total. */
 export function recipeIbu(hops: HopIngredient[], volumeL: number, og: number | null, boilMin: number): number | null {
   const total = hotBitterness(hops, volumeL, og, boilMin).total;
@@ -28,9 +40,13 @@ export function recipeIbu(hops: HopIngredient[], volumeL: number, og: number | n
 /** Strict current recipe view around the legacy Tinseth model. Old snapshots
  * retain their numeric targets; unknown inputs do not become 0 IBU or OG 1.050. */
 export function hotBitterness(hops: HopIngredient[], volumeL: number, og: number | null, boilMin: number): HotBitterness {
+  // MV-47 : 99 999 g de Nugget dans 20 L. Au-delà de la borne de houblon par litre (bornesMetier.ts), pas d'IBU calculé en silence.
+  const exces = messageHoublonParLitre(hops.reduce((s, h) => s + (Number.isFinite(h.weightG) && h.weightG > 0 ? h.weightG : 0), 0), volumeL);
   const additions = hops.map(h => {
     const missing: string[] = [];
     if (h.stage === 'dryHop' || h.weightG === 0) return { ibu: 0, missing };
+    // RJ-3 : quand l'en-tête refuse (houblon de toute la recette au-delà de la borne), la ligne refuse aussi : un ajout ne porte qu'un nombre.
+    if (exces) return { ibu: null, missing };
     if (!Number.isFinite(volumeL) || volumeL <= 0) missing.push('volume final');
     if (!Number.isFinite(h.weightG) || h.weightG < 0) missing.push('masse');
     if (!Number.isFinite(h.alpha) || h.alpha <= 0 || h.alpha > 100) missing.push('alpha du lot');
@@ -54,8 +70,6 @@ export function hotBitterness(hops: HopIngredient[], volumeL: number, og: number
   const DE_LA_RECETTE = ['volume final', 'densité initiale', 'durée d’ébullition'];
   const recipeLevel = DE_LA_RECETTE.filter(reason => additions.some(h => h.missing.includes(reason)))
     .map(reason => `${reason} de la recette`);
-  // MV-47 : 99 999 g de Nugget dans 20 L. Au-delà de la borne de houblon par litre (bornesMetier.ts), pas d'IBU calculé en silence.
-  const exces = messageHoublonParLitre(hops.reduce((s, h) => s + (Number.isFinite(h.weightG) && h.weightG > 0 ? h.weightG : 0), 0), volumeL);
   const missing = [...(exces ? [exces] : []), ...recipeLevel,...additions.flatMap((h, i) => h.missing.filter(reason => !DE_LA_RECETTE.includes(reason)).map(reason => `${hops[i].name} : ${reason}`))];
   return { total: missing.length ? null : known, known, additions, missing };
 }

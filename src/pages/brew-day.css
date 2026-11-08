@@ -1710,6 +1710,16 @@
   font-weight: 650;
   line-height: 1.25;
 }
+/* RJ-1 : en clair, l'aplat d'action (`--ebc-straw`) est noir et `--cave-texte-950` est la même encre noire : le bouton se lisait vide au repos. Un aplat d'action
+   noir porte un texte blanc (règle de themes.css pour `.bg-ebc-straw`, que ce bouton à classe propre ne reçoit pas). Au survol, l'aplat devient doré : texte foncé. */
+:root:not([data-theme='cave']) .brew-primary {
+  color: rgb(255 255 255);
+}
+@media (hover: hover) {
+  :root:not([data-theme='cave']) .brew-primary:hover {
+    color: rgb(var(--cave-texte-950));
+  }
+}
 .brew-primary > svg {
   display: none;
 }
