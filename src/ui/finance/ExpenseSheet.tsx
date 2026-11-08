@@ -568,11 +568,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const MESSAGE_DEPOT='Dépose un seul document à la fois. Pour plusieurs pages, touche « Plusieurs ».';
   /* LO-6 (08.11) : la même règle pour un sélecteur qui rend plusieurs fichiers (sélection multiple, automatisation) : refusés et dit, jamais seul le premier gardé en silence. */
   const unSeul=(liste:FileList|null|undefined):File|null=>{const fichiers=Array.from(liste??[]);if(fichiers.length>1){setError(MESSAGE_DEPOT);return null;}return fichiers[0]??null;};
+  /* LO-7 (08.11) : dans « Plusieurs » (sélecteur de pages, dépôt sur la rangée), plusieurs fichiers d'un coup sont plusieurs pages, dans l'ordre de leur nom (captures « …-1 », « …-2 » ; ordre numérique). Chacune passe les refus d'une page seule. */
+  const ajouterPages=(liste:FileList|File[]|null|undefined)=>{for(const f of Array.from(liste??[]).sort((x,y)=>x.name.localeCompare(y.name,undefined,{numeric:true})))ajouterPage(f);};
   const deposer=(e:React.DragEvent,vers:'document'|'page')=>{
     e.preventDefault();setDropping(false);
     const fichiers=Array.from(e.dataTransfer.files??[]);
+    if(vers==='page'){ajouterPages(fichiers);return;}
     if(fichiers.length>1){setError(MESSAGE_DEPOT);return;}
-    if(fichiers[0])vers==='page'?ajouterPage(fichiers[0]):void attach(fichiers[0]);
+    if(fichiers[0])void attach(fichiers[0]);
   };
   /* Le bulletin de versement (QR-facture) est en dernière page : les pages se lisent de la dernière à la première, jusqu'au premier QR lu. */
   const lancerQrPages=(fichiers:File[])=>{
@@ -1482,8 +1485,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)void attach(file);e.target.value='';}}/>
         <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)void attach(file);e.target.value='';}}/>
         <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)lancerQr(file);e.target.value='';}}/>
-        {/* n2-pages : « Plusieurs » et « + page » ouvrent ce sélecteur d'images, SANS capture (le téléphone propose « Prendre une photo » à côté des fichiers). Un fichier à la fois ; placé après les trois d'avant. */}
-        <input hidden ref={pagesInput} aria-label="Ajouter une page" type="file" accept="image/*" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)ajouterPage(file);e.target.value='';}}/>
+        {/* n2-pages : « Plusieurs » et « + page » ouvrent ce sélecteur d'images, SANS capture (le téléphone propose « Prendre une photo » à côté des fichiers). Plusieurs fichiers d'un coup = plusieurs pages (LO-7) ; placé après les trois d'avant. */}
+        <input hidden ref={pagesInput} aria-label="Ajouter une page" type="file" accept="image/*" multiple className="hidden" onChange={e=>{ajouterPages(e.target.files);e.target.value='';}}/>
         <div className="space-y-2 px-2 pt-1.5 empty:hidden">{capt}</div>
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}
       </div>

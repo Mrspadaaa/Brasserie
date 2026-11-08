@@ -121,17 +121,30 @@ describe('T-R5 / T-R6 la même page, l\'input', () => {
   });
 });
 
+describe('LO-7 le sélecteur de « Plusieurs » prend plusieurs images d\'un coup', () => {
+  it('trois captures choisies ensemble = trois pages, dans l\'ordre numérique des noms, sans refus', async () => {
+    const view = await monter();
+    expect(champPages(view).multiple).toBe(true);
+    fireEvent.change(champPages(view), { target: { files: [image('capture-10.png'), image('capture-2.png'), image('capture-1.png')] } });
+    await waitFor(() => expect(nbPages(view)).toBe(3));
+    const noms = [...view.container.querySelectorAll('[data-dp="rangee-pages"] [data-dp="page"]')].map(n => n.getAttribute('data-dp-nom'));
+    expect(noms).toEqual(['capture-1.png', 'capture-2.png', 'capture-10.png']);
+    expect(screen.queryByText(/Dépose un seul document/)).toBeNull();
+    expect(etat.scanned).not.toHaveBeenCalled();
+  });
+});
+
 describe('T-R7 le dépôt sur la rangée', () => {
-  it('un fichier lâché = une page ajoutée, jamais attach ; plusieurs lâchés = le refus de l\'entrée', async () => {
+  it('un fichier lâché = une page ajoutée, jamais attach ; plusieurs lâchés = autant de pages (LO-7 : on est déjà dans « Plusieurs »)', async () => {
     const view = await monter();
     await ouvrirRangee(view, [a]);
     const rangee = view.container.querySelector('[data-dp="rangee-pages"]')!;
     fireEvent.drop(rangee, { dataTransfer: { files: [b], types: ['Files'] } });
     await waitFor(() => expect(nbPages(view)).toBe(2));
     expect(etat.scanned).not.toHaveBeenCalled();
-    fireEvent.drop(rangee, { dataTransfer: { files: [c, image('d.jpg')], types: ['Files'] } });
-    await alerte('Dépose un seul document à la fois. Pour plusieurs pages, touche « Plusieurs ».');
-    expect(nbPages(view)).toBe(2);
+    fireEvent.drop(rangee, { dataTransfer: { files: [image('d.jpg'), c], types: ['Files'] } });
+    await waitFor(() => expect(nbPages(view)).toBe(4));
+    expect(screen.queryByText(/Dépose un seul document/)).toBeNull();
     expect(etat.scanned).not.toHaveBeenCalled();
   });
 });
