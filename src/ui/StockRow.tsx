@@ -2,7 +2,7 @@ import React, { useId } from 'react';
 import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
 import { computeStockLevel, pendingStockSummary, type RecipeStockComparison } from '../domain/stockLevel';
-import { libelleDurabilite } from '../domain/stock/regles';
+import { libelleDurabilite, quantiteLue } from '../domain/stock/regles';
 import { todayISO } from '../domain/finance/ledger';
 import { FavoriteToggle } from './EntityList';
 import { LevelGauge, stockLevelLabel } from './LevelGauge';
@@ -20,7 +20,7 @@ interface StockRowProps {
 }
 
 const quantity = (value: number | null, unit: string | null) =>
-  value === null || !unit ? 'Inconnu' : Units.format(value, unit);
+  value === null || !unit ? 'Inconnu' : quantiteLue(value, unit);
 
 function ComparisonBar({ comparison }: { comparison: RecipeStockComparison }) {
   const { physical, reserved, available, quantity: needed, shortage, unit } = comparison;

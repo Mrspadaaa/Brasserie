@@ -284,7 +284,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
                              : 'border-cave-700 text-cave-200 hover:border-ebc-straw hover:text-ebc-straw'
                          }`}
             >
-              {step > 0 ? `+${step}` : `−${Math.abs(step)}`}
+              {step > 0 ? `+${formatDecimal(step)}` : `−${formatDecimal(Math.abs(step))}`}
             </button>
           ))}
         </div>

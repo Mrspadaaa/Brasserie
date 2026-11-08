@@ -69,7 +69,10 @@ export function HopKnowledgePanel() {
   const install = () => {
     try {
       bootstrap.forEach(item => assertHopKnowledge(item));
-      bootstrap.filter(item => !knowledge.some(k => k.id === item.id)).forEach(item => StorageService.saveHopKnowledge(item as HopKnowledge)); setError('');
+      const manquantes = bootstrap.filter(item => !knowledge.some(k => k.id === item.id));
+      manquantes.forEach(item => StorageService.saveHopKnowledge(item as HopKnowledge)); setError('');
+      // BR-107 : un ajout dit toujours ce qu'il a fait, même quand il n'y avait rien à ajouter.
+      setNotice(manquantes.length ? `${manquantes.length} fiche(s) ajoutée(s).` : 'Rien à ajouter : tout est déjà installé.');
     } catch (e) { setError((e as Error).message); }
   };
   const installPack = async (pack: Record<string, { id: string }[]>) => {
@@ -79,7 +82,7 @@ export function HopKnowledgePanel() {
       const collections = Object.fromEntries(Object.entries(pack).map(([name, rows]) => [name,
         rows.filter(row => !present[name]?.has(row.id)).map(data => ({ id: data.id, data }))]));
       const count = await StorageService.importHopIndex(JSON.stringify({ schemaVersion: 3, source: 'device', exportedAt: new Date().toISOString(), collections }));
-      setError(''); setNotice(`${count} fiche(s) ajoutée(s). Les fiches existantes sont conservées.`);
+      setError(''); setNotice(count > 0 ? `${count} fiche(s) ajoutée(s). Les fiches existantes sont conservées.` : 'Rien à ajouter : ces fiches sont déjà dans l’index.');
     } catch (e) { setError((e as Error).message); }
     finally { setInstalling(false); }
   };

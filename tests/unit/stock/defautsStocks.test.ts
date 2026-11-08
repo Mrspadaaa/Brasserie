@@ -182,6 +182,21 @@ describe('TE-23, BR-71 — ce qu’on montre', () => {
     expect(regles.refAffichable('MP-004')).toBe('MP-004');
     expect(regles.refAffichable(undefined)).toBe('');
   });
+  it('BR-72 : quantités prévues lisibles comme sur une balance', () => {
+    expect(regles.quantiteLue(123.45, 'g')).toBe('123 g');
+    expect(regles.quantiteLue(56.88, 'g')).toBe('57 g');
+    expect(regles.quantiteLue(4.123, 'kg')).toBe('4,12 kg');
+    expect(regles.quantiteLue(4.5, 'g')).toBe('4,5 g');
+    expect(regles.quantiteLue(0.4, 'kg')).toBe('400 g');
+    expect(regles.quantiteLue(1500, 'g')).toBe('1,5 kg');
+    expect(regles.quantiteLue(0.04, 'g')).not.toMatch(/^0 /); // non nul : jamais « 0 »
+    expect(regles.quantiteLue(0, 'g')).toBe('0 g');
+  });
+  it('TE-50 : un zéro se dit « aucun »', () => {
+    expect(regles.resumeIndexHoublon(136, 0, 0)).toEqual(['136 références', 'aucun lot']);
+    expect(regles.resumeIndexHoublon(136, 3, 0)).toEqual(['136 références', '3 lots', 'aucun analysé']);
+    expect(regles.resumeIndexHoublon(1, 1, 1)).toEqual(['1 référence', '1 lot', '1 analysé']);
+  });
   it('la virgule suisse partout', () => {
     expect(regles.nombreFr(3.5, 1)).toBe('3,5');
     expect(regles.nombreFr(11.5, 2)).toBe('11,5');

@@ -4,7 +4,7 @@ import { Trash2, Star } from 'lucide-react';
 import { Batch, Recipe, StockItem } from '../types';
 import { DateField, toIsoDate, toSwissDate } from './DateField';
 import { todayISO } from '../domain/finance/ledger';
-import { libelleDurabilite, liensArticle, motifNonSuppression, nombreFr, statutDurabilite, verifierSeuil } from '../domain/stock/regles';
+import { libelleDurabilite, liensArticle, motifNonSuppression, nombreFr, quantiteLue, statutDurabilite, verifierSeuil } from '../domain/stock/regles';
 import { Units } from '../services/units';
 import { computeStockLevel, pendingStockSummary, allocatedBatches, type RecipeStockComparison } from '../domain/stockLevel';
 import { Suggestions } from '../services/suggestions';
@@ -110,9 +110,9 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
           {recipeCheck && recipeCheck.comparison.stockItem?.ref === item.ref && <div className="border-t border-cave-800 pt-2 space-y-1">
             <p className="text-xs text-cave-400">Besoin prévu · {recipeCheck.recipeName}</p>
             <dl className="grid grid-cols-3 gap-2 text-xs">
-              <div><dt className="text-cave-400">Besoin</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.quantity === null || !recipeCheck.comparison.unit ? 'Inconnu' : Units.format(recipeCheck.comparison.quantity, recipeCheck.comparison.unit)}</dd></div>
-              <div><dt className="text-cave-400">Libre</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.available === null ? 'Inconnu' : Units.format(recipeCheck.comparison.available, recipeCheck.comparison.unit!)}</dd></div>
-              <div><dt className="text-cave-400">Manque</dt><dd className={`font-mono ${recipeCheck.comparison.shortage === null ? 'text-cave-200' : recipeCheck.comparison.shortage > 0 ? 'text-alert-strong' : 'text-hop'}`}>{recipeCheck.comparison.shortage === null || !recipeCheck.comparison.unit ? 'Inconnu' : Units.format(recipeCheck.comparison.shortage, recipeCheck.comparison.unit)}</dd></div>
+              <div><dt className="text-cave-400">Besoin</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.quantity === null || !recipeCheck.comparison.unit ? 'Inconnu' : quantiteLue(recipeCheck.comparison.quantity, recipeCheck.comparison.unit)}</dd></div>
+              <div><dt className="text-cave-400">Libre</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.available === null ? 'Inconnu' : quantiteLue(recipeCheck.comparison.available, recipeCheck.comparison.unit!)}</dd></div>
+              <div><dt className="text-cave-400">Manque</dt><dd className={`font-mono ${recipeCheck.comparison.shortage === null ? 'text-cave-200' : recipeCheck.comparison.shortage > 0 ? 'text-alert-strong' : 'text-hop'}`}>{recipeCheck.comparison.shortage === null || !recipeCheck.comparison.unit ? 'Inconnu' : quantiteLue(recipeCheck.comparison.shortage, recipeCheck.comparison.unit)}</dd></div>
             </dl>
             {recipeCheck.comparison.issue && <p className="text-xs text-attention">{recipeCheck.comparison.issue}</p>}
             {recipeCheck.comparison.availabilityIssue && <p className="text-xs text-attention">{recipeCheck.comparison.availabilityIssue}</p>}

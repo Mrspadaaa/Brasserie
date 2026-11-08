@@ -141,6 +141,23 @@ export function refAffichable(ref: string | undefined): string {
   return /^FICHE-/i.test(ref) || /%[0-9A-F]{2}/i.test(ref) ? '' : ref;
 }
 
+/**
+ * Une quantité PRÉVUE, lisible comme sur une balance de cuisine (BR-72) : « 123 g », « 4,12 kg », pas « 123,45 g » ni « 4,123 kg ».
+ * Affichage seulement : la valeur calculée n'est jamais arrondie. Une quantité non nulle ne s'affiche jamais « 0 » : elle garde alors `Units.format`.
+ */
+export function quantiteLue(qty: number, unit: string): string {
+  if (!Number.isFinite(qty)) return `— ${unit}`;
+  const cle = unit.trim().toLowerCase();
+  let q = qty, u = unit;
+  if (cle === 'g' && Math.abs(q) >= 1000) { q = q / 1000; u = 'kg'; }
+  else if (cle === 'kg' && q !== 0 && Math.abs(q) < 1) { q = q * 1000; u = 'g'; }
+  const k = u.trim().toLowerCase();
+  const decimales = k === 'g' ? (Math.abs(q) >= 10 ? 0 : 1) : k === 'kg' || k === 'l' ? 2 : 2;
+  const arrondi = Number(q.toFixed(decimales));
+  if (q !== 0 && arrondi === 0) return Units.format(qty, unit);
+  return `${String(arrondi).replace('.', ',')} ${u}`;
+}
+
 /** « 136 références », « aucun lot », « 3 lots dont 1 analysé » : un zéro se dit « aucun », jamais deux « 0 » à la suite (TE-50). */
 export function resumeIndexHoublon(references: number, lots: number, analyses: number): string[] {
   const pluriel = (n: number, un: string, plusieurs: string) => `${n} ${n > 1 ? plusieurs : un}`;

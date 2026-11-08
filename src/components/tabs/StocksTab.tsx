@@ -27,6 +27,7 @@ import { useMobileLayout } from '../../ui/useViewport';
 import '../../ui/stocks.css';
 import { canonicalStockCategory } from '../../services/stockLineMatching';
 import { formatLitres } from '../../domain/recipeMetrics';
+import { quantiteLue } from '../../domain/stock/regles';
 
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
@@ -404,7 +405,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                       : <li key={comparison.key} className="border-b border-cave-800 py-1.5">
                           <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                             <span className="text-sm font-medium text-cave-50 break-words">{comparison.label}</span>
-                            <span className="shrink-0 font-mono text-sm text-cave-200">{comparison.quantity === null || !comparison.unit ? 'Inconnu' : Units.format(comparison.quantity, comparison.unit)}</span>
+                            <span className="shrink-0 font-mono text-sm text-cave-200">{comparison.quantity === null || !comparison.unit ? 'Inconnu' : quantiteLue(comparison.quantity, comparison.unit)}</span>
                           </div>
                           <p className="text-xs text-attention">{comparison.issue}</p>
                         </li>)}
