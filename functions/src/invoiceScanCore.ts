@@ -12,7 +12,7 @@ export type { ControlStatus, InvoiceField, ScanControls, ScanPoint, ScanPointCod
 
 /** v5 (31.10.2026) : le résultat porte `points`, `controls`, `vat`, `proForma`, `linesLost`… Le hachage de la lecture en dépend :
  * une lecture `invoice-v4` en cache n'est plus servie sous le nouveau format. Le moteur, lui, entre par son empreinte (`invoiceScanIdFor`, D273c). */
-export const INVOICE_SCAN_VERSION = 'invoice-v5';
+export const INVOICE_SCAN_VERSION = 'invoice-v6';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
 /**
