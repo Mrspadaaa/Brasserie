@@ -1537,3 +1537,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   que on puisse mettre du malt après la fermentation, ça a pas posé de problème ???? » ; « Mais surtout niveau business ça fait aucun sens ??? » ;
   « COMMENT CA A JAMAIS ÉTÉ FLAGGÉ ? JAI VU CA EN 2S ???? » ; « Il faut pas perdre les bug finding » ; « Il faut pas que ça se reproduise c'est critique
   met en place un mécanisme pour plus perdre ce genre d'opération » (lu : registre unique `work/missions/BUGS.md`, contrôle `controle-bugs.mjs`, hook Stop).
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Le temps perdu alors que j'ai donné explicitement mon autorisation .. »
+  (lu par le monitoring : couvre l'intégration des branches de correcteurs puis le déploiement ; la pilote garde la fusion d'une branche d'agent
+  pour un oui écrit dans son propre fil, question posée le 08.11).
