@@ -27,7 +27,7 @@ import { StyleWater } from '../domain/waterStyles';
 import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
 import { RecipeReview } from './RecipeReview';
-import { formatDecimal } from './numericInput';
+import { formatDecimal, messageRefus } from './numericInput';
 import { masseLigneRetenue } from '../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from './identite/regles';
 
@@ -102,7 +102,11 @@ const Cell: React.FC<{
   const { value, onValue, unit, width = 'w-[4.5rem] sm:w-20', integer, min, max, label } = props;
   // An erased required measure remains unavailable until the wizard validates it.
   const emptyValue = 'emptyValue' in props ? props.emptyValue : Number.NaN;
+  // TE-21, BR-42 : une saisie hors bornes (α 150 %, −5 min, −1 g) était ramenée à la borne sans un mot. Elle est refusée : la valeur d'avant reste ET le dit (role="alert"), comme VI-9.
+  const [refus, setRefus] = React.useState<string | null>(null);
+  const idRefus = React.useId();
   return (
+    <>
     <span className="flex items-baseline gap-1">
       <NumberInput
         value={value}
@@ -111,6 +115,10 @@ const Cell: React.FC<{
         emptyValue={emptyValue}
         min={min}
         max={max}
+        rejeter
+        onRefus={(r) => setRefus(r ? messageRefus(r.saisi, r.retenu, { min, max, unite: unit.replace('%α', '%') }) : null)}
+        aria-invalid={refus ? true : undefined}
+        aria-describedby={refus ? idRefus : undefined}
         pad
         aria-label={label}
         className={`${width} min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
@@ -119,6 +127,8 @@ const Cell: React.FC<{
       />
       <span className="reading-unit w-6 sm:w-8 text-sm shrink-0">{unit}</span>
     </span>
+    {refus && <p id={idRefus} role="alert" className="basis-full w-full text-xs text-alert leading-snug">{refus}</p>}
+    </>
   );
 };
 
@@ -473,7 +483,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     value={h.alpha || undefined}
                     onValue={(v) => patchHop(index, { alpha: v ?? 0 })}
                     emptyValue={0}
-                    unit="%AA"
+                    unit="%α"
                     width="w-16"
                     min={0}
                     max={30}

@@ -144,7 +144,30 @@ export function useNumericDraft(
     return next;
   };
 
-  return { draft, push, settle, onFocusChange };
+  /** Une saisie refusée (hors bornes) : le champ reprend la valeur d'avant, et le parent aussi (rien d'autre n'a été retenu). */
+  const revert = (to: number | undefined) => {
+    setDraft(formatDecimal(to, digits));
+    if (!Object.is(emitted.current, to)) {
+      emitted.current = to;
+      onChange(to);
+    }
+  };
+
+  return { draft, push, settle, revert, onFocusChange };
+}
+
+/**
+ * La phrase d'un refus (comme VI-9, SaltDoseControl) : ce qui est refusé, pourquoi, et la valeur que le champ garde vraiment.
+ * « −5 min : une valeur négative n'existe pas ici. La valeur précédente (10 min) est conservée. »
+ */
+export function messageRefus(saisi: number, avant: number | undefined, bornes: { min?: number; max?: number; unite?: string }): string {
+  const u = bornes.unite ? ` ${bornes.unite}` : '';
+  const nb = (x: number) => formatDecimal(x);
+  const raison = bornes.min !== undefined && saisi < bornes.min
+    ? (bornes.min === 0 ? 'une valeur négative n’existe pas ici' : `en dessous de ${nb(bornes.min)}${u}`)
+    : `au-delà de ${nb(bornes.max ?? 0)}${u}`;
+  const gardee = avant === undefined ? 'Le champ reste vide.' : `La valeur précédente (${nb(avant)}${u}) est conservée.`;
+  return `${nb(saisi)}${u} : ${raison}. ${gardee}`;
 }
 
 /**

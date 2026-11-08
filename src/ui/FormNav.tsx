@@ -189,14 +189,14 @@ export const InlineNum: React.FC<{
   'aria-invalid'?: React.AriaAttributes['aria-invalid'];
   'aria-describedby'?: string;
   /** Le message d'une valeur ramenée dans les bornes ; absent : la forme commune (« 777 min est hors bornes : de 0 à 240 min. 240 min retenu. »). */
-  refus?: (saisi: number, retenu: number) => string;
+  refus?: (saisi: number, retenu: number | undefined) => string;
 }> = ({ label, name, unit, value, onValue, min, max, integer, missing, refus, ...emptyOption }) => {
   // RX-2 : une valeur tapée hors bornes est ramenée à la sortie du champ ; elle ne disparaît jamais en silence (même forme que QuantityStepper).
   const [dit, setDit] = useState<string | null>(null);
   const nb = (x: number) => formatDecimal(x);
   const u = unit ? ` ${unit}` : '';
-  const forme = (saisi: number, retenu: number) =>
-    `${nb(saisi)}${u} est hors bornes : ${min !== undefined && max !== undefined ? `de ${nb(min)} à ${nb(max)}` : max !== undefined ? `au plus ${nb(max)}` : `au moins ${nb(min ?? 0)}`}${u}. ${nb(retenu)}${u} retenu.`;
+  const forme = (saisi: number, retenu: number | undefined) =>
+    `${nb(saisi)}${u} est hors bornes : ${min !== undefined && max !== undefined ? `de ${nb(min)} à ${nb(max)}` : max !== undefined ? `au plus ${nb(max)}` : `au moins ${nb(min ?? 0)}`}${u}. ${retenu === undefined ? "Rien" : nb(retenu) + u} retenu.`;
   return (
     <>
       <label className="flex items-center gap-2 min-w-0">
