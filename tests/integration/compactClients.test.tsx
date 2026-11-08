@@ -144,7 +144,7 @@ describe('Tarifs compacts : comparer et enregistrer sans perdre de données', ()
     fireEvent.keyDown(ingredients, { key: 'Enter', ctrlKey: true });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(saved).not.toHaveBeenCalled();
-    expect(ingredients).toHaveAccessibleDescription('Indique un montant positif ou nul.');
+    expect(ingredients).toHaveAccessibleDescription('Champ vide : indique un montant de 0 à 10 000 CHF.');
     fireEvent.change(ingredients, { target: { value: '2,50' } });
     expect(ingredients).toHaveAttribute('aria-invalid', 'false');
     expect(screen.getByRole('status', { name: 'Coût de revient' })).toHaveTextContent('3,50 CHF');
