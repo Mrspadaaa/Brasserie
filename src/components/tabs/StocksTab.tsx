@@ -3,7 +3,7 @@ import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucid
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
-import { articlesACommander, compareRecipeWithStock, computeStockLevel, type RecipeStockComparison } from '../../domain/stockLevel';
+import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison } from '../../domain/stockLevel';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
@@ -26,6 +26,7 @@ import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
 import '../../ui/stocks.css';
 import { canonicalStockCategory } from '../../services/stockLineMatching';
+import { formatLitres } from '../../domain/recipeMetrics';
 
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
@@ -242,10 +243,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     );
   };
 
-  const criticalCount = useMemo(
-    () => allItems.filter((i) => computeStockLevel(i, batches, allItems).band === 'rupture').length,
-    [allItems, batches]
-  );
+  // Le même compte que le badge de la barre et « À commander » (test en ligne n° 49, 08.11 : « Stock (1) » au-dessus de « À commander · 0 »).
+  const criticalCount = useMemo(() => articlesACommander(allItems, batches).length, [allItems, batches]);
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
@@ -375,7 +374,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                   options={recipes.map(recipe => ({
                     value: recipe.id,
                     label: recipe.name,
-                    detail: [recipe.style, Number.isFinite(recipe.volumeL) ? `${recipe.volumeL} L` : ''].filter(Boolean).join(' · '),
+                    detail: [recipe.style, Number.isFinite(recipe.volumeL) ? formatLitres(recipe.volumeL) : ''].filter(Boolean).join(' · '),
                     keywords: recipe.style
                   }))}
                   placeholder="Choisir une recette…"

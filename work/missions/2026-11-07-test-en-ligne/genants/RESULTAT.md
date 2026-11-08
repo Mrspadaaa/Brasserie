@@ -72,3 +72,21 @@ Le passage à la ligne contredisait la décision de densité du journal (« deux
 `controle-45.mjs` accepte une puce coupée seulement si le rail défile avec ce fondu : ECHEC sur le build d'avant (« À compléter » coupée,
 sans repère) → OK clair 500, cave 390, clair 1280 ; capture c45-clair-500 regardée. n° 28 : option B (« non documenté pour ce style »)
 confiée à l'auteur de maBiere.
+
+## Pilote, 08.11 : preuves Chrome des n° 13, 15 (NOLO) et 49
+
+Fixtures SIMULÉES, de même forme que les cas du test en ligne, par les vrais gestes de l'app (`?dev-local`) : brouillon de l'assistant avec la levure
+`lallemand-munich-classic` (n° 13) ; brouillon à 24,012 L avec la configuration NOLO de `fixture-nolo.ts` (tirée de la fixture `fruty`, n° 15) ; article
+créé par « Nouvel article » (stock 0, seuil vide, n° 49). Builds `VITE_HOP_V4=on` ; avant = `22a89d5f` (n° 13, 49) et `5cf2f99d` (n° 15).
+
+| Contrôle | Avant | HEAD corrigé (clair 390 et cave 1280) | Capture regardée |
+|---|---|---|---|
+| `controle-13` | LEVURE ECHEC : « Levure de la recette : lallemand-munich-classic » | LEVURE OK : « LalBrew Munich Classic » | `c13-houblons-clair-390.png` |
+| `controle-15-nolo` | NOLO ECHEC : 24,012 L, 30,012 L, en-tête « 24.012 L » | NOLO OK : « 24 L », « 30 L », en-tête « · 24 L » | `c15n-clair-390-fiche.png`, `avant5/c15n-apercu-clair-390.png` |
+| `controle-49` | BADGE ECHEC : badge 1 ≠ « À commander » 0 | BADGE OK : badge 0, pastille 0, « À commander · 0 » | `head3/c49-stocks-cave-1280.png` |
+
+Deux défauts neufs trouvés par ces preuves, rouges sur `605a3bc3` puis corrigés : l'en-tête de fiche « Foreign Extra Stout · 24.012 L » (volume brut ;
+`formatLitres` dans `recipeMetrics.ts`, aussi recherche, liste de Stocks et fiche de brassin) et la pastille « Stock (1) » qui comptait les ruptures
+au-dessus de « À commander · 0 » (`articlesACommander`, le même compte que le badge). Vitest : `recipeMetrics`, `recetteMemeChiffre`, `compactProduction`,
+`brewWortPair`, `compactStocks`, `stockLineMatching`, `dashboardNavigation`, `articlesACommander`, `stockLevel`, `dashboard*`, `fix114*` verts ; `tsc` sans erreur
+sur les fichiers touchés. Restent sans Chrome : n° 33, 34, 50 (brassin planifié ou en fermentation).

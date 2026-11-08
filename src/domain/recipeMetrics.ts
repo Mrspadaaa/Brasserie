@@ -18,6 +18,12 @@ import { normalizeHop } from './hopStage';
 import { yeastRecipeBoilOg, yeastRecipeComputedOg } from './yeastProjection';
 
 /** Densité à la française : « 1,085 ». Valeur inconnue ou hors plage : chaîne vide (jamais « 0,000 »). */
+/** Un volume de recette ou de brassin se lit au décilitre, à la virgule (« 24 L », « 23,7 L ») : jamais « 24.012 L » (test en ligne n° 15, en-tête de fiche, 08.11). */
+export function formatLitres(l: number | null | undefined): string {
+  if (l == null || !Number.isFinite(l)) return '— L';
+  return `${l.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} L`;
+}
+
 export function formatDensite(sg: number | null | undefined): string {
   if (sg == null || !Number.isFinite(sg) || sg <= 1) return '';
   return sg.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });

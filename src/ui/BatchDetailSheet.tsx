@@ -27,6 +27,7 @@ import { saveBatchSchedule } from '../services/batchSchedule';
 import { BrewSystemFeedback } from './BrewSystemFeedback';
 import { yeastPreparationState } from '../domain/yeastPitching';
 import type { YeastPreparationPlan } from '../../functions/src/yeastSupplySchema';
+import { formatLitres } from '../domain/recipeMetrics';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -119,7 +120,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         open={!!batch}
         onClose={onClose}
         title={draft.name}
-        subtitle={`${draft.id} · ${draft.style} · ${draft.volumeL} L visés`}
+        subtitle={`${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)} visés`}
         className="md:max-w-2xl md:mx-auto"
         footer={
           <Button intent="primary" full onClick={onClose}>

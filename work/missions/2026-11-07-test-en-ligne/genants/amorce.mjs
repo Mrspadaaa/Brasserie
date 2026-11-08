@@ -32,7 +32,7 @@ export async function ouvrirAmorce(construit, { theme = 'clair', largeur = 390, 
     const brut = JSON.parse(localStorage.getItem(k));
     const f = new Function('recipe', src);
     f(brut.draft.recipe);
-    if (brut.draft.details) { brut.draft.details.hops = brut.draft.recipe.hops; brut.draft.details.fermentables = brut.draft.recipe.fermentables; if (!('boilMin' in brut.draft.recipe)) delete brut.draft.details.boilMin; else brut.draft.details.boilMin = brut.draft.recipe.boilMin; }
+    if (brut.draft.details) { brut.draft.details.hops = brut.draft.recipe.hops; brut.draft.details.fermentables = brut.draft.recipe.fermentables; if (!('boilMin' in brut.draft.recipe)) delete brut.draft.details.boilMin; else brut.draft.details.boilMin = brut.draft.recipe.boilMin; if (brut.draft.recipe.nolo) brut.draft.details.nolo = brut.draft.recipe.nolo; }
     localStorage.removeItem(k);
     localStorage.setItem(k.replace(/:[^:]+$/, ':new'), JSON.stringify(brut));
   }, cle, transformer ?? '');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { amertumeRecette, fgRecette, formatDensite, ibuListe, ogRecette } from '../../src/domain/recipeMetrics';
+import { amertumeRecette, fgRecette, formatDensite, formatLitres, ibuListe, ogRecette } from '../../src/domain/recipeMetrics';
 import { recipeEntries } from '../../src/domain/productionCatalog';
 import type { Recipe } from '../../src/types';
 
@@ -75,5 +75,14 @@ describe('Pluriels', () => {
     expect(nombreAccorde(2, 'palier')).toBe('2 paliers');
     expect(nombreAccorde(0, 'ajout')).toBe('0 ajout');
     expect(nombreAccorde(3, 'bateau', 'bateaux')).toBe('3 bateaux');
+  });
+});
+
+describe('volume affiché (test en ligne n° 15, en-tête de fiche)', () => {
+  it('se lit au décilitre, à la virgule, jamais « 24.012 L »', () => {
+    expect(formatLitres(24.012)).toBe('24 L');
+    expect(formatLitres(23.75)).toBe('23,8 L');
+    expect(formatLitres(20)).toBe('20 L');
+    expect(formatLitres(undefined)).toBe('— L');
   });
 });

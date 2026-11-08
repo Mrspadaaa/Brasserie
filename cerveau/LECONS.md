@@ -25,7 +25,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346). 02.11 : alerte d'unité inventée, l'état pu4d existait (D372).
+- Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346).
 - Cause : « X de la variante Y » lu au sens étroit.
 - Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette (`data-nom`) n'est pas une consigne ; un choix vaut pour son principe, pas pour sa fixture. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires. Un constat de revue qui contredit sa maquette ou une colonne refusée : refusé ou montré (L24). Un cas neuf se range dans un état de sa maquette, pas un composant neuf.
 - Rôles : pilote, auteur, concepteur
@@ -64,14 +64,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
-- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366). 03.11 : lignes 36+ jetées, testé vert (D379). 07.11 : « 2 115 verts » : 27 fichiers non chargés, non comptés.
+- Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 02.11 : B codé, hors du menu (D366). 07.11 : « 2 115 verts » : 27 fichiers non chargés, non comptés.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
 - Faire : une chose est finie si elle est branchée, atteinte depuis le menu dans Chrome, typée, testée, avec un build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Une donnée jetée n'est jamais un vert : lire par tranches. Compter aussi les fichiers de test non chargés.
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px : « comment ça peut passer ça ??? ». 01.11 : l'écran sautille au téléphone. 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
+- Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px : « comment ça peut passer ça ??? ». 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
 - Cause : aucune force minimale exigée, captures non ouvertes.
 - Faire : « sous le doigt / au loin » ×3 au moins. Ouvrir chaque capture avant de dire OK ; juger la zone en plein format : un vert ne dit pas que c'est bien. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, à la question ouverte « combien et quels problèmes ? », critique puis pilote (D342). Reprise sur événement : rechargement et réseau joués.
 - Rôles : pilote, relecteur, auteur, exécutant
@@ -123,10 +123,10 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
-### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
-- Erreur : 22.10, questions fermées sans maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « ?? J'ai déjà donné mon avis ».
+### L24 — Un choix du brasseur se montre en variantes ; ni choix ni accord ne bloquent
+- Erreur : 22.10, questions fermées sans maquette. 01.11 : « Vue TVA : à choisir », sans page. 02.11 : « ?? J'ai déjà donné mon avis ». 07.11 : « Pourquoi tu attends mon accord ??? ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
-- Faire : chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315).
+- Faire : chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête.
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 

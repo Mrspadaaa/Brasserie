@@ -1,6 +1,6 @@
 import { batchDisplayDate } from '../domain/batchSchedule';
 import { hotBitterness } from '../domain/hopBitterness';
-import { amertumeRecette, fgRecette, formatDensite, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
+import { amertumeRecette, fgRecette, formatDensite, formatLitres, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
 import { formatDecimal } from '../ui/numericInput';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { mashPhDiagnostic } from '../domain/water/readiness';
@@ -233,7 +233,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     <PageShell
       className="recipe-reference"
       title={recipe.name}
-      subtitle={[recipe.style, `${recipe.volumeL} L`].filter(Boolean).join(' · ')}
+      subtitle={[recipe.style, formatLitres(recipe.volumeL)].filter(Boolean).join(' · ')}
       onClose={onClose}
       actions={
         <>
@@ -911,7 +911,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
         title="Supprimer cette recette ?"
-        what={`${recipe.name} — ${recipe.style}, ${recipe.volumeL} L`}
+        what={`${recipe.name} — ${recipe.style}, ${formatLitres(recipe.volumeL)}`}
         consequence={
           relatedBatches.length > 0
             ? `${relatedBatches.length} brassin${relatedBatches.length > 1 ? 's ont' : ' a'} été lancé${relatedBatches.length > 1 ? 's' : ''} depuis cette recette. Chacun garde sa propre copie figée : leur historique reste intact.`

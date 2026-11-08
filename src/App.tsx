@@ -28,6 +28,7 @@ import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './dom
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
 import { articlesACommander } from './domain/stockLevel';
+import { formatLitres } from './domain/recipeMetrics';
 
 import { Units } from './services/units';
 import { saveRecipeConfirmed } from './services/recipeSave';
@@ -669,7 +670,7 @@ export const App: React.FC = () => {
       items: recipes.filter(isCurrent).map((r) => ({
         id: `rec-${r.id}`,
         label: r.name,
-        detail: [r.style, `${r.volumeL} L`].filter(Boolean).join(' · '),
+        detail: [r.style, formatLitres(r.volumeL)].filter(Boolean).join(' · '),
         icon: <Beaker className="w-4 h-4" />,
         keywords: [r.style, r.id],
         onSelect: () => openRecipe(r)

@@ -1517,3 +1517,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **07.11**, à la session de monitoring (relayé), mot pour mot : « Attention aux utilisations de tokens, les utiliser et les maximiser pour la
   qualité » (lu : pas de jetons sur l'outillage ni sur une exploration refaite ; un agent par lot, réutilisé ; rejeux là où le diff touche ; Haiku
   pour rejeux et captures, Sonnet pour le code ; les jetons vont à ce qui trouve ou corrige un vrai défaut.)
+- **08.11**, à la session de monitoring (relayé), mot pour mot : « Pourquoi tu attends mon accord ??? » (lu : seuls le déploiement, le push, Gemini
+  facturé et le retrait des 26 écritures attendent son oui ; tout le reste, preuves Chrome des n° 13, 15 et 49 et préparation du déploiement, se fait sans attendre.)
