@@ -141,6 +141,18 @@ export function refAffichable(ref: string | undefined): string {
   return /^FICHE-/i.test(ref) || /%[0-9A-F]{2}/i.test(ref) ? '' : ref;
 }
 
+/** « 136 références », « aucun lot », « 3 lots dont 1 analysé » : un zéro se dit « aucun », jamais deux « 0 » à la suite (TE-50). */
+export function resumeIndexHoublon(references: number, lots: number, analyses: number): string[] {
+  const pluriel = (n: number, un: string, plusieurs: string) => `${n} ${n > 1 ? plusieurs : un}`;
+  const parties = [references > 0 ? pluriel(references, 'référence', 'références') : 'aucune référence'];
+  if (lots <= 0) parties.push('aucun lot');
+  else {
+    parties.push(pluriel(lots, 'lot', 'lots'));
+    parties.push(analyses > 0 ? pluriel(analyses, 'analysé', 'analysés') : 'aucun analysé');
+  }
+  return parties;
+}
+
 /** Une quantité, un seuil ou une valeur d'EBC avec la virgule suisse (BR-71) : « 3,5 », jamais « 3.5 ». */
 export function nombreFr(valeur: number, decimales = 2): string {
   if (!Number.isFinite(valeur)) return '';

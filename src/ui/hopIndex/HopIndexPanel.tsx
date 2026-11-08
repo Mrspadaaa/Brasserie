@@ -16,6 +16,7 @@ import { useHopCatalogue } from './useHopCatalogue';
 import { HopTechnicalPanel } from './HopTechnicalPanel';
 import { MobileDetails } from '../ViewNavigation';
 import { useMobileLayout } from '../useViewport';
+import { resumeIndexHoublon } from '../../domain/stock/regles';
 
 type Editor = { kind: 'variety'; value: HopVariety } | { kind: 'lot'; value: HopLot };
 const newVariety = (name = ''): HopVariety => ({ id: crypto.randomUUID(), name, aliases: [], form: 'unknown', descriptions: [], analysis: [] });
@@ -63,6 +64,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
   const [lotId, setLotId] = useState<string>();
   const [editor, setEditor] = useState<Editor | null>(null);
   const [error, setError] = useState('');
+  const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
   const [aiNote, setAiNote] = useState('');
   const [coaProposal, setCoaProposal] = useState<Partial<HopLot> | null>(null);
@@ -72,8 +74,10 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
   const sources = useMemo(() => [...new Set(varieties.map(hopReferenceSource))].sort((a, b) => a.localeCompare(b, 'fr')), [varieties]);
   const matches = useMemo(() => searchHopVarieties(varieties, query, includeArchived).filter(v => !sourceFilter || hopReferenceSource(v) === sourceFilter), [varieties, query, includeArchived, sourceFilter]);
   const lotCounts = useMemo(() => { const counts = new Map<string, number>(); for (const l of lots) if (!l.archived) counts.set(l.varietyId, (counts.get(l.varietyId) ?? 0) + 1); return counts; }, [lots]);
+  const resume = resumeIndexHoublon(varieties.filter(v => !v.archived).length, lots.filter(l => !l.archived).length,
+    lots.filter(l => !l.archived && l.analysis.some(m => m.kind !== 'unknown')).length);
   useEffect(() => { setLimit(20); }, [query, includeArchived, sourceFilter]);
-  const closeEditor = () => { requestEpoch.current++; setEditor(null); setBusy(false); setCoaProposal(null); setError(''); setAiNote(''); };
+  const closeEditor = () => { requestEpoch.current++; setTried(false); setEditor(null); setBusy(false); setCoaProposal(null); setError(''); setAiNote(''); };
   useEffect(() => () => { requestEpoch.current++; }, []);
   useEffect(() => {
     if (createRequest?.kind === 'newHopVariety') { setEditor({ kind: 'variety', value: newVariety() }); setError(''); }
@@ -85,6 +89,8 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
   };
   const save = async () => {
     if (!editor) return;
+    // BR-108 : le champ fautif est marqué, au lieu d'un « Identité de fiche houblon invalide. » sans champ.
+    if (!editor.value.name.trim()) { setTried(true); return; }
     setBusy(true);
     try {
       const item = { ...editor.value, name: editor.value.name.trim() };
@@ -161,14 +167,17 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
   return <section aria-label="Index houblon" className="px-1 space-y-2">
     {!mobile&&<div className="space-y-1"><h2 className="text-base font-semibold text-cave-50">Index houblon</h2>
       <p className="text-sm text-cave-200 max-w-2xl">Compare les sources, puis précise ton lot et son analyse.</p>
-      <div className="flex flex-wrap gap-1"><BrewTag tone="info">{varieties.filter(v => !v.archived).length} références</BrewTag><BrewTag>{lots.filter(l => !l.archived).length} lots</BrewTag><BrewTag>{lots.filter(l => !l.archived && l.analysis.some(m => m.kind !== 'unknown')).length} lots analysés</BrewTag></div>
+      <div className="flex flex-wrap gap-1">{resume.map((texte, i) => <BrewTag key={texte} tone={i === 0 ? 'info' : undefined}>{texte}</BrewTag>)}</div>
     </div>}
     <Field label={mobile?'Variété ou arôme':'Rechercher une variété ou un arôme documenté'}><TextInput value={query} onChange={setQuery} placeholder="Nom, alias, agrumes…" /></Field>
     <MobileDetails title="Options du catalogue" summary={[sourceFilter||'Toutes les sources',includeArchived?'Archives incluses':''].filter(Boolean).join(' · ')}>
-    {mobile&&<p className="text-sm text-cave-400">{varieties.filter(v=>!v.archived).length} références · {lots.filter(l=>!l.archived).length} lots, dont {lots.filter(l=>!l.archived&&l.analysis.some(m=>m.kind!=='unknown')).length} analysés. Compare les sources, puis précise ton lot et son analyse.</p>}
+    {mobile&&<p className="text-sm text-cave-400">{resume.join(' · ')}. Compare les sources, puis précise ton lot et son analyse.</p>}
     {sources.length > 1 && <Field label="Source du référentiel"><select className={inputClass} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}><option value="">Toutes les sources</option>{sources.map(s => <option key={s} value={s}>{s}</option>)}</select></Field>}
     <div className="flex flex-wrap gap-2">
-      <Button onClick={() => { requestEpoch.current++; setBusy(false); setEditor({ kind: 'variety', value: newVariety(query.trim()) }); setError(''); }} intent="primary">Nouvelle variété</Button>
+      <Button onClick={() => { requestEpoch.current++; setBusy(false); setTried(false);
+        // TE-51 : le texte cherché ne devient le nom d'une fiche neuve que s'il n'en désigne aucune déjà ; sinon la fiche naîtrait avec un nom qui existe.
+        const demande = query.trim(), existe = !!demande && varieties.some(v => [v.name, ...v.aliases].some(n => n.trim().toLocaleLowerCase('fr') === demande.toLocaleLowerCase('fr')));
+        setEditor({ kind: 'variety', value: newVariety(existe ? '' : demande) }); setError(''); }} intent="primary">Nouvelle variété</Button>
       {query.trim() && <Button onClick={lookup} disabled={busy || !!editor}>{busy && !editor ? 'Recherche en cours…' : 'Rechercher une fiche publiée'}</Button>}
     </div>
     <details className="text-sm text-cave-400"><summary className="cursor-pointer min-h-touch flex items-center">Import, export et archives</summary><div className="flex flex-wrap gap-2 py-2">
@@ -216,7 +225,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
       {editor && <fieldset disabled={busy} className="space-y-5 pb-4 min-w-0">
         {error && <p role="alert" className="text-alert">{error}</p>}
         {aiNote && <p role="status" className="text-ebc-straw">{aiNote}</p>}
-        <Field label={editor.kind === 'lot' ? 'Nom du lot' : 'Nom de la variété'}><TextInput value={editor.value.name} onChange={name => setEditor({ ...editor, value: { ...editor.value, name } } as Editor)} /></Field>
+        <Field label={editor.kind === 'lot' ? 'Nom du lot' : 'Nom de la variété'} error={tried && !editor.value.name.trim() ? (editor.kind === 'lot' ? 'Indique le nom du lot.' : 'Indique le nom de la variété.') : undefined}><TextInput value={editor.value.name} onChange={name => setEditor({ ...editor, value: { ...editor.value, name } } as Editor)} /></Field>
         <Field label="Forme du produit"><select className={inputClass} value={editor.value.form} onChange={e => setEditor({ ...editor, value: { ...editor.value, form: e.target.value } } as Editor)}>
           {HOP_FORMS.map(f => <option key={f} value={f}>{HOP_FORM_LABELS[f]}</option>)}
         </select></Field>

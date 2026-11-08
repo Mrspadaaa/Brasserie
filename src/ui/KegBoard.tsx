@@ -29,8 +29,8 @@ const NEXT_LABEL: Record<KegState, string> = {
 };
 
 /** Le contenu reste attaché pendant la livraison ; seul le retour vide le détache. */
-export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?: string }> = ({
-  kegs, batches, className = ''
+export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?: string; /** TE-45 : le bouton qui crée un fût, dans la barre de la liste. */ toolbarAction?: React.ReactNode }> = ({
+  kegs, batches, className = '', toolbarAction
 }) => {
   const listId = useId();
   const [selected, setSelected] = useLiveSelection(kegs, 'id');
@@ -91,6 +91,8 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
         keyOf={keg => keg.id}
         searchKeys={SEARCH_KEYS}
         searchPlaceholder="Chercher un fût, une bière, un client…"
+        toolbarAction={toolbarAction}
+        resetKey={filter}
         header={
           <div ref={filterRef} className="min-w-0">
           <SegmentedControl
@@ -110,7 +112,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
           <div className="equipment-empty">
             <p>{filter !== 'all' && kegs.length ? `Aucun fût « ${filter === 'unknown' ? UNKNOWN_STATE.label : KEG_STATE[filter].label} »` : 'Aucun fût enregistré'}</p>
             {kegs.length ? <Button intent="secondary" size="sm" onClick={() => setFilter('all')}>Voir tous les fûts</Button>
-              : <p className="text-cave-400">Ajoute un fût avec la commande « Ajouter ».</p>}
+              : <p className="text-cave-400">Ajoute un fût avec le bouton « Ajouter un fût ».</p>}
           </div>
         }
         renderItem={keg => {

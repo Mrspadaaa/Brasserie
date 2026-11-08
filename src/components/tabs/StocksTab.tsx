@@ -349,12 +349,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </div>
 
       {subTab === 'hops' && <>
-        {onOpenHopV55 && <section aria-label="Catalogue houblon V5.5" className="flex flex-wrap items-center justify-between gap-2 rounded-control border border-ebc-straw/30 bg-ebc-straw/5 p-2">
-          <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-cave-50">Explorer le catalogue</h2>
-            <p className="text-xs leading-snug text-cave-400">Ouvrir l’espace de travail houblon V5.5.</p>
-          </div>
-          <Button intent="primary" onClick={onOpenHopV55}>Explorer les houblons dans V5.5</Button>
+        {onOpenHopV55 && <section aria-label="Catalogue houblon V5.5" className="shrink-0">
+          {/* BR-109 : une ligne, un bouton. Trois lignes de texte collées sous la barre prenaient 22 % de l'écran à 390. */}
+          <Button intent="secondary" size="sm" full onClick={onOpenHopV55}>Explorer les houblons dans V5.5</Button>
         </section>}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
       </>}
@@ -514,7 +511,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </div>
       )}
 
-      {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1" />}
+      {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1"
+        toolbarAction={<Button intent="secondary" aria-label="Ajouter un fût" onClick={() => setCreatingKeg(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un fût</span></Button>} />}
 
       {subTab === 'materiel' && (
         <><MobileDetails title="Actions du matériel"><div className="flex flex-wrap gap-1"><Button intent="primary" size="sm" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" size="sm" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button>{onOpenEquipmentProjects&&<Button intent="ghost" size="sm" onClick={onOpenEquipmentProjects} icon={<Wrench size={14}/>}>Projets d’équipement</Button>}</div></MobileDetails><EquipmentList
