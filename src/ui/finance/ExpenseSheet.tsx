@@ -1002,8 +1002,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         updateLine(line.id,{unit:valeur,...convertirMasse(line,f)});
         return;
       }
-      if(posee){
-        uniteQuittee.current.set(line.id,{unit:unite,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
+      /* Hors masse, une unité seulement DÉDUITE (jaune) est un doute que le brasseur corrige (la quantité imprimée reste, B2 doute n° 2) ; une unité ÉCRITE qui change vide la quantité (« à remplir »). */
+      if(isReadableUnit(line.unit)){
+        uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
         calcules.current.delete(line.id);derniers.current.delete(line.id);
         updateLine(line.id,{unit:valeur,quantity:undefined});
         return;
