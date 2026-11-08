@@ -3,6 +3,7 @@ import { RecipeTextParser } from '../services/recipeParser';
 import { readRecipeFields, readRecipeText, RecipeContent } from './recipeTransfer';
 import { yeastRecipeDesignChanged } from './yeastRecipeDesign';
 import { momentParDefaut } from './fermentables/moments';
+import { normaliserAdditif } from './bornesProcede';
 
 export interface ImportedRecipe extends Omit<Partial<RecipeContent>, 'waterPlan' | 'mash'> {
   fermentables: RecipeContent['fermentables'];
@@ -226,7 +227,8 @@ export function normalizeRecipeImport(
       : {}),
     adjuncts: clean.adjuncts
       ?.filter((a) => a.name != null && a.amount != null && a.unit != null)
-      .map((a) => ({ ...a, step: a.step ?? '' })),
+      // AM-32 : unité et moment du texte libre ramenés aux valeurs connues (« ml » → « mL », « Empattage » → « Empâtage ») ; inconnus, ils restent tels quels.
+      .map((a) => normaliserAdditif({ ...a, step: a.step ?? '' })),
     waterTarget,
     waterTargetName: string(d.waterTargetName),
     waterNote: string(d.waterNote),

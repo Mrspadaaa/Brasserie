@@ -23,6 +23,7 @@ import {
 import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
 import { recipeFieldIssues, recipeReadiness, recipeSaveIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
+import { recipeAdvice } from '../domain/bornesProcede';
 import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCandidateSheet, mergeYeastCandidateSheet, readRecipeDraft, readYeastDocumentaryView, serializeRecipeDraft,
   tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
   recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
@@ -1888,9 +1889,16 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     </aside>);
   const readiness = recipeReadiness(build());
   const fieldIssues = [...readiness.invalid, ...readiness.missing];
-  const visibleIssues = validationRequested ? fieldIssues : [];
+  // Une valeur hors bornes (`live`) se dit dès la frappe ; le reste attend « Suivant » ou « Enregistrer ».
+  const visibleIssues = validationRequested ? fieldIssues : fieldIssues.filter(issue => issue.live);
   const hopIssueCount = visibleIssues.filter(issue => issue.step === 'houblons').length;
   const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
+  // AM-25, AM-28 : ordre des paliers, mash-out, ordre des phases. Des conseils : ils ne bloquent rien.
+  const advice = step === 'paliers' ? recipeAdvice({ mash: { steps: mashSteps }, fermentation: ferment }) : [];
+  const adviceList = (prefix: string) => {
+    const items = advice.filter(item => item.field.startsWith(prefix));
+    return items.length ? <ul data-role={'conseils-' + prefix} className="space-y-0.5 text-xs text-ebc-amber leading-snug">{items.map(item => <li key={item.field + item.message} role="status">{item.message}</li>)}</ul> : null;
+  };
 
   const requestCorrection = (issues: RecipeFieldIssue[]) => {
     setValidationRequested(true);
@@ -3107,6 +3115,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 </p>
               )}
             </div>
+            {adviceList('wz-mash-')}
             <AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />
           </Section>
 
@@ -3195,6 +3204,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 })}
               </ul>
             </div>
+            {adviceList('wz-ferment-')}
             <AvisRetrait dernier={retraitPhase.dernier} onAnnuler={retraitPhase.annuler} />
           </Section>
         </>

@@ -256,8 +256,8 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
           <p className="flex items-start gap-2 text-sm text-cave-400 leading-snug px-1">
             <Info className="w-4 h-4 shrink-0 mt-0.5" />
             <span>
-              Des degrés français sur l’analyse ? 1 °fH de TAC = 12.2 ppm de HCO₃ ; 1 °fH de
-              dureté calcique = 4.0 ppm de Ca ; 1 °fH de dureté magnésienne = 2.4 ppm de Mg.
+              Des degrés français sur l’analyse ? 1 °fH de TAC = 12,2 ppm de HCO₃ ; 1 °fH de
+              dureté calcique = 4,0 ppm de Ca ; 1 °fH de dureté magnésienne = 2,4 ppm de Mg.
             </span>
           </p>
           <Input

@@ -10,6 +10,7 @@ import { Units } from '../../services/units';
 import { scaleBrewBudgetRecipe } from '../../domain/finance/brewBudgetScaling';
 import { Field, inputClass } from '../FormNav';
 import { BREW_COST_LABELS, brewBudgetDateKey, estimateBrewBudget, type BrewBudgetLine, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewCostKey, type BrewPrice, type BrewCashTreatment } from '../../domain/finance/brewBudget';
+import { BORNES_PROCEDE } from '../../domain/bornesProcede';
 import './brew-budget.css';
 import type { FinanceTransaction } from '../../domain/finance/types';
 
@@ -76,7 +77,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
     const source = recipe.brewhouse ?? config.brewhouses?.find(b => b.id === config.activeBrewhouseId) ?? config.brewhouses?.[0];
     return source ? scaleBrewBudgetRecipe(recipe, volume, source) : recipe;
   }, [recipe, volume, config.brewhouses, config.activeBrewhouseId]);
-  const volumeIssue = !(recipe.volumeL > 0) || !Number.isFinite(recipe.volumeL) ? 'Corrige le volume de la recette avant de redimensionner ce brassin.' : !(volume > 0) || !Number.isFinite(volume) ? 'Renseigne un volume à brasser supérieur à zéro.' : Math.abs(scaled.volumeL - volume) > 1e-6 ? 'Configure une cuverie pour adapter les ingrédients à ce volume, ou reprends le volume de la recette.' : '';
+  const volumeIssue = !(recipe.volumeL > 0) || !Number.isFinite(recipe.volumeL) ? 'Corrige le volume de la recette avant de redimensionner ce brassin.' : !(volume > 0) || !Number.isFinite(volume) ? 'Renseigne un volume à brasser supérieur à zéro.' : volume > BORNES_PROCEDE.volumeBrassinL.max ? `Volume à brasser de ${Units.format(volume, 'L')} : au plus ${Units.format(BORNES_PROCEDE.volumeBrassinL.max, 'L')} (la plus grande cuve d’une micro-brasserie). Erreur de saisie probable.` : Math.abs(scaled.volumeL - volume) > 1e-6 ? 'Configure une cuverie pour adapter les ingrédients à ce volume, ou reprends le volume de la recette.' : '';
   const invalidNetVolume = !(netVolume > 0) || !Number.isFinite(netVolume);
   const costsNeedVolumeReview = !volumeIssue && !invalidNetVolume && (Math.abs(volume - costBasisVolume) > 1e-6 || Math.abs(netVolume - costBasisNetVolume) > 1e-6) && Object.values(settings.costs ?? {}).some(cost => cost.enabled !== false && cost.amountTTC != null);
   const estimate = useMemo(() => {

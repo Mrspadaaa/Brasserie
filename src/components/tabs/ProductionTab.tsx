@@ -11,7 +11,8 @@ import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
 import type { BatchDetailSection } from '../../domain/productionInsights';
 import { QuantityStepper } from '../../ui/QuantityStepper';
-import { parseDecimal } from '../../ui/numericInput';
+import { formatDecimal, parseDecimal } from '../../ui/numericInput';
+import { BORNES_PROCEDE } from '../../domain/bornesProcede';
 import '../../ui/production/compact.css';
 import { ViewNavigation } from '../../ui/ViewNavigation';
 import { loadRecipePage } from '../../pages/recipePageLoader';
@@ -126,6 +127,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     }
   }, [currentRecipes, selectedRecipeToScale]);
   const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
+  // BR-111, BE-101 : un volume hors bornes est dit, avec la valeur retenue, au lieu d'être changé en silence ou calculé jusqu'au bout.
+  const [volumeNote, setVolumeNote] = useState<string | undefined>();
   const [invalidTargetVolume, setInvalidTargetVolume] = useState<string>();
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
   const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
@@ -173,7 +176,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   const targetBh = targetVolumeL >= 250 ? (brewhouses.find((b) => b.volumeL >= 250) || sourceBh) : sourceBh;
   const targetVolumeError = invalidTargetVolume
     ? `Volume « ${invalidTargetVolume} » non reconnu. Indique un volume cible de 0,5 L ou plus.`
-    : !Number.isFinite(targetVolumeL) || targetVolumeL < 0.5 ? 'Indique un volume cible de 0,5 L ou plus.' : undefined;
+    : !Number.isFinite(targetVolumeL) || targetVolumeL < BORNES_PROCEDE.volumeBrassinL.min ? 'Indique un volume cible de 0,5 L ou plus.'
+      : targetVolumeL > BORNES_PROCEDE.volumeBrassinL.max ? `Volume cible de ${formatDecimal(targetVolumeL)} L : au plus ${formatDecimal(BORNES_PROCEDE.volumeBrassinL.max)} L (la plus grande cuve d’une micro-brasserie). Erreur de saisie probable.` : undefined;
   // Sans recette ni cuverie configurée, on ne calcule rien plutôt que de planter.
   const scaleResult =
     subTab === 'scaler' && selectedRecipeToScale?.volumeL > 0 && Number.isFinite(selectedRecipeToScale.volumeL) && sourceBh && !targetVolumeError
@@ -269,7 +273,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             <select name="production_scale_recipe_select" value={selectedRecipeToScale.id}
               onChange={event=>{const found=currentRecipes.find(recipe=>recipe.id===event.target.value); if(found)setSelectedRecipeToScale(found);}}
               className="w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50">
-              {currentRecipes.map(recipe=><option key={recipe.id} value={recipe.id}>{recipe.name} · {recipe.volumeL} L</option>)}
+              {currentRecipes.map(recipe=><option key={recipe.id} value={recipe.id}>{recipe.name} · {formatDecimal(recipe.volumeL)} L</option>)}
             </select>
           </label>
           <div className="volume-controls" onChangeCapture={event => {
@@ -278,6 +282,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             // Le compteur garde son dernier nombre pendant une frappe illisible.
             // Ce nombre ne doit pas produire un scénario, même après le blur.
             setInvalidTargetVolume(entered.trim() && parseDecimal(entered) === null ? entered : undefined);
+            const lu = parseDecimal(entered), { min, max } = BORNES_PROCEDE.volumeBrassinL;
+            setVolumeNote(lu !== null && (lu < min || lu > max) ? `${formatDecimal(lu)} L est hors bornes : de ${formatDecimal(min)} à ${formatDecimal(max)} L.${lu < min ? ` ${formatDecimal(min)} L retenu.` : ''}` : undefined);
           }}>
             <QuantityStepper compact label="Volume cible" unit="L" value={targetVolumeL} emptyValue={Number.NaN}
               onChange={value => { setTargetVolumeL(value); setInvalidTargetVolume(undefined); }}
@@ -285,6 +291,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
               min={0.5} customStep={0.5} customLadder={[0.5,5,10]} initialValue={selectedRecipeToScale.volumeL}/>
             {scaleResult && <output className="text-xs text-cave-400" aria-live="polite">× {(targetVolumeL/selectedRecipeToScale.volumeL).toLocaleString('fr-CH',{maximumFractionDigits:2})} de la recette</output>}
           </div>
+          {volumeNote && !targetVolumeError && <p role="status" data-role="borne-refusee" className="text-xs text-ebc-amber">{volumeNote}</p>}
           {!scaleResult && <p id={targetVolumeError ? 'production-target-volume-error' : undefined} role="alert" className="text-sm text-alert-strong">{targetVolumeError ?? (!sourceBh ? 'Configure une cuverie dans les réglages pour adapter cette recette.' : 'Le volume de la recette source doit être renseigné et positif.')}</p>}
           {scaleResult && <>
           <dl aria-label="Eaux adaptées" className="grid grid-cols-2 gap-2 border-y border-cave-800 py-1.5">

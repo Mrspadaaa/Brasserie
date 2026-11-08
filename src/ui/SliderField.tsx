@@ -62,6 +62,19 @@ export const SliderField: React.FC<SliderFieldProps> = ({
   const id = useId();
   const decimals = step < 1 ? String(step).split('.')[1]?.length ?? 1 : 0;
   const percent = ((value - min) / (max - min)) * 100;
+  /*
+   * ⚠️ Une grandeur bornée ne sort JAMAIS de ses bornes vers le calcul (BR-78, 08.11) : « −1 » % et « 99999 » % partaient tels quels au
+   * solveur d'eau (alcalinité résiduelle 68 → 136 ppm, puis « rien à corriger » en vert), sans un mot. Le champ garde ce qu'on tape, le
+   * calcul reçoit la valeur ramenée dans [min ; max], et le message dit la borne et la valeur retenue.
+   */
+  const [refused, setRefused] = React.useState<{ typed: number; kept: number } | null>(null);
+  const fr = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+  const typed = (v: number) => {
+    if (!Number.isFinite(v)) return;
+    const kept = Math.min(max, Math.max(min, v));
+    setRefused(kept === v ? null : { typed: v, kept });
+    onChange(kept);
+  };
 
   return (
     <Field label={label} hint={hint} htmlFor={id}>
@@ -76,7 +89,7 @@ export const SliderField: React.FC<SliderFieldProps> = ({
             min={min}
             max={max}
             value={displayDigits == null ? value : Number(value.toFixed(displayDigits))}
-            onValue={onChange}
+            onValue={typed}
             emptyValue={min}
             disabled={disabled}
             pad={false}
@@ -111,7 +124,7 @@ export const SliderField: React.FC<SliderFieldProps> = ({
             step={step}
             value={value}
             disabled={disabled}
-            onChange={(e) => onChange(parseFloat(e.target.value))}
+            onChange={(e) => { setRefused(null); onChange(parseFloat(e.target.value)); }}
             /* Le pouce de 24 px reste dans la zone active de 28 px. */
             className="w-full h-7 cursor-pointer appearance-none bg-transparent
                        focus:outline-none disabled:opacity-40
@@ -138,6 +151,12 @@ export const SliderField: React.FC<SliderFieldProps> = ({
                        [&::-moz-range-thumb]:border-cave-950"
           />
         </div>
+
+        {refused && (
+          <p role="status" data-role="borne-refusee" className="text-xs text-ebc-amber leading-snug">
+            {fr(refused.typed)}{unit ? ` ${unit}` : ''} est hors bornes : de {fr(min)} à {fr(max)}{unit ? ` ${unit}` : ''}. {fr(refused.kept)}{unit ? ` ${unit}` : ''} retenu.
+          </p>
+        )}
 
         {marks && marks.length > 0 && (
           /*

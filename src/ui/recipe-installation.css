@@ -10,6 +10,7 @@
 .recipe-installation li { border-top:1px solid rgb(var(--cave-700)); padding:.375rem 0; }
 .recipe-installation li span { display:block; margin-top:.125rem; }
 .recipe-thermal-row { display:grid; grid-template-columns:minmax(0,1fr) 68px 68px; gap:.375rem; padding:.375rem 0; border-bottom:1px solid rgb(var(--cave-700)); align-items:center; }
+.recipe-thermal-row [role=cell]:first-child { min-width:0; overflow-wrap:anywhere; }
 .recipe-thermal-row [role=columnheader] { font-size:.75rem; color:rgb(var(--cave-texte-400)); }
 .recipe-thermal-row [role=cell]:not(:first-child) { font-variant-numeric:tabular-nums; }
 .recipe-thermal-row small { display:block; color:rgb(var(--cave-texte-400)); }

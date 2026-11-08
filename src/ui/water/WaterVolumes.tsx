@@ -1,6 +1,7 @@
 import { InlineNum } from "../FormNav";
 import { NumberInput } from '../NumberInput';
 import { equipmentCheck, r1 } from "../../domain/brewEquipment";
+import { waterBalance } from "../../domain/water/volumeBalance";
 
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
 type Props = Pick<
@@ -37,6 +38,10 @@ export function WaterVolumes({
     preBoilHotL: vol?.preBoilHotL,
     preferences: brew?.preferences,
   });
+  // MV-31 : le moût collecté avec CES volumes d'eau, pas la cible du calcul.
+  const balance = vol && vol.preBoilVolumeL > 0
+    ? waterBalance({ mashWaterL: state.mashWaterL, spargeWaterL: hasSparge ? state.spargeWaterL : 0, preBoilVolumeL: vol.preBoilVolumeL, grainAbsorptionL: vol.grainAbsorptionL })
+    : null;
   const physicalRatio = brew?.equipment && grainKg > 0 ? (brew.equipment.kettleWorkingL-grainKg*brew.equipment.grainDisplacementLPerKg)/1.03/grainKg : 6;
   const ratioMax = Math.max(6,Number.isFinite(physicalRatio)?physicalRatio:6,Number.isFinite(mashRatioLPerKg)?mashRatioLPerKg:6);
   return (
@@ -118,10 +123,15 @@ export function WaterVolumes({
               </span>
             </div>
             <div className="flex items-baseline justify-between gap-2">
-              <span className="text-cave-400">Moût avant ébullition · à froid</span>
-              <span className="reading text-cave-50 shrink-0">{litres(vol.preBoilVolumeL)} L</span>
+              <span className="text-cave-400">{balance?.shortL ? 'Moût collecté avec cette eau · à froid' : 'Moût avant ébullition · à froid'}</span>
+              <span className="reading text-cave-50 shrink-0">{litres(balance?.shortL ? balance.collectedL : vol.preBoilVolumeL)} L</span>
             </div>
-            {check && hasSparge && (
+            {balance?.shortL ? (
+              <p role="alert" className="text-ebc-amber" data-role="eau-insuffisante">
+                <strong>Il manque {litres(balance.shortL)} L d’eau.</strong> Avec {litres(r1(state.mashWaterL + (hasSparge ? state.spargeWaterL : 0)))} L et {litres(vol.grainAbsorptionL)} L retenus par le grain, tu ne collectes que {litres(balance.collectedL)} L de moût pour {litres(balance.targetL)} L visés.
+              </p>
+            ) : null}
+            {check && hasSparge && state.spargeWaterL > 0 && (
               <p className="text-cave-200" role="status">
                 {/* Une seule phrase quand tout va dans le récipient principal (test en ligne n° 29 : « 13,9 L. 13,9 L dans le récipient principal »). */}
                 {check.spargeAuxiliaryHotL > .01 ? (

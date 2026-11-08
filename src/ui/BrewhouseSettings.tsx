@@ -150,7 +150,7 @@ export function BrewhouseSettings({
                 ébullition, en L/h, indépendamment du volume de la recette.
               </p>
               <div className="equipment-grid">
-                <label className="equipment-field"><span>Rendement en fermenteur (%)</span><NumberInput aria-label="Rendement en fermenteur (%)" value={profile.efficiencyPct} min={1} max={100} onValue={value=>onChange({...profile,efficiencyPct:value})} className={inputClass}/><small>Extrait mesuré dans le fermenteur, rapporté au potentiel des grains : pas l’extraction mesurée en cuve, plus haute.</small></label>
+                <label className="equipment-field"><span>Rendement en fermenteur (%)</span><NumberInput aria-label="Rendement en fermenteur (%)" value={profile.efficiencyPct} min={1} max={95} onValue={value=>onChange({...profile,efficiencyPct:value})} className={inputClass}/><small>Extrait mesuré dans le fermenteur, rapporté au potentiel des grains : pas l’extraction mesurée en cuve, plus haute.</small></label>
                 {field('boilOffLPerHour', 'Évaporation à chaud (L/h)', 0, 100)}
                 <label className="equipment-field">
                   <span>Pertes en fond de cuve (L froids)</span>
