@@ -197,6 +197,7 @@ N'ajoute jamais d'avertissement pour une valeur lue sans hésitation, ni pour ex
 items : toutes les lignes, y compris matériel, entretien/réparation, ingrédients, service, emballage,
 transport et remise (montant négatif), sans en omettre aucune, quel que soit leur nombre. price est le prix unitaire imprimé;
 amountTTC est le total TTC de la ligne uniquement s'il est imprimé, sinon null.
+Sur un ticket de caisse de magasin, un entier isolé imprimé après le prix d’une ligne (colonne « Qté » ou sans titre, par exemple « 86.95 1 ») est la quantité de la ligne : recopie-le dans quantity (« 1 » = 1 pièce) et laisse unit vide ; ne laisse pas quantity à null quand il est imprimé.
 name recopie exactement la désignation imprimée, sans la traduire, la résumer ni ajouter une explication.
 Conserve l'ordre des lignes et les lignes distinctes même si leurs désignations se répètent.
 kind : equipment = bien durable, maintenance = réparation/entretien, stock = ingrédient ou consommable,
