@@ -57,3 +57,14 @@ LEÇON PROPOSÉE : une valeur « retenue » et la même valeur « recalculée »
 - Même commande saisie deux fois : le code du journal est juste. Rien n'a été écrit ni supprimé.
 - Accord groupé (utilisateur) : retirer ou archiver `B-001` à `B-026` (et le paiement lié à `B-001`), ou garder la facture et marquer les anciennes. Geste sur données réelles : à lui.
 - Gênant produit (à suivre) : la lecture d'une facture ne signale pas une commande déjà saisie (même n° de commande dans `proofNotes`) ; candidat à un avertissement de doublon.
+
+## Retrait des 26 écritures en double (08.11, pilote, app en ligne)
+
+- Copie de secours lisible avant tout geste : `doublons-B001-B026-copie.json` (26 écritures, paiement lié, lu en lecture seule le 08.11 ; hors Git).
+- Lecture seule : aucune des 26 n'a de mouvement de stock ni d'impact de stock ; le retrait par l'app (« Corriger une erreur de saisie » →
+  « Annuler cette écriture » → « Confirmer la correction ») garde la pièce, pose `voidedAt` et une trace au journal, ne touche pas au stock.
+- B-001 (MA0221 Maris Otter 6 kg) porte un paiement `PAI-d5b16e0b…` de 13,80 du 17.10, alors que la facture 372765 est payée entière
+  (`PAY-6770960b…`, 110,40, 27.04) : l'app refuse d'annuler B-001 avant la correction de ce paiement. À confirmer par le brasseur.
+- Fait : 1 sur 26 — MA0027 Gerstenflocken 1 kg (2,40) ; journal 35 → 34 opérations, solde + 2 369,21 → + 2 371,61. Capture avant : `en-ligne/doublons-avant.jpg`.
+- Arrêté : la boucle sur les 24 suivantes a été refusée par le contrôle d'autorisation de l'outil (modification en lot de données financières réelles).
+  Reste : 24 retraits par le même geste, puis B-001 après correction de son paiement ; facture 372765 intacte.
