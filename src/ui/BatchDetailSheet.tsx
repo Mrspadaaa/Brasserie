@@ -28,6 +28,8 @@ import { BrewSystemFeedback } from './BrewSystemFeedback';
 import { yeastPreparationState } from '../domain/yeastPitching';
 import type { YeastPreparationPlan } from '../../functions/src/yeastSupplySchema';
 import { formatLitres } from '../domain/recipeMetrics';
+import { needsPackagingVolume } from '../domain/batchPackaging';
+import { BatchPackagingForm } from './production/BatchPackagingForm';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -60,7 +62,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [noloNotice,setNoloNotice]=useState('');
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
+  /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
+  const [packaging, setPackaging] = useState<{ target: Batch['status'] | null } | null>(null);
   useEffect(() => {
+    setPackaging(null);
     setSection(initialSection);
     setConfirmDelete(false);
     setConfirmStock(null);
@@ -102,10 +107,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     setDraft({ ...updated, ...(result.success ? { stockAccountingVersion: 1 } : {}), ...(saved?.stockConsumption ? { stockConsumption: saved.stockConsumption, stockAccountingVersion: saved.stockAccountingVersion } : {}), stockReviewIssues: result.issues });
     setStockMessage(result.success ? stage === 'historical-already' ? 'Confirmation conservée : les quantités de stock sont restées inchangées.' : stage === 'historical-unconsumed' ? 'Suivi confirmé : aucun stock retiré. Les ingrédients seront déstockés lors de la réalisation du brassin.' : stage === 'remaining' ? 'Ajouts de fermentation déstockés. Aucun ingrédient ne sera déduit une seconde fois.' : 'Ingrédients du brassage déstockés. Les ajouts de fermentation restent réservés.' : 'La production est enregistrée. Le stock attend les vérifications ci-dessous.');
   };
-  const changeStatus = (status: Batch['status']) => {
+  const changeStatus = (status: Batch['status'], base: Batch = draft) => {
     if (status === draft.status) return;
     if (awaitingPitch && status !== 'planifie' && status !== 'annule') { setStockMessage('Reprends le jour de brassage pour consigner l’ajout réel de levure avant de passer en fermentation.'); return; }
-    const updated = { ...draft, ...preserveBrewDates(draft), status };
+    // AM n° 6 : « Conditionné » et « Terminé » demandent d'abord le volume conditionné (assiette de la taxe sur la bière).
+    if (needsPackagingVolume({ status, volumePackagedL: base.volumePackagedL })) { setPackaging({ target: status }); return; }
+    const updated = { ...base, ...preserveBrewDates(base), status };
     if (status === 'annule' || status === 'planifie') { save(updated); return; }
     if (status === 'conditionne' || status === 'termine') {
       synchronizeStock(updated, draft.stockConsumption?.appliedAt ? 'remaining' : 'brewday');
@@ -169,6 +176,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {stockIssues.length > 0 && <p className="text-xs text-cave-400 leading-relaxed">Associez les articles dans le budget du brassin, ou corrigez les quantités comptées dans Stocks, puis revenez vérifier ici.</p>}
             </section>
           )}
+          {packaging && <BatchPackagingForm batch={draft}
+            confirmLabel={packaging.target ? `Passer en « ${BATCH_STATUS[packaging.target].label} »` : 'Enregistrer le volume'}
+            onCancel={() => setPackaging(null)}
+            onConfirm={values => { const target = packaging.target; setPackaging(null); if (target) changeStatus(target, { ...draft, ...values }); else save(values); }}/>}
           {stockMessage && <p role="status" className="text-sm text-hop flex items-start gap-2"><PackageCheck className="w-4 h-4 shrink-0 mt-0.5" />{stockMessage}</p>}
           {section === 'overview' && (
             <>
@@ -295,8 +306,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   <span className="block text-base text-cave-50 tabular-nums">
                     {draft.volumePackagedL != null ? `${draft.volumePackagedL} L` : 'Non renseigné'}
                   </span>
+                  {!packaging && draft.status !== 'planifie' && draft.status !== 'annule' && <button type="button" data-batch-packaging-open
+                    className="mt-0.5 text-xs text-ebc-straw underline underline-offset-2 min-h-touch" onClick={() => setPackaging({ target: null })}>
+                    {draft.volumePackagedL != null ? 'Corriger le volume conditionné' : 'Saisir le volume conditionné'}</button>}
                 </p>
               </div>
+              {needsPackagingVolume(draft) && <p role="status" className="text-xs text-attention">Volume conditionné manquant : ce lot échappe au calcul de la taxe sur la bière et au bilan de pertes.</p>}
               <FermentationCurveChart batch={draft} />
               {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${draft.brewDay.pitchTemperatureC} °C` : ' · température non relevée'}.</p>}
               {awaitingPitch && <p role="status" className="text-sm text-water">En attente d’ensemencement. Reprends le jour de brassage depuis le carnet des brassins.</p>}
