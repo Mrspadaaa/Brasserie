@@ -364,7 +364,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       <Section
         title={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Drêches d’origine' : 'Grain'}
         hint={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Malt du brassin d’origine · aucun nouveau débit' : measuredExtraction ? `${Units.format(totalGrist, 'kg')} à extraire · rendement à mesurer` : `${Units.format(totalGrist, 'kg')} au total · ${
-          (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${recipe.efficiencyPct ?? brewhouse?.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
+          (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${nombreFr((recipe.efficiencyPct ?? brewhouse?.efficiencyPct) as number, 1)} % d’efficacité` : 'efficacité inconnue'
         }`}
       >
         {grains.length === 0 ? (
@@ -577,7 +577,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
            * jamais : la fiche affichait « personnalisé » sur toutes les
            * recettes. C'est `styleByCode` qui connaît ces codes.
            */
-          hint={`${Number(recipe.waterPlan.diRatioPct.toFixed(2))} % d’osmosée · ${
+          hint={`${nombreFr(recipe.waterPlan.diRatioPct, 2)} % d’osmosée · ${
             recipe.waterPlan.targetIons
               ? recipe.waterPlan.targetName ?? 'cible de la recette'
               : styleByCode(recipe.waterPlan.targetProfileId).name
@@ -591,16 +591,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-400">{coldPilot ? 'Extraction' : 'Empâtage'}</div>
-                <div className="reading text-sm">{recipe.waterPlan.mashWaterL} L</div>
+                <div className="reading text-sm">{nombreFr(recipe.waterPlan.mashWaterL, 1)} L</div>
                 {((recipe.waterPlan.diRatioPct ?? 0) > 0) && (
                   <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                    {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({Number(recipe.waterPlan.diRatioPct.toFixed(2))} %)
+                    {nombreFr(Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10, 1)} L réseau · {nombreFr(Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10, 1)} L osmosée ({nombreFr(recipe.waterPlan.diRatioPct, 2)} %)
                   </div>
                 )}
               </div>
               <div>
                 <div className="text-cave-400">{coldPilot ? 'Eau complémentaire' : 'Rinçage'}</div>
-                <div className="reading text-sm">{recipe.waterPlan.spargeWaterL} L</div>
+                <div className="reading text-sm">{nombreFr(recipe.waterPlan.spargeWaterL, 1)} L</div>
                 {recipe.waterPlan.spargeWaterL > 0 && (
                   (() => {
                     const spargeDi = recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct ?? 0;
@@ -609,7 +609,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     const reseauL = Math.round((recipe.waterPlan.spargeWaterL - osmoseeL) * 10) / 10;
                     return (
                       <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                        {reseauL} L réseau · {osmoseeL} L osmosée ({Number(spargeDi.toFixed(2))} %)
+                        {nombreFr(reseauL, 1)} L réseau · {nombreFr(osmoseeL, 1)} L osmosée ({nombreFr(spargeDi, 2)} %)
                       </div>
                     );
                   })()
