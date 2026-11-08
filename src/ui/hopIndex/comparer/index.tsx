@@ -139,8 +139,11 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const lignes = sc.order.filter((f) => !cols.every((c) => c.cellules[f].inconnu));
   const tousInconnus = sc.order.filter((f) => cols.length > 0 && cols.every((c) => c.cellules[f].inconnu));
   const noms = cols.map((c) => c.houblon.nom);
-  const question = `${noms.slice(0, -1).join(', ')}${noms.length > 1 ? ' ou ' : ''}${noms.at(-1) ?? ''} pour ma ${termes().biere} ?`;
+  const question = noms.length ? `${noms.slice(0, -1).join(', ')}${noms.length > 1 ? ' ou ' : ''}${noms.at(-1)} pour ma ${termes().biere} ?` : `Quel houblon pour ma ${termes().biere} ?`;
   const quatre = cols.length >= 4;
+  // 08.11 (« Suggestions et comparez ne fonctionne plus ??? ») : sans aucun houblon (« Comparer (0) », aucune voie retenue dans Suggérer), les rangées, « Par famille » et
+  // l'égalisation n'avaient rien à dire : la pastille « Ta bière » et son « + » se superposaient (le « + » se centre sur la hauteur des colonnes, absentes). Un état vide, dit.
+  const vide = cols.length === 0;
   const disponibles = donnees().stock.filter((s) => s.grams > 0 && !cles.includes(s.key)).map((s) => s.key);
   const placer = () => sel && ouvrir({ ecran: 'dryhopper', ajout: nouvelId(recette, sel.cle), houblon: sel.cle });
   // La question de r6a est le titre de l'écran : le h1 que le cadre (CadreOutil du socle) pose sous l'en-tête commun
@@ -226,6 +229,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
             <TaStout demande={demande} quatre={quatre} plein={cols.length >= MAX_COLONNES} ouvert={feuille === 'ajouter' && !aRemplacer} onPlus={() => { setARemplacer(null); basculer('ajouter'); }} />
+            {vide && <p className="pq-comparer-vide pq-comparer-note" data-role="comparer-vide">Aucun houblon à comparer. Touche « + » pour en ajouter, ou retiens des voies dans Suggestions.</p>}
             {vue.map((c) => (
               <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin} mots={horsStyle[c.cle] ?? []}
                 retirable={c.cle !== pin && vue.length > 1} remplacable={c.cle !== pin}
@@ -234,6 +238,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
                 onRemplacer={() => { setARemplacer(c.cle); setFeuille('ajouter'); }} />
             ))}
           </div>
+          {!vide && <>
           {/* D128 : les étapes de x3b en bande-sélecteur sur les rangées de r6a ; la pastille du critère (r6n2) choisit la
               famille qu'elle chiffre, ★ au meilleur de chaque étape (la réponse de y1b, à chaque moment). */}
           <BandeEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue}
@@ -278,6 +283,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               sous « ses mots », avant les notes « ~ dans la cuve » ; la composition des huiles est dans la feuille Valeurs. */}
           <HuilesVue cols={cols} reference={reference} />
           <PiedEtapes cols={cols} retenu={cleRetenue} onDryhopper={placer} />
+          </>}
         </section>
         {/* D114 : le panel OSU (un acquis) reste replié, au rang d'une note, sous le tableau comme dans r6a ; un toucher ouvre
             Preuve, sa feuille dans le dock de r6n2. */}
@@ -285,9 +291,9 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         {/* « Placer <houblon> › » en bas, comme le « Doser Idaho 7 dans Dryhopper » de r6a (80 mots au premier écran), sous
             la réponse de y1b qui conclut la comparaison. */}
         {/* D114 : le panel OSU, replié, à un toucher (dans Preuve) ; un mot, plus une phrase (« Beaucoup trop mis en avant ») */}
-        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
+        {!vide && <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
           <button type="button" className="pq-comparer-lien pq-comparer-osu-tch" data-ouvre-element="y3-panel-osu r6a-osu" onClick={() => setFeuille('preuve')}>Panel OSU ›</button>
-        </section>
+        </section>}
         {rep && <LigneReponse rep={rep} critere={critere} moment={moment} onPourquoi={() => basculer('pourquoi')} />}
         {sel && (
           <span ref={refPont} className="pq-comparer-placer" data-etat="etat-comp-placer" data-element="y1b-dock-pouce y1b-second-houblon-puis">

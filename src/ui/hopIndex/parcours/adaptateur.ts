@@ -312,8 +312,13 @@ export const simulerMoment = (recette: RecetteParcours, ajout: AjoutParcours, q:
  * ajouter (10′, whirlpool, dry hop), augmenter, diminuer, retirer, remplacer à IBU égal, assembler deux houblons du
  * stock ; classées par le moteur (RANKING) avec les achats possibles. C'est la source des voies de q2b, groupées par
  * effet à l'écran. Mémoïsé par recette et direction. */
+/** 08.11 (« Suggestions et comparez ne fonctionne plus ???», 21A, Saaz + Galaxy, levure « ? ») : une recette dont la levure n'a pas d'identifiant de l'index
+ * (`yeast.hopIndexId` absent) a `yeastId` null ; le moteur le lit « levure non référencée : aucune prédiction aromatique », chaque famille reste inconnue, et
+ * Suggérer disait « Aucune voie houblon » (aucun houblon ne monte une famille inconnue). Ma bière (lireBiere) et la conversion (« le moteur suppose US-05 pour l'arôme »)
+ * supposaient déjà la levure des conditions ; les voies ne le faisaient pas. La recette de l'écran garde `yeastId` null (le pied de Suggérer dit « ? ») ; seul le calcul suppose. */
+export const avecLevureSupposee = (r: RecetteParcours): RecetteParcours => (r.yeastId ? r : { ...r, yeastId: CONDITIONS.levure });
 const voiesProposees = (recette: RecetteParcours, direction: Direction, remplacements: boolean): VoieResult => {
-  const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true, ...(remplacements ? {} : { remplacements: false }) });
+  const res = moteur().proposeVoies(avecLevureSupposee(recette), direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true, ...(remplacements ? {} : { remplacements: false }) });
   // Catalogue injecté (app : catalogue de production, #120) : seules les voies dont tous les houblons sont
   // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
   return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
@@ -332,7 +337,7 @@ siDonneesChangent(() => LEVIERS.clear());
 export function leviersLevure(recette: RecetteParcours, direction: Record<string, number>): LeviersLevure {
   const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction]);
   if (!LEVIERS.has(cle)) {
-    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true, remplacements: false, maxBuy: 0, moments: ['dryActive'] }); // D106 : les leviers ne lisent que le dry hop actif du STOCK et les souches : ni remplacements, ni pool à acheter, ni autres moments (inutile de les calculer)
+    const res = moteur().proposeVoies(avecLevureSupposee(recette), direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true, remplacements: false, maxBuy: 0, moments: ['dryActive'] }); // D106 : les leviers ne lisent que le dry hop actif du STOCK et les souches : ni remplacements, ni pool à acheter, ni autres moments (inutile de les calculer)
     LEVIERS.set(cle, {
       dry: res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
         .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))),
@@ -355,7 +360,7 @@ export function poolSuggerer(recette: RecetteParcours, direction: Record<string,
   const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction, moment, taille]);
   const connu = POOLS.get(cle);
   if (connu) return connu;
-  const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, remplacements: false, moments: [moment], limit: taille, buyLimit: taille, perHop: 1 });
+  const res = moteur().proposeVoies(avecLevureSupposee(recette), direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, remplacements: false, moments: [moment], limit: taille, buyLimit: taille, perHop: 1 });
   const vues = new Set<string>();
   const pool = res.voies.filter((v) => v.type === 'ajouter' && v.actions.length === 1 && v.actions[0].moment === moment)
     .filter((v) => catalogueDuMoteur() || proposable(v.actions[0].hopKey))
@@ -419,7 +424,7 @@ export const remplacants = memo<[RecetteParcours, string, number?], Remplacant[]
   (recette, ajoutId, limite = 8) => {
     const a = recette.additions.find((x) => x.id === ajoutId);
     if (!a) return [];
-    const res = moteur().substitutes(a.hopKey, { moment: a.moment, grams: a.grams, recipe: recette, style: style(recette.styleCode), stockFirst: true, limit: limite });
+    const res = moteur().substitutes(a.hopKey, { moment: a.moment, grams: a.grams, recipe: avecLevureSupposee(recette), style: style(recette.styleCode), stockFirst: true, limit: limite });
     return res.remplacants.filter((s) => proposable(s.key)).map((s) => {
       const d = doseRemplacement(recette, a, s.key);
       return {
