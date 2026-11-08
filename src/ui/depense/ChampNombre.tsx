@@ -5,17 +5,19 @@ import React, { useRef, useState } from 'react';
 import { Input } from '../Input';
 import { formatDecimal, parseDecimal } from '../numericInput';
 
-type Refus = 'negatif' | 'plafond' | 'illisible' | null;
+type Refus = 'negatif' | 'plafond' | 'illisible' | 'decimales' | null;
 export interface ChampNombreProps {
-  value: number | undefined; onValue: (next: number | undefined) => void; max: number; fractionDigits?: number; className?: string; placeholder?: string; 'aria-label'?: string; id?: string;
+  value: number | undefined; onValue: (next: number | undefined) => void; max: number; fractionDigits?: number;
+  /** Au plus ce nombre de décimales saisies (un montant en francs : 2). Au-delà : refus visible, comme un négatif (BE-64, BE-71 : « 0,004 » CHF). */
+  maxDecimales?: number; className?: string; placeholder?: string; 'aria-label'?: string; id?: string;
 }
 
-export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, fractionDigits, className = '', placeholder, 'aria-label': ariaLabel, id }) => {
+export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, fractionDigits, maxDecimales, className = '', placeholder, 'aria-label': ariaLabel, id }) => {
   const [texte, setTexte] = useState<string | null>(null);
   const [refus, setRefus] = useState<Refus>(null);
   const debut = useRef<number | undefined>(value);
   const affiche = texte ?? formatDecimal(value, fractionDigits);
-  const motif = refus === 'negatif' ? 'Pas de valeur négative' : refus === 'illisible' ? 'Pas un nombre' : refus === 'plafond' ? `Au plus ${formatDecimal(max)}` : undefined;
+  const motif = refus === 'negatif' ? 'Pas de valeur négative' : refus === 'illisible' ? 'Pas un nombre' : refus === 'plafond' ? `Au plus ${formatDecimal(max)}` : refus === 'decimales' ? `Au plus ${maxDecimales} décimales` : undefined;
   return <Input
     id={id} aria-label={ariaLabel} aria-invalid={refus ? true : undefined} title={motif} data-dp-refus={refus ?? undefined}
     type="text" inputMode="decimal" enterKeyHint="next" autoComplete="off" autoCorrect="off" spellCheck={false}
@@ -29,6 +31,7 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, f
       if (/^\s*[-−–]/.test(t)) { setRefus('negatif'); return; }
       const n = parseDecimal(t);
       if (n === null) { setRefus(/[^\d\s.,]/.test(t) ? 'illisible' : null); return; } // « 12, » et « . » : frappe intermédiaire ; « abc » : refusé, visible
+      if (maxDecimales !== undefined && (t.trim().replace(',', '.').split('.')[1] ?? '').length > maxDecimales) { setRefus('decimales'); return; }
       if (n > max) { setRefus('plafond'); return; }
       setRefus(null);
       if (n !== value) onValue(n);

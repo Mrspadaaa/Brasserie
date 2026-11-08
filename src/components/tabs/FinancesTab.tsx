@@ -163,7 +163,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     </div>
     {notice&&<div className="finance-notice" role="status">{notice}<button className="finance-link" onClick={()=>setNotice('')}>Fermer</button></div>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
-      {view==='overview'&&overviewPart==='situation'&&<><FinanceOverview ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} undatedCount={undated.length} onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}/>{financeAssistant}</>}
+      {view==='overview'&&overviewPart==='situation'&&<><FinanceOverview ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} openingCash={data.profile.openingCash} undatedCount={undated.length} onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}/>{financeAssistant}</>}
       {view==='overview'&&overviewPart==='costs'&&<>
         {/* La période commande, son total répond : les deux sur la même rangée. */}
         <FinancePeriodBar lead total={formatCHF(sum)} totalLabel="Dépenses nettes enregistrées sur la période"

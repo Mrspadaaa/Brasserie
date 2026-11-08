@@ -166,7 +166,13 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   };
 
   // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
+  const convertingIds = React.useRef(new Set<string>());
   const handleConvertToClient = (item: CreativeItem) => {
+    /* BE-22 : un double toucher créait deux fiches. Le verrou est synchrone (le rendu n'a pas le temps de masquer le bouton) ; un contact déjà converti ne se convertit pas deux fois. */
+    if (convertingIds.current.has(item.id)) return;
+    const dejaConverti = StorageService.getCreativeItems().find(i => i.id === item.id)?.status === 'validated';
+    if (dejaConverti) { onSuccessMessage?.(`« ${item.title} » est déjà un client : rien n’a été recréé.`); return; }
+    convertingIds.current.add(item.id);
     const newClientId = nextClientId(StorageService.getClients().map(c => c.id));
     const newClient: Client = {
       id: newClientId,
@@ -193,7 +199,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     } catch {}
 
     if (onSuccessMessage) {
-      onSuccessMessage(`Prospect "${item.title}" converti en compte Client CRM (${newClientId}) ! 👥`);
+      onSuccessMessage(`Prospect "${item.title}" converti en client (${newClientId}) ! 👥`);
     }
   };
 
@@ -257,7 +263,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                     className="px-3.5 py-1.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95"
                   >
                     <Sparkles className="w-3.5 h-3.5 mr-1" />
-                    <span>Transférer dans mes Recettes Officielles</span>
+                    <span>Passer dans mes recettes</span>
                   </button>
                 </div>
               </div>
@@ -326,7 +332,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                     className="px-3.5 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 text-cave-950 font-black text-sm rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 ml-auto"
                   >
                     <UserCheck className="w-3.5 h-3.5 mr-1" />
-                    <span>Convertir en Client CRM</span>
+                    <span>Convertir en client</span>
                   </button>
                 </div>
               </div>
