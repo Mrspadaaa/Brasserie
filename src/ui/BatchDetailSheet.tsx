@@ -32,6 +32,7 @@ import type { YeastPreparationPlan } from '../../functions/src/yeastSupplySchema
 import { formatLitres } from '../domain/recipeMetrics';
 import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -350,7 +351,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 )}
                 {abvUnavailable && !gravityAlert && (
                   <p className="text-sm text-cave-400">{abvAuDela
-                    ? `Alcool non calculé : au-delà de ${ABV_MAX} % vol., vérifie l’OG et la FG.`
+                    ? `Alcool non calculé : au-delà de ${nombreFr(ABV_MAX, 1)} % vol., vérifie l’OG et la FG.`
                     : 'Alcool non calculé : densités impossibles, ou finale au-dessus de l’initiale.'}</p>
                 )}
 
@@ -379,13 +380,13 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 <p>
                   Volume brassé
                   <span className="block text-base text-cave-50 tabular-nums">
-                    {draft.volumeBrewedL != null ? `${draft.volumeBrewedL} L` : 'Non renseigné'}
+                    {draft.volumeBrewedL != null ? `${nombreFr(draft.volumeBrewedL, 1)} L` : 'Non renseigné'}
                   </span>
                 </p>
                 <p>
                   Conditionné
                   <span className="block text-base text-cave-50 tabular-nums">
-                    {draft.volumePackagedL != null ? `${draft.volumePackagedL} L` : 'Non renseigné'}
+                    {draft.volumePackagedL != null ? `${nombreFr(draft.volumePackagedL, 1)} L` : 'Non renseigné'}
                   </span>
                   {!packaging && draft.status !== 'planifie' && draft.status !== 'annule' && <button type="button" data-batch-packaging-open
                     className="mt-0.5 text-xs text-ebc-straw underline underline-offset-2 min-h-touch" onClick={() => setPackaging({ target: null })}>
@@ -395,7 +396,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {needsPackagingVolume(draft) && <p role="status" className="text-xs text-attention">Volume conditionné manquant : ce lot échappe au calcul de la taxe sur la bière et au bilan de pertes.</p>}
               {/* Une densité en attente de confirmation n'est pas encore une mesure : la courbe garde la valeur enregistrée. */}
               <FermentationCurveChart batch={gravityAlert ? { ...draft, [gravityAlert.field]: batch[gravityAlert.field] } : draft} />
-              {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${draft.brewDay.pitchTemperatureC} °C` : ' · température non relevée'}.</p>}
+              {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${nombreFr(draft.brewDay.pitchTemperatureC, 1)} °C` : ' · température non relevée'}.</p>}
               {awaitingPitch && <p role="status" className="text-sm text-water">En attente d’ensemencement. Reprends le jour de brassage depuis le carnet des brassins.</p>}
               {draft.recipeSnapshot && draft.brewDay && <BrewSystemFeedback recipe={draft.recipeSnapshot} state={draft.brewDay}/>}
             </>

@@ -30,6 +30,7 @@ import { BrewTag } from './BrewTag';
 import { actualWater } from '../domain/brewAssist';
 import { amountDecimals, roundAmount } from '../../functions/src/brewAmount';
 import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from '../domain/brewQuantityBounds';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
 const f = (n: number, unit = 'L') => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: amountDecimals(unit, n) }).format(roundAmount(n, unit));
@@ -343,7 +344,7 @@ function IngredientRow({
                   {c.item.name} · {f(c.kg, 'kg')} kg
                   <span className="block text-2xs text-cave-400">
                     {c.exact ? 'Potentiel d’extrait compensé' : 'Poids égal, potentiel à vérifier'}{' '}
-                    · {c.item.colorEbc} EBC · {f(c.availableKg, 'kg')} kg disponibles
+                    · {nombreFr(c.item.colorEbc, 1)} EBC · {f(c.availableKg, 'kg')} kg disponibles
                   </span>
                 </button>
               ))}
@@ -730,7 +731,7 @@ export function BrewMinerals({ recipe, state }: { recipe: RecipeSnapshot; state:
         )}
         {added && extraRO > 0 && result.knownBase && (
           <p className="text-2xs text-cave-200 mt-1">
-            Dilution théorique : au moins +{extraRO} L d’osmosée pour retrouver les repères
+            Dilution théorique : au moins +{nombreFr(extraRO, 1)} L d’osmosée pour retrouver les repères
             indiqués. Cela dilue aussi le moût : vérifie capacité, densité et saveur avant d’agir.
           </p>
         )}

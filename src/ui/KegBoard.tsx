@@ -12,6 +12,7 @@ import { Combobox } from './Combobox';
 import { Field, FormNav, TextInput } from './FormNav';
 import { swissToday } from './DateField';
 import './equipment-compact.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const KEG_STATE: Record<KegState, { label: string; filter: string; hint: string; Icon: typeof Beer }> = {
   lavage: { label: 'À laver', filter: 'À laver', hint: 'Revenu vide, à nettoyer avant remplissage.', Icon: Droplets },
@@ -124,7 +125,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
               setFillBatch(''); setDeliveryClient(keg.clientName ?? ''); setRepairedState(''); setRepairAttempted(false); setSelected(keg);
             }}>
               <span id={`${descriptionId}-content`} className="equipment-row-main">
-                <span className="keg-identity"><strong>{keg.id}</strong><span className="equipment-reading">{keg.capacityL} L</span></span>
+                <span className="keg-identity"><strong>{keg.id}</strong><span className="equipment-reading">{nombreFr(keg.capacityL, 1)} L</span></span>
                 {(keg.state === 'plein' || keg.state === 'livre' || unknown && (keg.beerName || keg.batchRef)) && <span className="equipment-row-context">{keg.beerName || 'Bière non renseignée'}{keg.batchRef && <span className="text-cave-400"> · {keg.batchRef}</span>}</span>}
                 {(keg.state === 'livre' || unknown && keg.clientName) && <span className="equipment-row-meta">{keg.clientName || 'Client non renseigné'}</span>}
                 {keg.notes && <span className="equipment-row-meta">{keg.notes}</span>}
@@ -140,7 +141,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
         <>
           <Sheet
             open onClose={close} title={`Fût ${selected.id}`}
-            subtitle={`${selected.capacityL} L · ${selectedState.label}`}
+            subtitle={`${nombreFr(selected.capacityL, 1)} L · ${selectedState.label}`}
             className="equipment-sheet"
             footer={<div className="equipment-footer"><Button intent="secondary" onClick={close}>Annuler</Button><Button intent="primary" disabled={selectedUnknown ? !repairedState : selected.state === 'propre' && !batchToFill} onClick={advance}>{selectedUnknown ? 'Enregistrer l’état' : NEXT_LABEL[selected.state]}</Button></div>}
           >
@@ -182,7 +183,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
           </Sheet>
           <ConfirmSheet
             open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Retirer ce fût ?"
-            what={`Fût ${selected.id} — ${selected.capacityL} L`}
+            what={`Fût ${selected.id} — ${nombreFr(selected.capacityL, 1)} L`}
             consequence={selected.state === 'plein' || selected.state === 'livre' || selectedUnknown && (selected.beerName || selected.batchRef)
               ? `Ce fût contient ${selected.beerName || 'une bière non renseignée'}. Le retirer ne restitue pas son contenu au stock.`
               : 'Le fût disparaît du parc.'}

@@ -1,5 +1,6 @@
 import { POLICY, hopRef } from './data';
 import { MOMENTS, ibuPerGram, ibuPerGramAt, type MomentId, type Recipe } from './recipe';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Liste canonique des types d'ajout et du « quand » (unités), dans l'ordre d'affichage. */
 export interface MomentInfo {
@@ -24,7 +25,7 @@ export function momentCatalogue(boilMin = 60): MomentInfo[] {
     const d = code === 'dryActive' ? dry : post;
     return { code, label: m.label, type: 'à froid', v55Timing: m.timing, ibuModel: 'aucun : houblonnage à cru sans IBU Tinseth. L’amertume des humulinones relève d’un modèle séparé (hopBitternessCore, Maye 2016), non branché ici ; aucun chiffre n’est donné.',
       when: { unit: 'jour de houblonnage à cru', temperatureC: d.temperatureC!.central, contactHours: d.contactHours!.central,
-        note: `Jour d’ajout non modélisé ; contact supposé ${d.contactHours!.central} h à ${d.temperatureC!.central} °C (préréglage du solveur V5.5).` } };
+        note: `Jour d’ajout non modélisé ; contact supposé ${d.contactHours!.central} h à ${nombreFr(d.temperatureC!.central, 1)} °C (préréglage du solveur V5.5).` } };
   });
 }
 

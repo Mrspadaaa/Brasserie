@@ -32,6 +32,7 @@ import type {
   HopReplacementBasis,
   HopUse,
 } from '../../domain/hopDecision/types';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export const HOP_V55_PROGRAM_PREPARATION_VERSION = 'hop-v55-program-preparation-v1' as const;
 
@@ -327,7 +328,7 @@ function processRemove(operation: Extract<HopV55ProgramOperationV1, { kind: 'rem
   if (grams === null || grams === undefined) { evaluation.needs.push(need(operation.id, 'quantity', 'Saisir la masse à retirer en grammes.')); return; }
   if (!finite(grams) || grams <= 0) { evaluation.status = 'blocked'; evaluation.reasons.push('Une masse partielle retirée doit être finie et strictement positive.'); return; }
   if (source.grams === null) { evaluation.needs.push(need(operation.id, 'quantity', `La masse de ${source.id} est inconnue ; une quantité restante ne peut pas être calculée.`)); return; }
-  if (grams > source.grams) { evaluation.status = 'blocked'; evaluation.reasons.push(`La masse demandée (${grams} g) dépasse ${source.id} (${source.grams} g).`); return; }
+  if (grams > source.grams) { evaluation.status = 'blocked'; evaluation.reasons.push(`La masse demandée (${nombreFr(grams, 1)} g) dépasse ${source.id} (${nombreFr(source.grams, 1)} g).`); return; }
   if (grams === source.grams) evaluation.changes.push({ kind: 'remove', additionId: source.id });
   else evaluation.changes.push(changeForReplacement(source, { ...clone(source), grams: source.grams - grams }));
 }
@@ -384,7 +385,7 @@ function processMove(operation: Extract<HopV55ProgramOperationV1, { kind: 'move'
   if (grams === null || grams === undefined) { evaluation.needs.push(need(operation.id, 'quantity', 'Saisir la masse à déplacer en grammes.')); return; }
   if (!finite(grams) || grams <= 0) { evaluation.status = 'blocked'; evaluation.reasons.push('La masse déplacée doit être finie et strictement positive.'); return; }
   if (source.grams === null) { evaluation.needs.push(need(operation.id, 'quantity', `La masse de ${source.id} est inconnue ; le reliquat à l’emploi initial ne peut pas être calculé.`)); return; }
-  if (grams > source.grams) { evaluation.status = 'blocked'; evaluation.reasons.push(`La masse déplacée (${grams} g) dépasse ${source.id} (${source.grams} g).`); return; }
+  if (grams > source.grams) { evaluation.status = 'blocked'; evaluation.reasons.push(`La masse déplacée (${nombreFr(grams, 1)} g) dépasse ${source.id} (${nombreFr(source.grams, 1)} g).`); return; }
   if (grams === source.grams) { evaluation.status = 'blocked'; evaluation.reasons.push('Cette quantité couvre la ligne entière ; confirmer explicitement quantity.kind="entire".'); return; }
   if (!isText(operation.newAdditionId)) { evaluation.needs.push(need(operation.id, 'target', 'Fournir un identifiant stable pour la nouvelle ligne déplacée.')); return; }
   if (input.program.additions.some(row => row.id === operation.newAdditionId)) {

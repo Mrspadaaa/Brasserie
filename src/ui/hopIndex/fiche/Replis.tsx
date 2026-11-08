@@ -23,6 +23,7 @@ import { ibuByMoment } from '../parcours/v4';
 import { complementsFiche, type SourcesFiche } from './sources';
 import { useComplements } from './complements-ui';
 import { ContenuSources, Etiquettes, Rangee, pl } from './SourcesFiche';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 export type Section = 'styles' | 'huiles' | 'sources' | 'substituts';
 const TITRES: [Section, string][] = [['styles', 'Styles'], ['huiles', 'Huiles'], ['sources', 'Sources'], ['substituts', 'Substituts']];
@@ -108,7 +109,7 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
               : (
                 <ol data-role="fiche-remplacants" aria-label={`Remplaçants de ${h.nom}${q ? ` à ${nomMoment(q)}` : ''}`} className="mt-1 divide-y divide-cave-800">
                   {liste.map((c) => {
-                    const x = (v: number) => `${Math.max(0, Math.min(100, ((v - 50) / 50) * 100)).toFixed(1)}%`;
+                    const x = (v: number) => `${nombreFr(Math.max(0, Math.min(100, ((v - 50) / 50) * 100)), 1)}%`;
                     return (
                       <li key={c.cle} data-houblon-cle={c.cle} data-min={c.min} data-max={c.max} className="flex items-center gap-3 py-1.5">
                         <span className="w-[7.5rem] shrink-0 flex items-center gap-1 min-w-0">

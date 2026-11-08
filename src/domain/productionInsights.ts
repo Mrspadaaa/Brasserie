@@ -2,6 +2,7 @@ import type { Batch, Recipe, RecipeSnapshot } from '../types';
 import { catalogDate, catalogNumber, catalogText, type CatalogEntry } from './productionCatalog';
 import { normalizeHop } from './hopStage';
 import { actualBrewDate, hasBrewStarted, normalizeBrewDate } from './batchSchedule';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const dayMs = 86_400_000;
 export type BatchDetailSection = 'measurements' | 'tasting' | 'overview';
@@ -179,7 +180,7 @@ export function recipeSignature(recipe: Recipe | RecipeSnapshot) {
         ? h.dayOffset != null
           ? `J+${h.dayOffset}`
           : 'Jour non précisé'
-        : `${h.timeMin != null ? `${h.timeMin} min` : 'Durée non précisée'}${h.tempC != null ? ` à ${h.tempC} °C` : ''}`;
+        : `${h.timeMin != null ? `${h.timeMin} min` : 'Durée non précisée'}${h.tempC != null ? ` à ${nombreFr(h.tempC, 1)} °C` : ''}`;
     const key = `${catalogText(h.name)}:${h.stage}:${detail}`,
       previous = hopGroups.get(key);
     const weight = catalogNumber(h.weightG);

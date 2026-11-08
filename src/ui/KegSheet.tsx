@@ -10,6 +10,7 @@ import { Trash2 } from 'lucide-react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
 import './equipment-compact.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * Fiche fût : créer, modifier, supprimer.
@@ -76,7 +77,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
         open={Boolean(keg)}
         onClose={onClose}
         title={isNew ? 'Nouveau fût' : `Fût ${keg.id}`}
-        subtitle={isNew ? undefined : `${keg.capacityL} L · ${keg.beerName ?? 'vide'}`}
+        subtitle={isNew ? undefined : `${nombreFr(keg.capacityL, 1)} L · ${keg.beerName ?? 'vide'}`}
         className="equipment-sheet"
         footer={
           <div className="equipment-footer">
@@ -104,7 +105,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
               className="equipment-choice"
               value={String(draft.capacityL)}
               onChange={(v) => setDraft({ ...draft, capacityL: parseInt(v, 10) })}
-              options={capacities.map((c) => ({ value: String(c), label: `${c} L` }))}
+              options={capacities.map((c) => ({ value: String(c), label: `${nombreFr(c, 1)} L` }))}
             />
           </Field>
           </div>
@@ -216,7 +217,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
         title="Supprimer ce fût ?"
-        what={`Fût ${keg.id} — ${keg.capacityL} L${keg.beerName ? ` · ${keg.beerName}` : ''}`}
+        what={`Fût ${keg.id} — ${nombreFr(keg.capacityL, 1)} L${keg.beerName ? ` · ${keg.beerName}` : ''}`}
         consequence={
           keg.state === 'plein' || keg.state === 'livre'
             ? 'Ce fût est marqué comme rempli. Sa bière ne sera plus comptée dans le parc.'

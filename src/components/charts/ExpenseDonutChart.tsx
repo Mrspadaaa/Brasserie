@@ -1,6 +1,7 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Transaction, FinanceCategory } from '../../types';
+import { montantChf } from '../../domain/finance/ledger';
 
 interface ExpenseDonutChartProps {
   transactions: Transaction[];
@@ -43,7 +44,7 @@ export const ExpenseDonutChart: React.FC<ExpenseDonutChartProps> = ({
             <span>{p.name}</span>
           </div>
           <div className="text-ebc-straw font-black mt-1 font-mono">
-            {p.value.toFixed(2)} CHF ({pct}%)
+            {montantChf(p.value)} CHF ({pct}%)
           </div>
         </div>
       );
@@ -61,7 +62,7 @@ export const ExpenseDonutChart: React.FC<ExpenseDonutChartProps> = ({
           <h3 className="font-bold text-sm text-cave-50">Structure des Coûts Brasserie</h3>
         </div>
         <span className="text-sm font-black text-ebc-straw font-mono">
-          {totalExpenses.toFixed(2)} CHF
+          {montantChf(totalExpenses)} CHF
         </span>
       </div>
 

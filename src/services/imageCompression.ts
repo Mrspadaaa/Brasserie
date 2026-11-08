@@ -1,3 +1,4 @@
+import { nombreFr } from '../domain/nombreAffiche';
 /**
  * Compression des justificatifs avant écriture.
  *
@@ -145,7 +146,7 @@ export const ImageCompression = {
           finalBytes: size,
           summary:
             `Photo allégée de ${humanSize(originalBytes)} à ${humanSize(size)}` +
-            (saved > 0 ? ` (−${saved} %)` : '') +
+            (saved > 0 ? ` (−${nombreFr(saved, 1)} %)` : '') +
             `, ${width}×${height} px.`
         };
       }

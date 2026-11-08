@@ -5,6 +5,7 @@ import type { Batch } from '../../types';
 import { catalogDate } from '../../domain/productionCatalog';
 import { parseDecimal } from '../numericInput';
 import { GRAVITY_CEILING, GRAVITY_FLOOR } from '../../domain/gravityBounds';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 /** Température d'un échantillon de moût en fermentation : de la chambre froide (−5 °C) au moût encore chaud d'un départ (45 °C). */
 const TEMP_MIN_C = -5;
@@ -45,7 +46,7 @@ export function BatchGravityEntry({
       return;
     }
     if (temperature.trim() && temp !== null && (temp < TEMP_MIN_C || temp > TEMP_MAX_C)) {
-      setError(`Saisis une température entre ${TEMP_MIN_C} et ${TEMP_MAX_C} °C (celle de l’échantillon), ou laisse ce champ vide.`);
+      setError(`Saisis une température entre ${TEMP_MIN_C} et ${nombreFr(TEMP_MAX_C, 1)} °C (celle de l’échantillon), ou laisse ce champ vide.`);
       return;
     }
     if (

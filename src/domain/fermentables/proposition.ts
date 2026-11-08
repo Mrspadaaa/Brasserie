@@ -1,6 +1,7 @@
 import type { StockItem } from '../../types';
 import { normaliser, slugBeerAnalytics } from './noms';
 import { libelleDuPalier, palierDansLaCle, typiciteChargee, typiciteDe, type TableTypicite, type Typicite } from './typicite';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 /**
  * Les tuiles que le champ d'ajout de Malts/sucres propose à l'ouverture, avant toute frappe (D222 : « avec algo de reconnaissance
@@ -47,7 +48,7 @@ export const PROPOSITION_RULE: readonly string[] = [
 ];
 
 const libelleTypicite = (t: Typicite): string => {
-  const pct = (x: number) => `${Math.round(x * 1000) / 10} %`.replace('.', ',');
+  const pct = (x: number) => `${nombreFr(Math.round(x * 1000) / 10, 1)} %`.replace('.', ',');
   if (t.palier !== null) {
     const base = `typicité ${libelleDuPalier(t.palier)}`;
     if (t.part !== null) return t.origine === 'voisin' ? `${base} (${pct(t.part)} : un style voisin, à moitié)` : `${base} (${pct(t.part)} des recettes du style)`;

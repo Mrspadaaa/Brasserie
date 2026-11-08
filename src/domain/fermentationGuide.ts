@@ -6,6 +6,7 @@ import { documentedDirectPitchProtocol, type DirectPitchProtocol } from '../../f
 import type { FermentationStep, YeastSpec } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './hopIndex/recipeGuide';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export interface FermentationDraft {
   goal: FermentationGoal; pitchTempC: number | undefined;
@@ -58,7 +59,7 @@ export function fermentationDraftErrors(guide: FermentationGuide, draft: Ferment
   const protocol = declaresProtocol && draft.pitchMethod === 'direct' ? documentedDirectPitchProtocol(guide.yeastId, draft.pitchForm) : undefined;
   if (declaresProtocol && !protocol) errors.push('Aucun protocole chiffré d’ajout direct n’est documenté pour ce produit et cette forme.');
   if (!within(draft.pitchTempC, protocol?.temperatureC ?? guide.temperatureC.range)) errors.push(protocol
-    ? `L’ajout direct doit respecter la notice de ce produit (${protocol.temperatureC.min}–${protocol.temperatureC.max} °C), distincte de la fermentation.`
+    ? `L’ajout direct doit respecter la notice de ce produit (${protocol.temperatureC.min}–${nombreFr(protocol.temperatureC.max, 1)} °C), distincte de la fermentation.`
     : 'Cette proposition d’ensemencement sort de la fenêtre de fermentation. Choisis un protocole d’ajout documenté pour cette forme avant de retenir une autre température.');
   if (draft.phases.length !== plan.phases.length) errors.push('Le programme a changé : reprends ses paliers.');
   draft.phases.forEach((s, i) => {
@@ -71,7 +72,7 @@ export function proposedFermentationSteps(guide: FermentationGuide, draft: Ferme
   const plan = fermentationPlan(guide, draft.goal)!;
   const protocol = draft.pitchMethod === 'direct' ? documentedDirectPitchProtocol(guide.yeastId, draft.pitchForm) : undefined;
   return plan.phases.map((s, i) => ({ name: s.name, kind: s.kind, tempC: draft.phases[i].tempC!, days: draft.phases[i].days!,
-    note: `${s.completeWhen} Durée indicative, à ajuster aux mesures. Proposition L’Affinée (${guide.version}) ; ${guide.source.reference}.${i === 0 && protocol ? ` Ajout direct à ${draft.pitchTempC} °C : ${protocol.conditions} Délai de descente vers ce palier non précisé. ${protocol.source.reference}` : ''}` }));
+    note: `${s.completeWhen} Durée indicative, à ajuster aux mesures. Proposition L’Affinée (${guide.version}) ; ${guide.source.reference}.${i === 0 && protocol ? ` Ajout direct à ${nombreFr(draft.pitchTempC, 1)} °C : ${protocol.conditions} Délai de descente vers ce palier non précisé. ${protocol.source.reference}` : ''}` }));
 }
 /** Preserve conditioning and ingredient events. The complete new order is previewed before adoption. */
 export function replacePrimaryFermentation(previous: FermentationStep[], phases: FermentationStep[]): FermentationStep[] {

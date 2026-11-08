@@ -1,6 +1,7 @@
 import React from 'react';
 import { Chevron, Rendement, Verre } from './icones';
 import { fr, pc, teinte } from './modele';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface PropsReperes {
   /** Rendement en fermenteur retenu par la recette (profil, recette ou 75 % par défaut). */
@@ -22,7 +23,7 @@ export interface PropsReperes {
 
 const A = 1.04, B = 1.1;
 const ogTxt = (o: number | null) => (o == null ? '—' : `~${fr(o, 3)}`);
-const T0 = [0, 2, 4, 7, 12, 20, 35, 40].map((x) => `${teinte(x)} ${(x / 40) * 100}%`).join(',');
+const T0 = [0, 2, 4, 7, 12, 20, 35, 40].map((x) => `${teinte(x)} ${nombreFr((x / 40) * 100, 1)}%`).join(',');
 
 /** Les repères de la recette (r4-a) : OG attendue face à celle du style, teinte face à celle du style. Aucun nombre n'est refait ici. */
 export const Reperes: React.FC<PropsReperes> = ({ rendementPct, rendementDeclare, og, ogPlage, teinteBiere, ebcPlage, aRenseigner, ouvert, onBascule, onRenseigner }) => {

@@ -25,6 +25,7 @@ import { ViewNavigation } from '../../ui/ViewNavigation';
 import { SegmentedControl } from '../../ui/SegmentedControl';
 import { inputClass } from '../../ui/FormNav';
 import '../../ui/clients.css';
+import { nombreFr } from '../../domain/nombreAffiche';
 const InvoiceSheet = React.lazy(() => import('../../ui/finance/InvoiceSheet').then(m => ({ default: m.InvoiceSheet })));
 
 const amountFormat = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -156,9 +157,9 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   const handleCopyOfdfValues = () => {
     const text = `RÉSERVE INDICATIVE IMPÔT SUR LA BIÈRE — ${taxYear}
 Entreprise : ${config.company.name}
-Volume conditionné : ${montantChf(taxReport.totalHectoliters)} hl (${taxReport.totalVolumeL} L)
+Volume conditionné : ${montantChf(taxReport.totalHectoliters)} hl (${nombreFr(taxReport.totalVolumeL, 1)} L)
 Taux plein : ${montantChf(taxReport.fullRatePerHl)} CHF/hl
-Réduction petit brasseur : ${taxReport.reductionPct}%
+Réduction petit brasseur : ${nombreFr(taxReport.reductionPct, 1)}%
 Taux appliqué : ${montantChf(taxReport.ratePerHl)} CHF/hl
 Réserve : ${montantChf(taxReport.estimateLowCHF)} à ${montantChf(taxReport.estimateHighCHF)} CHF
 
@@ -293,7 +294,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
               <dd className="font-mono">{taxReport.totalVolumeL > 0 ? `${taxReport.estimateLowCHF === taxReport.estimateHighCHF ? montantChf(taxReport.estimateHighCHF) : `${montantChf(taxReport.estimateLowCHF)} – ${montantChf(taxReport.estimateHighCHF)}`} CHF` : '—'}</dd>
             </div>
           </dl>
-          <p className="text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${taxReport.reductionPct} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>
+          <p className="text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${nombreFr(taxReport.reductionPct, 1)} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>
           {taxReport.missingPlatoCount > 0 && <p className="text-attention">Densité initiale manquante pour {taxReport.missingPlatoCount} brassin(s) : fourchette entre les catégories légère et forte.</p>}
           <details className="clients-help">
             <summary>Comprendre le calcul et les démarches<ChevronDown size={14} aria-hidden="true" /></summary>

@@ -12,6 +12,7 @@ import type { Batch } from '../../types';
 import { formatDecimal } from '../../ui/numericInput';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { densityAxisDomain } from '../../domain/gravityBounds';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export function FermentationCurveChart({ batch }: { batch: Batch }) {
   const { points, target, latest, attenuation } = fermentationReadings(batch);
@@ -54,7 +55,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
                         </p>
                         <p>
                           {formatDecimal(p.sg, 3)}
-                          {p.tempC != null ? ` · ${p.tempC} °C` : ''}
+                          {p.tempC != null ? ` · ${nombreFr(p.tempC, 1)} °C` : ''}
                         </p>
                       </div>
                     ) : null;

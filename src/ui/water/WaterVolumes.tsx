@@ -4,6 +4,7 @@ import { equipmentCheck, r1 } from "../../domain/brewEquipment";
 import { waterBalance } from "../../domain/water/volumeBalance";
 
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
+import { nombreFr } from '../../domain/nombreAffiche';
 type Props = Pick<
   WaterWorkshopModel,
   | "beerVolumeL"
@@ -142,7 +143,7 @@ export function WaterVolumes({
                 )}
               </p>
             )}
-            {check?.spargeTooMuch && <p role="alert" className="text-ebc-amber">Au-dessus des {check.spargeMaximumHotL} L exceptionnels à chaud. Augmente l’eau d’empâtage si la cuve le permet, ou réduis le brassin.</p>}
+            {check?.spargeTooMuch && <p role="alert" className="text-ebc-amber">Au-dessus des {nombreFr(check.spargeMaximumHotL, 1)} L exceptionnels à chaud. Augmente l’eau d’empâtage si la cuve le permet, ou réduis le brassin.</p>}
             {check?.spargeStatus === 'exception' && <p className="text-ebc-amber">Rinçage exceptionnel : confirme la bouilloire annexe dans les choix de cette recette.</p>}
             {check?.mashTooFull && (
               <p role="alert" className="text-cave-50">

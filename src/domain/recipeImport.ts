@@ -4,6 +4,7 @@ import { readRecipeFields, readRecipeText, RecipeContent } from './recipeTransfe
 import { yeastRecipeDesignChanged } from './yeastRecipeDesign';
 import { momentParDefaut } from './fermentables/moments';
 import { normaliserAdditif } from './bornesProcede';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export interface ImportedRecipe extends Omit<Partial<RecipeContent>, 'waterPlan' | 'mash'> {
   fermentables: RecipeContent['fermentables'];
@@ -118,7 +119,7 @@ export function normalizeRecipeImport(
     clean.mash?.ratioLPerKg != null &&
     Math.abs(mashLitres / grainKg - clean.mash.ratioLPerKg) > 0.05
   ) {
-    const note = `Épaisseur annoncée : ${clean.mash.ratioLPerKg} L/kg ; les volumes et le grain donnent ${(mashLitres / grainKg).toFixed(2)} L/kg. Les volumes sont conservés.`;
+    const note = `Épaisseur annoncée : ${nombreFr(clean.mash.ratioLPerKg, 1)} L/kg ; les volumes et le grain donnent ${nombreFr((mashLitres / grainKg), 2)} L/kg. Les volumes sont conservés.`;
     warnings.push(note);
     clean.notesCreation = [clean.notesCreation, note].filter(Boolean).join('\n');
   }

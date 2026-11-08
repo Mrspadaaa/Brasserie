@@ -90,6 +90,7 @@ import { readingPrompt } from '../domain/brewAssist';
 import { ReadingKind } from '../domain/brewDay';
 import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface Props {
   batch: Batch;
@@ -1379,7 +1380,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           <details className="brew-bitterness">
                             <summary>
                               <span>
-                                ≈ {bitterness.projected} IBU{' '}
+                                ≈ {nombreFr(bitterness.projected, 1)} IBU{' '}
                                 <small>· recette {bitterness.planned}</small>
                               </span>
                               <ChevronDown size={16} />
@@ -1446,7 +1447,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         <strong>
                           {finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'} <small>L à froid</small>
                         </strong>
-                        <span>Cible {recipe.volumeL ?? '—'} L</span>
+                        <span>Cible {recipe.volumeL == null ? '—' : nombreFr(recipe.volumeL, 1)} L</span>
                       </div>
                     </div>
                     {(!finishedReadings.gravity || !finishedReadings.volume) && (
@@ -1723,8 +1724,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         className="brew-confirm"
         onClose={() => setConfirmFinish(false)}
         title={state.pitchedAt != null ? 'Finaliser la synchronisation ?' : 'Confirmer l’ajout de levure ?'}
-        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${finishedReadings.volume.value} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
-        consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${pitchTemperature} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
+        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${nombreFr(finishedReadings.volume.value, 1)} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
+        consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${nombreFr(pitchTemperature, 1)} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
         confirmLabel={state.pitchedAt != null ? 'Synchroniser et clôturer' : 'Confirmer la levure ajoutée'}
         onConfirm={async () => {
           if (finalizing.current) return;

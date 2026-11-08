@@ -2,6 +2,7 @@ import { hopAdviceContentReference } from './adviceContentReference';
 import { hopSourceError, type HopRange, type HopSource } from '../../../functions/src/hopIndexSchema';
 import { coldDecimal, coldDecimalToNumber, coldDecimalSnapshot, compareColdDecimals, sumColdDecimalNumbers,
   addColdDecimals, subtractColdDecimals, multiplyColdDecimals, divideColdDecimals, type ColdDecimalFraction } from './coldIbuDecimal';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export const HOP_COLD_BU_CALIBRATION_FORMAT = 'cold-hop-bu-calibration-v1' as const;
 export const HOP_COLD_BU_REFERENCE_FORMAT = 'cold-hop-bu-reference-result-v1' as const;
@@ -275,7 +276,7 @@ function referenceAtExactDose(input: InterpolateColdHopBuReferenceInput, coordin
   if (!Number.isFinite(doseEffectiveGPerHL)) invalid('La conversion de dose en g/hL n’est pas finie.');
   if (compareColdDecimals(coordinate, coldDecimal(domainGPerHL.min)) < 0 || compareColdDecimals(coordinate, coldDecimal(domainGPerHL.max)) > 0) {
     return finishReferenceResult({ ...base, doseEffectiveGPerHL, status: 'outOfDomain', valueBU: null,
-      contrastToControlBU: null, nodesUsed: [], limitations: [...base.limitations, `Dose hors domaine publié ${domainGPerHL.min}–${domainGPerHL.max} g/hL : aucune extrapolation ou saturation appliquée.`] });
+      contrastToControlBU: null, nodesUsed: [], limitations: [...base.limitations, `Dose hors domaine publié ${domainGPerHL.min}–${nombreFr(domainGPerHL.max, 1)} g/hL : aucune extrapolation ou saturation appliquée.`] });
   }
 
   const exact = points.find(point => compareColdDecimals(coldDecimal(point.doseGPerHL), coordinate) === 0);

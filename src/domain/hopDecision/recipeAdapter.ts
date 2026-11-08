@@ -3,6 +3,7 @@ import { hopDecisionReference, numericBounds, readHopAnalysis } from './measurem
 import { readHopAlphaForAddition } from './modelInputs';
 import { applyHopProgramProposal, programFingerprint } from './programs';
 import { HOP_DECISION_VERSION, type HopAlphaModelParameter, type HopDecisionMaterial, type HopDecisionProgram, type HopIbuModelContext, type HopProgramApplication, type HopProcessStage, type HopUse } from './types';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface HopRecipeLike { id: string; volumeL: number; hops: HopIngredient[]; hopPredictionIds?: string[]; hopTrialId?: string }
 export interface HopRecipeBinding {
@@ -145,7 +146,7 @@ export function buildHopRecipeDraft<T extends HopRecipeLike>(current: T, binding
         const range = numericBounds(reading);
         if (!Number.isFinite(selected) || selected < 0 || selected > 100 || range && (selected < range.min || selected > range.max)) throw Error('Alpha choisi hors du domaine documenté.');
         alpha = selected;
-        assumptions.push(`${material.name} : alpha de travail choisi explicitement (${selected} %), sans créer de mesure du lot.`);
+        assumptions.push(`${material.name} : alpha de travail choisi explicitement (${nombreFr(selected, 1)} %), sans créer de mesure du lot.`);
         recipeModelAlpha[addition.id] = { analyte: 'alpha', unit: 'percentAlpha', kind: 'point', value: selected, analyticalBasis: 'unknown', origin: 'workingHypothesis',
           source: { title: 'Choix scalaire pour le brouillon de recette', author: 'Choix de formulation', year: null, kind: 'judgment', reference: `recipe-draft:${current.id}:${addition.id}` },
           selectionReason: 'Nominal de travail choisi pour le champ de recette ; les observations et le programme appliqué restent figés séparément.' };

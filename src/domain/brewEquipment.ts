@@ -1,5 +1,6 @@
 import { BrewingEquipment, BrewhouseProfile } from '../types';
 import type { BrewingPreferences } from '../types/brewSystem';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /** Approximate expansion at mash/rinse temperature, distinct from boiling shrinkage. */
 export const MASH_WATER_EXPANSION = 1.03;
@@ -72,7 +73,7 @@ export function profileVolumeErrors(profile?: BrewhouseProfile): string[] {
   const v = profile.volumeL;
   if (!Number.isFinite(v) || v <= 0) return ['Indique le volume habituel en fermenteur, au-dessus de 0 L.'];
   const capacity = profile.equipment && positive(profile.equipment.fermenterCapacityL) ? profile.equipment.fermenterCapacityL : undefined;
-  if (capacity !== undefined && v > capacity + 1e-8) return [`Le volume habituel (${v} L) dépasse la capacité du fermenteur (${capacity} L) : baisse-le ou agrandis le fermenteur.`];
+  if (capacity !== undefined && v > capacity + 1e-8) return [`Le volume habituel (${nombreFr(v, 1)} L) dépasse la capacité du fermenteur (${nombreFr(capacity, 1)} L) : baisse-le ou agrandis le fermenteur.`];
   return [];
 }
 

@@ -22,6 +22,7 @@ import { dureeDeContact, mesureDe } from './mesures';
 import FroidDryhopper from './FroidDryhopper';
 import './pied-annuler.css';
 import './dryhopper.css';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Orangé « hors du style » / « trop amer » (le seul accent d'alerte du standard #142). */
 export const ACC = '#c2410c';
@@ -178,7 +179,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
   const aire = (() => {
     let d = `M${px(0)} ${YC}`;
     for (let k = 0; k <= N; k++) d += ` L${px(k)} ${yc(gain(points[k], principale).v)}`;
-    return `${d} L${px(N)} ${YC} Z`;
+    return `${d} L${px(N)} ${YC} Z`; // virgule-ok : chemin SVG (commande L), pas une unité
   })();
 
   const graphe = (
@@ -354,7 +355,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
       ]} />
         <span data-etat="etat-dryh-legende" className="inline-block"><Legende>
           <p>Courbes : ce qu’{h.nom} ajoute à ta {T.biere} en {liste(BANDEAU.map((f) => COURT[f].toLowerCase()))} à chaque moment du brassin{maquette ? '' : ` (${quiVise})`}. Point plein : calculé par le moteur ; pointillé : interpolé entre 60′, 10′ et whirlpool.</p>
-          <p>Cases sous l’axe : l’amertume de la bière, orangée au-delà de ton style ({bande ? `${bande[0]}–${bande[1]}` : '?'} IBU) ; hachurée à cru (non modélisée). Calculée à la minute.</p>
+          <p>Cases sous l’axe : l’amertume de la bière, orangée au-delà de ton style ({bande ? `${nombreFr(bande[0], 1)}–${nombreFr(bande[1], 1)}` : '?'} IBU) ; hachurée à cru (non modélisée). Calculée à la minute.</p>
           <p>Sous l’axe, dans l’actif : la levure travaille (biotransformation possible, non quantifiée) ; fin vers J+5, à confirmer à la densité.</p>
           <p>Glisse le pouce sur le rail, par 5′ : le trait traverse les courbes ; la loupe chiffre les moments voisins. ● sur l’axe : un moment mesuré.</p>
           <p>Barres : les 12 familles au style, rond : avant ; hachuré « ? » : jamais décrit, pas zéro. « ? → » : ta {T.biere} avant n’est pas décrite. ★ : le meilleur pour {quiVise}.</p>

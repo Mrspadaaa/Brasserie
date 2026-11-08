@@ -326,7 +326,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
           </div>
         )}
         {refusSaisie && <p id="fer-refus" className="fer-alerte" role="alert" data-hors="refus">{refusSaisie}</p>}
-        {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}
+        {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}{/* virgule-ok : 1 000 kg, entier écrit en lettres */}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
         {/* Une donnée ancienne mal placée (grain bouilli ou au fermenteur) : dite ici, en clair, tout de suite ; la ligne porte « compté 0 ». */}
         {fermentables.map((f, i) => {

@@ -7,6 +7,7 @@ import {
   arrondiKg, autresKg, cran, cranPas, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, MOMENT_SUIVANT, momentPermis, momentTourne, MOT_MOMENT, nu,
   pas, partN, teinte, voile,
 } from './modele';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface AnnMoment { i: number; use: Fermentable['use']; dayOffset?: number; t: number }
 
@@ -99,7 +100,7 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
     ? <span className="fer-pc fer-pc-hors" data-pc={i}>compté 0</span>
     : grain
     ? <span className="fer-pc" data-pc={i}><span className="fer-pn">{total ? partN(fermentables, f) : '—'}</span> %{ann ? '' : ' du grain'}</span>
-    : <span className="fer-pc" data-pc={i}>{nolo && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : `${f.fermentabilityPct ?? 100} % ferm.`}</span>;
+    : <span className="fer-pc" data-pc={i}>{nolo && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : `${nombreFr(f.fermentabilityPct ?? 100, 1)} % ferm.`}</span>;
 
   const bouton = !tourne ? (
     <span className="fer-mo fer-mo-fixe" data-role="moment-ligne" data-ml={i} data-m={MOT_MOMENT[f.use]}

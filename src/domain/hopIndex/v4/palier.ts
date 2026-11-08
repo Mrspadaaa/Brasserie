@@ -1,3 +1,4 @@
+import { nombreFr } from '../../../domain/nombreAffiche';
 // Voie g2b : le palier 60′ (D88 B, D165) et le vrai dry hop (D161, D166) de Suggérer. Constantes et comparaisons pures ; le calcul est dans voies.ts.
 // Tout ce qui est ici est une CONVENTION écrite, nommée comme telle : aucune source du dépôt ne donne une dose de dry hop par style
 // (Beer Analytics publie la part du poids de houblon de la recette par style, pas des g/L ; hopStyleUsageBootstrap, des rôles sans dose).
@@ -92,7 +93,7 @@ export interface RegleDryHop {
 export const REGLE_DRYHOP: RegleDryHop = {
   bornes: { min: BORNES_DRYHOP_GL.min, max: BORNES_DRYHOP_GL.max, pas: BORNES_DRYHOP_GL.pas },
   source: 'générique',
-  explication: `Dose = celle des multiples de 0,5 g/L, entre ${BORNES_DRYHOP_GL.min} et ${BORNES_DRYHOP_GL.max} g/L, dont l'effet sur la famille visée s'approche le plus de la visée (la plus petite en cas d'égalité). ${BORNES_DRYHOP_GL.source}.`,
+  explication: `Dose = celle des multiples de 0,5 g/L, entre ${BORNES_DRYHOP_GL.min} et ${nombreFr(BORNES_DRYHOP_GL.max, 1)} g/L, dont l'effet sur la famille visée s'approche le plus de la visée (la plus petite en cas d'égalité). ${BORNES_DRYHOP_GL.source}.`,
   revueCumuleGL: BORNES_DRYHOP_GL.revueCumuleGL,
   sourcesStyleCherchees: 'src/data/hopSolverBootstrap.json (searchDosesGL 2·4·6 g/L par timing, pas par style ; dryHopReviewGL 8) ; docs/hop-solver.md et docs/hop-extrapolation.md ; hopDoseStudyBootstrap (Cascade 0 à 16 g/L, un lot) ; Beer Analytics amount-used-per-style (part du poids de houblon, pas des g/L) ; hopStyleUsageBootstrap (rôles par style, sans dose).',
 };

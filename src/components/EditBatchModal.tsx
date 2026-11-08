@@ -7,6 +7,7 @@ import { X, Save, Plus, Trash2, Activity, Beer } from 'lucide-react';
 import { Batch, BatchStatus } from '../types';
 import { StorageService } from '../services/storage';
 import { BrewingMath } from '../services/brewingMath';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface EditBatchModalProps {
   isOpen: boolean;
@@ -105,7 +106,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
       status,
       og,
       fg,
-      abv: calculatedABV ? `${calculatedABV}%` : batch.abv,
+      abv: calculatedABV ? `${calculatedABV}%` : batch.abv, // virgule-ok : valeur enregistrée (« 5.2% »), relue par parseFloat ailleurs ; pas un affichage
       bottlingDate,
       gravityLog,
       notesCreation: notesCreation.trim() || undefined,
@@ -259,7 +260,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
           <div className="p-3 bg-cave-950/70 border border-cave-800 rounded-2xl flex justify-between items-center text-sm">
             <span className="text-cave-400">Taux d'alcool calculé :</span>
             <span className="text-sm font-extrabold text-hop">
-              {calculatedABV ? `${calculatedABV}% vol.` : 'En cours de mesure'}
+              {calculatedABV ? `${typeof calculatedABV === 'number' ? nombreFr(calculatedABV, 1) : calculatedABV}% vol.` : 'En cours de mesure'}
             </span>
           </div>
 
@@ -278,8 +279,8 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
                 <div key={idx} className="flex justify-between items-center p-2 bg-cave-850/40 rounded-xl border border-cave-800 text-sm">
                   <div className="flex items-center space-x-2">
                     <span className="text-cave-400 font-mono">{log.date}</span>
-                    <span className="font-bold text-ebc-straw font-mono">{log.sg.toFixed(3)}</span>
-                    <span className="text-cave-200">{log.tempC}°C</span>
+                    <span className="font-bold text-ebc-straw font-mono">{nombreFr(log.sg, 3)}</span>
+                    <span className="text-cave-200">{nombreFr(log.tempC, 1)}°C</span>
                     {log.notes && <span className="text-cave-400 italic">({log.notes})</span>}
                   </div>
                   <button

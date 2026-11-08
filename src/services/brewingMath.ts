@@ -9,6 +9,7 @@ import { replanRecipeWater } from '../domain/recipeWater';
 import { grainHorsEmpatage } from '../domain/fermentables/moments';
 import { BORNES } from '../domain/bornesMetier';
 import { alcoholByVolume } from '../domain/alcohol';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * L'OG la plus haute qu'une bière atteint : 1,130. Les styles les plus forts du BJCP 2021 (English Barleywine, Wheatwine, Eisbock)
@@ -575,12 +576,12 @@ export const BrewingMath = {
       if (check.boilTooFull) issues.push('Le volume avant ébullition dépasse la limite utile de la cuve.');
       if (check.fermenterTooFull) issues.push('Le volume final atteint ou dépasse la capacité totale du fermenteur.');
       if (!check.thinEnough) issues.push('Maische sous 2,5 L/kg : circulation du panier à vérifier ; réduire le brassin si nécessaire.');
-      if (check.spargeTooMuch) issues.push(`Le rinçage dépasse le maximum de ${check.spargeMaximumHotL} L à chaud. Réduis le volume du brassin.`);
-      if (Math.abs(balanceError) > 0.1) issues.push(`La répartition manuelle diffère de ${balanceError} L du besoin calculé ; les volumes saisis sont conservés.`);
+      if (check.spargeTooMuch) issues.push(`Le rinçage dépasse le maximum de ${nombreFr(check.spargeMaximumHotL, 1)} L à chaud. Réduis le volume du brassin.`);
+      if (Math.abs(balanceError) > 0.1) issues.push(`La répartition manuelle diffère de ${nombreFr(balanceError, 1)} L du besoin calculé ; les volumes saisis sont conservés.`);
       if (manual && spargeType === 'none' && sparge > 0) issues.push('Un rinçage est saisi alors que la recette est prévue sans rinçage.');
       const impossible = check.mashTooFull || check.boilTooFull || check.fermenterTooFull || check.spargeTooMuch ||
         Math.abs(balanceError) > 0.1 || (spargeType === 'none' && sparge > 0);
-      if (check.spargeStatus === 'exception') issues.push(`Prévoir ${round1(check.spargeAuxiliaryHotL)} L à chaud en appoint ; exception à confirmer.`);
+      if (check.spargeStatus === 'exception') issues.push(`Prévoir ${nombreFr(check.spargeAuxiliaryHotL, 1)} L à chaud en appoint ; exception à confirmer.`);
       return {
         mashWaterL: mash, spargeWaterL: sparge, preBoilVolumeL: round1(preCold), preBoilHotL: round1(preHot),
         grainAbsorptionL: round1(absorption), boilOffL: round1(evaporationHot * coldFactor), hopLossL,
@@ -620,7 +621,7 @@ export const BrewingMath = {
         return { ...vide, issues: ['La répartition manuelle de l’eau doit contenir deux volumes positifs ou nuls.'] };
       const waterBalanceErrorL = round1(manual.mashWaterL + manual.spargeWaterL - calculated.mashWaterL - calculated.spargeWaterL);
       const issues: string[] = [];
-      if (Math.abs(waterBalanceErrorL) > .1) issues.push(`La répartition manuelle diffère de ${waterBalanceErrorL} L du besoin calculé ; les volumes saisis sont conservés.`);
+      if (Math.abs(waterBalanceErrorL) > .1) issues.push(`La répartition manuelle diffère de ${nombreFr(waterBalanceErrorL, 1)} L du besoin calculé ; les volumes saisis sont conservés.`);
       if (spargeType === 'none' && manual.spargeWaterL > 0) issues.push('Un rinçage est saisi alors que la recette est prévue sans rinçage.');
       return { ...calculated, ...manual, mashRatioLPerKg: round1(manual.mashWaterL / totalGristKg),
         waterBalanceErrorL, planningStatus: issues.length ? 'impossible' : 'ready', issues };
@@ -750,7 +751,7 @@ export const BrewingMath = {
 
     const scaledRecipe: Recipe = {
       ...recipe,
-      id: `${recipe.id}-scale-${targetVolumeL}L`,
+      id: `${recipe.id}-scale-${nombreFr(targetVolumeL, 1)}L`,
       volumeL: targetVolumeL,
       brewhouse: snapshotBrewhouse(targetBrewhouse),
       efficiencyPct: targetBrewhouse.efficiencyPct,

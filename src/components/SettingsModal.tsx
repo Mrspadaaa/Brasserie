@@ -29,6 +29,7 @@ import { brewingPreferenceErrors } from '../domain/brewPreferences';
 import { BrewSystemCalibration } from '../ui/BrewSystemCalibration';
 import { BrewSystemSource } from '../ui/BrewSystemSource';
 import '../ui/settings-compact.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -269,22 +270,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-cave-50">{bh.name}</span>
                   <span className="text-footnote bg-ebc-straw/20 text-ebc-gold font-semibold px-2 py-0.5 rounded-full font-mono">
-                    {bh.volumeL} L visés
+                    {nombreFr(bh.volumeL, 1)} L visés
                   </span>
                 </div>
 
                 <dl className="grid grid-cols-3 gap-2 text-xs">
                   <div>
                     <dt className="text-cave-400" title="Rendement en fermenteur : l’extrait mesuré dans le fermenteur, rapporté au potentiel des grains">Rendement fermenteur</dt>
-                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.efficiencyPct}%</dd>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{nombreFr(bh.efficiencyPct, 1)}%</dd>
                   </div>
                   <div>
                     <dt className="text-cave-400">Évaporation</dt>
-                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.equipment ? `${bh.equipment.boilOffLPerHour} L/h` : `${bh.boilOffRatePct}%/h`}</dd>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.equipment ? `${nombreFr(bh.equipment.boilOffLPerHour, 1)} L/h` : `${nombreFr(bh.boilOffRatePct, 1)}%/h`}</dd>
                   </div>
                   <div>
                     <dt className="text-cave-400">Pertes cuve</dt>
-                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.deadSpaceL} L</dd>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{nombreFr(bh.deadSpaceL, 1)} L</dd>
                   </div>
                 </dl>
 

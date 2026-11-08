@@ -944,7 +944,7 @@ function IngredientCompletion({
                     {f.kind === 'malt' &&
                       [
                         f.missing.includes('couleur EBC') && f.facts.colorEbc != null
-                          ? `${f.facts.colorEbc} EBC`
+                          ? `${nombreFr(f.facts.colorEbc, 1)} EBC`
                           : null,
                         f.missing.includes('potentiel PPG') && f.facts.potentialPpg != null
                           ? `${f.facts.potentialPpg} PPG`

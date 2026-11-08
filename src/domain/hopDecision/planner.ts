@@ -15,6 +15,7 @@ import type {
   HopReplacementBasis,
   HopUse,
 } from './types';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export type HopPlannerDoseBasis = HopReplacementBasis | 'tinsethIbu';
 
@@ -472,7 +473,7 @@ function buildPath(request: HopPlannerRequest, requestReference: string, choices
   const needsDose = assignments.some(assignment => assignment.status === 'choose');
   const unknownDose = assignments.some(assignment => assignment.status === 'unknown');
   for (const assignment of assignments) {
-    if (assignment.status === 'choose') conditions.push(`${assignment.additionId} : choisir une dose dans les bornes explicites ${JSON.stringify(assignment.doseGrams.range)} g.`);
+    if (assignment.status === 'choose') conditions.push(`${assignment.additionId} : choisir une dose dans les bornes explicites ${JSON.stringify(assignment.doseGrams.range)} g.`); // virgule-ok : bornes sérialisées en JSON (liste de nombres), message technique du planificateur
     if (assignment.status === 'unknown') conditions.push(`${assignment.additionId} : dose inconnue ; ${assignment.missing.join(' ') || assignment.doseGrams.reasons.join(' ')}`);
     conditions.push(...assignment.missing.map(reason => `${assignment.additionId} : ${reason}`));
   }
@@ -650,9 +651,9 @@ export function selectHopReplacementPath(input: {
     if (chosen === null || chosen === undefined || !Number.isFinite(chosen) || chosen < 0
       || (chosen < bounds.min && !sameComputedDose(chosen, bounds.min))
       || (chosen > bounds.max && !sameComputedDose(chosen, bounds.max))) {
-      throw Error(`${assignment.additionId} : choisir une dose finie dans la plage ${bounds.min}–${bounds.max} g.`);
+      throw Error(`${assignment.additionId} : choisir une dose finie dans la plage ${bounds.min}–${nombreFr(bounds.max, 1)} g.`);
     }
-    if (assignment.status === 'fixed' && !sameComputedDose(chosen, assignment.doseGrams.value!)) throw Error(`${assignment.additionId} : la convention fixe ${assignment.doseGrams.value} g ; choisir une autre convention pour changer cette dose.`);
+    if (assignment.status === 'fixed' && !sameComputedDose(chosen, assignment.doseGrams.value!)) throw Error(`${assignment.additionId} : la convention fixe ${nombreFr(assignment.doseGrams.value, 1)} g ; choisir une autre convention pour changer cette dose.`);
     const addition = input.request.program.additions.find(row => row.id === assignment.additionId);
     if (!addition || addition.status !== 'planned') throw Error(`${assignment.additionId} : l’ajout source n’est plus prévu.`);
     const { alphaForModel: _sourceAlphaForModel, ...additionWithoutSourceAlpha } = addition;

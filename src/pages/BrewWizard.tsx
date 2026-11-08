@@ -166,7 +166,7 @@ function IbuEnPlage({ mesures }: { mesures: MesuresEtape }) {
     <>
       <span data-role="ibu-bandeau" data-valeur={ibu.toFixed(2)} className={cls} title={l.titre}>{l.texte}</span>
       {b && (
-        <span data-role="ibu-piste" role="img" aria-label={`style ${b[0]}–${b[1]} IBU`} className="relative self-center w-12 h-2 rounded-full bg-cave-800">
+        <span data-role="ibu-piste" role="img" aria-label={`style ${b[0]}–${nombreFr(b[1], 1)} IBU`} className="relative self-center w-12 h-2 rounded-full bg-cave-800">
           <i className="absolute inset-y-0 rounded-full bg-cave-600" style={{ left: pc(b[0]), width: `calc(${pc(b[1])} - ${pc(b[0])})` }} />
           <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />
         </span>
@@ -179,6 +179,7 @@ const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
 import type { MesuresEtape } from '../ui/hopIndex/maBiere/EtapeHoublons';
 import { libelleIbu } from '../domain/hopIndex/v4/recipeConversion';
 import { kettleHopGrammesBornes, ogAffichable } from '../domain/hopIndex/v4/bornesV4';
+import { nombreFr } from '../domain/nombreAffiche';
 const MesuresWizardV4 = lazy(() => import('../ui/hopIndex/maBiere/MesuresWizard'));
 const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
@@ -2549,7 +2550,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                       Les deux adaptations tiennent sur une ligne de liens ; le résumé des volumes, avec ses alertes, est replié sur une ligne. */}
                   {((volumeL!==volumeAdapte) || ((equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption)) && (
                     <div className="idn-liens" data-role="adapter">
-                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {volumeAdapte} L</button>}
+                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {nombreFr(volumeAdapte, 1)} L</button>}
                       {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
                     </div>
                   )}
@@ -2748,7 +2749,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 onValue={(v) => patchHop(i, { alpha: v })}
                                 refus={(saisi, retenu) => saisi < 0
                                   ? `α ${String(saisi).replace('.', ',')} % : un alpha négatif n’existe pas. Champ ramené à ${String(retenu).replace('.', ',')} % : à renseigner depuis le sachet.`
-                                  : `α ${String(saisi).replace('.', ',')} % : au-delà de 100 %, impossible ; au-delà de ${BORNES.alphaPct.max} %, aucun houblon du commerce (seuls les extraits). ${String(retenu).replace('.', ',')} % retenu : corrige-le d’après le sachet.`}
+                                  : `α ${String(saisi).replace('.', ',')} % : au-delà de 100 %, impossible ; au-delà de ${nombreFr(BORNES.alphaPct.max, 1)} %, aucun houblon du commerce (seuls les extraits). ${String(retenu).replace('.', ',')} % retenu : corrige-le d’après le sachet.`}
                                 missing={style.bitters && !h.alpha}
                               />
                               {/* AM 9 (08.11) : « 80 » pour 8,0. Au-delà de 30 %, l'IBU attend : corriger d'un toucher, ou confirmer (un extrait). */}
@@ -3119,7 +3120,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               {attenuation != null && yeast.attenuationPct != null && (
                 <p className="text-sm text-cave-400 leading-relaxed">
                   Atténuation retenue pour ce moût :{' '}
-                  <span className="reading text-ebc-straw">{attenuation} %</span>
+                  <span className="reading text-ebc-straw">{nombreFr(attenuation, 1)} %</span>
                   {(() => {
                     // FG retenue (la cible de la recette, entrées inchangées) ou estimée ; si elles diffèrent, l'écart est dit.
                     const retenue = fgRecette({ fgTarget: keepTargets ? details.fgTarget : undefined }, null);

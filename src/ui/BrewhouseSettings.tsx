@@ -6,6 +6,7 @@ import { personalBrewingPreferences, brewingPreferenceErrors } from '../domain/b
 import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
 import './brew-equipment.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export function BrewhouseSettings({
   profile,
@@ -78,7 +79,7 @@ export function BrewhouseSettings({
         ) : (
           <>
             <p className="equipment-target">
-              <strong>Fermenteur {e.fermenterCapacityL} L · repère {fermenterLimit(e) ?? '—'} L de moût</strong>
+              <strong>Fermenteur {nombreFr(e.fermenterCapacityL, 1)} L · repère {fermenterLimit(e) == null ? '—' : nombreFr(fermenterLimit(e), 1)} L de moût</strong>
               <span>
                 Repère ajustable dans chaque recette selon la levure et le style.
               </span>

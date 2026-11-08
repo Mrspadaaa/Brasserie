@@ -422,7 +422,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     {' · '}
                     {f.fermentabilityPct === 0
                       ? 'non fermentescible'
-                      : `${f.fermentabilityPct ?? 100} % fermentescible`}
+                      : `${nombreFr(f.fermentabilityPct ?? 100, 1)} % fermentescible`}
                   </span>
                 </span>
                 <span className="reading text-sm shrink-0">
@@ -753,7 +753,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && !recipe.waterPlan && recipe.water?.salts && (
         <Section
           title="Eau"
-          hint={`${recipe.water.sourceName} · ${recipe.water.diRatioPct} % d’osmosée`}
+          hint={`${recipe.water.sourceName} · ${nombreFr(recipe.water.diRatioPct, 1)} % d’osmosée`}
         >
           <dl className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
@@ -810,7 +810,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     </li>
                   ))}
                 </ul>
-                <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
+                <p className="text-sm text-water mt-2">Eau de rinçage : {nombreFr(recipe.mash.spargeTempC ?? 76, 1)} °C · les durées indiquent le maintien à la consigne.</p>
                 {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {nombreFr(recipe.mash.heatingRateCPerMin, 2)} °C/min. La montée est suivie séparément dans le journal.</p>}
               </Section>
             )}
@@ -885,7 +885,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       </span>
                       <span className="block text-sm text-cave-400">
                         {batchDisplayDate(b) ?? 'Date à définir'}
-                        {observed?.value != null ? ` · ${observed.value.toFixed(1)} % ${observed.scope === 'grain' ? 'de rendement mesuré' : 'd’extrait global'}` : ' · rendement : mesures à compléter'}
+                        {observed?.value != null ? ` · ${nombreFr(observed.value, 1)} % ${observed.scope === 'grain' ? 'de rendement mesuré' : 'd’extrait global'}` : ' · rendement : mesures à compléter'}
                       </span>
                     </span>
                     <span className="text-right shrink-0">

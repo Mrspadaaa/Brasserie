@@ -26,6 +26,7 @@ import {
 } from './icones';
 import { useComplements } from '../fiche/complements-ui';
 import { CHIMIE, acides, compose, huile, linalolEnBiere, panelOSU, titreRef, type ValeurReelle } from './valeurs';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
 export const signeCran = (x: number) => `~${x >= 0 ? '+' : '−'}${nombre(Math.abs(x), 1)}`;
@@ -256,14 +257,14 @@ export function FeuilleEgaler({ cols, sel, critere, etapes }: { cols: ColonneLue
                   <i className="pq-comparer-eg-trait" style={{ left: pc(CONDITIONS.doseGL) }} />
                 </span>
                 {jamais
-                  ? <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à {DOSE_MAX} g/L</span>
+                  ? <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à {nombreFr(DOSE_MAX, 1)} g/L</span>
                   : <span data-nature={estRef ? 'fixe' : 'simule'} className="pq-comparer-nb">{estRef ? `${nombre(r.doseGL!)} g/L · réf.` : `~${nombre(r.doseGL!, 1)} g/L`}</span>}
               </p>
             );
           })}
         </section>
       ))}
-      <p className="pq-comparer-vsrc">~ simulé par le moteur ; trait : {nombre(CONDITIONS.doseGL)} g/L, ta dose égale ; échelle 0–{DOSE_MAX} g/L, au-delà, inconnu ; après fermentation, {CONDITIONS.jours} j, {nomLevure(recette.yeastId)}.</p>
+      <p className="pq-comparer-vsrc">~ simulé par le moteur ; trait : {nombre(CONDITIONS.doseGL)} g/L, ta dose égale ; échelle 0–{nombreFr(DOSE_MAX, 1)} g/L, au-delà, inconnu ; après fermentation, {CONDITIONS.jours} j, {nomLevure(recette.yeastId)}.</p>
       <p className="pq-comparer-carte-st"><b>la même amertume en ébullition</b><Calcule /></p>
       <p className="pq-comparer-eg-l pq-comparer-note"><span className="ml-auto" />10 IBU à 10′<span className="w-24 text-right">5 IBU au whirlpool</span></p>
       {cols.map((c) => (

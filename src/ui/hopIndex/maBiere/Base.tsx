@@ -9,6 +9,7 @@ import { FAMILY_NAMES } from '../parcours/v4';
 import { raisonIbuIncalculable } from '../../../domain/hopIndex/v4/recipeConversion';
 import { yeastReferences } from '../../../domain/yeastReferences';
 import { StorageService } from '../../../services/storage';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Noms de levure de la base (« SafAle US-05 ») ; toutes celles-ci sont caractérisées par le moteur (biotransformation). */
 const LEVURES: Record<string, string> = {
@@ -68,7 +69,7 @@ export function Bandeau({ biere, avant, element, ecart = null }: { biere: BiereL
           : <output data-role="ibu" data-valeur={ibu.toFixed(2)} title={plage ? `entre ${nombre(biere.ibu.min)} et ${nombre(biere.ibu.max)} IBU : α du lot absent, plage de la variété` : undefined} className="reading text-xl">{plage ? '~' : ''}{nombre(ibu)}</output>}
         {ibuAvant != null && <s data-role="vient-de-changer" className="font-mono text-xs text-cave-400">{nombre(ibuAvant)}</s>}
         {b && (
-          <span aria-label={`style ${b[0]}–${b[1]} IBU`} role="img" className="relative self-center w-12 h-2 ml-1 rounded-full bg-cave-800">
+          <span aria-label={`style ${b[0]}–${nombreFr(b[1], 1)} IBU`} role="img" className="relative self-center w-12 h-2 ml-1 rounded-full bg-cave-800">
             <i className="absolute inset-y-0 rounded-full bg-cave-600" style={{ left: pc(b[0]), width: `calc(${pc(b[1])} - ${pc(b[0])})` }} />
             {/* Le repère de ma bière, seulement quand son IBU se chiffre : la bande du style reste lisible. */}
             {!raisonIbu && <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />}

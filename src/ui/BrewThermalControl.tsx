@@ -7,6 +7,7 @@ import { NumberInput } from './NumberInput';
 import type { BrewUpdate } from './BrewDayMeasurements';
 import { brewNow } from '../services/brewClock';
 import './brew-thermal.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const fmt = (n: number) => n.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
 const time = (at: number) => new Date(at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' });
@@ -65,7 +66,7 @@ export function BrewThermalControl({ recipe, state, step, now, update, onMeasure
         changedAt: at, reason: selected.label,
         ...(choice === 'documented-warm' ? { protocolSource: plan.warmProtocol!.source, protocolConditions: plan.warmProtocol!.conditions } : { protocolSource: undefined, protocolConditions: undefined }) },
         notes: [...s.notes ?? [], { id: crypto.randomUUID(), at, stepId: step.id,
-          text: `Conduite du jour : ${selected.label} · cible ${chosenTarget} °C.${choice === 'documented-warm' ? ` ${plan.warmProtocol!.conditions} Source : ${plan.warmProtocol!.source}` : ''}` }] };
+          text: `Conduite du jour : ${selected.label} · cible ${nombreFr(chosenTarget, 1)} °C.${choice === 'documented-warm' ? ` ${plan.warmProtocol!.conditions} Source : ${plan.warmProtocol!.source}` : ''}` }] };
       const active = activeThermalSegment(s, step.id);
       if (active && active.targetC !== chosenTarget) next = startThermalSegment(next, step, active.method, chosenTarget, at, { coolantC: active.coolantC, note: 'Cible du jour modifiée' });
       return next;
@@ -124,7 +125,7 @@ export function BrewThermalControl({ recipe, state, step, now, update, onMeasure
         <fieldset><legend>Comparer le refroidissement</legend>{plan.choices.map(c => <label key={c.id}>
           <input type="radio" name={`pitching-${step.id}`} value={c.id} checked={choice === c.id} disabled={!c.available} onChange={() => { setChoice(c.id); if (c.id === 'documented-warm') setDraftTarget(undefined); }} />
           <span><strong>{c.label}</strong><small>{c.available ? comparison(c.id) : 'Pas de durée proposée'}</small><small>{c.reason}</small></span></label>)}</fieldset>
-        {choice === 'documented-warm' && plan.warmProtocol && <label className="brew-thermal-coolant">Cible du jour · ajout direct {plan.warmProtocol.min}–{plan.warmProtocol.max} °C<NumberInput aria-label="Température d’ensemencement du jour" value={draftTarget} min={plan.warmProtocol.min} max={plan.warmProtocol.max} onValue={setDraftTarget} /><a href={plan.warmProtocol.source} target="_blank" rel="noreferrer">Notice de la levure</a></label>}
+        {choice === 'documented-warm' && plan.warmProtocol && <label className="brew-thermal-coolant">Cible du jour · ajout direct {plan.warmProtocol.min}–{nombreFr(plan.warmProtocol.max, 1)} °C<NumberInput aria-label="Température d’ensemencement du jour" value={draftTarget} min={plan.warmProtocol.min} max={plan.warmProtocol.max} onValue={setDraftTarget} /><a href={plan.warmProtocol.source} target="_blank" rel="noreferrer">Notice de la levure</a></label>}
         <p className="brew-thermal-note">Consigne principale : {plan.primaryC == null ? 'à préciser' : `${fmt(plan.primaryC)} °C`}. Le profil aromatique dépend aussi du départ et de la descente réelle. Aucun gain de temps n’est garanti sans relevés comparables.</p>
         <button type="button" disabled={!selected.available || !warmOkay} onClick={applyChoice}>Appliquer cette conduite</button>
         {plan.preparationNotes.some(n => n.id === 'rehydrate') && <p className="brew-thermal-note">Réhydratation : température de préparation séparée du moût. {plan.preparationNotes.find(n => n.id === 'rehydrate')?.detail}</p>}
