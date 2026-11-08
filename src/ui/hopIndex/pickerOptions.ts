@@ -28,10 +28,14 @@ export function alphaDeReference(v: HopVariety): string | null {
 const court = (t: string, n = 56) => (t.length > n ? `${t.slice(0, n - 1).trimEnd()}…` : t);
 
 /** Le détail d'un houblon du catalogue : α, arômes, puis la source et la forme. */
-export function detailReference(v: HopVariety): string {
+export function detailReference(v: HopVariety, alphaVoisin?: { alpha: string; source: string } | null): string {
   const aromes = v.descriptions.find((d) => d.text.trim())?.text.trim();
-  return [alphaDeReference(v) ?? 'α non publié', aromes ? court(aromes) : null, hopReferenceSource(v), HOP_FORM_LABELS[v.form]].filter(Boolean).join(' · ');
+  // RV-1 (08.11) : « Citra · α non publié » en tête d'un houblon phare. Une autre fiche de la MÊME variété publie-t-elle un α ? Il se montre, avec sa source.
+  const alpha = alphaDeReference(v) ?? (alphaVoisin ? `${alphaVoisin.alpha} (${alphaVoisin.source})` : 'α non publié');
+  return [alpha, aromes ? court(aromes) : null, hopReferenceSource(v), HOP_FORM_LABELS[v.form]].filter(Boolean).join(' · ');
 }
+
+const cleVariete = (nom: string) => nom.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
 export function optionsStock(stock: readonly StockItem[]): ComboOption[] {
   return stock.map((i) => ({
@@ -44,5 +48,15 @@ export function optionsStock(stock: readonly StockItem[]): ComboOption[] {
 }
 
 export function optionsReference(varieties: readonly HopVariety[], groupe: (v: HopVariety) => string): ComboOption[] {
-  return varieties.map((v) => ({ value: `ref:${v.id}`, label: v.name, group: groupe(v), detail: detailReference(v), keywords: v.aliases.join(' ') }));
+  // L'α publié de chaque variété, par nom et par alias (la première fiche qui en publie un).
+  const alphas = new Map<string, { alpha: string; source: string }>();
+  for (const v of varieties) {
+    const a = alphaDeReference(v);
+    if (!a) continue;
+    for (const nom of [v.name, ...v.aliases]) { const k = cleVariete(nom); if (k && !alphas.has(k)) alphas.set(k, { alpha: a, source: hopReferenceSource(v) }); }
+  }
+  // Les fiches qui publient un α passent devant celles qui n'en ont pas (tri stable : l'ordre du catalogue est gardé sinon).
+  const triees = [...varieties].sort((a, b) => Number(!alphaDeReference(a)) - Number(!alphaDeReference(b)));
+  return triees.map((v) => ({ value: `ref:${v.id}`, label: v.name, group: groupe(v),
+    detail: detailReference(v, alphaDeReference(v) ? null : alphas.get(cleVariete(v.name)) ?? null), keywords: v.aliases.join(' ') }));
 }

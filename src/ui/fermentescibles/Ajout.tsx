@@ -6,6 +6,7 @@ import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
 import { chercher, chercherAilleurs, decouper, kgTxt, lireAjout, memeArticle, nomPossible, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
+import { refAffichable } from '../../domain/stock/regles';
 
 export interface DefFamille {
   label: string;
@@ -183,7 +184,10 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
 
   const sousNom = (a?: StockItem, autre?: FermentableKind) => {
     const dup = a && (doublons.get(a.name.trim().toLocaleLowerCase('fr')) ?? 0) > 1;
-    return `${stockTxt(a)}${dup ? ` · réf. ${a!.ref}` : ''}${autre ? ` · ${defs[autre].label.toLowerCase()}` : ''}`;
+    // RV-2 : un identifiant interne (« MP-6770960b-… ») ne se montre jamais ; deux homonymes se distinguent alors par le fournisseur.
+    const ref = dup ? refAffichable(a!.ref) : '';
+    const distingue = dup ? (ref ? ` · réf. ${ref}` : a!.supplier ? ` · ${a!.supplier}` : '') : '';
+    return `${stockTxt(a)}${distingue}${autre ? ` · ${defs[autre].label.toLowerCase()}` : ''}`;
   };
 
   return (

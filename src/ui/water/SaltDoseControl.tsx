@@ -8,6 +8,10 @@ import { SaltDef, ION_SYMBOL_SHORT } from "../../domain/water";
 import { Minus, Plus, Info } from "lucide-react";
 
 import { SALT_SHORT } from "./constants";
+import { actualQuantityMax, actualQuantityProblem } from "../../domain/brewQuantityBounds";
+
+/** VI-9 à la recette (rejeu de 88ebd641) : la même borne que le jour de brassage (500 g, le plancher en grammes d'une micro-brasserie). */
+export const SEL_DOSE_MAX_G = actualQuantityMax(0, "g");
 export const SaltDoseControl: React.FC<{
   id: SaltId;
   def: SaltDef;
@@ -38,6 +42,9 @@ export const SaltDoseControl: React.FC<{
   onActivate,
 }) => {
   const related = selectedIon != null && ions.includes(selectedIon);
+  // La dose d'avant la frappe : une dose refusée la rétablit, comme le message le dit (jamais « conservée » avec 99 999 g dans le champ).
+  const avant = React.useRef(grams);
+  const [refus, setRefus] = React.useState<string | null>(null);
   const presse = useHoldRepeat(grams, onDose, (from, delta) =>
     Math.max(0, Math.round((from + delta) * 10) / 10),
   );
@@ -116,18 +123,26 @@ export const SaltDoseControl: React.FC<{
         >
           <Minus className="w-3 h-3" />
         </button>
+        <span className="contents" onFocus={() => { avant.current = grams; }}>
         <NumberInput
           aria-label={`Dose de ${def.name} en grammes`}
+          aria-describedby={refus ? `water-salt-${id}-refus` : undefined}
           min={0}
+          max={SEL_DOSE_MAX_G}
           value={grams}
           disabled={off}
           onValue={onDose}
+          onRefus={(r) => {
+            if (!r) { setRefus(null); return; }
+            if (r.saisi > SEL_DOSE_MAX_G) { onDose(avant.current); setRefus(actualQuantityProblem(r.saisi, 0, "g", avant.current)); }
+          }}
           pad
           className="w-full min-w-0 h-11 bg-cave-950 border-y border-cave-700
                          reading text-base font-semibold text-center focus:outline-none focus:border-ebc-straw disabled:opacity-50
                          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
                          [&::-webkit-inner-spin-button]:appearance-none"
         />
+        </span>
         <button
           type="button"
           disabled={off}
@@ -139,6 +154,7 @@ export const SaltDoseControl: React.FC<{
           <Plus className="w-3 h-3" />
         </button>
       </div>
+      {refus && <p id={`water-salt-${id}-refus`} role="alert" className="pt-1 text-2xs text-alert-strong">{refus}</p>}
       <p className="hidden sm:block pt-1 text-2xs text-cave-400">
         {off
           ? "Écarté du calcul"

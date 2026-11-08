@@ -138,7 +138,8 @@ export function libelleDurabilite(expiresOn: string | undefined, aujourdhuiIso: 
 /** Les fiches apprises portent `FICHE-Houblon%3Aariana` : identifiant interne, jamais à montrer. Les vraies références (`MP-001`) se montrent telles quelles. */
 export function refAffichable(ref: string | undefined): string {
   if (!ref) return '';
-  return /^FICHE-/i.test(ref) || /%[0-9A-F]{2}/i.test(ref) ? '' : ref;
+  // RV-2 (08.11) : un identifiant généré (« MP-6770960b-4f2c-… », bloc hexadécimal d'UUID) est interne lui aussi ; « MP-004 » reste une vraie référence.
+  return /^FICHE-/i.test(ref) || /%[0-9A-F]{2}/i.test(ref) || /[0-9a-f]{8}-[0-9a-f]{4}/i.test(ref) || /[0-9a-f]{16,}/i.test(ref) ? '' : ref;
 }
 
 /**
