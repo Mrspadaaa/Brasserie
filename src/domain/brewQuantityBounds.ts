@@ -17,13 +17,20 @@ export function actualQuantityMax(planned: number, unit: string): number {
   return Math.max(floor, p * FACTEUR_MAX_SUR_PREVU);
 }
 
-/** `null` quand la quantité est plausible, sinon la phrase qui dit pourquoi elle ne s'enregistre pas. */
-export function actualQuantityProblem(value: number, planned: number, unit: string): string | null {
+/**
+ * `null` quand la quantité est plausible, sinon la phrase qui dit pourquoi elle ne s'enregistre pas.
+ * `kept` : la valeur que l'écran garde vraiment (VI-9). La phrase la nomme (« La valeur précédente (2 g) est conservée ») ;
+ * l'appelant qui l'annonce doit la rétablir, sinon le message contredit la ligne.
+ */
+export function actualQuantityProblem(value: number, planned: number, unit: string, kept?: number): string | null {
   const shown = String(Math.round(value * 1000) / 1000).replace('.', ',');
   if (!Number.isFinite(value)) return 'Quantité illisible : tape un nombre.';
-  if (value < 0) return `${shown} ${unit} : une quantité ne peut pas être négative. La valeur précédente est conservée.`;
+  const conservee = kept !== undefined && Number.isFinite(kept)
+    ? `La valeur précédente (${String(Math.round(kept * 1000) / 1000).replace('.', ',')} ${unit}) est conservée.`
+    : 'La valeur précédente est conservée.';
+  if (value < 0) return `${shown} ${unit} : une quantité ne peut pas être négative. ${conservee}`;
   const max = actualQuantityMax(planned, unit);
   if (value > max)
-    return `${shown} ${unit} : au-delà de ${String(Math.round(max * 10) / 10).replace('.', ',')} ${unit}, c’est une erreur de saisie probable (unité confondue ?). La valeur précédente est conservée.`;
+    return `${shown} ${unit} : au-delà de ${String(Math.round(max * 10) / 10).replace('.', ',')} ${unit}, c’est une erreur de saisie probable (unité confondue ?). ${conservee}`;
   return null;
 }
