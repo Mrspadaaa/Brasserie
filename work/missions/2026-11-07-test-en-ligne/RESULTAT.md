@@ -90,3 +90,12 @@ LEÇON PROPOSÉE : une valeur « retenue » et la même valeur « recalculée »
 - doc12 B&R commande 647304 (3 captures, sans QR) : 203,95 OK, 06.08.2024 OK, 23 lignes OK, TVA 12,25 OK ; Référence « — » (n° de commande 647304 non repris ; doc10 l'avait) ÉCART mineur ; Qté×prix 21/23 ; 3/3
 - doc13 CFF (photo tournée) : 170,00 OK, 20.07.2026 OK, 4015545938 OK, 1 ligne OK ; TVA « — » (vérité : taux 8,1 %, montant non imprimé) ; fournisseur « lectures divergentes » à confirmer ; 3/3 ; <30 s
 - BILAN après correctif : total juste 12/13 (doc3 : 300 lu contre 150 au QR, signalé à trancher, vérité 150) ; n° et date justes partout où imprimés ; lignes justes 13/13 ; TVA manquante : doc2 (deux taux), doc3 et doc13 (non imprimée) ; doublons détectés : doc4, doc5, doc6, doc9
+
+### Retrait terminé (08.11, accord écrit du brasseur dans le fil de la pilote : « Oui : annule les 24 doublons restants, corrige le paiement de 13,80 de B-001, puis annule B-001 »)
+
+- 24 écritures annulées par le geste de l'app (B-002 et B-004 à B-026), puis le paiement `PAI-d5b16e0b` corrigé par sa contre-écriture
+  `CONTRE-PAI-d5b16e0b` (+ 13,80, date d'origine 17.10), puis B-001 annulée. Total : 26 sur 26.
+- Firestore relu (lecture seule) : B-001 à B-026 portent `finance.voidedAt` (06:36 à 06:55 UTC), aucune supprimée ; B-001 `settlementBalanceCents` 0 ;
+  facture `TX-6770960b…` (372765, 110,40) et `PAY-6770960b…` (110,40, 27.04) intactes. Aucun stock touché (aucun mouvement ni impact de stock sur ces 26).
+- Journal en ligne : 27 avr. passe de « 27 opérations · − 220,79 » à « 1 opération · − 110,40 » ; solde courant + 2 370,61 → + 2 478,60
+  (+ 107,99 = les 25 lignes restantes ; la 1re, 2,40, avant). Captures : `en-ligne/doublons-avant.jpg`, `en-ligne/doublons-apres.jpg`.
