@@ -500,8 +500,28 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               : current.id === 'ensemencement'
                 ? 'Relève la densité et le volume du moût refroidi, puis ajoute la levure selon sa notice.'
                 : current.detail;
+  /**
+   * « Terminer et continuer » : idempotent (BR-49, BE-30). Un double toucher rejoue la même fermeture avec le même état affiché ; l'ancienne
+   * version rebasculait l'état (étape suivante cochée à son tour, deux étapes passées d'un coup). Ici l'étape quittée se marque faite
+   * seulement si l'état courant ne l'est pas encore, et l'on va à l'étape suivante par son identifiant.
+   */
   const finishAndContinue = () => {
-    if (!completed) toggleComplete();
+    const fromId = current.id;
+    const wasBoil = boiled;
+    update((s) => {
+      const i = s.steps.findIndex((x) => x.id === fromId);
+      if (i < 0) return s;
+      if (wasBoil) return s.boilFinishedAt != null ? s : { ...s, boilFinishedAt: brewNow() };
+      if (s.steps[i].doneAt != null) return s;
+      const at = brewNow();
+      return {
+        ...s,
+        thermalSegments: s.thermalSegments?.map((segment) =>
+          segment.stepId === fromId && segment.endedAt == null ? { ...segment, endedAt: at } : segment
+        ),
+        steps: s.steps.map((x, k) => (k === i ? { ...x, doneAt: at } : x))
+      };
+    });
     if (nextStep) choose(state.steps.indexOf(nextStep));
   };
   const isConsulting = view === 'recipe' || view === 'journal';
@@ -719,7 +739,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         Journal
       </button>
       <span className="brew-progress-label">
-        {doneCount}/{route.length} étapes
+        {doneCount}/{route.length} étapes faites
       </span>
     </nav>
   );
@@ -1096,7 +1116,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         <div>
                           <div className="brew-step-meta">
                             <span className="brew-muted">
-                              Étape {Math.max(1, routeIndex + 1)} sur {route.length}
+                              Étape {Math.max(1, routeIndex + 1)}
                             </span>
                             {showTimer && <BrewTag tone={currentTag.tone}>{currentTag.label}</BrewTag>}
                             {/*
