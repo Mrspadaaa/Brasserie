@@ -33,3 +33,12 @@
 .fer .fer-jp > span.fer-jl-lab { top: 24px; }
 .fer .fer-jr:focus, .fer .fer-jr:focus-visible { outline: none; }
 .fer .fer-jr:focus-visible::-webkit-slider-thumb { border-color: var(--f-t0); }
+
+/* Audit métier du 08.11 (AM 1 à 3). Un grain n'a qu'un moment : le mot reste à sa place, sans la flèche qui tourne (rien d'autre ne change).
+   Un moment impossible (donnée ancienne : grain bouilli ou au fermenteur) et une OG hors de l'échelle se lisent en couleur d'attention. */
+.fer span.fer-mo { display: inline-flex; align-items: center; height: 24px; margin: -4px 0; padding: 0 4px; font-size: 12px; white-space: nowrap; color: var(--f-t2); }
+.fer span.fer-bmo { display: inline-flex; align-items: center; height: 24px; padding: 0 6px; border-radius: 10px; border: 1px solid var(--f-bord); font-size: 12px; color: var(--f-t1); background: var(--f-page); margin-left: auto; flex-shrink: 0; }
+.fer button.fer-mo.fer-mo-hors, .fer button.fer-bmo.fer-bmo-hors { color: var(--f-attt); background: rgb(var(--attention) / 0.14); border-color: rgb(var(--attention) / 0.5); }
+.fer button.fer-mo.fer-mo-hors .fer-tour { color: var(--f-attt); }
+.fer .fer-pc.fer-pc-hors { color: var(--f-attt); font-weight: 600; }
+.fer .fer-ogl.fer-hors { color: var(--f-attt); }

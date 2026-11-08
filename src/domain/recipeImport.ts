@@ -2,6 +2,7 @@ import { Fermentable, MashProfile, Recipe, WaterIons, WaterPlan } from '../types
 import { RecipeTextParser } from '../services/recipeParser';
 import { readRecipeFields, readRecipeText, RecipeContent } from './recipeTransfer';
 import { yeastRecipeDesignChanged } from './yeastRecipeDesign';
+import { momentParDefaut } from './fermentables/moments';
 
 export interface ImportedRecipe extends Omit<Partial<RecipeContent>, 'waterPlan' | 'mash'> {
   fermentables: RecipeContent['fermentables'];
@@ -156,7 +157,8 @@ export function normalizeRecipeImport(
   }
   const fermentables = (clean.fermentables ?? [])
     .filter((f) => typeof f.name === 'string' && f.weightKg != null)
-    .map((f) => ({ ...f, kind: f.kind ?? 'grain', use: f.use ?? 'empatage' }));
+    // Sans moment lu : celui de sa famille (table domain/fermentables/moments.ts) ; un sucre n'est jamais posé à l'empâtage d'office.
+    .map((f) => ({ ...f, kind: f.kind ?? 'grain', use: f.use ?? momentParDefaut(f.kind ?? 'grain') }));
   const hops = (clean.hops ?? [])
     .filter((h) => typeof h.name === 'string' && h.weightG != null)
     .map((h) => ({ ...h, alpha: h.alpha ?? 0, stage: h.stage ?? 'boil' }));
@@ -253,7 +255,7 @@ export function parseLocalRecipe(raw: string): ImportedRecipe {
   const fermentables: Fermentable[] = p.malts.map((m) => ({
     ...m,
     kind: m.kind ?? 'grain',
-    use: m.use ?? 'empatage'
+    use: m.use ?? momentParDefaut(m.kind ?? 'grain')
   }));
   const adjuncts = p.adjuncts.filter((a) => {
     const kind = /lactose/i.test(a.name)

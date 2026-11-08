@@ -4,7 +4,8 @@ import { ChampLigne } from './ChampLigne';
 import { CouleurChamp } from './CouleurChamp';
 import { Croix, Cube, Tour } from './icones';
 import {
-  arrondiKg, autresKg, cran, cranPas, grainKg, kgPourPart, kgTxt, MOMENT_SUIVANT, MOT_MOMENT, nu, pas, partN, teinte, voile,
+  arrondiKg, autresKg, cran, cranPas, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, MOMENT_SUIVANT, momentPermis, momentTourne, MOT_MOMENT, nu,
+  pas, partN, teinte, voile,
 } from './modele';
 
 export interface AnnMoment { i: number; use: Fermentable['use']; dayOffset?: number; t: number }
@@ -40,7 +41,7 @@ export interface LigneProps {
   a: ActionsLigne;
 }
 
-const enPart = (f: Fermentable, i: number, l: readonly Fermentable[]) => f.kind === 'grain' && autresKg(l, i) > 0;
+const enPart = (f: Fermentable, i: number, l: readonly Fermentable[]) => grainEmpate(f) && autresKg(l, i) > 0;
 
 function Pastille({ f, i, ouverte, a }: { f: Fermentable; i: number; ouverte: boolean; a: ActionsLigne }) {
   if (f.kind !== 'grain') return <span className="fer-pas fer-pas-fam" aria-hidden="true"><Cube /></span>;
@@ -73,8 +74,11 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
   const largeur = part ? (total ? (f.weightKg / total) * 100 : 0) : Math.min(100, (f.weightKg / echelle) * 100);
   const maxCur = part ? kgPourPart(fermentables, i, 95) ?? f.weightKg : echelle;
   const fond = grain && f.colorEbc != null ? { ['--fond' as string]: voile(f.colorEbc) } : undefined;
-  const suivant = MOMENT_SUIVANT(f.use);
-  const ferm = f.use === 'fermentation';
+  const suivant = MOMENT_SUIVANT(f);
+  // Table famille × moment (AM 1 et 2, 08.11) : un grain n'a qu'un moment et jamais de J+ ; mal placé (donnée ancienne), il le dit et un toucher le remet.
+  const hors = !momentPermis(f);
+  const tourne = momentTourne(f);
+  const ferm = f.use === 'fermentation' && !grain;
   const jour = f.dayOffset ?? 0;
   const ann = annMom && annMom.i === i ? annMom : null;
 
@@ -89,13 +93,20 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
     a.selectionner(i);
   };
 
-  const pc = grain
+  const pc = grain && grainHorsEmpatage(f)
+    ? <span className="fer-pc fer-pc-hors" data-pc={i}>compté 0</span>
+    : grain
     ? <span className="fer-pc" data-pc={i}><span className="fer-pn">{total ? partN(fermentables, f) : '—'}</span> %{ann ? '' : ' du grain'}</span>
     : <span className="fer-pc" data-pc={i}>{nolo && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : `${f.fermentabilityPct ?? 100} % ferm.`}</span>;
 
-  const bouton = (
-    <button type="button" className="fer-mo" data-role="moment-ligne" data-ml={i} data-m={ferm ? undefined : MOT_MOMENT[f.use]} data-booster="moment-tourne"
-      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}. Toucher : ${MOT_MOMENT[suivant]}`} onClick={() => a.tourner(i)}>
+  const bouton = !tourne ? (
+    <span className="fer-mo fer-mo-fixe" data-role="moment-ligne" data-ml={i} data-m={MOT_MOMENT[f.use]}
+      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}, le seul pour un grain`}>{MOT_MOMENT[f.use]}</span>
+  ) : (
+    <button type="button" className={`fer-mo${hors ? ' fer-mo-hors' : ''}`} data-role="moment-ligne" data-ml={i} data-m={ferm ? undefined : MOT_MOMENT[f.use]}
+      data-hors={hors ? 'moment' : undefined} data-booster="moment-tourne"
+      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${hors ? ', impossible pour cet ingrédient' : ''}. Toucher : ${MOT_MOMENT[suivant]}`}
+      onClick={() => a.tourner(i)}>
       {ferm ? 'J+' : <>{MOT_MOMENT[f.use]}<Tour /></>}
     </button>
   );

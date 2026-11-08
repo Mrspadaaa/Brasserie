@@ -5,7 +5,7 @@ import { ChampLigne } from './ChampLigne';
 import { Fiche } from './Fiche';
 import { CouleurChamp } from './CouleurChamp';
 import { Corbeille, Cube, Moins, Plus16, Croix, Tour } from './icones';
-import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOMENT_SUIVANT, MOT_MOMENT, pas, pmax, teinte } from './modele';
+import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOMENT_SUIVANT, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
 
 /**
  * Le plateau (D212 : toujours visible, clair) : le détail de la ligne choisie. Sa couleur, son moment, la corbeille ; la lecture de la
@@ -63,9 +63,15 @@ export const Plateau: React.FC<{
     <section className="fer-bal" id="fer-bal" data-role="bal" aria-label="Détail de l’ingrédient" data-booster="balance">
       <div className="fer-bh" data-role="bh">
         {sw}<b>{f.name}</b>{saisieEbc && <span className="fer-mo2">EBC, Entrée</span>}
-        <button type="button" className="fer-bmo" data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle"
-          aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}. Toucher : ${MOT_MOMENT[MOMENT_SUIVANT(f.use)]}`}
-          onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Tour /></button>
+        {/* Table famille × moment (AM 1 et 2, 08.11) : un grain bien placé n'a qu'un moment, dit sans la flèche qui tourne. */}
+        {momentTourne(f) ? (
+          <button type="button" className={`fer-bmo${momentPermis(f) ? '' : ' fer-bmo-hors'}`} data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle"
+            data-hors={momentPermis(f) ? undefined : 'moment'}
+            aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${momentPermis(f) ? '' : ', impossible pour cet ingrédient'}. Toucher : ${MOT_MOMENT[MOMENT_SUIVANT(f)]}`}
+            onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Tour /></button>
+        ) : (
+          <span className="fer-bmo fer-bmo-fixe" data-mom={i} data-m={MOT_MOMENT[f.use]}>{MOT_MOMENT[f.use]}</span>
+        )}
         <button type="button" className="fer-del" data-del={i} aria-label={`Supprimer ${f.name} de la recette`} onClick={() => retirer(i)}><Corbeille /></button>
       </div>
       <div className="fer-lect" data-role="lect">
@@ -91,7 +97,7 @@ export const Plateau: React.FC<{
         <span style={{ left: '100%', transform: 'translateX(-100%)' }}>{fr(M, M % 1 ? 1 : 0)} ›</span>
       </div>
       <div data-role="jours">
-        {f.use === 'fermentation' && (
+        {f.use === 'fermentation' && !grain && (
           <div className="fer-jours">
             <label>J+
               <ChampLigne valeur={f.dayOffset ?? 0} onValeur={(v) => setJour(i, v)} format={(v) => String(v)} arrondi={(v) => Math.max(0, Math.round(v))}

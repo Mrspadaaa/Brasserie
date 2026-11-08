@@ -3,6 +3,7 @@ import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { YeastFactKey } from '../../functions/src/yeastCatalogueSchema';
 import { alcoholPercentUnit, readYeastFactValue, readYeastTechnicalFacts, type YeastFactQualifier, type YeastFactReading, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import type { Fermentable, YeastSpec } from '../types';
+import { grainHorsEmpatage } from './fermentables/moments';
 import type { TrialRecipe } from './hopIndex/trials';
 import { yeastAcidifyingProductSource, yeastCultureComposition, yeastStyleEvidence } from './yeastStyleEvidence';
 import { resolveBrewingStyle } from './brewingStyles';
@@ -118,6 +119,9 @@ export function yeastRecipeStyleText(recipe: TrialRecipe): string {
 type ExtractInputs = { fermentables?: readonly Fermentable[]; volumeL: number; efficiencyPct?: number };
 function ingredientPoints(f: Fermentable, recipe: ExtractInputs): number | undefined {
   if (f.weightKg === 0) return 0;
+  // Un grain hors de l'empâtage (bouilli, ou au fermenteur) ne donne pas d'extrait : sans les enzymes de la maische, son amidon reste amidon.
+  // Il compte 0, et la validation le dit sur sa ligne (table `domain/fermentables/moments.ts`, audit du 08.11, AM 1 et 2).
+  if (grainHorsEmpatage(f)) return 0;
   const grain = (f.kind ?? 'grain') === 'grain';
   if (!finite(f.weightKg) || f.weightKg < 0 || !finite(f.potentialPpg) || f.potentialPpg < 0 || !finite(recipe.volumeL) || recipe.volumeL <= 0 ||
     grain && (!finite(recipe.efficiencyPct) || recipe.efficiencyPct <= 0 || recipe.efficiencyPct > 100)) return;
