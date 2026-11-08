@@ -4,7 +4,7 @@ import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
 import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
-import { abvFromGravities, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
+import { abvFromGravities, gravityKeepable, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
 import { StorageService } from '../services/storage';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { InventoryCorrectionSheet } from './InventoryCorrectionSheet';
@@ -62,7 +62,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
   const [pendingStatus, setPendingStatus] = useState<Batch['status'] | null>(null);
-  const [gravityAlert, setGravityAlert] = useState<{ field: 'og' | 'fg'; problem: GravityProblem | 'unreadable'; value: number | null } | null>(null);
+  const [gravityAlert, setGravityAlert] = useState<{ field: 'og' | 'fg'; problem: GravityProblem | 'unreadable'; value: number | null; keepable: boolean } | null>(null);
   useEffect(() => {
     setSection(initialSection);
     setConfirmDelete(false);
@@ -94,7 +94,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const save = (patch: Partial<Batch>) => {
     const updated = { ...draft, ...patch };
     setDraft(updated);
-    StorageService.updateBatch(updated);
+    // Une densité refusée reste dans son champ le temps de l'alerte, mais un autre enregistrement ne l'emporte pas avec lui (RJ-2).
+    const refused = gravityAlert && !(gravityAlert.field in patch) ? gravityAlert.field : null;
+    StorageService.updateBatch(refused ? { ...updated, [refused]: batch[refused] ?? '' } : updated);
   };
   const pending = draft.stockConsumption?.pendingItems ?? [];
   const stockContext = pending.length ? StorageService.getStocks() : null;
@@ -137,11 +139,16 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     const text = draft[field] || '';
     if (text.trim() === '') { setGravityAlert(null); save({ [field]: '' }); return; }
     const value = parseDecimal(text);
-    if (value === null) { setGravityAlert({ field, problem: 'unreadable', value: null }); return; }
-    const problem = gravityProblem(field, value, field === 'fg' ? og : null);
-    if (problem && !force) { setGravityAlert({ field, problem, value }); return; }
+    if (value === null) { setGravityAlert({ field, problem: 'unreadable', value: null, keepable: false }); return; }
+    // L'autre densité, telle qu'enregistrée : une saisie encore refusée n'est pas une mesure.
+    const otherField = field === 'og' ? 'fg' : 'og';
+    const other = gravityAlert?.field === otherField ? parseDecimal(batch[otherField] || '') : otherField === 'og' ? og : fg;
+    const problem = gravityProblem(field, value, field === 'fg' ? other : null, field === 'og' ? other : null);
+    // Une densité impossible (négative, hors [0,990 ; 1,200], FG au-dessus de l'OG) ne s'enregistre jamais, même forcée (RJ-2).
+    const keepable = gravityKeepable(field, value, field === 'fg' ? other : null, field === 'og' ? other : null);
+    if (problem && (!force || !keepable)) { setGravityAlert({ field, problem, value, keepable }); return; }
     setGravityAlert(null);
-    const pair = { og: field === 'og' ? value : og, fg: field === 'fg' ? value : fg };
+    const pair = { og: field === 'og' ? value : other, fg: field === 'fg' ? value : other };
     // Les deux densités connues : l'alcool suit le couple. Hors bornes ou FG > OG, l'ancien alcool est effacé.
     const abvPatch: Partial<Batch> = nolo || pair.og === null || pair.fg === null ? {}
       : { abv: abvFromGravities(pair.og, pair.fg) !== null ? `${abvFromGravities(pair.og, pair.fg)}%` : '' };
@@ -149,7 +156,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   };
   const gravityText = (alert: NonNullable<typeof gravityAlert>) => alert.problem === 'unreadable'
     ? 'Valeur illisible : tape un nombre, par exemple 1,048.'
-    : gravityMessage(alert.problem, alert.value!, alert.field === 'fg' ? og : null);
+    : gravityMessage(alert.problem, alert.value!, alert.field === 'fg' ? og : null, alert.keepable, alert.field === 'og' ? fg : null);
 
   return (
     <>
@@ -308,7 +315,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   <div role="alert" className="rounded-control border border-alert/40 bg-cave-950 p-2 space-y-1.5">
                     <p className="text-sm text-alert-strong">{gravityText(gravityAlert)}</p>
                     <div className="flex gap-2">
-                      {gravityAlert.problem !== 'unreadable' && (
+                      {gravityAlert.keepable && (
                         <Button intent="secondary" onClick={() => saveGravity(gravityAlert.field, true)}>Garder cette valeur</Button>
                       )}
                       <Button intent="secondary" onClick={() => { setDraft({ ...draft, [gravityAlert.field]: batch[gravityAlert.field] ?? '' }); setGravityAlert(null); }}>Annuler la saisie</Button>

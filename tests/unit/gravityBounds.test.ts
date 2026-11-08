@@ -1,6 +1,30 @@
 import { describe, expect, it } from 'vitest';
 import type { Batch } from '../../src/types';
-import { abvFromGravities, gravityMessage, gravityProblem, plausibleAbv } from '../../src/domain/gravityBounds';
+import { abvFromGravities, gravityKeepable, gravityMessage, gravityProblem, plausibleAbv } from '../../src/domain/gravityBounds';
+
+describe('RJ-2 · improbable (à confirmer) ou impossible (jamais enregistré)', () => {
+  it('OG : improbable entre 0,990 et 1,200 hors [1,020 ; 1,130] ; impossible au-delà', () => {
+    expect([1.02, 1.048, 1.13, 1.15, 1.2, 1.0, 0.99].map(v => gravityKeepable('og', v))).toEqual([true, true, true, true, true, true, true]);
+    expect([-5, 0, 0.5, 0.989, 1.201, 1.29, 5, 1048, NaN].map(v => gravityKeepable('og', v))).toEqual([false, false, false, false, false, false, false, false, false]);
+  });
+  it('FG : improbable entre 0,990 et l’OG ; impossible sous 0,990 ou au-dessus de l’OG', () => {
+    expect(gravityKeepable('fg', 0.992, 1.05)).toBe(true);
+    expect(gravityKeepable('fg', 1.05, 1.05)).toBe(true);
+    expect(gravityKeepable('fg', 1.07, 1.06)).toBe(false);
+    expect(gravityKeepable('fg', 0.5, 1.05)).toBe(false);
+    expect(gravityKeepable('fg', 1.15)).toBe(true);
+    expect(gravityKeepable('fg', 1.25)).toBe(false);
+  });
+  it('OG sous la FG déjà notée : impossible, avec son motif', () => {
+    expect(gravityProblem('og', 1.025, null, 1.03)).toBe('og-below-fg');
+    expect(gravityKeepable('og', 1.025, null, 1.03)).toBe(false);
+    expect(gravityKeepable('og', 1.03, null, 1.03)).toBe(true);
+  });
+  it('le message d’une valeur impossible le dit', () => {
+    expect(gravityMessage('og-low', -5, null, false)).toContain('ne s’enregistre pas');
+    expect(gravityMessage('og-low', 1.01, null, true)).not.toContain('ne s’enregistre pas');
+  });
+});
 import { batchEntries } from '../../src/domain/productionCatalog';
 import { estimateSwissBeerTax } from '../../src/domain/finance/swissBeerTax';
 
