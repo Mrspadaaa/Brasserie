@@ -33,7 +33,7 @@ import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
-import { currentInstallation, snapshotBrewhouse } from '../domain/brewPreferences';
+import { currentInstallation, snapshotBrewhouse, snapshotMashRatio } from '../domain/brewPreferences';
 import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
 import { normalizeRecipeImport } from '../domain/recipeImport';
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
@@ -1691,7 +1691,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     preBoilHotL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:
       volumesEdited && details.preBoilHotL != null && water.mashWaterL===details.waterPlan?.mashWaterL && water.spargeWaterL===details.waterPlan?.spargeWaterL ? details.preBoilHotL :
       rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
-    brewhouse: installationNeedsAdoption ? details.brewhouse : rig?.equipment ? snapshotBrewhouse(rig) : details.brewhouse,
+    brewhouse: installationNeedsAdoption ? details.brewhouse : rig?.equipment ? snapshotBrewhouse(snapshotMashRatio(rig, mashRatioOverride, volumesEdited, water.mashWaterL, totalGrist)) : details.brewhouse,
     installation: {
       ...details.installation,
       // Retaining old volumes does not turn them into an explicit manual choice.
