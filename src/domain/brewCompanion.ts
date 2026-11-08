@@ -1,4 +1,5 @@
 import { recipeIbu } from './hopBitterness';
+import { formatAmount } from '../../functions/src/brewAmount';
 import { yeastRecipeBoilOg } from './yeastProjection';
 import {
   AcidId,
@@ -267,7 +268,7 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
         at,
         stepId: items[0].stepId,
         title: 'Ajout en cuve',
-        body: items.map((i) => `${actualAmount(i, state) ?? i.planned} ${i.unit} ${i.name}`).join(' · ')
+        body: items.map((i) => `${formatAmount(actualAmount(i, state) ?? i.planned, i.unit)} ${i.name}`).join(' · ')
       });
     alarms.push({
       id: 'boil-end',

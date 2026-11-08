@@ -22,7 +22,7 @@ import { noloRecipeForBatch } from '../domain/nolo';
 import { BrewBudgetButton } from './finance/BrewBudgetDialog';
 import { DateField, toIsoDate } from './DateField';
 import { Units } from '../services/units';
-import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates } from '../domain/batchSchedule';
+import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
 import { BatchSchedule } from './production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
 import { BrewSystemFeedback } from './BrewSystemFeedback';
@@ -59,6 +59,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
 }) => {
   const [draft, setDraft] = useSyncedDraft(batch, batch?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [brewDayDraft, setBrewDayDraft] = useState<string | null>(null);
+  const [brewDayError, setBrewDayError] = useState('');
   const [section, setSection] = useState<BatchDetailSection>(initialSection);
   const [noloNotice,setNoloNotice]=useState('');
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
@@ -347,7 +349,18 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                     : 'Alcool non calculé : densités impossibles, ou finale au-dessus de l’initiale.'}</p>
                 )}
 
-                {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={actualBrewDate(draft) ?? ''} onChange={brewDate => save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' })} shortcuts={[]} />}
+                {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={brewDayDraft ?? actualBrewDate(draft) ?? ''} error={brewDayError || undefined} shortcuts={[]} onChange={brewDate => {
+                  // BR-122, BE-48 : un jour « réellement brassé » ne peut pas être demain. La saisie reste affichée avec son message, rien n'est écrit.
+                  const day = normalizeBrewDate(brewDate);
+                  if (day && toIsoDate(day) > toIsoDate(breweryDay(Date.now()))) {
+                    setBrewDayDraft(brewDate);
+                    setBrewDayError('Ce jour est dans le futur : un brassage déjà fait ne peut pas être daté après aujourd’hui.');
+                    return;
+                  }
+                  setBrewDayDraft(null);
+                  setBrewDayError('');
+                  save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' });
+                }} />}
               </section>
 
               {(draft.status === 'fermentation' || draft.status === 'garde') && (
