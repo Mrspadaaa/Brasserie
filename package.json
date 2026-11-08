@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/check-private-research.mjs",
+    "build": "tsc && vite build && node scripts/check-private-research.mjs && node scripts/check-build-flags.mjs dist",
     "preview": "vite preview",
     "check:hop-perf": "node scripts/check-hop-tools-perf.mjs",
     "lint:design": "node tools/design-lint/lancer.mjs DESIGN.md",
