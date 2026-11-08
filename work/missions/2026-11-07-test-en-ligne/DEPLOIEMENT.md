@@ -23,3 +23,8 @@ Set-Location "$env:TEMP\deploy-2bfe5dc3"; firebase deploy --project brasserie-l-
 1. Lire la version servie (`index.html` en ligne = `dist/index.html`) et les journaux des fonctions.
 2. Relecture Gemini des 13 vraies pièces par l'app déployée (facturée, journalisée) ; gestes d'écriture sur « ZZ TEST — … » ; corriger, redéployer.
 3. 26 écritures B-001 à B-026 : copie de secours lisible d'abord, retrait par la voie de l'app, facture 372765 intacte, journal et totaux relus.
+
+## Fait (08.11)
+
+- Hébergement : `65d3c645`, puis `92de7371` (total des pièces lues en morceaux), puis `1927152d` (avis « Nouvelle version · Recharger »), servi = `dist/index.html`.
+- Fonctions : les 40 à `65d3c645` (40 « Successful update »), puis `aiTask` à `92de7371`. Déployées depuis le dépôt principal : `%TEMP%deploy-2bfe5dc3` n'a pas `functions/.env` (comptes autorisés).
