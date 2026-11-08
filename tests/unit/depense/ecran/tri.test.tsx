@@ -18,6 +18,7 @@ vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService:
 vi.mock('../../../../src/services/purchaseEntry', async importOriginal => ({ ...await importOriginal<any>(), savePurchaseWithProofReceipt: async (d: any) => { state.saved(structuredClone(d)); return { transactionId: 'TX-test' }; }, confirmPurchase: async () => undefined, purchaseDuplicates: () => [] }));
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
+import { retirerStock, suivreAuStock, stockDe } from '../aide-plateau';
 
 const stock = () => ({ rawMaterials: (stockJson.articles as any[]).filter(a => a.name !== 'Verdant IPA').map(a => (a.name === 'Target' ? { ...a, name: 'Target 11.8%' } : a)), cleaning: [], equipment: [], kegs: [] });
 const lire = async (resultat: any = lecture) => {
@@ -53,7 +54,7 @@ describe('R1 : un prix « avec mouture » n’est montré que si le catalogue l�
     fireEvent.click(view.container.querySelector('[data-dp-mouture-tous]')!);
     expect(prixKg(view, 1)).toMatch(/^2,40\/Kg avec mouture$/);
     expect(ligne(view, 1).querySelector('[data-dp-prixkg]')!.textContent).toMatch(/✓ 2,40\/Kg/);
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'none' } }); // C7 : le menu du stock, plus d'interrupteur
+    retirerStock(1); // C7 : « Stock ligne 1 → aucun mouvement » est le bouton « Retirer » de la ligne article (28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md))
     sansPrixMouture(view, 1);
   });
   it('C16 : le tableau des moutures dit « lu 2,30 → 2,40 /Kg » seulement pour un malt relié, et « Laisser en service » ne lie rien', async () => {
@@ -70,14 +71,16 @@ describe('R1 : un prix « avec mouture » n’est montré que si le catalogue l�
 describe('R6 : « Créer un nouvel article » d’un produit déjà au stock devient « Relier » (D215 : une autre α reste « Créer »)', () => {
   it('Galaxy (même produit) : le choix « new » relie ; Target 11.3% (autre α) : « Créer » et ⇄ « Relier à Target 11.8% »', async () => {
     const view = await lire();
-    fireEvent.change(screen.getByLabelText('Stock ligne 18'), { target: { value: 'none' } });
-    fireEvent.change(screen.getByLabelText('Stock ligne 18'), { target: { value: 'new' } });
-    expect(screen.getByLabelText('Stock ligne 18')).toHaveValue('existing');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : les menus « Stock ligne n » sont les boutons « Retirer » et « Suivre au stock » (relie par le nom si l'article existe, sinon nouvel article).
+    retirerStock(18); expect(stockDe(18)).toBe('none');
+    suivreAuStock(18);
+    expect(stockDe(18)).toBe('existing');
     // D275 (voie f3) : un bis est nouvel article d'office ; la barre jaune le garde (HEAD : « Créer « Target bis » »).
     expect(within(ligne(view, 8)).getByRole('button', { name: 'Garder le nouvel article « Target bis »' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Stock ligne 8')).toHaveValue('new');
+    expect(stockDe(8)).toBe('new');
     fireEvent.click(within(ligne(view, 8)).getAllByRole('button', { name: 'Choisir un autre article' })[0]);
-    expect(screen.getByLabelText('Stock ligne 8')).toHaveValue('existing');
+    expect(stockDe(8)).toBe('existing'); // ⇄ : « article « ? » · à choisir », rien n'est relié
+    expect(ligne(view, 8).querySelector('[data-dp-stock]')!.textContent).toContain('à choisir');
   });
 });
 
@@ -121,7 +124,8 @@ describe('C3, C1, C5, C6, C8, C14 : ce qu’il lit', () => {
     const resume = ligne(view, 1).querySelector('summary')!;
     expect(resume.querySelector('b')!.textContent).toBe('Maris Otter');
     // D275 (voie f3) : le suffixe d'unité sort du nom (uniteDuNom) ; l'imprimé reste au plateau (HEAD : libellé « Maris Otter, Kg »).
-    expect((screen.getByLabelText('Libellé ligne 1') as HTMLInputElement).value).toBe('Maris Otter');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : l'édition du libellé d'une ligne lue est retirée du plateau (« Retiré sans équivalent ») : plus de champ « Libellé ligne 1 » ; le nom propre est celui de la rangée (ci-dessus).
+    expect(screen.queryByLabelText('Libellé ligne 1')).toBeNull();
     expect(ligne(view, 1).querySelector('[data-dp-imprime]')!.textContent).toContain('Maris Otter, Kg');
   });
   it('C6 : le compte de la preuve fait 23 (toutes catégories), sans phrase d’aide', async () => {

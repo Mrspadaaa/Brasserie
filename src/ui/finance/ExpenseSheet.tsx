@@ -338,7 +338,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(message.includes('quantité'))return line.querySelector<HTMLElement>('[aria-label^="Quantité ligne"]');
       if(message.includes('article de stock'))return line.querySelector<HTMLElement>('[role="combobox"]');
       if(message.includes('matériel existant'))return line.querySelector<HTMLElement>('[role="combobox"]');
-      if(message.includes('convertit')||message.includes('unité à préciser'))return line.querySelector<HTMLElement>('[aria-label^="Unité ligne"]');
+      if(message.includes('convertit')||message.includes('unité à préciser'))return line.querySelector<HTMLElement>('[aria-label^="Unité à remplir, ligne"],[aria-label^="Unité ligne"]');
       return line.querySelector<HTMLElement>('select');
     }
     return root.querySelector<HTMLElement>('[data-purchase-lines] summary')??root.querySelector<HTMLElement>('[data-dp="liste"]');

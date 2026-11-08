@@ -15,6 +15,7 @@ vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejec
 vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => state.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
 vi.mock('../../../../src/services/purchaseEntry', async importOriginal => ({ ...await importOriginal<any>(),
   savePurchaseWithProofReceipt: async (draft: any) => { state.saved(structuredClone(draft)); return { transactionId: 'TX-test' }; }, confirmPurchase: async () => undefined, purchaseDuplicates: () => [] }));
+import { toucherUnite, unitePressee } from '../aide-plateau';
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 import { swissToday } from '../../../../src/ui/DateField';
@@ -67,11 +68,12 @@ describe('R1 : le prix unitaire lu est gardé', () => {
   });
   it('R1b : retaper l’unité de la ligne retire le prix lu (il valait pour l’unité imprimée)', async () => {
     await open(result({ amountTTC: 20.4 }, items));
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'new' } });
-    fireEvent.change(screen.getByLabelText('Unité ligne 1'), { target: { value: 'g' } });
+    // 28c98cba (pu4d, D350) : l'unité est un segment (un toucher sur « g »). Test périmé sur un point : d'une masse à l'autre la quantité et le prix se CONVERTISSENT (B2 n° 3, 5cf2f99d, work/missions/2026-10-31-ecran-depense/banc-b2/RESULTAT.md : 2 Kg × 1,55 = 2 000 g × 0,00155) au lieu de retirer le prix ; le montant lu reste.
+    toucherUnite(1, 'g');
+    expect(unitePressee(1)).toBe('g');
     const sent = await save();
-    expect(sent.lines[0]).toMatchObject({ unit: 'g' });
-    expect(sent.lines[0].unitPrice).toBeUndefined();
+    expect(sent.lines[0]).toMatchObject({ unit: 'g', quantity: 6000, amount: 13.8 });
+    expect(sent.lines[0].unitPrice).toBeCloseTo(0.0023, 6);
     expect(sent.lines[1].unitPrice).toBe(0.04);
   });
 });
@@ -80,14 +82,10 @@ describe('R1 : cas limites du prix unitaire', () => {
   const kilo = [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 6, unit: 'Kg', price: 2.3, amountTTC: 13.8, stockCategory: '' }];
   it('Conception n° 14 : retaper la MÊME unité garde le prix unitaire (une autre unité le retire : voir R1b)', async () => {
     await open(result({ amountTTC: 13.8 }, kilo));
-    fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'new' } });
-    const unit = screen.getByLabelText('Unité ligne 1') as HTMLInputElement;
-    expect(unit.value).toBe('Kg');
-    // React ne signale pas une valeur identique : on passe par une valeur intermédiaire pour que la saisie « Kg » arrive bien à `onChange`.
-    unit.value = 'x';
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(unit, 'Kg');
-    fireEvent.input(unit);
-    expect(unit.value).toBe('Kg');
+    // 28c98cba (pu4d, D350) : « retaper la même unité » = un toucher sur « Kg », déjà allumé : rien ne change.
+    expect(unitePressee(1)).toBe('Kg');
+    toucherUnite(1, 'Kg');
+    expect(unitePressee(1)).toBe('Kg');
     const sent = await save();
     expect(sent.lines[0]).toMatchObject({ unit: 'Kg', unitPrice: 2.3 });
   });

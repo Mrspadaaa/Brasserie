@@ -19,6 +19,7 @@ vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejec
 vi.mock('../../../../src/services/financeService', () => ({ validateFinancialPayment: () => {}, FinanceService: { getPlans: () => [], stageNewTransactionPayment: (tx: any) => state.writes.push(['transaction', tx]) } }));
 vi.mock('../../../../src/services/financeDocuments', () => ({ prepareFinanceDocument: () => ({ id: 'proof' }), saveFinanceDocumentConfirmed: async () => undefined }));
 vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => state.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
+import { stockDe, toucherNature, suivreAuStock } from '../aide-plateau';
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 
@@ -53,14 +54,14 @@ const lire = async (category: string, extra: Array<ReturnType<typeof ligne>> = [
 };
 const bandeDe = (view: ReturnType<typeof render>, id: string) => view.container.querySelector(`[data-dp-ligne="${id}"]`)!.closest('[data-dp-bande]')!.getAttribute('data-dp-bande');
 const natureDe = (view: ReturnType<typeof render>, id: string) => view.container.querySelector(`[data-dp-ligne="${id}"] [data-dp-nature] [aria-pressed="true"]`)?.textContent;
-const stockDe = (n: number) => (screen.getByLabelText(`Stock ligne ${n}`) as HTMLSelectElement).value;
+// 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le menu « Stock ligne n » est lu sur la ligne « article » du plateau (aide-plateau.ts).
 
 describe('D306 — une pièce de travaux lue « stock » sous Local : la Rénovation ne crée ni article ni mouvement', () => {
   it('les lignes de travaux sont en bande Rénovation, sans sélecteur de stock (kind Matériel : aucun article), le malt reste proposé sur son article', async () => {
     const view = await lire('renovation');
     for (const id of ['line-2', 'line-3', 'line-4', 'line-5']) expect(bandeDe(view, id), id).toBe('renovation');
     expect(bandeDe(view, 'line-1')).toBe('malt');
-    for (const n of [2, 3, 4]) expect(screen.queryByLabelText(`Stock ligne ${n}`), `ligne ${n}`).toBeNull();
+    for (const n of [2, 3, 4]) { expect(stockDe(n), `ligne ${n}`).toBe('none'); expect(document.querySelector(`[data-dp-ligne="line-${n}"] [data-dp-suivre]`), `ligne ${n}`).toBeNull(); } // « hors stock », sans « Suivre au stock »
     expect(stockDe(1)).toBe('existing');
     expect(state.writes).toEqual([]);
   });
@@ -78,8 +79,8 @@ describe('D306 — une pièce de travaux lue « stock » sous Local : la Rénova
     expect(stockDe(6), 'brosse avant').toBe('new');
     expect(stockDe(7), 'seau avant').toBe('new');
     // le brasseur écarte puis choisit lui-même « nouvel article » pour le seau : ce n’est plus un choix d’office
-    fireEvent.change(screen.getByLabelText('Stock ligne 7'), { target: { value: 'none' } });
-    fireEvent.change(screen.getByLabelText('Stock ligne 7'), { target: { value: 'new' } });
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : plus de menu : écarter = passer la nature à Service (hors stock), puis choisir = Ingrédient et « Suivre au stock » (nouvel article choisi).
+    toucherNature(7, 'Service'); toucherNature(7, 'Ingrédient'); suivreAuStock(7);
     fireEvent.change(document.querySelector('#purchase-category')!, { target: { value: 'renovation' } });
     expect(stockDe(6), 'brosse après').toBe('none');
     expect(stockDe(7), 'seau (choix du brasseur) après').toBe('new');
@@ -99,7 +100,7 @@ describe('D306 — une pièce de travaux lue « stock » sous Local : la Rénova
     expect(bandeDe(view, 'line-2')).toBe('renovation');
     expect(bandeDe(view, 'line-4')).toBe('renovation');
     expect(bandeDe(view, 'line-5')).not.toBe('renovation');
-    for (const n of [2, 4]) expect(screen.queryByLabelText(`Stock ligne ${n}`), `ligne ${n}`).toBeNull();
+    for (const n of [2, 4]) expect(stockDe(n), `ligne ${n}`).toBe('none');
     expect(state.writes).toEqual([]);
   });
 });

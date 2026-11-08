@@ -14,6 +14,7 @@ vi.mock('../../../../src/services/financeService', () => ({ FinanceService: { ge
 vi.mock('../../../../src/services/firestoreRepo', () => ({ isConfirmedWriteRejection: () => false }));
 vi.mock('../../../../src/services/geminiScanner', () => ({ GeminiScannerService: { scanDocument: (...a: any[]) => etat.scanned(...a), fileToDataUrl: async () => 'data:application/pdf;base64,JVBERi0xLjQK', normalizeMimeType: () => 'application/pdf' } }));
 vi.mock('../../../../src/services/aiClient', async orig => { const m = await orig<any>(); return { ...m, AiClient: { ...m.AiClient, run: (...a: any[]) => etat.run(...a) } }; });
+import { stockDe, suivreAuStock, toucherNature, toucherUnite } from '../aide-plateau';
 import { ExpenseSheet } from '../../../../src/ui/finance/ExpenseSheet';
 import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 import { art } from './aide';
@@ -109,7 +110,7 @@ describe('N3 — l\'arrivée du français relie une ligne neuve intacte, comme �
 describe('une ligne « touchée » n\'est jamais reprise', () => {
   const gestes: Array<[string, () => void]> = [
     ['la quantité', () => fireEvent.change(screen.getByLabelText('Quantité ligne 1'), { target: { value: '6' } })],
-    ['l\'unité', () => fireEvent.change(screen.getByLabelText('Unité ligne 1'), { target: { value: 'g' } })],
+    ['l\'unité', () => toucherUnite(1, 'g')]/* 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : l'unité est un segment, le geste est un toucher sur « g » */,
     ['le nom tapé', () => fireEvent.change(champNom()!, { target: { value: 'Mon Vienna' } })],
   ];
   for (const [nom, geste] of gestes) {
@@ -146,12 +147,14 @@ describe('les autres gestes du brasseur empêchent la reprise', () => {
     await sansLien(() => fireEvent.click(within(screen.getByRole('group', { name: 'Type d’achat, ligne 1' })).getByRole('button', { name: 'Service' })));
   });
   it('« Créer un nouvel article » choisi au menu (`neufDOffice` vidé) : la ligne n\'est pas reprise', async () => {
-    await sansLien(() => fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'new' } }));
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('new');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : plus de menu « Stock ligne 1 » ; le seul geste qui pose « nouvel article » (et vide `neufDOffice`) est « Suivre au stock » d'une ligne hors stock : on y passe par la nature (Service, puis Ingrédient).
+    await sansLien(() => { toucherNature(1, 'Service'); toucherNature(1, 'Ingrédient'); suivreAuStock(1); });
+    expect(stockDe(1)).toBe('new');
   });
   it('« Ajouter à un article existant » choisi (lien choisi) : le français ne le remplace pas', async () => {
-    await sansLien(() => fireEvent.change(screen.getByLabelText('Stock ligne 1'), { target: { value: 'existing' } }));
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('existing');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : « Ajouter à un article existant » est le ⇄ « Choisir un autre article ».
+    await sansLien(() => fireEvent.click(screen.getByRole('button', { name: 'Choisir un autre article' })));
+    expect(stockDe(1)).toBe('existing');
   });
 });
 
@@ -163,7 +166,8 @@ describe('ce qui est montré est ce qui est écrit : le bouton « bis »', () =>
     rendre(reponse([0, 'Houblon Cascade']));
     await waitFor(() => expect(screen.queryAllByRole('button', { name: 'Garder le nouvel article « Houblon Cascade CH »' })).toHaveLength(1));
     expect(screen.getByRole('button', { name: 'Garder le nouvel article « Houblon Cascade CH »' }).textContent).toBe('Houblon Cascade CH');
-    expect(champNom()!.value).toBe('Houblon Cascade CH');
+    // 28c98cba (pu4d, D350, p-port-pu4d/RESULTAT.md) : le nom du bis n'a plus de champ (seul « Nouvel article · doublon » en a un) : il est le titre de la sortie « bis » du plateau.
+    expect(document.querySelector('[data-dp-ligne="line-1"] [data-dp-sortie="bis"]')!.textContent).toContain('Houblon Cascade CH');
   });
 });
 
