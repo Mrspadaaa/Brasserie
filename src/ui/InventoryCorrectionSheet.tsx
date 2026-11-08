@@ -8,6 +8,7 @@ import { SegmentedControl } from './SegmentedControl';
 import { QuantityStepper } from './QuantityStepper';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
+import { motifsAdmis, verifierCorrection } from '../domain/stock/regles';
 import './stocks.css';
 
 /**
@@ -56,10 +57,14 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
 
   if (!item) return null;
 
-  const delta = Units.round(counted - item.currentStock, item.unit);
+  const delta = Number.isFinite(counted) ? Units.round(counted - item.currentStock, item.unit) : 0;
+  // AM-54 : un stock compté supérieur au théorique n'est ni une casse, ni une perte, ni un don.
+  const admis = motifsAdmis(delta);
+  const motif: InventoryReason = admis.includes(reason) ? reason : 'comptage';
+  const bloque = !touched || delta === 0 || !verifierCorrection(item, counted, motif).ok;
   const submit = () => {
-    if (!touched || delta === 0 || !Number.isFinite(counted) || counted < 0) return;
-    onConfirm(counted, reason, note.trim() || undefined);
+    if (bloque) return;
+    onConfirm(counted, motif, note.trim() || undefined);
     onClose();
   };
 
@@ -76,7 +81,7 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
           </Button>
           <Button full intent="primary"
             onClick={submit}
-            disabled={!touched || delta === 0 || !Number.isFinite(counted) || counted < 0}
+            disabled={bloque}
           >
             {delta === 0 ? 'Aucun écart' : 'Enregistrer l’écart'}
           </Button>
@@ -125,13 +130,15 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
           <SegmentedControl
             label="Motif de la correction"
             layout="grid"
-            value={reason}
+            value={motif}
             onChange={setReason}
             options={(Object.keys(INVENTORY_REASONS) as InventoryReason[]).map((k) => ({
               value: k,
-              label: INVENTORY_REASONS[k]
+              label: INVENTORY_REASONS[k],
+              disabled: !admis.includes(k)
             }))}
           />
+          {delta > 0 && <p className="mt-1 text-xs text-cave-400" data-motif-gain>Le compté dépasse le théorique : casse, perte et don ne s’appliquent pas.</p>}
         </Field>
 
         <Field label="Précision (facultatif)" htmlFor="inventory-note">

@@ -20,6 +20,9 @@ import { Search, X, Star } from 'lucide-react';
  * Les favoris remontent toujours en tête, quel que soit le tri.
  */
 
+/** Pause après le dernier appui sur une étoile avant que la ligne change de place (BR-69). */
+const RETRI_MS = 1200;
+
 export interface EntityListProps<T> {
   items: T[];
   /** Identifiant stable, pour la réconciliation React. */
@@ -32,6 +35,8 @@ export interface EntityListProps<T> {
   /** Champs indexés par la recherche floue. */
   searchKeys?: string[];
   isFavorite?: (item: T) => boolean;
+  /** Quand cette valeur change (filtre choisi, onglet), la liste repart du haut (BR-70). */
+  resetKey?: unknown;
   searchPlaceholder?: string;
   /** Message quand la liste est vide au départ (pas après filtrage). */
   emptyState?: React.ReactNode;
@@ -50,6 +55,7 @@ export function EntityList<T>({
   groupOrder,
   searchKeys,
   isFavorite,
+  resetKey,
   searchPlaceholder = 'Rechercher…',
   emptyState,
   header,
@@ -64,6 +70,26 @@ export function EntityList<T>({
     return createSearch(items, searchKeys);
   }, [items, searchKeys]);
 
+  /*
+   * BR-69 : épingler retriait la liste à l'instant, et le second appui d'un double toucher tombait sur la ligne qui avait pris la place de la première
+   * (Pilsner 23,5 kg désépinglé, Pilsner 3 kg épinglé). L'étoile change tout de suite ; la LIGNE, elle, ne change de place qu'après une pause
+   * (RETRI_MS), ou à la recherche suivante. L'ordre sert au tri seulement, l'état affiché reste celui de `isFavorite`.
+   */
+  const epingles = useMemo(
+    () => (isFavorite ? new Set(items.filter(isFavorite).map(keyOf)) : new Set<string>()),
+    [items, isFavorite, keyOf]
+  );
+  const [ordre, setOrdre] = useState(epingles);
+  React.useEffect(() => {
+    if (ordre === epingles) return;
+    const egal = ordre.size === epingles.size && [...epingles].every((cle) => ordre.has(cle));
+    if (egal) return;
+    const delai = setTimeout(() => setOrdre(epingles), RETRI_MS);
+    return () => clearTimeout(delai);
+  }, [epingles, ordre]);
+  // Une nouvelle recherche repart de l'état à jour : rien à protéger d'un double toucher.
+  React.useEffect(() => { setOrdre(epingles); }, [query]);
+
   const filtered = useMemo(() => {
     const q = query.trim();
     const base = q && fuse ? runSearch(fuse, q) : items;
@@ -71,11 +97,15 @@ export function EntityList<T>({
     if (!isFavorite) return base;
     // Tri stable : les épinglés d'abord, l'ordre relatif préservé sinon.
     return [...base].sort((a, b) => {
-      const fa = isFavorite(a) ? 0 : 1;
-      const fb = isFavorite(b) ? 0 : 1;
+      const fa = ordre.has(keyOf(a)) ? 0 : 1;
+      const fb = ordre.has(keyOf(b)) ? 0 : 1;
       return fa - fb;
     });
-  }, [items, query, fuse, isFavorite]);
+  }, [items, query, fuse, isFavorite, ordre, keyOf]);
+
+  // BR-70 : un nouveau filtre ou une nouvelle recherche repart du haut ; sinon la liste garde son défilement et cache ses premières lignes sous l'en-tête.
+  const defilement = React.useRef<{ scrollToIndex: (arg: { index: number }) => void } | null>(null);
+  React.useEffect(() => { defilement.current?.scrollToIndex({ index: 0 }); }, [query, resetKey]);
 
   /** Découpage en groupes contigus, dans l'ordre demandé. */
   const grouped = useMemo(() => {
@@ -154,7 +184,7 @@ export function EntityList<T>({
 
       {noResults && (
         <div className="py-12 text-center space-y-2">
-          <p className="text-base text-cave-200">Rien ne correspond à « {query} »</p>
+          <p className="text-base text-cave-200 break-words [overflow-wrap:anywhere]">Rien ne correspond à « {query} »</p>
           <p className="text-sm text-cave-400">
             La recherche tolère les fautes et les accents manquants.
           </p>
@@ -163,6 +193,7 @@ export function EntityList<T>({
 
       {!isEmpty && !noResults && grouped && (
         <GroupedVirtuoso
+          ref={defilement as never}
           className="flex-1 min-h-0"
           groupCounts={grouped.counts}
           groupContent={(index) => (
@@ -188,6 +219,7 @@ export function EntityList<T>({
 
       {!isEmpty && !noResults && !grouped && (
         <Virtuoso
+          ref={defilement as never}
           className="flex-1 min-h-0"
           data={filtered}
           itemContent={(index, item) => (

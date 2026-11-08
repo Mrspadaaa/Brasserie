@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { Trash2, Star } from 'lucide-react';
-import { Batch, StockItem } from '../types';
+import { Batch, Recipe, StockItem } from '../types';
+import { DateField, toIsoDate, toSwissDate } from './DateField';
+import { todayISO } from '../domain/finance/ledger';
+import { libelleDurabilite, liensArticle, motifNonSuppression, nombreFr, statutDurabilite, verifierSeuil } from '../domain/stock/regles';
 import { Units } from '../services/units';
 import { computeStockLevel, pendingStockSummary, allocatedBatches, type RecipeStockComparison } from '../domain/stockLevel';
 import { Suggestions } from '../services/suggestions';
@@ -21,15 +24,18 @@ interface StockDetailSheetProps {
   stockItems?: StockItem[];
   recipeCheck?: { recipeName: string; comparison: RecipeStockComparison } | null;
   onClose: () => void;
-  onSave: (item: StockItem) => void;
+  /** `base` : l'article tel que la fiche l'a lu (sert à n'appliquer que les champs que le brasseur a changés, AM-53). */
+  onSave: (item: StockItem, base: StockItem) => void;
   onDelete: (item: StockItem) => void;
   onCorrectInventory: (item: StockItem) => void;
   onToggleFavorite: (item: StockItem) => void;
+  /** Les recettes enregistrées : un article qu'une recette cite ne se supprime pas (AM-55). */
+  recipes?: Recipe[];
 }
 
 /** Quantité et couverture d'abord ; propriétés techniques accessibles à la demande. */
 export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
-  item, batches, stockItems, recipeCheck, onClose, onSave, onDelete, onCorrectInventory, onToggleFavorite
+  item, batches, stockItems, recipeCheck, onClose, onSave, onDelete, onCorrectInventory, onToggleFavorite, recipes = []
 }) => {
   const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -42,12 +48,20 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   const pending = pendingStockSummary(item, batches);
   const physical = Number.isFinite(item.currentStock) && item.currentStock >= 0 ? item.currentStock : null;
   const available = physical !== null && pending.known ? Math.max(0, physical - pending.knownQuantity) : null;
-  const canSave = !!draft.name.trim() && Number.isFinite(draft.minStock) && draft.minStock >= 0;
+  // MV-43, BR-76 : un seuil de 999 999 kg est une faute de frappe, pas un seuil.
+  const seuil = verifierSeuil(draft.minStock, draft.unit);
+  const seuilErreur = 'refus' in seuil ? seuil.refus : undefined;
+  const canSave = !!draft.name.trim() && seuil.ok;
   const save = () => {
     if (!canSave) return;
-    onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.currentStock <= draft.minStock });
+    onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.currentStock <= draft.minStock }, item);
     onClose();
   };
+  // AM-55 : ce qui retient l'article (brassin qui le réserve, recette qui le cite).
+  const nonSuppression = motifNonSuppression(liensArticle(item, batches, recipes, stockItems ?? [item]));
+  // AM-56 : date de durabilité d'une levure (AAAA-MM-JJ dans le lot, JJ.MM.AAAA à l'écran).
+  const aujourdhui = todayISO();
+  const durabilite = statutDurabilite(draft.yeastLot?.expiresOn, aujourdhui);
   /* AM n° 8 : l'unité ne se change pas sans convertir le stock, le seuil et le maximum ; d'une famille à l'autre, le changement est refusé et dit pourquoi. */
   const changeUnit = (unit: string) => {
     const changement = changerUniteArticle(draft, unit, allocated.length > 0);
@@ -81,6 +95,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             <Button onClick={() => onCorrectInventory(item)}>Corriger l’inventaire</Button>
           </div>
           <LevelGauge level={level}/>
+          {(() => { const d = libelleDurabilite(item.yeastLot?.expiresOn, aujourdhui); return d && <p data-stock-durabilite className={`text-xs ${d.perime ? 'text-alert-strong' : 'text-attention'}`}>{d.texte}</p>; })()}
           {level.band === 'inconnu' && <button type="button" className="text-xs text-ebc-straw underline underline-offset-2 self-start" data-role="fixer-seuil"
             onClick={() => { const champ = document.getElementById('stock-min'); champ?.scrollIntoView({ block: 'center' }); champ?.focus(); }}>
             Fixer le seuil minimum</button>}
@@ -137,8 +152,8 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <Field label={`Seuil minimum (${draft.unit})`} htmlFor="stock-min">
-              <NumberInput id="stock-min" value={draft.minStock} min={0} onValue={minStock => setDraft({ ...draft, minStock })} className={inputClass}/>
+            <Field label={`Seuil minimum (${draft.unit})`} htmlFor="stock-min" error={seuilErreur}>
+              <NumberInput id="stock-min" value={draft.minStock} min={0} aria-invalid={!seuil.ok} onValue={minStock => setDraft({ ...draft, minStock })} className={inputClass}/>
             </Field>
             <Field label="Fournisseur" htmlFor="stock-vendor">
               <Combobox id="stock-vendor" ariaLabel="Fournisseur" value={draft.supplier || ''} onChange={supplier => setDraft({ ...draft, supplier })}
@@ -148,8 +163,8 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
 
           {technical && <details className="border-y border-cave-800 py-1">
             <summary className="text-cave-200">Caractéristiques techniques
-              {category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {draft.alphaPct} %</span>}
-              {malt && draft.colorEbc != null && <span className="text-cave-400"> · {draft.colorEbc} EBC</span>}
+              {category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {nombreFr(draft.alphaPct, 2)} %</span>}
+              {malt && draft.colorEbc != null && <span className="text-cave-400"> · {nombreFr(draft.colorEbc, 1)} EBC</span>}
             </summary>
             <div className="space-y-2 pt-1 pb-2">
               {category === 'Houblon' && <Field label="Acide alpha (%)" htmlFor="stock-alpha">
@@ -171,6 +186,10 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
                   <Field label="Laboratoire" htmlFor="stock-lab"><TextInput id="stock-lab" name="stock_sheet_yeast_lab" value={draft.yeastLab ?? ''} onChange={yeastLab => setDraft({ ...draft, yeastLab })}/></Field>
                   <Field label="Souche" htmlFor="stock-strain"><TextInput id="stock-strain" name="stock_sheet_yeast_strain" value={draft.yeastStrain ?? ''} onChange={yeastStrain => setDraft({ ...draft, yeastStrain })}/></Field>
                 </div>
+                <DateField label="À utiliser avant (DDM)" shortcuts={[]} value={toSwissDate(draft.yeastLot?.expiresOn ?? '')}
+                  hint={durabilite.statut === 'perime' ? undefined : 'Sans date, aucune alerte de péremption.'}
+                  error={durabilite.statut === 'perime' ? 'Sachet périmé : ne le brasse pas sans l’avoir testé.' : undefined}
+                  onChange={swiss => { const expiresOn = toIsoDate(swiss) || undefined; setDraft({ ...draft, yeastLot: { ...(draft.yeastLot ?? {}), expiresOn } }); }}/>
                 <div className="grid grid-cols-2 gap-2">
                   <Field label="Atténuation (%)" htmlFor="stock-att"><NumberInput id="stock-att" value={draft.yeastAttenuationPct} min={0} max={100} emptyValue={undefined} onValue={yeastAttenuationPct => setDraft({ ...draft, yeastAttenuationPct })} className={inputClass}/></Field>
                   <Field label="Temp. mini (°C)" htmlFor="stock-tmin"><NumberInput id="stock-tmin" value={draft.yeastTempMinC} emptyValue={undefined} onValue={yeastTempMinC => setDraft({ ...draft, yeastTempMinC })} className={inputClass}/></Field>
@@ -186,8 +205,10 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             icon={<Star className={`w-3.5 h-3.5 ${item.favorite ? 'fill-ebc-straw text-ebc-straw' : ''}`}/>}>
             {item.favorite ? 'Épinglé' : 'Épingler'}
           </Button>
-          <Button size="sm" intent="danger" onClick={() => setConfirmDelete(true)} icon={<Trash2 className="w-3.5 h-3.5"/>}>Supprimer</Button>
+          <Button size="sm" intent="danger" disabled={Boolean(nonSuppression)} aria-describedby={nonSuppression ? 'stock-delete-blocked' : undefined}
+            onClick={() => setConfirmDelete(true)} icon={<Trash2 className="w-3.5 h-3.5"/>}>Supprimer</Button>
         </div>
+        {nonSuppression && <p id="stock-delete-blocked" role="status" data-stock-suppression-bloquee className="text-xs text-attention">{nonSuppression}</p>}
       </div>
     </Sheet>
     <ConfirmSheet open={confirmDelete} onClose={() => setConfirmDelete(false)}

@@ -5,7 +5,8 @@ import { EquipmentItem } from '../types';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { SegmentedControl } from './SegmentedControl';
-import { DateField } from './DateField';
+import { DateField, toSwissDate } from './DateField';
+import { isoDate } from '../domain/finance/ledger';
 import { Trash2 } from 'lucide-react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
@@ -54,9 +55,16 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
   const nameError = !canSave && (saveAttempted || draft.name.length > 0 || !isNew) ? 'Indique un nom d’au moins 2 caractères.' : undefined;
   const categories = CATEGORIES.includes(draft.category) || !draft.category ? CATEGORIES : [draft.category, ...CATEGORIES];
   const states = STATES.some(state => state.value === draft.state) ? STATES : [...STATES, { value: draft.state, label: draft.state || 'Non renseigné' }];
+  // TE-47 : un prix négatif n'existe pas ; vide = non renseigné (jamais 0).
+  const priceError = draft.purchasePrice !== undefined && !(Number.isFinite(draft.purchasePrice) && draft.purchasePrice >= 0) ? 'Le prix payé ne peut pas être négatif.' : undefined;
+  // BR-94 : la date enregistrée peut être en AAAA-MM-JJ (achat, démo) ou JJ.MM.AAAA (saisie) ; le champ lit toujours le format suisse.
+  const iso = isoDate(draft.purchaseDate);
+  const purchaseDateSwiss = iso ? toSwissDate(iso) : '';
+  // TE-46 : la référence interne d'un matériel créé par un achat (EQ-<uuid>-0) n'est pas à montrer, comme dans la liste.
+  const automaticRef = /^EQ-[0-9a-f]{8}-[0-9a-f]{4}-/i.test(item.ref);
   const save = () => {
     setSaveAttempted(true);
-    if (!canSave) return;
+    if (!canSave || priceError) return;
     onSave({ ...draft, name: draft.name.trim() });
     onClose();
   };
@@ -67,12 +75,12 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
         open={Boolean(item)}
         onClose={onClose}
         title={isNew ? 'Nouveau matériel' : draft.name || item.name}
-        subtitle={isNew ? undefined : `${item.category} · ${item.ref}`}
+        subtitle={isNew ? undefined : automaticRef ? item.category : `${item.category} · ${item.ref}`}
         className="equipment-sheet"
         footer={
           <div className="equipment-footer">
             <Button intent="secondary" onClick={onClose}>Annuler</Button>
-            <Button intent="primary" onClick={save} disabled={!canSave}>Enregistrer</Button>
+            <Button intent="primary" onClick={save} disabled={!canSave || Boolean(priceError)}>Enregistrer</Button>
           </div>
         }
       >
@@ -125,17 +133,19 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
           </Field>
 
           <details className="equipment-disclosure">
-          <summary>Achat <span>· {draft.purchaseDate || 'Date non renseignée'}{draft.purchasePrice !== undefined ? ` · ${draft.purchasePrice.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF` : ' · Prix non renseigné'}</span></summary>
+          <summary>Achat <span>· {purchaseDateSwiss || 'Date non renseignée'}{draft.purchasePrice !== undefined ? ` · ${draft.purchasePrice.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF` : ' · Prix non renseigné'}</span></summary>
           <div className="equipment-form-pair">
             <DateField
               label="Date d’achat"
-              value={draft.purchaseDate ?? ''}
+              value={purchaseDateSwiss}
               onChange={(purchaseDate) => setDraft({ ...draft, purchaseDate })}
               shortcuts={[]}
             />
-            <Field label="Prix payé (CHF)" htmlFor="eq-price">
+            <Field label="Prix payé (CHF)" htmlFor="eq-price" error={priceError}>
               <NumberInput
                 id="eq-price"
+                min={0}
+                aria-invalid={Boolean(priceError)}
                 value={draft.purchasePrice}
                 onValue={(v) =>
                   setDraft({ ...draft, purchasePrice: v })}

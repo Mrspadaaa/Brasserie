@@ -232,7 +232,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     note?: string
   ) => {
     const result = StorageService.adjustInventory(typeOf(item), item.ref, countedQty, reason, note);
-    if (!result) return;
+    if (!result) {
+      onSuccessMessage?.(`${item.name} : correction refusée, le stock n’a pas changé.`);
+      return;
+    }
     onSuccessMessage?.(
       result.delta === 0
         ? `${item.name} : inventaire confirmé.`
@@ -420,6 +423,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           groupOrder={GROUP_ORDER}
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}
+          resetKey={stockFilter}
           searchPlaceholder="Rechercher un article…"
           header={allItems.length > 0 && <SegmentedControl className={`stock-filters ${mobile ? 'pr-16' : ''}`} label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
             { value: 'all', label: `Tous · ${allItems.length}` },
@@ -561,8 +565,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           return comparison ? { recipeName: selectedRecipe.name, comparison } : null;
         })() : null}
         onClose={() => setSelected(null)}
-        onSave={(item) => StorageService.updateStockItem(typeOf(item), item)}
-        onDelete={(item) => StorageService.deleteStockItem(typeOf(item), item.ref)}
+        recipes={savedRecipes}
+        onSave={(item, base) => StorageService.saveStockItemFiche(typeOf(item), base, item)}
+        onDelete={(item) => {
+          const result = StorageService.deleteStockItem(typeOf(item), item.ref);
+          if (!result.ok && result.refus) onSuccessMessage?.(result.refus);
+        }}
         onCorrectInventory={(item) => {
           setSelected(null);
           setCorrecting(item);

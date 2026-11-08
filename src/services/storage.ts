@@ -27,6 +27,7 @@ import { writeCatalogOrganization } from './catalogOrganization';
 import { deviceBackup, restoreBackup } from './dataBackup';
 import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
 import { Units } from './units';
+import { verifierCorrection, liensArticle, motifNonSuppression, ficheAEnregistrer } from '../domain/stock/regles';
 import { HopVariety, HopLot, assertHopDocument } from '../../functions/src/hopIndexSchema';
 import { parseBackup } from '../../functions/src/backupCore';
 import { HopKnowledge, HopPredictionSnapshot, HopTasting, assertHopKnowledge, assertHopTasting } from '../../functions/src/hopPredictionSchema';
@@ -767,12 +768,42 @@ export const StorageService = {
     }
   },
 
-  deleteStockItem(type: 'rawMaterials' | 'cleaning', ref: string) {
-    const target = this.getStocks()[type].find((s) => s.ref === ref);
+  /**
+   * Supprime un article. Un article qu'un brassin réserve ou qu'une recette cite reste en place (AM-55) : le supprimer laisserait ces lignes sans stock,
+   * en silence. Rend `{ ok: false, refus }` avec la phrase qui dit quoi retirer d'abord.
+   */
+  deleteStockItem(type: 'rawMaterials' | 'cleaning', ref: string): { ok: boolean; refus?: string } {
+    const stocks = this.getStocks();
+    const target = stocks[type].find((s) => s.ref === ref);
+    if (target) {
+      const refus = motifNonSuppression(liensArticle(target, this.getBatches(), this.getRecipes(), [...stocks.rawMaterials, ...stocks.cleaning]));
+      if (refus) return { ok: false, refus };
+    }
     FirestoreRepo.remove('stockItems', ref);
     if (target) {
       this.logAction('Suppression', 'Stocks', ref, `Article supprimé du stock : ${target.name}`);
     }
+    return { ok: true };
+  },
+
+  /**
+   * « Enregistrer » de la fiche d'un article (AM-53). La fiche ouverte est une copie ancienne : écrire le document entier effaçait un achat reçu entre-temps.
+   * Ici la quantité vient du stock VIVANT ; seule la conversion d'unité la touche (voir `ficheAEnregistrer`).
+   */
+  saveStockItemFiche(type: 'rawMaterials' | 'cleaning', ouverte: StockItem, saisie: StockItem) {
+    const vivant = this.getStocks()[type].find((s) => s.ref === saisie.ref);
+    if (!vivant) return this.updateStockItem(type, saisie);
+    const fiche = ficheAEnregistrer(vivant, ouverte, saisie);
+    // Écriture du document entier (un champ vidé dans la fiche doit disparaître, ce que la fusion ne ferait pas), mais avec la quantité du moment : la fenêtre
+    // d'écrasement passe de « tout le temps où la fiche était ouverte » à quelques millisecondes.
+    FirestoreRepo.put('stockItems', fiche.ref, { ...fiche, kind: type });
+    this.logAction(
+      'Modification',
+      'Stocks',
+      fiche.ref,
+      `Fiche ${fiche.name} enregistrée : ${fiche.currentStock} ${fiche.unit} (Min: ${fiche.minStock}, Max: ${fiche.maxStock || '—'})`,
+      `Stock lu au moment de l’enregistrement : ${vivant.currentStock} ${vivant.unit}`
+    );
   },
 
   updateStockItem(type: 'rawMaterials' | 'cleaning', item: StockItem) {
@@ -810,11 +841,16 @@ export const StorageService = {
   ): { delta: number } | null {
     const item = this.getStocks()[type].find((s) => s.ref === ref);
     if (!item) return null;
+    // Un compté négatif, illisible ou un motif de perte sur un gain n'écrit rien (AM-54) : le stock ne descend jamais sous zéro en silence.
+    const verdict = verifierCorrection(item, countedQty, reason);
+    if (!verdict.ok) return null;
 
-    const delta = Units.round(countedQty - item.currentStock, item.unit);
+    const delta = verdict.ecart;
+    const compte = Units.round(countedQty, item.unit);
     FirestoreRepo.put('stockItems', ref, {
       ...item,
-      currentStock: Units.round(countedQty, item.unit),
+      currentStock: compte,
+      reorder: compte <= item.minStock,
       kind: type
     });
 
@@ -1333,7 +1369,8 @@ export const StorageService = {
           stocks.cleaning.find((s) => s.ref === id);
         if (!item) return;
         const type = stocks.cleaning.some((s) => s.ref === id) ? 'cleaning' : 'rawMaterials';
-        FirestoreRepo.put('stockItems', id, { ...item, kind: type, favorite: !item.favorite });
+        // Fusion : seul l'épinglage s'écrit. Écrire l'article entier d'après le cache pouvait effacer une quantité reçue entre-temps.
+        FirestoreRepo.put('stockItems', id, { favorite: !item.favorite }, { merge: true });
         break;
       }
       case 'recipe': {
