@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { BrewhouseProfile, BrewingEquipment, EquipmentItem } from '../types';
-import { equipmentErrors, fermenterLimit, practicalEquipment, r1 } from '../domain/brewEquipment';
+import { equipmentErrors, fermenterLimit, practicalEquipment, profileVolumeErrors, r1 } from '../domain/brewEquipment';
 import { personalBrewingPreferences, brewingPreferenceErrors } from '../domain/brewPreferences';
 import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
@@ -39,7 +39,8 @@ export function BrewhouseSettings({
       <span>{label}</span>
       <NumberInput
         aria-label={label}
-        value={e?.[key] as number}
+        /* MV-36 : 13/30 s'affichait « 0,43333333333333335 ». Affichage au millième ; la valeur gardée ne change qu'à la saisie. */
+        value={Number.isFinite(e?.[key] as number) ? Math.round((e?.[key] as number) * 1000) / 1000 : (e?.[key] as number)}
         onValue={(v) => change({ [key]: v })}
         emptyValue={undefined}
         min={min}
@@ -151,7 +152,7 @@ export function BrewhouseSettings({
               </p>
               <div className="equipment-grid">
                 <label className="equipment-field"><span>Rendement en fermenteur (%)</span><NumberInput aria-label="Rendement en fermenteur (%)" value={profile.efficiencyPct} min={1} max={100} onValue={value=>onChange({...profile,efficiencyPct:value})} className={inputClass}/><small>Extrait mesuré dans le fermenteur, rapporté au potentiel des grains : pas l’extraction mesurée en cuve, plus haute.</small></label>
-                {field('boilOffLPerHour', 'Évaporation à chaud (L/h)', 0, 100)}
+                {field('boilOffLPerHour', 'Évaporation à chaud (L/h)', 0, 30)}
                 <label className="equipment-field">
                   <span>Pertes en fond de cuve (L froids)</span>
                   <NumberInput
@@ -169,9 +170,9 @@ export function BrewhouseSettings({
                 {field('heatingRateCPerMin', 'Vitesse de chauffe observée (°C/min)', 0.01, 10)}
               </div>
             </details>
-            {[...equipmentErrors(e), ...brewingPreferenceErrors(profile)].length > 0 && (
+            {[...equipmentErrors(e), ...brewingPreferenceErrors(profile), ...profileVolumeErrors(profile)].length > 0 && (
               <p role="alert" className="equipment-warning">
-                {[...equipmentErrors(e), ...brewingPreferenceErrors(profile)].join(' ')}
+                {[...equipmentErrors(e), ...brewingPreferenceErrors(profile), ...profileVolumeErrors(profile)].join(' ')}
               </p>
             )}
           </>

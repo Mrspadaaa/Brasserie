@@ -21,7 +21,7 @@ import { DriveService } from '../services/driveService';
 import { ModalShell } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
 import { BrewhouseSettings } from '../ui/BrewhouseSettings';
-import { equipmentErrors } from '../domain/brewEquipment';
+import { equipmentErrors, profileVolumeErrors } from '../domain/brewEquipment';
 import { BackupPanel } from '../ui/BackupPanel';
 import { DriveStoragePanel } from '../ui/DriveStoragePanel';
 import { useStorageValue, useSyncedDraft } from '../hooks/useLiveData';
@@ -66,7 +66,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const ibanErreur = ibanCompact(ibanSaisi) && !ibanValide(ibanSaisi) ? MESSAGE_IBAN : '';
 
   const handleSave = async () => {
-    if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length)) return;
+    if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length || profileVolumeErrors(b).length)) return;
     if (ibanErreur) { setActiveTab('fiscal'); setDataError(true); setDataMessage(ibanErreur); return; }
     setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
     try {
