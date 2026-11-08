@@ -1189,7 +1189,15 @@ export const StorageService = {
   },
 
   saveTarifs(tarifs: PricingItem[]) {
-    syncCollection('tarifs', tarifs, (t, i) => slugify(t.product) || `TARIF-${i}`);
+    /*
+     * ⚠️ Un tarif n'a pas d'identifiant propre : son document est adressé par le nom du produit (slugify).
+     * Une ligne relue peut pourtant porter l'`id` technique de son ancien document (mode local, anciennes
+     * fiches). Réécrite sous un autre nom, elle emportait cet `id` ; le retrait de l'ancien document
+     * (`remove` filtre aussi sur `id`) retirait alors la ligne neuve : BE-97, un tarif renommé disparaissait,
+     * et un enregistrement sans changement en retirait d'autres. L'`id` est donc écarté avant l'écriture.
+     */
+    const sansId = tarifs.map((t) => { const { id: _ancien, ...ligne } = t as PricingItem & { id?: unknown }; return ligne as PricingItem; });
+    syncCollection('tarifs', sansId, (t, i) => slugify(t.product) || `TARIF-${i}`);
   },
 
   // 9. CONFIGURATION

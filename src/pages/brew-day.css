@@ -294,7 +294,8 @@
   min-height: 32px;
   padding: 8px 8px;
   background: rgb(var(--c-ffb49b));
-  color: rgb(var(--ct-21150e));
+  /* BR-47 : texte posé sur l'aplat d'action (DESIGN.md) : blanc sur #C8382F au clair (5,2:1), #12100E sur #FFB49B en cave (11:1). */
+  color: rgb(var(--sur-paille));
   border-radius: 7px;
   font-weight: 600;
   font-size: 15px;

@@ -1,11 +1,12 @@
 import { Input, Textarea } from '../Input';
-import React, { useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { Sheet } from '../Sheet';
 import { NumberInput } from '../NumberInput';
 import type { FinanceCategory, Transaction, StockItem } from '../../types';
 import type { FinancialProfile, FinancialPlan, FinancialAsset, FinancialClosing, FinancialInventoryLine, FinancialPayment } from '../../domain/finance/types';
 import { formatCHF, todayISO, isoDate, transactionAmount, transactionDirection, paymentState } from '../../domain/finance/ledger';
+import { parseFiscalYear } from '../../domain/finance/annual';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 
@@ -13,6 +14,28 @@ export const CATEGORY_LABELS: Record<FinanceCategory,string> = { brassage:'Brass
 export const idFor = (prefix:string) => `${prefix}-${crypto.randomUUID()}`;
 export function MoneyInput({label,value,onChange,required=false,signed=false}:{label:string;value:number|undefined;onChange:(v:number|undefined)=>void;required?:boolean;signed?:boolean}) {
   return <label className="finance-field">{label}<NumberInput aria-label={label} value={value == null ? undefined : value/100} onValue={v=>onChange(v == null ? undefined : Math.round(v*100))} emptyValue={undefined} required={required} min={signed?undefined:0} /></label>;
+}
+/** Exercice fiscal : une année entière de quatre chiffres. Une saisie invalide est refusée sur place avec un message ; l'écran ne la reçoit jamais (BE-60). */
+export function ExerciceField({year,onYear}:{year:number;onYear:(year:number)=>void}) {
+  const [draft,setDraft]=useState(String(year)),[error,setError]=useState('');
+  const messageId=useId();
+  useEffect(()=>{setDraft(String(year));},[year]);
+  const push=(text:string)=>{
+    setDraft(text);
+    const t=text.trim();
+    // Frappe en cours (« 2 », « 20 », « 202 ») : on attend les quatre chiffres sans rien dire.
+    if(/^\d{0,3}$/.test(t)){setError('');return;}
+    const parsed=parseFiscalYear(text);
+    if('error' in parsed){setError(parsed.error);return;}
+    setError('');
+    if(parsed.year!==year)onYear(parsed.year);
+  };
+  const leave=()=>{
+    const parsed=parseFiscalYear(draft);
+    if('error' in parsed){setError(parsed.error);setDraft(String(year));return;}
+    setError('');setDraft(String(parsed.year));
+  };
+  return <div className="finance-year-field"><Field label="Exercice"><Input value={draft} inputMode="numeric" maxLength={6} className="finance-year-input" aria-invalid={error?true:undefined} aria-describedby={error?messageId:undefined} onFocus={e=>e.currentTarget.select()} onChange={e=>push(e.target.value)} onBlur={leave}/></Field>{error&&<p id={messageId} className="finance-error" role="alert">{error}</p>}</div>;
 }
 export function Field({label,children}:{label:string;children:React.ReactNode}) { return <label className="finance-field">{label}{children}</label>; }
 function FormSheet({title,onClose,onSave,children,saveLabel='Enregistrer'}:{title:string;onClose:()=>void;onSave:()=>void|Promise<void>;children:React.ReactNode;saveLabel?:string}) {
