@@ -23,6 +23,17 @@
   background: rgb(var(--c-29221d));
   flex-shrink: 0;
 }
+/* BR-57, BE-38 (08.11) : l'étiquette neutre (« À faire », « Rattraper ») posait #666 sur #ddd en clair : 4,22:1 à 12 px. Le texte courant (#333) fait plus de 9:1. */
+:root:not([data-theme='cave']) .brew-tag.is-neutral {
+  color: rgb(var(--cave-texte-200));
+}
+/* BR-59, BE-40 (08.11) : les liens de sources faisaient 17 px de haut. Cible tactile d'au moins 24 px (WCAG 2.2, 2.5.8) sans changer la mise en ligne du texte. */
+.brew-page a:not(.brew-primary) {
+  display: inline-block;
+  box-sizing: border-box;
+  min-height: 24px;
+  padding-block: 4px;
+}
 .brew-tag.is-info {
   color: rgb(var(--ct-a7cee4));
   background: rgb(var(--c-a7cee4) / 0.08);

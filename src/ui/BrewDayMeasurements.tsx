@@ -377,7 +377,7 @@ export function BrewDayMeasurements({
               setEditing(null);
               setNotice('');
             }}
-            className={`flex-1 min-h-10 px-1 rounded-control text-sm border ${kind === k ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-700 text-cave-200 hover:bg-cave-850'}`}
+            className={`flex-1 min-h-10 px-1 rounded-control text-sm border ${kind === k ? 'border-2 border-ebc-straw bg-ebc-straw/20 font-semibold text-cave-50 underline decoration-2 underline-offset-4' : 'border-cave-700 text-cave-200 hover:bg-cave-850'}`}
           >
             {k === 'temperature' ? 'Temp.' : READING[k].label}
             {(() => {

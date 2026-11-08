@@ -59,7 +59,8 @@ export const BATCH_STATUS: Record<BatchStatus, StatusStyle> = {
   termine: {
     label: 'Terminé',
     hint: 'Entièrement vendu ou consommé',
-    chip: 'bg-cave-800 text-cave-400 border-cave-700',
+    // BR-120, BE-46 (08.11) : text-cave-400 (#666) sur cave-800 (#ddd) en clair ne faisait que 4,22:1 à 12 px ; cave-200 (#333) tient largement.
+    chip: 'bg-cave-800 text-cave-200 border-cave-700',
     active: false,
     order: 4
   },
