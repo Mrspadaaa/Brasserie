@@ -26,12 +26,12 @@ const tourner = async () => { await f4.runEnrichissement('banc'); await f4.enric
 const compteur = async () => banc.store.compteur.get(jourDeZurich(banc.horloge.ms));
 
 describe('PLAFOND_TENTATIVES : tentatives parties par jour, quelle qu’en soit l’issue', () => {
-  it('la valeur est 200, comme les recherches (D300)', () => {
-    expect(PLAFOND_TENTATIVES).toBe(200);
-    expect(PLAFOND_JOUR).toBe(200);
+  it('la valeur est 20, comme les recherches (D378)', () => {
+    expect(PLAFOND_TENTATIVES).toBe(20);
+    expect(PLAFOND_JOUR).toBe(20);
   });
 
-  it('à 199, la suivante part et porte le compteur à 200 ; la suivante du jour attend le lendemain, puis part', async () => {
+  it('à 19, la suivante part et porte le compteur à 20 ; la suivante du jour attend le lendemain, puis part', async () => {
     await banc.store.compteur.put({ jour: jourDeZurich(banc.horloge.ms), recherches: 0, tentatives: PLAFOND_TENTATIVES - 1 });
     const d = saisie([malt('l1', 'Malterie du Banc Ambre 60'), malt('l2', 'Weyermann Autre Essai du Banc')]);
     await confirmer(d);

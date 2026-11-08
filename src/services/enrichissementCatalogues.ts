@@ -9,6 +9,7 @@ import type { CatalogueHop } from '../domain/hopIndex/v4/data';
 import type { ReferenceLevure } from '../domain/stock/ficheLevure';
 import type { ChampFiche } from '../domain/stock/ficheValeurs';
 import type { Famille } from '../domain/stock/ficheCle';
+import { floculationFrancaise } from '../domain/yeastFlocculation';
 
 /** D2 (REVUE-code) : le catalogue des levures n'est chargé (`import()`) que quand un travail de levure le demande. */
 export const referencesLevures = async (): Promise<ReferenceLevure[]> => (await import('./enrichissementLevures')).referencesLevures();
@@ -45,6 +46,8 @@ export function valeursDeReponse(famille: Famille, brute: IngredientFacts | unde
     const facts = sanitizeFacts(adaptYeastLookupResult(brute));
     delete facts.hopIndexId;
     const valeurs = champsLevure(factsForStock('levure', facts));
+    // D378 : « Very High » s'écrit « Très élevée », comme les autres fiches ; un libellé hors catégorie reste tel que publié.
+    if (typeof valeurs.yeastFlocculation === 'string') valeurs.yeastFlocculation = floculationFrancaise(valeurs.yeastFlocculation);
     if (!Object.keys(valeurs).length) return undefined;
     valeurs.technicalSource = `Trouvée en ligne — ${source}`;
     return { valeurs, source, ...(url ? { url } : {}), deduit: {}, ...(brute.name ? { nom: brute.name } : {}) };

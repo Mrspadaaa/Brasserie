@@ -177,9 +177,9 @@ describe('R6 : échecs comptés et non comptés', () => {
 
 describe(`Plafond : ${PLAFOND_JOUR} recherches arrivées par jour`, () => {
   it('la suivante du jour attend le lendemain', async () => {
-    expect(PLAFOND_JOUR).toBe(200);
+    expect(PLAFOND_JOUR).toBe(20);
     const lignes = Array.from({ length: PLAFOND_JOUR + 1 }, (_, i) => ligne(`l${i}`, `Weyermann Essai${i} du Banc`, 'kg', 1, { stockCategory: 'Malt' }));
-    // Une dépense porte 35 lignes au plus (`validatePurchaseCommit`) : les 201 lignes partent en plusieurs dépenses du même jour.
+    // Une dépense porte 35 lignes au plus (`validatePurchaseCommit`) : les 21 lignes partent en plusieurs dépenses du même jour.
     const TAILLE = 35;
     let d = saisie([]);
     for (let i = 0; i < lignes.length; i += TAILLE) { d = saisie(lignes.slice(i, i + TAILLE)); await confirmer(d); }

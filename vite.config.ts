@@ -52,6 +52,9 @@ export default defineConfig(({ command }) => ({
   ...(command === 'build' ? { define: {
     'import.meta.env.VITE_COMPOSES_A_PART': JSON.stringify('on'),
     'import.meta.env.VITE_HOP_V4': JSON.stringify(process.env.VITE_HOP_V4 || 'on'),
+    // D378 (08.11, « Baisse à 20 et go ») : l'enrichissement des fiches par l'IA est allumé en production, 20 recherches par jour au plus
+    // (enrichissementReglages.ts). VITE_ENRICHISSEMENT_IA=eteinte au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
+    'import.meta.env.VITE_ENRICHISSEMENT_IA': JSON.stringify(process.env.VITE_ENRICHISSEMENT_IA || 'production'),
   } } : {}),
   server: {
     // 3000 par défaut ; `PORT` permet de lancer un second serveur en parallèle

@@ -24,10 +24,13 @@ export const iaPermise = (): boolean => etatIA() !== 'eteinte';
 /** Vitest pose `MODE === 'test'` : l'exécutant réel y est interdit (P4). */
 export const enTest = (): boolean => (import.meta as { env?: Record<string, unknown> }).env?.MODE === 'test';
 
-/** Recherches arrivées au serveur, par jour de Zurich et par appareil (D300 : « on peut augmenter le cap à 200 »). */
-export const PLAFOND_JOUR = 200;
-/** Garde-fou de coût : tentatives parties par jour, quelle qu'en soit l'issue ; 200 appels au plus, échecs compris (D300). */
-export const PLAFOND_TENTATIVES = 200;
+/**
+ * Recherches arrivées au serveur, par jour de Zurich et par appareil. D378 (08.11, « Baisse à 20 et go ») : le banc payant mesure 0,35 CHF par
+ * appel (recherche ancrée), soit 7 CHF par jour au pire ; l'ancien 200 de D300 faisait 70 CHF.
+ */
+export const PLAFOND_JOUR = 20;
+/** Garde-fou de coût : tentatives parties par jour, quelle qu'en soit l'issue ; 20 appels au plus, échecs compris (D378). */
+export const PLAFOND_TENTATIVES = 20;
 /** 30 min au moins entre deux essais d'un même travail, dans une même vie de page. */
 export const ECART_ESSAIS_MS = 30 * 60_000;
 /** Trois jours distincts d'échec compté → `echec`. */
