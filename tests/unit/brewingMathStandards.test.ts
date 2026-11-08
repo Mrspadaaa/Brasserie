@@ -130,9 +130,9 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
   });
 
   describe('3. Titre Alcoométrique Volumique (ABV)', () => {
-    it('applique la formule des douanes suisses (OG - FG) * 131.25', () => {
+    it('applique la méthode ASBC (Balling), au dixième ; l’ancienne formule (OG - FG) * 131.25 donnait 8,4 à 1,080 (CF-6)', () => {
       expect(BrewingMath.calculateABV(1.050, 1.010)).toBe(5.3);
-      expect(BrewingMath.calculateABV(1.080, 1.016)).toBe(8.4);
+      expect(BrewingMath.calculateABV(1.080, 1.016)).toBe(8.6);
     });
 
     it('refuse toute inversion physique de densité (FG >= OG)', () => {

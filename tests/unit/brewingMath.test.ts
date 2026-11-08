@@ -28,8 +28,8 @@ const grain = (weightKg: number, ppg = 37): Fermentable => ({
 });
 
 describe('ABV', () => {
-  it('applique le facteur 131.25 des douanes suisses', () => {
-    expect(BrewingMath.calculateABV(1.061, 1.012)).toBeCloseTo(6.4, 1);
+  it('applique la méthode ASBC (Balling), à 0,2 de l’ancien facteur 131,25 sous 1,070 (CF-6)', () => {
+    expect(BrewingMath.calculateABV(1.061, 1.012)).toBeCloseTo(6.5, 1);
   });
 
   it('rend zéro quand la finale dépasse l’initiale — une fermentation ne remonte pas', () => {

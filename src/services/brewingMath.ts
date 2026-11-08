@@ -8,6 +8,7 @@ import { snapshotBrewhouse } from '../domain/brewPreferences';
 import { replanRecipeWater } from '../domain/recipeWater';
 import { grainHorsEmpatage } from '../domain/fermentables/moments';
 import { BORNES } from '../domain/bornesMetier';
+import { alcoholByVolume } from '../domain/alcohol';
 
 /**
  * L'OG la plus haute qu'une bière atteint : 1,130. Les styles les plus forts du BJCP 2021 (English Barleywine, Wheatwine, Eisbock)
@@ -62,8 +63,8 @@ export const BrewingMath = {
   // 1. ABV Calculator
   calculateABV(og: number, fg: number): number {
     if (!og || !fg || !Number.isFinite(og) || !Number.isFinite(fg) || og <= fg || og <= 1.0 || fg <= 0) return 0;
-    // Standard formula used in craft brewing & Swiss customs: (OG - FG) * 131.25
-    return Math.round((og - fg) * 131.25 * 10) / 10;
+    // Méthode ASBC (Balling), au dixième : l'ancienne formule (OG - FG) * 131.25 sous-estimait les bières fortes (CF-6, 08.11).
+    return Math.round(alcoholByVolume(og, fg) * 10) / 10;
   },
 
   // 2. Plato Conversion (Swiss OFDF official standard)

@@ -4,6 +4,7 @@ import type { YeastFactKey } from '../../functions/src/yeastCatalogueSchema';
 import { alcoholPercentUnit, readYeastFactValue, readYeastTechnicalFacts, type YeastFactQualifier, type YeastFactReading, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import type { Fermentable, YeastSpec } from '../types';
 import { grainHorsEmpatage } from './fermentables/moments';
+import { alcoholByVolume } from './alcohol';
 import type { TrialRecipe } from './hopIndex/trials';
 import { yeastAcidifyingProductSource, yeastCultureComposition, yeastStyleEvidence } from './yeastStyleEvidence';
 import { resolveBrewingStyle } from './brewingStyles';
@@ -432,7 +433,7 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   const sourUnspecified = process === 'unspecified' && (/sour|berliner|gose|lambic|gueuze|geuze|oud bruin|flanders|mixed fermentation|wild ale/i.test(yeastRecipeStyleText(recipe)) || cultureNeedsProcess);
   const abv: YeastProjectionEstimate = !knownProcess || !knownRoles ? unavailable('Procédé ou rôle de culture non reconnu : le préciser avant de projeter l’alcool.') : sourUnspecified ? unavailable('Procédé acidulé non précisé : distinguer une fermentation alcoolique sur moût pré-acidifié d’une culture produisant des acides avant de projeter l’alcool.') : mixed || cultureNeedsProcess
     ? unavailable('Culture acidifiante ou mixte : une baisse de densité peut aussi produire des acides. La répartition alcool/acides n’est pas documentée ; aucune teneur en alcool n’est déduite de la DF seule.')
-    : { range: { min: (og - range.max) * 131.25, max: (og - range.min) * 131.25 }, reasons: ['Approximation (DI équivalente − DF) × 131,25 ; ni analyse d’alcool ni prévision de refermentation au conditionnement.', ...reasons], sources, confidence: 'low' };
+    : { range: { min: alcoholByVolume(og, range.max), max: alcoholByVolume(og, range.min) }, reasons: ['Approximation ASBC (Balling) depuis la DI équivalente et la DF ; ni analyse d’alcool ni prévision de refermentation au conditionnement.', ...reasons], sources, confidence: 'low' };
   if (mixed) warnings.push('Procédé acidifiant ou mixte : DF conditionnelle à l’atténuation choisie ; pH, durée et stabilité finale non simulés.');
   if (!knownProcess) warnings.push('Procédé non reconnu : vérifier les données de fermentation.');
   if (!knownRoles) warnings.push('Rôle de culture non reconnu : vérifier les données de fermentation.');
