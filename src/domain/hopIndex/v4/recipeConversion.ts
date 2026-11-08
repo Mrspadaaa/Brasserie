@@ -21,6 +21,7 @@
 //   inconnu, comme hotBitterness ; une DI d'ébullition inconnue rend l'IBU à chaud de toute la recette inconnu.
 import type { HopIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
 import { recipeBeerColor } from '../../beerColor';
+import { BORNES, frBorne, ogHorsBornes } from '../../bornesMetier';
 import type { RecipeWizardDraft } from '../../../services/recipeDraft';
 import protoData from '../../../data/hopV4/proto-data.json';
 import { varieteProche } from './nomProche';
@@ -35,6 +36,8 @@ export interface AjoutParcours extends Addition {
   /** α du lot de la recette (HopIngredient.alpha), en % m/m : null = inconnu ; absent = l'α du stock ou de la plage
    * variétale. Posé par la conversion ; effacé quand le houblon change. */
   alphaLot?: number | null;
+  /** α confirmé par le brasseur (HopIngredient.alphaConfirme) : au-delà de 30 %, l'IBU n'attend plus que si cette valeur diffère de l'α du lot. */
+  alphaConfirme?: number;
   /** Whirlpool : température de contact (°C) de la recette de l'app ; absente = le préréglage du moteur (80 °C). */
   tempC?: number;
   /** Raison pour laquelle le moment de la recette de l'app est incomplet : l'IBU de l'ajout est alors inconnu. */
@@ -139,7 +142,9 @@ function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutPa
   const suppositions: string[] = [];
   if (!relie) suppositions.push(`« ${h.name} » n'est relié à aucune variété du moteur (ni hopVarietyId, ni nom exact, aucun nom proche) : arôme non simulé`);
   if (relie === 'nom proche') suppositions.push(`« ${h.name} » lu comme « ${proche} » (nom très proche, une seule variété) : à confirmer`);
-  const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, ...(alphaDuLot(h.alpha) !== undefined ? { alphaLot: alphaDuLot(h.alpha) } : {}) };
+  const confirme = (h as HopIngredient & { alphaConfirme?: number }).alphaConfirme;
+  const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, ...(alphaDuLot(h.alpha) !== undefined ? { alphaLot: alphaDuLot(h.alpha) } : {}),
+    ...(fini(confirme) ? { alphaConfirme: confirme } : {}) };
   let ajout: AjoutParcours;
   switch (h.stage) {
     case 'firstWort': ajout = { ...base, moment: 'fwh' }; break;
@@ -170,13 +175,18 @@ function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutPa
 }
 
 /** Ce que le bandeau lit de l'IBU d'une recette : l'OG (NaN = inconnue) et l'IBU total en plage, avec les ajouts incalculables. */
-export interface MesuresIbu { og: number; ibu: { valeur: number; min: number; max: number; inconnus: string[] } }
+export interface MesuresIbu { og: number; ibu: { valeur: number; min: number; max: number; inconnus: string[]; /** les raisons (distinctes) des ajouts inconnus */ raisons?: string[] } }
 /** Pourquoi le total d'IBU ne se chiffre pas ; null s'il se chiffre. Densité inconnue (recette sans malts) : aucun IBU à
- * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »). */
+ * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »).
+ * Une OG au-delà des bornes (9 000 kg de grain : DI de 105) n'est pas une densité : « — », jamais « IBU 0 » (RJ-4, 08.11). */
 export function raisonIbuIncalculable(m: MesuresIbu): string | null {
   if (!Number.isFinite(m.og)) return 'densité initiale inconnue : IBU incalculable';
+  if (ogHorsBornes(m.og)) return `densité initiale ${frBorne(m.og, 3)} au-delà de ${frBorne(BORNES.og.max, 3)} : IBU incalculable`;
   const n = m.ibu.inconnus.length;
-  if (n) return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}`;
+  if (n) {
+    const pourquoi = m.ibu.raisons?.length ? ` : ${m.ibu.raisons.join(' · ')}` : '';
+    return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}${pourquoi}`;
+  }
   return Number.isFinite(m.ibu.valeur) ? null : 'IBU incalculable';
 }
 /** L'IBU du bandeau : « ~7 » quand l'α du lot est absent (plage de la variété, bornes dans `titre`), « 7 » sinon ; `texte` null et

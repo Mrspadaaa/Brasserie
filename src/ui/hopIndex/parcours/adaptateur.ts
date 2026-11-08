@@ -9,6 +9,7 @@ import {
   type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
 } from '../../../domain/hopIndex/v4';
 import { ibuPerGram, ibuPerGramAt } from '../../../domain/hopIndex/v4/recipe';
+import { raisonBornesAjout } from '../../../domain/hopIndex/v4/bornesV4';
 import type { AjoutPouvoir, RecettePouvoir } from '../../../domain/hopIndex/v4/pouvoir';
 import { CONDITIONS } from './conditions';
 import { alphaDeAjout, alphaDeCle, catalogueDuMoteur, donnees, moteur, proposable, siDonneesChangent, stockLibre } from './donnees';
@@ -47,7 +48,7 @@ export interface FamilleLue {
 }
 export type ProfilLu = Record<FamilyId, FamilleLue>;
 export interface BiereLue {
-  ibu: Plage & { inconnus: string[] };
+  ibu: Plage & { inconnus: string[]; /** les raisons (distinctes) des ajouts dont l'IBU manque */ raisons?: string[] };
   ibuParAjout: Record<string, IbuLu>;
   bandeIbu: [number, number] | null;
   og: number; ebc: number | null;
@@ -93,6 +94,9 @@ export function ibuAjout(a: AjoutParcours, recette: RecetteParcours): IbuLu {
   const q = quandDe(a, recette);
   if (q.type === 'dryhop') return { ibu: null, raison: 'à froid : IBU non modélisé' };
   if (recette.ibuInconnu) return { ibu: null, raison: recette.ibuInconnu };
+  // Les bornes métier de la recette (domain/bornesMetier.ts, les mêmes que Fermentescibles) : 99 999 g dans 24 L ne font pas « 49 067 IBU ».
+  const horsBornes = raisonBornesAjout({ grams: a.grams, alphaLot: a.alphaLot, alphaConfirme: a.alphaConfirme }, recette);
+  if (horsBornes) return { ibu: null, raison: horsBornes };
   if (a.momentInconnu) return { ibu: null, raison: a.momentInconnu };
   const al = alphaDeAjout(a);
   if (!al) return { ibu: null, raison: a.alphaLot === null ? 'α du lot inconnu : IBU incalculable' : 'α inconnu : IBU incalculable' };
@@ -195,9 +199,14 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
   const valeurs = Object.values(ibuParAjout);
   const somme = (k: keyof Plage) => valeurs.reduce((s, x) => s + (x.ibu ? x.ibu[k] : 0), 0);
   // Inconnus : les ajouts à chaud dont l'IBU manque (α, moment ou densité inconnus) ; jamais comptés pour 0 en silence.
-  const inconnu = (r: string | null) => !!r && (r.startsWith('α') || r === recette.ibuInconnu || recette.additions.some((a) => a.momentInconnu === r));
+  const inconnu = (a: AjoutParcours) => {
+    const r = ibuParAjout[a.id].raison;
+    return !!r && (r.startsWith('α') || r === recette.ibuInconnu || recette.additions.some((x) => x.momentInconnu === r) || r === raisonBornesAjout({ grams: a.grams, alphaLot: a.alphaLot, alphaConfirme: a.alphaConfirme }, recette));
+  };
+  const inconnus = recette.additions.filter(inconnu);
   return {
-    ibu: { valeur: somme('valeur'), min: somme('min'), max: somme('max'), inconnus: recette.additions.filter((a) => inconnu(ibuParAjout[a.id].raison)).map((a) => a.id) },
+    ibu: { valeur: somme('valeur'), min: somme('min'), max: somme('max'), inconnus: inconnus.map((a) => a.id),
+      raisons: [...new Set(inconnus.map((a) => ibuParAjout[a.id].raison).filter((r): r is string => !!r))] },
     ibuParAjout, bandeIbu: sc.ibu, og: recette.og, ebc: recette.ebc ?? null,
     // D40 bis : une source décrit la famille : la fiche d'un houblon de la recette, ou la levure (ce qu'elle apporte seule,
     // sans houblon ni dégustation, sur la recette).

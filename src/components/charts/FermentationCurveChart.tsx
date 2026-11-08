@@ -11,6 +11,7 @@ import {
 import type { Batch } from '../../types';
 import { formatDecimal } from '../../ui/numericInput';
 import { fermentationReadings } from '../../domain/fermentationReadings';
+import { densityAxisDomain } from '../../domain/gravityBounds';
 
 export function FermentationCurveChart({ batch }: { batch: Batch }) {
   const { points, target, latest, attenuation } = fermentationReadings(batch);
@@ -39,7 +40,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
               <LineChart data={points} margin={{ left: -15, right: 8, top: 10 }}>
                 <XAxis dataKey="name" tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }} />
                 <YAxis
-                  domain={['auto', 'auto']}
+                  domain={densityAxisDomain([...points.map((p) => p.sg), target])}
                   tickFormatter={(value: number) => formatDecimal(value, 3)}
                   tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
                 />

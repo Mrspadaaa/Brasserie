@@ -132,6 +132,7 @@ import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, h
   retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
   type WaterProfileMode } from '../domain/wizardSourceValues';
 import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
+import { AvisRetrait, useRetraitAnnulable } from '../ui/useRetraitAnnulable';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
 // Vitest exercises the wizard with immediate, cross-step assertions. Keep
@@ -173,6 +174,7 @@ const chargerEtapeHoublonsV4 = () => import('../ui/hopIndex/maBiere/EtapeHoublon
 const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
 import type { MesuresEtape } from '../ui/hopIndex/maBiere/EtapeHoublons';
 import { libelleIbu } from '../domain/hopIndex/v4/recipeConversion';
+import { kettleHopGrammesBornes, ogAffichable } from '../domain/hopIndex/v4/bornesV4';
 const MesuresWizardV4 = lazy(() => import('../ui/hopIndex/maBiere/MesuresWizard'));
 const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
@@ -925,6 +927,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const setMashSteps = useMemo(() => brewerSetter(setMashStepsRaw), [brewerSetter]);
   const setSpargeType = useMemo(() => brewerSetter(setSpargeTypeRaw), [brewerSetter]);
   const setFerment = useMemo(() => brewerSetter(setFermentRaw), [brewerSetter]);
+  // BR-30 : un toucher = un retrait, avec « Annuler » (src/ui/useRetraitAnnulable.tsx).
+  const retraitPalier = useRetraitAnnulable(mashSteps, setMashSteps, (s) => s.name || 'Palier');
+  const retraitPhase = useRetraitAnnulable(ferment, setFerment, (s) => s.name || 'Phase');
   const setRecipeWaterSource = useMemo(() => brewerSetter(setRecipeWaterSourceRaw), [brewerSetter]);
   const setWater = useMemo(() => brewerSetter(setWaterRaw), [brewerSetter]);
   const setVolumesEdited = useMemo(() => brewerSetter(setVolumesEditedRaw), [brewerSetter]);
@@ -1012,7 +1017,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   );
 
   /** Ce que le houblon boira dans la cuve — le houblonnage à cru en est exclu. */
-  const kettleHopG = useMemo(() => kettleHopGrams(hops), [hops]);
+  const kettleHopG = useMemo(() => kettleHopGrammesBornes(hops, volumeL), [hops, volumeL]);
 
   useEffect(() => {
     if (volumesEdited || !Number.isFinite(totalGrist) || totalGrist <= 0 || !Number.isFinite(volumeL) || !Number.isFinite(boilMin) || (details.nolo?.enabled&&details.nolo.process==='secondRunnings')) return;
@@ -2533,8 +2538,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             onCreateStockItem={creerArticleEtape}
             onLearnIngredient={onLearnIngredient}
             nolo={!!details.nolo?.enabled}
-            og={og > 1 ? og : null}
-            teinteBiere={color ? { ebc: color.ebc, label: color.label } : null}
+            og={ogAffichable(og)}
+            teinteBiere={color && !ogHorsBornes(og) ? { ebc: color.ebc, label: color.label } : null}
             rendementPct={efficiency}
             rendementDeclare={details.efficiencyPct != null || brewhouse?.efficiencyPct != null}
             ogPlage={styleRepere?.stats.og}
@@ -2925,7 +2930,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             title="Empâtage"
             hint="Le palier de saccharification décide de la sécheresse de la bière."
           >
-            <div className="space-y-2 sm:space-y-3">
+            <div className={`space-y-2 sm:space-y-3${retraitPalier.verrou ? ' pointer-events-none' : ''}`}>
               <PresetChips
                 name="Programme d’empâtage"
                 presets={MASH_PROGRAMS}
@@ -2956,7 +2961,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                       />
                       <button
                         type="button"
-                        onClick={() => setMashSteps(mashSteps.filter((_, j) => j !== i))}
+                        onClick={() => retraitPalier.retirer(i)}
                         aria-label={`Retirer le palier ${s.name}`}
                         className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                       >
@@ -3067,6 +3072,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 </p>
               )}
             </div>
+            <AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />
           </Section>
 
           <Section
@@ -3075,7 +3081,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           >
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
             <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
-            <div className="space-y-2 sm:space-y-3">
+            <div className={`space-y-2 sm:space-y-3${retraitPhase.verrou ? ' pointer-events-none' : ''}`}>
               <PresetChips
                 name="Programme de fermentation"
                 presets={FERMENT_PROGRAMS}
@@ -3104,7 +3110,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                         </span>
                         <button
                           type="button"
-                          onClick={() => setFerment(ferment.filter((_, j) => j !== i))}
+                          onClick={() => retraitPhase.retirer(i)}
                           aria-label={`Retirer ${s.name}`}
                           className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                         >
@@ -3154,6 +3160,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 })}
               </ul>
             </div>
+            <AvisRetrait dernier={retraitPhase.dernier} onAnnuler={retraitPhase.annuler} />
           </Section>
         </>
       )}

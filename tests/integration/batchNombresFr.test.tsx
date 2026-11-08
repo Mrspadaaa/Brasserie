@@ -36,8 +36,10 @@ describe('Brassins › carte : la densité cible a trois décimales (RJ-5)', () 
 describe('Fiche brassin › Mesures : nombres à la française (RJ-5, RJ-6, RJ-7)', () => {
   it('RJ-6 · l’alcool se lit avec la virgule', () => {
     open(base({ og: '1.060', fg: '1.010' }));
-    expect(screen.getByText(/Alcool calculé/)).toHaveTextContent('6,6 % vol');
-    expect(screen.getByText(/Alcool calculé/)).not.toHaveTextContent('6.6');
+    // RJ-6 vérifie la virgule. La valeur suit la formule ASBC adoptée par le contre-calcul (0c3f4d41) : 6,6 avec l'ancienne
+    // formule simple, 6,7 avec l'ASBC pour 1,060 → 1,010.
+    expect(screen.getByText(/Alcool calculé/)).toHaveTextContent(/6,[67] % vol/);
+    expect(screen.getByText(/Alcool calculé/)).not.toHaveTextContent(/6\.\d/);
   });
 
   it('RJ-7 · l’aide donne l’erreur réelle : 1048 pour 1,048', () => {

@@ -75,13 +75,28 @@ export function plausibleAbv(abv: number | null | undefined): abv is number {
 }
 
 /**
- * Alcool tiré d'une OG et d'une FG, ou `null` : une des deux manque, sort des bornes, ou la FG dépasse l'OG.
- * Un alcool absurde n'est jamais calculé, donc jamais écrit.
+ * Alcool tiré d'une OG et d'une FG, ou `null` : une des deux manque, est impossible, ou la FG dépasse l'OG.
+ * Une densité GARDABLE (de 0,990 à 1,200, FG sous l'OG) est une mesure : celle que le brasseur a confirmée au-delà des bornes (OG 1,140) nourrit
+ * l'alcool, tant que le résultat reste plausible (0 à 18 % vol, `plausibleAbv`). Un alcool absurde n'est jamais calculé, donc jamais écrit.
  */
 export function abvFromGravities(og: number | null, fg: number | null): number | null {
   if (og === null || fg === null) return null;
-  if (gravityProblem('og', og) || gravityProblem('fg', fg, og)) return null;
+  if (!gravityKeepable('og', og, null, fg) || !gravityKeepable('fg', fg, og, null)) return null;
   // Même formule que BrewingMath.calculateABV : `alcohol.ts`, sans import (brewingMath importe la taxe, qui importe ce module).
   const abv = Math.round(alcoholByVolume(og, fg) * 10) / 10;
   return plausibleAbv(abv) ? abv : null;
+}
+
+/**
+ * L'axe vertical de la courbe de densité d'un brassin : de quoi lire les mesures (et la FG cible), pas une échelle automatique. Une seule
+ * mesure donnait −1,000 à 3,000 (axe « auto » d'un point isolé) : une marge de 0,010 autour de l'étendue, au moins ±0,010 autour d'un point.
+ * Les valeurs illisibles sont ignorées ; sans aucune valeur, l'axe d'une bière courante.
+ */
+export function densityAxisDomain(values: ReadonlyArray<number | null | undefined>): [number, number] {
+  const sg = values.filter((v): v is number => typeof v === 'number' && Number.isFinite(v) && v > 0);
+  if (!sg.length) return [1.0, 1.06];
+  const min = Math.min(...sg), max = Math.max(...sg);
+  const marge = Math.max(0.01, (max - min) * 0.1);
+  const arrondi = (x: number) => Math.round(x * 1000) / 1000;
+  return [arrondi(min - marge), arrondi(max + marge)];
 }

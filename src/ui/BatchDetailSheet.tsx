@@ -4,7 +4,7 @@ import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
 import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions, suggestedNextStatus, transitionConsequence } from '../domain/batchTransitions';
-import { abvFromGravities, gravityKeepable, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
+import { ABV_MAX, abvFromGravities, gravityKeepable, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
 import { StorageService } from '../services/storage';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { InventoryCorrectionSheet } from './InventoryCorrectionSheet';
@@ -91,6 +91,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const nolo = !!noloRecipeForBatch(draft);
   const abv = nolo ? null : abvFromGravities(og, fg);
   const abvUnavailable = !nolo && og !== null && fg !== null && abv === null;
+  // Deux densités gardables dans l'ordre, mais un alcool qui dépasse le plafond : la raison n'est pas « densités hors bornes » (valeurs confirmées).
+  const abvAuDela = abvUnavailable && gravityKeepable('og', og!, null, fg) && gravityKeepable('fg', fg!, og, null);
 
   const field =
     'w-full min-h-touch-lg px-2 rounded-control bg-cave-950 border border-cave-700 ' +
@@ -340,7 +342,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   </p>
                 )}
                 {abvUnavailable && !gravityAlert && (
-                  <p className="text-sm text-cave-400">Alcool non calculé : densités hors bornes, ou finale au-dessus de l’initiale.</p>
+                  <p className="text-sm text-cave-400">{abvAuDela
+                    ? `Alcool non calculé : au-delà de ${ABV_MAX} % vol., vérifie l’OG et la FG.`
+                    : 'Alcool non calculé : densités impossibles, ou finale au-dessus de l’initiale.'}</p>
                 )}
 
                 {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={actualBrewDate(draft) ?? ''} onChange={brewDate => save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' })} shortcuts={[]} />}
