@@ -8,6 +8,7 @@ import {
   actualWater,
   boilScenario,
   round,
+  roundFr,
   thermalEstimate,
   waterScenario,
   wortRescue
@@ -200,7 +201,7 @@ export function BrewAssist({
               ))}
             </div>
             <p className="brew-muted">
-              {round(actualWater(recipe, state, side).litres)} L au total · coupe prévue{' '}
+              {roundFr(actualWater(recipe, state, side).litres)} L au total · coupe prévue{' '}
               {actualWater(recipe, state, side).plannedPct} % osmosée. Modifie le volume total dans
               les ingrédients si nécessaire.
             </p>
@@ -214,14 +215,14 @@ export function BrewAssist({
               <>
                 <div className="brew-assist-result">
                   <strong>
-                    {round(w.roL)} L osmosée + {round(w.tapL)} L réseau
+                    {roundFr(w.roL)} L osmosée + {roundFr(w.tapL)} L réseau
                   </strong>
                   <p>{w.message}</p>
                 </div>
                 {w.ions && (
                   <p className="brew-muted">
-                    Avec les doses renseignées : Ca {round(w.ions.ca)} · SO₄ {round(w.ions.so4)} ·
-                    Cl {round(w.ions.cl)} · HCO₃ {round(w.ions.hco3)} mg/L.{' '}
+                    Avec les doses renseignées : Ca {roundFr(w.ions.ca)} · SO₄ {roundFr(w.ions.so4)} ·
+                    Cl {roundFr(w.ions.cl)} · HCO₃ {roundFr(w.ions.hco3)} mg/L.{' '}
                     {w.sourceInferred
                       ? 'Source reconstituée depuis l’analyse diluée de la recette.'
                       : 'Selon l’analyse de la source.'}
@@ -230,10 +231,10 @@ export function BrewAssist({
                 {w.replaceL > 0.01 && (
                   <p>
                     {!w.treated && !(side === 'mash' && w.grainIn)
-                      ? `Avant tout sel, acide ou grain : pour retrouver la coupe sans changer le volume, remplace ${round(w.replaceL)} L du mélange homogène par de l’eau ${w.replacement}.`
+                      ? `Avant tout sel, acide ou grain : pour retrouver la coupe sans changer le volume, remplace ${roundFr(w.replaceL)} L du mélange homogène par de l’eau ${w.replacement}.`
                       : 'Eau déjà versée ou traitée : ne retire pas le mélange pour appliquer cette correction. Mesure le pH et recalcule le traitement sur la coupe réelle.'}{' '}
                     {w.addL != null && w.addL > 0.01 && !w.treated && !w.grainIn
-                      ? `Un simple ajout demanderait ${round(w.addL)} L d’eau ${w.replacement} en plus : cela change aussi le volume et les dosages.`
+                      ? `Un simple ajout demanderait ${roundFr(w.addL)} L d’eau ${w.replacement} en plus : cela change aussi le volume et les dosages.`
                       : ''}
                   </p>
                 )}
@@ -308,7 +309,7 @@ export function BrewAssist({
                 />
                 {minutes != null && elapsed != null && elapsed <= minutes && (
                   <p className="brew-muted">
-                    +{elapsed} min écoulées = {round(minutes - elapsed)} min de contact avant la
+                    +{elapsed} min écoulées = {roundFr(minutes - elapsed)} min de contact avant la
                     fin. La notation de la recette exprime les minutes restantes.
                   </p>
                 )}
@@ -327,7 +328,7 @@ export function BrewAssist({
                   simulation.finalL > 0 &&
                   simulation.finalOg != null ? (
                     <p>
-                      Après évaporation : ≈ {round(simulation.finalL)} L · OG{' '}
+                      Après évaporation : ≈ {roundFr(simulation.finalL)} L · OG{' '}
                       {simulation.finalOg.toFixed(3)}, avant pertes de transfert. Calcul à partir du
                       volume et de la densité avant ébullition, ramenés à 20 °C.
                       {simulation.extract.names.length > 0 &&
@@ -345,7 +346,7 @@ export function BrewAssist({
                   {simulation.extraEvapL != null && (
                     <small>
                       Écart d’évaporation : {simulation.extraEvapL >= 0 ? '+' : ''}
-                      {round(simulation.extraEvapL)} L par rapport à la durée de la recette.
+                      {roundFr(simulation.extraEvapL)} L par rapport à la durée de la recette.
                     </small>
                   )}
                 </div>
@@ -429,19 +430,19 @@ export function BrewAssist({
             {rescue ? (
               <div className="brew-assist-result">
                 <strong>
-                  Volume final théorique : {round(rescue.targetL)} L pour OG{' '}
+                  Volume final théorique : {roundFr(rescue.targetL)} L pour OG{' '}
                   {recipe.ogTarget?.toFixed(3)}
                 </strong>
                 <p>
                   {rescue.actionDeltaL == null
                     ? ''
                     : rescue.actionDeltaL < -0.05
-                      ? `Évaporer environ ${round(-rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' en plus de l’ébullition prévue' : ''}.`
+                      ? `Évaporer environ ${roundFr(-rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' en plus de l’ébullition prévue' : ''}.`
                       : rescue.actionDeltaL > 0.05
-                        ? `Appoint théorique de ${round(rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' avant l’ébullition' : ''}.`
+                        ? `Appoint théorique de ${roundFr(rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' avant l’ébullition' : ''}.`
                         : 'Le volume suit la cible avec les hypothèses renseignées.'}{' '}
                   {rescue.evaporationL != null &&
-                    `Évaporation prévue prise en compte : ${round(rescue.evaporationL)} L. `}
+                    `Évaporation prévue prise en compte : ${roundFr(rescue.evaporationL)} L. `}
                   {rescue.message}
                 </p>
               </div>
@@ -462,8 +463,8 @@ export function BrewAssist({
           <section>
             <h3>Une pesée ou un malt à remplacer</h3>
             <p>
-              {grist > 0 ? `${round(grist, 2)} kg de grain · ` : ''}
-              {ratio != null ? `${round(ratio, 2)} L/kg avec l’eau renseignée. ` : ''}
+              {grist > 0 ? `${roundFr(grist, 2)} kg de grain · ` : ''}
+              {ratio != null ? `${roundFr(ratio, 2)} L/kg avec l’eau renseignée. ` : ''}
               Ajuste les doses dans les ingrédients pour recalculer le ratio. « Remplacer » compare
               les malts disponibles ; couleur proche ne signifie pas goût identique.
             </p>
