@@ -82,7 +82,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.getByRole('button',{name:'Facturer',hidden:true})).not.toBeVisible();
     fireEvent.click(screen.getByText('Auberge du Lac'));
     expect(screen.getByRole('button',{name:'Facturer'})).toBeVisible();
-    expect(screen.getByRole('link',{name:'Appeler'})).toHaveAttribute('href','tel:+41 79 123 45 67');
+    expect(screen.getByRole('link',{name:'Appeler'})).toHaveAttribute('href','tel:+41791234567');
     fireEvent.change(screen.getByRole('searchbox'),{target:{value:'Introuvable'}});
     expect(screen.getByText('Aucun client ne correspond à ta recherche.')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Effacer la recherche'}));
