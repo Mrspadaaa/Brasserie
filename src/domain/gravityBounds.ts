@@ -4,7 +4,7 @@
  * OG d'une bière : 1,020 à 1,130 (BJCP 2021 : Imperial Stout et Eisbock ≤ 1,120). Au-delà, c'est une
  * erreur de saisie probable (« 1048 » pour 1,048, « 5 » pour 1,050), jamais une bière.
  * FG : de 0,995 (bière très sèche) jusqu'à l'OG. Une FG au-dessus de l'OG est une atténuation négative.
- * L'alcool qui en découle reste sous 18 % vol. : de 1,130 à 0,995, la méthode ASBC donne 17,6 (17,7 avec l'ancienne formule simple).
+ * L'alcool qui en découle est plausible sous 18 % vol. (`ABV_MAX`) : seul le coin extrême 1,130 vers 0,995 le dépasse (18,6 par la méthode ASBC, 17,7 par l'ancienne formule simple) et n'est alors pas calculé.
  */
 
 import { BORNES } from './bornesMetier';
