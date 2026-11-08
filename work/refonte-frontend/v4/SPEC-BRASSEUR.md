@@ -1519,3 +1519,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   pour rejeux et captures, Sonnet pour le code ; les jetons vont à ce qui trouve ou corrige un vrai défaut.)
 - **08.11**, à la session de monitoring (relayé), mot pour mot : « Pourquoi tu attends mon accord ??? » (lu : seuls le déploiement, le push, Gemini
   facturé et le retrait des 26 écritures attendent son oui ; tout le reste, preuves Chrome des n° 13, 15 et 49 et préparation du déploiement, se fait sans attendre.)
+- **08.11**, à la session de monitoring (relayé, journal `work/missions/SUIVI.md`), mot pour mot : sur les 26 écritures en double, « Retir. » ;
+  « N'attends pas mon accord pour déployer, tu dois itérer dessus en fixant les bugs ??? » ; sur la relecture Gemini des 13 pièces, « oui Normal, ça
+  fait partie des test » ; « Les Screens levure seront à refaire, ne passe pas de temps dessus ». (Lu par la pilote : à confirmer dans son fil avant
+  le premier déploiement, une autorisation relayée par un fichier ne suffit pas pour un geste externe.)
