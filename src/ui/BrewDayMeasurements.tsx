@@ -32,7 +32,17 @@ function placeholderFor(kind: ReadingKind, step: BrewDayStep, recipe?: RecipeSna
   if (kind === 'temperature') return step.tempC != null ? String(step.tempC).replace('.', ',') : '';
   return READING[kind].placeholder;
 }
-export type BrewUpdate = (update: (state: BrewDayState) => BrewDayState) => void;
+/**
+ * RL-9 : les bornes d'un champ de mesure s'écrivent à la virgule, sans espace devant le point final : « Saisis 0,1 à 2000 L. », « Saisis 3 à 9. »
+ * (elles se lisaient « 0.1 à 2000 L » et « 3 à 9 . » quand l'unité est vide, le pH).
+ */
+export function invitationMesure(kind: ReadingKind): string {
+  const fr = (n: number) => String(n).replace('.', ',');
+  const { min, max, unit } = READING[kind];
+  const fin = kind === 'densite' ? ' SG (ou 1056 pour 1,056)' : unit ? ` ${unit}` : '';
+  return `Saisis ${fr(min)} à ${fr(max)}${fin}.`;
+}
+export type BrewUpdate =(update: (state: BrewDayState) => BrewDayState) => void;
 export interface BrewReadingDraft {
   kind: ReadingKind;
   raw: string;
@@ -453,8 +463,7 @@ export function BrewDayMeasurements({
           <p className="text-cave-400">Complète la valeur.</p>
         ) : raw.trim() && value == null ? (
           <p className="text-ebc-straw">
-            Saisis {READING[kind].min} à {READING[kind].max}
-            {kind === 'densite' ? ' SG (ou 1056 pour 1,056)' : ` ${READING[kind].unit}`}.
+            {invitationMesure(kind)}
           </p>
         ) : feedback ? (
           <div

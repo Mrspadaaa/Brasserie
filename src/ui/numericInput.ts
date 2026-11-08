@@ -162,7 +162,8 @@ export function useNumericDraft(
  */
 export function messageRefus(saisi: number, avant: number | undefined, bornes: { min?: number; max?: number; unite?: string }): string {
   const u = bornes.unite ? ` ${bornes.unite}` : '';
-  const nb = (x: number) => formatDecimal(x);
+  // Les milliers se séparent d'une espace insécable (« 10 000 »), la décimale d'une virgule.
+  const nb = (x: number) => formatDecimal(x).replace(/^(-?\d+)/, (entier) => entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
   const raison = bornes.min !== undefined && saisi < bornes.min
     ? (bornes.min === 0 ? 'une valeur négative n’existe pas ici' : `en dessous de ${nb(bornes.min)}${u}`)
     : `au-delà de ${nb(bornes.max ?? 0)}${u}`;

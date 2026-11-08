@@ -6,7 +6,7 @@ import { Sheet, ConfirmSheet } from './Sheet';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Trash2, AlertTriangle, ChevronDown } from 'lucide-react';
 import { useSyncedDraft } from '../hooks/useLiveData';
-import { parseDecimal } from './numericInput';
+import { messageRefus, parseDecimal } from './numericInput';
 import './clients.css';
 
 interface TarifSheetProps {
@@ -35,6 +35,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
   const [draft, setDraft] = useSyncedDraft<TarifDraft | null>(item, item?.product);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [attempted, setAttempted] = useState(false);
+  const [refusMoney, setRefusMoney] = useState<Partial<Record<MoneyKey, string>>>({});
   const [invalidMoney, setInvalidMoney] = useState<Partial<Record<MoneyKey, string>>>({});
   // TE-6 : un montant jamais touché reste vide, sans reproche ; l'erreur vient à la frappe ou à l'enregistrement.
   const [touched, setTouched] = useState<Partial<Record<MoneyKey, boolean>>>({});
@@ -97,11 +98,14 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
       }}>
         <NumberInput id={`tf-${key}`} value={draft[key]} emptyValue={undefined}
           onValue={(value: number | undefined) => { setTouched(current => ({ ...current, [key]: true })); setDraft(current => current && ({ ...current, [key]: value })); }}
+          // BE-98 : au-delà du plafond (ou sous zéro), la saisie est refusée : la valeur d'avant revient ET le message dit le plafond et la valeur gardée.
+          min={0} max={PRIX_UNITAIRE_MAX} rejeter
+          onRefus={(r) => setRefusMoney(current => ({ ...current, [key]: r ? messageRefus(r.saisi, r.retenu, { min: 0, max: PRIX_UNITAIRE_MAX, unite: 'CHF' }) : undefined }))}
           pad required className={`${inputClass} font-mono text-right`}
-          aria-invalid={montrerErreur(key)}
-          aria-describedby={montrerErreur(key) ? `tf-${key}-error` : undefined} />
+          aria-invalid={montrerErreur(key) || Boolean(refusMoney[key])}
+          aria-describedby={montrerErreur(key) || refusMoney[key] ? `tf-${key}-error` : undefined} />
       </div>
-      {montrerErreur(key) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : 'Indique un montant positif ou nul.'}</p>}
+      {(montrerErreur(key) || refusMoney[key]) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{refusMoney[key] ?? (invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : 'Indique un montant positif ou nul.')}</p>}
     </Field>
   );
 
