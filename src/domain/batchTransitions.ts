@@ -50,10 +50,10 @@ export function fermentationBlockedReason(batch: Batch): string | null {
     : null;
 }
 
-/** Un retour en arrière, ou un abandon après déstockage, se confirme dans la page. */
+/** Un retour en arrière et un abandon se confirment dans la page, même panneau (RJ-15 : l'abandon s'appliquait sans question, le retour en demandait une). */
 export function needsConfirmation(batch: Batch, status: BatchStatus): boolean {
   const option = statusOptions(batch).find(o => o.status === status);
-  return option?.kind === 'back' || (option?.kind === 'cancel' && stockApplied(batch));
+  return option?.kind === 'back' || option?.kind === 'cancel';
 }
 
 /** Ce que le changement défait : toujours le stock d'abord, car un statut ne remet rien en rayon. */

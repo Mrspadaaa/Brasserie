@@ -43,10 +43,11 @@ describe('AM 4 · étapes permises d’un brassin', () => {
     expect(ids(base({ status: 'annule', brewDay: pitchedDay }))).toEqual(['fermentation']);
     expect(needsConfirmation(base({ status: 'annule' }), 'planifie')).toBe(true);
   });
-  it('abandonner après déstockage se confirme ; avant déstockage, non', () => {
+  it('RJ-15 · abandonner se confirme, avant comme après déstockage (même panneau que le retour en arrière)', () => {
     const consumed = { appliedAt: '2026-09-01', eventId: 'e', items: [], pendingItems: [], completedStages: ['brewday'] as const };
     expect(needsConfirmation(base({ status: 'fermentation', stockConsumption: { ...consumed, completedStages: ['brewday'] } }), 'annule')).toBe(true);
-    expect(needsConfirmation(base({ status: 'fermentation' }), 'annule')).toBe(false);
+    expect(needsConfirmation(base({ status: 'fermentation' }), 'annule')).toBe(true);
+    expect(needsConfirmation(base({ status: 'planifie' }), 'annule')).toBe(true);
   });
   it('la conséquence dit ce qui arrive au stock', () => {
     const consumed = { appliedAt: '2026-09-01', eventId: 'e', items: [], pendingItems: [], completedStages: ['brewday', 'remaining'] as ('brewday' | 'remaining')[] };

@@ -34,6 +34,8 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
     render(<BatchDetailSheet batch={batch} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: status } });
+    expect(update).not.toHaveBeenCalled(); // RJ-15 : l'abandon se confirme dans la page
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ status, brewDate: '01.09.2026', plannedBrewDate: '' }));
     expect(screen.queryByRole('button', { name: 'Planifier' })).not.toBeInTheDocument();
     expect(screen.getByText(`${status === 'planifie' ? 'Commencé' : 'Brassé'} le 01.09.2026`)).toBeInTheDocument();
@@ -43,6 +45,7 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
     const update = vi.spyOn(StorageService, 'updateBatch').mockImplementation(() => {});
     render(<BatchDetailSheet batch={{ ...batch, status: 'planifie' }} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Étape du brassin'), { target: { value: 'annule' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
     expect(update).toHaveBeenCalledWith(expect.objectContaining({ brewDate: '', plannedBrewDate: '01.09.2026' }));
     expect(screen.getByText('Était prévu le 01.09.2026')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Changer la date' })).not.toBeInTheDocument();

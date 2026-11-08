@@ -61,6 +61,21 @@ describe('AM 4 · le sélecteur d’étape n’offre que ce qui est permis', () 
     expect(confirmSpy).not.toHaveBeenCalled();
   });
 
+  it('RJ-15 · « Annulé (abandon) » se confirme dans la page, comme le retour en arrière, sans confirm()', () => {
+    open(base({ status: 'planifie' }));
+    fireEvent.change(selector(), { target: { value: 'annule' } });
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', { name: 'Abandonner ce brassin ?' })).toBeInTheDocument();
+    expect(screen.getByText(/Rien n’a été déstocké/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    expect(selector()).toHaveValue('planifie');
+    fireEvent.change(selector(), { target: { value: 'annule' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Abandonner le brassin' }));
+    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ status: 'annule' }));
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
   it('annuler la confirmation laisse le brassin tel quel', () => {
     open(base({ status: 'termine' }));
     fireEvent.change(selector(), { target: { value: 'conditionne' } });
