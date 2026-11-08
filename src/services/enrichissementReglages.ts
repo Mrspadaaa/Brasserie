@@ -18,7 +18,9 @@ export function etatDe(valeur: unknown, emulateurs: unknown, dev: unknown): Etat
   return 'eteinte';
 }
 // Écrit en clair (`import.meta.env.VITE_…`) : Vite le remplace au build (et Vitest à la transformation), comme `firebase.ts`.
-const etatDuBuild = (): EtatIA => etatDe(import.meta.env.VITE_ENRICHISSEMENT_IA, import.meta.env.VITE_USE_FIREBASE_EMULATORS, import.meta.env.DEV);
+// La clé reste écrite dans le paquet (`VITE_ENRICHISSEMENT_IA:"production"`) : `check-build-flags.mjs` la lit avant tout déploiement (D378), comme flags.ts.
+const etatDuBuild = (env: Record<string, unknown> = { VITE_ENRICHISSEMENT_IA: import.meta.env.VITE_ENRICHISSEMENT_IA }): EtatIA =>
+  etatDe(env.VITE_ENRICHISSEMENT_IA, import.meta.env.VITE_USE_FIREBASE_EMULATORS, import.meta.env.DEV);
 export const etatIA = (): EtatIA => force ?? etatDuBuild();
 export const iaPermise = (): boolean => etatIA() !== 'eteinte';
 /** Vitest pose `MODE === 'test'` : l'exécutant réel y est interdit (P4). */
