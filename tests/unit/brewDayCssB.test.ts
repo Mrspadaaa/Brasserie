@@ -22,6 +22,15 @@ describe('contrastes et cibles du jour de brassage', () => {
     const r = bloc('.brew-page a:not(.brew-primary) {');
     expect(r).toMatch(/min-height:\s*24px/);
   });
+  it('RJ-13 / PD-12 : le panneau de confirmation est borné et centré au bureau', () => {
+    expect(readFileSync('src/ui/Sheet.tsx', 'utf8')).toMatch(/className=\{`lg:max-w-xl lg:mx-auto/);
+  });
+  it('BR-119 : la rangée des filtres de la liste passe à la ligne au bureau au lieu d’être coupée', () => {
+    expect(readFileSync('src/ui/production/CatalogToolbar.tsx', 'utf8')).toMatch(/scrollbar-none lg:flex-wrap lg:overflow-visible/);
+  });
+  it('PD-11 : le guillemet fermant ne passe pas seul à la ligne', () => {
+    expect(readFileSync('src/ui/BatchDetailSheet.tsx', 'utf8')).toContain('actuellement « ${style.label} »');
+  });
   it('BR-58 : l’onglet de mesure choisi porte une marque qui ne dépend pas de la teinte (bordure pleine, gras, souligné)', () => {
     expect(mesures).toMatch(/border-2 border-ebc-straw[^']*font-semibold[^']*underline/);
   });

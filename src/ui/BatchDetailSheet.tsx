@@ -475,7 +475,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       />
       <ConfirmSheet open={pendingStatus !== null} onClose={() => setPendingStatus(null)}
         title={pendingStatus === 'annule' ? 'Abandonner ce brassin ?' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} » ?`}
-        what={`${draft.id} — ${draft.name} · actuellement « ${style.label} »`}
+        what={`${draft.id} — ${draft.name} · actuellement « ${style.label} »`}
         consequence={pendingStatus ? transitionConsequence(draft, pendingStatus) : undefined}
         confirmLabel={pendingStatus === 'annule' ? 'Abandonner le brassin' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} »`}
         onConfirm={() => { const status = pendingStatus; setPendingStatus(null); if (status) applyStatus(status); }} />
