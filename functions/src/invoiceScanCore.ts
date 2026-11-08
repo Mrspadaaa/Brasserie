@@ -170,6 +170,58 @@ export function invoiceDate(value: unknown): string {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// LT-2 (08.11.2026) : entre deux lectures qui ne diffèrent que par l'année (02.11.2026 / 02.11.2025 sur un ticket Bauhaus qui imprime
+// l'année à 4 chiffres dans le corps et à 2 chiffres au pied), le vote gardait 2025 : la dépense partait dans l'exercice clos.
+// Règle pure, sans IA : (1) l'année imprimée à 4 chiffres l'emporte sur celle à 2 chiffres ; (2) à défaut, la date plausible aujourd'hui
+// (ni future, ni plus de 11 mois dans le passé) l'emporte sur celle qui ne l'est pas. Tout autre désaccord (jour, mois) reste au vote.
+// ---------------------------------------------------------------------------------------------------------------------
+interface DateParsee { j: number; m: number; a: number; quatre: boolean }
+function dateParsee(valeur: unknown): DateParsee | null {
+  const lue = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})$/.exec(text(valeur));
+  if (!lue) return null;
+  const j = Number(lue[1]), m = Number(lue[2]), quatre = lue[3].length === 4, a = quatre ? Number(lue[3]) : 2000 + Number(lue[3]);
+  const at = new Date(Date.UTC(a, m - 1, j));
+  return a >= 1900 && a <= 2200 && at.getUTCFullYear() === a && at.getUTCMonth() === m - 1 && at.getUTCDate() === j ? { j, m, a, quatre } : null;
+}
+const deuxChiffres = (n: number) => String(n).padStart(2, '0');
+const dateEcrite = (p: DateParsee) => `${deuxChiffres(p.j)}.${deuxChiffres(p.m)}.${p.a}`;
+const jourUtc = (p: DateParsee) => Date.UTC(p.a, p.m - 1, p.j);
+/** La date du jour à Zurich, à minuit UTC. */
+function aujourdhuiZurich(): Date {
+  const [a, m, j] = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich', year: 'numeric', month: '2-digit', day: '2-digit' }).format(Date.now()).split('-').map(Number);
+  return new Date(Date.UTC(a, m - 1, j));
+}
+/** La date lue avec une année à 2 chiffres (`jj.mm.aa`), gardée à part : `invoiceDate` la refuse, mais le vote doit savoir ce qui était imprimé. */
+export function dateCourteLue(valeur: unknown): string {
+  const p = dateParsee(valeur);
+  return p && !p.quatre ? `${deuxChiffres(p.j)}.${deuxChiffres(p.m)}.${String(p.a).slice(2)}` : '';
+}
+/** Ce qu'une lecture a lu comme date : la date à 4 chiffres, sinon celle à 2 chiffres, sinon rien. */
+export const dateDeLecture = (lecture: { date?: string; dateCourte?: string }): string => lecture.date || lecture.dateCourte || '';
+/**
+ * `lues` : les dates des lectures (`jj.mm.aaaa`, ou `jj.mm.aa` pour une année imprimée à 2 chiffres) ; `parDefaut` : la date que le vote garde.
+ * Rend `parDefaut` sauf si les lectures ne diffèrent QUE par l'année et que l'une des deux règles tranche. `aujourdhui` : minuit UTC.
+ */
+export function choisirDate(lues: string[], parDefaut: string, aujourdhui: Date = aujourdhuiZurich()): string {
+  const parsees = lues.flatMap(v => { const p = dateParsee(v); return p ? [p] : []; });
+  if (!parsees.length || parsees.some(p => p.j !== parsees[0].j || p.m !== parsees[0].m)) return parDefaut;
+  const parAnnee = new Map<number, DateParsee>();
+  for (const p of parsees) { const connue = parAnnee.get(p.a); parAnnee.set(p.a, { ...p, quatre: p.quatre || !!connue?.quatre }); }
+  let restantes = [...parAnnee.values()];
+  if (restantes.length < 2) return parDefaut;
+  if (restantes.some(p => p.quatre)) restantes = restantes.filter(p => p.quatre);
+  if (restantes.length > 1) {
+    const haut = aujourdhui.getTime(), bas = Date.UTC(aujourdhui.getUTCFullYear(), aujourdhui.getUTCMonth() - 11, aujourdhui.getUTCDate());
+    const plausibles = restantes.filter(p => jourUtc(p) <= haut && jourUtc(p) >= bas);
+    if (plausibles.length) restantes = plausibles;
+  }
+  if (restantes.length === 1) return dateEcrite(restantes[0]);
+  const garde = dateParsee(parDefaut);
+  if (garde && restantes.some(p => p.a === garde.a && p.j === garde.j && p.m === garde.m)) return parDefaut;
+  return dateEcrite(restantes.reduce((a, b) => Math.abs(jourUtc(a) - aujourdhui.getTime()) <= Math.abs(jourUtc(b) - aujourdhui.getTime()) ? a : b));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Contrôles arithmétiques (C1 à C4, P2). Fonctions pures : aucune valeur lue n'est jamais modifiée.
 // ---------------------------------------------------------------------------------------------------------------------
 type CoreItem = {
@@ -328,7 +380,7 @@ export function normalizeInvoiceScan(raw: any) {
     documentTypeRetenu: (proForma && paymentEvidence === 'paid' && documentType === 'quote' ? 'invoice' : documentType) as DocumentType, proForma,
     paymentEvidence,
     fieldWarnings: (Array.isArray(raw?.fieldWarnings) ? raw.fieldWarnings : []).filter((warning: any) => INVOICE_FIELDS.includes(warning?.field) && text(warning?.message)).slice(0, 20).map((warning: any): InvoiceFieldWarning => ({ field: warning.field, message: text(warning.message, 200) })),
-    vendor: text(raw?.vendor), date: invoiceDate(raw?.date), currency: text(raw?.currency, 5).toUpperCase(), invoiceNumber: text(raw?.invoiceNumber, 70),
+    vendor: text(raw?.vendor), date: invoiceDate(raw?.date), ...(dateCourteLue(raw?.date) ? { dateCourte: dateCourteLue(raw?.date) } : {}), currency: text(raw?.currency, 5).toUpperCase(), invoiceNumber: text(raw?.invoiceNumber, 70),
     orderNumber: text(raw?.orderNumber, 70),
     amountHT: number(raw?.amountHT), tvaRate: number(raw?.tvaRate), tvaAmount: number(raw?.tvaAmount), amountTTC: number(raw?.amountTTC),
     vat, printedLineCount, linesLost: lostCertain,

@@ -2,6 +2,7 @@ import {
   ajouterCoupure, alignerLignes, finirUneLecture, phraseCoupure, pointLectureCoupee, reconcileInvoiceVision,
   type CauseCoupure, type InvoiceScanResult
 } from './invoiceVisionReview.js';
+import { choisirDate, dateDeLecture } from './invoiceScanCore.js';
 
 /**
  * La lecture de facture en production : C★v8 + N du banc (D247, mission 2026-11-01-bascule-lecture).
@@ -100,7 +101,11 @@ export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: Lectur
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
-  return { ...star, result: { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] } };
+  const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
+  // LT-2 : la 3.8 tranche seule, mais deux lectures qui ne diffèrent que par l'année cèdent à l'année à 4 chiffres, puis à la date plausible aujourd'hui.
+  const date = choisirDate([r1, r2, third].map(l => dateDeLecture(l.normalized!)), String(star.result.date ?? ''));
+  if (date !== (star.result.date ?? '')) { result.date = date; delete result.dateCourte; }
+  return { ...star, result };
 }
 /**
  * D272b : les phrases du vote, sans ses contrôles de calcul. Ceux-ci portent sur le mélange des trois lectures, alors que les valeurs gardées sont

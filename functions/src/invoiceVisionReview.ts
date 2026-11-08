@@ -1,4 +1,4 @@
-import { normalizeInvoiceScan, INVOICE_FIELDS, type InvoiceFieldWarning } from './invoiceScanCore.js';
+import { normalizeInvoiceScan, INVOICE_FIELDS, choisirDate, dateDeLecture, invoiceDate, type InvoiceFieldWarning } from './invoiceScanCore.js';
 import { lineMathCheck, makePoint, peserPoint, signerPoint, toCents, totalAbsentPoint, type ScanPoint, type ScanValue } from './invoiceControls.js';
 
 export type InvoiceScanResult = ReturnType<typeof normalizeInvoiceScan>;
@@ -274,6 +274,24 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
         if (lu !== undefined && lu !== null) merged[field] = lu;
         continue;
       }
+    }
+    // LT-2 : deux lectures de date qui ne diffèrent que par l'année : l'année à 4 chiffres, puis la date plausible aujourd'hui, priment sur le vote.
+    // Le désaccord reste un point visible (le brasseur peut changer) ; seule la valeur retenue change.
+    const dateChoisie = field === 'date' && !unanime ? choisirDate(readings.map(dateDeLecture), String(decision ? decision.value : first.date)) : undefined;
+    if (dateChoisie !== undefined && dateChoisie !== String(decision ? decision.value : first.date) && invoiceDate(dateChoisie)) {
+      const cle = comparisonKey(field, dateChoisie);
+      merged.date = dateChoisie; delete merged.dateCourte;
+      if (comparisonKey(field, first.date) !== cle) correctedFields.push(field);
+      const retenues = vals.map(v => comparisonKey(field, v) === cle);
+      const message = decision && settledHeader.has(field) ? `${labels[field]} : une lecture sur trois diffère (${vals.map(v => montrer(field, v)).join(' / ')}).`
+        : `${labels[field]} : lectures divergentes (${vals.map(v => montrer(field, v)).join(' / ')}), vérifier le justificatif.`;
+      if (!decision) {
+        findings.push(message);
+        warnings.push({ field: 'date', message: `Les lectures ne concordent pas (${vals.map(v => montrer(field, v)).join(' / ')}). ${NON_CONCORDANT}` });
+        triggered = true;
+      }
+      desaccords.push(pointDesaccord({ field, ligne: null, vals, lectures: numeros, retenues, pese: !decision, enjeu, message }));
+      continue;
     }
     if (!decision) {
       const message = `${labels[field]} : lectures divergentes (${vals.map(v => montrer(field, v)).join(' / ')}), vérifier le justificatif.`;
