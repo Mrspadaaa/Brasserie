@@ -142,7 +142,7 @@ export const GeminiScannerService = {
   /** D381 : les morceaux de la pièce, ou `null` (lecture d'aujourd'hui). Une découpe qui échoue (image illisible, pdf.js absent) ne bloque jamais la lecture : `null`. */
   async decouper(file:File,force:boolean):Promise<Decoupe|null> {
     // Chargé à la demande : le module de découpe (canvas, pdf.js) ne pèse pas sur le morceau principal.
-    try { return await (await import('./decoupe')).decouperPiece(file,{ force }); } catch { return null; }
+    try { return await (await import('./decoupeHorsFil')).decouperPiece(file,{ force }); } catch { return null; }
   },
   /** L'empreinte SHA-256 du fichier d'origine, celle que le serveur calcule pour une lecture entière (« même fichier déjà joint ») ; `undefined` si le navigateur ne peut pas. */
   async empreinte(file:File):Promise<string|undefined> {

@@ -661,10 +661,24 @@ export function coupeBasseForcee(m: Morceau, rangees: number[], dernier: boolean
 export interface Geometrie { cx: number; cy: number; angle: number; echelle: number; largeur: number; hauteur: number }
 
 const creerCanevas = (w: number, h: number): HTMLCanvasElement => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
-const contexte2d = (c: HTMLCanvasElement, lecture = false): CanvasRenderingContext2D => {
-  const ctx = c.getContext('2d', lecture ? { willReadFrequently: true } : undefined);
+/** Une toile de calcul : un canevas de la page, ou (dans le Worker de `decoupeTravail.ts`, LO-2) un OffscreenCanvas. Même API 2D, mêmes pixels. */
+type Toile = HTMLCanvasElement | OffscreenCanvas;
+type Contexte2d = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+const creerToile = (w: number, h: number): Toile => (typeof document !== 'undefined' ? creerCanevas(w, h) : new OffscreenCanvas(w, h));
+const contexte2d = (c: Toile, lecture = false): Contexte2d => {
+  const ctx = (c as HTMLCanvasElement).getContext('2d', lecture ? { willReadFrequently: true } : undefined) as Contexte2d | null;
   if (!ctx) throw new Error('canevas indisponible');
   return ctx;
+};
+/**
+ * LO-2 : sur le fil de la page, un calcul de plusieurs centaines de millisecondes gèle l'onglet (la photo est lue pendant ce temps : 0,5 à 0,9 s mesurées
+ * sur un PC, 4 à 6 fois plus sur un téléphone). Ces pauses rendent la main au navigateur entre deux grosses étapes quand le calcul n'a pas pu partir dans
+ * le Worker (voir `decoupeTravail.ts`). Dans le Worker, aucune pause : rien n'y est à geler.
+ */
+const rendreLaMain = (): Promise<void> => {
+  if (typeof document === 'undefined') return Promise.resolve();
+  const planificateur = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+  return typeof planificateur?.yield === 'function' ? planificateur.yield() : new Promise<void>(fin => setTimeout(fin, 0));
 };
 function grisDe(pixels: ImageData): Uint8Array {
   const rgba = pixels.data, gris = new Uint8Array(pixels.width * pixels.height);
@@ -677,7 +691,7 @@ function grisDe(pixels: ImageData): Uint8Array {
  * pixels de bord, étirés, puis l'image par-dessus : aucune couture). `lisser` faux : plus proche
  * voisin (le banc D381 y dessine le masque des pièges, couleurs exactes).
  */
-export function dessinerNormalise(canevas: HTMLCanvasElement, source: ImageBitmap | HTMLCanvasElement, g: Geometrie, y0: number, lisser = true): CanvasRenderingContext2D {
+export function dessinerNormalise(canevas: Toile, source: ImageBitmap | HTMLCanvasElement | OffscreenCanvas, g: Geometrie, y0: number, lisser = true): Contexte2d {
   const ctx = contexte2d(canevas, true);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canevas.width, canevas.height);
@@ -697,14 +711,15 @@ export function dessinerNormalise(canevas: HTMLCanvasElement, source: ImageBitma
 }
 
 /** Le gris de toute l'image normalisée, par bandes (jamais un canevas de la hauteur d'un ticket entier : limite mémoire des téléphones). */
-function grisNormalise(source: ImageBitmap | HTMLCanvasElement, g: Geometrie): Bitmap {
+async function grisNormalise(source: ImageBitmap | HTMLCanvasElement | OffscreenCanvas, g: Geometrie): Promise<Bitmap> {
   const gris = new Uint8Array(g.largeur * g.hauteur), bande = 1024;
-  const canevas = creerCanevas(g.largeur, Math.min(bande, g.hauteur));
+  const canevas = creerToile(g.largeur, Math.min(bande, g.hauteur));
   for (let y0 = 0; y0 < g.hauteur; y0 += bande) {
     const h = Math.min(bande, g.hauteur - y0);
     if (canevas.height !== h) canevas.height = h;
     const ctx = dessinerNormalise(canevas, source, g, y0);
     gris.set(grisDe(ctx.getImageData(0, 0, g.largeur, h)), y0 * g.largeur);
+    await rendreLaMain();
   }
   canevas.width = 0; canevas.height = 0;
   return { width: g.largeur, height: g.hauteur, gray: gris };
@@ -726,7 +741,12 @@ function dessinerZone(source: ImageBitmap | HTMLCanvasElement, g: Geometrie, top
 type JonctionBrute = { k: number; data: string };
 /** Dessine des zones [top, bottom) de l'image normalisée en JPEG (base64), dans l'ordre (une image, ou une page de PDF). */
 type Dessinateur = (zones: Array<[number, number]>) => Promise<string[]>;
-const parCanevas = (source: ImageBitmap | HTMLCanvasElement, g: Geometrie): Dessinateur => async zones => zones.map(([t, b]) => dessinerZone(source, g, t, b));
+const parCanevas = (source: ImageBitmap | HTMLCanvasElement, g: Geometrie): Dessinateur => async zones => {
+  const images: string[] = [];
+  // LO-2 : un JPEG à la fois, la main rendue entre deux (17 encodages d'affilée pour une facture de 9 morceaux).
+  for (const [t, b] of zones) { images.push(dessinerZone(source, g, t, b)); await rendreLaMain(); }
+  return images;
+};
 /** Les parties d'une image normalisée (rang à compléter par l'appelant : plusieurs pages se suivent) et ses bandes de contrôle (D381 : une par coupe intérieure). */
 async function partiesDe(a: Analyse, dessiner: Dessinateur): Promise<{ parties: Array<Omit<Partie, 'morceau'>>; jonctions: JonctionBrute[] }> {
   const bandes = planJonctions(a.morceaux, a.rangees).filter(j => j.bottom > j.top);
@@ -785,31 +805,47 @@ export async function planifierImageDetaille(image: ImageBitmap, force: boolean,
   const W = image.width, H = image.height;
   // Coup d'œil : l'image réduite (côté court ≈ 1 200 px) suffit au papier et à l'angle.
   const s = Math.min(1, 1200 / Math.min(W, H)), pw = Math.max(1, Math.round(W * s)), ph = Math.max(1, Math.round(H * s));
-  const petit = creerCanevas(pw, ph);
+  const petit = creerToile(pw, ph);
   contexte2d(petit, true).drawImage(image, 0, 0, pw, ph);
   const reduit: Bitmap = { width: pw, height: ph, gray: grisDe(contexte2d(petit, true).getImageData(0, 0, pw, ph)) };
   petit.width = 0; petit.height = 0;
   let haute: boolean | null = null;
+  await rendreLaMain();
   if (!force || options.mesurerHaute) {
     // Haute : l'image recadrée, ou le papier lui-même (sa forme, même posé de travers : ses tickets penchés du 03.11).
     const papier = trouverPapier(reduit), r = recadrageDe(papier, pw, ph);
     haute = Math.max(r.h / r.w, papier?.rapport ?? 0) > RAPPORT_DECOUPE;
     if (!force && !haute) return null;
+    await rendreLaMain();
   }
   const coup = analyser(reduit, { maxLines: BAND_MAX_LINES });
+  await rendreLaMain();
   // Le cadre peut déborder de l'image (redressement sans rognure, `cadrePourAngle`) : le dessin y étend le bord (voir `normaliser`).
   const crop: Rect = { x: coup.crop.x / s, y: coup.crop.y / s, w: coup.crop.w / s, h: coup.crop.h / s };
   const echelle = Math.min(1, LARGEUR_MAX / crop.w);
   const g: Geometrie = { cx: crop.x + crop.w / 2, cy: crop.y + crop.h / 2, angle: coup.angle, echelle, largeur: Math.max(1, Math.round(crop.w * echelle)), hauteur: Math.max(1, Math.round(crop.h * echelle)) };
   // Le papier est cherché de nouveau dans l'image normalisée, pour mesurer les rangées blanches sur sa seule largeur.
-  const finale = analyser(grisNormalise(image, g), { papier: coup.papier, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
+  const finale = analyser(await grisNormalise(image, g), { papier: coup.papier, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
   return { finale, g, haute };
 }
 
+/**
+ * LO-2 : qui sait calculer le plan d'une image DANS un Worker (`decoupeTravail.ts`, branché par `decoupeHorsFil.ts`). Rendu : le plan, `null` (rien à découper)
+ * ou `undefined` (pas de Worker, ou il a échoué : le calcul se fait alors ici). Injecté, jamais importé : le Worker lui-même charge ce module-ci, et un import
+ * du client y ferait recréer le Worker dans le Worker.
+ */
+export type PlanificateurHorsFil = (fichier: Blob, force: boolean) => Promise<PlanImage | null | undefined>;
+let planificateurHorsFil: PlanificateurHorsFil | null = null;
+export const brancherPlanificateur = (p: PlanificateurHorsFil | null): void => { planificateurHorsFil = p; };
+
 async function decouperImage(file: File | Blob, force: boolean): Promise<Decoupe | null> {
+  // LO-2 : le plan (papier, angle, rangées : 0,5 à 0,9 s de calcul) se fait d'abord dans un Worker. `undefined` : pas de Worker (ou il a échoué) → le même
+  // calcul sur le fil de la page, mais en rendant la main entre ses étapes. `null` : rien à découper, l'image n'est même pas décodée ici.
+  const horsFil = planificateurHorsFil ? await planificateurHorsFil(file, force).catch(() => undefined) : undefined;
+  if (horsFil === null) return null;
   const image = await createImageBitmap(file);
   try {
-    const plan = await planifierImage(image, force);
+    const plan = horsFil ?? await planifierImage(image, force);
     if (!plan) return null;
     const dessin = await partiesDe(plan.finale, parCanevas(image, plan.g)), n = dessin.parties.length;
     return {
@@ -840,7 +876,7 @@ async function decouperPdf(file: File | Blob, force: boolean): Promise<Decoupe |
       const echelle = Math.min(1, LARGEUR_MAX / canevas.width);
       const g: Geometrie = { cx: canevas.width / 2, cy: canevas.height / 2, angle: 0, echelle, largeur: Math.max(1, Math.round(canevas.width * echelle)), hauteur: Math.max(1, Math.round(canevas.height * echelle)) };
       // Une page rendue est blanche et droite : ni papier à chercher, ni redressement. Aucun voisin d'une page à l'autre.
-      const a = analyser(grisNormalise(canevas, g), { papier: false, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
+      const a = analyser(await grisNormalise(canevas, g), { papier: false, redresser: false, recadrer: false, maxLines: BAND_MAX_LINES });
       const dessin = await partiesDe(a, parCanevas(canevas, g)), decalage = toutes.length;
       toutes.push(...dessin.parties);
       coupes.push(...dessin.jonctions.map(j => ({ k: decalage + j.k, data: j.data })));
