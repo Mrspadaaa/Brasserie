@@ -46,7 +46,7 @@ it('le vrai callable sauvegarde les champs et les nouveaux calculs dans la même
   const { data, c } = arrange(); await call(data);
   const saved = state.docs.get(`recipes/${c.recipe.id}`);
   expect(saved.yeast.attenuationPct).toBe(75); expect(saved.fermentation[0].days).toBe(12);
-  expect(saved.fgTarget).toBeCloseTo(1.0085, 10); expect(saved.abvTarget).toBeCloseTo(3.346875, 10);
+  expect(saved.fgTarget).toBeCloseTo(1.0085, 10); expect(saved.abvTarget).toBeCloseTo(3.363036, 6) /* ASBC (CF-6, 0c3f4d41) : 1,034 → 1,0085 ; 3,347 avec (OG − FG) × 131,25 */;
   expect(saved.yeast.technicalFacts).toEqual(c.recipe.yeast.technicalFacts); expect(saved.hops).toEqual(c.recipe.hops);
   expect(saved).toMatchObject({ brewDate: '20.09.2026', favorite: true });
   const once = structuredClone([...state.docs]); await call(data); expect([...state.docs]).toEqual(once);

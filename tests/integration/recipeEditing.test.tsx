@@ -450,7 +450,7 @@ describe('Recipe data entry regressions', () => {
     expect(saved.yeastDesign).toMatchObject({ modelVersion: 'yeast-recipe-2', yeastId: '', process: 'preacidified', pressureBar: 0.5,
       pitchRateMillionPerMlPlato: 0.75, viableCellsBillion: 200 });
     expect(saved.ogTarget).toBe(original.ogTarget);
-    expect(saved.fgTarget).toBeCloseTo(1.01, 10); expect(saved.abvTarget).toBeCloseTo(5.25, 10);
+    expect(saved.fgTarget).toBeCloseTo(1.01, 10); expect(saved.abvTarget).toBeCloseTo(5.315837, 6) /* ASBC (CF-6) : 1,050 → 1,010 ; 5,25 avec l'ancienne formule */;
     expect(yeastRecipeDesignChanged(saved, readYeastRecipeDesign(saved)!)).toBe(false);
     const restored = normalizeRecipe({ ...readRecipeText(writeRecipeText(saved))!, id: saved.id });
     expect(restored.yeast).toEqual(JSON.parse(JSON.stringify(saved.yeast)));
@@ -479,14 +479,14 @@ describe('Recipe data entry regressions', () => {
     expect(save.mock.lastCall![0].ogTarget).toBe(1.05); expect(save.mock.lastCall![0].abvTarget).toBe(original.abvTarget);
     step(/^Levure$/); openScenario();
     fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'preacidified' } });
-    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('5,1 % vol');
+    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('5,2 % vol') /* ASBC (CF-6) */;
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved: Recipe = save.mock.lastCall![0];
     expect(saved.styleRef).toEqual(original.styleRef); expect(saved.ogTarget).toBe(1.05);
-    expect(saved.fgTarget).toBeCloseTo(1.011, 10); expect(saved.abvTarget).toBeCloseTo(5.11875, 10);
+    expect(saved.fgTarget).toBeCloseTo(1.011, 10); expect(saved.abvTarget).toBeCloseTo(5.183583, 6); /* ASBC (CF-6) : 1,050 → 1,011 ; 5,119 avec l'ancienne formule */
     const again = vi.fn(); view.unmount(); wizard(saved, again); step(/^Levure$/);
-    expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('5,1');
+    expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('5,2'); // ASBC (CF-6)
     openScenario();
     fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'acidifying-yeast' } });
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
