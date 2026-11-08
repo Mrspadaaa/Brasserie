@@ -140,5 +140,15 @@ describe('TE-45 — créer un fût', () => {
     expect(screen.getByRole('button', { name: 'Ajouter un fût' })).toBeInTheDocument();
     expect(screen.getByText(/Ajoute un fût avec le bouton/)).toBeInTheDocument();
   });
+  // VI-10 (rejeu b47cd90b n° 10) : à 390 le bouton n'est qu'un « + » sans libellé (« Ajouter un fût » n'apparaît qu'à partir de sm) : la phrase ne doit citer
+  // que ce qui est à l'écran aux deux largeurs, le « + ».
+  it('la phrase du vide cite le « + », présent à toutes les largeurs, pas le libellé caché au téléphone', () => {
+    render(<VirtuosoMockContext.Provider value={{ viewportHeight: 1000, itemHeight: 60 }}>
+      <KegBoard kegs={[]} batches={[]} toolbarAction={<button type="button" aria-label="Ajouter un fût"><span aria-hidden="true">+</span><span className="hidden sm:inline">Ajouter un fût</span></button>} />
+    </VirtuosoMockContext.Provider>);
+    const phrase = screen.getByText(/Ajoute un fût avec le bouton/).textContent ?? '';
+    expect(phrase).toContain('« + »');
+    expect(phrase).not.toContain('« Ajouter un fût »');
+  });
 });
 void within;

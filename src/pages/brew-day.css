@@ -1672,10 +1672,17 @@
     monospace;
   color: rgb(var(--cave-texte-50));
 }
+/* VI-8 : sur un écran tactile le champ est un <textarea> d'une ligne, dont le texte se pose en haut de sa boîte ; la hauteur de ligne
+   égale à celle du champ le centre sur l'axe du « g » et des boutons « − / + ». */
+.brew-dose-value :is(input, textarea:where([data-single-line])) { line-height: 32px; }
 .brew-dose-value > span {
   color: var(--brew-muted);
   font-size: 16px;
 }
+/* VI-8 : « Consigner à cette heure » : une action (bord franc, texte plein), pas un gris sur gris ; éteint, il reste lisible. */
+button.brew-consign { border-color: rgb(var(--cave-400)); color: rgb(var(--cave-texte-50)); font-weight: 600; }
+button.brew-consign:disabled { opacity: 0.6; }
+.brew-consign-hint { flex: 1 1 12rem; margin: 0; color: rgb(var(--cave-texte-400)); font-size: 0.75rem; line-height: 1rem; }
 .brew-extra-addition {
   display: block;
   color: var(--brew-muted);

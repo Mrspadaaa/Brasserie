@@ -120,6 +120,21 @@ describe('l\'étape Malts/sucres (s1)', () => {
     expect(masse(1).value).toBe('0');
   });
 
+  // VI-2 (rejeu b47cd90b n° 2) : la masse effacée, pas encore quittée, affichait « 0 » (le repère du champ) alors que la recette comptait encore la masse
+  // d'avant (« 63 % du grain », « Grain 8 kg », « 5,0 kg » au plateau) : trois chiffres pour une masse. Le repère est la valeur d'avant, jamais un 0 inventé.
+  it('une masse effacée, pas encore quittée, montre la valeur qui compte encore (placeholder), jamais un « 0 » inventé', async () => {
+    const u = userEvent.setup();
+    render(<Banc />);
+    await u.click(masse(1));
+    await u.clear(masse(1));
+    expect(masse(1).value).toBe('');
+    expect(masse(1).placeholder).toBe('1,5');
+    expect(courant[1].weightKg).toBe(1.5);
+    // Taper rend la main à la saisie ; Échap rend la valeur d'avant.
+    await u.type(masse(1), '2');
+    expect(courant[1].weightKg).toBe(2);
+  });
+
   it('« pils » dit « déjà 5,0 kg » et Entrée ne crée pas de doublon', async () => {
     const u = userEvent.setup();
     render(<Banc />);

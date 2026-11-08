@@ -227,7 +227,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
             );
           })}
         </span>}
-        {nonSimule && q.type !== 'dryhop' && <span className="inline-flex items-center gap-1 text-xs text-cave-400"><Inconnu raison={nonSimule.raison} />arôme</span>}
+        {nonSimule && q.type !== 'dryhop' && <span className="inline-flex items-center gap-1 text-xs text-cave-400"><Inconnu raison={nonSimule.raison} />arôme non simulé</span>}
         {h.partSansFamille != null && h.partSansFamille >= 0.25 && <Autres h={h} largeur={48} petit />}
         <span className="ml-auto inline-flex items-center gap-1" {...stop}>
           {q.type === 'whirlpool' && (

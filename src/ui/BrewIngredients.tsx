@@ -1,6 +1,6 @@
 import { Input } from './Input';
 import { brewNow } from '../services/brewClock';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   ArrowLeftRight,
   Check,
@@ -63,10 +63,12 @@ function AdditionTime({ name, doneAt, onConfirm }: {
         onChange={(event) => setRaw(event.currentTarget.value)}
       />
     </label>
-    <button type="button" className={brewControl} disabled={!valid || raw === localAdditionTime(doneAt)}
+    {/* VI-8 (rejeu b47cd90b n° 8) : éteint, le bouton était un gris sur gris sans raison lisible ; il dit ce qui manque, et allumé il se lit comme une action. */}
+    <button type="button" className={`${brewControl} brew-consign`} disabled={!valid || raw === localAdditionTime(doneAt)}
       onClick={() => { if (valid && at <= brewNow()) onConfirm(at); }}>
       Consigner à cette heure
     </button>
+    {!raw && <p className="brew-consign-hint">Choisis d’abord la date et l’heure réelles.</p>}
     {!!raw && !valid && <p role="alert" className="basis-full text-xs text-alert-strong">Choisis une date et une heure valides, au plus tard maintenant.</p>}
   </div>;
 }
@@ -123,6 +125,23 @@ function IngredientRow({
   );
   // BR-50, BR-53 (08.11) : une quantité hors bornes (négative, ou 99 999 g) ne s'enregistre pas ET le dit ; avant, « -1 » restait tapé sans un mot.
   const [quantityProblem, setQuantityProblem] = useState<string | null>(null);
+  // VI-9 (rejeu b47cd90b n° 9) : chaque chiffre tapé s'enregistre au vol (« 9 », « 99 »…). Quand la frappe finit hors bornes (« 99999 »), le message
+  // annonce « la valeur précédente est conservée » : il faut donc revenir à celle d'avant la frappe, pas à l'avant-dernier chiffre. On la note à la
+  // première frappe d'une séance de saisie (jusqu'à la sortie du champ) ; `avant` vaut undefined quand rien n'était consigné pour cet ingrédient.
+  const seance = useRef<{ avant: NonNullable<BrewDayState['additions']>[string] | undefined; valeur: number | undefined } | null>(null);
+  const retablirAvantFrappe = () => {
+    const base = seance.current;
+    if (!base) return;
+    onInteract();
+    update((s) => {
+      const courant = s.additions?.[item.id];
+      if (!courant) return s;
+      const additions = { ...s.additions };
+      if (base.avant) additions[item.id] = { ...courant, amount: base.avant.amount };
+      else delete additions[item.id];
+      return { ...s, additions };
+    });
+  };
   const fermentable =
     item.fermentableIndex != null
       ? effectiveFermentables(recipe, state)[item.fermentableIndex]
@@ -251,16 +270,18 @@ function IngredientRow({
                 −
               </button>
             )}
-            <div className="brew-dose-value">
+            <div className="brew-dose-value" onBlur={() => { seance.current = null; }}>
               <NumberInput
                 value={amount}
                 emptyValue={undefined}
                 aria-invalid={quantityProblem ? true : undefined}
                 onValue={(n) => {
                   if (n === undefined) { setQuantityProblem(null); return; }
-                  const problem = actualQuantityProblem(n, item.planned, item.unit);
+                  if (!seance.current) seance.current = { avant: actual, valeur: amount };
+                  const problem = actualQuantityProblem(n, item.planned, item.unit, seance.current.valeur);
                   setQuantityProblem(problem);
-                  if (!problem) patch({ amount: n });
+                  if (problem) retablirAvantFrappe();
+                  else patch({ amount: n });
                 }}
                 aria-label={`Quantité réelle de ${named}${item.side ? ' au ' + item.side : ''}`}
               />

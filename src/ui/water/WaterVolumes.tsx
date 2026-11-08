@@ -78,7 +78,7 @@ export function WaterVolumes({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
           <InlineNum
             id="wz-mash-water"
             emptyValue={Number.NaN}

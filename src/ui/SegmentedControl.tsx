@@ -1,5 +1,6 @@
 import React, { useId, useRef } from 'react';
 import { useDensity } from './useViewport';
+import './segmented-control.css';
 
 /**
  * Choix parmi deux à cinq options mutuellement exclusives.
@@ -124,7 +125,7 @@ export function SegmentedControl<T extends string>({
                         disabled:opacity-40 disabled:cursor-not-allowed
                         ${
                           active
-                            ? 'bg-ebc-straw text-cave-950 font-semibold'
+                            ? 'seg-actif font-semibold'
                             : 'text-cave-200 hover:text-cave-50 hover:bg-cave-900'
                         }`}
           >
@@ -136,7 +137,7 @@ export function SegmentedControl<T extends string>({
               {opt.hint && layout === 'grid' && !tight && (
                 <span
                   className={`block text-xs truncate ${
-                    active ? 'text-cave-950/70' : 'text-cave-400'
+                    active ? 'seg-indice' : 'text-cave-400'
                   }`}
                 >
                   {opt.hint}

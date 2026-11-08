@@ -55,7 +55,9 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
   const connu = valeur !== null && (zeroValide || valeur !== 0);
   const vide = !connu || (zeroAttention && valeur === 0);
   const affiche = texte ?? (connu ? format(valeur as number) : '');
-  const repere = repos;
+  // VI-2 : le repère d'un champ effacé en cours de frappe est la valeur qui compte encore dans la recette (elle ne change qu'à la frappe d'un nombre ou
+  // à la sortie), pas le « 0 » de repos : la ligne disait « 0 kg » à côté de « 63 % du grain » et d'un total qui n'avait pas bougé. Jamais un chiffre inventé.
+  const repere = connu ? format(valeur as number) : repos;
   const largeur = auContenu ? { width: `${Math.max(1, (affiche || repere).length) + 0.4}ch` } : undefined;
 
   const garder = (v: number) => {
