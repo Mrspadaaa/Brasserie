@@ -98,6 +98,8 @@ const Cell: React.FC<{
   min?: number;
   max?: number;
   label: string;
+  /** Hors bornes, la saisie est refusée (valeur d'avant gardée, message) au lieu d'être ramenée à la borne : les lignes de houblon (TE-21, BR-42). */
+  refuser?: boolean;
 }> = (props) => {
   const { value, onValue, unit, width = 'w-[4.5rem] sm:w-20', integer, min, max, label } = props;
   // An erased required measure remains unavailable until the wizard validates it.
@@ -115,7 +117,7 @@ const Cell: React.FC<{
         emptyValue={emptyValue}
         min={min}
         max={max}
-        rejeter
+        rejeter={props.refuser}
         onRefus={(r) => setRefus(r ? messageRefus(r.saisi, r.retenu, { min, max, unite: unit.replace('%α', '%') }) : null)}
         aria-invalid={refus ? true : undefined}
         aria-describedby={refus ? idRefus : undefined}
@@ -477,6 +479,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     unit="g"
                     integer
                     min={0}
+                    refuser
                   />
                   <Cell
                     label={`Alpha de ${h.name}`}
@@ -487,6 +490,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     width="w-16"
                     min={0}
                     max={30}
+                    refuser
                   />
                   {(def.ask === 'time' || def.ask === 'timeAndTemp') && (
                     <Cell
@@ -498,6 +502,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                       width="w-16"
                       integer
                       min={0}
+                      refuser
                     />
                   )}
                   {def.ask === 'timeAndTemp' && (
