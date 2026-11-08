@@ -489,6 +489,8 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   if (draft.paymentStatus==='paid' && purchaseIsoDate(draft.paymentDate)>todayISO()) errors.push('Le paiement est futur : utilise « À payer ».');
   if (draft.dueDate && !purchaseIsoDate(draft.dueDate)) errors.push('L’échéance est invalide.');
   if (draft.sourceVatAmount!==undefined && (!isMoney(draft.sourceVatAmount) || draft.sourceVatAmount<0 || (draft.sourceCurrency==='CHF' && draft.sourceVatAmount>(draft.amount??0)))) errors.push('Vérifie le montant de TVA : il doit être positif ou nul et ne pas dépasser le TTC du document.');
+  /* AM-58 : pour un assujetti, une TVA absente n'est pas « 0 » : l'impôt préalable à récupérer serait faux sans alerte. Il faut la lire ou saisir 0 en le sachant. */
+  if (draft.sourceVatAmount===undefined && (draft.sourceCurrency===undefined || draft.sourceCurrency==='CHF') && StorageService.getConfig?.()?.fiscal?.isTvaRegistered===true) errors.push('Brasserie assujettie à la TVA : indique la TVA du document (0 si le document n’en porte vraiment aucune). Sans elle, la TVA à récupérer serait fausse.');
   if (draft.sourceVatRate!==undefined && (!Number.isFinite(draft.sourceVatRate) || draft.sourceVatRate<0 || draft.sourceVatRate>1)) errors.push('Vérifie le taux de TVA du document (entre 0 et 100 %).');
   const existants=sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId), virtuels:MembreVirtuel[]=[];
   for (const line of draft.lines) {

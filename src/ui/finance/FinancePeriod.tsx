@@ -1,6 +1,11 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { shiftMonth } from './financeFormat';
+import { messageDateHorsBornes } from '../../domain/finance/bornesFinance';
+import { todayISO } from '../../domain/finance/ledger';
+
+/** BE-70 : « 99999-11 » ne désigne aucune période : un mois hors des bornes d'une pièce (2000 à +1 an) n'est pas retenu, le champ revient au mois courant. */
+const moisValide = (mois: string) => /^\d{4}-\d{2}$/.test(mois) && messageDateHorsBornes(`${mois}-01`, todayISO()) === null;
 
 /**
  * Choix du mois, sur une seule rangée.
@@ -23,7 +28,7 @@ export function MonthStepper({ label, month, disabled = false, onMonth }: {
       <ChevronLeft size={15} aria-hidden="true"/>
     </button>
     <input type="month" aria-label={label} value={month} disabled={disabled}
-      onChange={event => { if (event.target.value) onMonth(event.target.value); }}/>
+      min="2000-01" onChange={event => { if (event.target.value && moisValide(event.target.value)) onMonth(event.target.value); }}/>
     <button type="button" aria-label="Mois suivant" disabled={disabled} onClick={() => onMonth(shiftMonth(month, 1))}>
       <ChevronRight size={15} aria-hidden="true"/>
     </button>

@@ -436,6 +436,20 @@ describe('Recettes et brassins', () => {
   });
 });
 
+describe('Écritures comptables : sens et zéro', () => {
+  const ecriture = (over: Record<string, unknown> = {}) => ({ id: 'T-1', date: '2026-11-01', description: 'Test', category: 'divers', amountHT: 10, amountTTC: 10, tvaRate: 0, tvaAmount: 0, ...over }) as any;
+  it('AM-62 : une charge ne devient pas une recette (ni l’inverse) en changeant de catégorie', () => {
+    store.set('transactions', new Map([['T-1', ecriture()]]));
+    expect(() => StorageService.updateTransaction(ecriture({ category: 'recettes' }))).toThrow(/ne se transforment pas/);
+    expect(() => StorageService.updateTransaction(ecriture({ category: 'apports' }))).toThrow(/ne se transforment pas/);
+    expect(() => StorageService.updateTransaction(ecriture({ category: 'materiel' }))).not.toThrow();
+  });
+  it('AM-63 : une écriture à 0 CHF reste dans la liste', () => {
+    store.set('transactions', new Map([['T-0', ecriture({ id: 'T-0', amountHT: 0, amountTTC: 0 })], ['T-X', ecriture({ id: 'T-X', amountTTC: undefined, amountHT: undefined })]]));
+    expect(StorageService.getTransactions().map(t => t.id)).toEqual(['T-0']);
+  });
+});
+
 describe('Journal d’audit', () => {
   it('garde trace de chaque écriture, la plus récente en tête', () => {
     StorageService.addStockItem('rawMaterials', stockItem());
@@ -450,5 +464,13 @@ describe('Journal d’audit', () => {
   it('note l’utilisateur qui a saisi', () => {
     StorageService.addStockItem('rawMaterials', stockItem());
     expect(['Gaëtan', 'Aricia']).toContain(StorageService.getAuditLogs()[0].user);
+  });
+
+  it('TE-58 : une ancienne entrée à identifiant d’un autre format ne passe pas devant les récentes', () => {
+    store.set('auditLogs', new Map([['LOG-zzzz-ancien', { id: 'LOG-zzzz-ancien', timestamp: '03.09.2026, 23:15:15', action: 'Création', category: 'Finances', entityId: 'OLD', summary: 'ancienne', user: 'Gaëtan' }]]));
+    StorageService.addStockItem('rawMaterials', stockItem());
+    const logs = StorageService.getAuditLogs();
+    expect(logs[0].summary).not.toBe('ancienne');
+    expect(logs[logs.length - 1].summary).toBe('ancienne');
   });
 });

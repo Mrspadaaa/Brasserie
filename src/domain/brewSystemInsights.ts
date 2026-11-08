@@ -149,6 +149,18 @@ export function measuredWortYield(recipe: BrewRecipe, state: BrewDayState, stage
   };
 }
 
+/**
+ * AM-50 : une mesure hors du vraisemblable n'entre pas dans la médiane d'une calibration. Évaporation : une cuve de brasserie artisanale
+ * évapore quelques litres par heure (au plus ~30 L/h pour une cuve de plusieurs hectolitres, estimé) ; absorption du grain : 0 à 3 L/kg
+ * (le plafond du champ des Réglages ; la valeur courante est ~1 L/kg). Au-delà, les volumes ou les durées saisis sont faux.
+ */
+const PLAUSIBLE: Partial<Record<SystemParameter, [number, number]>> = { boilOffLPerHour: [0, 30], grainAbsorptionLPerKg: [0, 3] };
+export function plausibilite(m: SystemMetric): SystemMetric {
+  const range = m.parameter ? PLAUSIBLE[m.parameter] : undefined;
+  if (!range || m.value == null || (m.value >= range[0] && m.value <= range[1])) return m;
+  return { ...m, calibrationEligible: false, reason: `Valeur invraisemblable (${rounded(m.value)} ${m.unit}, attendu entre ${range[0]} et ${range[1]}) : vérifie les volumes et les durées avant de calibrer.` };
+}
+
 export interface SystemMetric {
   id: SystemMetricId;
   label: string;
@@ -280,7 +292,7 @@ export function brewSystemInsights(recipe: BrewRecipe, state: BrewDayState): { m
     missingIngredients: yieldResult.missingIngredients,
     calibrationEligible: yieldResult.calibrationEligible, ...(stage === 'ensemencement' ? { parameter: 'efficiencyPct' as const } : {}),
   });
-  const metrics = [yieldMetric(pre, 'preboil'), yieldMetric(final, 'ensemencement'), evaporation(recipe, state), absorption(recipe, state), transferLoss(recipe, state), heating(recipe, state)];
+  const metrics = [yieldMetric(pre, 'preboil'), yieldMetric(final, 'ensemencement'), evaporation(recipe, state), absorption(recipe, state), transferLoss(recipe, state), heating(recipe, state)].map(plausibilite);
   const currentStage = state.steps[state.currentIndex]?.id;
   const expectedStage = currentStage && ['postboil', 'refroidissement', 'ensemencement'].includes(currentStage) || finite(state.boilFinishedAt) ? 'ensemencement' : 'preboil';
   const next = metrics.find(m => m.value == null && m.nextStepId === expectedStage) ?? metrics.find(m => m.value == null && m.nextStepId);

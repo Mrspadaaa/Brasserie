@@ -18,6 +18,7 @@ import { StorageService } from '../services/storage';
 import { IconButton } from './ui/Button';
 import { ThemeToggle } from '../theme/ThemeToggle';
 import { useDensity, useMobileLayout } from '../ui/useViewport';
+import { ConfirmModal } from './ConfirmModal';
 
 interface HeaderProps {
   /** Barre compacte de l'application, extensible avec le texte. */
@@ -97,7 +98,10 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [periodOpen, setPeriodOpen] = useState(false);
+  /* TE-61 : changer de signataire demande une confirmation (il signe toutes les écritures suivantes). */
+  const [confirmUser, setConfirmUser] = useState(false);
   const currentUser = StorageService.getCurrentUser();
+  const otherUser = currentUser === 'Gaëtan' ? 'Aricia' : 'Gaëtan';
   /* Les anciens aperçus peuvent encore demander une disposition confortable. */
   const compact = useDensity() !== 'comfortable';
   const mobile = useMobileLayout();
@@ -216,7 +220,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button className={menuItem} onClick={() => { window.dispatchEvent(new Event('brewer-inbox-open')); setMenuOpen(false); }}><MessageCircle className="w-5 h-5 text-cave-400 shrink-0"/>Mes conversations</button>
               <button
                 onClick={() => {
-                  StorageService.setCurrentUser(currentUser === 'Gaëtan' ? 'Aricia' : 'Gaëtan');
+                  setConfirmUser(true);
                   setMenuOpen(false);
                 }}
                 className={menuItem}
@@ -312,6 +316,14 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
       </div>
+      <ConfirmModal
+        isOpen={confirmUser}
+        title={`Saisir au nom de ${otherUser} ?`}
+        message={`Les prochaines écritures seront signées ${otherUser}, plus ${currentUser}. Tu peux revenir en arrière depuis ce menu.`}
+        confirmLabel={`Saisir au nom de ${otherUser}`}
+        onConfirm={() => { StorageService.setCurrentUser(otherUser); setConfirmUser(false); }}
+        onCancel={() => setConfirmUser(false)}
+      />
     </header>
   );
 };

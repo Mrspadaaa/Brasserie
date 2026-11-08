@@ -12,6 +12,8 @@
 .clients-filters { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; min-width: 0; }
 .clients-segments { flex: 1; min-width: 0; }
 .clients-segments [role='radio'][aria-checked='true'] { background: theme('colors.cave.850'); color: theme('colors.cave.50'); box-shadow: inset 0 -2px theme('colors.ebc.straw'); }
+/* TE-1 : en clair, `.bg-ebc-straw, .bg-ebc-straw *` (themes.css) force un texte blanc, à égalité de spécificité avec la règle ci-dessus : « Tous 5 » et « Particulier » se lisaient en blanc sur gris clair. Le préfixe :root la dépasse, pastille et libellé compris. */
+:root .clients-segments [role='radio'][aria-checked='true'], :root .clients-segments [role='radio'][aria-checked='true'] * { color: theme('textColor.cave.50'); }
 .clients-status-filter { flex: 0 1 auto; min-width: 0; }
 .clients-status-filter select { max-width: 100%; }
 .tarif-segments { justify-self: start; min-width: min(100%, 14rem); }

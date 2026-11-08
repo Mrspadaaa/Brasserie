@@ -8,6 +8,7 @@ import { ModalShell } from '../ui/ModalShell';
 import { TextInput, inputClass, noAutofillProps } from '../ui/FormNav';
 import type { TextInputHandle } from '../ui/TextInput';
 import { SegmentedControl } from '../ui/SegmentedControl';
+import { lireTelephone } from '../services/clientPhone';
 import '../ui/clients.css';
 
 interface EditClientModalProps {
@@ -19,28 +20,32 @@ interface EditClientModalProps {
 
 export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client, onClose, onSave }) => {
   const [draft, setDraft] = useSyncedDraft(isOpen ? client : null, client?.id);
-  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
   const id = useId();
   const nameInput = useRef<TextInputHandle>(null);
   const emailInput = useRef<InputElement>(null);
+  const phoneInput = useRef<InputElement>(null);
   useEffect(() => { setErrors({}); }, [isOpen, client?.id]);
   if (!isOpen || !client || !draft) return null;
 
   const { name, type, contact, phone, email, notes = '' } = draft;
   const field = <K extends keyof Client>(key: K, value: Client[K]) => {
     setDraft(current => ({ ...current, [key]: value }));
-    if (key === 'name' || key === 'email') setErrors(current => ({ ...current, [key]: undefined }));
+    if (key === 'name' || key === 'email' || key === 'phone') setErrors(current => ({ ...current, [key]: undefined }));
   };
 
   const handleSave = (event: React.FormEvent) => {
     event.preventDefault();
     const nextErrors = {
       name: name.trim() ? undefined : 'Indique le nom du client.',
-      email: email.trim() && emailInput.current && !emailInput.current.validity.valid ? 'Vérifie l’adresse email, par exemple contact@restaurant.ch.' : undefined
+      email: email.trim() && emailInput.current && !emailInput.current.validity.valid ? 'Vérifie l’adresse email, par exemple contact@restaurant.ch.' : undefined,
+      /* TE-2 : « abc » n'est pas un numéro (la fiche en tirait `tel:abc` et un lien WhatsApp vide). */
+      phone: phone.trim() ? (() => { const lu = lireTelephone(phone); return lu.ok === false ? lu.message : undefined; })() : undefined
     };
     setErrors(nextErrors);
     if (nextErrors.name) { nameInput.current?.focus(); return; }
     if (nextErrors.email) { emailInput.current?.focus(); return; }
+    if (nextErrors.phone) { phoneInput.current?.focus(); return; }
     const updated: Client = {
       ...draft,
       name: name.trim(),
@@ -82,8 +87,10 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
             </div>
             <div className="client-form-field">
               <label htmlFor={`${id}-phone`}>Téléphone / mobile</label>
-              <Input {...noAutofillProps} id={`${id}-phone`} name="cl_contact_tel_digits" type="tel" inputMode="tel"
-                value={phone} onChange={event => field('phone', event.target.value)} placeholder="026 408 33 33" className={inputClass} enterKeyHint="next" />
+              <Input {...noAutofillProps} ref={phoneInput} id={`${id}-phone`} name="cl_contact_tel_digits" type="tel" inputMode="tel"
+                value={phone} onChange={event => field('phone', event.target.value)} placeholder="026 408 33 33" className={inputClass} enterKeyHint="next"
+                aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? `${id}-phone-error` : undefined} />
+              {errors.phone && <p id={`${id}-phone-error`} role="alert" className="mt-1 text-xs text-alert-strong">{errors.phone}</p>}
             </div>
           </div>
           <div className="client-form-field">

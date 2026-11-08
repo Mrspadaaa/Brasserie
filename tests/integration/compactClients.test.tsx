@@ -53,7 +53,7 @@ describe('Carnet compact : retrouver, lire, corriger', () => {
     expect(screen.getByText('Auberge du Lac')).toBeVisible();
     expect(screen.getByText('Léon Martin')).toBeVisible();
     expect(screen.getByRole('searchbox')).toHaveValue('');
-    fireEvent.keyDown(screen.getByRole('radio', { name: 'Tous 3' }), { key: 'ArrowRight' });
+    fireEvent.keyDown(screen.getByRole('radio', { name: 'Tous' }), { key: 'ArrowRight' });
     expect(screen.getByRole('radio', { name: 'Pro 2' })).toHaveAttribute('aria-checked', 'true');
     expect(screen.queryByText('Léon Martin')).not.toBeInTheDocument();
   });
@@ -67,7 +67,7 @@ describe('Carnet compact : retrouver, lire, corriger', () => {
     expect(within(row).getByRole('button', { name: 'Facturer', hidden: true })).not.toBeVisible();
     fireEvent.click(screen.getByText('Auberge du Lac'));
     expect(within(row).getByRole('button', { name: 'Facturer' })).toBeVisible();
-    expect(within(row).getByRole('link', { name: 'Appeler' })).toHaveAttribute('href', 'tel:+41 79 123 45 67');
+    expect(within(row).getByRole('link', { name: 'Appeler' })).toHaveAttribute('href', 'tel:+41791234567');
     expect(within(row).getByRole('link', { name: 'claire@example.test' })).toHaveAttribute('href', 'mailto:claire@example.test');
     expect(within(row).getByText('Entrée côté cave')).toBeVisible();
   });
@@ -184,13 +184,13 @@ describe('Tarifs compacts : comparer et enregistrer sans perdre de données', ()
     showClients();
     fireEvent.click(screen.getByRole('button', { name: 'Impôt sur la bière' }));
     const tax = within(screen.getByRole('region', { name: 'Réserve pour l’impôt sur la bière' }));
-    expect(tax.getByText('0.00 CHF')).toBeVisible();
+    expect(tax.getByText(/Aucun litre conditionné en/)).toBeVisible();
     expect(tax.getByText(/Réduction annuelle à confirmer/)).toBeVisible();
     expect(tax.getByText(/Barème par hectolitre/)).not.toBeVisible();
     fireEvent.click(tax.getByText('Comprendre le calcul et les démarches'));
     expect(tax.getByText(/Barème par hectolitre/)).toBeVisible();
     fireEvent.change(tax.getByRole('combobox', { name: 'Année de réserve OFDF' }), { target: { value: String(new Date().getFullYear() - 1) } });
-    expect(tax.getByText('0.00 CHF')).toBeVisible();
+    expect(tax.getByText(/Aucun litre conditionné en/)).toBeVisible();
     expect(tax.getByRole('button', { name: 'Copier cette estimation' })).toBeVisible();
     expect(tax.getByRole('link', { name: 'Ouvrir Taxas' })).toHaveAttribute('href', 'https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation');
   });

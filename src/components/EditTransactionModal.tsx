@@ -9,6 +9,7 @@ import { DriveService } from '../services/driveService';
 import { ReceiptService } from '../services/receiptService';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
+import { montantChf, sensDeCategorie } from '../domain/finance/ledger';
 
 interface EditTransactionModalProps {
   isOpen: boolean;
@@ -136,14 +137,17 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               onChange={(e) => field('category', e.target.value as FinanceCategory)}
               className={inputClass}
             >
-              <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
-              <option value="materiel">⚙️ Matériel & Équipement</option>
-              <option value="nettoyage">🧼 Produits Nettoyage (CIP/Hygiène)</option>
-              <option value="chargesFixes">🏢 Charges Fixes (Élec/Assurance)</option>
-              <option value="renovation">🔨 Local & Rénovation</option>
-              <option value="divers">📦 Frais Divers</option>
-              <option value="apports">💎 Apport Personnel</option>
-              <option value="recettes">💰 Recettes Ventes</option>
+              {/* AM-62 : seules les catégories du même sens que l'écriture d'origine ; une charge ne devient pas une recette. */}
+              {sensDeCategorie(transaction.category) === 'charge' && <>
+                <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
+                <option value="materiel">⚙️ Matériel & Équipement</option>
+                <option value="nettoyage">🧼 Produits Nettoyage (CIP/Hygiène)</option>
+                <option value="chargesFixes">🏢 Charges Fixes (Élec/Assurance)</option>
+                <option value="renovation">🔨 Local & Rénovation</option>
+                <option value="divers">📦 Frais Divers</option>
+              </>}
+              {sensDeCategorie(transaction.category) === 'apport' && <option value="apports">💎 Apport Personnel</option>}
+              {sensDeCategorie(transaction.category) === 'recette' && <option value="recettes">💰 Recettes Ventes</option>}
             </select>
           </div>
 
@@ -230,7 +234,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             >
               <option value={0.0}>0.0% (Exonéré)</option>
               <option value={0.026}>2.6% (Réduit)</option>
-              <option value={0.081}>8.1% (Matériel)</option>
+              <option value={0.081}>8,1 % (Matériel, services, bière alcoolisée)</option>
             </select>
           </div>
         </div>
@@ -239,11 +243,11 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         <div className="p-3 bg-cave-950/70 border border-cave-800 rounded-2xl flex justify-between items-center text-sm">
           <div>
             <span className="text-cave-400">TVA : </span>
-            <strong className="text-ebc-straw font-mono">{tvaAmount.toFixed(2)} CHF</strong>
+            <strong className="text-ebc-straw font-mono">{montantChf(tvaAmount)} CHF</strong>
           </div>
           <div className="text-right">
             <span className="text-cave-400">Total TTC : </span>
-            <strong className="text-base text-hop font-mono">{amountTTC.toFixed(2)} CHF</strong>
+            <strong className="text-base text-hop font-mono">{montantChf(amountTTC)} CHF</strong>
           </div>
         </div>
 

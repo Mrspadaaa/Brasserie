@@ -3,6 +3,8 @@ import React, { useEffect, useId, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { Sheet } from '../Sheet';
 import { NumberInput } from '../NumberInput';
+import { ChampNombre } from '../depense/ChampNombre';
+import { BORNES_FINANCE } from '../../domain/finance/bornesFinance';
 import type { FinanceCategory, Transaction, StockItem } from '../../types';
 import type { FinancialProfile, FinancialPlan, FinancialAsset, FinancialClosing, FinancialInventoryLine, FinancialPayment } from '../../domain/finance/types';
 import { formatCHF, todayISO, isoDate, transactionAmount, transactionDirection, paymentState } from '../../domain/finance/ledger';
@@ -13,7 +15,9 @@ import { StorageService } from '../../services/storage';
 export const CATEGORY_LABELS: Record<FinanceCategory,string> = { brassage:'Brassage', materiel:'Matériel', nettoyage:'Nettoyage', chargesFixes:'Charges fixes', renovation:'Local et travaux', divers:'Autres frais', recettes:'Ventes', apports:'Apports privés' };
 export const idFor = (prefix:string) => `${prefix}-${crypto.randomUUID()}`;
 export function MoneyInput({label,value,onChange,required=false,signed=false}:{label:string;value:number|undefined;onChange:(v:number|undefined)=>void;required?:boolean;signed?:boolean}) {
-  return <label className="finance-field">{label}<NumberInput aria-label={label} value={value == null ? undefined : value/100} onValue={v=>onChange(v == null ? undefined : Math.round(v*100))} emptyValue={undefined} required={required} min={signed?undefined:0} /></label>;
+  /* BE-64, BE-71 : un montant non signé refuse VISIBLEMENT un négatif (« −1 » devenait 0 en silence), un millième (« 0,004 ») et ce qui dépasse la borne d'une écriture. Le solde de départ, signé, garde la saisie libre. */
+  if (!signed) return <label className="finance-field">{label}<ChampNombre aria-label={label} value={value == null ? undefined : value/100} onValue={v=>onChange(v == null ? undefined : Math.round(v*100))} max={BORNES_FINANCE.operationCents.valeur/100} maxDecimales={2} /></label>;
+  return <label className="finance-field">{label}<NumberInput aria-label={label} value={value == null ? undefined : value/100} onValue={v=>onChange(v == null ? undefined : Math.round(v*100))} emptyValue={undefined} required={required} /></label>;
 }
 /** Exercice fiscal : une année entière de quatre chiffres. Une saisie invalide est refusée sur place avec un message ; l'écran ne la reçoit jamais (BE-60). */
 export function ExerciceField({year,onYear}:{year:number;onYear:(year:number)=>void}) {

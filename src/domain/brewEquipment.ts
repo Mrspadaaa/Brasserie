@@ -62,6 +62,20 @@ export function equipmentErrors(e: BrewingEquipment): string[] {
   return [...new Set(errors)];
 }
 
+/**
+ * AM-48 : le volume habituel du profil reste positif et ne dépasse pas la CAPACITÉ du fermenteur (aucun moût n'entre au-delà).
+ * Le repère de mousse (capacité moins la réserve) n'est pas une limite dure : un repère qui change ne redimensionne jamais en silence le volume choisi
+ * (voir `defaultBrewVolume`) ; le dépassement du repère reste un avertissement ailleurs. Sans matériel valide, seul le signe se contrôle.
+ */
+export function profileVolumeErrors(profile?: BrewhouseProfile): string[] {
+  if (!profile) return [];
+  const v = profile.volumeL;
+  if (!Number.isFinite(v) || v <= 0) return ['Indique le volume habituel en fermenteur, au-dessus de 0 L.'];
+  const capacity = profile.equipment && positive(profile.equipment.fermenterCapacityL) ? profile.equipment.fermenterCapacityL : undefined;
+  if (capacity !== undefined && v > capacity + 1e-8) return [`Le volume habituel (${v} L) dépasse la capacité du fermenteur (${capacity} L) : baisse-le ou agrandis le fermenteur.`];
+  return [];
+}
+
 export function fermenterLimit(e?: BrewingEquipment): number | undefined {
   if (!e || equipmentErrors(e).length) return undefined;
   // Round DOWN: rounding to nearest could exceed the selected headspace.
