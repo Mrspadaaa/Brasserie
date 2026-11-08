@@ -125,7 +125,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes ; ni choix ni accord ne bloquent
-- Erreur : 22.10, questions fermées sans maquette. 02.11 : « ?? J'ai déjà donné mon avis ». 07.11 : « Pourquoi tu attends mon accord ??? ».
+- Erreur : 22.10, questions fermées sans maquette. 02.11 : « ?? J'ai déjà donné mon avis ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
 - Faire : un mot ou un détail mineur se tranche sans maquette ([[micro-correctifs]]). Chaque choix ouvert devient un axe de variantes : on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Un point ouvert : le lien et ce qu'on attend, sans code (D307). Un cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête.
 - Rôles : pilote, conseil
@@ -148,7 +148,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
 - Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ».
 - Cause : pièces fictives ou réduites, écran jamais jugé contre la pièce ; réponse IA rejouée inventée.
-- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Une réponse IA rejouée se copie d'une vraie. Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels).
+- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Une réponse IA rejouée se copie d'une vraie, anonymisée avant Git. Une pièce entre au banc vue en plein format (08.11 : 4 montages crus réels).
 - Rôles : pilote, exécutant, relecteur
 - Contrôle : au banc (D261 à D263)
 
