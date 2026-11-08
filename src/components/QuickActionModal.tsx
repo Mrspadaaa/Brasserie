@@ -43,6 +43,8 @@ import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { useDensity } from '../ui/useViewport';
 import { NumericField } from '../ui/NumericField';
 import { MoneyField, splitTva } from '../ui/MoneyField';
+import { messageMontantChfHorsBornes } from '../domain/finance/bornesFinance';
+import { montantChf } from '../domain/finance/ledger';
 import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
 import type { ApercuDepense } from '../ui/depense/types';
 import { saveIncomeEntry, type IncomeEntry } from '../services/incomeEntry';
@@ -245,6 +247,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   };
 
   if (!isOpen) return null;
+
+  /* MV-38 : une vente hors borne (999 999 CHF) ne s'encaisse pas ; le champ le dit, le bouton attend. */
+  const saleAmountMessage = messageMontantChfHorsBornes(saleAmount, 'income');
 
   const resetAndClose = () => {
     if (saleBusy.current || brewBusy.current) return;
@@ -518,7 +523,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     const drivePath = DriveService.generateDrivePath(newTx);
     if (onSuccessMessage) {
       onSuccessMessage(
-        `Facture de ${ttc.toFixed(2)} CHF enregistrée (Stock mis à jour) ! Drive : ${drivePath}`
+        `Facture de ${montantChf(ttc)} CHF enregistrée (Stock mis à jour) ! Drive : ${drivePath}`
       );
     }
     resetAndClose();
@@ -526,7 +531,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   // Quick Sale with Official Receipt & Proof (Pillar 3 & 4)
   const handleSaveSale = async () => {
-    if (saleBusy.current || !(saleAmount > 0)) return;
+    if (saleBusy.current || !(saleAmount > 0) || saleAmountMessage) return;
     saleBusy.current = true; setSaleSaving(true); setSaleError('');
     try {
       if (!pendingSale.current) {
@@ -542,9 +547,10 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
         const payment = paid ? { id: `PAY-${id}`, transactionId: id, date: purchaseIsoDate(saleTx.date), amountCents: Math.round(ttc * 100), direction: 'in' as const, method: salePaymentMethod === 'TWINT' ? 'twint' as const : salePaymentMethod === 'Espèces' ? 'cash' as const : 'bank' as const, recordedAt: at } : undefined;
         pendingSale.current = { transaction: saleTx, proof, payment };
       }
-      await saveIncomeEntry(pendingSale.current);
+      const receipt = await saveIncomeEntry(pendingSale.current);
       triggerConfetti();
-      onSuccessMessage?.(`Vente de ${pendingSale.current.transaction.amountTTC.toFixed(2)} CHF enregistrée. Justificatif conservé dans Drive.`);
+      /* TE-55 : « dans Drive » seulement sur une preuve de Drive ; sinon on dit ce qui est vrai. */
+      onSuccessMessage?.(`Vente de ${montantChf(pendingSale.current.transaction.amountTTC)} CHF enregistrée. ${receipt ? 'Quittance conservée dans Drive.' : 'Quittance gardée sur cet appareil, pas dans Drive.'}`);
       saleBusy.current = false;
       resetAndClose();
     } catch (error) { setSaleError(error instanceof Error ? error.message : 'La vente reste à confirmer. Le brouillon est conservé.'); }
@@ -719,7 +725,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               <div className="p-3 bg-water/10 border border-water/30 rounded-2xl space-y-1">
                 <div className="flex justify-between items-center text-water font-bold">
                   <span>Fournisseur : {vendor || 'Détecté'}</span>
-                  <span className="font-mono text-ebc-straw font-black">{amountTTC.toFixed(2)} CHF TTC</span>
+                  <span className="font-mono text-ebc-straw font-black">{montantChf(amountTTC)} CHF TTC</span>
                 </div>
                 <p className="text-sm text-water/80">
                   Vérifiez le rapprochement automatique de chaque article. Vous avez le contrôle total pour modifier ou exclure une ligne avant validation.
@@ -1205,7 +1211,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             <div className="space-y-2 text-[13px] [&_label]:text-xs [&_input]:min-h-8 [&_input]:py-0.5 [&_input]:text-base [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_p]:text-xs">
               {pendingSale.current && <p className="text-amber-200">La vente est conservée à l’identique. Réessaie pour confirmer cet enregistrement.</p>}
               <fieldset disabled={saleSaving || Boolean(pendingSale.current)} className="space-y-2 border-0 p-0 m-0 min-w-0">
-                <MoneyField label={salePaymentMethod === 'Facture' ? 'Montant TTC à encaisser' : 'Montant TTC encaissé'} valueTTC={saleAmount} onChange={setSaleAmount} tvaRate={StorageService.getConfig().fiscal.tvaNormalRate} isTvaRegistered={isTvaRegistered}/>
+                <MoneyField label={salePaymentMethod === 'Facture' ? 'Montant TTC à encaisser' : 'Montant TTC encaissé'} valueTTC={saleAmount} onChange={setSaleAmount} error={saleAmountMessage ?? undefined} tvaRate={StorageService.getConfig().fiscal.tvaNormalRate} isTvaRegistered={isTvaRegistered}/>
                 <Field label="Client (facultatif)" htmlFor="qa-sale-client"><TextInput id="qa-sale-client" value={saleClient} onChange={setSaleClient} placeholder="Client comptoir" className={inputClass}/></Field>
                 <Field label="Bière / conditionnement (facultatif)" htmlFor="qa-sale-beer"><TextInput id="qa-sale-beer" value={saleBeer} onChange={setSaleBeer} placeholder="Carton, fût, bière…" className={inputClass}/></Field>
                 <div role="group" aria-label="Mode de règlement" className="space-y-1">
@@ -1230,8 +1236,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               </div>
               {saleError && <p role="alert" className="text-sm text-alert-strong">{saleError}</p>}
               <div className="sticky bottom-0 flex flex-wrap justify-end items-center gap-2 min-h-9 border-t border-cave-800 bg-cave-900 py-0.5">
-                <button type="button" onClick={handleDownloadSaleReceipt} disabled={saleAmount <= 0 || saleSaving} className="min-h-7 px-2 border border-cave-700 rounded-control text-[13px] text-cave-200 inline-flex items-center gap-1 disabled:opacity-50"><FileText size={14}/>Quittance PDF</button>
-                <button type="button" onClick={() => void handleSaveSale()} disabled={saleAmount <= 0 || saleSaving} className="min-h-8 px-2 bg-ebc-straw text-cave-950 font-semibold rounded-control text-[13px] inline-flex items-center gap-1 disabled:opacity-50"><Check size={14}/>{saleSaving ? 'Enregistrement…' : pendingSale.current ? 'Reprendre la confirmation' : salePaymentMethod === 'Facture' ? 'Enregistrer à encaisser' : 'Valider l’encaissement'}</button>
+                <button type="button" onClick={handleDownloadSaleReceipt} disabled={saleAmount <= 0 || Boolean(saleAmountMessage) || saleSaving} className="min-h-7 px-2 border border-cave-700 rounded-control text-[13px] text-cave-200 inline-flex items-center gap-1 disabled:opacity-50"><FileText size={14}/>Quittance PDF</button>
+                <button type="button" onClick={() => void handleSaveSale()} disabled={saleAmount <= 0 || Boolean(saleAmountMessage) || saleSaving} className="min-h-8 px-2 bg-ebc-straw text-cave-950 font-semibold rounded-control text-[13px] inline-flex items-center gap-1 disabled:opacity-50"><Check size={14}/>{saleSaving ? 'Enregistrement…' : pendingSale.current ? 'Reprendre la confirmation' : salePaymentMethod === 'Facture' ? 'Enregistrer à encaisser' : 'Valider l’encaissement'}</button>
               </div>
             </div>
           )}

@@ -1,10 +1,14 @@
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialProfile } from './types';
 import { compte } from '../../services/plural';
+import { messageDateHorsBornes, messageMontantHorsBornes } from './bornesFinance';
 
 export const toCents = (value: number): number => Number.isFinite(value) ? Math.round((value + Number.EPSILON) * 100) : 0;
 export const fromCents = (value: number): number => value / 100;
 const chfFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'CHF' });
 export const formatCHF = (value: number): string => chfFormatter.format(value / 100);
+const montantFr = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/** Un montant en francs (pas en centimes) pour une phrase : « 1,00 », jamais « 1.00 ». Le point décimal est le défaut du `toFixed(2)` (TE-8, TE-55, MV-39). */
+export const montantChf = (chf: number): string => Number.isFinite(chf) ? montantFr.format(chf) : '—';
 export function isoDate(value?: string): string | null {
   if (!value) return null;
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
@@ -162,8 +166,12 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
 
 export function validateFinanceTransaction(tx: FinanceTransaction): void {
   if (!isoDate(tx.date)) throw new Error('Date comptable invalide.');
+  const dateHorsBornes = messageDateHorsBornes(isoDate(tx.date)!, todayISO());
+  if (dateHorsBornes) throw new Error(dateHorsBornes);
   const finance = tx.finance;
   if (!finance || finance.version !== 1 || !Number.isSafeInteger(finance.amountCents) || finance.amountCents <= 0) throw new Error('Montant CHF invalide.');
+  const montantHorsBornes = messageMontantHorsBornes(finance.amountCents, finance.kind);
+  if (montantHorsBornes) throw new Error(montantHorsBornes);
   if (!Number.isFinite(tx.amountTTC) || toCents(tx.amountTTC) !== finance.amountCents) throw new Error('Le total TTC ne correspond pas au montant comptable.');
   if (!tx.description.trim()) throw new Error('Description requise.');
   if (finance.lines.some(l => !Number.isSafeInteger(l.amountCents) || !l.description.trim())) throw new Error('Une ligne est incomplète.');
