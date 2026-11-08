@@ -77,12 +77,28 @@ export function useNumericDraft(
    */
   const emitted = useRef<number | undefined>(value);
 
+  /*
+   * ⚠️ Pendant la frappe, le parent qui BORNE la valeur reçue ne réécrit plus le champ (BR-80, 08.11). « 99999 » tapé dans un champ dont le
+   * parent plafonne à 1000 : la frappe « 9 » à « 9999 » passait, « 99999 » revenait « 1000 » dans le champ, et le « 9 » suivant donnait
+   * « 10009 ». La chaîne tapée reste la vérité tant que le champ a le focus ; à la sortie, le champ relit la valeur que le parent a retenue
+   * (`onFocusChange(false)`), donc ce qu'on lit est ce qui est gardé. Un champ qui n'appelle pas `onFocusChange` garde l'ancien comportement.
+   */
+  const focused = useRef(false);
+  const [leaves, setLeaves] = useState(0);
+  const onFocusChange = (isFocused: boolean) => {
+    const wasFocused = focused.current;
+    focused.current = isFocused;
+    // Une sortie sans entrée (focus jamais reçu) n'a rien retenu pendant la frappe : rien à relire.
+    if (!isFocused && wasFocused) setLeaves(n => n + 1);
+  };
+
   useEffect(() => {
+    if (focused.current) return;
     if (!Object.is(value, emitted.current)) {
       emitted.current = value;
       setDraft(formatDecimal(value, digits));
     }
-  }, [value]);
+  }, [value, leaves]);
 
   /** Reçoit le texte tapé, remonte le nombre s'il est complet. */
   const push = (next: string) => {
@@ -128,7 +144,7 @@ export function useNumericDraft(
     return next;
   };
 
-  return { draft, push, settle };
+  return { draft, push, settle, onFocusChange };
 }
 
 /**

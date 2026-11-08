@@ -3,12 +3,15 @@ import { readYeastDocumentaryView } from '../services/recipeDraft';
 import { messageMoment } from './fermentables/moments';
 import { messageAlpha } from './hopAlpha';
 import { BORNES, frBorne, messageHoublonParLitre, messageMasseParLitre, ogHorsBornes } from './bornesMetier';
+import { procedeIssues, procedeManques } from './bornesProcede';
 
 export type RecipeStepId = 'identite' | 'fermentescibles' | 'houblons' | 'levure' | 'paliers' | 'eau' | 'recap';
 export interface RecipeFieldIssue {
   field: string;
   step: RecipeStepId;
   message: string;
+  /** Valeur hors bornes (impossible en brasserie) : le message paraît dès la frappe, sans attendre « Suivant » ou « Enregistrer ». */
+  live?: boolean;
 }
 
 export interface RecipeReadiness {
@@ -110,6 +113,8 @@ export function recipeSaveIssues(recipe: Recipe): RecipeFieldIssue[] {
     number(recipe.waterPlan.mashWaterL, 0, 'wz-mash-water', 'eau', 'Eau d’empâtage');
     number(recipe.waterPlan.spargeWaterL, 0, 'wz-sparge-water', 'eau', 'Eau de rinçage');
   }
+  // Bornes du procédé (bornesProcede.ts, AM-21 à AM-32, BR-23, BR-33) : paliers, phases, levure, rendement, eau, sels, acide, additifs.
+  for (const issue of procedeIssues(recipe)) if (!issues.some(known => known.field === issue.field)) issues.push(issue);
   const invalidNumber = firstInvalidNumber(recipe);
   if (invalidNumber && !knownNonFinite) add('wz-validation', 'recap', `Une valeur numérique de la recette est invalide (${invalidNumber}). Corrige-la avant l’enregistrement.`);
   return issues;
@@ -128,6 +133,8 @@ function recipeMissingIssues(recipe: Recipe): RecipeFieldIssue[] {
     if (item.stage === 'whirlpool' && item.tempC == null)
       add(`wz-hop-temp-${i}`, 'houblons', `Température de ${item.name} : à compléter.`);
   });
+  // AM-26 : une recette sans empâtage, sans fermentation ni plan d'eau n'est pas prête à brasser.
+  for (const manque of procedeManques(recipe)) add(manque.field, manque.step, manque.message);
   if (!recipe.yeast?.name?.trim()) add('wz-yeast-name', 'levure', 'Choisis une souche de levure.');
   else {
     if (recipe.yeast.qty == null || recipe.yeast.qty === 0) add('wz-yeast-qty', 'levure', 'Quantité de levure : à compléter.');

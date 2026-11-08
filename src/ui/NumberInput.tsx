@@ -74,7 +74,7 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
   const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
   const inputRef = useRef<InputElement>(null);
   const coarse = useCoarsePointer();
-  const { draft, push, settle } = useNumericDraft(value, onValue, { emptyValue, fractionDigits: props.fractionDigits });
+  const { draft, push, settle, onFocusChange } = useNumericDraft(value, onValue, { emptyValue, fractionDigits: props.fractionDigits });
 
   return (
     <Input
@@ -99,9 +99,10 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
       disabled={disabled}
       placeholder={placeholder}
       value={draft}
-      onFocus={(e) => e.currentTarget.select()}
+      onFocus={(e) => { onFocusChange(true); e.currentTarget.select(); }}
       onBlur={() => {
         settle({ min, max, integer });
+        onFocusChange(false);
       }}
       onChange={(e) => push(e.target.value)}
       className={className}
