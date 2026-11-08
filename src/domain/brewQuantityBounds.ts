@@ -18,6 +18,16 @@ export function actualQuantityMax(planned: number, unit: string): number {
 }
 
 /**
+ * RL-10 : une quantité réelle tapée s'arrondit à la précision de son unité (« 1,23456 g » n'existe pas sur une balance de brasserie) :
+ * 0,01 pour g, mL et L ; 0,001 pour kg. Une valeur négative ou illisible passe telle quelle (elle est refusée plus loin, avec son message).
+ */
+export function actualQuantityRounded(value: number, unit: string): number {
+  if (!Number.isFinite(value) || value < 0) return value;
+  const facteur = unit === 'kg' ? 1000 : 100;
+  return Math.round(value * facteur) / facteur;
+}
+
+/**
  * `null` quand la quantité est plausible, sinon la phrase qui dit pourquoi elle ne s'enregistre pas.
  * `kept` : la valeur que l'écran garde vraiment (VI-9). La phrase la nomme (« La valeur précédente (2 g) est conservée ») ;
  * l'appelant qui l'annonce doit la rétablir, sinon le message contredit la ligne.

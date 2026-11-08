@@ -29,7 +29,7 @@ import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
 import { actualWater } from '../domain/brewAssist';
 import { amountDecimals, roundAmount } from '../../functions/src/brewAmount';
-import { actualQuantityMax, actualQuantityProblem } from '../domain/brewQuantityBounds';
+import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from '../domain/brewQuantityBounds';
 
 /** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
 const f = (n: number, unit = 'L') => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: amountDecimals(unit, n) }).format(roundAmount(n, unit));
@@ -275,8 +275,10 @@ function IngredientRow({
                 value={amount}
                 emptyValue={undefined}
                 aria-invalid={quantityProblem ? true : undefined}
-                onValue={(n) => {
-                  if (n === undefined) { setQuantityProblem(null); return; }
+                onValue={(saisi) => {
+                  if (saisi === undefined) { setQuantityProblem(null); return; }
+                  // RL-10 : la dose s'arrondit à la précision de l'unité avant tout contrôle (le champ la montre ainsi à la sortie).
+                  const n = actualQuantityRounded(saisi, item.unit);
                   if (!seance.current) seance.current = { avant: actual, valeur: amount };
                   const problem = actualQuantityProblem(n, item.planned, item.unit, seance.current.valeur);
                   setQuantityProblem(problem);
