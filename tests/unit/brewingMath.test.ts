@@ -256,6 +256,16 @@ describe('Rendement à haute densité', () => {
     expect(r.note).toContain('%');
   });
 
+  it('RJ-8 / RO-3 : à 1,080, dans la plage du style (1,065–1,085), la perte est calculée mais la note se tait ; au-dessus, elle parle', () => {
+    const dedans = BrewingMath.efficiencyAtGravity(75, 1.08, 1.085);
+    expect(dedans.note).toBeNull();
+    expect(dedans.correctedPct).toBeCloseTo(72, 5);
+    expect(BrewingMath.efficiencyAtGravity(75, 1.082, 1.085).note).toBeNull();
+    expect(BrewingMath.efficiencyAtGravity(75, 1.095, 1.085).note).toMatch(/le moût sature/);
+    // Au-delà des bornes métier, la note d'erreur de saisie reste, quel que soit le style.
+    expect(BrewingMath.efficiencyAtGravity(75, 1.29, 1.3).note).toMatch(/Erreur de saisie probable/);
+  });
+
   it('RJ-8 : la note écrit le rendement à la virgule, jamais « 71.9 % »', () => {
     const r = BrewingMath.efficiencyAtGravity(75, 1.08048);
     expect(r.correctedPct).toBeCloseTo(71.9, 5);

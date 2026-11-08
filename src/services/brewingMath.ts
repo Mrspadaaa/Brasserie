@@ -320,7 +320,11 @@ export const BrewingMath = {
    * Le chiffre corrigé est RENDU, jamais appliqué en silence : c'est à Gaëtan
    * de décider s'il ajuste sa facture ou son volume.
    */
-  efficiencyAtGravity(nominalPct: number, og: number): {
+  /**
+   * `ogStyleMax` : le haut de la plage d'OG du style choisi. Une OG dans cette plage est la densité normale du style : la perte est
+   * calculée, mais la note se tait (RJ-8 et RO-3, 08.11 : « le moût sature » à 1,080 pour un style de 1,065 à 1,085, du bruit).
+   */
+  efficiencyAtGravity(nominalPct: number, og: number, ogStyleMax?: number | null): {
     correctedPct: number;
     lostPoints: number;
     note: string | null;
@@ -345,6 +349,7 @@ export const BrewingMath = {
     }
     const lost = Math.round((points - 65) * 0.2 * 10) / 10;
     const corrected = Math.round(Math.max(40, nominalPct - lost) * 10) / 10;
+    if (typeof ogStyleMax === 'number' && Number.isFinite(ogStyleMax) && og <= ogStyleMax) return { correctedPct: corrected, lostPoints: lost, note: null };
     return {
       correctedPct: corrected,
       lostPoints: lost,

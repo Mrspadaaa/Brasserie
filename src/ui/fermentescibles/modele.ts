@@ -231,10 +231,15 @@ export function chercher(texte: string, articles: readonly StockItem[], lignes: 
  * « cara 0,3 » : le nom, puis la masse si elle est tapée. Un nombre ENTIER sans « kg » n'est une masse que derrière un nom connu (`connu`) qui ne
  * le contient pas lui-même : « Crystal 60 », « Munich 10 » sont des noms (critique B1 n° 2, 07.11 : « Crystal 60 » devenait 60 kg).
  */
-export function lireAjout(v: string, connu?: (nom: string) => boolean): { nom: string; kg: number | null } {
+/**
+ * `sucre` : en mode Sucre, un entier de 1 à 25 au bout d'un nom inconnu est une masse (RO-2, 08.11 : « sirop candi 1 » créait un sucre à 0 kg).
+ * Les noms de sucre ne finissent pas par un petit entier (« Candi D-180 », « Candi D 90 » : au-delà de 25) ; ceux des malts si (« Caramunich 2 »).
+ */
+export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = false): { nom: string; kg: number | null } {
   const s = v.trim(), m = s.match(/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(kg)?$/);
   if (!m) return { nom: s, kg: null };
-  const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
+  const petitEntier = /^\d+$/.test(m[2]) && Number(m[2]) >= 1 && Number(m[2]) <= 25;
+  const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (sucre && petitEntier && !(connu?.(s) ?? false)) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
   return masse ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
 }
 

@@ -986,10 +986,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const fgPredicted = yeastProjection?.fg.range?.min === yeastProjection?.fg.range?.max ? yeastProjection?.fg.range?.min ?? null : null;
   const abvPredicted = yeastProjection?.abv.range?.min === yeastProjection?.abv.range?.max ? yeastProjection?.abv.range?.min ?? null : null;
 
-  const gravityWarning = useMemo(
-    () => (og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og) : null),
-    [og, efficiency]
-  );
 
   /**
    * Volumes d'eau, déduits du grain tant que Gaëtan ne les a pas posés.
@@ -2547,7 +2543,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             styleCode={styleRepere?.code ?? null}
             ebcVise={ebcPlage ? (ebcPlage.min + ebcPlage.max) / 2 : null}
             ebcMax={ebcPlage?.max ?? null}
-            alerteDensite={gravityWarning?.note ?? null}
+            alerteDensite={og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og, styleRepere?.stats.og?.max).note : null}
             erreur={fieldError}
           />
         );

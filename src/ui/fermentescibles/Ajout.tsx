@@ -117,7 +117,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   }, [articles]);
 
   // Une masse entière sans « kg » seulement derrière un nom déjà là (en tête de nom) : « Crystal 60 » reste un nom (critique B1 n° 2).
-  const s = lireAjout(valeur, (nom) => chercher(nom, articles, lignes).some((c) => c.rang <= 1));
+  // En mode Sucre, un petit entier est une masse même derrière un nom neuf (« sirop candi 1 », RO-2).
+  const s = lireAjout(valeur, (nom) => chercher(nom, articles, lignes).some((c) => c.rang <= 1), famille === 'sucre');
   const t = s.nom;
   const on = ouvert || !!t;
   // Les autres rayons comptent : « dext » en Grain propose Dextrose (rayon Sucre), qui s'ajoute dans sa famille. Les noms de la famille du champ restent devant
