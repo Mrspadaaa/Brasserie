@@ -1,5 +1,5 @@
 import { batchDisplayDate } from '../domain/batchSchedule';
-import { hotBitterness } from '../domain/hopBitterness';
+import { ibuDeLAjout } from '../domain/hopBitterness';
 import { amertumeRecette, fgRecette, formatDensite, formatLitres, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
 import { formatDecimal } from '../ui/numericInput';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
@@ -192,7 +192,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   const boilOg = useMemo(() => recipe.nolo?.enabled ? og || null : yeastRecipeBoilOg({ ...recipe, efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og: og || null }).og, [recipe, og, brewhouse?.efficiencyPct]);
   const bitterness = useMemo(() => amertumeRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75, { og: og || null, nolo: !!recipe.nolo?.enabled }),
     [recipe, og, brewhouse?.efficiencyPct]);
-  const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, boilOg, recipe.boilMin ?? 60).additions[0].ibu;
+  const ibuOf = (hop: HopIngredient) => ibuDeLAjout(hops, hop, recipe.volumeL, boilOg, recipe.boilMin ?? 60);
   const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);

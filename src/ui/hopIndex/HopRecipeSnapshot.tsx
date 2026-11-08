@@ -1,11 +1,15 @@
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import { analyseHopRecipe } from '../../domain/hopRecipeDesign';
+import { phraseIbuIncomplet } from '../../domain/hopBitterness';
+import { BORNES } from '../../domain/bornesMetier';
 import { HopIbuRange } from './HopIbuRange';
 import { hopV55DoseText } from '../hopV55/readings';
 import './hop-recipe.css';
 
 const stageNames = { firstWort: 'Premier moût', boil: 'Ébullition', whirlpool: 'Whirlpool', dryHop: 'À cru' };
 const number = (value: number | undefined) => value === undefined ? '—' : value.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+/** Une dose en g/L : lue au millième avec sa valeur exacte (décision 34c) ; au-delà de la borne de houblon, une erreur de saisie probable se lit à 0,1 g/L (RJ-11, « 4 166,625 g/L »). */
+const doseText = (doseGL: number | undefined) => doseGL === undefined || doseGL <= BORNES.houblonGParL.max ? hopV55DoseText(doseGL) : `${number(doseGL)} g/L`;
 
 /** Read-only step header: the same model and rounding as the scenario workshop. */
 export function HopRecipeSnapshot({ recipe }: { recipe: TrialRecipe }) {
@@ -16,9 +20,9 @@ export function HopRecipeSnapshot({ recipe }: { recipe: TrialRecipe }) {
       ? <p className="hop-snapshot-empty"><span>IBU à chaud · Tinseth</span><strong>{analysis.hot.total == null ? '—' : '0'}</strong></p>
       : <HopIbuRange current={analysis.hot.total} range={analysis.style.ibu} currentDigits={0} />}
     {analysis.phases.some(phase => phase.count > 0) && <dl className="hop-snapshot-phases" aria-label="Quantités par moment d’ajout">
-      {analysis.phases.filter(phase => phase.count > 0).map(phase => <div key={phase.stage}><dt>{stageNames[phase.stage]} · {phase.count} {phase.count > 1 ? 'ajouts' : 'ajout'}</dt><dd>{`${number(phase.grams)}\u00a0g`} <span>· {phase.doseGL === undefined ? 'dose inconnue' : hopV55DoseText(phase.doseGL)}</span></dd></div>)}
+      {analysis.phases.filter(phase => phase.count > 0).map(phase => <div key={phase.stage}><dt>{stageNames[phase.stage]} · {phase.count} {phase.count > 1 ? 'ajouts' : 'ajout'}</dt><dd>{`${number(phase.grams)}\u00a0g`} <span>· {phase.doseGL === undefined ? 'dose inconnue' : doseText(phase.doseGL)}</span></dd></div>)}
     </dl>}
-    {analysis.hot.missing.length > 0 && <p className="hop-warning" role="status">IBU incomplets : {analysis.hot.missing.join(' · ')}.</p>}
+    {analysis.hot.missing.length > 0 && <p className="hop-warning" role="status">IBU incomplets : {phraseIbuIncomplet(analysis.hot.missing)}</p>}
     {analysis.style.role && <p className="hop-small">{analysis.style.role}</p>}
   </section>;
 }

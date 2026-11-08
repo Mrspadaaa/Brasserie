@@ -61,7 +61,8 @@ import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossie
 import { keepIndependentPitchingWort, yeastPlannedInFormat } from '../domain/yeastPitching';
 import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
-import { fgRecette, formatDensite } from '../domain/recipeMetrics';
+import { fgRecette, formatDensite, formatOgEnTete } from '../domain/recipeMetrics';
+import { ogHorsBornes } from '../domain/bornesMetier';
 import { oublierRepere } from '../ui/hopIndex/maBiere/repere';
 import { yeastReferences } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
@@ -79,7 +80,7 @@ import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import { hopV4Enabled } from '../ui/hopIndex/flags';
 import { poserPorteEtape } from '../ui/hopIndex/comparer/porte';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
-import { hotBitterness } from '../domain/hopBitterness';
+import { hotBitterness, ibuDeLAjout } from '../domain/hopBitterness';
 import { alphaAConfirmer, alphaProbable } from '../domain/hopAlpha';
 import { grainEmpate } from '../domain/fermentables/moments';
 import {
@@ -2323,7 +2324,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">OG</span>
             <span className="reading text-sm sm:text-base text-ebc-straw">
-              {formatDensite(og) || '—'}
+              {formatOgEnTete(og)}
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:items-center">
@@ -2333,14 +2334,15 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">EBC</span>
             <span className="flex items-center gap-1">
-              {color && (
+              {color && !ogHorsBornes(og) && (
                 <span
                   className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700"
                   style={{ background: teinteEbc(color.ebc) }}
                   aria-hidden
                 />
               )}
-              <span className="reading text-sm sm:text-base">{color ? formatDecimal(color.ebc) : '—'}</span>
+              {/* RJ-4 : « EBC 1170,8 » pour 10 000 kg de grain : comme l'OG, une couleur hors bornes n'est pas une valeur. */}
+              <span className="reading text-sm sm:text-base">{color && !ogHorsBornes(og) ? formatDecimal(color.ebc) : '—'}</span>
             </span>
           </div>
         </div>
@@ -2643,9 +2645,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 {describeMoment(h)}
                               </span>
                             )}
-                            {style.bitters && bitterness.additions[i].ibu != null && (
+                            {/* RJ-3 : quand l'en-tête refuse (houblon au-delà de la borne par litre), la ligne le dit aussi : « — IBU ». */}
+                            {style.bitters && (bitterness.additions[i].ibu != null || (bitterness.total == null && bitterness.missing.length > 0)) && (
                               <span className="text-sm text-cave-200 font-mono">
-                                {bitterness.additions[i].ibu!.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} IBU
+                                {bitterness.additions[i].ibu != null ? bitterness.additions[i].ibu!.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '—'} IBU
                               </span>
                             )}
                           </span>
@@ -3307,9 +3310,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           totalGristKg={totalGrist}
           hops={hops}
           onHops={setHops}
-          hopIbu={(h) =>
-            hotBitterness([h], volumeL, boilOg, boilMin).additions[0].ibu
-          }
+          hopIbu={(h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin)}
           yeast={yeast}
           onYeast={setYeast}
           mashSteps={mashSteps}
@@ -3359,7 +3360,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               fermentables,
               totalGristKg: totalGrist,
               hops,
-              hopIbu: (h) => hotBitterness([h], volumeL, boilOg, boilMin).additions[0].ibu,
+              hopIbu: (h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin),
               yeast,
               mashSteps,
               fermentation: ferment,
