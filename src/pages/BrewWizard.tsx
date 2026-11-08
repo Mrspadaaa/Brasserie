@@ -74,6 +74,7 @@ import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOv
 import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 import { StorageService } from '../services/storage';
+import { noterArticleCree, oublierArticlesCrees, retirerArticlesDuBrouillon } from '../services/articlesDuBrouillon';
 import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
 import { assertHopV55RecipeDraftApplicationTarget } from '../services/hopV55/recipeDraftApplication';
 import { preparerEcritureHoublons, type ChangementHoublonsV4 } from '../domain/hopIndex/v4/recipeConversion';
@@ -624,8 +625,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [stockApercu, setStockApercu] = useState<StockItem[] | null>(null);
   const stockPourEtape = stockApercu ?? stockItems;
   const [creerApercu, setCreerApercu] = useState<((s: StockItem[], n: string, c: string, u: string) => StockItem) | null>(null);
+  // RL-12 : un article créé par cet assistant est noté pour ce brouillon ; « Abandonner » le retire (src/services/articlesDuBrouillon.ts).
+  const creerArticleDuBrouillon = (name: string, category: string, unit: string): StockItem => {
+    const cree = onCreateStockItem(name, category, unit);
+    noterArticleCree(draftKey, cree.ref);
+    return cree;
+  };
   const creerArticleEtape = (name: string, category: string, unit: string): StockItem => {
-    if (!stockApercu || !creerApercu) return onCreateStockItem(name, category, unit);
+    if (!stockApercu || !creerApercu) return creerArticleDuBrouillon(name, category, unit);
     const cree = creerApercu(stockApercu, name, category, unit);
     setStockApercu([...stockApercu, cree]);
     return cree;
@@ -2125,6 +2132,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     try {
       clearRecipeDraft(draftKey);
       draftFinished.current = true;
+      // RL-12 : un brouillon abandonné ne laisse rien — les articles qu'il a créés, liés à rien, partent avec lui.
+      retirerArticlesDuBrouillon(draftKey);
       onClose();
     } catch { setDraftError('Le brouillon n’a pas pu être supprimé. Réessaie.'); }
   };
@@ -2141,6 +2150,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     // recipe, and keeps its draft.
     const writesAtSubmit = seenEdits.current;
     const finish = () => {
+      // RL-12 : la recette est enregistrée, ses articles créés lui appartiennent.
+      oublierArticlesCrees(draftKey);
       // Settings applied automatically while saving (completions, props renewed by the App) do not keep the draft; a
       // change of the brewer since the click, or not rendered yet, does (#97, D8).
       const automaticOnly = brewerWrites.current === writesAtSubmit;
@@ -2876,7 +2887,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               onBusyChange={setHopGuideBusy}
               onReference={variety => addHop(variety.name, undefined, variety)}
               onCreate={(n) => {
-                const created = onCreateStockItem(n, 'Houblon', 'g');
+                const created = creerArticleDuBrouillon(n, 'Houblon', 'g');
                 addHop(created.name, created);
               }}
               // « en houblonnage à cru… » passait sous le chevron à 320 px.
