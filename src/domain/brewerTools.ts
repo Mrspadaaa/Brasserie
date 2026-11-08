@@ -17,7 +17,7 @@ import {
   maltAlternatives,
   boilMinutes
 } from './brewCompanion';
-import { computeBeerColor } from './beerColor';
+import { recipeBeerColor } from './beerColor';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from './yeastProjection';
 export { normalizeRecipe } from './recipeSnapshot';
 export { loadBrewingCatalogueReferences } from './brewingCatalogueReferences';
@@ -638,7 +638,7 @@ export function runBrewerTool(
     const fg = point(fermentationProjection.fg.range), abv = point(fermentationProjection.abv.range);
     const boil = yeastRecipeBoilOg(recipe, fermentationProjection);
     const ibu = recipeIbu(recipe.hops, volumeL, boil.og, recipe.boilMin);
-    const color = computeBeerColor(recipe.fermentables, volumeL);
+    const color = recipeBeerColor(recipe.fermentables, volumeL);
     const water = recipe.waterPlan;
     const recommendedWater = rig
       ? BrewingMath.waterVolumes(
