@@ -4,6 +4,7 @@ import { Archive, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import type { Transaction } from '../../types';
 import type { FinancialArchive, FinancialPayment } from '../../domain/finance/types';
 import { archiveIndex, isTransactionArchived } from '../../domain/finance/archive';
+import { ledgerDuplicates } from '../../domain/finance/duplicates';
 import { isoDate, isActiveTransaction, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
 import { CATEGORY_LABELS, Field } from './FinanceForms';
 import { FinancePeriodBar, MonthStepper } from './FinancePeriod';
@@ -18,7 +19,7 @@ import './journal.css';
 export const sansJustificatif = (t: Transaction): boolean => !t.proofUrl && !t.finance?.proofDocumentId;
 
 export type JournalScope = 'current' | 'archives' | 'all';
-export type JournalFilter = 'all' | 'due' | 'late' | 'payable' | 'receivable' | 'review' | 'proof' | 'undated' | 'unknown' | 'void';
+export type JournalFilter = 'all' | 'due' | 'late' | 'payable' | 'receivable' | 'review' | 'proof' | 'undated' | 'unknown' | 'void' | 'doublon';
 export interface JournalRequest {
   key: string;
   scope?: JournalScope;
@@ -48,11 +49,11 @@ export function createJournalState(overrides: Partial<JournalState> = {}): Journ
     allDates: false, archiveYear: '', year: '', page: 1, ...overrides };
 }
 const PAGE_SIZE = 50;
-const FOLLOW_UP_FILTERS = new Set(['due', 'late', 'payable', 'receivable', 'review', 'unknown', 'proof', 'undated']);
+const FOLLOW_UP_FILTERS = new Set(['due', 'late', 'payable', 'receivable', 'review', 'unknown', 'proof', 'undated', 'doublon']);
 const FILTER_LABELS: Record<string, string> = {
   all: 'Toutes', due: 'À payer et encaisser', late: 'En retard', payable: 'À payer', receivable: 'À encaisser',
   review: 'À compléter', proof: 'Sans justificatif', undated: 'Sans date',
-  unknown: 'Paiements à confirmer', void: 'Écritures annulées',
+  unknown: 'Paiements à confirmer', void: 'Écritures annulées', doublon: 'Doublons possibles',
 };
 /**
  * Les états de suivi, dans l'ordre où le brasseur les traite.
@@ -84,6 +85,8 @@ const STATE_FILTERS: Array<{ value: string; always: boolean; urgent?: boolean }>
   { value: 'proof', always: false },
   { value: 'undated', always: false },
   { value: 'unknown', always: false },
+  // AM n° 7 : un achat inscrit deux fois fausse toute la comptabilité ; la chasse se signale tant qu'elle n'est pas vide.
+  { value: 'doublon', always: false, urgent: true },
 ];
 
 export function TransactionJournal({ transactions, payments, archives, request, state: controlledState, onStateChange,
@@ -128,6 +131,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     };
   }), [transactions, payments]);
   const classified = useMemo(() => entries.map(entry => ({ ...entry, archived: isTransactionArchived(entry.transaction, index) })), [entries, index]);
+  /** AM n° 7 : les achats déjà inscrits plus d'une fois. Un avertissement : rien n'est supprimé ni annulé d'office. */
+  const duplicateGroups = useMemo(() => ledgerDuplicates(transactions), [transactions]);
+  const duplicateIds = useMemo(() => new Set(duplicateGroups.flatMap(group => group.ids)), [duplicateGroups]);
   const archivedCount = useMemo(() => classified.reduce((n, entry) => entry.archived ? n + 1 : n, 0), [classified]);
 
   useEffect(() => { onScopeChange?.(scope); }, [scope, onScopeChange]);
@@ -195,13 +201,14 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       if (['due', 'late', 'payable', 'receivable'].includes(wanted) && !['unpaid', 'partial'].includes(payment.state)) return false;
       if (wanted === 'payable' && direction !== 'out' || wanted === 'receivable' && direction !== 'in') return false;
       if (wanted === 'late') { const due = isoDate(t.finance?.dueDate); if (!due || due >= today) return false; }
+      if (wanted === 'doublon' && !duplicateIds.has(t.id)) return false;
       if (wanted === 'undated' && date) return false;
       if (wanted === 'unknown' && payment.state !== 'unknown') return false;
       if (wanted === 'proof' && !sansJustificatif(t)) return false;
       if (wanted === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && !sansJustificatif(t)) return false;
       return true;
     };
-  }, [scope]);
+  }, [scope, duplicateIds]);
   const baseFor = (wanted: string) => scope === 'current' && FOLLOW_UP_FILTERS.has(wanted) ? bases.chasing : bases.scoped;
   const filtered = useMemo(() => baseFor(filter).filter(entry => matchesState(entry, filter)).sort((a, b) =>
     (b.date ?? '').localeCompare(a.date ?? '') || b.recordedAt - a.recordedAt || a.transaction.id.localeCompare(b.transaction.id)),
@@ -313,6 +320,11 @@ export function TransactionJournal({ transactions, payments, archives, request, 
         <button type="button" className="journal-text-action" onClick={onManageArchives}><Archive size={15} aria-hidden="true"/>Gérer les archives</button>
       </div></details>
     </div>
+    {duplicateGroups.length > 0 && <div className="journal-duplicates" role="note" data-testid="journal-duplicates">
+      <p><strong>{compte(duplicateIds.size, 'écriture')} possiblement en double.</strong> Rien n’est supprimé : vérifie, puis annule celle en trop.
+        {filter !== 'doublon' && <> <button type="button" className="journal-text-action" onClick={() => change({ filter: 'doublon' })}>Voir ces écritures</button></>}</p>
+      {filter === 'doublon' && <ul>{duplicateGroups.map(group => <li key={group.reason}>{group.reason} · {compte(group.ids.length, 'écriture')}</li>)}</ul>}
+    </div>}
     <div className="finance-list">{days.map(day => {
       const label = day.date ? shortDate(day.date) : 'Date à vérifier';
       return <section key={day.key} className="journal-day-group" aria-label={`${label} · ${compte(day.rows.length, 'opération')} · ${signedCHF(netCents(day.rows))}`}>

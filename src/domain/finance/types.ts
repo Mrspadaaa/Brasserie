@@ -46,6 +46,8 @@ export interface TransactionFinance {
   sourceAmount?: number;
   sourceDocumentType?: string;
   sourceOrderNumber?: string;
+  /** Référence de paiement QR (QRR ou SCOR) de la facture : elle identifie la facture, quel que soit le total (AM n° 7). */
+  paymentReference?: string;
   sourceTotalBasis?: 'printed' | 'line_sum';
   exchangeRate?: number;
   sourceDocumentHash?: string;
