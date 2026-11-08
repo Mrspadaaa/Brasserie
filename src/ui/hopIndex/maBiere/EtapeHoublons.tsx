@@ -17,6 +17,7 @@ import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { useHopData } from '../useHopData';
 import { ouvrirCouche } from '../ouvrirCouche';
 import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
+import { AvisRetrait, type Retrait } from '../../useRetraitAnnulable';
 import { HoteEtapeProvider, type HoteEtape, type RouteEtape } from './hote';
 import { EtapeHoublonsContenu } from './index';
 import { JeuPictos } from '../Pictos';
@@ -143,6 +144,20 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
     onChange({ draftId, patch: { hops } });
   }, [conversion, draftId, onChange]);
 
+  const [retrait, setRetrait] = useState<Retrait<AjoutParcours> | null>(null);
+  const avis = useRef<number | null>(null);
+  useEffect(() => () => { if (avis.current != null) window.clearTimeout(avis.current); }, []);
+  const annulerRetrait = useCallback(() => {
+    if (!retrait) return;
+    geste((r) => {
+      const additions = r.additions.filter((a) => a.id !== retrait.item.id);
+      additions.splice(Math.min(retrait.index, additions.length), 0, retrait.item);
+      return { ...r, additions };
+    });
+    setRetrait(null);
+    if (avis.current != null) window.clearTimeout(avis.current);
+  }, [retrait, geste]);
+
   const valeur = useMemo<HoteEtape>(() => ({
     lectures, lireNom,
     recette,
@@ -153,7 +168,17 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
     gestes: {
       ajouter: (_sur, a: AjoutParcours) => geste((r) => ajouter(r, a)),
       dose: (_sur, id, g) => geste((r) => changerDose(r, id, g)),
-      retirer: (_sur, id) => geste((r) => retirer(r, id)),
+      retirer: (_sur, id) => {
+        // TE-24, BR-2 (même mécanisme que BR-30) : le retrait se dit et se défait d'un toucher. La ligne et son rang sont gardés ; un second toucher sur la même ligne ne l'écrase pas.
+        const rang = recetteRef.current.additions.findIndex((a) => a.id === id);
+        if (rang < 0) return;
+        const ajout = recetteRef.current.additions[rang];
+        const nom = houblon(ajout.hopKey).nom;
+        geste((r) => retirer(r, id));
+        setRetrait({ item: ajout, index: rang, nom });
+        if (avis.current != null) window.clearTimeout(avis.current);
+        avis.current = window.setTimeout(() => setRetrait(null), 10_000);
+      },
       moment: (_sur, id, q) => geste((r) => changerMoment(r, id, q)),
     },
     // Le glisser : chaque cran suit le doigt en mémoire ; l'écriture part au repos (un seul patch par glisser).
@@ -176,6 +201,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
         <JeuPictos />
         {erreur && <p role="alert" className="mb-1 text-sm text-cave-200">{erreur}</p>}
         <EtapeHoublonsContenu bandeau={false} />
+        <AvisRetrait dernier={retrait} onAnnuler={annulerRetrait} />
         {fiche && <ContexteFicheApp valeur={brouillon}><FicheDeLApp houblon={fiche} onFermer={fermerFiche} /></ContexteFicheApp>}
       </div>
     </HoteEtapeProvider>
