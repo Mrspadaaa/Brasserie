@@ -243,11 +243,11 @@ export function chercher(texte: string, articles: readonly StockItem[], lignes: 
  * à 0 kg ; MV-10 : « Mangue 20 » créait un fruit « Mangue 20 » à 0 kg).
  * Les noms de sucre ne finissent pas par un petit entier (« Candi D-180 », « Candi D 90 » : au-delà de 25) ; ceux des malts si (« Caramunich 2 »).
  */
-export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = false): { nom: string; kg: number | null } {
+export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = false, exact?: (nom: string) => boolean): { nom: string; kg: number | null } {
   const s = v.trim(), m = s.match(/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(kg)?$/);
   if (!m) return { nom: s, kg: null };
   const petitEntier = /^\d+$/.test(m[2]) && Number(m[2]) >= 1 && Number(m[2]) <= 25;
-  const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (sucre && petitEntier && !(connu?.(s) ?? false)) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
+  const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (sucre && petitEntier && !((exact ?? connu)?.(s) ?? false)) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
   return masse ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
 }
 
