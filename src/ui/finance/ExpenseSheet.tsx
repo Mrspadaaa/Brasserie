@@ -58,6 +58,7 @@ import type { LienStock } from '../depense/Pictos';
 import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,uniteAffichee,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
 import { confianceEntete,natureSansEnjeu,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
 import { arrondiDuTotal,uniteEffective } from '../../services/purchaseEntry';
+import { illisibleSiVide,lectureSansRien } from '../../services/lectureIllisible';
 import { regleProduit,linkUnit,donneesDArticle } from '../../services/stockLineMatching';
 import type { ApercuDepense } from '../depense/types';
 import { tenirEnrichissement } from '../../services/enrichissement';
@@ -491,12 +492,14 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /** Ce que l'écran fait de la valeur rendue par `scanDocument` / `scanPages` : un morceau a été reçu → fusion ; sinon (cache, pièce sans 3.8, ancien serveur) → comme avant. */
   const finLecture=(outcome:ScanOutcome,documentHash?:string)=>{
     if(provRef.current){surFinal(outcome,documentHash);return;}
-    setVerif('aucune');applyOutcome(outcome,documentHash);
+    /* LL-5, B2-17 : une lecture « ok » sans rien d'exploitable est un document illisible, dit une fois ; aucune ligne n'est fabriquée à sa place. */
+    setVerif('aucune');applyOutcome(illisibleSiVide(outcome),documentHash);
   };
   /** Les options du flux pour `scanDocument` / `scanPages` : le morceau provisoire, et le signal levé quand la feuille se ferme (le serveur finit et met en cache). */
   const optionsFlux=(documentHash:string,pages?:boolean):ScanFluxOptions=>{
     const jeton=++lectureJeton.current;lectureAbort.current?.abort();const ctrl=new AbortController();lectureAbort.current=ctrl;provRef.current=null;
-    return {signal:ctrl.signal,onProvisoire:p=>{if(!mounted.current||lectureJeton.current!==jeton||!p.ok||!p.result)return;if(pages)setNPagesLues(p.pagesLues??0);surProvisoire(p,documentHash);}};
+    /* LL-5 : un provisoire sans rien d'exploitable n'est pas posé (ni ligne « Achat » fabriquée, ni écran de confirmation) : le final décide, et dit « document illisible » s'il est vide aussi. */
+    return {signal:ctrl.signal,onProvisoire:p=>{if(!mounted.current||lectureJeton.current!==jeton||!p.ok||!p.result||lectureSansRien(p.result))return;if(pages)setNPagesLues(p.pagesLues??0);surProvisoire(p,documentHash);}};
   };
   /* D7 : dès qu'un justificatif est parti sous cette saisie (même `submissionId`, donc même `proof-…` dans Drive), un autre fichier n'est ni lu, ni scanné, ni posé :
      il ne serait jamais envoyé (save() saute l'envoi) ou irait contre l'empreinte de la dépense déjà écrite. Défense en profondeur : les boutons sont déjà désactivés. */
