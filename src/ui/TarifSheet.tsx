@@ -23,7 +23,9 @@ type TarifDraft = Omit<PricingItem, MoneyKey> & Record<MoneyKey, number | undefi
 const chf = (value: number | undefined) => value === undefined || !Number.isFinite(value)
   ? 'À renseigner'
   : value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const validAmount = (value: number | undefined): value is number => value !== undefined && Number.isFinite(value) && value >= 0;
+/* BE-98 : un prix ou un coût UNITAIRE (une bouteille, un fût) va de 0 à 10 000 CHF (estimé : un fût de 30 L ~150 CHF, une palette ~5 000 CHF) ; « 99 999 » n'est plus accepté. */
+const PRIX_UNITAIRE_MAX = 10_000;
+const validAmount = (value: number | undefined): value is number => value !== undefined && Number.isFinite(value) && value >= 0 && value <= PRIX_UNITAIRE_MAX;
 // saveTarifs adresse les documents avec cette normalisation. Vérifier la clé
 // effective empêche aussi les collisions d'accents, de ponctuation ou de casse.
 const productKey = (value: string) => value.toLowerCase().normalize('NFD')
@@ -70,7 +72,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
     // la chaîne pendant une frappe incomplète (« - », « 12, »).
     const invalidInput = Array.from(form.current?.querySelectorAll<InputElement>('[data-tarif-money] input, [data-tarif-money] textarea') ?? [])
       .find(input => !validAmount(parseDecimal(input.value) ?? undefined));
-    if (invalidInput) { invalidInput.focus(); invalidInput.setCustomValidity('Indique un montant positif ou nul en CHF.'); invalidInput.reportValidity(); return; }
+    if (invalidInput) { invalidInput.focus(); invalidInput.setCustomValidity('Indique un montant entre 0 et 10 000 CHF.'); invalidInput.reportValidity(); return; }
     if (!validAmount(costIngredients) || !validAmount(costFixed) || !validAmount(priceHT) || costTotal === undefined || marginCHF === undefined || marginPercent === undefined) {
       form.current?.querySelector<HTMLElement>(`#tf-${moneyErrors[0]}`)?.focus();
       return;
