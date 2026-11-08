@@ -112,7 +112,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
           <div className="equipment-empty">
             <p>{filter !== 'all' && kegs.length ? `Aucun fût « ${filter === 'unknown' ? UNKNOWN_STATE.label : KEG_STATE[filter].label} »` : 'Aucun fût enregistré'}</p>
             {kegs.length ? <Button intent="secondary" size="sm" onClick={() => setFilter('all')}>Voir tous les fûts</Button>
-              : <p className="text-cave-400">Ajoute un fût avec le bouton « Ajouter un fût ».</p>}
+              : <p className="text-cave-400">Ajoute un fût avec le bouton « + » de la barre.</p>}
           </div>
         }
         renderItem={keg => {
