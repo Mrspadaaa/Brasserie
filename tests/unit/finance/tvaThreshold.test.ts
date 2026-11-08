@@ -24,13 +24,6 @@ describe('AM n° 10 : seuil de 100 000 CHF', () => {
   });
   it('RF-10 : la fenêtre est dite et l’effet juridique n’est pas affirmé (à vérifier avec l’AFC ou la fiduciaire)', () => {
     const s = tvaThresholdStatus([vente('V1', '2026-10-01', 100_000)], ASOF, 100_000, false);
-    expect(s?.message).toMatch(/12 mois glissants (du 09.11.2025 au 08.11.2026)/);
-    expect(s?.message).toMatch(/à vérifier avec l’AFC ou ta fiduciaire/);
-    expect(s?.message).not.toMatch(/est obligatoire/);
-    expect(tvaThresholdStatus([vente('V1', '2026-10-01', 85_000)], ASOF, 100_000, false)?.message).toMatch(/à vérifier avec l’AFC ou ta fiduciaire/);
-  });
-  it('RF-10 : la fenêtre est dite et l’effet juridique n’est pas affirmé (à vérifier avec l’AFC ou la fiduciaire)', () => {
-    const s = tvaThresholdStatus([vente('V1', '2026-10-01', 100_000)], ASOF, 100_000, false);
     expect(s?.message).toContain('12 mois glissants (du 09.11.2025 au 08.11.2026)');
     expect(s?.message).toMatch(/à vérifier avec l’AFC ou ta fiduciaire/);
     expect(s?.message).not.toMatch(/est obligatoire/);
