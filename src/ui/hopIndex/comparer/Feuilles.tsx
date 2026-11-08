@@ -610,7 +610,7 @@ export function FeuilleAjouter({ disponibles, exclus, verbe, suite, onAjouter }:
         const familles = (Object.keys(h.familles) as FamilyId[]).filter((f) => h.familles[f].niveau !== 'non décrit')
           .sort((x, y) => (h.familles[y].niveau === 'marqué' ? 1 : 0) - (h.familles[x].niveau === 'marqué' ? 1 : 0)).slice(0, 6);
         const part = h.partSansFamille;
-        const lot = !!h.stock && hopRef(cle)?.stock?.alphaFrom === 'fiche de stock';
+        const lot = !!h.stock && hopRef(cle)?.stock?.alphaFrom != null; // HX-6
         return (
           <section key={cle} className="pq-comparer-ajout-c" style={{ ['--pq-h' as string]: couleurHoublon(cle) }} data-houblon-carte={cle}>
             <p className="pq-comparer-ajout-n"><Point couleur={couleurHoublon(cle)} /><b>{h.nom}</b>{h.stock != null && h.stock > 0 ? <IconeStock /> : <IconePanier />}</p>

@@ -521,7 +521,8 @@ function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, remplacable
   };
   useEffect(() => finSurvol, []);
   const h = c.houblon;
-  const a = h.alpha, lot = !!h.stock && hopRef(c.cle)?.stock?.alphaFrom === 'fiche de stock';
+  // HX-6 (08.11) : l'α du lot, qu'il vienne de la fiche de stock ou du nom de l'article (« Citra Cryo 24,8 % »), est celui du moteur et de Suggérer ; la plage de la variété (pellets) ne vaut pas pour un cryo.
+  const a = h.alpha, lot = !!h.stock && hopRef(c.cle)?.stock?.alphaFrom != null;
   const deduit = h.role.source.startsWith('règle');
   const familles = (Object.keys(h.familles) as FamilyId[]).filter((f) => h.familles[f].niveau !== 'non décrit')
     .sort((x, y) => (h.familles[y].niveau === 'marqué' ? 1 : 0) - (h.familles[x].niveau === 'marqué' ? 1 : 0)).slice(0, quatre ? 3 : 5);

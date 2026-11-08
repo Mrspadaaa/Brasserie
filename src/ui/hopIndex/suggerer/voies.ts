@@ -11,6 +11,7 @@
 import type { FamilyId, Voie, VoieResult } from '../../../domain/hopIndex/v4';
 import { additionEffect, applyVoie, yeastSignals } from '../parcours/v4';
 import { calcul } from '../parcours/calcul';
+import { nombre } from '../nombres';
 import type { BiereLue, Candidat, HoublonLu } from '../parcours/adaptateur';
 import { houblon, leviersLevure, lireBiere, style, type LeviersLevure } from '../parcours/adaptateur';
 import { placer } from '../parcours/operations';
@@ -147,7 +148,8 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
       v, cles,
       ligne: {
         n: 0, id: v.id, geste, houblons: cles.map((c) => houblon(c)),
-        dose: v.type === 'assemblage' ? v.actions.map((a) => a.grams).join('+') + ' g' : geste === 'remplacer' ? `${v.actions[0].grams} g` : null,
+        // HX-5 (08.11) : « 22.5+22.5 g » s'écrit « 22,5 + 22,5 g », virgule comme partout (TE-23).
+        dose: v.type === 'assemblage' ? v.actions.map((a) => nombre(a.grams, 1)).join(' + ') + ' g' : geste === 'remplacer' ? `${nombre(v.actions[0].grams, 1)} g` : null,
         effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
         hors: horsDuStyle(v),
         stock: v.stock.status, estime: v.estimated, muet: null,
