@@ -126,7 +126,8 @@ export const GeminiScannerService = {
     if (!['image/jpeg','image/png','image/webp','application/pdf'].includes(mimeType) || file.size>4*1024*1024)
       return { ...base,ok:false,error:'Choisis une image JPG, PNG, WebP ou un PDF de 4 Mo maximum.' };
     const proofDataUrl=await this.fileToDataUrl(file);
-    // D381, déclencheur « avant » : une pièce très haute, un PDF de plus de 4 pages ou très dense se lit en morceaux. Les autres gardent la lecture d'aujourd'hui, au même appel.
+    // D381, déclencheur « avant » : une pièce très haute ou un PDF de plus de 4 pages se lit en morceaux (un PDF de 1 à 4 pages, jamais : lu entier, couche de
+    // texte comprise ; 08.11). Les autres gardent la lecture d'aujourd'hui, au même appel.
     const avant=await this.decouper(file,false);
     if (avant) return this.lireMorceaux(avant,file,base,proofDataUrl,options?.signal);
     const response=await this.appeler({ task:'scanInvoice',tier:'fast',file },options,etape=>({ ...base,proofDataUrl,ok:true,jeton:etape.jeton,result:this.normalizeResult(etape.data),model:etape.model,elapsedMs:etape.elapsedMs }));

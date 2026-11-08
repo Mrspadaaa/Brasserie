@@ -58,13 +58,53 @@ const etiquettes = (data: Uint8ClampedArray) => { const e = new Uint32Array(data
   });
   // Une ligne perdue ou rognée : absente du masque normalisé, ou moins de 80 % de l'aire de sa TRANCHE (à l'échelle près). Une mesure à l'encre a été
   // essayée le 07.11 et écartée : réduite et lissée, l'image perd des pixels sombres de traits fins sans rien perdre de lisible (1 157 « rognées »).
+  // Diagnostic (08.11) : chaque coupe intérieure, son blanc (rangées presque vides autour de la coupe, dans le profil du plan) et si elle tranche une ligne.
+  const pasPlan = linePitchDe(finale.rangees);
+  const diagCoupes = coupes.map((cut, i) => {
+    let a = cut - 1, b = cut - 1;
+    const vide = (y: number) => (finale.rangees[y] ?? 1) <= 0.003;
+    if (vide(cut - 1)) { while (a > 0 && vide(a - 1)) a--; while (b < Hn - 1 && vide(b + 1)) b++; }
+    const tranchees = coupees.filter(x => x.coupe === i + 1).length;
+    return { k: i + 1, cut, blanc: vide(cut - 1) ? b - a + 1 : 0, forcee: forcees[i], tranchees, pas: pasPlan, maxAutour: Math.max(...finale.rangees.slice(Math.max(0, cut - 4), cut + 3)) };
+  });
   const e2 = g.echelle * g.echelle, perdues: number[] = [], rognees: number[] = [];
   for (const [id, a] of aire0) { const b = aire.get(id) ?? 0; if (!b) perdues.push(id - 1); else if (b < 0.8 * a * e2) rognees.push(id - 1); }
   return {
-    morceaux: m.length, lignes: aire0.size, msPlan, angleGeo: g.angle, echelle: g.echelle, largeur: L, hauteur: Hn,
+    morceaux: m.length, lignes: aire0.size, msPlan, angleGeo: g.angle, diagCoupes, echelle: g.echelle, largeur: L, hauteur: Hn,
     forcees: forcees.filter(Boolean).length, jonctions: planJonctions(m, finale.rangees).length,
     coupeesSilencieuses: coupees.filter(x => !x.signalee).map(x => ({ ...x, rangees: [Math.min(...rangs.get(x.ligne + 1)!), Math.max(...rangs.get(x.ligne + 1)!)], cut: coupes[x.coupe - 1] })), coupeesSignalees: coupees.filter(x => x.signalee).length, perdues, rognees,
   };
+};
+/** Diagnostic (08.11) : la photo normalisée autour d'une coupe (± 3 pas), la coupe en bleu, et à gauche, en rouge, les rangées où le masque dit
+ *  qu'une ligne a de l'encre (critère du banc) ; en vert, les rangées encrées de la carte des coupes du plan. PNG en base 64. */
+(window as any).__voirCoupe = async (photo64: string, masque64: string, k: number) => {
+  const r = await (window as any).__controler(photo64, masque64);
+  const photo = await decoder(photo64, 'image/jpeg');
+  const plan = await planifierImage(photo, true);
+  if (!plan) return null;
+  const { g, finale } = plan, cut = finale.morceaux[k - 1].bottom, pas = Math.round(linePitchDe(finale.rangees) ?? 30);
+  const y0 = Math.max(0, cut - 3 * pas), h = Math.min(g.hauteur - y0, 6 * pas);
+  const c = document.createElement('canvas'); c.width = g.largeur; c.height = h;
+  const x = dessinerNormalise(c, photo, g, y0);
+  x.setTransform(1, 0, 0, 1, 0, 0);
+  for (let y = 0; y < h; y++) if (finale.rangees[y0 + y] > 0.003) { x.fillStyle = '#0a0'; x.fillRect(12, y, 10, 1); }
+  for (const s of r.coupeesSilencieuses ?? []) if (s.coupe === k) { x.fillStyle = 'rgba(255,0,0,0.8)'; x.fillRect(0, s.rangees[0] - y0, 10, s.rangees[1] - s.rangees[0] + 1); }
+  x.fillStyle = '#00f'; x.fillRect(0, cut - y0, g.largeur, 1);
+  const u = c.toDataURL('image/png');
+  return u.slice(u.indexOf(',') + 1);
+};
+/** Diagnostic (08.11) : la photo d'ORIGINE, rangées [y0, y0 + h), avec en rouge les frontières des tranches du masque (changement de couleur). */
+(window as any).__voirBrut = async (photo64: string, masque64: string, y0: number, h: number) => {
+  const photo = await decoder(photo64, 'image/jpeg'), masque = await decoder(masque64, 'image/png');
+  const c = document.createElement('canvas'); c.width = photo.width; c.height = h;
+  const x = c.getContext('2d', { willReadFrequently: true })!; x.drawImage(masque, 0, -y0);
+  const e = etiquettes(x.getImageData(0, 0, c.width, h).data);
+  x.drawImage(photo, 0, -y0);
+  const d = x.getImageData(0, 0, c.width, h);
+  for (let y = 1; y < h; y++) for (let i = y * c.width; i < (y + 1) * c.width; i++) if (e[i] !== e[i - c.width] && e[i] && e[i - c.width]) { d.data[4 * i] = 255; d.data[4 * i + 1] = 0; d.data[4 * i + 2] = 0; }
+  x.putImageData(d, 0, 0);
+  const u = c.toDataURL('image/png');
+  return u.slice(u.indexOf(',') + 1);
 };
 (window as any).__pret = true;
 

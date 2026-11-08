@@ -21,9 +21,14 @@ export interface Partie { file: { data: string; mimeType: string }; morceau: { k
 
 /** Une image plus haute que 3 × sa largeur (après recadrage du papier) est découpée sans qu'on le demande. */
 export const RAPPORT_DECOUPE = 3;
-/** Un PDF de plus de 4 pages, ou de plus de 90 rangées de texte, est découpé sans qu'on le demande. */
+/**
+ * Un PDF de plus de 4 pages (le plafond du serveur) est découpé sans qu'on le demande ; un PDF de 1 à 4 pages se lit ENTIER, comme PDF : Gemini y reçoit
+ * la couche de texte native en plus de l'image des pages (« + Native Text », état de l'art du 08.11). Le seuil de 90 rangées de texte (D380) n'avait
+ * aucune mesure derrière lui : il additionnait les rangées de toutes les pages (adresses, bulletin compris) et a coupé en 14 morceaux, en ligne le 08.11,
+ * une facture B&R de 4 pages que la lecture entière lisait juste. Une lecture entière trop longue est relue en morceaux par le déclencheur « après »,
+ * qui est exact (le serveur dit lui-même que sa réponse a été coupée).
+ */
 export const PDF_PAGES_MAX = 4;
-export const PDF_RANGEES_MAX = 90;
 export const LARGEUR_MAX = 1600;
 export const QUALITE_JPEG = 0.85;
 /** Le contraste d'encre ne descend jamais sous ce plancher (niveaux de gris), quel que soit le seuil d'Otsu. */
@@ -787,16 +792,8 @@ async function decouperPdf(file: File | Blob, force: boolean): Promise<Decoupe |
   const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise;
   try {
     const pages: number = pdf.numPages;
-    if (!force && pages <= PDF_PAGES_MAX) {
-      let rangees = 0;
-      for (let p = 1; p <= pages; p++) {
-        const page = await pdf.getPage(p);
-        const texte = await page.getTextContent();
-        rangees += compterRangees(texte.items.filter((i: any) => typeof i.str === 'string' && i.str.trim() !== '' && Array.isArray(i.transform)).map((i: any) => i.transform[5]));
-        page.cleanup();
-      }
-      if (rangees <= PDF_RANGEES_MAX) return null;
-    }
+    // 1 à 4 pages : lu entier (voir `PDF_PAGES_MAX`), sans même ouvrir les pages.
+    if (!force && pages <= PDF_PAGES_MAX) return null;
     const toutes: Array<Omit<Partie, 'morceau'>> = [];
     // Les coupes intérieures, au rang GLOBAL du morceau qui les précède : une bande de contrôle (coupe dans une page) ou un saut de page (rien à recouper).
     const coupes: Array<{ k: number; data: string } | { k: number; sautDePage: true }> = [];
@@ -831,7 +828,7 @@ const estPdf = (f: File | Blob) => f.type === 'application/pdf' || /\.pdf$/i.tes
 
 /**
  * Les morceaux d'une pièce, ou `null` : la pièce se lit alors EXACTEMENT comme aujourd'hui (même appel).
- *  - sans `force` : une image plus de 3 × plus haute que large après recadrage du papier ; un PDF de plus de 4 pages ou de plus de 90 rangées de texte ;
+ *  - sans `force` : une image plus de 3 × plus haute que large après recadrage du papier ; un PDF de plus de 4 pages (1 à 4 : lu entier) ;
  *  - avec `force` (la première lecture a été coupée ou a laissé des lignes imprimées) : dès que `planMorceaux` rend au moins 2 morceaux.
  * Peut lever (image illisible, canevas absent, pdf.js indisponible) : l'appelant garde alors la lecture d'aujourd'hui.
  */
