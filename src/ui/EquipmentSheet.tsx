@@ -1,5 +1,5 @@
 import { Input, Textarea } from './Input';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { EquipmentItem } from '../types';
 import { Sheet, ConfirmSheet } from './Sheet';
@@ -47,6 +47,11 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
   const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [saveAttempted, setSaveAttempted] = useState(false);
+  // TE-47 (rejeu 649bcc54) : le prix est dans la section repliable « Achat ». Un prix refusé l'ouvre, et son message vit HORS de la section
+  // (toujours visible, annoncé, relié au champ et au bouton éteint).
+  const [achatOuvert, setAchatOuvert] = useState(false);
+  const prixRefuse = draft?.purchasePrice !== undefined && !(Number.isFinite(draft.purchasePrice) && draft.purchasePrice >= 0);
+  useEffect(() => { if (prixRefuse) setAchatOuvert(true); }, [prixRefuse]);
 
   if (!item || !draft) return null;
 
@@ -56,7 +61,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
   const categories = CATEGORIES.includes(draft.category) || !draft.category ? CATEGORIES : [draft.category, ...CATEGORIES];
   const states = STATES.some(state => state.value === draft.state) ? STATES : [...STATES, { value: draft.state, label: draft.state || 'Non renseigné' }];
   // TE-47 : un prix négatif n'existe pas ; vide = non renseigné (jamais 0).
-  const priceError = draft.purchasePrice !== undefined && !(Number.isFinite(draft.purchasePrice) && draft.purchasePrice >= 0) ? 'Le prix payé ne peut pas être négatif.' : undefined;
+  const priceError = prixRefuse ? 'Le prix payé ne peut pas être négatif.' : undefined;
   // BR-94 : la date enregistrée peut être en AAAA-MM-JJ (achat, démo) ou JJ.MM.AAAA (saisie) ; le champ lit toujours le format suisse.
   const iso = isoDate(draft.purchaseDate);
   const purchaseDateSwiss = iso ? toSwissDate(iso) : '';
@@ -80,7 +85,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
         footer={
           <div className="equipment-footer">
             <Button intent="secondary" onClick={onClose}>Annuler</Button>
-            <Button intent="primary" onClick={save} disabled={!canSave || Boolean(priceError)}>Enregistrer</Button>
+            <Button intent="primary" onClick={save} disabled={!canSave || Boolean(priceError)} aria-describedby={priceError ? 'eq-price-error' : undefined}>Enregistrer</Button>
           </div>
         }
       >
@@ -132,7 +137,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
             />
           </Field>
 
-          <details className="equipment-disclosure">
+          <details className="equipment-disclosure" open={achatOuvert} onToggle={(e) => setAchatOuvert(e.currentTarget.open)}>
           <summary>Achat <span>· {purchaseDateSwiss || 'Date non renseignée'}{draft.purchasePrice !== undefined ? ` · ${draft.purchasePrice.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF` : ' · Prix non renseigné'}</span></summary>
           <div className="equipment-form-pair">
             <DateField
@@ -141,9 +146,10 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
               onChange={(purchaseDate) => setDraft({ ...draft, purchaseDate })}
               shortcuts={[]}
             />
-            <Field label="Prix payé (CHF)" htmlFor="eq-price" error={priceError}>
+            <Field label="Prix payé (CHF)" htmlFor="eq-price">
               <NumberInput
                 id="eq-price"
+                aria-describedby={priceError ? 'eq-price-error' : undefined}
                 /* Pas de `min` : il ramenait « -1 » à « 0 » à la sortie du champ, en silence (TE-47, rejeu ff0f822e). Le refus se dit (priceError) et bloque Enregistrer. */
                 aria-invalid={Boolean(priceError)}
                 value={draft.purchasePrice}
@@ -156,6 +162,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
             </Field>
           </div>
           </details>
+          {priceError && <p id="eq-price-error" role="alert" className="text-xs text-alert leading-snug">{priceError}</p>}
 
           <details className="equipment-disclosure">
           <summary>Notes <span>· {draft.notes || 'Aucune'}</span></summary>
