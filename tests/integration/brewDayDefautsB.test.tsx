@@ -57,6 +57,15 @@ describe('TE-42 : un seul avancement', () => {
   });
 });
 
+describe('BR-56 : la virgule partout', () => {
+  it('l’en-tête dit « 19,75 L », pas « 19.75 L »', () => {
+    monter({ ...brassin(), volumeL: 19.75 } as Batch);
+    const texte = document.body.textContent ?? '';
+    expect(texte).toContain('19,75 L');
+    expect(texte).not.toMatch(/\d\.\d+ (L|°C)/);
+  });
+});
+
 describe('BR-49 / BE-30 : double toucher sur « Terminer et continuer »', () => {
   it('ne passe qu’une étape : la suivante n’est pas cochée à son tour', () => {
     const saved: Batch[] = [];

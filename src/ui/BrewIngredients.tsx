@@ -575,7 +575,7 @@ export function BrewIngredients({
                 <h3>{group.label}</h3>
                 {key === 'sparge' && (
                   <span className="brew-water-temperature">
-                    Consigne {recipe.mash?.spargeTempC ?? 76} °C
+                    Consigne {String(recipe.mash?.spargeTempC ?? 76).replace('.', ',')} °C
                   </span>
                 )}
                 {group.label === 'Premier moût' && <span>{group.hint}</span>}

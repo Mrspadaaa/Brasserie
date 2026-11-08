@@ -100,6 +100,8 @@ interface Props {
   onFinish: (batch: Batch) => void;
   onOpenHopV55?: (journal: BrewDayState) => void;
 }
+/** Un nombre décimal s'écrit avec la virgule partout sur l'écran (BR-56, BE-… 08.11 : « 19.75 L » à côté de « 3,216 L », « Consigne 78.5 °C »). */
+const fr = (n: number | string) => String(n).replace('.', ',');
 const AREA: Record<BrewArea, string> = {
   preparation: 'Préparer',
   mash: 'Empâter',
@@ -751,7 +753,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       subtitle={
         session.error
           ? 'Journal à synchroniser · brouillon conservé'
-          : `${brewingStarted ? 'Jour de brassage' : 'Brassin à préparer'} · ${batch.id} · ${recipe.volumeL ?? batch.volumeL ?? '—'} L`
+          : `${brewingStarted ? 'Jour de brassage' : 'Brassin à préparer'} · ${batch.id} · ${String(recipe.volumeL ?? batch.volumeL ?? '—').replace('.', ',')} L`
       }
       onClose={() =>
         capture
@@ -1051,7 +1053,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           <li key={s.id}>
                             <span>{isBoilStep(s) ? 'Ébullition' : s.label}</span>
                             <strong>
-                              {s.tempC != null ? `${s.tempC} °C` : ''}
+                              {s.tempC != null ? `${fr(s.tempC)} °C` : ''}
                               {isUsefulTimer(s)
                                 ? ` · ${s.durationMin} min`
                                 : isBoilStep(s)
@@ -1098,7 +1100,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                 {f.note ? ` · ${f.note}` : ''}
                               </span>
                               <strong>
-                                {f.tempC} °C · {f.days} jours
+                                {fr(f.tempC)} °C · {f.days} jours
                               </strong>
                             </li>
                           ))}
@@ -1143,7 +1145,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                   value: String(i),
                                   label: isBoilStep(s) ? 'Ébullition' : s.label,
                                   detail: [
-                                    s.tempC != null ? `${s.tempC} °C` : '',
+                                    s.tempC != null ? `${fr(s.tempC)} °C` : '',
                                     isBoilStep(s)
                                       ? `${boilMinutes(state, recipe)} min`
                                       : s.durationMin > 0
@@ -1193,7 +1195,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                 Consigne
                               </span>
                               <strong className="brew-digits">
-                                {thermalTarget}
+                                {fr(thermalTarget)}
                                 <small>°C</small>
                               </strong>
                             </div>
@@ -1249,7 +1251,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
                       {current.id === 'ensemencement' && state.pitchedAt == null && (
                         <label className="brew-thermal-coolant">Moût à l’ajout de levure (facultatif)
-                          <span><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-10} max={120} onValue={setPitchTemperature} /> °C</span>
+                          <span><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-5} max={45} onValue={setPitchTemperature} /> °C <small>(−5 à 45 °C : au-delà, la levure ne s’ajoute pas)</small></span>
                         </label>
                       )}
                       {showTimer && (
