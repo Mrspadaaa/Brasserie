@@ -65,6 +65,13 @@ describe('T-E5 / T-E6 le dépôt par glisser sur l\'entrée', () => {
     expect(etat.scanned).not.toHaveBeenCalled();
     expect(etat.pages).not.toHaveBeenCalled();
   });
+  it('LO-6 : trois captures dans « Importer un justificatif » d\'un coup → le même refus ; la capture 1 n\'est jamais lue seule en silence', async () => {
+    const view = await monter();
+    fireEvent.change(champFichier(view), { target: { files: [image('c1.png'), image('c2.png'), image('c3.png')] } });
+    expect(await screen.findByRole('alert')).toHaveTextContent('Dépose un seul document à la fois. Pour plusieurs pages, touche « Plusieurs ».');
+    expect(etat.scanned).not.toHaveBeenCalled();
+    expect(etat.pages).not.toHaveBeenCalled();
+  });
   it('T-E6 : un seul fichier lâché → lu comme aujourd\'hui', async () => {
     etat.scanned.mockResolvedValue(lectureOk());
     await monter();
