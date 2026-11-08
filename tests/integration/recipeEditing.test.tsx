@@ -679,7 +679,7 @@ describe('Recipe data entry regressions', () => {
   });
   it('adding a malt completes a touch click without advancing to hops', () => {
     const save = vi.fn(); wizard(base, save);
-    step(/^Fermentescibles$/);
+    step(/^Malts.sucres$/);
     const picker = screen.getByRole('combobox', { name: /Ajouter un fermentescible/ });
     fireEvent.focus(picker);
     fireEvent.change(picker, { target: { value: 'Munich' } });
@@ -758,7 +758,7 @@ describe('Recipe data entry regressions', () => {
   it('edits EBC and PPG in both steps, saves them, and restores manual acids', async () => {
     const save = vi.fn();
     wizard(base, save);
-    step(/^Fermentescibles$/);
+    step(/^Malts.sucres$/);
     // D226 : à cette étape, la fiche technique du malt (couleur, PPG) est la ligne « PPG — · fiche › » du plateau, plus le résumé « Base · 4 EBC · modifier » sous la ligne.
     // Mêmes valeurs saisies (9,5 EBC) et même recette vérifiée à l'enregistrement ; le récapitulatif garde `MaltDetails` (« Base · 9.5 EBC »).
     fireEvent.click(screen.getByRole('button', { name: /^Fiche technique de Pilsner : PPG/ }));

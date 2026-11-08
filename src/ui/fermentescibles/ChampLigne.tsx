@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../Input';
 import { lit } from './modele';
 
@@ -39,10 +39,14 @@ export interface ChampLigneProps {
   marques?: Record<string, string | number | undefined>;
   /** Le champ prend sa largeur au contenu (la masse de la ligne). */
   auContenu?: boolean;
+  /** Unité dite dans le message d'un refus (« kg », « jours »). */
+  unite?: string;
+  /** Un refus se dit (N-4, BR-16, comme VI-9) : le message à écrire quelque part (role="alert"), ou `null` quand il tombe. */
+  onRefus?: (message: string | null) => void;
 }
 
 export const ChampLigne: React.FC<ChampLigneProps> = ({
-  valeur, onValeur, format, arrondi, cran, libelle, id, className = '', invalide, decrit, repos = '0', zeroValide: zeroValideProp, videVaut0, zeroAttention, entier, onEntree, onTab, marques = {}, auContenu,
+  valeur, onValeur, format, arrondi, cran, libelle, id, className = '', invalide, decrit, repos = '0', zeroValide: zeroValideProp, videVaut0, zeroAttention, entier, onEntree, onTab, marques = {}, auContenu, unite, onRefus,
 }) => {
   const [texte, setTexte] = useState<string | null>(null);
   const avant = useRef<number | null>(null);
@@ -50,7 +54,14 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
   const touche = useRef(false);
   // « frais » : la valeur d'avant, lisible en gris et sélectionnée (invisiblement) : la frappe la remplace, un champ vidé puis quitté vaut 0 (D228).
   const [frais, setFrais] = useState(false);
-  const [negatif, setNegatif] = useState(false);
+  // Le refus d'un nombre négatif : le champ reste aria-invalid et le message reste dit après la sortie (la valeur d'avant est déjà rétablie), jusqu'à la frappe suivante.
+  const [refus, setRefus] = useState<string | null>(null);
+  const negatif = refus !== null;
+  const dire = useRef(onRefus);
+  dire.current = onRefus;
+  const poserRefus = (m: string | null) => { setRefus(m); dire.current?.(m); };
+  // Le champ disparaît (ligne retirée) : son message tombe avec lui.
+  useEffect(() => () => { dire.current?.(null); }, []);
   const zeroValide = zeroValideProp || zeroAttention;
   const connu = valeur !== null && (zeroValide || valeur !== 0);
   const vide = !connu || (zeroAttention && valeur === 0);
@@ -73,7 +84,14 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
       }
     }
     setTexte(null);
-    setNegatif(false);
+  };
+  /** La phrase du refus (VI-9) : ce qui est refusé, et la valeur que le champ garde vraiment. */
+  const phraseRefus = (tape: string) => {
+    const garde = avant.current;
+    const gardee = garde !== null && (zeroValide || garde !== 0)
+      ? `La valeur précédente (${format(garde)}${unite ? ` ${unite}` : ''}) est conservée.`
+      : 'Le champ reste vide.';
+    return `« ${tape.trim()} » : une valeur négative ne se retient pas. ${gardee}`;
   };
 
   return (
@@ -86,22 +104,24 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
       aria-label={libelle}
       aria-invalid={invalide || negatif || undefined}
       title={negatif ? 'Pas de valeur négative' : undefined}
-      aria-describedby={decrit}
+      aria-describedby={negatif ? `${decrit ? `${decrit} ` : ''}fer-refus` : decrit}
       placeholder={repere}
       className={`${className}${vide && (texte === null || frais) && (!connu || zeroAttention) ? ' fer-zero' : ''}${texte !== null && frais ? ' fer-frais' : ''}${negatif ? ' fer-ko' : ''}`}
       style={largeur}
       value={affiche}
-      onFocus={(e) => { avant.current = valeur ?? null; echap.current = false; touche.current = false; setFrais(true); setTexte(connu ? format(valeur as number) : ''); e.currentTarget.select(); }}
+      onFocus={(e) => { avant.current = valeur ?? null; echap.current = false; touche.current = false; if (refus !== null) poserRefus(null); setFrais(true); setTexte(connu ? format(valeur as number) : ''); e.currentTarget.select(); }}
       onChange={(e) => {
         const t = e.target.value;
         touche.current = true;
         setFrais(false);
         setTexte(t);
         // Un nombre négatif n'existe pas ici (masse, jour) : « -1 » n'est plus lu « 1 » (banc d'actionneurs N4). Refus visible, rien de retenu ; la valeur d'avant revient en quittant le champ.
-        const negatif = /^\s*[-−–]/.test(t);
-        setNegatif(negatif);
+        const moins = /^\s*[-−–]/.test(t);
+        // Le message se pose une fois par frappe négative, et tombe à la frappe d'un nombre permis (N-4, BR-16 : jamais un retour muet à la valeur d'avant).
+        if (moins) poserRefus(phraseRefus(t));
+        else if (refus !== null) poserRefus(null);
         const v = lit(t);
-        if (v !== null && !negatif) garder(arrondi(entier ? Math.round(v) : v));
+        if (v !== null && !moins) garder(arrondi(entier ? Math.round(v) : v));
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
@@ -109,9 +129,10 @@ export const ChampLigne: React.FC<ChampLigneProps> = ({
           if (!onEntree || !onEntree()) e.currentTarget.blur();
         } else if (e.key === 'Escape') {
           e.preventDefault(); e.stopPropagation();
-          echap.current = true; e.currentTarget.blur();
+          echap.current = true; if (refus !== null) poserRefus(null); e.currentTarget.blur();
         } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
           e.preventDefault();
+          if (refus !== null) poserRefus(null);
           const lu = texte ? lit(texte) : null;
           const v = cran(lu ?? valeur ?? 0, e.key === 'ArrowUp' ? 1 : -1);
           setFrais(false); setTexte(format(v)); garder(v);

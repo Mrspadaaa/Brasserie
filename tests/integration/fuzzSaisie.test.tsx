@@ -291,7 +291,7 @@ describe('Fuzz — l’assistant de recette', () => {
     );
 
   /** Parcourt les étapes et malmène chaque champ qu'elles portent. */
-  const etapes = ['Identité', 'Fermentescibles', 'Houblons', 'Levure', 'Paliers'];
+  const etapes = ['Identité', 'Malts/sucres', 'Houblons', 'Levure', 'Paliers'];
 
   it('un palier vidé demande ses valeurs et ne présente pas un total de maintien partiel', () => {
     monterAssistant();

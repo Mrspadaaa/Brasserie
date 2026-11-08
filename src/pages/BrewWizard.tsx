@@ -458,7 +458,8 @@ export type StepId =
 
 const STEPS: Array<{ id: StepId; label: string; shortLabel?: string }> = [
   { id: 'identite', label: 'Identité' },
-  { id: 'fermentescibles', label: 'Fermentescibles', shortLabel: 'Malts/sucres' },
+  // B1-10 : un seul nom, celui du rail (rejeu ff0f822e : le titre disait « Fermentescibles — étape 2 sur 7 »). `fermentescibles` reste l'identifiant.
+  { id: 'fermentescibles', label: 'Malts/sucres' },
   { id: 'houblons', label: 'Houblons' },
   { id: 'levure', label: 'Levure' },
   { id: 'paliers', label: 'Paliers' },

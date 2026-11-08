@@ -24,7 +24,9 @@ export const Plateau: React.FC<{
   onLearnIngredient?: LearnIngredient;
   /** Entrée dans la lecture : le focus repart vers le champ d'ajout. */
   versAjout: () => void;
-}> = ({ f, i, setKg, setJour, tourner, retirer, setCouleur, patch, onLearnIngredient, versAjout }) => {
+  /** Un nombre négatif refusé se dit dans les alertes de l'étape (N-4, BR-16). */
+  onRefus?: (message: string | null) => void;
+}> = ({ f, i, setKg, setJour, tourner, retirer, setCouleur, patch, onLearnIngredient, versAjout, onRefus }) => {
   const [saisieEbc, setSaisieEbc] = useState(false);
   const [fixe, setFixe] = useState<number | null>(null);
   const piste = useRef<HTMLDivElement | null>(null);
@@ -79,7 +81,7 @@ export const Plateau: React.FC<{
         <label className="fer-num">
           <ChampLigne valeur={f.weightKg} onValeur={(v) => setKg(i, v)} format={kgTxt} arrondi={arrondiKg} cran={(v, d) => pas(v, d)}
             libelle={`Masse de ${f.name}, en kg`} className="fer-bin" auContenu videVaut0 zeroAttention marques={{ 'data-role': 'bin' }}
-            onEntree={() => { versAjout(); return true; }} />
+            onEntree={() => { versAjout(); return true; }} unite="kg" onRefus={onRefus} />
           <span className="fer-bu">kg</span>
         </label>
         <button type="button" className="fer-sb" data-pas="1" aria-label="Ajouter un cran" onClick={() => setKg(i, pas(f.weightKg, 1))}><Plus16 /></button>
@@ -102,7 +104,7 @@ export const Plateau: React.FC<{
             <label>J+
               <ChampLigne valeur={f.dayOffset ?? 0} onValeur={(v) => setJour(i, v)} format={(v) => String(v)} arrondi={(v) => Math.max(0, Math.round(v))}
                 cran={(v, d) => Math.max(0, v + d)} zeroValide entier repos={String(f.dayOffset ?? 0)} libelle={`Jour d’ajout de ${f.name}`}
-                className="fer-jin" marques={{ 'data-jour': i }} />
+                className="fer-jin" marques={{ 'data-jour': i }} onRefus={onRefus} />
             </label>
             <div className="fer-jp">
               <div className="fer-jt" />

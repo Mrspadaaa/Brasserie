@@ -165,7 +165,10 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     setCouleurLigne(-1);
   };
 
+  // N-4, BR-16 : la saisie refusée d'un champ (« -1 ») se dit en alerte ; le champ rétablit la valeur d'avant, comme VI-9 aux sels.
+  const [refusSaisie, setRefusSaisie] = useState<string | null>(null);
   const a: ActionsLigne = {
+    refus: setRefusSaisie,
     selectionner: (i) => { setSel(i); echelles.current.clear(); },
     retirer, setKg,
     setJour: (i, j) => patch(i, { dayOffset: j }),
@@ -317,6 +320,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
             </div>
           </div>
         )}
+        {refusSaisie && <p id="fer-refus" className="fer-alerte" role="alert" data-hors="refus">{refusSaisie}</p>}
         {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
         {/* Une donnée ancienne mal placée (grain bouilli ou au fermenteur) : dite ici, en clair, tout de suite ; la ligne porte « compté 0 ». */}
@@ -328,7 +332,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}
       </div>
       <Plateau f={selF} i={selI} setKg={setKg} setJour={a.setJour} tourner={tourner} retirer={retirer}
-        setCouleur={(i, v) => patch(i, { colorEbc: v })} patch={patch} onLearnIngredient={onLearnIngredient} versAjout={versAjout} />
+        setCouleur={(i, v) => patch(i, { colorEbc: v })} patch={patch} onLearnIngredient={onLearnIngredient} versAjout={versAjout} onRefus={setRefusSaisie} />
     </div>
   );
 };

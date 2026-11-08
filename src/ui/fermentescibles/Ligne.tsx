@@ -22,6 +22,8 @@ export interface ActionsLigne {
   /** Entrée dans la masse de la ligne i : vrai si le focus est reparti vers le champ d'ajout. */
   entreeMasse: (i: number) => boolean;
   tabMasse: (i: number, decalage: 1 | -1) => boolean;
+  /** Un nombre refusé à la saisie (négatif) se dit dans les alertes de l'étape ; `null` le retire (N-4, BR-16). */
+  refus: (message: string | null) => void;
 }
 
 export interface LigneProps {
@@ -127,7 +129,7 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
         <ChampLigne valeur={f.weightKg} onValeur={(v) => a.setKg(i, v)} format={kgTxt} arrondi={arrondiKg} cran={(v, d) => pas(v, d)}
           libelle="Quantité en kg" id={`wz-fermentable-${i}`} className="fer-kgin" auContenu videVaut0 zeroAttention invalide={invalide} decrit={`${decrit ? decrit + ' ' : ''}fer-nom-${i}`}
           marques={{ 'data-role': 'kg-ligne', 'data-kl': i, 'data-booster': 'masse-sur-ligne' }}
-          onEntree={() => a.entreeMasse(i)} onTab={(d) => a.tabMasse(i, d)} />
+          onEntree={() => a.entreeMasse(i)} onTab={(d) => a.tabMasse(i, d)} unite="kg" onRefus={a.refus} />
         <small>kg</small>
       </label>
       <span className="fer-l2">
@@ -136,7 +138,7 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
             {bouton}
             <ChampLigne valeur={jour} onValeur={(v) => a.setJour(i, v)} format={(v) => String(v)} arrondi={(v) => Math.max(0, Math.round(v))}
               cran={(v, d) => Math.max(0, v + d)} zeroValide entier repos={String(jour)} libelle={`Jour d’ajout de ${f.name} en fermentation`}
-              className="fer-jl" marques={{ 'data-role': 'jour-ligne', 'data-jl': i }} />
+              className="fer-jl" marques={{ 'data-role': 'jour-ligne', 'data-jl': i }} onRefus={a.refus} />
           </span>
         ) : bouton}
         {pc}
