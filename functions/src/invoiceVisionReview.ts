@@ -73,6 +73,9 @@ const montrer = (field: string, v: unknown): string => {
   return String(x);
 };
 
+/** La somme, en centimes, des montants de TVA imprimés par taux ; `null` si le bloc est vide ou si un montant manque (rien n'est complété). */
+const sommeBlocTva = (r: InvoiceScanResult): number | null => (r.vat.length && r.vat.every(row => toCents(row.amount) !== null) ? r.vat.reduce((s, row) => s + toCents(row.amount)!, 0) : null);
+
 interface Desaccord {
   field: string; ligne: number | null; vals: unknown[]; lectures: number[]; retenues: boolean[]; motifs?: Array<ScanValue['motif'] | undefined>;
   pese: boolean; enjeu: ScanPoint['enjeu']; message: string; bloqueLiaison?: boolean;
@@ -267,7 +270,7 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
     // qui écrit null ne sont pas en désaccord : la valeur lue est recoupée par le bloc imprimé de sa propre lecture. Une valeur qui n'est NI null NI la
     // somme de son bloc reste un désaccord (le vrai écart n'est pas masqué).
     if (!decision && field === 'tvaAmount' && !unanime) {
-      const sommeBloc = (r: InvoiceScanResult): number | null => (r.vat.length && r.vat.every(row => toCents(row.amount) !== null) ? r.vat.reduce((s, row) => s + toCents(row.amount)!, 0) : null);
+      const sommeBloc = sommeBlocTva;
       if (vals.every((v, i) => v === null || (toCents(v) !== null && toCents(v) === sommeBloc(readings[i])))) {
         const lu = vals.find(v => v !== null);
         // pas de `correctedFields` : la valeur est recoupée, elle ne doit pas non plus poser « Valeur corrigée… À confirmer » (invoiceFieldHints)
@@ -292,6 +295,14 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
       desaccords.push(pointDesaccord({ field, ligne: null, vals, lectures: numeros, retenues: vals.map(v => comparisonKey(field, v) === key), pese: false, enjeu,
         message: `${labels[field]} : une lecture diffère des autres (${vals.map(v => montrer(field, v)).join(' / ')}).` }));
     }
+  }
+  // LP-2 : un total de TVA absent (majorité de lectures à null) alors que le bloc imprimé par taux donne chaque montant. Une lecture dont le total est la somme de son propre bloc
+  // le garde (recoupé par le document) ; sinon, si toutes les lectures lisent le même bloc complet, la TVA en est la somme. Jamais une valeur qui n'est pas imprimée.
+  if (merged.tvaAmount === null || merged.tvaAmount === undefined) {
+    const sommes = readings.map(sommeBlocTva);
+    const recoupee = readings.find((r, i) => r.tvaAmount !== null && sommes[i] !== null && toCents(r.tvaAmount) === sommes[i]);
+    if (recoupee) merged.tvaAmount = recoupee.tvaAmount;
+    else if (sommes[0] !== null && sommes.every(somme => somme === sommes[0])) merged.tvaAmount = sommes[0]! / 100;
   }
   // This free-form editorial suggestion is not source transcription or a financial classification.
   merged.subcategory = majority(readings.map(reading => reading.subcategory), 'subcategory')?.value ?? '';
