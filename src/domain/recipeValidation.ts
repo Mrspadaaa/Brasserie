@@ -1,8 +1,9 @@
 import type { Recipe } from '../types';
 import { readYeastDocumentaryView } from '../services/recipeDraft';
 import { messageMoment } from './fermentables/moments';
+import { messageSansMaltDeBase } from './fermentables/base';
 import { messageAlpha } from './hopAlpha';
-import { BORNES, frBorne, messageHoublonParLitre, messageMasseParLitre, ogHorsBornes } from './bornesMetier';
+import { BORNES, frBorne, joursProgramme, messageEbullition, messageHoublonParLitre, messageMasseParLitre, ogHorsBornes, problemesLigneHoublon } from './bornesMetier';
 
 export type RecipeStepId = 'identite' | 'fermentescibles' | 'houblons' | 'levure' | 'paliers' | 'eau' | 'recap';
 export interface RecipeFieldIssue {
@@ -60,6 +61,8 @@ export function recipeSaveIssues(recipe: Recipe): RecipeFieldIssue[] {
   const houblon = messageHoublonParLitre((recipe.hops ?? []).reduce((s, h) => s + (Number.isFinite(h.weightG) && h.weightG > 0 ? h.weightG : 0), 0), recipe.volumeL);
   if (houblon) add('wz-hop-list', 'houblons', houblon);
   if (ogHorsBornes(recipe.ogTarget)) add('wz-og', 'fermentescibles', `OG retenue ${frBorne(recipe.ogTarget!, 3)} : au-delà de ${frBorne(BORNES.og.max, 3)}, erreur de saisie probable.`);
+  const programmeJours = joursProgramme(recipe.fermentation);
+  const actifJours = (recipe.fermentation ?? []).find((p) => p.kind === 'primaire' && Number.isFinite(p.days) && p.days > 0)?.days ?? null;
   (recipe.hops ?? []).forEach((item, i) => {
     number(item.weightG, 0, `wz-hop-${i}`, 'houblons', `Quantité de ${item.name || `houblon ${i + 1}`}`);
     // 0 means this lot's alpha is unknown; it is not a fabricated estimate.
@@ -77,7 +80,14 @@ export function recipeSaveIssues(recipe: Recipe): RecipeFieldIssue[] {
       if (item.dayOffset != null) number(item.dayOffset, 0, `wz-hop-day-${i}`, 'houblons', `Jour à cru de ${item.name}`);
       if (item.aromaContactHours != null) number(item.aromaContactHours, 0, `wz-hop-contact-${i}`, 'houblons', `Contact à cru de ${item.name}`);
     }
+    // Bornes des moments (bornesMetier.ts, AM 14 à 18, TE-22) : un whirlpool de 600 min, un jour après la fin du programme, une phase contraire à son jour.
+    for (const p of problemesLigneHoublon(item, { programmeJours, actifJours }))
+      add(p.champ === 'phase' ? `wz-hop-phase-${i}` : `wz-hop-${p.champ}-${i}`, 'houblons', p.message);
   });
+  // AM-19 : une ébullition de 1 440 min n'existe pas ; à 0 min, les houblons d'ébullition et de premier moût n'ont aucun IBU.
+  const ebullition = messageEbullition(recipe.boilMin);
+  if (ebullition && recipe.boilMin > 0) add('wz-boil', 'identite', ebullition);
+  else if (ebullition && (recipe.hops ?? []).some((h) => (h.stage === 'boil' || h.stage === 'firstWort') && h.weightG > 0)) add('wz-hop-list', 'houblons', ebullition);
   // A missing yeast dose is a valid saved plan; a malformed or negative dose is not.
   if (recipe.yeast?.qty != null) number(recipe.yeast.qty, 0, 'wz-yeast-qty', 'levure', 'Quantité de levure');
   for (const [value, label] of [[recipe.yeast?.fermTempMinC, 'minimale'], [recipe.yeast?.fermTempMaxC, 'maximale']] as const) {
@@ -121,6 +131,9 @@ function recipeMissingIssues(recipe: Recipe): RecipeFieldIssue[] {
   const fermentables = recipe.fermentables ?? recipe.malts ?? [];
   if (!fermentables.length) add('wz-fermentable-list', 'fermentescibles', 'Ajoute les fermentescibles prévus.');
   fermentables.forEach((item, i) => { if (item.weightKg === 0) add(`wz-fermentable-${i}`, 'fermentescibles', `Quantité de ${item.name} : à compléter.`); });
+  // AM-8 : une maische sans malt de base (100 % caramel, flocons ou torréfiés) ne se saccharifie pas : à corriger avant de brasser (la recette s'enregistre).
+  const sansBase = messageSansMaltDeBase(fermentables);
+  if (sansBase) add('wz-fermentable-list', 'fermentescibles', sansBase);
   (recipe.hops ?? []).forEach((item, i) => {
     if (item.weightG === 0) add(`wz-hop-${i}`, 'houblons', `Quantité de ${item.name} : à compléter.`);
     if ((item.stage === 'boil' || item.stage === 'whirlpool') && item.timeMin == null)

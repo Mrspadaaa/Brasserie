@@ -52,6 +52,7 @@ import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
+import { champsMomentNeuf, changerMoment } from '../domain/hopIndex/momentDefauts';
 import { HopRecipeGuide as SyncHopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { HopRecipeSnapshot } from '../ui/hopIndex/HopRecipeSnapshot';
 import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/FermentationWorkshop';
@@ -62,7 +63,7 @@ import { keepIndependentPitchingWort, yeastPlannedInFormat } from '../domain/yea
 import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
 import { fgRecette, formatDensite, formatOgEnTete } from '../domain/recipeMetrics';
-import { ogHorsBornes } from '../domain/bornesMetier';
+import { BORNES, ogHorsBornes, saisieHoublonRetenue } from '../domain/bornesMetier';
 import { oublierRepere } from '../ui/hopIndex/maBiere/repere';
 import { yeastReferences } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
@@ -80,7 +81,7 @@ import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import { hopV4Enabled } from '../ui/hopIndex/flags';
 import { poserPorteEtape } from '../ui/hopIndex/comparer/porte';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
-import { hotBitterness, ibuDeLAjout } from '../domain/hopBitterness';
+import { hotBitterness, ibuDeLAjout, ibuEnTete } from '../domain/hopBitterness';
 import { alphaAConfirmer, alphaProbable } from '../domain/hopAlpha';
 import { grainEmpate } from '../domain/fermentables/moments';
 import {
@@ -409,7 +410,7 @@ const KIND_DEF: Record<
     label: 'Fruit',
     use: 'fermentation',
     fermentability: 90,
-    ppg: 8,
+    // Pas de potentiel inventé (AM-6, PRODUCT.md) : il varie d'un fruit à l'autre ; il se renseigne dans la fiche de la ligne (« PPG — · fiche »).
     hint: 'Apporte peu de sucre et beaucoup d’eau. À ajouter en fermentation.',
     stock: ['Fruit', 'Additif'],
     newCat: 'Sucre'
@@ -418,7 +419,7 @@ const KIND_DEF: Record<
     label: 'Extrait',
     use: 'ebullition',
     fermentability: 75,
-    ppg: 36,
+    // Idem : un extrait liquide, sec ou un sirop n'ont pas le même potentiel (de ~36 à ~44 ppg) ; à renseigner dans la fiche.
     hint: 'Moût concentré, déjà empâté.',
     stock: ['Extrait', 'Sucre'],
     newCat: 'Sucre'
@@ -721,6 +722,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    */
   const coarse = useCoarsePointer();
   const [focusHop, setFocusHop] = useState<number | null>(null);
+  // Les houblons retirés, du plus ancien au dernier : « Annuler » les rend pendant 6 s (TE-24, BR-2 : Malts/sucres l'offrait déjà ; un double toucher en retire deux).
+  const [hopsRetires, setHopsRetires] = useState<Array<{ h: HopIngredient; i: number }>>([]);
+  const minutHopRetrait = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(minutHopRetrait.current), []);
 
   /*
    * `autoFocus` de React ne s'applique qu'au MONTAGE du champ : le focus est
@@ -1459,15 +1464,40 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
         stage: hopStage,
-        ...(hopStage === 'boil' ? { timeMin: boilMin } : {}),
-        ...(hopStage === 'whirlpool' ? { timeMin: 20, tempC: 80 } : {}),
-        ...(hopStage === 'dryHop' ? { dayOffset: 3 } : {})
+        ...Object.fromEntries(Object.entries(champsMomentNeuf(hopStage, boilMin)).filter(([, v]) => v !== undefined))
       }
     ]);
   };
 
-  const patchHop = (index: number, patch: Partial<HopIngredient>) =>
-    setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
+  const retirerHop = (index: number) => {
+    const h = hops[index];
+    if (!h) return;
+    clearTimeout(minutHopRetrait.current);
+    setHopsRetires(a => [...a, { h, i: index }]);
+    setHops(current => current.filter((_, j) => j !== index));
+    minutHopRetrait.current = setTimeout(() => setHopsRetires([]), 6000);
+  };
+  const rendreHops = () => {
+    const pile = hopsRetires;
+    if (!pile.length) return;
+    clearTimeout(minutHopRetrait.current);
+    setHopsRetires([]);
+    setHops(current => {
+      const r = [...current];
+      for (let k = pile.length - 1; k >= 0; k--) r.splice(Math.min(pile[k].i, r.length), 0, pile[k].h);
+      return r;
+    });
+  };
+
+  const patchHop = (index: number, patch: Partial<HopIngredient>) => {
+    // Un nombre négatif ne se retient pas (α −2 %, −5 min, −1 g : MV-18, TE-21, BR-42) ; la valeur d'avant reste, le champ la reprend à la sortie.
+    const retenu = saisieHoublonRetenue(patch as Record<string, unknown>) as Partial<HopIngredient>;
+    if (!Object.keys(retenu).length) return;
+    // Un autre moment pose les champs de ce moment (durée seule, durée et °C, jour) et retire ceux de l'ancien : 60 min d'ébullition ne deviennent pas un whirlpool d'une heure (BR-3, TE-26).
+    setHops(hops.map((h, i) => (i !== index ? h : retenu.stage && retenu.stage !== h.stage
+      ? patchIndexedHop(changerMoment(patchIndexedHop(h, { stage: retenu.stage }), retenu.stage, boilMin), { ...retenu, stage: retenu.stage })
+      : patchIndexedHop(h, retenu))));
+  };
 
   /**
    * Writes a V5.5 application already proven against this exact draft (owner,
@@ -2330,7 +2360,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           </div>
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">{!(hopV4Actif && mesuresV4) && hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
-            {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>}
+            {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibuEnTete(ibu, hops)}</span>}
           </div>
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">EBC</span>
@@ -2605,6 +2635,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
             />
 
+            {hopsRetires.length > 0 && (
+              <p role="status" data-role="hop-retire" className="flex flex-wrap items-center gap-2 text-sm text-cave-200">
+                <span><s>{hopsRetires[hopsRetires.length - 1].h.name}</s> retiré{hopsRetires.length > 1 ? ` · ${hopsRetires.length - 1} de plus` : ''}</span>
+                <button type="button" data-role="hop-annuler" className="rounded-full border border-current px-3 min-h-touch" onClick={rendreHops}>Annuler</button>
+              </p>
+            )}
             {hops.length === 0 ? (
               <p className="text-sm text-cave-400 py-1">Aucun houblon.</p>
             ) : (
@@ -2673,7 +2709,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                           </div>
                           <button
                             type="button"
-                            onClick={() => setHops(hops.filter((_, j) => j !== i))}
+                            onClick={() => retirerHop(i)}
                             aria-label={`Retirer ${h.name}`}
                             className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                           >
@@ -2753,6 +2789,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 name={`Minutes avant la fin pour ${h.name}`}
                                 unit="min"
                                 min={0}
+                                max={BORNES.ebullitionMin.max}
                                 integer
                                 value={h.timeMin}
                                 onValue={(v) => patchHop(i, { timeMin: v })}
@@ -2773,6 +2810,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                   name={`Durée de contact de ${h.name}`}
                                   unit="min"
                                   min={0}
+                                  max={BORNES.whirlpoolMin.max}
                                   integer
                                   value={h.timeMin}
                                   onValue={(v) => patchHop(i, { timeMin: v })}
@@ -2788,8 +2826,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                   label="à"
                                   name={`Température de whirlpool pour ${h.name}`}
                                   unit="°C"
-                                  min={0}
-                                  max={100}
+                                  min={BORNES.whirlpoolTempC.min}
+                                  max={BORNES.whirlpoolTempC.max}
                                   integer
                                   value={h.tempC}
                                   onValue={(v) => patchHop(i, { tempC: v })}
@@ -2809,6 +2847,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                   label="jour"
                                   name={`Jour en cuve pour ${h.name}`}
                                   min={0}
+                                  max={BORNES.dryHopJour.max}
                                   integer
                                   value={h.dayOffset}
                                   onValue={(v) => patchHop(i, { dayOffset: v })}
@@ -2826,7 +2865,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                         <label className="block text-sm text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
                           <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
                         </select></label>
-                        <div className="flex flex-wrap gap-3"><InlineNum id={`wz-hop-contact-${i}`} emptyValue={undefined} aria-invalid={!!fieldError(`wz-hop-contact-${i}`)} aria-describedby={fieldError(`wz-hop-contact-${i}`) ? 'wz-validation' : undefined} label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum emptyValue={undefined} label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
+                        <div className="flex flex-wrap gap-3"><InlineNum id={`wz-hop-contact-${i}`} emptyValue={undefined} aria-invalid={!!fieldError(`wz-hop-contact-${i}`)} aria-describedby={fieldError(`wz-hop-contact-${i}`) ? 'wz-validation' : undefined} label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} max={BORNES.dryHopContactH.max} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum emptyValue={undefined} label="à" name={`Température à cru de ${h.name}`} unit="°C" min={BORNES.dryHopTempC.min} max={BORNES.dryHopTempC.max} value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
                       </div>}
                     </li>
                   );
