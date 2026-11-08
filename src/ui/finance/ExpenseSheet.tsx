@@ -815,7 +815,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     }
     if(chip.codes.includes('date-absente')&&viser(q('[data-purchase-date]'),{focus:q('[data-purchase-date] input[type="date"]')}))return;
     if(chip.codes.some(c=>c==='somme-ecart'||c==='somme-incomplete'||c==='total-absent')){const champ=q('#purchase-total');if(viser(champ,{focus:champ,block:'center'}))return;}
-    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-non-rapprochees')&&viser(q('[data-dp="liste"]')??q('[data-purchase-lines]')))return;
+    if(chip.codes.some(c=>c==='lignes-perdues'||c==='lignes-annoncees'||c==='lignes-absentes'||c==='lignes-non-rapprochees')&&viser(q('[data-dp="liste"]')??q('[data-purchase-lines]')))return;
     /* Sans cible propre : la preuve de la lecture, ouverte et amenée à l'écran. */
     flushSync(()=>setViseePreuve(true));viser(q('[data-dp="preuve"]'));setTimeout(()=>{if(mounted.current)setViseePreuve(false);},1600);
   };

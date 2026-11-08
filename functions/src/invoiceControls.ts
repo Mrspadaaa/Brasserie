@@ -19,6 +19,7 @@ export const SCAN_POINT_CODES = [
   'ht-tva-ttc',          // C4  HT + TVA ≠ TTC
   'lignes-perdues',      // P2  des lignes n'ont pas été conservées
   'lignes-annoncees',    // P2  le modèle annonce plus de lignes qu'il n'en a transcrit, mais la somme tombe juste
+  'lignes-absentes',     // LO-3  un total imprimé et aucune ligne lue (une page ou une partie du document manque peut-être)
   'pro-forma-non-payee', // A6  pro-forma sans paiement imprimé
   'type-deduit',         // A6  pro-forma payée lue « devis » : `documentTypeRetenu` = invoice, `documentType` reste tel que lu
   'devis',               // un vrai devis (pas une pro-forma) : à vérifier
@@ -41,7 +42,7 @@ export interface ScanValue { lecture: number; valeur: number | string | boolean 
  * `type-deduit` ne pèse pas (pro-forma payée retenue comme facture). `lectures-divergentes` pèse sauf quand une majorité a tranché. */
 export const PESE_PAR_CODE: Record<ScanPointCode, boolean> = {
   'ligne-montant': true, 'ligne-prix-par-lot': true, 'somme-ecart': true, 'somme-incomplete': true, 'tva-incoherente': true, 'ht-tva-ttc': true,
-  'lignes-perdues': true, 'lignes-annoncees': true, 'pro-forma-non-payee': true, 'type-deduit': false, 'devis': true, 'alpha-libelle': true,
+  'lignes-perdues': true, 'lignes-annoncees': true, 'lignes-absentes': true,'pro-forma-non-payee': true, 'type-deduit': false, 'devis': true, 'alpha-libelle': true,
   'unite-absente': true, 'forme-rejetee': true, 'date-absente': true, 'devise-non-chf': true, 'total-absent': true, 'taux-tva-hors-plage': true,
   'document-livraison': true, 'avoir': true, 'nature-a-preciser': true, 'ambiguite-ligne': true, 'lectures-divergentes': true,
   'lignes-non-rapprochees': true, 'lecture-coupee': true,

@@ -41,9 +41,9 @@ describe('C2 — somme des lignes = total, au centime', () => {
     expect(r.controls.totals.statut).toBe('ok');
   });
 
-  it('facture sans aucune ligne : somme non vérifiable, ni point ni phrase', () => {
+  it('facture sans aucune ligne : somme non vérifiable, ni point ni phrase de SOMME ; seule « aucune ligne lue » (LO-3) parle', () => {
     const r = lire(entete({ amountTTC: 0.3, items: [] }));
-    expect(r.points).toEqual([]);
+    expect(r.points.map((p: any) => p.code)).toEqual(['lignes-absentes']);
     expect(r.controls.sum.statut).toBe('non-verifiable');
     expect(r.issues.join(' ')).not.toContain('somme des lignes');
   });

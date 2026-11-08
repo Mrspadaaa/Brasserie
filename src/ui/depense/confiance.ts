@@ -295,6 +295,7 @@ export const TABLE_POINTS: Record<ScanPointCode, ReglePoint> = {
   'devise-non-chf': () => [cible('total', 'repris', 'montant dans une autre devise')],
   'lignes-perdues': () => [cible('lignes', 'inconnu', 'des lignes n\'ont pas été conservées')],
   'lignes-annoncees': () => [cible('lignes', 'repris', 'plus de lignes annoncées que transcrites')],
+  'lignes-absentes': () => [cible('lignes', 'inconnu', 'aucune ligne lue')],
   'lignes-non-rapprochees': () => [cible('lignes', 'repris', 'des lignes à recouper sur le document')],
   'lecture-coupee': () => [cible('lignes', 'repris', 'une lecture a été coupée')],
   'pro-forma-non-payee': () => [cible('document', 'repris', 'pro-forma sans paiement imprimé')],
