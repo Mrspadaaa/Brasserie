@@ -133,6 +133,7 @@ import type { HopV55DecisionCorrectionRequest, HopV55DecisionProgramPreparationR
 import { programFingerprint } from '../../domain/hopDecision/programs';
 import { HopV55Explorer, type HopV55Composition, type HopV55ExplorerSelectionOutcome } from './Explorer';
 import { readHopV55ContextualComparisonSnapshot } from './contextualExplorationModel';
+import './jetons.css';
 import './page.css';
 import { Input, Textarea } from '../Input';
 

@@ -19,6 +19,7 @@ import { useHopV55SemanticCompanionCycleV1 } from './Host';
 import { HopV55Page } from './Page';
 import { HopV55RecipeColdContactWorkbench } from './RecipeColdContactWorkbench';
 import { hopV55TraceLine } from './traceLabels';
+import './jetons.css';
 import './recipe-step.css';
 
 /**

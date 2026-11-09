@@ -75,7 +75,7 @@ export function HopV55FixturePreview() {
   // Do not hand the prior mode's soon-to-close database to a freshly keyed Page.
   // In StrictMode, identity also rejects the first setup during its effect replay.
   const current = active?.namespace === namespace && active.mode === mode && activeRef.current === active ? active : undefined;
-  return <div className="hop-v55"><div className="hv-fixture-bar" style={{ padding: '6px 10px', borderBottom: '1px solid #d7d7c8', display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', ...(assistantFixture ? { background: '#f7f5eb' } : {}) }}>
+  return <div className="hop-v55"><div className="hv-fixture-bar" style={{ padding: '6px 10px', borderBottom: '1px solid rgb(var(--hv-l-d7d7c8))', display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', ...(assistantFixture ? { background: 'rgb(var(--hv-f-f7f5eb))' } : {}) }}>
     <label style={{ display: 'flex', gap: 6, alignItems: 'center' }}>Parcours de vérification<select aria-label="Parcours de vérification" style={{ width: 'auto', fontSize: 13 }} value={mode} onChange={e => setMode(e.target.value as HopV55FixtureMode)}>
       <option value="planning">Recette avant brassage</option><option value="fermenting">Brassin en fermentation</option>
       <option value="unknown">Sans recette, passé inconnu</option><option value="nolo">Contexte NOLO</option><option value="sour">Contexte acide</option>
