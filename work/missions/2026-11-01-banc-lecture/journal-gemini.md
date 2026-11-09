@@ -577,3 +577,150 @@ Une ligne par appel, écrite juste après lui. Aucune valeur des documents. Coû
 | 2026-11-01 21:38:00 | doc10 | 1 | NomsFr | 1 | gemini-3.8-flash | 5137 ms | 1266 | 558 | 0.007605 | 8.643351 | STOP |
 | 2026-11-01 21:38:04 | doc12 | 1 | NomsFr | 1 | gemini-3.8-flash | 3953 ms | 1042 | 373 | 0.005451 | 8.648802 | STOP |
 | 2026-11-01 21:38:07 | doc14 | 1 | NomsFr | 1 | gemini-3.8-flash | 3543 ms | 902 | 304 | 0.004542 | 8.653344 | STOP |
+| 2026-11-08 09:00:40 | doc1 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3409 ms | 2664 | 1145 | 0.004578 | 8.657922 | STOP |
+| 2026-11-08 09:00:40 | doc1 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3522 ms | 2685 | 1140 | 0.004570 | 8.662492 | STOP |
+| 2026-11-08 09:00:46 | doc1 | 1 | Csv8 | 3 | gemini-3.8-flash | 6284 ms | 2700 | 744 | 0.012038 | 8.674530 | STOP |
+| 2026-11-08 09:00:49 | doc2 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2925 ms | 2685 | 1114 | 0.004489 | 8.679019 | STOP |
+| 2026-11-08 09:00:50 | doc2 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3227 ms | 2664 | 1237 | 0.004865 | 8.683884 | STOP |
+| 2026-11-08 09:00:56 | doc2 | 1 | Csv8 | 3 | gemini-3.8-flash | 6278 ms | 2700 | 724 | 0.011850 | 8.695734 | STOP |
+| 2026-11-08 09:00:58 | doc3 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 1705 ms | 2685 | 395 | 0.002242 | 8.697976 | STOP |
+| 2026-11-08 09:00:58 | doc3 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 1721 ms | 2664 | 346 | 0.002081 | 8.700057 | STOP |
+| 2026-11-08 09:01:02 | doc3 | 1 | Csv8 | 3 | gemini-3.8-flash | 4546 ms | 2700 | 480 | 0.009563 | 8.709620 | STOP |
+| 2026-11-08 09:01:04 | doc4 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2088 ms | 2664 | 629 | 0.002965 | 8.712585 | STOP |
+| 2026-11-08 09:01:04 | doc4 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2195 ms | 2685 | 617 | 0.002935 | 8.715520 | STOP |
+| 2026-11-08 09:01:09 | doc4 | 1 | Csv8 | 3 | gemini-3.8-flash | 4582 ms | 2700 | 433 | 0.009122 | 8.724642 | STOP |
+| 2026-11-08 09:01:17 | doc5 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8279 ms | 2679 | 4312 | 0.014480 | 8.739122 | STOP |
+| 2026-11-08 09:01:18 | doc5 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 9162 ms | 2658 | 4464 | 0.014947 | 8.754069 | STOP |
+| 2026-11-08 09:01:24 | doc6 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 6056 ms | 2685 | 3135 | 0.010804 | 8.764873 | STOP |
+| 2026-11-08 09:01:24 | doc6 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6244 ms | 2664 | 3217 | 0.011053 | 8.775926 | STOP |
+| 2026-11-08 09:01:40 | doc6 | 1 | Csv8 | 3 | gemini-3.8-flash | 15528 ms | 2700 | 2553 | 0.028997 | 8.804923 | STOP |
+| 2026-11-08 09:01:43 | doc7 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2910 ms | 2685 | 1117 | 0.004498 | 8.809421 | STOP |
+| 2026-11-08 09:01:43 | doc7 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3103 ms | 2664 | 1145 | 0.004578 | 8.813999 | STOP |
+| 2026-11-08 09:01:50 | doc7 | 1 | Csv8 | 3 | gemini-3.8-flash | 6549 ms | 2700 | 856 | 0.013088 | 8.827087 | STOP |
+| 2026-11-08 09:02:00 | doc8 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 10772 ms | 5954 | 5388 | 0.019071 | 8.846158 | STOP |
+| 2026-11-08 09:02:01 | doc8 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 11345 ms | 5975 | 5870 | 0.020585 | 8.866743 | STOP |
+| 2026-11-08 09:02:36 | doc8 | 1 | Csv8 | 3 | gemini-3.8-flash | 35274 ms | 5990 | 6085 | 0.068279 | 8.935022 | STOP |
+| 2026-11-08 09:02:45 | doc9 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8843 ms | 4883 | 4542 | 0.016025 | 8.951047 | STOP |
+| 2026-11-08 09:02:45 | doc9 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8980 ms | 4862 | 4604 | 0.016211 | 8.967258 | STOP |
+| 2026-11-08 09:03:03 | doc9 | 1 | Csv8 | 3 | gemini-3.8-flash | 17795 ms | 4898 | 2926 | 0.036615 | 9.003873 | STOP |
+| 2026-11-08 09:03:12 | doc10 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8562 ms | 4881 | 4495 | 0.015878 | 9.019751 | STOP |
+| 2026-11-08 09:03:12 | doc10 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 9239 ms | 4902 | 4562 | 0.016095 | 9.035846 | STOP |
+| 2026-11-08 09:03:40 | doc10 | 1 | Csv8 | 3 | gemini-3.8-flash | 27554 ms | 4917 | 4945 | 0.055579 | 9.091425 | STOP |
+| 2026-11-08 09:03:48 | doc11 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 7777 ms | 4928 | 3777 | 0.013652 | 9.105077 | STOP |
+| 2026-11-08 09:03:48 | doc11 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8212 ms | 4907 | 3765 | 0.013606 | 9.118683 | STOP |
+| 2026-11-08 09:03:56 | doc12 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 7784 ms | 4881 | 4038 | 0.014450 | 9.133133 | STOP |
+| 2026-11-08 09:03:56 | doc12 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8200 ms | 4902 | 4028 | 0.014426 | 9.147559 | STOP |
+| 2026-11-08 09:04:15 | doc12 | 1 | Csv8 | 3 | gemini-3.8-flash | 18598 ms | 4917 | 2963 | 0.036998 | 9.184557 | STOP |
+| 2026-11-08 09:04:18 | doc13 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2411 ms | 2650 | 381 | 0.002185 | 9.186742 | STOP |
+| 2026-11-08 09:04:18 | doc13 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2497 ms | 2671 | 477 | 0.002493 | 9.189235 | STOP |
+| 2026-11-08 09:04:23 | doc13 | 1 | Csv8 | 3 | gemini-3.8-flash | 5238 ms | 2686 | 270 | 0.007568 | 9.196803 | STOP |
+| 2026-11-08 09:04:28 | doc14 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 5422 ms | 2685 | 2389 | 0.008473 | 9.205276 | STOP |
+| 2026-11-08 09:04:29 | doc14 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6267 ms | 2664 | 2830 | 0.009843 | 9.215119 | STOP |
+| 2026-11-08 09:04:41 | doc14 | 1 | Csv8 | 3 | gemini-3.8-flash | 11902 ms | 2700 | 1758 | 0.021544 | 9.236663 | STOP |
+| 2026-11-08 09:04:48 | doc15 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 6973 ms | 2671 | 2181 | 0.007818 | 9.244481 | STOP |
+| 2026-11-08 09:04:49 | doc15 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 7907 ms | 2650 | 2746 | 0.009575 | 9.254056 | STOP |
+| 2026-11-08 09:05:02 | doc15 | 1 | Csv8 | 3 | gemini-3.8-flash | 13036 ms | 2686 | 1635 | 0.020365 | 9.274421 | STOP |
+| 2026-11-08 09:05:08 | doc16 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6182 ms | 2650 | 2636 | 0.009232 | 9.283653 | STOP |
+| 2026-11-08 09:05:08 | doc16 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 6179 ms | 2671 | 2739 | 0.009561 | 9.293214 | STOP |
+| 2026-11-08 09:05:21 | doc16 | 1 | Csv8 | 3 | gemini-3.8-flash | 12281 ms | 2686 | 1771 | 0.021640 | 9.314854 | STOP |
+| 2026-11-08 09:05:24 | doc21 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3414 ms | 2650 | 530 | 0.002650 | 9.317504 | STOP |
+| 2026-11-08 09:05:24 | doc21 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3449 ms | 2671 | 524 | 0.002640 | 9.320144 | STOP |
+| 2026-11-08 14:15:36 | doc1 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3790 ms | 2685 | 1127 | 0.004529 | 9.324673 | STOP |
+| 2026-11-08 14:15:36 | doc1 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 4013 ms | 2664 | 1543 | 0.005821 | 9.330494 | STOP |
+| 2026-11-08 14:15:43 | doc1 | 1 | Csv8 | 3 | gemini-3.8-flash | 6907 ms | 2700 | 825 | 0.012797 | 9.343291 | STOP |
+| 2026-11-08 14:15:46 | doc2 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3332 ms | 2664 | 1150 | 0.004593 | 9.347884 | STOP |
+| 2026-11-08 14:15:46 | doc2 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3339 ms | 2685 | 1148 | 0.004595 | 9.352479 | STOP |
+| 2026-11-08 14:15:52 | doc2 | 1 | Csv8 | 3 | gemini-3.8-flash | 6277 ms | 2700 | 801 | 0.012572 | 9.365051 | STOP |
+| 2026-11-08 14:15:55 | doc3 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2455 ms | 2664 | 340 | 0.002062 | 9.367113 | STOP |
+| 2026-11-08 14:15:55 | doc3 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2706 ms | 2685 | 358 | 0.002126 | 9.369239 | STOP |
+| 2026-11-08 14:15:57 | doc4 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2318 ms | 2685 | 623 | 0.002954 | 9.372193 | STOP |
+| 2026-11-08 14:15:58 | doc4 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2621 ms | 2664 | 634 | 0.002981 | 9.375174 | STOP |
+| 2026-11-08 14:16:03 | doc4 | 1 | Csv8 | 3 | gemini-3.8-flash | 5198 ms | 2700 | 427 | 0.009066 | 9.384240 | STOP |
+| 2026-11-08 14:16:12 | doc5 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8755 ms | 2658 | 4374 | 0.014666 | 9.398906 | STOP |
+| 2026-11-08 14:16:12 | doc5 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 9147 ms | 2679 | 4519 | 0.015127 | 9.414033 | STOP |
+| 2026-11-08 14:16:37 | doc5 | 1 | Csv8 | 3 | gemini-3.8-flash | 25248 ms | 2694 | 4426 | 0.046545 | 9.460578 | STOP |
+| 2026-11-08 14:16:44 | doc6 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6968 ms | 2664 | 3414 | 0.011668 | 9.472246 | STOP |
+| 2026-11-08 14:16:44 | doc6 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 7011 ms | 2685 | 3401 | 0.011635 | 9.483881 | STOP |
+| 2026-11-08 14:17:00 | doc6 | 1 | Csv8 | 3 | gemini-3.8-flash | 15143 ms | 2700 | 2517 | 0.028660 | 9.512541 | STOP |
+| 2026-11-08 14:17:03 | doc7 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3589 ms | 2685 | 1106 | 0.004464 | 9.517005 | STOP |
+| 2026-11-08 14:17:03 | doc7 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3614 ms | 2664 | 1145 | 0.004578 | 9.521583 | STOP |
+| 2026-11-08 14:17:14 | doc8 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 10933 ms | 5954 | 5386 | 0.019064 | 9.540647 | STOP |
+| 2026-11-08 14:17:14 | doc8 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 11120 ms | 5975 | 5799 | 0.020363 | 9.561010 | STOP |
+| 2026-11-08 14:17:22 | doc9 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8077 ms | 4883 | 4034 | 0.014438 | 9.575448 | STOP |
+| 2026-11-08 14:17:23 | doc9 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8863 ms | 4862 | 4630 | 0.016292 | 9.591740 | STOP |
+| 2026-11-08 14:17:39 | doc9 | 1 | Csv8 | 3 | gemini-3.8-flash | 16054 ms | 4898 | 2948 | 0.036822 | 9.628562 | STOP |
+| 2026-11-08 14:17:49 | doc10 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 9662 ms | 4881 | 4707 | 0.016540 | 9.645102 | STOP |
+| 2026-11-08 14:17:50 | doc10 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 10700 ms | 4902 | 4503 | 0.015911 | 9.661013 | STOP |
+| 2026-11-08 14:18:19 | doc10 | 1 | Csv8 | 3 | gemini-3.8-flash | 28998 ms | 4917 | 4834 | 0.054539 | 9.715552 | STOP |
+| 2026-11-08 14:18:28 | doc11 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8497 ms | 4928 | 3852 | 0.013886 | 9.729438 | STOP |
+| 2026-11-08 14:18:28 | doc11 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8568 ms | 4907 | 3688 | 0.013366 | 9.742804 | STOP |
+| 2026-11-08 14:18:52 | doc11 | 1 | Csv8 | 3 | gemini-3.8-flash | 24724 ms | 4943 | 4345 | 0.050003 | 9.792807 | STOP |
+| 2026-11-08 14:19:00 | doc12 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 7711 ms | 4881 | 3875 | 0.013940 | 9.806747 | STOP |
+| 2026-11-08 14:19:01 | doc12 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8266 ms | 4902 | 4023 | 0.014411 | 9.821158 | STOP |
+| 2026-11-08 14:19:18 | doc12 | 1 | Csv8 | 3 | gemini-3.8-flash | 17217 ms | 4917 | 2679 | 0.034335 | 9.855493 | STOP |
+| 2026-11-08 14:19:21 | doc13 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3407 ms | 2671 | 373 | 0.002168 | 9.857661 | STOP |
+| 2026-11-08 14:19:22 | doc13 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 4016 ms | 2650 | 338 | 0.002050 | 9.859711 | STOP |
+| 2026-11-08 14:19:26 | doc13 | 1 | Csv8 | 3 | gemini-3.8-flash | 4313 ms | 2686 | 326 | 0.008093 | 9.867804 | STOP |
+| 2026-11-08 14:19:32 | doc14 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 5761 ms | 2685 | 2570 | 0.009039 | 9.876843 | STOP |
+| 2026-11-08 14:19:32 | doc14 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 5940 ms | 2664 | 2766 | 0.009643 | 9.886486 | STOP |
+| 2026-11-08 14:19:39 | doc15 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6987 ms | 2650 | 2424 | 0.008569 | 9.895055 | STOP |
+| 2026-11-08 14:19:39 | doc15 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 7320 ms | 2671 | 2440 | 0.008627 | 9.903682 | STOP |
+| 2026-11-08 14:19:50 | doc15 | 1 | Csv8 | 3 | gemini-3.8-flash | 10873 ms | 2686 | 1600 | 0.020037 | 9.923719 | STOP |
+| 2026-11-08 14:19:57 | doc16 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 6190 ms | 2671 | 2636 | 0.009240 | 9.932959 | STOP |
+| 2026-11-08 14:19:57 | doc16 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6467 ms | 2650 | 2634 | 0.009225 | 9.942184 | STOP |
+| 2026-11-08 14:20:13 | doc16 | 1 | Csv8 | 3 | gemini-3.8-flash | 16449 ms | 2686 | 2578 | 0.029205 | 9.971389 | STOP |
+| 2026-11-08 14:20:16 | doc21 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3153 ms | 2650 | 534 | 0.002663 | 9.974052 | STOP |
+| 2026-11-08 14:20:17 | doc21 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3399 ms | 2671 | 530 | 0.002658 | 9.976710 | STOP |
+
+## Rejeu en ligne ff0f822e (monitoring, accord du brasseur : 5 lectures au plus, pièces fictives du banc)
+
+| heure | pièce | écran | durée | coût |
+|---|---|---|---|---|
+| 2026-11-08 soir | tests/fixtures/gemini-usage-bench/vision/ticket-long-tva.png (fictif « Brassi-Shop Fictif Sarl ») | Actions rapides › Entrer une facture | ≈ 20 s, « Lectures 3/3 » | non visible dans l app (≈ 1 centime estimé) ; rien enregistré, saisie abandonnée |
+| 2026-11-08 soir | tests/fixtures/gemini-usage-bench/vision/illisible.jpg (fictif, flou) | Actions rapides › Entrer une facture | ≈ 10 s, « Lectures 2/2 » | non visible dans l app (≈ 1 centime estimé) ; rien enregistré, saisie abandonnée |
+
+Bilan : 2 lectures sur les 5 permises. Les autres bugs de lecture demandent une pièce qui n existe pas parmi les fixtures fictives (Idaho7, PDF B&R, mouture rattachée), ou un enregistrement qui crée des articles de stock.
+| 2026-11-08 soir (649bcc54) | tests/fixtures/gemini-usage-bench/vision/ticket-long-tva.png (fictif) | Entrer une facture | ≈ 20 s | non visible (≈ 1 centime estimé) ; saisie abandonnée |
+| 2026-11-08 soir (649bcc54) | tests/fixtures/gemini-usage-bench/vision/illisible.jpg (fictif) | Entrer une facture | ≈ 10 s | non visible (≈ 1 centime estimé) ; saisie abandonnée |
+
+Bilan : 4 lectures sur les 5 permises, 1 restante.
+| 2026-11-09 (48d16402, fonctions du 09.11) | tests/fixtures/gemini-usage-bench/vision/ticket-long-tva.png (fictif) | Actions rapides › Entrer une facture | ≈ 18 s, « Lectures 2/2 » | non visible (≈ 1 centime estimé) ; rien enregistré, saisie abandonnée |
+
+Bilan : 5 lectures sur les 5 permises, aucune restante.
+| 2026-11-09 02:17:00 | doc1 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3295 ms | 2791 | 1175 | 0.004719 | 9.981429 | STOP |
+| 2026-11-09 02:17:00 | doc1 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3922 ms | 2770 | 1563 | 0.005924 | 9.987353 | STOP |
+| 2026-11-09 02:17:07 | doc1 | 1 | Csv8 | 3 | gemini-3.8-flash | 6523 ms | 2806 | 806 | 0.012818 | 10.000171 | STOP |
+| 2026-11-09 02:17:10 | doc2 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3164 ms | 2791 | 1100 | 0.004485 | 10.004656 | STOP |
+| 2026-11-09 02:17:10 | doc2 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3334 ms | 2770 | 1155 | 0.004649 | 10.009305 | STOP |
+| 2026-11-09 02:17:16 | doc2 | 1 | Csv8 | 3 | gemini-3.8-flash | 6060 ms | 2806 | 632 | 0.011187 | 10.020492 | STOP |
+| 2026-11-09 02:17:18 | doc3 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 1994 ms | 2770 | 363 | 0.002174 | 10.022666 | STOP |
+| 2026-11-09 02:17:18 | doc3 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2039 ms | 2791 | 400 | 0.002297 | 10.024963 | STOP |
+| 2026-11-09 02:17:24 | doc3 | 1 | Csv8 | 3 | gemini-3.8-flash | 5573 ms | 2806 | 473 | 0.009696 | 10.034659 | STOP |
+| 2026-11-09 02:17:26 | doc4 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2605 ms | 2770 | 632 | 0.003014 | 10.037673 | STOP |
+| 2026-11-09 02:17:26 | doc4 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2623 ms | 2791 | 657 | 0.003100 | 10.040773 | STOP |
+| 2026-11-09 02:17:35 | doc5 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8291 ms | 2785 | 4370 | 0.014701 | 10.055474 | STOP |
+| 2026-11-09 02:17:35 | doc5 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8565 ms | 2764 | 4376 | 0.014712 | 10.070186 | STOP |
+| 2026-11-09 02:17:52 | doc5 | 1 | Csv8 | 3 | gemini-3.8-flash | 17217 ms | 2800 | 2876 | 0.032213 | 10.102399 | STOP |
+| 2026-11-09 02:17:58 | doc6 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 6158 ms | 2791 | 3061 | 0.010613 | 10.113012 | STOP |
+| 2026-11-09 02:17:59 | doc6 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6572 ms | 2770 | 3209 | 0.011067 | 10.124079 | STOP |
+| 2026-11-09 02:18:21 | doc6 | 1 | Csv8 | 3 | gemini-3.8-flash | 21945 ms | 2806 | 3681 | 0.039771 | 10.163850 | STOP |
+| 2026-11-09 02:18:24 | doc7 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 3407 ms | 2770 | 1145 | 0.004617 | 10.168467 | STOP |
+| 2026-11-09 02:18:24 | doc7 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 3486 ms | 2791 | 1243 | 0.004931 | 10.173398 | STOP |
+| 2026-11-09 02:18:33 | doc7 | 1 | Csv8 | 3 | gemini-3.8-flash | 8723 ms | 2806 | 1182 | 0.016343 | 10.189741 | STOP |
+| 2026-11-09 02:18:44 | doc8 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 10871 ms | 6060 | 5838 | 0.020517 | 10.210258 | STOP |
+| 2026-11-09 02:18:44 | doc8 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 11003 ms | 6081 | 5771 | 0.020315 | 10.230573 | STOP |
+| 2026-11-09 02:18:53 | doc9 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 8965 ms | 4989 | 4446 | 0.015765 | 10.246338 | STOP |
+| 2026-11-09 02:18:53 | doc9 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 9018 ms | 4968 | 4490 | 0.015895 | 10.262233 | STOP |
+| 2026-11-09 02:19:19 | doc9 | 1 | Csv8 | 3 | gemini-3.8-flash | 25740 ms | 5004 | 4423 | 0.050849 | 10.313082 | STOP |
+| 2026-11-09 02:19:28 | doc10 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8814 ms | 4987 | 4460 | 0.015808 | 10.328890 | STOP |
+| 2026-11-09 02:19:28 | doc10 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 9093 ms | 5008 | 4603 | 0.016263 | 10.345153 | STOP |
+| 2026-11-09 02:19:56 | doc10 | 1 | Csv8 | 3 | gemini-3.8-flash | 28034 ms | 5023 | 4891 | 0.055272 | 10.400425 | STOP |
+| 2026-11-09 02:20:04 | doc11 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 7981 ms | 5034 | 3869 | 0.013979 | 10.414404 | STOP |
+| 2026-11-09 02:20:04 | doc11 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 8328 ms | 5013 | 4013 | 0.014421 | 10.428825 | STOP |
+| 2026-11-09 02:20:30 | doc11 | 1 | Csv8 | 3 | gemini-3.8-flash | 25455 ms | 5049 | 4453 | 0.051214 | 10.480039 | STOP |
+| 2026-11-09 02:20:37 | doc12 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 7232 ms | 4987 | 3556 | 0.012983 | 10.493022 | STOP |
+| 2026-11-09 02:20:37 | doc12 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 7281 ms | 5008 | 3550 | 0.012972 | 10.505994 | STOP |
+| 2026-11-09 02:21:00 | doc12 | 1 | Csv8 | 3 | gemini-3.8-flash | 23246 ms | 5023 | 4069 | 0.047565 | 10.553559 | STOP |
+| 2026-11-09 02:21:03 | doc13 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2501 ms | 2756 | 354 | 0.002140 | 10.555699 | STOP |
+| 2026-11-09 02:21:03 | doc13 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2565 ms | 2777 | 385 | 0.002245 | 10.557944 | STOP |
+| 2026-11-09 02:21:07 | doc13 | 1 | Csv8 | 3 | gemini-3.8-flash | 3916 ms | 2792 | 298 | 0.008029 | 10.565973 | STOP |

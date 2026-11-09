@@ -1566,3 +1566,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « Suggestions et comparez ne fonctionne plus ??? »
   puis « Mais les test ont bien été fait sur la prod ??? C'est ce que j'ai demandé. En 10s je trouve plein de problème... »
   puis « Mais la partie houblon fonctionnait super bien fut un temps ??? »
+- **09.11**, mot pour mot, à « Banc payant (environ 0,70 CHF) … je le lance ? » et « Les 3 bugs des Réglages : je les joue sur tes vrais Réglages en remettant chaque valeur à l'identique ? » : « Oui et oui » ; « N'attends pas d'input de ma part continue tes tâches ».
+  Puis : « Économie de token. Que pour la qualité !!! » ; « Ensuite fait moi des mini maquettes pour la partie levures. Avec le bon workflow » (lu : l'étape « Levure 4/7 » de la création de recette, suivante du programme « refaire tous les écrans un à un » ; entonnoir allégé D204, comme Malts/sucres ; lecture étroite, L01).
