@@ -900,7 +900,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* Les pièces de la ligne : le formulaire simple (saisie sans justificatif) les montre toutes ; le plateau de p3c-3 n'en garde que l'utile au premier plan,
        le reste derrière un seul « plus » (VERDICT-f3, défaut 1). Une pièce n'existe qu'une fois : le nom de l'article, la quantité, l'unité, le montant. */
     const libelleEl=<div className="flex items-center gap-2"><div className="flex-1 min-w-0"><Field label="Libellé de la facture"><TextInput aria-label={`Libellé ligne ${index+1}`} value={line.description} onChange={description=>{updateLine(line.id,{description,nameFr:undefined});if(line.imprime)void retenirNomBrasseur({name:line.imprime.nom,variant:line.imprime.variante,unit:line.unit},description);}} placeholder="Article ou prestation"/></Field></div>{draft.lines.length>1?<button type="button" aria-label={`Retirer la ligne ${index+1}`} onClick={()=>retirerLigne(line.id)} className="min-h-7 min-w-7 text-cave-400 flex justify-center items-center"><Trash2 size={17}/></button>:null}</div>;
-    const changerNature=(kind:PurchaseLineDraft['kind'])=>{manuallyClassified.current.add(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{kind,stockAction:'none',equipmentAction:'none'});};
+    /* 09.11, ses mots : « si je change je ltype à ingrédients, ça le fait changer de catégorie et surtout on perd du coup le focus sur l'item » : la ligne change de bande (elle s'y remonte), le plateau reste ouvert et le focus la suit. */
+    const changerNature=(kind:PurchaseLineDraft['kind'])=>{manuallyClassified.current.add(line.id);proposedStock.current.delete(line.id);updateLine(line.id,{kind,stockAction:'none',equipmentAction:'none'});suivreLigne(line.id);};
     const natureEl=<Field label="Type d’achat"><select aria-label={`Nature ligne ${index+1}`} value={line.kind} onChange={e=>changerNature(e.target.value as PurchaseLineDraft['kind'])} className={inputClass}>{kinds.map(kind=><option key={kind.value} value={kind.value}>{kind.label}</option>)}</select></Field>;
     const ttcEl=<Field label="TTC (CHF)"><NumberInput aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{updateLine(line.id,{amount});if(draft.lines.length===1)patch({amount});}} emptyValue={undefined} className={`${inputClass} tabular-nums`}/></Field>;
     const calculOk=line.quantity!==undefined&&line.unitPrice!==undefined&&line.amount!==undefined?lineMathCheck([{id:line.id,name:line.description,kind:line.kind,quantity:line.quantity,unit:line.unit,price:line.unitPrice,amountTTC:line.amount}]).points.length===0:undefined;
@@ -1247,6 +1248,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const toutPlierGroupes=(cle?:string)=>{setChoixGroupes(c=>plierTout(bandes,c,cle));bandes.filter(b=>!cle||b.cle===cle).forEach(b=>b.sousGroupes?.forEach(sg=>{if(pliable(sg))fermerPlateaux(sg.ids);}));};
   const toutDeplierGroupes=(cle?:string)=>setChoixGroupes(c=>deplierTout(bandes,c,cle));
   /* Une cible (« y aller », une erreur) dans un sous-groupe replié : il s'ouvre d'abord, de façon synchrone, avant le défilement et le focus. */
+  /* Une ligne qui change de bande se remonte ailleurs : son plateau reste ouvert, elle vient au centre et le focus revient sur le type allumé. */
+  const suivreLigne=(id:string)=>{ouvertesRef.current.set(id,true);setPlateaux(n=>n+1);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{if(!mounted.current)return;const el=form.current?.querySelector<HTMLElement>(`[data-dp-ligne="${id}"]`);if(!el)return;reveler(el);const d=el.querySelector<HTMLDetailsElement>('details');if(d&&!d.open)d.open=true;
+      el.scrollIntoView?.({block:'center'});(el.querySelector<HTMLElement>('[data-dp-nature] [aria-pressed="true"]')??el.querySelector<HTMLElement>('summary'))?.focus({preventScroll:true});}));};
   const reveler=(el:Element|null|undefined)=>{const corps=el?.closest<HTMLElement>('[data-dp-sg-corps]'),cle=corps?.dataset.dpSgCorps;if(corps&&cle&&corps.hidden)flushSync(()=>setChoixGroupes(c=>new Map(c).set(cle,true)));};
   const barre:ItemBarre[]=lignesAff.map(l=>({id:l.id,cents:l.amount===undefined?0:Math.round(l.amount*100),groupe:groupeDeLigne(draft.lines.indexOf(l)),ouvert:douteuxIds.has(l.id),nom:l.description}));
   const centsAff=lignesAff.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
@@ -1334,6 +1339,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const surFichier:{nom:string;url:string;type:string}|null=draft.proofDataUrl&&!busy?{nom:draft.proofFileName??'justificatif',url:draft.proofDataUrl,type:draft.proofType??''}:null;
   /* B2 (test en ligne n° 40) : fermer une saisie remplie (total, fournisseur, description, lignes, TVA, justificatif lu ou joint) perdait tout sans un mot ; le × et Échap demandent d'abord « Abandonner ? ». */
   const saisieRemplie=!done&&!attached&&!dejaTx&&(Boolean(draft.amount&&draft.amount>0)||Boolean(draft.vendor.trim())||Boolean(draft.description.trim())||draft.sourceVatAmount!==undefined||draft.lines.some(l=>l.description.trim()||l.quantity!==undefined||l.unitPrice!==undefined||l.amount!==undefined)||Boolean(scan?.ok)||pages.length>0);
+  /* 09.11, « il y a des cas de figure où je peux pas annuler » : le × était éteint pendant toute la lecture (busy) ; il ne l'est plus que pendant l'enregistrement. Fermer pendant la lecture la laisse finir sans écran. */
   const fermer=()=>{if(saisieRemplie){setAbandon(true);scroller.current?.scrollTo?.({top:0});}else onClose();};
   const nArticlesSaisis=draft.lines.filter(l=>l.description.trim()||l.quantity!==undefined||l.unitPrice!==undefined||l.amount!==undefined).length;
   const lignesBloc=<details data-purchase-lines {...(scan?.ok?{open:true}:{'data-purchase-options':true,open:initialIntent==='equipment'})} className="order-2 border-t border-cave-800 py-1 lg:col-start-2 lg:row-start-1">
@@ -1483,8 +1489,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {phraseRecu}
   </fieldset>;
   const enteteFichier=surFichier;
-  return <ModalShell open onClose={()=>{if(!busy&&!saving)fermer();}} dismissible={!busy&&!saving} labelledBy={titleId} size="xl" plein>
-    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={busy||saving} onFermer={fermer} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
+  return <ModalShell open onClose={()=>{if(!saving)fermer();}} dismissible={!saving} labelledBy={titleId} size="xl" plein>
+    <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={saving} onFermer={fermer} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
       milieu={ordre==='cat'&&etatSeg.visible?<SegmentPlier plie={etatSeg.plie} deplie={etatSeg.deplie} onPlier={()=>toutPlierGroupes()} onDeplier={()=>toutDeplierGroupes()}/>:undefined}/>
     {abandon?<div data-dp="abandon" role="alertdialog" aria-labelledby="dp-abandon-titre" className="mx-2 mt-1.5 space-y-1.5 rounded-panel border border-attention/40 bg-attention/10 p-2.5 text-sm text-cave-50">
       <p id="dp-abandon-titre"><b>Abandonner cette saisie ?</b> Rien n’est enregistré : ce que tu as saisi sera perdu.</p>
