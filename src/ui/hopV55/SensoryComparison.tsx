@@ -37,12 +37,12 @@ type NumericReading =
 type Definition = SensoryDimension['definition'];
 
 const CANDIDATE_SERIES = [
-  { color: '#2f6b3f', marker: '●' },
-  { color: '#b8741a', marker: '▲' },
-  { color: '#2e5b86', marker: '■' },
-  { color: '#a83a2b', marker: '◆' },
-  { color: '#6b4fa0', marker: '✚' },
-  { color: '#4c4f49', marker: '✕' }
+  { color: 'rgb(var(--hv-t-2f6b3f))', marker: '●' },
+  { color: 'rgb(var(--hv-t-b8741a))', marker: '▲' },
+  { color: 'rgb(var(--hv-t-2e5b86))', marker: '■' },
+  { color: 'rgb(var(--hv-t-a83a2b))', marker: '◆' },
+  { color: 'rgb(var(--hv-t-6b4fa0))', marker: '✚' },
+  { color: 'rgb(var(--hv-t-4c4f49))', marker: '✕' }
 ] as const;
 /** Hollow counterparts mark the upper bound of a range, so a bound never reads as a central value. */
 const RANGE_CAPS = ['○', '△', '□', '◇', '✛', '×'] as const;

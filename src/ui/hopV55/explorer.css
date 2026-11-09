@@ -1,19 +1,25 @@
 .hop-v55-explorer {
-  --hop-paper: #f3efe3;
-  --hop-card: #fffdf7;
-  --hop-ink: #1c3029;
-  --hop-muted: #596c62;
-  --hop-forest: #28513f;
-  --hop-forest-dark: #1b3e30;
-  --hop-line: #cbd3c8;
-  --hop-soft: #e7ece4;
-  --hop-gold: #c28b35;
-  --hop-alert: #8d442c;
+  --hop-paper: rgb(var(--hv-f-f3efe3));
+  --hop-card: rgb(var(--hv-f-fffdf7));
+  --hop-ink: rgb(var(--hv-t-1c3029));
+  --hop-muted: rgb(var(--hv-t-596c62));
+  --hop-forest: rgb(var(--hv-l-28513f));
+  --hop-forest--f: rgb(var(--hv-f-28513f));
+  --hop-forest--t: rgb(var(--hv-t-28513f));
+  --hop-forest--o: rgb(var(--hv-o-28513f));
+  --hop-forest-dark: rgb(var(--hv-t-1b3e30));
+  --hop-forest-dark--f: rgb(var(--hv-f-1b3e30));
+  --hop-forest-dark--l: rgb(var(--hv-l-1b3e30));
+  --hop-line: rgb(var(--hv-l-cbd3c8));
+  --hop-soft: rgb(var(--hv-f-e7ece4));
+  --hop-gold: rgb(var(--hv-l-c28b35));
+  --hop-alert: rgb(var(--hv-l-8d442c));
+  --hop-alert--o: rgb(var(--hv-o-8d442c));
   color: var(--hop-ink);
   background: var(--hop-paper);
   border: 1px solid var(--hop-line);
   border-radius: 14px;
-  box-shadow: 0 12px 32px rgb(28 48 41 / 8%);
+  box-shadow: 0 12px 32px rgb(var(--hv-o-1c3029) / 8%);
   font-family: inherit;
   margin: 0 auto;
   max-width: 1440px;
@@ -53,7 +59,7 @@
 }
 
 .hop-v55-explorer__eyebrow {
-  color: var(--hop-forest);
+  color: var(--hop-forest--t);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -97,7 +103,7 @@
 
 .hop-v55-explorer__intent {
   align-items: baseline;
-  background: #e6e9de;
+  background: rgb(var(--hv-f-e6e9de));
   border-left: 3px solid var(--hop-gold);
   border-radius: 4px 8px 8px 4px;
   display: flex;
@@ -162,8 +168,8 @@
 
 .hop-v55-explorer__map-wrap {
   background:
-    radial-gradient(ellipse at 50% 46%, rgb(255 255 255 / 78%), rgb(237 237 222 / 52%) 70%, transparent 100%);
-  border: 1px solid #dfe3d7;
+    radial-gradient(ellipse at 50% 46%, rgb(var(--hv-f-ffffff) / 78%), rgb(var(--hv-f-ededde) / 52%) 70%, transparent 100%);
+  border: 1px solid rgb(var(--hv-l-dfe3d7));
   border-radius: 10px;
   margin-bottom: 12px;
   padding: 4px 6px 8px;
@@ -199,13 +205,13 @@
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-zone.is-outer {
-  background: #f4f3ea;
-  border: 1px dashed #b9c3b6;
+  background: rgb(var(--hv-f-f4f3ea));
+  border: 1px dashed rgb(var(--hv-l-b9c3b6));
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-zone.is-inner {
-  background: #e9efe5;
-  border: 1.5px solid #8fa592;
+  background: rgb(var(--hv-f-e9efe5));
+  border: 1.5px solid rgb(var(--hv-l-8fa592));
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-zone-title {
@@ -234,7 +240,7 @@
 .hop-v55-explorer .hop-v55-explorer__map-chip,
 .hop-v55-explorer .hop-v55-explorer__map-unknown {
   align-items: center;
-  background: #fdfbf3;
+  background: rgb(var(--hv-f-fdfbf3));
   border: 1.5px solid var(--hop-forest);
   border-radius: 999px;
   display: inline-flex;
@@ -250,19 +256,19 @@
 
 .hop-v55-explorer .hop-v55-explorer__map-chip.is-linked {
   border-width: 2px;
-  background: #fffef8;
+  background: rgb(var(--hv-f-fffef8));
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-chip:hover,
 .hop-v55-explorer .hop-v55-explorer__map-unknown:hover,
 .hop-v55-explorer .hop-v55-explorer__map-unknown.is-active {
-  background: #d9e5d7;
+  background: rgb(var(--hv-f-d9e5d7));
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-center {
   align-items: center;
-  background: #fffdf7;
-  border: 2px solid var(--hop-forest-dark);
+  background: rgb(var(--hv-f-fffdf7));
+  border: 2px solid var(--hop-forest-dark--l);
   border-radius: 16px;
   display: flex;
   flex-wrap: wrap;
@@ -290,7 +296,7 @@
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-unknown {
-  border-color: #6f6a4e;
+  border-color: rgb(var(--hv-l-6f6a4e));
   border-radius: 12px;
   border-style: dashed;
   justify-self: stretch;
@@ -299,9 +305,9 @@
 /* Index and counts are single tokens: they never wrap between digits. */
 .hop-v55-explorer .hop-v55-explorer__map-index {
   align-items: center;
-  background: var(--hop-forest);
+  background: var(--hop-forest--f);
   border-radius: 999px;
-  color: #fffdf7;
+  color: rgb(var(--hv-t-fffdf7));
   display: inline-flex;
   flex: none;
   font-size: 0.68rem;
@@ -315,8 +321,8 @@
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-unknown .hop-v55-explorer__map-index {
-  background: #6f6a4e;
-  border: 1px dashed #fffdf7;
+  background: rgb(var(--hv-f-6f6a4e));
+  border: 1px dashed rgb(var(--hv-l-fffdf7));
   font-size: 0.85rem;
 }
 
@@ -334,7 +340,7 @@
 }
 
 .hop-v55-explorer .hop-v55-explorer__map-name small {
-  color: #615b42;
+  color: rgb(var(--hv-t-615b42));
   display: block;
   font-size: 0.7rem;
   font-weight: 500;
@@ -367,7 +373,7 @@
 }
 
 .hop-v55-explorer .hop-v55-explorer__neighbours {
-  border-top: 1px solid #d7dccf;
+  border-top: 1px solid rgb(var(--hv-l-d7dccf));
   margin-top: 10px;
   padding-top: 8px;
 }
@@ -418,7 +424,7 @@
 
 .hop-v55-explorer__family-button {
   align-items: center;
-  background: #faf9f2;
+  background: rgb(var(--hv-f-faf9f2));
   border: 1px solid var(--hop-line);
   border-radius: 7px;
   display: flex;
@@ -431,15 +437,15 @@
 
 .hop-v55-explorer__family-button:hover,
 .hop-v55-explorer__family-button.is-active {
-  background: #e1eade;
-  border-color: #537360;
+  background: rgb(var(--hv-f-e1eade));
+  border-color: rgb(var(--hv-l-537360));
 }
 
 .hop-v55-explorer__family-index {
   align-items: center;
-  background: var(--hop-forest);
+  background: var(--hop-forest--f);
   border-radius: 50%;
-  color: #fffdf7;
+  color: rgb(var(--hv-t-fffdf7));
   display: inline-flex;
   flex: 0 0 24px;
   font-size: 0.68rem;
@@ -450,8 +456,8 @@
 }
 
 .hop-v55-explorer__family-button.is-unknown .hop-v55-explorer__family-index {
-  background: #6f6a4e;
-  border: 1px dashed #fffdf7;
+  background: rgb(var(--hv-f-6f6a4e));
+  border: 1px dashed rgb(var(--hv-l-fffdf7));
 }
 
 .hop-v55-explorer__family-copy {
@@ -473,7 +479,7 @@
 }
 
 .hop-v55-explorer__family-count {
-  background: #fffdf7;
+  background: rgb(var(--hv-f-fffdf7));
   border-radius: 999px;
   color: var(--hop-forest-dark);
   flex: 0 0 auto;
@@ -488,7 +494,7 @@
 .hop-v55-explorer__more,
 .hop-v55-explorer__text-button {
   background: transparent;
-  border: 1px solid #829486;
+  border: 1px solid rgb(var(--hv-l-829486));
   border-radius: 6px;
   color: var(--hop-forest-dark);
   font-size: 0.82rem;
@@ -509,11 +515,11 @@
 
 .hop-v55-explorer__more:hover,
 .hop-v55-explorer__text-button:hover {
-  background: #e8eee5;
+  background: rgb(var(--hv-f-e8eee5));
 }
 
 .hop-v55-explorer__focus {
-  background: #f4f4eb;
+  background: rgb(var(--hv-f-f4f4eb));
   border-left: 3px solid var(--hop-gold);
   border-radius: 5px;
   margin-top: 12px;
@@ -536,7 +542,7 @@
 }
 
 .hop-v55-explorer__model-sources {
-  border-left: 2px solid #ccd6ca;
+  border-left: 2px solid rgb(var(--hv-l-ccd6ca));
   display: grid;
   gap: 8px;
   margin-top: 10px;
@@ -559,7 +565,7 @@
 }
 
 .hop-v55-explorer__source a {
-  color: #315f4b;
+  color: rgb(var(--hv-t-315f4b));
   font-weight: 700;
   width: fit-content;
 }
@@ -576,8 +582,8 @@
 .hop-v55-explorer__search,
 .hop-v55-explorer__field input:not([type='hidden']),
 .hop-v55-explorer__field select {
-  background: #fffefa;
-  border: 1px solid #8fa094;
+  background: rgb(var(--hv-f-fffefa));
+  border: 1px solid rgb(var(--hv-l-8fa094));
   border-radius: 6px;
   min-height: 36px;
   padding: 6px 9px;
@@ -603,7 +609,7 @@
 }
 
 .hop-v55-explorer__material {
-  background: #fffefa;
+  background: rgb(var(--hv-f-fffefa));
   border: 1px solid var(--hop-line);
   border-radius: 8px;
   min-width: 0;
@@ -612,7 +618,7 @@
 
 .hop-v55-explorer__material.is-selected {
   border-color: var(--hop-forest);
-  box-shadow: inset 3px 0 0 var(--hop-forest);
+  box-shadow: inset 3px 0 0 var(--hop-forest--o);
 }
 
 .hop-v55-explorer__material-head,
@@ -637,10 +643,10 @@
 }
 
 .hop-v55-explorer button.hop-v55-explorer__select[type='button'] {
-  background: var(--hop-forest);
-  border: 1px solid var(--hop-forest-dark);
+  background: var(--hop-forest--f);
+  border: 1px solid var(--hop-forest-dark--l);
   border-radius: 6px;
-  color: #fffdf7 !important;
+  color: rgb(var(--hv-t-fffdf7)) !important;
   flex: 0 0 auto;
   font-size: 0.75rem !important;
   font-weight: 700 !important;
@@ -649,11 +655,11 @@
 }
 
 .hop-v55-explorer button.hop-v55-explorer__select[type='button']:hover {
-  background: var(--hop-forest-dark);
+  background: var(--hop-forest-dark--f);
 }
 
 .hop-v55-explorer button.hop-v55-explorer__select[type='button'].is-selected {
-  background: #e6eee4;
+  background: rgb(var(--hv-f-e6eee4));
   color: var(--hop-forest-dark) !important;
 }
 
@@ -666,7 +672,7 @@
 
 .hop-v55-explorer__compare-button {
   background: transparent;
-  border: 1px solid #a3b2a5;
+  border: 1px solid rgb(var(--hv-l-a3b2a5));
   border-radius: 999px;
   color: var(--hop-forest-dark);
   font-size: 0.74rem;
@@ -675,11 +681,11 @@
 }
 
 .hop-v55-explorer__compare-button:hover {
-  background: #eef2ea;
+  background: rgb(var(--hv-f-eef2ea));
 }
 
 .hop-v55-explorer__compare-button.is-active {
-  background: #e1eade;
+  background: rgb(var(--hv-f-e1eade));
   border-color: var(--hop-forest);
   font-weight: 700;
 }
@@ -689,7 +695,7 @@
 }
 
 .hop-v55-explorer__descriptions {
-  border-top: 1px solid #e2e5da;
+  border-top: 1px solid rgb(var(--hv-l-e2e5da));
   margin-top: 8px;
   padding-top: 7px;
 }
@@ -711,7 +717,7 @@
 }
 
 .hop-v55-explorer__evidence-list li {
-  border-left: 2px solid #c7d3c7;
+  border-left: 2px solid rgb(var(--hv-l-c7d3c7));
   display: grid;
   gap: 3px;
   padding-left: 8px;
@@ -731,15 +737,15 @@
 }
 
 .hop-v55-explorer__unknown-note {
-  color: #615b42;
+  color: rgb(var(--hv-t-615b42));
   font-size: 0.78rem;
   line-height: 1.4;
   margin: 7px 0 0;
 }
 
 .hop-v55-explorer__empty {
-  background: #f2f2e9;
-  border: 1px dashed #9daa9c;
+  background: rgb(var(--hv-f-f2f2e9));
+  border: 1px dashed rgb(var(--hv-l-9daa9c));
   border-radius: 8px;
   color: var(--hop-muted);
   display: grid;
@@ -752,8 +758,8 @@
    page.css). The panel never exceeds the visible area above the shell action bar (≈ 53 px + floating button,
    72 px reserved), so its lower actions such as « Simuler et comparer cet essai » stay reachable by scrolling it. */
 .hop-v55-explorer__crucible {
-  background: #e8ede4;
-  border-color: #a9b9aa;
+  background: rgb(var(--hv-f-e8ede4));
+  border-color: rgb(var(--hv-l-a9b9aa));
   position: sticky;
   top: 52px;
   max-height: calc(100dvh - 52px - 72px);
@@ -762,7 +768,7 @@
 }
 
 .hop-v55-explorer__crucible-heading {
-  border-bottom: 1px solid #bdc9bc;
+  border-bottom: 1px solid rgb(var(--hv-l-bdc9bc));
   margin-bottom: 10px;
   padding-bottom: 10px;
 }
@@ -783,8 +789,8 @@
 }
 
 .hop-v55-explorer__crucible-list > li {
-  background: #fffdf7;
-  border: 1px solid #c5d0c3;
+  background: rgb(var(--hv-f-fffdf7));
+  border: 1px solid rgb(var(--hv-l-c5d0c3));
   border-radius: 7px;
   min-width: 0;
   padding: 8px;
@@ -797,7 +803,7 @@
 
 .hop-v55-explorer__remove {
   background: transparent;
-  border: 1px solid #849589;
+  border: 1px solid rgb(var(--hv-l-849589));
   border-radius: 5px;
   color: var(--hop-forest-dark);
   flex: 0 0 auto;
@@ -833,8 +839,8 @@
 
 .hop-v55-explorer .hv-field > input,
 .hop-v55-explorer .hv-field > textarea {
-  background: #fffefa;
-  border: 1px solid #8fa094;
+  background: rgb(var(--hv-f-fffefa));
+  border: 1px solid rgb(var(--hv-l-8fa094));
   border-radius: 6px;
   font-size: 1rem;
   min-height: 36px;
@@ -844,7 +850,7 @@
 
 .hop-v55-explorer .hv-field > small[role='alert'],
 .hop-v55-explorer__field-error {
-  color: #713c2c;
+  color: rgb(var(--hv-t-713c2c));
   font-size: 0.74rem;
   line-height: 1.35;
 }
@@ -861,8 +867,8 @@
 }
 
 .hop-v55-explorer__number {
-  background: #fffefa;
-  border: 1px solid #8fa094;
+  background: rgb(var(--hv-f-fffefa));
+  border: 1px solid rgb(var(--hv-l-8fa094));
   border-radius: 6px;
   font-size: 1rem;
   min-height: 36px;
@@ -871,14 +877,14 @@
 }
 
 .hop-v55-explorer__composition-fields {
-  border-top: 1px solid #bdc9bc;
+  border-top: 1px solid rgb(var(--hv-l-bdc9bc));
   padding-top: 2px;
 }
 
 .hop-v55-explorer__dose {
   align-items: baseline;
-  background: #fffdf7;
-  border: 1px solid #b7c5b7;
+  background: rgb(var(--hv-f-fffdf7));
+  border: 1px solid rgb(var(--hv-l-b7c5b7));
   border-radius: 7px;
   display: grid;
   font-variant-numeric: tabular-nums;
@@ -900,9 +906,9 @@
 }
 
 .hop-v55-explorer__error {
-  background: #faeee8;
+  background: rgb(var(--hv-f-faeee8));
   border-left: 3px solid var(--hop-alert);
-  color: #713c2c;
+  color: rgb(var(--hv-t-713c2c));
   font-size: 0.82rem;
   line-height: 1.4;
   margin: 10px 0 0;
@@ -911,10 +917,10 @@
 
 /* Scoped to win over page.css `.hop-v55 button` (0,1,1): white on white (1.01:1) and 30 px otherwise. */
 .hop-v55 .hop-v55-explorer__compose {
-  background: var(--hop-forest-dark);
-  border: 1px solid #173729;
+  background: var(--hop-forest-dark--f);
+  border: 1px solid rgb(var(--hv-l-173729));
   border-radius: 7px;
-  color: #fffdf7 !important;
+  color: rgb(var(--hv-t-fffdf7)) !important;
   font-weight: 750 !important;
   margin-top: 10px;
   min-height: 38px;
@@ -923,7 +929,7 @@
 }
 
 .hop-v55 .hop-v55-explorer__compose:hover {
-  background: #315d47;
+  background: rgb(var(--hv-f-315d47));
 }
 
 .hop-v55-explorer__footnote {
