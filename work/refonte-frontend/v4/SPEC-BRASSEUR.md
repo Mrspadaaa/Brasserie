@@ -1652,3 +1652,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : Synthèse = g3a (la base de la rangée, « celle ci »), choisi. Annuel = g6 (g4a et ses 9 écrans de clôture), cité sans réserve : choisi. Passe 4 : Prix, variantes du type c5b avec c5a ; Prévisions, variantes de p4a qui gardent l'info sur le graphe ; rangement, e1b amélioré ; Opérations, v5a aux lignes plus compactes.)
 - **09.11**, mot pour mot, complément sur p4a : « Le frigo en marche / p4a / Mieux mais on perds l'info directement sur le graph, fait quelques variantes  et ça reste dure à lire... Fait plus de variante de cette vues »
   (lu : Prévisions passe 4 portée à 6 variantes (p5a–p5f), la lisibilité d'abord : l'info posée sur le graphe, lue en 3 s.)
+- **09.11**, mot pour mot, sur la passe 4 compta et prix (https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm) : « Par bouteille ou par an / c5b était mieux, mais il faut un peu l'améliorer »
+  (lu : Prix = c5b, à améliorer légèrement ; les c6 ne la remplacent pas. Passe 5 : 3 retouches de c5b.)
+- **09.11**, mot pour mot, sur la passe 4 : « 3 et 4 candidat validé » (lu : rangée 3, rangement : e3a choisi ; rangée 4, Opérations : v6b choisi.)

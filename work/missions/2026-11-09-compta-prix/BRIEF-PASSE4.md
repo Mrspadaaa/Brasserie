@@ -26,3 +26,8 @@ Panel passe 3 : https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe ; captures `p3
 
 Plancher à enrichir (L07). N'écris que dans `p4/<tes ids>/` et `p4/RESULTAT-<voie>.md`. Pas de heredoc ni `node -e` pour du code, pas de
 `git stash`, aucun commit, rien dans `src/`. Rends une ligne.
+
+## Passe 5, Prix (ses mots : « Par bouteille ou par an / c5b était mieux, mais il faut un peu l'améliorer »)
+Ids `c7a`–`c7c` dans `p4/` : c5b (`p3/c5b/`) reprise, **retouchée légèrement**, pas réinventée. Pistes tirées des critiques : la règle
+retrouve son aiguille franche (c4a) ; le graphe à deux axes se lit sans effort (un axe nommé, valeurs posées sur la courbe) ; la bascule
+« par bouteille / par an » reste sur le chiffre de tête. Corrections transversales toujours obligatoires. Une NOTE dit ce qui change.

@@ -120,6 +120,24 @@
       "mots": "L année, et la clôture / g6",
       "capture": "work/missions/2026-11-09-compta-prix/p3/g6/g6-page.png",
       "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
+    },
+    {
+      "ecran": "rangement-prix-impot",
+      "route": "e3a",
+      "statut": "choisi",
+      "choix": "e3a (e1b amélioré : prix et impôt depuis la fiche du brassin)",
+      "mots": "3 et 4 candidat validé",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/e3a/e3a-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "operations",
+      "route": "v6b",
+      "statut": "choisi",
+      "choix": "v6b (v5a, lignes serrées : qui, quoi, état, échéance, pièce)",
+      "mots": "3 et 4 candidat validé",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/v6b/v6b-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
     }
   ]
 }
