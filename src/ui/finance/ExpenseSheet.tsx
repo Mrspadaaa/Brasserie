@@ -43,7 +43,7 @@ import { ChipsBar,TITRES } from '../depense/Verdict';
 import { VerificationCroisee,RechercheLignes,BandeManque } from './controlesCroisesVue';
 import { controlesPiece,compterArticles,payeEffectif,type ContexteControles,type LectureControlee } from '../../domain/finance/controlesPiece';
 import { rangsDePiece,notePaiement } from './controlesPieceRangs';
-import { controlesCroises,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
+import { controlesCroises,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montantDeLaLigneManquante,resumeDuBloc,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
@@ -69,7 +69,7 @@ import { tenirEnrichissement } from '../../services/enrichissement';
 import { BORNES_FINANCE } from '../../domain/finance/bornesFinance';
 /* B2-NOTE-10 : le plafond d'un montant est celui de l'écriture (`bornesFinance`), le même que celui qui refuse à l'enregistrement. */
 const MONTANT_MAX = BORNES_FINANCE.operationCents.valeur / 100;
-import { EntreeFendue,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVerification } from '../depense/Pages';
+import { EntreeDocuments,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVerification } from '../depense/Pages';
 import { allegerPhoto,assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,PAGE_OCTETS_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
@@ -265,7 +265,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     FirebaseAuthService.ensureDriveAccessToken().catch(()=>null).finally(()=>{if(actif){setDriveVerifie(true);setDriveTick(t=>t+1);}});
     return()=>{actif=false;};
   },[draft.proofDataUrl,driveVerifie]);
-  /* D366 (D291 : « dans la première vue, pouvoir choisir entre envoyé 1 ou plusieurs documents ») : « Lire un justificatif » n’ouvre plus d’office le sélecteur d’un seul fichier ; la première vue montre « Un document » | « Plusieurs ». */
+  /* D366 (D291 : « dans la première vue, pouvoir choisir entre envoyé 1 ou plusieurs documents ») : « Lire un justificatif » n’ouvre plus d’office le sélecteur d’un seul fichier ; la première vue montre « Un document » | « Plusieurs ». D382 (09.11) : un seul bouton « Documents ». */
   useEffect(()=>{if(error)errorBox.current?.scrollIntoView?.({block:'nearest'});},[error]);
   /* La ligne à suivre (type changé : elle s'est remontée dans une autre bande) : juste après le rendu, sans attendre une image (une page cachée n'en dessine pas). */
   const aSuivre=useRef<string|null>(null);
@@ -557,17 +557,19 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const urlDePage=(file:File)=>typeof URL.createObjectURL==='function'?URL.createObjectURL(file):'';
   /* Une page de plus, dans la file des ajouts : les plafonds (4 pages, 4 Mo la page, 12 Mo en tout, jamais deux fois la même) se lisent sur `pagesRef` au moment où la page passe.
      Quand une dépense est déjà jointe (« Changer » a rouvert l'entrée), la première page d'un nouveau lot remet tout à zéro, comme `attach` pour un document. */
+  /* Les messages des services nomment encore « Un document » : le bouton s'appelle « Documents » (D382). */
+  const sansUnDocument=(m:string)=>m.split('« Un document »').join('« Documents »');
   const ajouterUnePage=async(file:File)=>{
     if(!mounted.current||scanLocked.current||saveLocked.current)return;
     const refus=refusDeFichier();if(refus){setError(refus);return;}
     if(file.size>PAGE_OCTETS_MAX){file=await allegerPhoto(file);if(!mounted.current||scanLocked.current)return;}
     const nouveauLot=Boolean(etatRef.current.attachment);
     const base=nouveauLot?[]:pagesRef.current;
-    const avant=refuserPage(file,base);if(avant){setError(avant);return;}
+    const avant=refuserPage(file,base);if(avant){setError(sansUnDocument(avant));return;}
     const empreinte=await empreinteDePage(file);
     /* « Lire » a pu partir pendant l'empreinte : cette page n'est ni dans le PDF ni dans la lecture, elle n'entre pas non plus dans la pile ni dans « N pages ». */
     if(!mounted.current||scanLocked.current)return;
-    const refusEmpreinte=refuserPage(file,nouveauLot?[]:pagesRef.current,empreinte);if(refusEmpreinte){setError(refusEmpreinte);return;}
+    const refusEmpreinte=refuserPage(file,nouveauLot?[]:pagesRef.current,empreinte);if(refusEmpreinte){setError(sansUnDocument(refusEmpreinte));return;}
     if(nouveauLot){
       libererPages();
       if(etatRef.current.scanOk)remettreLaDepenseAZero();
@@ -585,17 +587,26 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Après un échec d'assemblage : saisir à la main, les pages retirées (le formulaire s'ouvre, rien n'est lu). */
   const saisirSansPages=()=>{libererPages();setError('');setShowForm(true);};
   /* Un fichier lâché : un seul = comme aujourd'hui (une page de plus quand la rangée est ouverte) ; plusieurs d'un coup : refusés, jamais la page 2 perdue en silence. */
-  const MESSAGE_DEPOT='Dépose un seul document à la fois. Pour plusieurs pages, touche « Plusieurs ».';
+  const MESSAGE_DEPOT='Un PDF se lit seul : dépose-le sans autre fichier. Plusieurs fichiers ne se prennent qu’en images (les pages).';
   /* LO-6 (08.11) : la même règle pour un sélecteur qui rend plusieurs fichiers (sélection multiple, automatisation) : refusés et dit, jamais seul le premier gardé en silence. */
   const unSeul=(liste:FileList|null|undefined):File|null=>{const fichiers=Array.from(liste??[]);if(fichiers.length>1){setError(MESSAGE_DEPOT);return null;}return fichiers[0]??null;};
   /* LO-7 (08.11) : dans « Plusieurs » (sélecteur de pages, dépôt sur la rangée), plusieurs fichiers d'un coup sont plusieurs pages, dans l'ordre de leur nom (captures « …-1 », « …-2 » ; ordre numérique). Chacune passe les refus d'une page seule. */
   const ajouterPages=(liste:FileList|File[]|null|undefined)=>{for(const f of Array.from(liste??[]).sort((x,y)=>x.name.localeCompare(y.name,undefined,{numeric:true})))ajouterPage(f);};
+  /* D382 (09.11, « un seul bouton Documents ») : la même règle au sélecteur, au dépôt et à « Changer ». Un fichier (PDF ou image) : le chemin d'aujourd'hui (`attach`, la lecture part tout de suite) ;
+     plusieurs images : les pages (`ajouterPages`, LO-7) ; un PDF parmi plusieurs fichiers : refusé et dit (LO-6), rien n'est lu. */
+  const estPdf=(f:File)=>f.type==='application/pdf'||/.pdf$/i.test(f.name);
+  const surDocuments=(liste:FileList|File[]|null|undefined)=>{
+    const fichiers=Array.from(liste??[]);
+    if(!fichiers.length)return;
+    if(fichiers.length===1){void attach(fichiers[0]);return;}
+    if(fichiers.some(estPdf)){setError(MESSAGE_DEPOT);return;}
+    ajouterPages(fichiers);
+  };
   const deposer=(e:React.DragEvent,vers:'document'|'page')=>{
     e.preventDefault();setDropping(false);
     const fichiers=Array.from(e.dataTransfer.files??[]);
     if(vers==='page'){ajouterPages(fichiers);return;}
-    if(fichiers.length>1){setError(MESSAGE_DEPOT);return;}
-    if(fichiers[0])void attach(fichiers[0]);
+    surDocuments(fichiers);
   };
   /* Le bulletin de versement (QR-facture) est en dernière page : les pages se lisent de la dernière à la première, jusqu'au premier QR lu. */
   const lancerQrPages=(fichiers:File[])=>{
@@ -637,7 +648,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       if(!mounted.current)return;
       setNPagesLues(outcome.ok?outcome.pagesLues??0:0);
       finLecture(outcome,documentHash);
-    }catch(e:any){if(mounted.current){setError(e.message||'Lecture indisponible. Saisis les informations manuellement.');if(!pose)setAssemblageEchoue(true);}}
+    }catch(e:any){if(mounted.current){setError(sansUnDocument(e.message||'Lecture indisponible. Saisis les informations manuellement.'));if(!pose)setAssemblageEchoue(true);}}
     finally{scanLocked.current=false;if(mounted.current){setBusy(false);if(pose)setShowForm(true);if(verifRef.current==='attente')finDePartie();}}
   };
   /* « Changer » sur des pages : l'entrée (« Un document » | « Plusieurs ») s'ouvre au-dessus de la dépense, qui ne bouge pas ; rien n'est remis à zéro avant le premier nouveau fichier. */
@@ -1374,27 +1385,28 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ctxPiece:ContexteControles={depenses:transactions.map(tx=>({id:tx.id,vendor:tx.finance?.vendor??'',date:tx.date,total:tx.amountTTC})),
     prixConnus:[...stocks.rawMaterials,...stocks.cleaning].filter(a=>typeof a.pricePerUnit==='number'&&a.pricePerUnit>0&&a.unit).map(a=>({nom:a.name,reference:a.ref,prix:a.pricePerUnit!,unite:a.unit,source:'stock' as const}))};
   const piece=lectureCtl?controlesPiece(lectureCtl,ctxPiece):[];
-  const ctrlBloc=controlesCroises({lignesCents:lignesCtsBloc,nLignes:draft.lines.length,nAjoutes:draft.lines.filter(estAjouteeAMain).length,ajoutsCents:ajoutsMain.reduce((t,a)=>t+a.cents,0),totalCents:totalImprimeCts,attendus:typeof result?.printedLineCount==='number'?result.printedLineCount:null,attendusIndependant:typeof result?.countedAmounts==='number'&&piece.find(c=>c.id==='comptage-montants')?.ok!==null?result.countedAmounts:null,nRabais:draft.lines.filter(l=>l.kind==='discount').length,vusUneLecture:(()=>{const avecMontant=perdues.filter(p=>p.ligne.amount!==undefined);return avecMontant.length&&avecMontant.length===perdues.length?{n:perdues.length,cents:perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0)}:null;})(),payeCents:lectureCtl?payeEffectif(lectureCtl)?.cts??null:null,moyen:result?.paymentMethod?MOYENS[result.paymentMethod]??null:null,qte:qteBloc,notePaye:notePaiement(piece),
+  const ligneSuspecte=piece.find(c=>c.id==='prix-plausible'&&c.ok===false)?.lignes?.[0]??null;
+  const ctrlBloc=controlesCroises({ligneSuspecte,photo:Boolean(draft.proofDataUrl&&!busy),lignesCents:lignesCtsBloc,nLignes:draft.lines.length,nAjoutes:draft.lines.filter(estAjouteeAMain).length,ajoutsCents:ajoutsMain.reduce((t,a)=>t+a.cents,0),totalCents:totalImprimeCts,attendus:typeof result?.printedLineCount==='number'?result.printedLineCount:null,attendusIndependant:typeof result?.countedAmounts==='number'&&piece.find(c=>c.id==='comptage-montants')?.ok!==null?result.countedAmounts:null,nRabais:draft.lines.filter(l=>l.kind==='discount').length,vusUneLecture:(()=>{const avecMontant=perdues.filter(p=>p.ligne.amount!==undefined);return avecMontant.length&&avecMontant.length===perdues.length?{n:perdues.length,cents:perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0)}:null;})(),payeCents:lectureCtl?payeEffectif(lectureCtl)?.cts??null:null,moyen:result?.paymentMethod?MOYENS[result.paymentMethod]??null:null,qte:qteBloc,notePaye:notePaiement(piece),
     piece:rangsDePiece(piece.filter(c=>!(c.id==='doublon'&&(existing||similar))),{nRemises:compterArticles(lectureCtl?.items??[]).remises,sommeEnEcart:lignesCtsBloc!==totalImprimeCts&&totalImprimeCts!==null})});
   /* d3 (VERDICT-2, bloquant 1) : une seule source pour l'accord des lectures, celle de la barre du bas : les chips « lectures-divergentes » encore à trancher (TVA comprise). L'ancien compte lisait origine 'lecture' et pese : il disait « 3/3 d'accord » pendant que la barre disait « désaccord ». */
   const nDesaccords=chips.filter(c=>c.source==='point'&&!reglesSet.has(c.id)).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0);
   const rangsLecture:RangControle[]=result?[
-    ...(verif==='attente'?[{cle:'lectures',verdict:'inconnu' as const,texte:'Lectures',valeurs:'',lectures:{faites:2,sur:3}}]:lectures?[nDesaccords?{cle:'lectures',verdict:'ecart' as const,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeurs:`${lectures}/${lectures} · ${nDesaccords} désaccord${nDesaccords>1?'s':''}`,geste:'Voir le désaccord',renvoi:'lectures' as const}:nPagesLues>1?{cle:'lectures',verdict:'ok' as const,texte:`${nPagesLues} pages lues`,valeurs:''}:{cle:'lectures',verdict:'ok' as const,texte:'Lectures',valeurs:`${lectures}/${lectures} d'accord`}]:[]),
-    ...((result.linesLost??0)>0?[{cle:'perdues',verdict:'ecart' as const,texte:'Lignes non gardées',valeurs:String(result.linesLost),geste:'Voir la liste',renvoi:'liste' as const}]:[]),
+    ...(verif==='attente'?[{cle:'lectures',verdict:'inconnu' as const,texte:'Lectures',valeurs:'',lectures:{faites:2,sur:3}}]:lectures?[nDesaccords?{cle:'lectures',verdict:'ecart' as const,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeurs:`${lectures}/${lectures} · ${nDesaccords} désaccord${nDesaccords>1?'s':''}`,resume:`${nDesaccords} désaccord${nDesaccords>1?'s':''} de lecture`,geste:'Voir le désaccord',renvoi:'lectures' as const}:nPagesLues>1?{cle:'lectures',verdict:'ok' as const,texte:`${nPagesLues} pages lues`,valeurs:''}:{cle:'lectures',verdict:'ok' as const,texte:'Lectures',valeurs:`${lectures}/${lectures} d'accord`}]:[]),
+    ...((result.linesLost??0)>0?[{cle:'perdues',verdict:'ecart' as const,texte:'Lignes non gardées',valeurs:String(result.linesLost),resume:`${result.linesLost} ligne${(result.linesLost??0)>1?'s':''} non gardée${(result.linesLost??0)>1?'s':''}`,geste:'Voir la liste',renvoi:'liste' as const}]:[]),
   ]:[];
   const rangsBloc=result?[...ctrlBloc.rangs,...rangsLecture]:[];
   const drapeauBloc=rangsBloc.some(r=>r.verdict==='ecart');
-  const resumeBloc=[ctrlBloc.resume,...rangsBloc.filter(r=>r.verdict==='ecart'&&!['articles','somme','une-lecture'].includes(r.cle)).map(r=>r.texte)].filter(Boolean).join(' · ');
+  const resumeBloc=resumeDuBloc(ctrlBloc.resume,rangsBloc);
   /* Une pastille d'erreur mène à son geste : ligne manquante → la recherche (et « Ajouter la ligne manquante » sous elle) ; ligne fausse ou en trop → la ligne, ouverte ; total douteux → son champ ; règlement ; désaccord. */
   const surRenvoi=(r:Renvoi,rang?:RangControle)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
-    if(r==='manquante'){viser(rechercheZone.current,{focus:rechercheRef.current,block:'center'});return;}
+    /* p1 (09.11, « très étrange » : le clavier s'ouvrait dans la recherche) : « Ajouter la ligne manquante » ajoute la ligne, ouverte, le nom à saisir ; son montant est le manque quand un seul article manque. */
+    if(r==='manquante'){if(draft.lines.length<LIGNES_MAX)ajouterManquante(montantDeLaLigneManquante(ctrlBloc));else versListe();return;}
     if(r==='fausse'){flushSync(()=>setRecherche(''));const ec=ctrlBloc.ecartCents,cible=qteFausses[0]??(ec&&ec>0?draft.lines.find(l=>l.amount!==undefined&&Math.round(l.amount*100)===ec)?.id:undefined)??ligneEnTrop();if(cible)versLigne(cible);else versListe();return;}
     if(r==='total'){const c=q('#purchase-total');viser(c,{focus:c,block:'center'});return;}
     if(r==='reglement'){flushSync(()=>setPanel('paye'));viser(q('[data-dp="panneau-paye"]'));return;}
     /* d2 : les gestes des contrôles de la pièce. `lignes` : la ligne désignée, ouverte (rang base 1 du brouillon) ; `photo` : le justificatif ; `doublon` : la dépense déjà saisie. */
-    /* d2, bloquant 2 (critique) : le compte concorde, la somme non : un montant est faux, pas une ligne absente. Le geste ouvre la ligne la plus suspecte : un prix éloigné du stock, sinon le plus gros montant. */
-    if(r==='montants'){flushSync(()=>setRecherche(''));const loin=piece.find(c=>c.id==='prix-plausible'&&c.ok===false)?.lignes?.[0];const gros=[...draft.lines].filter(l=>l.amount!==undefined&&l.kind!=='discount').sort((a,b)=>(b.amount as number)-(a.amount as number))[0];const id=(loin?draft.lines[loin-1]:gros)?.id;if(id)versLigne(id);else versListe();return;}
+    /* p1 : le compte concorde, la somme non : un montant est faux, pas une ligne absente. Le geste est dit par la rangée : la ligne que « Prix connus » désigne (`lignes`), sinon le justificatif (`photo`). */
     if(r==='lignes'){const id=draft.lines[(rang?.lignes?.[0]??0)-1]?.id;flushSync(()=>setRecherche(''));if(id)versLigne(id);else versListe();return;}
     if(r==='photo'){if(surFichier){setJustifOuvert(true);scroller.current?.scrollTo?.({top:0,behavior:'smooth'});}else versListe();return;}
     if(r==='doublon'){const id=rang?.refs?.[0];if(id&&onOpenExpense){onClose();onOpenExpense(id);}else viser(bandeauRef.current);return;}
@@ -1498,7 +1510,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <p className="text-xs text-cave-400">{similarChoice==='same'?(similarAttachable?'Même achat : le justificatif rejoint la dépense existante, sans dépense, stock ni paiement en plus.':'Même achat : rien n’est enregistré, la dépense existante reste telle quelle.'):'Ce n’est qu’un signal : sans choix, l’achat s’enregistre normalement.'}</p>
       </section>:null}
   </>;
-  /* L'entrée : le bouton noir coupé en deux (« Un document » : le geste d'aujourd'hui | « Plusieurs » : la rangée de pages), puis « Photographier », la note, « Saisir sans justificatif ». */
+  /* L'entrée : le bouton noir (D382 : un seul bouton « Documents »), puis « Photographier », la note, « Saisir sans justificatif ». */
   const entree=<section
         aria-label="Justificatif de la dépense"
         className={`py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors ${dropping?'border-ebc-straw bg-ebc-straw/10':'border-cave-700'}`}
@@ -1506,7 +1518,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         onDragLeave={()=>setDropping(false)}
         onDrop={e=>deposer(e,'document')}
       >
-        <EntreeFendue onUn={()=>fileInput.current?.click()} onPlusieurs={()=>pagesInput.current?.click()}/>
+        <EntreeDocuments onChoisir={()=>fileInput.current?.click()}/>
         {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
         <p className="text-xs text-center text-cave-400">PDF ou image{coarse?'':', ou dépose le fichier ici'} · lecture automatique · 4 Mo max.</p>
         {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
@@ -1518,7 +1530,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
           onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}} onDragLeave={()=>setDropping(false)} onDrop={e=>deposer(e,'page')} depose={dropping} sansJustificatif={assemblageEchoue?saisirSansPages:undefined}/>
         <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]"><FrisePages etat="repos" pages={pages.length}/></div>
         <ResteDeLecture/>
-      </>:showForm?<EntreeFendue discret mot="Joindre un justificatif" desactive={saving||Boolean(pendingId)} onUn={()=>fileInput.current?.click()} onPlusieurs={()=>pagesInput.current?.click()}/>:entree:busy?<div data-dp="lecture" className="space-y-1.5">
+      </>:showForm?<EntreeDocuments discret mot="Joindre des documents" desactive={saving||Boolean(pendingId)} onChoisir={()=>fileInput.current?.click()}/>:entree:busy?<div data-dp="lecture" className="space-y-1.5">
         {/* p3c-3, état « lecture » : la carte du fichier avec la frise « envoi ✓ · lecture · vérification », le cadre « Les lignes arrivent ici », puis « Pour quoi ? » et « Règlement » (verrouillés tant que la lecture écrit le brouillon). */}
         <div className="rounded-panel border border-cave-800 bg-cave-900/40 px-2.5 pb-[7px] pt-[5px]">
           <div className="flex items-baseline justify-between gap-2"><span className="min-w-0 truncate text-base font-semibold leading-6 text-cave-50">{pages.length>1?(pagesJointes?`${pages.length} pages`:'Préparation des pages…'):attachment?.name||apercu?.fichier.name||'Préparation de la photo…'}</span>{pages.length>1?(pagesJointes&&pdfRef.current?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round(pdfRef.current.octets/1e5)/10)} Mo{pdfRef.current.reduite?' · réduites':''}</span>:null):(attachment?.size||apercu?.fichier.size)?<span className="shrink-0 font-mono text-xs text-cave-400">{fr(Math.round((attachment?.size||apercu?.fichier.size||0)/1e5)/10)} Mo</span>:null}{sceauQr&&vue?.etat!=='sans'?<div className="shrink-0 self-center">{sceauQr}</div>:null}</div>
@@ -1554,7 +1566,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const uneLignePeutManquer=ctrlBloc.rangs.some(r=>r.renvoi==='manquante');
   const bandeManque=uneLignePeutManquer&&(manqueCts<0&&phrasePied.attention||articlesManquants>0)?[manqueCts<0&&phrasePied.attention?`${montantCts(manqueCts)} CHF`:'',articlesManquants?`${articlesManquants} article${articlesManquants>1?'s':''}`:''].filter(Boolean).join(' · ')+' non retrouvé'+((manqueCts<0&&phrasePied.attention?2:articlesManquants)>1?'s':''):'';
   /* d2 (critique 10) : la ligne neuve prend le focus sur son libellé : on tape le nom d'abord, comme le brasseur le fait. */
-  const ajouterManquante=()=>{const l=newLine(),rang=draft.lines.length+1;setRecherche('');patch({lines:[...draft.lines,l]});suivreLigne(l.id);requestAnimationFrame(()=>requestAnimationFrame(()=>{if(mounted.current)focaliser(l.id,rang,'libelle');}));};
+  const ajouterManquante=(montantCHF?:number)=>{const l={...newLine(),...(montantCHF!==undefined?{amount:montantCHF}:{})},rang=draft.lines.length+1;setRecherche('');patch({lines:[...draft.lines,l]});suivreLigne(l.id);requestAnimationFrame(()=>requestAnimationFrame(()=>{if(mounted.current)focaliser(l.id,rang,'libelle');}));};
   const scanLayout=scan?.ok&&result&&statutFinal?<fieldset disabled={saving||Boolean(pendingId)||Boolean(done)} className="min-w-0">
     {/* 1280 : la colonne de gauche (récap, tuiles, rubriques) est COLLANTE comme `.p3a3-gauche` de la maquette (sticky top 0, hauteur du corps, défilement propre) ; sur téléphone
         l'enveloppe disparaît (`contents`) et `order` garde l'ordre d'avant : récap, liste, rubriques. */}
@@ -1573,7 +1585,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-3 lg:order-none lg:pb-0">{rubriquesScan}{phraseRecu}</div>
       </div>
       <div className="order-2 lg:order-none lg:col-start-2">
-        <div ref={rechercheZone} className="lg:sticky lg:top-0 lg:z-[5] lg:bg-cave-950"><RechercheLignes valeur={recherche} onChange={setRecherche} onFocus={()=>setRechercheOuverte(true)} nTrouvees={idsRecherche?.length??draft.lines.length} nTotal={draft.lines.length} inputRef={rechercheRef}/>{bandeManque&&(rechercheOuverte||recherche.trim())?<BandeManque texte={bandeManque} causes={CAUSES_DU_MANQUE} onAjouter={ajouterManquante} ajouterOff={draft.lines.length>=LIGNES_MAX} onPhoto={surFichier?()=>{setJustifOuvert(true);scroller.current?.scrollTo?.({top:0,behavior:'smooth'});}:undefined}/>:null}</div><Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtreAff} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setRecherche('');setGarde([]);}}
+        <div ref={rechercheZone} className="lg:sticky lg:top-0 lg:z-[5] lg:bg-cave-950"><RechercheLignes valeur={recherche} onChange={setRecherche} onFocus={()=>setRechercheOuverte(true)} nTrouvees={idsRecherche?.length??draft.lines.length} nTotal={draft.lines.length} inputRef={rechercheRef}/>{bandeManque&&(rechercheOuverte||recherche.trim())?<BandeManque texte={bandeManque} causes={CAUSES_DU_MANQUE} onAjouter={()=>ajouterManquante(montantDeLaLigneManquante(ctrlBloc))} ajouterOff={draft.lines.length>=LIGNES_MAX} onPhoto={surFichier?()=>{setJustifOuvert(true);scroller.current?.scrollTo?.({top:0,behavior:'smooth'});}:undefined}/>:null}</div><Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtreAff} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setRecherche('');setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
           pied={{ajouterOff:draft.lines.length>=LIGNES_MAX,ajouterTitre:draft.lines.length>=LIGNES_MAX?`${LIGNES_MAX} lignes au plus, port compris`:undefined,regrouper:draft.lines.length>1,arrondi:arrondiCents?{texte:`${arrondiCents<0?'−':'+'}${fr2c(Math.abs(arrondiCents))}`}:null,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,annuler:retraits.length?{nom:nomRetrait(),n:retraits.length,onAnnuler:annulerRetrait}:null,detail:draft.lines.length>1&&!(detailListe.ecart&&drapeauBloc)?{...detailListe,cache:Boolean(scan?.cached)}:null}}
           onAjouter={()=>patch({lines:[...draft.lines,newLine()]})} onRegrouper={regrouper}>
@@ -1605,10 +1617,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className={justifOuvert&&enteteFichier?'px-2 pt-1.5':''}><Justificatif fichier={enteteFichier} ouvert={justifOuvert} changerOff={saving||Boolean(pendingId)||Boolean(done)||verif==='attente'} pages={pagesJointes?pages.map(p=>({id:p.id,url:p.url,nom:p.file.name})):undefined} onChanger={pagesJointes?ouvrirEntree:()=>fileInput.current?.click()}/></div>
       <div data-dp="alertes" className="space-y-1.5 px-2 pt-1.5 empty:hidden">{recu}{alertes}</div>
       <div ref={form} className="pb-2">
-        <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)void attach(file);e.target.value='';}}/>
+        <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="application/pdf,image/*" multiple className="hidden" onChange={e=>{surDocuments(e.target.files);e.target.value='';}}/>
         <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)void attach(file);e.target.value='';}}/>
         <input hidden ref={qrPhoto} aria-label="Photographier le QR" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=unSeul(e.target.files);if(file)lancerQr(file);e.target.value='';}}/>
-        {/* n2-pages : « Plusieurs » et « + page » ouvrent ce sélecteur d'images, SANS capture (le téléphone propose « Prendre une photo » à côté des fichiers). Plusieurs fichiers d'un coup = plusieurs pages (LO-7) ; placé après les trois d'avant. */}
+        {/* n2-pages : « + page » ouvre ce sélecteur d'images, SANS capture (le téléphone propose « Prendre une photo » à côté des fichiers). Plusieurs fichiers d'un coup = plusieurs pages (LO-7) ; placé après les trois d'avant. */}
         <input hidden ref={pagesInput} aria-label="Ajouter une page" type="file" accept="image/*" multiple className="hidden" onChange={e=>{ajouterPages(e.target.files);e.target.value='';}}/>
         <div className="space-y-2 px-2 pt-1.5 empty:hidden">{capt}</div>
         {showForm&&!busy&&!attached&&!dejaTx?(scanLayout??sansLecture):null}

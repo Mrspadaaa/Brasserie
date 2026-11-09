@@ -23,12 +23,12 @@ const frise = () => document.querySelector('[data-dp="frise"]') as HTMLElement;
 const alerte = async (texte: string | RegExp) => expect(await screen.findByRole('alert')).toHaveTextContent(texte);
 
 describe('T-R1 / T-R2 la rangée', () => {
-  it('« Plusieurs » ouvre le sélecteur des pages ; trois choix → trois vignettes numérotées, un × chacune, « + page », « Lire 3 pages »', async () => {
+  it('« Documents » puis le sélecteur des pages ; trois choix → trois vignettes numérotées, un × chacune, « + page », « Lire 3 pages »', async () => {
     const view = await monter();
     const ouverts: Array<string | null> = [];
     vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(function (this: HTMLInputElement) { ouverts.push(this.getAttribute('aria-label')); });
-    fireEvent.click(bouton('Plusieurs'));
-    expect(ouverts).toEqual(['Ajouter une page']);
+    fireEvent.click(bouton('Documents'));
+    expect(ouverts).toEqual(['Importer un justificatif']); // D382 : « Documents » ouvre le sélecteur unique ; « + page » ouvre celui des pages
     expect(nbPages(view)).toBe(0);
     for (const f of [a, b, c]) fireEvent.change(champPages(view), { target: { files: [f] } });
     await waitFor(() => expect(nbPages(view)).toBe(3));
@@ -52,8 +52,8 @@ describe('T-R1 / T-R2 la rangée', () => {
     const view = await monter();
     await ouvrirRangee(view, [a, b]);
     fireEvent.click(bouton('Retirer la page 1')); fireEvent.click(bouton('Retirer la page 1'));
-    expect(bouton('Un document')).toBeTruthy();
-    expect(bouton('Plusieurs')).toBeTruthy();
+    expect(bouton('Documents')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Plusieurs' })).toBeNull();
     expect(bouton('Saisir sans justificatif')).toBeTruthy();
     expect(etat.pages).not.toHaveBeenCalled();
     expect(etat.scanned).not.toHaveBeenCalled();
@@ -69,11 +69,11 @@ describe('T-R3 les plafonds, dits', () => {
     await alerte('4 pages au plus.');
     expect(nbPages(view)).toBe(4);
   });
-  it('un PDF se lit par « Un document » ; une page de plus de 4 Mo est refusée avec son poids', async () => {
+  it('un PDF se lit par « Documents » ; une page de plus de 4 Mo est refusée avec son poids', async () => {
     const view = await monter();
     await ouvrirRangee(view, [a]);
     fireEvent.change(champPages(view), { target: { files: [image('f.pdf', 'pdf', undefined, 'application/pdf')] } });
-    await alerte('Un PDF se lit avec « Un document ».');
+    await alerte('Un PDF se lit avec « Documents ».');
     fireEvent.change(champPages(view), { target: { files: [image('gros.jpg', 'gros', 4 * MO + 1)] } });
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/Cette page pèse 4,1 Mo : 4 Mo au plus\./));
     expect(nbPages(view)).toBe(1);
@@ -114,14 +114,14 @@ describe('T-R5 / T-R6 la même page, l\'input', () => {
     const view = await monter();
     const valeurs: string[] = [];
     Object.defineProperty(champPages(view), 'value', { configurable: true, get: () => '', set: v => { valeurs.push(v); } });
-    fireEvent.click(bouton('Plusieurs'));
+    fireEvent.click(bouton('Documents'));
     fireEvent.change(champPages(view), { target: { files: [a] } });
     await waitFor(() => expect(nbPages(view)).toBe(1));
     expect(valeurs).toContain('');
   });
 });
 
-describe('LO-7 le sélecteur de « Plusieurs » prend plusieurs images d\'un coup', () => {
+describe('LO-7 le sélecteur de pages prend plusieurs images d\'un coup', () => {
   it('trois captures choisies ensemble = trois pages, dans l\'ordre numérique des noms, sans refus', async () => {
     const view = await monter();
     expect(champPages(view).multiple).toBe(true);
@@ -135,7 +135,7 @@ describe('LO-7 le sélecteur de « Plusieurs » prend plusieurs images d\'un cou
 });
 
 describe('T-R7 le dépôt sur la rangée', () => {
-  it('un fichier lâché = une page ajoutée, jamais attach ; plusieurs lâchés = autant de pages (LO-7 : on est déjà dans « Plusieurs »)', async () => {
+  it('un fichier lâché = une page ajoutée, jamais attach ; plusieurs lâchés = autant de pages (LO-7 : on est déjà dans la rangée)', async () => {
     const view = await monter();
     await ouvrirRangee(view, [a]);
     const rangee = view.container.querySelector('[data-dp="rangee-pages"]')!;

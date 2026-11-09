@@ -15,7 +15,7 @@ describe('contrôles croisés : la règle',()=>{
     expect(c.resume).toBe('74,45 CHF');
     const par=Object.fromEntries(c.rangs.map(r=>[r.cle,r]));
     expect(par.articles.verdict).toBe('ok');
-    expect(par.somme).toMatchObject({verdict:'ecart',valeurs:'277,60 / 352,05',ecart:'−74,45',renvoi:'montants',geste:'Vérifier les montants'}); // d2, critique 2 : 29 comptées = 29 lues, une ligne ne manque pas
+    expect(par.somme).toMatchObject({verdict:'ecart',valeurs:'277,60 / 352,05',ecart:'−74,45',renvoi:'liste',geste:'Voir la liste'}); /* p1 : aucune ligne suspecte ni photo dans cette entrée : la liste */ // d2, critique 2 : 29 comptées = 29 lues, une ligne ne manque pas
     expect(par.paye).toMatchObject({verdict:'ok',valeurs:'352,05'});
     expect(par.qte.verdict).toBe('inconnu');
   });
@@ -75,7 +75,8 @@ describe('banc b1 (09.11) : P2 pas de vert sans comptage indépendant, P3 lignes
     const a=art(controlesCroises(tache));
     expect(a.verdict).not.toBe('ok');
     expect(a.verdict).toBe('inconnu');
-    expect(a.valeurs).toMatch(/annoncé par la lecture/);
+    expect(a.valeurs).toBe('23');
+    expect(a.note).toBe('annoncé par la lecture'); // p1 : la valeur reste courte (jamais sur le libellé à 390), « annoncé » est la note
   });
   it('P2 : un comptage indépendant (nombre imprimé) concordant donne le vert, discordant (29 contre 23) lève l’écart',()=>{
     expect(art(controlesCroises({...tache,attendusIndependant:23})).verdict).toBe('ok');

@@ -18,17 +18,18 @@ vi.mock('../../../../src/ui/useViewport', async importOriginal => (await import(
 beforeEach(preparer);
 afterEach(() => vi.restoreAllMocks());
 
-describe('D366 — la première vue offre « Un document » | « Plusieurs » par les vraies entrées', () => {
-  it('« Lire un justificatif » : aucun sélecteur ouvert d’office, la première vue montre le bouton coupé en deux', async () => {
+describe('D366 / D382 — la première vue offre un seul bouton « Documents » par les vraies entrées', () => {
+  it('« Lire un justificatif » : aucun sélecteur ouvert d’office, la première vue montre le bouton « Documents »', async () => {
     const clic = vi.spyOn(HTMLInputElement.prototype, 'click');
     await monter({ startWithScan: true });
     expect(clic).not.toHaveBeenCalled();
-    expect(bouton('Un document')).toBeTruthy();
-    expect(bouton('Plusieurs')).toBeTruthy();
+    expect(bouton('Documents')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Un document' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Plusieurs' })).toBeNull();
   });
-  it('« Saisir une dépense » : joindre un justificatif offre aussi « Plusieurs »', async () => {
+  it('« Saisir une dépense » : un seul bouton « Joindre des documents »', async () => {
     await monter({ startWithScan: false });
-    expect(screen.getByRole('button', { name: /Joindre un justificatif/ })).toBeTruthy();
-    expect(bouton('Plusieurs')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Joindre des documents/ })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Plusieurs' })).toBeNull();
   });
 });

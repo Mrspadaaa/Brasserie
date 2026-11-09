@@ -96,13 +96,13 @@ describe('D7 : la dépense attend sa confirmation, le fichier ne change plus', (
     expect(state.scanned).toHaveBeenCalledTimes(1);
     expect(state.save).toHaveBeenCalledTimes(1);
   });
-  it('la zone de dépôt et « Joindre un justificatif » ne sont pas rendus pendant la confirmation en attente', async () => {
+  it('la zone de dépôt et « Joindre des documents » ne sont pas rendus pendant la confirmation en attente', async () => {
     state.save.mockResolvedValue({ transactionId: 'TX-test', proof: RECEIPT });
     state.confirmed.mockRejectedValueOnce(new Error('Confirmation ciblée'));
     await open();
     click(CONFIRM);
     await screen.findByRole('alert');
-    expect(screen.queryByRole('button', { name: 'Joindre un justificatif' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Joindre des documents' })).toBeNull();
     expect(screen.queryByRole('region', { name: 'Justificatif de la dépense' })).toBeNull();
   });
 });

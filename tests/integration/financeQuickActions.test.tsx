@@ -36,9 +36,11 @@ describe('Entrées financières directes', () => {
     view.rerender(<QuickActionModal {...props} isOpen initialScreen="scan"/>);
     // Une facture est d'abord un document : le choix de fichier est l'action principale,
     // et l'appareil photo n'apparaît que sur un écran tactile.
-    expect(screen.getByRole('button', { name: 'Un document' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Documents' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Photographier le ticket' })).not.toBeInTheDocument();
     expect(screen.getByLabelText('Importer un justificatif')).toHaveAttribute('accept', expect.stringContaining('application/pdf'));
+    expect(screen.getByLabelText('Importer un justificatif')).toHaveAttribute('multiple');
+    expect(screen.getByLabelText('Importer un justificatif')).not.toHaveAttribute('capture');
   });
 
   it('ouvre la dépense manuelle immédiatement et quitte le scan en une seule sélection', () => {
@@ -49,7 +51,7 @@ describe('Entrées financières directes', () => {
     render(<QuickActionModal isOpen recipes={[]} onClose={() => {}} initialScreen="scan"/>);
     fireEvent.click(screen.getByRole('button', { name: 'Saisir sans justificatif' }));
     expect(screen.getByLabelText('Total TTC en CHF')).toBeVisible();
-    expect(screen.queryByRole('button', { name: 'Un document' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Documents' })).not.toBeInTheDocument();
   });
 
   it('permet de choisir une vente au clavier, confine Tab et restaure le déclencheur à Échap', async () => {

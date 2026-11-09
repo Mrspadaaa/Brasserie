@@ -1,6 +1,6 @@
 import React from 'react';
 import {beforeEach,describe,it,expect,vi} from 'vitest';
-import {render,screen,fireEvent,waitFor,cleanup} from '@testing-library/react';
+import {render,screen,fireEvent,waitFor,cleanup,within} from '@testing-library/react';
 import {webcrypto} from 'node:crypto';
 /* d2 (09.11) : les contrôles de la pièce (`controlesPiece.ts`, voie c1) branchés au bloc de l'écran Dépense. Chaque rangée dit ses deux valeurs, son verdict et sa pastille-geste ;
    un contrôle non vérifiable n'a pas de rangée (jamais un vert inventé). Lectures SIMULÉES (ticket anonymisé de t1, champs de c1) : Gemini n'est jamais appelé. */
@@ -102,14 +102,19 @@ describe('Dépense : contrôles de la pièce dans le bloc (d2)',()=>{
     const oui=await ouvrir(ticketEan({countedAmounts:31,countedAmountsConfirmed:true,amountTTC:277.6,amountPaid:277.6,printedLineCount:undefined}));
     expect(rangee(oui,'articles')!.getAttribute('data-dp-verdict')).toBe('ecart');
   });
-  it('le compte concorde (29 = 29), la somme non : « Vérifier les montants », la pastille ouvre le plus gros montant (pas la recherche)',async()=>{
+  it('p1 : le compte concorde (29 = 29), la somme non, aucune ligne suspecte : « Comparer à la photo » ouvre le justificatif, jamais la plus grosse ligne ni la recherche ; en rouge',async()=>{
     const view=await ouvrir(ticketEan({amountTTC:400,amountPaid:400}));
     const s=rangee(view,'somme')!;
-    expect(s.textContent).toMatch(/Vérifier les montants/);
-    expect(s.getAttribute('data-dp-renvoi')).toBe('montants');
+    expect(s.textContent).toMatch(/Comparer à la photo/);
+    expect(s.textContent).not.toMatch(/Vérifier les montants|plus gros/);
+    expect(s.getAttribute('data-dp-renvoi')).toBe('photo');
+    expect(s.getAttribute('data-dp-ton')).toBe('rouge');
+    expect(view.container.querySelector('[data-dp="justificatif"]')!.className).toMatch(/hidden/);
     fireEvent.click(s);
-    await waitFor(()=>expect(view.container.querySelector<HTMLDetailsElement>('[data-dp-ligne="line-1"] details')!.open).toBe(true));
+    await waitFor(()=>expect(view.container.querySelector('[data-dp="justificatif"]')!.className).toMatch(/block/));
+    expect(view.container.querySelector('[data-dp-ligne] details[open]')).toBeNull();
     expect(document.activeElement).not.toBe(screen.getByLabelText('Chercher dans les lignes lues'));
+    expect(['INPUT','TEXTAREA']).not.toContain(document.activeElement?.tagName);
   });
   it('critique 12 : les contrôles « rien à signaler » tiennent sur une petite ligne, pas une rangée pleine',async()=>{
     const view=await ouvrir(ticketEan({ignoredLines:[]}));
@@ -128,9 +133,11 @@ describe('Dépense : contrôles de la pièce dans le bloc (d2)',()=>{
     fireEvent.focus(screen.getByLabelText('Chercher dans les lignes lues'));
     await waitFor(()=>expect(view.container.querySelector('[data-dp="manque"]')).not.toBeNull());
     const avant=view.container.querySelectorAll('[data-dp-ligne]').length;
-    fireEvent.click(screen.getByRole('button',{name:/Ajouter la ligne/}));
+    fireEvent.click(within(view.container.querySelector<HTMLElement>('[data-dp="manque"]')!).getByRole('button',{name:/Ajouter la ligne/}));
     await waitFor(()=>expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant+1));
     await waitFor(()=>expect(document.activeElement?.getAttribute('aria-label')).toBe('Libellé ligne '+(avant+1)));
+    /* p1 : 31 comptées pour 29 lues = deux articles manquent : aucun montant deviné, le champ reste vide (l'inconnu n'est jamais 0). */
+    expect((screen.getByLabelText('Montant ligne '+(avant+1)) as HTMLInputElement).value).toBe('');
   });
   it('doublon : l’écran a déjà sa section « Achat peut-être déjà enregistré » (même fournisseur, jour, total) : la rangée du contrôle ne la répète pas',async()=>{
     state.transactions=[{id:'tx-deja',date:'02.11.2026',description:'Travaux',amountHT:0,tvaRate:0,tvaAmount:0,amountTTC:352.05,category:'renovation',subcategory:'',finance:{vendor:'Brico Fictif SA',invoiceNumber:''}}];

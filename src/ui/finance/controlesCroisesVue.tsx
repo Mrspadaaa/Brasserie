@@ -3,7 +3,7 @@
 import React from 'react';
 import { AlertCircle, Check, Flag, Plus, Search, X, FileText } from 'lucide-react';
 import { Bandeau } from '../depense/Recap';
-import type { RangControle, Renvoi } from './controlesCroises';
+import { estTotalFaux, type RangControle, type Renvoi } from './controlesCroises';
 
 export interface PropsControles {
   rangs: RangControle[];
@@ -20,28 +20,32 @@ function Rangee({ r, onRenvoi }: { r: RangControle; onRenvoi: (r: Renvoi, rang?:
   /* d2 (critique 12) : les contrôles « rien à signaler » ne méritent pas une rangée pleine : une petite ligne. */
   if (r.cle === 'verifies') return <p data-dp="controle-discret" data-dp-controle-cle="verifies" data-dp-verdict="ok" title={r.detail} className="col-span-2 flex items-center gap-1 py-0.5 text-xs leading-tight text-cave-400"><Check size={12} aria-hidden className="shrink-0 text-hop"/>{r.texte} : rien à signaler</p>;
   const erreur = r.verdict === 'ecart';
+  /* p1 (09.11) : un total faux (articles, somme, payé) est une erreur : rouge `alert`. Les autres écarts (lectures, Qté × prix, contrôles de la pièce) restent une attention : ambre. */
+  const rouge = estTotalFaux(r), ton = rouge ? 'text-alert' : 'text-attention';
   const corps = <>
-    {erreur ? <span aria-hidden className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border border-attention text-[10px] font-bold leading-none text-attention">!</span> : r.lectures ? null : r.verdict === 'ok' ? <Check size={14} aria-hidden className="shrink-0 text-hop"/> : <span aria-hidden className="w-3.5 shrink-0 text-center text-cave-400">·</span>}
-    <span className={`min-w-0 flex-1 text-left leading-tight ${erreur ? 'font-medium text-cave-50' : 'text-cave-200'} ${r.valeurs || r.lectures ? 'whitespace-nowrap' : 'whitespace-normal'}`}>{r.texte}</span>
+    {erreur ? <span aria-hidden className={`inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border ${rouge ? 'border-alert' : 'border-attention'} text-[10px] font-bold leading-none ${ton}`}>!</span> : r.lectures ? null : r.verdict === 'ok' ? <Check size={14} aria-hidden className="shrink-0 text-hop"/> : <span aria-hidden className="w-3.5 shrink-0 text-center text-cave-400">·</span>}
+    <span className={`max-w-full text-left leading-tight ${erreur ? 'font-medium text-cave-50' : 'text-cave-200'} ${r.lectures ? 'whitespace-nowrap' : 'whitespace-normal'}`}>{r.texte}</span>
     {r.lectures ? <span data-dp="lectures-points" role="img" aria-label={`${r.lectures.faites} lectures sur ${r.lectures.sur}`} className="ml-auto inline-flex items-center gap-[3px]">{Array.from({ length: r.lectures.sur }, (_, k) => <i key={k} className={`size-2 rounded-full ${k < r.lectures!.faites ? 'bg-cave-200' : 'border-[1.5px] border-dashed border-cave-200'}`}/>)}</span>
-      : <b className="ml-auto shrink-0 whitespace-nowrap pl-1 font-mono font-medium text-cave-50">{r.valeurs}{r.ecart ? <span data-dp="ecart" className="ml-1.5 text-attention">{r.ecart}</span> : null}</b>}
+      : <b className="ml-auto max-w-full whitespace-nowrap pl-1 text-right font-mono font-medium text-cave-50">{r.valeurs}{r.ecart ? <span data-dp="ecart" className={`ml-1.5 ${ton}`}>{r.ecart}</span> : null}</b>}
   </>;
   const verdict = erreur ? 'ne concorde pas' : r.verdict === 'ok' ? 'concorde' : 'non vérifiable';
-  if (erreur && r.renvoi) return <button type="button" data-dp="controle" data-dp-controle-cle={r.cle} data-dp-verdict="ecart" data-dp-renvoi={r.renvoi} aria-label={`${r.texte} ${r.valeurs}${r.ecart ? `, écart ${r.ecart}` : ''} : ${verdict}. ${r.geste ?? ''}`} onClick={() => onRenvoi(r.renvoi!, r)}
-    className="col-span-2 my-0.5 flex min-h-[34px] w-full min-w-0 flex-col justify-center gap-0 rounded-control border border-dashed border-attention/60 bg-attention/5 px-1.5 text-left text-sm">
-    <span className="flex w-full min-w-0 items-center gap-1">{corps}</span>
+  if (erreur && r.renvoi) return <button type="button" data-dp="controle" data-dp-controle-cle={r.cle} data-dp-verdict="ecart" data-dp-ton={rouge ? 'rouge' : 'ambre'} data-dp-renvoi={r.renvoi} aria-label={`${r.texte} ${r.valeurs}${r.ecart ? `, écart ${r.ecart}` : ''} : ${verdict}. ${r.geste ?? ''}`} onClick={() => onRenvoi(r.renvoi!, r)}
+    className={`col-span-2 my-0.5 flex min-h-[34px] w-full min-w-0 flex-col justify-center gap-0 rounded-control border border-dashed px-1.5 text-left text-sm ${rouge ? 'border-alert/70 bg-alert/5' : 'border-attention/60 bg-attention/5'}`}>
+    <span className="flex w-full min-w-0 flex-wrap items-center gap-x-1 gap-y-0">{corps}</span>
     {r.detail ? <span data-dp="controle-detail" className="pl-[18px] text-xs leading-[14px] text-cave-300">{r.detail}</span> : null}
     {r.note ? <span data-dp="controle-note" className="pl-[18px] text-xs leading-[14px] text-cave-300">{r.note}</span> : null}
-    {r.geste ? <span className="pl-[18px] text-xs leading-[14px] text-attention">{r.geste} ›</span> : null}
+    {r.geste ? <span className={`pl-[18px] text-xs leading-[14px] ${ton}`}>{r.geste} ›</span> : null}
   </button>;
-  const ligne = <button type="button" data-dp="controle" data-dp-controle-cle={r.cle} data-dp-verdict={r.verdict} aria-label={`${r.texte} ${r.valeurs} : ${verdict}${r.detail ? `. ${r.detail}` : ''}`} title={r.detail} onClick={() => onRenvoi('liste', r)} className="col-span-2 flex min-h-[26px] w-full min-w-0 items-center gap-1 border-b border-cave-800 text-left text-sm">{corps}</button>;
+  const ligne = <button type="button" data-dp="controle" data-dp-controle-cle={r.cle} data-dp-verdict={r.verdict} aria-label={`${r.texte} ${r.valeurs} : ${verdict}${r.detail ? `. ${r.detail}` : ''}`} title={r.detail} onClick={() => onRenvoi('liste', r)} className="col-span-2 flex min-h-[26px] w-full min-w-0 flex-wrap items-center gap-x-1 gap-y-0 border-b border-cave-800 py-px text-left text-sm">{corps}</button>;
   return r.note ? <><div className="col-span-2">{ligne}</div><p data-dp="controle-note" className="col-span-2 border-b border-cave-800 pb-0.5 pl-[18px] text-xs leading-[14px] text-cave-300">{r.note}</p></> : ligne;
 }
 
 /** Le bloc « Somme ≠ imprimé · Qté × prix · Lectures » refait. `children` : les comptes de liens (inchangés). */
 export function ControlesCroisesBloc(p: PropsControles & { children?: React.ReactNode }) {
-  return <section data-dp="preuve" aria-label="Preuve de la lecture" data-dp-visee={p.visee ? '1' : undefined} data-dp-drapeau={p.drapeau ? '1' : undefined} className={`scroll-mt-12 rounded-panel border px-2 pb-1 pt-0.5 ${p.drapeau ? 'border-attention/50' : 'border-cave-800'} ${p.visee ? 'dp-p3c-visee' : ''}`}>
-    {p.drapeau ? <p data-dp="drapeau" role="status" className="flex min-h-[26px] items-center gap-1.5 border-b border-attention/30 text-sm font-medium text-attention"><Flag size={14} aria-hidden className="shrink-0"/><span className="min-w-0">À vérifier{p.resume ? ` · ${p.resume}` : ''}</span></p> : null}
+  /* p1 : l'en-tête passe au rouge dès qu'un total est faux ; sinon il reste ambre. */
+  const rouge = p.rangs.some(estTotalFaux);
+  return <section data-dp="preuve" aria-label="Preuve de la lecture" data-dp-visee={p.visee ? '1' : undefined} data-dp-drapeau={p.drapeau ? '1' : undefined} className={`scroll-mt-12 rounded-panel border px-2 pb-1 pt-0.5 ${p.drapeau ? (rouge ? 'border-alert/60' : 'border-attention/50') : 'border-cave-800'} ${p.visee ? 'dp-p3c-visee' : ''}`}>
+    {p.drapeau ? <p data-dp="drapeau" data-dp-ton={rouge ? 'rouge' : 'ambre'} role="status" className={`flex min-h-[26px] items-center gap-1.5 border-b text-sm font-medium ${rouge ? 'border-alert/40 text-alert' : 'border-attention/30 text-attention'}`}><Flag size={14} aria-hidden className="shrink-0"/><span className="min-w-0">À vérifier{p.resume ? ` · ${p.resume}` : ''}</span></p> : null}
     <div className="grid grid-cols-2 gap-x-2">
       {p.rangs.map(r => <Rangee key={r.cle} r={r} onRenvoi={p.onRenvoi}/>)}
     </div>

@@ -79,7 +79,7 @@ describe('D358 — l\'arrondi suisse à 5 centimes est sa propre ligne neutre', 
     expect(detailDe()).toBeUndefined();
     const drapeau = q('[data-dp="drapeau"]')!;
     expect(drapeau.textContent).toContain('0,99 CHF');
-    expect(drapeau.className).toMatch(/text-attention/);
+    expect(drapeau.className).toMatch(/text-alert/); // p1 : un total faux est rouge (l'écart de 0,99 est une somme ≠ imprimé)
   });
   it('une somme exacte n\'a aucune ligne d\'arrondi', async () => {
     await lirePiece(state.scanned, deux, r => { r.amountTTC = 120.21; });

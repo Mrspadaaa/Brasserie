@@ -31,7 +31,7 @@ const lire = async (view: { container: HTMLElement }, pages = trois()) => {
 };
 const lue = async (view: { container: HTMLElement }, sortie: any = lectureOk(3)) => { etat.pages.mockResolvedValue(sortie); const p = await lire(view); await screen.findByRole('region', { name: 'Vérification du justificatif' }); return p; };
 const pile = () => screen.getByRole('button', { name: /^Justificatif, 3 pages/ });
-const entreeVisible = () => screen.queryByRole('button', { name: 'Plusieurs' }) !== null;
+const entreeVisible = () => screen.queryByRole('button', { name: 'Documents' }) !== null;
 
 describe('T-A1 attachment = le PDF dès l\'assemblage', () => {
   it('scanPages reçoit les 3 originales dans l\'ordre ; la carte dit « 3 pages » pendant la lecture ; applyOutcome reçoit l\'empreinte des pages', async () => {
@@ -135,7 +135,7 @@ describe('T-A6 / T-A7 / T-A8 « Changer »', () => {
     await lue(view);
     fireEvent.click(pile());
     fireEvent.click(within(document.querySelector('[data-dp="pages-panneau"]') as HTMLElement).getByRole('button', { name: 'Changer' }));
-    fireEvent.click(bouton('Plusieurs'));
+    fireEvent.click(bouton('Documents'));
     fireEvent.change(champPages(view), { target: { files: [image('neuve.jpg')] } });
     await waitFor(() => expect(document.querySelectorAll('[data-dp="rangee-pages"] [data-dp="page"]')).toHaveLength(1));
     expect(screen.queryByRole('region', { name: 'Vérification du justificatif' })).toBeNull();

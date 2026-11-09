@@ -68,9 +68,9 @@ export const champPages = (view: { container: HTMLElement }) => view.container.q
 export const champFichier = (view: { container: HTMLElement }) => view.container.querySelector('input[aria-label="Importer un justificatif"]') as HTMLInputElement;
 export const nbPages = (view: { container: HTMLElement }) => view.container.querySelectorAll('[data-dp="rangee-pages"] [data-dp="page"]').length;
 export const bouton = (nom: string | RegExp) => screen.getByRole('button', { name: nom });
-/** « Plusieurs » puis une page par fichier (un fichier à la fois, comme le sélecteur de B). */
+/** « Documents » puis une page par fichier (un fichier à la fois, par le sélecteur « + page » : un seul fichier par « Documents » se lirait tout de suite, D382). */
 export async function ouvrirRangee(view: { container: HTMLElement }, fichiers: File[]) {
-  fireEvent.click(bouton('Plusieurs'));
+  fireEvent.click(bouton('Documents'));
   for (const [i, f] of fichiers.entries()) {
     fireEvent.change(champPages(view), { target: { files: [f] } });
     await waitFor(() => expect(nbPages(view)).toBe(i + 1));

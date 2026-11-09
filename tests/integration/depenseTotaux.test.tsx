@@ -120,13 +120,33 @@ describe('Dépense : contrôles croisés (le bloc refait)',()=>{
 });
 
 describe('Dépense : chaque pastille d’erreur mène à son geste',()=>{
-  it('ligne manquante : « Somme ≠ imprimé » met le focus sur la recherche, « Ajouter la ligne manquante » ouvre une ligne neuve (31 comptées pour 29 lues)',async()=>{
+  it('p1 ligne manquante : « Ajouter la ligne manquante » ajoute une ligne neuve, ouverte, nom à saisir, sans toucher à la recherche ; deux manquent (31 comptées pour 29 lues) : montant vide',async()=>{
     const view=await ouvrir({countedAmounts:31});
-    fireEvent.click(rang(view,/Somme/));
-    expect(document.activeElement).toBe(screen.getByLabelText('Chercher dans les lignes lues'));
+    const somme=rang(view,/Somme/);
+    expect(somme.textContent).toMatch(/Ajouter la ligne manquante/);
+    expect(somme.textContent).not.toMatch(/Chercher la ligne manquante/);
     const avant=view.container.querySelectorAll('[data-dp-ligne]').length;
-    fireEvent.click(within(view.container.querySelector<HTMLElement>('[data-dp="manque"]')!).getByRole('button',{name:/Ajouter la ligne/}));
+    fireEvent.click(somme);
     await waitFor(()=>expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant+1));
+    await waitFor(()=>expect(document.activeElement).toBe(screen.getByLabelText('Libellé ligne '+(avant+1))));
+    expect(document.activeElement).not.toBe(screen.getByLabelText('Chercher dans les lignes lues'));
+    expect((screen.getByLabelText('Montant ligne '+(avant+1)) as HTMLInputElement).value).toBe('');
+  });
+  it('p1 un seul article manque (30 comptées pour 29 lues) : la ligne ajoutée a pour montant le manque, 74,45',async()=>{
+    const view=await ouvrir({countedAmounts:30});
+    const avant=view.container.querySelectorAll('[data-dp-ligne]').length;
+    fireEvent.click(rang(view,/Articles/));
+    await waitFor(()=>expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant+1));
+    await waitFor(()=>expect((screen.getByLabelText('Montant ligne '+(avant+1)) as HTMLInputElement).value).toMatch(/^74[,.]45$/));
+    expect(document.activeElement).toBe(screen.getByLabelText('Libellé ligne '+(avant+1)));
+  });
+  it('p1 les totaux faux sont rouges (articles, somme, payé) et l’en-tête aussi ; un autre écart reste ambre',async()=>{
+    const view=await ouvrir({countedAmounts:31,amountPaid:300});
+    for(const re of [/Articles/,/Somme/,/Payé/])expect(rang(view,re).getAttribute('data-dp-ton'),String(re)).toBe('rouge');
+    expect(view.container.querySelector('[data-dp="drapeau"]')!.getAttribute('data-dp-ton')).toBe('rouge');
+    expect(view.container.querySelector('[data-dp="drapeau"]')!.className).toMatch(/text-alert/);
+    expect(rang(view,/Somme/).className).toMatch(/border-alert/);
+    expect(rang(view,/Somme/).className).not.toMatch(/attention/);
   });
   it('ligne en trop : la ligne dont le montant est l’écart s’ouvre pour la modifier ou la retirer',async()=>{
     // Total imprimé 270,60 : les lignes dépassent de 7,00 ; aucune ligne ne vaut 7,00 → la liste ; avec 269,65 : 7,95 (CHARNIERE) est la ligne en trop.
@@ -165,7 +185,8 @@ describe('Dépense : défauts du banc réel (b1)',()=>{
     const articles=rang(view,/Articles/);
     expect(articles.getAttribute('data-dp-verdict')).not.toBe('ok');
     expect(articles.textContent).toMatch(/23/);
-    expect(articles.textContent).toMatch(/annoncé par la lecture/);
+    expect(articles.parentElement!.nextElementSibling!.textContent).toMatch(/annoncé par la lecture/);
+    expect(articles.textContent).not.toMatch(/annoncé/); // p1 : la valeur reste courte, « annoncé » est la note sous la rangée (jamais sur le libellé à 390)
     expect(rang(view,/Somme/).textContent).toContain('−117,65');
   });
   it('P2 : avec un nombre d’articles imprimé lu (29), les 23 lignes lèvent l’écart de 6 articles',async()=>{

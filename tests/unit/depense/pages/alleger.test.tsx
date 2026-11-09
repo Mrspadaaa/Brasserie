@@ -66,7 +66,7 @@ const canvasSimule = () => {
 };
 
 describe('T-A5 / T-A6 dans la fiche', () => {
-  it('T-A5 : « Un document » avec la photo de 8,1 Mo → lue une fois, allégée en JPEG, sans le refus « 4 Mo maximum »', async () => {
+  it('T-A5 : « Documents » avec un fichier, la photo de 8,1 Mo → lue une fois, allégée en JPEG, sans le refus « 4 Mo maximum »', async () => {
     canvasSimule();
     etat.scanned.mockResolvedValue(lectureOk());
     const view = await monter();
@@ -77,7 +77,7 @@ describe('T-A5 / T-A6 dans la fiche', () => {
     expect([lu.type, lu.name, lu.size]).toEqual(['image/jpeg', 'ticket.jpg', 4]);
     expect(screen.queryByText(/4 Mo maximum/)).toBeNull();
   });
-  it('T-A6 : « Plusieurs » avec une page de 8,1 Mo → la page entre dans la rangée, allégée', async () => {
+  it('T-A6 : les pages, avec une page de 8,1 Mo → la page entre dans la rangée, allégée', async () => {
     canvasSimule();
     const view = await monter();
     await ouvrirRangee(view, [image('a.jpg')]);

@@ -1,16 +1,15 @@
 // Plusieurs pages pour une seule dépense (n2-pages, son choix D291) : le bouton noir coupé en deux, la rangée de pages, la frise, la pile de l'en-tête et le panneau des pages.
-// Maquette reprise telle quelle : `work/missions/2026-10-31-ecran-depense/choix-captures/retenue/` (forme 3 : « Un document » | « Plusieurs »). Jetons de l'app seulement (le thème rend `bg-ebc-straw` noir).
+// Maquette reprise telle quelle : `work/missions/2026-10-31-ecran-depense/choix-captures/retenue/` (forme 3), réduite à un seul bouton « Documents » (D382). Jetons de l'app seulement (le thème rend `bg-ebc-straw` noir).
 import React from 'react';
 import { FileText, Files, Plus, X } from 'lucide-react';
 
 export interface VignettePage { id: string; url: string; nom: string }
 
-/** Le bouton noir coupé en deux : « Un document » (large, le geste d'aujourd'hui : la lecture part tout de suite) | « Plusieurs » (étroit, picto pages).
- *  D366 : `discret` (saisie sans justificatif, « Joindre un justificatif ») garde le contour d'aujourd'hui, coupé de même. */
-export function EntreeFendue(p: { onUn: () => void; onPlusieurs: () => void; mot?: string; discret?: boolean; desactive?: boolean }) {
+/** D382 (09.11, « un seul bouton Documents ») : un seul bouton noir, picto pages. Un fichier (PDF ou image) est lu tout de suite ; plusieurs images font les pages (la règle est dans `surDocuments` de l'écran).
+ *  D366 : `discret` (saisie sans justificatif, « Joindre des documents ») garde le contour d'aujourd'hui. */
+export function EntreeDocuments(p: { onChoisir: () => void; mot?: string; discret?: boolean; desactive?: boolean }) {
   return <div data-dp="entree" className={`flex min-h-8 overflow-hidden rounded-control ${p.discret ? 'border border-cave-700 text-cave-200' : 'bg-ebc-straw text-cave-950'}`}>
-    <button data-primary type="button" disabled={p.desactive} onClick={p.onUn} className={`flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] ${p.discret ? 'min-h-9' : 'font-semibold'}`}><FileText size={16}/>{p.mot ?? 'Un document'}</button>
-    <button type="button" disabled={p.desactive} onClick={p.onPlusieurs} style={{ borderLeftColor: 'color-mix(in srgb, currentColor 38%, transparent)' }} className={`flex w-[124px] shrink-0 items-center justify-center gap-2 border-l text-[13px] ${p.discret ? '' : 'font-semibold'}`}><Files size={15}/>Plusieurs</button>
+    <button data-primary type="button" disabled={p.desactive} onClick={p.onChoisir} className={`flex min-w-0 flex-1 items-center justify-center gap-2 text-[13px] ${p.discret ? 'min-h-9' : 'font-semibold'}`}><Files size={16}/>{p.mot ?? 'Documents'}</button>
   </div>;
 }
 
