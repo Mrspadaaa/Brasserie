@@ -12,16 +12,18 @@ const TOUS: Record<CleUnite, ChoixUnite> = {
   kg: { label: 'Kg', valeur: 'kg', le: 'le Kg' }, g: { label: 'g', valeur: 'g', le: 'le g' }, sachet: { label: 'sachets', valeur: 'sachet', le: 'l’un' },
   piece: { label: 'pièce', valeur: 'pièce', le: 'l’une' }, l: { label: 'L', valeur: 'l', le: 'le L' },
 };
-/** Les cinq unités de la case « unité à remplir » (D353 : la pièce y est, et le sachet). */
-export const CINQ_UNITES: readonly ChoixUnite[] = [TOUS.kg, TOUS.g, { ...TOUS.sachet, label: 'sachet' }, TOUS.piece, TOUS.l];
+/** Les cinq unités de la case « unité à remplir » (D353 : la pièce y est, et le sachet). s1 (09.11, ses mots : « mettre pièce en premier ») : pièce · g · Kg · L · sachet, l'ordre qu'il a donné. */
+export const CINQ_UNITES: readonly ChoixUnite[] = [TOUS.piece, TOUS.g, TOUS.kg, TOUS.l, { ...TOUS.sachet, label: 'sachet' }];
 
 /** La clé commune d'une unité écrite de n'importe quelle façon (« Kg », « kilo », « Stk », « pièce », « sachets »). */
 export const cleUnite = (unite: string): string => (isPieceUnit(unite) ? 'piece' : isSachetUnit(unite) ? 'sachet' : linkUnit(unite));
 
 export type GenreUnite = 'malt' | 'houblon' | 'levure' | 'sucre' | 'materiel';
 const PAR_GENRE: Record<GenreUnite, CleUnite[]> = {
-  malt: ['kg', 'g', 'piece'], houblon: ['g', 'kg', 'piece'], levure: ['sachet', 'g', 'piece'], sucre: ['kg', 'g', 'piece'], materiel: ['piece', 'l'],
+  malt: ['piece', 'g', 'kg'], houblon: ['piece', 'g', 'kg'], levure: ['piece', 'g', 'sachet'], sucre: ['piece', 'g', 'kg'], materiel: ['piece', 'l'],
 };
+/** L'unité propre du genre (celle dont on compte d'ordinaire) : elle règle les nombres rapides d'une unité illisible. La pièce est première au segment, pas forcément l'unité du genre. */
+const UNITE_DU_GENRE: Record<GenreUnite, CleUnite> = { malt: 'kg', houblon: 'g', levure: 'sachet', sucre: 'kg', materiel: 'piece' };
 /** Le genre de la ligne pour son segment d'unité : la nature d'abord (matériel, nettoyant, emballage : pièce | L), puis ce que dit la lecture ou l'article. */
 export function genreDeUnite(kind: PurchaseLineDraft['kind'], contexte: string | undefined, categorie: string | undefined): GenreUnite {
   if (kind !== 'ingredient') return 'materiel';
@@ -30,15 +32,15 @@ export function genreDeUnite(kind: PurchaseLineDraft['kind'], contexte: string |
 }
 
 /**
- * D350, D353 : le segment d'unité d'une ligne, deux ou trois unités plausibles, la pièce toujours offerte. Une unité lue hors de la liste (un « L » sur un malt) passe en tête,
- * suivie de la première du genre et de la pièce : jamais un menu, jamais une unité perdue.
+ * D350, D353 : le segment d'unité d'une ligne, deux ou trois unités plausibles, la pièce toujours offerte. La pièce est première (s1, 09.11) ; une unité lue hors de la liste (un « L » sur un malt) vient juste après,
+ * suivie de la première unité de masse du genre : jamais un menu, jamais une unité perdue.
  */
 export function choixUnite(genre: GenreUnite, courante: string): ChoixUnite[] {
   const base = PAR_GENRE[genre].map(k => TOUS[k]);
   const cle = cleUnite(courante);
   if (!courante.trim() || !/[a-z]/i.test(courante) || base.some(c => cleUnite(c.valeur) === cle)) return base;
   const actuelle = TOUS[cle as CleUnite] ?? { label: shortUnit(courante), valeur: courante.trim(), le: `le ${shortUnit(courante)}` };
-  return [actuelle, base[0], TOUS.piece].filter((c, i, tous) => tous.findIndex(x => cleUnite(x.valeur) === cleUnite(c.valeur)) === i);
+  return [TOUS.piece, actuelle, base.find(c => cleUnite(c.valeur) !== 'piece') ?? base[0]].filter((c, i, tous) => tous.findIndex(x => cleUnite(x.valeur) === cleUnite(c.valeur)) === i);
 }
 /** Le mot d'une unité d'article au pluriel quand il faut (« sachet » → « sachets »), « Kg » et « L » en capitales comme la maquette. */
 export function motUnite(unite: string, quantite?: number): string {
@@ -80,7 +82,7 @@ export function apresReception(lignes: readonly PurchaseLineDraft[], idLigne: st
 const NOMBRES: Record<CleUnite, readonly number[]> = { piece: [1, 2, 3, 5, 10], sachet: [1, 2, 3, 5, 10], g: [1, 5, 10, 100, 500], kg: [1, 5, 10, 25], l: [1, 5, 10, 20] };
 /** L'unité de la ligne d'abord ; illisible, la première unité de son genre (matériel : pièce). */
 export function nombresRapides(unite: string, genre: GenreUnite): readonly number[] {
-  return NOMBRES[cleUnite(unite) as CleUnite] ?? NOMBRES[PAR_GENRE[genre][0]];
+  return NOMBRES[cleUnite(unite) as CleUnite] ?? NOMBRES[UNITE_DU_GENRE[genre]];
 }
 
 /**
@@ -145,3 +147,15 @@ export function uniteHorsArticle(ligne: { description: string; quantity?: number
   if (!isReadableUnit(ligne.unit) || !isReadableUnit(article.unit)) return false;
   return !stockQuantityFor({ description: ligne.description, quantity: ligne.quantity !== undefined && ligne.quantity > 0 ? ligne.quantity : 1, unit: ligne.unit }, article).ok;
 }
+
+/**
+ * s1 (09.11) : une quantité posée d'un toucher (tuile, ou « 1 » mis par l'unité) GARDE le montant (la facture fait foi) : le prix unitaire se recalcule (montant ÷ quantité, `prixCalcule`) ;
+ * sans montant, le montant devient quantité × prix. Sans l'un ni l'autre, seule la quantité est posée. L'inconnu n'est jamais 0.
+ */
+export function quantiteGardantMontant(ligne: { unitPrice?: number; amount?: number }, quantite: number): { quantity: number; unitPrice?: number; amount?: number } {
+  if (ligne.amount !== undefined && quantite > 0) return { quantity: quantite, unitPrice: prixCalcule(ligne.amount, quantite) };
+  if (ligne.unitPrice !== undefined) return { quantity: quantite, amount: Math.round(quantite * ligne.unitPrice * 100) / 100 };
+  return { quantity: quantite };
+}
+/** s1 (09.11, « quand je click sur l'unité, ça met 1 dans la quantité, 90 % du temps j'ai pas besoin de plus ») : la quantité vide prend 1. */
+export const metUn = (ligne: { unitPrice?: number; amount?: number }) => quantiteGardantMontant(ligne, 1);

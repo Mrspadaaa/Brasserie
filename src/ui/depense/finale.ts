@@ -34,6 +34,15 @@ export function ajouterCoupure<R extends { points: any[]; issues: string[]; revi
   return result;
 }
 
+/**
+ * s1 (jeu en ligne, VERDICT-EN-LIGNE n° 3 ; ses mots : « 90 % du temps j'ai pas besoin de plus ») : un ticket de magasin n'imprime pas la quantité d'un article vendu à l'unité ; le serveur rend alors `quantity` null et un prix
+ * unitaire égal au montant (`montantDeLigne` de `invoiceScanCore.ts` : « quantity null ou 1 → price »). La quantité est donc 1, SEULEMENT quand ce prix est lu et égal au montant (au centime) : une ligne dont le prix diffère du montant
+ * (2 × 2,60 = 5,20 sans quantité) garde sa quantité inconnue, jamais inventée ; hors CHF il n'y a pas de montant de ligne.
+ */
+export function quantiteImpliciteDuTicket(item: { price?: number | null; amountTTC?: number | null }, devise: string | null | undefined): number | undefined {
+  if (devise !== 'CHF' || item.price === null || item.price === undefined || item.amountTTC === null || item.amountTTC === undefined) return undefined;
+  return Math.round(item.price * 100) === Math.round(item.amountTTC * 100) && item.price > 0 ? 1 : undefined;
+}
 export const scanKind = (kind: ScannedLineKind): PurchaseLineDraft['kind'] => (kind === 'stock' ? 'ingredient' : kind === 'unknown' ? 'other' : kind);
 /** Le prix lu, au moins deux décimales (2,30 et non 2,3), trois sous 0,10 : une mise en forme, jamais un chiffre ajouté. */
 export const prixImprime = (p: number) => { const d = (String(p).split('.')[1] ?? '').length; return p.toFixed(Math.max(Math.abs(p) < 0.1 ? 3 : 2, d)).replace('.', ','); };
@@ -59,7 +68,7 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
     /* P4 (banc b1) : une remise s'appelle « Rabais », jamais le libellé de taxe que le ticket imprime sous l'article (« NoVatTax - 0% ») ; ce libellé reste sous « Imprimé » (rien n'est perdu). */
     const nomImprime = String(item.name ?? '').trim(), lu: ReturnType<typeof libelleLu> = item.kind === 'discount' ? { description: 'Rabais', ...(nomImprime ? { imprime: { nom: nomImprime, ...(item.variant ? { variante: String(item.variant).trim() } : {}) } } : {}) } : libelleLu(item);
     const nomLu = lireOptions(String(item.name ?? ''), item.variant ? String(item.variant) : undefined, String(item.unit ?? '')).base.trim().slice(0, 80);
-    return { id: item.id, description: lu.description, ...(nomLu ? { nomLu } : {}), ...(lu.imprime ? { imprime: lu.imprime } : {}), kind: scanKind(item.kind), amount: result.currency === 'CHF' ? (item.amountTTC ?? undefined) : undefined, quantity: item.kind === 'discount' ? undefined : item.quantity ?? undefined, unit: item.kind === 'discount' ? '' : item.unit, unitPrice: result.currency === 'CHF' && item.kind !== 'discount' ? (item.price ?? undefined) : undefined, stockAction: 'none' as const, equipmentAction: 'none' as const, stockCategory: item.stockCategory, sourceReference: item.reference, evidence: [item.reference ? `Réf. ${item.reference}` : '', lu.imprime ? `Imprimé : ${libelleDeLigne(item.name, item.variant)}` : '', item.evidence].filter(Boolean).join(' · ') };
+    return { id: item.id, description: lu.description, ...(nomLu ? { nomLu } : {}), ...(lu.imprime ? { imprime: lu.imprime } : {}), kind: scanKind(item.kind), amount: result.currency === 'CHF' ? (item.amountTTC ?? undefined) : undefined, quantity: item.kind === 'discount' ? undefined : item.quantity ?? quantiteImpliciteDuTicket(item, result.currency), unit: item.kind === 'discount' ? '' : item.unit, unitPrice: result.currency === 'CHF' && item.kind !== 'discount' ? (item.price ?? undefined) : undefined, stockAction: 'none' as const, equipmentAction: 'none' as const, stockCategory: item.stockCategory, sourceReference: item.reference, evidence: [item.reference ? `Réf. ${item.reference}` : '', lu.imprime ? `Imprimé : ${libelleDeLigne(item.name, item.variant)}` : '', item.evidence].filter(Boolean).join(' · ') };
   });
   const existantsLus = sansCetteSaisie(stockItems, submissionId);
   const familleDeLigne = (l: PurchaseLineDraft): FamilleCle => groupeDe(donneesDeLigne(ligneDeBrouillon({ ...l, unit: uniteEffective(l) }, result.vendor ?? undefined)).contexte, l.kind, l.description, l.stockCategory, undefined, result.category);

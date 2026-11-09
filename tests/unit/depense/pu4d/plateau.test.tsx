@@ -42,11 +42,11 @@ describe('règles pures du plateau pu4d', () => {
     expect(apresReception([ligne('l1', 6, 'Kg', 'autre')], 'l1', article, l => l.unit)).toBeUndefined();
   });
   it('le choix d’unité offre toujours la pièce (D353) ; une unité lue hors liste passe en tête', () => {
-    expect(choixUnite('malt', 'Kg').map(c => c.label)).toEqual(['Kg', 'g', 'pièce']);
-    expect(choixUnite('houblon', 'g').map(c => c.label)).toEqual(['g', 'Kg', 'pièce']);
-    expect(choixUnite('levure', 'sachet').map(c => c.label)).toEqual(['sachets', 'g', 'pièce']);
+    expect(choixUnite('malt', 'Kg').map(c => c.label)).toEqual(['pièce', 'g', 'Kg']);
+    expect(choixUnite('houblon', 'g').map(c => c.label)).toEqual(['pièce', 'g', 'Kg']);
+    expect(choixUnite('levure', 'sachet').map(c => c.label)).toEqual(['pièce', 'g', 'sachets']);
     expect(choixUnite('materiel', 'Stk').map(c => c.label)).toEqual(['pièce', 'L']);
-    expect(choixUnite('malt', 'L').map(c => c.label)).toEqual(['L', 'Kg', 'pièce']);
+    expect(choixUnite('malt', 'L').map(c => c.label)).toEqual(['pièce', 'L', 'g']);
   });
 });
 
@@ -74,7 +74,7 @@ describe('le plateau porté, sur l’écran rendu', () => {
     const a = ouvrir(view, 'line-1');
     expect(a.querySelector('[data-dp-apres]')?.textContent).toBe('1 → 7 Kg');
     const seg = a.querySelector('[data-dp-unite-segments]')!;
-    expect([...seg.querySelectorAll('button')].map(b => b.textContent)).toEqual(['Kg', 'g', 'pièce']);
+    expect([...seg.querySelectorAll('button')].map(b => b.textContent)).toEqual(['pièce', 'g', 'Kg']);
     expect(seg.querySelector('[aria-pressed="true"]')?.textContent).toBe('Kg');
     expect(a.querySelector('[data-dp-pu4d] select:not([data-dp-famille])')).toBeNull();
     expect(a.querySelector('[data-dp-plus]')).toBeNull();

@@ -40,3 +40,16 @@ export function phraseDuPied(lignes: number, total: number, ajouts: readonly Ajo
   }
   return { texte: `Lignes ${fr(lignes)} · total ${fr(total)} · ${fr(Math.abs(ecart))} de ${ecart > 0 ? 'plus' : 'moins'}`, attention: true };
 }
+
+/** s1 (jeu en ligne, VERDICT-EN-LIGNE n° 5) : les natures que le serveur écrit en mot de code (« other / equipment ») se disent en français. */
+const NATURE_FR: Record<string, string> = {
+  stock: 'ingrédient', ingredient: 'ingrédient', packaging: 'emballage', cleaning: 'nettoyage', equipment: 'matériel', maintenance: 'entretien',
+  service: 'service', shipping: 'port', discount: 'rabais', other: 'autre', unknown: 'inconnu',
+};
+/**
+ * Un message du serveur (« VITRIFIC… — nature : lectures divergentes (other / equipment), vérifier… ») ne montre jamais un mot du code : dans ses parenthèses, chaque mot de nature
+ * passe en français. Hors parenthèses (le nom de l'article, la phrase) rien ne change : « service » dans un nom reste « service ».
+ */
+export function sansMotsBruts(message: string): string {
+  return message.replace(/\(([^)]*)\)/g, (_tout, dedans: string) => `(${dedans.replace(/\b[a-z]+\b/g, mot => NATURE_FR[mot] ?? mot)})`);
+}

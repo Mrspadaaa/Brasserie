@@ -6,6 +6,7 @@ import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { PictoLien, type LienStock } from './Pictos';
 import { FILET_FAMILLE, type GroupeCle } from './groupes';
+import { familleHorsBrassage } from './familles';
 import { pastilleConversion } from './etat';
 import type { Niveau } from './confiance';
 import type { PastilleEtat } from './rangees';
@@ -49,7 +50,7 @@ export function LigneP3c(p: LigneP3cProps) {
     <details data-dp-plateau open={p.ouverte} onToggle={e => p.onToggle(p.id, (e.currentTarget as HTMLDetailsElement).open)}>
       <summary title={titre} className={`dp-p3c-r relative list-none cursor-pointer flex items-center gap-1.5 px-2.5 min-h-7${p.rabais ? ' pl-9 text-cave-300' : ''}`}>
         {p.numeroPapier !== undefined ? <span data-dp-numero className="w-[18px] text-right font-mono text-xs text-cave-400">{p.numeroPapier}</span> : null}
-        <i aria-hidden className="dp-no-chevron hidden"/>{p.rabais ? null : <span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>}
+        <i aria-hidden className="dp-no-chevron hidden"/>{p.rabais || (p.lien === 'aucun' && familleHorsBrassage(p.groupe)) ? null : <span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>}
         <span className="min-w-0 flex-1 flex flex-wrap items-center gap-x-1.5 py-0.5">
           {/* Le nom et sa pastille d'équivalence forment un seul bloc : le nom se coupe entre deux mots (deux lignes au plus), la pastille « = 2 sachets » reste à sa droite ; B2-NOTE-8 : si la place manque (320 px), la pastille passe SOUS le nom au lieu de l'écraser (« W… he… »). */}
           {mout ? null : <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">

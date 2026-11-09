@@ -290,6 +290,12 @@ export const estFamilleIngredient = (famille: FamilleCle): boolean => FAMILLES_I
  */
 export const familleAUnStock = (famille: FamilleCle): boolean => Object.values(FAMILLE_DE_CATEGORIE).includes(famille);
 /**
+ * s1 (09.11, « pas besoin d'avoir tout mes outils et autres, juste ce qui concerne vraiment le brassage, donc pas rénovation ») : une famille dont on SAIT qu'elle n'est pas du brassage
+ * (rénovation, services) ne montre aucune icône de stock sur ses lignes. Matériel de brassage et « Autres » (inclassable : l'appartenance est inconnue) gardent l'icône : comportement actuel, prudent.
+ */
+export const FAMILLES_HORS_BRASSAGE: ReadonlySet<FamilleCle> = new Set<FamilleCle>(['renovation', 'service']);
+export const familleHorsBrassage = (famille: FamilleCle): boolean => FAMILLES_HORS_BRASSAGE.has(famille);
+/**
  * D328c : la nature (`kind` du brouillon) que prend une ligne lue « stock » dont la famille n'est pas un ingrédient : nettoyage et consommable → `cleaning`, emballage →
  * `packaging` (ces natures entrent en stock : un article déjà là se relie), matériel → `equipment`, services → `service`, « Autres » → `other` (rien en stock). La Rénovation garde
  * `equipment` (D306, acquis : « Matériel » au sélecteur, ses tests) ; `other` si le brasseur le préfère : une seule ligne ici.

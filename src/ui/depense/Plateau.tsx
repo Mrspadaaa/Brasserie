@@ -36,6 +36,20 @@ export function NombresRapides({ index, nombres, effacable, onAjouter, onEffacer
     {effacable ? <button type="button" aria-label="effacer la quantité" onClick={onEffacer} className="min-w-9 px-1.5 text-sm text-cave-400">✕</button> : null}
   </span>;
 }
+/**
+ * s1 (09.11, « une fois cliqué ça ouvre aussi en grand comme l'unité les nombres, mais sans le rouge ») : une fois l'unité touchée, la quantité s'offre en grandes tuiles, comme les cases d'unité
+ * (même grille, même hauteur), SANS le cadre ni le texte d'alerte. Un toucher POSE la quantité (5 : 5, pas 6) ; la valeur courante est allumée (1 d'abord : l'unité vient de la mettre). Aucun clavier.
+ */
+export function TuilesQuantite({ index, nombres, valeur, mot, onChoisir }: { index: number; nombres: readonly number[]; valeur: number | undefined; mot: (n: number) => string; onChoisir: (n: number) => void }) {
+  return <div data-dp-tuiles-quantite role="group" aria-label={`Quantité, ligne ${index}`} className="flex flex-col gap-1 rounded-control border border-cave-700 bg-cave-900 p-1.5">
+    <span className="text-xs font-semibold text-cave-400">quantité</span>
+    <div className="grid grid-cols-5 gap-1">
+      {nombres.map(n => <button key={n} type="button" data-val={n} aria-pressed={valeur === n} onClick={() => onChoisir(n)}
+        className={`flex min-h-12 flex-col items-center justify-center rounded-control border ${valeur === n ? `border-ebc-straw ${ACTIF}` : 'border-cave-600 bg-cave-950 text-cave-50'}`}>
+        <b className="font-mono text-base font-normal">{n}</b><small className={`whitespace-nowrap text-xs ${valeur === n ? 'text-cave-950' : 'text-cave-400'}`}>{mot(n)}</small></button>)}
+    </div>
+  </div>;
+}
 /** L'unité qui manque n'a pas de champ : une boîte rouge tiretée, et ses cinq cases juste dessous. */
 export function BoiteUniteVide() {
   return <span data-dp-niveau="inconnu" aria-hidden className="inline-flex h-9 min-w-16 items-center justify-center rounded-control border-2 border-dashed border-alert bg-alert/10 font-mono text-base text-alert">▒</span>;

@@ -156,14 +156,15 @@ export const CAUSES_DU_MANQUE = 'ligne illisible, cachée ou rabais ?';
 const nombreFr = (n: number | undefined) => (n === undefined || !Number.isFinite(n) ? '' : [montant(Math.round(n * 100)), String(n).replace('.', ',')].join(' '));
 
 /**
- * La mini recherche dans les lignes lues : le nom imprimé et le français, la référence ou l'EAN, et le montant (« 14,90 » trouve sa ligne, « 14.90 » aussi).
+ * La mini recherche dans les lignes lues : le nom imprimé et le français, la référence ou l'EAN, le montant (« 14,90 » trouve sa ligne, « 14.90 » aussi) et l'étiquette de groupe que l'écran donne à la ligne
+ * (s1, jeu en ligne : « peinture » trouve les lignes du sous-groupe « Peinture et sols » même quand l'OCR a abîmé leur nom).
  * Tous les mots tapés doivent se trouver dans la même ligne ; les accents et la casse ne comptent pas. Ne change aucune donnée.
  */
-export function chercherLignes(lignes: readonly PurchaseLineDraft[], saisie: string): string[] {
+export function chercherLignes(lignes: readonly PurchaseLineDraft[], saisie: string, etiquette?: (ligne: PurchaseLineDraft, index: number) => string | undefined): string[] {
   const mots = normalize(saisie).split(/\s+/).filter(Boolean).map(m => (/^[\d.,]+$/.test(m) ? m.replace(/\./g, ',') : m));
   if (!mots.length) return lignes.map(l => l.id);
-  return lignes.filter(l => {
-    const foin = normalize([l.description, l.nomLu, l.imprime?.nom, l.imprime?.variante, l.nameFr, l.sourceReference, nombreFr(l.amount), nombreFr(l.unitPrice)].filter(Boolean).join(' ')).replace(/ /g, '');
+  return lignes.filter((l, i) => {
+    const foin = normalize([l.description, l.nomLu, l.imprime?.nom, l.imprime?.variante, l.nameFr, l.sourceReference, nombreFr(l.amount), nombreFr(l.unitPrice), etiquette?.(l, i)].filter(Boolean).join(' ')).replace(/ /g, '');
     return mots.every(m => foin.includes(m));
   }).map(l => l.id);
 }

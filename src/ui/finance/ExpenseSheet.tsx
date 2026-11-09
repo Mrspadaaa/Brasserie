@@ -47,12 +47,12 @@ import { controlesCroises,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montant
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
-import { ajoutsALaMain,estAjouteeAMain,phraseDuPied } from '../depense/phrasePied';
+import { ajoutsALaMain,estAjouteeAMain,phraseDuPied,sansMotsBruts } from '../depense/phrasePied';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
-import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides } from '../depense/Plateau';
-import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
+import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,TuilesQuantite } from '../depense/Plateau';
+import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,metUn,quantiteGardantMontant,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
 import { appliquerFinale,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
@@ -154,9 +154,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
   /* D369 : le champ de `q × prix = montant` que le calcul a posé, par ligne (il suit les deux autres) ; les lignes dont la quantité a été posée d'un toucher (ses nombres restent). */
-  const calcules=useRef(new Map<string,ChampCalcul>()),derniers=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>());
+  const calcules=useRef(new Map<string,ChampCalcul>()),derniers=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>()),unitesTouchees=useRef(new Set<string>());
   /* B2 n° 2 : la ligne telle qu'elle était avant un changement d'unité (quantité, prix, unité écrite) : le retour à cette unité la rend. */
-  const uniteQuittee=useRef(new Map<string,{unit:string;quantity:number|undefined;unitPrice:number|undefined;amount:number|undefined}>());
+  const uniteQuittee=useRef(new Map<string,{unit:string;quantity:number|undefined;unitPrice:number|undefined;amount:number|undefined;mitUn?:boolean;prixPose?:number}>());
   /* D370 : une ligne venue sans libellé garde son champ pendant qu'on le tape (il ne part plus à la première lettre). */
   const libellesVides=useRef(new Set<string>());
   /* D370 : pendant la frappe du libellé, la ligne garde sa bande et son sous-groupe (sinon elle change de place à la première lettre, et le champ avec elle) ; elle se range au départ du champ. */
@@ -391,6 +391,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* Le français des noms de base, à part de la lecture, sans l'attendre ; apparié par id (D280). Hors ligne, en échec ou en aperçu : le nom imprimé reste. Lenteur D (M6, R5) : `traduireLignes` rend une `Map<rang, nameFr>` dont le rang est la position
      dans la liste ENVOYÉE ; ce rang est reporté vers l'id. Une traduction du provisoire encore en vol, dont le final est arrivé entre-temps, est jetée par sa garde (`nomsJeton`). */
   const traduire=(lines:PurchaseLineDraft[],jeton:number,stockItems:StockItem[])=>{
+    lines=lines.filter(l=>l.kind!=='discount'); /* s1 : un rabais s'appelle « Rabais » : son libellé de taxe (« NoVatTax - 0% ») n'est jamais traduit */
     if(apercu||!lines.length)return;
     void traduireLignes(lines.map(l=>({name:l.imprime?.nom??l.description,variant:l.imprime?.variante,unit:l.unit,kind:l.kind,stockCategory:l.stockCategory,stockAction:l.stockAction,stockRef:l.stockRef})),{stock:stockItems,enLigne:online}).then(noms=>{
       if(!mounted.current||nomsJeton.current!==jeton||!noms.size)return;
@@ -887,7 +888,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const sousFamilleLigne=(i:number):string|undefined=>{const l=draft.lines[rattacheA(i)];const fige=libelleFige.current.get(l.id);if(fige&&!famillesChoisies.current.has(l.id))return fige.sous;return famillesChoisies.current.has(l.id)?undefined:sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
   const numeros=numerosPapier(draft.lines,port);
   /* t1 : la mini recherche filtre comme un compte (même mécanique : les groupes s'ouvrent sur les trouvailles) ; elle ne change aucune donnée. */
-  const idsRecherche=recherche.trim()?chercherLignes(draft.lines,recherche):null;
+  const idsRecherche=recherche.trim()?chercherLignes(draft.lines,recherche,(_l,i)=>[NOMS_GROUPES[groupeDeLigne(i)],sousFamilleLigne(i)].filter(Boolean).join(' ')):null;
   const filtreAff=idsRecherche?{mot:idsRecherche.length>1?'trouvées':'trouvée',ids:idsRecherche}:filtre;
   const visibles=filtreAff?new Set(filtreAff.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
@@ -1005,9 +1006,21 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       /* Rejeu ff0f822e B2-2, B2-3 : « posée » est l'unité que l'écran MONTRE (`unite` : écrite, ou déduite du prix et jaune), pas seulement l'unité écrite sur la ligne : « Malt Munich 2 Kg × 4,20 » dont le Kg est déduit se
          convertit comme une ligne au Kg imprimé (2 000 g × 0,0042), au lieu de garder « 2 » et d'effacer le prix. Un toucher sur l'unité déduite la confirme (elle s'écrit), sans rien changer d'autre. */
       const posee=isReadableUnit(unite);
-      if(posee&&cleUnite(valeur)===cleUnite(unite)){if(!isReadableUnit(line.unit))updateLine(line.id,{unit:valeur});return;}
+      /* s1 (09.11) : toucher une unité ouvre les quantités en grandes tuiles ; une quantité VIDE prend 1 (le montant imprimé reste, le prix en découle) ; une quantité saisie ne change pas. Jamais de focus : le clavier ne s'ouvre qu'au toucher du champ. */
+      unitesTouchees.current.add(line.id);
+      let calculeApres:ChampCalcul|undefined;
+      const metUnSiVide=(patch:Partial<PurchaseLineDraft>):Partial<PurchaseLineDraft>=>{
+        const q='quantity' in patch?patch.quantity:line.quantity;
+        if(q!==undefined||line.kind==='discount')return patch;
+        const un=metUn({unitPrice:'unitPrice' in patch?patch.unitPrice:line.unitPrice,amount:line.amount});
+        calculeApres='unitPrice' in un?'unitPrice':'amount' in un?'amount':undefined; /* le champ que le « 1 » a calculé : une quantité tapée ensuite le recalcule, le montant imprimé ne bouge pas (D373) */
+        return {...patch,...un};
+      };
+      const ecrire=(patch:Partial<PurchaseLineDraft>)=>{derniers.current.delete(line.id);if(calculeApres)calcules.current.set(line.id,calculeApres);else calcules.current.delete(line.id);updateLine(line.id,patch);};
+      if(posee&&cleUnite(valeur)===cleUnite(unite)){const patch=metUnSiVide(isReadableUnit(line.unit)?{}:{unit:valeur});if(Object.keys(patch).length)ecrire(patch);else setPlateaux(n=>n+1);return;}
       const quittee=uniteQuittee.current.get(line.id);
-      if(quittee&&line.quantity===undefined&&line.unitPrice===undefined&&line.amount===quittee.amount&&cleUnite(quittee.unit)===cleUnite(valeur)){
+      /* Le retour à l'unité quittée rend la ligne : quantité vide et prix vide (B2), ou la quantité « 1 » que l'unité avait mise (s1) avec le prix qu'elle avait posé. */
+      if(quittee&&((line.quantity===undefined&&line.unitPrice===undefined)||(quittee.mitUn&&line.quantity===1&&line.unitPrice===quittee.prixPose))&&line.amount===quittee.amount&&cleUnite(quittee.unit)===cleUnite(valeur)){
         uniteQuittee.current.delete(line.id);calcules.current.delete(line.id);derniers.current.delete(line.id);
         updateLine(line.id,{unit:quittee.unit,quantity:quittee.quantity,unitPrice:quittee.unitPrice});
         return;
@@ -1015,25 +1028,28 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       /* B2 n° 3 (lot 2) : d'une masse à l'autre la quantité se convertit (2 Kg → 2 000 g), le prix suit (÷ 1000), le montant reste ; Kg → g → Kg rend les mêmes valeurs. Pièce, sachet, litre : rien ne se convertit, la quantité est « à remplir ». */
       const f=posee?facteurMasse(unite,valeur):undefined;
       if(f!==undefined){
-        calcules.current.delete(line.id);derniers.current.delete(line.id);
-        updateLine(line.id,{unit:valeur,...convertirMasse(line,f)});
+        ecrire(metUnSiVide({unit:valeur,...convertirMasse(line,f)}));
         return;
       }
       /* Hors masse, une unité seulement DÉDUITE (jaune) est un doute que le brasseur corrige (la quantité imprimée reste, B2 doute n° 2) ; une unité ÉCRITE qui change vide la quantité (« à remplir »). */
       if(isReadableUnit(line.unit)){
-        uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount});
-        calcules.current.delete(line.id);derniers.current.delete(line.id);
-        updateLine(line.id,{unit:valeur,quantity:undefined});
+        const patch=metUnSiVide({unit:valeur,quantity:undefined});
+        uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount,mitUn:patch.quantity===1,prixPose:patch.unitPrice});
+        ecrire(patch);
         return;
       }
-      updateLine(line.id,{unit:valeur});
+      ecrire(metUnSiVide({unit:valeur}));
     };
     /* D369, D373 : un champ du calcul posé ; celui qui manque se calcule, et quand les trois sont là, celui qu'il n'a pas touché suit (le montant d'abord). */
     const poser=(champ:ChampCalcul,valeur:number|undefined)=>{const r=recalculer(line,champ,valeur,calcules.current.get(line.id),derniers.current.get(line.id));derniers.current.set(line.id,champ);if(r.calcule)calcules.current.set(line.id,r.calcule);else calcules.current.delete(line.id);updateLine(line.id,r.patch);return r.patch;};
     /* d3 (VERDICT-2, 5) : une remise n'a ni quantité ni prix unitaire : sa fiche n'a que le montant (et l'imprimé, supprimer). */
     const estRabais=line.kind==='discount';
     const montrerNombres=!estRabais&&(line.quantity===undefined||rougeDe('quantite')||nombresTouches.current.has(line.id));
-    const nombresEl=montrerNombres?<NombresRapides index={index+1} nombres={nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category))} effacable={line.quantity!==undefined}
+    /* s1 : unité touchée → tuiles de quantité (grandes, sans rouge, la valeur courante allumée) au lieu des « +1 +2 ». Une tuile POSE la quantité et garde le montant imprimé. */
+    const nombresDe=nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category));
+    const tuilesEl=!estRabais&&unitesTouchees.current.has(line.id)?<TuilesQuantite index={index+1} nombres={nombresDe} valeur={line.quantity} mot={n=>motUnite(unite,n)}
+      onChoisir={n=>{const p=quantiteGardantMontant(line,n);derniers.current.delete(line.id);if('unitPrice' in p&&line.amount!==undefined)calcules.current.set(line.id,'unitPrice');else if('amount' in p)calcules.current.set(line.id,'amount');else calcules.current.delete(line.id);updateLine(line.id,p);}}/>:null;
+    const nombresEl=tuilesEl?tuilesEl:montrerNombres?<NombresRapides index={index+1} nombres={nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category))} effacable={line.quantity!==undefined}
       onAjouter={n=>{nombresTouches.current.add(line.id);poser('quantity',Math.round(((line.quantity??0)+n)*1e6)/1e6);}} onEffacer={()=>poser('quantity',undefined)}/>:null;
     const BLEU_CH=' !border-2 !border-area-finances !bg-area-finances/15 !text-area-finances font-semibold';
     const montantTexte=line.amount===undefined?'':fr2c(Math.round(line.amount*100)),prixTexte=line.unitPrice===undefined?'':prixImprime(line.unitPrice);
@@ -1136,7 +1152,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture||estRabais?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>retirerLigne(line.id)}/>
     </div>;
     return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
-      nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
+      nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article&&!estRabais?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
       alpha={alphaLu} ebc={ebcLu} conversion={article?conversionDe({...line,unit:unite},article):undefined}
       qte={{texte:texteQuantite(line,unite,horsStock)}} niveaux={niveaux}
       prix={line.unitPrice!==undefined?prixImprime(line.unitPrice):'—'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
@@ -1239,7 +1255,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     setNTranchees(n=>n+1);};
   const toutValider=()=>{setPerdues([]);setTranchees(t=>new Set([...t,...fileChangements.filter(c=>c.type==='corrigee'||c.type==='ajoutee').map(c=>c.cle)]));setReglees(r=>new Set([...r,...desaccordsRestants.map(c=>c.id)]));setNTranchees(n=>n+fileChangements.length);};
   const ligneChg=courantChg?(courantChg.type==='perdue'?perdues.find(x=>x.ligne.id===courantChg.id)?.ligne:draft.lines.find(l=>l.id===courantChg.id)):undefined;
-  const chgNom=courantChg?.type==='desaccord'?((points??[]).find(pt=>pt.code==='lectures-divergentes'&&!/tva/i.test(pt.champ))?.message??'Les lectures divergent'):ligneChg?nomAffiche(ligneChg.description):'';
+  const chgNom=courantChg?.type==='desaccord'?sansMotsBruts((points??[]).find(pt=>pt.code==='lectures-divergentes'&&!/tva/i.test(pt.champ))?.message??'Les lectures divergent'):ligneChg?nomAffiche(ligneChg.description):'';
   const chgMontant=courantChg?.type==='desaccord'?'':ligneChg?.amount===undefined?'—':fr2c(Math.round(ligneChg.amount*100));
   const chgSecond=!courantChg?undefined:courantChg.type==='corrigee'?{geste:'annuler' as const,label:'Annuler',onClick:()=>{annulerCorrection(courantChg.id);setNTranchees(n=>n+1);}}
     :courantChg.type==='desaccord'?{geste:'voir' as const,label:'Voir',onClick:()=>{const ch=chips.find(x=>x.id===courantChg.id);if(ch)aller(ch);}}
@@ -1330,13 +1346,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const lignesCtsBloc=draft.lines.reduce((t,l)=>t+(l.amount===undefined?0:Math.round(l.amount*100)),0)+arrondiBloc;
   const qteFausses=draft.lines.filter(l=>l.quantity!==undefined&&l.unitPrice!==undefined&&l.amount!==undefined&&lineMathCheck([{id:l.id,name:l.description,kind:l.kind,quantity:l.quantity,unit:l.unit,price:l.unitPrice,amountTTC:l.amount}]).points.length>0).map(l=>l.id);
   /* d3 (VERDICT-2, 4) : « Qté × prix » ne compte que les lignes VÉRIFIABLES (quantité, prix unitaire et montant lus, ni port ni rabais) : un rabais n'a ni quantité ni prix, une prestation sans prix unitaire non plus ; les compter donnait « 2/5 » sur une pièce entièrement juste. Celles qui n'ont pas de prix unitaire se disent à part, jamais comptées justes ni fausses. */
-  const verifiable=(l:typeof draft.lines[number])=>l.kind!=='discount'&&l.quantity!==undefined&&l.unitPrice!==undefined&&l.amount!==undefined&&!port.has(l.id);
+  const verifiable=(l:typeof draft.lines[number])=>l.kind!=='discount'&&l.quantity!==undefined&&(l.unitPrice!==undefined||l.quantity===1)&&l.amount!==undefined&&!port.has(l.id); /* s1 : à 1 pièce le prix unitaire EST le montant : la ligne se vérifie sans prix imprimé */
   const nControlables=draft.lines.filter(verifiable).length;
   const sansPrix=draft.lines.filter(l=>l.kind!=='discount'&&!port.has(l.id)&&!verifiable(l)).length;
   const nonVerifiables=new Set(draft.lines.filter(l=>!verifiable(l)).map(l=>l.id));
   /* Sans `controls` du serveur (ancienne lecture, cache) : l'arithmétique se lit sur le brouillon, ligne par ligne, comme `recalculerLecture`. */
   /* En devise étrangère le brouillon n'a pas de montants de lignes en CHF (`nControlables` 0) : le compte reste celui de la lecture (serveur). */
-  const qteServeur=ctl&&nControlables===0?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id))&&qteFausses.length===0?true:qteFausses.length>0||ctl.lines.failed>0?false:null,valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:null;
+  const qteServeur=ctl&&nControlables===0?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id))&&qteFausses.length===0?true:qteFausses.length>0||ctl.lines.failed>0?false:null,valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.filter(l=>l.kind!=='discount').length}`}:null; /* s1 : un rabais n'a ni quantité ni prix : il n'entre jamais au dénominateur */
   /* Des lignes sans prix unitaire (hors rabais et port) : le contrôle est dit sans coche, jamais vert (une ligne non vérifiée n'est ni juste ni fausse). */
   const qteBloc=qteServeur?qteServeur:ctl?{ok:ctl.lines.failed===0&&qteFausses.length===0&&nControlables>0&&sansPrix===0&&(ctl.lines.skippedIds??[]).every(id=>nonVerifiables.has(id))?true:qteFausses.length>0||ctl.lines.failed>0?false:null,valeur:`${Math.max(0,nControlables-qteFausses.length)}/${nControlables}`,sansPrix}:nControlables>0?{ok:qteFausses.length===0&&sansPrix===0?true:qteFausses.length>0?false:null,valeur:`${nControlables-qteFausses.length}/${nControlables}`,sansPrix}:null;
   /* Le total « imprimé » : le total de la pièce ; un total calculé (somme des bulletins, somme des lignes) n'est pas imprimé. */
