@@ -52,4 +52,16 @@ describe('Dépense : un rabais (P4 du banc b1)',()=>{
     const articles=Array.from(view.container.querySelectorAll<HTMLElement>('[data-dp="preuve"] [data-dp="controle"]')).find(e=>/Articles/.test(e.textContent??''))!;
     expect(articles.textContent).toMatch(/3 · 2 rabais/);
   });
+  it('ne compte jamais en pièces : l’en-tête de la bande dit 3 pièces (A, B, la consultation), pas 5 ; la rangée n’a ni quantité ni picto d’article',async()=>{
+    const view=await ouvrir();
+    const entetes=Array.from(view.container.querySelectorAll<HTMLElement>('[data-dp-bande-entete]')).map(e=>e.textContent??'');
+    /* « Matériel de brassage », pastille 3 (A, son rabais, B), puis « 2 pièces » : A et B ; le rabais n'y est pas. Service : 1 pièce (la consultation). */
+    expect(entetes[0]).toMatch(/^Matériel de brassage3\s*2 pièces/);
+    expect(entetes.join(' | ')).toMatch(/1 pièce/);
+    for(const e of lignes(view).filter(l=>nom(l)==='Rabais')){
+      expect(e.querySelector('[data-dp-qte]')?.textContent??'').toBe('');
+      expect(e.querySelector('[data-dp-lien]')).toBeNull();
+      expect(e.getAttribute('data-dp-rabais')).toBe('1');
+    }
+  });
 });

@@ -17,6 +17,8 @@ export interface PropsControles {
 }
 
 function Rangee({ r, onRenvoi }: { r: RangControle; onRenvoi: (r: Renvoi, rang?: RangControle) => void }) {
+  /* d2 (critique 12) : les contrôles « rien à signaler » ne méritent pas une rangée pleine : une petite ligne. */
+  if (r.cle === 'verifies') return <p data-dp="controle-discret" data-dp-controle-cle="verifies" data-dp-verdict="ok" title={r.detail} className="col-span-2 flex items-center gap-1 py-0.5 text-xs leading-tight text-cave-400"><Check size={12} aria-hidden className="shrink-0 text-hop"/>{r.texte} : rien à signaler</p>;
   const erreur = r.verdict === 'ecart';
   const corps = <>
     {erreur ? <span aria-hidden className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border border-attention text-[10px] font-bold leading-none text-attention">!</span> : r.lectures ? null : r.verdict === 'ok' ? <Check size={14} aria-hidden className="shrink-0 text-hop"/> : <span aria-hidden className="w-3.5 shrink-0 text-center text-cave-400">·</span>}
@@ -60,13 +62,13 @@ export function VerificationCroisee(p: { bandeau: React.ComponentProps<typeof Ba
  * La mini recherche, dans la bande des lignes : une loupe, un champ discret, « × » (ou Échap) pour vider. Elle filtre la liste (les groupes s'ouvrent sur les trouvailles) ;
  * une saisie sans résultat dit que l'article manque. Jamais `type="number"` : un montant se tape en texte.
  */
-export function RechercheLignes(p: { valeur: string; onChange: (v: string) => void; nTrouvees: number; nTotal: number; inputRef: React.Ref<HTMLInputElement>; zoneRef?: React.Ref<HTMLDivElement> }) {
+export function RechercheLignes(p: { valeur: string; onChange: (v: string) => void; onFocus?: () => void; nTrouvees: number; nTotal: number; inputRef: React.Ref<HTMLInputElement>; zoneRef?: React.Ref<HTMLDivElement> }) {
   const saisie = p.valeur.trim();
   return <div ref={p.zoneRef} data-dp="recherche" role="search" className="flex flex-col gap-0.5 px-2 pb-1 pt-1.5">
     <label className="relative flex min-h-8 items-center">
       <Search size={14} aria-hidden className="pointer-events-none absolute left-2 text-cave-400"/>
       <input ref={p.inputRef} type="text" inputMode="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" spellCheck={false} value={p.valeur} placeholder="Chercher une ligne : nom, référence, montant" aria-label="Chercher dans les lignes lues"
-        onChange={e => p.onChange(e.target.value)}
+        onChange={e => p.onChange(e.target.value)} onFocus={p.onFocus}
         onKeyDown={e => { if (e.key === 'Escape' && p.valeur) { e.preventDefault(); e.stopPropagation(); e.nativeEvent.stopImmediatePropagation(); p.onChange(''); } }}
         className="h-8 min-w-0 flex-1 rounded-control border border-cave-700 bg-cave-950 pl-7 pr-8 text-sm text-cave-50 placeholder:text-cave-400"/>
       {p.valeur ? <button type="button" aria-label="Vider la recherche" onClick={() => p.onChange('')} className="absolute right-0 flex size-8 items-center justify-center text-cave-300"><X size={14}/></button> : null}
@@ -77,11 +79,11 @@ export function RechercheLignes(p: { valeur: string; onChange: (v: string) => vo
 }
 
 /** Ce qui manque et les gestes : rechercher, ajouter la ligne manquante, relire la photo. Une ligne, sans phrase longue. */
-export function BandeManque(p: { texte: string; causes: string; onChercher: () => void; onAjouter: () => void; onPhoto?: () => void; ajouterOff?: boolean }) {
+export function BandeManque(p: { texte: string; causes: string; onChercher?: () => void; onAjouter: () => void; onPhoto?: () => void; ajouterOff?: boolean }) {
   return <div data-dp="manque" role="status" className="mx-2 mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-control border border-dashed border-attention/60 bg-attention/5 px-2 py-1 text-xs text-cave-50">
     <span className="flex min-w-0 items-center gap-1"><AlertCircle size={13} aria-hidden className="shrink-0 text-attention"/><span><strong className="font-semibold">{p.texte}</strong><span className="text-cave-300"> · {p.causes}</span></span></span>
     <span className="ml-auto flex items-center gap-1">
-      <button type="button" onClick={p.onChercher} className="inline-flex min-h-7 items-center gap-1 whitespace-nowrap rounded-control border border-cave-600 px-2 text-cave-50"><Search size={12} aria-hidden/>Chercher</button>
+      {p.onChercher ? <button type="button" onClick={p.onChercher} className="inline-flex min-h-7 items-center gap-1 whitespace-nowrap rounded-control border border-cave-600 px-2 text-cave-50"><Search size={12} aria-hidden/>Chercher</button> : null}
       <button type="button" disabled={p.ajouterOff} onClick={p.onAjouter} className="inline-flex min-h-7 items-center gap-1 whitespace-nowrap rounded-control border border-cave-600 px-2 text-cave-50 disabled:opacity-50"><Plus size={12} aria-hidden/>Ajouter la ligne</button>
       {p.onPhoto ? <button type="button" onClick={p.onPhoto} className="inline-flex min-h-7 items-center gap-1 whitespace-nowrap rounded-control border border-cave-600 px-2 text-cave-50"><FileText size={12} aria-hidden/>Photo</button> : null}
     </span>

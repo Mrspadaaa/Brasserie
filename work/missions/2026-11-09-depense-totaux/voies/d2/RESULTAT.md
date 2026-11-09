@@ -1,4 +1,4 @@
-OK — Champs de lecture gardés au client, contrôles de la pièce dans le bloc, rabais rangé sous son article, zone verte (2 965) ; captures à rejouer
+OK — 12 retouches de la critique faites (rabais hors pièces, geste « Vérifier les montants », bande et pied tus, banc fidèle) ; zone verte 2 978
 
 ## Fait
 1. `src/services/geminiScanner.ts` : `normalizeResult` garde `amountPaid`, `terminalAmount`, `printedItemCount`, `countedAmounts`, `countedEans`, `printedTime`, `ignoredLines`, `photoIncomplete`, `photoIncompleteNote` (type `ScannedInvoiceResult` + `champsControlesPiece`). Une clé n'existe que si la lecture la porte ; négatif, non entier, heure impossible, genre inconnu écartés ; un 0 lu reste un 0. Test : `tests/unit/finance/geminiScannerControles.test.ts` (6 tests, 5 rouges avant).
@@ -20,6 +20,25 @@ OK — Champs de lecture gardés au client, contrôles de la pièce dans le bloc
 - `normalizeResult` recopie `countedAmountsConfirmed` (seulement s'il vaut `true` et que `countedAmounts` existe). L'écran le passe à `controlesPiece`, avec `documentType`. La rangée « Articles » n'utilise `countedAmounts` comme comptage indépendant que si le contrôle `comptage-montants` n'est pas « non vérifié » (un comptage discordant non confirmé ne lève plus de drapeau).
 - Tout « Payé » affiché vient de `payeEffectif(lectureCtl)` (reçu, sinon terminal égal au total sur un ticket de caisse) ; plus aucune lecture de `amountPaid` seul dans `ExpenseSheet.tsx`.
 - Tests (rouges avant : 2 d'intégration + 4 unitaires) : `geminiScannerControles.test.ts` (+1, clés absentes), `depensePiece.test.tsx` (+2 : payé effectif caisse/facture ; comptage non confirmé / confirmé). `tsc` vide ; `tests.txt` : 228 fichiers, 2 965 verts, zéro rouge. Pas de captures (le critique les fera).
+
+## Retouches de la critique (VERDICT.md, 12 problèmes) — tout en un message
+Chaque point a son test, écrit rouge avant (`depenseRabais`, `depensePiece`, `controlesCroisesD2`, `depenseTotaux`) ; `tsc` vide ; `tests.txt` : 229 fichiers, **2 978 verts**, zéro rouge.
+1. **Rabais (bloquant)** : `lignesDeLecture` ne lui donne ni quantité, ni unité, ni prix unitaire ; `Ligne.tsx` (prop `rabais`) : sans picto d'article, sans colonne quantité, indentée ; l'en-tête de bande compte 2 pièces (A, B) et 1 (consultation), jamais 5 ou 6.
+2. **Geste du compte concordant (bloquant)** : `controlesCroises.ts` : comptage indépendant concordant et somme au-dessous du total → « Vérifier les montants » (renvoi `montants`) ; l'écran ouvre la ligne au prix éloigné du stock, sinon le plus gros montant. « Chercher la ligne manquante » reste pour le compte qui manque (tache) ou sans comptage indépendant.
+3. **Tuile « Règlement »** : le « supposée » portait sur la DATE du paiement (celle de la pièce), pas sur le montant payé : l'étiquette dit « date supposée ». Le chip « 1 » reste (c'est la date).
+4. **Écart dit trois fois** : le pied se tait quand le bloc lève le drapeau (les phrases neutres, ajout à la main, restent) ; la bande « non retrouvés » n'apparaît qu'une fois la recherche ouverte (focus ou saisie) et seulement si une ligne peut manquer.
+5. **« Qté × prix »** : « 23/23 justes » (plus de « incomplet »).
+6. **« comptés »** au lieu de « imprimés » (« Articles lus ≠ comptés 23 / 29 », « = comptés »).
+7. **Banc fidèle** (`banc.tsx`) : Sun Store 2 sans `amountPaid` (« montant non lu » + note terminal), photo du tâché lue complète (plus de rangée Photo), désaccords de lecture réels (tache 45, copie 25, Sun Store 2 : 3 : « Lectures 3 · n désaccords »), review « disputed ». Non fait : le rejeu des lectures finales de `H13-reels` (données réelles, interdites dans Git) ; la tache reste la lecture d'avant c1 (23/29), les formes sont celles de b1.
+8. **Gestes « modifier ou retirer »** sur des pièces : copie : le stock connaît « Peinture fictive C01 » à 6,95, le montant lu 66,95 lève « Prix connus » (ouvre la ligne) ; nouvelle pièce `bauhaus-eur` (29 lignes + « Montant en EUR 370,92 » lue comme une ligne) : « Lignes hors articles » et « Voir la ligne en trop », ligne ouverte. Vérifié en Chrome : lignes ouvertes après le toucher.
+9. **Bouton « Chercher »** de la bande : retiré (le focus est déjà dans le champ).
+10. **« Ajouter la ligne »** : focus sur le libellé de la ligne neuve. Le rouge « à remplir » avant la première frappe est la règle de l'écran (champ obligatoire), non touchée.
+11. **Photo** : le banc rejouait une pièce de type PDF (lien « Ouvrir le PDF original ») ; il donne maintenant une image (comportement d'une photo, « Voir l'original »). À confirmer en ligne.
+12. **Contrôles muets** : « Lignes hors articles · Photo : rien à signaler » devient une petite ligne (une `p` de texte 12 px), plus une rangée pleine.
+
+Assertions d'écran modifiées pour ces changements (raison écrite dans le test) : `depenseTotaux` (« justes », bande après focus, compte 31 pour la ligne manquante, renvoi `montants`), `sm0811/pied` ×3 et `g7/ecran-g7` ×1 (le pied se tait, le bloc dit l'écart : les mêmes montants sont testés dans le drapeau du bloc).
+
+DEMANDE EXECUTANT (mise à jour) : 5 pièces au lieu de 4 : ajouter `bauhaus-eur` à la liste des CAS (20 planches) ; deux pastilles touchées par planche. Le critique a dit qu'il fait lui-même les captures.
 
 ## Fichiers écrits
 `src/services/geminiScanner.ts`, `src/ui/depense/finale.ts`, `src/ui/depense/groupes.ts`, `src/ui/finance/ExpenseSheet.tsx`, `src/ui/finance/controlesCroises.ts`, `src/ui/finance/controlesCroisesVue.tsx`, `src/ui/finance/controlesPieceRangs.ts` (nouveau) ; tests : `tests/unit/finance/{geminiScannerControles,controlesPieceRangs}.test.ts`, `tests/unit/depense/rabais-p4.test.ts`, `tests/integration/{depensePiece,depenseRabais}.test.tsx`, quatre fichiers d'écran corrigés (ci-dessus) ; `voies/d2/banc/{banc.html,banc.tsx,capturer.mjs}`, `voies/d2/tests.txt`. Rien dans `functions/`, ni commit, ni stash. Aucun appel Gemini.

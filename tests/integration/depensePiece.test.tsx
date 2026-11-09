@@ -102,6 +102,36 @@ describe('Dépense : contrôles de la pièce dans le bloc (d2)',()=>{
     const oui=await ouvrir(ticketEan({countedAmounts:31,countedAmountsConfirmed:true,amountTTC:277.6,amountPaid:277.6,printedLineCount:undefined}));
     expect(rangee(oui,'articles')!.getAttribute('data-dp-verdict')).toBe('ecart');
   });
+  it('le compte concorde (29 = 29), la somme non : « Vérifier les montants », la pastille ouvre le plus gros montant (pas la recherche)',async()=>{
+    const view=await ouvrir(ticketEan({amountTTC:400,amountPaid:400}));
+    const s=rangee(view,'somme')!;
+    expect(s.textContent).toMatch(/Vérifier les montants/);
+    expect(s.getAttribute('data-dp-renvoi')).toBe('montants');
+    fireEvent.click(s);
+    await waitFor(()=>expect(view.container.querySelector<HTMLDetailsElement>('[data-dp-ligne="line-1"] details')!.open).toBe(true));
+    expect(document.activeElement).not.toBe(screen.getByLabelText('Chercher dans les lignes lues'));
+  });
+  it('critique 12 : les contrôles « rien à signaler » tiennent sur une petite ligne, pas une rangée pleine',async()=>{
+    const view=await ouvrir(ticketEan({ignoredLines:[]}));
+    const d=view.container.querySelector('[data-dp="preuve"] [data-dp="controle-discret"]')!;
+    expect(d.textContent).toMatch(/Lignes hors articles : rien à signaler/);
+    expect(d.tagName).toBe('P');
+  });
+  it('critique 3 : la tuile Règlement dit « date supposée » (la date, pas le montant payé, qui est lu)',async()=>{
+    const view=await ouvrir(ticketEan());
+    const tuile=view.container.querySelector('[data-dp="tuile-paye"]')!.textContent??'';
+    expect(tuile).toMatch(/date supposée/);
+    expect(tuile).not.toMatch(/Règlement\s*supposée/);
+  });
+  it('critique 10 : « Ajouter la ligne » (bande) met le focus sur le libellé de la ligne neuve',async()=>{
+    const view=await ouvrir(ticketEan({countedAmounts:31}));
+    fireEvent.focus(screen.getByLabelText('Chercher dans les lignes lues'));
+    await waitFor(()=>expect(view.container.querySelector('[data-dp="manque"]')).not.toBeNull());
+    const avant=view.container.querySelectorAll('[data-dp-ligne]').length;
+    fireEvent.click(screen.getByRole('button',{name:/Ajouter la ligne/}));
+    await waitFor(()=>expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant+1));
+    await waitFor(()=>expect(document.activeElement?.getAttribute('aria-label')).toBe('Libellé ligne '+(avant+1)));
+  });
   it('doublon : l’écran a déjà sa section « Achat peut-être déjà enregistré » (même fournisseur, jour, total) : la rangée du contrôle ne la répète pas',async()=>{
     state.transactions=[{id:'tx-deja',date:'02.11.2026',description:'Travaux',amountHT:0,tvaRate:0,tvaAmount:0,amountTTC:352.05,category:'renovation',subcategory:'',finance:{vendor:'Brico Fictif SA',invoiceNumber:''}}];
     const view=await ouvrir(ticketEan());

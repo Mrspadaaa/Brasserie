@@ -75,9 +75,11 @@ describe('D358 — l\'arrondi suisse à 5 centimes est sa propre ligne neutre', 
   it('tout autre écart reste signalé : 120,21 pour 121,20 : aucune ligne d\'arrondi, le détail garde l\'écart et la couleur d\'attention', async () => {
     await lirePiece(state.scanned, deux, r => { r.amountTTC = 121.2; });
     expect(q('[data-dp-arrondi]')).toBeNull();
-    const detail = detailDe();
-    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('0,99 CHF non retrouvés dans les lignes'); // t1, 09.11 : remplace « Lignes 120,21 · total 121,20 · 0,99 de moins », qui ne disait rien
-    expect(detail.className).toMatch(/text-attention/);
+    // d2 (critique 4) : le pied se tait, le bloc des contrôles dit l'écart (en attention) une seule fois.
+    expect(detailDe()).toBeUndefined();
+    const drapeau = q('[data-dp="drapeau"]')!;
+    expect(drapeau.textContent).toContain('0,99 CHF');
+    expect(drapeau.className).toMatch(/text-attention/);
   });
   it('une somme exacte n\'a aucune ligne d\'arrondi', async () => {
     await lirePiece(state.scanned, deux, r => { r.amountTTC = 120.21; });

@@ -29,6 +29,8 @@ export interface LigneP3cProps {
   neuve?: boolean;
   /** D2 (sa maquette `p3c-3-renvoi`) : sous un filtre, chaque rangée gardée est sur fond jaune avec un bord. */
   filtree?: boolean;
+  /** d2 (critique, bloquant 1) : un rabais est une sous-ligne de l'article du dessus : ni picto d'article, ni quantité, ni prix unitaire ; seulement son montant négatif. */
+  rabais?: boolean;
 }
 
 const stop = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); };
@@ -42,12 +44,12 @@ const BLEU = 'rounded-control bg-area-finances/15 px-1 text-area-finances';
 export function LigneP3c(p: LigneP3cProps) {
   const mout = p.boutonMouture, n = p.niveaux, c = p.corrigee;
   const titre = n.raisons.length ? n.raisons.join(' · ') : undefined;
-  return <article data-purchase-line data-dp-ligne={p.id} data-dp-groupe={p.groupe} hidden={p.masquee} {...(p.neuve ? { 'data-dp-neuve': '1' } : {})} {...(c ? { 'data-dp-corrigee': '1' } : {})}
+  return <article data-purchase-line data-dp-ligne={p.id} data-dp-groupe={p.groupe} hidden={p.masquee} {...(p.neuve ? { 'data-dp-neuve': '1' } : {})} {...(p.rabais ? { 'data-dp-rabais': '1' } : {})} {...(c ? { 'data-dp-corrigee': '1' } : {})}
     className={`dp-p3c-li scroll-mt-9 border-b border-cave-800 ${p.boutonMouture ? "" : BARRE[p.groupe]} ${p.neuve ? 'bg-area-finances/10' : p.douteux ? (p.fixNiveau === 'inconnu' ? 'bg-alert/5' : 'bg-attention/5') : ''} ${p.garde ? 'dp-p3c-garde' : ''} ${p.filtree ? 'bg-attention/15 shadow-[inset_0_0_0_1.5px_rgb(var(--attention))]' : ''}`} {...(p.filtree ? { 'data-dp-filtree': '1' } : {})}>
     <details data-dp-plateau open={p.ouverte} onToggle={e => p.onToggle(p.id, (e.currentTarget as HTMLDetailsElement).open)}>
-      <summary title={titre} className="dp-p3c-r relative list-none cursor-pointer flex items-center gap-1.5 px-2.5 min-h-7">
+      <summary title={titre} className={`dp-p3c-r relative list-none cursor-pointer flex items-center gap-1.5 px-2.5 min-h-7${p.rabais ? ' pl-9 text-cave-300' : ''}`}>
         {p.numeroPapier !== undefined ? <span data-dp-numero className="w-[18px] text-right font-mono text-xs text-cave-400">{p.numeroPapier}</span> : null}
-        <i aria-hidden className="dp-no-chevron hidden"/><span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>
+        <i aria-hidden className="dp-no-chevron hidden"/>{p.rabais ? null : <span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>}
         <span className="min-w-0 flex-1 flex flex-wrap items-center gap-x-1.5 py-0.5">
           {/* Le nom et sa pastille d'équivalence forment un seul bloc : le nom se coupe entre deux mots (deux lignes au plus), la pastille « = 2 sachets » reste à sa droite ; B2-NOTE-8 : si la place manque (320 px), la pastille passe SOUS le nom au lieu de l'écraser (« W… he… »). */}
           {mout ? null : <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -68,7 +70,7 @@ export function LigneP3c(p: LigneP3cProps) {
           : p.etat ? <span role="img" data-dp-etat={p.etat.cle} aria-label={p.etat.aria} title={p.etat.aria}
             className="inline-flex h-6 shrink-0 items-center gap-0.5 rounded-control border border-cave-600 bg-cave-950 px-1 font-mono text-xs tabular-nums text-cave-200">
             {p.etat.cle === 'concasse' ? <><PictoLien lien="mouture" size={12}/>{p.etat.texte.replace(/^↳\s*/, '')}</> : p.etat.texte}</span> : null}
-        <span className="dp-p3c-dq" aria-label={p.qte.texte ? `${p.qte.texte} × ${p.prix}` : p.prix}>
+        <span className={`dp-p3c-dq${p.rabais ? ' hidden' : ''}`} aria-label={p.qte.texte ? `${p.qte.texte} × ${p.prix}` : p.prix}>
           <span data-dp-qte {...niveau(n.qte)} {...(c?.qte ? { 'data-dp-corrige': '1' } : {})} className={`font-semibold ${c?.qte || p.neuve ? (c?.qte ? BLEU : 'text-area-finances') : MARQUE[n.qte]}`}>{p.qte.texte}</span><i>{p.qte.texte || p.prix !== '—' ? '×' : ''}</i><span data-dp-prix {...niveau(n.prix)} {...(c?.prix ? { 'data-dp-corrige': '1' } : {})} className={c?.prix ? BLEU : p.neuve ? 'text-area-finances' : MARQUE[n.prix]}>{p.qte.texte || p.prix !== '—' ? p.prix : ''}</span>
         </span>
         <span data-dp-montant {...niveau(n.montant)} {...(c?.montant ? { 'data-dp-corrige': '1' } : {})} className={`w-[54px] shrink-0 text-right font-mono text-sm ${c?.montant ? BLEU : p.neuve ? 'text-area-finances' : 'text-cave-50'} ${MARQUE[n.montant]}`}>{p.montant}</span>

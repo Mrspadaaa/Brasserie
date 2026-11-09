@@ -72,18 +72,27 @@ describe('Dépense : contrôles croisés (le bloc refait)',()=>{
     expect(paye.textContent).toContain('TWINT');
     expect(paye.textContent).toContain('352,05');
     expect(rang(view,/Qté × prix/).getAttribute('data-dp-verdict')).not.toBe('ok');
-    expect(rang(view,/Qté × prix/).textContent).toMatch(/incomplet/);
+    expect(rang(view,/Qté × prix/).textContent).toMatch(/29\/29 justes/); expect(rang(view,/Qté × prix/).textContent).not.toMatch(/incomplet/); // d2, critique 5
     expect(bloc(view).getAttribute('data-dp-drapeau')).toBe('1');
     expect(within(bloc(view)).getByRole('status').textContent).toMatch(/74,45 CHF/);
   });
-  it('la phrase « de moins » devient ce qui manque, avec la bande de gestes (chercher, ajouter, photo)',async()=>{
-    const view=await ouvrir();
+  it('la phrase « de moins » devient ce qui manque, dit UNE fois dans le bloc ; la bande de gestes (ajouter, photo) n’apparaît qu’une fois la recherche ouverte (d2, critique 4 et 9)',async()=>{
+    const view=await ouvrir({countedAmounts:31});
     expect(view.container.textContent).not.toMatch(/74,45 de moins/);
-    expect(view.container.textContent).toMatch(/74,45 CHF non retrouvés dans les lignes/);
+    expect(within(bloc(view)).getByRole('status').textContent).toMatch(/74,45 CHF/);
+    expect(view.container.querySelector('[data-dp="fin"]')!.textContent).not.toMatch(/non retrouvés/);
+    expect(view.container.querySelector('[data-dp="manque"]')).toBeNull();
+    fireEvent.focus(screen.getByLabelText('Chercher dans les lignes lues'));
+    await waitFor(()=>expect(view.container.querySelector('[data-dp="manque"]')).not.toBeNull());
     const bande=view.container.querySelector<HTMLElement>('[data-dp="manque"]')!;
     expect(bande.textContent).toMatch(/illisible, cachée ou rabais/);
-    expect(within(bande).getByRole('button',{name:/Chercher/})).toBeTruthy();
+    expect(within(bande).queryByRole('button',{name:/Chercher/})).toBeNull();
     expect(within(bande).getByRole('button',{name:/Ajouter la ligne/})).toBeTruthy();
+  });
+  it('compte concordant (29 = 29) : aucune ligne ne manque, donc aucune bande « non retrouvés »',async()=>{
+    const view=await ouvrir();
+    fireEvent.focus(screen.getByLabelText('Chercher dans les lignes lues'));
+    expect(view.container.querySelector('[data-dp="manque"]')).toBeNull();
   });
   it('nombre d’articles imprimé absent : « non imprimé », jamais 0 ni inventé ; payé sans montant : « montant non lu »',async()=>{
     const view=await ouvrir({printedLineCount:null,countedAmounts:null,amountPaid:undefined});
@@ -111,8 +120,8 @@ describe('Dépense : contrôles croisés (le bloc refait)',()=>{
 });
 
 describe('Dépense : chaque pastille d’erreur mène à son geste',()=>{
-  it('ligne manquante : « Somme ≠ imprimé » met le focus sur la recherche, « Ajouter la ligne manquante » ouvre une ligne neuve',async()=>{
-    const view=await ouvrir();
+  it('ligne manquante : « Somme ≠ imprimé » met le focus sur la recherche, « Ajouter la ligne manquante » ouvre une ligne neuve (31 comptées pour 29 lues)',async()=>{
+    const view=await ouvrir({countedAmounts:31});
     fireEvent.click(rang(view,/Somme/));
     expect(document.activeElement).toBe(screen.getByLabelText('Chercher dans les lignes lues'));
     const avant=view.container.querySelectorAll('[data-dp-ligne]').length;

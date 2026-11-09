@@ -15,7 +15,7 @@ describe('contrôles croisés : la règle',()=>{
     expect(c.resume).toBe('74,45 CHF');
     const par=Object.fromEntries(c.rangs.map(r=>[r.cle,r]));
     expect(par.articles.verdict).toBe('ok');
-    expect(par.somme).toMatchObject({verdict:'ecart',valeurs:'277,60 / 352,05',ecart:'−74,45',renvoi:'manquante'});
+    expect(par.somme).toMatchObject({verdict:'ecart',valeurs:'277,60 / 352,05',ecart:'−74,45',renvoi:'montants',geste:'Vérifier les montants'}); // d2, critique 2 : 29 comptées = 29 lues, une ligne ne manque pas
     expect(par.paye).toMatchObject({verdict:'ok',valeurs:'352,05'});
     expect(par.qte.verdict).toBe('inconnu');
   });
