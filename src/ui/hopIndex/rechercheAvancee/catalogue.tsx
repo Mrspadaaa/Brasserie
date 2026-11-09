@@ -67,7 +67,15 @@ export function fichesHoublons(): FicheHoublon[] {
   return sortie;
 }
 
-const familles = (f: FicheHoublon): FamilyId[] => FAMILIES.filter((x) => f.h.familles[x].niveau !== 'non décrit');
+/**
+ * Les familles d'un houblon pour le filtre : celles que le dessin de l'app MARQUE (au moins deux fiches, ou la première citée). Une famille citée par
+ * une seule fiche parmi d'autres n'est pas la sienne (D167 : Hersbrucker n'est pas tropical parce qu'une fiche écrit « tropical/fruit »). Une fiche qui n'en
+ * marque aucune garde ses familles citées : elle est décrite, seulement moins nettement. Sans rien : non documentée, jamais 0.
+ */
+export const familles = (f: FicheHoublon): FamilyId[] => {
+  const marquees = FAMILIES.filter((x) => f.h.familles[x].niveau === 'marqué');
+  return marquees.length ? marquees : FAMILIES.filter((x) => f.h.familles[x].niveau === 'cité');
+};
 const ALPHA = [5, 8, 11, 14];
 const HUILE = [1, 1.5, 2, 3];
 
@@ -91,11 +99,11 @@ export function facettesHoublons(fiches: readonly FicheHoublon[]): Facette<Fiche
 }
 
 export const FILTRES_HOUBLON: DefFiltreRA[] = [
-  { id: 'alpha', libelle: 'α (acides alpha)', court: 'α', rang: 'premier', genre: 'plage', unite: '%', enPuce: true },
-  { id: 'role', libelle: 'Rôle', rang: 'premier', genre: 'choix', enPuce: true },
-  { id: 'aromes', libelle: 'Arômes', rang: 'premier', genre: 'choix', enPuce: true },
+  { id: 'alpha', libelle: 'α (acides alpha)', court: 'α', nonDoc: 'non documenté', rang: 'premier', genre: 'plage', unite: '%', enPuce: true },
+  { id: 'role', libelle: 'Rôle', nonDoc: 'non documenté', rang: 'premier', genre: 'choix', enPuce: true },
+  { id: 'aromes', libelle: 'Arômes', nonDoc: 'non documentés', rang: 'premier', genre: 'choix', enPuce: true },
   { id: 'origine', libelle: 'Origine', rang: 'premier', genre: 'choix', enPuce: true },
-  { id: 'huile', libelle: 'Huile totale', court: 'Huiles', rang: 'premier', genre: 'plage', unite: 'mL/100 g', enPuce: true },
+  { id: 'huile', libelle: 'Huile totale', court: 'Huiles', nonDoc: 'non documentée', rang: 'premier', genre: 'plage', unite: 'mL/100 g', enPuce: true },
   { id: 'stock', libelle: 'En stock chez moi', court: 'En stock', rang: 'premier', genre: 'bascule', enPuce: true },
   { id: 'disponibilite', libelle: 'Disponibilité', rang: 'plus', genre: 'choix' },
 ];
@@ -184,10 +192,12 @@ export function catalogueHoublons(fiches: readonly FicheHoublon[], actions: () =
         {(f.grams ?? 0) > 0 && <Package size={13} role="img" aria-label="en stock" className="hx-stock" />}
       </>
     ),
-    Pastilles: ({ item: f }) => {
+    Pastilles: ({ item: f, filtres }) => {
       const marques = FAMILIES.filter((x) => f.h.familles[x].niveau === 'marqué');
       const cites = FAMILIES.filter((x) => f.h.familles[x].niveau === 'cité');
-      const montre = [...marques, ...cites].slice(0, 4);
+      // Les familles filtrées d'abord, toujours : le brasseur voit pourquoi la ligne est là. Puis les marquées, puis les citées (4 au plus, hors filtrées).
+      const posees = (Array.isArray(filtres?.aromes) ? filtres!.aromes : []).filter((x): x is FamilyId => (FAMILIES as readonly string[]).includes(x) && f.h.familles[x as FamilyId].niveau !== 'non décrit');
+      const montre = [...new Set<FamilyId>([...posees, ...marques, ...cites])].slice(0, Math.max(4, posees.length));
       // L14 : les mots hors des 12 familles (« vin blanc », « groseille ») se disent aussi, sinon Nelson Sauvin paraît ordinaire.
       const hors = f.h.motsSansFamille;
       return (

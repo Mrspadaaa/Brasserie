@@ -41,7 +41,9 @@ export interface Disponibilite { rang: RangDisponibilite; pays?: Array<'CH' | 'F
 export type IdFiltre =
   | 'boisson' | 'famille' | 'style' | 'temperature' | 'attenuation' | 'tolerance' | 'effets' | 'clarte' | 'forme' | 'disponibilite' | 'stock'
   | 'sansSta1' | 'labo' | 'vitesse' | 'rondeur' | 'soufre' | 'nutriments' | 'sansAlcool';
-export interface DefFiltre { id: IdFiltre; libelle: string; rang: 'premier' | 'plus'; genre: 'choix' | 'plage' | 'bascule' }
+export interface DefFiltre { id: IdFiltre; libelle: string; rang: 'premier' | 'plus'; genre: 'choix' | 'plage' | 'bascule';
+  /** L'accord de « non documentée » avec le libellé (« non documentés » pour Effets) ; défaut : féminin singulier. */
+  nonDoc?: 'non documenté' | 'non documentés' | 'non documentée' | 'non documentées' }
 export type EtatFiltres = Partial<Record<IdFiltre, string[] | { min: number; max: number } | boolean>>;
 /** Par filtre : le compte de chaque option (comptée en excluant ce seul filtre, facettes disjonctives) et les fiches sans la donnée. */
 export interface ComptesFiltre { options: Array<{ valeur: string; libelle: string; n: number }>; nonDocumentees: number }

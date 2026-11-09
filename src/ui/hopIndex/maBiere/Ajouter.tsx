@@ -134,7 +134,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
         <button type="button" data-role="recherche-avancee" aria-label="Recherche avancée" title="Recherche avancée : α, rôle, arômes, origine, huiles, stock"
           onClick={() => { onGeste(); ouvrirCouche({ view: 'hopSearch' }); }}
           className="shrink-0 inline-flex items-center gap-1 h-10 px-2 rounded-full text-sm text-cave-400">
-          <SlidersHorizontal className="w-4 h-4" aria-hidden="true" /><span><span className="hidden sm:inline">Recherche </span>avancée</span>
+          <SlidersHorizontal className="w-4 h-4" aria-hidden="true" /><span className="hidden sm:inline">Recherche avancée</span><span className="sm:hidden">Avancée</span>
         </button>
         {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
       </div>

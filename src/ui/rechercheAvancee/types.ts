@@ -20,6 +20,8 @@ export interface DefFiltreRA {
   genre: 'choix' | 'plage' | 'bascule';
   /** Montré dans la rangée de puces sous le résumé. */
   enPuce?: boolean;
+  /** L'accord de « non documentée » avec le libellé (« non documenté » pour Rôle, « non documentés » pour Arômes) ; défaut : féminin singulier. */
+  nonDoc?: 'non documenté' | 'non documentés' | 'non documentée' | 'non documentées';
   /** Champ non normalisé : l'index écrit « estimé » au lieu du nombre de non documentées. */
   estime?: boolean;
   /** Unité des bornes d'une plage (« % vol », « °C »). */
@@ -105,7 +107,7 @@ export interface CatalogueRA<T> {
   /** Sous le nom, hors du bouton : « épuisée au relevé du 27.09 ». */
   SousNom?(p: { item: T }): ReactNode;
   /** La deuxième ligne : arômes en couleur, « ⌕ … ? ». `poses` : les bascules posées (« sans STA1 · fiche »). */
-  Pastilles(p: { item: T; ref?: T; poses: readonly DefFiltreRA[] }): ReactNode;
+  Pastilles(p: { item: T; ref?: T; poses: readonly DefFiltreRA[]; /** Ce que le brasseur a posé : une pastille de la famille filtrée se montre toujours sur la ligne (D167). */ filtres?: EtatFiltresRA }): ReactNode;
   /** La ligne ouverte : « Choisir pour ma recette · + Comparer », « Ajouter à ma recette · Fiche ». */
   Actions(p: { item: T }): ReactNode;
   /** « ⌕ STA1 ? » : la donnée qui manque, un toucher la cherche. */

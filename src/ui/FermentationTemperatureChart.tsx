@@ -338,7 +338,7 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
     {editable ? <figcaption className="text-sm text-cave-200">Consignes °C · jours depuis J0{selectable ? ' · touche un palier pour le régler' : ''}</figcaption>
       : <figcaption className="text-sm text-cave-200">Consignes de température · jours écoulés depuis le début prévu J0{selectable ? ' · toucher un palier pour régler sa durée' : ''}</figcaption>}
     {handleHint && <p id={hintId} className="yc-chart-hint">{handleHint}<span className="sr-only"> Clavier : poignée ↕, flèches haut et bas 0,5 °C ; poignée ↔, flèches gauche et droite 0,5 j ; Page haut et bas, pas de 2 ; Échap annule le geste.</span></p>}
-    <div ref={box} className={selectable || editable ? 'yc-chart-surface relative w-full min-w-0' : 'yc-chart-surface w-full min-w-0'}>
+    <div ref={box} className={selectable || editable ? 'yc-chart-surface relative isolate w-full min-w-0' : 'yc-chart-surface w-full min-w-0'}>
       <svg ref={plot} className="block w-full" height={chartHeight} viewBox={`0 0 ${width} ${chartHeight}`} role="img" aria-label="Consignes de température et contacts à cru positionnés en fonction des jours"
         data-plot-left={editable ? left : undefined} data-plot-right={editable ? right : undefined} data-plot-top={editable ? top : undefined} data-plot-bottom={editable ? bottom : undefined}
         data-scale-end-day={editable ? axisEnd : undefined} data-scale-min={editable ? min : undefined} data-scale-max={editable ? max : undefined}>

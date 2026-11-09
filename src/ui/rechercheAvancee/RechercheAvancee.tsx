@@ -130,6 +130,7 @@ export function RechercheAvancee<T>({ catalogue: c }: { catalogue: CatalogueRA<T
   const res = useMemo(() => c.chercher(requete, filtres), [c, requete, filtres]);
   const ref = res.tapee;
   const libelleFiltre = (id: string) => courtFiltre(c.filtres.find((d) => d.id === id)?.libelle ?? id);
+  const nonDocDe = (id: string) => c.filtres.find((d) => d.id === id)?.nonDoc ?? 'non documentée';
 
   const poses = c.filtres.filter((d) => (d.deBase ? filtres[d.id] !== undefined && estPose(filtres, d.id) : estPose(filtres, d.id)));
   const manquants = poses.length ? maxNonDoc(poses.map((d) => d.id), res) : undefined;
@@ -225,14 +226,14 @@ export function RechercheAvancee<T>({ catalogue: c }: { catalogue: CatalogueRA<T
         // Sans recherche de donnée pour ce catalogue : le constat seul, sans « chercher » (aucun geste promis qui ne fait rien).
         <p className="ra-verif" role="status">
           <Search size={12} strokeWidth={2} aria-hidden="true" className="ra-i" />
-          <span>{libelleFiltre(manquants.id)} non documentée <b className="ra-m">{mil(manquants.n)}</b></span>
+          <span>{libelleFiltre(manquants.id)} {nonDocDe(manquants.id)} <b className="ra-m">{mil(manquants.n)}</b></span>
         </p>
       )}
       {manquants && c.chercherDonnee && (
         <button type="button" className="ra-verif" data-booster="chercher-ia"
           onClick={() => { const l = verifier[0] ?? tous.find((x) => !c.documente(x, manquants.id)); if (l) c.chercherDonnee?.(l, manquants.id); }}>
           <Search size={12} strokeWidth={2} aria-hidden="true" className="ra-i" />
-          <span>{libelleFiltre(manquants.id)} non documentée <b className="ra-m">{mil(manquants.n)}</b>{verifier.length > 0 && <> · dont <b className="ra-m">{verifier.length}</b> {c.rayons.find((r) => r.id === rv)?.reste}</>}</span>
+          <span>{libelleFiltre(manquants.id)} {nonDocDe(manquants.id)} <b className="ra-m">{mil(manquants.n)}</b>{verifier.length > 0 && <> · dont <b className="ra-m">{verifier.length}</b> {c.rayons.find((r) => r.id === rv)?.reste}</>}</span>
           <span className="ra-verif-a">chercher</span>
         </button>
       )}
@@ -260,7 +261,7 @@ export function RechercheAvancee<T>({ catalogue: c }: { catalogue: CatalogueRA<T
                   return (
                     <Ligne key={id} c={c} item={l} ref={ref} deplie={deplie === id} onBasculer={() => setDeplie(deplie === id ? null : id)}
                       manques={idsVerifier.has(id) && manquants ? [{ id: manquants.id, libelle: libelleFiltre(manquants.id) }] : []}
-                      posesBascule={poses.filter((d) => d.genre === 'bascule')} />
+                      posesBascule={poses.filter((d) => d.genre === 'bascule')} filtres={filtres} />
                   );
                 })}
                 {reste > 0 && (
@@ -307,9 +308,9 @@ function Resume({ parts }: { parts: string[] }) {
   );
 }
 
-function Ligne<T>({ c, item, ref, deplie, onBasculer, manques, posesBascule }: {
+function Ligne<T>({ c, item, ref, deplie, onBasculer, manques, posesBascule, filtres }: {
   c: CatalogueRA<T>; item: T; ref?: T; deplie: boolean; onBasculer: () => void;
-  manques: Array<{ id: string; libelle: string }>; posesBascule: readonly DefFiltreRA[];
+  manques: Array<{ id: string; libelle: string }>; posesBascule: readonly DefFiltreRA[]; filtres: EtatFiltresRA;
 }) {
   const pale = manques.length > 0;
   return (
@@ -323,7 +324,7 @@ function Ligne<T>({ c, item, ref, deplie, onBasculer, manques, posesBascule }: {
         {c.SousNom && <c.SousNom item={item} />}
       </span>
       {c.pistes.map((p) => <PisteLigne key={p.id} piste={p} item={item} ref={ref} />)}
-      {!pale && <span className="ra-pas-l"><c.Pastilles item={item} ref={ref} poses={posesBascule} /></span>}
+      {!pale && <span className="ra-pas-l"><c.Pastilles item={item} ref={ref} poses={posesBascule} filtres={filtres} /></span>}
       {deplie && <span className="ra-actions"><c.Actions item={item} /></span>}
     </div>
   );
@@ -425,7 +426,7 @@ function PanneauFiltre<T>({ c, def, res, filtres, regle, echelle, nomListe, prem
       {k && k.nonDocumentees > 0 && (
         <button type="button" className="ra-ndl" data-booster="chercher-ia" disabled={!cibleNd || !c.chercherDonnee}
           onClick={() => cibleNd && c.chercherDonnee?.(cibleNd, def.id)}>
-          <Search size={12} strokeWidth={2} aria-hidden="true" className="ra-i" /><span className="ra-ndl-t">non documentée <b className="ra-m">{mil(k.nonDocumentees)}</b></span>{cibleNd && c.chercherDonnee && <span className="ra-ndl-a">chercher</span>}
+          <Search size={12} strokeWidth={2} aria-hidden="true" className="ra-i" /><span className="ra-ndl-t">{def.nonDoc ?? 'non documentée'} <b className="ra-m">{mil(k.nonDocumentees)}</b></span>{cibleNd && c.chercherDonnee && <span className="ra-ndl-a">chercher</span>}
         </button>
       )}
     </div>

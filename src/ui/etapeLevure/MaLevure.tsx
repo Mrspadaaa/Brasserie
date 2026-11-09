@@ -7,7 +7,7 @@
 // « Changer de levure » est un vrai champ (modèle : `fermentescibles/Ajout.tsx`), ses résultats en tuiles juste dessous ; la recherche
 // avancée reste l'onglet « Chercher », que le brasseur ouvre lui-même ; (2) « la conduite de palier fonctionne infiniment mieux sur celle
 // de base » : la nouvelle conduite (`Conduite.tsx`, non montée, conservée) cède la place à la station de l'app.
-import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { FlaskConical, History, Package, Search, X } from 'lucide-react';
 import type { StockItem } from '../../types';
 import type { YeastSupply } from '../../../functions/src/yeastSupplySchema';
@@ -36,6 +36,17 @@ const pct = (v: number, min: number, max: number) => Math.max(0, Math.min(100, (
 const nu = (t: string) => t.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('fr').trim();
 /** Le nom court d'une puce : sans la parenthèse ni la marque en tête. */
 const nomCourt = (nom: string) => nom.replace(/\s*\(.*\)\s*$/, '').replace(/^(SafAle|SafLager|LalBrew|Wyeast|WLP|Lallemand Brewing ·)\s+/i, '');
+/**
+ * Le nom de la carte : sans la marque de gamme en tête quand le fabricant est dit dessous et que le nom serait long (« LalBrew Verdant IPA » → « Verdant IPA » ;
+ * « SafAle US-05 » reste entier, c'est son nom d'usage). Le nom complet reste dans le titre et le libellé du bouton ×.
+ */
+export const nomDeCarte = (nom: string, fabricantDit: boolean): string => {
+  if (!fabricantDit || nom.length <= 18) return nom;
+  const court = nom.replace(/^(LalBrew|SafAle|SafLager|SafSpirit|Wyeast|White Labs)\s+/i, '').trim();
+  return court || nom;
+};
+/** Le fabricant, dit dessous : « Lallemand Brewing » → « Lallemand » (une ligne à 390 px, la dose et la jauge sont à droite). */
+const fabricantCourt = (f: string): string => f.replace(/\s+Brewing$/i, '');
 /** Le nom d'une tuile : sans le fabricant en tête (il est dit dessous) ni la parenthèse finale. */
 const nomDeTuile = (l: YeastReference) => {
   const f = l.catalogue?.manufacturer;
@@ -78,10 +89,12 @@ type Tuile =
  * stock d'abord. Flèches, Entrée choisit, Échap vide (comme le champ d'ajout de Malts/sucres). Rien ne renvoie ailleurs : la recherche avancée est
  * l'onglet « Chercher » du segment. Sans résultat, « Mon stock ou saisie libre » s'offre avec le texte tapé.
  */
-function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, precedente, onPrecedente, onProposee, onStock, onHorsCatalogue }: {
+function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, precedente, onPrecedente, onProposee, onStock, onHorsCatalogue, libre }: {
   choisie: boolean; reperes: ReperesRecette; stock: StockItem[]; stockIds: ReadonlySet<string>; enStock: StockItem[];
   proposees: YeastReference[]; precedente?: string; onPrecedente?: () => void;
   onProposee?: (levure: YeastReference) => void; onStock: (item: StockItem) => void; onHorsCatalogue: (texte?: string) => void;
+  /** La saisie libre ouverte (« Mon stock ou saisie libre »), posée juste sous le champ : le geste n° 1 du 09.11 aboutit sous les yeux. */
+  libre?: ReactNode;
 }) {
   const [valeur, setValeur] = useState('');
   const [cible, setCible] = useState(0);
@@ -198,10 +211,11 @@ function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, pr
       })}
       {total > tuiles.length && tuiles[0]?.genre !== 'libre' && <p className="lv-plus-n" role="status">{tuiles.length} sur {total.toLocaleString('fr-FR')} · précise la saisie</p>}
     </div>}
+    {libre}
   </div>;
 }
 
-export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherDonnee, onRetirer, stock, onStock, onHorsCatalogue, precedente, onPrecedente, proposees = [], onProposee,
+export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherDonnee, onRetirer, stock, onStock, onHorsCatalogue, libre, precedente, onPrecedente, proposees = [], onProposee,
   reperes = {}, stockIds, conduiteCachee, onComparer, onFiche, onObjectifs, onNavigate }: {
   /** Levures proposées (vendues en CH · FR · DE, API de d1, la plus proche de la recette d'abord) : puces « ⬚ Nottingham » de la maquette. */
   proposees?: YeastReference[]; onProposee?: (levure: YeastReference) => void;
@@ -217,6 +231,8 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
   stock: StockItem[]; onStock: (item: StockItem) => void;
   /** « Hors catalogue » ou une saisie sans résultat : ouvre « Mon stock ou saisie libre » (le texte tapé est donné quand il y en a un). */
   onHorsCatalogue: (texte?: string) => void;
+  /** La saisie libre ouverte, rendue sous le champ de recherche. */
+  libre?: ReactNode;
   /** Repères de la recette pour classer les résultats (jamais un filtre). */
   reperes?: ReperesRecette;
   /** Les levures du stock, reliées au catalogue (ids) : elles passent devant et portent l'icône du stock. */
@@ -255,18 +271,20 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
   const avecConduite = choisie || !!recipe.fermentation?.length;
   const conduite = useRef<HTMLDivElement>(null);
   // Ma levure montre la station ouverte (maquette l5b) ; elle se remonte à neuf, ouverte, après un autre choix de levure (clé).
+  const labo = recipe.yeast.lab || levure?.catalogue?.manufacturer;
+  const nomAffiche = nomDeCarte(recipe.yeast.name, !!labo);
   const clePlan = `${draft.yeastId || recipe.yeast.name}||`;
 
   return <div className="lv-ma" data-lv="ma-levure" data-yeast-state={choisie ? 'chosen' : 'empty'}>
     {choisie && <div className="lv-bloc" data-booster="ligne-levure">
       <div className="lv-row">
         <span className="lv-pic" aria-hidden="true"><FlaskConical size={20} /></span>
-        <span className={`lv-nom${recipe.yeast.name.length > 22 ? ' lv-long' : ''}`}>{recipe.yeast.name}</span>
+        <span className={`lv-nom${nomAffiche.length > 22 ? ' lv-long' : ''}`} title={nomAffiche !== recipe.yeast.name ? recipe.yeast.name : undefined}>{nomAffiche}</span>
         <span className="lv-dose" data-lv="dose" title={sachets && !prevu ? 'Plage fabricant au volume de la recette, à choisir dans « Dose, ensemencement et starter »' : undefined}>
           <b>{doseTexte}</b><span>{doseUnite}</span></span>
         <button type="button" className="lv-x" aria-label={`Retirer ${recipe.yeast.name} de la recette`} onClick={onRetirer}><X size={16} aria-hidden="true" /></button>
         <span className="lv-sub">
-          <span className="lv-sub-t">{[recipe.yeast.form ?? yeastPrete.form, recipe.yeast.lab || levure?.catalogue?.manufacturer].filter(Boolean).join(' · ') || 'forme et laboratoire ?'}</span>
+          <span className="lv-sub-t">{[recipe.yeast.form ?? yeastPrete.form, labo && fabricantCourt(labo)].filter(Boolean).join(' · ') || 'forme et laboratoire ?'}</span>
           {(grammes || sachets) && <span className="lv-sub-d">
             {grammes && <span className="lv-m">{grammes}</span>}
             {sachets && <span className="lv-mini" aria-hidden="true"><i style={{ left: '8%', right: '8%' }} /></span>}
@@ -309,7 +327,7 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
     </div>}
 
     <ChampLevure choisie={choisie} reperes={reperes} stock={stock} stockIds={idsStock} enStock={enStock} proposees={proposees} precedente={precedente} onPrecedente={onPrecedente}
-      onProposee={onProposee} onStock={onStock} onHorsCatalogue={onHorsCatalogue} />
+      onProposee={onProposee} onStock={onStock} onHorsCatalogue={onHorsCatalogue} libre={libre} />
 
     {avecConduite && <div className="yeast-workbench yeast-choice lv-base" data-lv="conduite-base" ref={conduite} hidden={conduiteCachee}>
       <YeastRecipePlan key={clePlan} recipe={recipe} refs={refs} onChange={onConduite}

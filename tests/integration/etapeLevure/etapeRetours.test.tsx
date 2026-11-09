@@ -151,7 +151,8 @@ describe('Ma levure : la conduite de base revient', () => {
     expect(entete().getAttribute('aria-expanded')).toBe('true');
     taper('verdant');
     fireEvent.click(within(document.querySelector('[data-lv="resultats"]') as HTMLElement).getAllByRole('option')[0]);
-    expect(screen.getByText('LalBrew Verdant IPA')).toBeTruthy();
+    // la carte porte « Verdant IPA » (la marque de gamme est dite par le fabricant dessous) ; le nom entier reste en titre (retour du critique, constat 5)
+    expect(screen.getByTitle('LalBrew Verdant IPA').textContent).toBe('Verdant IPA');
     expect(entete().getAttribute('aria-expanded')).toBe('true');
     expect(document.body.textContent).toContain('conduite actuelle');
   });

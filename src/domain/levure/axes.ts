@@ -35,11 +35,11 @@ export const AXES_NUMERIQUES: readonly IdAxe[] = ['attenuation', 'tolerance', 'r
 export const FILTRES: readonly DefFiltre[] = [
   { id: 'boisson', libelle: 'Boisson', rang: 'premier', genre: 'choix' },
   { id: 'famille', libelle: 'Famille', rang: 'premier', genre: 'choix' },
-  { id: 'style', libelle: 'Style', rang: 'premier', genre: 'choix' },
+  { id: 'style', libelle: 'Style', nonDoc: 'non documenté', rang: 'premier', genre: 'choix' },
   { id: 'temperature', libelle: 'Température', rang: 'premier', genre: 'plage' },
   { id: 'attenuation', libelle: 'Atténuation', rang: 'premier', genre: 'plage' },
   { id: 'tolerance', libelle: 'Tolérance à l’alcool', rang: 'premier', genre: 'plage' },
-  { id: 'effets', libelle: 'Effets', rang: 'premier', genre: 'choix' },
+  { id: 'effets', libelle: 'Effets', nonDoc: 'non documentés', rang: 'premier', genre: 'choix' },
   { id: 'clarte', libelle: 'Floculation', rang: 'premier', genre: 'choix' },
   { id: 'forme', libelle: 'Forme', rang: 'premier', genre: 'choix' },
   { id: 'disponibilite', libelle: 'Disponibilité', rang: 'premier', genre: 'choix' },
