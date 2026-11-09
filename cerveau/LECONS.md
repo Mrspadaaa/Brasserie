@@ -102,13 +102,11 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
-- Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
+- Erreur : lots 5 à 21, 8 à 12 auteurs, 130 à 350 k jetons chacun. 09.11 : voies relancées jusqu'à 10 fois : « pas pour du va et vient inutile !!! ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d'emblée, retouches groupées par voie, une suite en fin de lot.
 - Rôles : pilote
-- Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns (01.11)
-
-## Décider
+- Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns ; `.claude/hooks/garde-jetons.mjs` (09.11 : 3e relance et brief incomplet refusés)
 
 ### L19 — Cadrer une décision sur l'acquis et les choix en attente, et lire la plainte comme une proposition
 - Erreur : 22.10, conseil cadré sur « A, B ou C », sans savoir que Comparer était déjà intégré, qu'un choix de radar attendait, et que sa plainte contenait déjà une carte.
