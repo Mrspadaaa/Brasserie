@@ -98,7 +98,7 @@ export function litreTroisTemps(notions: Pick<TroisNotions, 'dejaPaye' | 'aPayer
   return [plancher[0] / 100, plancher[1] / 100, plancher[2] / 100];
 }
 
-const PX = 1.62, MIN = 12, X0 = 112, X1 = 236, W = 10, TOP = 10, H_MAX = 330;
+const PX = 1.62, MIN = 12, X0 = 112, X1 = 236, W = 10, TOP = 10, H_MAX = 330, PAS = 24;
 const SRC: Array<{ id: SourceId; nom: string; c: string }> = [{ id: 'stock', nom: 'Déjà payé', c: 'var(--cbf-stock)' }, { id: 'now', nom: 'À payer', c: 'var(--cbf-now)' }, { id: 'an', nom: 'Coût de l’année', c: 'var(--cbf-an)' }];
 
 export interface CoutBrassinFluxProps {
@@ -131,15 +131,16 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
     const finSources = y;
     y = TOP; const dp: Record<string, { y: number; h: number; o: number }> = {};
     destinations.forEach(d => { const h = d.montant === null ? MIN : Math.max(dh[d.id] ?? 0, MIN); dp[d.id] = { y, h, o: 0 }; y += h + 7; });
-    const hauteur = Math.ceil(Math.max(y, finSources, 120) + 18);
+    // Étiquettes de destination : un pas de 24 px au moins, pour que deux zones tactiles voisines ne se chevauchent pas (constat 10).
+    const ly: number[] = [];
+    destinations.forEach((d, i) => { const p = dp[d.id]; let c = p.y + p.h / 2; if (i && c < ly[i - 1] + PAS) c = ly[i - 1] + PAS; ly.push(c); });
+    const hauteur = Math.ceil(Math.max(y, finSources, 120, (ly.length ? ly[ly.length - 1] + PAS / 2 : 0) + 6) + 18);
     const rubans = flux.map(f => {
       const t = haut(f.montant), a = sp[f.source], b = dp[f.dest];
       const y0 = a.y + a.o, y1 = b.y + b.o; a.o += t; b.o += t;
       const xm = (X0 + W + X1) / 2;
       return { f, d: `M${X0 + W} ${y0} C${xm} ${y0} ${xm} ${y1} ${X1} ${y1} L${X1} ${y1 + t} C${xm} ${y1 + t} ${xm} ${y0 + t} ${X0 + W} ${y0 + t} Z` };
     });
-    const ly: number[] = [];
-    destinations.forEach((d, i) => { const p = dp[d.id]; let c = p.y + p.h / 2; if (i && c < ly[i - 1] + 19) c = ly[i - 1] + 19; ly.push(c); });
     return { sp, dp, hauteur, rubans, ly };
   }, [flux, destinations]);
 
@@ -155,10 +156,9 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
   const libelleParts = ['payé', 'à payer', 'année'];
 
   return <div className="cbf">
-    <div className="cbf-fil">
+    <div className="cbf-cols"><span>Quand tu paies</span>
       <button type="button" className="cbf-vol cbf-m" onClick={onVolumes} aria-label={litres ? `Volumes : ${frL(litres)} L nets` : 'Volumes : litres nets à renseigner'} data-inconnu={litres ? undefined : 'true'}>{litres ? `${frL(litres)} L nets` : '? L nets'}</button>
-    </div>
-    <div className="cbf-cols"><span>Quand tu paies</span><span>Pour quoi</span></div>
+      <span>Pour quoi</span></div>
     <div className="cbf-sk" style={{ height: geo.hauteur }} data-booster="flux-cout">
       <svg className="cbf-flux" viewBox={`0 0 390 ${geo.hauteur}`} preserveAspectRatio="none" aria-hidden="true">
         <defs><pattern id="cbf-hach" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--cbf-fond)" /><rect width="2" height="5" fill="var(--cbf-trait)" /></pattern></defs>
@@ -177,7 +177,15 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
         <span>{d.label}</span><b className="cbf-m">{d.montant === null ? '?' : fr(d.montant)}</b></button>)}
       <div className="cbf-exl"><span className="cbf-m">0,00</span> pointillé : estimé</div>
     </div>
-    {selection === 'now'
+    <div className="cbf-resw">
+    {selection === 'stock' || selection === 'an'
+      ? <div className={`cbf-res cbf-sel-${selection}`} data-booster="deux-nombres">
+        <div className="cbf-row"><span className="cbf-div">{selection === 'stock' ? 'Déjà payé' : 'Coût de l’année'}</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{fr(sources[selection])}</span><span className="cbf-u">CHF<b>{selection === 'stock' ? 'en stock' : 'part du brassin'}</b></span></div>
+        <div className="cbf-quand">
+          {flux.filter(f => f.source === selection).map(f => <span key={f.dest}>{destinations.find(d => d.id === f.dest)?.label.toLocaleLowerCase('fr-CH')} <b className="cbf-m">{fr(f.montant)}</b></span>)}
+        </div>
+      </div>
+      : selection === 'now'
       ? <div className="cbf-res cbf-now" data-booster="deux-nombres">
         <div className="cbf-row"><span className="cbf-div">À payer</span><span className="cbf-eq">=</span><span className="cbf-big cbf-m">{fr(poche)}</span><span className="cbf-u">CHF<b>TTC</b>{partiel || q?.avantBrassage === null || q?.plusTard === null ? <em>partiel</em> : null}</span></div>
         <div className="cbf-quand">
@@ -193,6 +201,7 @@ export function CoutBrassinFlux({ snapshot, notions, litre, litres, motifSansLit
           <span className="cbf-u">CHF/L<em>{litre ? `${emballageCompris ? 'emballage compris · ' : ''}estimé` : motifSansLitre === 'litres' ? 'litres nets à confirmer' : 'prix à compléter'}</em>{litre && horsRecette ? <em>sans houblon ni levure</em> : null}</span>
         </div>
       </div>}
+    </div>
     <div className="cbf-litw">
       <div className="cbf-litt">Ton litre, quand tu le paies</div>
       {parts

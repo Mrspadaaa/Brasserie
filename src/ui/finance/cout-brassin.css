@@ -1,6 +1,6 @@
 /* c3a — coût d'un brassin et d'un litre (maquette choisie, 09.11). Classes préfixées `cbf-` (L26). Teintes de catégorie de la maquette ;
    fond, texte et bords par les jetons de l'app (clair et cave). La couleur « Malt » est celle de la maquette, pas l'échelle EBC. */
-.cbf, .cbf-act {
+.cbf, .cbf-act, .cbf-noeud, .cbf-fait {
   --cbf-malt: #D2B356; --cbf-ener: #D27B56; --cbf-net: #56C1D2; --cbf-emb: #9A8A7E; --cbf-imp: #1F64A3; --cbf-fix: #9856D2; --cbf-mat: #567BD2; --cbf-hop: #7FA35B;
   --cbf-stock: #5E8C3A; --cbf-an: #9856D2;
   --cbf-now: rgb(var(--cave-50));
@@ -11,8 +11,8 @@
   --cbf-sur-ink: rgb(var(--cave-950));
   --cbf-att: #7F5B10;
 }
-.cbf { max-width: 390px; margin: 0 auto; padding: 0 0 8px; color: var(--cbf-t1); font-size: 14px; line-height: 1.3; }
-[data-theme='cave'] .cbf, [data-theme='cave'] .cbf-act {
+.cbf { width: 100%; max-width: 390px; margin: 0 auto; padding: 0 0 8px; color: var(--cbf-t1); font-size: 14px; line-height: 1.3; }
+[data-theme='cave'] .cbf, [data-theme='cave'] .cbf-act, [data-theme='cave'] .cbf-noeud, [data-theme='cave'] .cbf-fait {
   --cbf-imp: #5B9BD5; --cbf-fix: #B98AE8; --cbf-an: #B98AE8; --cbf-mat: #86A5EC; --cbf-stock: #8FBF6A; --cbf-hop: #9CC27A; --cbf-emb: #B3A397;
   --cbf-att: #F2C14E;
 }
@@ -79,3 +79,36 @@
 [data-theme='cave'] .cbf-ia { background: rgba(91, 155, 213, .16); color: #8FBFEA; }
 .cbf-retour { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; font-size: 14px; color: var(--cbf-t1); margin-bottom: 8px; }
 .cbf-noeud { max-width: 760px; margin: 0 auto; }
+
+/* Corrections du test d'écran (09.11). */
+/* 5 : la pastille « 27 L nets » prend la ligne des titres de colonnes (elle coûtait une ligne entière) ; sa zone tactile déborde sans toucher un autre bouton. */
+.cbf-cols { align-items: center; min-height: 28px; }
+.cbf button.cbf-vol { position: relative; min-height: 26px; padding: 3px 10px; font-size: 13px; text-transform: none; letter-spacing: 0; font-weight: 500; background: var(--cbf-panneau); border: 1px solid var(--cbf-bord); border-radius: 10px; }
+.cbf button.cbf-vol[data-inconnu] { border: 1px dashed var(--cbf-att); }
+.cbf-vol::after { content: ''; position: absolute; inset: -5px -4px; }
+/* 1 : le bloc du litre reste visible en bas de la feuille quand l'écran est trop court pour tout montrer ; au repos il garde sa place de la maquette. */
+.cbf-resw { position: sticky; bottom: 0; z-index: 2; background: var(--cbf-panneau); padding: 6px 0 4px; margin-top: 2px; }
+.cbf-resw .cbf-res { margin: 0; }
+/* 3 : « Déjà payé » et « Coût de l'année » donnent leur bloc dans leur couleur, comme « À payer » (état 2 de la maquette). */
+.cbf-res.cbf-sel-stock { background: var(--cbf-stock); color: #fff; }
+.cbf-res.cbf-sel-an { background: var(--cbf-an); color: #fff; }
+[data-theme='cave'] .cbf-res.cbf-sel-stock, [data-theme='cave'] .cbf-res.cbf-sel-an { color: #111; }
+.cbf-res.cbf-sel-stock .cbf-u b, .cbf-res.cbf-sel-an .cbf-u b { font-weight: 600; font-size: 12px; display: block; }
+.cbf-res.cbf-sel-stock .cbf-quand, .cbf-res.cbf-sel-an .cbf-quand { color: inherit; opacity: .95; }
+.cbf-res.cbf-sel-stock .cbf-quand b, .cbf-res.cbf-sel-an .cbf-quand b { color: inherit; }
+/* 2 : le geste « Prévoir » répond dans la feuille. */
+.cbf-fait { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--cbf-stock); padding: 2px 2px 6px; max-width: 390px; margin: 0 auto; }
+.cbf-fait span { color: var(--cbf-t1); font-weight: 500; }
+/* 8 : explications derrière « ? ». */
+.cbf-aide { font-size: 13px; color: var(--cbf-t1); }
+.cbf-aide > button { cursor: pointer; width: 22px; height: 22px; border-radius: 11px; border: 1px solid var(--cbf-bord); background: none; color: var(--cbf-t2); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; position: relative; }
+.cbf-aide > button::after { content: ''; position: absolute; inset: -8px; }
+.cbf-aide[data-ouvert] > button { background: var(--cbf-t0); color: var(--cbf-sur-ink); border-color: var(--cbf-t0); }
+.cbf-aide-texte { position: absolute; left: 0; right: 0; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--cbf-bord); border-radius: 10px; background: var(--cbf-panneau); display: grid; gap: 4px; line-height: 1.4; z-index: 3; }
+.cbf-aide-texte p { margin: 0; }
+.cbf-tete { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cbf-tete h3 { margin: 0; }
+/* 9 : le poste touché est surligné dans la feuille. */
+.cbf-noeud [data-poste-actif='true'] { padding: 4px 6px; background: color-mix(in srgb, var(--cbf-att) 14%, transparent); border-radius: 10px; outline: 1.5px solid var(--cbf-att); outline-offset: 2px; }
+.cbf-lien { display: inline-flex; align-items: center; min-height: 32px; font-size: 13px; font-weight: 600; color: var(--cbf-t0); text-decoration: underline; text-underline-offset: 3px; }
+.cbf-ingr-calcul { color: var(--cbf-t2); }

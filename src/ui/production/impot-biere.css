@@ -66,3 +66,12 @@
 .ibr-liens a, .ibr-liens button { color: inherit; text-decoration: underline; min-height: 32px; display: inline-flex; align-items: center; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
 .ibr-prim { height: 32px; padding: 0 12px; border-radius: 10px; background: rgb(var(--ebc-straw)); color: rgb(var(--cave-950)); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; border: 0; cursor: pointer; white-space: nowrap; }
 .ibr-prim:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+
+/* Corrections du test d'écran (09.11). */
+.ibr-pied .ibr-prim { min-height: 40px; padding-inline: 14px; }
+.ibr-reglage { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; min-height: 32px; }
+/* Clients › Impôt bière : la liste des brassins de l'année, chacun menant à sa règle des degrés (constat 16). */
+.clients-tax-brassins { display: grid; gap: 2px; }
+.clients-tax-brassins-titre { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: rgb(var(--cave-400)); }
+.clients-tax-brassin { min-height: 36px; width: 100%; text-align: left; padding: 6px 10px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px; background: rgb(var(--cave-850)); color: rgb(var(--cave-50)); font-size: 14px; font-weight: 500; cursor: pointer; }
+.clients-tax-brassin:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }

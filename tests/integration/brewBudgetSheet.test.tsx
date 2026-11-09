@@ -172,14 +172,14 @@ describe('feuilles des nœuds : ce que la feuille d’aujourd’hui savait déj�
   it('Impôt bière : calculé quand la densité existe (pas de champ manuel), manuel et « Densité à noter » sans elle', () => {
     renderC3a();
     aller.noeud('Impôt bière');
-    expect(screen.getByLabelText('Impôt sur la bière calculé')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Impôt sur la bière en CHF')).not.toBeInTheDocument();
-    expect(screen.getByText(/densité visée par la recette \(estimé\)/)).toBeInTheDocument();
+    expect(screen.getByLabelText('Impôt bière calculé')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Impôt bière en CHF')).not.toBeInTheDocument();
+    expect(screen.getByText(/densité visée \(estimé\) /)).toBeInTheDocument();
     cleanup();
     renderC3a({ recipe: { ...c3aRecipe, ogTarget: null } as unknown as Recipe, savedEstimate: c3aSaved({ og: undefined, settings: { ...c3aSettings, costs: { ...c3aSettings.costs, beerTax: { enabled: true, amountTTC: 6.84 } } } }) });
     aller.noeud('Impôt bière');
-    expect(screen.getByLabelText('Impôt sur la bière en CHF')).toHaveValue('6,84');
-    expect(screen.getByText(/Densité à noter pour calculer l’impôt/)).toBeInTheDocument();
+    expect(screen.getByLabelText('Impôt bière en CHF')).toHaveValue('6,84');
+    expect(screen.getByText(/Densité à noter : impôt non calculé/)).toBeInTheDocument();
   });
   it('Charges fixes et Usure matériel : production annuelle et montants, sans type="number"', () => {
     const { container } = renderC3a();
@@ -269,8 +269,9 @@ describe('daily brew budget sheet', () => {
   it('compares a saved snapshot with live stock without overwriting its amount', () => {
     const saved = estimateBrewBudget({ recipe, stockItems: [stock], batches: [], brewDate: recipe.brewDate!, settings, prices: { [demandKey('Pils', 'kg')]: { amount: 3, quantity: 1, unit: 'kg', basis: 'TTC', tvaRate: 0, source: 'manual', date: '09.09.2026' } } });
     renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[{ ...stock, currentStock: 5 }]} batches={[]} config={config} savedEstimate={saved} onSave={vi.fn()} onClose={vi.fn()} />);
-    expect(screen.getByText(/^9[,.]00 CHF$/)).toBeInTheDocument();
-    expect(screen.getByText(/Écart actuel : -9[,.]00 CHF/)).toBeInTheDocument();
+    aller.volumes();
+    expect(screen.getByText(/Estimation enregistrée/)).toHaveTextContent(/9[,.]00 CHF/);
+    expect(screen.getByText(/Estimation enregistrée/)).toHaveTextContent(/aujourd’hui 0[,.]00 CHF \(−9[,.]00\)/);
     expect(saved.cashRequiredTTC).toBe(9);
   });
 
@@ -388,12 +389,12 @@ describe('daily brew budget sheet', () => {
     expect(screen.getByLabelText('Volume net attendu')).toHaveValue('54');
     aller.retour();
     aller.noeud('Énergie');
-    expect(screen.getByText(/Volume modifié : 30 L brassés/)).toHaveTextContent('60 L brassés / 54 L nets');
-    expect(screen.getByText(/Estimation manuelle de l’impôt/)).toBeInTheDocument();
+    expect(screen.getByText(/Volume modifié/)).toHaveTextContent('30 L brassés / 27 L nets → 60 L / 54 L');
+    expect(screen.getByText(/Montant saisi à la main/)).toBeInTheDocument();
     expect(screen.getByLabelText('Énergie en CHF')).toHaveValue('8');
     expect(screen.getByLabelText('Nettoyage en CHF')).toHaveValue('3');
-    expect(screen.getByLabelText('Conditionnement en CHF')).toHaveValue('24');
-    expect(screen.getByLabelText('Impôt sur la bière en CHF')).toHaveValue('6,84');
+    expect(screen.getByLabelText('Emballage en CHF')).toHaveValue('24');
+    expect(screen.getByLabelText('Impôt bière en CHF')).toHaveValue('6,84');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ volumeL: 60, netVolumeL: 54, operatingCost: 41.84, totalCost: 71.84, costPerL: 1.33 }), false));
     expect(saved.netVolumeL).toBe(27);

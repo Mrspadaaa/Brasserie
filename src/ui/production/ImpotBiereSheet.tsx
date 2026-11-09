@@ -78,18 +78,16 @@ const PICTOS: Record<string, React.ReactNode> = {
 
 type Depart = { plato: number; mention: 'exemple' | 'visée recette' | '' };
 
-export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batch; onClose: () => void; onNoteDensity: () => void }) {
-  const { profile, plans, fiscal } = useStorageValue(lireDonnees);
-  const [dixiemes, setDixiemes] = useState<number | null>(null);
-  const [copie, setCopie] = useState<'idle' | 'ok' | 'failed'>('idle');
+type Donnees = ReturnType<typeof lireDonnees>;
 
+/** Ce que la feuille, le lien du dossier et la liste de Clients doivent savoir d'un brassin, calculé une fois (d1 : `beerTaxForVolume`, `litresNets`). */
+export function baseImpot(batch: Batch, { plans, fiscal }: Pick<Donnees, 'plans' | 'fiscal'>) {
   // Litres : la même chaîne que le coût du brassin (conditionné, puis net enregistré ; aucun net « attendu » n'existe).
   const litres = litresNets({ conditionneL: batch.volumePackagedL, netEnregistreL: netEnregistre(plans as never, batch.id), netAttenduL: null });
   const annee = anneeDuBrassin(batch);
   const pctReduction = fiscal.beerTaxAnnualReductionPct;
   const reductionConfirmee = typeof pctReduction === 'number' && Number.isFinite(pctReduction) && pctReduction >= 0 && pctReduction <= 40 && fiscal.beerTaxReductionYear === annee;
   const reductionPct = reductionConfirmee ? pctReduction! : 0;
-
   // `batch.abv` s'écrit « 5% » sur la fiche : `beerTaxForVolume` lit un nombre (« % » retiré ici, sinon l'exonération sans alcool ne se déclenche jamais).
   const abvBrut = String(batch.abv ?? '').replace('%', '').trim();
   const calcul = (plato: number | null, l: number | null | undefined) => beerTaxForVolume({ og: batch.og, abv: abvBrut, plato, litres: l ?? 0, reductionPct });
@@ -99,6 +97,28 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
   const visee = batch.recipeSnapshot?.ogTarget != null ? beerTaxForVolume({ og: batch.recipeSnapshot.ogTarget, litres: 1 }).plato : null;
   const depart: Depart = densite === 'notee' ? { plato: lu.plato!, mention: '' }
     : visee != null ? { plato: visee, mention: 'visée recette' } : { plato: PLATO_EXEMPLE, mention: 'exemple' };
+  return { litres, annee, reductionConfirmee, reductionPct, calcul, lu, densite, visee, depart };
+}
+
+/** « Impôt bière · 6,74 CHF · 0,08 par 33 cl › » : la réponse déjà dans le dossier du brassin (constat 19). Le montant n'est écrit que sur une densité notée ou visée (« ~ » pour la visée) ; jamais sur un °P d'exemple. */
+export function ImpotBiereLien({ batch, onOpen, titre = 'Impôt bière', className }: { batch: Batch; onOpen: () => void; titre?: string; className?: string }) {
+  const donnees = useStorageValue(lireDonnees);
+  const b = baseImpot(batch, donnees);
+  const plato = b.densite === 'notee' ? b.lu.plato : b.visee;
+  const total = plato != null && b.litres ? b.calcul(plato, b.litres.litres).montant : null;
+  const un33 = plato != null ? b.calcul(plato, FORMATS_IMPOT[0].volumeL).montant : null;
+  const approx = b.densite === 'notee' ? '' : '~ ';
+  const texte = [titre, total !== null ? `${approx}${montantChf(total)} CHF` : null, un33 !== null ? `${approx}${montantChf(un33)} par 33 cl` : (b.densite === 'inconnue' ? 'densité à noter' : 'densité à vérifier')].filter(Boolean).join(' · ');
+  return <button type="button" className={className ?? 'min-h-touch rounded-control border border-cave-700 px-2.5 py-0 my-1 text-sm leading-tight text-ebc-straw font-semibold text-left'} onClick={onOpen}>{texte} ›</button>;
+}
+
+export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batch; onClose: () => void; onNoteDensity?: () => void }) {
+  const donnees = useStorageValue(lireDonnees);
+  const { profile, fiscal } = donnees;
+  const [dixiemes, setDixiemes] = useState<number | null>(null);
+  const [copie, setCopie] = useState<'idle' | 'ok' | 'failed'>('idle');
+  const [reglage, setReglage] = useState<'idle' | 'introuvable'>('idle');
+  const { litres, annee, reductionConfirmee, reductionPct, calcul, lu, densite, depart } = baseImpot(batch, donnees);
   const plato = dixiemes === null ? depart.plato : platoDuCurseur(dixiemes);
   const mention = dixiemes === null ? depart.mention
     : densite === 'notee' ? (plato === lu.plato ? '' : 'simulation') : 'exemple';
@@ -114,13 +134,20 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
   const hachure = densite !== 'notee';
   const ogTexte = String(batch.og ?? '').trim().replace('.', ',');
 
-  const motLitres = litres === null ? null : litres.source === 'conditionne' ? 'conditionnés' : 'nets enregistrés (estimé)';
+  // « conditionnés » seulement quand le brassin l'est (constat 17) : un brassin en cuve n'a rien de conditionné, ses litres sont ceux de l'estimation enregistrée.
+  const sortieNeutre = batch.status === 'conditionne' || batch.status === 'termine';
+  const motLitres = litres === null ? null : litres.source === 'conditionne' && sortieNeutre ? 'conditionnés' : 'attendus (estimé)';
   const puce = exonere ? 'exonéré · ≤ 0,5 % vol.'
     : densite === 'notee' ? `densité notée ${ogTexte} · ${nombreFr(lu.plato, 1)} °P`
     : densite === 'a-verifier' ? 'densité à vérifier' : 'densité à noter';
-  const sortieNeutre = batch.status === 'conditionne' || batch.status === 'termine';
   const periode = fiscal.beerTaxPeriod === 'quarterly' ? 'trimestre' : fiscal.beerTaxPeriod === 'annual' ? 'année' : 'trimestre ou année selon le régime attribué';
   const exemplePlato = beerTaxForVolume({ og: 1.048, litres: 1 }).plato;
+
+  // Réglages s'ouvre depuis App : la feuille le demande par un événement annulable ; sans écouteur, elle dit où aller (le texte d'avant).
+  const ouvrirReglages = () => {
+    const pris = !window.dispatchEvent(new CustomEvent('affinee:ouvrir-reglages', { cancelable: true, detail: { section: 'reserve-impot-biere' } }));
+    if (pris) onClose(); else setReglage('introuvable');
+  };
 
   const copier = () => {
     const lignes = [
@@ -145,12 +172,12 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
         <a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer">Directives OFDF</a>
         <button type="button" onClick={copier}>Copier</button>
       </span>
-      <button type="button" className="ibr-prim" onClick={onNoteDensity}><Plus size={16} aria-hidden="true" />{densite === 'notee' ? 'Corriger la densité' : 'Noter la densité'}</button>
+      {onNoteDensity && <button type="button" className="ibr-prim" onClick={onNoteDensity}><Plus size={16} aria-hidden="true" />{densite === 'notee' ? 'Corriger la densité' : 'Noter la densité'}</button>}
     </div>
   );
 
   return (
-    <Sheet open onClose={onClose} title="Impôt bière" subtitle={`${batch.name} · ${batch.id}`} className="md:max-w-xl md:mx-auto" footer={pied}>
+    <Sheet open onClose={onClose} title="Impôt bière" subtitle={batch.name} className="md:max-w-xl md:mx-auto" footer={pied}>
       <div className="ibr">
         <div className="ibr-tete"><h3>Combien par bière</h3><span>CHF par hl, selon le °Plato</span></div>
 
@@ -203,16 +230,16 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
         </div>
 
         <div className="ibr-qa">
-          <div><span>Quand</span><b>à la sortie de cave</b><span className="ibr-sortie" data-testid="ibr-sortie" data-ton={sortieNeutre ? 'neutre' : 'attention'}>{sortieNeutre ? 'aucune sortie rattachée à ce brassin' : 'aucune sortie notée'}</span></div>
+          <div><span>Quand</span><b>à la sortie de cave</b><span className="ibr-sortie" data-testid="ibr-sortie" data-ton={sortieNeutre ? 'neutre' : 'attention'}>{sortieNeutre ? 'aucune sortie rattachée' : 'aucune sortie notée'}</span></div>
           <div><span>À qui</span><b>OFDF, par Taxas</b><span>déclarer sous 20 j, payer sous 30</span></div>
         </div>
 
         <details className="ibr-pli" data-testid="ibr-reduction">
           <summary><span className="ibr-x"><b>Réduction petit brasseur</b>
-            <span>{reductionConfirmee ? `${nombreFr(reductionPct, 1)} % confirmée pour ${annee}` : `non confirmée pour ${annee} : taux plein`}</span></span>
+            <span>{reductionConfirmee ? `${nombreFr(reductionPct, 1)} % confirmée` : 'non confirmée · taux plein'}</span></span>
             <ChevronDown size={14} aria-hidden="true" /></summary>
           <div className="ibr-corps"><p>Le taux de réduction est communiqué chaque année par l’OFDF ; il ne se déduit pas du volume. L’app n’applique aucune réduction tant qu’elle n’est pas confirmée pour l’année du brassin.</p>
-            <p>À régler dans Réglages (menu ⋮ en haut) › Réserve impôt sur la bière.</p></div>
+            <p><button type="button" className="ibr-reglage" onClick={ouvrirReglages}>Régler dans Réglages ›</button>{reglage === 'introuvable' && <span role="status"> Menu ⋮ en haut › Réserve impôt sur la bière.</span>}</p></div>
         </details>
 
         <details className="ibr-pli">

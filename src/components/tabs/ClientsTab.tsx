@@ -11,6 +11,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { Client, ClientStatus, Batch, PricingItem, AppConfig } from '../../types';
+import { ImpotBiereSheet, ImpotBiereLien, anneeDuBrassin } from '../../ui/production/ImpotBiereSheet';
 import { StorageService } from '../../services/storage';
 import { BrewingMath } from '../../services/brewingMath';
 import { BEER_TAX_SOURCE, BAREME_IMPOT_BIERE } from '../../domain/finance/swissBeerTax';
@@ -132,6 +133,10 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
       }),
     [batches, config.fiscal, taxYear]
   );
+
+  // Constat 16 : la réserve annuelle renvoie aux brassins de l'année, chacun avec sa règle des degrés (feuille de la fiche), pour un seul récit de l'impôt.
+  const [impotBatch, setImpotBatch] = useState<Batch | null>(null);
+  const brassinsImpot = useMemo(() => batches.filter(batch => batch.status !== 'planifie' && anneeDuBrassin(batch) === taxYear), [batches, taxYear]);
 
   // Chiffres clients calculés depuis les ventes réelles (jamais stockés).
   const transactions = useStorageValue(StorageService.getTransactions);
@@ -301,6 +306,11 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
               <dd className="font-mono">{taxReport.totalVolumeL > 0 ? `${taxReport.estimateLowCHF === taxReport.estimateHighCHF ? montantChf(taxReport.estimateHighCHF) : `${montantChf(taxReport.estimateLowCHF)} – ${montantChf(taxReport.estimateHighCHF)}`} CHF` : '—'}</dd>
             </div>
           </dl>
+          {brassinsImpot.length > 0 && <div className="clients-tax-brassins" role="group" aria-label="Impôt par brassin">
+            <span className="clients-tax-brassins-titre">Par brassin · règle des degrés</span>
+            {brassinsImpot.map(batch => <ImpotBiereLien key={batch.id} batch={batch} titre={batch.name} className="clients-tax-brassin" onOpen={() => setImpotBatch(batch)} />)}
+          </div>}
+          {impotBatch && <ImpotBiereSheet batch={impotBatch} onClose={() => setImpotBatch(null)} />}
           <p className="text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${nombreFr(taxReport.reductionPct, 1)} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>
           {taxReport.missingPlatoCount > 0 && <p className="text-attention">Densité initiale manquante pour {taxReport.missingPlatoCount} brassin(s) : fourchette entre les catégories légère et forte.</p>}
           <details className="clients-help">

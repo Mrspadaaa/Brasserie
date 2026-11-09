@@ -9,14 +9,25 @@ import { DateField, swissToday, toSwissDate } from '../DateField';
 import { Units } from '../../services/units';
 import { scaleBrewBudgetRecipe } from '../../domain/finance/brewBudgetScaling';
 import { Field, inputClass } from '../FormNav';
-import { BREW_COST_LABELS, brewBudgetDateKey, estimateBrewBudget, netVolumeSaisi, reductionImpotPourAnnee, type BrewBudgetLine, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewCostKey, type BrewPrice, type BrewCashTreatment } from '../../domain/finance/brewBudget';
+import { brewBudgetDateKey, estimateBrewBudget, netVolumeSaisi, reductionImpotPourAnnee, type BrewBudgetLine, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewCostKey, type BrewPrice, type BrewCashTreatment } from '../../domain/finance/brewBudget';
 import { coutLitre, litresNets, troisNotions } from '../../domain/finance/chaineLitre';
 import { BORNES_PROCEDE } from '../../domain/bornesProcede';
 import './brew-budget.css';
 import { CoutBrassinFlux, fr, frL, groupeIngredient, type NoeudId, type SourceId } from './CoutBrassinFlux';
 import type { FinanceTransaction } from '../../domain/finance/types';
+import { ImpotBiereSheet } from '../production/ImpotBiereSheet';
 
 const BrewerChat = React.lazy(() => import('../BrewerChat').then(m => ({ default: m.BrewerChat })));
+/** Un mot par poste, le même sur le flux et dans la feuille (constat 7) : « Emballage », « Impôt bière ». */
+const LABELS_FRAIS: Record<BrewCostKey, string> = { energy: 'Énergie', cleaning: 'Nettoyage', packaging: 'Emballage', beerTax: 'Impôt bière' };
+const POSTE_DU_NOEUD: Partial<Record<NoeudId, BrewCostKey>> = { ener: 'energy', net: 'cleaning', emb: 'packaging', imp: 'beerTax' };
+const dateCourte = (dateKey?: string) => dateKey ? new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short' }).format(new Date(`${dateKey}T12:00:00`)) : '';
+/** « 22,41 en stock + 22,42 à acheter » : la somme des deux parts est le coût de la ligne, celui du flux. */
+const detailCout = (line: BrewBudgetLine) => [(line.stockCost ?? 0) > 0 && `${chf(line.stockCost!)} en stock`, (line.purchaseCost ?? 0) > 0 && `${chf(line.purchaseCost!)} à acheter`].filter(Boolean).join(' + ') || 'rien à payer';
+const Aide = ({ children }: { children: React.ReactNode }) => {
+  const [ouvert, setOuvert] = useState(false);
+  return <div className="cbf-aide" data-ouvert={ouvert ? 'true' : undefined}><button type="button" aria-label="Explication" aria-expanded={ouvert} onClick={() => setOuvert(o => !o)}>?</button>{ouvert && <div className="cbf-aide-texte">{children}</div>}</div>;
+};
 const chf = (v: number) => new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
 export interface BrewBudgetSheetProps {
@@ -37,21 +48,24 @@ export interface BrewBudgetSheetProps {
   renderPlanReconciliation?: (snapshot: BrewBudgetSnapshot) => React.ReactNode;
   canPlan?: (snapshot: BrewBudgetSnapshot) => boolean;
   onSave: (snapshot: BrewBudgetSnapshot, addToPlan: boolean) => void | Promise<void>;
+  /** Fiche du brassin : « Noter la densité » depuis la feuille Impôt bière y mène. Absent : la feuille n'offre pas ce geste. */
+  onNoteDensity?: () => void;
 }
 
-type Vue = { id: 'flux' } | { id: 'volumes' } | { id: 'ingredients'; groupe: 'malt' | 'q' | 'autres' } | { id: 'frais' } | { id: 'annuel' };
+type Vue = { id: 'flux' } | { id: 'volumes' } | { id: 'ingredients'; groupe: 'malt' | 'q' | 'autres' } | { id: 'frais'; poste?: BrewCostKey } | { id: 'annuel'; poste?: 'fix' | 'mat' };
 const GROUPE_TITRE = { malt: 'Malt', q: 'Houblon, levure', autres: 'Autres ingrédients' } as const;
-const VUE_TITRE: Record<Vue['id'], string> = { flux: '', volumes: 'Volumes et date', ingredients: 'Ingrédients', frais: 'Frais du brassin', annuel: 'Charges fixes et usure' };
+const VUE_TITRE: Record<Vue['id'], string> = { flux: '', volumes: 'Volumes et date', ingredients: 'Ingrédients', frais: 'Frais', annuel: 'Charges fixes et usure' };
 
 /** Unmount the draft on close; live stock updates recalculate without overwriting the user's prices. */
 export function BrewBudgetSheet(props: BrewBudgetSheetProps) {
+  const [prevu, setPrevu] = useState<{ montant: number; date?: string } | null>(null);
   if (!props.open) return null;
   const recipe = props.batch?.recipeSnapshot ? { ...props.batch.recipeSnapshot, id: props.batch.recipeSnapshot.sourceRecipeId ?? props.batch.recipeRef ?? props.batch.id } as Recipe : props.recipe;
   if (!recipe) return <Sheet open onClose={props.onClose} title="Budget du brassin"><p className="p-4 text-cave-200">Associe une recette à ce brassin pour calculer ses besoins.</p></Sheet>;
-  return <BrewBudgetDraft key={`${props.batch?.id ?? recipe.id}:${props.savedEstimate?.id ?? 'new'}`} {...props} recipe={recipe} />;
+  return <BrewBudgetDraft key={`${props.batch?.id ?? recipe.id}:${props.savedEstimate?.id ?? 'new'}`} {...props} recipe={recipe} prevu={prevu} setPrevu={setPrevu} />;
 }
 
-function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEstimate, savedEstimates, settings: defaultSettings, settingsWarnings, usureForBudgetDate, renderPlanReconciliation, canPlan, transactions, onClose, onSave }: BrewBudgetSheetProps & { recipe: Recipe }) {
+function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEstimate, savedEstimates, settings: defaultSettings, settingsWarnings, usureForBudgetDate, renderPlanReconciliation, canPlan, transactions, onClose, onSave, onNoteDensity, prevu, setPrevu }: BrewBudgetSheetProps & { recipe: Recipe; prevu: { montant: number; date?: string } | null; setPrevu: (p: { montant: number; date?: string }) => void }) {
   const [volume, setVolume] = useState(savedEstimate?.volumeL ?? recipe.volumeL);
   // Un seul net : le conditionné réel, sinon le net saisi et enregistré. Jamais le volume à brasser (30 L au lieu de 27 : 7,21 au lieu de 7,51).
   const initialNet = litresNets({ conditionneL: batch?.volumePackagedL, netEnregistreL: netVolumeSaisi(savedEstimate) })?.litres;
@@ -79,6 +93,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
   const [vue, setVue] = useState<Vue>({ id: 'flux' });
   const [selection, setSelection] = useState<SourceId | null>(null);
   const [question, setQuestion] = useState<string>();
+  const [regleOuverte, setRegleOuverte] = useState(false);
   const [lineFilter, setLineFilter] = useState<'all' | 'buy' | 'missing'>('all');
   const [focusedLineKey, setFocusedLineKey] = useState<string | null>(null);
   const [useRegisterDepreciation, setUseRegisterDepreciation] = useState(Boolean(usureForBudgetDate) && savedEstimate?.settings.annualDepreciationCHF == null);
@@ -128,13 +143,13 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
     if (saving.current || volumeIssue || netInvalide || !dateKey || plan && (!futureBatch || !estimate.complete || canPlan && !canPlan(estimate))) return;
     saving.current = true;
     setBusy(true); setError('');
-    try { await onSave(estimate, plan); onClose(); }
+    try { await onSave(estimate, plan); if (plan) setPrevu({ montant: estimate.cashRequiredTTC, date: dateKey }); else onClose(); }
     catch (e) { setError(e instanceof Error ? e.message : 'L’enregistrement a échoué. Ton estimation reste ici.'); }
     finally { saving.current = false; setBusy(false); }
   };
   const ouvrir = (id: NoeudId) => {
     setLineFilter('all'); setFocusedLineKey(null);
-    setVue(id === 'malt' || id === 'q' || id === 'autres' ? { id: 'ingredients', groupe: id } : id === 'mat' || id === 'fix' ? { id: 'annuel' } : { id: 'frais' });
+    setVue(id === 'malt' || id === 'q' || id === 'autres' ? { id: 'ingredients', groupe: id } : id === 'mat' || id === 'fix' ? { id: 'annuel', poste: id } : { id: 'frais', poste: POSTE_DU_NOEUD[id] });
   };
   const expliquer = () => {
     const total = notions?.total ?? estimate.totalCost;
@@ -142,7 +157,10 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       + `Distingue ce qui est déjà payé (stock : ${fr(estimate.dejaPaye ?? 0)}), ce que je dois encore payer (${fr(estimate.aPayer ?? 0)}) et la part de l’année (charges fixes et usure : ${fr(estimate.annee ?? 0)}). Dis ce qui est estimé et ce qui manque.`);
   };
 
-  const sousTitre = futureBatch ? 'Budget du prochain brassin' : 'Pour reproduire ce brassin';
+  const sousTitre = futureBatch ? 'Coût du brassin' : 'Pour reproduire ce brassin';
+  const posteActif = vue.id === 'frais' || vue.id === 'annuel' ? vue.poste : undefined;
+  React.useEffect(() => { if (posteActif) document.querySelector<HTMLElement>('[data-poste-actif="true"]')?.scrollIntoView?.({ block: 'nearest' }); }, [vue.id, posteActif]);
+  const ingredientsVides = vue.id === 'ingredients' && estimate.lines.every(l => groupeIngredient(l, estimate.recipeSnapshot) !== vue.groupe);
   const lignesDuGroupe = vue.id === 'ingredients' ? estimate.lines.filter(l => groupeIngredient(l, estimate.recipeSnapshot) === vue.groupe) : [];
   const knownLines = lignesDuGroupe.filter(l => l.consumedCost !== null).length;
   const manquantsGroupe = lignesDuGroupe.filter(l => l.issues.length > 0);
@@ -150,7 +168,12 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
   // Completing the last missing price must not remove the input mid-keystroke.
   const visibleLines = lignesDuGroupe.filter(line => lineFilter === 'all' || line.key === focusedLineKey || (lineFilter === 'missing' ? line.issues.length > 0 : line.purchaseQuantity > 0 && line.cashTreatment !== 'included-in-recurring'));
 
-  const pied = vue.id === 'flux'
+  const pied = prevu
+    ? <>
+      <div className="cbf-fait" role="status" data-booster="prevu"><Check size={16} aria-hidden="true" /><b>Ajouté aux prévisions</b><span>· {fr(prevu.montant)} CHF à payer{prevu.date ? ` · brassage le ${dateCourte(prevu.date)}` : ''}</span></div>
+      <div className="cbf-act"><button type="button" className="cbf-pri" onClick={onClose}>Fermer</button></div>
+    </>
+    : vue.id === 'flux'
     ? <div className="cbf-act">
       <button type="button" className="cbf-ia" data-booster="ia-expliquer" onClick={expliquer}><Sparkles size={17} aria-hidden="true" />Expliquer</button>
       {futureBatch && !estimate.complete && <button type="button" className="cbf-sec" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}
@@ -159,17 +182,21 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
         : <button type="button" className="cbf-pri" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}
     </div>
     : <div className="cbf-act">
-      <button type="button" className="cbf-sec" onClick={() => { setVue({ id: 'flux' }); }}><ChevronLeft size={17} aria-hidden="true" />Retour</button>
-      <button type="button" className="cbf-pri" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>
+      {ingredientsVides
+        // Rien à saisir (aucun houblon ni levure dans la recette) : pas d'« Enregistrer » qui n'enregistrerait rien (constat 11).
+        ? <button type="button" className="cbf-pri" onClick={() => { setVue({ id: 'flux' }); }}><ChevronLeft size={17} aria-hidden="true" />Retour au flux</button>
+        : <>
+          <button type="button" className="cbf-sec" onClick={() => { setVue({ id: 'flux' }); }}><ChevronLeft size={17} aria-hidden="true" />Retour</button>
+          <button type="button" className="cbf-pri" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>
+        </>}
     </div>;
 
-  return <Sheet open onClose={() => { if (!saving.current) onClose(); }} title={recipe.name} subtitle={vue.id === 'flux' ? sousTitre : `${sousTitre} · ${vue.id === 'ingredients' ? GROUPE_TITRE[vue.groupe] : VUE_TITRE[vue.id]}`} dismissible={!busy} footer={pied}>
+  return <Sheet open onClose={() => { if (!saving.current) onClose(); }} title={recipe.name} subtitle={vue.id === 'flux' ? sousTitre : `${sousTitre} · ${vue.id === 'ingredients' ? GROUPE_TITRE[vue.groupe] : VUE_TITRE[vue.id]}`} dismissible={!busy} footer={pied} className="md:max-w-xl md:mx-auto">
     {vue.id === 'flux' && <div className="brew-budget">
       <CoutBrassinFlux snapshot={estimate} notions={notions} litre={litre} litres={netConnu ?? null} motifSansLitre={netInconnu || netInvalide ? 'litres' : 'prix'} estimes={estimes}
         selection={selection} onSelect={setSelection} onNoeud={ouvrir} onVolumes={() => setVue({ id: 'volumes' })} assujetti={config.fiscal.isTvaRegistered}>
         <div className="cbf-extra">
           {!futureBatch && <p className="brew-budget-hint">Ce brassin a déjà été produit. Cette simulation utilise le stock et les prix actuels pour le reproduire ; elle ne modifie pas son coût historique.</p>}
-          {savedEstimate && <div className="cbf-enregistree"><span>Estimation enregistrée : <b>{chf(savedEstimate.cashRequiredTTC)} CHF</b></span>{!volumeIssue && <small>Écart actuel : {estimate.cashRequiredTTC >= savedEstimate.cashRequiredTTC ? '+' : ''}{chf(estimate.cashRequiredTTC - savedEstimate.cashRequiredTTC)} CHF</small>}</div>}
           {futureBatch && renderPlanReconciliation?.(estimate)}
           {(!estimate.complete || netInconnu || netInvalide) && <p className="cbf-statut" role="status">
             {netInvalide ? 'Renseigne un volume net supérieur à zéro pour calculer le coût par litre.' : netInconnu ? 'Litres nets à confirmer : touche la pastille « ? L nets ».'
@@ -191,6 +218,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
         {batch?.volumePackagedL && initialNet === batch.volumePackagedL && <p className="brew-budget-hint">Net pris sur le conditionnement réel du brassin.</p>}
         {volumeIssue && <div role="alert" className="brew-budget-warning"><p>{volumeIssue}</p>{recipe.volumeL > 0 && Number.isFinite(recipe.volumeL) && <button type="button" className="brew-budget-text-action" onClick={() => changeVolume(recipe.volumeL)}>Reprendre les {Units.format(recipe.volumeL, 'L')} de la recette</button>}</div>}
         {netInvalide && <p role="alert" className="brew-budget-warning">Renseigne un volume net supérieur à zéro pour calculer le coût par litre.</p>}
+        {savedEstimate && <p className="brew-budget-hint">Estimation enregistrée : <b>{chf(savedEstimate.cashRequiredTTC)} CHF</b>{!volumeIssue && Math.abs(estimate.cashRequiredTTC - savedEstimate.cashRequiredTTC) >= 0.005 ? ` · aujourd’hui ${chf(estimate.cashRequiredTTC)} CHF (${estimate.cashRequiredTTC > savedEstimate.cashRequiredTTC ? '+' : '−'}${chf(Math.abs(estimate.cashRequiredTTC - savedEstimate.cashRequiredTTC))})` : ' · inchangée'}</p>}
         {netInconnu && <p className="brew-budget-hint">Sans litres nets, le coût du litre reste « — » : il n’est jamais calculé sur le volume à brasser.</p>}
         {!volumeIssue && volume !== recipe.volumeL && recipe.waterPlan && <p className="brew-budget-hint">Le budget ajuste les volumes d’eau et les doses conservées de la recette. Le plan d’eau du nouveau brassin reste à vérifier avant de brasser.</p>}
         <DateField label="Date du scénario budgétaire" value={toSwissDate(dateKey ?? '')} onChange={setDate} shortcuts={[{ label: 'Aujourd’hui', offsetDays: 0 }, { label: 'Demain', offsetDays: 1 }, { label: 'Dans 7 jours', offsetDays: 7 }]} hint="Les brassins prévus avant ce jour utilisent le stock en priorité. Ce scénario ne change pas le planning du brassin." />
@@ -198,9 +226,9 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       </section>}
       {vue.id === 'ingredients' && <section className="brew-budget-section">
         <div className="brew-budget-section-heading"><h3>{GROUPE_TITRE[vue.groupe]}</h3><span>{knownLines}/{lignesDuGroupe.length} prix connus</span></div>
-        {!lignesDuGroupe.length && <p className="brew-budget-hint">{vue.groupe === 'q' ? 'Aucun houblon ni levure dans la recette : le coût du litre ne les compte pas. Ajoute-les à la recette pour les chiffrer.' : 'Aucun ingrédient de ce genre dans la recette.'}</p>}
+        {!lignesDuGroupe.length && <p className="brew-budget-hint">{vue.groupe === 'q' ? 'Aucun houblon ni levure dans la recette : le litre ne les compte pas. Ajoute-les à la recette pour les chiffrer.' : 'Aucun ingrédient de ce genre dans la recette.'}</p>}
         {lignesDuGroupe.length > 0 && <>
-          <p className="brew-budget-hint">Ouvre un ingrédient pour ajuster son prix ou son format d’achat. Les quantités incluent la fermentation et le houblonnage à froid.</p>
+          {vue.groupe === 'q' && <p className="brew-budget-hint">Les quantités comptent le houblonnage à froid.</p>}
           <div className="brew-budget-filters" role="group" aria-label="Filtrer les ingrédients">
             {([{ key: 'all', label: 'Tous', count: lignesDuGroupe.length }, { key: 'buy', label: 'À acheter', count: aAcheterGroupe.length }, { key: 'missing', label: 'À compléter', count: manquantsGroupe.length }] as const).map(filter => <button type="button" key={filter.key} aria-pressed={lineFilter === filter.key} onClick={() => { setFocusedLineKey(null); setLineFilter(filter.key); }}>{filter.label} <span>{filter.count}</span></button>)}
           </div>
@@ -210,7 +238,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
           const item = stockItems.find(s => s.ref === line.stockItemRef);
           const price = prices[line.key] ?? line.price;
           return <details className="brew-budget-line" key={line.key} onFocusCapture={() => setFocusedLineKey(line.key)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setFocusedLineKey(null); }}>
-            <summary><span className="brew-budget-line-icon">{line.issues.length ? <AlertCircle size={17} /> : line.missing ? <Package size={17} /> : <Check size={17} />}</span><span className="brew-budget-line-title"><b>{line.name}</b><small>{Units.format(line.quantity, line.unit)} nécessaires · {line.cashTreatment === 'included-in-recurring' ? 'facturé avec les charges' : line.missing > 0 ? line.purchaseQuantity === 0 ? 'compris dans l’achat groupé' : `${Units.format(line.purchaseQuantity, line.unit)} à acheter` : 'déjà en stock'}</small></span><span className="brew-budget-line-price">{line.purchaseTTC === null ? 'À estimer' : `${chf(line.purchaseTTC)} CHF`}<ChevronRight size={16} /></span></summary>
+            <summary><span className="brew-budget-line-icon">{line.issues.length ? <AlertCircle size={17} /> : line.missing ? <Package size={17} /> : <Check size={17} />}</span><span className="brew-budget-line-title"><b>{line.name}</b><small>{Units.format(line.quantity, line.unit)}{line.cashTreatment === 'included-in-recurring' ? ' · facturé avec les charges' : line.consumedCost === null ? (line.missing > 0 ? ` · ${Units.format(line.purchaseQuantity, line.unit)} à acheter` : ' · en stock') : <span className="cbf-ingr-calcul"> · {detailCout(line)}</span>}</small></span><span className="brew-budget-line-price">{line.consumedCost === null ? 'À estimer' : `${chf(line.consumedCost)} CHF`}<ChevronRight size={16} /></span></summary>
             <div className="brew-budget-line-body">
               <div className="brew-budget-stock-note"><span>Disponible : <b>{Units.format(line.available, line.unit)}</b></span>{line.reserved > 0 && <span>Réservé avant : <b>{Units.format(line.reserved, line.unit)}</b></span>}</div>
               <Field label="Article de stock"><select aria-label={`Article de stock pour ${line.name}`} className={inputClass} value={line.stockItemRef ?? ''} onChange={e => setBindings(current => ({ ...current, [line.key]: e.target.value }))}><option value="">Aucun article associé</option>{stockItems.map(s => <option key={s.ref} value={s.ref}>{s.name} · {s.ref} · {s.unit}</option>)}</select></Field>
@@ -230,25 +258,27 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
           </details>;
         })}</div>
       </section>}
-      {vue.id === 'frais' && <section className="brew-budget-section"><h3>Les autres frais de ce brassin</h3><p className="brew-budget-hint">Renseigne tes montants habituels. Désactive les postes qui ne concernent pas ce brassin.</p>
-        {costsNeedVolumeReview && <p className="brew-budget-warning" role="status">Volume modifié : {Units.format(costBasisVolume, 'L')} brassés / {Units.format(costBasisNetVolume!, 'L')} nets → {Units.format(volume, 'L')} brassés / {Units.format(netConnu!, 'L')} nets. Les frais manuels ci-dessous sont conservés. Vérifie l’énergie, le nettoyage, le conditionnement et l’estimation d’impôt avant d’enregistrer ce nouveau budget.</p>}
-        {(Object.keys(BREW_COST_LABELS) as BrewCostKey[]).map(key => <div key={key}>
+      {vue.id === 'frais' && <section className="brew-budget-section">
+        <div className="cbf-tete"><h3>Frais du brassin</h3><Aide><p>Saisis le coût TTC de chaque poste pour ce brassin. Coche « Déjà prévu » si son paiement figure dans tes charges récurrentes. Évite de reprendre les consommables déjà chiffrés dans les ingrédients.</p></Aide></div>
+        {costsNeedVolumeReview && <p className="brew-budget-warning" role="status">Volume modifié ({Units.format(costBasisVolume, 'L')} brassés / {Units.format(costBasisNetVolume!, 'L')} nets → {Units.format(volume, 'L')} / {Units.format(netConnu!, 'L')}) : vérifie l’énergie, le nettoyage, l’emballage et l’impôt.</p>}
+        {(Object.keys(LABELS_FRAIS) as BrewCostKey[]).map(key => <div key={key} data-poste-actif={vue.poste === key ? 'true' : undefined}>
           {key === 'beerTax' && estimate.beerTaxSource === 'calcule' && settings.costs?.beerTax?.enabled !== false
-            ? <div className="brew-budget-cost-row"><label><input type="checkbox" checked onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, beerTax: { ...s.costs?.beerTax, enabled: e.target.checked } } }))} /><span>{BREW_COST_LABELS[key]}</span></label><div><strong aria-label="Impôt sur la bière calculé">{chf(estimate.beerTaxCost ?? 0)}</strong><span>CHF · calculé</span></div></div>
-            : <div className="brew-budget-cost-row"><label><input type="checkbox" checked={settings.costs?.[key]?.enabled !== false} onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: e.target.checked } } }))} /><span>{BREW_COST_LABELS[key]}</span></label><div><NumberInput aria-label={`${BREW_COST_LABELS[key]} en CHF`} className={inputClass} value={settings.costs?.[key]?.amountTTC} emptyValue={undefined} min={0} placeholder="À estimer" disabled={settings.costs?.[key]?.enabled === false} onValue={amountTTC => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: s.costs?.[key]?.enabled !== false, amountTTC } } }))} /><span>CHF</span></div></div>}
+            ? <div className="brew-budget-cost-row"><label><input type="checkbox" checked onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, beerTax: { ...s.costs?.beerTax, enabled: e.target.checked } } }))} /><span>{LABELS_FRAIS[key]}</span></label><div><strong aria-label="Impôt bière calculé">{chf(estimate.beerTaxCost ?? 0)}</strong><span>CHF · calculé</span></div></div>
+            : <div className="brew-budget-cost-row"><label><input type="checkbox" checked={settings.costs?.[key]?.enabled !== false} onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: e.target.checked } } }))} /><span>{LABELS_FRAIS[key]}</span></label><div><NumberInput aria-label={`${LABELS_FRAIS[key]} en CHF`} className={inputClass} value={settings.costs?.[key]?.amountTTC} emptyValue={undefined} min={0} placeholder="À estimer" disabled={settings.costs?.[key]?.enabled === false} onValue={amountTTC => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: s.costs?.[key]?.enabled !== false, amountTTC } } }))} /><span>CHF</span></div></div>}
           {settings.costs?.[key]?.enabled !== false && !(key === 'beerTax' && estimate.beerTaxSource === 'calcule') && <label className="brew-budget-recurring"><input type="checkbox" checked={settings.costs?.[key]?.cashTreatment === 'included-in-recurring'} onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: true, cashTreatment: e.target.checked ? 'included-in-recurring' : 'additional' } } }))} /><span>Déjà prévu dans les charges récurrentes</span></label>}
           {key === 'beerTax' && settings.costs?.beerTax?.enabled !== false && (estimate.beerTaxSource === 'calcule'
-            ? <p className="brew-budget-hint">Calculé sur {netConnu !== undefined ? Units.format(netConnu, 'L') : '—'} nets, densité {ogMesuree ? 'mesurée' : 'visée par la recette (estimé)'} {ogUtilisee === undefined ? '' : Number(ogUtilisee).toFixed(3).replace('.', ',')}. {estimate.beerTaxExonere ? 'Bière sans alcool : exonérée. ' : ''}{reductionPct ? `Réduction petit brasseur de ${reductionPct} % confirmée pour cette année.` : 'Taux plein : la réduction petit brasseur n’est pas confirmée pour cette année (Réglages).'}</p>
-            : <p className="brew-budget-hint">{netConnu === undefined ? 'Sans litres nets, l’impôt ne peut pas être calculé. ' : ogUtilisee === undefined ? 'Densité à noter pour calculer l’impôt. ' : ''}Estimation manuelle de l’impôt : ce montant ne se recalcule pas automatiquement avec le volume.</p>)}
-          {config.fiscal.isTvaRegistered && key !== 'beerTax' && settings.costs?.[key]?.enabled !== false && <Field label={`TVA · ${BREW_COST_LABELS[key]}`} hint="%"><NumberInput aria-label={`TVA ${BREW_COST_LABELS[key]}`} className={inputClass} min={0} max={100} value={settings.costs?.[key]?.tvaRate != null ? settings.costs[key].tvaRate * 100 : undefined} emptyValue={undefined} placeholder="À confirmer" onValue={rate => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: true, tvaRate: rate != null ? rate / 100 : undefined } } }))} /></Field>}
+            ? <p className="brew-budget-hint">{netConnu !== undefined ? Units.format(netConnu, 'L') : '—'} nets · densité {ogMesuree ? 'mesurée' : 'visée (estimé)'} {ogUtilisee === undefined ? '' : Number(ogUtilisee).toFixed(3).replace('.', ',')} · {estimate.beerTaxExonere ? 'exonérée (sans alcool) · ' : ''}{reductionPct ? `réduction ${reductionPct} %` : 'taux plein'}</p>
+            : <p className="brew-budget-hint">{netConnu === undefined ? 'Litres nets à confirmer : impôt non calculé. ' : ogUtilisee === undefined ? 'Densité à noter : impôt non calculé. ' : ''}Montant saisi à la main, il ne suit pas le volume.</p>)}
+          {key === 'beerTax' && settings.costs?.beerTax?.enabled !== false && batch && <button type="button" className="cbf-lien" onClick={() => setRegleOuverte(true)}>Règle des degrés ›</button>}
+          {config.fiscal.isTvaRegistered && key !== 'beerTax' && settings.costs?.[key]?.enabled !== false && <Field label={`TVA · ${LABELS_FRAIS[key]}`} hint="%"><NumberInput aria-label={`TVA ${LABELS_FRAIS[key]}`} className={inputClass} min={0} max={100} value={settings.costs?.[key]?.tvaRate != null ? settings.costs[key].tvaRate * 100 : undefined} emptyValue={undefined} placeholder="À confirmer" onValue={rate => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: true, tvaRate: rate != null ? rate / 100 : undefined } } }))} /></Field>}
         </div>)}
-        <p className="brew-budget-hint">Saisis le coût TTC de chaque poste pour ce brassin. Coche « Déjà prévu » si son paiement figure dans tes charges récurrentes. Évite de reprendre les consommables déjà chiffrés dans les ingrédients.</p>
+        {regleOuverte && batch && <ImpotBiereSheet batch={batch} onClose={() => setRegleOuverte(false)} onNoteDensity={onNoteDensity ? () => { setRegleOuverte(false); onClose(); onNoteDensity(); } : undefined} />}
       </section>}
-      {vue.id === 'annuel' && <section className="brew-budget-section"><h3>Charges fixes et usure du matériel</h3><p className="brew-budget-hint">Les charges annuelles se répartissent selon les litres produits. Elles ne s’ajoutent pas aux achats à payer pour ce brassin.</p>
-        <p className="brew-budget-hint">La part du brassin = montant annuel × litres conditionnés ÷ production annuelle. L’usure est linéaire sur la durée du matériel (jamais l’amortissement fiscal dégressif) ; le prix d’achat et le capital d’un emprunt ne s’y ajoutent pas.</p>
+      {vue.id === 'annuel' && <section className="brew-budget-section">
+        <div className="cbf-tete"><h3>Charges fixes et usure</h3><Aide><p>La part du brassin = montant annuel × litres conditionnés ÷ production annuelle ; elle ne s’ajoute pas aux achats à payer.</p><p>L’usure est linéaire sur la durée du matériel (jamais l’amortissement fiscal dégressif) ; le prix d’achat et le capital d’un emprunt ne s’y ajoutent pas.</p></Aide></div>
         {settingsWarnings?.map(warning => <p className="brew-budget-warning" key={warning}>{warning}</p>)}
         <Field label="Production annuelle prévue" hint="L de bière conditionnée"><NumberInput aria-label="Production annuelle prévue" className={inputClass} value={settings.annualVolumeL} emptyValue={undefined} min={1} onValue={annualVolumeL => setSettings(s => ({ ...s, annualVolumeL }))} /></Field>
-        {([{ key: 'annualFixedCHF', enabled: 'includeFixed', label: 'Charges fixes annuelles' }, { key: 'annualDepreciationCHF', enabled: 'includeDepreciation', label: 'Usure annuelle du matériel' }] as const).map(field => <div key={field.key} className="brew-budget-cost-row"><label><input type="checkbox" aria-label={`Inclure ${field.label.toLocaleLowerCase('fr-CH')}`} checked={settings[field.enabled] !== false} onChange={e => setSettings(s => ({ ...s, [field.enabled]: e.target.checked }))} /><span>{field.label}</span></label><div><NumberInput aria-label={field.label} className={inputClass} value={effectiveSettings[field.key]} emptyValue={undefined} min={0} disabled={settings[field.enabled] === false} placeholder="À estimer" onValue={v => { if (field.key === 'annualDepreciationCHF') setUseRegisterDepreciation(false); setSettings(s => ({ ...s, [field.key]: v })); }} /><span>CHF</span></div></div>)}
+        {([{ key: 'annualFixedCHF', enabled: 'includeFixed', label: 'Charges fixes annuelles', poste: 'fix' }, { key: 'annualDepreciationCHF', enabled: 'includeDepreciation', label: 'Usure annuelle du matériel', poste: 'mat' }] as const).map(field => <div key={field.key} className="brew-budget-cost-row" data-poste-actif={vue.poste === field.poste ? 'true' : undefined}><label><input type="checkbox" aria-label={`Inclure ${field.label.toLocaleLowerCase('fr-CH')}`} checked={settings[field.enabled] !== false} onChange={e => setSettings(s => ({ ...s, [field.enabled]: e.target.checked }))} /><span>{field.label}</span></label><div><NumberInput aria-label={field.label} className={inputClass} value={effectiveSettings[field.key]} emptyValue={undefined} min={0} disabled={settings[field.enabled] === false} placeholder="À estimer" onValue={v => { if (field.key === 'annualDepreciationCHF') setUseRegisterDepreciation(false); setSettings(s => ({ ...s, [field.key]: v })); }} /><span>CHF</span></div></div>)}
         {usureForBudgetDate && settings.includeDepreciation !== false && <div className="brew-budget-hint">
           <p>{useRegisterDepreciation ? `Usure reprise du registre du matériel pour ${budgetYear || 'l’année du brassin'}.` : 'Usure conservée dans cette estimation. Tu peux reprendre le montant du registre pour l’année du brassin.'}</p>
           {useRegisterDepreciation ? registerDepreciation?.warnings.map(warning => <p className="brew-budget-warning" key={warning}>{warning}</p>) : <button type="button" className="brew-budget-text-action" onClick={() => setUseRegisterDepreciation(true)}>Reprendre le registre {budgetYear || ''}</button>}

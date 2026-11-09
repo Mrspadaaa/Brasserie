@@ -33,7 +33,7 @@ import { formatLitres } from '../domain/recipeMetrics';
 import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
-import { ImpotBiereSheet } from './production/ImpotBiereSheet';
+import { ImpotBiereSheet, ImpotBiereLien } from './production/ImpotBiereSheet';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -260,8 +260,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           })()}
           {section === 'overview' && (
             <>
-              <BrewBudgetButton batch={draft} />
-              <button type="button" className="min-h-touch rounded-control border border-cave-700 px-2.5 py-0 my-1 text-sm leading-tight text-ebc-straw font-semibold text-left" onClick={() => setImpotOpen(true)}>Impôt bière ›</button>
+              <BrewBudgetButton batch={draft} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />
+              <ImpotBiereLien batch={draft} onOpen={() => setImpotOpen(true)} />
               {impotOpen && <ImpotBiereSheet batch={draft} onClose={() => setImpotOpen(false)} onNoteDensity={() => { setImpotOpen(false); setSection('measurements'); setFocusOg(true); }} />}
               <section className="space-y-2">
                 <div className="flex items-center gap-2">

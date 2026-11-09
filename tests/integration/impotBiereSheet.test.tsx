@@ -36,7 +36,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     expect(txt('ibr-puce')).toBe('densité à noter');
     expect(screen.getByTestId('ibr-regle')).toHaveAttribute('data-hachure', 'oui');
     expect(txt('ibr-curseur')).toBe('12 °P · exemple');
-    expect(txt('ibr-litres')).toBe('ce brassin · 26,6 L conditionnés');
+    expect(txt('ibr-litres')).toBe('ce brassin · 26,6 L attendus (estimé)');
     expect(txt('ibr-resultat')).toBe('6,74 CHF');
     expect(txt('ibr-fmt-33cl')).toBe('33 cl 0,08 CHF');
     expect(txt('ibr-fmt-75cl')).toBe('75 cl 0,19 CHF');
@@ -99,7 +99,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     const plan = (source: string, createdAt = '2026-09-01T10:00:00Z') => ({ id: `P${createdAt}`, createdAt, brewEstimate: { batchId: 'B12', netVolumeL: 27, netVolumeSource: source } });
     plans = [plan('saisi')];
     const { } = ouvrir(brassin({ volumePackagedL: undefined }));
-    expect(txt('ibr-litres')).toBe('ce brassin · 27 L nets enregistrés (estimé)');
+    expect(txt('ibr-litres')).toBe('ce brassin · 27 L attendus (estimé)');
     expect(txt('ibr-resultat')).toBe('6,84 CHF');
     cleanup();
     plans = [plan('volume-a-brasser')];
@@ -112,6 +112,10 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     cleanup();
     plans = [plan('saisi')];
     ouvrir();
+    // Un brassin pas encore conditionné n'a que des litres attendus, même si la fixture porte un conditionné (constat 17).
+    expect(txt('ibr-litres')).toBe('ce brassin · 26,6 L attendus (estimé)');
+    cleanup();
+    ouvrir(brassin({ status: 'conditionne' }));
     expect(txt('ibr-litres')).toBe('ce brassin · 26,6 L conditionnés');
     expect(txt('ibr-resultat')).toBe('6,74 CHF');
   });
@@ -122,12 +126,12 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     expect(txt('ibr-resultat')).toBe('5,39 CHF');
     expect(txt('ibr-fmt-33cl')).toBe('33 cl 0,07 CHF');
     expect(txt('ibr-annee')).toContain('~ 243,07');
-    expect(screen.getByTestId('ibr-reduction')).toHaveTextContent(`20 % confirmée pour ${annee}`);
+    expect(screen.getByTestId('ibr-reduction')).toHaveTextContent('20 % confirmée');
     cleanup();
     fiscal = { beerTaxAnnualReductionPct: 20, beerTaxReductionYear: annee - 1 };
     ouvrir();
     expect(txt('ibr-resultat')).toBe('6,74 CHF');
-    expect(screen.getByTestId('ibr-reduction')).toHaveTextContent(`non confirmée pour ${annee} : taux plein`);
+    expect(screen.getByTestId('ibr-reduction')).toHaveTextContent('non confirmée · taux plein');
     cleanup();
     fiscal = { beerTaxAnnualReductionPct: 55, beerTaxReductionYear: annee };
     ouvrir();
@@ -138,7 +142,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     fiscal = { beerTaxAnnualReductionPct: 20, beerTaxReductionYear: 2031 };
     ouvrir(brassin({ brewDate: '', plannedBrewDate: '12.03.2031' }));
     expect(txt('ibr-resultat')).toBe('5,39 CHF');
-    expect(screen.getByTestId('ibr-reduction')).toHaveTextContent('20 % confirmée pour 2031');
+    expect(screen.getByTestId('ibr-reduction')).toHaveTextContent('20 % confirmée');
   });
 
   it('9. bière sans alcool : exonérée, 0,00 CHF (un cas connu, pas un inconnu)', () => {
@@ -174,7 +178,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
 
   it('12b. un brassin conditionné : la même carte, en mots exacts et sans alerte', () => {
     ouvrir(brassin({ status: 'conditionne' }));
-    expect(txt('ibr-sortie')).toBe('aucune sortie rattachée à ce brassin');
+    expect(txt('ibr-sortie')).toBe('aucune sortie rattachée');
     expect(screen.getByTestId('ibr-sortie')).toHaveAttribute('data-ton', 'neutre');
   });
 

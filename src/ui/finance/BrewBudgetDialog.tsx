@@ -12,7 +12,7 @@ import { Field, inputClass } from '../FormNav';
 
 const readContext = () => ({ ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), stocks: StorageService.getStocks(), batches: StorageService.getBatches(), config: StorageService.getConfig() });
 /** `onOpenForecast` : branché par l'écran Prévisions (hors de ce port). Sans lui, aucun lien n'est affiché ; l'état de navigation est tout de même écrit. */
-export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast}:{recipe?:Recipe;batch?:Batch;onClose:()=>void;onOpenForecast?:(target:{planId:string;batchId?:string})=>void}) {
+export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast,onNoteDensity}:{recipe?:Recipe;batch?:Batch;onClose:()=>void;onOpenForecast?:(target:{planId:string;batchId?:string})=>void;onNoteDensity?:()=>void}) {
   const data=useStorageValue(readContext);
   const [recipePlanChoice,setRecipePlanChoice]=React.useState('');
   const key=batch?.id??recipe?.id??'new';
@@ -25,7 +25,7 @@ export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast}:{recipe?:
     if(!usure.lignes.length)return {amountCHF:undefined,warnings:[...usure.avertissements,'Aucun matériel au registre : usure à renseigner.']};
     return {amountCHF:usure.complet?usure.totalCents/100:undefined,warnings:usure.avertissements};
   },[data.plans,data.assets,data.transactions]);
-  return <BrewBudgetSheet open onClose={onClose} recipe={recipe} batch={batch} config={data.config} batches={data.batches} stockItems={[...data.stocks.rawMaterials,...data.stocks.cleaning]} transactions={data.transactions}
+  return <BrewBudgetSheet open onClose={onClose} onNoteDensity={onNoteDensity} recipe={recipe} batch={batch} config={data.config} batches={data.batches} stockItems={[...data.stocks.rawMaterials,...data.stocks.cleaning]} transactions={data.transactions}
     savedEstimates={data.plans.filter(p=>p.brewEstimate).map(p=>p.brewEstimate as BrewBudgetSnapshot)} savedEstimate={previous?.brewEstimate as BrewBudgetSnapshot|undefined} settings={{annualVolumeL:data.profile.annualProductionL,annualFixedCHF:annualFixed.amountCHF}} settingsWarnings={annualFixed.warnings} usureForBudgetDate={budgetUsure}
     canPlan={snapshot=>{const candidates=matchingRecipeBrewPlans(data.plans,snapshot);return !candidates.length||recipePlanChoice==='separate'||candidates.some(p=>p.id===recipePlanChoice);}}
     renderPlanReconciliation={snapshot=>{
@@ -46,7 +46,7 @@ export function BrewBudgetDialog({recipe,batch,onClose,onOpenForecast}:{recipe?:
     }}/>
 }
 
-export function BrewBudgetButton({recipe,batch}:{recipe?:Recipe;batch?:Batch}) {
+export function BrewBudgetButton({recipe,batch,onNoteDensity}:{recipe?:Recipe;batch?:Batch;onNoteDensity?:()=>void}) {
   const [open,setOpen]=React.useState(false);
-  return <><button type="button" className="min-h-touch rounded-control border border-cave-700 px-2.5 py-0 my-1 text-sm leading-tight text-ebc-straw font-semibold text-left" onClick={()=>setOpen(true)}>Estimer le budget de ce brassin</button>{open&&<BrewBudgetDialog recipe={recipe} batch={batch} onClose={()=>setOpen(false)}/>}</>;
+  return <><button type="button" className="min-h-touch rounded-control border border-cave-700 px-2.5 py-0 my-1 text-sm leading-tight text-ebc-straw font-semibold text-left" onClick={()=>setOpen(true)}>Estimer le budget de ce brassin</button>{open&&<BrewBudgetDialog recipe={recipe} batch={batch} onNoteDensity={onNoteDensity} onClose={()=>setOpen(false)}/>}</>;
 }

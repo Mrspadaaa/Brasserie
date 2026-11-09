@@ -23,7 +23,7 @@ describe('Fiche du brassin › Impôt bière', () => {
     render(<BatchDetailSheet batch={batch()} initialSection="overview" onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: /Impôt bière/ }));
     const feuille = await screen.findByRole('dialog', { name: /Impôt bière/ });
-    expect(within(feuille).getByText('Pale Ale de septembre · B12')).toBeVisible();
+    expect(within(feuille).getByText('Pale Ale de septembre')).toBeVisible();
     fireEvent.click(within(feuille).getByRole('button', { name: 'Noter la densité' }));
     await waitFor(() => expect(screen.queryByRole('dialog', { name: /Impôt bière/ })).toBeNull());
     await waitFor(() => expect(document.querySelector('input[name="batch_sheet_og"]')).toHaveFocus());
