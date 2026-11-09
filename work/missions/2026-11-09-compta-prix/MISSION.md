@@ -35,6 +35,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte dans DEFAUTS-RECUR
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
 | Compta et prix · panel v0 (24 concepts ; candidates g1b, g2b, c1b, c2b, p1b, p2b, v1c, v2c) | 09.11 v1 | https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix/index.html` |
+| Compta et prix · passe 2 (32 variantes ; candidates g3c, g4d, c3a, c4a, p3a, e1a, v3a, v4b ; p2b choisi) | 09.11 v2 | https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p2/index.html` |
 
 ## Sources
 - `INVENTAIRE-CODE.md`, `BRIEF-AUTEUR.md`, `work/missions/BUGS.md`, PRODUCT.md, DESIGN.md

@@ -1,0 +1,6 @@
+# c4e — Prix et marges · chaude (la pente de l'année)
+**Idée** : le prix se juge sur l'année : droite « prix de la 33 cl → ce qu'il te resterait sur 1 200 L » ; à 5,00 : 9 162,72 CHF (estimé, prix exemple) ; « + 0,10 CHF = + 363,60 /an » ; sous 2,48, à perte : le loyer n'est plus couvert.
+**Autre genre** : une courbe de sensibilité, pas une décomposition. Repères 4,50 · 5,00 · 6,00. État 2 : fût, 60 fûts par an, au plus 1 652,40, « + 10,00 = + 600,00 /an ».
+**Baseline** : formats, prix, coût (2,48 = 7,51 × 0,33 L ; lien 7,51), marge ; Changer le prix ; Proposer (IA). Hypothèse « tout en 33 cl » écrite dans la NOTE et la légende (au premier écran : « estimé · prix exemple »).
+B1 OK. B2 OK (9 162,72 en 40 px). B3 alerte 94 mots chiffres compris (≈ 50 hors chiffres, axes compris). B4 OK (cibles ≥ 40 px). B5 OK (une action primaire). B6 OK (en-tête, barre du bas, + gardés). B7 OK (COMMUN OK). B8 OK (inconnu = « ? » hachuré, jamais 0). B9 s.o. (statique). B10 s.o. (aucune saisie, 0 type number). B12 OK (format suisse, décimales constantes).  B13 OK (IA au toucher, « exemple »). B11 « Dix centimes sur la bouteille, c'est 363,60 de plus sur l'année. »
+Captures : c4e-haut.png, c4e-page.png, c4e-1280.png.

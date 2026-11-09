@@ -1621,3 +1621,13 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : dans les maquettes du domaine, l'IA a sa place là où elle épargne un geste ou explique un chiffre — lire une pièce, proposer un prix depuis le coût, expliquer un écart, préparer la clôture, relancer un client ; jamais un chiffre de l'IA sans sa source ni en remplacement du calcul ; dans les maquettes, réponses IA marquées « exemple » ; au port, Gemini simulé dans les tests.)
 - **09.11**, mot pour mot, sur les mini maquettes comptabilité et prix : « btw les manquette ont pas besoin d'être jouable »
   (lu : maquettes statiques, une image par état utile ; aucun geste à rendre jouable ; les tours épargnés vont à la qualité du dessin.)
+- **09.11**, mot pour mot, sur le panel compta et prix v0 (https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS) :
+  « Quand tu paies, pour quoi / c1c · chaude / Très bien, faire d'autres petites variantes »
+  « 4 · Prix et marges / Pas de candidat probant »
+  « Avec ou sans le fermenteur / p1b · tiède / Ça j'aime beaucoup, faire d'autres variantes »
+  « La règle des degrés / p2b · tiède / Ça top comme ça »
+  « Comme une caisse / v1c · chaude / Ça j'aime bien, faire d'autres variantes »
+  « Le journal allégé / v2a · froide / Le meilleur mais pas de vrai candidats »
+  « Entré contre dépensé / g1b · tiède / Ma mieux pas pas de vrai candidats »
+  « 12 cases, la 13e fait le compte / g2c · chaude / Ça j'aime bien mais en plus, pas de vrai bon candidat mais dans la bonne version je veux une version tuile par mois, ça c'est top mais ça doit pas être la vue principal mais plus un outil d'analyse »
+  (lu : p2b choisi tel quel pour l'Impôt bière. Passe 2 : variantes proches de c1c (coût), p1b (Prévisions), v1c (facture) ; nouvelles pistes autour de g1b (Synthèse) et v2a (Opérations), qui restent les meilleures sans le convaincre ; Prix et marges repart d'un autre genre ; Annuel : une vue principale neuve, les tuiles par mois de g2c gardées comme outil d'analyse à un toucher.)

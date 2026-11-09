@@ -75,6 +75,15 @@
       "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
       "capture": "work/missions/2026-11-09-ecran-levure/p2/s7a/s7a-cadres.png",
       "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd"
+    },
+    {
+      "ecran": "impot-biere",
+      "route": "p2b",
+      "statut": "choisi",
+      "choix": "p2b (la règle des degrés : trois bandes du barème, chaque bière posée dessus)",
+      "mots": "La règle des degrés / p2b · tiède / Ça top comme ça",
+      "capture": "work/missions/2026-11-09-compta-prix/v0/p2b/p2b-page.png",
+      "page": "https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS"
     }
   ]
 }
