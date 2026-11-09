@@ -1,0 +1,8 @@
+# c5b — c4 + filtres posés et feuille ; le style suggère ses plages (passe 3, 09.11)
+Base : c4 telle quelle. Idée : les filtres posés vivent en pastilles noires retirables (×) au-dessus de la liste, avec « Filtres (n) » qui ouvre une feuille ; dans la feuille, toucher un style pose les plages de ses levures types (encadré bleu « posées par IPA nette »), réglables au doigt ; la conduite 18–20 est marquée sur la plage °C.
+Cadres : 1 « 1056 » tapé : ses deux plages (16–22 °C, 73–77 %) et « CH · FR · DE » posés en filtres → 4 levures (Verdant, Pomona, Wyeast 1084, 1007 épuisée) ; US-05 et NovaLager sortent, atténuation au-dessus · 2 feuille ouverte, « IPA nette » sélectionné · 3 quatre filtres posés → 39 = 3 · 33 · 3.
+Plages du style : « IPA nette » = profil `clean-ale` de `yeastRecipeProfiles.ts` (US-05, BRY-97, Nottingham) ; médiane des bornes de leurs fiches : 78–83 %, 15–25 °C. Autres styles calculés de même : Hazy 75–82 % / 18–23 °C (3 fiches), Saison 86–94 / 20–35 (2), Lager 80–84 / 12–18 (2), Weizen 73–80 / 18–25 (8), Belge 77–83 / 17–25 (1) ; Stout : aucune levure de profil, plages non documentées.
+Comptes vrais (même script) : IPA nette + sèche = 39 (3 vendues, 33 européennes, 3 rares) ; 1056 + CH · FR · DE = 4 ; les autres comme c5a (neutre ≈135 estimé).
+Effets relus contre savoir/TROUS-COMBLES.md (voir c5a) ; New England et BRY-97 : arômes non documentés.
+Boosters : filtres-poses, feuille-filtres, style, style-suggere-plages, plage-temperature, plage-attenuation, forme, effets, disponibilite, compte-rayons, effets-us, pont.
+Mots : 124 bruts, 83 hors données (> 72). verifier-page PAGE OK ; aucun débordement ; la feuille couvre le pied (voulu, voile).

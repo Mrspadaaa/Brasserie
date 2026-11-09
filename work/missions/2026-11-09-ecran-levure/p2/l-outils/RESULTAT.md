@@ -29,3 +29,12 @@ OK — l3b et l4b écrits dans `p2/l3b`, `p2/l4b` ; l3 et l4 restent intacts.
   dose (dans la colonne de droite, elles étaient coupées). PAGE OK ; 74 mots.
 - l4b : bande en aplat 8 % sans hachures ; étiquettes 19 °C sur fond blanc. PAGE OK ; 77 mots.
 - PANEL (l1, l2, l3b, l4b) : remplissage correct, ressemblance 0,93 → PANEL ECHEC (chrome imposé, inchangé).
+
+## Passe 3 (09.11)
+OK — l5a et l5b écrits dans `p2/l5a`, `p2/l5b` (l2 et l4b intacts), 7 cadres chacune, PAGE OK.
+- l5a : effets en pastilles de famille ; palier fantôme « + » au bout, × sur le palier touché.
+- l5b : effets en jauges 3 cases, seulement là où la source donne un ordre ; « + » sur chaque frontière.
+- Données : TROUS-COMBLES.md (US-05, Abbaye, Verdant) et fiches du catalogue (températures, atténuation, dose) ; FG et sachets
+  calculés pour OG 1,066 et 30 L. Le palier ajouté reste « ? °C · ? j », comme dans l'app.
+- Mots : 104 et 98 (70 et 65 hors données), au-dessus de 72 : les effets demandés ajoutent une vingtaine de mots.
+- DÉCISION À PRENDRE : couleurs des familles d'effets à aligner sur les familles d'arômes des houblons au port.

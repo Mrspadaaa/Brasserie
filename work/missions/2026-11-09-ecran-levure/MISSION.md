@@ -39,6 +39,11 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 |---|---|---|---|
 | Levure · panel v0 (12 concepts, tri du critique : r2, r3, u4) | 09.11 v1 | https://claude.ai/artifact/DJkJFqKMkfY5LTeqAyWVM7 | `work/missions/2026-11-09-ecran-levure/panel-v0.html` |
 | Levure · passe 2 (étape, Chercher, Comparer, Suggérer ; candidates l3b, c4, s1b, s3b) | 09.11 v2 | https://claude.ai/artifact/BCuZb4L8dtQWwWvP1qoBHE | `work/missions/2026-11-09-ecran-levure/panel-p2.html` |
+| Levure · passe 3 (l5, c5, s5, s6 ; candidates l5b, c5a, s5a, s6a ; c5b et s5c écartées, montrées) | 09.11 v3 | https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz | `work/missions/2026-11-09-ecran-levure/panel-p3.html` |
+
+c5b écartée : taper une levure US posait ses plages en filtres et cachait l'US-05 (idée « le style pose ses plages » greffée vers c5a).
+s5c écartée : le ⊕ flottant recouvrait le × d'une colonne (idée « le ⊕ devient la colonne des puces » greffée vers s5a).
+Pilote : après une levure US tapée, la liste garde l'ordre de c4 (l'achetable la plus proche d'abord), ses plages restent un repère, pas des filtres ; sous « sèche », les 1 417 fiches sans forme sont exclues mais comptées (« + 1 417 forme inconnue »).
 
 ## Sources
 - `work/missions/2026-11-09-ecran-levure/jury-levure/fiche.md`, `work/missions/2026-11-09-ecran-levure/BRIEF-AUTEUR.md`, `work/missions/2026-11-09-ecran-levure/BRIEF-PASSE2.md`, `work/missions/2026-11-09-ecran-levure/inventaire/inventaire-levure.md`
