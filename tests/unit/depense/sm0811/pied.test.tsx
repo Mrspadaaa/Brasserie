@@ -81,7 +81,7 @@ const ouvrir = (view: ReturnType<typeof render>, id: string) => { const d = lign
 const pied = (view: ReturnType<typeof render>) => {
   const fin = view.container.querySelector('[data-dp="fin"]')!;
   const regrouper = fin.querySelector('[data-dp-regrouper]');
-  const mots = [...fin.querySelectorAll<HTMLElement>('span')].find(s => /^(Lignes|Détail)/.test(s.textContent ?? '') && !s.contains(regrouper));
+  const mots = [...fin.querySelectorAll<HTMLElement>('span')].find(s => /^(Lignes|Détail)|^[\d\s,]+ CHF (de plus|non retrouvés)/.test(s.textContent ?? '') && !s.contains(regrouper));
   return { fin, regrouper, mots: mots!, texte: (mots?.textContent ?? '').replace(/\s+/g, ' ').trim() };
 };
 /** Ajoute à la main « libellé », 5 × 1,00 (5,00). */
@@ -115,21 +115,21 @@ describe('SM — le pied sur l’écran rendu', () => {
     expect(p.mots.className).not.toMatch(/text-attention|text-alert/);
     expect(p.regrouper).not.toBeNull();
   });
-  it('un vrai écart (total imprimé 50,00, lignes 51,80) : « Lignes 51,80 · total 50,00 · 1,80 de plus », en attention', async () => {
+  it('un vrai écart (total imprimé 50,00, lignes 51,80) : « 1,80 CHF de plus que le total », en attention (t1, 09.11 : remplace « Lignes 51,80 · total 50,00 · 1,80 de plus », qui ne disait rien)', async () => {
     const view = await lire(50);
     const p = pied(view);
-    expect(p.texte).toBe('Lignes 51,80 · total 50,00 · 1,80 de plus');
+    expect(p.texte).toBe('1,80 CHF de plus que le total');
     expect(p.mots.className).toMatch(/text-attention/);
   });
   it('la ligne ajoutée ne couvre pas l’écart (total 49,00) : écart réel, en attention', async () => {
     const view = await lire(49);
     ajouter(view, 'Idaho7');
     const p = pied(view);
-    expect(p.texte).toBe('Lignes 56,80 · total 49,00 · 7,80 de plus');
+    expect(p.texte).toBe('7,80 CHF de plus que le total');
     expect(p.mots.className).toMatch(/text-attention/);
   });
-  it('manque : total 60,00, lignes 51,80 : « 8,20 de moins »', async () => {
+  it('manque : total 60,00, lignes 51,80 : « 8,20 CHF non retrouvés dans les lignes »', async () => {
     const view = await lire(60);
-    expect(pied(view).texte).toBe('Lignes 51,80 · total 60,00 · 8,20 de moins');
+    expect(pied(view).texte).toBe('8,20 CHF non retrouvés dans les lignes');
   });
 });

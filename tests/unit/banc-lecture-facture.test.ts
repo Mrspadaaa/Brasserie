@@ -875,7 +875,7 @@ describe('k4 — Sv : le schéma du banc et son convertisseur', () => {
   });
   it('le schéma : au plus 8 champs de plus que la production, l’ordre des clés imposé, 80 lignes, la recopie avant les chiffres, la devise en liste fermée', () => {
     const production = countSchemaFields(TASKS.scanInvoice.schema);
-    expect(production).toBe(39); // RL-8 (08.11) : paymentMethod, facultatif (une lecture sans lui reste exploitable)
+    expect(production).toBe(51); // RL-8 (08.11) : paymentMethod ; c1 (09.11) : 9 champs facultatifs de contrôle croisé (12 avec les trois de ignoredLines), hors required
     expect(countSchemaFields(SV_SCHEMA)).toBeLessThanOrEqual(production + 8);
     expect(SV_SCHEMA.propertyOrdering).toHaveLength(Object.keys(SV_SCHEMA.properties).length);
     expect([...SV_SCHEMA.propertyOrdering].sort()).toEqual(Object.keys(SV_SCHEMA.properties).sort());

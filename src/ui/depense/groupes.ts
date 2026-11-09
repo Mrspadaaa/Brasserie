@@ -38,6 +38,16 @@ export function lignesDePort(lines: readonly LigneMin[]): ReadonlySet<string> {
   if (lines.length > 0 && lines.every(l => l.kind === 'shipping')) return new Set();
   return new Set(lines.filter(l => l.kind === 'shipping' && montantValide(l.amount)).map(l => l.id));
 }
+/**
+ * P4 (banc b1, 09.11) : un rabais se rattache à l'article du dessus. Rang de la ligne à laquelle la ligne `i` se rattache : l'article qui la précède dans l'ordre du papier
+ * (deux rabais de suite pointent le même article), `-1` quand la ligne n'est pas un rabais ou qu'aucun article ne la précède. Sa famille et sa bande sont celles de cet article ;
+ * le rabais n'est jamais compté comme article (voir `compterArticles`).
+ */
+export function articleDuDessus(lines: readonly { kind: string }[], i: number): number {
+  if (i < 0 || i >= lines.length || lines[i].kind !== 'discount') return -1;
+  for (let j = i - 1; j >= 0; j--) if (lines[j].kind !== 'discount') return j;
+  return -1;
+}
 /** « dont port » : somme en centimes entiers des lignes de port ; `null` quand il n'y en a aucune (un port à 0,00 est un port connu). */
 export function portCents(lines: readonly LigneMin[], port: ReadonlySet<string>): number | null {
   if (port.size === 0) return null;

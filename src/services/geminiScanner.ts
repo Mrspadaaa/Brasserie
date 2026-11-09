@@ -33,6 +33,14 @@ export interface ScannedInvoiceResult {
   lignesPasseesAuTtc?:boolean;
   proForma?:boolean; documentTypeLu?:ScannedInvoiceResult['documentType']; documentTypeRetenu?:ScannedInvoiceResult['documentType'];
   linesLost?:number; printedLineCount?:number|null; rejets?:Array<{champ:string;ligne:number|null;luTexte:string;raison:string}>;
+  /** d2 (champs de la voie c1, mêmes noms que le schéma serveur) : chacun n'existe que si la lecture le porte ; absent = inconnu, jamais 0. */
+  /** « Montant reçu / Payé » du ticket ; `terminalAmount` : le montant du terminal (EFT, TWINT), une information qui peut couvrir plusieurs tickets. */
+  amountPaid?:number; terminalAmount?:number;
+  /** Le nombre d'articles IMPRIMÉ par la pièce ; `countedAmounts` / `countedEans` : comptages indépendants faits avant la transcription ; `printedTime` : HH:MM imprimée. */
+  printedItemCount?:number; countedAmounts?:number; countedEans?:number; printedTime?:string;
+  /** Les lignes que la lecture a écartées des articles (montant en devise, règlement, sous-total). */
+  ignoredLines?:Array<{label:string;amount:number|null;kind:'foreign_currency'|'payment'|'subtotal'|'other'}>;
+  photoIncomplete?:boolean; photoIncompleteNote?:string;
 }
 export interface ScanOutcome {
   ok:boolean; result?:ScannedInvoiceResult; proofDataUrl:string; fileName:string; mimeType:string;
@@ -64,6 +72,23 @@ const documentTypes=['invoice','receipt','delivery_note','quote','credit_note','
 const controlStatuses=['ok','ecart','incomplet','non-verifiable'];
 const int=(value:any,min=0):number|null=>Number.isInteger(value)&&value>=min?value:null;
 const oneOf=<T extends string>(value:any,list:readonly T[],fallback:T):T=>list.includes(value)?value:fallback;
+/** d2 : les champs des contrôles de la pièce (c1). Une clé n'existe que si la lecture la porte et qu'elle est valide : un montant négatif, un comptage non entier, une heure impossible sont écartés, un 0 lu reste un 0. */
+function champsControlesPiece(raw:any):Partial<ScannedInvoiceResult>{
+  const montant=(v:any)=>{const n=number(v);return n!==null&&n>=0?n:null;};
+  const heure=/^([01]?\d|2[0-3])[:h.]([0-5]\d)$/.exec(text(raw?.printedTime,8));
+  const ecartees=Array.isArray(raw?.ignoredLines)?raw.ignoredLines.slice(0,20).filter((l:any)=>text(l?.label)).map((l:any)=>({label:text(l.label,80),amount:number(l.amount),kind:oneOf(l?.kind,['foreign_currency','payment','subtotal','other'] as const,'other')})):null;
+  return {
+    ...(montant(raw?.amountPaid)!==null?{amountPaid:montant(raw.amountPaid)!}:{}),
+    ...(montant(raw?.terminalAmount)!==null?{terminalAmount:montant(raw.terminalAmount)!}:{}),
+    ...(int(raw?.printedItemCount)!==null?{printedItemCount:int(raw.printedItemCount)!}:{}),
+    ...(int(raw?.countedAmounts)!==null?{countedAmounts:int(raw.countedAmounts)!}:{}),
+    ...(int(raw?.countedEans)!==null?{countedEans:int(raw.countedEans)!}:{}),
+    ...(heure?{printedTime:`${heure[1].padStart(2,'0')}:${heure[2]}`}:{}),
+    ...(ecartees?{ignoredLines:ecartees}:{}),
+    ...(typeof raw?.photoIncomplete==='boolean'?{photoIncomplete:raw.photoIncomplete}:{}),
+    ...(text(raw?.photoIncompleteNote,120)?{photoIncompleteNote:text(raw.photoIncompleteNote,120)}:{}),
+  };
+}
 /** Une valeur lue par une lecture : '' et absent deviennent null (jamais 0), un texte est borné. */
 const scanValue=(value:any)=>value===null||value===undefined||value===''?null:typeof value==='number'?(Number.isFinite(value)?value:null):typeof value==='boolean'?value:text(String(value),120)||null;
 /** Assainit un point reçu du serveur sans en perdre : un code inconnu (serveur plus récent) est conservé tel quel. */
@@ -210,6 +235,7 @@ export const GeminiScannerService = {
       ...(raw?.documentTypeRetenu!==undefined?{documentTypeRetenu:documentTypes.includes(raw.documentTypeRetenu)?raw.documentTypeRetenu:(documentTypes.includes(raw?.documentType)?raw.documentType:'other')}:{}),
       ...(int(raw?.linesLost)!==null?{linesLost:int(raw.linesLost)!}:{}),
       ...(raw?.printedLineCount===null||int(raw?.printedLineCount)!==null?{printedLineCount:raw.printedLineCount}:{}),
+      ...champsControlesPiece(raw),
       ...(Array.isArray(raw?.rejets)?{rejets:raw.rejets.slice(0,40).filter((r:any)=>typeof r?.champ==='string'&&typeof r?.luTexte==='string').map((r:any)=>({champ:text(r.champ,40),ligne:int(r.ligne,1),luTexte:text(r.luTexte,60),raison:text(r.raison,120)}))}:{}),
     };
     // n3-ht (D304, D317) : des lignes imprimées hors taxe passent au TTC, ici, pour que le provisoire du flux et le final (tous deux assainis par cette fonction) donnent les mêmes montants.

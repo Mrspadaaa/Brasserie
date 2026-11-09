@@ -169,7 +169,10 @@ describe('contredit : le désaccord côte à côte, sans rien changer sans lui',
     await ouvrir();
     fireEvent.click(screen.getByRole('button', { name: /^Lecture à confirmer|^Corrections|^Vérification incomplète/ }));
     const preuve = screen.getByRole('region', { name: 'Preuve de la lecture' });
-    expect(preuve.textContent).toContain('110,40 ≠ 110,04');
+    // t1, 09.11 : la rangée dit ses deux valeurs et l'écart (« Somme ≠ imprimé 110,40 / 110,04 +0,36 ») au lieu de « 110,40 ≠ 110,04 ».
+    expect(preuve.textContent).toContain('Somme ≠ imprimé');
+    expect(preuve.textContent).toContain('110,40 / 110,04');
+    expect(preuve.textContent).toContain('+0,36');
     expect(screen.queryByRole('button', { name: /^Lecture vérifiée/ })).toBeNull();
   });
 });

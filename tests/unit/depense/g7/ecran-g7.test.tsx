@@ -28,7 +28,7 @@ const q = (sel: string) => document.querySelector<HTMLElement>(sel);
 const fin = () => q('[data-dp="fin"]')!;
 const deux = [ligne(1, 'Fermenteur 30 L fictif', 'equipment', 1, 'Stk', 100.10, 100.10), ligne(2, 'Brosse plate fictive', 'equipment', 1, 'Stk', 20.11, 20.11)];
 /** Le texte du pied seul (« Lignes = total a », « Lignes a · total b · c de plus » ; SM 08.11, avant « Détail a / b »), pas son enveloppe, qui porte aussi le lien « Regrouper ». */
-const detailDe = () => [...fin().querySelectorAll<HTMLElement>('span')].find(s => /^Lignes/.test(s.textContent ?? '') && !/Regrouper/.test(s.textContent ?? ''))!;
+const detailDe = () => [...fin().querySelectorAll<HTMLElement>('span')].find(s => /^Lignes|^[\d\s,]+ CHF (de plus|non retrouvés)/.test(s.textContent ?? '') && !/Regrouper/.test(s.textContent ?? ''))!;
 const bouton = (parent: ParentNode, texte: RegExp) => [...parent.querySelectorAll<HTMLButtonElement>('button')].find(b => texte.test(b.textContent ?? ''))!;
 
 describe('D357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste', () => {
@@ -76,7 +76,7 @@ describe('D358 — l\'arrondi suisse à 5 centimes est sa propre ligne neutre', 
     await lirePiece(state.scanned, deux, r => { r.amountTTC = 121.2; });
     expect(q('[data-dp-arrondi]')).toBeNull();
     const detail = detailDe();
-    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('Lignes 120,21 · total 121,20 · 0,99 de moins');
+    expect(detail.textContent!.replace(/\s+/g, ' ')).toBe('0,99 CHF non retrouvés dans les lignes'); // t1, 09.11 : remplace « Lignes 120,21 · total 121,20 · 0,99 de moins », qui ne disait rien
     expect(detail.className).toMatch(/text-attention/);
   });
   it('une somme exacte n\'a aucune ligne d\'arrondi', async () => {

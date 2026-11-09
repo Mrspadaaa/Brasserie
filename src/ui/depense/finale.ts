@@ -55,7 +55,9 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
   const propositions = propositionsVides();
   const total = invoiceTotalProposal(result);
   const lues0: PurchaseLineDraft[] = result.items.map(item => {
-    const lu = libelleLu(item), nomLu = lireOptions(String(item.name ?? ''), item.variant ? String(item.variant) : undefined, String(item.unit ?? '')).base.trim().slice(0, 80);
+    /* P4 (banc b1) : une remise s'appelle « Rabais », jamais le libellé de taxe que le ticket imprime sous l'article (« NoVatTax - 0% ») ; ce libellé reste sous « Imprimé » (rien n'est perdu). */
+    const nomImprime = String(item.name ?? '').trim(), lu: ReturnType<typeof libelleLu> = item.kind === 'discount' ? { description: 'Rabais', ...(nomImprime ? { imprime: { nom: nomImprime, ...(item.variant ? { variante: String(item.variant).trim() } : {}) } } : {}) } : libelleLu(item);
+    const nomLu = lireOptions(String(item.name ?? ''), item.variant ? String(item.variant) : undefined, String(item.unit ?? '')).base.trim().slice(0, 80);
     return { id: item.id, description: lu.description, ...(nomLu ? { nomLu } : {}), ...(lu.imprime ? { imprime: lu.imprime } : {}), kind: scanKind(item.kind), amount: result.currency === 'CHF' ? (item.amountTTC ?? undefined) : undefined, quantity: item.quantity ?? undefined, unit: item.unit, unitPrice: result.currency === 'CHF' ? (item.price ?? undefined) : undefined, stockAction: 'none' as const, equipmentAction: 'none' as const, stockCategory: item.stockCategory, sourceReference: item.reference, evidence: [item.reference ? `Réf. ${item.reference}` : '', lu.imprime ? `Imprimé : ${libelleDeLigne(item.name, item.variant)}` : '', item.evidence].filter(Boolean).join(' · ') };
   });
   const existantsLus = sansCetteSaisie(stockItems, submissionId);

@@ -252,6 +252,8 @@ describe('p3c-3 : D11 — liste vide, plafond de 35, invariant de somme sur l’
     await ouvrir('port');
     expect(qa('[data-dp-ligne]')).toHaveLength(19); // 24 lignes dans le brouillon, dont le port ; 5 moutures en pastille (28c98cba (pu4d, p-port-pu4d/RESULTAT.md))
     expect(q('[data-dp="preuve"]').textContent).toMatch(/Qté × prix\s*23\/23/);
-    expect(q('[data-dp="preuve"]').textContent).not.toMatch(/24/);
+    // d2 : la rangée « Articles lus » compte, elle, les 24 lignes du papier (le port est une ligne imprimée : 24 lues = 24 annoncées) ; c'est « Qté × prix » qui ne compte jamais la ligne de port.
+    expect(q('[data-dp-controle-cle="qte"]').textContent).not.toMatch(/24/);
+    expect(q('[data-dp-controle-cle="articles"]').getAttribute('data-dp-verdict')).not.toBe('ecart');
   });
 });
