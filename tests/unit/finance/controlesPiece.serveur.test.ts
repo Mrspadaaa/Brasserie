@@ -174,3 +174,28 @@ describe('B1 (P5, 09.11) — sunstore-1 : le code de TVA n’est jamais la quant
     expect(r.items[0]).toMatchObject({ quantity: 3, amountTTC: null });
   });
 });
+
+describe('limite 2 (b1, 09.11) — le vote marque le comptage des montants confirmé par la 3.8', () => {
+  const lectureComptee = (n: number) => lire(sun1({ countedAmounts: n }));
+  it('trois lectures, la 3.8 lit le même nombre que les deux autres : countedAmountsConfirmed', () => {
+    const { result } = reconcileInvoiceVision([lectureComptee(3), lectureComptee(3), lectureComptee(3)]) as any;
+    expect(result).toMatchObject({ countedAmounts: 3, countedAmountsConfirmed: true });
+  });
+  it('la 3.8 tranche entre deux lectures qui divergent : confirmé', () => {
+    const { result } = reconcileInvoiceVision([lectureComptee(3), lectureComptee(2), lectureComptee(2)]) as any;
+    expect(result).toMatchObject({ countedAmounts: 2, countedAmountsConfirmed: true });
+  });
+  it('deux lectures seulement qui concordent (la 3.8 n’est pas appelée) : retenu mais jamais confirmé', () => {
+    const { result } = reconcileInvoiceVision([lectureComptee(3), lectureComptee(3)]) as any;
+    expect(result.countedAmounts).toBe(3);
+    expect(result).not.toHaveProperty('countedAmountsConfirmed');
+  });
+  it('deux lectures concordent contre une 3.8 qui lit autre chose : retenu, jamais confirmé', () => {
+    const { result } = reconcileInvoiceVision([lectureComptee(3), lectureComptee(3), lectureComptee(2)]) as any;
+    expect(result.countedAmounts).toBe(3);
+    expect(result).not.toHaveProperty('countedAmountsConfirmed');
+  });
+  it('le marqueur ne survit pas sans comptage de montants (le vote seul le pose)', () => {
+    expect(lire(sun1({ countedAmounts: undefined, countedAmountsConfirmed: true }))).not.toHaveProperty('countedAmountsConfirmed');
+  });
+});

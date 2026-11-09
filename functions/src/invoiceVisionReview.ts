@@ -453,6 +453,10 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
   for (const champ of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans'] as const) {
     const valeur = voterChampControle(readings.map((r: any) => r[champ]));
     if (valeur !== undefined) merged[champ] = valeur;
+    // Limite 2 : un comptage de montants n'est « confirmé » que si la 3.8 (la 3ᵉ lecture) l'a lu aussi, au même nombre.
+    if (champ === 'countedAmounts') {
+      if (valeur !== undefined && readings.length === 3 && (readings[2] as any).countedAmounts === valeur) merged.countedAmountsConfirmed = true; else delete merged.countedAmountsConfirmed;
+    }
   }
   const heure = base.printedTime || readings.map((r: any) => r.printedTime).find((v: unknown) => v);
   if (heure) merged.printedTime = heure;

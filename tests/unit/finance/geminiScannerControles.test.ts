@@ -18,9 +18,14 @@ describe('d2 — normalizeResult garde les champs des contrôles de la pièce', 
     expect(r.ignoredLines).toEqual([{ label: 'Montant en EUR', amount: 370.92, kind: 'foreign_currency' }, { label: 'TWINT', amount: null, kind: 'payment' }]);
   });
 
+  it('garde `countedAmountsConfirmed` (comptage confirmé par la 3.8) seulement s’il est vrai et que le comptage existe', () => {
+    expect(lire({ countedAmounts: 29, countedAmountsConfirmed: true })).toMatchObject({ countedAmounts: 29, countedAmountsConfirmed: true });
+    for (const extra of [{ countedAmounts: 29, countedAmountsConfirmed: false }, { countedAmounts: 29 }, { countedAmountsConfirmed: true }, { countedAmounts: 29, countedAmountsConfirmed: 'oui' }]) expect(lire(extra), JSON.stringify(extra)).not.toHaveProperty('countedAmountsConfirmed');
+  });
+
   it('un ancien résultat sort sans aucune de ces clés (jamais 0, jamais faux)', () => {
     const r = lire({});
-    for (const cle of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans', 'printedTime', 'ignoredLines', 'photoIncomplete', 'photoIncompleteNote']) expect(r, cle).not.toHaveProperty(cle);
+    for (const cle of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans', 'printedTime', 'ignoredLines', 'photoIncomplete', 'photoIncompleteNote', 'countedAmountsConfirmed']) expect(r, cle).not.toHaveProperty(cle);
   });
 
   it('un payé de 0 est un montant lu ; un comptage de 0 aussi ; une valeur absente ou null reste absente', () => {

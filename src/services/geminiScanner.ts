@@ -37,6 +37,8 @@ export interface ScannedInvoiceResult {
   /** « Montant reçu / Payé » du ticket ; `terminalAmount` : le montant du terminal (EFT, TWINT), une information qui peut couvrir plusieurs tickets. */
   amountPaid?:number; terminalAmount?:number;
   /** Le nombre d'articles IMPRIMÉ par la pièce ; `countedAmounts` / `countedEans` : comptages indépendants faits avant la transcription ; `printedTime` : HH:MM imprimée. */
+  /** `countedAmountsConfirmed` : la 3.8 a confirmé le comptage des montants (sans lui, un comptage discordant n'est pas un drapeau). */
+  countedAmountsConfirmed?:true;
   printedItemCount?:number; countedAmounts?:number; countedEans?:number; printedTime?:string;
   /** Les lignes que la lecture a écartées des articles (montant en devise, règlement, sous-total). */
   ignoredLines?:Array<{label:string;amount:number|null;kind:'foreign_currency'|'payment'|'subtotal'|'other'}>;
@@ -82,6 +84,7 @@ function champsControlesPiece(raw:any):Partial<ScannedInvoiceResult>{
     ...(montant(raw?.terminalAmount)!==null?{terminalAmount:montant(raw.terminalAmount)!}:{}),
     ...(int(raw?.printedItemCount)!==null?{printedItemCount:int(raw.printedItemCount)!}:{}),
     ...(int(raw?.countedAmounts)!==null?{countedAmounts:int(raw.countedAmounts)!}:{}),
+    ...(int(raw?.countedAmounts)!==null&&raw?.countedAmountsConfirmed===true?{countedAmountsConfirmed:true as const}:{}),
     ...(int(raw?.countedEans)!==null?{countedEans:int(raw.countedEans)!}:{}),
     ...(heure?{printedTime:`${heure[1].padStart(2,'0')}:${heure[2]}`}:{}),
     ...(ecartees?{ignoredLines:ecartees}:{}),

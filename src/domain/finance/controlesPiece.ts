@@ -70,7 +70,11 @@ export interface LectureControlee {
   /** Montant du terminal de paiement (Total EFT, TWINT) : information, peut couvrir plusieurs tickets. */
   terminalAmount?: number | null;
   paymentMethod?: string;
+  /** Le type de document lu (receipt = ticket de caisse) ; absent = inconnu. */
+  documentType?: string;
   printedLineCount?: number | null; printedItemCount?: number | null;
+  /** Posé par le serveur quand le comptage des montants est confirmé par la 3.8 (la 3ᵉ lecture) ; absent = pas confirmé. */
+  countedAmountsConfirmed?: boolean;
   countedAmounts?: number | null; countedEans?: number | null;
   ignoredLines?: LigneEcartee[] | null;
   photoIncomplete?: boolean | null; photoIncompleteNote?: string;
@@ -191,12 +195,20 @@ const heureNet = (h: string | undefined): string => {
 // -------------------------------------------------------------------------------------------------------------------------------------------
 // Les dix contrôles
 // -------------------------------------------------------------------------------------------------------------------------------------------
-function comptageMontants(l: LectureControlee): ControlePiece {
+/**
+ * Limite 2 (b1, 09.11) : un comptage de la colonne des montants lu par deux Flash-Lite seules (3 pour 2 lignes, un total compté pour un article) ne lève un drapeau
+ * que s'il est CONFIRMÉ : par la 3.8 (`countedAmountsConfirmed`) ou par brut − rabais lui aussi en échec (`confirmeParLesCHF`). Sinon le contrôle reste non vérifié (ok: null),
+ * sans écart ni geste : il dit seulement ce qu'il a compté.
+ */
+function comptageMontants(l: LectureControlee, confirmeParLesCHF: boolean): ControlePiece {
   const attendu = l.countedAmounts ?? null;
   const lues = l.items.filter(i => !estHorsArticle(i) && montantDeLigneCts(i) !== null).length;
   const base = { id: 'comptage-montants' as const, attendu: attendu === null ? '—' : mark(attendu, 'montant'), trouve: mark(lues, 'ligne') + ' avec montant' };
   if (attendu === null) return { ...base, ok: null, geste: rien };
   if (attendu === lues) return { ...base, ok: true, geste: rien };
+  if (!l.countedAmountsConfirmed && !confirmeParLesCHF) {
+    return { ...base, ok: null, geste: rien, note: 'Comptage non confirmé (ni par la 3.8, ni par brut − rabais) : non vérifié, aucun drapeau.' };
+  }
   const manque = attendu > lues;
   return {
     ...base, ok: false, ecart: Math.abs(attendu - lues), unite: 'lignes', sens: manque ? 'manque' : 'exces',
@@ -310,13 +322,27 @@ function memeJour(l: LectureControlee, d: DepenseConnue): boolean {
  * un seul paiement peut couvrir plusieurs tickets (Sun Store : 14,60 + 149,25 = 163,85). Il ne lève jamais seul un drapeau ; il est expliqué par les autres dépenses du même
  * fournisseur, du même jour, quand il y en a. Sans `amountPaid`, un terminal égal au total vaut paiement ; différent, le contrôle reste non vérifiable.
  */
+export interface PayeEffectif { cts: number; source: 'recu' | 'terminal' }
+/**
+ * Limite 1 (b1, 09.11) : le payé d'un ticket est son « Montant reçu / Payé » ; quand AUCUN reçu n'est imprimé (BAUHAUS : une seule ligne « TWINT 352,05 », rangée au terminal),
+ * le montant du terminal en tient lieu SI ET SEULEMENT SI il égale le total, sur un ticket de caisse (un ticket, un règlement). Différent du total (Sun Store : 163,85 pour
+ * 14,60), il reste une information et ne devient jamais le payé. Rend null quand rien ne permet de dire le payé (jamais 0).
+ */
+export function payeEffectif(l: LectureControlee): PayeEffectif | null {
+  const recu = cts(l.amountPaid);
+  if (recu !== null) return { cts: recu, source: 'recu' };
+  const total = cts(l.amountTTC), terminal = cts(l.terminalAmount);
+  const ticket = l.documentType === undefined || l.documentType === 'receipt';
+  return ticket && terminal !== null && total !== null && Math.abs(terminal - total) <= TOLERANCE ? { cts: terminal, source: 'terminal' } : null;
+}
+
 function paiement(l: LectureControlee, ctx: ContexteControles): ControlePiece {
   const total = cts(l.amountTTC), payeLu = cts(l.amountPaid), terminal = cts(l.terminalAmount);
   const moyen = l.paymentMethod && l.paymentMethod !== 'unknown' ? ` (${({ twint: 'TWINT', cash: 'espèces', card: 'carte', bank_transfer: 'virement', other: 'autre' } as Record<string, string>)[l.paymentMethod] ?? l.paymentMethod})` : '';
-  const paye = payeLu ?? (terminal !== null && total !== null && Math.abs(terminal - total) <= TOLERANCE ? terminal : null);
+  const effectif = payeEffectif(l), paye = effectif?.cts ?? null;
   const base = {
     id: 'paiement' as const, attendu: total === null ? '—' : `total ${chf(total)}`,
-    trouve: paye !== null ? `payé ${chf(paye)}${moyen}` : terminal !== null ? `montant payé non lu ; terminal ${chf(terminal)}${moyen}` : 'montant payé non lu',
+    trouve: paye !== null ? `payé ${chf(paye)}${moyen}${effectif!.source === 'terminal' ? ' · lu au terminal, aucun reçu imprimé' : ''}` : terminal !== null ? `montant payé non lu ; terminal ${chf(terminal)}${moyen}` : 'montant payé non lu',
   };
   // Le règlement commun : le montant du terminal est la somme de ce ticket et d'autres dépenses du même fournisseur, du même jour.
   const partage = (() => {
@@ -434,8 +460,9 @@ function photoIncomplete(l: LectureControlee): ControlePiece {
 
 /** Les dix contrôles de la pièce, dans l'ordre fixe de l'en-tête. Le contexte est facultatif : sans lui, doublon, paiement partagé et prix restent non vérifiables, jamais « bons ». */
 export function controlesPiece(lecture: LectureControlee, contexte: ContexteControles = {}): ControlePiece[] {
+  const brut = brutRabais(lecture);
   return [
-    comptageMontants(lecture), comptageEan(lecture, contexte), cleEan(lecture, contexte), brutRabais(lecture), tvaParTaux(lecture),
+    comptageMontants(lecture, brut.ok === false), comptageEan(lecture, contexte), cleEan(lecture, contexte), brut, tvaParTaux(lecture),
     paiement(lecture, contexte), doublon(lecture, contexte), horsArticles(lecture), prixPlausible(lecture, contexte), photoIncomplete(lecture),
   ];
 }

@@ -1,7 +1,7 @@
 // Voie c1 (09.11) : les dix contrôles de robustesse d'une pièce lue, sur les quatre pièces pièges en lectures simulées anonymisées (L13 : écrits avant le module).
 import { describe, expect, it } from 'vitest';
 import {
-  cleGs1Valide, codeBarresDeLigne, compterArticles, controlesEnEchec, controlesPiece, estHorsArticle, rattacherRemises, type ControlePiece, type LectureControlee,
+  cleGs1Valide, codeBarresDeLigne, compterArticles, controlesEnEchec, controlesPiece, estHorsArticle, payeEffectif, rattacherRemises, type ControlePiece, type LectureControlee,
 } from '../../../src/domain/finance/controlesPiece';
 import {
   DEPENSE_SUN1, DEPENSE_SUN2, DEPENSE_TACHE, LIGNES_COPIE, LIGNES_TACHE_23, LIGNES_TACHE_29, MONTANTS_COPIE, SOMME_COPIE, SOMME_TACHE_23, SOMME_TACHE_29,
@@ -407,5 +407,57 @@ describe('le drapeau : au moins un contrôle en échec', () => {
     const lecture = tacheAsLue(); const avant = JSON.stringify(lecture);
     controlesPiece(lecture, { depenses: [DEPENSE_TACHE] });
     expect(JSON.stringify(lecture)).toBe(avant);
+  });
+});
+
+describe('limite 1 (b1, 09.11) — payé = montant du terminal quand il égale le total et qu’aucun reçu n’est imprimé', () => {
+  const sansRecu = () => { const l = tacheComplete(); l.amountPaid = null; return l; }; // BAUHAUS : une seule ligne « TWINT 352,05 », rangée au terminal
+  it('BAUHAUS : payé 352,05 lu au terminal, concorde avec le total', () => {
+    expect(payeEffectif({ ...sansRecu(), documentType: 'receipt' })).toEqual({ cts: 35205, source: 'terminal' });
+    const c = par(controlesPiece({ ...sansRecu(), documentType: 'receipt' }))['paiement'];
+    expect(c.ok).toBe(true);
+    expect(c.trouve).toBe('payé 352,05 (TWINT) · lu au terminal, aucun reçu imprimé');
+  });
+  it('un reçu imprimé l’emporte sur le terminal', () => {
+    const l = tacheComplete(); l.amountPaid = 352.05; l.terminalAmount = 352.05;
+    expect(payeEffectif(l)).toEqual({ cts: 35205, source: 'recu' });
+  });
+  it('terminal différent du total (le piège Sun Store, 163,85 pour 14,60) : jamais le payé', () => {
+    const l = sun1(); l.amountPaid = null;
+    expect(payeEffectif(l)).toBeNull();
+    expect(par(controlesPiece(l, { depenses: [DEPENSE_SUN2] }))['paiement'].ok).toBeNull();
+  });
+  it('seulement un ticket de caisse : une facture dont le terminal égale le total n’y gagne pas de payé', () => {
+    expect(payeEffectif({ ...sansRecu(), documentType: 'invoice' })).toBeNull();
+    expect(payeEffectif({ ...sansRecu(), documentType: 'receipt' })).not.toBeNull();
+  });
+  it('ni terminal ni reçu : null, jamais 0', () => {
+    const l = tacheComplete(); l.amountPaid = null; l.terminalAmount = null;
+    expect(payeEffectif(l)).toBeNull();
+    expect(par(controlesPiece(l))['paiement']).toMatchObject({ ok: null, trouve: 'montant payé non lu' });
+  });
+});
+
+describe('limite 2 (b1, 09.11) — le comptage des montants ne lève un drapeau que confirmé par la 3.8 ou par brut − rabais', () => {
+  it('sunstore-1 : deux Flash-Lite comptent 3 pour 2 lignes justes, brut − rabais concorde : aucun drapeau', () => {
+    const l = sun1(); l.countedAmounts = 3;
+    const c = par(controlesPiece(l, { depenses: [DEPENSE_SUN2] }));
+    expect(c['brut-rabais'].ok).toBe(true);
+    expect(c['comptage-montants']).toMatchObject({ ok: null, attendu: '3 montants', trouve: '2 lignes avec montant' });
+    expect(c['comptage-montants'].ecart).toBeUndefined();
+    expect(c['comptage-montants'].geste.type).toBe('rien');
+    expect(controlesEnEchec(controlesPiece(l, { depenses: [DEPENSE_SUN2] }))).toEqual([]);
+  });
+  it('confirmé par la 3.8 : le drapeau revient, même quand les CHF concordent', () => {
+    const l = sun1(); l.countedAmounts = 3; l.countedAmountsConfirmed = true;
+    expect(par(controlesPiece(l))['comptage-montants']).toMatchObject({ ok: false, ecart: 1, sens: 'manque' });
+  });
+  it('confirmé par brut − rabais (tache, 23 lignes sur 29) : drapeau ; sans écart de CHF et sans 3.8 : non vérifié', () => {
+    expect(par(controlesPiece(tacheAsLue()))['comptage-montants'].ok).toBe(false);
+    const l = tacheComplete(); l.amountTTC = 277.6; l.countedAmounts = 28; // les CHF concordent : le 28 d’une lecture seule n’est pas confirmé
+    expect(par(controlesPiece(l))['comptage-montants'].ok).toBeNull();
+  });
+  it('un comptage qui concorde reste « ok », confirmé ou non', () => {
+    expect(par(controlesPiece(sun1()))['comptage-montants'].ok).toBe(true);
   });
 });

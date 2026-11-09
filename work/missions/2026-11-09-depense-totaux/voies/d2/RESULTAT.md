@@ -1,4 +1,4 @@
-EN COURS — éléments 1 à 4 faits et testés (2 948 verts, zéro rouge dans la zone, tsc vide) ; les 16 planches de captures attendent l'exécutant (DEMANDE EXECUTANT)
+OK — Champs de lecture gardés au client, contrôles de la pièce dans le bloc, rabais rangé sous son article, zone verte (2 965) ; captures à rejouer
 
 ## Fait
 1. `src/services/geminiScanner.ts` : `normalizeResult` garde `amountPaid`, `terminalAmount`, `printedItemCount`, `countedAmounts`, `countedEans`, `printedTime`, `ignoredLines`, `photoIncomplete`, `photoIncompleteNote` (type `ScannedInvoiceResult` + `champsControlesPiece`). Une clé n'existe que si la lecture la porte ; négatif, non entier, heure impossible, genre inconnu écartés ; un 0 lu reste un 0. Test : `tests/unit/finance/geminiScannerControles.test.ts` (6 tests, 5 rouges avant).
@@ -15,6 +15,11 @@ EN COURS — éléments 1 à 4 faits et testés (2 948 verts, zéro rouge dans l
    - `sm0811/pied.test.tsx` ×3 et `g7/ecran-g7.test.tsx` ×1 : « Lignes a · total b · c de plus/moins » est remplacé par « c CHF de plus que le total » / « c CHF non retrouvés dans les lignes » (la phrase que le brasseur a jugée « sans info »). Même texte exact, même classe `text-attention`.
    - `qr/ecran-qr.test.tsx` : « 110,40 ≠ 110,04 » devient « Somme ≠ imprimé 110,40 / 110,04 +0,36 » (trois assertions au lieu d'une).
    - `ecran/p3c.test.tsx` D12 : « n'affiche jamais 24 » visait « Qté × prix » ; il est précisé sur sa rangée (`data-dp-controle-cle="qte"`) et « Articles lus » doit rester sans écart (24 lignes imprimées, 24 lues) : la 6e rouge venait du faux « −1 article » ci-dessus, corrigé dans le code.
+
+## Suite (coordinateur, après c1) : trois points
+- `normalizeResult` recopie `countedAmountsConfirmed` (seulement s'il vaut `true` et que `countedAmounts` existe). L'écran le passe à `controlesPiece`, avec `documentType`. La rangée « Articles » n'utilise `countedAmounts` comme comptage indépendant que si le contrôle `comptage-montants` n'est pas « non vérifié » (un comptage discordant non confirmé ne lève plus de drapeau).
+- Tout « Payé » affiché vient de `payeEffectif(lectureCtl)` (reçu, sinon terminal égal au total sur un ticket de caisse) ; plus aucune lecture de `amountPaid` seul dans `ExpenseSheet.tsx`.
+- Tests (rouges avant : 2 d'intégration + 4 unitaires) : `geminiScannerControles.test.ts` (+1, clés absentes), `depensePiece.test.tsx` (+2 : payé effectif caisse/facture ; comptage non confirmé / confirmé). `tsc` vide ; `tests.txt` : 228 fichiers, 2 965 verts, zéro rouge. Pas de captures (le critique les fera).
 
 ## Fichiers écrits
 `src/services/geminiScanner.ts`, `src/ui/depense/finale.ts`, `src/ui/depense/groupes.ts`, `src/ui/finance/ExpenseSheet.tsx`, `src/ui/finance/controlesCroises.ts`, `src/ui/finance/controlesCroisesVue.tsx`, `src/ui/finance/controlesPieceRangs.ts` (nouveau) ; tests : `tests/unit/finance/{geminiScannerControles,controlesPieceRangs}.test.ts`, `tests/unit/depense/rabais-p4.test.ts`, `tests/integration/{depensePiece,depenseRabais}.test.tsx`, quatre fichiers d'écran corrigés (ci-dessus) ; `voies/d2/banc/{banc.html,banc.tsx,capturer.mjs}`, `voies/d2/tests.txt`. Rien dans `functions/`, ni commit, ni stash. Aucun appel Gemini.

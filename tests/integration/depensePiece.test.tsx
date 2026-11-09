@@ -87,6 +87,21 @@ describe('Dépense : contrôles de la pièce dans le bloc (d2)',()=>{
     expect(paye.getAttribute('data-dp-verdict')).toBe('inconnu');
     expect(view.container.querySelector('[data-dp="controle-note"]')!.textContent).toMatch(/terminal affiche 500,00/);
   });
+  it('payé effectif : sans reçu imprimé, le terminal égal au total vaut paiement (ticket de caisse) ; sur une facture il reste « montant non lu »',async()=>{
+    const caisse=await ouvrir(ticketEan({amountPaid:undefined,terminalAmount:352.05,documentType:'receipt'}));
+    expect(rangee(caisse,'paye')!.textContent).toContain('352,05');
+    expect(rangee(caisse,'paye')!.textContent).not.toMatch(/montant non lu/);
+    cleanup();
+    const facture=await ouvrir(ticketEan({amountPaid:undefined,terminalAmount:352.05,documentType:'invoice'}));
+    expect(rangee(facture,'paye')!.textContent).toMatch(/montant non lu/);
+  });
+  it('comptage des montants : 31 comptés pour 29 lus, non confirmé par la 3.8 : « Articles » ne lève pas le drapeau seul ; confirmé : pastille',async()=>{
+    const non=await ouvrir(ticketEan({countedAmounts:31,amountTTC:277.6,amountPaid:277.6,printedLineCount:undefined}));
+    expect(rangee(non,'articles')!.getAttribute('data-dp-verdict')).not.toBe('ecart');
+    cleanup();
+    const oui=await ouvrir(ticketEan({countedAmounts:31,countedAmountsConfirmed:true,amountTTC:277.6,amountPaid:277.6,printedLineCount:undefined}));
+    expect(rangee(oui,'articles')!.getAttribute('data-dp-verdict')).toBe('ecart');
+  });
   it('doublon : l’écran a déjà sa section « Achat peut-être déjà enregistré » (même fournisseur, jour, total) : la rangée du contrôle ne la répète pas',async()=>{
     state.transactions=[{id:'tx-deja',date:'02.11.2026',description:'Travaux',amountHT:0,tvaRate:0,tvaAmount:0,amountTTC:352.05,category:'renovation',subcategory:'',finance:{vendor:'Brico Fictif SA',invoiceNumber:''}}];
     const view=await ouvrir(ticketEan());

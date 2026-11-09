@@ -426,6 +426,8 @@ export function normalizeInvoiceScan(raw: any) {
     ...(montantTerminal !== null && montantTerminal >= 0 ? { terminalAmount: montantTerminal } : {}),
     ...(entierLu(raw?.printedItemCount) !== null ? { printedItemCount: entierLu(raw?.printedItemCount)! } : {}),
     ...(entierLu(raw?.countedAmounts) !== null ? { countedAmounts: entierLu(raw?.countedAmounts)! } : {}),
+    // Limite 2 : posé par le vote seulement, quand la 3.8 (3ᵉ lecture) confirme le comptage retenu.
+    ...(entierLu(raw?.countedAmounts) !== null && raw?.countedAmountsConfirmed === true ? { countedAmountsConfirmed: true as const } : {}),
     ...(entierLu(raw?.countedEans) !== null ? { countedEans: entierLu(raw?.countedEans)! } : {}),
     ...(heureLue ? { printedTime: `${heureLue[1].padStart(2, '0')}:${heureLue[2]}` } : {}),
     ...(ignoredLines ? { ignoredLines } : {}),
