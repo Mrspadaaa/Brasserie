@@ -132,7 +132,9 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       expect(items[0]).toHaveTextContent(/^Nouvelle écriture/);
       expect(items[0]).toHaveTextContent('Facture ou saisie à la main');
       const labels = items.map(item => item.textContent ?? '');
-      for (const other of ['Entrer une facture', 'Encaisser une vente', 'Créer une recette', 'Lancer un brassin']) {
+      // BX-4 (09.11) : « Nouvelle écriture » ouvre l'entrée de la facture ; « Entrer une facture » ne se répète pas dessous.
+      expect(labels.some(label => label.startsWith('Entrer une facture'))).toBe(false);
+      for (const other of ['Encaisser une vente', 'Créer une recette', 'Lancer un brassin']) {
         expect(labels.findIndex(label => label.startsWith(other))).toBeGreaterThan(0);
       }
       await user.click(items[0]);

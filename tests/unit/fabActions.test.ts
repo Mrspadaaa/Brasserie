@@ -15,4 +15,8 @@ describe('Bouton + · action principale « écriture comptable » (#114)', () =>
   it('un sous-onglet inconnu retombe toujours sur la saisie rapide', () => {
     expect(fabActionFor('stocks', 'inexistant' as never).intent).toBe('quickAction');
   });
+  it('BX-4 : rien à créer sur Volumes ni sur l’impôt : pas d’action d’écran', () => {
+    expect(fabActionFor('production', 'scaler').intent).toBe('quickAction');
+    expect(fabActionFor('clients', 'ofdf').intent).toBe('quickAction');
+  });
 });
