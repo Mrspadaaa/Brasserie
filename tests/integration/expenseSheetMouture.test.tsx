@@ -53,7 +53,7 @@ afterEach(cleanup);
 describe('R1 (relecture) : le prix affiché « avec mouture » est celui du catalogue', () => {
   it('malt relié : l’écran montre 2,40/Kg, le vrai savePurchase écrit le lien, latestBrewPrices rend 14,40 CHF pour 6 kg (2,40/kg)', async () => {
     const view = await ouvrir();
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('existing');
+    expect(maltLigne(view).querySelector('[data-dp-stock]')).toHaveTextContent(/article « Maris Otter » · (relié|proposé)/); // D350 : plus de menu « Stock », la ligne « article » dit le lien
     expect(affiche(view)).toBeUndefined(); // sans geste, aucun lien : rien d'affiché
     fireEvent.click(view.container.querySelector('[data-dp-mouture]')!);
     expect(affiche(view)).toBe('2,40');
@@ -67,8 +67,8 @@ describe('R1 (relecture) : le prix affiché « avec mouture » est celui du cata
     const view = await ouvrir();
     fireEvent.click(view.container.querySelector('[data-dp-mouture]')!);
     expect(affiche(view)).toBe('2,40');
-    fireEvent.click(screen.getByRole('switch', { name: 'Mettre en stock, ligne 1' }));
-    expect((screen.getByLabelText('Stock ligne 1') as HTMLSelectElement).value).toBe('none');
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer l’article, ligne 1' })); // D350 : « Retirer » sur la ligne article remplace l'interrupteur « Mettre en stock »
+    expect(maltLigne(view).querySelector('[data-dp-stock]')).toHaveTextContent('hors stock');
     expect(affiche(view)).toBeUndefined();
     expect(maltLigne(view).querySelector('[data-dp-prixkg]')).toBeNull();
     expect(maltLigne(view).querySelector('[aria-label*="avec mouture"]')).toBeNull(); // toute la rangée : un aria-label n'est pas dans textContent

@@ -1,0 +1,47 @@
+{
+  "base": "http://127.0.0.1:5657",
+  "api": "reelle",
+  "erreurs": [
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "bloques": [],
+  "captures": [
+    "c1-1280-clair",
+    "m2-1280-clair",
+    "s2-1280-clair"
+  ],
+  "notes": {
+    "c1-1280-clair": {
+      "resume": "bière·repères 19 °C·7 %·proche de 10561 309",
+      "carte": "Wyeast 1056 American Ale",
+      "tete": "1007 German Ale"
+    },
+    "m2-1280-clair": {
+      "journal": [
+        {
+          "cb": "onChercherDonnee",
+          "args": [
+            "fermentis-us05",
+            "phenols"
+          ]
+        }
+      ]
+    },
+    "s2-1280-clair": {
+      "phrase": "Moins d'atténuation",
+      "carte": "AtténuationUS-05 78–82 %levier : empâtage → Malts/sucres−492+124",
+      "rayons": [
+        "Vendue CH · FR · DE 260 · 65 · 70 · 75 · 80 · 85 %",
+        "Fabricant présent en Europe · sans offre vue 190"
+      ],
+      "lignes": [
+        "CH1084 Irish AleWyeast · fiche−7 pts71–75 %fruité",
+        "CH1007 German AleWyeast · fiche−5 pts73–77 %neutre",
+        "EuropeWHC Lab Low Rider: Session Low Attenuating Dry YeastWHC Lab · fiche−14,5 pts63–68 %",
+        "EuropeWLP002 English AleWhite Labs · fiche−13,5 pts63–70 %fruité",
+        "EuropeWLP011 European Ale YeastWhite Labs · fiche−12,5 pts65–70 %neutre",
+        "EuropeYeastflow yf-111-pacificationYeastflow · fiche−12,5 pts65–70 %"
+      ]
+    }
+  }
+}

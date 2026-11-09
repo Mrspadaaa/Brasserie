@@ -20,6 +20,9 @@ const phaseDate = (step: PositionedFermentationStep) => step.start === null
     ? `début J${number(step.start)}, fin inconnue`
     : `début J${number(step.start)}, fin J${number(step.end)}`;
 const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
+/** Largeur de dessin d'un palier dont la durée est inconnue (maquette l5b : une boîte « ? °C · ? j »). Jamais écrite dans un programme. */
+export const NOMINAL_DAYS = 2.37;
+export const joursNominaux = (steps: readonly FermentationChartStep[]): FermentationChartStep[] => steps.map(step => finite(step.days) ? step : { ...step, days: NOMINAL_DAYS });
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const snap = (value: number, step: number) => Math.round(value / step) * step;
 /** Steps of 0.5 stay exact: +step then −step gives back the stored value. */
@@ -31,6 +34,19 @@ const DEAD_PX = 4;
 /** Releasing this far outside the chart cancels the gesture. */
 const CANCEL_PX = 48;
 const TEMP_STEP = 0.5, DAY_STEP = 0.5, PAGE_STEPS = 4;
+
+/**
+ * Ligne de base de l'étiquette d'une consigne (BE-42 : « 20,5 °C » posée sur son propre trait).
+ * Au-dessus du trait quand il y a de la place (comme avant) ; sinon, au lieu d'être rabattue sur le trait par le haut du cadre,
+ * juste en dessous, dans le premier creux libre entre deux traits de la grille. Police de 11 px : le corps couvre de b − 9 à b + 3.
+ */
+export function setpointLabelBaseline(lineY: number, top: number, bottom: number, gridYs: readonly number[]): number {
+  const above = lineY - 8;
+  const clear = (b: number, withGrid: boolean) => [lineY, ...(withGrid ? gridYs : [])].every((line) => line < b - 10 || line > b + 4);
+  const scanAbove = (withGrid: boolean) => { for (let b = above; b >= top + 11; b -= 0.5) if (clear(b, withGrid)) return b; return undefined; };
+  const scanBelow = (withGrid: boolean) => { for (let b = lineY + 12; b + 3 <= bottom; b += 0.5) if (clear(b, withGrid)) return b; return undefined; };
+  return scanAbove(true) ?? scanBelow(true) ?? (above >= top + 11 ? above : undefined) ?? scanBelow(false) ?? Math.max(top + 11, above);
+}
 
 /** Brewer-facing reading of one change: durations stay stored, later phases only move. */
 export function describeFermentationEdit(before: readonly FermentationChartStep[], after: readonly FermentationChartStep[], index: number): string {
@@ -69,13 +85,15 @@ const HandleArrows = ({ axis }: { axis: FermentationChartAxis }) => <svg aria-hi
  * With onStepsChange, touching a phase selects it and shows two handles:
  * ↕ on its setpoint for the temperature, ↔ under the day axis at its END for
  * its duration. Each handle edits one axis only; the rest of the chart scrolls. */
-export function FermentationTemperatureChart({ steps, referenceSteps = [], bands = [], pitchTempC, compact = false, contacts = [], bandLabel = 'plage proposée, confiance faible (non statistique)', onSelectStep, selectedStepIndex, onStepsChange }: {
+export function FermentationTemperatureChart({ steps, referenceSteps = [], bands = [], pitchTempC, compact = false, contacts = [], bandLabel = 'plage proposée, confiance faible (non statistique)', onSelectStep, selectedStepIndex, onStepsChange, inconnuDessine = false }: {
   steps: FermentationChartStep[]; bands?: (HopRange | undefined)[]; pitchTempC?: number; compact?: boolean;
   referenceSteps?: FermentationChartStep[];
   contacts?: FermentationChartContact[]; bandLabel?: string;
   onSelectStep?: (index: number, keyboard: boolean) => void; selectedStepIndex?: number;
   /** Present only where the brewer may edit: commits one gesture or key press at a time. */
   onStepsChange?: (next: FermentationChartStep[], edit: FermentationChartEdit) => void;
+  /** Maquette l5b : un palier aux valeurs inconnues se dessine en boîte pointillée « ? °C · ? j » sans cacher les suivants ; l'inconnu n'est jamais un point à 0 °C. */
+  inconnuDessine?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null), plot = useRef<SVGSVGElement>(null), [width, setWidth] = useState(400);
   const hintId = useId();
@@ -86,7 +104,11 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
   const stableScale = useRef<{ min: number; max: number; axisEnd: number } | null>(null);
   const [readout, setReadout] = useState('');
   const setDrag = (value: ChartDrag | null) => { dragRef.current = value; setDragState(value); };
-  const shown = drag?.preview ?? steps;
+  const unknownDays = new Set<number>(inconnuDessine ? steps.flatMap((step, index) => finite(step.days) ? [] : [index]) : []);
+  const shown = inconnuDessine ? joursNominaux(drag?.preview ?? steps) : drag?.preview ?? steps;
+  const firstUnknownStart = unknownDays.size ? positionFermentationSteps(shown)[Math.min(...unknownDays)]?.start ?? null : null;
+  /** Un geste ne fige jamais la largeur de dessin dans le programme : une durée inconnue qu'il n'a pas réglée reste inconnue. */
+  const restore = (next: FermentationChartStep[]) => inconnuDessine ? next.map((step, index) => unknownDays.has(index) && step.days === NOMINAL_DAYS ? { ...step, days: undefined } : step) : next;
   const timeline = planFermentationTimeline(shown);
   const segments = timeline.phases.map((step, index) => {
     const candidate = bands[index];
@@ -210,7 +232,7 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
   const durationHandle = drawnPhase ? { x: clamp(x(drawnPhase.end!), left, right), y: laneY } : undefined;
   /** Setpoint value: above the ↕ handle of the selected phase (below it near the top), never under it. */
   const setpointLabelY = (index: number, tempC: number) => tempHandle && drawnPhase?.index === index
-    ? (tempHandle.y - 26 >= top + 11 ? tempHandle.y - 26 : tempHandle.y + 34) : Math.max(top + 11, y(tempC) - 8);
+    ? (tempHandle.y - 26 >= top + 11 ? tempHandle.y - 26 : tempHandle.y + 34) : setpointLabelBaseline(y(tempC), top, bottom, temperatureTicks.map(y));
   /** The editable chart folds its legend, so a range band names itself inside, clear of the setpoint, its label and the ↕ handle; none without room. */
   const bandLabelY = (step: (typeof known)[number]) => {
     const band = step.band, startX = x(step.start!), width = x(step.end!) - startX;
@@ -233,7 +255,7 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
     event.currentTarget.focus({ preventScroll: true });
     // Capture keeps the gesture on the handle when the finger leaves it; some engines lack it.
     try { event.currentTarget.setPointerCapture?.(event.pointerId); } catch { /* Gesture still follows pointer events on the handle. */ }
-    const origin = steps.map(step => ({ ...step }));
+    const origin = (inconnuDessine ? joursNominaux(steps) : steps).map(step => ({ ...step }));
     setDrag({ index: drawnPhase.index, axis, pointerId: event.pointerId, origin, preview: origin, startX: event.clientX, startY: event.clientY,
       handleX: handle.x, handleY: handle.y, frame, outside: false });
     setReadout(describeFermentationEdit(origin, origin, drawnPhase.index));
@@ -278,7 +300,7 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
     if (sameSteps(d.origin, d.preview)) { setReadout(''); return; }
     const label = describeFermentationEdit(d.origin, d.preview, d.index);
     setReadout(label);
-    onStepsChange?.(d.preview, { index: d.index, label, source: 'pointer', axis: d.axis });
+    onStepsChange?.(restore(d.preview), { index: d.index, label, source: 'pointer', axis: d.axis });
   };
   const keyStep = (axis: FermentationChartAxis, key: string) => axis === 'temperature'
     ? ({ ArrowUp: TEMP_STEP, ArrowDown: -TEMP_STEP, PageUp: TEMP_STEP * PAGE_STEPS, PageDown: -TEMP_STEP * PAGE_STEPS } as Record<string, number>)[key]
@@ -337,7 +359,8 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
         {selectable && placed.filter(step => step.index === selectedStepIndex).map(step => <rect key={`selected-${step.index}`} x={x(step.start!)} y={top} width={Math.max(0, x(step.end!) - x(step.start!))} height={bottom - top} fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeDasharray="3 3" className="text-area-production" />)}
         {known.map(step => <g key={step.index} data-step={step.index} data-start={step.start} data-end={step.end} data-temp={step.tempC}>
           {step.band && (step.band.max === step.band.min ? <line x1={x(step.start!)} x2={x(step.end!)} y1={y(step.band.min)} y2={y(step.band.max)} className="text-ebc-straw/40" stroke="currentColor" /> : <rect data-band="temperature" x={x(step.start!)} width={x(step.end!) - x(step.start!)} y={y(step.band.max)} height={y(step.band.min) - y(step.band.max)} fill="currentColor" className="text-ebc-straw/20" />)}
-          {step.band && bandLabelY(step) !== undefined && <text data-band-label={step.index} x={x(step.start!) + 4} y={bandLabelY(step)} textAnchor="start" fill="currentColor" className="text-cave-200" fontSize="10">plage levure {number(step.band.min)}–{number(step.band.max)} °C</text>}
+          {step.band && inconnuDessine && step.band.max > step.band.min && [step.band.min, step.band.max].map(value => <line key={value} data-band-edge={value} x1={x(step.start!)} x2={x(step.end!)} y1={y(value)} y2={y(value)} stroke="#B8901E" strokeDasharray="4 3" strokeWidth="1.2" />)}
+          {step.band && !inconnuDessine && bandLabelY(step) !== undefined && <text data-band-label={step.index} x={x(step.start!) + 4} y={bandLabelY(step)} textAnchor="start" fill="currentColor" className="text-cave-200" fontSize="10">plage levure {number(step.band.min)}–{number(step.band.max)} °C</text>}
           {step.index > 0 && Number.isFinite(segments[step.index - 1].tempC) && <line x1={x(step.start!)} x2={x(step.start!)} y1={y(segments[step.index - 1].tempC!)} y2={y(step.tempC!)} stroke="currentColor" className="text-ebc-straw" strokeWidth="2" />}
           <line data-setpoint="true" x1={x(step.start!)} x2={x(step.end!)} y1={y(step.tempC!)} y2={y(step.tempC!)} stroke="currentColor" className="text-ebc-straw" strokeWidth="3" />
           {x(step.end!) - x(step.start!) > 42 && !(drag?.axis === 'temperature' && drag.index === step.index) && <text x={(x(step.start!) + x(step.end!)) / 2} y={setpointLabelY(step.index, step.tempC!)}
@@ -345,9 +368,19 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
             // BR-61 (08.11) : « 20,5 °C » posée sur le trait de 20 °C, barrée. Un liseré de la couleur du fond la détache des traits de la grille.
             style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>{number(step.tempC!)} °C</text>}
         </g>)}
+        {inconnuDessine && placed.filter(step => !finite(step.tempC) || unknownDays.has(step.index)).map(step => {
+          const left0 = x(step.start!), width0 = Math.max(0, x(step.end!) - x(step.start!)), mid = (top + bottom) / 2;
+          const lines = [finite(step.tempC) ? `${number(step.tempC)} °C` : '? °C', ...(unknownDays.has(step.index) ? ['? j'] : [])];
+          const boxWidth = Math.min(Math.max(width0 - 6, 30), 54), boxHeight = 8 + lines.length * 14;
+          return <g key={`unknown-${step.index}`} data-inconnu={step.index}>
+            <rect x={left0} y={top} width={width0} height={bottom - top} fill="currentColor" fillOpacity="0.08" stroke="currentColor" strokeDasharray="3 3" className="text-ebc-straw" />
+            <rect x={left0 + width0 / 2 - boxWidth / 2} y={mid - boxHeight / 2} width={boxWidth} height={boxHeight} rx="6" fill="rgb(var(--cave-900))" stroke="currentColor" strokeDasharray="3 2" className="text-ebc-straw" />
+            {lines.map((line, i) => <text key={i} x={left0 + width0 / 2} y={mid - boxHeight / 2 + 17 + i * 14} textAnchor="middle" fill="currentColor" className="text-cave-50" fontSize="11" fontWeight="600">{line}</text>)}
+          </g>;
+        })}
         {currentTransitions.map(transition => <g key={`transition-${transition.phaseIndex}`} data-transition-day={transition.day} data-transition-kind={transition.kind}>
           <line x1={x(transition.day!)} x2={x(transition.day!)} y1={top} y2={bottom} stroke="currentColor" className="text-ebc-straw" strokeDasharray="3 4" />
-          <circle cx={x(transition.day!)} cy={transition.toTempC === undefined ? bottom : y(transition.toTempC)} r="4" fill="currentColor" className="text-ebc-straw" />
+          {!(inconnuDessine && transition.toTempC === undefined) && <circle cx={x(transition.day!)} cy={transition.toTempC === undefined ? bottom : y(transition.toTempC)} r="4" fill="currentColor" className="text-ebc-straw" />}
           <title>J{number(transition.day!)} · {timeline.phases[transition.phaseIndex].name} · {transition.kind === 'temperature-change' ? 'nouvelle consigne de température' : transition.kind === 'same-temperature' ? 'même consigne de température' : 'température à préciser'}</title>
         </g>)}
         {total !== null && <g data-programme-end-day={total}>
@@ -371,8 +404,8 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
         {drag?.axis === 'temperature' && tempHandle && <text data-gesture-temp={previewPhase?.tempC} x={clamp(tempHandle.x, left + 44, right - 44)} y={tempHandle.y - 30 < top ? tempHandle.y + 40 : tempHandle.y - 30} textAnchor="middle" fill="currentColor" className="text-area-production" fontSize="13" fontWeight="700">
           {drag.outside ? 'annulé' : `${originPhase && finite(originPhase.tempC) && originPhase.tempC !== previewPhase?.tempC ? `${number(originPhase.tempC)} → ` : ''}${finite(previewPhase?.tempC) ? number(previewPhase!.tempC!) : '?'} °C`}</text>}
         <text x={left} y={axisY + (editable ? 16 : 20)} textAnchor="start" fill="currentColor" className="text-cave-200" fontSize="12">J0</text>
-        {transitionDays.map((day, index) => <text key={`transition-day-${day}`} x={x(day)} y={axisY + (editable ? 16 : 20) + index % 2 * (editable ? 12 : 14)} textAnchor="middle" fill="currentColor" className="text-ebc-straw" fontSize="12">J{number(day)}</text>)}
-        {total !== null && <text x={x(total)} y={editable ? axisY + 16 + transitionDays.length % 2 * 12 : axisY + 47} textAnchor={total === axisEnd || x(total) > right - 24 ? 'end' : 'middle'} fill="currentColor" className="text-cave-50" fontSize="11">fin J{number(total)}</text>}
+        {transitionDays.map((day, index) => <text key={`transition-day-${day}`} x={x(day)} y={axisY + (editable ? 16 : 20) + index % 2 * (editable ? 12 : 14)} textAnchor="middle" fill="currentColor" className="text-ebc-straw" fontSize="12">{firstUnknownStart !== null && day > firstUnknownStart ? 'J?' : `J${number(day)}`}</text>)}
+        {total !== null && <text x={x(total)} y={editable ? axisY + 16 + transitionDays.length % 2 * 12 : axisY + 47} textAnchor={total === axisEnd || x(total) > right - 24 ? 'end' : 'middle'} fill="currentColor" className="text-cave-50" fontSize="11">{unknownDays.size ? 'fin ?' : `fin J${number(total)}`}</text>}
         <text x="3" y="12" fill="currentColor" className="text-cave-400" fontSize="12">°C</text>
       </svg>
       {selectable && placed.filter(step => step.end! > step.start!).map(step => {
@@ -417,7 +450,7 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
       {withoutScale.map(step => selectButton(step, step.start === null || step.end === null ? 'durée inconnue · position non calculable' : 'durée nulle · sélection dans la liste'))}
     </div>}
     {contacts.length > 0 && <ul className="text-xs text-cave-200" aria-label="Contacts de houblon à cru">{contactPositions.map(contact => <li key={contact.index}><strong>{contact.start === null ? 'Contact à cru : jour inconnu' : contact.end === null ? `Contact à cru J${number(contact.start)} · fin inconnue` : `Contact à cru J${number(contact.start)} → J${number(contact.end)}`}</strong> · {contactContext(contact)}{contact.start === null ? ' · non placé sur la frise' : ''}</li>)}</ul>}
-    {(unknownTemperature || unknownDurationIndex >= 0) && <p role="status" className="text-xs text-ebc-straw">Calendrier partiel : {unknownTemperature && 'les températures inconnues ne sont pas dessinées. '}{unknownDurationIndex >= 0 && (unknownDurationIndex < segments.length - 1
+    {!inconnuDessine && (unknownTemperature || unknownDurationIndex >= 0) && <p role="status" className="text-xs text-ebc-straw">Calendrier partiel : {unknownTemperature && 'les températures inconnues ne sont pas dessinées. '}{unknownDurationIndex >= 0 && (unknownDurationIndex < segments.length - 1
       ? 'Après une durée inconnue, les paliers gardent leur ordre mais leur position n’est pas calculable.'
       : 'La fin du dernier palier reste inconnue tant que sa durée manque.')}</p>}
     {editable && <details className="yc-chart-details"><summary>Jours de bascule et légende</summary>

@@ -243,16 +243,16 @@ export function WaterFeedback({
           {messagesSolveur.map((msg, i) => (
             <li
               key={i}
-              className="flex items-start gap-2 text-xs text-ebc-amber leading-snug"
+              className="flex items-start gap-2 text-xs text-cave-50 leading-snug"
             >
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-ebc-amber" />
               <span>{formatWaterMessage(msg)}</span>
             </li>
           ))}
 
           {caShort && (
-            <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+            <li className="flex items-start gap-2 text-xs text-cave-50 leading-snug">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-ebc-amber" />
               <span>
                 Calcium à {Math.round(achievedTotalApresAcide.ca)} ppm sur l’eau
                 totale, le profil en demande au moins {formatDecimal(style.ions.ca.min)}.
@@ -261,8 +261,8 @@ export function WaterFeedback({
           )}
 
           {phEstimate !== null && lactate > LACTATE_TASTE_THRESHOLD && (
-            <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+            <li className="flex items-start gap-2 text-xs text-cave-50 leading-snug">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-ebc-amber" />
               <span>
                 Acide lactique cumulé : {formatDecimal(lactate)} g par litre de bière (
                 {formatDecimal(mashAcid.amount)} + {formatDecimal(spargeAcid.amount)} mL pour {formatDecimal(beerVolumeL)} L)
@@ -273,8 +273,8 @@ export function WaterFeedback({
           )}
 
           {phEstimate !== null && spargeAcid.warning && (
-            <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+            <li className="flex items-start gap-2 text-xs text-cave-50 leading-snug">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-ebc-amber" />
               <span>{formatWaterMessage(spargeAcid.warning)}</span>
             </li>
           )}

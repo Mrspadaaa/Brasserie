@@ -144,12 +144,21 @@ describe('wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé'
     expect(p).toMatch(/data-floating-actions-gap=\{endActions \? 'page-row' : 'page'\}/);
     expect(p).toMatch(/launcherPresent && !dockInHeader \? 'pr-16' : ''/);
   });
-  it('le banc `?dev-local&etape=houblons` reste derrière import.meta.env.DEV et le compte dev-local', () => {
+  it('les bancs `?dev-local&etape=houblons` et `&etape=levure` restent derrière UN SEUL verrou : import.meta.env.DEV et le compte dev-local', () => {
     const a = lire('src/App.tsx');
-    const i = a.indexOf("q.get('etape') !== 'houblons'");
-    expect(i).toBeGreaterThan(0);
-    const avant = a.slice(Math.max(0, i - 400), i);
-    expect(avant).toMatch(/if \(import\.meta\.env\.DEV\) \{\s*if \(!isDevLocal \|\| !isDataReady/);
+    const verrou = /if \(import\.meta\.env\.DEV\) \{\s*if \(!isDevLocal \|\| !isDataReady \|\| apercuOuvert\.current\) return;/;
+    const v = a.search(verrou);
+    expect(v).toBeGreaterThan(0);
+    expect(a.match(new RegExp(verrou.source, 'g'))).toHaveLength(1);
+    // Les deux bancs sont lus après ce verrou, dans le même effet : aucun ne l'a quitté (le verrou se lit jusqu'à la fin de l'effet).
+    const effet = a.slice(v, a.indexOf('eslint-disable-next-line react-hooks/exhaustive-deps', v));
+    expect(effet).toContain("q.get('etape') === 'levure'");
+    expect(effet).toContain("q.get('etape') !== 'houblons'");
+    // Rien du banc levure n'est lu hors de ce bloc : la recette de démonstration et la recherche simulée ne partent que de là.
+    expect(a.split("'./ui/etapeLevure/apercuDev'")).toHaveLength(2);
+    expect(effet).toContain("'./ui/etapeLevure/apercuDev'");
+    // La recherche simulée du banc levure n'est lue, côté étape, que sous le même drapeau (éliminée au build).
+    expect(lire('src/ui/etapeLevure/EtapeLevure.tsx')).toMatch(/import\.meta\.env\.DEV \? \(window as unknown as \{ __lvRechercheSimulee/);
   });
   it('le champ « Ajouter — houblon… » est le champ protégé de l\'app (Input), pas un <input> brut', () => {
     const a = lire('src/ui/hopIndex/maBiere/Ajouter.tsx');

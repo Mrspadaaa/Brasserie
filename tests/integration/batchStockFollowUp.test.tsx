@@ -89,3 +89,19 @@ describe('production stock reconciliation', () => {
     expect(pending.brewDate).toBe('27.09.2026');
   });
 });
+
+describe('TE-41 — le bandeau de stock n’est pas répété dans chaque rubrique', () => {
+  it.each(['tasting', 'overview'] as const)('rubrique %s : une ligne renvoie à Mesures, le bandeau complet n’y est pas', section => {
+    render(<BatchDetailSheet batch={base()} initialSection={section} onClose={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: 'Tout est déjà déstocké' })).not.toBeInTheDocument();
+    const renvoi = screen.getByRole('button', { name: /Stock à confirmer/ });
+    fireEvent.click(renvoi);
+    expect(screen.getByRole('button', { name: 'Tout est déjà déstocké' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Stock à confirmer/ })).not.toBeInTheDocument();
+  });
+  it('rubrique Mesures : le bandeau complet, une seule fois', () => {
+    render(<BatchDetailSheet batch={base()} initialSection="measurements" onClose={vi.fn()} />);
+    expect(screen.getAllByRole('button', { name: 'Tout est déjà déstocké' })).toHaveLength(1);
+    expect(screen.queryByRole('button', { name: /Stock à confirmer/ })).not.toBeInTheDocument();
+  });
+});

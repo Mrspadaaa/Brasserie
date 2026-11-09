@@ -116,6 +116,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const stockNotDue = draft.status === 'planifie' || draft.status === 'annule';
   const needsBrewStock = draft.stockAccountingVersion === 1 && !draft.stockConsumption?.appliedAt && draft.status !== 'planifie' && draft.status !== 'annule';
   const stockIssues = draft.stockReviewIssues ?? [];
+  // TE-41 : le bandeau complet reste dans Mesures ; une erreur à corriger reste montrée là où le brasseur vient d'agir.
+  const stockBannerHere = section === 'measurements' || stockIssues.length > 0;
   const synchronizeStock = (updated: Batch, stage: 'brewday' | 'remaining' | 'historical-already' | 'historical-unconsumed', confirmHistorical = false) => {
     const result = StorageService.completeBrewStock(updated, stage, confirmHistorical);
     const saved = StorageService.getBatches().find(b => b.id === updated.id);
@@ -214,7 +216,14 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               </button>
             ))}
           </nav>
-          {(historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && (
+          {/* TE-41 : le bandeau complet vit dans Mesures ; les autres rubriques n'ont qu'une ligne qui y renvoie, au lieu de le répéter. */}
+          {(historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && !stockBannerHere && (
+            <button type="button" onClick={() => setSection('measurements')} className="min-h-touch flex items-center gap-2 text-left text-sm text-ebc-amber">
+              <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>{historicalStock ? 'Stock à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés à confirmer'} · voir Mesures</span>
+            </button>
+          )}
+          {(historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && stockBannerHere && (
             <section aria-label="Suivi du stock du brassin" className="rounded-xl border border-ebc-amber/30 bg-cave-950 p-2 space-y-2">
               <div className="flex items-start gap-2"><AlertTriangle className="w-4 h-4 shrink-0 text-ebc-amber mt-0.5" /><div><h3 className="text-sm font-semibold text-cave-50">{historicalStock ? 'Stock de ce brassin à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés pour la fermentation'}</h3><p className="text-2xs text-cave-400 leading-snug mt-1">{historicalStock ? 'Ce brassin vient de l’ancien suivi. Indiquez ce qui a déjà été retiré pour éviter une double déduction.' : needsBrewStock ? 'Les relevés sont conservés. Vérifiez les ingrédients puis confirmez leur sortie de stock.' : 'Les réservations protègent ces ingrédients pour ce brassin jusqu’à leur ajout réel.'}</p></div></div>
               {stockIssues.length > 0 && <ul className="list-disc pl-5 text-sm text-ebc-amber space-y-1">{stockIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}

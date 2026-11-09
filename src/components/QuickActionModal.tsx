@@ -57,6 +57,7 @@ import { Field, inputClass } from '../ui/FormNav';
 import { BrewScheduleField } from '../ui/production/BrewScheduleField';
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { nombreFr } from '../domain/nombreAffiche';
+import { avertissementMaterielActuel } from '../domain/materielActuel';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -192,6 +193,14 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     setBrewError('');
     pendingBatch.current = undefined;
   }, [isOpen, initialRecipeId]);
+
+  /* AM-47 : le volume repris de la recette est comparé au matériel actuel ; on avertit et on propose, sans refuser ni changer seul. */
+  const materielActuel = useMemo(() => {
+    const recetteChoisie = recipes.find((r) => r.id === selectedRecipeId);
+    if (!isOpen || !recetteChoisie) return undefined;
+    const cfg = StorageService.getConfig();
+    return avertissementMaterielActuel(recetteChoisie, batchVolumeL, cfg.brewhouses.find((b) => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0]);
+  }, [isOpen, recipes, selectedRecipeId, batchVolumeL]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const saleFileInputRef = useRef<HTMLInputElement>(null);
@@ -1293,6 +1302,11 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 value={batchVolumeL}
                 onChange={(next) => { setBatchVolumeL(next); setBrewError(''); }}
               />
+
+              {materielActuel && <div role="status" aria-label="Volume et matériel actuel" className="space-y-1 border-l-2 border-ebc-straw pl-2 text-footnote font-normal text-cave-200">
+                <p>{materielActuel.message}</p>
+                {materielActuel.adaptationL != null && <button type="button" className="min-h-touch rounded-control border border-cave-600 px-2 text-2xs text-cave-50" onClick={() => { setBatchVolumeL(materielActuel.adaptationL!); setBrewError(''); }}>Adapter à {nombreFr(materielActuel.adaptationL, 1)} L</button>}
+              </div>}
 
               <p className="text-footnote text-cave-400">
                 Stock déduit après validation des ajouts en production.

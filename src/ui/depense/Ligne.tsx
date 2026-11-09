@@ -49,8 +49,8 @@ export function LigneP3c(p: LigneP3cProps) {
         {p.numeroPapier !== undefined ? <span data-dp-numero className="w-[18px] text-right font-mono text-xs text-cave-400">{p.numeroPapier}</span> : null}
         <i aria-hidden className="dp-no-chevron hidden"/><span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>
         <span className="min-w-0 flex-1 flex flex-wrap items-center gap-x-1.5 py-0.5">
-          {/* Le nom et sa pastille d'équivalence forment un seul bloc : le nom se coupe entre deux mots (deux lignes au plus), la pastille « = 2 sachets » reste à sa droite. */}
-          {mout ? null : <span className="flex min-w-0 items-center gap-x-1.5">
+          {/* Le nom et sa pastille d'équivalence forment un seul bloc : le nom se coupe entre deux mots (deux lignes au plus), la pastille « = 2 sachets » reste à sa droite ; B2-NOTE-8 : si la place manque (320 px), la pastille passe SOUS le nom au lieu de l'écraser (« W… he… »). */}
+          {mout ? null : <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
             <b data-dp-nom {...niveau(n.nom)} className={`dp-p3c-nom min-w-0 text-sm font-normal leading-tight ${p.neuve ? 'text-area-finances' : n.nom === 'sur' ? 'text-cave-50' : MARQUE[n.nom]}`}>{p.neuve ? <RefreshCw size={14} strokeWidth={2.2} aria-label="ligne ajoutée par la 3e lecture" role="img" className="mr-1 inline shrink-0 align-[-2px]"/> : null}{p.nom || 'Ligne sans libellé'}</b>
             {p.conversion ? <span data-dp-conversion className="shrink-0 whitespace-nowrap rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-cave-200">{pastilleConversion(p.conversion)}</span> : null}</span>}
           {mout ? <span data-dp-nom className="sr-only">{p.nom}</span> : null}

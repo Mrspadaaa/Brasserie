@@ -1,0 +1,32 @@
+{
+ "clair": {
+  "decider": true,
+  "regler": true,
+  "saisie": {
+   "Masse du réglage": "champ absent",
+   "Temps d’ébullition restant": "champ absent",
+   "Température du réglage": "champ absent"
+  },
+  "largeur": {
+   "sw": 390,
+   "iw": 390,
+   "hors": 0,
+   "defile": []
+  }
+ },
+ "cave": {
+  "decider": true,
+  "regler": true,
+  "saisie": {
+   "Masse du réglage": "champ absent",
+   "Temps d’ébullition restant": "champ absent",
+   "Température du réglage": "champ absent"
+  },
+  "largeur": {
+   "sw": 390,
+   "iw": 390,
+   "hors": 0,
+   "defile": []
+  }
+ }
+}

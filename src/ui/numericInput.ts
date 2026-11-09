@@ -163,7 +163,8 @@ export function useNumericDraft(
 export function messageRefus(saisi: number, avant: number | undefined, bornes: { min?: number; max?: number; unite?: string }): string {
   const u = bornes.unite ? ` ${bornes.unite}` : '';
   // Les milliers se séparent d'une espace insécable (« 10 000 »), la décimale d'une virgule.
-  const nb = (x: number) => formatDecimal(x).replace(/^(-?\d+)/, (entier) => entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
+  // Arrondi au millième : une valeur calculée (4,19672131147541 L/kg) ne se dit pas à quatorze décimales.
+  const nb = (x: number) => formatDecimal(Math.round(x * 1000) / 1000).replace(/^(-?\d+)/, (entier) => entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
   const raison = bornes.min !== undefined && saisi < bornes.min
     ? (bornes.min === 0 ? 'une valeur négative n’existe pas ici' : `en dessous de ${nb(bornes.min)}${u}`)
     : `au-delà de ${nb(bornes.max ?? 0)}${u}`;

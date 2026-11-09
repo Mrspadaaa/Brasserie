@@ -221,7 +221,7 @@ export function readingFeedback(
   }
   return {
     tone: 'neutral',
-    title: `${READING[kind].label} : ${value} ${READING[kind].unit}`,
+    title: `${READING[kind].label} : ${String(value).replace('.', ',')} ${READING[kind].unit}`,
     detail:
       kind === 'ph'
         ? 'pH hors empâtage : aucune dose d’acide de maische calculée.'

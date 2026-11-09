@@ -39,13 +39,13 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('p3c-3 : les bandes teintées de la facture 372765', () => {
-  it('T1 : trois bandes dans l’ordre malt, houblon, levure ; sous-totaux 36,85 · 20,05 · 29,60 ; quantités en gras « 18 Kg », « 270 g + 30 ? », « 7 Stk »', async () => {
+  it('T1 : trois bandes dans l’ordre malt, houblon, levure ; sous-totaux 36,85 · 20,05 · 29,60 ; quantités en gras « 18 Kg », « 270 g + 30 ? », « 7 sachets » (sa maquette dit sachets, B2-NOTE-4)', async () => {
     await ouvrir('3');
     const bandes = qa('[data-dp-bande]');
     expect(bandes.map(b => b.getAttribute('data-dp-bande'))).toEqual(['malt', 'houblon', 'levure']);
     expect(bandes.map(b => b.querySelector('[data-dp-sous-montant]')!.textContent)).toEqual(['36,85', '20,05', '29,60']);
     // D275 (voie f3) : une même famille d'unités s'additionne, Sabro « 30 » prend le g de ses voisines (deux l'impriment : sûr) : jamais « ? » quand l'unité se déduit (HEAD : « 270 g + 30 ? »).
-    expect(bandes.map(b => b.querySelector('[data-dp-sous-qte]')!.textContent)).toEqual(['18 Kg', '300 g', '7 Stk']);
+    expect(bandes.map(b => b.querySelector('[data-dp-sous-qte]')!.textContent)).toEqual(['18 Kg', '300 g', '7 sachets']);
     expect(bandes[0].querySelector('[data-dp-bande-entete]')!.textContent).toContain('+5 ↳');
     expect(qa('[data-dp-qte]').every(e => e.className.includes('font-semibold'))).toBe(true);
   });

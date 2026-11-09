@@ -290,7 +290,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
           <dl className="clients-tax-reading">
             <div>
               {/* MV-42 : sans litre conditionné, il n'y a pas de réserve à chiffrer — pas un « 0.00 CHF » qui ressemble à un calcul. */}
-              <dt>{taxReport.totalVolumeL > 0 ? `Pour ${taxReport.totalVolumeL} litres conditionnés` : `Aucun litre conditionné en ${taxYear}`}</dt>
+              <dt>{taxReport.totalVolumeL > 0 ? `Pour ${nombreFr(taxReport.totalVolumeL, 2)} litres conditionnés` : `Aucun litre conditionné en ${taxYear}`}</dt>
               <dd className="font-mono">{taxReport.totalVolumeL > 0 ? `${taxReport.estimateLowCHF === taxReport.estimateHighCHF ? montantChf(taxReport.estimateHighCHF) : `${montantChf(taxReport.estimateLowCHF)} – ${montantChf(taxReport.estimateHighCHF)}`} CHF` : '—'}</dd>
             </div>
           </dl>

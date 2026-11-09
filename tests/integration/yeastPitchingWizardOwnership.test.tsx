@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { defaultConfig } from '../../src/services/storage';
 import { fullRecipe } from '../fixtures/fullRecipe';
+import { ouvrirAtelierLevure } from '../helpers/wizard';
 import type { Recipe, StockItem } from '../../src/types';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
@@ -25,6 +26,7 @@ describe('Moût opérationnel et propriétaire documentaire du Wizard', () => {
       unit: 'flacon', currentStock: 2, minStock: 0, reorder: false, yeastForm: 'liquide' };
     const save = vi.fn(); mount(recipe, save, [item]);
     fireEvent.click(screen.getAllByRole('button', { name: 'Levure' })[0]);
+    ouvrirAtelierLevure(true);   // l'ancienne étape (moût à ensemencer, stock, saisie libre) vit dans le repli « Atelier complet » de Ma levure
     await screen.findByRole('region', { name: 'Moût à ensemencer' });
     const source = document.querySelector<HTMLDetailsElement>('.yc-personal-fold')!;
     if (!source.open) fireEvent.click(source.querySelector('summary')!);
@@ -50,6 +52,7 @@ describe('Moût opérationnel et propriétaire documentaire du Wizard', () => {
       unit: 'flacon', currentStock: 2, minStock: 0, reorder: false, yeastForm: 'liquide' };
     const save = vi.fn(); const firstView = mount(recipe, save, mode === 'stock' ? [localStock] : []);
     fireEvent.click(screen.getAllByRole('button', { name: 'Levure' })[0]);
+    ouvrirAtelierLevure(true);   // l'ancienne étape (moût à ensemencer, stock, saisie libre) vit dans le repli « Atelier complet » de Ma levure
     const wort = await screen.findByRole('region', { name: 'Moût à ensemencer' });
     fireEvent.click(within(wort).getByRole('button', { name: 'Corriger' }));
     const volume = within(wort).getByRole('textbox', { name: 'Volume du moût à ensemencer en litres' });
@@ -70,6 +73,7 @@ describe('Moût opérationnel et propriétaire documentaire du Wizard', () => {
     firstView.unmount();
     const saveCleared = vi.fn(); mount(saved, saveCleared, mode === 'stock' ? [localStock] : []);
     fireEvent.click(screen.getAllByRole('button', { name: 'Levure' })[0]);
+    ouvrirAtelierLevure(true);   // l'ancienne étape (moût à ensemencer, stock, saisie libre) vit dans le repli « Atelier complet » de Ma levure
     const reopenedWort = await screen.findByRole('region', { name: 'Moût à ensemencer' });
     fireEvent.click(within(reopenedWort).getByRole('button', { name: 'Corriger' }));
     fireEvent.click(within(reopenedWort).getByRole('button', { name: 'Effacer le moût' }));

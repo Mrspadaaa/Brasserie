@@ -306,6 +306,8 @@ interface PageShellProps {
    * reprend toute sa largeur.
    */
   endActions?: React.ReactNode;
+  /** Rangée de fin collée au bas de l'écran à toutes les largeurs (l'étape Levure : pied « Retour · Suivant » de ses maquettes, le + à sa droite). */
+  endActionsCollant?: boolean;
   /**
    * Sans effet depuis #114 : le lanceur ne réserve plus de case dans le pied,
    * il flotte au-dessus de la page.
@@ -331,6 +333,7 @@ export const PageShell: React.FC<PageShellProps> = ({
   progress,
   footer,
   endActions,
+  endActionsCollant,
   mobileHeader,
   wide = false,
   className = '',
@@ -698,8 +701,8 @@ export const PageShell: React.FC<PageShellProps> = ({
           {endActions && (
             // Au-dessus de 640 px (écran d'ordinateur, 800 px de haut), la rangée Retour / Suivant reste collée en bas de la zone qui défile : sortie de l'écran dès
             // qu'une étape dépassait la page (B1 n° 15 : 911 / 800 au champ ouvert, 926 / 800 à huit lignes). Au téléphone elle suit le contenu (T12b : 56 px confisqués sinon).
-            <div data-page-end-actions className={`pb-safe sm:sticky sm:bottom-0 sm:z-10 sm:bg-cave-950 ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
-              style={launcherPresent && !dockInHeader && !largeur ? { marginBottom: '0.5rem' } : undefined}>
+            <div data-page-end-actions className={`pb-safe ${endActionsCollant ? 'sticky bottom-0 z-10 bg-cave-950' : 'sm:sticky sm:bottom-0 sm:z-10 sm:bg-cave-950'} ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
+              style={launcherPresent && !dockInHeader && !largeur ? { marginBottom: '0.5rem', ...(endActionsCollant ? { paddingRight: '4.75rem' } : {}) } : undefined}>
               {endActions}
             </div>
           )}

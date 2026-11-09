@@ -17,3 +17,5 @@
 .hop-v55 .brewer-chat-proof:not(.brewer-work-card *),.hop-v55 .brewer-chat-status:not(.brewer-work-card *){color:var(--hv-muted)}.hop-v55 .brewer-chat-proof:not(.brewer-work-card *) strong{color:var(--hv-ink)}.hop-v55 .brewer-chat-proof:not(.brewer-work-card *) a{color:#295e38}.hop-v55 .brewer-chat-proof:not(.brewer-work-card *)>div{border-color:var(--hv-line)}
 /* Raw archived JSON and exact references wrap visually inside their panel, so one long line no longer sets the min-content width of a history grid. Text, spaces, indentation and copied characters are unchanged. */
 .hop-v55 pre{display:block;width:100%;max-width:100%;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}
+/* BR-45 (09.11) : l'inversion de toute la palette par filtre est retirée par le pilote (elle faussait les couleurs des familles d'arômes et les images) ; le thème cave de l'atelier demande ses 1 443 couleurs en jetons, mission à part. Seul le cadre suit le thème. */
+:root[data-theme='cave'] .recipe-hop-v55-scope { background: rgb(var(--cave-900)); color: rgb(var(--cave-texte-50)); border-color: rgb(var(--cave-700)); }

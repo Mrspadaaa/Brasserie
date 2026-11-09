@@ -69,3 +69,12 @@ describe('formatDecimal', () => {
     }
   });
 });
+
+describe('messageRefus : la valeur gardée se dit arrondie (vu en Chrome 390, étape Eau)', () => {
+  it('une épaisseur de maische calculée (4,19672131147541) se lit « 4,197 L/kg », pas à 14 décimales', async () => {
+    const { messageRefus } = await import('../../src/ui/numericInput');
+    const m = messageRefus(-1, 4.19672131147541, { min: 0.1, unite: 'L/kg' });
+    expect(m).toContain('4,197 L/kg');
+    expect(m).not.toMatch(/\d,\d{4,}/);
+  });
+});

@@ -69,6 +69,16 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(FinanceService.getPlans()[0].status).toBe('active'); // simulation temporaire
   });
 
+  it('TE-36 : la case des prévisions garde le même mot, cochée ou non', async () => {
+    await FinanceService.saveUpgrade(hotte()); render(<UpgradeWorkspace/>);
+    const case_ = screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' });
+    expect(case_).toBeChecked();
+    expect(case_.closest('label')).toHaveTextContent('Inclure dans mes prévisions');
+    expect(screen.queryByText('Dans les prévisions')).not.toBeInTheDocument();
+    fireEvent.click(case_);
+    await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' })).not.toBeChecked());
+    expect(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' }).closest('label')).toHaveTextContent('Inclure dans mes prévisions');
+  });
   it('reprend les idées R&D, archive sans résurrection et restaure les notes', async () => {
     const legacy = { id: 'OLD-HOTTE', type: 'equipment' as const, title: 'Hotte historique', status: 'quote' as const, estimatedCost: 750, description: 'Évacuer la vapeur', notes: 'Devis fournisseur conservé' };
     StorageService.addCreativeItem(legacy); render(<UpgradeWorkspace/>);

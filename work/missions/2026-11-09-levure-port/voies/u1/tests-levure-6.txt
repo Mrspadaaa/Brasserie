@@ -1,0 +1,383 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — cible nulle, zéro ou absente face à une projection exacte[2m > [22m[2mune FG et un ABV cibles nuls restent nuls ; l’estimation exacte reste à part dans l’export
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2msuivi automatique et choix manuel du MÊME code : après save et réouverture, seul le suivi change avec le style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun style sans repère d’eau, enregistré puis rouvert, suit encore le style importé ensuite
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun profil hérité sans provenance, même égal à la suggestion, reste gardé et n’est pas déclaré choisi
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mune cible chiffrée (origine undefined) reste la cible après changement de style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mune cible chiffrée (origine choice) reste la cible après changement de style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun ancien brouillon local (suivi false, sans provenance) garde son propre mode
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun ancien brouillon local (suivi true, sans provenance) garde son propre mode
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mexporte et relit la provenance ; un texte sans provenance reste gardé ; une valeur inconnue est refusée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mexporte et relit la provenance ; un texte sans provenance reste gardé ; une valeur inconnue est refusée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mexporte et relit la provenance ; un texte sans provenance reste gardé ; une valeur inconnue est refusée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — provenance du mode du profil d’eau[2m > [22m[2mun import partiel ne prouve aucune provenance : son profil est gardé sans être déclaré suivi ni choisi
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — analyse d’eau introuvable[2m > [22m[2mgarde la référence et ses valeurs retenues, sans analyse empruntée à la source active, ni dans l’export
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence vide sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence vide sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence blanche sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mimport partiel d’une référence blanche sur une recette à analyse A, source active B : conservée sans emprunt
+[22m[39mAn update to RecipeTextExport inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — référence d’analyse vide ou blanche[2m > [22m[2mtémoins d’omission : un plan ancien sans référence et un import partiel qui l’omet gardent leur comportement acquis
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2mpilote : engager le profil en cours sans changer sa valeur enregistre un choix que le style ne déplace plus
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2mpilote, témoin : un autre réglage d’eau ne devient pas un choix de profil
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2matelier réel : sélectionner l’option déjà cochée du profil suggéré le garde après réouverture et changement de style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — garder le profil suggéré par un geste explicite[2m > [22m[2matelier réel, témoin : ouvrir puis fermer la liste sans sélectionner laisse le profil suivre le style
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot legacy sans identité utilisable[2m > [22m[2mtémoins C03 : une référence blanche déclarée ne se résout pas par un snapshot de même id blanc, ni après un import partiel
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msnapshot vide exact sur une recette liée à A : A, son analyse et ses calculs restent ceux du save sans import
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msnapshot composé d’espaces sur une recette liée à A : A, son analyse et ses calculs restent ceux du save sans import
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msnapshot d’une autre identité sur une recette liée à A : A, son analyse et ses calculs restent ceux du save sans import
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mle reste d’un import partiel s’applique : seule l’analyse ambiguë est écartée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mune mise à jour documentaire portant exactement l’identité A est admise et annoncée
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mune recette déjà anonyme garde son propre snapshot devant un autre snapshot anonyme importé
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2msans référence ni analyse détenues, le snapshot anonyme importé devient l’analyse de la recette, annoncé comme tel
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/brewWizardFirstSaveSourceContract.test.tsx[2m > [22m[2mpremier enregistrement — snapshot d’un import partiel sans référence[2m > [22m[2mtémoin C03 : un import partiel qui déclare sa référence et son snapshot cohérent remplace A comme avant
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m190 passed[39m[22m[90m (190)[39m
+[2m   Start at [22m 13:30:54
+[2m   Duration [22m 88.17s[2m (transform 3.52s, setup 425ms, collect 8.86s, tests 162.32s, environment 2.44s, prepare 254ms)[22m
+

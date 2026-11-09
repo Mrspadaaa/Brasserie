@@ -136,7 +136,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
           {money('Prix de vente HT', 'priceHT')}
           <dl className="tarif-results">
             <div className="tarif-result-row"><dt>Coût de revient</dt><dd><output className="font-mono" aria-label="Coût de revient">{chf(costTotal)}{costTotal !== undefined && ' CHF'}</output></dd></div>
-            <div className="tarif-result-row"><dt>Marge brute</dt><dd><output aria-label="Marge brute" className={`font-mono tarif-result-margin ${marginCHF !== undefined && marginCHF <= 0 ? 'tarif-result-loss' : ''}`}>
+            <div className="tarif-result-row"><dt>Marge brute</dt><dd><output aria-label="Marge brute" className={`font-mono ${marginCHF !== undefined ? 'tarif-result-margin' : ''} ${marginCHF !== undefined && marginCHF <= 0 ? 'tarif-result-loss' : ''}`}>
               {marginCHF !== undefined && marginCHF > 0 ? '+' : ''}{chf(marginCHF)}{marginCHF !== undefined && ' CHF'}{marginPercent !== undefined && <span className="tarif-percent">{marginPercent.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} % du prix HT</span>}
             </output></dd></div>
             <div className="tarif-result-row"><dt>Prix TTC <span className="block text-xs">{config.fiscal.isTvaRegistered ? `TVA ${(tvaRate * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} %` : 'Non assujettie à la TVA'}</span></dt><dd><output className="font-mono" aria-label="Prix TTC">{chf(priceTTC)}{priceTTC !== undefined && ' CHF'}</output></dd></div>

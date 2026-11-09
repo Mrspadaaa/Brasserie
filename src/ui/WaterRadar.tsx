@@ -232,7 +232,8 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   return (
     <div className={`water-radar ${className}`}>
       <svg
-        viewBox={`0 0 ${W} ${H}`}
+        /* BR-105 : l'étiquette du sommet (« Cl⁻ 11 ▼ ») dépassait le haut du cadre de 6 px (mesuré en Chrome) : 14 unités de marge en haut. */
+        viewBox={`0 -14 ${W} ${H + 14}`}
         /* Sur mobile, la pesée réserve ses commandes et le Spider prend
            toute la place restante. Le viewBox garde les étiquettes intactes. */
         className={`block w-full mx-auto ${fitToControls

@@ -64,8 +64,8 @@ describe('JUS-0 : contrats du parcours justificatif (défauts corrigés en JUS-1
     Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode('%PDF-1.4\n').buffer});
     fireEvent.change(view.container.querySelector('input[type="file"]')!,{target:{files:[file]}});
     await screen.findByRole('region',{name:'Vérification du justificatif'});
-    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
     expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-stock]')).toHaveTextContent('proposé');
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-stock]')).toHaveTextContent('article « Malt fumé du Banc »'); // D350 : plus de menu « Stock » : la ligne article dit le lien
     expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-nom]')).toHaveTextContent('Malt fumé du Banc');
     expect(state.writes).toEqual([]);
   });
@@ -203,8 +203,8 @@ describe('JUS-1 : achat déjà enregistré et propositions de stock',()=>{
     expect(lines).toHaveLength(2);
     expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-stock]')).toHaveTextContent('proposé');
     expect(view.container.querySelector('[data-dp-ligne="line-2"]')).not.toHaveTextContent('proposé');
-    expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('existing');
-    expect(screen.queryByLabelText('Stock ligne 2')).toBeNull();
+    expect(view.container.querySelector('[data-dp-ligne="line-1"] [data-dp-stock]')).toHaveTextContent('article « Malt fumé du Banc »');
+    expect(view.container.querySelector('[data-dp-ligne="line-2"] [data-dp-stock]')).toHaveTextContent('hors stock'); // la ligne de service reste hors stock, jamais proposée
     // VERDICT-f3-p2, majeur 1 (D277) : HEAD « proposée par la lecture » ; désormais la pastille jaune « 1 proposé » au récap.
     expect(view.container.querySelector('[data-dp="compte-liens"] [data-va="propose"]')).toHaveTextContent(/^1 proposé/);
     expect(state.writes).toEqual([]);

@@ -54,9 +54,16 @@ export function invoicePurchaseDescription(scan: ScannedInvoiceResult): string {
   const complete = [...matieresDites, ...autres];
   // Tout tient : chaque famille nommée. Sinon, plusieurs familles de matières se disent ensemble (« ingrédients ») plutôt que d'en garder une seule, et les autres
   // familles suivent tant qu'elles tiennent, les plus nombreuses d'abord.
-  const retenues = join([vendor, number, complete.join(', ')]).length <= DESCRIPTION_MAX || matieresDites.length < 2 ? complete : [INGREDIENTS, ...autres];
+  // RF-15 : « ingrédients » ne remplace plus toutes les familles dès qu'elles ne tiennent pas ensemble : on garde les plus nombreuses qui tiennent (deux au moins) ; « ingrédients » reste le repli quand deux ne tiennent pas.
+  const tient = (liste: string[]) => join([vendor, number, liste.join(', ')]).length <= DESCRIPTION_MAX;
+  // Quand des familles de matières sont coupées, la description le dit (« malts, houblons… ») et les autres familles, qui viennent après, ne sont plus nommées.
+  let gardees = matieresDites.length;
+  while (gardees > 2 && !tient([...matieresDites.slice(0, gardees), '…'])) gardees--;
+  const toutesTiennent = tient(matieresDites);
+  const coupe = !toutesTiennent && matieresDites.length >= 2 && tient([...matieresDites.slice(0, gardees), '…']);
+  const retenues = toutesTiennent || matieresDites.length < 2 ? complete : coupe ? matieresDites.slice(0, gardees) : [INGREDIENTS, ...autres];
   for (let kept = retenues.length; kept >= 0; kept--) {
-    const text = join([vendor, number, retenues.slice(0, kept).join(', ')]);
+    const text = join([vendor, number, retenues.slice(0, kept).join(', ') + (coupe && kept === retenues.length ? '…' : '')]);
     if (text.length <= DESCRIPTION_MAX) return text;
   }
   // Trop long même sans familles : le fournisseur est coupé à un mot pour que le numéro reste lisible.

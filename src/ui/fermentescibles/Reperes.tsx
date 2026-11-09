@@ -70,11 +70,14 @@ export const Reperes: React.FC<PropsReperes> = ({ rendementPct, rendementDeclare
             )}
             <span className="fer-gd fer-mot">{teinteBiere ? teinteBiere.label : '—'}</span>
           </div>
-          <div className="fer-ech" role="img" aria-label={`Teinte : échelle de 0 à 40 EBC${ebcPlage ? `, style de ${ebcPlage.min} à ${ebcPlage.max}` : ''}${e == null ? ', teinte inconnue' : `, bière à ${fr(e, 1)} EBC`}`}>
+          <div className="fer-ech" role="img" aria-label={`Teinte : échelle de 0 à 40 EBC${e != null && e > 40 ? ', bière hors de l’échelle' : ''}${ebcPlage ? `, style de ${ebcPlage.min} à ${ebcPlage.max}` : ''}${e == null ? ', teinte inconnue' : `, bière à ${fr(e, 1)} EBC`}`}>
             <div className="fer-tr" style={{ background: `linear-gradient(90deg,${T0})` }} />
             {ebcPlage && <div className="fer-zone" style={{ left: `${pc(ebcPlage.min, 0, 40)}%`, width: `${pc(ebcPlage.max, 0, 40) - pc(ebcPlage.min, 0, 40)}%` }} />}
-            {ebcPlage && <span className="fer-zl" style={{ left: `${pc((ebcPlage.min + ebcPlage.max) / 2, 0, 40)}%` }}>style {ebcPlage.min}–{ebcPlage.max}</span>}
+            {/* Une plage tout au bout de l'échelle (style 59–79 pour une stout) : l'étiquette se cale sur le bord droit au lieu de déborder du cadre. */}
+            {ebcPlage && <span className="fer-zl" style={pc((ebcPlage.min + ebcPlage.max) / 2, 0, 40) > 80 ? { left: 'auto', right: 8, transform: 'none' } : { left: `${pc((ebcPlage.min + ebcPlage.max) / 2, 0, 40)}%` }}>style {ebcPlage.min}–{ebcPlage.max}</span>}
             {e != null && <b className="fer-mk" style={{ left: `${pc(e, 0, 40)}%` }} />}
+            {/* AM-11 : hors de l'échelle (0–40 EBC), le repère reste au bord mais le dit : « 63,3 EBC › » (comme l'OG), jamais collé au bord sans un mot. */}
+            {e != null && e > 40 && <span className="fer-ebcl fer-hors" data-hors="ebc" style={{ left: 'auto', right: 8, top: 19, transform: 'none' }}>{fr(e, 1)} EBC ›</span>}
           </div>
         </>
       )}

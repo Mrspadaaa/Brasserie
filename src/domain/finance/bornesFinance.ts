@@ -18,6 +18,11 @@ export const BORNES_FINANCE = {
     valeur: 25_000_000, unite: 'centimes',
     source: 'Estimée : l’achat le plus lourd d’une micro-brasserie est une installation de brassage (ordre de grandeur : 50 000 à 150 000 CHF pour une salle de brassage de 5 à 10 hl) ; marge de moitié, soit 250 000 CHF.',
   },
+  /** BE-26 : le prix ou le coût d'UN format dans les essais de tarifs (bouteille, carton, fût), pas une écriture. */
+  formatCents: {
+    valeur: 1_000_000, unite: 'centimes',
+    source: 'Estimée : un fût de 30 L se vend ~150 CHF, un carton de 24 bouteilles ~100 CHF, une palette entière ~8 000 CHF ; 10 000 CHF couvre la palette, tout au-delà est une faute de frappe (« 99999 »).',
+  },
   /** Un taux de TVA saisi dans les Réglages, en %. */
   tauxTvaPct: { valeur: 15, unite: '%', source: 'Taux suisses en vigueur : 8,1 % normal, 3,8 % hébergement, 2,6 % réduit (AFC) ; marge jusqu’à 15 % pour une hausse future, bien au-dessous de « 0 à 100 % ».' },
   /** Année de la date de pièce, au plus ancien. */

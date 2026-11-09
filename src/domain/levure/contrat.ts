@@ -33,7 +33,9 @@ export interface ValeurAxe {
 
 /** Où l'acheter, du plus proche au plus rare (c4, D du 09.11 : CH · FR · DE d'abord). */
 export type RangDisponibilite = 'ici' | 'europe' | 'rare';
-export interface Disponibilite { rang: RangDisponibilite; pays?: Array<'CH' | 'FR' | 'DE'>; offres: number; prixMin?: { montant: number; devise: 'CHF' | 'EUR' } }
+export interface Disponibilite { rang: RangDisponibilite; pays?: Array<'CH' | 'FR' | 'DE'>; offres: number; prixMin?: { montant: number; devise: 'CHF' | 'EUR' };
+  /** L'état du stock au dernier relevé des offres (M6) : « épuisée au relevé du 27.09 », jamais une date de rupture (le relevé ne la donne pas). */
+  stock?: { statut: 'en-stock' | 'epuise' | 'inconnu'; releveLe: string; note?: string } }
 
 /** Les 18 filtres de Chercher (premier rang 11, « Plus de filtres » 7). */
 export type IdFiltre =
@@ -53,7 +55,9 @@ export interface ResultatRecherche {
 }
 
 /** Repères tirés de la recette : posés en repère, JAMAIS en filtre imposé (règle du pilote sur c5b). */
-export interface ReperesRecette { temperatureC?: number; abvVise?: number; styleId?: string; ogVisee?: number }
+export interface ReperesRecette { temperatureC?: number; abvVise?: number; styleId?: string; ogVisee?: number;
+  /** Volume du lot (L), pour la ligne Dose de Comparer (09.11, demande de u2). */
+  volumeL?: number }
 
 /** Suggérer (s7a) : un ou deux axes choisis, chacun vers le bas ou le haut, depuis la levure de la recette. */
 export interface ChoixAxe { axe: IdAxe; sens: -1 | 1 }
@@ -66,7 +70,11 @@ export interface Suggestion {
   source?: SourceCourte;
   /** Le levier de conduite quand une source le documente (« °C : plus chaud », « empâtage → Malts/sucres »). */
   levier?: string;
+  /** Le même levier, structuré : la vue lit l'axe et la plage ici, plus dans la phrase de preuve (S2). `texte` = `levier`. */
+  levierDetail?: LevierDetail;
 }
+/** Un levier de conduite : ce qu'on fait, sur quel axe, dans quelle plage la preuve vaut, d'où cela vient. */
+export interface LevierDetail { texte: string; axe?: 'temperature'; plage?: { min: number; max: number }; source?: SourceCourte }
 
 export interface ApiLevure {
   AXES: readonly Axe[];
@@ -80,4 +88,8 @@ export interface ApiLevure {
   /** Pour chaque axe : combien de levures sont en dessous (−) et au dessus (+) de la base, et combien n'en disent rien. */
   comptesAxes(base: YeastReference): Record<IdAxe, { moins: number; plus: number; sansDonnee: number; estime: boolean }>;
   suggerer(base: YeastReference, choix: ChoixAxe[], limite?: number): Suggestion[];
+  /** La fiche documente-t-elle ce filtre ? (le « ⌕ » d'une ligne de Chercher ; 09.11, demande de u2). */
+  documente(levure: YeastReference, filtre: IdFiltre): boolean;
+  /** Une levure du catalogue par son id (colonnes de Comparer). */
+  trouver(id: string): YeastReference | undefined;
 }

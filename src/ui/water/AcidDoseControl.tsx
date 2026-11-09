@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { NumberInput } from "../NumberInput";
-import { useHoldRepeat, formatDecimal } from "../numericInput";
+import { useHoldRepeat, formatDecimal, messageRefus } from "../numericInput";
 
 import { Minus, Plus } from "lucide-react";
+
+/** TE-31 : un HCO₃ épuisé est 0 ppm (la carte le disait, le résumé écrivait −1,2) : jamais un négatif à l'écran. */
+export const hco3Affiche = (v: number): string => formatDecimal(Math.max(0, Math.round(v * 10) / 10));
 
 export const AcidDoseControl: React.FC<{
   label: string;
@@ -19,6 +22,8 @@ export const AcidDoseControl: React.FC<{
   onEditEnd?: () => void;
 }> = ({ label, name, unit, amount, force, status, hco3, descriptionId, disabled = false, onDose, onEditStart, onEditEnd }) => {
   const doseStatus = status ?? (force ? "manual" : "calculated");
+  // BR-85 : une dose négative est refusée et dite (« −1 mL : une valeur négative n’existe pas ici. La valeur précédente … »).
+  const [refus, setRefus] = useState<string | null>(null);
   const presse = useHoldRepeat(amount, onDose, (from, delta) =>
     Math.max(0, Math.round((from + delta) * 10) / 10),
   );
@@ -49,6 +54,8 @@ export const AcidDoseControl: React.FC<{
           aria-label={name}
           aria-describedby={descriptionId}
           min={0}
+          rejeter
+          onRefus={(r) => setRefus(r ? messageRefus(r.saisi, r.retenu, { min: 0, unite: unit }) : null)}
           value={amount}
           disabled={disabled}
           onValue={onDose}
@@ -68,8 +75,9 @@ export const AcidDoseControl: React.FC<{
           <Plus className="w-3 h-3" />
         </button>
       </div>
+      {refus && <p role="alert" data-role="refus" className="mt-0.5 text-xs leading-4 text-alert-strong">{refus}</p>}
       {hco3 != null && <p aria-label={`HCO₃ après acide — ${label}`} className="mt-0.5 text-xs leading-4 text-cave-200">
-        HCO₃ <strong className="tabular-nums text-cave-50">{formatDecimal(Math.round(hco3 * 10) / 10)}</strong> ppm
+        HCO₃ <strong className="tabular-nums text-cave-50">{hco3Affiche(hco3)}</strong> ppm
       </p>}
     </div>
   );

@@ -199,7 +199,7 @@ export function HopV55RecipeStep({ ownerKey, recipe, localOnly = false, onApply,
 
   return <div className="recipe-hop-v55" data-testid="recipe-hop-v55" data-draft-id={draftId}>
     <div className="recipe-hop-v55-scope">
-      <p><strong>Atelier Houblons V5.5 · brouillon en cours</strong> · les études, prévisions et essais restent dans le dossier local de ce brouillon; un programme ne modifie la recette qu’après « Appliquer au brouillon ».</p>
+      <p><strong>Atelier houblons · brouillon en cours</strong> · les études, prévisions et essais restent dans le dossier local de ce brouillon; un programme ne modifie la recette qu’après « Appliquer au brouillon ».</p>
       {latest ? <><p role="status">Dernière application · {localDateTime(latest.appliedAt)}
         {latest.ownerKey !== ownerKey ? ' · autre profil, dossier local conservé séparément' : ''}</p>
         <details><summary>Origine du programme appliqué</summary><p>Scénario {latest.scenarioId} · branche {latest.branchId}</p>

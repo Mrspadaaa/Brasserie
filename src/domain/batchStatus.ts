@@ -38,21 +38,22 @@ export const BATCH_STATUS: Record<BatchStatus, StatusStyle> = {
   fermentation: {
     label: 'Fermentation',
     hint: 'En cuve, la levure travaille',
-    chip: 'bg-hop/15 text-hop border-hop/40',
+    // BR-120, BE-46 : la teinte vit dans l'aplat et la bordure ; le texte, courant (≥ 11:1), car la teinte du texte tombait à 3,8–4,3:1 au thème cave et à 4,4:1 en clair sur cave-850.
+    chip: 'bg-hop/15 text-cave-50 border-hop/60',
     active: true,
     order: 1
   },
   garde: {
     label: 'Garde froide',
     hint: 'Maturation à froid avant conditionnement',
-    chip: 'bg-water/15 text-water border-water/40',
+    chip: 'bg-water/15 text-cave-50 border-water/60',
     active: true,
     order: 2
   },
   conditionne: {
     label: 'Conditionné',
     hint: 'Mis en bouteille ou en fût, prêt à vendre',
-    chip: 'bg-ebc-copper/20 text-ebc-copper border-ebc-copper/40',
+    chip: 'bg-ebc-copper/20 text-cave-50 border-ebc-copper/60',
     active: true,
     order: 3
   },
@@ -67,7 +68,7 @@ export const BATCH_STATUS: Record<BatchStatus, StatusStyle> = {
   annule: {
     label: 'Annulé',
     hint: 'Brassin abandonné, historique conservé',
-    chip: 'bg-alert/15 text-alert border-alert/40',
+    chip: 'bg-alert/15 text-cave-50 border-alert/60',
     active: false,
     order: 5
   }

@@ -65,7 +65,8 @@ export function amertumeRecette(recipe: Recipe, efficiencyPct: number, options: 
  * on garde l'IBU annoncé de la recette (une valeur saisie), sinon rien : l'inconnu n'est jamais 0.
  */
 export function ibuListe(recipe: Recipe, efficiencyPct: number): number | undefined {
-  const annonce = typeof recipe.ibuTarget === 'number' && Number.isFinite(recipe.ibuTarget) ? recipe.ibuTarget : undefined;
+  // Un IBU annoncé à 0 n'est pas une cible (TE-33 : « Amertume 0 IBU » pour un houblon sans dose) : l'inconnu n'est jamais 0.
+  const annonce = typeof recipe.ibuTarget === 'number' && Number.isFinite(recipe.ibuTarget) && recipe.ibuTarget > 0 ? recipe.ibuTarget : undefined;
   if (recipe.nolo?.enabled) return annonce;
   const chauds = (recipe.hops ?? []).map(normalizeHop).filter(h => h.stage !== 'dryHop' && h.weightG > 0);
   if (!chauds.length) return annonce;

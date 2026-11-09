@@ -47,6 +47,8 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
   disabled = false
 }) => {
   const litresId = useId();
+  // BR-78 : des litres hors de 0 à volume (donc une part hors de 0–100 %) étaient ramenés au bord sans un mot. Refusés, la valeur d'avant reste et la phrase le dit.
+  const [refus, setRefus] = React.useState<string | null>(null);
 
   const osmoseeL = round1((volumeL * value) / 100);
   const reseauL = round1(volumeL - osmoseeL);
@@ -127,6 +129,7 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
               aria-label={`Litres d’osmosée (${label})`}
               min={0}
               max={hasVolume ? volumeL : undefined}
+              onRefus={(r) => setRefus(r ? `${formatDecimal(r.saisi)} L est hors bornes : de 0 à ${formatDecimal(volumeL)} L. ${formatDecimal(r.retenu ?? 0)} L retenu.` : null)}
               value={osmoseeL}
               onValue={(litres: number) => {
                 if (!hasVolume) return;
@@ -153,6 +156,7 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
           </span>
         }
       />
+      {refus && <p role="status" data-role="refus" className="text-xs text-alert-strong">{refus}</p>}
     </div>
   );
 };

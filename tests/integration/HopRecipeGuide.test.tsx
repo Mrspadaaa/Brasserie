@@ -75,11 +75,11 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('Guide aromatique dans la recette', () => {
-  it('#75 : le bilan écrit la dose comme l’atelier V5.5 (3 décimales et valeur complète), pas une seconde précision', () => {
+  it('TE-25 (remplace #75) : le bilan écrit la dose au centième, sans fraction « exacte »', () => {
     render(<HopRecipeSnapshot recipe={recipe({ volumeL: 30, hops: [{ name: 'Cascade', stage: 'boil', weightG: 25, alpha: 7, timeMin: 60 }] as Recipe['hops'] })} />);
     const phases = screen.getByRole('definition');
-    expect(phases).toHaveTextContent('25 g · 0,833 g/L (5/6 g/L exacts)');
-    expect(phases).not.toHaveTextContent('0,8 g/L');
+    expect(phases).toHaveTextContent('25 g · 0,83 g/L');
+    expect(phases).not.toHaveTextContent(/exacts/);
   });
 
   it('V4 : dans le créateur (contextOnly), ne double pas les éditeurs de moment, durée, température et phase des lignes', async () => {

@@ -191,7 +191,7 @@ describe('le total corrigé (défaut A, D315) et la puce (m2)', () => {
     const final = lecture([item(1, 'Malt de Munich', 'stock', 4, 'Kg', 2.2, 8.8, { rangProvisoire: 0 }), item(2, 'Sucre candi', 'stock', 1, 'g', 5.9, 5.9, { rangProvisoire: 1 })], { provisoireJeton: 'j1' });
     const s = fusion(p, provisoire, final);
     expect(libelleAvant(p.base.lignes['line-1'], s.corrections.lignes['line-1'])).toBe('4 Kg × 1,80 · 7,20');
-    expect(libelleAvant(p.base.lignes['line-2'], s.corrections.lignes['line-2'])).toBe('1 Stk'); // l'unité DÉDUITE d'avant (jaune) est celle qu'on barre
+    expect(libelleAvant(p.base.lignes['line-2'], s.corrections.lignes['line-2'])).toBe('1 pièce'); // l'unité DÉDUITE d'avant (jaune) est celle qu'on barre
     expect(libelleAvant({ quantity: 30, unit: '' }, [{ champ: 'unit' }])).toBe('30 ?'); // aucune unité connue : « 30 ? », comme sa maquette;
   });
 });

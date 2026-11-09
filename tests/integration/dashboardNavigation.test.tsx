@@ -207,7 +207,8 @@ describe('Direct batch navigation from the dashboard', () => {
     // Le tableau de bord n'a plus ses propres raccourcis : tout passe par le bouton flottant.
     expect(screen.queryByRole('button', { name: 'Saisie rapide', exact: true })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Entrer une facture/ }));
+    // BX-4 (09.11) : au Bord, l'action de l'écran est « Nouvelle écriture » ; « Entrer une facture » n'est plus répétée dans le menu. La vente passe par la même saisie rapide.
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Encaisser une vente/ }));
     expect(await screen.findByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);

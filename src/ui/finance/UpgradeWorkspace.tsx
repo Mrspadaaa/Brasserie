@@ -48,7 +48,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
       </button>
       {progress.invoiceCount > 0 && <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</p>}
       {scope === 'future' && <div className="upgrade-project-actions">
-        {missing.length && plan.status !== 'active' ? <button className="finance-link" onClick={() => open(plan)}>Budget ou date à compléter<ChevronRight size={16}/></button> : <label className="finance-check"><input type="checkbox" aria-label={`Inclure ${plan.title} dans les prévisions`} checked={plan.status === 'active'} disabled={!!busy} onChange={e => void changeInclusion(plan, e.target.checked)}/>{plan.status === 'active' ? 'Dans les prévisions' : 'Inclure dans les prévisions'}</label>}
+        {missing.length && plan.status !== 'active' ? <button className="finance-link" onClick={() => open(plan)}>Budget ou date à compléter<ChevronRight size={16}/></button> : <label className="finance-check"><input type="checkbox" aria-label={`Inclure ${plan.title} dans les prévisions`} checked={plan.status === 'active'} disabled={!!busy} onChange={e => void changeInclusion(plan, e.target.checked)}/>Inclure dans mes prévisions{/* TE-36 : un seul libellé pour la case, cochée ou non (comme la feuille du projet) */}</label>}
         <button className="finance-link" onClick={() => setPurchase(plan)}>Noter l’achat<ArrowRight size={16}/></button>
       </div>}
     </article>;

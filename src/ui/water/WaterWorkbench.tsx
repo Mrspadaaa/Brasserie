@@ -19,7 +19,7 @@ import { Sparkles, Target } from "lucide-react";
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
 import { ACID_SHORT, SALT_SHORT } from "./constants";
 import { SaltDoseControl } from "./SaltDoseControl";
-import { AcidDoseControl } from "./AcidDoseControl";
+import { AcidDoseControl, hco3Affiche } from "./AcidDoseControl";
 import { WaterTargetStatus } from "./WaterTargetStatus";
 import { WaterDoseImpact } from "./WaterDoseImpact";
 import { PRACTICAL_RATIO_TOLERANCE } from "../../domain/water/saltFit";
@@ -438,7 +438,7 @@ export function WaterWorkbench({
       <details className="text-xs text-cave-200">
         <summary className="min-h-touch cursor-pointer py-1">
           <span aria-label={waterModelIssue ? "HCO₃ après ajouts retenus — moyenne du graphique" : "HCO₃ après acide — moyenne du graphique"}>HCO₃ · moyenne du graphique :{' '}
-            <strong className="tabular-nums text-cave-50">{bicarbonateUnknown ? 'inconnu' : `${formatDecimal(treatment.treatedTotal.hco3)} ppm`}</strong>
+            <strong className="tabular-nums text-cave-50">{bicarbonateUnknown ? 'inconnu' : `${hco3Affiche(treatment.treatedTotal.hco3)} ppm`}</strong>
           </span>
         </summary>
         <div className="space-y-1 pb-1">

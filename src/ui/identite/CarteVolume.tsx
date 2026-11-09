@@ -39,6 +39,7 @@ export interface CarteVolumeProps {
  * se lit sur la même règle (moût d'avant ébullition, part évaporée, et « +N L de trop » quand elle déborde).
  */
 export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, cuveL, avantEbullition, onOuvrirFermenteur, invalide, decrit }: CarteVolumeProps) {
+  const [refus, setRefus] = React.useState<string | null>(null);
   const voulue = etendreVolume({ cuveL, capaciteL, volumeL });
   const { regle, auToucher } = useRegleFigee(voulue);
   const connu = Number.isFinite(volumeL);
@@ -78,6 +79,8 @@ export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, c
             data-role="vin"
             data-element="r4a-volume-champ"
             libelle="Volume en fermenteur"
+            unite="L"
+            onRefus={setRefus}
             valeur={volumeL}
             onValeur={onVolume}
             pas={1}
@@ -91,6 +94,7 @@ export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, c
           <span className="idn-u">L</span>
         </label>
       </div>
+      {refus && <p className="idn-refus" role="alert" data-role="refus">{refus}</p>}
       {texteEtat && (
         <div className="idn-ih" style={{ justifyContent: 'flex-end' }}>
           <span

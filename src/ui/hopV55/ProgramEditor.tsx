@@ -7,12 +7,26 @@ import { programDelta } from '../../services/hopV55/programOverlay';
 import { HopV55ExactInput } from './ExactInput';
 import { Input } from '../Input';
 import { nombreFr } from '../../domain/nombreAffiche';
+import { BORNES } from '../../domain/bornesMetier';
 
 export const hopV55Uses: Array<{ value: HopUse; label: string }> = [
   { value: 'firstWort', label: 'Premier moût' }, { value: 'boil', label: 'Ébullition' },
   { value: 'whirlpool', label: 'Whirlpool' }, { value: 'fermentation', label: 'Fermentation active' },
   { value: 'postFermentation', label: 'À froid après fermentation' },
 ];
+/** BR-43 : les bornes d'un réglage, lues dans la table métier (bornesMetier.ts) selon l'emploi choisi ; sans emploi ou sans volume, seule la borne sûre reste.
+ * Avant : masse 99 999 g, contact 99 999 h, température −1 °C et ébullition 99 999 min passaient sans un mot. */
+export function hopV55ReglageBornes(use: HopUse | '', volumeL: number | null | undefined) {
+  const cave = use === 'fermentation' || use === 'postFermentation';
+  return {
+    masseMaxG: volumeL && volumeL > 0 ? BORNES.houblonGParL.max * volumeL : undefined,
+    ebullitionMaxMin: BORNES.ebullitionMin.max,
+    contactMaxH: cave ? BORNES.dryHopContactH.max : use === 'whirlpool' ? BORNES.whirlpoolMin.max / 60 : BORNES.ebullitionMin.max / 60,
+    temperatureMinC: cave ? BORNES.dryHopTempC.min : use === 'whirlpool' ? BORNES.whirlpoolTempC.min : 0,
+    temperatureMaxC: cave ? BORNES.dryHopTempC.max : 100,
+    jourMax: BORNES.dryHopJour.max,
+  };
+}
 const formNames = { pelletT90: 'pellets T90', pelletT45: 'pellets T45', cryo: 'lupuline concentrée', cone: 'cônes', extract: 'extrait', unknown: 'forme inconnue' };
 
 export interface HopV55ProgramPrefill { id: string; kind: 'replace' | 'append' | 'remove'; additionId?: string; materialId?: string; use?: HopUse; label: string }
@@ -44,6 +58,7 @@ export function HopV55ProgramEditor({ prepared, referenceProgram, editableProgra
     setTemperature(row?.temperatureC ?? undefined); setDay(row?.dayOffset ?? undefined); setLabel(prefill.label); setError('');
   }, [prefill?.id]);
   const material = prepared.runtime.materials.find(row => row.id === materialId);
+  const bornes = hopV55ReglageBornes(use, program?.volumeL);
   if (!program) return <p>Le programme n’est pas encore lié. Explorer reste disponible ; une référence hypothétique peut être déclarée séparément.</p>;
   function selectAddition(id: string) {
     setAdditionId(id);
@@ -87,11 +102,11 @@ export function HopV55ProgramEditor({ prepared, referenceProgram, editableProgra
     {kind !== 'remove' ? <div className="hv-fields"><label className="hv-field hv-wide"><span>Matière et forme</span><select aria-label="Matière du réglage" value={materialId} onChange={e => setMaterialId(e.target.value)}>
       <option value="">Choisir une matière</option>{prepared.runtime.materials.map(row => <option key={row.id} value={row.id}>{row.name} · {formNames[row.form]} · {row.lot ? 'lot identifié' : row.product ? row.product.manufacturer : row.id.startsWith('variety:') ? 'fiche variété' : 'matière du programme'} {row.availableGrams === 0 ? '· indisponible' : ''}</option>)}
     </select></label>
-    <HopV55ExactInput label="Masse du réglage" unit="g" value={grams} onValue={setGrams} min={0} required />
+    <HopV55ExactInput label="Masse du réglage" unit="g" value={grams} onValue={setGrams} min={0} max={bornes.masseMaxG} required />
     <label className="hv-field"><span>Emploi</span><select aria-label="Emploi du réglage" value={use} onChange={e => setUse(e.target.value as HopUse)}><option value="">À préciser</option>{hopV55Uses.map(row => <option key={row.value} value={row.value}>{row.label}</option>)}</select></label>
-    {use === 'boil' ? <HopV55ExactInput label="Temps d’ébullition restant" unit="min" min={0} value={minutes} onValue={setMinutes} /> : <HopV55ExactInput label="Contact du réglage" unit="h" min={0} value={hours} onValue={setHours} />}
-    <HopV55ExactInput label="Température du réglage" unit="°C" min={-273.15} value={temperature} onValue={setTemperature} />
-    <HopV55ExactInput label="Jour de l’ajout" unit="jour" value={day} onValue={setDay} min={0} />
+    {use === 'boil' ? <HopV55ExactInput label="Temps d’ébullition restant" unit="min" min={0} max={bornes.ebullitionMaxMin} value={minutes} onValue={setMinutes} /> : <HopV55ExactInput label="Contact du réglage" unit="h" min={0} max={bornes.contactMaxH} value={hours} onValue={setHours} />}
+    <HopV55ExactInput label="Température du réglage" unit="°C" min={bornes.temperatureMinC} max={bornes.temperatureMaxC} value={temperature} onValue={setTemperature} />
+    <HopV55ExactInput label="Jour de l’ajout" unit="jour" value={day} onValue={setDay} min={0} max={bornes.jourMax} />
     </div> : null}
     {error ? <p className="hv-error" role="alert">{error}</p> : null}
     {stagedProgram ? <div className="hv-wide"><strong>Programme préparé · plusieurs gestes possibles</strong><ul>{stagedProgram.additions.map(row => <li key={row.id}>{prepared.runtime.materials.find(item => item.id === row.materialId)?.name ?? row.materialId} · {row.grams == null ? 'Masse inconnue' : `${row.grams.toLocaleString('fr-CH')} g physiques`} · {hopV55Uses.find(item => item.value === row.use)?.label ?? row.use} · {row.status === 'performed' ? 'Effectué, inchangé' : 'Prévu'}</li>)}</ul><div className="hv-actions"><button type="button" onClick={() => { setError(''); try { compare(stagedProgram); } catch (err) { setError((err as Error).message); } }}>Comparer les gestes préparés</button><button type="button" onClick={() => { setStagedProgram(undefined); setError(''); }}>Annuler la préparation des gestes</button></div></div> : null}

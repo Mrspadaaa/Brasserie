@@ -46,6 +46,7 @@ export function motUnite(unite: string, quantite?: number): string {
   if (cle === 'kg') return 'Kg';
   if (cle === 'l') return 'L';
   if (cle === 'sachet') return quantite !== undefined && quantite <= 1 ? 'sachet' : 'sachets';
+  if (cle === 'piece') return quantite !== undefined && quantite > 1 ? 'pièces' : 'pièce'; // TL-42 : une seule langue à l'écran
   return shortUnit(unite);
 }
 /** Le nombre en français, sans bruit flottant : 0,5 ; 1 250. */

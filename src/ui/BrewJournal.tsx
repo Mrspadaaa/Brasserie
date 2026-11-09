@@ -251,7 +251,13 @@ export function BrewJournal({
         <div>
           <h2>Journal de cuve</h2>
         </div>
-        <button type="button" className="brew-export" onClick={download}>
+        <button
+          type="button"
+          className="brew-export"
+          onClick={download}
+          disabled={!events.length}
+          title={events.length ? undefined : 'Rien à exporter : le journal est vide.'}
+        >
           <Download size={17} />
           <span>Exporter .txt</span>
         </button>

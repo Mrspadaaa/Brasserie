@@ -20,6 +20,7 @@ export interface CarteEbullitionProps {
 
 /** La durée d'ébullition, r4-a : se tape (arrondie à 5′), se glisse, et la règle s'ouvre d'une demi-heure au-delà. */
 export function CarteEbullition({ minutes, onMinutes, evaporation, invalide, decrit }: CarteEbullitionProps) {
+  const [refus, setRefus] = React.useState<string | null>(null);
   const voulue = etendreEbullition(minutes);
   const { regle, auToucher } = useRegleFigee(voulue);
   const connu = Number.isFinite(minutes);
@@ -34,6 +35,8 @@ export function CarteEbullition({ minutes, onMinutes, evaporation, invalide, dec
             data-role="bin"
             data-element="r4a-ebullition-champ"
             libelle="Durée d’ébullition"
+            unite="min"
+            onRefus={setRefus}
             valeur={minutes}
             onValeur={onMinutes}
             pas={EBULLITION_PAS}
@@ -49,6 +52,7 @@ export function CarteEbullition({ minutes, onMinutes, evaporation, invalide, dec
           <span className="idn-u">min</span>
         </label>
       </div>
+      {refus && <p className="idn-refus" role="alert" data-role="refus">{refus}</p>}
       <div className="idn-piste" style={{ marginTop: 30 }} data-element="r4a-curseur-ebullition">
         <div className="idn-bpiste"><i style={{ width: `${pourcent(connu ? minutes : 0, regle)}%` }} /></div>
         {connu && evaporation && (

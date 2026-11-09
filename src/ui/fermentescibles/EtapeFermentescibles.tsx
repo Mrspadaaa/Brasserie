@@ -4,6 +4,7 @@ import type { Fermentable, FermentableKind, StockItem } from '../../types';
 import type { LearnIngredient } from '../../domain/ingredientFacts';
 import './correctifs.css';
 import { messageSansMaltDeBase } from '../../domain/fermentables/base';
+import { messageJourFermentable } from '../../domain/fermentables/jours';
 import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
@@ -41,6 +42,8 @@ export interface EtapeFermentesciblesProps {
   ebcMax?: number | null;
   /** La note du moût qui sature (BrewingMath.efficiencyAtGravity), s'il y en a une. */
   alerteDensite?: string | null;
+  /** Les jours du programme de fermentation (AM-5) : un « J+ » au-delà de sa fin est dit. */
+  programmeJours?: number | null;
   /** Le message d'erreur d'un champ de la validation du brouillon. */
   erreur: (champ: string) => string | undefined;
 }
@@ -54,7 +57,7 @@ const focus = (sel: string) => {
 
 export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   fermentables, onFermentables, stockItems, famille, onFamille, defs, familles = FAMILLES, onCreateStockItem, onLearnIngredient, nolo,
-  og, teinteBiere, rendementPct, rendementDeclare, ogPlage, ebcPlage, styleCode, ebcVise, ebcMax, alerteDensite, erreur,
+  og, teinteBiere, rendementPct, rendementDeclare, ogPlage, ebcPlage, styleCode, ebcVise, ebcMax, alerteDensite, programmeJours, erreur,
 }) => {
   const [sel, setSel] = useState(0);
   const [neuf, setNeuf] = useState<number | null>(null);
@@ -74,7 +77,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const n = fermentables.length;
   const selI = n ? Math.min(sel, n - 1) : -1;
-  const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null).length;
+  const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null && f.weightKg !== 0).length;
   useEffect(() => () => { clearTimeout(minutRetrait.current); clearTimeout(minutMoment.current); clearTimeout(minutPlafond.current); }, []);
 
   // L'ajout mène à la masse de la ligne, sur la ligne (le focus est donné quand la ligne est montée).
@@ -164,7 +167,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const finEbc = (i: number, mode: 'ok' | 'echap' | 'sortie', v: number | null) => {
     if (mode !== 'echap' && v != null) patch(i, { colorEbc: v });
     const suite = mode === 'ok' && chaine.current
-      ? fermentables.findIndex((g, k) => k !== i && g.kind === 'grain' && g.colorEbc == null) : -1;
+      ? fermentables.findIndex((g, k) => k !== i && g.kind === 'grain' && g.colorEbc == null && g.weightKg !== 0) : -1;
     if (suite >= 0) { setCouleurLigne(suite); return; }
     chaine.current = false;
     setCouleurLigne(-1);
@@ -297,7 +300,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
         aria-label={`Composition : ${fermentables.map((f) => `${f.name} ${kgTxt(f.weightKg)} kg`).join(', ')}`}>
         {fermentables.map((f, i) => (
           <i key={i} className={f.kind !== 'grain' ? 'fer-sucre' : f.colorEbc == null ? 'fer-inc' : ''}
-            style={{ flexGrow: f.weightKg, ...(f.kind === 'grain' && f.colorEbc != null ? { background: teinte(f.colorEbc) } : {}) }} />
+            style={{ flexGrow: messageMoment(f) ? 0 : f.weightKg, ...(f.kind === 'grain' && f.colorEbc != null ? { background: teinte(f.colorEbc) } : {}) }} />
         ))}
       </div>
       <ul className="fer-ticket" data-role="ticket" aria-label="Malts et sucres de la recette" data-booster="ticket-selection">
@@ -305,26 +308,29 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
       </ul>
       <Ajout famille={famille} familles={familles} defs={defs} onFamille={onFamille} stockItems={stockItems} fermentables={fermentables}
         styleCode={styleCode} ebcVise={ebcVise} ebcMax={ebcMax} onChoisir={choisir} onCreer={creer} />
+      {/* PD-4 : la question se pose juste sous le champ où l'on a tapé (Entrée), pas sous les repères. */}
+      <>
+          {remplacer && (
+            <div className="fer-alerte" role="alert" data-role="remplacer">
+              <p style={{ margin: 0 }}>
+                « {fermentables[remplacer.ligne].name} » est déjà dans la recette ({defs[fermentables[remplacer.ligne].kind].label.toLowerCase()}, {kgTxt(fermentables[remplacer.ligne].weightKg)} kg), pas un {defs[famille].label.toLowerCase()} à ajouter.
+                Remplacer sa masse par {kgTxt(remplacer.kg)} kg ?
+              </p>
+              <div className="fer-remp">
+                <button type="button" className="fer-ann" data-role="remplacer-oui"
+                  onClick={() => { setKg(remplacer.ligne, remplacer.kg); setARemplacer(null); versAjout(); }}>Remplacer par {kgTxt(remplacer.kg)} kg</button>
+                <button type="button" className="fer-ann fer-ann-non" data-role="remplacer-non"
+                  onClick={() => { setARemplacer(null); versAjout(); }}>Garder {kgTxt(fermentables[remplacer.ligne].weightKg)} kg</button>
+              </div>
+            </div>
+          )}
+      </>
       {n > 0 && (
         <Reperes rendementPct={rendementPct} rendementDeclare={rendementDeclare} og={og} ogPlage={ogPlage} teinteBiere={teinteBiere} ebcPlage={ebcPlage}
           aRenseigner={aRenseigner} ouvert={repsVisible} onBascule={() => setRepsOuvert(!repsVisible)}
-          onRenseigner={() => { const i = fermentables.findIndex((f) => f.kind === 'grain' && f.colorEbc == null); if (i >= 0) ouvrirEbc(i, true); }} />
+          onRenseigner={() => { const i = fermentables.findIndex((f) => f.kind === 'grain' && f.colorEbc == null && f.weightKg !== 0); if (i >= 0) ouvrirEbc(i, true); }} />
       )}
       <div data-role="alertes">
-        {remplacer && (
-          <div className="fer-alerte" role="alert" data-role="remplacer">
-            <p style={{ margin: 0 }}>
-              « {fermentables[remplacer.ligne].name} » est déjà dans la recette ({defs[fermentables[remplacer.ligne].kind].label.toLowerCase()}, {kgTxt(fermentables[remplacer.ligne].weightKg)} kg), pas un {defs[famille].label.toLowerCase()} à ajouter.
-              Remplacer sa masse par {kgTxt(remplacer.kg)} kg ?
-            </p>
-            <div className="fer-remp">
-              <button type="button" className="fer-ann" data-role="remplacer-oui"
-                onClick={() => { setKg(remplacer.ligne, remplacer.kg); setARemplacer(null); versAjout(); }}>Remplacer par {kgTxt(remplacer.kg)} kg</button>
-              <button type="button" className="fer-ann fer-ann-non" data-role="remplacer-non"
-                onClick={() => { setARemplacer(null); versAjout(); }}>Garder {kgTxt(fermentables[remplacer.ligne].weightKg)} kg</button>
-            </div>
-          </div>
-        )}
         {refusSaisie && <p id="fer-refus" className="fer-alerte" role="alert" data-hors="refus">{refusSaisie}</p>}
         {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}{/* virgule-ok : 1 000 kg, entier écrit en lettres */}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
@@ -332,6 +338,10 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
         {fermentables.map((f, i) => {
           const m = messageMoment(f);
           return m ? <p key={`mom-${i}`} className="fer-alerte" data-hors="moment" data-ah={i}>{m} Touche son moment pour le remettre.</p> : null;
+        })}
+        {fermentables.map((f, i) => {
+          const j = messageJourFermentable(f, programmeJours);
+          return j ? <p key={`jour-${i}`} className="fer-alerte" data-hors="jour" role="status">{j}</p> : null;
         })}
         {sansBase && <p className="fer-alerte" data-hors="base" role="status">{sansBase}</p>}
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}

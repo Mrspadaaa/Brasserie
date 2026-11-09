@@ -78,7 +78,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
     fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Paramètres → Brasserie');
+    expect(screen.getByRole('alert')).toHaveTextContent('Réglages → Brasserie');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
     fireEvent.change(volume, { target: { value: '30' } });

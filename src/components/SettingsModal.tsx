@@ -64,7 +64,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   /* AM-66 : un IBAN saisi doit être un IBAN ; vide, la facture dit que les coordonnées manquent. */
   const ibanSaisi = formData.company.iban || COMPANY_FALLBACK.iban;
-  const ibanErreur = ibanCompact(ibanSaisi) && !ibanValide(ibanSaisi) ? MESSAGE_IBAN : '';
+  /* RL-14 : sans IBAN enregistré, le champ montre celui de la configuration de l'app (VITE_COMPANY_IBAN). S'il est faux, le dire : le brasseur n'a rien tapé, et croit son IBAN enregistré faux. */
+  const ibanDeConfig = !formData.company.iban && !!COMPANY_FALLBACK.iban;
+  const ibanErreur = ibanCompact(ibanSaisi) && !ibanValide(ibanSaisi)
+    ? (ibanDeConfig ? 'Aucun IBAN n’est enregistré dans les Réglages : celui de la configuration de l’app s’affiche, et sa clé de contrôle est fausse. Saisis ici le bon IBAN, puis sauvegarde. ' : '') + MESSAGE_IBAN
+    : '';
   /* Le message se montre toujours (un IBAN faux sur les factures doit se voir), mais seul un IBAN TAPÉ dans ce formulaire bloque l'enregistrement :
      un IBAN déjà là (enregistré, ou celui de la configuration de l'app) ne doit jamais empêcher de sauver la cuverie ou un autre réglage (08.11). */
   const ibanModifie = (formData.company.iban ?? '') !== (config.company?.iban ?? '');
@@ -98,7 +102,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div className="flex items-center justify-between px-2 py-1 border-b border-cave-800 bg-cave-900/90 shrink-0">
         <div className="flex items-center space-x-2">
           <Settings className="w-5 h-5 text-ebc-straw shrink-0" />
-          <h3 id="settings-modal-title" className="font-semibold text-sm text-cave-50">Paramètres & Évolutions</h3>
+          <h3 id="settings-modal-title" className="font-semibold text-sm text-cave-50">Réglages</h3>
         </div>
         <button
           type="button"
@@ -315,7 +319,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="p-3 bg-cave-850/50 border border-cave-700 rounded-2xl flex items-center justify-between">
               <div>
                 <h4 className="font-bold text-cave-50 flex items-center text-xs sm:text-sm">
-                  <Shield className="w-4 h-4 text-hop mr-1.5" /> Journal d'Audit & Historique
+                  <Shield className="w-4 h-4 text-hop mr-1.5" /> Journal des modifications
                 </h4>
                 <p className="text-xs text-cave-400">Consulter les modifications</p>
               </div>

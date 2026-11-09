@@ -4,7 +4,7 @@ import { bandes, groupeDe, lignesDePort, numerosPapier, portCents, texteQte, typ
 
 const L = (id: string, groupe: LigneBande['groupe'], amount: number | undefined, quantity: number | undefined, unit: string, extra: Partial<LigneBande> = {}): LigneBande =>
   ({ id, groupe, amount, quantity, unit, uniteLisible: unit.trim() !== '', mouture: false, ...extra });
-// 372765 : 7 malts (18 Kg) + 5 moutures, 7 houblons (270 g + 30 ?), 4 levures (7 Stk) = 86,50.
+// 372765 : 7 malts (18 Kg) + 5 moutures, 7 houblons (270 g + 30 ?), 4 levures (7 sachets) = 86,50.
 const facture = (): LigneBande[] => [
   L('1', 'malt', 13.8, 6, 'Kg'), L('2', 'malt', 0.6, 6, 'Kg', { mouture: true }), L('3', 'malt', 2.4, 1, 'Kg'), L('4', 'malt', 1.8, 1, 'Kg'), L('5', 'malt', 0.1, 1, 'Kg', { mouture: true }),
   L('6', 'malt', 1.75, 1, 'Kg'), L('7', 'malt', 0.1, 1, 'Kg', { mouture: true }),
@@ -26,9 +26,9 @@ describe('bandes : sous-totaux de 372765', () => {
     const h = b.find(x => x.cle === 'houblon')!;
     expect(h.ids).toHaveLength(7); expect(h.cents).toBe(2005); expect(texteQte(h.qte)).toBe('270 g + 30 ?');
   });
-  it('Levures : 4 lignes, 29,60, 7 Stk, « = 7 sachets » seulement parce que chaque conversion est sûre', () => {
+  it('Levures : 4 lignes, 29,60, 7 sachets, « = 7 sachets » seulement parce que chaque conversion est sûre', () => {
     const l = b.find(x => x.cle === 'levure')!;
-    expect(l.ids).toHaveLength(4); expect(l.cents).toBe(2960); expect(texteQte(l.qte)).toBe('7 Stk'); expect(l.eqb).toBe('= 7 sachets');
+    expect(l.ids).toHaveLength(4); expect(l.cents).toBe(2960); expect(texteQte(l.qte)).toBe('7 sachets'); expect(l.eqb).toBe('= 7 sachets');
   });
   it('« Autres » absente (une bande sans ligne n’existe pas) ; Σ = 86,50 en centimes entiers', () => {
     expect(b.map(x => x.cle)).toEqual(['malt', 'houblon', 'levure']); expect(somme(b)).toBe(8650);

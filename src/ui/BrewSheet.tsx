@@ -28,6 +28,7 @@ import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
 import { RecipeReview } from './RecipeReview';
 import { formatDecimal, messageRefus } from './numericInput';
+import { uniteAccordee } from '../domain/fermentables/parts';
 import { masseLigneRetenue } from '../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from './identite/regles';
 
@@ -70,7 +71,8 @@ const Row: React.FC<{
 }> = ({ label, hint, onDelete, children }) => (
   <div className="py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
     <div className="min-w-0 flex-1">
-      <div className="text-sm sm:text-base text-cave-50 truncate leading-tight">{label}</div>
+      {/* BR-25 : le nom passe à la ligne (« Fermentation primaire » était coupé en « Fermentation prim… » à 390). */}
+      <div className="text-sm sm:text-base text-cave-50 break-words leading-tight">{label}</div>
       {hint && <div className="text-sm text-cave-400 truncate leading-tight mt-0.5">{hint}</div>}
     </div>
     <div className="shrink-0 flex items-center gap-1 sm:gap-1.5">{children}</div>
@@ -537,8 +539,9 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Levure -------------------------------------------------------- */}
-      <Block title="Levure" aside={yeastSummary ?? (yeast.name ? `${yeast.name} · ${Number.isFinite(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${yeast.unit}` : 'quantité à préciser'}` : 'Souche à choisir')}>
-        <Row label={yeast.name || '—'} hint={yeast.strain}>
+      <Block title="Levure" aside={yeastSummary ?? (yeast.name ? `${yeast.name} · ${Number.isFinite(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${uniteAccordee(yeast.unit, yeast.qty)}` : 'quantité à préciser'}` : 'Souche à choisir')}>
+        {/* BR-26 : la ligne de la quantité se lit « Quantité », la souche passe en dessous (le nom seul ne disait pas ce que le champ attend). */}
+        <Row label="Quantité" hint={[yeast.name, yeast.strain].filter(Boolean).join(' · ') || undefined}>
           <Cell
             label="Quantité de levure"
             value={yeast.qty}
@@ -613,7 +616,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Fermentation -------------------------------------------------- */}
-      <Block title="Fermentation" aside={fermentation.length ? `${fermentation.length} palier${fermentation.length > 1 ? 's' : ''}` : 'Conduite à définir'}>
+      <Block title="Fermentation" aside={fermentation.length ? `${fermentation.length} phase${fermentation.length > 1 ? 's' : ''}` : 'Conduite à définir'}>
         {fermentation.length === 0 ? (
           <p className="py-2 text-sm text-cave-400">Aucune phase.</p>
         ) : (

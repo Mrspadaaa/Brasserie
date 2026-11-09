@@ -15,7 +15,7 @@ export function recipeInstallationAdoptionIssue(
     : 'Le matériel de cette recette n’est pas figé.';
   return activeProfile?.equipment
     ? `${reason} Ouvre « Modifier la recette », puis choisis « Adapter à mon matériel actuel » avant de lancer un nouveau brassin.`
-    : `${reason} Renseigne ton matériel dans Paramètres → Brasserie, puis ouvre « Modifier la recette » pour l’adapter avant de lancer un nouveau brassin.`;
+    : `${reason} Renseigne ton matériel dans Réglages → Brasserie, puis ouvre « Modifier la recette » pour l’adapter avant de lancer un nouveau brassin.`;
 }
 
 /** Drafts can be kept while unresolved; launching a batch requires a feasible recorded plan. */

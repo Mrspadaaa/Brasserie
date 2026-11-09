@@ -26,7 +26,7 @@ describe('D328a — une pièce dont le calcul tombe juste est sûre, hors des fa
 describe('D328b — aucun « ? » à l\'en-tête pour une ligne hors stock', () => {
   it('une ligne hors stock sans unité ni quantité entière n\'est pas comptée « ? » ; un ingrédient sans unité l\'est toujours', () => {
     const L = (id: string, extra: Partial<LigneBande>): LigneBande => ({ id, groupe: 'autres', amount: 5, quantity: 1, unit: '', uniteLisible: false, mouture: false, ...extra });
-    expect(texteQte(bandes([L('a', { horsStock: true }), L('b', { horsStock: true, quantity: undefined }), L('c', { unit: 'Stk', uniteLisible: true, quantity: 3 })])[0].qte)).toBe('3 Stk');
+    expect(texteQte(bandes([L('a', { horsStock: true }), L('b', { horsStock: true, quantity: undefined }), L('c', { unit: 'Stk', uniteLisible: true, quantity: 3 })])[0].qte)).toBe('3 pièces');
     expect(texteQte(bandes([L('a', { groupe: 'malt', quantity: 2 }), L('b', { groupe: 'malt', horsStock: true })])[0].qte)).toBe('2 ?');
   });
 });

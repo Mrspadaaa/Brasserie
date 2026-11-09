@@ -237,7 +237,7 @@ function IngredientRow({
           disabled={pitchActualUnknown}
           onClick={() => setEditingDose((value) => !value)}
         >
-          <strong id={`brew-dose-value-${item.id}`}>{pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? 'À préciser' : f(amount ?? 0, item.unit)}</strong>{' '}
+          <strong id={`brew-dose-value-${item.id}`} data-sans-valeur={pitchActualUnknown || pitchPlannedUnknown ? '' : undefined}>{pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? 'À préciser' : f(amount ?? 0, item.unit)}</strong>{' '}
           <span id={`brew-dose-unit-${item.id}`}>{pitchActualUnknown || pitchPlannedUnknown && !item.unit ? '' : item.unit}{item.kind === 'water' ? ' à froid' : ''}</span>
         </button>
         <label className="brew-add-check" title="Cocher après l’ajout réel">

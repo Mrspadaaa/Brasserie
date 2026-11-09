@@ -17,9 +17,21 @@ export interface TvaImprimee {
 
 const centimes = (valeur: unknown): number | null => (typeof valeur === 'number' && Number.isFinite(valeur) ? Math.round(valeur * 100) : null);
 
+type RangeeVat = NonNullable<ScannedInvoiceResult['vat']>[number];
+/**
+ * RF-14 : le modèle range parfois dans le bloc une ligne « Total TVA » (taux inconnu) en plus des rangées par taux. Une rangée sans taux dont le montant égale, au centime, la somme
+ * des AUTRES rangées (au moins deux, toutes lues) est ce total : elle n'est ni additionnée une seconde fois ni montrée comme un taux.
+ */
+export function sansTotalDuBloc(rangees: readonly RangeeVat[]): RangeeVat[] {
+  if (rangees.length < 3 || rangees.some(r => centimes(r.amount) === null)) return [...rangees];
+  const somme = rangees.reduce((s, r) => s + centimes(r.amount)!, 0);
+  const total = rangees.findIndex(r => !(typeof r.rate === 'number' && Number.isFinite(r.rate)) && centimes(r.amount)! * 2 === somme);
+  return total < 0 ? [...rangees] : rangees.filter((_, i) => i !== total);
+}
+
 /** Les rangées du bloc de TVA dont le montant est lu, du plus bas taux au plus haut (taux inconnu en dernier). */
 export function tauxLus(result: Pick<ScannedInvoiceResult, 'vat'> | undefined): TvaParTaux[] {
-  return (result?.vat ?? []).filter(row => centimes(row.amount) !== null).map(row => ({ rate: typeof row.rate === 'number' && Number.isFinite(row.rate) ? row.rate : null, amount: row.amount as number }))
+  return sansTotalDuBloc(result?.vat ?? []).filter(row => centimes(row.amount) !== null).map(row => ({ rate: typeof row.rate === 'number' && Number.isFinite(row.rate) ? row.rate : null, amount: row.amount as number }))
     .sort((a, b) => (a.rate ?? Infinity) - (b.rate ?? Infinity));
 }
 
@@ -33,7 +45,7 @@ export function tvaImprimee(result: Pick<ScannedInvoiceResult, 'tvaAmount' | 'va
   if (!result) return undefined;
   const taux = tauxLus(result);
   if (typeof result.tvaAmount === 'number' && Number.isFinite(result.tvaAmount)) return { montant: result.tvaAmount, source: 'total', taux };
-  const rangees = result.vat ?? [];
+  const rangees = sansTotalDuBloc(result.vat ?? []);
   if (!rangees.length || rangees.some(row => centimes(row.amount) === null)) return undefined;
   if (result.controls?.vat?.statut === 'ecart') return undefined;
   const somme = rangees.reduce((s, row) => s + centimes(row.amount)!, 0), ttc = centimes(result.amountTTC);

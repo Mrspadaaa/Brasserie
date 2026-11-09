@@ -243,5 +243,5 @@ describe('le vrai dry hop : actif et après, chacun à la dose de la règle', ()
       const a = dosesDe(d.actif), b = dosesDe(k.actif);
       for (const [id, x] of a) expect(b.get(id)).toBe(x);
     }
-  });
+  }, 60_000); // PI-NOTE-3 : calcul sur tout le catalogue, 8 s seul ; sous une suite chargée il dépassait les 15 s par défaut
 });

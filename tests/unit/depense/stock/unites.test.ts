@@ -120,7 +120,7 @@ describe('D213 unités : la ligne repliée de la feuille', () => {
     const view = await lire([{ id: 'line-1', name: 'Safale US-05 11,5g', kind: 'stock', quantity: 2, unit: 'Stk', amountTTC: 10, stockCategory: '' }], [item('U', 'Safale US-05', 'Levure', 'sachet')]);
     expect(stock(view, 1)).toContain('proposé');
     expect(duel(view, 1)).toContain('2 Stk = 2 sachet');
-    expect(qte(view, 1)).toContain('Stk'); // l'unité imprimée n'est pas réécrite
+    expect(qte(view, 1)).toContain('pièces'); // TL-42 : une seule langue à l'écran ; l'unité imprimée reste dite dans le face à face (« 2 Stk = 2 sachet »)
   });
 
   it('D214 : une ligne sans unité lisible est proposée, son champ « Unité » reste vide, la rangée repliée dit « unité ? » et le plateau « unité à préciser »', async () => {

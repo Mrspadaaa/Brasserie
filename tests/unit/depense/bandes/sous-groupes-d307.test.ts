@@ -27,17 +27,17 @@ describe('D307 : les sous-groupes d\'une bande à sept sous-familles', () => {
   });
   it('sous-totaux de quantité (la fonction de la bande) et de montant, au centime : ceux de sa maquette', () => {
     const lu = b.sousGroupes!.map(g => `${g.nom} ${g.ids.length} ${texteQte(g.qte)} ${g.cents}`);
-    expect(lu).toEqual(['Peinture et sols 5 9 Stk 19130', 'Outillage 2 2 Stk 9550', 'Quincaillerie 2 2 Stk 2240', 'Électricité 2 3 Stk 4970', 'Plomberie 2 5 Stk 5880', 'Protection 2 2 Stk 2140', 'Divers travaux 1 2 Stk 1560']);
+    expect(lu).toEqual(['Peinture et sols 5 9 pièces 19130', 'Outillage 2 2 pièces 9550', 'Quincaillerie 2 2 pièces 2240', 'Électricité 2 3 pièces 4970', 'Plomberie 2 5 pièces 5880', 'Protection 2 2 pièces 2140', 'Divers travaux 1 2 pièces 1560']);
   });
-  it('la somme des sous-groupes est la bande : 454,70, 16 rangées, 25 Stk', () => {
+  it('la somme des sous-groupes est la bande : 454,70, 16 rangées, 25 pièces', () => {
     expect(b.sousGroupes!.reduce((s, g) => s + g.cents, 0)).toBe(b.cents);
     expect(b.cents).toBe(45470);
     expect(b.sousGroupes!.reduce((s, g) => s + g.ids.length, 0)).toBe(b.ids.length);
-    expect(texteQte(b.qte)).toBe('25 Stk');
+    expect(texteQte(b.qte)).toBe('25 pièces');
   });
   it('les unités d\'une même grandeur s\'additionnent dans un sous-groupe comme dans la bande (1 Kg + 300 g = 1,3 Kg), les pièces à part', () => {
     const g = rev([L('a', 'renovation', 'Peinture et sols', 4.1, 1, 'Kg'), L('b', 'renovation', 'Peinture et sols', 1.2, 300, 'g'), L('c', 'renovation', 'Peinture et sols', 3, 2, 'Stk'), R('d', 'Outillage', 1, 650)]).sousGroupes![0];
-    expect(texteQte(g.qte)).toBe('1,3 Kg + 2 Stk'); expect(g.cents).toBe(830);
+    expect(texteQte(g.qte)).toBe('1,3 Kg + 2 pièces'); expect(g.cents).toBe(830);
   });
   it('les centimes restent entiers : 0,10 + 0,20 = 0,30', () => {
     const g = rev([L('a', 'renovation', 'Outillage', 0.1, 1, 'Stk'), L('b', 'renovation', 'Outillage', 0.2, 1, 'Stk'), R('c', 'Protection', 1, 100)]).sousGroupes![0];
@@ -47,7 +47,7 @@ describe('D307 : les sous-groupes d\'une bande à sept sous-familles', () => {
     const t = rev([R('a', 'Outillage', 1, 650), L('b', 'renovation', 'Outillage', undefined, 1, 'Stk'), L('c', 'renovation', 'Protection', 5, 3, ''), R('d', 'Protection', 1, 100)]);
     const [out, pro] = t.sousGroupes!;
     expect(out.incomplet).toBe(true); expect(pro.incomplet).toBe(false);
-    expect(texteQte(pro.qte)).toBe('1 Stk + 3 ?');
+    expect(texteQte(pro.qte)).toBe('1 pièce + 3 ?');
     expect(t.incomplet).toBe(true);
   });
 });

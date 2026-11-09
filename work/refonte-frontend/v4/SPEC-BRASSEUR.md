@@ -1604,3 +1604,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : audit du bouton + sur tous les écrans — onglets, sous-onglets, pages plein écran, 390 tactile et 1280 : sa place (toujours la même, sans couvrir un contrôle), son action principale (celle de l'écran), son menu ; puis correction, puis test sur l'app déployée par le critique (BX-4).)
 - **09.11**, mot pour mot, sur le panel Levure passe 4 (https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd) : « Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant »
   (lu : « les deux suggestions » = les deux candidates du critique, c6b (Chercher) et s7a (Suggérer) ; avec l5b (étape) et s5a (Comparer), déjà choisies, les quatre vues de la Levure sont à porter dans l'app, maintenant.)
+- **09.11**, mot pour mot, pendant le port Levure et les voies de bugs : « Token pour la qualité !!!!! »
+  (lu : les jetons servent la qualité — pas de raccourci sur la critique, les tests complets, les captures regardées et le jeu en ligne ; ni rustine pour finir vite (BR-45 retiré).)
+- **09.11**, mot pour mot : « Mais utilsent tes token pour la qualité pas pour du va et vient inutile !!! »
+  (lu : pas de compte rendu à chaque retour d'agent ni de relance pour un détail ; le pilote tranche, groupe et ne parle qu'au résultat vérifié.)

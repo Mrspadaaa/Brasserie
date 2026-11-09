@@ -1,0 +1,16 @@
+{
+  "base": "http://127.0.0.1:5660",
+  "erreurs": [],
+  "bloques": [],
+  "captures": [
+    "c1-1056-390-cave"
+  ],
+  "notes": {
+    "c1-390-cave": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "puces": [],
+      "premier": "US-05",
+      "tapee": "Wyeast 1056 American Ale"
+    }
+  }
+}

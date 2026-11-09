@@ -501,7 +501,7 @@ export function BrewDayMeasurements({
         <div className="flex items-center justify-between gap-2 text-2xs text-cave-200">
           <span role="status">
             {notice ||
-              `Dernier relevé · ${new Date(last.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} · ${last.value} ${last.unit}`}
+              `Dernier relevé · ${new Date(last.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} · ${last.kind === 'densite' ? sg(last.value) : String(last.value).replace('.', ',')} ${last.unit}`}
           </span>
           <button
             type="button"

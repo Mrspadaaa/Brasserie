@@ -49,6 +49,8 @@ export interface WaterVolumePlan {
   spargeMaximumHotL?: number;
   preferredMashRatioLPerKg?: number;
   mashIncreasedForSparge?: boolean;
+  /** TE-39 : présent quand l'empâtage voulu ne tient pas dans la cuve ; vaut la cuve utile (L) qui le borne. */
+  mashLimitedByKettleL?: number;
   waterBalanceErrorL?: number;
 }
 
@@ -589,6 +591,7 @@ export const BrewingMath = {
         planningStatus: impossible ? 'impossible' : check.spargeStatus,
         issues, preferredMashRatioLPerKg: ratio,
         mashIncreasedForSparge: !manual && spargeType !== 'none' && mash > preferred + 0.05,
+        ...(!manual && spargeType !== 'none' && maxMash < Math.min(totalWater, requiredMash) - 0.05 ? { mashLimitedByKettleL: e.kettleWorkingL } : {}),
         waterBalanceErrorL: balanceError,
         spargeHotL: check.spargeHotL, spargeMainHotL: check.spargeMainHotL,
         spargeAuxiliaryHotL: check.spargeAuxiliaryHotL, spargePreferredHotL: check.spargePreferredHotL,

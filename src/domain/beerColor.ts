@@ -130,14 +130,15 @@ export function recipeBeerColor(
   volumeL: number
 ): BeerColor | null {
   const colorants = (fermentables ?? []).filter(
-    (f) => f.kind == null || f.kind === 'grain' || Number.isFinite(f.colorEbc)
+    // RJ-10 : une ligne à 0 kg (texte non reconnu, ajout pas encore pesé) ne colore rien : elle ne bloque pas la couleur de la recette.
+    (f) => (f.kind == null || f.kind === 'grain' || Number.isFinite(f.colorEbc)) && !(f.weightKg === 0 && f.colorEbc == null)
   );
   return computeBeerColor(colorants, volumeL);
 }
 
 /** Ce qui manque pour pouvoir calculer la couleur — pour le dire précisément. */
 export function missingColorData(malts: MaltIngredient[]): string[] {
-  return malts.filter((m) => m.colorEbc == null).map((m) => m.name);
+  return malts.filter((m) => m.colorEbc == null && m.weightKg !== 0).map((m) => m.name);
 }
 
 /* ---------------------------------------------------------------------------

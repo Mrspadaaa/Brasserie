@@ -112,7 +112,7 @@ const Metric: React.FC<{
       </>
     ) : (
       // Une case de chiffre ne porte jamais une consigne : « — », et la raison en une ligne sous la carte (test en ligne n° 11).
-      <dd className="reading text-sm text-cave-500" title={hint ?? 'incalculable'}>
+      <dd className="reading text-sm text-cave-400" title={hint ?? 'incalculable'}>
         —<span className="sr-only"> {hint ?? 'incalculable'}</span>
       </dd>
     )}
@@ -122,6 +122,7 @@ const Metric: React.FC<{
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { measuredWortYield } from '../domain/brewSystemInsights';
+import { partsEntieres, resumeAjouts, uniteAccordee } from '../domain/fermentables/parts';
 
 export const RecipePage: React.FC<RecipePageProps> = ({
   recipe,
@@ -175,6 +176,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     () => measuredExtraction ? null : recipeBeerColor(fermentables, recipe.volumeL),
     [fermentables, recipe.volumeL, measuredExtraction]
   );
+  // TL-17 : parts entières qui font 100 % (plus forts restes), pas chaque part arrondie seule.
+  const partsGrain = useMemo(() => partsEntieres(grains.map((g) => g.weightKg)), [grains]);
   const colorMissing = useMemo(() => missingColorData(grains), [grains]);
 
   const points = useMemo(
@@ -353,7 +356,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
         {color && (
           <p className="mt-1 text-xs text-cave-400">
-            Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {nombreFr(color.srm, 1)}.
+            Couleur attendue : <span className="text-cave-200">{color.label}</span> — {nombreFr(color.ebc, 1)} EBC.
           </p>
         )}
       </section>
@@ -372,11 +375,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         ) : (
           <ul className="divide-y divide-cave-850">
             {grains.map((m, i) => {
-              const pct = totalGrist > 0 ? (m.weightKg / totalGrist) * 100 : 0;
+              const pct = partsGrain[i] ?? 0;
               return (
                 <li key={`${m.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
                   <span className="reading text-sm text-cave-400 w-12 shrink-0 text-right">
-                    {pct.toFixed(0)} %
+                    {nombreFr(pct, 0)} %
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-cave-50 break-words">{m.name}</span>
@@ -402,12 +405,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {others.length > 0 && (
         <Section
           title="Sucres et ajouts"
-          hint={
-            (points?.unfermentable ?? 0) > 2
-              ? `${Math.round(points!.unfermentable)} points de densité que la levure ne peut pas manger — ils restent dans la bière.`
-              : undefined
-          }
+          hint={resumeAjouts(others)}
         >
+          {(points?.unfermentable ?? 0) > 2 && (
+            <p className="pb-1 text-sm text-cave-400">{nombreFr(points!.unfermentable, 0)} points de densité que la levure ne peut pas manger : ils restent dans la bière.</p>
+          )}
           <ul className="divide-y divide-cave-850">
             {others.map((f, i) => (
               <li key={`${f.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
@@ -524,7 +526,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <dt className="text-sm text-cave-400">Quantité</dt>
                 <dd className="reading text-sm">
-                  {recipe.yeast.qty > 0 ? `${recipe.yeast.qty.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${recipe.yeast.unit ?? ''}`.trim() : 'À renseigner'}
+                  {recipe.yeast.qty > 0 ? `${recipe.yeast.qty.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${uniteAccordee(recipe.yeast.unit, recipe.yeast.qty)}`.trim() : 'À renseigner'}
                 </dd>
               </div>
               <div>
@@ -816,7 +818,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             {recipe.fermentation && recipe.fermentation.length > 0 && (
-              <Section title="Fermentation" hint={nombreAccorde(recipe.fermentation.length, 'étape')}>
+              <Section title="Fermentation" hint={nombreAccorde(recipe.fermentation.length, 'phase')}>
                 <h3 className="text-sm text-cave-400 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {recipe.fermentation.map((s, i) => {

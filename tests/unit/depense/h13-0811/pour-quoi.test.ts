@@ -34,10 +34,10 @@ describe('« Pour quoi ? » reflète la majorité des lignes', () => {
     const items = [ligne('a', 'Kronkorken', 'packaging'), ligne('b', 'Gärtank', 'equipment'), ligne('c', 'Hahn', 'equipment'), ligne('d', 'Siphon', 'equipment'), ligne('e', 'Pilsner Malz', 'stock', 'Malt'), ligne('f', 'Pale Ale Malz', 'stock', 'Malt')];
     expect(invoicePurchaseDescription(lecture(items))).toBe('B&R · 1 · malts, matériel, emballages');
   });
-  it('plusieurs familles de matières qui ne tiennent pas dans 60 caractères se disent « ingrédients », pas « matières premières »', () => {
+  it('plusieurs familles de matières qui ne tiennent pas dans 60 caractères nomment celles qui tiennent, suivies de « … » (RF-15), jamais « matières premières »', () => {
     const items = [ligne('a', 'Gärtank', 'equipment'), ligne('b', 'Kronkorken', 'packaging'), ligne('c', 'Pilsner Malz', 'stock', 'Malt'), ligne('d', 'Aramis', 'stock', 'Houblon'), ligne('e', 'Wyeast 3944', 'stock', 'Levure')];
     const texte = invoicePurchaseDescription(lecture(items, { vendor: 'Brasserie-Fourniture GmbH', invoiceNumber: '100001' }));
-    expect(texte).toBe('Brasserie-Fourniture GmbH · 100001 · ingrédients, matériel');
+    expect(texte).toBe('Brasserie-Fourniture GmbH · 100001 · malts, houblons…'); // RF-15 : les deux plus nombreuses qui tiennent, et le « … » dit qu'il y en a d'autres
     expect(texte).not.toContain('matières premières');
   });
   it('quand tout tient, les familles de matières restent nommées (malts, houblons, levures)', () => {

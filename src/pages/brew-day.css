@@ -1533,6 +1533,15 @@
     monospace;
   font-variant-numeric: tabular-nums;
 }
+/* RJ-14 : « À préciser » n'est pas un nombre : texte courant, à la ligne dans son cadre, jamais 20 px de chiffre à 106 px de large. */
+.brew-amount strong[data-sans-valeur] {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
 .brew-amount > span {
   font-size: 14px;
   color: var(--brew-muted);

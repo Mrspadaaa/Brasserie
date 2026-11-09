@@ -1,0 +1,59 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 11 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/recipeEditing.test.tsx[2m > [22mRecipe data entry regressions[2m > [22mlets the brewer explicitly update a saved source snapshot
+[31m[1mAssertionError[22m: expected 'Réseau — Villars-sur-Glâne' to be 'Analyse corrigée' // Object.is equality[39m
+
+Expected: [32m"[7mAnalyse corrigé[27me"[39m
+Received: [31m"[7mRéseau — Villars-sur-Glân[27me"[39m
+
+[36m [2m❯[22m tests/integration/recipeEditing.test.tsx:[2m233:85[22m[39m
+    [90m231| [39m    fireEvent.click(screen.getByRole('button', { name: 'Faire relire l…
+    [90m232| [39m    [35mawait[39m screen[33m.[39m[34mfindByText[39m([32m'Source à jour'[39m)[33m;[39m
+    [90m233| [39m    expect(run.mock.calls[0][0].context.fiche.recipe.waterPlan.sourceS…
+    [90m   | [39m                                                                                    [31m^[39m
+    [90m234| [39m      [32m'Analyse corrigée'[39m
+    [90m235| [39m    )[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS1 : au repos, la liste s’ouvre sur « US-05 · ta levure · la référence », ⊕ grisé, puis les autres
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS4 : référence muette sur l’axe : les vendues ici documentées restent, la référence montre ses « ⌕ ? »
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS3 : une levure dont la plage ne couvre pas la conduite le dit en rouge (« 19 hors plage »)
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS5 : le levier sans preuve chiffrée ne double pas l’en-tête
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS6 : l’en-tête dit le volume : « 30 L · 19 °C »
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-reel.test.tsx[2m > [22mles vues sur l’API de d1[2m > [22mSuggérer : 12 axes, « − » sur Atténuation, les vendues ici d’abord, le levier de l’API
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues.test.tsx[2m > [22mSuggérer (s7a)[2m > [22m12 axes en cartes − / +, groupés Arômes · Corps · Conduite, aucun but nommé
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues.test.tsx[2m > [22mSuggérer (s7a)[2m > [22m« − » sur Atténuation reclasse la liste, les vendues ici d’abord, avec le levier de l’API
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues.test.tsx[2m > [22mSuggérer (s7a)[2m > [22mdeux axes se combinent : « Plus de thiols · plus clair », les autres groupes en puces, les jauges des deux axes par ligne
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues.test.tsx[2m > [22mSuggérer (s7a)[2m > [22m⊕ pose la levure dans Comparer ; toucher le ⌕ de la base appelle onChercherDonnee seul
+[31m[1mTypeError[22m: (0 , epuisee) is not a function[39m
+[36m [2m❯[22m ligne src/ui/etapeLevure/Suggerer.tsx:[2m187:16[22m[39m
+    [90m185| [39m    [35mconst[39m estBase [33m=[39m l[33m.[39mid [33m===[39m base[33m.[39mid[33m;[39m
+    [90m186| [39m    [35mconst[39m ep [33m=[39m [34mtexteEpuisee[39m(s[33m.[39mdisponibilite)[33m;[39m
+    [90m187| [39m    [35mconst[39m tL [33m=[39m [34mplageDe[39m(api[33m,[39m l[33m,[39m [32m'temperature'[39m)[33m;[39m
+    [90m   | [39m               [31m^[39m
+    [90m188| [39m    [35mconst[39m repT [33m=[39m reperes[33m.[39mtemperatureC[33m;[39m
+    [90m189| [39m    const hors = !!tL && repT !== undefined && (repT < tL.min || repT …
+[90m [2m❯[22m rang src/ui/etapeLevure/Suggerer.tsx:[2m246:132[22m[39m
+[90m [2m❯[22m Suggerer src/ui/etapeLevure/Suggerer.tsx:[2m302:8[22m[39m
+[90m [2m❯[22m Object.react_stack_bottom_frame ../../../../Documents/Brasserie/node_modules/react-dom/cjs/react-dom-client.development.js:[2m25904:20[22m[39m
+[90m [2m❯[22m renderWithHooks ../../../../Documents/Brasserie/node_modules/react-dom/cjs/react-dom-client.development.js:[2m7662:22[22m[39m
+[90m [2m❯[22m updateFunctionComponent ../../../../Documents/Brasserie/node_modules/react-dom/cjs/react-dom-client.development.js:[2m10166:19[22m[39m
+[90m [2m❯[22m beginWork ../../../../Documents/Brasserie/node_modules/react-dom/cjs/react-dom-client.development.js:[2m11778:18[22m[39m
+[90m [2m❯[22m runWithFiberInDEV ../../../../Documents/Brasserie/node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+[90m [2m❯[22m performUnitOfWork ../../../../Documents/Brasserie/node_modules/react-dom/cjs/react-dom-client.development.js:[2m17641:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m163 passed[39m[22m[90m (174)[39m
+[2m   Start at [22m 14:13:01
+[2m   Duration [22m 74.13s[2m (transform 4.22s, setup 798ms, collect 10.42s, tests 129.63s, environment 5.02s, prepare 464ms)[22m
+

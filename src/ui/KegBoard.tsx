@@ -13,6 +13,7 @@ import { Field, FormNav, TextInput } from './FormNav';
 import { swissToday } from './DateField';
 import './equipment-compact.css';
 import { nombreFr } from '../domain/nombreAffiche';
+import { brassinFutable, problemeRemplissage } from '../domain/stock/futs';
 
 const KEG_STATE: Record<KegState, { label: string; filter: string; hint: string; Icon: typeof Beer }> = {
   lavage: { label: 'À laver', filter: 'À laver', hint: 'Revenu vide, à nettoyer avant remplissage.', Icon: Droplets },
@@ -43,8 +44,11 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
   const [repairedState, setRepairedState] = useState<KegState | ''>('');
   const [repairAttempted, setRepairAttempted] = useState(false);
   const repairInput = useRef<HTMLSelectElement>(null);
-  const fillable = batches.filter(b => isCurrent(b) && ['conditionne', 'garde', 'fermentation'].includes(b.status));
+  const fillable = batches.filter(b => isCurrent(b) && brassinFutable(b));
   const batchToFill = fillable.find(b => b.id === fillBatch);
+  // AM-70 : mêmes règles que la fiche du fût (domain/stock/futs) — contenance déjà couverte ailleurs, client de la livraison.
+  const fillProblem = selected && batchToFill ? problemeRemplissage({ ...selected, state: 'plein', batchRef: batchToFill.id }, batches, kegs) : undefined;
+  const deliveryMissing = selected?.state === 'plein' && !deliveryClient.trim();
   const filtered = useMemo(() => filter === 'all' ? kegs : kegs.filter(k => filter === 'unknown' ? !isKnownState(k.state) : k.state === filter), [kegs, filter]);
   const counts = kegs.reduce((result, keg) => {
     result[isKnownState(keg.state) ? keg.state : 'unknown'] += 1;
@@ -61,7 +65,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
 
   const close = () => { setSelected(null); setConfirmDelete(false); setRepairedState(''); setRepairAttempted(false); };
   const advance = () => {
-    if (!selected || (selected.state === 'propre' && !batchToFill)) return;
+    if (!selected || (selected.state === 'propre' && (!batchToFill || fillProblem)) || deliveryMissing) return;
     if (!isKnownState(selected.state)) {
       if (!repairedState) { setRepairAttempted(true); repairInput.current?.focus(); return; }
       // Corriger une donnée importée ne constitue ni un retour vide ni un remplissage.
@@ -143,7 +147,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
             open onClose={close} title={`Fût ${selected.id}`}
             subtitle={`${nombreFr(selected.capacityL, 1)} L · ${selectedState.label}`}
             className="equipment-sheet"
-            footer={<div className="equipment-footer"><Button intent="secondary" onClick={close}>Annuler</Button><Button intent="primary" disabled={selectedUnknown ? !repairedState : selected.state === 'propre' && !batchToFill} onClick={advance}>{selectedUnknown ? 'Enregistrer l’état' : NEXT_LABEL[selected.state]}</Button></div>}
+            footer={<div className="equipment-footer"><Button intent="secondary" onClick={close}>Annuler</Button><Button intent="primary" disabled={selectedUnknown ? !repairedState : (selected.state === 'propre' && (!batchToFill || Boolean(fillProblem))) || deliveryMissing} onClick={advance}>{selectedUnknown ? 'Enregistrer l’état' : NEXT_LABEL[selected.state]}</Button></div>}
           >
             <FormNav className="equipment-form" onSubmit={advance}>
               <p className="equipment-help">{selectedState.hint}</p>
@@ -166,13 +170,13 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
                 </dl>
               )}
               {selected.state === 'propre' && (fillable.length ? (
-                <Field label="Brassin à enfûter" htmlFor="keg-fill-batch" hint="Choisis la bière, puis confirme le remplissage.">
+                <Field label="Brassin à enfûter" htmlFor="keg-fill-batch" hint="Choisis la bière, puis confirme le remplissage." error={fillProblem}>
                   <Combobox id="keg-fill-batch" ariaLabel="Brassin à enfûter" value={fillBatch} onChange={setFillBatch}
                     options={fillable.map(batch => ({ value: batch.id, label: `${batch.name} · ${batch.id}`, detail: batch.style }))}
                     placeholder="Choisir un brassin…"/>
                 </Field>
               ) : <p className="equipment-help">Aucun brassin disponible à enfûter. Un brassin doit être au moins en fermentation.</p>)}
-              {selected.state === 'plein' && <Field label="Client de livraison (facultatif)" htmlFor="keg-delivery-client"><TextInput id="keg-delivery-client" name="keg_delivery_customer" value={deliveryClient} onChange={setDeliveryClient}/></Field>}
+              {selected.state === 'plein' && <Field label="Client de livraison" htmlFor="keg-delivery-client" hint={deliveryMissing ? 'Indique le client chez qui ce fût est livré.' : undefined}><TextInput id="keg-delivery-client" name="keg_delivery_customer" value={deliveryClient} onChange={setDeliveryClient}/></Field>}
               {selected.state === 'livre' && <p className="equipment-help">Confirme le retour du fût vide pour le remettre à laver.</p>}
               {selected.notes && <p className="equipment-note"><span>Note · </span>{selected.notes}</p>}
             </FormNav>

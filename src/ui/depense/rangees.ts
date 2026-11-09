@@ -6,6 +6,7 @@ import { libelleDeLigne } from './etat';
 import { confianceLigne, deduireUnite, pireNiveau, type ConfianceLigne, type ContexteConfiance, type LigneConfiance, type Niveau } from './confiance';
 import type { InvoicePoint } from '../../domain/finance/invoicePoints';
 import { isReadableUnit, shortUnit } from '../../services/stockLineMatching';
+import { isPieceUnit } from '../../services/ingredientIdentity';
 import type { PurchaseDraft, PurchaseLineDraft } from '../../services/purchaseEntry';
 import type { StockItem } from '../../types';
 
@@ -111,11 +112,12 @@ export function optionsEnFrancais(line: PurchaseLineDraft, unite: string): { com
 
 /** Le texte de la quantité d'une rangée : « 85 g » (unité effective), « 2 » sans unité connue, vide pour une ligne hors stock sans quantité (le port). */
 /** B2 n° 5 : une seule casse d'unité à l'écran, « Kg » et « L » comme les segments (la ligne garde l'écriture de l'imprimé ou du geste, « kg » ou « Kg » : elle ne change jamais ce qui s'écrit au stock). */
-export const uniteAffichee = (unite: string): string => { const s = shortUnit(unite); return /^kg$/i.test(s) ? 'Kg' : /^l$/i.test(s) ? 'L' : s; };
+/** TL-42 : une seule langue à l'écran : la pièce (Stk, Stück, pce, pcs…) s'écrit « pièce » ; l'imprimé reste lisible dans « imprimé » et au stock. */
+export const uniteAffichee = (unite: string): string => { if (isPieceUnit(unite)) return 'pièce'; const s = shortUnit(unite); return /^kg$/i.test(s) ? 'Kg' : /^l$/i.test(s) ? 'L' : s; };
 export function texteQuantite(line: PurchaseLineDraft, unite: string, horsStock: boolean): string {
   if (line.quantity === undefined) return horsStock ? '' : '?';
   const u = uniteAffichee(unite);
-  return `${virgule(line.quantity)}${u ? ` ${u === 'sachet' && line.quantity > 1 ? 'sachets' : u}` : horsStock ? '' : ' ?'}`;
+  return `${virgule(line.quantity)}${u ? ` ${u === 'sachet' && line.quantity > 1 ? 'sachets' : u === 'pièce' && line.quantity > 1 ? 'pièces' : u}` : horsStock ? '' : ' ?'}`;
 }
 
 // ——— Voie g2a (D328g, D328h, D334, D329) ———

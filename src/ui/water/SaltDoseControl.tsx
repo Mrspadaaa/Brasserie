@@ -1,6 +1,6 @@
 import React from "react";
 import { NumberInput } from "../NumberInput";
-import { useHoldRepeat } from "../numericInput";
+import { messageRefus, useHoldRepeat } from "../numericInput";
 import { SaltId, WaterIons } from "../../types";
 
 import { SaltDef, ION_SYMBOL_SHORT } from "../../domain/water";
@@ -135,6 +135,8 @@ export const SaltDoseControl: React.FC<{
           onRefus={(r) => {
             if (!r) { setRefus(null); return; }
             if (r.saisi > SEL_DOSE_MAX_G) { onDose(avant.current); setRefus(actualQuantityProblem(r.saisi, 0, "g", avant.current)); }
+            // BR-85 : « −1 g » ramené à 0 sans un mot. La dose d'avant est rendue et la phrase le dit.
+            else if (r.saisi < 0) { onDose(avant.current); setRefus(messageRefus(r.saisi, avant.current, { min: 0, unite: "g" })); }
           }}
           pad
           className="w-full min-w-0 h-11 bg-cave-950 border-y border-cave-700

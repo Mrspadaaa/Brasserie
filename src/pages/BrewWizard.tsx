@@ -87,6 +87,8 @@ import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { hotBitterness, ibuDeLAjout, ibuEnTete } from '../domain/hopBitterness';
 import { alphaAConfirmer, alphaProbable } from '../domain/hopAlpha';
 import { grainEmpate } from '../domain/fermentables/moments';
+import { joursProgramme } from '../domain/bornesMetier';
+import { messageSansSaccharification, nomPalierAjoute } from '../domain/fermentables/empatage';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -117,6 +119,11 @@ import { EtapeFermentescibles } from '../ui/fermentescibles/EtapeFermentescibles
 import { plageEbc } from '../ui/identite/plages';
 import { teinte as teinteEbc } from '../ui/fermentescibles/modele';
 import { applyCatalogueYeast } from '../domain/yeastCatalogue';
+import type { YeastReference } from '../domain/yeastReferences';
+import { doseApresChoix } from '../ui/etapeLevure/dose';
+import { EtapeLevure as SyncEtapeLevure } from '../ui/etapeLevure/EtapeLevure';
+import type { VueLevure } from '../ui/etapeLevure/props';
+import { useYeastSupply } from '../hooks/useYeastSupply';
 import { completeFromStockReferences } from '../domain/localStockFacts';
 import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
 import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesign';
@@ -185,6 +192,8 @@ const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ Ho
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
 const YeastRecipeChoice = syncWizardPanels ? SyncYeastRecipeChoice : lazy(() => import('../ui/YeastRecipeChoice').then(({ YeastRecipeChoice: Panel }) => ({ default: Panel })));
+// L'étape Levure (mission levure-port, voie u1) : la coque des quatre vues ; l'ancienne étape reste dans son repli « Atelier complet ».
+const EtapeLevure = syncWizardPanels ? SyncEtapeLevure : lazy(() => import('../ui/etapeLevure/EtapeLevure').then(({ EtapeLevure: Panel }) => ({ default: Panel })));
 const YeastRecipeContext = syncWizardPanels ? SyncYeastRecipeContext : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeContext: Panel }) => ({ default: Panel })));
 const YeastRecipeHeading = syncWizardPanels ? SyncYeastRecipeHeading : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeHeading: Panel }) => ({ default: Panel })));
 const YeastIngredientPicker = syncWizardPanels ? SyncYeastIngredientPicker : lazy(() => import('../ui/YeastIngredientPicker').then(({ YeastIngredientPicker: Panel }) => ({ default: Panel })));
@@ -696,6 +705,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // T12 : l'étape Houblons v4 est demandée dès l'ouverture du wizard (drapeau allumé), pour être prête à l'étape 3.
   useEffect(() => { if (hopV4Actif) chargerEtapeHoublonsV4().catch(() => {}); }, []);
   const [yeastSelection, setYeastSelection] = useState(0);
+  // Étape Levure : la vue choisie et les levures posées dans Comparer vivent ici, pour que le pied « Comparer (n) » les lise.
+  const [vueLevure, setVueLevure] = useState<VueLevure>('ma-levure');
+  const [levuresComparees, setLevuresComparees] = useState<string[]>([]);
+  const yeastSupply = useYeastSupply();
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const styles = useMemo(() => brewingStyles(knowledge), [knowledge]);
   /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
@@ -982,8 +995,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // Option A (décision du pilote, test en ligne n° 5/6) : la cible retenue gagne PARTOUT (bandeau, alertes, fiche) ; si elle diffère du calcul en direct, l'écran
   // le dit en une ligne courte, au lieu de montrer 1,068 à une étape et 1,066 à l'autre. Règle unique : `recipeMetrics.ts`.
   const ogRetenue = keepOgTarget && typeof details.ogTarget === 'number' && details.ogTarget > 1 ? details.ogTarget : null;
+  // BR-22 : sans aucun fermentescible, la cible retenue s'affichait comme une OG calculée (« Grain 0 kg · OG 1,066 ») : l'écran dit qu'elle est retenue, pas calculée.
   const ecartOg = ogRetenue != null && ogPredicted != null && formatDensite(ogRetenue) !== formatDensite(ogPredicted)
-    ? `OG retenue ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)}` : null;
+    ? `OG retenue ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)}`
+    : ogRetenue != null && ogPredicted == null && !(totalGrist > 0)
+      ? `OG retenue ${formatDensite(ogRetenue)} · aucun fermentescible pour la calculer` : null;
 
   const boilOg = useMemo(() => details.nolo?.enabled ? og || null : yeastRecipeBoilOg({ fermentables, volumeL, efficiencyPct: efficiency } as Recipe, { og: og || null }).og,
     [details.nolo?.enabled, og, fermentables, volumeL, efficiency]);
@@ -1903,7 +1919,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const visibleIssues = validationRequested ? fieldIssues : fieldIssues.filter(issue => issue.live);
   const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
   // AM-25, AM-28 : ordre des paliers, mash-out, ordre des phases. Des conseils : ils ne bloquent rien.
-  const advice = step === 'paliers' ? recipeAdvice({ mash: { steps: mashSteps }, fermentation: ferment }) : [];
+  // BR-31 : le dernier palier retiré (ou aucun dans la plage des amylases) laissait un empâtage de grain sans saccharification, sans un mot.
+  const sansSaccharification = step === 'paliers' && !details.nolo?.enabled
+    ? messageSansSaccharification(mashSteps, fermentables.filter(grainEmpate).reduce((s, f) => s + f.weightKg, 0)) : null;
+  const advice = step === 'paliers' ? [...recipeAdvice({ mash: { steps: mashSteps }, fermentation: ferment }),
+    ...(sansSaccharification ? [{ field: 'wz-mash-saccharification', step: 'paliers' as const, message: sansSaccharification }] : [])] : [];
   const adviceList = (prefix: string) => {
     const items = advice.filter(item => item.field.startsWith(prefix));
     return items.length ? <ul data-role={'conseils-' + prefix} className="space-y-0.5 text-xs text-ebc-amber leading-snug">{items.map(item => <li key={item.field + item.message} role="status">{item.message}</li>)}</ul> : null;
@@ -2269,6 +2289,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       >
         Retour
       </button>
+      {step === 'levure' && !details.nolo?.enabled && levuresComparees.length > 0 && (
+        <button type="button" onClick={() => setVueLevure('comparer')} data-lv="pied-comparer"
+          className="min-h-touch-sm px-3 rounded-control border border-cave-50 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850">
+          {`Comparer (${levuresComparees.length})`}
+        </button>
+      )}
       <button
         type="button"
         onClick={() => go(1)}
@@ -2290,6 +2316,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       onClose={onClose}
       mobileHeader={mobileHeader}
       endActions={stepActions}
+      endActionsCollant={step === 'levure' && !details.nolo?.enabled}
       compactDock
       className="recipe-wizard"
       actions={abandonner && isDesktop ? abandonner : undefined}
@@ -2472,7 +2499,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 aria-label="Nom de la bière"
                 className="idn-nom"
                 data-element="r4a-nom"
-                placeholder="Milk Stout #2, NEIPA Tropicale…"
+                placeholder={style.trim() ? `${style.trim()} #2, version d’été…` : 'Milk Stout #2, NEIPA Tropicale…'}
                 value={name}
                 onChange={setName}
                 required
@@ -2594,6 +2621,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             styleCode={styleRepere?.code ?? null}
             ebcVise={ebcPlage ? (ebcPlage.min + ebcPlage.max) / 2 : null}
             ebcMax={ebcPlage?.max ?? null}
+            programmeJours={joursProgramme(ferment)}
             alerteDensite={og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og, styleRepere?.stats.og?.max).note : null}
             erreur={fieldError}
           />
@@ -2939,11 +2967,17 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       )}
 
       {/* ---------------------------------------------------- ÉTAPE 4 */}
-      {step === 'levure' && (
-        <Section title="Levure">
-          {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
-          <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>
-            <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} savedRecipe={seed?.recipe} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={applyYeastChoice} onNavigate={setStep}
+      {step === 'levure' && (() => {
+        /* Choisir une levure du catalogue : la dose se recalcule pour la nouvelle levure et le volume de la recette (#132, `etapeLevure/dose.ts`). */
+        const choisirLevure = (reference: YeastReference) => {
+          const avant = build();
+          if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(avant, 'catalogue'));
+          applyYeastChoice(doseApresChoix(applyCatalogueYeast(avant, reference, reference.form), avant.yeast, yeastSupply), 'replace-selection');
+          setYeastSelection(n => n + 1);
+        };
+        // L'ancienne étape entière : le mode NOLO la garde (NoloPanel), l'étape Levure la garde dans son repli « Atelier complet ».
+        const ancienne = (cible?: string) => (
+          <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${cible ?? yeastFocus?.yeastId ?? ''}`} recipe={build()} savedRecipe={seed?.recipe} initialGoal={yeastFocus?.goal} initialYeastId={cible ?? yeastFocus?.yeastId} onChange={applyYeastChoice} onNavigate={setStep}
               candidateSheets={candidateSheets} onCandidateSheetsChange={retainCandidateSheets} candidateSheetsWarning={candidateSheetsWarning}
               yeastChange={yeastChange} onYeastChange={setYeastChange}
               quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
@@ -2955,15 +2989,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                   if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'free'));
                   selectYeast(n);
                 }}
-                onReference={reference => {
-                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'catalogue'));
-                  const next = applyCatalogueYeast(build(), reference, reference.form);
-                  if (yeast.hopIndexId !== reference.id) {
-                    delete next.yeast.qty; delete next.yeast.unit;
-                  }
-                  applyYeastChoice(next, 'replace-selection');
-                  setYeastSelection(n => n + 1);
-                }} /></Suspense>}
+                onReference={reference => choisirLevure(reference)} /></Suspense>}
               factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
               aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure" reviewScope="recipe"
                 reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
@@ -2977,9 +3003,43 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               </>}
               programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyYeastChoice(next, 'conduct')} /></Suspense>}
             />
-          </Suspense>}
-        </Section>
-      )}
+        );
+        // Le mode NOLO garde l'ancienne étape dans sa section ; sinon la coque des quatre vues se pose sans cadre (maquettes l5b, s7a).
+        if (noloNeedsEquipmentAdoption || details.nolo?.enabled) return (
+          <Section title="Levure">
+            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
+            <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>{ancienne()}</Suspense>}
+          </Section>
+        );
+        return (
+          <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement de l’étape Levure…</p>}>
+            <EtapeLevure recipe={build()} vue={vueLevure} onVue={setVueLevure}
+              comparees={levuresComparees} onComparees={setLevuresComparees}
+              onChoisir={choisirLevure} onChange={applyYeastChoice} onNavigate={setStep}
+              stockItems={stockItems}
+              onStock={item => { setYeastChange(startYeastChoiceChange(build(), 'stock')); selectYeast(item.name, item); }}
+              onRetirer={() => { setYeastChange(startYeastChoiceChange(build(), 'free')); selectYeast(''); }}
+              yeastChange={yeastChange} onYeastChange={setYeastChange}
+              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {
+                  setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                  selectYeast(name, item);
+                }} personalChoice
+                onCreate={n => {
+                  setYeastChange(startYeastChoiceChange(build(), 'free'));
+                  selectYeast(n);
+                }}
+                onReference={reference => choisirLevure(reference)} /></Suspense>}
+              factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
+              aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment scope="levure" reviewScope="recipe"
+                reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
+                stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={updateSelectedYeastDocumentation} /></Suspense>}
+              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
+              doseInvalide={!!fieldError('wz-yeast-qty')} atelier={ancienne}
+              onRetenir={fait => { try { return (updateSelectedYeastDocumentation({ ...yeast, technicalFacts: [...(yeast.technicalFacts ?? []), fait] }, 'documentary') as { accepted: boolean }).accepted !== false; } catch { return false; } }} />
+          </Suspense>
+        );
+      })()}
 
       {/* ---------------------------------------------------- ÉTAPE 5 */}
       {step === 'paliers' && (
@@ -3095,7 +3155,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               <button
                 type="button"
                 onClick={() =>
-                  setMashSteps([...mashSteps, { name: 'Palier', tempC: 67, durationMin: 30 }])
+                  setMashSteps([...mashSteps, { name: nomPalierAjoute(mashSteps), tempC: 67, durationMin: 30 }])
                 }
                 className="w-full min-h-touch rounded-control border border-cave-700
                            text-cave-200 text-sm font-medium flex items-center justify-center gap-1.5 py-1.5 hover:bg-cave-850 transition-colors"

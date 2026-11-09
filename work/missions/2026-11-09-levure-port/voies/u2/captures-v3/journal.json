@@ -1,0 +1,113 @@
+{
+  "base": "http://127.0.0.1:5657",
+  "erreurs": [],
+  "bloques": [],
+  "captures": [
+    "c3-390-clair",
+    "c3-1280-clair",
+    "c3-390-cave",
+    "c3-1280-cave"
+  ],
+  "notes": {
+    "c3-390-clair": {
+      "titres": [
+        [
+          "4\nà vérifier",
+          16
+        ],
+        [
+          "25",
+          15
+        ],
+        [
+          "73",
+          15
+        ]
+      ],
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "c3-1280-clair": {
+      "titres": [
+        [
+          "Vendue CH · FR · DE4\nà vérifier",
+          16
+        ],
+        [
+          "Fabricant présent en Europe25",
+          15
+        ],
+        [
+          "Rare en Europe73",
+          15
+        ]
+      ],
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "c3-390-cave": {
+      "titres": [
+        [
+          "4\nà vérifier",
+          16
+        ],
+        [
+          "25",
+          15
+        ],
+        [
+          "73",
+          15
+        ]
+      ],
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    },
+    "c3-1280-cave": {
+      "titres": [
+        [
+          "Vendue CH · FR · DE4\nà vérifier",
+          16
+        ],
+        [
+          "Fabricant présent en Europe25",
+          15
+        ],
+        [
+          "Rare en Europe73",
+          15
+        ]
+      ],
+      "phrase": "98ale US · neutre·sans STA1",
+      "verif": "STA1 non documentée 258 · dont 4 vendues icichercher",
+      "lignesIci": [
+        "PomonaSTA1 ?",
+        "Verdant IPASTA1 ?",
+        "US-05STA1 ?",
+        "1007 German AleSTA1 ?épuisée au relevé du 27.09"
+      ],
+      "chevauche": 0
+    }
+  }
+}

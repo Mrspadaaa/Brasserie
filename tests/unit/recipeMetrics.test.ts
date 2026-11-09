@@ -66,6 +66,12 @@ describe('IBU : la liste montre le nombre de la fiche', () => {
     const cru = { hops: [{ name: 'Citra', weightG: 100, stage: 'dryHop' as const, alpha: 12 }] };
     expect(ibuListe(stout(cru), 75)).toBe(65);
   });
+
+  it('TE-33 : un IBU annoncé à 0 (houblon sans dose) est un inconnu, pas « 0 IBU »', () => {
+    const sansDose = { ibuTarget: 0, hops: [{ name: 'Galaxy', weightG: 0, stage: 'boil' as const, timeMin: 60, alpha: 14 }] };
+    expect(ibuListe(stout(sansDose), 75)).toBeUndefined();
+    expect(recipeEntries([stout(sansDose)], [])[0].ibu).toBeUndefined();
+  });
 });
 
 describe('Pluriels', () => {

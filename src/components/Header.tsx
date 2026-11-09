@@ -115,8 +115,9 @@ export const Header: React.FC<HeaderProps> = ({
     'w-full min-h-touch px-2 py-0.5 flex items-center gap-2 text-sm text-cave-200 ' +
     'hover:bg-cave-850 active:bg-cave-800 transition-colors text-left';
 
+  /* V-a : en-tête opaque. Un fond à 95 % et un flou laissaient voir à travers lui ce qui défile dessous (fantôme gris sous « L'Affinée » à 390). */
   return (
-    <header className="sticky top-0 z-40 bg-cave-950/95 backdrop-blur-md border-b border-cave-800 pt-safe">
+    <header className="sticky top-0 z-40 bg-cave-950 border-b border-cave-800 pt-safe">
       {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
       <div
         className={`app-titlebar max-w-4xl mx-auto px-2 flex items-center ${

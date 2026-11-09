@@ -205,7 +205,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   return (
     <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
-      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Idées et projets</h2></div>}
+      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
       <ViewNavigation<typeof activeSection> label="Vue de l’atelier" value={activeSection} onChange={setActiveSection} options={[{value:'equipment',label:'Projets de matériel',shortLabel:'Matériel'},{value:'recipe-idea',label:'Idées de bières',shortLabel:'Bières'},{value:'pricing-test',label:'Essais de tarifs',shortLabel:'Tarifs'},{value:'prospect',label:'Contacts'},{value:'event',label:'À faire'}]}>
       <div className="creative-nav" role="group" aria-label="Mon atelier">
         {([['equipment','Matériel'],['recipe-idea','Bières'],['pricing-test','Tarifs'],['prospect','Contacts'],['event','À faire']] as const).map(([key,label])=><button key={key} aria-pressed={activeSection===key} onClick={()=>setActiveSection(key)}>{label}</button>)}
@@ -242,7 +242,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                       </p>
                     )}
                     {item.notes && (
-                      <div className="mt-1 text-footnote text-ebc-gold/90 italic bg-ebc-straw/10 p-1.5 rounded-lg border border-ebc-straw/20 inline-block">
+                      <div className="mt-1 text-footnote text-ebc-gold italic bg-ebc-straw/10 p-1.5 rounded-lg border border-ebc-straw/20 inline-block">
                         🎨 Visuel : {item.notes}
                       </div>
                     )}

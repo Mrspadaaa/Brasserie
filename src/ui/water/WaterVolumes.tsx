@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { InlineNum } from "../FormNav";
 import { NumberInput } from '../NumberInput';
+import { messageRefus } from "../numericInput";
 import { equipmentCheck, r1 } from "../../domain/brewEquipment";
 import { waterBalance } from "../../domain/water/volumeBalance";
 
@@ -28,6 +30,10 @@ export function WaterVolumes({
   vol,
   hasSparge,
 }: Props) {
+  // BR-84 : « 2,5 » tapé revenait « 2,51 » (recalculé depuis le volume arrondi au dixième). Le nombre tapé reste affiché tant que
+  // le volume qu'il donne (ratio × grain, au dixième) est celui du plan ; BR-85 : « −1 L/kg » est refusé et dit.
+  const [ratioSaisi, setRatioSaisi] = useState<number | null>(null);
+  const [refusRatio, setRefusRatio] = useState<string | null>(null);
   const litres = (n: number) => Number.isFinite(n) ? n.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '—';
   const grainKg = brew?.totalGristKg ?? 0;
   const moreSparge = hasSparge && grainKg > 0 && state.spargeWaterL > state.mashWaterL;
@@ -44,6 +50,9 @@ export function WaterVolumes({
     ? waterBalance({ mashWaterL: state.mashWaterL, spargeWaterL: hasSparge ? state.spargeWaterL : 0, preBoilVolumeL: vol.preBoilVolumeL, grainAbsorptionL: vol.grainAbsorptionL })
     : null;
   const physicalRatio = brew?.equipment && grainKg > 0 ? (brew.equipment.kettleWorkingL-grainKg*brew.equipment.grainDisplacementLPerKg)/1.03/grainKg : 6;
+  const ratioAffiche = ratioSaisi !== null && Number.isFinite(state.mashWaterL) && grainKg > 0 && r1(ratioSaisi * grainKg) === r1(state.mashWaterL)
+    ? ratioSaisi
+    : Number(mashRatioLPerKg.toPrecision(15));
   const ratioMax = Math.max(6,Number.isFinite(physicalRatio)?physicalRatio:6,Number.isFinite(mashRatioLPerKg)?mashRatioLPerKg:6);
   return (
     <>
@@ -183,10 +192,11 @@ export function WaterVolumes({
                 Épaisseur de maische
               </label>
               <span className="reading text-sm text-cave-50 flex items-center gap-1 shrink-0">
-                <NumberInput aria-label="Rapport eau grain exact en litres par kilogramme" value={Number(mashRatioLPerKg.toPrecision(15))} fractionDigits={2} onValue={onMashRatioChange} min={0.1} className="w-16 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-1 text-base"/>
+                <NumberInput aria-label="Rapport eau grain exact en litres par kilogramme" value={ratioAffiche} fractionDigits={2} onValue={(v) => { setRatioSaisi(v); onMashRatioChange(v); }} min={0.1} rejeter onRefus={(r) => setRefusRatio(r ? messageRefus(r.saisi, r.retenu, { min: 0.1, unite: "L/kg" }) : null)} className="w-16 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-1 text-base"/>
                 <span className="reading-unit"> L/kg</span>
               </span>
             </div>
+            {refusRatio && <p role="alert" data-role="refus" className="text-xs text-alert-strong">{refusRatio}</p>}
             <input
               id="w-mash-ratio"
               name="water_mash_ratio_range"
@@ -200,7 +210,7 @@ export function WaterVolumes({
               max={ratioMax}
               step={0.1}
               value={Math.max(2.5, Number.isFinite(mashRatioLPerKg) ? mashRatioLPerKg : 4.2)}
-              onChange={(e) => onMashRatioChange(parseFloat(e.target.value))}
+              onChange={(e) => { setRatioSaisi(null); onMashRatioChange(parseFloat(e.target.value)); }}
               className="w-full h-11 cursor-pointer appearance-none bg-transparent focus:outline-none
                            [&::-webkit-slider-runnable-track]:h-1.5
                            [&::-webkit-slider-runnable-track]:rounded-full

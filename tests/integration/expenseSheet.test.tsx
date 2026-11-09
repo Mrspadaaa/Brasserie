@@ -13,6 +13,8 @@ import {FirebaseAuthService} from '../../src/services/firebaseAuth';
 beforeEach(()=>{cleanup();vi.restoreAllMocks();state.saved.mockReset();state.scanned.mockReset().mockResolvedValue({ok:false,error:'Lecture indisponible. Saisie manuelle possible.'});vi.spyOn(FirebaseAuthService,'ensureDriveAccessToken').mockResolvedValue('synthetic-token');vi.spyOn(FirebaseAuthService,'prepareGoogleLogin').mockResolvedValue();state.confirmed.mockReset().mockResolvedValue(undefined);});
 const scannedInvoice=(review?:Record<string,unknown>)=>({vendor:'Fournisseur fictif',date:'09.09.2026',currency:'CHF',invoiceNumber:'TEST-VISION',description:'Fermenteur et entretien',amountHT:508.79,tvaRate:.081,tvaAmount:41.21,amountTTC:550,category:'materiel',subcategory:'Brasserie',issues:[] as string[],review,
   items:[{id:'line-1',name:'Fermenteur 30 L',kind:'equipment',quantity:1,unit:'pièce',amountTTC:500,evidence:'Fermenteur 30 L — CHF 500.00'},{id:'line-2',name:'Entretien de pompe',kind:'maintenance',quantity:1,unit:'pièce',amountTTC:50,evidence:'Entretien de pompe — CHF 50.00'}]});
+/** La nature allumée d'une ligne : le mot pressé du segment « Type d’achat, ligne n » (D335). */
+const nature=(n:number)=>within(screen.getByRole('group',{name:`Type d’achat, ligne ${n}`})).getAllByRole('button').find(b=>b.getAttribute('aria-pressed')==='true')?.textContent;
 async function openScannedInvoice(result:ReturnType<typeof scannedInvoice>,cached=false){
   Object.defineProperty(crypto,'subtle',{configurable:true,value:webcrypto.subtle});
   vi.spyOn(FirebaseAuthService,'hasDriveAccess').mockReturnValue(true);
@@ -49,6 +51,17 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     await waitFor(()=>expect(state.saved).toHaveBeenCalledOnce());
     expect(state.saved.mock.calls[0][0]).toMatchObject({amount:60,date:'31.07.2020',paymentDate:'31.07.2020',paymentStatus:'paid',sourceAmount:undefined,sourceTotalBasis:'line_sum',sourceDocumentType:'delivery_note',sourceOrderNumber:'COMMANDE-TEST',lines:[{kind:'other',description:'Article fictif 1 · Taille test',sourceReference:'REF-TEST-1',stockAction:'none',equipmentAction:'none'},{kind:'other',stockAction:'none',equipmentAction:'none'}]});
     expect(state.scanned).toHaveBeenCalledOnce();
+  });
+  it('AM-73 : un paiement daté avant la pièce avertit, il ne refuse pas (un acompte est légitime)',async()=>{
+    const view=await openScannedInvoice(scannedInvoice({status:'checked',findings:[],readers:2}));
+    expect(view.container.querySelector('[data-dp="paye-avant"]')).toBeNull();
+    fireEvent.click(screen.getByRole('button',{name:'Autre date'}));
+    fireEvent.change(screen.getByLabelText('Date du paiement'),{target:{value:'2026-09-01'}});
+    const avertissement=view.container.querySelector('[data-dp="paye-avant"]');
+    expect(avertissement).not.toBeNull();expect(avertissement).toHaveTextContent('acompte');
+    fireEvent.click(screen.getByRole('button',{name:'Confirmer et enregistrer'}));
+    await waitFor(()=>expect(state.saved).toHaveBeenCalledOnce());
+    expect(state.saved.mock.calls[0][0]).toMatchObject({date:'09.09.2026',paymentDate:'01.09.2026',paymentStatus:'paid'});
   });
   it('respecte la mention à payer et ne crée pas une dépense pour un avoir',async()=>{
     const result=scannedInvoice({status:'checked',findings:[],readers:2});
@@ -89,10 +102,10 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
   ])('présente honnêtement le statut %s sans créer d’achat, de stock ni de matériel',async(status,title)=>{
     await openScannedInvoice(scannedInvoice(status?{status,readers:status==='corrected'?3:2,findings:[],correctedFields:status==='corrected'?['amountTTC','items[1].kind']:[]}:undefined));
     expect(screen.getByRole('button',{name:new RegExp('^'+title)})).toBeInTheDocument();
-    expect(screen.getByLabelText('Nature ligne 1')).toHaveValue('equipment');
-    expect(screen.getByLabelText('Nature ligne 2')).toHaveValue('maintenance');
-    expect(screen.getByLabelText('Matériel ligne 1')).toHaveValue('none');
-    expect(screen.getByLabelText('Matériel ligne 2')).toHaveValue('none');
+    /* D335, D350 : la nature n'est plus un menu mais un segment « Ingrédient | Service | Matériel » ; l'entretien se range sous « Matériel ». Le lien matériel n'a plus de menu :
+       rien n'est lié ni créé tant que le brasseur n'a rien choisi, et c'est l'enregistrement qui le prouve. */
+    expect(nature(1)).toBe('Matériel');
+    expect(nature(2)).toBe('Matériel');
     expect(state.saved).not.toHaveBeenCalled();
     if(status==='corrected')expect(screen.getByLabelText('Total TTC en CHF')).toHaveAccessibleDescription(expect.stringContaining('Valeur corrigée'));
   });
@@ -110,9 +123,11 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     const result=scannedInvoice({status:'disputed',findings:['Le montant de la deuxième ligne reste illisible.'],readers:3});
     result.issues=['Le montant de la deuxième ligne reste illisible.'];
     Object.assign(result.items[1],{ambiguity:'Réparation ou pièce de rechange à confirmer.'});
-    await openScannedInvoice(result,true);
+    const view=await openScannedInvoice(result,true);
+    /* Le mot « Lecture déjà disponible » n'est plus une ligne de texte : c'est l'infobulle du « Détail » du pied (maquette p3c-3, A4), toujours là tant que la lecture vient du cache. */
+    const cache=()=>view.container.querySelector('[title="Lecture déjà disponible · aucun nouvel appel IA"]');
     /* p3c-3 : la preuve est ouverte d'office (rien à ouvrir) ; le toucher de la pastille « Lecture à confirmer, n lignes » AMÈNE à la liste (D7 : le geste a un effet vérifié). */
-    expect(screen.getByText('Lecture déjà disponible · aucun nouvel appel IA.')).toBeInTheDocument();
+    expect(cache()).not.toBeNull();
     const vise=vi.fn(),avant=Object.getOwnPropertyDescriptor(Element.prototype,'scrollIntoView');
     (Element.prototype as any).scrollIntoView=vise;
     try{
@@ -122,7 +137,7 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
       if(avant)Object.defineProperty(Element.prototype,'scrollIntoView',avant);else delete (Element.prototype as any).scrollIntoView;
     }
     expect(screen.getAllByText('Le montant de la deuxième ligne reste illisible.')).toHaveLength(1);
-    expect(screen.getByText('Lecture déjà disponible · aucun nouvel appel IA.')).toBeInTheDocument();
+    expect(cache()).not.toBeNull();
     expect(screen.getByText('Entretien de pompe : Réparation ou pièce de rechange à confirmer.')).toBeVisible();
     expect(screen.getByRole('button',{name:'Confirmer et enregistrer'})).toBeEnabled();
     expect(state.saved).not.toHaveBeenCalled();
@@ -147,7 +162,14 @@ describe('Saisie quotidienne et reprise sans doublon',()=>{
     fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'50'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Achat fictif'}});
     const vat=screen.getByLabelText('TVA source (CHF)');
-    fireEvent.change(vat,{target:{value:'60'}});fireEvent.blur(vat);
+    /* B2 n° 39 : au-delà du TTC, le champ TVA refuse la frappe en le disant (alerte sur le champ, valeur d'avant gardée). */
+    fireEvent.focus(vat);fireEvent.change(vat,{target:{value:'60'}});
+    expect(vat).toHaveAttribute('aria-invalid','true');
+    expect(screen.getByRole('alert')).toHaveTextContent('au plus 50');
+    fireEvent.blur(vat);expect(vat).toHaveValue('');
+    /* La TVA reste fautive si c'est le TTC qui baisse après coup : l'enregistrement la refuse alors, ouvre sa seule rubrique et y met le focus. */
+    fireEvent.change(vat,{target:{value:'40'}});fireEvent.blur(vat);
+    fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'30'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));
     expect(screen.getByRole('alert')).toHaveTextContent('Vérifie le montant de TVA');
     expect(vat).toHaveFocus();expect(vat.closest('details')).toHaveAttribute('open');
@@ -179,22 +201,24 @@ describe('Saisie quotidienne et reprise sans doublon',()=>{
     expect(state.saved.mock.calls[1][0]).toMatchObject({amount:125,proofFileName:'Facture malt.pdf',proofDataUrl:'data:application/pdf;base64,JVBERi0xLjQK'});
   });
   it('saisit le matériel une fois et conserve ses valeurs en ajoutant les frais de livraison',async()=>{
-    render(<ExpenseSheet initialIntent="equipment" onClose={()=>{}} onSaved={()=>{}}/>);
+    const view=render(<ExpenseSheet initialIntent="equipment" onClose={()=>{}} onSaved={()=>{}}/>);
     fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'500'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Fermenteur 30 L'}});
     expect(screen.queryByLabelText('Libellé ligne 1')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Montant ligne 1')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button',{name:'Ajouter une ligne'}));
-    expect(screen.getByLabelText('Libellé ligne 1')).toHaveValue('Fermenteur 30 L');
-    expect(Number((screen.getByLabelText('Montant ligne 1') as HTMLInputElement).value)).toBe(500);
-    expect(screen.getByLabelText('Matériel ligne 1')).toHaveValue('new');
+    /* p3c-3 : la ligne reprise du formulaire simple est une rangée à plateau (son nom en titre, pas de champ « Libellé » tant qu'il est rempli) ; la nouvelle ligne, vide, s'ouvre sur son libellé. */
+    expect(view.container.querySelectorAll('[data-dp-nom]')[0]).toHaveTextContent('Fermenteur 30 L');
+    expect(screen.getByLabelText('Montant ligne 1')).toHaveValue('500,00'); // TE-23 : à la virgule
+    expect(nature(1)).toBe('Matériel');
     fireEvent.change(screen.getByLabelText('Libellé ligne 2'),{target:{value:'Livraison'}});
-    fireEvent.change(screen.getByLabelText('Nature ligne 2'),{target:{value:'shipping'}});
+    /* D335 : le segment n'offre plus « Livraison » : les frais de port se rangent sous « Service » (kind service, hors stock). */
+    fireEvent.click(within(screen.getByRole('group',{name:'Type d’achat, ligne 2'})).getByRole('button',{name:'Service'}));
     fireEvent.change(screen.getByLabelText('Montant ligne 2'),{target:{value:'25'}});fireEvent.blur(screen.getByLabelText('Montant ligne 2'));
     fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'525'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));
     await waitFor(()=>expect(state.saved).toHaveBeenCalledOnce());
-    expect(state.saved.mock.calls[0][0]).toMatchObject({amount:525,description:'Fermenteur 30 L',lines:[{description:'Fermenteur 30 L',amount:500,kind:'equipment',equipmentAction:'new'},{description:'Livraison',amount:25,kind:'shipping',stockAction:'none'}]});
+    expect(state.saved.mock.calls[0][0]).toMatchObject({amount:525,description:'Fermenteur 30 L',lines:[{description:'Fermenteur 30 L',amount:500,kind:'equipment',equipmentAction:'new'},{description:'Livraison',amount:25,kind:'service',stockAction:'none'}]});
     expect(state.scanned).not.toHaveBeenCalled();
   });
   it('préclasse un achat simple et conserve le type choisi explicitement par le brasseur',()=>{
@@ -221,6 +245,29 @@ describe('Saisie quotidienne et reprise sans doublon',()=>{
     expect(document.querySelectorAll('details[data-purchase-options][open]')).toHaveLength(0);
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));await waitFor(()=>expect(onSaved).toHaveBeenCalledOnce());
     expect(state.saved).toHaveBeenCalledOnce();expect(state.saved.mock.calls[0][0]).toMatchObject({amount:34.5,paymentStatus:'paid',lines:[{stockAction:'none'}]});expect(state.scanned).not.toHaveBeenCalled();
+  });
+  it('B2-NOTE-6 : recharger la page avec une saisie remplie demande confirmation ; une feuille vide ne demande rien',()=>{
+    const unload=()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented;};
+    const view=render(<ExpenseSheet onClose={()=>{}} onSaved={()=>{}}/>);
+    expect(unload()).toBe(false);
+    fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Malt pour le prochain brassin'}});
+    expect(unload()).toBe(true);
+    view.unmount();
+    expect(unload()).toBe(false); // la garde part avec la feuille
+  });
+  it('B2-NOTE-12 : le × du formulaire manuel est son « Annuler » : vide, il ferme ; rempli, il demande « Abandonner cette saisie ? » (comme BX-1)',()=>{
+    const onClose=vi.fn();render(<ExpenseSheet onClose={onClose} onSaved={()=>{}}/>);
+    fireEvent.click(screen.getByRole('button',{name:'Fermer'}));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    onClose.mockClear();cleanup();
+    render(<ExpenseSheet onClose={onClose} onSaved={()=>{}}/>);
+    fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Malt pour le prochain brassin'}});
+    fireEvent.click(screen.getByRole('button',{name:'Fermer'}));
+    expect(screen.getByRole('alertdialog')).toHaveTextContent('Abandonner cette saisie ?');expect(onClose).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button',{name:'Continuer la saisie'}));
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();expect(screen.getByLabelText('Pour quoi ?')).toHaveValue('Malt pour le prochain brassin');
+    fireEvent.click(screen.getByRole('button',{name:'Fermer'}));fireEvent.click(screen.getByRole('button',{name:'Abandonner'}));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
   it('prépare une fiche équipement seulement quand ce parcours a été demandé',()=>{
     render(<ExpenseSheet initialIntent="equipment" onClose={()=>{}} onSaved={()=>{}}/>);

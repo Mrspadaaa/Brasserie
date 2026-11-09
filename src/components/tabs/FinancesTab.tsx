@@ -156,7 +156,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     {/* Titre, sous-vue et réglages sur une seule rangée : trois barres empilées
         mangeaient un tiers de l'écran avant la première donnée. */}
     <div className="finance-bar">
-      <h2>{view==='overview'?'Situation financière':view==='journal'?'Mes opérations':view==='forecast'?'Anticiper les dépenses':'Bilan et impôts'}</h2>
+      <h2>{views.find(([key])=>key===view)?.[1]}</h2>
       {view==='overview'&&<div className="finance-subnav" role="group" aria-label="Lecture de la synthèse"><button type="button" aria-pressed={overviewPart==='situation'} onClick={()=>setOverviewPart('situation')}>Situation</button><button type="button" aria-pressed={overviewPart==='costs'} onClick={()=>setOverviewPart('costs')}>Coûts</button></div>}
       {view==='forecast'&&<div className="finance-subnav" role="group" aria-label="Prévisions et projets"><button type="button" aria-pressed={forecastPart==='timeline'} onClick={()=>setForecastPart('timeline')}>Échéances</button><button type="button" aria-pressed={forecastPart==='projects'} onClick={()=>setForecastPart('projects')}>Projets de matériel</button></div>}
       {/* Achat et vente vivent dans le bouton d'action flottant, sur tous les écrans. */}

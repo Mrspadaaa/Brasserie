@@ -3,6 +3,7 @@
 
 import { familleDe, NOMS_FAMILLES, ORDRE_FAMILLES, SOUS_FAMILLES_RENOVATION, sousFamilleDe, type FamilleCle } from './familles';
 import { linkUnit, STOCK_CATEGORIES } from '../../services/stockLineMatching';
+import { isPieceUnit } from '../../services/ingredientIdentity';
 import { Units } from '../../services/units';
 import type { Niveau } from './confiance';
 
@@ -127,10 +128,12 @@ function quantites(lignes: readonly LigneBande[]): QteGroupe[] {
   for (const l of lignes) {
     if (horsCompte(l)) continue;
     if (!l.uniteLisible || l.quantity === undefined) { inconnu += l.quantity ?? 0; continue; }
-    const cle = linkUnit(l.unit), famille = Units.familyOf(cle), g = famille === 'piece' ? `piece:${cle}` : famille;
+    // TL-42 : « Stk », « Stück », « pce » et « pièce » sont la même pièce : une seule forme, « pièce » (elles s'additionnent).
+    // B2-NOTE-4 (sa maquette dit « 3 sachets ») : dans la bande Levures, la pièce se compte en sachets ; ailleurs, en pièces.
+    const pieceU = isPieceUnit(l.unit), motPiece = l.groupe === 'levure' ? 'sachet' : 'pièce', cle = pieceU ? motPiece : linkUnit(l.unit), famille = Units.familyOf(cle), g = famille === 'piece' ? `piece:${cle}` : famille;
     const e = parGrandeur.get(g) ?? { formes: new Map<string, Forme>(), niveau: 'sur' as Niveau };
     // Une forme par écriture de l'unité (« Kg » et « kg » se lisent ensemble sous l'écriture la plus fréquente).
-    const forme = [...e.formes.keys()].find(f => linkUnit(f) === cle) ?? l.unit.trim();
+    const forme = [...e.formes.keys()].find(f => (pieceU ? isPieceUnit(f) || linkUnit(f) === motPiece : linkUnit(f) === cle)) ?? (pieceU ? motPiece : l.unit.trim());
     const f = e.formes.get(forme) ?? { q: 0, lignes: 0, ordre: ordre++ };
     f.q += l.quantity; f.lignes++; e.formes.set(forme, f);
     if (l.niveau === 'repris' || l.niveau === 'inconnu') e.niveau = e.niveau === 'inconnu' ? 'inconnu' : l.niveau;
@@ -242,7 +245,7 @@ export function etatSegment(liste: readonly Bande[], choix: ChoixGroupes, forces
   return { visible: true, plie: pl.every(x => !x.ouvert), deplie: pl.every(x => x.ouvert) };
 }
 /** « 18 Kg », « 270 g + 30 ? » : le texte de la colonne des quantités d'un sous-total. */
-export const texteQte = (q: readonly QteGroupe[]): string => q.map(e => (e.inconnue ? `${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?` : `${String(e.n).replace('.', ',')} ${e.unite === 'sachet' && e.n > 1 ? 'sachets' : e.unite}`)).join(' + ');
+export const texteQte = (q: readonly QteGroupe[]): string => q.map(e => (e.inconnue ? `${e.n ? `${String(e.n).replace('.', ',')} ` : ''}?` : `${String(e.n).replace('.', ',')} ${e.unite === 'sachet' && e.n > 1 ? 'sachets' : e.unite === 'pièce' && e.n > 1 ? 'pièces' : e.unite}`)).join(' + ');
 
 /** Le numéro d'une rangée en ordre Papier : son rang dans le brouillon (un port écarté laisse un trou, comme les libellés « ligne n »). */
 export function numerosPapier(lines: readonly LigneMin[], port: ReadonlySet<string>): Map<string, number> {

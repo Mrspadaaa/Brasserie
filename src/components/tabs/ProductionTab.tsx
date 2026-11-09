@@ -298,6 +298,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             <div><dt className="text-xs text-cave-400">Empâtage</dt><dd className="text-sm font-mono text-cave-50">{Units.format(scaleResult.mashWaterL,'L')}</dd></div>
             <div><dt className="text-xs text-cave-400">Rinçage</dt><dd className="text-sm font-mono text-cave-50">{Units.format(scaleResult.spargeWaterL,'L')}</dd></div>
           </dl>
+          {/* TE-39 : plus de grain laisse moins d'eau d'empâtage quand la cuve est pleine ; le dire là où le nombre baisse. */}
+          {scaleResult.waterPlan.mashLimitedByKettleL != null && <p className="text-xs text-cave-400">Empâtage plafonné par la cuve ({formatDecimal(scaleResult.waterPlan.mashLimitedByKettleL)} L utiles).</p>}
           <table className="volume-ingredients">
             <caption className="text-left text-sm font-semibold text-cave-50 pb-1">Ingrédients pour {Units.format(targetVolumeL,'L')}</caption>
             <thead><tr><th scope="col">Ingrédient</th><th scope="col">Quantité</th></tr></thead>

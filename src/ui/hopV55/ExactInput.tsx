@@ -21,6 +21,6 @@ export function HopV55ExactInput({ label, value, onValue, unit, min, max, requir
         const accepted = n !== null && (min === undefined || n >= min) && (max === undefined || n <= max) ? n : undefined;
         emitted.current = accepted; onValue(accepted);
       }} />
-    {invalid ? <small role="alert">Valeur illisible ou hors des bornes{min !== undefined ? ` ≥ ${formatDecimal(min)}` : ''}{max !== undefined ? ` ≤ ${formatDecimal(max)}` : ''}.</small> : null}
+    {invalid ? <small role="alert">{number === null ? 'Valeur illisible.' : `Hors des bornes réalistes : ${min !== undefined && max !== undefined ? `entre ${formatDecimal(min)} et ${formatDecimal(max)}` : min !== undefined ? `au moins ${formatDecimal(min)}` : `au plus ${formatDecimal(max)}`}${unit ? ` ${unit}` : ''}.`}</small> : null}
   </label>;
 }

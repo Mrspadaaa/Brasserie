@@ -307,7 +307,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   const tabs: Array<{ id: SubTab; label: string; Icon: typeof Boxes; badge?: number }> = [
-    { id: 'stock', label: 'Stock', Icon: Boxes, badge: criticalCount },
+    { id: 'stock', label: 'Articles', Icon: Boxes, badge: criticalCount },
     { id: 'courses', label: 'Courses', Icon: ShoppingCart, badge: totalToOrder },
     { id: 'futs', label: 'Fûts', Icon: Beer },
     { id: 'materiel', label: 'Matériel', Icon: Wrench },
@@ -543,6 +543,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       <KegSheet
         keg={kegSheet}
         batches={batches}
+        kegs={stocks.kegs}
         onClose={() => setKegSheet(null)}
         onSave={(keg) => {
           const exists = stocks.kegs.some((k) => k.id === keg.id);

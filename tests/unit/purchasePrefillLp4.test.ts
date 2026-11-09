@@ -18,9 +18,12 @@ describe('LP-4 : « Pour quoi ? » d’une commande qui mêle matériel, emballa
   it('doc8 : le matériel vient d’abord sur la facture, les matières passent devant (« ingrédients » quand les familles ne tiennent pas) et le matériel suit', () => {
     const texte = invoicePurchaseDescription(commande([...MATERIEL, ...EMBALLAGE, ...MATIERES]));
     // 08.11 (point 2) : « matières premières » est devenu « ingrédients » (le mot de l'app), plus court : le matériel, 3 lignes sur 7, tient à côté.
-    expect(texte).toBe('Brau- und Rauchshop GmbH · 652093 · ingrédients, matériel');
+    // RF-15 (09.11) : les familles de matières qui tiennent sont nommées (ici les trois, le matériel qui ne tient pas est coupé) ; « ingrédients » ne remplace plus tout dès que trois ne tiennent pas.
+    expect(texte).toBe('Brau- und Rauchshop GmbH · 652093 · malts, houblons, levures');
     expect(texte.length).toBeLessThanOrEqual(60);
     expect(texte).not.toMatch(/emballages|matières premières/);
+    // Même commande, fournisseur plus long : deux familles ne tiennent plus, « ingrédients » reste le repli.
+    expect(invoicePurchaseDescription(commande([...MATERIEL, ...MATIERES], { vendor: 'Brau- und Rauchshop GmbH Densbüren', invoiceNumber: '652093' }))).toMatch(/ingrédients|malts/);
   });
   it('quand tout tient, les matières premières sont nommées par famille et passent avant le matériel', () => {
     const texte = invoicePurchaseDescription(commande([...MATERIEL, ...MATIERES.slice(0, 1)], { vendor: 'B&R', invoiceNumber: '1' }));

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Input } from '../Input';
-import { fr, lireSaisie, pasClavier } from './regles';
+import { fr, lireSaisie, messageRefusSaisie, pasClavier } from './regles';
 
 /**
  * Un nombre qui se tape sur place (r4-a : « pouvoir modifier aussi les chiffres directement »).
@@ -26,6 +26,10 @@ export interface ChampNombreProps {
   /** Vider le champ est un état (volume « à renseigner »). Faux pour une capacité de fermenteur. */
   permettreVide?: boolean;
   libelle: string;
+  /** Unité dite dans le message d'un refus (BR-65) : « L », « min »… */
+  unite?: string;
+  /** Reçoit le message d'un texte refusé à la sortie du champ (la valeur d'avant est rendue), null quand il n'y a plus lieu. */
+  onRefus?: (message: string | null) => void;
   id?: string;
   className?: string;
   invalide?: boolean;
@@ -40,7 +44,7 @@ export interface ChampNombreProps {
 const afficher = (v: number) => (Number.isFinite(v) ? fr(v) : '');
 
 export const ChampNombre: React.FC<ChampNombreProps> = ({
-  valeur, onValeur, pas, min, max, arrondi, decimal = true, permettreVide = true, libelle, id, className = '',
+  valeur, onValeur, pas, min, max, arrondi, decimal = true, permettreVide = true, libelle, unite, onRefus, id, className = '',
   invalide, decrit, required, auContenu, ...marques
 }) => {
   const [edition, setEdition] = useState(false);
@@ -58,7 +62,12 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({
     const s = lireSaisie(texte, bornes);
     if (s.genre === 'valeur') { if (!Object.is(s.valeur, valeur)) onValeur(s.valeur); }
     else if (s.genre === 'vide' && permettreVide) { if (!Number.isNaN(valeur)) onValeur(Number.NaN); }
-    else if (!Object.is(avant.current, valeur)) onValeur(avant.current);
+    else {
+      if (!Object.is(avant.current, valeur)) onValeur(avant.current);
+      // « -1 » se lit comme un nombre hors des limites (la saisie le refuse comme illisible parce qu'elle n'accepte pas de signe).
+      const genre = s.genre === 'illisible' && /^\s*[-−–]\s*\d/.test(texte) ? 'hors-limites' : s.genre;
+      onRefus?.(messageRefusSaisie(genre, { min, max, unite, gardee: avant.current }));
+    }
     setEdition(false);
   };
 
@@ -81,6 +90,7 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({
         avant.current = valeur;
         annule.current = false;
         premier.current = true;
+        onRefus?.(null);
         setTexte(afficher(valeur));
         setEdition(true);
         e.currentTarget.select();
@@ -91,7 +101,7 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({
         const t = e.target.value;
         setTexte(t);
         const s = lireSaisie(t, bornes);
-        if (s.genre === 'valeur') onValeur(s.valeur);
+        if (s.genre === 'valeur') { onValeur(s.valeur); onRefus?.(null); }
         else if (s.genre === 'vide' && permettreVide) onValeur(Number.NaN);
       }}
       onKeyDown={(e) => {

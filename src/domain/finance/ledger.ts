@@ -9,6 +9,8 @@ export const formatCHF = (value: number): string => chfFormatter.format(value / 
 const montantFr = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 /** Un montant en francs (pas en centimes) pour une phrase : « 1,00 », jamais « 1.00 ». Le point décimal est le défaut du `toFixed(2)` (TE-8, TE-55, MV-39). */
 export const montantChf = (chf: number): string => Number.isFinite(chf) ? montantFr.format(chf) : '—';
+/** BE-67 : la date telle que l'app l'écrit partout, JJ.MM.AAAA ; une date ISO (AAAA-MM-JJ) est réécrite, tout autre texte reste tel quel (le champ se tape, on ne le corrige pas). */
+export const dateAffichee = (value?: string): string => { const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? ''); return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : value ?? ''; };
 export function isoDate(value?: string): string | null {
   if (!value) return null;
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);

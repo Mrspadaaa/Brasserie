@@ -1,0 +1,53 @@
+{
+  "base": "http://127.0.0.1:5657",
+  "erreurs": [],
+  "bloques": [],
+  "captures": [
+    "m1-390-clair",
+    "m1-1280-clair",
+    "m1-390-cave",
+    "m1-1280-cave"
+  ],
+  "notes": {
+    "m1-390-clair": {
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "Verdant IPALallemandCH",
+        "PomonaLallemandFR"
+      ],
+      "dose": "Dose2–3 sachets2–3 sachets2–3 sachets",
+      "fg": "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,011–1,0176,6–7,4 %",
+      "debordements": []
+    },
+    "m1-1280-clair": {
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "Verdant IPALallemandCH",
+        "PomonaLallemandFR"
+      ],
+      "dose": "Dose2–3 sachets2–3 sachets2–3 sachets",
+      "fg": "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,011–1,0176,6–7,4 %",
+      "debordements": []
+    },
+    "m1-390-cave": {
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "Verdant IPALallemandCH",
+        "PomonaLallemandFR"
+      ],
+      "dose": "Dose2–3 sachets2–3 sachets2–3 sachets",
+      "fg": "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,011–1,0176,6–7,4 %",
+      "debordements": []
+    },
+    "m1-1280-cave": {
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "Verdant IPALallemandCH",
+        "PomonaLallemandFR"
+      ],
+      "dose": "Dose2–3 sachets2–3 sachets2–3 sachets",
+      "fg": "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,011–1,0176,6–7,4 %",
+      "debordements": []
+    }
+  }
+}

@@ -473,6 +473,15 @@ export const App: React.FC = () => {
     if (import.meta.env.DEV) {
       if (!isDevLocal || !isDataReady || apercuOuvert.current) return;
       const q = new URLSearchParams(location.search);
+      if (q.get('etape') === 'levure') {
+        // Banc de l'étape Levure (mission levure-port, u1) : une recette de démonstration (US-05, OG 1,066, 30 L, 19 °C), ou `&recette=vide`.
+        apercuOuvert.current = true;
+        import('./ui/etapeLevure/apercuDev').then(({ recetteApercuEtapeLevure, recetteApercuSansLevure, rechercheSimulee }) => {
+          if (q.get('recherche') === 'simulee') (window as unknown as { __lvRechercheSimulee?: unknown }).__lvRechercheSimulee = rechercheSimulee;
+          openWizard({ recipe: q.get('recette') === 'vide' ? recetteApercuSansLevure() : recetteApercuEtapeLevure(), step: 'levure' });
+        });
+        return;
+      }
       if (q.get('etape') !== 'houblons') return;
       apercuOuvert.current = true;
       if (q.get('recette') === 'vide') { openWizard({ step: 'houblons' }); return; }
@@ -647,7 +656,11 @@ export const App: React.FC = () => {
 
     if (!thenBrew) {
       showToast(`Recette « ${recipe.name} » enregistrée.`);
-      if (currentRoute.current === sourceRoute) route.close();
+      if (currentRoute.current === sourceRoute) {
+        // BR-7 : une recette modifiée depuis sa fiche revient à sa fiche (la pile pose le wizard sur les onglets : `close` ramenait à la liste, défilée).
+        if (sourceRoute.view === 'wizard' && sourceRoute.recipeId && !sourceRoute.duplicate) route.replaceTop({ view: 'recipe', recipeId: recipe.id });
+        else route.close();
+      }
       return;
     }
 

@@ -1,0 +1,102 @@
+{
+  "erreurs": [],
+  "notes": {
+    "introuvable:^Synthèse": true,
+    "finances-Synthèse": {
+      "ok": false,
+      "titres": [
+        "Synthèse"
+      ],
+      "deborde": false
+    },
+    "finances-Opérations": {
+      "ok": true,
+      "titres": [
+        "Opérations"
+      ],
+      "deborde": false
+    },
+    "finances-Prévisions": {
+      "ok": true,
+      "titres": [
+        "Prévisions"
+      ],
+      "deborde": false
+    },
+    "finances-Annuel": {
+      "ok": true,
+      "titres": [
+        "Annuel"
+      ],
+      "deborde": false
+    },
+    "clients": {
+      "onglets": [
+        "🍺\nL'Affinée",
+        "Clients",
+        "Impôt bière",
+        "Prix et marges",
+        "Bord",
+        "Finances",
+        "Brassins",
+        "Stocks",
+        "Clients"
+      ]
+    },
+    "introuvable:^\\+$|Ajouter|Nouveau|assistant": true,
+    "introuvable:Nouveau tarif": true,
+    "tarif": {
+      "fab": false,
+      "titres": [],
+      "marge": []
+    },
+    "menu": {
+      "menu": true,
+      "entrees": [
+        "Bord",
+        "Finances",
+        "Brassins",
+        "Stocks",
+        "Clients"
+      ]
+    },
+    "reglages": {
+      "titres": []
+    },
+    "reglagesBrasserie": {
+      "champ": false,
+      "labels": [
+        "Volume habituel en fermenteur (L)",
+        "Empâtage préféré (L/kg)",
+        "Rinçage habituel à chaud (L)",
+        "Rinçage exceptionnel maximum à chaud (L)",
+        "Augmenter l’eau d’empâtage pour limiter le rinçage, si la cuve le permet",
+        "Froid régulé disponible après le serpentin",
+        "",
+        "",
+        "",
+        "",
+        "Cuve · capacité totale (L)",
+        "Cuve · limite utile à chaud (L)\nEau + grains à l’empâtage ; marge pour mousse et circulation déjà réservée.",
+        "Sparger · capacité à chaud (L)\nCapacité du récipient principal à température de rinçage. Le complément vient de la bouilloire annexe.",
+        "Fermenteur · capacité totale (L)",
+        "Place pour la mousse (%)\nRepère provisoire, remplacé par le conseil de la levure ou ton choix dans la recette.",
+        "Eau osmosée · volume du pack (L)\nLe reste du pack est conservé, pas versé automatiquement.",
+        "J’ai vérifié la limite utile sur ma cuve",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "journal": {
+      "titres": []
+    },
+    "atelier": {
+      "titres": []
+    }
+  }
+}
