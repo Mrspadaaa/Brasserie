@@ -122,3 +122,20 @@ les deux fois (avant : k6 0 sur 3, k7 1, k8 2). La date n'a déclenché la 3.8 q
   `node scripts/agents/controle-bugs.mjs`) ; commande de déploiement au pilote (aiTask seule, hébergement pour l'écran).
 - Environnement du worktree : jonctions `node_modules`, `functions/node_modules`, `work/finalisation-tickets-2026-10-08/H13-reels` vers le dépôt principal ;
   `.env`, `.env.local`, `src/data/seedData.ts` copiés (ignorés par Git). Passes payantes lancées avec le dépôt principal comme dossier courant (clé lue par le banc).
+
+## Lenteur : mesure appariée (09.11, 17 h, à sa demande « regarde pour cette lenteur en détail »)
+
+Ancienne consigne (copie détachée de f04e2119) et nouvelle, lancées EN MÊME TEMPS sur 8 pièces (doc1, doc2, doc5, doc8, doc10, doc12, doc15, doc21), 1 tirage,
+0,38 + 0,29 CHF (mission : 2,26 CHF au total). Sorties : `banc-m9-ab-ancienne`, `banc-m9-ab-nouvelle` (bloc-notes de la session, hors Git).
+
+| | ancienne | nouvelle |
+|---|---|---|
+| Flash-Lite, ms par jeton de sortie (médiane) | 2,31 | 2,35 |
+| 3.8, ms par jeton de sortie (médiane) | 7,00 | 6,95 |
+| entrée par lecture | — | +73 jetons |
+| pièces où la 3.8 est appelée | 7 sur 8 | 5 sur 8 |
+| parcours, médiane | ≈ 18,5 s | ≈ 12 s |
+
+Lectures Flash-Lite appariées (même pièce, même n° de lecture) : durées égales à ±1 s, sauf doc10 lecture 1 (8,3 s → 19,0 s pour une sortie identique,
+4 462 → 4 524 jetons) : variance du service. Conclusion : la lenteur des passes de l'après-midi vient de l'API (latence par jeton et 3.8 appelée selon
+les écarts des lignes), pas de la phrase de consigne. Indice sur 8 pièces, cohérent avec les deux passes complètes.

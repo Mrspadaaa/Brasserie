@@ -839,3 +839,6 @@ Bilan : 5 lectures sur les 5 permises, aucune restante.
 | 2026-11-09 16:00:44 | doc12 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 7412 ms | 5081 | 3605 | 0.013171 | 12.395514 | STOP |
 | 2026-11-09 16:00:51 | doc15 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 6528 ms | 2829 | 2837 | 0.009927 | 12.405441 | STOP |
 | 2026-11-09 16:00:51 | doc15 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 6789 ms | 2850 | 2886 | 0.010088 | 12.415529 | STOP |
+| 2026-11-09 16:01:08 | doc15 | 1 | Csv8 | 3 | gemini-3.8-flash | 17160 ms | 2865 | 2467 | 0.028500 | 12.444029 | STOP |
+| 2026-11-09 16:01:11 | doc21 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2448 ms | 2829 | 543 | 0.002758 | 12.446787 | STOP |
+| 2026-11-09 16:01:11 | doc21 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2726 ms | 2850 | 560 | 0.002819 | 12.449606 | STOP |
