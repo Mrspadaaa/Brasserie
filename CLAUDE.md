@@ -92,6 +92,11 @@ Système complet : `docs/agents/systeme.md`.
   contexte ciblé et résultat attendu. Réutiliser le même agent pour une suite liée.
   Les sous-agents consomment aussi du quota ; ne pas créer une équipe par défaut
   ni refaire leur exploration. Garder une revue indépendante quand le risque le justifie.
+- Jetons (09.11, « tout va dans la qualité ») : chaque appel relit tout le contexte en cache, donc
+  moins d'appels et un contexte léger. Un lot = un script préparé et un appel groupé, pas une exploration
+  pas à pas ; jamais un appel en échec relancé tel quel ; sorties filtrées (`head`, `grep`, champs
+  ciblés) ; pas d'outil ni de connecteur activé en cours de session (casse le cache) ; compacter ou
+  passer la main avant que les messages pèsent plus de 300 k. Mesure : `node scripts/agents/jetons.mjs`.
 - Arrêter la recherche quand les preuves permettent la décision. Grouper les
   lectures indépendantes ; garder les longs journaux en fichiers et remonter
   résultats, erreurs utiles et références. Les tests déjà verts se rejouent pour
