@@ -41,12 +41,14 @@ export type Route =
   | { view: 'hopSuggest'; recipeId?: string }
   | { view: 'hopCompare'; recipeId?: string; hops: string[]; pinned?: string }
   | { view: 'hopTiming'; recipeId?: string; additionId: string; step?: 'yeast' }
-  | { view: 'hopSubstitute'; recipeId?: string; hopKey: string };
+  | { view: 'hopSubstitute'; recipeId?: string; hopKey: string }
+  // La recherche avancée des houblons (mission 2026-11-09-levure-retours, r2) : ouverte par le champ d'ajout de l'étape.
+  | { view: 'hopSearch'; recipeId?: string };
 
 export type RouteView = Route['view'];
-export type LayerRoute = Extract<Route, { view: 'hopV55' | 'hopBeer' | 'hopSuggest' | 'hopCompare' | 'hopTiming' | 'hopSubstitute' }>;
+export type LayerRoute = Extract<Route, { view: 'hopV55' | 'hopBeer' | 'hopSuggest' | 'hopCompare' | 'hopTiming' | 'hopSubstitute' | 'hopSearch' }>;
 
-const LAYER_VIEWS: ReadonlySet<RouteView> = new Set<RouteView>(['hopV55', 'hopBeer', 'hopSuggest', 'hopCompare', 'hopTiming', 'hopSubstitute']);
+const LAYER_VIEWS: ReadonlySet<RouteView> = new Set<RouteView>(['hopV55', 'hopBeer', 'hopSuggest', 'hopCompare', 'hopTiming', 'hopSubstitute', 'hopSearch']);
 
 /** Une couche s'empile sur la page ouverte ; une page remplace tout au-dessus des onglets. */
 export const isLayerRoute = (route: Route): route is LayerRoute => LAYER_VIEWS.has(route.view);

@@ -8,7 +8,8 @@
 // 5 pour une recette vide, puis 3, 2, 1. Le champ cherche dans tout le catalogue, pas seulement le stock (D21 : « je
 // fais une recette puis ensuite j'achète les ingrédients, souvent pas présent »).
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
-import { Plus, ShoppingCart } from 'lucide-react';
+import { Plus, ShoppingCart, SlidersHorizontal } from 'lucide-react';
+import { ouvrirCouche } from '../ouvrirCouche';
 import { Input, type InputElement } from '../../Input';
 import { COULEURS, nombre } from './commun';
 import { useOuvrir } from './hote';
@@ -128,6 +129,13 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
         <Input ref={champRef} inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           data-etat="etat-etape-champ-ajouter" aria-label="Ajouter un houblon : stock ou catalogue"
           className="flex-1 min-w-0 h-10 px-4 py-2 leading-6 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
+        {/* 09.11 (« je choisis la recherche avancée par moi même ») : la recherche de base reste ce champ ; la recherche avancée
+            (forme c6b de la levure : facettes à comptes, α, rôle, arômes, origine, huiles, stock) s'ouvre par son bouton, dans la pile. */}
+        <button type="button" data-role="recherche-avancee" aria-label="Recherche avancée" title="Recherche avancée : α, rôle, arômes, origine, huiles, stock"
+          onClick={() => { onGeste(); ouvrirCouche({ view: 'hopSearch' }); }}
+          className="shrink-0 inline-flex items-center gap-1 h-10 px-2 rounded-full text-sm text-cave-400">
+          <SlidersHorizontal className="w-4 h-4" aria-hidden="true" /><span><span className="hidden sm:inline">Recherche </span>avancée</span>
+        </button>
         {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
       </div>
       <ul className="space-y-1" aria-label="Ajouts proposés par le moteur, chacun à son moment suggéré">

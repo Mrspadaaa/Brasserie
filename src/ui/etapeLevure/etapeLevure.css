@@ -25,17 +25,23 @@
 .lv-pic { grid-row: 1 / 3; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   background: theme('colors.ebc.straw / 22%'); border: 1px solid theme('colors.ebc.straw'); color: theme('colors.ebc.straw'); }
 :root[data-theme='clair'] .lv-pic { background: #F4E7B8; border-color: #C9A227; color: #6E5409; }
-.lv-nom { font-size: 1.25rem; font-weight: 600; color: theme('colors.cave.50'); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Un nom long passe sur deux lignes au lieu d'être coupé (« LalBrew Verdant … ») ; au-delà seulement, il est tronqué. */
+.lv-nom { font-size: 1.25rem; font-weight: 600; line-height: 1.15; color: theme('colors.cave.50'); overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .lv-nom.lv-long { font-size: 1.0625rem; }
 .lv-dose { justify-self: end; display: flex; align-items: baseline; gap: 4px; }
 .lv-dose b { font-family: 'IBM Plex Mono', monospace; font-size: 1.625rem; font-weight: 600; color: theme('colors.cave.50'); letter-spacing: -.02em; }
 .lv-dose span { font-size: .875rem; color: theme('colors.cave.400'); }
 .lv-x { grid-row: 1 / 3; grid-column: 4; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: theme('colors.cave.400'); }
-.lv-sub { grid-column: 2 / 4; display: flex; align-items: center; gap: 8px; min-width: 0; font-size: .875rem; color: theme('colors.cave.400'); }
-.lv-mini { flex: 1; max-width: 240px; position: relative; height: 10px; border-radius: 10px; border: 1px solid theme('colors.cave.700'); background: theme('colors.cave.950'); overflow: hidden; min-width: 24px; }
+.lv-sub { grid-column: 2 / 4; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; font-size: .875rem; color: theme('colors.cave.400'); }
+.lv-sub-t { min-width: 0; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; }
+/* Grammes et jauge : un bloc calé sur le bord droit de la dose, la jauge toujours à la même largeur. */
+.lv-sub-d { flex: none; display: inline-flex; align-items: center; gap: 8px; }
+.lv-mini { flex: none; width: 56px; position: relative; height: 10px; border-radius: 10px; border: 1px solid theme('colors.cave.700'); background: theme('colors.cave.950'); overflow: hidden; }
 .lv-mini i, .lv-hach { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, #E2BE45 0 2px, rgba(226,190,69,.18) 2px 6px); }
 .lv-bande { display: grid; grid-template-columns: 1.25fr 1fr .9fr; border-top: 1px solid theme('colors.cave.700'); background: theme('colors.cave.850'); }
 .lv-cel { padding: 6px 8px 7px; display: flex; flex-direction: column; gap: 3px; min-width: 0; align-items: flex-start; }
+.lv-cel > .lv-tr, .lv-cel > .lv-jo { margin-top: auto; }
+.lv-cel > .lv-ct, .lv-cel > .lv-cv, .lv-cel > .lv-ab { min-height: 1.1rem; line-height: 1.1rem; }
 .lv-cel + .lv-cel { border-left: 1px solid theme('colors.cave.700'); }
 .lv-ct { font-size: .75rem; color: theme('colors.cave.400'); }
 .lv-cv { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; font-size: .875rem; font-weight: 600; color: theme('colors.cave.50'); white-space: nowrap; }
@@ -53,6 +59,8 @@
 .lv-el i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
 .lv-ev { display: flex; align-items: center; gap: 8px; justify-content: flex-end; font-size: .8125rem; color: theme('colors.cave.50'); min-width: 0; text-align: right; }
 .lv-ev em { font-style: normal; font-size: .75rem; color: theme('colors.cave.400'); }
+/* Les jauges des effets sur une même colonne : le mot (faible, moyen, élevé) a une largeur fixe, la jauge se cale à gauche de lui. */
+.lv-ev[data-genre='jauge'] em { display: inline-block; min-width: 3.4em; line-height: 1; text-align: right; }
 .lv-ev > span { min-width: 0; overflow-wrap: anywhere; }
 .lv-ch { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 0 8px; border: 1px dashed theme('colors.attention'); border-radius: 10px; font-size: .8125rem; color: theme('colors.attention'); white-space: nowrap; background: transparent; }
 .lv-vide { padding: 10px; border: 1px dashed theme('colors.cave.700'); border-radius: 16px; }
@@ -60,12 +68,38 @@
 
 /* Champ « Changer de levure » et puces (langue de s1) */
 .lv-ajout { background: theme('colors.cave.850'); border-radius: 16px; padding: 8px; }
-.lv-champ { display: flex; align-items: center; gap: 8px; width: 100%; height: 40px; border: 1px dashed theme('colors.cave.600'); border-radius: 16px; padding: 0 12px; background: theme('colors.cave.950'); color: theme('colors.cave.400'); font-size: 1rem; text-align: left; }
-.lv-puces { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; scrollbar-width: none; }
+.lv-champ { display: flex; align-items: center; gap: 8px; width: 100%; height: 40px; border: 1px dashed theme('colors.cave.600'); border-radius: 16px; padding: 0 8px 0 12px; background: theme('colors.cave.950'); color: theme('colors.cave.400'); font-size: 1rem; text-align: left; cursor: text; }
+.lv-champ:focus-within { border-style: solid; border-color: theme('colors.ebc.straw'); }
+.lv-champ > svg { flex: none; }
+.lv-in { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: 0; font-size: 1rem; color: theme('colors.cave.50'); }
+.lv-in::placeholder { color: theme('colors.cave.400'); }
+.lv-eff { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: theme('colors.cave.400'); }
+.lv-eff:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
+/* Les puces du repos : une seule rangée de puces entières ; celles qui ne tiennent pas passent sous la rangée, masquées. « Hors catalogue » reste à droite. */
+.lv-puces { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; }
+.lv-puces-l { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 6px; height: 32px; overflow: hidden; }
+.lv-puce[data-hors] { visibility: hidden; }
+.lv-puce > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.lv-puces-l .lv-puce { max-width: 100%; }
 .lv-puce { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px 0 8px; border: 1px solid theme('colors.cave.600'); border-radius: 10px; background: theme('colors.cave.950'); font-size: .875rem; color: theme('colors.cave.50'); white-space: nowrap; flex-shrink: 0; }
 .lv-puce svg { color: theme('colors.water'); }
 .lv-puce.lv-hab { color: theme('colors.cave.400'); }
 .lv-puce.lv-hc { border-style: dashed; color: theme('colors.cave.200'); }
+
+/* Les résultats du champ, en tuiles juste dessous (langue de Malts/sucres) */
+.lv-res { display: grid; grid-template-columns: repeat(auto-fill, minmax(152px, 1fr)); gap: 6px; margin-top: 6px; }
+.lv-tu { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; min-height: 44px; padding: 4px 10px; border: 1px solid theme('colors.cave.600'); border-radius: 10px; background: theme('colors.cave.950'); color: theme('colors.cave.50'); text-align: left; min-width: 0; }
+.lv-tu.lv-prem { border-color: theme('colors.ebc.straw'); }
+.lv-tu:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
+.lv-tu1 { display: flex; align-items: center; gap: 5px; max-width: 100%; font-size: .875rem; font-weight: 600; }
+.lv-tun { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; }
+.lv-st { flex: none; color: theme('colors.water'); }
+.lv-tu2 { font-size: .75rem; color: theme('colors.cave.400'); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lv-tu.lv-libre { grid-column: 1 / -1; border-style: dashed; }
+.lv-plus-n { grid-column: 1 / -1; font-size: .75rem; color: theme('colors.cave.400'); padding: 0 2px; }
+/* La conduite de base dans Ma levure : seule station de l'écran, ses pastilles « 1 » et « 2 » (numéros d'étapes de l'ancien parcours) n'ont plus rien à numéroter. */
+.lv-base { min-width: 0; }
+.lv-base .yc-step-number { display: none; }
 
 /* Ta conduite */
 .lv-cond { background: theme('colors.cave.850'); border: 1px solid theme('colors.cave.700'); border-radius: 16px; padding: 8px 10px; min-width: 0; }

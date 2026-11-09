@@ -39,8 +39,8 @@ describe('C1 : le repère de l’alcool vient de la recette', () => {
     expect(screen.getByRole('button', { name: /Filtres : .*7 %/ })).toBeInTheDocument();
     await u.click(screen.getByRole('button', { name: /^Tolérance/ }));
     const f = await screen.findByRole('dialog');
-    expect(f.querySelector('[data-filtre="tolerance"] .lvv-irp')).not.toBeNull();
-    expect(f.querySelector('.lvv-reperl')).not.toBeNull();
+    expect(f.querySelector('[data-filtre="tolerance"] .ra-irp')).not.toBeNull();
+    expect(f.querySelector('.ra-reperl')).not.toBeNull();
     expect(within(f).getByRole('switch', { name: /ne garder que ≥ 7/ })).toBeInTheDocument();
   });
 });

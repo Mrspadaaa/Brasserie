@@ -12,7 +12,8 @@ import { FILTRES, axeParId } from './axes';
 import type { Contexte } from './contexte';
 import { RANG_ORDRE, enStockIci } from './disponibilite';
 import type { Fiche } from './fiche';
-import { DEFS, etatEffectif, passe, trancheDe, type OptionDef, type ValeurFiltre } from './filtres';
+import { DEFS, etatEffectif, facettesLevure } from './filtres';
+import { facetter } from '../rechercheAvancee/facettes';
 import { distance } from './proximite';
 import { lire } from './valeurs';
 
@@ -75,41 +76,12 @@ export function chercher(
   const etats = IDS.map((id) => etatEffectif(filtres, id));
   const posés = IDS.filter((_, k) => etats[k] != null);
 
-  // 3. Une passe : valeur de chaque fiche pour chaque filtre, échecs
-  const base: Array<{ f: Fiche; valeurs: ValeurFiltre[]; echecs: number; premier: number }> = [];
-  for (const f of tous) {
-    if (!texteOk(f)) continue;
-    const valeurs: ValeurFiltre[] = new Array(IDS.length);
-    let echecs = 0, premier = -1;
-    for (let k = 0; k < IDS.length; k++) {
-      const v = DEFS[IDS[k]].valeur(f, stock, ctx);
-      valeurs[k] = v;
-      const etat = etats[k];
-      if (etat != null && !passe(DEFS[IDS[k]], etat, v, ctx, f)) { echecs++; if (premier < 0) premier = k; }
-    }
-    base.push({ f, valeurs, echecs, premier });
-  }
-  const retenues = base.filter((b) => b.echecs === 0);
-
-  // 4. Comptes disjonctifs
-  const comptes: Partial<Record<IdFiltre, ComptesFiltre>> = {};
-  IDS.forEach((id, k) => {
-    const options: OptionDef[] = DEFS[id].options(ctx);
-    const n = new Map<string, number>(options.map((o) => [o.valeur, 0]));
-    let nonDocumentees = 0;
-    for (const b of base) {
-      if (!(b.echecs === 0 || (b.echecs === 1 && b.premier === k))) continue;
-      const v = b.valeurs[k];
-      if (v == null) { nonDocumentees++; continue; }
-      if (typeof v === 'boolean') { if (v) n.set('oui', (n.get('oui') ?? 0) + 1); continue; }
-      const cles = typeof v === 'number' ? [trancheDe(id, v)] : v;
-      for (const c of cles) if (n.has(c)) n.set(c, n.get(c)! + 1);
-    }
-    comptes[id] = { options: options.map((o) => ({ valeur: o.valeur, libelle: o.libelle, n: n.get(o.valeur) ?? 0 })), nonDocumentees };
-  });
+  // 3. et 4. Filtres et comptes disjonctifs : le moteur de facettes commun (src/domain/rechercheAvancee), sur les fiches du texte.
+  const { retenues, comptes: tousComptes } = facetter(tous.filter(texteOk), facettesLevure(ctx, stock), etats);
+  const comptes = tousComptes as Partial<Record<IdFiltre, ComptesFiltre>>;
 
   // 5. L'ordre c4
-  let rangees = retenues.map((b) => b.f).filter((f) => f !== tapee);
+  let rangees = retenues.filter((f) => f !== tapee);
   // Vendues ici d'abord, celles qui ont du stock avant les épuisées ; puis Europe ; puis rares.
   const rang = (f: Fiche) => RANG_ORDRE[ctx.dispo(f).rang] * 2 + (ctx.dispo(f).rang === 'ici' && !enStockIci(f.id) ? 1 : 0);
   const nom = (a: Fiche, b: Fiche) => a.ref.name.localeCompare(b.ref.name, 'fr');

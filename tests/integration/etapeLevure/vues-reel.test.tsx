@@ -30,7 +30,7 @@ describe('les vues sur l’API de d1', () => {
     await u.type(screen.getByLabelText('Nom, fabricant ou code'), '1056');
     expect(screen.getByRole('region', { name: /Levure tapée : .*1056/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /proche de 1056/ })).toBeInTheDocument();
-    const premier = document.querySelector('.lvv-rayon-ici [data-levure]') as HTMLElement;
+    const premier = document.querySelector('.ra-rayon-ici [data-levure]') as HTMLElement;
     expect(premier.textContent).toMatch(/US-05/);
     const titres = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent ?? '');
     expect(titres[0]).toMatch(/^Vendue CH · FR · DE/);
@@ -46,7 +46,7 @@ describe('les vues sur l’API de d1', () => {
     await u.click(within(feuille).getByRole('button', { name: /^Famille/ }));
     await u.click(within(feuille).getAllByRole('checkbox')[0]);
     await u.click(feuille.querySelector('[data-filtre="temperature"]') as HTMLElement);
-    await u.click(within(feuille).getAllByRole('button', { pressed: false }).find((b) => b.classList.contains('lvv-col') && /15–18|18–22/.test(b.getAttribute('aria-label') ?? ''))!);
+    await u.click(within(feuille).getAllByRole('button', { pressed: false }).find((b) => b.classList.contains('ra-col') && /15–18|18–22/.test(b.getAttribute('aria-label') ?? ''))!);
     await u.click(within(feuille).getByRole('button', { name: /^Sans STA1/ }));
     await u.click(within(feuille).getByRole('switch'));
     await u.click(within(feuille).getByRole('button', { name: /^Voir/ }));
@@ -54,10 +54,10 @@ describe('les vues sur l’API de d1', () => {
     const n = Number((phrase.querySelector('b') as HTMLElement).textContent!.replace(/\s/g, ''));
     expect(n).toBeGreaterThan(0);
     expect(n).toBeLessThan(1309);
-    expect(phrase.querySelectorAll('.lvv-mot')).toHaveLength(3);
+    expect(phrase.querySelectorAll('.ra-mot')).toHaveLength(3);
     // les vendues ici dont la fiche ne dit rien de STA1 : en pâle, « ⌕ STA1 ? », hors du compte
     expect(screen.getAllByRole('button', { name: 'STA1 ? : chercher' }).length).toBeGreaterThan(0);
-    for (const x of [...phrase.querySelectorAll('.lvv-mot-x')]) await u.click(x as HTMLElement);
+    for (const x of [...phrase.querySelectorAll('.ra-mot-x')]) await u.click(x as HTMLElement);
     expect(document.querySelector('[data-booster="phrase-filtres"]')).toBeNull();
   });
 

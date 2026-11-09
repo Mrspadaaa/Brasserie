@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { EtapeLevure } from '../../../src/ui/etapeLevure/EtapeLevure';
+import { Conduite } from '../../../src/ui/etapeLevure/Conduite';
+import { yeastReferences } from '../../../src/domain/yeastReferences';
 import { recetteApercuAncienne, recetteApercuEtapeLevure } from '../../../src/ui/etapeLevure/apercuDev';
 import type { VueLevure, PropsVue } from '../../../src/ui/etapeLevure/props';
 import type { TrialRecipe } from '../../../src/domain/hopIndex/trials';
@@ -67,73 +69,11 @@ describe('Ma levure (l5b)', () => {
     expect(document.querySelector('.lv-sub')!.textContent).toMatch(/sèche\s*·\s*Fermentis\s*12–19\s*g/);
   });
 
-  it('la conduite : un « + » par frontière (J0, chaque bascule, la fin), un × sur le palier touché', () => {
-    render(<Banc />);
-    expect(document.querySelectorAll('.lv-plus').length).toBe(5);                                  // 4 paliers : J0, J4, J7, J9, fin J12
-    expect(document.querySelectorAll('.lv-moins').length).toBe(1);
-    expect(screen.getByRole('button', { name: /Retirer le palier 1/ })).toBeTruthy();
-  });
-
-  it('× retire le palier touché (le retrait de l’app), les autres durées sont conservées', () => {
-    const changes: TrialRecipe[] = [];
-    render(<Banc changes={changes} />);
-    fireEvent.click(document.querySelector('[data-phase-select="1"]')!);                          // touche le palier 2
-    fireEvent.click(screen.getByRole('button', { name: /Retirer le palier 2/ }));
-    const ecrit = changes.at(-1)!;
-    expect(ecrit.fermentation!.map(p => [p.name, p.days])).toEqual([['Fermentation principale', 4], ['Fin de fermentation', 2], ['Garde froide', 3]]);
-    expect(document.querySelector('.lv-cond-sous')!.textContent).toContain('3 paliers');
-  });
-
-  it('« + » ajoute un palier inconnu à cette frontière ; la recette n’est écrite que quand ses valeurs sont renseignées (jamais 0)', () => {
-    const changes: TrialRecipe[] = [];
-    render(<Banc changes={changes} />);
-    fireEvent.click(document.querySelector('.lv-plus[data-frontiere="1"]')!);                     // entre le palier 2 et le palier 3
-    expect(document.querySelector('.lv-cond-sous')!.textContent).toContain('5 paliers');
-    expect(changes).toHaveLength(0);                                                               // programme incomplet : rien n'est écrit
-    const champs = screen.getByRole('group', { name: /Valeurs du palier 3/ });
-    fireEvent.change(within(champs).getByLabelText('Température du palier 3'), { target: { value: '21' } });
-    fireEvent.change(within(champs).getByLabelText('Durée du palier 3'), { target: { value: '2' } });
-    const ecrit = changes.at(-1)!;
-    expect(ecrit.fermentation).toHaveLength(5);
-    expect(ecrit.fermentation![2]).toMatchObject({ name: 'Garde', tempC: 21, days: 2 });
-  });
-
-  // Verdict du critique L1 et L2 : le geste est « + » entre les paliers 2 et 3, puis « + » sur la fin J12 (maquette l5b, cadre 6).
-  it.each([[1, 2, 5], [3, 4, 5]])('« + » à la frontière %i : le palier neuf est une boîte « ? °C · ? j », les autres restent dessinés, rien à 0 °C, aucune explication ajoutée', (frontiere, neuf, total) => {
-    render(<Banc />);
-    fireEvent.click(document.querySelector(`.lv-plus[data-frontiere="${frontiere}"]`)!);
-    expect(document.querySelector('.lv-cond-sous')!.textContent).toContain(`${total} paliers`);
-    const boite = document.querySelector(`[data-inconnu="${neuf}"]`);
-    expect(boite).toBeTruthy();
-    expect(boite!.textContent).toContain('? °C');
-    expect(boite!.textContent).toContain('? j');
-    // Les paliers connus sont toujours tracés (ni cartes de texte, ni graphe vidé) : 19, 19, 19 et 4 °C.
-    const connus = [...document.querySelectorAll('[data-step]')].map(g => g.getAttribute('data-temp'));
-    expect(connus.sort()).toEqual(['19', '19', '19', '4']);
-    // L'inconnu n'est jamais dessiné à 0 °C : aucun point sur l'axe pour une température inconnue.
-    const bas = document.querySelector('svg[data-plot-bottom]')!.getAttribute('data-plot-bottom');
-    expect([...document.querySelectorAll('[data-transition-day] circle')].filter(c => c.getAttribute('cy') === bas)).toHaveLength(0);
-    // Aucun paragraphe d'explication de plus.
-    const texte = document.body.textContent ?? '';
-    expect(texte).not.toContain('Calendrier partiel');
-    expect(texte).not.toContain('position non calculable');
-    expect(texte).not.toContain('une valeur vide reste inconnue');
-    expect(document.querySelector('[role="status"].lv-note')).toBeNull();
-    expect(document.querySelector('svg[data-plot-bottom]')!.textContent).toContain('fin ?');
-  });
-
-  it('un seul palier : pas de ×', () => {
-    const seul = recette(); seul.fermentation = [seul.fermentation![0]];
-    render(<Banc depart={seul} />);
-    expect(document.querySelectorAll('.lv-moins').length).toBe(0);
-    expect(document.querySelectorAll('.lv-plus').length).toBe(2);
-  });
-
   it('recette sans levure : « Levure · choisir », le champ de recherche, aucune carte', () => {
     const vide = { ...recette(), yeast: { name: '' }, fermentation: undefined } as TrialRecipe;
     render(<Banc depart={vide} />);
     expect(screen.getByText('Levure · choisir')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Chercher une levure' })).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: /Chercher une levure/ })).toBeTruthy();
     expect(document.querySelector('.lv-bloc')).toBeNull();
   });
 
@@ -210,6 +150,77 @@ describe('Ma levure (l5b)', () => {
     expect(screen.getByRole('tab', { name: 'Comparer' }).getAttribute('aria-selected')).toBe('true');
     expect(document.querySelector('[data-vue="comparer"]')).toBeTruthy();
   });
+});
+
+// La NOUVELLE conduite (`Conduite.tsx`, « + » entre les paliers, × sur le palier touché) n'est plus montée dans Ma levure depuis le retour du brasseur du 09.11
+// (« la conduite de palier fonctionne infiniment mieux sur celle de base » : `etapeRetours.test.tsx`). Le composant reste dans le dépôt : ses tests le jouent seul.
+function BancConduite({ depart = recette(), changes = [] as TrialRecipe[] }) {
+  const [recipe, setRecipe] = useState<TrialRecipe>(depart);
+  return <Conduite recipe={recipe} refs={yeastReferences([])} onChange={next => { changes.push(next); setRecipe(next); return next; }} />;
+}
+describe('Conduite (nouvelle, non montée dans Ma levure)', () => {
+  it('la conduite : un « + » par frontière (J0, chaque bascule, la fin), un × sur le palier touché', () => {
+    render(<BancConduite />);
+    expect(document.querySelectorAll('.lv-plus').length).toBe(5);                                  // 4 paliers : J0, J4, J7, J9, fin J12
+    expect(document.querySelectorAll('.lv-moins').length).toBe(1);
+    expect(screen.getByRole('button', { name: /Retirer le palier 1/ })).toBeTruthy();
+  });
+
+  it('× retire le palier touché (le retrait de l’app), les autres durées sont conservées', () => {
+    const changes: TrialRecipe[] = [];
+    render(<BancConduite changes={changes} />);
+    fireEvent.click(document.querySelector('[data-phase-select="1"]')!);                          // touche le palier 2
+    fireEvent.click(screen.getByRole('button', { name: /Retirer le palier 2/ }));
+    const ecrit = changes.at(-1)!;
+    expect(ecrit.fermentation!.map(p => [p.name, p.days])).toEqual([['Fermentation principale', 4], ['Fin de fermentation', 2], ['Garde froide', 3]]);
+    expect(document.querySelector('.lv-cond-sous')!.textContent).toContain('3 paliers');
+  });
+
+  it('« + » ajoute un palier inconnu à cette frontière ; la recette n’est écrite que quand ses valeurs sont renseignées (jamais 0)', () => {
+    const changes: TrialRecipe[] = [];
+    render(<BancConduite changes={changes} />);
+    fireEvent.click(document.querySelector('.lv-plus[data-frontiere="1"]')!);                     // entre le palier 2 et le palier 3
+    expect(document.querySelector('.lv-cond-sous')!.textContent).toContain('5 paliers');
+    expect(changes).toHaveLength(0);                                                               // programme incomplet : rien n'est écrit
+    const champs = screen.getByRole('group', { name: /Valeurs du palier 3/ });
+    fireEvent.change(within(champs).getByLabelText('Température du palier 3'), { target: { value: '21' } });
+    fireEvent.change(within(champs).getByLabelText('Durée du palier 3'), { target: { value: '2' } });
+    const ecrit = changes.at(-1)!;
+    expect(ecrit.fermentation).toHaveLength(5);
+    expect(ecrit.fermentation![2]).toMatchObject({ name: 'Garde', tempC: 21, days: 2 });
+  });
+
+  // Verdict du critique L1 et L2 : le geste est « + » entre les paliers 2 et 3, puis « + » sur la fin J12 (maquette l5b, cadre 6).
+  it.each([[1, 2, 5], [3, 4, 5]])('« + » à la frontière %i : le palier neuf est une boîte « ? °C · ? j », les autres restent dessinés, rien à 0 °C, aucune explication ajoutée', (frontiere, neuf, total) => {
+    render(<BancConduite />);
+    fireEvent.click(document.querySelector(`.lv-plus[data-frontiere="${frontiere}"]`)!);
+    expect(document.querySelector('.lv-cond-sous')!.textContent).toContain(`${total} paliers`);
+    const boite = document.querySelector(`[data-inconnu="${neuf}"]`);
+    expect(boite).toBeTruthy();
+    expect(boite!.textContent).toContain('? °C');
+    expect(boite!.textContent).toContain('? j');
+    // Les paliers connus sont toujours tracés (ni cartes de texte, ni graphe vidé) : 19, 19, 19 et 4 °C.
+    const connus = [...document.querySelectorAll('[data-step]')].map(g => g.getAttribute('data-temp'));
+    expect(connus.sort()).toEqual(['19', '19', '19', '4']);
+    // L'inconnu n'est jamais dessiné à 0 °C : aucun point sur l'axe pour une température inconnue.
+    const bas = document.querySelector('svg[data-plot-bottom]')!.getAttribute('data-plot-bottom');
+    expect([...document.querySelectorAll('[data-transition-day] circle')].filter(c => c.getAttribute('cy') === bas)).toHaveLength(0);
+    // Aucun paragraphe d'explication de plus.
+    const texte = document.body.textContent ?? '';
+    expect(texte).not.toContain('Calendrier partiel');
+    expect(texte).not.toContain('position non calculable');
+    expect(texte).not.toContain('une valeur vide reste inconnue');
+    expect(document.querySelector('[role="status"].lv-note')).toBeNull();
+    expect(document.querySelector('svg[data-plot-bottom]')!.textContent).toContain('fin ?');
+  });
+
+  it('un seul palier : pas de ×', () => {
+    const seul = recette(); seul.fermentation = [seul.fermentation![0]];
+    render(<BancConduite depart={seul} />);
+    expect(document.querySelectorAll('.lv-moins').length).toBe(0);
+    expect(document.querySelectorAll('.lv-plus').length).toBe(2);
+  });
+
 });
 
 describe('le segment et les trois autres vues', () => {

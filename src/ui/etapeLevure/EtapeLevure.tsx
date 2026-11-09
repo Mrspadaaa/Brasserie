@@ -29,6 +29,7 @@ import { useYeastSupply } from '../../hooks/useYeastSupply';
 import { StorageService } from '../../services/storage';
 import type { YeastChoiceChange, YeastChoiceFields, YeastChoiceIntent } from '../YeastRecipeChoice';
 import { YeastPitchingPanel } from '../YeastPitchingPanel';
+import { NomLibreInitial } from '../nomLibreLevure';
 import { YeastStrainDetails } from '../YeastStrainDetails';
 import { YeastBeerTargetPanel } from '../YeastBeerTargetPanel';
 import { MaLevure } from './MaLevure';
@@ -106,6 +107,10 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const choisie = !!recipe.yeast.name?.trim();
   const [ouverts, setOuverts] = useState<Partial<Record<RepliId, boolean>>>({});
   const ouvre = (id: RepliId, o = true) => setOuverts(s => ({ ...s, [id]: o }));
+  // Le texte tapé sans résultat : « Mon stock ou saisie libre » s'ouvre sur la saisie hors catalogue, ce nom dedans.
+  const [nomLibre, setNomLibre] = useState<string>();
+  /** Un lien de la conduite de base (« Corriger la fiche », « Objectifs ») : le repli s'ouvre et vient dans l'écran. */
+  const vaAu = (id: RepliId) => { ouvre(id); requestAnimationFrame(() => racine.current?.querySelector(`[data-repli="${id}"]`)?.scrollIntoView?.({ block: 'start' })); };
   const cible: string | undefined = undefined;
   const racine = useRef<HTMLDivElement>(null);
   // « ⌕ » LANCE la recherche, sur la vue en cours (maquette l5b : « recherche… · 3/20 » dans la cellule) ; le résultat reste « à confirmer ».
@@ -169,12 +174,15 @@ export function EtapeLevure(p: PropsEtapeLevure) {
     <div role="tabpanel" id={`lv-vue-${vue}`} aria-labelledby={`lv-tab-${vue}`}>
       {vue === 'ma-levure' && <>
         <MaLevure recipe={recipe} refs={refs} supply={supply} levure={levure} onConduite={next => p.onChange(next, 'conduct')}
-          onChercherDonnee={chercherDeMaLevure} onChanger={() => onVue('chercher')} onRetirer={p.onRetirer}
-          stock={p.stockItems} onStock={onStock} onHorsCatalogue={() => ouvre('stock')} proposees={proposees} onProposee={l => props.onChoisir(l)}
+          onChercherDonnee={chercherDeMaLevure} onRetirer={p.onRetirer}
+          stock={p.stockItems} onStock={onStock} onHorsCatalogue={texte => { setNomLibre(texte?.trim() || undefined); ouvre('stock'); }} proposees={proposees} onProposee={l => props.onChoisir(l)}
+          reperes={props.reperes} stockIds={stockIds} conduiteCachee={!!ouverts.atelier}
+          onComparer={() => onVue('comparer')} onFiche={() => vaAu('fiche')} onObjectifs={() => vaAu('objectifs')} onNavigate={p.onNavigate}
           precedente={change?.from.yeast.name && change.from.yeast.name !== recipe.yeast.name ? change.from.yeast.name : undefined}
           onPrecedente={() => { const avant = refs.find(r => r.id === change?.from.yeast.hopIndexId); if (avant) props.onChoisir!(avant); }} />
         <div className="lv-replis" data-lv="replis">
-          <Repli id="stock" titre="Mon stock ou saisie libre" resume="une levure de l’atelier, ou hors catalogue" ouvert={!!ouverts.stock} onOuvre={o => ouvre('stock', o)}>{p.identityEditor}</Repli>
+          <Repli id="stock" titre="Mon stock ou saisie libre" resume="une levure de l’atelier, ou hors catalogue" ouvert={!!ouverts.stock} onOuvre={o => ouvre('stock', o)}>
+            <NomLibreInitial.Provider key={nomLibre ?? ''} value={nomLibre}>{p.identityEditor}</NomLibreInitial.Provider></Repli>
           {choisie && <Repli id="produit" titre="Produit exact et offres" resume="facultatif · vendeurs, « Corriger la fiche produit »" ouvert={!!ouverts.produit} onOuvre={o => ouvre('produit', o)}>
             <YeastPitchingPanel part="supply" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} /></Repli>}
           {choisie && <Repli id="fiche" titre="Fiche : compléter, corriger, chercher avec l’IA" resume="valeurs typées, sources" ouvert={!!ouverts.fiche} onOuvre={o => ouvre('fiche', o)}>

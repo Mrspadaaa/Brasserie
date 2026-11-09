@@ -6,7 +6,8 @@ import { YEAST_STYLE_FAMILIES } from '../../data/yeastRecipeProfiles';
 import { yeastStyleEvidence } from '../yeastStyleEvidence';
 import type { EtatFiltres, IdAxe, IdFiltre } from './contrat';
 import type { Fiche } from './fiche';
-import { AXES_AROMES, BOISSONS, FAMILLES, NIVEAUX, axeParId } from './axes';
+import { AXES_AROMES, BOISSONS, FAMILLES, FILTRES, NIVEAUX, axeParId } from './axes';
+import { garde, tranches, trancheDe as trancheGenerique, type Facette } from '../rechercheAvancee/facettes';
 import { niveauDuRang } from './lecture';
 import { lire, position } from './valeurs';
 import type { Contexte } from './contexte';
@@ -18,16 +19,9 @@ export type ValeurFiltre = string[] | number | boolean | null;
 export const BORNES_PLAGE: Partial<Record<IdFiltre, number[]>> = {
   tolerance: [8, 10, 12], attenuation: [70, 75, 80, 85], temperature: [15, 18, 22, 26]
 };
-const TRANCHES = (bornes: number[]): OptionDef[] => [
-  { valeur: `<${bornes[0]}`, libelle: `< ${bornes[0]}` },
-  ...bornes.slice(1).map((b, i) => ({ valeur: `${bornes[i]}-${b}`, libelle: `${bornes[i]}–${b}` })),
-  { valeur: `>=${bornes[bornes.length - 1]}`, libelle: `≥ ${bornes[bornes.length - 1]}` }
-];
+const TRANCHES = (bornes: number[]): OptionDef[] => tranches(bornes);
 export function trancheDe(filtre: IdFiltre, v: number): string {
-  const b = BORNES_PLAGE[filtre]!;
-  if (v < b[0]) return `<${b[0]}`;
-  for (let i = 1; i < b.length; i++) if (v < b[i]) return `${b[i - 1]}-${b[i]}`;
-  return `>=${b[b.length - 1]}`;
+  return trancheGenerique(BORNES_PLAGE[filtre]!, v);
 }
 
 const niveauDe = (f: Fiche, axe: IdAxe): string[] | null => {
@@ -116,21 +110,31 @@ export function etatEffectif(filtres: EtatFiltres, id: IdFiltre): string[] | { m
   return v;
 }
 
+/** Plage demandée sur °C et atténuation : on garde la fiche dont la plage la recoupe (règle de produit, doutes.json « regle-c-c5b »). */
+function gardePlage(id: IdFiltre): Facette<Fiche>['garde'] {
+  if (id !== 'temperature' && id !== 'attenuation') return undefined;
+  return (etat, valeur, f) => {
+    const p = lire(f, id)?.plage;
+    return p ? p.max >= etat.min && p.min <= etat.max : valeur >= etat.min && valeur <= etat.max;
+  };
+}
+
+/** Les 18 filtres en facettes du moteur commun (src/domain/rechercheAvancee) : options lues une fois par recherche, stock du brasseur lié. */
+export function facettesLevure(ctx: Contexte, stock: ReadonlySet<string>): Facette<Fiche>[] {
+  return FILTRES.map(({ id }) => {
+    const def = DEFS[id];
+    const bornes = BORNES_PLAGE[id];
+    return {
+      id, options: def.options(ctx), valeur: (f: Fiche) => def.valeur(f, stock, ctx),
+      ...(def.cumul ? { cumul: true } : {}),
+      ...(bornes ? { tranche: (v: number) => trancheGenerique(bornes, v) } : {}),
+      ...(gardePlage(id) ? { garde: gardePlage(id) } : {}),
+    };
+  });
+}
+
 /** Une fiche passe-t-elle un filtre posé ? Une fiche non documentée ne passe pas : l'inconnu n'est jamais un accord. */
 export function passe(def: DefFiltreInterne, etat: string[] | { min: number; max: number } | true, valeur: ValeurFiltre, ctx: Contexte, f: Fiche): boolean {
-  if (valeur == null) return false;
-  if (etat === true) return valeur === true;
-  if (Array.isArray(etat)) {
-    if (!Array.isArray(valeur)) return false;
-    return def.cumul ? etat.every((e) => valeur.includes(e)) : etat.some((e) => valeur.includes(e));
-  }
-  if (typeof valeur !== 'number') return false;
-  if (def.id === 'temperature' || def.id === 'attenuation') {
-    // Plage demandée : on garde la fiche dont la plage la recoupe (règle de produit, doutes.json « regle-c-c5b »).
-    const lu = lire(f, def.id);
-    const p = lu?.plage;
-    return p ? p.max >= etat.min && p.min <= etat.max : valeur >= etat.min && valeur <= etat.max;
-  }
-  void ctx;
-  return valeur >= etat.min && valeur <= etat.max;
+  const g = gardePlage(def.id);
+  return garde({ id: def.id, options: [], valeur: () => valeur, ...(def.cumul ? { cumul: true } : {}), ...(g ? { garde: g } : {}) }, etat, valeur, f);
 }

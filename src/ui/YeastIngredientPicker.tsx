@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type MouseEvent } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type MouseEvent } from 'react';
 import type { StockItem, YeastSpec } from '../types';
 import { yeastReferences, type YeastReference } from '../domain/yeastReferences';
 import { normalizedYeastText, yeastIdentitySearchIndex, yeastSearchIndex, yeastSearchScore, type YeastSearchIndex } from '../domain/yeastCatalogue';
@@ -8,6 +8,7 @@ import { normalize } from '../services/search';
 import { Units } from '../services/units';
 import { Combobox, type ComboOption } from './Combobox';
 import { Input } from './Input';
+import { NomLibreInitial } from './nomLibreLevure';
 
 type IndexedChoice = { option: ComboOption; identity: YeastSearchIndex };
 
@@ -35,7 +36,8 @@ export function YeastIngredientPicker({ items, yeast, onStock, onReference, onCr
   onCreate: (name: string) => void;
   personalChoice?: boolean;
 }) {
-  const [manual, setManual] = useState(false), [name, setName] = useState('');
+  const nomInitial = useContext(NomLibreInitial)?.trim() || undefined;
+  const [manual, setManual] = useState(!!nomInitial), [name, setName] = useState(nomInitial ?? '');
   const [searchQuery, setSearchQuery] = useState('');
   // Empty personal choice: the catalogue search sits just above, so this one opens on demand.
   const [searchOpen, setSearchOpen] = useState(false);
