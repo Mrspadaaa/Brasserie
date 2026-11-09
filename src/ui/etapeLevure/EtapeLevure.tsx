@@ -21,6 +21,7 @@ import type { StockItem } from '../../types';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import type { YeastReference } from '../../domain/yeastReferences';
 import { yeastReferences } from '../../domain/yeastReferences';
+import { relierAuCatalogue } from '../../domain/levure/relier';
 import { createYeastRecipeDraft, evaluateYeastRecipeDesign, inferYeastRecipeStyle } from '../../domain/yeastRecipeDesign';
 import { yeastStrainInformation } from '../../domain/yeastStrainInformation';
 import { keepIndependentPitchingWort } from '../../domain/yeastPitching';
@@ -103,7 +104,13 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const supply = useYeastSupply();
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const refs = useMemo(() => yeastReferences(saved), [saved]);
-  const levure = useMemo(() => recipe.yeast.hopIndexId ? refs.find(r => r.id === recipe.yeast.hopIndexId) : undefined, [refs, recipe.yeast.hopIndexId]);
+  // Une levure sans fiche (article du stock, saisie) se relie à la fiche du catalogue seulement si la correspondance est unique et sûre (voie r4, 09.11) ;
+  // le lien se lit ici, à l'écran : la recette ne change qu'au premier geste de conduite, qui écrit alors l'identité de la fiche.
+  const declaree = useMemo(() => recipe.yeast.hopIndexId ? refs.find(r => r.id === recipe.yeast.hopIndexId) : undefined, [refs, recipe.yeast.hopIndexId]);
+  const reliee = useMemo(() => declaree || recipe.yeast.hopIndexId || recipe.yeast.localDocumentary !== undefined || !recipe.yeast.name?.trim() ? undefined
+    : relierAuCatalogue(recipe.yeast, refs), [declaree, refs, recipe.yeast]);
+  const levure = declaree ?? reliee;
+  const recipeVue = useMemo<TrialRecipe>(() => reliee ? { ...recipe, yeast: { ...recipe.yeast, hopIndexId: reliee.id } } : recipe, [recipe, reliee]);
   const choisie = !!recipe.yeast.name?.trim();
   const [ouverts, setOuverts] = useState<Partial<Record<RepliId, boolean>>>({});
   const ouvre = (id: RepliId, o = true) => setOuverts(s => ({ ...s, [id]: o }));
@@ -150,10 +157,11 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   };
 
   // « En stock chez moi » (Chercher) : les levures du stock, reliées au catalogue par leur fiche (s6) ou par le produit de leur lot.
+  // Un article sans fiche s'y relie par son nom quand la correspondance est unique et sûre (voie r4) : il porte alors l'icône du stock.
   const stockIds = useMemo(() => p.stockItems
     .filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && i.currentStock > 0)
-    .map(i => i.fiche?.id ?? supply.products.find(x => x.id === i.yeastLot?.productId)?.referenceId)
-    .filter((id): id is string => !!id), [p.stockItems, supply]);
+    .map(i => i.fiche?.id ?? supply.products.find(x => x.id === i.yeastLot?.productId)?.referenceId ?? relierAuCatalogue({ name: i.name, lab: i.yeastLab, strain: i.yeastStrain }, refs)?.id)
+    .filter((id): id is string => !!id), [p.stockItems, supply, refs]);
   const abvVise = useMemo(() => abvViseDe(recipe, refs), [recipe, refs]);
   const primaire = (recipe.fermentation ?? []).find(f => f.kind === 'primaire') ?? (recipe.fermentation ?? [])[0];
   const style = inferYeastRecipeStyle(recipe);
@@ -174,10 +182,10 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const proposees = useMemo(() => {
     if (!apiLevure) return [];
     try {
-      return apiLevure.chercher('', {}, props.reperes).liste.filter(l => l.id !== levure?.id && l.id !== (change?.from.yeast.hopIndexId) && apiLevure!.disponibilite(l).rang === 'ici').slice(0, 2);
+      return apiLevure.chercher('', {}, props.reperes).liste.filter(l => l.id !== levure?.id && l.id !== (change?.from.yeast.hopIndexId) && !stockIds.includes(l.id) && apiLevure!.disponibilite(l).rang === 'ici').slice(0, 2);
     } catch { return []; }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levure?.id, props.reperes.temperatureC, props.reperes.abvVise, props.reperes.styleId, change?.from.yeast.hopIndexId]);
+  }, [levure?.id, stockIds, props.reperes.temperatureC, props.reperes.abvVise, props.reperes.styleId, change?.from.yeast.hopIndexId]);
   // Ouvert, « Mon stock ou saisie libre » se pose sous le champ de recherche (à la place des tuiles) ; fermé, il reste dans la liste des replis.
   const repliStock = <Repli id="stock" titre="Mon stock ou saisie libre" resume="une levure de l’atelier, ou hors catalogue" ouvert={!!ouverts.stock} onOuvre={o => { ouvre('stock', o); if (!o) setLibreSous(false); }}>
             <NomLibreInitial.Provider key={libreN} value={nomLibre}>{p.identityEditor}</NomLibreInitial.Provider></Repli>;
@@ -192,7 +200,7 @@ export function EtapeLevure(p: PropsEtapeLevure) {
 
     <div role="tabpanel" id={`lv-vue-${vue}`} aria-labelledby={`lv-tab-${vue}`}>
       {vue === 'ma-levure' && <>
-        <MaLevure recipe={recipe} refs={refs} supply={supply} levure={levure} onConduite={next => p.onChange(next, 'conduct')}
+        <MaLevure recipe={recipeVue} refs={refs} supply={supply} levure={levure} onConduite={next => p.onChange(next, 'conduct')}
           onChercherDonnee={chercherDeMaLevure} onRetirer={p.onRetirer}
           stock={p.stockItems} onStock={onStock} onHorsCatalogue={texte => { setNomLibre(texte?.trim() ?? ''); setLibreN(n => n + 1); setLibreSous(true); ouvre('stock'); }} libre={ouverts.stock && libreSous ? repliStock : undefined} proposees={proposees} onProposee={l => props.onChoisir(l)}
           reperes={props.reperes} stockIds={stockIds} conduiteCachee={!!ouverts.atelier}

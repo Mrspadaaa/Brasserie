@@ -15,6 +15,7 @@ import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import type { YeastReference } from '../../domain/yeastReferences';
 import type { ReperesRecette, ResultatRecherche } from '../../domain/levure/contrat';
 import { catalogueMatches } from '../../domain/yeastCatalogue';
+import { relierAuCatalogue } from '../../domain/levure/relier';
 import { createYeastRecipeDraft, evaluateYeastRecipeDesign } from '../../domain/yeastRecipeDesign';
 import { Units } from '../../services/units';
 import { Input } from '../Input';
@@ -89,8 +90,10 @@ type Tuile =
  * stock d'abord. Flèches, Entrée choisit, Échap vide (comme le champ d'ajout de Malts/sucres). Rien ne renvoie ailleurs : la recherche avancée est
  * l'onglet « Chercher » du segment. Sans résultat, « Mon stock ou saisie libre » s'offre avec le texte tapé.
  */
-function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, precedente, onPrecedente, onProposee, onStock, onHorsCatalogue, libre }: {
+function ChampLevure({ choisie, reperes, stock, stockIds, fiches, enStock, proposees, precedente, onPrecedente, onProposee, onStock, onHorsCatalogue, libre }: {
   choisie: boolean; reperes: ReperesRecette; stock: StockItem[]; stockIds: ReadonlySet<string>; enStock: StockItem[];
+  /** La fiche du catalogue de chaque article du stock (par sa référence) : celle de l'article, sinon celle à laquelle son nom se relie de façon sûre. Une levure, une tuile. */
+  fiches: ReadonlyMap<string, string>;
   proposees: YeastReference[]; precedente?: string; onPrecedente?: () => void;
   onProposee?: (levure: YeastReference) => void; onStock: (item: StockItem) => void; onHorsCatalogue: (texte?: string) => void;
   /** La saisie libre ouverte (« Mon stock ou saisie libre »), posée juste sous le champ : le geste n° 1 du 09.11 aboutit sous les yeux. */
@@ -110,7 +113,7 @@ function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, pr
     const q = nu(t);
     const duStock = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && i.currentStock > 0 && nu(`${i.name} ${i.supplier ?? ''}`).includes(q))
       .sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite) || a.name.localeCompare(b.name, 'fr'));
-    const dejaVues = new Set(duStock.map(i => i.fiche?.id).filter((id): id is string => !!id));
+    const dejaVues = new Set(duStock.map(i => fiches.get(i.ref)).filter((id): id is string => !!id));
     let catalogue: YeastReference[] = [];
     let total = 0;
     try {
@@ -132,7 +135,7 @@ function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, pr
     ].slice(0, MAX_TUILES);
     if (!liste.length && t.length >= 2) return { tuiles: [{ genre: 'libre', cle: 'libre', nom: `Mon stock ou saisie libre : « ${t} »`, sous: 'rien dans le catalogue ni le stock · saisie libre' }], total: 0 };
     return { tuiles: liste, total };
-  }, [t, stock, stockIds, reperes]);
+  }, [t, stock, stockIds, fiches, reperes]);
   const iCible = Math.min(cible, Math.max(0, tuiles.length - 1));
   const enSaisie = !!texte;
 
@@ -194,7 +197,7 @@ function ChampLevure({ choisie, reperes, stock, stockIds, enStock, proposees, pr
     {!enSaisie && <div className="lv-puces" ref={rangee} data-role="puces">
       <div className="lv-puces-l">
         {proposees.map(l => <button key={l.id} type="button" className="lv-puce" data-propose={l.id} onClick={() => onProposee?.(l)}><Package size={14} aria-hidden="true" /><span>{nomCourt(l.name)}</span></button>)}
-        {enStock.map(item => <button key={item.ref} type="button" className="lv-puce" onClick={() => onStock(item)}><Package size={14} aria-hidden="true" /><span>{item.name}</span></button>)}
+        {enStock.filter(item => !proposees.some(l => l.id === fiches.get(item.ref))).map(item => <button key={item.ref} type="button" className="lv-puce" onClick={() => onStock(item)}><Package size={14} aria-hidden="true" /><span>{item.name}</span></button>)}
         {precedente && onPrecedente && <button type="button" className="lv-puce lv-hab" onClick={onPrecedente}><History size={14} aria-hidden="true" /><span>{precedente}</span></button>}
       </div>
       <button type="button" className="lv-puce lv-hc" onClick={() => onHorsCatalogue()}>Hors catalogue</button>
@@ -258,6 +261,9 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
   const enStock = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && i.currentStock > 0)
     .sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite) || a.name.localeCompare(b.name, 'fr')).slice(0, 3);
   const idsStock = useMemo(() => new Set(stockIds ?? []), [stockIds]);
+  // La fiche du catalogue de chaque levure du stock : sa fiche posée, sinon la correspondance unique et sûre de son nom (voie r4, 09.11).
+  const fiches = useMemo(() => new Map(stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure')
+    .flatMap((i): [string, string][] => { const id = i.fiche?.id ?? relierAuCatalogue({ name: i.name, lab: i.yeastLab, strain: i.yeastStrain }, refs)?.id; return id ? [[i.ref, id]] : []; })), [stock, refs]);
 
   // La dose : celle qui est prévue, sinon la plage de sachets du fabricant au volume de la recette (jamais son milieu, jamais 0).
   const prevu = Number.isFinite(recipe.yeast.qty) && (recipe.yeast.qty ?? 0) > 0 ? recipe.yeast : undefined;
@@ -326,7 +332,7 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
       <p className="lv-note">Aucune levure dans la recette : cherche-la par son nom, son code, son fabricant ou son arôme, ou prends-en une de ton stock.</p>
     </div>}
 
-    <ChampLevure choisie={choisie} reperes={reperes} stock={stock} stockIds={idsStock} enStock={enStock} proposees={proposees} precedente={precedente} onPrecedente={onPrecedente}
+    <ChampLevure choisie={choisie} reperes={reperes} stock={stock} stockIds={idsStock} fiches={fiches} enStock={enStock} proposees={proposees} precedente={precedente} onPrecedente={onPrecedente}
       onProposee={onProposee} onStock={onStock} onHorsCatalogue={onHorsCatalogue} libre={libre} />
 
     {avecConduite && <div className="yeast-workbench yeast-choice lv-base" data-lv="conduite-base" ref={conduite} hidden={conduiteCachee}>

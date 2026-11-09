@@ -4,7 +4,7 @@
  * (`src/domain/rechercheAvancee`). Les fiches sont celles que l'étape lit déjà (`parcours/adaptateur.ts`, `donnees()` : le
  * stock du brasseur, puis le catalogue du moteur) ; rien n'est inventé :
  *  - α : celui du lot (stock), sinon le milieu de la plage variétale (`houblon(cle).alpha`), la plage des fiches si elle existe ;
- *  - rôle : amérisant, aromatique, mixte (fournisseur, sinon règle rôle-α) ;
+ *  - rôle : amérisant, aromatique, double (fournisseur, sinon règle rôle-α), le mot de l'étape Houblons (`Usage` de maBiere/briques : hopRole) ;
  *  - arômes : les 12 familles citées ou marquées par les fiches (`describeFamilies`), aux couleurs et pictos de l'app ;
  *  - origine : celle de la fiche ; huiles : l'huile totale (mL/100 g, Beer Maverick, sinon Hopsteiner) ;
  *  - stock : les grammes libres du brasseur ; disponibilité : chez moi, épuisé chez moi, à acheter.
@@ -41,6 +41,8 @@ export interface FicheHoublon {
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 const milieu = (p: readonly [number, number]) => (p[0] + p[1]) / 2;
+/** Le rôle dans le mot de l'étape Houblons (`Usage` de maBiere/briques lit hopRole : « double »), jamais « mixte » (voie r4, 09.11 : deux mots pour une même donnée). */
+export const motDuRole = (f: FicheHoublon): 'amérisant' | 'aromatique' | 'double' | null => (f.h.role.mot === 'mixte' ? 'double' : f.h.role.mot);
 
 /** Les fiches de la recherche : le stock du brasseur (même clé, cryo compris), puis le catalogue du moteur (même règle que les ajouts proposés). */
 export function fichesHoublons(): FicheHoublon[] {
@@ -88,7 +90,7 @@ export function facettesHoublons(fiches: readonly FicheHoublon[]): Facette<Fiche
       // α du lot : la valeur ; sinon la plage des fiches, gardée si elle recoupe la plage demandée (comme les plages de la levure).
       garde: (e, v, f) => { const p = sourceAlpha(f.h) === 'lot' ? null : f.h.alpha?.plage; return p ? p[1] >= e.min && p[0] <= e.max : v >= e.min && v <= e.max; },
     },
-    { id: 'role', options: [{ valeur: 'amérisant', libelle: 'amérisant' }, { valeur: 'aromatique', libelle: 'aromatique' }, { valeur: 'mixte', libelle: 'mixte' }], valeur: (f) => (f.h.role.mot ? [f.h.role.mot] : null) },
+    { id: 'role', options: [{ valeur: 'amérisant', libelle: 'amérisant' }, { valeur: 'aromatique', libelle: 'aromatique' }, { valeur: 'double', libelle: 'double' }], valeur: (f) => { const m = motDuRole(f); return m ? [m] : null; } },
     { id: 'aromes', options: FAMILIES.map((x) => ({ valeur: x, libelle: COURT[x] })), valeur: (f) => { const l = familles(f); return l.length ? l : null; }, cumul: true },
     { id: 'origine', options: origines.map((o) => ({ valeur: o, libelle: o })), valeur: (f) => (f.cat?.origin ? [f.cat.origin] : null) },
     { id: 'huile', options: tranches(HUILE), valeur: (f) => (f.huile ? milieu(f.huile) : null), tranche: (v) => trancheDe(HUILE, v),
@@ -188,7 +190,7 @@ export function catalogueHoublons(fiches: readonly FicheHoublon[], actions: () =
     ApresNom: ({ item: f }) => (
       <>
         <b className="hx-alpha ra-m" title={f.h.alpha ? `α ${f.h.alpha.source}` : 'α inconnu'}>{f.h.alpha ? <>{nb(f.h.alpha.valeur)}<small> %</small></> : 'α ?'}</b>
-        <small className="hx-role">{f.h.role.mot ?? 'rôle ?'}</small>
+        <small className="hx-role">{motDuRole(f) ?? 'usage ?'}</small>
         {(f.grams ?? 0) > 0 && <Package size={13} role="img" aria-label="en stock" className="hx-stock" />}
       </>
     ),

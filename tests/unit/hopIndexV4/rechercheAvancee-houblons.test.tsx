@@ -17,7 +17,7 @@ vi.mock('../../../src/services/storage', () => ({
 }));
 
 import { facetter } from '../../../src/domain/rechercheAvancee/facettes';
-import { catalogueHoublons, chercherHoublons, facettesHoublons, fichesHoublons, type FicheHoublon } from '../../../src/ui/hopIndex/rechercheAvancee/catalogue';
+import { catalogueHoublons, chercherHoublons, facettesHoublons, fichesHoublons, motDuRole, type FicheHoublon } from '../../../src/ui/hopIndex/rechercheAvancee/catalogue';
 import EcranRechercheHoublons from '../../../src/ui/hopIndex/rechercheAvancee/EcranApp';
 import { poserPorteEtape } from '../../../src/ui/hopIndex/comparer/porte';
 import type { ChangementHoublonsV4 } from '../../../src/domain/hopIndex/v4/recipeConversion';
@@ -48,8 +48,8 @@ describe('recherche avancée houblons : facettes sur les fiches réelles du cata
 
   it('rôle posé « amérisant » : les comptes du rôle ignorent ce filtre (disjonctifs), ceux de l’origine le suivent', () => {
     const r = chercherHoublons(fiches, facettes, '', { role: ['amérisant'] });
-    const parRole = (mot: string) => fiches.filter((f) => f.h.role.mot === mot).length;
-    expect(r.comptes.role!.options.map((o) => [o.valeur, o.n])).toEqual([['amérisant', parRole('amérisant')], ['aromatique', parRole('aromatique')], ['mixte', parRole('mixte')]]);
+    const parRole = (mot: string) => fiches.filter((f) => motDuRole(f) === mot).length;
+    expect(r.comptes.role!.options.map((o) => [o.valeur, o.n])).toEqual([['amérisant', parRole('amérisant')], ['aromatique', parRole('aromatique')], ['double', parRole('double')]]);
     // l'inconnu à part, jamais compté comme un rôle ni comme 0
     expect(r.comptes.role!.nonDocumentees).toBe(fiches.filter((f) => !f.h.role.mot).length);
     expect(r.total).toBe(parRole('amérisant'));
