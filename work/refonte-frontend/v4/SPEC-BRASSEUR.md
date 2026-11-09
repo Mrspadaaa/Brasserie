@@ -1608,3 +1608,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : les jetons servent la qualité — pas de raccourci sur la critique, les tests complets, les captures regardées et le jeu en ligne ; ni rustine pour finir vite (BR-45 retiré).)
 - **09.11**, mot pour mot : « Mais utilsent tes token pour la qualité pas pour du va et vient inutile !!! »
   (lu : pas de compte rendu à chaque retour d'agent ni de relance pour un détail ; le pilote tranche, groupe et ne parle qu'au résultat vérifié.)
+- **09.11**, mot pour mot, accords : « la suppression du code mort (AM-NOTE-3) ; ok », « le push, quand tu le veux. Mtn », « Missions à part : la lecture des factures par Gemini (payante) et le passage des couleurs de l'écran houblons en couleurs de thème (BR-45). Ok » ; puis : « C'est déjà déployé ? Et testé sur la vrai app? »
+- **09.11**, mot pour mot, cinq captures de l'étape Levure en ligne (Ma levure, Chercher, ancienne et nouvelle Conduite) : « Pas mal de petit soucis, la recherche de base doit se faire sur le premier écran, comme pour malt et sucre, pas de renvoi, je choisis la recherche avancée par moi même.
+  La conduite de palier fonctionne infiniment mieux sur celle de base.
+  Il y a des problèmes d'alignement.
+  dans la recherche clicker sur une levure n'importe où pas que son nom ouvre son sous menu
+  Faire la même chose que levure pour la recherche pour les houblons »
+  (lu : 1. « Changer de levure » cherche sur place dans Ma levure, résultats dessous, comme l'étape Malts/sucres ; l'onglet Chercher reste la recherche avancée qu'il ouvre lui-même. 2. la conduite d'avant le port (carte « Conduite · température × jours » à paliers réglables, poignées ↕ et ↔) revient à la place de la nouvelle. 3. alignements à relever sur ses captures (boutons de la conduite par-dessus le pied, colonnes de Chercher). 4. toute la ligne d'une levure ouvre son détail. 5. l'étape Houblons reçoit la même recherche : de base sur place, avancée (filtres à facettes comme Chercher levure) à sa demande.)
