@@ -22,19 +22,16 @@ brasseur (il refuse les messages à chaque retour d'agent).
   - saisie libre pré-remplie (`src/ui/nomLibreLevure.ts`, lu par `YeastIngredientPicker`) ;
   - test dans `etapeRetours.test.tsx` ;
   - tsc 0.
-- **Rien de tout cela n'est commité.**
-
-## En cours
-- **Voie r2** (agent opus, en arrière-plan dans la session d'origine), objet :
-  - Chercher levure : ligne entière cliquable, alignements ;
-  - moteur et vue de recherche avancée génériques ;
-  - recherche avancée des houblons.
-- Contrat : `voies/r2/VOIE.md` ; rendu attendu : `voies/r2/RESULTAT.md`, `tests.txt`, `captures/`.
+- **Voie r2, arrêtée à sa limite de 120 tours, code fini** (`voies/r2/RESULTAT.md`) :
+  - Chercher levure : ligne entière, 5 alignements ;
+  - moteur générique `src/domain/rechercheAvancee/facettes.ts` et vue `src/ui/rechercheAvancee/` ;
+  - houblons : `src/ui/hopIndex/rechercheAvancee/`, bouton « avancée » dans `Ajouter.tsx`, route `hopSearch`.
+  Ses captures h1 à h5 sont faites ; la série complète ne l'est pas.
+- **Commit 0df6d24a** (local, non poussé, non déployé) : pilote rejoué, tsc 0, 1 255 tests verts (128 fichiers, levure, houblons,
+  YeastRecipeChoice).
 
 ## Prochaines actions
-1. Lire `voies/r2/RESULTAT.md`, puis rejouer :
-   - `npx tsc --noEmit -p .` ;
-   - `npx vitest run tests/integration/etapeLevure tests/unit/levure tests/integration/hopIndex tests/unit/hopIndexV4 tests/integration/YeastRecipeChoice.test.tsx --reporter=dot`.
+1. (fait : rejeu tsc et vitest)
 2. `git status --short` contre les Possède. Ne jamais commettre :
    - `src/data/hopSources/beeranalytics-*.json` ;
    - `scripts/eval-hop/k1-*` ;
