@@ -53,7 +53,7 @@ export type AnySubTab = SubTabOf[keyof SubTabOf];
 const A = (intent: FabIntent, label: string, hint?: string): FabAction => ({ intent, label, hint });
 
 /** Le formulaire ouvert est celui d'une dépense : la seconde ligne le dit avant l'appui. */
-const NEW_TRANSACTION = A('newTransaction', 'Nouvelle écriture', 'Dépense saisie à la main');
+const NEW_TRANSACTION = A('newTransaction', 'Nouvelle écriture', 'Facture ou saisie à la main');
 
 /**
  * Le tableau complet. Chaque onglet donne soit une action unique, soit une

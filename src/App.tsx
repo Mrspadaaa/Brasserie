@@ -545,8 +545,9 @@ export const App: React.FC = () => {
         setCreateRequest({ kind: fabAction.intent, at: Date.now() });
         break;
       case 'newTransaction':
-        // Le formulaire d'écriture directement, sans repasser par le sommaire.
-        setQuickAction('quick-expense', actionLauncherRef.current);
+        // 09.11, ses mots : « entrer une facture ouvre la bonne vue tandis que nouvelle écriture, non » : la même entrée que « Entrer une facture »
+        // (document, photo, ou « Saisir sans justificatif » d'un toucher), sans repasser par le sommaire.
+        setQuickAction('scan', actionLauncherRef.current);
         break;
       case 'quickAction':
       default:

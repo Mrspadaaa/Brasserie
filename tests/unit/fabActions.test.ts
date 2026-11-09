@@ -5,7 +5,7 @@ import { fabActionFor } from '../../src/domain/fabActions';
 // crée une écriture comptable ; les autres saisies restent dans le menu, dessous.
 describe('Bouton + · action principale « écriture comptable » (#114)', () => {
   it('le tableau de bord propose la nouvelle écriture, plus le sommaire des saisies', () => {
-    expect(fabActionFor('dashboard')).toEqual({ intent: 'newTransaction', label: 'Nouvelle écriture', hint: 'Dépense saisie à la main' });
+    expect(fabActionFor('dashboard')).toEqual({ intent: 'newTransaction', label: 'Nouvelle écriture', hint: 'Facture ou saisie à la main' });
   });
 
   it('Finances garde exactement la même action', () => {
