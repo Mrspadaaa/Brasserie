@@ -9,7 +9,7 @@ import type { ChoixUnite } from './calculPlateau';
 /** Un champ du plateau : 36 px, chiffres en mono, largeur de son contenu (maquette pu4d). */
 export const CHAMP_PU4D = 'h-9 min-w-0 rounded-control border border-cave-600 bg-cave-950 px-2 text-right font-mono text-base text-cave-50 tabular-nums';
 /** La largeur d'un champ selon la longueur de son texte (classes statiques : Tailwind ne lit pas les classes composées). */
-export const largeur = (texte: string): string => { const n = texte.length; return n <= 2 ? 'w-12' : n <= 3 ? 'w-14' : n <= 4 ? 'w-16' : n <= 5 ? 'w-[4.375rem]' /* B2 n° 6 : 70 px tiennent cinq chiffres (« 3,333 », « 10,00 ») : la rangée de calcul reste sur une ligne à 390 */ : 'w-24'; };
+export const largeur = (texte: string): string => { const n = texte.length; return n <= 2 ? 'w-12' : n <= 3 ? 'w-14' : n <= 4 ? 'w-16' : n <= 5 ? 'w-[4.375rem]' /* B2 n° 6 : 70 px tiennent cinq chiffres (« 3,333 », « 10,00 ») : la rangée de calcul reste sur une ligne à 390 */ : n <= 6 ? 'w-[4.875rem]' /* d3 (VERDICT-2, 6) : six caractères (« 370,92 ») tiennent en 78 px ; à 96 px le montant passait à la ligne à 390 */ : 'w-24'; };
 const BOUTON = 'inline-flex min-h-8 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50';
 const ACTIF = 'bg-ebc-straw font-semibold text-cave-950';
 

@@ -1030,12 +1030,15 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     };
     /* D369, D373 : un champ du calcul posé ; celui qui manque se calcule, et quand les trois sont là, celui qu'il n'a pas touché suit (le montant d'abord). */
     const poser=(champ:ChampCalcul,valeur:number|undefined)=>{const r=recalculer(line,champ,valeur,calcules.current.get(line.id),derniers.current.get(line.id));derniers.current.set(line.id,champ);if(r.calcule)calcules.current.set(line.id,r.calcule);else calcules.current.delete(line.id);updateLine(line.id,r.patch);return r.patch;};
-    const montrerNombres=line.quantity===undefined||rougeDe('quantite')||nombresTouches.current.has(line.id);
+    /* d3 (VERDICT-2, 5) : une remise n'a ni quantité ni prix unitaire : sa fiche n'a que le montant (et l'imprimé, supprimer). */
+    const estRabais=line.kind==='discount';
+    const montrerNombres=!estRabais&&(line.quantity===undefined||rougeDe('quantite')||nombresTouches.current.has(line.id));
     const nombresEl=montrerNombres?<NombresRapides index={index+1} nombres={nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category))} effacable={line.quantity!==undefined}
       onAjouter={n=>{nombresTouches.current.add(line.id);poser('quantity',Math.round(((line.quantity??0)+n)*1e6)/1e6);}} onEffacer={()=>poser('quantity',undefined)}/>:null;
     const BLEU_CH=' !border-2 !border-area-finances !bg-area-finances/15 !text-area-finances font-semibold';
     const montantTexte=line.amount===undefined?'':fr2c(Math.round(line.amount*100)),prixTexte=line.unitPrice===undefined?'':prixImprime(line.unitPrice);
-    const calculEl=<RangeeCalcul avant={avantQte!==undefined?fr(avantQte):undefined}>
+    const montantRabaisEl=<RangeeCalcul><span {...niv('montant')} className="inline-flex"><ChampNombre aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{poser('amount',amount);if(draft.lines.length===1)patch({amount});}} max={MONTANT_MAX} placeholder={rougeDe('montant')?'montant':undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${rougeDe('montant')&&line.amount===undefined?VIDE_ROUGE:largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span></RangeeCalcul>;
+    const calculEl=estRabais?montantRabaisEl:<RangeeCalcul avant={avantQte!==undefined?fr(avantQte):undefined}>
       <span {...niv('quantite')} className="inline-flex"><ChampNombre aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>poser('quantity',quantity)} max={1000000} placeholder={rougeDe('quantite')?'quantité':undefined} className={`${CHAMP_PU4D} ${rougeDe('quantite')&&line.quantity===undefined?VIDE_ROUGE:largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
       {uniteManque?<BoiteUniteVide/>:horsStock&&!lisible?null:<SegmentUnite index={index+1} choix={choixU} active={uniteActive} repris={ud?.niveau==='repris'} onChoisir={choisirUnite}/>}<Op c="×"/>
       <span {...niv('prix')} className="inline-flex"><ChampNombre aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>poser('unitPrice',unitPrice)} max={100000} placeholder={rougeDe('prix')?'prix':undefined} fractionDigits={/* B2 n° 14 : le même format que la rangée (`prixImprime` : 0,040 sous 0,10) */line.unitPrice===undefined?2:(prixTexte.split(',')[1]??'').length} className={`${CHAMP_PU4D} ${rougeDe('prix')&&line.unitPrice===undefined?VIDE_ROUGE:largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
@@ -1126,11 +1129,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       {casesEl}
       {/* B2 n° 18 : une marque rouge par champ manquant, sur le champ lui-même (bord tireté, son nom dedans) : plus de puce « à remplir » en double dessous. */}
       {duelUniteEl}{duelCorrEl}{trioEl}{duelProposeEl}
-      {isMouture?null:natureSegEl}
-      {articleEl}
+      {isMouture||estRabais?null:natureSegEl}
+      {estRabais?null:articleEl}
       {mouturePlateau}
       {line.id===mouturesPropositions[0]?.parentId?tableauEl:null}
-      <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>retirerLigne(line.id)}/>
+      <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture||estRabais?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>retirerLigne(line.id)}/>
     </div>;
     return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
       nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
@@ -1254,7 +1257,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     return {id:l.id,groupe:groupeDeLigne(i),...(sf?{sousFamille:sf}:{}),...((pire&&pire!=='sur')||douteuxIds.has(l.id)?{averifier:true}:{}),amount:l.amount,quantity:l.quantity,unit:uniteAffichee(u),uniteLisible:isReadableUnit(u),mouture:parentIdxDe(i)>=0,sachets:m?Number(m[1]):undefined,...(nu&&nu!=='sur'?{niveau:nu}:{}),...(HORS_STOCK_KINDS.includes(l.kind)&&l.quantity===undefined?{sansQuantite:true}:{}),...(HORS_STOCK_KINDS.includes(l.kind)?{horsStock:true}:{}),...(l.amount!==undefined&&niveauLigne.get(l.id)?.montant==='inconnu'?{montantDoute:true}:{})};});
   const bandes=calculerBandes(ligneBandes);
   /* D2 : sous un filtre, les quantités et montants des en-têtes (bande et sous-groupe) sont ceux des rangées MONTRÉES ; la structure (ids, plis) reste celle de toutes les lignes. */
-  const bandesMontrees=visibles?(()=>{const vues=calculerBandes(ligneBandes.filter(l=>visibles.has(l.id)));return bandes.map(b=>{const v=vues.find(x=>x.cle===b.cle);return {...b,qte:v?.qte??[],cents:v?.cents??0,incomplet:v?.incomplet??false,eqb:v?.eqb,sousGroupes:b.sousGroupes?.map(sg=>{const w=v?.sousGroupes?.find(x=>x.nom===sg.nom);return {...sg,qte:w?.qte??[],cents:w?.cents??0,incomplet:w?.incomplet??false};})};});})():bandes;
+  const bandesMontrees=visibles?(()=>{const vues=calculerBandes(ligneBandes.filter(l=>visibles.has(l.id)));return bandes.map(b=>{const v=vues.find(x=>x.cle===b.cle);return {...b,qte:v?.qte??[],cents:v?.cents??0,incomplet:v?.incomplet??false,eqb:v?.eqb,sousGroupes:b.sousGroupes?.map(sg=>{/* d3 (VERDICT-2, bloquant 3) : calculerBandes ne rend des sous-groupes que pour deux sous-familles visibles au moins ; une seule ligne trouvée donnait « 0,00 » au sous-groupe. Le sous-groupe somme alors ses lignes visibles comme la bande. */const w=v?.sousGroupes?.find(x=>x.nom===sg.nom)??calculerBandes(ligneBandes.filter(l=>visibles.has(l.id)&&sg.ids.includes(l.id))).find(x=>x.cle===b.cle);return {...sg,qte:w?.qte??[],cents:w?.cents??0,incomplet:w?.incomplet??false};})};});})():bandes;
   /* D307 : les rangées qu'on doit voir ouvrent leur sous-groupe, quel que soit le choix (plateau ouvert, filtre des comptes). */
   const forcesGroupes=new Set<string>([...plateauxOuverts,...(visibles??[])]);
   /* D311 (son choix E) : l'état du segment « Plié | Déplié » se calcule sur l'état réel des groupes, il n'est jamais gardé. */
@@ -1307,6 +1310,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(c.cle==='remplir'){const id=c.ids[0],rs=champsRougesIds.get(id),idx=draft.lines.findIndex(l=>l.id===id);if(id&&rs?.length&&idx>=0){ouvertesRef.current.set(id,true);setPlateaux(n=>n+1);requestAnimationFrame(()=>focaliser(id,idx+1,rs[0].champ));}}
     requestAnimationFrame(()=>form.current?.querySelector('[data-dp="liste"]')?.scrollIntoView?.({block:'start'}));
   };
+  /* d3 (VERDICT-2, bloquant 2) : « Voir la ligne en trop » ne reste jamais muet. Quand aucun montant n'égale l'écart (la pièce manque aussi d'autres lignes), la ligne la plus probable est d'abord celle que « Lignes hors articles » désigne, sinon la plus grosse ligne. */
+  const ligneEnTrop=():string|undefined=>{const hors=piece.find(c=>c.id==='hors-articles'&&c.ok===false)?.lignes?.[0];const parRang=hors?draft.lines[hors-1]?.id:undefined;if(parRang)return parRang;return [...draft.lines].filter(l=>l.amount!==undefined&&l.kind!=='discount').sort((x,y)=>(y.amount as number)-(x.amount as number))[0]?.id;};
   const versListe=()=>{viser(form.current?.querySelector<HTMLElement>('[data-dp="liste"]'));};
   const versLigne=(id:string)=>aller({id:'l',nom:'',enjeu:'info',ligne:null,codes:[],source:'voisin',cible:id});
   /* La preuve (rangées chiffrées lues dans `controls` : rien d'affirmé sans contrôle). */
@@ -1324,10 +1329,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const ajoutsMain=ajoutsALaMain(draft.lines),arrondiBloc=arrondiDuTotal(draft)||0;
   const lignesCtsBloc=draft.lines.reduce((t,l)=>t+(l.amount===undefined?0:Math.round(l.amount*100)),0)+arrondiBloc;
   const qteFausses=draft.lines.filter(l=>l.quantity!==undefined&&l.unitPrice!==undefined&&l.amount!==undefined&&lineMathCheck([{id:l.id,name:l.description,kind:l.kind,quantity:l.quantity,unit:l.unit,price:l.unitPrice,amountTTC:l.amount}]).points.length>0).map(l=>l.id);
-  const qteArith=ctl?ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id)):null;
-  const nControlables=draft.lines.filter(l=>l.quantity!==undefined&&l.unitPrice!==undefined&&l.amount!==undefined&&!port.has(l.id)).length;
+  /* d3 (VERDICT-2, 4) : « Qté × prix » ne compte que les lignes VÉRIFIABLES (quantité, prix unitaire et montant lus, ni port ni rabais) : un rabais n'a ni quantité ni prix, une prestation sans prix unitaire non plus ; les compter donnait « 2/5 » sur une pièce entièrement juste. Celles qui n'ont pas de prix unitaire se disent à part, jamais comptées justes ni fausses. */
+  const verifiable=(l:typeof draft.lines[number])=>l.kind!=='discount'&&l.quantity!==undefined&&l.unitPrice!==undefined&&l.amount!==undefined&&!port.has(l.id);
+  const nControlables=draft.lines.filter(verifiable).length;
+  const sansPrix=draft.lines.filter(l=>l.kind!=='discount'&&!port.has(l.id)&&!verifiable(l)).length;
+  const nonVerifiables=new Set(draft.lines.filter(l=>!verifiable(l)).map(l=>l.id));
   /* Sans `controls` du serveur (ancienne lecture, cache) : l'arithmétique se lit sur le brouillon, ligne par ligne, comme `recalculerLecture`. */
-  const qteBloc=ctl?{ok:qteArith&&qteFausses.length===0?true:qteFausses.length>0||ctl.lines.failed>0?false:null,valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:nControlables>0?{ok:qteFausses.length===0,valeur:`${nControlables-qteFausses.length}/${lignesAff.length}`}:null;
+  /* En devise étrangère le brouillon n'a pas de montants de lignes en CHF (`nControlables` 0) : le compte reste celui de la lecture (serveur). */
+  const qteServeur=ctl&&nControlables===0?{ok:ctl.lines.failed===0&&ctl.lines.checked>0&&(ctl.lines.skippedIds??[]).length===ctl.lines.skipped&&(ctl.lines.skippedIds??[]).every(id=>port.has(id))&&qteFausses.length===0?true:qteFausses.length>0||ctl.lines.failed>0?false:null,valeur:`${Math.max(0,ctl.lines.checked-ctl.lines.failed-[...port].filter(id=>!(ctl.lines.skippedIds??[]).includes(id)).length)}/${lignesAff.length}`}:null;
+  /* Des lignes sans prix unitaire (hors rabais et port) : le contrôle est dit sans coche, jamais vert (une ligne non vérifiée n'est ni juste ni fausse). */
+  const qteBloc=qteServeur?qteServeur:ctl?{ok:ctl.lines.failed===0&&qteFausses.length===0&&nControlables>0&&sansPrix===0&&(ctl.lines.skippedIds??[]).every(id=>nonVerifiables.has(id))?true:qteFausses.length>0||ctl.lines.failed>0?false:null,valeur:`${Math.max(0,nControlables-qteFausses.length)}/${nControlables}`,sansPrix}:nControlables>0?{ok:qteFausses.length===0&&sansPrix===0?true:qteFausses.length>0?false:null,valeur:`${nControlables-qteFausses.length}/${nControlables}`,sansPrix}:null;
   /* Le total « imprimé » : le total de la pièce ; un total calculé (somme des bulletins, somme des lignes) n'est pas imprimé. */
   const totalImprimeCts=sommeBulletins||draft.sourceTotalBasis==='line_sum'||!draft.amount?null:Math.round(draft.amount*100);
   /* Le règlement lu : le moyen (TWINT, carte…) existe au schéma ; le MONTANT payé n'y est pas encore (`amountPaid`, proposé au serveur) : sans lui, « montant non lu », jamais 0. */
@@ -1342,7 +1353,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const piece=lectureCtl?controlesPiece(lectureCtl,ctxPiece):[];
   const ctrlBloc=controlesCroises({lignesCents:lignesCtsBloc,nLignes:draft.lines.length,nAjoutes:draft.lines.filter(estAjouteeAMain).length,ajoutsCents:ajoutsMain.reduce((t,a)=>t+a.cents,0),totalCents:totalImprimeCts,attendus:typeof result?.printedLineCount==='number'?result.printedLineCount:null,attendusIndependant:typeof result?.countedAmounts==='number'&&piece.find(c=>c.id==='comptage-montants')?.ok!==null?result.countedAmounts:null,nRabais:draft.lines.filter(l=>l.kind==='discount').length,vusUneLecture:(()=>{const avecMontant=perdues.filter(p=>p.ligne.amount!==undefined);return avecMontant.length&&avecMontant.length===perdues.length?{n:perdues.length,cents:perdues.reduce((t,p)=>t+Math.round((p.ligne.amount??0)*100),0)}:null;})(),payeCents:lectureCtl?payeEffectif(lectureCtl)?.cts??null:null,moyen:result?.paymentMethod?MOYENS[result.paymentMethod]??null:null,qte:qteBloc,notePaye:notePaiement(piece),
     piece:rangsDePiece(piece.filter(c=>!(c.id==='doublon'&&(existing||similar))),{nRemises:compterArticles(lectureCtl?.items??[]).remises,sommeEnEcart:lignesCtsBloc!==totalImprimeCts&&totalImprimeCts!==null})});
-  const nDesaccords=(result?.points??[]).filter(p=>p.origine==='lecture'&&p.pese!==false).length;
+  /* d3 (VERDICT-2, bloquant 1) : une seule source pour l'accord des lectures, celle de la barre du bas : les chips « lectures-divergentes » encore à trancher (TVA comprise). L'ancien compte lisait origine 'lecture' et pese : il disait « 3/3 d'accord » pendant que la barre disait « désaccord ». */
+  const nDesaccords=chips.filter(c=>c.source==='point'&&!reglesSet.has(c.id)).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0);
   const rangsLecture:RangControle[]=result?[
     ...(verif==='attente'?[{cle:'lectures',verdict:'inconnu' as const,texte:'Lectures',valeurs:'',lectures:{faites:2,sur:3}}]:lectures?[nDesaccords?{cle:'lectures',verdict:'ecart' as const,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeurs:`${lectures}/${lectures} · ${nDesaccords} désaccord${nDesaccords>1?'s':''}`,geste:'Voir le désaccord',renvoi:'lectures' as const}:nPagesLues>1?{cle:'lectures',verdict:'ok' as const,texte:`${nPagesLues} pages lues`,valeurs:''}:{cle:'lectures',verdict:'ok' as const,texte:'Lectures',valeurs:`${lectures}/${lectures} d'accord`}]:[]),
     ...((result.linesLost??0)>0?[{cle:'perdues',verdict:'ecart' as const,texte:'Lignes non gardées',valeurs:String(result.linesLost),geste:'Voir la liste',renvoi:'liste' as const}]:[]),
@@ -1354,7 +1366,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const surRenvoi=(r:Renvoi,rang?:RangControle)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
     if(r==='manquante'){viser(rechercheZone.current,{focus:rechercheRef.current,block:'center'});return;}
-    if(r==='fausse'){flushSync(()=>setRecherche(''));const ec=ctrlBloc.ecartCents,cible=qteFausses[0]??(ec&&ec>0?draft.lines.find(l=>l.amount!==undefined&&Math.round(l.amount*100)===ec)?.id:undefined);if(cible)versLigne(cible);else versListe();return;}
+    if(r==='fausse'){flushSync(()=>setRecherche(''));const ec=ctrlBloc.ecartCents,cible=qteFausses[0]??(ec&&ec>0?draft.lines.find(l=>l.amount!==undefined&&Math.round(l.amount*100)===ec)?.id:undefined)??ligneEnTrop();if(cible)versLigne(cible);else versListe();return;}
     if(r==='total'){const c=q('#purchase-total');viser(c,{focus:c,block:'center'});return;}
     if(r==='reglement'){flushSync(()=>setPanel('paye'));viser(q('[data-dp="panneau-paye"]'));return;}
     /* d2 : les gestes des contrôles de la pièce. `lignes` : la ligne désignée, ouverte (rang base 1 du brouillon) ; `photo` : le justificatif ; `doublon` : la dépense déjà saisie. */

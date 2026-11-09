@@ -89,7 +89,8 @@ describe('(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur', 
     await waitFor(() => expect((screen.getByLabelText('Montant ligne 1') as HTMLTextAreaElement).value).toMatch(/^17[,.]40?$/));
     expect(rangeePreuve(view, 'Qté × prix').textContent).toMatch(/Qté × prix\s*7\/7/);
     taper('Prix ligne 1', '');
-    await waitFor(() => expect(rangeePreuve(view, 'Qté × prix').textContent).toMatch(/Qté × prix\s*6\/7/));
+    /* d3 (VERDICT-2, 4) : le dénominateur ne compte que les lignes vérifiables ; la ligne dont le prix est effacé est dite à part (« sans prix unitaire »), sans coche : assertion « 6/7 » caduque, la sémantique « pas de vert tant qu'une ligne n'est pas vérifiée » est gardée. */
+    await waitFor(() => expect(rangeePreuve(view, 'Qté × prix').textContent).toMatch(/Qté × prix\s*6\/6 · 1 sans prix unitaire/));
     expect(rangeePreuve(view, 'Qté × prix').querySelector('svg')).toBeNull();
   });
 });

@@ -57,7 +57,7 @@ export interface EntreeControles {
   /** Le moyen de règlement lu (« TWINT »), sans montant ou avec ; `null` : non lu. */
   moyen: string | null;
   /** L'arithmétique `quantité × prix = montant` de chaque ligne : `ok` si toutes passent ; `null` : non contrôlée. */
-  qte: { ok: boolean | null; valeur: string } | null;
+  qte: { ok: boolean | null; valeur: string; sansPrix?: number } | null;
   /** d2 : les rangées des contrôles de la pièce (`rangsDePiece`), insérées après « Payé » ; la note du paiement est une phrase sous « Payé ». */
   piece?: RangControle[];
   notePaye?: string;
@@ -130,9 +130,9 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   const couvertureEcart = rangs.some(r => r.verdict === 'ecart' && (r.cle === 'articles' || r.cle === 'somme'));
   if (!e.qte) rangs.push({ cle: 'qte', verdict: 'inconnu', texte: 'Qté × prix non contrôlé', valeurs: '' });
   /* Des lignes sans prix ou sans montant (à remplir) : l'arithmétique n'est pas prouvée sur toutes (6/7), sans qu'aucune soit fausse : neutre, jamais vert. */
-  else if (e.qte.ok === null) rangs.push({ cle: 'qte', verdict: 'inconnu', texte: 'Qté × prix', valeurs: e.qte.valeur });
+  else if (e.qte.ok === null) rangs.push({ cle: 'qte', verdict: 'inconnu', texte: 'Qté × prix', valeurs: `${e.qte.valeur}${e.qte.sansPrix ? ` · ${e.qte.sansPrix} sans prix unitaire` : ''}` });
   else if (e.qte.ok === false) rangs.push({ cle: 'qte', verdict: 'ecart', texte: 'Qté × prix', valeurs: e.qte.valeur, geste: 'Ouvrir la ligne fausse', renvoi: 'fausse' });
-  else rangs.push({ cle: 'qte', verdict: couvertureEcart ? 'inconnu' : 'ok', texte: 'Qté × prix', valeurs: `${e.qte.valeur} justes` });
+  else rangs.push({ cle: 'qte', verdict: couvertureEcart ? 'inconnu' : 'ok', texte: 'Qté × prix', valeurs: `${e.qte.valeur} justes${e.qte.sansPrix ? ` · ${e.qte.sansPrix} sans prix unitaire` : ''}` });
 
   const manques: string[] = [];
   if (ecartCents && !ajoutExplique) manques.push(`${montant(ecartCents)} CHF`);
