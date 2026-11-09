@@ -15,7 +15,7 @@ beforeEach(()=>{cleanup();vi.restoreAllMocks();state.saved.mockReset();state.sca
 const joindre=(container:HTMLElement)=>{const file=new File(['%PDF-1.4\n'],'Facture synthétique.pdf',{type:'application/pdf'});Object.defineProperty(file,'arrayBuffer',{value:async()=>new TextEncoder().encode('%PDF-1.4\n').buffer});fireEvent.change(container.querySelector('input[type="file"]')!,{target:{files:[file]}});};
 
 describe('Dépense : fermer et changer le type sans perdre la ligne',()=>{
-  it('le × ferme même pendant la lecture',async()=>{
+  it('le × ferme même pendant la lecture, après « Abandonner ? » puisqu’un justificatif est joint',async()=>{
     state.scanned.mockReturnValue(new Promise(()=>{}));
     const onClose=vi.fn();
     const view=render(<ExpenseSheet onClose={onClose} onSaved={()=>{}}/>);
@@ -24,8 +24,8 @@ describe('Dépense : fermer et changer le type sans perdre la ligne',()=>{
     const fermer=screen.getByRole('button',{name:'Fermer'});
     expect(fermer).not.toBeDisabled();
     fireEvent.click(fermer);
-    const abandon=view.container.querySelector('[data-dp-abandon-oui]') as HTMLElement|null;
-    if(abandon)fireEvent.click(abandon);
+    expect(onClose).not.toHaveBeenCalled();
+    fireEvent.click(view.container.querySelector('[data-dp-abandon-oui]')!);
     expect(onClose).toHaveBeenCalledOnce();
   });
   it('changer le type garde la ligne ouverte et le focus dessus',async()=>{

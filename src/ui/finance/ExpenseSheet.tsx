@@ -1338,7 +1338,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     :nUnite&&attempted?{texte:`${nUnite} unité${nUnite>1?'s':''} à préciser`,attention:true}:null;
   const surFichier:{nom:string;url:string;type:string}|null=draft.proofDataUrl&&!busy?{nom:draft.proofFileName??'justificatif',url:draft.proofDataUrl,type:draft.proofType??''}:null;
   /* B2 (test en ligne n° 40) : fermer une saisie remplie (total, fournisseur, description, lignes, TVA, justificatif lu ou joint) perdait tout sans un mot ; le × et Échap demandent d'abord « Abandonner ? ». */
-  const saisieRemplie=!done&&!attached&&!dejaTx&&(Boolean(draft.amount&&draft.amount>0)||Boolean(draft.vendor.trim())||Boolean(draft.description.trim())||draft.sourceVatAmount!==undefined||draft.lines.some(l=>l.description.trim()||l.quantity!==undefined||l.unitPrice!==undefined||l.amount!==undefined)||Boolean(scan?.ok)||pages.length>0);
+  const saisieRemplie=!done&&!attached&&!dejaTx&&(Boolean(draft.amount&&draft.amount>0)||Boolean(draft.vendor.trim())||Boolean(draft.description.trim())||draft.sourceVatAmount!==undefined||draft.lines.some(l=>l.description.trim()||l.quantity!==undefined||l.unitPrice!==undefined||l.amount!==undefined)||Boolean(scan?.ok)||pages.length>0||Boolean(attachment));
   /* 09.11, « il y a des cas de figure où je peux pas annuler » : le × était éteint pendant toute la lecture (busy) ; il ne l'est plus que pendant l'enregistrement. Fermer pendant la lecture la laisse finir sans écran. */
   const fermer=()=>{if(saisieRemplie){setAbandon(true);scroller.current?.scrollTo?.({top:0});}else onClose();};
   const nArticlesSaisis=draft.lines.filter(l=>l.description.trim()||l.quantity!==undefined||l.unitPrice!==undefined||l.amount!==undefined).length;
