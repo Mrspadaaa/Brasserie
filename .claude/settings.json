@@ -16,6 +16,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/agents/bugs-auto.mjs\" --hook",
+            "timeout": 30
+          },
+          {
+            "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/scripts/agents/controle-bugs.mjs\" --hook",
             "timeout": 30
           }

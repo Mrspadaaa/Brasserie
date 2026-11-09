@@ -2,7 +2,7 @@
 name: fermeture-et-quota
 description: Fermer une issue dès qu'elle est utilisable sans bloquant (mineurs en sous-issues) ; travailler jusqu'aux paliers de quota, sessions neuves au-delà de 450 k.
 type: agents
-maj: 2026-11-02
+maj: 2026-11-09
 sources: mémoire locale affinee-fermeture-et-quota.md ; work/finalisation-tickets-2026-10-08/mission-orchestrateur.md ; veille/STOP (absent de ce worktree)
 ---
 
@@ -19,5 +19,7 @@ Choix de l'utilisateur, 2026-10-12 (« Fait en sorte de fixer ce mécanisme ») 
 - Ne jamais mettre en pause sous 95 % de la fenêtre 5 h : de 80 à 95 %, on continue l'engagé ; à 98 %, arrêt propre. L'utilisateur a réagi vivement à une pause à 89 %.
 
 Détail actuel : section « Mécanismes d'accélération » de `work/finalisation-tickets-2026-10-08/mission-orchestrateur.md`.
+
+- Mesure (09.11) : `node scripts/agents/jetons.mjs [heures]` lit les transcripts et signale, par session, sorties d'outil > 8 000 car., erreurs, appels répétés (code 1 au-delà des plafonds) ; la session de suivi le joue à chaque lot et alerte la session fautive. Registre : `bugs-auto.mjs` (hook Stop) pose « corrigé » depuis les commits « ID : … », et « déployé » avec `--deploye <sha>`.
 
 Voir [[autonomie-decisions]] et (leçon L11).
