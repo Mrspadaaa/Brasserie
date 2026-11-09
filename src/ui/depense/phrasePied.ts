@@ -44,7 +44,7 @@ export function phraseDuPied(lignes: number, total: number, ajouts: readonly Ajo
 /** s1 (jeu en ligne, VERDICT-EN-LIGNE n° 5) : les natures que le serveur écrit en mot de code (« other / equipment ») se disent en français. */
 const NATURE_FR: Record<string, string> = {
   stock: 'ingrédient', ingredient: 'ingrédient', packaging: 'emballage', cleaning: 'nettoyage', equipment: 'matériel', maintenance: 'entretien',
-  service: 'service', shipping: 'port', discount: 'rabais', other: 'autre', unknown: 'inconnu',
+  service: 'service', shipping: 'port', discount: 'rabais', other: 'autre', unknown: 'inconnu', absent: 'non lu',
 };
 /**
  * Un message du serveur (« VITRIFIC… — nature : lectures divergentes (other / equipment), vérifier… ») ne montre jamais un mot du code : dans ses parenthèses, chaque mot de nature

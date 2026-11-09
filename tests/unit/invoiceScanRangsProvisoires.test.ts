@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { normalizeInvoiceScan } from '../../functions/src/invoiceScanCore';
-import { ressemblance, rangsProvisoires, retireesParLaTroisieme } from '../../functions/src/invoiceScanVote';
+import { ressemblance, rangsProvisoires, redresserDecalage, retireesParLaTroisieme } from '../../functions/src/invoiceScanVote';
 
 const ligne = (name: string, amountTTC: number, quantity = 1) => ({ name, kind: 'stock', quantity, unit: 'pc', amountTTC, reference: '' });
 const ancre = (n: number) => ligne(`Article sûr ${n}`, 10 + n);
@@ -47,5 +47,30 @@ describe('p3 : les lignes « retirées » écrites pour le cache sont celles que
     const final = { items: [ancre(1), ligne('BROSSE NEY ORANCR', 4.55)], amountTTC: 100, tvaAmount: 0 };
     const r = retireesParLaTroisieme(l1 as any, l2 as any, lecture(final.items) as any, final);
     expect(r?.lignes.map(x => x.rang)).toEqual([2]);
+  });
+});
+
+describe('p3 relance 1 : redresserDecalage, le nom d’une ligne ne prend jamais le montant d’une voisine', () => {
+  const noms = ['Seau bleu', 'Turbine rotative', 'Mètre ruban', 'Gants de travail', 'Serre-joint', 'Jeu de clés', 'Brosse radiateur'];
+  const montants = [1.2, 8.85, 7.9, 4.25, 14.9, 8.9, 5.6];
+  const liste = (m: number[], n = noms) => n.map((name, i) => ({ name, amountTTC: m[i], price: m[i], quantity: 1, unit: 'pc' }));
+  const vote = (items: any[]) => ({ normalized: { items } as any, cause: null });
+  it('la 3.8 décalée d’un rang sur les montants : le montant des deux Flash-Lite revient, le nom de la 3.8 reste', () => {
+    const decalee = liste([1.2, 8.85, 4.25, 14.9, 8.9, 5.6, 5.6]);
+    const r = redresserDecalage({ items: decalee }, vote(liste(montants)), vote(liste(montants)));
+    expect(r.redressees.length).toBeGreaterThan(0);
+    expect(r.items[3].amountTTC).toBe(4.25); // « Gants » : 4,25 (le montant d'accord), pas 14,90
+    expect(r.items.map((x: any) => x.name)).toEqual(noms);
+    expect(r.items[2].amountTTC).toBe(7.9);
+  });
+  it('une 3.8 qui s’accorde avec les Flash-Lite, ou qui corrige un montant sans rapport avec une voisine : rien ne change', () => {
+    expect(redresserDecalage({ items: liste(montants) }, vote(liste(montants)), vote(liste(montants))).redressees).toEqual([]);
+    const corrigee = liste(montants); corrigee[3] = { ...corrigee[3], amountTTC: 4.5, price: 4.5 };
+    expect(redresserDecalage({ items: corrigee }, vote(liste(montants)), vote(liste(montants))).redressees).toEqual([]);
+  });
+  it('deux Flash-Lite de longueur très différente de la 3.8 : le raisonnement par les voisines ne s’applique pas', () => {
+    const decalee = liste([1.2, 8.85, 4.25, 14.9, 8.9, 5.6, 5.6]);
+    const courte = liste(montants).slice(0, 3);
+    expect(redresserDecalage({ items: decalee }, vote(courte), vote(courte)).redressees).toEqual([]);
   });
 });

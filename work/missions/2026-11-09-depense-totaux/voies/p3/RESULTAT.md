@@ -1,4 +1,4 @@
-OK — 4 bloquants du jeu 5 corrigés (cache, retirées, payé, BAUHAUS décalé) ; échec « 240 s » expliqué ; page 2 seule de la 3.8 : non mesurée
+OK — Relance 1 : décalage de la 3.8 redressé (prouvé, mesuré sur 113 tirages), bricolage hors «Matériel de brassage», mots bruts ôtés ; plus les 4 bloquants du jeu 5
 
 Version : HEAD 46c7a569 + le travail non commité de la voie. Aucun commit, stash, déploiement ; AUCUN appel Gemini (voir § 5).
 
@@ -49,3 +49,27 @@ DÉCISION À PRENDRE : (1) déployer `functions` (nouvel alignement + `retirees`
 CONNAISSANCE : un état lu dans un rappel différé doit se lire dans la même passe (ref posée tout de suite), pas au rendu suivant ; `rangsProvisoires` ne rapproche plus que sur une preuve (ancre, ressemblance du nom) : la même longueur de deux listes n'en est pas une.
 
 LEÇON PROPOSÉE : une fusion « sa saisie l'emporte » rejouée sans attendre le rendu lit un état périmé : tout test d'un enchaînement setState puis lecture d'une ref se joue avec le minuteur rendu immédiat, pas seulement sous `act` (le jeu en ligne 5 a montré ce que p2 n'avait pas vu).
+
+---
+# Relance 1 (VERDICT-EN-LIGNE-6) — aucun appel Gemini
+
+Fichiers écrits en plus : `functions/src/invoiceScanVote.ts` (`redresserDecalage`, appelé par `lireCsv8`), `src/ui/depense/familles.ts` (`categorieDeLaPiece`), `src/ui/depense/finale.ts` (la catégorie de la pièce), `src/ui/depense/phrasePied.ts` (`absent` → « non lu »), `src/ui/finance/ExpenseSheet.tsx` (remarques du bloc passées par `sansMotsBruts`) ; tests `tests/unit/depense/p3-categorie-piece.test.ts` (5), `tests/unit/invoiceScanRangsProvisoires.test.ts` (10 au total) ; voie : `analyse-decalage.ts`, `mesure-decalage.ts`, `mesure-categorie.ts` (+ leurs `-sortie.txt`), `voir-doc25.ts`, banc : cas `p3-bricolage`, 104 captures.
+
+## Bloquant 1 — noms posés sur le montant d'une voisine : c'est la 3.8, pas le rapprochement
+Preuve (`analyse-decalage-sortie.txt`, rejeu hors ligne des 113 tirages à trois lectures du banc) : la 3.8 est la seule à porter le montant d'une ligne voisine : sur le ticket BAUHAUS tâché (doc24) jusqu'à 12 lignes sur 29 d'un tirage (rangs 15 à 27 : la fin du ticket), 5 sur un second ticket de la boutique (doc25) ; sur les autres documents (21 documents), aucune. Les deux Flash-Lite s'accordent sur ces lignes. Le rapprochement n'y est pour rien : la ligne arrive déjà décalée dans la lecture de la 3.8, et son rang provisoire est le bon.
+Correction (`redresserDecalage`) : une ligne de la 3.8 dont le nom est retrouvé dans les deux Flash-Lite, au même rang, avec le même montant dans les deux, alors que le montant de la 3.8 est celui d'une ligne voisine d'un autre nom dans les deux : le montant, le prix, la quantité et l'unité d'accord reviennent ; le nom de la 3.8 reste. Garde : les trois listes de longueur comparable (à une ligne près). Mesure (`mesure-decalage-sortie.txt`, 113 tirages, vérité écrite de 21 documents) : 1 tirage touché (doc24, 8 lignes redressées, lignes justes 8 → 13 sur 29), 112 inchangés, 0 tirage en recul ; lignes justes 972 → 977 sur 113 tirages.
+Limites honnêtes : (1) un seul tirage touché : un indice, pas une preuve (sous 40 pièces) ; (2) les trois autres tirages décalés de doc24 ne sont pas redressés (leurs deux Flash-Lite ne s'accordent pas assez : le détecteur laisse la 3.8) : le décalage reste possible en ligne ; (3) une première version sans la garde de longueur faisait reculer le doc25 (15 → 13 lignes justes : la 3.8 avait raison contre deux Flash-Lite elles-mêmes décalées) : la garde est choisie sur ce cas, à confirmer sur de nouvelles pièces ; (4) le redressement est silencieux (la ligne revient à ce que les deux lectures d'accord disaient) : pas de rangée « lecture décalée » ajoutée.
+
+## Bloquant 2 — 16 outils en « Matériel de brassage » avec icône de stock
+Cause (règle de famille, `familles.ts`) : les mots AMBIGUS des travaux (brosse, seau, gants, ruban…) ne vont en Rénovation que si la catégorie de la dépense vaut `renovation` ; or cette catégorie est un choix de la lecture, qui varie d'un tirage à l'autre sur le même ticket (jeu 4 : Rénovation 29 ; jeu 6 : autre) ; avec une autre, la nature `equipment` lue envoie 16 lignes au Matériel de brassage et au stock. Correction à la cause : `categorieDeLaPiece` : le contexte de la PIÈCE tranche (au moins 3 lignes aux mots de travaux sans équivoque, au moins une sur dix, aucune ligne de brassage : ingrédient, matériel précis) : la dépense est de `renovation` (famille, « Pour quoi ? », aucun stock proposé, aucune icône). Sans nom de boutique. Mesure sur les lectures réelles de la 3.8 (`mesure-categorie-sortie.txt`) : les tickets BAUHAUS rendus `renovation` (doc15 4/4, doc16 4/4, doc24 4/5), les 17 autres documents (brassage, houblons, levures, Sun Store, factures) : 0 faux. Limite : doc25 (4 tirages) n'est pas reconnu (noms trop abîmés : moins de 3 mots de travaux) ; les 16 lignes de ce ticket-là resteraient en matériel.
+Captures banc (`p3-bricolage`) : lecture « materiel », 12 outils de nature equipment : groupe « Rénovation 12 », « Peinture et sols 6 » et « Outillage 2 », aucun « Matériel de brassage », aucune icône de stock, 390 clair et cave, 1280 clair et cave, ouvertes (390 cave, 390 clair, 1280 clair).
+
+## Non bloquant 4 — mots bruts
+Les remarques du bloc passent par `sansMotsBruts` ; « absent » se dit « non lu » : « (absent / 0) » → « (non lu / 0) », « (service / other) » → « (service / autre) » (test). Non vu en ligne : le banc n'a pas ce message ; à confirmer au jeu suivant.
+
+## Critères (relance)
+`tsc` racine et `functions/` : vides. Tests : `Test Files 254 passed | 1 skipped (255)` ; `Tests 3536 passed | 4 skipped (3540)` (`tests.txt`, dont `tests/unit/banc-lecture`, `tests/unit/invoice`). Build : « built in 14.82s », DRAPEAUX OK. Captures : 104 PNG, `console-p3.txt` : 0 erreur de page, 0 débordement, 0 chevauchement, 8/8 « Payé = imprimé » après la chaîne Sun Store, 0 icône sur les lignes barrées.
+
+DÉCISION À PRENDRE : redéployer `functions` (`redresserDecalage`) : additif, ne touche que les lignes décalées avec deux Flash-Lite d'accord ; recommandé. Choix du pilote : afficher une rangée « lecture décalée » en écart quand le détecteur redresse (pas fait : le redressement est silencieux).
+
+LEÇON PROPOSÉE : un réglage de détection se mesure sur TOUS les tirages réels du banc avant de livrer, vérité à l'appui : la première version du détecteur de décalage faisait reculer un tirage que seule la vérité écrite a montré.

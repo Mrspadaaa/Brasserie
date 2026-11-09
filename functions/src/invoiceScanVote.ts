@@ -230,6 +230,38 @@ export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: 
 }
 
 /**
+ * p3 relance 1 (jeu en ligne 6, BAUHAUS : « OPSHGE CHANTIER » à 8,50 posé sur « CRATONS DE CHARPENTTER · 3,10 », 8 lignes au nom d'une voisine) : preuve sur les lectures réelles du banc (`analyse-decalage-sortie.txt`,
+ * 113 tirages à trois lectures, aucun appel) : c'est la 3.8 elle-même, pas le rapprochement : sur le ticket BAUHAUS tâché (doc24) et un second ticket de la même boutique (doc25), jusqu'à 12 lignes sur 29 de sa lecture portent le montant
+ * d'une ligne VOISINE ; ailleurs, aucune. Quand elle tranche seule (C★), ses lignes remplacent celles des deux Flash-Lite, qui s'accordaient sur ces lignes.
+ * Détection (pas de modèle de plus) : une ligne de la 3.8 dont le nom est retrouvé (ressemblance ≥ 0,6) dans CHACUNE des deux Flash-Lite, les deux lignes retrouvées s'accordant sur le montant, alors que le montant de la 3.8 diffère
+ * de ce montant d'accord ET est celui d'une ligne voisine (rang ± 1 à 2, d'un autre nom) dans chacune des deux. Alors le montant, le prix, la quantité et l'unité d'accord des deux Flash-Lite remplacent ceux de la 3.8 :
+ * le nom (sa lecture, meilleure) reste. Une correction de nom ne change jamais le montant d'une ligne. Rend les rangs redressés.
+ */
+export function redresserDecalage(final: any, l1: LectureVote, l2: LectureVote): { items: any[]; redressees: number[] } {
+  const items: any[] = final?.items ?? [];
+  if (!l1.normalized || !l2.normalized || !items.length) return { items, redressees: [] };
+  const lites = [l1.normalized.items as any[], l2.normalized.items as any[]];
+  const montant = (x: any) => (typeof x?.amountTTC === 'number' && Number.isFinite(x.amountTTC) ? Math.round(x.amountTTC * 100) : null);
+  // Le raisonnement par les voisines ne vaut que si les trois listes ont une structure comparable (à une ligne près) : deux Flash-Lite qui ont perdu des lignes (doc25, tirage p5 : 18 et 21 pour 22) se décalent elles-mêmes.
+  if (lites.some(liste => Math.abs(liste.length - items.length) > 1)) return { items, redressees: [] };
+  const redressees: number[] = [];
+  const sortie = items.map((it, i) => {
+    const a3 = montant(it);
+    if (a3 === null) return it;
+    const proches = lites.map(liste => liste.map((x, j) => ({ j, s: ressemblance(it.name, x?.name) })).sort((p, q) => q.s - p.s)[0]);
+    if (proches.some(p => !p || p.s < 0.6)) return it;
+    const [pa, pb] = proches, xa = lites[0][pa.j], xb = lites[1][pb.j], aF = montant(xa);
+    // les deux Flash-Lite s'accordent sur la ligne ET sur son rang : deux listes de longueurs différentes n'ont pas les mêmes voisines (doc25, tirage p5 : la 3.8 avait raison contre deux listes décalées entre elles)
+    if (aF === null || aF !== montant(xb) || aF === a3 || pa.j !== pb.j) return it;
+    const voisine = (liste: any[], p: { j: number }) => [-2, -1, 1, 2].some(dj => liste[p.j + dj] && montant(liste[p.j + dj]) === a3 && ressemblance(liste[p.j + dj].name, it.name) < 0.6);
+    if (!voisine(lites[0], pa) || !voisine(lites[1], pb)) return it;
+    redressees.push(i);
+    return { ...it, amountTTC: xa.amountTTC, price: xa.price ?? null, quantity: xa.quantity ?? null, unit: xa.unit ?? it.unit };
+  });
+  return { items: sortie, redressees };
+}
+
+/**
  * C★v8 : deux Flash-Lite en parallèle (chaque appel en cours est attendu avant de rendre la main : le budget ferme son registre après),
  * la 3.8 sur désaccord ou lecture manquante, le résultat de `finalOfStarVote`. Rien de lisible nulle part : l'erreur de la première
  * lecture remonte, comme avant.
@@ -253,6 +285,7 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
   }
   const final = finalOfStarVote(l1, l2, third);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
+  if (third?.normalized) { const { items, redressees } = redresserDecalage(final.result, l1, l2); if (redressees.length) final.result = { ...final.result, items }; }
   const retirees = retireesParLaTroisieme(l1, l2, third, final.result);
   if (retirees) final.result = { ...final.result, retirees };
   if (!provisoire) return final.result;

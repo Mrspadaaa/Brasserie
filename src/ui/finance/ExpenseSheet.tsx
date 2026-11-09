@@ -867,7 +867,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* Sans cible propre : la preuve de la lecture, ouverte et amenée à l'écran. */
     flushSync(()=>setViseePreuve(true));viser(q('[data-dp="preuve"]'));setTimeout(()=>{if(mounted.current)setViseePreuve(false);},1600);
   };
-  const remarques=result?[...new Set([...result.issues,...(result.review?.findings??[]),...result.items.flatMap(item=>item.ambiguity?[`${item.name||'Article'} : ${item.ambiguity}`]:[]),/* e-finitions (b-lenteur, défaut 3) : la phrase de n3-ht ne disparaît jamais derrière un indice plus grave : elle est dite ici, après lui. */...(result.lignesPasseesAuTtc?[LIGNES_HT_PASSEES_AU_TTC]:[])].map(p=>p.trim()).filter(Boolean))].filter(p=>!(points??[]).some(pt=>pt.message===p)):[];
+  const remarques=result?[...new Set([...result.issues,...(result.review?.findings??[]),...result.items.flatMap(item=>item.ambiguity?[`${item.name||'Article'} : ${item.ambiguity}`]:[]),/* e-finitions (b-lenteur, défaut 3) : la phrase de n3-ht ne disparaît jamais derrière un indice plus grave : elle est dite ici, après lui. */...(result.lignesPasseesAuTtc?[LIGNES_HT_PASSEES_AU_TTC]:[])].map(p=>p.trim()).filter(Boolean))].filter(p=>!(points??[]).some(pt=>pt.message===p)).map(sansMotsBruts):[];
   const driveOk=apercu?apercu.drive==='ok':draft.proofDataUrl?FirebaseAuthService.hasDriveAccess():true;void driveTick;
   /* R1 : un prix « avec mouture » seulement si le catalogue l'écrira (latestBrewPrices) : malt relié au stock, mouture de genre service à montant positif, lien confirmé. */
   const eur=(cents:number)=>(cents/100).toFixed(2).replace('.',',');

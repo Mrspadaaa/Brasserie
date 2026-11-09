@@ -64,3 +64,16 @@ Jamais lire `functions/.env` ni `functions/.secret.local`. Gemini réel : banc s
 - Les captures 390 tactile et 1280, clair et cave, toutes ouvertes.
 
 Réponse finale au pilote : une ligne.
+
+## Relance 1 (pilote, 10.11) — VERDICT-EN-LIGNE-6
+Même contrôles, mêmes possessions, mêmes interdits (aucun appel Gemini). Un test qui échoue d'abord.
+1. **Bloquant 1** : BAUHAUS neuf, la 3.8 rend des noms décalés d'un rang sur les montants (« OPSHGE CHANTIER » à 8,50 posé sur
+   « CRATONS DE CHARPENTTER · 3,10 »…), 26 corrigées sous « Qté × prix 28/28 justes ». Sur les lectures réelles déjà au banc (aucun
+   appel), prouve si c'est la 3.8 ou le rapprochement. Si la 3.8 : détecte le décalage (noms des deux Flash-Lite retrouvés au rang
+   voisin, montants d'accord entre elles) et ne laisse pas la 3.8 l'emporter en silence : garde l'accord des deux, ou rangée en écart
+   « lecture décalée » avec son geste. Mesure sur toutes les lectures réelles du banc (pas de recul sur les pièces qui marchaient).
+2. **Bloquant 2** : 16 outils BAUHAUS en « Matériel de brassage » avec icône de stock (lecture « equipment »). Une ligne d'un ticket de
+   bricolage ou rénovation ne devient pas du matériel de brassage par la seule nature lue ; aucune icône de stock hors brassage (s1).
+   Trouve la règle de famille et corrige à la cause.
+3. Non bloquant 4 : plus de mots bruts (« lectures divergentes (service / other) », « code tva … (absent / 0) ») : des mots du brasseur.
+Captures du banc, 390 et 1280, clair et cave, ouvertes. RESULTAT.md à jour.
