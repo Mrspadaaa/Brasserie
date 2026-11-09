@@ -20,6 +20,8 @@ export interface ScannedInvoiceResult {
   category:FinanceCategory; subcategory:string; description:string;
   /** Lenteur D : le jeton du morceau provisoire envoyé dans l'appel qui a calculé ce final ; absent d'un final seul (cache, ancien serveur, pièce sans 3.8). */
   provisoireJeton?:string;
+  /** p2 : ce que la 3.8 a retiré aux deux premières lectures (lignes, total et TVA d'avant), écrit par le serveur dans le résultat lui-même, donc aussi servi du cache. Absent : rien n'a été retiré (ou ancien serveur). */
+  retirees?:{ lignes:Array<{ rang:number; ligne:ScannedInvoiceResult['items'][number] }>; amountTTC?:number|null; tvaAmount?:number|null };
   items:Array<{ id:string; name:string; kind:ScannedLineKind; reference?:string; variant?:string; quantity:number|null; unit:string; price?:number|null; amountTTC?:number|null; stockCategory?:string; evidence?:string; ambiguity?:string; vatCode?:string; alphaPct?:number|null; alphaPctLu?:number|null;
     /** Lenteur D : le rang de la ligne provisoire d'où vient cette ligne finale ; `null` = ajoutée par la 3.8 ; absent = le serveur ne le dit pas (jamais fabriqué). */
     rangProvisoire?:number|null;
@@ -241,6 +243,13 @@ export const GeminiScannerService = {
       ...champsControlesPiece(raw),
       ...(Array.isArray(raw?.rejets)?{rejets:raw.rejets.slice(0,40).filter((r:any)=>typeof r?.champ==='string'&&typeof r?.luTexte==='string').map((r:any)=>({champ:text(r.champ,40),ligne:int(r.ligne,1),luTexte:text(r.luTexte,60),raison:text(r.raison,120)}))}:{}),
     };
+    // p2 : les lignes que la 3.8 a retirées, lues comme n'importe quelle ligne ; une clé n'existe que si le serveur la porte.
+    if(raw?.retirees&&typeof raw.retirees==='object'&&Array.isArray(raw.retirees.lignes)){
+      const lignes=raw.retirees.lignes.slice(0,40).filter((x:any)=>x&&typeof x==='object'&&int(x.rang)!==null&&x.ligne&&typeof x.ligne==='object');
+      const lues=lignes.length?this.normalizeResult({items:lignes.map((x:any)=>x.ligne)}).items:[];
+      const re={lignes:lignes.map((x:any,i:number)=>({rang:int(x.rang)!,ligne:{...lues[i],id:`retiree-${i+1}`}})),...(raw.retirees.amountTTC===null||number(raw.retirees.amountTTC)!==null?{amountTTC:number(raw.retirees.amountTTC)}:{}),...(raw.retirees.tvaAmount===null||number(raw.retirees.tvaAmount)!==null?{tvaAmount:number(raw.retirees.tvaAmount)}:{})};
+      if(re.lignes.length||'amountTTC' in re||'tvaAmount' in re)result.retirees=re;
+    }
     // n3-ht (D304, D317) : des lignes imprimées hors taxe passent au TTC, ici, pour que le provisoire du flux et le final (tous deux assainis par cette fonction) donnent les mêmes montants.
     return keepWeighingPoints(lignesHtAuTtc(result),raw);
   },

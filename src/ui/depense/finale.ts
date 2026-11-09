@@ -374,3 +374,29 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
 /** R1 : la fin de partie (rien du final n'a pu être posé) : le provisoire, avec le point « lecture coupée » (`delai-saute`) qui marque les lignes « reprises ». */
 export const provisoireCoupe = (provisoire: ScannedInvoiceResult): ScannedInvoiceResult => ajouterCoupure(clone(provisoire) as any, 'delai-saute', phraseCoupure('delai-saute')) as ScannedInvoiceResult;
 export { shortUnit };
+
+/** p2 : le jeton du provisoire reconstruit à partir d'un final servi du cache (aucun flux n'a eu lieu). */
+export const JETON_CACHE = 'cache-retirees';
+
+/**
+ * p2 (jeu en ligne 4 : deux tickets lus comme deux pages, la 3.8 retire la page 1) : un final servi du cache n'a plus de flux provisoire, donc plus de « pas retrouvée ». Le serveur écrit ce qu'il a retiré dans
+ * `result.retirees` (lignes avec leur rang, total et TVA d'avant) ; on en refait le provisoire (lignes remises à leur rang, total et TVA d'avant) et le final (chaque ligne dit son rang), puis la fusion habituelle
+ * (`appliquerFinale`) donne les mêmes lignes barrées, les mêmes valeurs changées et les mêmes gestes que sur le flux. Limite : une ligne que la 3.8 a AJOUTÉE n'est pas connue (le serveur ne l'écrit pas) : elle
+ * se lit comme une ligne inchangée. Rend `null` quand rien n'a été retiré.
+ */
+export function provisoireDeRetirees(final: ScannedInvoiceResult): { provisoire: ScannedInvoiceResult; final: ScannedInvoiceResult } | null {
+  const re = final.retirees;
+  if (!re || (!re.lignes.length && re.amountTTC === undefined && re.tvaAmount === undefined)) return null;
+  const prov: Array<{ ligne: ScannedInvoiceResult['items'][number]; deFinal: number | null }> = final.items.map((ligne, j) => ({ ligne, deFinal: j }));
+  for (const r of [...re.lignes].sort((a, b) => a.rang - b.rang)) prov.splice(Math.min(r.rang, prov.length), 0, { ligne: r.ligne, deFinal: null });
+  const { retirees: _retirees, ...sans } = final;
+  const rangDuFinal = new Map<number, number>();
+  prov.forEach((p, k) => { if (p.deFinal !== null) rangDuFinal.set(p.deFinal, k); });
+  const provisoire: ScannedInvoiceResult = {
+    ...sans, points: [], provisoireJeton: undefined,
+    items: prov.map((p, k) => ({ ...p.ligne, id: `line-${k + 1}`, rangProvisoire: undefined })),
+    ...(re.amountTTC !== undefined ? { amountTTC: re.amountTTC } : {}), ...(re.tvaAmount !== undefined ? { tvaAmount: re.tvaAmount } : {}),
+  };
+  delete (provisoire as { provisoireJeton?: string }).provisoireJeton;
+  return { provisoire, final: { ...sans, provisoireJeton: JETON_CACHE, items: final.items.map((it, j) => ({ ...it, rangProvisoire: rangDuFinal.get(j) ?? null })) } };
+}

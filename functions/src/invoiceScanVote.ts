@@ -168,6 +168,26 @@ export function rangsProvisoires(provisoire: any[], final: any[]): Array<number 
 }
 
 /**
+ * p2 (jeu en ligne 4, 10.11) : deux tickets Sun Store lus comme deux pages d'UNE dépense, « Total EFT 163,85 » imprimé sur les deux. Les deux Flash-Lite lisent les 7 lignes et 163,85 ; la 3.8, qui tranche SEULE (C★),
+ * rend la page 2 seule : 5 lignes, 149,25, TVA 0,00. Le client voit la perte tant que le flux provisoire est là (« pas retrouvée »), mais le résultat gardé au cache ne la dit plus : relu plus tard, la dépense
+ * affiche 149,25 sans aucune trace. Ce que la 3.8 retire est donc écrit dans le résultat lui-même : les lignes que les deux premières lectures avaient et que la 3.8 n'a pas (rapprochement de production,
+ * `alignerLignes`), et, avec elles, le total et la TVA d'avant quand la 3.8 les change. Additif : aucune valeur du résultat n'est modifiée ici, le client décide (Garder / Retirer).
+ */
+export interface Retirees { lignes: Array<{ rang: number; ligne: any }>; amountTTC?: number | null; tvaAmount?: number | null }
+export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: LectureVote | undefined, final: any): Retirees | null {
+  if (!l1.normalized || !l2.normalized || !third?.normalized || !needsThird(l1, l2)) return null;
+  const provisoire = provisoireDeDeux(l1, l2);
+  if (!provisoire) return null;
+  const lignes = alignerLignes(provisoire.items, final.items ?? []).orphansBase.map(rang => ({ rang, ligne: provisoire.items[rang] }));
+  const centimes = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const total = centimes(provisoire.amountTTC) !== null && centimes(provisoire.amountTTC) !== centimes(final.amountTTC);
+  const tva = centimes(provisoire.tvaAmount) !== null && centimes(provisoire.tvaAmount) !== centimes(final.tvaAmount);
+  // Seules les LIGNES retirées déclenchent l'écriture (une donnée perdue) ; un total ou une TVA que la 3.8 corrige seul reste, comme avant, une correction ordinaire (le banc `scripts/banc-lecture-facture.ts`, oracle de parité, ne l'écrit pas).
+  if (!lignes.length) return null;
+  return { lignes, ...(total ? { amountTTC: provisoire.amountTTC } : {}), ...(tva ? { tvaAmount: provisoire.tvaAmount } : {}) };
+}
+
+/**
  * C★v8 : deux Flash-Lite en parallèle (chaque appel en cours est attendu avant de rendre la main : le budget ferme son registre après),
  * la 3.8 sur désaccord ou lecture manquante, le résultat de `finalOfStarVote`. Rien de lisible nulle part : l'erreur de la première
  * lecture remonte, comme avant.
@@ -191,6 +211,8 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
   }
   const final = finalOfStarVote(l1, l2, third);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
+  const retirees = retireesParLaTroisieme(l1, l2, third, final.result);
+  if (retirees) final.result = { ...final.result, retirees };
   if (!provisoire) return final.result;
   // La 3.8 a lu : ses lignes se rapprochent de celles du provisoire. Elle a échoué : le final EST le provisoire (plus la coupure), chaque rang est le sien.
   const rangs = third?.normalized ? rangsProvisoires(provisoire.items, final.result.items) : final.result.items.map((_: unknown, rang: number) => rang);
