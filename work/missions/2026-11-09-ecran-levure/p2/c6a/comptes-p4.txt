@@ -1,0 +1,144 @@
+BOISSON { biere: 1339, cidre: 18, vin: 330, distillerie: 37, autre: 9 }
+FAMILLE {
+  ale: 403,
+  belge: 83,
+  saison: 53,
+  lager: 179,
+  kveik: 55,
+  ble: 198,
+  anglaise: 102,
+  melange: 78,
+  brett: 132,
+  bacteries: 56
+}
+FLOC { '1': 201, '2': 454, '3': 231, '4': 10, nd: 443 }
+FORME { seche: 106, nd: 1157, liquide: 76 }
+TOL { '<8': 4, '8-10': 57, '10-12': 263, '>=12': 346, nd: 669 }
+T19 372 nd 620
+ATT 75-82 732 nd 435
+MOTS banane 43 girofle 30 neutre 174 fruité 252 tropical 80
+VITESSE { '0': 17, '1': 18, '2': 73, '3': 45, '4': 1, nd: 1185 }
+SANS ALCOOL 17
+RONDEUR glycérol 0 sucres 4
+SOUFRE 2 NUTR 2
+LABOS {
+  Fermentis: 27,
+  'Lallemand Brewing': 32,
+  'White Labs': 189,
+  Wyeast: 77,
+  'Bootleg Biology': 98,
+  'Brewferm / Brouwland': 3,
+  'Brewing Science Institute': 138,
+  CellarScience: 27,
+  Doemens: 113,
+  'Escarpment Labs': 184,
+  'Fermentum Mobile': 29,
+  'Imperial Yeast': 59,
+  'Kveik Yeastery': 4,
+  'Mangrove Jack’s': 17,
+  'Omega Yeast': 104,
+  'VLB Berlin': 23,
+  'Hefebank Weihenstephan': 123,
+  'WHC Lab': 49,
+  'The Yeast Bay': 4,
+  Yeastflow: 39
+}
+bière 1339
+STYLE documenté (fiches bière) 233 sans style 1106
+AROME esters    + 317 3·47·267 | − 41 1·5·35 | + Europe : Fermentis SafAle W-68, LalBrew Abbaye™ Belgia, LalBrew Belle Saison™ , LalBrew New England™ Y, LalBrew Munich Classic, Belgian Fruit Beer, Tropical Fruit Ale, SafAle™ BE‑134
+AROME phenols   + 208 0·17·191 | − 187 1·8·178 | + Europe : Fermentis SafAle W-68, LalBrew Abbaye™ Belgia, LalBrew Belle Saison™ , LalBrew Munich Classic, SafAle™ BE‑134, SafAle™ BW‑20, SafAle™ T‑58, SafAle™ WB‑06
+AROME thiols    + 55 1·2·52 | − 37 0·2·35 | + Europe : LalBrew Nottingham, Thiol Unleashed: Non-G
+AROME terpenes  + 7 1·1·5 | − 0 0·0·0 | + Europe : LalBrew Belle Saison™ 
+  vérif + esters 3068 true · + phénols true
+  vérif + esters WLP300 true · + phénols false
+  vérif + esters M20 Bavarian true · + phénols false
+  vérif + esters W-68 true · + phénols true
+  vérif + esters Abbaye true · + phénols true
+esters       US-05= 1 doc 21 nd 1318 | plus 14 0·14·0 | moins 1 0·1·0
+   + Fermentis SafAle W-68[europe:3], SafAle™ BE‑134[europe:2], SafAle™ BE‑256[europe:3], SafAle™ BW‑20[europe:3], SafAle™ K‑97[europe:2], SafAle™ S‑33[europe:2], SafAle™ T‑58[europe:3]
+   - SafBrew™ LA‑01[europe:0]
+phenols      US-05= null doc 291 nd 1048 | plus 104 0·8·96 | moins 187 1·8·178
+   + Fermentis SafAle W-68[europe:1], SafAle™ BE‑134[europe:1], SafAle™ BW‑20[europe:1], SafAle™ T‑58[europe:1], SafAle™ WB‑06[europe:1], SafBrew™ DW‑17[europe:1], SafBrew™ HA‑18[europe:1]
+   - LalBrew NovaLager™ Brewers Y[ici:0], SafAle™ BE‑256[europe:0], SafAle™ S‑04[europe:0], SafBrew™ DA‑16[europe:0], SafBrew™ LA‑02[europe:0], SafBrew™ LD‑20[europe:0], SafLager™ S‑189[europe:0]
+biotransfo   US-05= null doc 109 nd 1230 | plus 41 0·0·41 | moins 35 0·0·35
+   + Vermont Ale[rare:3], Vermont Ale [HB][rare:3], Foggy London Ale[rare:3], Überweizen[rare:3], Überweizen [HB][rare:3], Weizen I[rare:3], Weizen I [HB][rare:3]
+   - On Deck Lager[rare:1], Cali Ale[rare:1], Cali Ale [HB][rare:1], American Ale[rare:1], American Ale [HB][rare:1], Northwest Ale[rare:1], Northwest Ale [HB][rare:1]
+attenuation  US-05= 80 doc 890 nd 449 | plus 124 0·8·116 | moins 500 2·21·477
+   + LalBrew Belle Saison™ Belgia[europe:90], SafAle™ BE‑134[europe:91], SafAle™ BE‑256[europe:84], SafAle™ WB‑06[europe:88], M41 Belgian Ale Yeast - 10g[europe:87], M29 French Saison Yeast - 10[europe:90], M31 Belgian Tripel Yeast - 1[europe:87]
+   - 1007 German Ale[ici:75], 1084 Irish Ale[ici:73], LalBrew Windsor™ Yeast[europe:68.5], Brewferm dried brewing yeast[europe:72], SafAle™ S‑33[europe:70], SafAle™ T‑58[europe:75], White Labs Munich Lager Yeas[europe:70]
+glycerol     US-05= null doc 0 nd 1339 | plus 0 0·0·0 | moins 0 0·0·0
+   + 
+   - 
+sucresRes    US-05= null doc 4 nd 1335 | plus 0 0·0·0 | moins 4 0·3·1
+   + 
+   - LalBrew LoNa™ Yeast (500 g)[europe:1], SafBrew™ LA‑01[europe:1], Zero Hero: Low / Non Alcohol[europe:1], WLP618 NA All Day®[rare:1]
+floculation  US-05= null doc 896 nd 443 | plus 241 0·22·219 | moins 201 1·25·175
+   + LalBrew BRY-97[europe:3], LalBrew Diamond[europe:3], LalBrew Nottingham[europe:3], LalBrew Voss™ Kviek Yeast[europe:4], Brewferm dried brewing yeast[europe:3], Brewferm dried brewing yeast[europe:3], SafAle™ BE‑256[europe:3]
+   - 1007 German Ale[ici:1], LalBrew Belle Saison™ Belgia[europe:1], LalBrew Farmhouse™ Yeast[europe:1], LalBrew Windsor™ Yeast[europe:1], LalBrew Wit™ Yeast[europe:1], LalBrew Munich Classic[europe:1], Brewferm dried brewing yeast[europe:1]
+tolerance    US-05= 11 doc 670 nd 669 | plus 346 3·38·305 | moins 268 1·17·250
+   + LalBrew NovaLager™ Brewers Y[ici:13], LalBrew Verdant IPA[ici:12], 1084 Irish Ale[ici:12], LalBrew Abbaye™ Belgian Styl[europe:14], LalBrew Belle Saison™ Belgia[europe:15], LalBrew BRY-97[europe:13], LalBrew Diamond[europe:13]
+   - LalBrew Pomona[ici:10], LalBrew New England™ Yeast[europe:9], WildBrew Philly Sour Yeast[europe:9], WildBrew Philly Sour - Box o[europe:9], M15 Empire Ale Yeast - 10g[europe:8], M84 Bohemian Lager Yeast - 1[europe:8], M20 Bavarian Wheat Yeast - 1[europe:7.5]
+soufre       US-05= null doc 0 nd 1339 | plus 0 0·0·0 | moins 0 0·0·0
+   + 
+   - 
+vitesse      US-05= null doc 154 nd 1185 | plus 46 0·1·45 | moins 35 0·0·35
+   + SafAle™ BE‑256[europe:4], 3470[rare:3], American Ale[rare:3], American Ale [HB][rare:3], Ardennes Ale[rare:3], Ardennes Ale [HB][rare:3], West Abbey Ale[rare:3]
+   - 1214 Belgian Abbey Style Ale[rare:1], St. Lucifer[rare:1], St. Lucifer [HB][rare:1], Mexican Lager[rare:1], Mexican Lager [HB][rare:1], Czech Lager[rare:1], Czech Lager [HB][rare:1]
+nutriments   US-05= null doc 1 nd 1338 | plus 0 0·0·0 | moins 0 0·0·0
+   + 
+   - 
+temperature  US-05= 22 doc 719 nd 620 | plus 268 0·26·242 | moins 431 5·64·362
+   + LalBrew Belle Saison™ Belgia[europe:27.5], LalBrew CBC-1™ Yeast[europe:25], LalBrew Farmhouse™ Yeast[europe:25], LalBrew LoNa™ Yeast (500 g)[europe:22.5], LalBrew Voss™ Kviek Yeast[europe:32.5], SafBrew™ DW‑17[europe:26], SafBrew™ HA‑18[europe:30]
+   - LalBrew NovaLager™ Brewers Y[ici:15], LalBrew Pomona[ici:20], LalBrew Verdant IPA[ici:21.5], 1007 German Ale[ici:16.5], 1084 Irish Ale[ici:19.5], LalBrew Abbaye™ Belgian Styl[europe:21], LalBrew BRY-97[europe:18.5]
+
+COMBO ale · sans STA1 · biotransfo doc 48 ici 0 · europe 0 · rare 48
+   ici 
+   europe 
+
+COMBO ale · sans STA1 · ≥10 % 218 ici 0 · europe 2 · rare 216
+   ici 
+   europe LalBrew BRY-97 | LalBrew Farmhouse™ Yeast
+
+COMBO ale · sèche · sans STA1 3 ici 0 · europe 3 · rare 0
+   ici 
+   europe LalBrew BRY-97 | LalBrew Farmhouse™ Yeast | LalBrew LoNa™ Yeast (500 g)
+
+COMBO ale · 18–20 couvre · ≥10 % 211 ici 5 · europe 28 · rare 178
+   ici SafAle US-05 (Fermentis) | LalBrew Pomona | LalBrew Verdant IPA | 1007 German Ale | 1084 Irish Ale
+   europe LalBrew Abbaye™ Belgian Style  | LalBrew BRY-97 | LalBrew Nottingham | LalBrew Windsor™ Yeast | LalBrew Wit™ Yeast | LalBrew Munich Classic | SafAle™ BE‑134 | SafAle™ BE‑256 | SafAle™ K‑97 | SafAle™ S‑33 | SafAle™ T‑58 | SafAle™ WB‑06
+
+COMBO ale · floc haute · ≥10 % 114 ici 0 · europe 8 · rare 106
+   ici 
+   europe LalBrew BRY-97 | LalBrew Nottingham | SafAle™ BE‑256 | Sourvisiae Yeast 10g Sachet | Sourvisiae Lactic-Producing Ye | M44 US West Coast Yeast - 10g | M42 New World Strong Ale Yeast | M66 Hophead Ale Yeast - 10g
+
+sta1 neg 437 pos 115 nd 787
+20 labos bière
+ici [
+  'fermentis-us05',
+  'lalbrew-novalager',
+  'lalbrew-pomona',
+  'lalbrew-verdant-ipa',
+  'wyeast-1007',
+  'wyeast-1084'
+] europe 412 rare 921
+
+COMBO ale · 18–20 · sans STA1 déclarée 120 ici 0 · europe 1 · rare 119
+   ici 
+   europe LalBrew BRY-97
+
+COMBO ale · 18–20 · STA1 non documentée 143 ici 5 · europe 51 · rare 87
+   ici SafAle US-05 (Fermentis) | LalBrew Pomona | LalBrew Verdant IPA | 1007 German Ale | 1084 Irish Ale
+   europe Fermentis SafAle W-68 | LalBrew Abbaye™ Belgian Style  | LalBrew New England™ Yeast | LalBrew Nottingham | LalBrew Windsor™ Yeast | LalBrew Wit™ Yeast | LalBrew Munich Classic | Brewferm dried brewing yeast T | Brewferm dried brewing yeast B | SafAle™ BE‑134 | SafAle™ BE‑256 | SafAle™ BW‑20
+
+COMBO ale · 18–20 · STA1 positive 23 ici 0 · europe 2 · rare 21
+   ici 
+   europe M41 Belgian Ale Yeast - 10g | M31 Belgian Tripel Yeast - 10g
+
+COMBO ale · 18–20 286 ici 5 · europe 54 · rare 227
+   ici SafAle US-05 (Fermentis) | LalBrew Pomona | LalBrew Verdant IPA | 1007 German Ale | 1084 Irish Ale
+   europe Fermentis SafAle W-68 | LalBrew Abbaye™ Belgian Style  | LalBrew BRY-97 | LalBrew New England™ Yeast | LalBrew Nottingham | LalBrew Windsor™ Yeast | LalBrew Wit™ Yeast | LalBrew Munich Classic | Brewferm dried brewing yeast T | Brewferm dried brewing yeast B | SafAle™ BE‑134 | SafAle™ BE‑256
+
+COMBO ale 912 ici 5 · europe 362 · rare 545
+   ici SafAle US-05 (Fermentis) | LalBrew Pomona | LalBrew Verdant IPA | 1007 German Ale | 1084 Irish Ale
+   europe Fermentis SafAle W-68 | LalBrew Abbaye™ Belgian Style  | LalBrew Belle Saison™ Belgian  | LalBrew BRY-97 | LalBrew CBC-1™ Yeast | LalBrew Farmhouse™ Yeast | LalBrew® House Ale [HB] | LalBrew LoNa™ Yeast (500 g) | LalBrew New England™ Yeast | LalBrew Nottingham | LalBrew Windsor™ Yeast | LalBrew Wit™ Yeast
+{ ale: 912, lager: 187, kveik: 52, brett: 132, bact: 56 }
