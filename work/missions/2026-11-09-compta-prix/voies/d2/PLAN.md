@@ -115,3 +115,28 @@ Arithmétique vérifiée à la main : 22,42 + 8 + 3 + 24 + 6,84 = 64,26 ; 8 + 3 
 
 ## 8. Hors périmètre
 Écran Prévisions et son libellé ; branchement `FinancesTab`/`assistantContext` (Q1) ; stockage des réglages de délais ; ventes attendues et meilleur mois du frigo (B4) ; impôt d'un brassin conditionné (assiette = litres sortis, v3a) ; signalement des doublons de numéros (REVUE-B R4, uv) ; saisie durée/catégorie dans `UpgradeSheet` (d3 liste) ; `BrewBudgetDialog.tsx` et le geste « fige » (uc) ; troisième copie du °Plato (d1) ; aucun appel Gemini, aucun commit, aucun `git stash`, aucun IBAN.
+
+## 9. Étape 2 : sort de chaque constat des revues P2 (A = métier, B = code)
+Écarts au plan d'origine : décision 10 (factures `batchId`) retirée ; items à 0 émis seulement s'ils sont « partiels » ; test 17 remplacé (voir D2-6 B) ; la découpe en quatre sorties est inchangée.
+| Constat | Sort | Raison / preuve |
+|---|---|---|
+| A D2-1 (B) `og`, alcool, réduction | **retenu, corrigé** | `og = batch.og` sinon `recipeSnapshot.ogTarget` (dit « estimé » dans l'origine de la ligne), `abv = batch.abv`, réduction en entrée (`reductionImpot: { pct, annee }`, seulement si `annee` = année du brassage, même règle que c3a). Tests : fixture = 64,26 ; 33,42 / 30,84 ; exonéré 0,4 % vol. ; réduction 5,47 (20 %) / plein une autre année |
+| A D2-2 / B D2-3 : litres nets | **retenu, corrigé** | net = conditionné réel > net d'un instantané `netVolumeSource === 'saisi'` ; sinon aucune densité passée : item impôt partiel `impôt (litres nets)`, jamais 7,59 ni 7,60. Tests : sans instantané, instantané ancien refusé, 26,6 L donne 6,74 |
+| A D2-3 usure registre vide | **retenu, corrigé** | aucun actif ni projet, ou registre non fourni, ou durée inconnue : `annualDepreciationCHF` absent, coût du litre `null`. Quatre tests |
+| A D2-4 impôt du conditionné | **retenu autrement** | pas d'item (aucun suivi de paiement par brassin : un item resterait à vie) ; un avertissement nomme le brassin et l'échéance estimée tant qu'elle n'est pas passée. **À décider par le pilote** (voir RESULTAT) |
+| A D2-5 / B D2-2 : deux découpes | **retenu** | `fraisParPoste` n'existe pas sur HEAD (voie uc en cours) : test de croisement, somme des items = `cashRequiredTTC` de l'instantané, sur 5 cas (base, assujetti TVA, énergie incluse dans le récurrent, impôt saisi inclus, emballage désactivé). À rejouer quand uc livre `fraisParPoste` |
+| A D2-6 plans de brassins conditionnés/terminés | **retenu** | sautés comme les annulés (`remplaces`). Tests annulé, terminé, conditionné |
+| A D2-7 / B D2-5 écrivains de `finance.batchId` | **retenu** | grep `src/` : aucun écrivain (lecture seule). Règle « facture rattachée » supprimée du plan et du code : hors périmètre |
+| A D2-8 dates | **retenu** | impôt = fin du trimestre du conditionnement, puis + 30 j ; brassin commencé : jour réellement brassé (`batchDisplayDate`, `brewDate`) ; « date estimée » dans le libellé de l'emballage et de l'impôt |
+| A D2-9 / T1 Q1 à Q5 | **défauts prudents** | Q1 non branché ; Q2 partiel honnête ; Q3 caduc ; Q4 brassins commencés inclus (emballage + impôt) ; Q5 trimestre, paramètre |
+| B P-1 branchement | **signalé** | `FinancesTab`/`assistantContext`/`financeDemo` hors Possède : domaine livré, non branché (L11), voir RESULTAT |
+| B P-2 `brewBudget.ts` à uc | **sans effet** | d2 ne modifie pas `brewBudget.ts` ; `brewBudget.test.ts` passe avec la version de uc présente dans le worktree (`tests-appelants.txt`) |
+| B D2-1 pureté | **retenu** | `now = asOf à midi UTC` ; `id`/`createdAt` de l'instantané jamais exposés ; test « deux appels identiques, entrées intactes » |
+| B D2-4 prêt à coder | **retenu** | ids `brew:<batchId>:achats\|frais\|emballage\|impot` ; `category: 'brassage'` ; pas de `planId`, `batchId` porté ; dates par `brewBudgetDateKey(batchDisplayDate(b))` ; `recipeForBatch` copiée avec ses deux branches ; item à 0 non émis sauf partiel ; un seul nom `origin` |
+| B D2-6 performance | **retenu, mesuré** | 10 brassins, 2 000 factures, 150 articles, à froid : 437 ms avant optimisation. Optimisation exacte : seules les pièces portant une ligne d'un article du brassin sont passées à `estimateBrewBudget` (index par article, ordre d'origine gardé ; test d'équivalence avec le grand livre entier). Après : 11,6 ms (60 factures des articles du brassin), 54 ms (300 : cas lourd). Seuil 20 ms tenu sur le cas réaliste ; le cas lourd a une garde de 250 ms |
+| B D2-7 code mort | **retenu** | dit : `BrassinPrevu.coutLitre`, `ignorerPlanId` sans consommateur (domaine livré, non branché) |
+| B D2-8 id pour `onOpenForecast` | **retenu** | les items dérivés portent `batchId` et l'id `brew:<batchId>:…` ; uc reçoit l'id du brassin |
+| B D2-9 date du brassage | **retenu** | la date du brassin fait foi ; la date écrite dans un plan « Prévoir » n'est plus lue pour un brassin dérivé |
+| B D2-10 importeurs de `forecast.ts` | **noté** | `purchaseEntry.ts:11`, `ExpenseSheet.tsx:22`, `TransactionDetails.tsx:12` importent `planOccurrences` : `forecast.ts` tire désormais `brewForecast` → `brewBudget` dans leurs chemins ; signatures inchangées, tests verts. Le paquet serveur (`scripts/build-brewer-tools.mjs`) bundle `assistantContext.ts` : à vérifier au build du poste principal |
+| B D2-11 virgule | **retenu** | aucun montant dans les avertissements ; `controle-virgule` : aucune ligne de mes fichiers |
+| B D2-12 brassin en garde depuis longtemps | **noté** | emballage et impôt ramenés à `asOf` tant que le brassin n'est pas conditionné : bruit assumé, dit dans RESULTAT |

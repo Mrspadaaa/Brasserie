@@ -13,7 +13,7 @@ import {
 import { Client, ClientStatus, Batch, PricingItem, AppConfig } from '../../types';
 import { StorageService } from '../../services/storage';
 import { BrewingMath } from '../../services/brewingMath';
-import { BEER_TAX_SOURCE } from '../../domain/finance/swissBeerTax';
+import { BEER_TAX_SOURCE, BAREME_IMPOT_BIERE } from '../../domain/finance/swissBeerTax';
 import { ClientStatsService } from '../../services/clientStats';
 import { lireTelephone } from '../../services/clientPhone';
 import { montantChf } from '../../domain/finance/ledger';
@@ -26,6 +26,13 @@ import { SegmentedControl } from '../../ui/SegmentedControl';
 import { inputClass } from '../../ui/FormNav';
 import '../../ui/clients.css';
 import { nombreFr } from '../../domain/nombreAffiche';
+/** La phrase du barème, dérivée de `BAREME_IMPOT_BIERE` (une seule source) : bornes basses à 0,1 °P au-dessus de la borne précédente. */
+const PHRASE_BAREME = 'Barème par hectolitre : ' + BAREME_IMPOT_BIERE.map((tranche, i) => {
+  const taux = `${montantChf(tranche.chfParHl)} CHF`;
+  const debut = i === 0 ? null : nombreFr(BAREME_IMPOT_BIERE[i - 1].jusquaPlato + 0.1, 1);
+  return debut === null ? `${taux} jusqu’à ${nombreFr(tranche.jusquaPlato, 1)} °P`
+    : Number.isFinite(tranche.jusquaPlato) ? `${taux} de ${debut} à ${nombreFr(tranche.jusquaPlato, 1)} °P` : `${taux} dès ${debut} °P`;
+}).join(' ; ') + '.';
 const InvoiceSheet = React.lazy(() => import('../../ui/finance/InvoiceSheet').then(m => ({ default: m.InvoiceSheet })));
 
 const amountFormat = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -299,7 +306,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
           <details className="clients-help">
             <summary>Comprendre le calcul et les démarches<ChevronDown size={14} aria-hidden="true" /></summary>
             <div className="clients-tax-help-body">
-              <p>Barème par hectolitre : 16,88 CHF jusqu’à 10 °P ; 25,32 CHF de 10,1 à 14 °P ; 33,76 CHF dès 14,1 °P.</p>
+              <p>{PHRASE_BAREME}</p>
               <p>Le taux annuel de réduction est communiqué par l’OFDF. Il ne se déduit pas du seul volume de cette période.</p>
               <p>Selon le régime attribué : déclaration sous 20 jours et paiement sous 30 jours après la fin du trimestre ou de l’année, via Taxas.</p>
               <p>TVA de la bière alcoolisée : {config.fiscal.isTvaRegistered ? 'taux normal de 8,1 %.' : 'brasserie non assujettie, aucune TVA facturée.'}</p>

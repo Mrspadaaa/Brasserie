@@ -33,6 +33,7 @@ import { formatLitres } from '../domain/recipeMetrics';
 import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
+import { ImpotBiereSheet } from './production/ImpotBiereSheet';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -65,6 +66,19 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [brewDayError, setBrewDayError] = useState('');
   const [section, setSection] = useState<BatchDetailSection>(initialSection);
   const [noloNotice,setNoloNotice]=useState('');
+  /** Feuille « Impôt bière » ; `focusOg` : « Noter la densité » y a ouvert Mesures, le focus se pose sur la densité initiale une fois la feuille fermée. */
+  const [impotOpen, setImpotOpen] = useState(false);
+  const [focusOg, setFocusOg] = useState(false);
+  useEffect(() => {
+    if (!focusOg || impotOpen || section !== 'measurements') return;
+    const timer = window.setTimeout(() => {
+      const champ = document.querySelector<HTMLInputElement>('input[name="batch_sheet_og"]');
+      champ?.focus();
+      champ?.scrollIntoView?.({ block: 'center' });
+      setFocusOg(false);
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [focusOg, impotOpen, section]);
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
@@ -247,6 +261,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           {section === 'overview' && (
             <>
               <BrewBudgetButton batch={draft} />
+              <button type="button" className="min-h-touch rounded-control border border-cave-700 px-2.5 py-0 my-1 text-sm leading-tight text-ebc-straw font-semibold text-left" onClick={() => setImpotOpen(true)}>Impôt bière ›</button>
+              {impotOpen && <ImpotBiereSheet batch={draft} onClose={() => setImpotOpen(false)} onNoteDensity={() => { setImpotOpen(false); setSection('measurements'); setFocusOg(true); }} />}
               <section className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>

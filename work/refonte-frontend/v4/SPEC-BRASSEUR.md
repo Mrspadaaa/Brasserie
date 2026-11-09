@@ -1642,3 +1642,13 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « La caisse complète / v3a / Choix définitif »
   « Par catégorie / v4c / C j'aime bien mais plus de détails et plus compact, pas assez d'info sur les opérateurs directement, sans les déroulement, ouvrir »
   (lu : c3a (coût) et v3a (facture) choisis, définitifs. Métier : un brassin planifié crée seul sa prévision de coût (et la met à jour) ; un achat de matériel prévu (ex. frigo 3 000 CHF) se mesure — trésorerie au mois d'achat, usure par an, part dans le coût du litre, quand il est remboursé — et s'affiche. Passe 3 : Synthèse entre g3a et g3c, en mieux ; Annuel = g4a, avec les écrans de clôture dessinés ; Prix = c4a, c4e greffé ; Prévisions refaites avec ces deux cas, au-delà du seul graphe ; rangement autour de e1b ; Opérations = v4c plus compact et plus détaillé, l'info des opérations visible sans rien déplier (« opérateurs » lu « opérations »).)
+- **09.11**, mot pour mot, sur la passe 3 compta et prix (https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe) :
+  « Ta base / g3a et g3c / passe 2 / Non la meilleure on garde celle ci »
+  « L'année, et la clôture / g6 »
+  « Par bouteille ou par an / c5b / Une bascule sur le chiffre de tête. / La meilleure de loin mais fait quelques variantes en plus de ce type / Avec c5a »
+  « Le frigo en marche / p4a / Mieux mais on perds l'info directement sur le graph, fait quelques variantes »
+  « Ta base / Depuis le brassin / e1b / Était mieux, améliore le encore »
+  « Chaque ligne dit tout / v5a / Qui, quoi, état, échéance, pièce. / Beaucoup mieux mais plus compact les lignes, mais quasiment parfait »
+  (lu : Synthèse = g3a (la base de la rangée, « celle ci »), choisi. Annuel = g6 (g4a et ses 9 écrans de clôture), cité sans réserve : choisi. Passe 4 : Prix, variantes du type c5b avec c5a ; Prévisions, variantes de p4a qui gardent l'info sur le graphe ; rangement, e1b amélioré ; Opérations, v5a aux lignes plus compactes.)
+- **09.11**, mot pour mot, complément sur p4a : « Le frigo en marche / p4a / Mieux mais on perds l'info directement sur le graph, fait quelques variantes  et ça reste dure à lire... Fait plus de variante de cette vues »
+  (lu : Prévisions passe 4 portée à 6 variantes (p5a–p5f), la lisibilité d'abord : l'info posée sur le graphe, lue en 3 s.)

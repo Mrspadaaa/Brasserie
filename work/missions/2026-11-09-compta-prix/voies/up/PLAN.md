@@ -151,3 +151,21 @@ Rejeu après code : les mêmes 30 fichiers + les 3 neufs, dans `voies/up/tests.t
 - **D5** Le geste « Noter la densité » passe par le champ « Densité initiale » de la fiche (garde-fous et alcool recalculé) au lieu d'un champ dans la feuille d'impôt : un écran de plus dans le parcours (fermer, saisir, rouvrir). Recommandé : oui.
 
 Limites : rien rendu dans Chrome à ce stade ; `ModalShell`/vaul (focus en cascade de deux feuilles) lu en surface seulement ; `controle-choix.mjs` lu par son emplacement (`work/refonte-frontend/v4/tournoi/outils/`), pas rejoué ; thème clair/cave : correspondance exacte des jetons à fixer à l'écriture du CSS.
+
+## 9. Étape 2 : sort de chaque constat des revues P2 (A et B), 09.11
+
+| Constat | Sort | Raison / ce qui a été fait |
+|---|---|---|
+| UP-1 (A) ligne « Réduction › » devenue pli | **retenu, écart annoncé** | la ligne garde le gabarit titre + sous-titre d'état (2 lignes) ; le chevron est `⌄` parce qu'elle se déplie. Réglages n'est pas ouvrable sans toucher `App.tsx`. Écart à montrer au critique et au pilote. |
+| UP-2 (A) D4 : départ du curseur | **retenu (D4 oui)** | sans densité notée, le curseur part de l'OG visée de la recette (`recipeSnapshot.ogTarget`), étiquette « visée recette », hachures gardées ; 12 °P « exemple » seulement sans OG ni OG visée. Même source que c3a (UC-6). Test 16b. Aucune décision du pilote n'existait : défaut recommandé par la revue, réversible (une ligne). |
+| UP-3 (A) « aucune sortie notée » rouge sur un brassin vendu | **retenu** | brassin `conditionne` ou `termine` : teinte neutre et « aucune sortie rattachée à ce brassin » ; sinon la maquette telle quelle. Test 12b. |
+| UP-4 (A) « Noter la densité » sort de la feuille | **retenu (D5)** | parcours joué dans Chrome à 390 px (voir RESULTAT) : feuille fermée, Mesures ouverte, focus sur `batch_sheet_og`. Test 17 + 17b (saisie par `saveGravity`, alcool recalculé). |
+| UP-5 (A) et UP-4 (B) numéros de ligne | **écarté** | sans conséquence : le champ est cherché par son nom `batch_sheet_og`. |
+| UP-6 (A) année de « Sur l'année » | **retenu** | l'année du brassin est dans la sous-ligne (« estimé · exemple · 2026 ») et dans la ligne Réduction ; réduction et net identiques à ceux du brassin (test 8). |
+| UP-1 (B) barème « une seule fois » faux à moitié | **retenu, borné** | le défaut 14 est borné à Clients et à la feuille. Restent `SettingsModal.tsx:234` (texte « 16,88 / 25,32 / 33,76 ») et `storage.ts:245-247` (défaut 25,32) : **à passer à uv par écrit** (SettingsModal) ; `storage.ts` hors voie. |
+| UP-2 (B) même règle des litres que uc/d2 | **retenu** | up lit le net d'un instantané seulement si `netVolumeSource === 'saisi'` (test 7, trois cas : saisi, volume à brasser, ancien sans source). Le helper commun n'existe pas : règle recopiée ici (5 lignes, `netEnregistre`). À mutualiser par le pilote (LEÇON PROPOSÉE de la revue B). |
+| UP-3 (B) année de la réduction via `isoDate` | **retenu** | `anneeDuBrassin` passe par `isoDate` ; test 8b (date prévue `12.03.2031`). Règle de la réduction (0-40, année égale) : parité avec `estimateSwissBeerTax` testée par 8 (valeurs 20 et 55). |
+| UP-5 (B) focus | **retenu** | vérifié dans Chrome (RESULTAT) et en jsdom (test 17). |
+| UP-6 (B) chemin « Réglages › Réserve impôt sur la bière » | acquis | existe. |
+| UP-7 (B) `inventaire-ecrans.mjs` | **non fait, hors Possède** | une ligne « feuille Impôt bière » à donner par le pilote (P-1). |
+| Trouvé en codant | **à signaler** | `batch.abv` s'écrit « 5% » sur la fiche (`saveGravity`), et `beerTaxForVolume` (d1) lit un nombre : « 0.4% » donne NaN, l'exonération sans alcool ne s'y déclenche jamais, et `estimateSwissBeerTax` (Clients, Annuel) a le même défaut. La feuille retire le « % » elle-même (test 9) ; **le correctif de fond est dans `swissBeerTax.ts`, hors Possède**. |

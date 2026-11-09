@@ -1,8 +1,16 @@
-import type { FinanceTransaction, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
+import type { Batch, StockItem } from '../../types';
+import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
+import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast } from './brewForecast';
 import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
 import { isUpgradePlan, upgradeReadiness } from './upgrades';
 
-export interface ForecastItem { id: string; date: string; label: string; amountCents: number; direction: 'in' | 'out'; source: 'invoice' | 'plan' | 'recurring' | 'brew' | 'trend' | 'equipment'; category: string; planId?: string; occurrenceId?: string }
+export interface ForecastItem { id: string; date: string; label: string; amountCents: number; direction: 'in' | 'out'; source: 'invoice' | 'plan' | 'recurring' | 'brew' | 'trend' | 'equipment'; category: string; planId?: string; occurrenceId?: string;
+  /** Sortie dérivée d'un brassin (d2) : identifiant du brassin, pour ouvrir sa ligne. */
+  batchId?: string;
+  /** Ce qui manque pour que le montant soit entier ; le montant affiché est le connu. */
+  partial?: string[];
+  /** D'où vient chaque montant (prix de facture, réglage, densité…). */
+  lines?: Array<{ label: string; amountCents: number; origin: string }> }
 export interface ForecastMonth { month: string; incomeCents: number; expenseCents: number; committedCents: number; projectedCents: number; balanceCents: number | null; items: ForecastItem[] }
 /** Pièce à payer ou à encaisser dont l'échéance manque : jamais placée dans un mois, comptée à part (aucune date inventée). */
 export interface UndatedForecastItem { id: string; label: string; amountCents: number; direction: 'in' | 'out'; category: string; pieceDate: string | null; planId?: string; occurrenceId?: string; unconfirmed?: boolean }
@@ -55,7 +63,9 @@ export function isResidualExpense(tx: FinanceTransaction): boolean {
   return isActiveTransaction(tx) && transactionKind(tx) === 'expense' && !tx.finance?.planId && !tx.finance?.batchId && !tx.finance?.excludedFromTrend
     && !['materiel', 'renovation'].includes(tx.category) && !tx.finance?.lines.some(l => l.kind === 'equipment');
 }
-export function buildForecast(input: { transactions: FinanceTransaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; asOf?: string; months?: number; includeEquipmentProjects?: boolean }): FinanceForecast {
+export function buildForecast(input: { transactions: FinanceTransaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; asOf?: string; months?: number; includeEquipmentProjects?: boolean;
+  /** Brassins et stock : avec eux, les brassins planifiés ajoutent leurs sorties DÉRIVÉES (jamais écrites) et remplacent leurs plans « Prévoir ». Sans eux : comportement inchangé. */
+  batches?: Batch[]; stockItems?: StockItem[]; assets?: FinancialAsset[]; brewReglages?: Partial<ReglagesBrewForecast>; brewTaxReduction?: { pct?: number; annee?: number }; ignoreUpgradePlanId?: string }): FinanceForecast {
   const { transactions, payments, plans, profile } = input, asOf = isoDate(input.asOf) ?? todayISO();
   const count = Math.min(24, Math.max(1, input.months ?? 12)), currentMonth = monthKey(asOf);
   const monthKeys = Array.from({ length: count }, (_, i) => shiftMonth(currentMonth, i));
@@ -85,8 +95,12 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
     }
     if (date <= end) items.push({ id: `invoice:${tx.id}`, date, label: state.state === 'unknown' ? `${tx.description} · paiement à confirmer` : tx.description, amountCents: state.remainingCents, direction: transactionDirection(tx, transactions), source: 'invoice', category: tx.category, planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId });
   }
+  const derived = input.batches ? estimerBrassinsPlanifies({ batches: input.batches, stockItems: input.stockItems ?? [], transactions, plans, profile, assets: input.assets, asOf, fin: end, reglages: input.brewReglages, reductionImpot: input.brewTaxReduction, ignorerPlanId: input.ignoreUpgradePlanId }) : undefined;
+  if (derived) { items.push(...derived.items); warnings.push(...derived.warnings); }
   for (const plan of plans) {
     if (plan.status !== 'active') continue;
+    // Le brassin porte ses sorties dérivées (ou n'en a plus : annulé, conditionné, terminé) : son plan « Prévoir » reste lisible, jamais compté.
+    if (derived && plan.source === 'brew') { const batchId = planBrewBatchId(plan); if (batchId && derived.remplaces.has(batchId)) continue; }
     if (isUpgradePlan(plan) && input.includeEquipmentProjects === false) continue;
     if (isUpgradePlan(plan) && upgradeReadiness(plan).length) { warnings.push(`Projet à compléter : ${plan.title}.`); continue; }
     if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents < 0 || !isoDate(plan.date)) { warnings.push(`Prévision invalide : ${plan.title}.`); continue; }

@@ -128,3 +128,25 @@ Rouge d'abord : `npx vitest run <ces 2 fichiers> --reporter=dot > voies/uc/tests
 5. **Mot « exemple » → « estimé »** pour les pointillés (§ 2, ligne 7) : écart voulu avec la maquette, qui parle de chiffres d'exemple ; je préviens le critique.
 6. **Page ou feuille** : la maquette est un écran-page (fil d'Ariane, barre du bas). Le port reste une feuille (PLAN-METIER § 3.2, 4 ouvertures). Si le brasseur veut la page `Brassins › …` de c1c, c'est un autre chantier (route neuve).
 7. **Possède** : ajouter `tests/unit/coutBrassinFlux.test.ts` (neuf) pour les fonctions pures du § 3.1 (somme des flux, plus grand reste, groupes d'ingrédients) ; sinon elles seront testées dans `brewBudgetSheet.test.tsx` seul.
+   Réponses du pilote (`DECISIONS-PHASE2.md`) : 1 à 7 acceptées telles que recommandées.
+
+## 9. Constats des revues P2 (étape 2) : retenu ou écarté
+| Constat | Sort | Raison / ce qui est fait |
+|---|---|---|
+| REVUE-B UC-1 (bloquant), REVUE-A UC-1 : le net 30 L revient à la réouverture | **retenu, corrigé** | `netVolumeSaisi(snapshot)` dans `brewBudget.ts` : le net n'est lu que si `netVolumeSource === 'saisi'` ; un instantané ancien ou sans net saisi rouvre à « ? L nets » / « — ». Helper unique, exporté pour p2b et la prévision. Tests : `brewBudget.test.ts` (helper), `brewBudgetSheet.test.tsx` (« rouvre à — », « enregistrer sans net, rouvrir », instantané d'avant d1) |
+| REVUE-B UC-2 : état des boutons quand le net est inconnu | **retenu** | net vide = inconnu : Enregistrer permis (instantané `volume-a-brasser`, jamais relu comme net), Prévoir grisé ; net ≤ 0 saisi : les deux grisés. Tests dédiés |
+| REVUE-B UC-3 : impôt sur 30 L sans net | **retenu** | sans net saisi, `og` n'est pas passé : l'impôt est « ? », jamais calculé sur le volume à brasser. Test « sans net, l'impôt n'est pas calculé » |
+| REVUE-B UC-4 : importateurs à rejouer | **retenu** | 23 fichiers rejoués : les 17 de HEAD + `chaineLitre`, `brewStockConsumption`, `contreCalculUnites`, `materielFutur`, `swissBeerTax`, `brewBudget`, `coutBrassinFlux` : `Test Files 23 passed (23)`, `Tests 354 passed (354)` |
+| REVUE-B UC-5 : `fraisParPoste` dans les instantanés | **retenu** | valeurs `null` (jamais `undefined`) ; aucun `toEqual` d'instantané existant cassé (les 23 fichiers verts) ; champ additif facultatif |
+| REVUE-B UC-6 / D2-8 / D2-9 : id donné à `onOpenForecast`, date du brassage | **retenu en partie** | `onOpenForecast({ planId, batchId })` : `batchId` fait foi pour la ligne dérivée de d2 ; le plan écrit garde l'id `BUDGET-…`. La date du scénario reste celle de la feuille (modifiable, visible dans Volumes) ; la règle « la date du brassin fait foi » est à écrire côté d2 au branchement |
+| REVUE-B UC-7 / REVUE-A : règle de la réduction copiée trois fois | **retenu** | `reductionImpotPourAnnee(fiscal, date)` dans `brewBudget.ts` (0 à 40 %, année du brassin, date suisse ou ISO) + test de parité avec `estimateSwissBeerTax`. À reprendre par up et d2 |
+| REVUE-B UC-8 : signature de la prop d'usure | **retenu** | `depreciationForBudgetYear(année)` devient `usureForBudgetDate(AAAA-MM-JJ)` (mois de référence de `usureAnnuelleLitre`) |
+| REVUE-B UC-9 | **vérifié** | liste des tests à adapter complète ; adaptés |
+| REVUE-A UC-2 : « 33 cl » sans source | **retenu** | aucun champ du format ; le nœud s'appelle « Emballage », le bloc dit « emballage compris · estimé » (jamais « 33 cl »). Écart avec la maquette, à valider par le critique |
+| REVUE-A UC-3 : registre vide = usure 0 « complète » | **retenu** | sans actif ni projet : usure inconnue (« ? »), avertissement « Aucun matériel au registre : usure à renseigner. », Prévoir grisé. Test |
+| REVUE-A UC-4 : « ? » et Prévoir grisé | **retenu** | deux cas : houblon et levure absents de la recette → « ? » hors recette, litre 7,51, Prévoir actif (la maquette) ; houblon présent sans prix → « ? » à compléter, litre « — », Prévoir grisé. Tests des deux |
+| REVUE-A UC-5 : Prévoir sans effet visible | **accepté** | décision n° 2 du pilote : état de navigation écrit, `onOpenForecast` exposé, branchement avec l'écran Prévisions |
+| REVUE-A UC-6 : nœud Impôt face à la feuille de up | **accepté, à coordonner** | le nœud montre le calcul et dit « OG visée (estimé) » ; le lien vers `ImpotBiereSheet` viendra quand up est branché ; les deux lisent le même `beerTaxForVolume` et le même net |
+| REVUE-A UC-7 : égalité du plus grand reste | **retenu** | départage par l'ordre payé, à payer, année ; test 1,005 / 2,495 / 4,010 et son miroir |
+| REVUE-A UC-8 : « avant le brassage » et assujetti | **retenu en partie** | libellé gardé (décision n° 3) ; test assujetti : 2 temps = `cashRequiredTTC` (`brewBudget.test.ts`) ; le nœud À payer dit « (HT) » |
+| REVUE-A UC-9 : contraste cave | **vérifié sur capture** | teintes éclaircies en cave (impôt, année, stock, usure) ; Malt garde la teinte de la maquette, pas l'échelle EBC |

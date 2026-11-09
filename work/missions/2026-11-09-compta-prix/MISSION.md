@@ -42,3 +42,11 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte dans DEFAUTS-RECUR
 - `INVENTAIRE-CODE.md`, `BRIEF-AUTEUR.md`, `work/missions/BUGS.md`, PRODUCT.md, DESIGN.md
 
 e2c écartée : impôt de l'année faux (303,84), critique SYNTHESE-P3.
+
+## État de reprise (09.11, soir)
+- **Choisis** (ecrans-app.json) : p2b impôt, c3a coût du litre, v3a facture, g3a Synthèse, g6 Annuel + clôture.
+- **Commits** : 4c1d0543 (v0), 55a1a976 (passe 2), 480f8d3e (phase 1 du port : chaîne litre, matériel futur, QR-facture), 2b6577f7 (passe 3). Rien poussé.
+- **Port phase 2, non commitée** : d2 fini (brewForecast.ts, 44 tests) ; uc fini (c3a porté, 112 tests, captures dans voies/uc/captures, « Prévoir » non branché à Prévisions) ; up en cours (p2b). À faire : rejouer tests d2+uc+up, `tsc`, git status contre Possède, test d'écran du critique (390 tactile, 1280, deux thèmes) sur uc et up, commit. Décision ouverte : up et d2 reprennent `netVolumeSaisi` et `reductionImpotPourAnnee` de brewBudget.ts (même litre, même réduction).
+- **Passe 4 maquettes, en cours** : voie c (c6a–d Prix type c5b+c5a, e3a–c rangement autour de e1b), voie p Fable (p5a–f Prévisions, lisibilité), v fini (v6a–b Opérations compactes). Puis critique, page publiée (artefact neuf), MISSION § Pages.
+- **Fable 5.2** : brief prêt `BRIEF-FABLE52.md` (p5g–p5l dans p4/f52/), à lancer par le brasseur depuis l'app de bureau ; comparer les deux séries dans la page passe 4.
+- **Ensuite** : port de v3a (voie uv, phase 3 de PLAN-METIER § 3.5), puis g3a, g6, et les écrans choisis en passe 4.

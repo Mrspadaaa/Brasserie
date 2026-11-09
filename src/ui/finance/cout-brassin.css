@@ -1,0 +1,81 @@
+/* c3a — coût d'un brassin et d'un litre (maquette choisie, 09.11). Classes préfixées `cbf-` (L26). Teintes de catégorie de la maquette ;
+   fond, texte et bords par les jetons de l'app (clair et cave). La couleur « Malt » est celle de la maquette, pas l'échelle EBC. */
+.cbf, .cbf-act {
+  --cbf-malt: #D2B356; --cbf-ener: #D27B56; --cbf-net: #56C1D2; --cbf-emb: #9A8A7E; --cbf-imp: #1F64A3; --cbf-fix: #9856D2; --cbf-mat: #567BD2; --cbf-hop: #7FA35B;
+  --cbf-stock: #5E8C3A; --cbf-an: #9856D2;
+  --cbf-now: rgb(var(--cave-50));
+  --cbf-fond: rgb(var(--cave-950));
+  --cbf-trait: rgb(var(--cave-400));
+  --cbf-t0: rgb(var(--cave-50)); --cbf-t1: rgb(var(--cave-200)); --cbf-t2: rgb(var(--cave-400));
+  --cbf-panneau: rgb(var(--cave-900)); --cbf-bord: rgb(var(--cave-700));
+  --cbf-sur-ink: rgb(var(--cave-950));
+  --cbf-att: #7F5B10;
+}
+.cbf { max-width: 390px; margin: 0 auto; padding: 0 0 8px; color: var(--cbf-t1); font-size: 14px; line-height: 1.3; }
+[data-theme='cave'] .cbf, [data-theme='cave'] .cbf-act {
+  --cbf-imp: #5B9BD5; --cbf-fix: #B98AE8; --cbf-an: #B98AE8; --cbf-mat: #86A5EC; --cbf-stock: #8FBF6A; --cbf-hop: #9CC27A; --cbf-emb: #B3A397;
+  --cbf-att: #F2C14E;
+}
+.cbf-m { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.cbf button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+.cbf button:focus-visible { outline: 2px solid var(--cbf-t0); outline-offset: 2px; border-radius: 10px; }
+.cbf-fil { display: flex; justify-content: flex-end; padding: 0 0 6px; }
+.cbf-vol { font-size: 13px; color: var(--cbf-t0); background: var(--cbf-panneau); border: 1px solid var(--cbf-bord); border-radius: 10px; padding: 6px 10px; min-height: 32px; }
+.cbf-vol[data-inconnu] { color: var(--cbf-att); border: 1px dashed var(--cbf-att); }
+.cbf-cols { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--cbf-t2); text-transform: uppercase; letter-spacing: .06em; }
+.cbf-sk { position: relative; margin-top: 2px; }
+.cbf-sk svg.cbf-flux { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cbf-src { position: absolute; left: 0; width: 100px; min-height: 44px; display: flex; flex-direction: column; justify-content: center; border-radius: 10px; padding: 2px 4px 2px 0; }
+.cbf-src small { font-size: 13px; color: var(--cbf-t1); font-weight: 600; line-height: 1.1; display: flex; align-items: center; gap: 5px; }
+.cbf-src small i { width: 9px; height: 9px; border-radius: 10px; display: inline-block; flex-shrink: 0; }
+.cbf-src b { font-size: 17px; font-weight: 600; color: var(--cbf-t0); line-height: 1.25; }
+.cbf-src.cbf-pale { opacity: .35; }
+.cbf-dst { position: absolute; left: 64.1%; right: 0; gap: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--cbf-t1); transform: translateY(-50%); white-space: nowrap; min-height: 24px; }
+.cbf-dst b { font-weight: 500; color: var(--cbf-t0); font-size: 13px; }
+.cbf-dst.cbf-ex b { border-bottom: 1.5px dotted var(--cbf-t2); }
+.cbf-dst.cbf-q b { color: var(--cbf-att); font-weight: 600; }
+.cbf-dst.cbf-pale { opacity: .35; }
+.cbf-exl { position: absolute; right: 0; bottom: 0; font-size: 12px; color: var(--cbf-t2); }
+.cbf-exl span { border-bottom: 1.5px dotted var(--cbf-t2); }
+.cbf-res { margin: 8px 0 0; border-radius: 16px; background: var(--cbf-t0); color: var(--cbf-sur-ink); padding: 10px 12px 12px; }
+.cbf-row { display: flex; align-items: center; gap: 10px; }
+.cbf-div { font-size: 13px; opacity: .8; display: flex; flex-direction: column; line-height: 1.15; }
+.cbf-div b { font-size: 16px; opacity: 1; font-weight: 600; }
+.cbf-eq { font-size: 22px; opacity: .8; }
+.cbf-big { font-size: 32px; font-weight: 600; letter-spacing: -.02em; }
+.cbf-u { font-size: 13px; opacity: .85; display: flex; flex-direction: column; line-height: 1.15; }
+.cbf-u em { font-style: normal; color: #F2C14E; font-weight: 600; font-size: 12px; opacity: 1; }
+[data-theme='cave'] .cbf-u em { color: #8A5A00; }
+.cbf-res.cbf-now { background: #F2C14E; color: #111; }
+.cbf-res.cbf-now .cbf-u em { color: #3A2E0A; }
+.cbf-quand { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 13px; color: #3A2E0A; }
+.cbf-quand b { color: #111; font-weight: 600; margin-left: 4px; }
+.cbf-quand small { font-size: 12px; opacity: .85; }
+.cbf-note { margin-top: 4px; font-size: 12px; color: #3A2E0A; }
+.cbf-litw { margin: 14px 0 0; }
+.cbf-litt { font-size: 13px; font-weight: 600; color: var(--cbf-t1); margin-bottom: 6px; }
+.cbf-lit { display: flex; height: 22px; border-radius: 10px; overflow: hidden; gap: 2px; }
+.cbf-lit span { display: block; height: 100%; }
+.cbf-lit-vide { background: repeating-linear-gradient(45deg, var(--cbf-fond) 0 3px, var(--cbf-trait) 3px 5px); border: 1px solid var(--cbf-trait); }
+.cbf-litl { display: flex; margin-top: 5px; font-size: 13px; color: var(--cbf-t2); gap: 8px; }
+.cbf-litl span { white-space: nowrap; }
+.cbf-litl b { color: var(--cbf-t0); font-weight: 600; }
+.cbf-extra { margin-top: 12px; display: grid; gap: 8px; font-size: 13px; color: var(--cbf-t1); }
+.cbf-extra p { margin: 0; }
+.cbf-extra .brew-budget-section { gap: 6px; }
+.cbf-extra .brew-budget-section h3 { font-size: 14px; }
+.cbf-extra .brew-budget-hint { font-size: 13px; line-height: 1.4; }
+.cbf-statut { font-size: 13px; color: var(--cbf-att); }
+.cbf-enregistree { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--cbf-t2); }
+.cbf-enregistree b { color: var(--cbf-t0); font-weight: 600; }
+/* Pied de feuille : Expliquer (bleu clair), action principale noire (maquette). */
+.cbf-act { display: flex; gap: 8px; width: 100%; max-width: 390px; margin: 0 auto; }
+.cbf-pri, .cbf-sec, .cbf-ia { height: 44px; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; padding: 0 12px; }
+.cbf-pri { flex: 1; background: var(--cbf-t0); color: var(--cbf-sur-ink); }
+.cbf-pri:disabled { opacity: .4; cursor: not-allowed; }
+.cbf-sec { border: 1px solid var(--cbf-bord); color: var(--cbf-t0); }
+.cbf-sec:disabled { opacity: .4; cursor: not-allowed; }
+.cbf-ia { background: rgba(31, 100, 163, .12); color: #1F64A3; }
+[data-theme='cave'] .cbf-ia { background: rgba(91, 155, 213, .16); color: #8FBFEA; }
+.cbf-retour { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; font-size: 14px; color: var(--cbf-t1); margin-bottom: 8px; }
+.cbf-noeud { max-width: 760px; margin: 0 auto; }

@@ -102,6 +102,36 @@ export interface BrewBudgetSnapshot {
   beerTaxExonere?: boolean;
   /** 'saisi' : litres nets donnés. 'volume-a-brasser' : repli sur le volume de la recette, un estimé : `troisNotions` le déclare incomplet. */
   netVolumeSource?: 'saisi' | 'volume-a-brasser';
+  /**
+   * Frais du brassin par poste (uc, 09.11). `cout` : dans la base du coût (HT pour un assujetti) ; `cash` : ce qui sort de la caisse (TTC ; 0 si le poste est
+   * « déjà prévu dans les charges récurrentes »). `null` : inconnu, jamais 0. Poste désactivé : absent. Facultatif : un instantané ancien n'en a pas.
+   */
+  fraisParPoste?: Partial<Record<BrewCostKey, { cout: number | null; cash: number | null }>>;
+  /**
+   * Poche en deux temps (B1 b) : `avantBrassage` = ingrédients à acheter + énergie + nettoyage ; `plusTard` = emballage (au conditionnement) + impôt (après).
+   * Somme = `cashRequiredTTC` quand tout est connu. `null` : un poste est inconnu.
+   */
+  quandPaye?: { avantBrassage: number | null; plusTard: number | null };
+}
+
+/**
+ * Litres nets d'un instantané, un seul helper pour c3a, p2b et la prévision (revues P2, UC-1) : le net n'est lu que s'il a été saisi.
+ * Un instantané ancien (sans `netVolumeSource`) ou sans net saisi porte le volume à brasser par défaut : ce n'est pas un net → `null`.
+ */
+export function netVolumeSaisi(snapshot: Pick<BrewBudgetSnapshot, 'netVolumeL' | 'netVolumeSource'> | null | undefined): number | null {
+  if (!snapshot || snapshot.netVolumeSource !== 'saisi') return null;
+  return typeof snapshot.netVolumeL === 'number' && Number.isFinite(snapshot.netVolumeL) && snapshot.netVolumeL > 0 ? snapshot.netVolumeL : null;
+}
+
+/**
+ * Réduction petit brasseur d'une année : seulement confirmée (0 à 40 %) ET pour l'année réglée (même règle que `estimateSwissBeerTax`).
+ * Un seul export pour c3a, p2b et la prévision (UC-7). Rend `undefined` (taux plein, prudent) sinon.
+ */
+export function reductionImpotPourAnnee(fiscal: { beerTaxAnnualReductionPct?: number; beerTaxReductionYear?: number } | undefined, brewDate: string | undefined): number | undefined {
+  const year = Number((brewBudgetDateKey(brewDate ?? '') ?? '').slice(0, 4));
+  const pct = fiscal?.beerTaxAnnualReductionPct;
+  if (!year || typeof pct !== 'number' || !Number.isFinite(pct) || pct < 0 || pct > 40 || fiscal?.beerTaxReductionYear !== year) return undefined;
+  return pct;
 }
 export interface EstimateBrewBudgetInput {
   recipe: Recipe;
@@ -405,6 +435,7 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
   let operatingCashTTC = 0, operatingCost = 0;
   let packagingCost: number | null = 0, beerTaxCost: number | null = 0, beerTaxExonere = false;
   let beerTaxSource: BrewBudgetSnapshot['beerTaxSource'];
+  const fraisParPoste: NonNullable<BrewBudgetSnapshot['fraisParPoste']> = {};
   for (const key of Object.keys(BREW_COST_LABELS) as BrewCostKey[]) {
     const option = settings.costs?.[key];
     if (option?.enabled === false) continue;
@@ -415,9 +446,11 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
       const amount = money(calculated.montant);
       operatingCashTTC += amount; operatingCost += amount;
       beerTaxCost = amount; beerTaxSource = 'calcule'; beerTaxExonere = calculated.exonere;
+      fraisParPoste[key] = { cout: amount, cash: amount };
       continue;
     }
     if (!finite(option?.amountTTC)) {
+      fraisParPoste[key] = { cout: null, cash: null };
       issues.push(`${BREW_COST_LABELS[key]} : montant à estimer ou poste à désactiver`);
       if (key === 'packaging') packagingCost = null;
       if (key === 'beerTax') { beerTaxCost = null; beerTaxSource = 'inconnu'; }
@@ -427,6 +460,7 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
       if (isTvaRegistered && (!finite(rate) || rate > 1)) issues.push(`${BREW_COST_LABELS[key]} : TVA à confirmer`);
       const cost = option.amountTTC / (isTvaRegistered && finite(rate) && rate <= 1 ? 1 + rate : 1);
       operatingCost += cost;
+      fraisParPoste[key] = { cout: money(cost), cash: option.cashTreatment === 'included-in-recurring' ? 0 : option.amountTTC };
       if (key === 'packaging') packagingCost = money(cost);
       if (key === 'beerTax') { beerTaxCost = money(cost); beerTaxSource = 'manuel'; }
     }
@@ -448,6 +482,14 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
   const aPayer = (cents(totalCost) - cents(dejaPaye) - cents(annee)) / 100;
   const ambiguousCash = isTvaRegistered || lines.some(line => line.purchaseCost === null || (line.cashTreatment === 'included-in-recurring' && line.missing > 0));
   const resteEnStock = ambiguousCash ? null : Math.max(0, money(purchasesTTC - lines.reduce((sum, line) => sum + (line.purchaseCost ?? 0), 0)));
+  // Poche en deux temps, en centimes entiers. Un ingrédient sans prix d'achat ou un poste inconnu rend `null` : jamais un faux 0.
+  const sansInconnu = (keys: BrewCostKey[]) => keys.every(k => !fraisParPoste[k] || fraisParPoste[k]!.cash !== null);
+  const cashDe = (keys: BrewCostKey[]) => keys.reduce((sum, k) => sum + cents(fraisParPoste[k]?.cash ?? 0), 0);
+  const achatsConnus = lines.every(line => line.purchaseTTC !== null || line.purchaseQuantity === 0);
+  const quandPaye = {
+    avantBrassage: achatsConnus && sansInconnu(['energy', 'cleaning']) ? (cents(purchasesTTC) + cashDe(['energy', 'cleaning'])) / 100 : null,
+    plusTard: sansInconnu(['packaging', 'beerTax']) ? cashDe(['packaging', 'beerTax']) / 100 : null
+  };
   const now = input.now ?? new Date().toISOString();
   const { id, favorite, archivedAt, batchRef, ...recipeContent } = normalizeRecipe(recipe);
   return {
@@ -457,6 +499,6 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
     ingredientsCost, purchasesTTC, operatingCost: money(operatingCost), operatingCashTTC: money(operatingCashTTC), cashRequiredTTC: money(purchasesTTC + operatingCashTTC),
     fixedAllocation, depreciationAllocation, totalCost, costPerL: netVolumeL > 0 && Number.isFinite(netVolumeL) ? money(totalCost / netVolumeL) : null,
     complete: issues.length === 0 && lines.every(l => l.issues.length === 0), issues: [...new Set(issues)],
-    dejaPaye, aPayer, annee, resteEnStock, packagingCost, beerTaxCost, ...(beerTaxSource ? { beerTaxSource } : {}), beerTaxExonere, netVolumeSource
+    dejaPaye, aPayer, annee, resteEnStock, packagingCost, beerTaxCost, ...(beerTaxSource ? { beerTaxSource } : {}), beerTaxExonere, netVolumeSource, fraisParPoste, quandPaye
   };
 }

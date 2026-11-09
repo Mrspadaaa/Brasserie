@@ -102,6 +102,24 @@
       "mots": "La caisse complète / v3a / Choix définitif",
       "capture": "work/missions/2026-11-09-compta-prix/p2/v3a/v3a-page.png",
       "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
+    },
+    {
+      "ecran": "synthese",
+      "route": "g3a",
+      "statut": "choisi",
+      "choix": "g3a (g1b, entré contre dépensé à la même échelle, l à-payer hachuré)",
+      "mots": "Ta base / g3a et g3c / passe 2 / Non la meilleure on garde celle ci",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/g3a/g3a-page.png",
+      "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
+    },
+    {
+      "ecran": "annuel-cloture",
+      "route": "g6",
+      "statut": "choisi",
+      "choix": "g6 (g4a, colonnes de l année, puis 9 écrans de clôture)",
+      "mots": "L année, et la clôture / g6",
+      "capture": "work/missions/2026-11-09-compta-prix/p3/g6/g6-page.png",
+      "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
     }
   ]
 }
