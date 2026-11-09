@@ -1595,3 +1595,6 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « s6a · huit buts en cartes, comme q2b  Top » (lu : s6a choisie pour Suggérer).
 - **09.11**, mot pour mot : « Parcontre houblons, banane ECT était juste des exemples c'est pas assez générique DU TOUT !!!! »
   (lu : les huit buts nommés de s6a (banane, girofle, houblon en avant…) sont une liste figée ; il veut un mécanisme générique : chaque caractéristique de la fiche levure, quelle qu'elle soit, peut être poussée en plus ou en moins. s6a reste la forme choisie (cartes) ; son contenu devient la liste des axes de la fiche, chacun avec + et −. La même liste d'axes sert aux filtres de Chercher — `savoir/AUDIT-FILTRES.md`).
+- **09.11**, mot pour mot, sur l'écran Dépense en ligne (deux captures, facture Poste CH 6,80) : « Plusieurs soucis mineur, il y a des cas de figure où je peux pas annuler, j'ai pas encore trouvé pourquoi
+  Aussi si je change je ltype à ingrédients, ça le fait changer de catégorie et surtout on perd du coup le focus sur l'item ce qui est vraiment problématique »
+  (lu : « annuler » = fermer la saisie ; le × était éteint pendant la lecture (BX-1). Le type changé garde la ligne au centre, ouverte, focus dessus ; la bande change, c'est la conséquence voulue (BX-2). Lecture étroite, dite dans la réponse.)
