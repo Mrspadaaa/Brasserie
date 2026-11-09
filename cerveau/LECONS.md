@@ -43,7 +43,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
 - Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? »
 - Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
-- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md et dans chaque brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`.
+- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md et dans chaque brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`. Contenu ajouté en voie : revoir ses plafonds (mots).
 - Rôles : pilote
 - Contrôle : `controle-au-style.mjs` (D75)
 
@@ -57,7 +57,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L29 — Un problème connu se résout par la méthode standard et ses bibliothèques, pas à la main
 - Erreur : 02 et 03.11, D381 : découpe des photos réécrite à la main sans nommer le problème type ; deux jours de rustines. « Tu reinvte la roue là » ; « c'est une erreur de junior ».
 - Cause : chaque cas raté du banc a reçu sa rustine, sans jamais nommer le problème type ni chercher ce qui existe ; aucune étape ne le demandait.
-- Faire : avant tout algorithme non trivial (image, OCR, géométrie, analyse de texte, calcul numérique, dates), nommer le problème d'école, chercher la méthode standard et les bibliothèques maintenues (licence, poids, vitesse), écrire la décision dans « ## État de l'art » de MISSION.md, puis coder. À la deuxième rustine sur un même module, s'arrêter et refaire cette étape. Chaque changement rejoue tout le banc, temps compris.
+- Faire : avant tout algorithme non trivial (image, OCR, géométrie, analyse de texte, calcul numérique, dates), nommer le problème d'école, chercher la méthode standard et les bibliothèques maintenues, écrire la décision dans « ## État de l'art » de MISSION.md, puis coder. À la deuxième rustine sur un même module, s'arrêter et refaire cette étape. Chaque changement rejoue tout le banc, temps compris.
 - Rôles : pilote, auteur, conseil
 - Contrôle : `systeme.mjs mission` refuse une mission de code sans « ## État de l'art » (problème type, examiné, décision)
 
@@ -97,14 +97,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21 et 22.10, fichiers de travail à la racine ; 25.10, T4 : déménagé sans les importeurs ; 01.11 : correctif testé en partie, sources remises à HEAD.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins. Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement, champ nourri d'ailleurs : `grep` des lecteurs (module compris), tests rejoués ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence : `git show HEAD:<f>` vers `os.tmpdir()` ; rien remis à HEAD sans copie vérifiée. Déployer ou jouer un banc Chrome d'un dossier que nul autre n'écrit (Vite recharge, 01.11), puis lire « found N files » et la page servie.
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Commit par chemins. Fichiers de travail : son OWNS ou `os.tmpdir()`, jamais la racine. Déménagement, format, chargement, champ nourri d'ailleurs : `grep` des lecteurs (module compris), tests rejoués ; un correctif, toute la liste de sa voie. Un critère n'écrit pas dans un livrable. Référence : `git show HEAD:<f>` vers `os.tmpdir()` ; rien remis à HEAD sans copie vérifiée. Déployer ou jouer un banc Chrome d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie.
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Un long livrable s'écrit section par section. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne ; variantes, 12 à 16 (D204). Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns (01.11)
 
