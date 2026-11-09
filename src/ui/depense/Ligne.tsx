@@ -22,7 +22,8 @@ export interface LigneP3cProps {
   pastilleMouture?: PastilleMouture; etat?: PastilleEtat; boutonMouture?: BoutonMouture; douteux: boolean; garde: boolean; masquee: boolean; ouverte: boolean;
   fix?: React.ReactNode; fixNiveau?: Niveau;
   /** D277 : le lien proposé par la lecture, jaune tant qu’il n’est pas confirmé. */
-  lienNiveau?: Niveau; plateau: React.ReactNode; moutureArticles?: React.ReactNode;
+  /** s1 : la dépense est hors brassage (travaux, divers) : aucune icône de stock sur ses lignes sans lien. */
+  sansStock?: boolean; lienNiveau?: Niveau; plateau: React.ReactNode; moutureArticles?: React.ReactNode;
   onToggle: (id: string, ouvert: boolean) => void;
   /** Lenteur D (`choix-lenteur/d-lue`) : les cellules que la 3.8 a corrigées sont sur le bleu des corrections, l'ancienne valeur barrée sous le nom (« 10 Kg × 1,45 »). */
   corrigee?: { qte?: boolean; prix?: boolean; montant?: boolean; nom?: boolean; avant: string };
@@ -50,7 +51,7 @@ export function LigneP3c(p: LigneP3cProps) {
     <details data-dp-plateau open={p.ouverte} onToggle={e => p.onToggle(p.id, (e.currentTarget as HTMLDetailsElement).open)}>
       <summary title={titre} className={`dp-p3c-r relative list-none cursor-pointer flex items-center gap-1.5 px-2.5 min-h-7${p.rabais ? ' pl-9 text-cave-300' : ''}`}>
         {p.numeroPapier !== undefined ? <span data-dp-numero className="w-[18px] text-right font-mono text-xs text-cave-400">{p.numeroPapier}</span> : null}
-        <i aria-hidden className="dp-no-chevron hidden"/>{p.rabais || (p.lien === 'aucun' && familleHorsBrassage(p.groupe)) ? null : <span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>}
+        <i aria-hidden className="dp-no-chevron hidden"/>{p.rabais || (p.lien === 'aucun' && (p.sansStock || familleHorsBrassage(p.groupe))) ? null : <span data-dp-lien {...(p.lienNiveau && p.lienNiveau !== 'sur' ? { 'data-dp-niveau': p.lienNiveau, title: 'lien proposé par la lecture : à confirmer' } : {})} className="inline-flex shrink-0"><PictoLien lien={p.lien} size={18} propose={p.lienNiveau === 'repris'}/></span>}
         <span className="min-w-0 flex-1 flex flex-wrap items-center gap-x-1.5 py-0.5">
           {/* Le nom et sa pastille d'équivalence forment un seul bloc : le nom se coupe entre deux mots (deux lignes au plus), la pastille « = 2 sachets » reste à sa droite ; B2-NOTE-8 : si la place manque (320 px), la pastille passe SOUS le nom au lieu de l'écraser (« W… he… »). */}
           {mout ? null : <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">

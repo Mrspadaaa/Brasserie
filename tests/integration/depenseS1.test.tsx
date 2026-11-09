@@ -41,15 +41,29 @@ describe('s1-1 : le stock ne garde que le brassage',()=>{
     expect(lignes.length).toBe(29);
     for(const l of lignes)expect(l.querySelector('summary [data-dp-lien]'),`ligne ${l.getAttribute('data-dp-ligne')} : ${l.textContent}`).toBeNull();
   });
-  it('un ticket mêlé : le houblon garde son icône, la rénovation et le service n’en ont pas',async()=>{
+  it('une dépense de brassage : le houblon garde son icône, le service n’en a pas',async()=>{
     const view=await ouvrir(lectureSans([
       item('line-1','Houblon Citra 100 g',{kind:'stock',stockCategory:'Houblon',unit:'g',quantity:100,price:0.09,amountTTC:9}),
-      item('line-2','SERRE-JOINT 150MM',{kind:'other',amountTTC:14.9,price:14.9}),
       item('line-3','Entretien chaudière',{kind:'service',amountTTC:120,price:120}),
-    ]));
+    ],{category:'brassage'}));
     expect(iconeStock(view,'line-1')).not.toBeNull();
-    expect(iconeStock(view,'line-2')).toBeNull();
     expect(iconeStock(view,'line-3')).toBeNull();
+  });
+  /* VERDICT-EN-LIGNE-2, bloquant 1 : la règle tient à la DÉPENSE (catégorie, but, fournisseur), jamais à la famille que la lecture range ligne par ligne : « CHANTILLES S00 » rangé en Levures, une brosse en Consommables. */
+  it.each(['renovation','divers','chargesFixes'])('dépense « %s » : aucune ligne n’a d’icône ni de stock, même rangée en Levures ou en Consommables',async categorie=>{
+    const view=await ouvrir(lectureSans([
+      item('line-1','CHANTILLES S00',{kind:'stock',stockCategory:'Levure',unit:'sachet',quantity:1,price:4.25,amountTTC:4.25}),
+      item('line-2','BROSSE LATTOB GD',{kind:'cleaning',stockCategory:'Consommable',unit:'pièce',quantity:1,price:5.5,amountTTC:5.5}),
+      item('line-3','Houblon Citra 100 g',{kind:'stock',stockCategory:'Houblon',unit:'g',quantity:100,price:0.09,amountTTC:9}),
+      item('line-4','VACCIN FICTIF',{kind:'other',quantity:1,unit:'pièce',price:26.68,amountTTC:26.68}),
+    ],{category:categorie}));
+    for(const id of ['line-1','line-2','line-3','line-4'])expect(iconeStock(view,id),`${categorie} ${id}`).toBeNull();
+    await ouvrirLigne(view,'line-1');
+    expect(ligne(view,'line-1').textContent).not.toMatch(/nouvel article|relié/);
+  });
+  it('la même lecture dans une dépense de brassage garde ses icônes (le brasseur change la catégorie : elles reviennent)',async()=>{
+    const view=await ouvrir(lectureSans([item('line-1','CHANTILLES S00',{kind:'stock',stockCategory:'Levure',unit:'sachet',quantity:1,price:4.25,amountTTC:4.25})],{category:'brassage'}));
+    expect(iconeStock(view,'line-1')).not.toBeNull();
   });
   it('l’appartenance au brassage inconnue (« Autres », dépense de brassage) : comportement actuel, l’icône reste (prudent)',async()=>{
     const view=await ouvrir(lectureSans([item('line-1','Objet sans mot connu XQ7',{kind:'other',amountTTC:5,price:5})],{category:'brassage'}));
@@ -98,6 +112,32 @@ describe('s1-2 : toucher l’unité d’une quantité vide y met 1, sans clavier
     expect(champQte(view,'line-1').value).toBe('25');
     fireEvent.click(Array.from(seg.querySelectorAll('button')).find(b=>b.textContent==='Kg')!);
     expect(champQte(view,'line-1').value).toBe('25');
+  });
+  /* VERDICT-EN-LIGNE-2, bloquant 2 : VITRIFIC, ligne hors stock dont l'unité n'était que déduite de la quantité : la quantité vidée emportait le segment, plus rien à toucher. */
+  it('une quantité vidée garde le segment d’unité (ligne hors stock) ; toucher l’unité remet 1',async()=>{
+    const view=await ouvrir(lectureSans([item('line-1','VITRIFIC.P.SGL 5.8KG',{kind:'other',quantity:null,unit:'',price:86.85,amountTTC:86.85})]));
+    await ouvrirLigne(view,'line-1');
+    expect(ligne(view,'line-1').querySelector('[data-dp-unite-segments]')).not.toBeNull();
+    fireEvent.change(champQte(view,'line-1'),{target:{value:''}});fireEvent.blur(champQte(view,'line-1')); /* le toucher sur un bouton fait perdre le focus au champ */
+    await waitFor(()=>expect(champQte(view,'line-1').value).toBe(''));
+    const seg=ligne(view,'line-1').querySelector('[data-dp-unite-segments]');
+    expect(seg,'le segment d’unité a disparu avec la quantité').not.toBeNull();
+    fireEvent.click(Array.from(seg!.querySelectorAll('button')).find(b=>/pièce/.test(b.textContent!))!);
+    await waitFor(()=>expect(champQte(view,'line-1').value).toBe('1'));
+    expect(document.activeElement?.tagName).not.toBe('INPUT');
+    expect(document.activeElement?.tagName).not.toBe('TEXTAREA');
+  });
+  it('une quantité posée par une tuile (5) reste quand on touche une autre unité (L)',async()=>{
+    const view=await ouvrir(vide());
+    await ouvrirLigne(view,'line-1');
+    fireEvent.click(ligne(view,'line-1').querySelector<HTMLElement>('[data-dp-cases-unite] button[data-val="pièce"]')!);
+    await waitFor(()=>expect(ligne(view,'line-1').querySelector('[data-dp-tuiles-quantite]')).not.toBeNull());
+    fireEvent.click(ligne(view,'line-1').querySelector<HTMLElement>('[data-dp-tuiles-quantite] button[data-val="5"]')!);
+    await waitFor(()=>expect(champQte(view,'line-1').value).toBe('5'));
+    const seg=ligne(view,'line-1').querySelector('[data-dp-unite-segments]')!;
+    fireEvent.click(Array.from(seg.querySelectorAll('button')).find(b=>b.textContent==='L')!);
+    await waitFor(()=>expect(ligne(view,'line-1').querySelector('[data-dp-unite-segments] button[aria-pressed="true"]')!.textContent).toBe('L'));
+    expect(champQte(view,'line-1').value).toBe('5');
   });
   it('le clavier ne s’ouvre qu’en touchant la quantité (le champ n’est pas focalisé par l’unité)',async()=>{
     const view=await ouvrir(vide());

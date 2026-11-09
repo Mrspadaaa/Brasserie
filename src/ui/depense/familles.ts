@@ -306,6 +306,14 @@ export const NATURE_DE_FAMILLE: Partial<Record<FamilleCle, 'cleaning' | 'packagi
 };
 const KINDS_HORS_INGREDIENT: ReadonlySet<string> = new Set(['equipment', 'maintenance', 'service', 'packaging', 'cleaning', 'shipping', 'discount']);
 
+/**
+ * s1 (VERDICT-EN-LIGNE-2, bloquant 1 ; ses mots : « pas besoin d'avoir tout mes outils et autres, juste ce qui concerne vraiment le brassage ») : une DÉPENSE hors brassage (travaux, charges, divers : quincaillerie, pharmacie…)
+ * n'a de stock sur aucune de ses lignes, quelle que soit la famille que la lecture range ligne par ligne (« CHANTILLES S00 » en Levures, une brosse en Consommables). La règle tient à la dépense, jamais à une ligne.
+ * Catégories de la lecture : brassage, matériel, nettoyage restent du brassage ; renovation, chargesFixes, divers n'en sont pas. Une catégorie inconnue ou absente garde le comportement actuel (prudent).
+ */
+export const CATEGORIES_HORS_BRASSAGE: ReadonlySet<string> = new Set(['renovation', 'chargesFixes', 'divers']);
+export const depenseHorsBrassage = (categorie: string | undefined | null): boolean => !!categorie && CATEGORIES_HORS_BRASSAGE.has(categorie);
+
 export function familleDe(e: EntreeFamille): FamilleCle {
   const kind = typeof e.kind === 'string' ? e.kind : '';
   const horsIngredient = KINDS_HORS_INGREDIENT.has(kind);

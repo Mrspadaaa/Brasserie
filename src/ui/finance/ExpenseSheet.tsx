@@ -48,6 +48,7 @@ import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
 import { ajoutsALaMain,estAjouteeAMain,phraseDuPied,sansMotsBruts } from '../depense/phrasePied';
+import { depenseHorsBrassage } from '../depense/familles';
 import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
@@ -154,7 +155,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
   /* D369 : le champ de `q × prix = montant` que le calcul a posé, par ligne (il suit les deux autres) ; les lignes dont la quantité a été posée d'un toucher (ses nombres restent). */
-  const calcules=useRef(new Map<string,ChampCalcul>()),derniers=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>()),unitesTouchees=useRef(new Set<string>());
+  const calcules=useRef(new Map<string,ChampCalcul>()),derniers=useRef(new Map<string,ChampCalcul>()),nombresTouches=useRef(new Set<string>()),unitesTouchees=useRef(new Set<string>()),quantiteSaisie=useRef(new Set<string>());
   /* B2 n° 2 : la ligne telle qu'elle était avant un changement d'unité (quantité, prix, unité écrite) : le retour à cette unité la rend. */
   const uniteQuittee=useRef(new Map<string,{unit:string;quantity:number|undefined;unitPrice:number|undefined;amount:number|undefined;mitUn?:boolean;prixPose?:number}>());
   /* D370 : une ligne venue sans libellé garde son champ pendant qu'on le tape (il ne part plus à la première lettre). */
@@ -1032,6 +1033,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         return;
       }
       /* Hors masse, une unité seulement DÉDUITE (jaune) est un doute que le brasseur corrige (la quantité imprimée reste, B2 doute n° 2) ; une unité ÉCRITE qui change vide la quantité (« à remplir »). */
+      if(isReadableUnit(line.unit)&&line.quantity!==undefined&&quantiteSaisie.current.has(line.id)){
+        /* s1 (VERDICT-EN-LIGNE-2, n° 3) : la quantité que le BROSSEUR a posée (tuile, +N, frappe) est à lui : une autre unité ne l'efface pas (« 5 pièces » puis « L » : « 5 L »). Seule une quantité LUE (B2) ne vaut pas pour une autre unité. */
+        calcules.current.delete(line.id);derniers.current.delete(line.id);
+        updateLine(line.id,{unit:valeur,unitPrice:line.unitPrice});
+        return;
+      }
       if(isReadableUnit(line.unit)){
         const patch=metUnSiVide({unit:valeur,quantity:undefined});
         uniteQuittee.current.set(line.id,{unit:line.unit,quantity:line.quantity,unitPrice:line.unitPrice,amount:line.amount,mitUn:patch.quantity===1,prixPose:patch.unitPrice});
@@ -1048,15 +1055,15 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* s1 : unité touchée → tuiles de quantité (grandes, sans rouge, la valeur courante allumée) au lieu des « +1 +2 ». Une tuile POSE la quantité et garde le montant imprimé. */
     const nombresDe=nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category));
     const tuilesEl=!estRabais&&unitesTouchees.current.has(line.id)?<TuilesQuantite index={index+1} nombres={nombresDe} valeur={line.quantity} mot={n=>motUnite(unite,n)}
-      onChoisir={n=>{const p=quantiteGardantMontant(line,n);derniers.current.delete(line.id);if('unitPrice' in p&&line.amount!==undefined)calcules.current.set(line.id,'unitPrice');else if('amount' in p)calcules.current.set(line.id,'amount');else calcules.current.delete(line.id);updateLine(line.id,p);}}/>:null;
+      onChoisir={n=>{quantiteSaisie.current.add(line.id);const p=quantiteGardantMontant(line,n);derniers.current.delete(line.id);if('unitPrice' in p&&line.amount!==undefined)calcules.current.set(line.id,'unitPrice');else if('amount' in p)calcules.current.set(line.id,'amount');else calcules.current.delete(line.id);updateLine(line.id,p);}}/>:null;
     const nombresEl=tuilesEl?tuilesEl:montrerNombres?<NombresRapides index={index+1} nombres={nombresRapides(unite,genreDeUnite(line.kind,lu?.contexte,article?.category))} effacable={line.quantity!==undefined}
-      onAjouter={n=>{nombresTouches.current.add(line.id);poser('quantity',Math.round(((line.quantity??0)+n)*1e6)/1e6);}} onEffacer={()=>poser('quantity',undefined)}/>:null;
+      onAjouter={n=>{nombresTouches.current.add(line.id);quantiteSaisie.current.add(line.id);poser('quantity',Math.round(((line.quantity??0)+n)*1e6)/1e6);}} onEffacer={()=>poser('quantity',undefined)}/>:null;
     const BLEU_CH=' !border-2 !border-area-finances !bg-area-finances/15 !text-area-finances font-semibold';
     const montantTexte=line.amount===undefined?'':fr2c(Math.round(line.amount*100)),prixTexte=line.unitPrice===undefined?'':prixImprime(line.unitPrice);
     const montantRabaisEl=<RangeeCalcul><span {...niv('montant')} className="inline-flex"><ChampNombre aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{poser('amount',amount);if(draft.lines.length===1)patch({amount});}} max={MONTANT_MAX} placeholder={rougeDe('montant')?'montant':undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${rougeDe('montant')&&line.amount===undefined?VIDE_ROUGE:largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span></RangeeCalcul>;
     const calculEl=estRabais?montantRabaisEl:<RangeeCalcul avant={avantQte!==undefined?fr(avantQte):undefined}>
-      <span {...niv('quantite')} className="inline-flex"><ChampNombre aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>poser('quantity',quantity)} max={1000000} placeholder={rougeDe('quantite')?'quantité':undefined} className={`${CHAMP_PU4D} ${rougeDe('quantite')&&line.quantity===undefined?VIDE_ROUGE:largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
-      {uniteManque?<BoiteUniteVide/>:horsStock&&!lisible?null:<SegmentUnite index={index+1} choix={choixU} active={uniteActive} repris={ud?.niveau==='repris'} onChoisir={choisirUnite}/>}<Op c="×"/>
+      <span {...niv('quantite')} className="inline-flex"><ChampNombre aria-label={`Quantité ligne ${index+1}`} value={line.quantity} onValue={quantity=>{if(quantity!==undefined)quantiteSaisie.current.add(line.id);poser('quantity',quantity);}} max={1000000} placeholder={rougeDe('quantite')?'quantité':undefined} className={`${CHAMP_PU4D} ${rougeDe('quantite')&&line.quantity===undefined?VIDE_ROUGE:largeur(line.quantity===undefined?'':fr(line.quantity))}${rougeDe('quantite')?ROUGE:''}${corr?.qte?BLEU_CH:''}`}/></span>
+      {uniteManque?<BoiteUniteVide/>:<SegmentUnite index={index+1} choix={choixU} active={uniteActive} repris={ud?.niveau==='repris'} onChoisir={choisirUnite}/>}<Op c="×"/>
       <span {...niv('prix')} className="inline-flex"><ChampNombre aria-label={`Prix ligne ${index+1}`} value={line.unitPrice} onValue={unitPrice=>poser('unitPrice',unitPrice)} max={100000} placeholder={rougeDe('prix')?'prix':undefined} fractionDigits={/* B2 n° 14 : le même format que la rangée (`prixImprime` : 0,040 sous 0,10) */line.unitPrice===undefined?2:(prixTexte.split(',')[1]??'').length} className={`${CHAMP_PU4D} ${rougeDe('prix')&&line.unitPrice===undefined?VIDE_ROUGE:largeur(prixTexte)}${rougeDe('prix')?ROUGE:''}${corr?.prix?BLEU_CH:''}`}/></span><Op c="="/>
       <span {...niv('montant')} className="inline-flex"><ChampNombre aria-label={`Montant ligne ${index+1}`} value={line.amount} onValue={amount=>{poser('amount',amount);if(draft.lines.length===1)patch({amount});}} max={MONTANT_MAX} placeholder={rougeDe('montant')?'montant':undefined} fractionDigits={decimalesAuRepos(line.amount)} className={`${CHAMP_PU4D} ${rougeDe('montant')&&line.amount===undefined?VIDE_ROUGE:largeur(montantTexte)}${rougeDe('montant')?ROUGE:''}${corr?.montant?BLEU_CH:''}`}/></span>
       {/* D351 : « au centime » ne se dit plus quand le calcul tombe juste ; seul un écart se dit. */}
@@ -1152,7 +1159,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture||estRabais?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>retirerLigne(line.id)}/>
     </div>;
     return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
-      nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article&&!estRabais?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
+      nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article&&!estRabais?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} sansStock={depenseHorsBrassage(draft.category)} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
       alpha={alphaLu} ebc={ebcLu} conversion={article?conversionDe({...line,unit:unite},article):undefined}
       qte={{texte:texteQuantite(line,unite,horsStock)}} niveaux={niveaux}
       prix={line.unitPrice!==undefined?prixImprime(line.unitPrice):'—'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
