@@ -43,42 +43,33 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toHaveValue('mixte');
     expect(screen.getByRole('button',{name:'À payer',exact:true})).toHaveAttribute('aria-pressed','true');
   });
-  it('annonce les limites de la prévision avant ses chiffres et ouvre les paiements à confirmer',()=>{
+  it('annonce les limites de la prévision (pli « Limites ») et ouvre les paiements à confirmer',()=>{
     StorageService.addTransaction(tx({finance:undefined}));
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    fireEvent.click(screen.getByRole('button',{name:/Limites/}));
     expect(screen.getByText('Prévision incomplète')).toBeVisible();
-    expect(screen.getByText('Sorties renseignées')).toBeVisible();
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent('À compléter');
     fireEvent.click(screen.getByRole('button',{name:/Confirmer les paiements/}));
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
     expect(screen.getByRole('button',{name:/^Achat mixte/})).toHaveTextContent('Paiement à confirmer');
   });
-  it('ne charge le graphique qu’à l’ouverture et garde le tableau accessible pendant le chargement',async()=>{
+  it('l’escalier se rend sans mesure d’écran (largeur de repli) et porte un nom accessible',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.queryByRole('group',{name:/Scénario mensuel à venir/})).not.toBeInTheDocument();
-    const summary=screen.getByText('Comparer les mois',{exact:true});
-    summary.focus();fireEvent.click(summary);
-    expect(summary).toHaveFocus();
-    expect(await screen.findByRole('table',{name:/Scénario mensuel à venir/})).toBeVisible();
-    await waitFor(()=>expect(screen.getByRole('group',{name:/Scénario mensuel à venir/})).toBeVisible());
+    const escalier=screen.getByRole('img',{name:/Escalier de trésorerie/});
+    expect(escalier).toBeVisible();expect(escalier).toHaveAttribute('width','370');
   });
-  it('fait varier les sorties et les soldes mensuels du même montant lorsque le projet de matériel est exclu',async()=>{
+  it('la bascule retire le projet de matériel : soldes avec et sans, du même montant',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());
     FinanceService.savePlan({id:'POMPE',title:'Pompe prévue',date:todayISO(),amountCents:20000,direction:'out',category:'materiel',source:'equipment',status:'active',createdAt:new Date().toISOString()});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    const summary=within(screen.getByRole('region',{name:/Prévision sur/}));
-    const outgoing=()=>summary.getByText(/Sorties (prévues|renseignées)/).parentElement;
-    expect(outgoing()).toHaveTextContent('350,00');
-    fireEvent.click(screen.getByText('Comparer les mois',{exact:true}));
-    const table=within(await screen.findByRole('table',{name:/Scénario mensuel à venir/}));
-    expect(table.getAllByRole('row')[1]).toHaveTextContent(/350,00\s*CHF\s*0,00\s*CHF\s*650,00\s*CHF/);
-    fireEvent.click(screen.getByRole('checkbox',{name:/Inclure mes projets de matériel/}));
-    expect(outgoing()).toHaveTextContent('150,00');
-    expect(table.getAllByRole('row')[1]).toHaveTextContent(/150,00\s*CHF\s*0,00\s*CHF\s*850,00\s*CHF/);
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
+    const bascule=within(screen.getByRole('group',{name:/Avec ou sans/}));
+    expect(bascule.getByRole('button',{name:/Avec pompe prévue/})).toHaveTextContent(/650,00/);
+    expect(bascule.getByRole('button',{name:/Sans pompe prévue/})).toHaveTextContent(/850,00/);
+    expect(screen.getByText('À payer').parentElement).toHaveTextContent('150,00');
+    fireEvent.click(bascule.getByRole('button',{name:/Sans pompe prévue/}));
+    expect(bascule.getByRole('button',{name:/Sans pompe prévue/})).toHaveAttribute('aria-pressed','true');
   });
   it('ne redemande pas le solde déjà confirmé lorsque les paiements empêchent de calculer la trésorerie',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
@@ -88,6 +79,7 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.queryByRole('button',{name:/Vérifier le solde de départ/})).not.toBeInTheDocument();
     expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
     fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    fireEvent.click(screen.getByRole('button',{name:/Limites/}));
     expect(screen.getByText('Prévision incomplète')).toBeVisible();
     expect(screen.queryByRole('button',{name:'Renseigner le solde de départ'})).not.toBeInTheDocument();
     expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
@@ -123,18 +115,16 @@ describe('Comptabilité quotidienne intégrée',()=>{
     fireEvent.click(dialog.getByText('Échéance et prévision',{exact:true}));
     expect(dialog.getByLabelText('Échéance de la facture')).toBeVisible();
   });
-  it('sépare les factures des budgets et donne accès aux échéances au-delà des six premières',()=>{
+  it('sépare à payer et prévu, et la liste de l’annexe garde toutes les sorties (jamais tronquée)',()=>{
     StorageService.addTransaction(tx());
     for(let i=1;i<=8;i++)FinanceService.savePlan({id:`PLAN-${i}`,title:`Achat prévu ${i}`,date:todayISO(),amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
-    expect(screen.getByText('Budgets et estimations').parentElement).toHaveTextContent('80,00');
-    const due=within(screen.getByRole('heading',{name:'Échéances et estimations à venir'}).closest('section')!);
-    expect(due.queryByRole('button',{name:/^Achat prévu 8/})).not.toBeInTheDocument();
-    fireEvent.click(due.getByRole('button',{name:'Voir les 3 échéances suivantes'}));
-    expect(due.getByRole('button',{name:/^Achat prévu 8/})).toBeVisible();
-    fireEvent.click(screen.getByRole('button',{name:'30 jours',exact:true}));
-    expect(due.queryByRole('button',{name:/^Achat prévu 8/})).not.toBeInTheDocument();
+    expect(screen.getByText('À payer').parentElement).toHaveTextContent('150,00');
+    expect(screen.getByText('Prévu').parentElement).toHaveTextContent('80,00');
+    fireEvent.click(screen.getByRole('button',{ name: /\d+\s+sorties?$/ }));
+    const liste=within(screen.getByRole('dialog',{name:'Sorties et entrées prévues'}));
+    expect(liste.getAllByRole('listitem')).toHaveLength(9);
+    expect(within(liste.getByRole('list')).getByText(/Achat prévu 8/)).toBeVisible();
   });
   it('ouvre le registre existant depuis le récapitulatif annuel et signale une valeur non confirmée',()=>{
     FinanceService.saveAsset({id:'CUVE',name:'Cuve 30 L',category:'tanks',acquisitionDate:todayISO(),inServiceDate:todayISO(),acquisitionCents:50000,businessUsePct:100,method:'declining',ratePct:20,openingYear:Number(todayISO().slice(0,4)),openingValueCents:50000,openingConfirmed:false,firstYearFraction:1});
@@ -150,13 +140,16 @@ describe('Comptabilité quotidienne intégrée',()=>{
     try {
       for(const [id,date] of [['Dans 29 jours','2026-10-08'],['Dans 30 jours','2026-10-09'],['Dernier jour inclus','2027-09-08'],['Anniversaire exclu','2027-09-09']]) FinanceService.savePlan({id,title:id,date,amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
       render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-      const due=()=>within(screen.getByRole('heading',{name:'Échéances et estimations à venir'}).closest('section')!);
+      const annexe=()=>{fireEvent.click(screen.getByRole('button',{ name: /\d+\s+sorties?$/ }));return within(screen.getByRole('dialog',{name:'Sorties et entrées prévues'}));};
       fireEvent.click(screen.getByRole('button',{name:'30 jours',exact:true}));
-      expect(due().getByRole('button',{name:/^Dans 29 jours/})).toBeInTheDocument();
-      expect(due().queryByRole('button',{name:/^Dans 30 jours/})).not.toBeInTheDocument();
+      let liste=within(annexe().getByRole('list'));
+      expect(liste.getByText(/Dans 29 jours/)).toBeInTheDocument();
+      expect(liste.queryByText(/Dans 30 jours/)).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button',{name:'Fermer'}));
       fireEvent.click(screen.getByRole('button',{name:'12 mois',exact:true}));
-      expect(due().getByRole('button',{name:/^Dernier jour inclus/})).toBeInTheDocument();
-      expect(due().queryByRole('button',{name:/^Anniversaire exclu/})).not.toBeInTheDocument();
+      liste=within(annexe().getByRole('list'));
+      expect(liste.getByText(/Dernier jour inclus/)).toBeInTheDocument();
+      expect(liste.queryByText(/Anniversaire exclu/)).not.toBeInTheDocument();
     } finally { vi.useRealTimers(); }
   });
   it('déduit les avoirs des coûts et permet la navigation au clavier',()=>{

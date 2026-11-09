@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Archive, ChevronRight, RotateCcw } from 'lucide-react';
 import type { Transaction } from '../../types';
 import type { EquipmentUpgrade, FinancialPlan } from '../../domain/finance/types';
+import { DEPRECIATION_CATEGORIES } from '../../domain/finance/annual';
 import { UPGRADE_STAGES, UPGRADE_TIMINGS, upgradeBudget, upgradeDetails, upgradeProgress, upgradeReadiness } from '../../domain/finance/upgrades';
 import { formatCHF, isActiveTransaction, isoDate, planInvoiceAllocation, transactionKind } from '../../domain/finance/ledger';
 import { FinanceService } from '../../services/financeService';
@@ -77,6 +78,13 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
           return onOpenTransaction ? <button className="finance-row" key={tx.id} onClick={() => onOpenTransaction(tx)}>{content}<ChevronRight size={16}/></button> : <div className="finance-row" key={tx.id}>{content}</div>;
         })}
       </div></details>}
+      <details className="finance-disclosure"><summary>Usure et mise en service</summary><div className="finance-form">
+        <p className="finance-muted">L’usure (linéaire) entre dans le coût du litre dès la mise en service. Sans durée, la catégorie donne la durée (100 ÷ taux linéaire AFC). Sans les deux, l’usure reste « à renseigner » : jamais 0.</p>
+        <Field label="Catégorie d’usure"><select value={detail.depreciationCategory ?? ''} onChange={e => patch({ depreciationCategory: (e.target.value || undefined) as EquipmentUpgrade['depreciationCategory'] })}><option value="">À préciser</option>{DEPRECIATION_CATEGORIES.filter(c => c.linearRate > 0).map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></Field>
+        <Field label="Durée d’usage (années)"><input inputMode="decimal" value={detail.usefulLifeYears == null ? '' : String(detail.usefulLifeYears).replace('.', ',')} placeholder="5" autoComplete="off"
+          onChange={e => { const n = Number(e.target.value.trim().replace(',', '.')); patch({ usefulLifeYears: e.target.value.trim() && Number.isFinite(n) && n > 0 ? n : undefined }); }} /></Field>
+        <Field label="Mise en service prévue"><input type="month" value={detail.inServiceMonth ?? ''} onChange={e => patch({ inServiceMonth: e.target.value || undefined })} /></Field>
+      </div></details>
       <details className="finance-disclosure"><summary>Avancement et notes</summary><div className="finance-form">
         <Field label="Avancement du projet"><select value={detail.stage} onChange={e => patch({ stage: e.target.value as EquipmentUpgrade['stage'] })}>{Object.entries(UPGRADE_STAGES).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
         <Field label="Notes du projet"><Textarea rows={3} value={draft.notes ?? ''} onChange={e => setDraft({ ...draft, notes: e.target.value })} /></Field>
