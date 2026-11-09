@@ -71,7 +71,7 @@ describe('FloatingActions · contrat DOM et clavier', () => {
     const callbacks = renderActions(null);
     const destinations = [
       { label: /Entrer une facture/, run: callbacks.invoice },
-      { label: /Encaisser une vente/, run: callbacks.sale },
+      { label: /Vendre/, run: callbacks.sale },
       { label: /Créer une recette/, run: callbacks.recipe },
       { label: /Lancer un brassin/, run: callbacks.brew }
     ];

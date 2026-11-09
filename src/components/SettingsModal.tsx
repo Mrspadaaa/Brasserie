@@ -1,6 +1,7 @@
 import { Input } from '../ui/Input';
 import React, { useEffect, useState } from 'react';
-import { COMPANY_FALLBACK } from '../domain/companyDefaults';
+import { COMPANY_FALLBACK, companyFraiche } from '../domain/companyDefaults';
+import { IdentiteBrasserie } from '../ui/vente/IdentiteBrasserie';
 import { NumberInput } from '../ui/NumberInput';
 import { ChampNombre } from '../ui/depense/ChampNombre';
 import { BORNES_FINANCE } from '../domain/finance/bornesFinance';
@@ -78,8 +79,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     if (ibanErreur && ibanModifie) { setActiveTab('fiscal'); setDataError(true); setDataMessage(ibanErreur); return; }
     setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
     try {
-    StorageService.saveConfig(formData);
-    onConfigUpdated(formData);
+    /* Un champ d'identité non touché reprend la valeur fraîche du stockage (adresse écrite depuis la caisse) : jamais un instantané périmé. */
+    const aEnregistrer = { ...formData, company: companyFraiche(config.company, formData.company, StorageService.getConfig().company) };
+    StorageService.saveConfig(aEnregistrer);
+    onConfigUpdated(aEnregistrer);
     await StorageService.confirmPendingWrites();
     setSavedSuccess(true);
     setDataMessage('Enregistré sur le serveur.');
@@ -233,32 +236,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <label className="block text-sm text-cave-200">Périodicité attribuée<select className={inputClass} value={formData.fiscal.beerTaxPeriod??''} onChange={event=>setFormData({...formData,fiscal:{...formData.fiscal,beerTaxPeriod:(event.target.value||undefined) as 'annual'|'quarterly'|undefined}})}><option value="">À confirmer auprès de l’OFDF</option><option value="annual">Annuelle</option><option value="quarterly">Trimestrielle</option></select></label>
               <details className="text-xs text-cave-400"><summary className="min-h-touch flex items-center cursor-pointer">Calcul et déclaration</summary><div className="space-y-2"><p>Taux pleins selon le degré Plato : 16,88 / 25,32 / 33,76 CHF par hl. Le conditionnement fournit une réserve indicative ; l’impôt naît à la sortie ou à la consommation sur place.</p><p>Sans taux annuel confirmé, aucune réduction n’est supposée. Les paiements et décomptes s’effectuent selon les décisions de l’OFDF, via Taxas.</p><a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="inline-flex min-h-touch items-center text-ebc-straw underline">Consulter les informations OFDF</a></div></details>
             </div>
-            <div className="p-2 bg-cave-850/40 rounded-control border border-cave-800 space-y-1">
-              <label htmlFor="settings-company-iban" className="font-bold text-cave-200 text-xs">IBAN Brasserie (factures par virement)</label>
-              <Input
-                id="settings-company-iban"
-                type="text"
-                name="settings_company_qr_ref"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                data-bwignore="true"
-                value={formData.company.iban || COMPANY_FALLBACK.iban}
-                aria-invalid={ibanErreur ? true : undefined}
-                aria-describedby={ibanErreur ? 'settings-company-iban-erreur' : undefined}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    company: { ...formData.company, iban: e.target.value }
-                  })
-                }
-                className={`${inputClass} font-mono`}
-              />
-              {ibanErreur && <p id="settings-company-iban-erreur" role="alert" className="text-xs text-alert-strong">{ibanErreur}</p>}
-            </div>
+            <IdentiteBrasserie company={formData.company} onChange={company => setFormData({ ...formData, company })} ibanErreur={ibanErreur} />
           </div>
         )}
 

@@ -82,7 +82,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
       'Nouveau matérielSur cet écran',
       'Compagnon brasseurMatériel',
       'Entrer une factureDocument, puis vérification',
-      'Encaisser une vente',
+      'Vendre',
       'Créer une recette',
       'Lancer un brassinÀ partir d’une recette existante'
     ]);
@@ -96,7 +96,7 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
   it('ouvre chaque saisie à son écran, sans repasser par un sommaire', () => {
     const calls = { invoice: vi.fn(), sale: vi.fn(), recipe: vi.fn(), brew: vi.fn() };
     render(screenWith({ onInvoice: calls.invoice, onSale: calls.sale, onRecipe: calls.recipe, onBrew: calls.brew }));
-    for (const name of [/Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
+    for (const name of [/Entrer une facture/, /Vendre/, /Créer une recette/, /Lancer un brassin/]) {
       fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
       fireEvent.click(screen.getByRole('menuitem', { name }));
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();

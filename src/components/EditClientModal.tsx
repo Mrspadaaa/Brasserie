@@ -2,7 +2,9 @@ import { Input, Textarea, type InputElement } from '../ui/Input';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { X, Save, ChevronDown } from 'lucide-react';
-import { Client } from '../types';
+import { Client, type AdresseSaisie } from '../types';
+import { AdresseChamps, ADRESSE_VIDE, adresseComplete, adresseEnTexte } from '../ui/vente/AdresseChamps';
+import { adresseDepuisTexte } from '../services/swissQrBill';
 import { StorageService } from '../services/storage';
 import { ModalShell } from '../ui/ModalShell';
 import { TextInput, inputClass, noAutofillProps } from '../ui/FormNav';
@@ -25,7 +27,11 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
   const nameInput = useRef<TextInputHandle>(null);
   const emailInput = useRef<InputElement>(null);
   const phoneInput = useRef<InputElement>(null);
-  useEffect(() => { setErrors({}); }, [isOpen, client?.id]);
+  /* L'adresse structurée : la saisie, sinon la chaîne existante découpée (rien d'inventé). Écrite seulement si le brasseur la touche et qu'elle est complète. */
+  const adresseDepart = (c: Client | null): AdresseSaisie => c?.adresse ?? adresseDepuisTexte(c?.address ?? '') ?? ADRESSE_VIDE;
+  const [adr, setAdr] = useState<AdresseSaisie>(() => adresseDepart(client));
+  const adrDepart = useRef<AdresseSaisie>(adr);
+  useEffect(() => { setErrors({}); const a = adresseDepart(client); setAdr(a); adrDepart.current = a; }, [isOpen, client?.id]);
   if (!isOpen || !client || !draft) return null;
 
   const { name, type, contact, phone, email, notes = '' } = draft;
@@ -54,6 +60,9 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
       email: email.trim(),
       notes: notes.trim()
     };
+    /* REVUE-B 3 : `address` n'est réécrite que par une adresse touchée ET complète ; sinon la chaîne d'origine (« Case postale 123 ») reste intacte. */
+    const touchee = JSON.stringify(adr) !== JSON.stringify(adrDepart.current);
+    if (touchee && adresseComplete(adr)) { updated.adresse = { ...adr, pays: adr.pays || 'CH' }; updated.address = adresseEnTexte(adr); }
     StorageService.updateClient(updated);
     onSave(updated);
     onClose();
@@ -99,6 +108,10 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client
               value={email} onChange={event => field('email', event.target.value)} placeholder="contact@restaurant.ch" className={inputClass}
               aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? `${id}-email-error` : undefined} />
             {errors.email && <p id={`${id}-email-error`} role="alert" className="mt-1 text-xs text-alert-strong">{errors.email}</p>}
+          </div>
+          <div className="client-form-field">
+            {client.address?.trim() && !adresseComplete(client.adresse) && !adresseDepuisTexte(client.address) && <p className="text-xs text-cave-400">Adresse enregistrée : {client.address.trim()}</p>}
+            <AdresseChamps legende="Adresse de facturation" value={adr} onChange={setAdr} />
           </div>
           <details key={client.id} className="clients-help">
             <summary>Notes et accès logistiques{notes.trim() ? ' · renseignés' : ''}<ChevronDown size={14} aria-hidden="true" /></summary>

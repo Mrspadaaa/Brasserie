@@ -34,7 +34,7 @@ const PHRASE_BAREME = 'Barème par hectolitre : ' + BAREME_IMPOT_BIERE.map((tran
   return debut === null ? `${taux} jusqu’à ${nombreFr(tranche.jusquaPlato, 1)} °P`
     : Number.isFinite(tranche.jusquaPlato) ? `${taux} de ${debut} à ${nombreFr(tranche.jusquaPlato, 1)} °P` : `${taux} dès ${debut} °P`;
 }).join(' ; ') + '.';
-const InvoiceSheet = React.lazy(() => import('../../ui/finance/InvoiceSheet').then(m => ({ default: m.InvoiceSheet })));
+const Caisse = React.lazy(() => import('../../ui/vente/Caisse').then(m => ({ default: m.Caisse })));
 
 const amountFormat = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const percentFormat = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -76,7 +76,7 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
 
   const [copiedTax, setCopiedTax] = useState<'idle' | 'ok' | 'failed'>('idle');
   const [editingClient, setEditingClient] = useLiveSelection(clients, 'id');
-  const [invoiceClient, setInvoiceClient] = useLiveSelection(clients, 'id');
+  const [caisseClient, setCaisseClient] = useLiveSelection(clients, 'id');
   const [taxYear, setTaxYear] = useState(new Date().getFullYear());
   const displayedTarifs = useMemo(() => tarifs.map(t => { const costTotal = Math.round((t.costIngredients + t.costFixed) * 100) / 100; const marginCHF = Math.round((t.priceHT - costTotal) * 100) / 100; return { ...t, costLabor: 0, costTotal, marginCHF, marginPercent: t.priceHT > 0 ? marginCHF / t.priceHT * 100 : 0 }; }), [tarifs]);
   /** Fiche tarif ouverte. Un tarif sans produit vaut création. */
@@ -185,7 +185,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
   };
 
   const handleGenerateInvoicePdf = (client: Client) => {
-    setInvoiceClient(client);
+    setCaisseClient(client);
   };
 
   return (
@@ -370,7 +370,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
       )}
 
       {/* Edit Client Modal */}
-      {invoiceClient && <React.Suspense fallback={<p role="status">Ouverture de la facture…</p>}><InvoiceSheet client={invoiceClient} tarifs={tarifs} config={config} onClose={() => setInvoiceClient(null)} onSaved={() => onSuccessMessage?.('Facture enregistrée à encaisser et PDF téléchargé.')} /></React.Suspense>}
+      {caisseClient && <React.Suspense fallback={<p role="status">Ouverture de la caisse…</p>}><Caisse clientIdInitial={caisseClient.id} onClose={() => setCaisseClient(null)} onSaved={message => onSuccessMessage?.(message)} /></React.Suspense>}
       <TarifSheet
         item={tarifSheet}
         config={config}

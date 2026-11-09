@@ -1661,3 +1661,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **09.11**, mot pour mot, à la suite : « Et l'escalier » (lu : p5s, « l'escalier qui monte » (Fable 5.2), entre aussi dans les aspects à reprendre pour p6.)
 - **09.11**, mot pour mot : « Deux échelles côte à côte / c7c / Et / Les étiquettes accrochées / p5b / Là je vois tout sur le graphe. / Par là dessus, à tout implémenter sur la vrai app, jsp du c'est toi qui fait ou une autre session, envoie les info à la session de gestion des tâches »
   (lu : Prix = c7c, Prévisions = p5b, choisis. Le port de tous les écrans choisis dans l'app est confié à la session de gestion des tâches, qui le répartit.)
+- **09.11**, mot pour mot, sur le port compta et prix : « Bien replacé ce qui est déjà en place par les mini maquettes, par un merge ou portage à moitié »
+  (lu : « pas par un merge » ; chaque écran choisi remplace entièrement l'écran actuel : rien de l'ancien ne reste à côté, aucun hybride ; les fonctions de l'ancien qui ne sont pas dans la maquette vont au second plan de la maquette ou sont listées, jamais gardées telles quelles au premier plan. Vaut aussi pour Clients › Impôt bière, aujourd'hui à moitié porté.)
+- **09.11**, mot pour mot, correction de la phrase précédente : « Pas un merge**** » (confirme la lecture : remplacer, pas fusionner.)
+- **09.11**, mot pour mot : « On peut faire quelque compromis mais normalement 99% mini maquettes » (lu : l'écran porté est la maquette à 99 % ; un compromis reste possible s'il est rare, justifié et listé dans RESULTAT.md.)

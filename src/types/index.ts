@@ -718,6 +718,9 @@ export interface Batch {
 
 export type ClientStatus = 'Fidèle' | 'Actif' | 'Prospect';
 
+/** Adresse structurée saisie (norme QR-facture) ; le nom vient de la fiche ou de la brasserie. */
+export interface AdresseSaisie { rue: string; numero: string; npa: string; localite: string; pays: string }
+
 export interface Client {
   id: string; // CL-001
   name: string;
@@ -725,7 +728,10 @@ export interface Client {
   contact: string;
   phone: string;
   email: string;
+  /** Adresse en une chaîne (anciennes fiches, autres lecteurs). Dérivée de `adresse` à chaque écriture complète ; jamais effacée sinon. */
   address?: string;
+  /** Adresse structurée (QR-facture) : prime pour la caisse. */
+  adresse?: AdresseSaisie;
   notes?: string;
   /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
   favorite?: boolean;
@@ -820,6 +826,8 @@ export interface AppConfig {
     communeContact: string;
     iban?: string;
     bankName?: string;
+    /** Adresse structurée de la brasserie (QR-facture, P7). Absente sur les anciennes configurations. */
+    adresse?: AdresseSaisie;
   };
   fiscal: {
     /**

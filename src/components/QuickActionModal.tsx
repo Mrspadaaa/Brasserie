@@ -5,14 +5,12 @@ import { isCurrent } from '../domain/catalogOrganization';
 import { 
   X, 
   Camera, 
-  UploadCloud, 
   Zap, 
   TrendingUp, 
   Beer, 
   Boxes, 
   Check, 
   Sparkles, 
-  FileText, 
   ChevronRight,
   ArrowLeft,
   Package,
@@ -31,7 +29,7 @@ import { GeminiScannerService, ScannedInvoiceResult } from '../services/geminiSc
 import { AiTier, TIER_LABEL, TIER_HINT } from '../services/aiClient';
 import { DriveService } from '../services/driveService';
 import { GoogleDriveService } from '../services/googleDriveService';
-import { ReceiptService } from '../services/receiptService';
+import { CaisseContenu } from '../ui/vente/Caisse';
 import { CloudConfigModal } from './CloudConfigModal';
 import { Batch, FinanceCategory, Transaction, Recipe, StockItem } from '../types';
 import { Units } from '../services/units';
@@ -43,17 +41,10 @@ import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { useDensity } from '../ui/useViewport';
 import { NumericField } from '../ui/NumericField';
 import { MoneyField, splitTva } from '../ui/MoneyField';
-import { messageMontantChfHorsBornes } from '../domain/finance/bornesFinance';
 import { montantChf } from '../domain/finance/ledger';
 import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
 import type { ApercuDepense } from '../ui/depense/types';
-import { saveIncomeEntry, type IncomeEntry } from '../services/incomeEntry';
-import { prepareFinanceDocument } from '../services/financeDocuments';
-import { DriveConnection } from '../ui/finance/DriveConnection';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../services/firestoreRepo';
-import { purchaseIsoDate } from '../services/purchaseEntry';
-import { TextInput } from '../ui/TextInput';
-import { Field, inputClass } from '../ui/FormNav';
 import { BrewScheduleField } from '../ui/production/BrewScheduleField';
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { nombreFr } from '../domain/nombreAffiche';
@@ -159,15 +150,10 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   const [description, setDescription] = useState<string>('');
   const [vendor, setVendor] = useState<string>('');
 
-  // Quick Sale State (Point Clé Justificatifs de Vente & Quittance)
-  const [saleAmount, setSaleAmount] = useState<number>(0);
-  const [saleClient, setSaleClient] = useState<string>('');
-  const [saleBeer, setSaleBeer] = useState<string>('');
-  const [salePaymentMethod, setSalePaymentMethod] = useState<'TWINT' | 'Espèces' | 'Virement' | 'Facture'>('TWINT');
-  const [saleProofUrl, setSaleProofUrl] = useState<string | null>(null);
-  const [saleProofFileName, setSaleProofFileName] = useState<string>('');
-  const [saleSaving, setSaleSaving] = useState(false), [saleError, setSaleError] = useState('');
-  const saleBusy = useRef(false), pendingSale = useRef<IncomeEntry | undefined>(undefined);
+  /* La caisse (v3a) : un seul écran de vente, son état vit dans `CaisseContenu`. L'hôte sait seulement si elle enregistre (× et Échap bloqués) et si elle peut fermer. */
+  const [caisseOccupee, setCaisseOccupee] = useState(false);
+  const caisseBusy = useRef(false);
+  const fermetureCaisse = useRef<(() => boolean) | null>(null);
 
   // Cloud & AI Config Modal
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
@@ -203,7 +189,6 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   }, [isOpen, recipes, selectedRecipeId, batchVolumeL]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const saleFileInputRef = useRef<HTMLInputElement>(null);
   /*
    * Tant que la brasserie n'est pas assujettie, il n'y a aucune TVA à ventiler
    * ni à récupérer : le TTC saisi EST le HT enregistré.
@@ -258,11 +243,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   if (!isOpen) return null;
 
-  /* MV-38 : une vente hors borne (999 999 CHF) ne s'encaisse pas ; le champ le dit, le bouton attend. */
-  const saleAmountMessage = messageMontantChfHorsBornes(saleAmount, 'income');
-
   const resetAndClose = () => {
-    if (saleBusy.current || brewBusy.current) return;
+    if (caisseBusy.current || brewBusy.current) return;
     setExpenseMode(null);
     setScreen('menu');
     setIsScanning(false);
@@ -274,8 +256,13 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     setDescription('');
     setVendor('');
     setBrewError('');
-    pendingSale.current = undefined; setSaleError(''); setSaleAmount(0); setSaleClient(''); setSaleBeer(''); setSalePaymentMethod('TWINT'); setSaleProofUrl(null); setSaleProofFileName('');
     onClose();
+  };
+
+  /* La caisse décide si elle peut fermer : jamais pendant l'enregistrement ; avec une écriture locale en attente, un premier appui avertit. */
+  const fermer = () => {
+    if (screen === 'quick-sale' && fermetureCaisse.current && !fermetureCaisse.current()) return;
+    resetAndClose();
   };
 
   const triggerConfetti = () => {
@@ -539,51 +526,6 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     resetAndClose();
   };
 
-  // Quick Sale with Official Receipt & Proof (Pillar 3 & 4)
-  const handleSaveSale = async () => {
-    if (saleBusy.current || !(saleAmount > 0) || saleAmountMessage) return;
-    saleBusy.current = true; setSaleSaving(true); setSaleError('');
-    try {
-      if (!pendingSale.current) {
-        const ttc = saleAmount, cfg = StorageService.getConfig(), id = `REC-${crypto.randomUUID()}`;
-        const saleTx = ReceiptService.createSaleTransactionWithReceipt({ clientName: saleClient || 'Client Comptoir', beerName: saleBeer || 'Bière artisanale', amountTTC: ttc, tvaRate: cfg.fiscal.tvaNormalRate, paymentMethod: salePaymentMethod, notes: `Règlement : ${salePaymentMethod}`, receiptNumber: id }, cfg, saleProofUrl || undefined);
-        saleTx.id = id;
-        const dataUrl = saleTx.proofUrl!.replace(/^data:application\/pdf;[^,]*base64,/, 'data:application/pdf;base64,');
-        const mimeType = /^data:([^;]+);/.exec(dataUrl)?.[1] ?? 'application/pdf';
-        const proof = prepareFinanceDocument(`proof-${crypto.randomUUID()}`, dataUrl, saleProofFileName || saleTx.proofFileName || 'Quittance.pdf', mimeType);
-        delete saleTx.proofUrl; saleTx.proofFileName = proof.fileName; saleTx.proofType = mimeType; saleTx.syncedToDrive = true;
-        const paid = salePaymentMethod !== 'Facture', at = new Date().toISOString();
-        saleTx.finance = { version: 1, kind: 'income', amountCents: Math.round(ttc * 100), lines: [{ id: 'sale', description: saleBeer || 'Bière artisanale', kind: 'other', amountCents: Math.round(ttc * 100) }], paymentStatus: paid ? 'paid' : 'unpaid', recordedAt: at, proofDocumentId: proof.id };
-        const payment = paid ? { id: `PAY-${id}`, transactionId: id, date: purchaseIsoDate(saleTx.date), amountCents: Math.round(ttc * 100), direction: 'in' as const, method: salePaymentMethod === 'TWINT' ? 'twint' as const : salePaymentMethod === 'Espèces' ? 'cash' as const : 'bank' as const, recordedAt: at } : undefined;
-        pendingSale.current = { transaction: saleTx, proof, payment };
-      }
-      const receipt = await saveIncomeEntry(pendingSale.current);
-      triggerConfetti();
-      /* TE-55 : « dans Drive » seulement sur une preuve de Drive ; sinon on dit ce qui est vrai. */
-      onSuccessMessage?.(`Vente de ${montantChf(pendingSale.current.transaction.amountTTC)} CHF enregistrée. ${receipt ? 'Quittance conservée dans Drive.' : 'Quittance gardée sur cet appareil, pas dans Drive.'}`);
-      saleBusy.current = false;
-      resetAndClose();
-    } catch (error) { setSaleError(error instanceof Error ? error.message : 'La vente reste à confirmer. Le brouillon est conservé.'); }
-    finally { saleBusy.current = false; setSaleSaving(false); }
-  };
-
-  const handleDownloadSaleReceipt = () => {
-    const ttc = saleAmount;
-    if (ttc <= 0) return;
-    const cfg = StorageService.getConfig();
-    ReceiptService.downloadReceipt(
-      {
-        clientName: saleClient || 'Client Comptoir',
-        beerName: saleBeer || 'Bière artisanale',
-        amountTTC: ttc,
-        tvaRate: 0.081,
-        paymentMethod: salePaymentMethod,
-        notes: `Règlement : ${salePaymentMethod}`
-      },
-      cfg
-    );
-  };
-
   // Launch Brew Batch
   const handleLaunchBrew = async () => {
     if (brewBusy.current) return;
@@ -637,7 +579,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   return (
     <>
-      <ModalShell open={isOpen} onClose={resetAndClose} size="lg" labelledBy={titleId} abovePage={screen === 'brew-batch'} dismissible={!saleSaving && !brewSaving}>
+      <ModalShell open={isOpen} onClose={fermer} size={screen === 'quick-sale' ? 'xl' : 'lg'} labelledBy={titleId} abovePage={screen === 'brew-batch'} dismissible={!caisseOccupee && !brewSaving}>
         {/* En-tête : réduit au titre et aux deux boutons quand le clavier
             occupe l'écran — c'est 28 px rendus à la saisie. */}
         <div
@@ -648,7 +590,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
           <div className="flex items-center space-x-2">
             {screen !== 'menu' && initialScreen === 'menu' && (
               <button
-                disabled={saleSaving || brewSaving}
+                disabled={caisseOccupee || brewSaving}
                 type="button"
                 aria-label="Toutes les actions"
                 onClick={() => setScreen('menu')}
@@ -663,15 +605,15 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               {screen === 'scan' && 'Lire un justificatif'}
               {screen === 'matching' && 'Matching & Contrôle Stocks'}
               {screen === 'quick-expense' && 'Saisie Dépense'}
-              {screen === 'quick-sale' && 'Enregistrer une vente'}
+              {screen === 'quick-sale' && 'Vendre'}
               {screen === 'brew-batch' && 'Préparer un brassin'}
             </h2>
           </div>
           <button
             type="button"
             aria-label="Fermer"
-            disabled={saleSaving || brewSaving}
-            onClick={resetAndClose}
+            disabled={caisseOccupee || brewSaving}
+            onClick={fermer}
             className="min-h-7 min-w-7 flex items-center justify-center text-cave-400 hover:text-cave-200 rounded-control transition"
           >
             <X className="w-4 h-4" />
@@ -707,7 +649,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 <Zap size={16} className="text-area-finances shrink-0"/><span className="flex-1">Saisir une dépense</span><ChevronRight size={14}/>
               </button>
               <button type="button" onClick={() => setScreen('quick-sale')} className="w-full min-h-9 py-1 flex items-center gap-2 text-left text-[13px] text-cave-200 hover:bg-cave-850 rounded-control">
-                <TrendingUp size={16} className="text-area-finances shrink-0"/><span className="flex-1">Encaisser une vente</span><ChevronRight size={14}/>
+                <TrendingUp size={16} className="text-area-finances shrink-0"/><span className="flex-1">Vendre</span><ChevronRight size={14}/>
               </button>
               <button type="button" onClick={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } else setScreen('brew-batch'); }} className="w-full min-h-9 py-1 flex items-center gap-2 text-left text-[13px] text-cave-200 hover:bg-cave-850 rounded-control">
                 <Beer size={16} className="text-area-production shrink-0"/><span className="flex-1">Préparer un brassin</span><ChevronRight size={14}/>
@@ -1216,40 +1158,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             </div>
           )}
 
-          {/* Une vente, son montant et son règlement ; justificatif facultatif. */}
+          {/* La caisse (v3a, choisie) : à qui, quoi, comment. Remplace l'ancien écran de vente et la feuille Facturer. */}
           {screen === 'quick-sale' && (
-            <div className="space-y-2 text-[13px] [&_label]:text-xs [&_input]:min-h-8 [&_input]:py-0.5 [&_input]:text-base [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_p]:text-xs">
-              {pendingSale.current && <p className="text-amber-200">La vente est conservée à l’identique. Réessaie pour confirmer cet enregistrement.</p>}
-              <fieldset disabled={saleSaving || Boolean(pendingSale.current)} className="space-y-2 border-0 p-0 m-0 min-w-0">
-                <MoneyField label={salePaymentMethod === 'Facture' ? 'Montant TTC à encaisser' : 'Montant TTC encaissé'} valueTTC={saleAmount} onChange={setSaleAmount} error={saleAmountMessage ?? undefined} tvaRate={StorageService.getConfig().fiscal.tvaNormalRate} isTvaRegistered={isTvaRegistered}/>
-                <Field label="Client (facultatif)" htmlFor="qa-sale-client"><TextInput id="qa-sale-client" value={saleClient} onChange={setSaleClient} placeholder="Client comptoir" className={inputClass}/></Field>
-                <Field label="Bière / conditionnement (facultatif)" htmlFor="qa-sale-beer"><TextInput id="qa-sale-beer" value={saleBeer} onChange={setSaleBeer} placeholder="Carton, fût, bière…" className={inputClass}/></Field>
-                <div role="group" aria-label="Mode de règlement" className="space-y-1">
-                  <p className="text-xs text-cave-400">Règlement</p>
-                  <div className="grid grid-cols-4 gap-1">
-                    {(['TWINT', 'Espèces', 'Virement', 'Facture'] as const).map(method => <button key={method} type="button" aria-pressed={salePaymentMethod === method} onClick={() => setSalePaymentMethod(method)} className={'min-h-7 px-1 rounded-control text-[13px] border ' + (salePaymentMethod === method ? 'border-area-finances bg-area-finances/10 text-cave-50' : 'border-cave-700 text-cave-200')}>{method}</button>)}
-                  </div>
-                  {salePaymentMethod === 'Facture' && <p className="text-xs text-cave-400">La vente restera à encaisser jusqu’au paiement.</p>}
-                </div>
-                <div className="border-t border-cave-800 pt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <input hidden ref={saleFileInputRef} type="file" aria-label="Justificatif de paiement" accept="image/*,application/pdf" className="hidden" onChange={async e => {
-                    const file = e.target.files?.[0]; e.target.value = '';
-                    if (file) { try { const data = await GeminiScannerService.fileToDataUrl(file); setSaleProofUrl(data); setSaleProofFileName(file.name); } catch { setSaleError('Ce fichier ne peut pas être lu. Choisis un autre justificatif.'); } }
-                  }}/>
-                  <button type="button" onClick={() => saleFileInputRef.current?.click()} className="min-h-7 inline-flex items-center gap-1.5 text-[13px] text-cave-200"><UploadCloud size={14}/>{saleProofUrl ? 'Changer le justificatif' : 'Joindre un justificatif (facultatif)'}</button>
-                  {saleProofUrl && <><span className="min-w-0 truncate text-xs text-cave-400">{saleProofFileName}</span><button type="button" onClick={() => { setSaleProofUrl(null); setSaleProofFileName(''); }} className="min-h-7 px-1 text-xs text-alert-strong">Retirer</button></>}
-                </div>
-              </fieldset>
-              <div className="space-y-1 [&_button]:min-h-7 [&_button]:py-0.5 [&_button]:text-[13px]">
-                <p className="text-xs text-cave-400">Une quittance sera conservée dans ton Drive privé.</p>
-                <DriveConnection compact always={Boolean(saleError)}/>
-              </div>
-              {saleError && <p role="alert" className="text-sm text-alert-strong">{saleError}</p>}
-              <div className="sticky bottom-0 flex flex-wrap justify-end items-center gap-2 min-h-9 border-t border-cave-800 bg-cave-900 py-0.5">
-                <button type="button" onClick={handleDownloadSaleReceipt} disabled={saleAmount <= 0 || Boolean(saleAmountMessage) || saleSaving} className="min-h-7 px-2 border border-cave-700 rounded-control text-[13px] text-cave-200 inline-flex items-center gap-1 disabled:opacity-50"><FileText size={14}/>Quittance PDF</button>
-                <button type="button" onClick={() => void handleSaveSale()} disabled={saleAmount <= 0 || Boolean(saleAmountMessage) || saleSaving} className="min-h-8 px-2 bg-ebc-straw text-cave-950 font-semibold rounded-control text-[13px] inline-flex items-center gap-1 disabled:opacity-50"><Check size={14}/>{saleSaving ? 'Enregistrement…' : pendingSale.current ? 'Reprendre la confirmation' : salePaymentMethod === 'Facture' ? 'Enregistrer à encaisser' : 'Valider l’encaissement'}</button>
-              </div>
-            </div>
+            <CaisseContenu onClose={resetAndClose} onSaved={onSuccessMessage} onBusy={occupe => { caisseBusy.current = occupe; setCaisseOccupee(occupe); }} fermetureRef={fermetureCaisse} />
           )}
 
           {/* SCREEN 6: BREW BATCH — brasser une recette déjà au carnet. */}
