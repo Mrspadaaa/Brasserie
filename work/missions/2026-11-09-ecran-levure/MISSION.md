@@ -30,6 +30,7 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte va dans DEFAUTS-RE
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Levure · panel v0 (12 concepts, tri du critique : r2, r3, u4) | 09.11 v1 | https://claude.ai/artifact/DJkJFqKMkfY5LTeqAyWVM7 | `work/missions/2026-11-09-ecran-levure/panel-v0.html` |
 
 ## Sources
 - `jury-levure/fiche.md`, `BRIEF-AUTEUR.md`, `inventaire/inventaire-levure.md`
