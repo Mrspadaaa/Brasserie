@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { BATCH_STATUS } from '../../../src/domain/batchStatus';
 
-const css = readFileSync('src/theme/themes.css', 'utf8');
+// Fins de ligne CRLF d'une extraction Git sous Windows : la lecture les ramène à \n.
+const css = readFileSync('src/theme/themes.css', 'utf8').replace(/\r\n/g, '\n');
 type Rgb = [number, number, number];
 function jetons(theme: 'clair' | 'cave'): Record<string, Rgb> {
   const ouverture = theme === 'clair' ? ':root,\n[data-theme=\'clair\'] {' : '[data-theme=\'cave\'] {';

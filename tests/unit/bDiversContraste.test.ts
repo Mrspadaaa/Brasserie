@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const racine = resolve(__dirname, '../..');
-const lire = (chemin: string) => readFileSync(resolve(racine, chemin), 'utf8');
+// Fins de ligne CRLF d'une extraction Git sous Windows : la lecture les ramène à \n.
+const lire = (chemin: string) => readFileSync(resolve(racine, chemin), 'utf8').replace(/\r\n/g, '\n');
 
 const luminance = ([r, g, b]: number[]) => {
   const lin = (c: number) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; };
