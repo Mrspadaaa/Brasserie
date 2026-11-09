@@ -1655,3 +1655,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **09.11**, mot pour mot, sur la passe 4 compta et prix (https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm) : « Par bouteille ou par an / c5b était mieux, mais il faut un peu l'améliorer »
   (lu : Prix = c5b, à améliorer légèrement ; les c6 ne la remplacent pas. Passe 5 : 3 retouches de c5b.)
 - **09.11**, mot pour mot, sur la passe 4 : « 3 et 4 candidat validé » (lu : rangée 3, rangement : e3a choisi ; rangée 4, Opérations : v6b choisi.)
+- **09.11**, mot pour mot : « Deux échelles côte à côte / c7c, c'est vraiment bien, mais on peut faire encore mieux!!! » (lu : Prix = base c7c ; passe 6 : variantes qui gardent l'idée des deux échelles côte à côte et vont plus loin.)
+- **09.11**, mot pour mot, sur les Prévisions de la passe 4 : « Bien / Chaque marche dit son nom / p5a / p4a plus les étiquettes ; la liste reste. / Le mieux mais résoud pas tout les problèmes. / Reprend certain aspect de Ta base / Le frigo en marche / p4a Fable 5.2 / Le socle / p5g Fable 5.2 / Avant, après / p5q / Fait des variantes »
+  (lu : base p5a ; variantes qui reprennent des aspects de p4a, p5g (le socle) et p5q (avant, après) pour résoudre ce qui reste.)
+- **09.11**, mot pour mot, à la suite : « Et l'escalier » (lu : p5s, « l'escalier qui monte » (Fable 5.2), entre aussi dans les aspects à reprendre pour p6.)

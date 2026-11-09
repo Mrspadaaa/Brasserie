@@ -31,3 +31,16 @@ Plancher à enrichir (L07). N'écris que dans `p4/<tes ids>/` et `p4/RESULTAT-<v
 Ids `c7a`–`c7c` dans `p4/` : c5b (`p3/c5b/`) reprise, **retouchée légèrement**, pas réinventée. Pistes tirées des critiques : la règle
 retrouve son aiguille franche (c4a) ; le graphe à deux axes se lit sans effort (un axe nommé, valeurs posées sur la courbe) ; la bascule
 « par bouteille / par an » reste sur le chiffre de tête. Corrections transversales toujours obligatoires. Une NOTE dit ce qui change.
+
+## Passe 6, Prix (ses mots : « Deux échelles côte à côte / c7c, c'est vraiment bien, mais on peut faire encore mieux!!! »)
+Ids `c8a`–`c8d` dans `p4/` : base c7c (`p4/c7c/`), son idée gardée (les deux échelles par bouteille et par an côte à côte, comme °C et °F),
+**poussée plus loin** : plus lisible, plus frappant, plus utile pour choisir un prix (format, Privé / Pro, l'impôt et l'emballage visibles,
+la proposition IA au toucher). Quatre pistes différentes entre elles. Corrections transversales obligatoires. NOTE : ce qui va plus loin que c7c.
+
+## Passe 6, Prévisions (ses mots : « p5a … Le mieux mais résoud pas tout les problèmes. Reprend certain aspect de … p4a … p5g … p5q … Fait des variantes »)
+Ids `p6a`–`p6f` dans `p4/` : base **p5a** (`p4/p5a/`, « chaque marche dit son nom », la liste reste), greffée d'aspects de **p4a** (`p3/p4a/`,
+le frigo en marche), **p5g** (`p4/f52/p5g/`, le socle) et **p5q** (`p4/f52/p5q/`, avant / après). Avant de dessiner, écris dans RESULTAT les
+problèmes que p5a ne résout pas encore (lis p4/RESULTAT-p.md, critique/SYNTHESE-P4.md, ses mots sur p4a : « on perds l'info directement sur
+le graph … dure à lire »), puis une variante par combinaison différente. Lisible en 3 s : peut-il acheter le frigo à 3 000 CHF, et quand ;
+ce que coûte le prochain brassin. Corrections transversales obligatoires. NOTE : ce qui vient de chaque base.
+Ajout (ses mots : « Et l'escalier ») : reprendre aussi **p5s** (`p4/f52/p5s/`, l'escalier qui monte).
