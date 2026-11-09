@@ -1,28 +1,20 @@
-# État de reprise — 09.11, soir (pilote)
+# État de reprise — 10.11 (pilote)
 
-## En ligne (hébergement 2e12f716 ; aiTask avec #200 fusionnée, 72811157 ; branche poussée)
-- Levure-retours :
-  - recherche sur place, conduite de base, alignements, ligne entière ;
-  - recherche avancée commune, et pour les houblons ;
-  - stock relié au catalogue, rôle « double ».
-  Joué en ligne : `../2026-11-09-levure-retours/critique/VERDICT-EN-LIGNE.md` (OK).
-- BR-45 : fusionné (ce9e707d), session archivée.
-- Dépense DP-1 :
-  - contrôles croisés, pastilles qui mènent au geste, mini recherche ;
-  - rabais rattachés, payé effectif, comptage confirmé ;
-  - champs de lecture côté serveur (c1).
-  Critique local : VERDICT-3, 0 bloquant.
+## En ligne
+- Hébergement c76481aa (index-Bm7Esjph.js) : DP-2 (totaux faux en rouge, renvois utiles, rangées sans chevauchement) et D382 (un seul
+  bouton « Documents »). Jeu en ligne 4 : rouge, gestes et « Documents » tiennent.
+- aiTask : afb30756 (champ `retirees` additif, redressement d'un décalage d'un rang de la 3.8) ; sans effet visible sur c76481aa.
+- Branche poussée jusqu'à afb30756 (p2, p3 et sa relance) ; hébergement revenu deux fois à c76481aa (jeux 5 et 7 : régressions).
 
-## En cours
-- Jeu en ligne passe 3 (critique neuf) : critique/VERDICT-EN-LIGNE-3.md — stock tenu par la dépense, unité/quantité (s1), non-recul des 5 points.
-- Tranché (pilote) : une ligne mal classée garde sa bande (5 tests D306) ; pastilles « 1 » masquées.
+## Ouvert — fusion des lectures (provisoire des deux Flash-Lite / 3.8)
+- Jeux en ligne 5, 6, 7 : chaque passe corrige des bloquants et en révèle d'autres dans le même module (`rangsProvisoires`,
+  `alignerLignes`, `retirees`, payé, comptage) : doublons « vues par une seule lecture », quantités perdues, corrections décalées,
+  payé 14,60, « 13 comptés ». Verdicts : `critique/VERDICT-EN-LIGNE-5.md` à `-7.md`.
+- L29 atteinte (trois rustines sur un module) : arrêt. Suite : une mission dédiée, « ## État de l'art » d'abord (problème type :
+  alignement de séquences / affectation des lignes entre lectures — Needleman-Wunsch, Hungarian, vote par champ), banc réel.
+- La 3.8 ne rend que la page 2 de deux tickets d'un même règlement : cause probable `MULTI_PAGE_NOTE` (ai.ts) ; non mesuré.
+- Coût Gemini cumulé 10,94 CHF > plafond D234 (5 CHF) : toute lecture réelle attend son accord.
 
-## Reste
-1. Lire VERDICT-EN-LIGNE ; corriger s'il y a un bloquant (nouvelle voie, VOIE.md complet).
-2. Rapport unique au brasseur, 400 caractères au plus : ce qui est en ligne ; les trois coûts Gemini du banc (0,128 + 0,140 + 0,576 CHF) ;
-   ses choix Finances en attente (https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su, session Suivi).
-3. Leçons proposées par les voies, à traiter :
-   - b1 : une consigne neuve se juge d'abord sur les pièces qui marchaient ; une seule lecture ne fait pas une preuve ;
-   - pilote : un VOIE.md copié par script doit être relu avant le lancement (d3 est parti sur l'objectif de d2).
-   LECONS est au plafond : fusionner avant d'ajouter.
-4. Données réelles : les photos de `pieces/` et `captures-brasseur/` restent hors Git (ignorées).
+## Leçon proposée (LECONS au plafond : fusionner avant)
+- Un jeu en ligne qui révèle un nouveau bloquant dans le même module à chaque passe : à la deuxième, arrêter les relances et passer
+  par L29 (état de l'art, banc), pas une troisième rustine.
