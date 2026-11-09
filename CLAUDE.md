@@ -96,7 +96,7 @@ Système complet : `docs/agents/systeme.md`.
   moins d'appels et un contexte léger. Un lot = un script préparé et un appel groupé, pas une exploration
   pas à pas ; jamais un appel en échec relancé tel quel ; sorties filtrées (`head`, `grep`, champs
   ciblés) ; pas d'outil ni de connecteur activé en cours de session (casse le cache) ; compacter ou
-  passer la main avant que les messages pèsent plus de 300 k. Mesure : `node scripts/agents/jetons.mjs`.
+  passer la main avant que les messages pèsent plus de 450 k. Mesure : `node scripts/agents/jetons.mjs`.
   Appliqué par hooks (`.claude/hooks/economie.mjs`) ; toute session lancée passe en /rc on (`rc-sessions.mjs`).
 - Arrêter la recherche quand les preuves permettent la décision. Grouper les
   lectures indépendantes ; garder les longs journaux en fichiers et remonter

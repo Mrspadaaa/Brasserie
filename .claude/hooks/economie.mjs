@@ -1,7 +1,7 @@
 // Économie de jetons, appliquée par hook et non par mémoire (brasseur, 09.11 : « pour l'éconmoie et maximisé la qualité »).
 //  PreToolUse        : refuse (code 2) un appel identique à un appel qui vient d'échouer → corriger la cause, pas relancer.
 //  PostToolUseFailure: retient la clé de l'appel en échec.  PostToolUse : l'oublie ; sortie > 20 000 car. → rappel de filtrer.
-//  Stop              : contexte > 300 k (lu dans le dernier usage du transcript) → une fois par palier de 100 k, code 2 :
+//  Stop              : contexte > 450 k (lu dans le dernier usage du transcript) → une fois par palier de 100 k, code 2 :
 //                      écrire l'état de reprise et passer la main (hand_off_to_session) ou compacter.
 // La qualité n'est jamais rabotée : le hook ne coupe aucun contrôle, il retire seulement les répétitions et le poids mort.
 import fs from 'node:fs';
@@ -15,7 +15,7 @@ let s = {}; try { s = JSON.parse(fs.readFileSync(f, 'utf8')); } catch { /* neuf 
 const garder = () => fs.writeFileSync(f, JSON.stringify(s));
 const cle = () => `${e.tool_name}:${JSON.stringify(e.tool_input ?? {})}`;
 const dire = (ev, t) => console.log(JSON.stringify({ hookSpecificOutput: { hookEventName: ev, additionalContext: t } }));
-const SEUIL_SORTIE = 20000, SEUIL_CONTEXTE = 300000;
+const SEUIL_SORTIE = 20000, SEUIL_CONTEXTE = 450000;
 
 switch (e.hook_event_name) {
   case 'PreToolUse':
