@@ -1659,3 +1659,5 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - **09.11**, mot pour mot, sur les Prévisions de la passe 4 : « Bien / Chaque marche dit son nom / p5a / p4a plus les étiquettes ; la liste reste. / Le mieux mais résoud pas tout les problèmes. / Reprend certain aspect de Ta base / Le frigo en marche / p4a Fable 5.2 / Le socle / p5g Fable 5.2 / Avant, après / p5q / Fait des variantes »
   (lu : base p5a ; variantes qui reprennent des aspects de p4a, p5g (le socle) et p5q (avant, après) pour résoudre ce qui reste.)
 - **09.11**, mot pour mot, à la suite : « Et l'escalier » (lu : p5s, « l'escalier qui monte » (Fable 5.2), entre aussi dans les aspects à reprendre pour p6.)
+- **09.11**, mot pour mot : « Deux échelles côte à côte / c7c / Et / Les étiquettes accrochées / p5b / Là je vois tout sur le graphe. / Par là dessus, à tout implémenter sur la vrai app, jsp du c'est toi qui fait ou une autre session, envoie les info à la session de gestion des tâches »
+  (lu : Prix = c7c, Prévisions = p5b, choisis. Le port de tous les écrans choisis dans l'app est confié à la session de gestion des tâches, qui le répartit.)

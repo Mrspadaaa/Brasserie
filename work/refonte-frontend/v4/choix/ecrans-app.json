@@ -138,6 +138,24 @@
       "mots": "3 et 4 candidat validé",
       "capture": "work/missions/2026-11-09-compta-prix/p4/v6b/v6b-page.png",
       "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "prix-marges",
+      "route": "c7c",
+      "statut": "choisi",
+      "choix": "c7c (c5b retouchée : deux échelles par bouteille et par an côte à côte)",
+      "mots": "Deux échelles côte à côte / c7c",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/c7c/c7c-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "previsions",
+      "route": "p5b",
+      "statut": "choisi",
+      "choix": "p5b (les étiquettes accrochées à l escalier : brassin futur, frigo, point bas)",
+      "mots": "Les étiquettes accrochées / p5b / Là je vois tout sur le graphe.",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/p5b/p5b-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
     }
   ]
 }
