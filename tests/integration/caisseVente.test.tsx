@@ -332,3 +332,69 @@ describe('Clients › fiche › Facturer ouvre la même caisse', () => {
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
   });
 });
+
+describe('Constats du test d\'écran (vx, 09.11)', () => {
+  it('1 et 2 : un PDF trop lourd est dit avec les mots de la caisse (« facture »), rien n\'est enregistré, jamais « justificatif »', async () => {
+    state.generate.mockReturnValue({ dataUrl: `data:application/pdf;base64,${'A'.repeat(5_700_000)}`, fileName: 'Facture.pdf', doc: { save: state.download }, totals: {} });
+    ouvrir(); choisirClient(/Martin Rey/); ajouter(/^33 cl/, 1);
+    fireEvent.click(primaire());
+    const alerte = await screen.findByText(/n’a pas pu être produite/);
+    expect(alerte).toHaveTextContent('La facture n’a pas pu être produite');
+    expect(alerte).toHaveTextContent('Rien n’est enregistré');
+    expect(screen.queryByText(/ustificatif/)).toBeNull();
+    expect(state.save).not.toHaveBeenCalled();
+  });
+  it('3 : sans vente notée depuis la caisse, la jauge ne dit pas « 0,0/27 » (inconnu, jamais 0) : « 27 L nets », barre hachurée', () => {
+    ouvrir();
+    const bouton = screen.getByRole('button', { name: /Pale Ale/ });
+    expect(bouton).toHaveTextContent('27 L nets');
+    expect(bouton).not.toHaveTextContent('0,0');
+    expect(bouton.querySelector('.cs-jg')).toHaveAttribute('data-inconnu');
+  });
+  it('4 : Échap ou × avec un panier plein avertit d\'abord, puis ferme au second appui ; un panier qui change réarme l\'avertissement', () => {
+    ouvrir(); ajouter(/^33 cl/, 24); ajouter(/^75 cl/, 6);
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+    expect(close).not.toHaveBeenCalled();
+    expect(screen.getByRole('status')).toHaveTextContent('Le panier (2 lignes) sera perdu');
+    ajouter(/^33 cl/, 1);
+    expect(screen.queryByText(/Le panier \(/)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer' }));
+    expect(close).not.toHaveBeenCalled();
+    expect(screen.getByRole('status')).toHaveTextContent('Le panier (2 lignes) sera perdu');
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer' }));
+    expect(close).toHaveBeenCalledTimes(1);
+  });
+  it('4b : un panier vide se ferme sans avertir', () => {
+    ouvrir();
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+    expect(close).toHaveBeenCalledTimes(1);
+  });
+  it('5 : la quittance n\'emploie pas « une ligne » : elle liste les articles', () => {
+    ouvrir(); ajouter(/^33 cl/, 24); ajouter(/^75 cl/, 6);
+    const quittance = screen.getByLabelText('Aperçu de la quittance');
+    expect(quittance).toHaveTextContent('24 × Pale Ale · 33 cl · 6 × Pale Ale · 75 cl');
+    expect(quittance).not.toHaveTextContent(/une ligne/);
+  });
+  it('6 : les initiales ignorent la particule : Café du Bourg → CB, Martin Rey → MR', () => {
+    ouvrir();
+    expect(within(screen.getByRole('button', { name: /Café du Bourg/ })).getByText('CB')).toBeTruthy();
+    expect(within(screen.getByRole('button', { name: /Martin Rey/ })).getByText('MR')).toBeTruthy();
+  });
+  it('7 : l\'en-tête de l\'annexe peut passer à la ligne sans couper « n° … · date » (nom de brasserie à deux mots)', () => {
+    const css = readFileSync('src/ui/vente/caisse.css', 'utf8');
+    expect(css).toMatch(/\.cs-dh \{[^}]*flex-wrap: wrap/);
+    expect(css).toMatch(/\.cs-dh > div:first-child \{[^}]*white-space: nowrap/);
+  });
+  it('8 : la caisse seule (Clients › Facturer) a le même en-tête que « + › Vendre » : étincelle, titre, × plat « Fermer »', async () => {
+    const hote = render(<QuickActionModal isOpen recipes={[]} onClose={close as any} initialScreen="quick-sale" />);
+    const enteteHote = within(screen.getByRole('dialog')).getByRole('button', { name: 'Fermer' }).className;
+    const iconeHote = screen.getByRole('dialog').querySelector('h2')!.previousElementSibling!.getAttribute('class');
+    hote.unmount(); cleanup();
+    const { Caisse } = await import('../../src/ui/vente/Caisse');
+    render(<Caisse onClose={close as any} />);
+    const seule = screen.getByRole('dialog', { name: 'Vendre' });
+    expect(within(seule).getByRole('button', { name: 'Fermer' }).className).toBe(enteteHote);
+    expect(seule.querySelector('h2')!.previousElementSibling!.getAttribute('class')).toBe(iconeHote);
+    expect(within(seule).queryByRole('button', { name: 'Fermer la vente' })).toBeNull();
+  });
+});

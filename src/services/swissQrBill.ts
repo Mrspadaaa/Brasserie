@@ -214,7 +214,9 @@ export const SwissQrBillService = {
     if (options.qr) {
       /* Section paiement SIX : 210 × 105 mm au bas de la page (297 - 105 = 192) ; si le texte la recouvrirait, elle prend sa propre page. */
       if (y > 187) doc.addPage();
-      doc.addImage(options.qr.png, 'PNG', 0, 192, 210, 105);
+      /* Compression obligatoire : jsPDF range une image sans compression ('NONE' par défaut) en pixels bruts, soit 2 480 × 1 240 × 3 octets = 9,2 Mo
+         (12,3 Mo en base64, refusé au-delà de 5,6 Mo). 'FAST' (Flate) la ramène à quelques dizaines de ko sans perdre un pixel : le QR reste à 300 ppp. */
+      doc.addImage(options.qr.png, 'PNG', 0, 192, 210, 105, 'section-paiement', 'FAST');
     }
     const fileName = `Facture_${invoiceNumber.replace(/[^\w-]/g, '_')}.pdf`;
     const dataUrl = doc.output('datauristring');

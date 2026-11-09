@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 import type { AppConfig, Batch, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -40,7 +40,13 @@ const moisCourt = (b: Batch): string => {
   const mois = Number((iso ?? suisse)?.[1]);
   return mois >= 1 && mois <= 12 ? MOIS[mois - 1] : '';
 };
-const initiales = (nom: string) => nom.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
+/** Initiales d'un nom : les particules (du, de, la, d', l'…) ne comptent pas — « Café du Bourg » → CB, comme sa maquette. */
+const PARTICULES = new Set(['du', 'de', 'des', 'la', 'le', 'les', 'au', 'aux', 'et', 'd', 'l', 'von', 'van', 'zum', 'zur']);
+export const initiales = (nom: string): string => {
+  const mots = nom.trim().split(/\s+/).map(m => m.replace(/^[dl]['’]/i, '')).filter(Boolean);
+  const utiles = mots.filter(m => !PARTICULES.has(m.toLowerCase()));
+  return (utiles.length ? utiles : mots).slice(0, 2).map(m => m[0].toUpperCase()).join('');
+};
 const fr = (cents: number) => (cents / 100).toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const nombre1 = (n: number) => n.toLocaleString('fr-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const dateCourte = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' });
@@ -98,7 +104,8 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const [identiteOuverte, setIdentiteOuverte] = useState(false);
   const [apercu, setApercu] = useState<{ svg: string; erreur: string } | null>(null);
   const [essai, setEssai] = useState(0);
-  const busy = useRef(false), avert = useRef(false);
+  const busy = useRef(false), avert = useRef(false), avertPanier = useRef(false);
+  const panierRef = useRef<{ n: number; fini: boolean }>({ n: 0, fini: false });
   const premiereTuile = useRef<HTMLButtonElement>(null);
 
   const vendables = useMemo(() => brassinsVendables(batches), [batches]);
@@ -161,10 +168,16 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
     fermetureRef.current = () => {
       if (busy.current) return false;
       if (lireBrouillon() && !avert.current) { avert.current = true; setAvertissement(`Une écriture locale existe déjà (${lireBrouillon()!.vente.numero}) : elle se confirmera à la reprise. Ferme encore pour la laisser en attente.`); return false; }
+      const { n, fini } = panierRef.current;
+      if (n > 0 && !fini && !lireBrouillon() && !avertPanier.current) { avertPanier.current = true; setAvertissement(`Le panier (${n} ligne${n > 1 ? 's' : ''}) sera perdu. Ferme encore pour l’abandonner.`); return false; }
       return true;
     };
     return () => { fermetureRef.current = null; };
   }, [fermetureRef]);
+
+  /* Un panier plein ne se perd pas d'un geste : le premier appui sur × ou Échap avertit (et se réarme dès que le panier change). */
+  panierRef.current = { n: lignes.length, fini: Boolean(resultat) };
+  useEffect(() => { avertPanier.current = false; setAvertissement(a => a.startsWith('Le panier') ? '' : a); }, [lignes]);
 
   const changerOccupe = (v: boolean) => { busy.current = v; setOccupe(v); onBusy?.(v); };
 
@@ -252,6 +265,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
 
   return (
     <div className="cs" data-mode={mode}>
+      {avertissement && <div className="cs-warn" role="status"><span>{avertissement}</span></div>}
       <div className="cs-app">
         <div className="cs-left">
           <div className="cs-who" role="group" aria-label="À qui">
@@ -271,12 +285,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               const j = jaugeBrassin(b, litresVendus(transactions, b.id));
               return (
                 <button key={id} type="button" className="cs-bc" aria-pressed={id === actifId} disabled={fieldsetOff} onClick={() => setSelection(s => [id, ...s.filter(x => x !== id)])}
-                  title={j.nets === null ? 'Litres nets à noter' : `Litres notés depuis la caisse, sur ${j.source === 'conditionne' ? 'les litres conditionnés' : 'les litres nets enregistrés'}`}>
+                  title={j.nets === null ? 'Litres nets à noter' : j.vendus === 0 ? 'Aucune vente notée depuis la caisse : les ventes d’avant ne sont pas comptées' : `Litres notés depuis la caisse, sur ${j.source === 'conditionne' ? 'les litres conditionnés' : 'les litres nets enregistrés'}`}>
                   <svg width="20" height="28" viewBox="0 0 22 30" aria-hidden="true"><path d="M3 3h16l-2 25H5z" fill="#F2C14E" stroke="currentColor" strokeWidth="1.8" /><path d="M3 3h16v4H3z" fill="#fff" stroke="currentColor" strokeWidth="1.8" /></svg>
                   <span><b>{b.name}</b><small>{moisCourt(b)}</small></span>
-                  <span className="cs-jg" data-inconnu={j.nets === null ? '' : undefined} data-depasse={j.depasse ? '' : undefined}>
+                  <span className="cs-jg" data-inconnu={j.nets === null || j.vendus === 0 ? '' : undefined} data-depasse={j.depasse ? '' : undefined}>
                     <div><i style={{ width: `${Math.round((j.ratio ?? 0) * 100)}%` }} /></div>
-                    <p>{j.nets === null ? 'litres à noter' : <><span className="cs-m">{nombre1(j.vendus)}</span>/<span className="cs-m">{Math.round(j.nets * 10) / 10}</span> L nets</>}{j.depasse ? ' · au-delà du conditionné' : ''}</p>
+                    <p>{j.nets === null ? 'litres à noter' : j.vendus === 0 ? <><span className="cs-m">{Math.round(j.nets * 10) / 10}</span> L nets</> : <><span className="cs-m">{nombre1(j.vendus)}</span>/<span className="cs-m">{Math.round(j.nets * 10) / 10}</span> L nets</>}{j.depasse ? ' · au-delà du conditionné' : ''}</p>
                   </span>
                 </button>
               );
@@ -364,13 +378,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               </button>
             : <div className="cs-fait" role="status"><b>Facture {resultat.numero} enregistrée</b><span className="cs-m">{fr(resultat.totalCents)} CHF</span></div>}
 
-          {(manques.length > 0 || erreur || manqueQrHorsLigne || avertissement || dateErreur) && (
+          {(manques.length > 0 || erreur || manqueQrHorsLigne || dateErreur) && (
             <div className="cs-notes">
               {manques.map(m => <div className="cs-note" key={m.cle}><span>{m.texte}</span>{m.bouton && <button type="button" onClick={m.action}>{m.bouton}</button>}</div>)}
               {manqueQrHorsLigne && <div className="cs-note"><span>{manqueQrHorsLigne}</span><button type="button" onClick={() => { setApercu(null); setEssai(n => n + 1); }}>Réessayer</button></div>}
               {dateErreur && <div className="cs-note" role="alert"><span>{dateErreur}</span></div>}
               {erreur && <div className="cs-note cs-note-err" role="alert"><span>{erreur}</span>{enAttente && !occupe && <button type="button" onClick={() => void soumettre(false)}>Réessayer</button>}</div>}
-              {avertissement && <div className="cs-note" role="status"><span>{avertissement}</span></div>}
             </div>
           )}
 
@@ -383,12 +396,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
                   <button type="button" className="cs-date cs-m" disabled={fieldsetOff} aria-label="Date de la facture" onClick={() => setDateOuverte(v => !v)}>{dateLongue(dateIso)}</button></small>
                 {dateOuverte && <input type="date" className="cs-dateinput" aria-label="Choisir la date" value={dateIso} onChange={e => choisirDate(e.target.value)} />}
               </div>
-              <div style={{ textAlign: 'right' }}><b style={{ fontSize: 15 }}>{company.name || 'Brasserie'}</b><small>{creancier?.localite ?? ''}</small></div>
+              <div className="cs-dh-r"><b>{company.name || 'Brasserie'}</b><small>{creancier?.localite ?? ''}</small></div>
             </div>
             <div className="cs-dto"><b>{nomAnnexe}</b>{client ? ` · ${client.type}` : ''}{client && !debiteurDe(client) && <><br /><span className="cs-att">adresse à compléter</span></>}</div>
             {mode === 'qr'
               ? lignes.map((l, i) => <div className="cs-dl" key={l.cle}><span>{l.designation} · {l.quantite} × <span className="cs-m">{montantChf(l.prixHT ?? NaN)}</span></span><span className="cs-m">{totaux ? fr(totaux.lines[i].netCents) : '—'}</span></div>)
-              : <div className="cs-dl"><span>quittance : une ligne · {lignes.length ? versArticles(lignes, taux).map(a => `${a.quantity} × ${a.description}`).join(' · ') : '—'}</span><span className="cs-m">{totaux ? fr(totaux.totalCents) : '—'}</span></div>}
+              : <div className="cs-dl"><span>{lignes.length ? versArticles(lignes, taux).map(a => `${String(a.quantity).replace('.', ',')} × ${a.description}`).join(' · ') : '—'}</span><span className="cs-m">{totaux ? fr(totaux.totalCents) : '—'}</span></div>}
             <div className="cs-dsum"><span>Total CHF · {assujetti ? 'TVA incluse' : 'sans TVA'}{mode === 'qr' && dueDate ? <> · payable au <span className="cs-m">{dateLongue(dueDate)}</span></> : mode === 'paye' ? <> · {moyen === 'twint' ? 'payé par TWINT' : moyen === 'cash' ? 'payé en espèces' : 'payé ici'}</> : null}</span><b className="cs-m">{libelleTotal}</b></div>
             {mode === 'qr' && <>
               <div className="cs-cut"><span>✂</span></div>
@@ -420,9 +433,12 @@ export function Caisse({ clientIdInitial, onClose, onSaved }: { clientIdInitial?
   const fermer = () => { if (fermeture.current && !fermeture.current()) return; onClose(); };
   return (
     <ModalShell open onClose={fermer} size="xl" labelledBy="caisse-titre" dismissible={!occupe}>
-      <div className="cs-hd">
-        <h2 id="caisse-titre">Vendre</h2>
-        <button type="button" aria-label="Fermer la vente" disabled={occupe} onClick={fermer}><X size={18} aria-hidden="true" /></button>
+      <div className="cs-hd shrink-0 flex items-center justify-between border-b border-cave-800 bg-cave-900/60 min-h-9 px-3 py-0.5">
+        <div className="flex items-center space-x-2">
+          <Sparkles className="w-4 h-4 text-area-finances" aria-hidden="true" />
+          <h2 id="caisse-titre" className="font-semibold text-lg text-cave-50">Vendre</h2>
+        </div>
+        <button type="button" aria-label="Fermer" disabled={occupe} onClick={fermer} className="min-h-7 min-w-7 flex items-center justify-center text-cave-400 hover:text-cave-200 rounded-control transition"><X className="w-4 h-4" aria-hidden="true" /></button>
       </div>
       <div className="cs-scroll"><CaisseContenu clientIdInitial={clientIdInitial} onClose={onClose} onSaved={onSaved} onBusy={setOccupe} fermetureRef={fermeture} /></div>
     </ModalShell>

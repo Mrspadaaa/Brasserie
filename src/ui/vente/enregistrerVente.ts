@@ -47,6 +47,15 @@ const memeBrassin = (lignes: LignePanier[]): string | undefined => {
   return ids.size === 1 ? [...ids][0] : undefined;
 };
 
+/**
+ * Le justificatif de l'écriture (le PDF produit). Son contrôle (`prepareFinanceDocument`) parle d'un « justificatif » que le brasseur n'a jamais joint :
+ * ici l'échec est dit avec les mots de la caisse, et rien n'a été enregistré.
+ */
+const justificatif = (id: string, dataUrl: string, nom: string, quoi: 'facture' | 'quittance'): ReturnType<typeof prepareFinanceDocument> => {
+  try { return prepareFinanceDocument(id, dataUrl.replace(/^data:application\/pdf;[^,]*base64,/, 'data:application/pdf;base64,'), nom, 'application/pdf'); }
+  catch { throw new Error(`La ${quoi} n’a pas pu être produite (PDF trop lourd ou illisible). Rien n’est enregistré : réessaie, ou signale-le si cela se répète.`); }
+};
+
 /** Prépare la vente (facture QR ou encaissement). Pure côté données : rien n'est écrit, rien n'est numéroté ailleurs. Lève `QrFactureInvalide` ou une erreur lisible. */
 export async function preparerVente(e: EntreeVente): Promise<VentePreparee> {
   const assujetti = e.config.fiscal.isTvaRegistered, taux = e.config.fiscal.tvaNormalRate;
@@ -68,7 +77,7 @@ export async function preparerVente(e: EntreeVente): Promise<VentePreparee> {
     const dueDate = echeanceFacture(e.dateIso, e.echeance);
     const qr = await preparerQrFacture({ iban: e.config.company.iban || COMPANY_FALLBACK.iban, creancier, debiteur, montantCents: totaux.totalCents, numero: e.numero, rasteriser: e.rasteriser });
     const pdf = SwissQrBillService.generateInvoicePdf(e.client, items, e.config, e.numero, { date: e.dateIso, dueDate, download: false, qr, creancier, debiteur });
-    const proof = prepareFinanceDocument(`proof-${crypto.randomUUID()}`, pdf.dataUrl.replace(/^data:application\/pdf;[^,]*base64,/, 'data:application/pdf;base64,'), pdf.fileName, 'application/pdf');
+    const proof = justificatif(`proof-${crypto.randomUUID()}`, pdf.dataUrl, pdf.fileName, 'facture');
     const tx: Transaction = {
       id: e.numero, ...base, description: libelleFacture(e.client.name, items), subcategory: 'Facture client', proofNotes: `Client: ${e.client.name}`,
       proofFileName: pdf.fileName, proofType: 'application/pdf', syncedToDrive: true,
@@ -82,7 +91,7 @@ export async function preparerVente(e: EntreeVente): Promise<VentePreparee> {
   const methode = e.moyen === 'twint' ? 'TWINT' : 'Espèces';
   /* La quittance imprimée porte UNE ligne de résumé et le total (le service A5 ne connaît pas les lignes) ; l'écriture, elle, porte toutes les lignes. */
   const recu = ReceiptService.generateReceiptPdf({ clientName: nomClient, beerName: resume, amountTTC: totaux.totalCents / 100, tvaRate: assujetti ? taux : 0, paymentMethod: methode, date: e.dateIso.split('-').reverse().join('.'), notes: `Règlement : ${methode}`, receiptNumber: id }, e.config);
-  const proof = prepareFinanceDocument(`proof-${crypto.randomUUID()}`, recu.dataUrl.replace(/^data:application\/pdf;[^,]*base64,/, 'data:application/pdf;base64,'), recu.fileName, 'application/pdf');
+  const proof = justificatif(`proof-${crypto.randomUUID()}`, recu.dataUrl, recu.fileName, 'quittance');
   const tx: Transaction = {
     id, ...base, description: `Vente ${resume} — ${nomClient}`, subcategory: 'Vente directe', proofNotes: `Client: ${nomClient} · Paiement: ${methode}`,
     proofFileName: proof.fileName, proofType: 'application/pdf', syncedToDrive: true,
