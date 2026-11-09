@@ -339,13 +339,29 @@ export function montantDeLigne(amountTTC: number | null, price: number | null, q
  * (`evidence`, « désignation 86.95 1 p. 1 ») si, et seulement si, un entier de 1 à 99 suit EXACTEMENT le prix lu ou le montant lu de la ligne. Une quantité déjà lue n'est jamais réécrite,
  * un autre type de document ni un extrait sans ce motif ne changent rien : jamais une quantité qui n'est pas imprimée.
  */
-export function quantiteDeTicket(quantity: number | null, documentType: unknown, evidence: string, price: number | null, amountTTC: number | null): number | null {
+/**
+ * B1 (09.11, P5) : un entier court tout à droite d'une ligne, après le montant, est le CODE DE TVA (« 5.40 2 » : 2 = code), pas une quantité.
+ * Il est reconnu quand il est le code de la ligne (`vatCode`) ou un code du récapitulatif de TVA du document.
+ */
+export const estCodeTva = (entier: number, vatCode: string, codesTva: ReadonlySet<string>): boolean => vatCode === String(entier) || codesTva.has(String(entier));
+/**
+ * B1 : une quantité lue qui EST le code de TVA, quand l'extrait imprimé ne la montre qu'en fin de ligne après le montant, n'est pas une quantité : la quantité est
+ * le nombre imprimé en tête de ligne, sinon absente (null : le montant de la ligne reste alors le prix, jamais 2 × le prix). Toute autre quantité est gardée.
+ */
+export function quantiteSansCodeTva(quantity: number | null, evidence: string, vatCode: string, codesTva: ReadonlySet<string>): number | null {
+  if (quantity === null || !estCodeTva(quantity, vatCode, codesTva)) return quantity;
+  const fin = /(\d+[.,]\d{2})\s+(\d{1,2})\s*$/.exec(evidence.trim());
+  if (!fin || Number(fin[2]) !== quantity) return quantity;
+  const tete = /^\s*(\d{1,3})\s+\S/.exec(evidence);
+  return tete ? Number(tete[1]) : null;
+}
+export function quantiteDeTicket(quantity: number | null, documentType: unknown, evidence: string, price: number | null, amountTTC: number | null, vatCode = '', codesTva: ReadonlySet<string> = new Set()): number | null {
   if (quantity !== null || documentType !== 'receipt') return quantity;
   const m = /(\d+[.,]\d{2})\s+(\d{1,2})(?:\s+p\.?\s*\d+)?\s*$/i.exec(evidence.trim());
   if (!m) return quantity;
   const imprime = toCents(Number(m[1].replace(',', '.'))), entier = Number(m[2]);
   const lus = [price, amountTTC].flatMap(v => (v === null ? [] : [toCents(v)]));
-  return entier >= 1 && lus.includes(imprime) ? entier : quantity;
+  return entier >= 1 && lus.includes(imprime) && !estCodeTva(entier, vatCode, codesTva) ? entier : quantity;
 }
 
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
@@ -357,12 +373,15 @@ export function normalizeInvoiceScan(raw: any) {
     if (!rejets.some(r => r.champ === champ && r.ligne === ligne && r.luTexte === luTexte.slice(0, 60))) rejets.push({ champ, ligne, luTexte: luTexte.slice(0, 60), raison });
   };
   const sourceItems: any[] = Array.isArray(raw?.items) ? raw.items : [];
+  // B1 : les codes du récapitulatif de TVA imprimé, pour ne jamais lire un code de TVA comme une quantité.
+  const codesTva = new Set<string>((Array.isArray(raw?.vat) ? raw.vat : []).map((row: any) => text(row?.code, 10)).filter((c: string) => c !== ''));
   const items: CoreItem[] = sourceItems.slice(0, SCAN_MAX_ITEMS).map((item: any, index: number) => {
     const alphaRead = number(item?.alphaPctLu ?? item?.alphaPct), alphaPct = alphaRead !== null && alphaRead > 0 && alphaRead <= 30 ? alphaRead : null;
     if (alphaRead !== null && alphaPct === null) reject('alphaPct', index + 1, String(alphaRead), 'α hors de ]0 ; 30] %');
     const code = text(item?.vatCode, 60);
     if (code.length > 10) reject('vatCode', index + 1, code, 'code de TVA coupé à 10 caractères');
-    const price = number(item?.price), quantity = quantiteDeTicket(number(item?.quantity), raw?.documentType, text(item?.evidence, 250), price, number(item?.amountTTC));
+    const price = number(item?.price), evidenceLue = text(item?.evidence, 250);
+    const quantity = quantiteDeTicket(quantiteSansCodeTva(number(item?.quantity), evidenceLue, code, codesTva), raw?.documentType, evidenceLue, price, number(item?.amountTTC), code, codesTva);
     return {
       id: `line-${index + 1}`, name: text(item?.name), kind: SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const,
       quantity, unit: text(item?.unit, 30), price, amountTTC: montantDeLigne(number(item?.amountTTC), price, quantity),
@@ -391,7 +410,31 @@ export function normalizeInvoiceScan(raw: any) {
   const lostCertain = Math.max(0, sourceItems.length - SCAN_MAX_ITEMS, Number.isInteger(raw?.linesLost) && raw.linesLost > 0 ? raw.linesLost : 0);
   const announcedGap = printedLineCount !== null ? Math.max(0, printedLineCount - items.length - lostCertain) : 0;
 
+  // c1 (09.11) : les champs des contrôles croisés. Un champ absent reste null / absent : l'inconnu n'est jamais 0.
+  const entierLu = (v: unknown): number | null => (typeof v === 'number' && Number.isInteger(v) && v >= 0 ? v : null);
+  const montantPaye = number(raw?.amountPaid), montantTerminal = number(raw?.terminalAmount);
+  const ignoredLines = Array.isArray(raw?.ignoredLines)
+    ? raw.ignoredLines.slice(0, 20).filter((l: any) => text(l?.label)).map((l: any) => ({
+      label: text(l.label, 80), amount: number(l.amount),
+      kind: ['foreign_currency', 'payment', 'subtotal', 'other'].includes(l?.kind) ? l.kind as 'foreign_currency' | 'payment' | 'subtotal' | 'other' : 'other' as const,
+    }))
+    : null;
+  const heureLue = /^([01]?\d|2[0-3])[:h.]([0-5]\d)$/.exec(text(raw?.printedTime, 8));
+  // Une clé n'existe que si la lecture la porte : un ancien résultat (cache, ancien serveur) sort comme avant, et l'absence reste « inconnu », jamais 0.
+  const controlesPiece = {
+    ...(montantPaye !== null && montantPaye >= 0 ? { amountPaid: montantPaye } : {}),
+    ...(montantTerminal !== null && montantTerminal >= 0 ? { terminalAmount: montantTerminal } : {}),
+    ...(entierLu(raw?.printedItemCount) !== null ? { printedItemCount: entierLu(raw?.printedItemCount)! } : {}),
+    ...(entierLu(raw?.countedAmounts) !== null ? { countedAmounts: entierLu(raw?.countedAmounts)! } : {}),
+    ...(entierLu(raw?.countedEans) !== null ? { countedEans: entierLu(raw?.countedEans)! } : {}),
+    ...(heureLue ? { printedTime: `${heureLue[1].padStart(2, '0')}:${heureLue[2]}` } : {}),
+    ...(ignoredLines ? { ignoredLines } : {}),
+    ...(typeof raw?.photoIncomplete === 'boolean' ? { photoIncomplete: raw.photoIncomplete as boolean } : {}),
+    ...(text(raw?.photoIncompleteNote, 120) ? { photoIncompleteNote: text(raw?.photoIncompleteNote, 120) } : {}),
+  };
+
   const result = {
+    ...controlesPiece,
     documentType, documentTypeLu: DOCUMENT_TYPES.includes(raw?.documentTypeLu) ? raw.documentTypeLu as DocumentType : documentType,
     documentTypeRetenu: (proForma && paymentEvidence === 'paid' && documentType === 'quote' ? 'invoice' : documentType) as DocumentType, proForma,
     paymentEvidence, paymentMethod,

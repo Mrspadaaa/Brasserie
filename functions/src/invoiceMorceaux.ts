@@ -261,6 +261,23 @@ export function overlapDrops(acc: any[], next: any[], window = OVERLAP_WINDOW): 
   return drop;
 }
 
+const sumCounts = (list: any[], field: string): number | null => { const v = list.map(entry => entry?.[field]).filter((x): x is number => typeof x === 'number'); return v.length ? v.reduce((a, b) => a + b, 0) : null; };
+/** c1 : les champs des contrôles croisés des parties, recollés ; une clé n'existe que si une partie la porte (sinon la lecture sort comme avant). */
+const champsControles = (parts: any[]) => {
+  const out: Record<string, unknown> = {};
+  const compte = (c: string) => sumCounts(parts, c);
+  const dernier = (c: string) => [...parts].reverse().map(p => p?.[c]).find(v => typeof v === 'number');
+  if (compte('countedAmounts') !== null) out.countedAmounts = compte('countedAmounts');
+  if (compte('countedEans') !== null) out.countedEans = compte('countedEans');
+  if (dernier('amountPaid') !== undefined) out.amountPaid = dernier('amountPaid');
+  if (dernier('terminalAmount') !== undefined) out.terminalAmount = dernier('terminalAmount');
+  if (dernier('printedItemCount') !== undefined) out.printedItemCount = dernier('printedItemCount');
+  const heure = firstFilled(parts, 'printedTime'); if (heure) out.printedTime = heure;
+  if (parts.some(p => Array.isArray(p?.ignoredLines))) out.ignoredLines = parts.flatMap(p => (Array.isArray(p?.ignoredLines) ? p.ignoredLines : []));
+  if (parts.some(p => p?.photoIncomplete === true)) { out.photoIncomplete = true; const note = firstFilled(parts.filter(p => p?.photoIncomplete === true), 'photoIncompleteNote'); if (note) out.photoIncompleteNote = note; }
+  else if (parts.some(p => p?.photoIncomplete === false)) out.photoIncomplete = false;
+  return out;
+};
 const firstFilled = (list: any[], field: string) => list.map(entry => entry?.[field]).find(value => !isBlank(value));
 const lastFilled = (list: any[], field: string) => [...list].reverse().map(entry => entry?.[field]).find(value => !isBlank(value));
 /**
@@ -294,6 +311,8 @@ export function mergeDecoded(parts: any[], options: { dedupe: boolean }): any {
     proForma: parts.some(part => part?.proForma === true),
     amountHT: nullable('amountHT'), tvaAmount: nullable('tvaAmount'), amountTTC: nullable('amountTTC'), tvaRate: nullable('tvaRate'), vat,
     printedLineCount: counted.length ? counted.reduce((a, b) => a + b, 0) : null,
+    // c1 : contrôles croisés. Comptes par partie : sommés (null si aucune partie ne les donne) ; règlement et nombre imprimé : pied du document, dernière valeur lue ; heure : première ; lignes écartées : toutes ; photo : une partie incomplète suffit.
+    ...champsControles(parts),
     linesLost: parts.reduce((sum, part) => sum + (typeof part?.linesLost === 'number' ? part.linesLost : 0), 0),
     fieldWarnings: warnings, rejets: parts.flatMap(part => (Array.isArray(part?.rejets) ? part.rejets : [])), items
   };

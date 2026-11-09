@@ -54,6 +54,18 @@ function comparisonKey(field: string, value: unknown): string {
   return `text:${normalized}`;
 }
 
+/**
+ * Vote d'un nombre de contrôle (payé, terminal, comptes) : la valeur lue par au moins deux lectures ; à défaut la 3ᵉ lecture (la 3.8 qui tranche) si elle en porte une ; sinon `undefined`
+ * (le champ reste absent : inconnu, jamais 0). Une lecture vide ne pèse pas contre deux lectures qui concordent.
+ */
+export function voterChampControle(valeurs: unknown[]): number | undefined {
+  const nombres = valeurs.map(x => (typeof x === 'number' && Number.isFinite(x) ? Math.round(x * 100) : null));
+  for (let k = 0; k < nombres.length; k++) {
+    if (nombres[k] !== null && nombres.filter(n => n === nombres[k]).length >= 2) return valeurs[k] as number;
+  }
+  if (valeurs.length === 3 && nombres[2] !== null) return valeurs[2] as number;
+  return undefined;
+}
 function majority<T>(values: T[], field: string): { value: T; index: number } | undefined {
   for (let index = 0; index < values.length; index++) {
     const key = comparisonKey(field, values[index]);
@@ -435,6 +447,21 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
   if (n === 3 && baseIndex === 0 && !complete01 && !complete02 && !complete12) {
     // aucune paire complète : la base reste la première lecture (signalé plus haut)
   }
+
+  // c1 : les champs des contrôles croisés ne se votent pas ; la lecture de base les porte, une valeur absente se prend dans une autre lecture (jamais inventée), une photo incomplète pour une lecture l'est.
+  // Comme le total : deux lectures qui concordent l'emportent (une 3.8 vide ne les efface pas) ; sans concordance, la 3.8 seule (la 3ᵉ lecture) ; sinon rien : jamais une valeur lue une seule fois par une Flash-Lite.
+  for (const champ of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans'] as const) {
+    const valeur = voterChampControle(readings.map((r: any) => r[champ]));
+    if (valeur !== undefined) merged[champ] = valeur;
+  }
+  const heure = base.printedTime || readings.map((r: any) => r.printedTime).find((v: unknown) => v);
+  if (heure) merged.printedTime = heure;
+  const ecartees = Array.isArray(base.ignoredLines) ? base.ignoredLines : readings.map((r: any) => r.ignoredLines).find((v: unknown) => Array.isArray(v));
+  if (ecartees) merged.ignoredLines = ecartees;
+  const incompletes = readings.filter((r: any) => r.photoIncomplete === true);
+  if (incompletes.length) { merged.photoIncomplete = true; if (incompletes[0].photoIncompleteNote) merged.photoIncompleteNote = incompletes[0].photoIncompleteNote; }
+  else if (readings.some((r: any) => r.photoIncomplete === false)) merged.photoIncomplete = false;
+  // (sans lecture qui les porte, les clés restent absentes : un ancien résultat sort comme avant)
 
   // 4. Fusion : contrôles recalculés sur ce qui est retenu
   const normalized = normalizeInvoiceScan(merged);

@@ -193,12 +193,19 @@ Sur un bordereau, la somme des lignes n’est PAS un total final imprimé : amou
 Ne prends pas une quantité totale, une taille de vêtement, un numéro client ou un numéro de commande pour un montant ou un numéro de facture.
 paymentEvidence vaut paid seulement si le paiement est explicitement établi, unpaid si un solde à payer est explicite, unknown sinon. Un document livré n’atteste pas son paiement.
 paymentMethod est le moyen de paiement IMPRIMÉ sur le document (rejeu du 08.11, RL-8 : « TWINT CHF 165.20 Paye ») : twint, cash (espèces), card (carte, Maestro, Visa, Postcard), bank_transfer (virement, bulletin payé), other (un autre moyen écrit) ; unknown s’il n’est pas imprimé. Ne le devine jamais d’après le type de commerce.
+amountPaid est le montant que le ticket dit avoir reçu ou payé POUR CE TICKET (« Montant reçu », « Payé », « Bezahlt », « Reçu », espèces données moins rendu non comprises) ; null s’il n’est pas imprimé. Le montant du terminal de paiement (« Total EFT », « EFT CHF », « TWINT CHF », « Karte ») n’est PAS amountPaid : un seul paiement peut couvrir plusieurs tickets ; recopie-le dans terminalAmount, tel quel, sans jamais le remplacer par le total.
+terminalAmount est le montant imprimé par le terminal de paiement (Total EFT, TWINT, carte) ; null s’il n’est pas imprimé. C’est une information : il peut différer du total du ticket sans que rien ne soit faux.
+printedItemCount est le nombre d’articles que le document IMPRIME lui-même (« 3 articles », « Anzahl Artikel : 29 ») ; null s’il n’est pas imprimé : ne le compte jamais toi-même (c’est printedLineCount).
+Comptage indépendant, à faire AVANT de transcrire items, sans te servir d’items : countedAmounts est le nombre de montants d’ARTICLES et de REMISES imprimés dans la colonne des montants des lignes, et rien d’autre : ni le total, ni le montant reçu ou payé, ni le montant du terminal (EFT, TWINT), ni la TVA, ni un montant en devise étrangère. countedEans est le nombre de codes EAN (8 ou 13 chiffres) imprimés sur les lignes d’articles. null si tu ne peux pas compter.
+ignoredLines : chaque ligne imprimée qui n’est PAS un article, au lieu de la mettre dans items : un montant en devise étrangère (« Montant en EUR 370,92 », foreign_currency), une ligne de règlement (TWINT, EFT, carte, espèces, rendu ; payment), un sous-total ou un total intermédiaire (subtotal), toute autre ligne qui n’est pas un article (other). Recopie son libellé et son montant ; [] s’il n’y en a pas. Une remise (Rabais, Aktion, ligne négative sous un article) n’est pas un article : elle reste dans items, kind discount, montant négatif, rendue IMMÉDIATEMENT sous l’article qu’elle réduit, avec son libellé imprimé ; elle n’entre pas dans le nombre d’articles.
+printedTime est l’heure imprimée du ticket (HH:MM), "" si absente.
+photoIncomplete vaut true seulement si la zone des montants (colonne des prix, totaux, règlement) est coupée, pliée, tachée, floue ou masquée sur l’image ; photoIncompleteNote dit en quelques mots où. false si tout est lisible. Ne devine jamais un montant caché : null ou valeur absente.
 fieldWarnings : un avertissement par champ au plus, et seulement pour une valeur illisible, absente alors qu’elle est essentielle (date, total TTC, fournisseur), ou confondable avec une autre (par exemple deux numéros proches) ; la raison courte donne les deux valeurs en cause.
 N'ajoute jamais d'avertissement pour une valeur lue sans hésitation, ni pour expliquer où elle est imprimée, ni pour un champ absent par nature : total HT non imprimé (amountHT = null), taux unique d'un document à plusieurs taux (porté par vat), intitulé pro-forma (porté par proForma).
 items : toutes les lignes, y compris matériel, entretien/réparation, ingrédients, service, emballage,
 transport et remise (montant négatif), sans en omettre aucune, quel que soit leur nombre. price est le prix unitaire imprimé;
-amountTTC est le total TTC de la ligne uniquement s'il est imprimé, sinon null.
-Sur un ticket de caisse de magasin, un entier isolé imprimé après le prix d’une ligne (colonne « Qté » ou sans titre, par exemple « 86.95 1 ») est la quantité de la ligne : recopie-le dans quantity (« 1 » = 1 pièce) et laisse unit vide ; ne laisse pas quantity à null quand il est imprimé.
+amountTTC est le montant de la ligne tel qu’imprimé dans la colonne des montants : remplis-le TOUJOURS quand il est imprimé, même si price est lu aussi et même sur un ticket qui n’imprime qu’un montant par ligne ; null seulement s’il n’est pas imprimé.
+Sur un ticket de caisse de magasin, un entier isolé imprimé après le prix d’une ligne (colonne « Qté » ou sans titre, par exemple « 86.95 1 ») est la quantité de la ligne : recopie-le dans quantity (« 1 » = 1 pièce) et laisse unit vide ; ne laisse pas quantity à null quand il est imprimé. Exception : un entier court tout à droite de la ligne, dans la colonne TVA / MWST / code de taxe (le même code que dans le récapitulatif de TVA, par exemple « 5.40 2 » où 2 est le code), est vatCode, JAMAIS la quantité ; la quantité est alors le nombre imprimé en tête de ligne, avant la désignation, ou null s’il n’y en a pas.
 name recopie exactement la désignation imprimée, sans la traduire, la résumer ni ajouter une explication.
 Conserve l'ordre des lignes et les lignes distinctes même si leurs désignations se répètent.
 kind : equipment = bien durable, maintenance = réparation/entretien, stock = ingrédient ou consommable,
@@ -227,6 +234,16 @@ N'invente ni quantité, ni unité, ni catégorie de stock, ni prix d'achat à pa
         proForma: { type: 'BOOLEAN' },
         vat: arr(S({ code: str, rate: { ...num, nullable: true }, base: { ...num, nullable: true }, amount: { ...num, nullable: true } }, ['code', 'rate', 'base', 'amount'])),
         printedLineCount: { type: 'INTEGER', nullable: true },
+        // c1 (09.11) : contrôles croisés de la pièce ; hors `required`, jamais exigés (une lecture sans eux sort comme avant).
+        amountPaid: { ...num, nullable: true },
+        terminalAmount: { ...num, nullable: true },
+        printedItemCount: { type: 'INTEGER', nullable: true },
+        countedAmounts: { type: 'INTEGER', nullable: true },
+        countedEans: { type: 'INTEGER', nullable: true },
+        printedTime: str,
+        ignoredLines: arr(S({ label: str, amount: { ...num, nullable: true }, kind: { type: 'STRING', enum: ['foreign_currency', 'payment', 'subtotal', 'other'] } }, ['label', 'amount', 'kind'])),
+        photoIncomplete: { type: 'BOOLEAN', nullable: true },
+        photoIncompleteNote: str,
         amountHT: { ...num, nullable: true },
         tvaRate: { ...num, nullable: true },
         tvaAmount: { ...num, nullable: true },
