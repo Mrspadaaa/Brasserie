@@ -339,7 +339,8 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
   merged.documentTypeLu = merged.documentType;
 
   // Bloc TVA : comparé trié par taux, en centimes. Un désaccord est un point, jamais une lecture payante (P5).
-  const vatKey = (r: InvoiceScanResult) => JSON.stringify([...r.vat].map(v => [v.code, v.rate, toCents(v.base), toCents(v.amount)]).sort((a, b) => ((a[1] as number ?? -1) - (b[1] as number ?? -1)) || String(a[0]).localeCompare(String(b[0]))));
+  // LT-5 (08.11, doc21) : le code imprimé n'est qu'un libellé (« N » et « %-TVA1 » pour la même rangée) ; seuls le taux, la base et le montant votent.
+  const vatKey = (r: InvoiceScanResult) => JSON.stringify([...r.vat].map(v => [v.rate, toCents(v.base), toCents(v.amount)]).sort((a, b) => ((a[0] ?? -1) - (b[0] ?? -1)) || ((a[1] ?? -1) - (b[1] ?? -1)) || ((a[2] ?? -1) - (b[2] ?? -1))));
   const vatKeys = readings.map(vatKey);
   if (!vatKeys.every(k => k === vatKeys[0])) {
     const vatDecision = majority(vatKeys, 'vat');

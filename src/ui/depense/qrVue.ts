@@ -2,6 +2,7 @@
 // Fonctions pures : le résultat de la lecture du QR (`qrLecture.ts`) et la confrontation (`qrFacture.ts`) arrivent calculés ; rien n'est écrit, aucun champ n'est changé.
 import type { ChampConfronte, ConfrontationQr, ConditionS1, LectureQr, QrFacture } from '../../services/qrFacture';
 import type { ResultatQr } from '../../services/qrLecture';
+import { PAS_LISIBLE_PX } from '../../services/qrOptions';
 
 /** Les états dessinés par z2 : attente (lecture…), ok (QR ✓), diff (le montant du QR), partiel, off (illisible), sans (cercle vide « sans QR »). */
 export type EtatSceau = 'wait' | 'ok' | 'diff' | 'partiel' | 'off' | 'sans';
@@ -47,7 +48,7 @@ export interface VueQr {
   duel: Duel | null;
   /** Le montant du QR contredit celui de la page : le total est douteux jusqu'au choix du brasseur. */
   contredit: boolean;
-  /** L'illisible propose de photographier le QR. */
+  /** L'illisible propose de photographier le QR, sauf s'il est vu net (LO-5 : barré ou abîmé sur la pièce, une photo n'y change rien). */
   photographier: boolean;
   /** Les champs (hors total) que le QR contredit : chacun est marqué dans le bandeau et désigné par une chip numérotée. */
   ecarts?: Array<'facture' | 'date' | 'devise' | 'creancier'>;
@@ -174,8 +175,8 @@ function lignesSeules(qr: QrFacture, ms: number, bulletins = 0): LigneFiche[] {
 }
 
 /** Ce que la lecture de la facture dit seule, quand le QR n'a rien décodé (illisible) : une aide, jamais une confirmation. */
-function lignesIllisible(lecture: LectureQr | null): LigneFiche[] {
-  const sortie: LigneFiche[] = [{ cle: 'qr', libelle: 'QR', valeur: 'vu, rien décodé', statut: 'vide', note: '' }];
+function lignesIllisible(lecture: LectureQr | null, net = false): LigneFiche[] {
+  const sortie: LigneFiche[] = [{ cle: 'qr', libelle: 'QR', valeur: net ? 'vu net, mais barré ou abîmé : rien décodé' : 'vu, rien décodé', statut: 'vide', note: '' }];
   if (!lecture) return sortie;
   sortie.push({ cle: 'montant', libelle: 'Montant', valeur: typeof lecture.amountTTC === 'number' ? `lu ${fr2(lecture.amountTTC)} · à vérifier sur la page` : 'non lu', statut: 'vide', note: '' });
   if (lecture.invoiceNumber?.trim()) sortie.push({ cle: 'facture', libelle: 'Facture', valeur: `lu ${lecture.invoiceNumber.trim()}`, statut: 'vide', note: '' });
@@ -193,7 +194,9 @@ export function vueQr(resultat: ResultatQr | null, confrontation: ConfrontationQ
   if (resultat.statut === 'non-verifie') return null;
   if (resultat.statut === 'sans') return { etat: 'sans', verdict: '', aria: 'Aucun QR-facture sur ce document', lignes: [], duel: null, contredit: false, photographier: false };
   if (resultat.statut === 'illisible') {
-    return { etat: 'off', verdict: 'illisible', aria: 'QR-facture : illisible', lignes: lignesIllisible(lecture), duel: null, contredit: false, photographier: true };
+    // LO-5 : vu assez grand (pas ≥ 4 px), l'échec ne vient pas de la photo : le geste « Photographier le QR » n'est plus proposé.
+    const net = resultat.pasPx !== undefined && resultat.pasPx >= PAS_LISIBLE_PX;
+    return { etat: 'off', verdict: 'illisible', aria: net ? 'QR-facture : vu, mais barré ou abîmé' : 'QR-facture : illisible', lignes: lignesIllisible(lecture, net), duel: null, contredit: false, photographier: !net };
   }
   const qr = resultat.qr;
   if (!qr.valid) {

@@ -1152,3 +1152,15 @@ describe('k4 — le jugement : listes, unités, prix, lignes invisibles, genres'
     expect(check.cleanWrong).toEqual([]);
   });
 });
+
+// Mission 2026-11-09-banc-gemini : le banc rejouait C★v sans la règle LT-2 de la production (doc21, passe m9 : deux Flash-Lite 07.11.2026, la 3.8 07.11.2025
+// tranchait seule et le banc comptait un faux « corrigé » que la production ne fait pas). Lectures fabriquées ; aucune valeur d'une vraie pièce.
+describe('C★v du banc applique la règle LT-2 de la production (dateDuVoteEtoile)', () => {
+  it('deux Flash-Lite 07.11.2026, la 3.8 07.11.2025 : le banc garde 2026 comme finalOfStarVote de production', () => {
+    const lite = (lecture: 1 | 2, vendor: string) => reading(lecture, invoice('stock', { vendor, date: '07.11.2026' }), LITE_MODEL);
+    const third = reading(3, invoice('stock', { vendor: 'Fournisseur SA', date: '07.11.2025' }));
+    const v = finalOfStarVote(lite(1, 'Fournisseur'), lite(2, 'Fournisseur SA'), third);
+    expect(v.used).toHaveLength(3);
+    expect(v.result.date).toBe('07.11.2026');
+  });
+});
