@@ -4,6 +4,7 @@ import { Units } from '../../services/units';
 import { normalizeRecipe, ingredientsOf } from '../recipeSnapshot';
 import { SALTS, ACIDS } from '../water/substances';
 import type { FinanceTransaction, FinancialPlan } from './types';
+import { beerTaxForVolume } from './swissBeerTax';
 
 export interface BrewPrice {
   /** Price for quantity of unit, not necessarily the stock unit. */
@@ -50,6 +51,10 @@ export interface BrewBudgetLine extends BrewBudgetDemand {
   inventoryPrice?: BrewPrice;
   cashTreatment: BrewCashTreatment;
   consumedCost: number | null;
+  /** Part de `consumedCost` déjà payée : le stock en main, à sa valeur pondérée. null si le prix manque. */
+  stockCost?: number | null;
+  /** Part de `consumedCost` à acheter (manque × prix, sans l'arrondi au sac). `stockCost + purchaseCost = consumedCost`. */
+  purchaseCost?: number | null;
   purchaseTTC: number | null;
   issues: string[];
 }
@@ -79,6 +84,24 @@ export interface BrewBudgetSnapshot {
   costPerL: number | null;
   complete: boolean;
   issues: string[];
+  /**
+   * Trois notions du coût (d1, 09.11), côté COÛT et non côté caisse : `dejaPaye + aPayer + annee = totalCost` au centime. Facultatives : un instantané
+   * enregistré avant n'en a pas (`troisNotions` rend alors null). `aPayer` n'est pas l'argent à sortir : un frais « inclus dans le récurrent » y reste,
+   * un assujetti le lit en HT, un sac entier le sous-estime. L'argent à sortir est `cashRequiredTTC`.
+   */
+  dejaPaye?: number;
+  aPayer?: number;
+  annee?: number;
+  /** Argent sorti pour un sac entier mais non consommé (achats TTC − coût des achats). 0 si aucun écart ; null quand la TVA ou un frais récurrent brouille la lecture. */
+  resteEnStock?: number | null;
+  /** Frais d'emballage du brassin, dans la base du coût (HT si assujetti) ; 0 si le poste est désactivé ; null si inconnu. */
+  packagingCost?: number | null;
+  /** Impôt sur la bière du brassin ; 0 si désactivé ou exonéré ; null si inconnu. */
+  beerTaxCost?: number | null;
+  beerTaxSource?: 'calcule' | 'manuel' | 'inconnu';
+  beerTaxExonere?: boolean;
+  /** 'saisi' : litres nets donnés. 'volume-a-brasser' : repli sur le volume de la recette, un estimé : `troisNotions` le déclare incomplet. */
+  netVolumeSource?: 'saisi' | 'volume-a-brasser';
 }
 export interface EstimateBrewBudgetInput {
   recipe: Recipe;
@@ -87,6 +110,12 @@ export interface EstimateBrewBudgetInput {
   brewDate: string;
   batchId?: string;
   netVolumeL?: number;
+  /** Densité initiale du brassin (impôt calculé). Absente : le montant manuel garde son chemin. */
+  og?: string | number;
+  /** Alcool en % vol. : 0,5 ou moins, impôt nul. */
+  abv?: string | number;
+  /** Réduction petit brasseur confirmée pour l'année du brassin ; absente, le coût du litre est au taux plein (prudent). */
+  beerTaxReductionPct?: number;
   bindings?: Record<string, string>;
   prices?: Record<string, BrewPrice>;
   cashTreatments?: Record<string, BrewCashTreatment>;
@@ -318,6 +347,7 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
     // Even network water has a bill. Only an explicit confirmation may move its cash into a recurring plan.
     const cashTreatment = input.cashTreatments?.[demand.key] ?? 'additional';
     let consumedCost: number | null = null, purchaseTTC: number | null = missing === 0 ? 0 : null, purchaseQuantity = missing;
+    let stockCost: number | null = null, purchaseCost: number | null = null;
     if (!price) lineIssues.push(item?.pricePerUnit != null ? 'Ancien prix à confirmer (HT ou TTC)' : 'Prix à renseigner');
     else {
       const quantityInPriceUnit = Units.convert(demand.quantity, demand.unit, price.unit);
@@ -336,11 +366,13 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
             consumedCost = money(inventoryQty * historicalCost + missingInPriceUnit * perUnitCost);
           }
         }
+        purchaseCost = money(missingInPriceUnit * perUnitCost);
+        stockCost = money(consumedCost - purchaseCost);
         purchaseTTC = money(Math.max(0, toBuy) * perUnitTTC);
         purchaseQuantity = Units.convert(Math.max(0, toBuy), price.unit, demand.unit) ?? missing;
       }
     }
-    return { ...demand, ...(item ? { stockItemRef: item.ref } : {}), available: have, reserved: item ? Units.convert(reserved.get(item.ref) ?? 0, item.unit, demand.unit) ?? 0 : 0, missing, purchaseQuantity, ...(price ? { price } : {}), ...(inventoryPrice ? { inventoryPrice } : {}), cashTreatment, consumedCost, purchaseTTC: cashTreatment === 'included-in-recurring' ? 0 : purchaseTTC, issues: lineIssues };
+    return { ...demand, ...(item ? { stockItemRef: item.ref } : {}), available: have, reserved: item ? Units.convert(reserved.get(item.ref) ?? 0, item.unit, demand.unit) ?? 0 : 0, missing, purchaseQuantity, ...(price ? { price } : {}), ...(inventoryPrice ? { inventoryPrice } : {}), cashTreatment, consumedCost, stockCost, purchaseCost, purchaseTTC: cashTreatment === 'included-in-recurring' ? 0 : purchaseTTC, issues: lineIssues };
   });
   // Aliases bound to the same article share one pack purchase. Differing quotes remain separate.
   const packGroups = new Map<string, { lines: BrewBudgetLine[]; unit: string; pack: number; perUnitTTC: number }>();
@@ -365,20 +397,40 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
   }
   const ingredientsCost = money(lines.reduce((sum, line) => sum + (line.consumedCost ?? 0), 0));
   const purchasesTTC = money(lines.reduce((sum, line) => sum + (line.purchaseTTC ?? 0), 0));
+  // Litres nets d'abord : l'impôt calculé en dépend. Un repli sur le volume à brasser est un estimé, dit et jamais « complet ».
+  const netVolumeL = input.netVolumeL ?? recipe.volumeL;
+  const netVolumeSource: 'saisi' | 'volume-a-brasser' = input.netVolumeL === undefined ? 'volume-a-brasser' : 'saisi';
+  // Pas d'issue ici : `complete` resterait faux pour tout appelant qui ne passe pas les litres nets (financeArchiveContinuity). `troisNotions` lit `netVolumeSource` et refuse alors le coût du litre.
+  if (!(netVolumeL > 0) || !Number.isFinite(netVolumeL)) issues.push('Volume net attendu à renseigner');
   let operatingCashTTC = 0, operatingCost = 0;
+  let packagingCost: number | null = 0, beerTaxCost: number | null = 0, beerTaxExonere = false;
+  let beerTaxSource: BrewBudgetSnapshot['beerTaxSource'];
   for (const key of Object.keys(BREW_COST_LABELS) as BrewCostKey[]) {
     const option = settings.costs?.[key];
     if (option?.enabled === false) continue;
-    if (!finite(option?.amountTTC)) issues.push(`${BREW_COST_LABELS[key]} : montant à estimer ou poste à désactiver`);
-    else {
+    // Impôt : calculé dès que l'OG est connue (le montant saisi est alors ignoré) ; sinon le montant manuel garde son chemin.
+    const calculated = key === 'beerTax' && input.og != null && input.og !== ''
+      ? beerTaxForVolume({ og: input.og, abv: input.abv, litres: netVolumeL, reductionPct: input.beerTaxReductionPct }) : null;
+    if (calculated && calculated.montant != null) {
+      const amount = money(calculated.montant);
+      operatingCashTTC += amount; operatingCost += amount;
+      beerTaxCost = amount; beerTaxSource = 'calcule'; beerTaxExonere = calculated.exonere;
+      continue;
+    }
+    if (!finite(option?.amountTTC)) {
+      issues.push(`${BREW_COST_LABELS[key]} : montant à estimer ou poste à désactiver`);
+      if (key === 'packaging') packagingCost = null;
+      if (key === 'beerTax') { beerTaxCost = null; beerTaxSource = 'inconnu'; }
+    } else {
       if (option.cashTreatment !== 'included-in-recurring') operatingCashTTC += option.amountTTC;
       const rate = key === 'beerTax' ? 0 : option.tvaRate;
       if (isTvaRegistered && (!finite(rate) || rate > 1)) issues.push(`${BREW_COST_LABELS[key]} : TVA à confirmer`);
-      operatingCost += option.amountTTC / (isTvaRegistered && finite(rate) && rate <= 1 ? 1 + rate : 1);
+      const cost = option.amountTTC / (isTvaRegistered && finite(rate) && rate <= 1 ? 1 + rate : 1);
+      operatingCost += cost;
+      if (key === 'packaging') packagingCost = money(cost);
+      if (key === 'beerTax') { beerTaxCost = money(cost); beerTaxSource = 'manuel'; }
     }
   }
-  const netVolumeL = input.netVolumeL ?? recipe.volumeL;
-  if (!(netVolumeL > 0) || !Number.isFinite(netVolumeL)) issues.push('Volume net attendu à renseigner');
   const allocation = (enabled: boolean | undefined, annual: number | undefined, label: string) => {
     if (enabled === false) return 0;
     if (!finite(annual)) { issues.push(`${label} : montant annuel à renseigner ou poste à désactiver`); return 0; }
@@ -389,6 +441,13 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
   const fixedAllocation = allocation(settings.includeFixed, settings.annualFixedCHF, 'Charges fixes');
   const depreciationAllocation = allocation(settings.includeDepreciation, settings.annualDepreciationCHF, 'Amortissement');
   const totalCost = money(ingredientsCost + operatingCost + fixedAllocation + depreciationAllocation);
+  // Trois notions, en centimes entiers : `aPayer` est le reste, donc la somme est exacte (le brut de `operatingCost` n'est pas arrondi poste par poste).
+  const cents = (n: number) => Math.round(n * 100);
+  const dejaPaye = money(lines.reduce((sum, line) => sum + (line.stockCost ?? 0), 0));
+  const annee = money(fixedAllocation + depreciationAllocation);
+  const aPayer = (cents(totalCost) - cents(dejaPaye) - cents(annee)) / 100;
+  const ambiguousCash = isTvaRegistered || lines.some(line => line.purchaseCost === null || (line.cashTreatment === 'included-in-recurring' && line.missing > 0));
+  const resteEnStock = ambiguousCash ? null : Math.max(0, money(purchasesTTC - lines.reduce((sum, line) => sum + (line.purchaseCost ?? 0), 0)));
   const now = input.now ?? new Date().toISOString();
   const { id, favorite, archivedAt, batchRef, ...recipeContent } = normalizeRecipe(recipe);
   return {
@@ -397,6 +456,7 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
     bindings: structuredClone(bindings), prices: structuredClone(prices), cashTreatments: structuredClone(input.cashTreatments ?? {}), settings: structuredClone(settings), lines,
     ingredientsCost, purchasesTTC, operatingCost: money(operatingCost), operatingCashTTC: money(operatingCashTTC), cashRequiredTTC: money(purchasesTTC + operatingCashTTC),
     fixedAllocation, depreciationAllocation, totalCost, costPerL: netVolumeL > 0 && Number.isFinite(netVolumeL) ? money(totalCost / netVolumeL) : null,
-    complete: issues.length === 0 && lines.every(l => l.issues.length === 0), issues: [...new Set(issues)]
+    complete: issues.length === 0 && lines.every(l => l.issues.length === 0), issues: [...new Set(issues)],
+    dejaPaye, aPayer, annee, resteEnStock, packagingCost, beerTaxCost, ...(beerTaxSource ? { beerTaxSource } : {}), beerTaxExonere, netVolumeSource
   };
 }

@@ -84,6 +84,24 @@
       "mots": "La règle des degrés / p2b · tiède / Ça top comme ça",
       "capture": "work/missions/2026-11-09-compta-prix/v0/p2b/p2b-page.png",
       "page": "https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS"
+    },
+    {
+      "ecran": "cout-brassin-litre",
+      "route": "c3a",
+      "statut": "choisi",
+      "choix": "c3a (le flux de c1c, trois notions nommées : déjà payé, à payer, coût de l année ; le litre découpé)",
+      "mots": "c1c, trois notions nommées / c3a / Oui choix définitif",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/c3a/c3a-page.png",
+      "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
+    },
+    {
+      "ecran": "facture-vente",
+      "route": "v3a",
+      "statut": "choisi",
+      "choix": "v3a (la caisse complète : comptoir, Pro ou Privé, échéance, facture imprimée)",
+      "mots": "La caisse complète / v3a / Choix définitif",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/v3a/v3a-page.png",
+      "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
     }
   ]
 }

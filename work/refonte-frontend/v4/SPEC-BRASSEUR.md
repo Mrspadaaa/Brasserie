@@ -1631,3 +1631,14 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   « Entré contre dépensé / g1b · tiède / Ma mieux pas pas de vrai candidats »
   « 12 cases, la 13e fait le compte / g2c · chaude / Ça j'aime bien mais en plus, pas de vrai bon candidat mais dans la bonne version je veux une version tuile par mois, ça c'est top mais ça doit pas être la vue principal mais plus un outil d'analyse »
   (lu : p2b choisi tel quel pour l'Impôt bière. Passe 2 : variantes proches de c1c (coût), p1b (Prévisions), v1c (facture) ; nouvelles pistes autour de g1b (Synthèse) et v2a (Opérations), qui restent les meilleures sans le convaincre ; Prix et marges repart d'un autre genre ; Annuel : une vue principale neuve, les tuiles par mois de g2c gardées comme outil d'analyse à un toucher.)
+- **09.11**, mot pour mot, sur la passe 2 compta et prix (https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su) :
+  « La partie optimisation, prévision de dépense, par exemple je crée un futur brassin, je veux que ça ajoute une prévision du prix. (Pas que mini maquettes sûrement changement business) Pareil pour du futur Achat de matériels, par exemple je veux acheter un frigo à 3000chf comment cela est mesure, affiche et tout ... »
+  « g1b avec l'à-payer hachuré / g3a / Pas mal mais peu faire mieux » ; « Aussi bien Où part la vente / g3c »
+  « Les colonnes sur l'année / g4a / La meilleure, montre moi les autres écrans de clôture »
+  « c1c, trois notions nommées / c3a / Oui choix définitif »
+  « La règle du prix / c4a / Bien / J'aime aussi Le prix sur l'année / c4e »
+  « 5 · Prévisions / À revoir avec mes nouveaux input... Le graph suffit pas je pense.. »
+  « Depuis le brassin / e1b / Ça semble le mieux mais toujours pas 100% convaincue. »
+  « La caisse complète / v3a / Choix définitif »
+  « Par catégorie / v4c / C j'aime bien mais plus de détails et plus compact, pas assez d'info sur les opérateurs directement, sans les déroulement, ouvrir »
+  (lu : c3a (coût) et v3a (facture) choisis, définitifs. Métier : un brassin planifié crée seul sa prévision de coût (et la met à jour) ; un achat de matériel prévu (ex. frigo 3 000 CHF) se mesure — trésorerie au mois d'achat, usure par an, part dans le coût du litre, quand il est remboursé — et s'affiche. Passe 3 : Synthèse entre g3a et g3c, en mieux ; Annuel = g4a, avec les écrans de clôture dessinés ; Prix = c4a, c4e greffé ; Prévisions refaites avec ces deux cas, au-delà du seul graphe ; rangement autour de e1b ; Opérations = v4c plus compact et plus détaillé, l'info des opérations visible sans rien déplier (« opérateurs » lu « opérations »).)

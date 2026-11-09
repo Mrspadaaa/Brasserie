@@ -124,6 +124,12 @@ export interface EquipmentUpgrade {
   purpose?: string;
   quoteReference?: string;
   sourceCreativeItemId?: string;
+  /** Usure estimée du futur matériel (litre) : durée saisie, sinon taux linéaire AFC de la catégorie. Facultatifs, rien à migrer. */
+  depreciationCategory?: DepreciationCategory;
+  /** Années d'usage, 1 à 50 par demi-année. */
+  usefulLifeYears?: number;
+  /** Mise en service prévue, `AAAA-MM` ; défaut = mois de la date prévue. */
+  inServiceMonth?: string;
 }
 export type DepreciationCategory = 'tanks' | 'furniture' | 'production' | 'electronics' | 'tools' | 'custom';
 export interface FinancialAsset {
@@ -139,6 +145,8 @@ export interface FinancialAsset {
   acquisitionCents: number;
   businessUsePct: number;
   category: DepreciationCategory;
+  /** Années d'usage pour l'usure linéaire du litre (facultatif) : l'Annuel garde le taux AFC ci-dessous. */
+  usefulLifeYears?: number;
   method: 'declining' | 'linear';
   ratePct: number;
   /** Required for an old asset: accepted opening book value, not recalculated past years. */

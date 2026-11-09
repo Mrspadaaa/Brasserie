@@ -217,3 +217,94 @@ describe('invoice price provenance', () => {
     expect(latestBrewPrices([invalid])).toEqual({});
   });
 });
+
+// d1 (09.11) : trois notions, impôt calculé, litres nets. Fixture construite à la main, dates fixes (jamais financeDemoEntries :
+// elle dépend de l'horloge). Brassin de 27 L nets : déjà payé 22,41 + à payer 64,26 + année 116,10 = 202,77 ; 7,51 CHF/L.
+describe('trois notions, impôt calculé et litres nets (d1)', () => {
+  const pilsner = stock({ ref: 'MP-1', name: 'Pilsner', currentStock: 6 });
+  const pale = stock({ id: 's2', ref: 'MP-2', name: 'Pale', currentStock: 0 });
+  const fixtureRecipe = () => recipe({ volumeL: 30, fermentables: [
+    { name: 'Pilsner', weightKg: 5.6025, kind: 'grain', use: 'empatage' }, { name: 'Pale', weightKg: 5.605, kind: 'grain', use: 'empatage' }] } as Partial<Recipe>);
+  const fixtureSettings: BrewBudgetSettings = { costs: { energy: { enabled: true, amountTTC: 8 }, cleaning: { enabled: true, amountTTC: 3 }, packaging: { enabled: true, amountTTC: 24 }, beerTax: { enabled: true } },
+    includeFixed: true, includeDepreciation: true, annualVolumeL: 1200, annualFixedCHF: 4800, annualDepreciationCHF: 360 };
+  const fixturePrices = (pale4: Partial<BrewPrice> = {}) => ({ [demandKey('Pilsner', 'kg')]: price({ amount: 4 }), [demandKey('Pale', 'kg')]: price({ amount: 4, ...pale4 }) });
+  const fixture = (patch = {}) => estimateBrewBudget({ recipe: fixtureRecipe(), stockItems: [pilsner, pale], batches: [], brewDate: '15.09.2026', netVolumeL: 27, og: '1.048',
+    settings: fixtureSettings, prices: fixturePrices(), now: '2026-09-09T12:00:00Z', ...patch });
+  const cents = (n: number | undefined) => Math.round((n ?? NaN) * 100);
+
+  it('rejoue la fixture : 22,41 + 64,26 + 116,10 = 202,77 et 7,51 CHF/L', () => {
+    const r = fixture();
+    expect(r.complete).toBe(true);
+    expect([r.dejaPaye, r.aPayer, r.annee]).toEqual([22.41, 64.26, 116.1]);
+    expect(r.totalCost).toBe(202.77);
+    expect(r.costPerL).toBe(7.51);
+    expect(r.cashRequiredTTC).toBe(64.26);
+    expect(r.packagingCost).toBe(24);
+    expect(r.beerTaxCost).toBe(6.84);
+    expect(r.beerTaxSource).toBe('calcule');
+    expect(r.netVolumeSource).toBe('saisi');
+  });
+  it('découpe chaque ligne : valeur du stock + achat = coût consommé, au centime', () => {
+    for (const line of fixture().lines) expect(cents(line.stockCost!) + cents(line.purchaseCost!)).toBe(cents(line.consumedCost!));
+  });
+  it('un sac entier fait sortir plus d’argent que le coût : le reste en stock s’affiche, le coût ne bouge pas', () => {
+    const base = fixture(), sac = fixture({ prices: fixturePrices({ packQuantity: 25 }) });
+    expect(sac.totalCost).toBe(base.totalCost);
+    expect(sac.aPayer).toBe(base.aPayer);
+    expect(sac.cashRequiredTTC).toBe(141.84);
+    expect(sac.resteEnStock).toBe(77.58);
+    expect(base.resteEnStock).toBe(0);
+  });
+  it('un frais inclus dans le récurrent reste dans « à payer » (coût) mais sort de la caisse', () => {
+    const r = fixture({ settings: { ...fixtureSettings, costs: { ...fixtureSettings.costs, energy: { enabled: true, amountTTC: 8, cashTreatment: 'included-in-recurring' } } } });
+    expect(r.aPayer).toBe(64.26);
+    expect(r.cashRequiredTTC).toBe(56.26);
+  });
+  it('assujetti à 8,1 % : les trois notions somment exactement au total, en centimes', () => {
+    const tva = { amount: 4.32, tvaRate: 0.081, basis: 'HT' as const };
+    const r = fixture({ isTvaRegistered: true, prices: { [demandKey('Pilsner', 'kg')]: price(tva), [demandKey('Pale', 'kg')]: price(tva) },
+      settings: { ...fixtureSettings, costs: { energy: { enabled: true, amountTTC: 8, tvaRate: 0.081 }, cleaning: { enabled: true, amountTTC: 3, tvaRate: 0.081 }, packaging: { enabled: true, amountTTC: 24, tvaRate: 0.081 }, beerTax: { enabled: true } } } });
+    expect(r.complete).toBe(true);
+    expect(cents(r.dejaPaye) + cents(r.aPayer) + cents(r.annee)).toBe(cents(r.totalCost));
+    expect(r.resteEnStock).toBeNull();
+    expect(r.cashRequiredTTC).toBeGreaterThan(r.aPayer!);
+  });
+  it('l’impôt vient de l’OG et des litres nets ; le montant manuel est ignoré', () => {
+    const r = fixture({ settings: { ...fixtureSettings, costs: { ...fixtureSettings.costs, beerTax: { enabled: true, amountTTC: 99 } } } });
+    expect(r.beerTaxCost).toBe(6.84);
+    expect(r.beerTaxSource).toBe('calcule');
+    expect(fixture({ netVolumeL: 26.6 }).beerTaxCost).toBe(6.74);
+  });
+  it('sans OG : le montant manuel garde son chemin, vide il reste inconnu (jamais 0)', () => {
+    const manuel = fixture({ og: undefined, settings: { ...fixtureSettings, costs: { ...fixtureSettings.costs, beerTax: { enabled: true, amountTTC: 6.84 } } } });
+    expect(manuel.beerTaxSource).toBe('manuel');
+    expect(manuel.totalCost).toBe(202.77);
+    const inconnu = fixture({ og: undefined });
+    expect(inconnu.beerTaxSource).toBe('inconnu');
+    expect(inconnu.beerTaxCost).toBeNull();
+    expect(inconnu.complete).toBe(false);
+    expect(inconnu.issues.some(i => i.includes('Impôt'))).toBe(true);
+  });
+  it('une bière à 0,4 % vol. est exonérée : impôt 0, cas connu', () => {
+    const r = fixture({ og: '1.040', abv: '0.4' });
+    expect(r.beerTaxCost).toBe(0);
+    expect(r.beerTaxSource).toBe('calcule');
+    expect(r.beerTaxExonere).toBe(true);
+    expect(r.complete).toBe(true);
+  });
+  it('la réduction confirmée s’applique, son absence donne le taux plein', () => {
+    expect(fixture({ beerTaxReductionPct: 40 }).beerTaxCost).toBe(4.1);
+    expect(fixture().beerTaxCost).toBe(6.84);
+  });
+  it('les litres nets pris sur le volume à brasser sont signalés par netVolumeSource', () => {
+    const r = fixture({ netVolumeL: undefined });
+    expect(r.netVolumeSource).toBe('volume-a-brasser');
+    expect(fixture().netVolumeSource).toBe('saisi');
+    expect(r.costPerL).toBe(7.21); // 216,43 ÷ 30 L : charges, usure et impôt suivent les 30 L
+  });
+  it('un prix inconnu sort du total : l’instantané le dit', () => {
+    const r = fixture({ prices: { [demandKey('Pilsner', 'kg')]: price({ amount: 4 }) } });
+    expect(r.lines.find(l => l.name === 'Pale')!.stockCost).toBeNull();
+    expect(r.complete).toBe(false);
+  });
+});
