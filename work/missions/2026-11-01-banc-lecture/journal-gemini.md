@@ -842,3 +842,28 @@ Bilan : 5 lectures sur les 5 permises, aucune restante.
 | 2026-11-09 16:01:08 | doc15 | 1 | Csv8 | 3 | gemini-3.8-flash | 17160 ms | 2865 | 2467 | 0.028500 | 12.444029 | STOP |
 | 2026-11-09 16:01:11 | doc21 | 1 | Csv8 | 1 | gemini-3.5-flash-lite | 2448 ms | 2829 | 543 | 0.002758 | 12.446787 | STOP |
 | 2026-11-09 16:01:11 | doc21 | 1 | Csv8 | 2 | gemini-3.5-flash-lite | 2726 ms | 2850 | 560 | 0.002819 | 12.449606 | STOP |
+
+Témoin du 09.11 (mission 2026-11-09-banc-gemini) : ancienne consigne, lancée en même temps que la nouvelle depuis une copie détachée de f04e2119 ; son cumul était compté à part (10,57 → 10,94 CHF) : +0,38 CHF réels au total du journal (12,45 + 0,38 = 12,83 CHF).
+| 2026-11-09 15:59:00 | doc1 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 2961 ms | 2791 | 1121 | 0.004550 | 10.570523 | STOP |
+| 2026-11-09 15:59:01 | doc1 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 3621 ms | 2770 | 1563 | 0.005924 | 10.576447 | STOP |
+| 2026-11-09 15:59:11 | doc1 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 9893 ms | 2806 | 1243 | 0.016915 | 10.593362 | STOP |
+| 2026-11-09 15:59:14 | doc2 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 3109 ms | 2791 | 1159 | 0.004669 | 10.598031 | STOP |
+| 2026-11-09 15:59:14 | doc2 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 3427 ms | 2770 | 1186 | 0.004745 | 10.602776 | STOP |
+| 2026-11-09 15:59:21 | doc2 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 7036 ms | 2806 | 777 | 0.012546 | 10.615322 | STOP |
+| 2026-11-09 15:59:29 | doc5 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 8377 ms | 2764 | 4347 | 0.014621 | 10.629943 | STOP |
+| 2026-11-09 15:59:30 | doc5 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 8756 ms | 2785 | 4466 | 0.015001 | 10.644944 | STOP |
+| 2026-11-09 15:59:49 | doc5 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 18625 ms | 2800 | 2896 | 0.032400 | 10.677344 | STOP |
+| 2026-11-09 15:59:59 | doc8 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 10092 ms | 6081 | 5390 | 0.019125 | 10.696469 | STOP |
+| 2026-11-09 15:59:59 | doc8 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 10554 ms | 6060 | 5771 | 0.020307 | 10.716776 | STOP |
+| 2026-11-09 16:00:07 | doc10 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 8252 ms | 4987 | 4462 | 0.015814 | 10.732590 | STOP |
+| 2026-11-09 16:00:08 | doc10 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 9017 ms | 5008 | 4582 | 0.016197 | 10.748787 | STOP |
+| 2026-11-09 16:00:38 | doc10 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 29840 ms | 5023 | 5163 | 0.057822 | 10.806609 | STOP |
+| 2026-11-09 16:00:45 | doc12 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 7105 ms | 4987 | 3482 | 0.012752 | 10.819361 | STOP |
+| 2026-11-09 16:00:46 | doc12 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 7521 ms | 5008 | 3686 | 0.013397 | 10.832758 | STOP |
+| 2026-11-09 16:01:11 | doc12 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 25511 ms | 5023 | 4315 | 0.049872 | 10.882630 | STOP |
+| 2026-11-09 16:01:17 | doc15 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 5658 ms | 2756 | 2451 | 0.008693 | 10.891323 | STOP |
+| 2026-11-09 16:01:17 | doc15 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 6199 ms | 2777 | 2438 | 0.008661 | 10.899984 | STOP |
+| 2026-11-09 16:01:35 | doc15 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 17347 ms | 2792 | 2478 | 0.028467 | 10.928451 | STOP |
+| 2026-11-09 16:01:37 | doc21 | 1 | Csv8 (témoin, ancienne consigne) | 2 | gemini-3.5-flash-lite | 2466 ms | 2777 | 532 | 0.002704 | 10.931155 | STOP |
+| 2026-11-09 16:01:39 | doc21 | 1 | Csv8 (témoin, ancienne consigne) | 1 | gemini-3.5-flash-lite | 3959 ms | 2756 | 543 | 0.002731 | 10.933886 | STOP |
+| 2026-11-09 16:01:43 | doc21 | 1 | Csv8 (témoin, ancienne consigne) | 3 | gemini-3.8-flash | 4764 ms | 2792 | 352 | 0.008535 | 10.942421 | STOP |
