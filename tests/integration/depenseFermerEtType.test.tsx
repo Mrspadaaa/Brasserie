@@ -29,7 +29,7 @@ describe('Dépense : fermer et changer le type sans perdre la ligne',()=>{
     expect(onClose).toHaveBeenCalledOnce();
   });
   it('changer le type garde la ligne ouverte et le focus dessus',async()=>{
-    state.scanned.mockResolvedValueOnce({ok:true,model:'gemini-3.8-flash',cached:false,result:{vendor:'Poste fictive',date:'09.11.2026',currency:'CHF',invoiceNumber:'T-1',description:'Envoi',amountHT:6.29,tvaRate:.081,tvaAmount:.51,amountTTC:6.8,category:'divers',
+    state.scanned.mockResolvedValueOnce({ok:true,model:'gemini-3.8-flash',cached:false,result:{vendor:'Poste fictive',date:'09.11.2026',currency:'CHF',invoiceNumber:'T-1',description:'Envoi',amountHT:6.29,tvaRate:.081,tvaAmount:.51,amountTTC:6.8,category:'divers',subcategory:'Envois',issues:[] as string[],
       items:[{id:'line-1',name:'Recommandé fictif',kind:'service',quantity:1,unit:'pièce',amountTTC:6.8,evidence:'Recommandé fictif 6.80'}],review:{status:'checked',findings:[],readers:2}}});
     const view=render(<ExpenseSheet onClose={()=>{}} onSaved={()=>{}}/>);
     joindre(view.container);
