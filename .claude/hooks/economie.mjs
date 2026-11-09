@@ -1,6 +1,8 @@
 // Économie de jetons, appliquée par hook et non par mémoire (brasseur, 09.11 : « pour l'éconmoie et maximisé la qualité »).
 //  PreToolUse        : refuse (code 2) un appel identique à un appel qui vient d'échouer → corriger la cause, pas relancer.
 //  PostToolUseFailure: retient la clé de l'appel en échec.  PostToolUse : l'oublie ; sortie > 20 000 car. → rappel de filtrer.
+//  Allers-retours    : PostToolUse compte les appels du tour (remis à zéro par UserPromptSubmit) ; à 8, 16, 24… ou à 4 appels
+//                      d'affilée du même outil → rappel : préparer un script ou un appel groupé qui fait tout le reste.
 //  Stop              : contexte > 450 k (lu dans le dernier usage du transcript) → une fois par palier de 100 k, code 2 :
 //                      écrire l'état de reprise et passer la main (hand_off_to_session) ou compacter.
 // La qualité n'est jamais rabotée : le hook ne coupe aucun contrôle, il retire seulement les répétitions et le poids mort.
@@ -27,8 +29,16 @@ switch (e.hook_event_name) {
   case 'PostToolUseFailure':
     s.echec = cle(); garder();
     break;
+  case 'UserPromptSubmit':
+    s.tour = 0; s.suite = 0; s.dernier = ''; garder();
+    break;
   case 'PostToolUse': {
-    if (s.echec) { delete s.echec; garder(); }
+    if (s.echec) delete s.echec;
+    s.tour = (s.tour ?? 0) + 1;
+    s.suite = e.tool_name === s.dernier ? (s.suite ?? 0) + 1 : 1; s.dernier = e.tool_name;
+    garder();
+    if (s.tour % 8 === 0 || s.suite === 4)
+      dire('PostToolUse', `ÉCONOMIE : ${s.tour} appels dans ce tour${s.suite >= 4 ? `, dont ${s.suite} ${e.tool_name} d'affilée` : ''}. Chaque appel relit tout le contexte : écris le reste en un seul script ou un seul appel groupé (browser_batch, javascript unique, node -e), sans perdre un contrôle.`);
     const r = e.tool_response;
     const n = typeof r === 'string' ? r.length : JSON.stringify(r ?? '').length;
     if (n > SEUIL_SORTIE && !/^(Read|Write|Edit)$/.test(e.tool_name ?? ''))
