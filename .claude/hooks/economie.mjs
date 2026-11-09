@@ -39,6 +39,7 @@ switch (e.hook_event_name) {
     break;
   case 'UserPromptSubmit':
     s.tour = 0; s.suite = 0; s.dernier = ''; garder();
+    dire('UserPromptSubmit', 'PAROLE : réponse la plus courte possible. Aucun rapport de progrès, aucune note intermédiaire relayée ; une fin de tour en attente tient en un mot ; un seul récapitulatif (≤ 400 car.) quand la tâche est finie.');
     break;
   case 'PostToolUse': {
     if (s.echec) delete s.echec;
