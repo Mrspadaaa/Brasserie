@@ -3,6 +3,7 @@
 //  PostToolUseFailure: retient la clé de l'appel en échec.  PostToolUse : l'oublie ; sortie > 20 000 car. → rappel de filtrer.
 //  Allers-retours    : PostToolUse compte les appels du tour (remis à zéro par UserPromptSubmit) ; à 8, 16, 24… ou à 4 appels
 //                      d'affilée du même outil → rappel : préparer un script ou un appel groupé qui fait tout le reste.
+//  Messages          : SessionStart injecte la règle de parole ; PreToolUse refuse un SendMessage de plus de 700 caractères.
 //  Stop              : contexte > 450 k (lu dans le dernier usage du transcript) → une fois par palier de 100 k, code 2 :
 //                      écrire l'état de reprise et passer la main (hand_off_to_session) ou compacter.
 // La qualité n'est jamais rabotée : le hook ne coupe aucun contrôle, il retire seulement les répétitions et le poids mort.
@@ -20,7 +21,14 @@ const dire = (ev, t) => console.log(JSON.stringify({ hookSpecificOutput: { hookE
 const SEUIL_SORTIE = 20000, SEUIL_CONTEXTE = 450000;
 
 switch (e.hook_event_name) {
+  case 'SessionStart':
+    dire('SessionStart', "PAROLE (brasseur, 09.11 : « pas besoin de retour juste un recap à la fin quand la tache est terminé, c'est TOUT ») : aucun rapport de progrès, ni à l'utilisateur ni à la session parente. Une fin de tour en attente (agents, tests) tient en un mot. Un seul récapitulatif quand la tâche est terminée : ce qui est fait, preuve, commit, en 400 caractères au plus. Une note intermédiaire d'une sous-session ne se relaie pas à l'utilisateur. SendMessage seulement pour une question bloquante, 700 caractères au plus.");
+    break;
   case 'PreToolUse':
+    if (e.tool_name === 'SendMessage' && String(e.tool_input?.message ?? '').length > 700) {
+      process.stderr.write('ÉCONOMIE (hook) : message de plus de 700 caractères refusé. Pas de rapport intermédiaire ; une question bloquante ou un récapitulatif final, courts.');
+      process.exit(2);
+    }
     if (s.echec && s.echec === cle()) {
       process.stderr.write('ÉCONOMIE (hook) : cet appel est identique à celui qui vient d\'échouer. Lis l\'erreur, corrige la cause (chemin, argument, sélecteur), puis lance un appel différent.');
       process.exit(2);

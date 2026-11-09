@@ -7,11 +7,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/cerveau.mjs\"",
             "timeout": 20
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/economie.mjs\"",
-            "timeout": 10
           }
         ]
       }
@@ -28,16 +23,6 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/scripts/agents/controle-bugs.mjs\" --hook",
             "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/rc-sessions.mjs\"",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/economie.mjs\"",
-            "timeout": 10
           }
         ]
       }
@@ -52,26 +37,6 @@
             "timeout": 20
           }
         ]
-      },
-      {
-        "matcher": "mcp__ccd_session__start_session|mcp__ccd_session__hand_off_to_session|mcp__ccd_session_mgmt__set_remote_control",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/rc-sessions.mjs\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/economie.mjs\"",
-            "timeout": 10
-          }
-        ]
       }
     ],
     "PreToolUse": [
@@ -81,28 +46,6 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/garde-jetons.mjs\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/economie.mjs\"",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "PostToolUseFailure": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/economie.mjs\"",
             "timeout": 10
           }
         ]
