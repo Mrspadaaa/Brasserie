@@ -107,7 +107,7 @@ describe('Dépense : contrôles croisés (le bloc refait)',()=>{
     expect(articles.getAttribute('data-dp-verdict')).toBe('ecart');
     expect(articles.textContent).toMatch(/29 \/ 31/);
     expect(articles.textContent).toContain('−2');
-    expect(within(bloc(view)).getByRole('status').textContent).toMatch(/74,45 CHF · 2 articles/);
+    expect(within(bloc(view)).getByRole('status').textContent).toBe('À vérifier · 74,45 CHF manquants'); /* p1 relance : le pire point seul ; les 2 articles sont dans la rangée « Articles » */
   });
   it('tout concorde : pas de drapeau, Qté × prix vert',async()=>{
     // Le total imprimé égal à la somme des lignes (277,60) et le payé aussi.
@@ -120,17 +120,30 @@ describe('Dépense : contrôles croisés (le bloc refait)',()=>{
 });
 
 describe('Dépense : chaque pastille d’erreur mène à son geste',()=>{
-  it('p1 ligne manquante : « Ajouter la ligne manquante » ajoute une ligne neuve, ouverte, nom à saisir, sans toucher à la recherche ; deux manquent (31 comptées pour 29 lues) : montant vide',async()=>{
+  it('p1 plus d’un article manque (31 comptées pour 29 lues) : Articles et Somme disent « Comparer à la photo » et ouvrent le justificatif, sans ajouter de ligne',async()=>{
     const view=await ouvrir({countedAmounts:31});
-    const somme=rang(view,/Somme/);
-    expect(somme.textContent).toMatch(/Ajouter la ligne manquante/);
-    expect(somme.textContent).not.toMatch(/Chercher la ligne manquante/);
+    for(const re of [/Articles/,/Somme/]){expect(rang(view,re).textContent,String(re)).toMatch(/Comparer à la photo/);expect(rang(view,re).getAttribute('data-dp-renvoi')).toBe('photo');}
     const avant=view.container.querySelectorAll('[data-dp-ligne]').length;
-    fireEvent.click(somme);
+    fireEvent.click(rang(view,/Somme/));
+    await waitFor(()=>expect(view.container.querySelector('[data-dp="justificatif"]')!.className).toMatch(/block/));
+    expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant);
+  });
+  it('p1 relance : un seul article manque, la ligne est ajoutée : la rangée dit « Remplir la ligne ajoutée », l’ouvre et focalise son libellé, et n’en ajoute pas une deuxième',async()=>{
+    const view=await ouvrir({countedAmounts:30});
+    const avant=view.container.querySelectorAll('[data-dp-ligne]').length;
+    fireEvent.click(rang(view,/Articles/));
     await waitFor(()=>expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant+1));
+    await waitFor(()=>expect(rang(view,/Articles/).textContent).toMatch(/Remplir la ligne ajoutée/));
+    expect(rang(view,/Articles/).getAttribute('data-dp-renvoi')).toBe('ajoutee');
+    (document.activeElement as HTMLElement).blur();
+    fireEvent.click(rang(view,/Articles/));
     await waitFor(()=>expect(document.activeElement).toBe(screen.getByLabelText('Libellé ligne '+(avant+1))));
-    expect(document.activeElement).not.toBe(screen.getByLabelText('Chercher dans les lignes lues'));
-    expect((screen.getByLabelText('Montant ligne '+(avant+1)) as HTMLInputElement).value).toBe('');
+    expect(view.container.querySelectorAll('[data-dp-ligne]').length).toBe(avant+1);
+  });
+  it('p1 relance : le payé qui concorde dit « Payé = imprimé · TWINT » ; l’en-tête d’un manque ne dit que le pire point',async()=>{
+    const view=await ouvrir({countedAmounts:31});
+    expect(bloc(view).textContent).toMatch(/Payé = imprimé · TWINT/);
+    expect(view.container.querySelector('[data-dp="drapeau"]')!.textContent).toBe('À vérifier · 74,45 CHF manquants');
   });
   it('p1 un seul article manque (30 comptées pour 29 lues) : la ligne ajoutée a pour montant le manque, 74,45',async()=>{
     const view=await ouvrir({countedAmounts:30});

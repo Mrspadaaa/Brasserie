@@ -82,7 +82,7 @@ describe('p1 — le rouge des totaux faux et l’en-tête qui dit le problème',
   it('2 pages, un désaccord de lecture : l’en-tête dit « 1 désaccord de lecture », pas « Lectures · 2 pages »', () => {
     const lectures: RangControle = { cle: 'lectures', verdict: 'ecart', texte: 'Lectures · 2 pages', valeurs: '2/2 · 1 désaccord', resume: '1 désaccord de lecture' };
     expect(resumeDuBloc('', [r('articles', 'inconnu'), lectures])).toBe('1 désaccord de lecture');
-    expect(resumeDuBloc('74,45 CHF', [r('somme', 'ecart'), lectures])).toBe('74,45 CHF · 1 désaccord de lecture');
+    expect(resumeDuBloc('74,45 CHF manquants', [r('somme', 'ecart'), lectures])).toBe('74,45 CHF manquants');
   });
   it('sans résumé propre, une rangée en écart garde son libellé ; une rangée juste ne dit rien', () => {
     expect(resumeDuBloc('', [r('qte', 'ecart'), r('paye', 'ok')])).toBe('qte');
@@ -93,5 +93,35 @@ describe('p1 — « Articles lus » : une valeur courte, « annoncé » en note'
   it('l’annonce seule (sans comptage indépendant) : valeur « 5 · 2 rabais », note « annoncé par la lecture »', () => {
     const e = entree({ nLignes: 7, nRabais: 2, attendus: 7, attendusIndependant: null, totalCents: 19665, lignesCents: 19665, payeCents: 19665 });
     expect(rang(e, 'articles')).toMatchObject({ verdict: 'inconnu', texte: 'Articles lus', valeurs: '5 · 2 rabais', note: 'annoncé par la lecture' });
+  });
+});
+
+describe('p1 relance (VERDICT-4) — payé, ligne ajoutée à remplir, photo au-delà de −1, en-tête = le pire point', () => {
+  it('1 : un payé qui concorde dit à quoi il est comparé : « Payé = imprimé · TWINT » (sans moyen : « Payé = imprimé »)', () => {
+    expect(rang(entree(), 'paye').texte).toBe('Payé = imprimé · TWINT');
+    expect(rang(entree({ moyen: null }), 'paye').texte).toBe('Payé = imprimé');
+  });
+  const moins1 = (o: Partial<EntreeControles> = {}) => entree({ nLignes: 21, lignesCents: 28000, totalCents: 35205, attendus: 22, attendusIndependant: 22, ...o });
+  it('2 : une ligne ajoutée et pas remplie : Articles et Somme disent « Remplir la ligne ajoutée » (renvoi ajoutee, son rang), jamais un 2e ajout', () => {
+    const e = moins1({ ajouteeAVide: 22 });
+    for (const cle of ['articles', 'somme']) expect(rang(e, cle), cle).toMatchObject({ geste: 'Remplir la ligne ajoutée', renvoi: 'ajoutee', lignes: [22] });
+    for (const cle of ['articles', 'somme']) expect(rang(moins1(), cle).renvoi, cle).toBe('manquante');
+  });
+  it('3 : plus d’un article manque (−6) et un justificatif : « Comparer à la photo » sur Articles et Somme ; sans justificatif : ajouter ; à −1 : ajouter', () => {
+    const e = entree({ nLignes: 23, lignesCents: 23440, attendus: 23, attendusIndependant: 29 });
+    for (const cle of ['articles', 'somme']) expect(rang({ ...e, photo: true }, cle), cle).toMatchObject({ geste: 'Comparer à la photo', renvoi: 'photo' });
+    for (const cle of ['articles', 'somme']) expect(rang(e, cle), cle).toMatchObject({ geste: 'Ajouter la ligne manquante', renvoi: 'manquante' });
+    for (const cle of ['articles', 'somme']) expect(rang(moins1({ photo: true }), cle), cle).toMatchObject({ geste: 'Ajouter la ligne manquante', renvoi: 'manquante' });
+  });
+  it('4 : le résumé de l’en-tête est le pire point seul : « 117,65 CHF manquants », « 2 articles manquants », « 3,00 CHF en trop »', () => {
+    expect(controlesCroises(entree({ nLignes: 23, lignesCents: 23440, attendus: 23, attendusIndependant: 29 })).resume).toBe('117,65 CHF manquants');
+    expect(controlesCroises(entree({ nLignes: 20, lignesCents: 35205, attendus: 22, attendusIndependant: 22 })).resume).toBe('2 articles manquants');
+    expect(controlesCroises(entree({ lignesCents: 35505 })).resume).toBe('3,00 CHF en trop');
+  });
+  it('4 : l’en-tête ne garde que ce pire point ; sans écart de total, le premier autre point par son résumé', () => {
+    const lectures: RangControle = { cle: 'lectures', verdict: 'ecart', texte: 'Lectures', valeurs: '3/3 · 25 désaccords', resume: '25 désaccords de lecture' };
+    const prix: RangControle = { cle: 'prix-plausible', verdict: 'ecart', texte: 'Prix connus', valeurs: '1 ligne à revoir' };
+    expect(resumeDuBloc('155,40 CHF manquants', [prix, lectures])).toBe('155,40 CHF manquants');
+    expect(resumeDuBloc('', [prix, lectures])).toBe('Prix connus 1 ligne à revoir');
   });
 });

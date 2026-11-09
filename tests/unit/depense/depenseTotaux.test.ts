@@ -12,7 +12,7 @@ describe('contrôles croisés : la règle',()=>{
     expect(c.drapeau).toBe(true);
     expect(c.ecartCents).toBe(-7445);
     expect(c.ecartArticles).toBe(0);
-    expect(c.resume).toBe('74,45 CHF');
+    expect(c.resume).toBe('74,45 CHF manquants');
     const par=Object.fromEntries(c.rangs.map(r=>[r.cle,r]));
     expect(par.articles.verdict).toBe('ok');
     expect(par.somme).toMatchObject({verdict:'ecart',valeurs:'277,60 / 352,05',ecart:'−74,45',renvoi:'liste',geste:'Voir la liste'}); /* p1 : aucune ligne suspecte ni photo dans cette entrée : la liste */ // d2, critique 2 : 29 comptées = 29 lues, une ligne ne manque pas
@@ -100,7 +100,7 @@ describe('banc b1 (09.11) : P2 pas de vert sans comptage indépendant, P3 lignes
     expect(r).toMatchObject({verdict:'ecart',valeurs:'5 · +34,30',renvoi:'perdues'});
     expect(r.geste).toMatch(/Les garder/);
     expect(r.geste).toMatch(/83,35/);
-    expect(c.resume).toMatch(/dont 34,30 vus par une seule lecture/);
+    expect(c.resume).toBe('117,65 CHF manquants'); /* p1 : l’en-tête ne dit que le pire point ; les lignes d’une seule lecture ont leur rangée */
     expect(c.rangs.map(x=>x.cle).indexOf('une-lecture')).toBe(c.rangs.map(x=>x.cle).indexOf('somme')+1);
   });
   it('P3 : des lignes d’une seule lecture qui dépassent le manque ne le comblent pas : pas de rangée',()=>{

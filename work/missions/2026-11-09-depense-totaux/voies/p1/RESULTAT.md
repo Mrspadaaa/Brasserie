@@ -1,4 +1,4 @@
-OK — totaux faux en rouge, gestes honnêtes, rangées sans chevauchement, un seul bouton « Documents » ; 3 024 tests verts, captures ouvertes
+OK — totaux faux en rouge, gestes honnêtes, rangées sans chevauchement, un seul bouton « Documents » ; relance VERDICT-4 (1, 2, 3, 4, 6) faite ; 3 031 tests verts
 
 ## Fichiers écrits
 - `src/ui/finance/controlesCroises.ts` : `estTotalFaux`, `CLES_TOTAUX`, `gesteMontants`, `montantDeLaLigneManquante`, `resumeDuBloc`, champs `resume`, `ligneSuspecte`, `photo` ; renvoi `montants` supprimé ; « Articles lus » : valeur « 5 · 2 rabais » + note « annoncé par la lecture ».
@@ -44,3 +44,13 @@ DÉCISION À PRENDRE : aucune bloquante. Option : retirer la chip « 1 à contr�
 CONNAISSANCE : une ligne ajoutée à la main avec le montant du manque fait passer « Somme ≠ imprimé » au vert (« Somme = imprimé + ajouté ») ; l'écart d'articles reste rouge tant que la ligne n'est pas lue (vu sur `bauhaus-un-manque`, 1280). Le Bash du poste mange les `\'` des scripts de réécriture : passer par Edit/Write.
 
 LEÇON PROPOSÉE : aucune.
+
+## Relance VERDICT-4 (points 1, 2, 3, 4 et 6 ; le 5 laissé)
+- 1 · « Payé = imprimé · TWINT » (sans moyen : « Payé = imprimé »). `controlesCroises.ts`.
+- 2 · une ligne ajoutée à la main et sans libellé : Articles et Somme disent « Remplir la ligne ajoutée › » (renvoi `ajoutee`) : la ligne s'ouvre, focus sur son libellé, aucune deuxième ligne ; le bouton « Ajouter la ligne » de la bande est désactivé tant qu'elle n'est pas remplie. Mesuré en Chrome (`console-p1.txt`, `bauhaus-un-manque`, 4 vues) : 1er toucher 30 lignes, 2e toucher 30 lignes, focus « Libellé ligne 30 ».
+- 3 · écart d'articles < −1 et un justificatif : « Comparer à la photo » sur Articles et Somme (tâche : −6, ouvre le justificatif, aucune ligne ajoutée). À −1 : ajouter/remplir. Sans justificatif : ajouter. La bande « ce qui manque » reste (elle suit l'écart d'articles).
+- 4 · l'en-tête dit le pire point seul : « À vérifier · 117,65 CHF manquants » (CHF d'abord, sinon « N articles manquants/en trop », sinon la première autre rangée en écart : « 1 désaccord de lecture », « Prix connus 1 ligne à revoir »). `resumeDuBloc`, `controlesCroises().resume`.
+- 6 · note d'entrée : « Un fichier, ou plusieurs photos du même ticket · PDF ou image · 4 Mo max. » (« 4 Mo » insécable, `text-balance`). L'astuce « ou dépose le fichier ici » (bureau) n'y est plus : écrite par la consigne, à rendre si le brasseur la regrette.
+- Tests écrits d'abord, 12 rouges avant le code (controlesCroisesD2 +5, depenseTotaux unitaire et intégration +3, entrée +1), puis verts. Un test acquis changé, dit : `depenseTotaux.test.tsx` « articles imprimés 31, trouvés 29 » attendait « 74,45 CHF · 2 articles » dans l'en-tête, il attend « 74,45 CHF manquants » (les 2 articles sont dans la rangée).
+- `tsc` vide ; zone : 232 fichiers, 3 031 tests verts (`tests.txt`) ; `npm run build` vert.
+- Captures refaites (série complète 6 cas + 2 entrées, 390 et 1280, clair et cave) et ouvertes : montages un-manque 390 (repos, après Articles, après Somme, après ajout « Remplir », après remplir), tache 390 (« Comparer à la photo », en-tête « 117,65 CHF manquants »), entrée 390 (note retouchée vue en plein format, clair). Les en-têtes et le « Payé = imprimé · TWINT » des autres cas et des 1280 sont lus dans `console-p1.txt` (même texte, même ton rouge, 0 chevauchement) mais leurs montages 1280 n'ont pas été rouverts après la relance.

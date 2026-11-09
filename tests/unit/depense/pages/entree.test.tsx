@@ -37,6 +37,7 @@ describe('T-E1 un seul bouton « Documents »', () => {
     expect(screen.queryByRole('button', { name: 'Choisir le document' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Photographier le ticket' })).toBeNull();
     expect(bouton('Saisir sans justificatif')).toBeTruthy();
+    expect(screen.getByText('Un fichier, ou plusieurs photos du même ticket · PDF ou image · 4 Mo max.')).toBeTruthy(); // p1 relance : la règle du bouton est dite
     view.unmount();
     etat.coarse = true;
     await monter();

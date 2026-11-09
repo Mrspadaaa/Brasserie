@@ -10,7 +10,7 @@ import { normalize } from '../../services/search';
 export type Verdict = 'ok' | 'ecart' | 'inconnu';
 /** Le geste où mène une pastille d'erreur : ajouter la ligne manquante (une ligne neuve, ouverte, nom à saisir) ; ouvrir la ligne fausse ou en trop ; le champ du total (cas rare) ; le règlement ; le désaccord des lectures ; la liste. */
 /* d2 : `lignes` (ouvrir les lignes que le contrôle désigne), `photo` (le justificatif), `doublon` (la dépense déjà saisie). p1 : « montants » n'existe plus : la somme fausse à compte concordant ouvre la ligne suspecte (`lignes`) ou la photo. */
-export type Renvoi = 'manquante' | 'fausse' | 'total' | 'reglement' | 'lectures' | 'liste' | 'perdues' | 'lignes' | 'photo' | 'doublon';
+export type Renvoi = 'manquante' | 'fausse' | 'total' | 'reglement' | 'lectures' | 'liste' | 'perdues' | 'lignes' | 'photo' | 'doublon' | 'ajoutee';
 
 /** p1 (09.11, « un total faux, c'est du rouge ») : les rangées dont un écart est un total faux ; le reste (désaccord des lectures, Qté × prix, contrôles de la pièce) reste en ambre. */
 export const CLES_TOTAUX: readonly string[] = ['articles', 'somme', 'paye'];
@@ -69,6 +69,8 @@ export interface EntreeControles {
   notePaye?: string;
   /** p1 : le rang (base 1, dans les lignes du brouillon) de la ligne que le contrôle « Prix connus » désigne ; `null` : aucune. Sans elle, une somme fausse à compte concordant ne désigne aucune ligne. */
   ligneSuspecte?: number | null;
+  /** p1 relance : le rang (base 1) d'une ligne ajoutée à la main et pas encore remplie (sans libellé) ; `null` : aucune. Le geste « manquante » devient alors « Remplir la ligne ajoutée », jamais un 2e ajout. */
+  ajouteeAVide?: number | null;
   /** p1 : le justificatif est ouvrable (« Comparer à la photo » mène quelque part). */
   photo?: boolean;
 }
@@ -103,11 +105,13 @@ export function montantDeLaLigneManquante(c: Pick<ControlesCroises, 'ecartArticl
 }
 
 /**
- * p1 : l'en-tête « À vérifier · … » dit le problème, pas un libellé de rangée : les écarts de totaux d'abord (CHF, articles), puis chaque autre rangée en écart par son `resume` (à défaut, son libellé et ses valeurs : « Prix connus 1 ligne à revoir »).
+ * p1 : l'en-tête « À vérifier · … » dit le pire point seul : l'écart de totaux (CHF, sinon articles), à défaut la première autre rangée en écart par son `resume` (à défaut, son libellé et ses valeurs : « Prix connus 1 ligne à revoir »).
  * `croise` : le résumé des totaux de `controlesCroises`.
  */
 export function resumeDuBloc(croise: string, rangs: readonly RangControle[]): string {
-  return [croise, ...rangs.filter(r => r.verdict === 'ecart' && !['articles', 'somme', 'une-lecture'].includes(r.cle)).map(r => r.resume ?? (r.valeurs ? `${r.texte} ${r.valeurs}` : r.texte))].filter(Boolean).join(' · ');
+  if (croise) return croise;
+  const autre = rangs.find(r => r.verdict === 'ecart' && !['articles', 'somme', 'une-lecture'].includes(r.cle));
+  return autre ? (autre.resume ?? (autre.valeurs ? `${autre.texte} ${autre.valeurs}` : autre.texte)) : '';
 }
 
 /** Un montant en centimes : « 1 234,50 » (sans unité). */
@@ -128,6 +132,10 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   const rabais = nRabais ? ` · ${nRabais} rabais` : '';
   const ajoutExplique = ecartCents !== null && ecartCents > 0 && e.ajoutsCents > 0 && ecartCents === e.ajoutsCents;
   const rangs: RangControle[] = [];
+  /* p1 relance (VERDICT-4) : le geste d'une ligne qui manque. Plus d'un article (−2 et au-delà) et un justificatif : la photo (les lignes sont sur le ticket, une ligne vide n'en rendrait qu'une) ;
+     une ligne ajoutée pas remplie : on la remplit, on n'en ajoute pas une deuxième ; sinon on ajoute la ligne. */
+  const gesteManque = (): { geste: string; renvoi: Renvoi; lignes?: number[] } => (ecartArticles !== null && ecartArticles < -1 && e.photo ? { geste: 'Comparer à la photo', renvoi: 'photo' }
+    : e.ajouteeAVide ? { geste: 'Remplir la ligne ajoutée', renvoi: 'ajoutee', lignes: [e.ajouteeAVide] } : { geste: 'Ajouter la ligne manquante', renvoi: 'manquante' });
 
   /* 1. Articles : trouvés contre attendus. Un nombre non imprimé n'est jamais deviné. */
   /* Pas de vert sans comptage indépendant concordant (P2, banc b1) : l'annonce du modèle qui transcrit ne prouve rien quand elle égale ce qu'il a transcrit. */
@@ -135,7 +143,7 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   else if (ecartArticles === 0 && independant !== null) rangs.push({ cle: 'articles', verdict: 'ok', texte: 'Articles lus = comptés', valeurs: `${nLus}${rabais}` });
   else if (ecartArticles === 0) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais}`, note: 'annoncé par la lecture' }); /* p1 : la valeur reste courte (« 5 · 2 rabais »), jamais sur le libellé à 390 ; « annoncé » est la note sous la rangée. */
   else rangs.push({ cle: 'articles', verdict: 'ecart', texte: independant !== null ? 'Articles lus ≠ comptés' : 'Articles lus ≠ annoncés', valeurs: `${nLignesLues} / ${reference}`, ecart: `${signe(ecartArticles)}${Math.abs(ecartArticles)}`,
-    geste: ecartArticles < 0 ? 'Ajouter la ligne manquante' : 'Voir la ligne en trop', renvoi: ecartArticles < 0 ? 'manquante' : 'fausse' });
+    ...(ecartArticles < 0 ? gesteManque() : { geste: 'Voir la ligne en trop', renvoi: 'fausse' as const }) });
 
   /* 2. CHF : la somme des lignes trouvées contre le total imprimé. */
   /* Le payé donne raison aux lignes quand il leur est égal : c'est alors le total imprimé qui est douteux (cas rare). */
@@ -144,7 +152,7 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   else if (ecartCents === 0) rangs.push({ cle: 'somme', verdict: 'ok', texte: 'Somme = imprimé', valeurs: montant(e.totalCents) });
   else if (ajoutExplique) rangs.push({ cle: 'somme', verdict: 'ok', texte: 'Somme = imprimé + ajouté', valeurs: `${montant(e.totalCents)} + ${montant(e.ajoutsCents)}` });
   else rangs.push({ cle: 'somme', verdict: 'ecart', texte: 'Somme ≠ imprimé', valeurs: `${montant(e.lignesCents)} / ${montant(e.totalCents)}`, ecart: ecartTexte(ecartCents!),
-    ...(payeRaisonAuxLignes ? { geste: 'Total imprimé douteux ? (rare)', renvoi: 'total' as const } : ecartCents! < 0 && ecartArticles === 0 && independant !== null ? gesteMontants(e.ligneSuspecte ?? null, Boolean(e.photo)) : ecartCents! < 0 ? { geste: 'Ajouter la ligne manquante', renvoi: 'manquante' as const } : { geste: 'Voir la ligne en trop', renvoi: 'fausse' as const }) });
+    ...(payeRaisonAuxLignes ? { geste: 'Total imprimé douteux ? (rare)', renvoi: 'total' as const } : ecartCents! < 0 && ecartArticles === 0 && independant !== null ? gesteMontants(e.ligneSuspecte ?? null, Boolean(e.photo)) : ecartCents! < 0 ? gesteManque() : { geste: 'Voir la ligne en trop', renvoi: 'fausse' as const }) });
 
   /* P3 (banc b1) : des lignes que seule une lecture a vues et qui comblent une part du manque : à part, avec le geste et ce qu'il resterait. */
   const manque = ecartCents !== null && ecartCents < 0 ? -ecartCents : 0, vus = e.vusUneLecture ?? null;
@@ -154,7 +162,7 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   /* 3. Payé : le règlement lu contre le total imprimé (à défaut, la somme des lignes). Sans montant lu : « — », jamais 0. */
   const refCents = e.totalCents ?? e.lignesCents;
   if (e.payeCents === null) rangs.push({ cle: 'paye', verdict: 'inconnu', texte: e.moyen ? `Payé · ${e.moyen}` : 'Payé', valeurs: e.moyen ? 'montant non lu' : '—' });
-  else if (e.payeCents === refCents) rangs.push({ cle: 'paye', verdict: 'ok', texte: e.moyen ? `Payé · ${e.moyen}` : 'Payé = imprimé', valeurs: montant(e.payeCents) });
+  else if (e.payeCents === refCents) rangs.push({ cle: 'paye', verdict: 'ok', texte: e.moyen ? `Payé = imprimé · ${e.moyen}` : 'Payé = imprimé', valeurs: montant(e.payeCents) });
   else rangs.push({ cle: 'paye', verdict: 'ecart', texte: e.moyen ? `Payé · ${e.moyen} ≠ imprimé` : 'Payé ≠ imprimé', valeurs: `${montant(e.payeCents)} / ${montant(refCents)}`, ecart: ecartTexte(e.payeCents - refCents),
     geste: payeRaisonAuxLignes ? 'Total imprimé douteux ? (rare)' : 'Voir le règlement', renvoi: payeRaisonAuxLignes ? 'total' : 'reglement' });
 
@@ -169,11 +177,10 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   else if (e.qte.ok === false) rangs.push({ cle: 'qte', verdict: 'ecart', texte: 'Qté × prix', valeurs: e.qte.valeur, geste: 'Ouvrir la ligne fausse', renvoi: 'fausse' });
   else rangs.push({ cle: 'qte', verdict: couvertureEcart ? 'inconnu' : 'ok', texte: 'Qté × prix', valeurs: `${e.qte.valeur} justes${e.qte.sansPrix ? ` · ${e.qte.sansPrix} sans prix unitaire` : ''}` });
 
-  const manques: string[] = [];
-  if (ecartCents && !ajoutExplique) manques.push(`${montant(ecartCents)} CHF`);
-  if (ecartArticles) manques.push(`${Math.abs(ecartArticles)} article${Math.abs(ecartArticles) > 1 ? 's' : ''}`);
-  if (vus && vusComblent) manques.push(`dont ${montant(vus.cents)} vus par une seule lecture`);
-  return { rangs, drapeau: rangs.some(r => r.verdict === 'ecart'), ecartCents, ecartArticles, resume: manques.join(' · ') };
+  /* p1 relance : l'en-tête dit le pire point seul (D277) : les CHF d'abord, sinon les articles ; le reste est dans les rangées. */
+  const nArt = Math.abs(ecartArticles ?? 0), pl = nArt > 1 ? 's' : '';
+  const resume = ecartCents && !ajoutExplique ? `${montant(ecartCents)} CHF ${ecartCents < 0 ? 'manquants' : 'en trop'}` : ecartArticles ? `${nArt} article${pl} ${ecartArticles < 0 ? 'manquant' : 'en trop'}${ecartArticles < 0 ? pl : ''}` : '';
+  return { rangs, drapeau: rangs.some(r => r.verdict === 'ecart'), ecartCents, ecartArticles, resume };
 }
 
 /**
