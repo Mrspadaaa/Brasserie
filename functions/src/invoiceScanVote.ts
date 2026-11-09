@@ -157,14 +157,54 @@ export function provisoireDeDeux(r1: LectureVote, r2: LectureVote): any | null {
 
 /**
  * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si la 3.8 l'ajoute. Le rapprochement est celui de la production
- * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position). Repli par la position (PLAN § 2 bis) : quand les deux listes ont la même
- * longueur, une ligne sans paire des deux côtés au même rang est la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13 du banc).
+ * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position : ce sont les ANCRES).
+ * p3 (jeu en ligne 5, BAUHAUS : « GANTS DE TRAVAIL » posé sur « METRE AUGA » à un autre montant) : problème d'école, l'alignement de deux séquences autour d'ancres communes (diff, Needleman-Wunsch).
+ * L'ancien repli (même longueur totale, ligne sans paire au même rang des deux côtés) devinait des paires dès que les deux listes avaient le même nombre de lignes, sans regarder si l'espace entre deux ancres
+ * avait le même nombre de lignes de chaque côté : sur une photo tachée (10 lignes sans paire de chaque côté) il rapprochait des lignes sans rapport et décalait les corrections. Le repli se fait DANS UN INTERVALLE
+ * entre deux ancres voisines (dans l'ordre des deux listes) : les lignes sans paire de l'intervalle se rapprochent une à une, dans l'ordre, seulement s'il y en a le même nombre des deux côtés (le doc13 du banc :
+ * la 3.8 change le nom et le montant d'une ligne entre deux lignes sûres). Sinon aucune paire : celle du provisoire est « retirée », celle du final « ajoutée », sans correction inventée.
  */
+const SEUIL_NOM = 0.7, SEUIL_NOM_MONTANT_EGAL = 0.5, SEUIL_UNE_PAIRE = 0.5;
+const texteDeNom = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/** Ressemblance de deux noms : 1 − (distance de Levenshtein / longueur du plus long), sur le texte sans accents ni ponctuation. 0 si l'un est vide. */
+export function ressemblance(a: unknown, b: unknown): number {
+  const x = texteDeNom(a), y = texteDeNom(b);
+  if (!x || !y) return 0;
+  let precedente = Array.from({ length: y.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= x.length; i++) {
+    const courante = [i];
+    for (let j = 1; j <= y.length; j++) courante[j] = Math.min(precedente[j] + 1, courante[j - 1] + 1, precedente[j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
+    precedente = courante;
+  }
+  return 1 - precedente[y.length] / Math.max(x.length, y.length);
+}
 export function rangsProvisoires(provisoire: any[], final: any[]): Array<number | null> {
   const paire = alignerLignes(provisoire, final);
   const rangDe = new Map<number, number>([...paire.match].map(([p, f]) => [f, p]));
-  const repli = provisoire.length === final.length;
-  return final.map((_, f) => rangDe.get(f) ?? (repli && paire.orphansBase.includes(f) && paire.orphansOther.includes(f) ? f : null));
+  const rangs: Array<number | null> = final.map((_, f) => rangDe.get(f) ?? null);
+  const sansPaire = new Set(paire.orphansBase);
+  let precedenteF = -1, precedenteP = -1; // la dernière ancre (rang final, rang provisoire)
+  const intervalle = (finF: number, finP: number) => {
+    const deF: number[] = []; for (let f = precedenteF + 1; f < finF; f++) if (rangs[f] === null) deF.push(f);
+    const deP: number[] = []; for (let p = precedenteP + 1; p < finP; p++) if (sansPaire.has(p)) deP.push(p);
+    if (!deF.length || !deP.length) return;
+    // Une seule ligne sans paire de chaque côté : la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13) SEULEMENT si la pièce n'a que cette ligne ou si les noms se ressemblent : entre deux ancres,
+    // la position seule rapprochait « PINCEAU PLAT » de « ROBAN DE MASQUAGE » (BAUHAUS, banc : deux lignes sans rapport, montants 3,40 et 4,50).
+    if (deF.length === 1 && deP.length === 1) { if ((final.length === 1 && provisoire.length === 1) || ressemblance(final[deF[0]]?.name, provisoire[deP[0]]?.name) >= SEUIL_UNE_PAIRE) rangs[deF[0]] = deP[0]; return; }
+    // Plusieurs : jamais la position (elle décale tout). Seule une ressemblance du nom lu (une faute d'OCR corrigée : BNOSEE / BROSSE) rapproche, la plus forte d'abord, une paire à la fois.
+    const candidats = deF.flatMap(f => deP.map(p => ({ f, p, s: ressemblance(final[f]?.name, provisoire[p]?.name), memeMontant: final[f]?.amountTTC === provisoire[p]?.amountTTC })))
+      .filter(c => c.s >= SEUIL_NOM || (c.memeMontant && c.s >= SEUIL_NOM_MONTANT_EGAL)).sort((a, b) => b.s - a.s);
+    const prisF = new Set<number>(), prisP = new Set<number>();
+    for (const c of candidats) if (!prisF.has(c.f) && !prisP.has(c.p)) { rangs[c.f] = c.p; prisF.add(c.f); prisP.add(c.p); }
+  };
+  for (let f = 0; f < final.length; f++) {
+    const p = rangDe.get(f);
+    if (p === undefined || p <= precedenteP) continue; // une ancre qui revient en arrière n'ouvre aucun intervalle sûr
+    intervalle(f, p);
+    precedenteF = f; precedenteP = p;
+  }
+  intervalle(final.length, provisoire.length);
+  return rangs;
 }
 
 /**
@@ -178,7 +218,9 @@ export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: 
   if (!l1.normalized || !l2.normalized || !third?.normalized || !needsThird(l1, l2)) return null;
   const provisoire = provisoireDeDeux(l1, l2);
   if (!provisoire) return null;
-  const lignes = alignerLignes(provisoire.items, final.items ?? []).orphansBase.map(rang => ({ rang, ligne: provisoire.items[rang] }));
+  // p3 : la même table que le flux (`rangsProvisoires`) : une ligne que le repli rapproche est corrigée par la 3.8, pas retirée.
+  const rapprochees = new Set(rangsProvisoires(provisoire.items, final.items ?? []).filter((r): r is number => r !== null));
+  const lignes = provisoire.items.map((ligne: any, rang: number) => ({ rang, ligne })).filter((x: { rang: number }) => !rapprochees.has(x.rang));
   const centimes = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
   const total = centimes(provisoire.amountTTC) !== null && centimes(provisoire.amountTTC) !== centimes(final.amountTTC);
   const tva = centimes(provisoire.tvaAmount) !== null && centimes(provisoire.tvaAmount) !== centimes(final.tvaAmount);

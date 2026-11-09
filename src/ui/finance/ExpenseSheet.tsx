@@ -55,7 +55,7 @@ import { LigneP3c,LignePerdue } from '../depense/Ligne';
 import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,TuilesQuantite } from '../depense/Plateau';
 import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,metUn,quantiteGardantMontant,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
-import { appliquerFinale,provisoireDeRetirees,JETON_CACHE,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
+import { appliquerFinale,payeCopieDuTotal,provisoireDeRetirees,JETON_CACHE,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { articleDuDessus,bandes as calculerBandes,ORDRE_GROUPES,NOMS_GROUPES,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
@@ -207,6 +207,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const setVerif=(v:'aucune'|'attente'|'finie'|'echec')=>{verifRef.current=v;setVerifEtat(v);};
   const lectureJeton=useRef(0),lectureAbort=useRef<AbortController|null>(null),provRef=useRef<{base:BaseFusion;scan:ScanOutcome}|null>(null),courantRef=useRef<{reviewedFields:string[];reglees:ReadonlySet<string>;stockItems:StockItem[]}>({reviewedFields:[],reglees:new Set(),stockItems:[]});
   /* Ce que la fusion a corrigé (pour le bleu des cellules, l'ancienne valeur barrée, la puce), les lignes que la 3.8 ne lit plus (hors du brouillon, donc hors des sommes) et le nombre de lignes gardées. */
+  const [payeCopie,setPayeCopie]=useState(false);
   const [fusion,setFusion]=useState<{lignes:Record<string,Correction[]>;entete:Record<string,{avant:unknown;apres:unknown}>;ajoutees:ReadonlySet<string>;n:number;avant:Record<string,CellulesLigne>}|null>(null);
   const [perdues,setPerdues]=useState<Perdue[]>([]),[nGardees,setNGardees]=useState(0),[nPerduesGardees,setNPerduesGardees]=useState(0);
   /* D329 : la file des changements de la 3e lecture. `tranchees` : les corrections et lignes ajoutées gardées (D354 : la marque, bleu et ancienne valeur barrée, ne reste que tant que son geste l'attend) ; `nTranchees` : les gestes faits (le « 2/7 » du bandeau). */
@@ -447,8 +448,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const surProvisoire=(provisoire:ScanOutcome,documentHash?:string)=>{
     const posee=applyOutcome(provisoire,documentHash);
     if(!posee||!provisoire.jeton)return;
+    /* p3 (jeu 5, cache) : le brouillon posé est le brouillon COURANT dès maintenant, sans attendre le rendu : une fusion qui suit tout de suite (final du cache) ne doit pas lire le brouillon vide d'avant la lecture. */
+    draftCourant.current=posee.posee;
     provRef.current={base:baseDeBrouillon(posee.posee,provisoire.jeton,posee.propositions,posee.nLignes),scan:provisoire};
-    setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);
+    setFusion(null);setPayeCopie(false);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);
     setBusy(false);setShowForm(true);setVerif('attente');
   };
   /** La fin de partie (M2, R1) : le final n'arrive pas (délai, erreur, flux fermé) : les valeurs du provisoire restent, avec le point « lecture coupée » (`delai-saute`), comme une 3.8 coupée aujourd'hui. Ses saisies restent. */
@@ -497,6 +500,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const lignesCorr:Record<string,Correction[]>={};let nCorr=s.nCorrigees;
     for(const [id,cs] of Object.entries(s.corrections.lignes)){const vraies=sansTraductions(cs,prov.base.lignes[id]);if(vraies.length)lignesCorr[id]=vraies;else nCorr-=1;}
     setFusion({lignes:lignesCorr,entete:s.corrections.entete,ajoutees:new Set(s.ajoutees),n:nCorr,avant:prov.base.lignes});
+    setPayeCopie(payeCopieDuTotal(final.result,s.corrections.entete.total));
     setPerdues(s.perdues);setNGardees(0);setNPerduesGardees(0);setTranchees(new Set());setNTranchees(0);
     setVerif('finie');
     /* M6 : la traduction du provisoire en vol est jetée (`nomsJeton`) ; les lignes sans français (nom changé, ligne ajoutée, traduction jetée) se traduisent à nouveau, ce seul appel. */
@@ -507,7 +511,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     if(provRef.current){surFinal(outcome,documentHash);return;}
     /* p2 : un final servi SANS flux (cache) qui porte ce que la 3.8 a retiré : on rejoue la même fusion que le flux (provisoire reconstruit = lignes retirées remises à leur rang, total et TVA d'avant), pour que la perte reste dite et tranchable. */
     const reconstruit=outcome.ok&&outcome.result?provisoireDeRetirees(outcome.result):null;
-    if(reconstruit&&outcome.result){const final:ScanOutcome={...outcome,result:{...reconstruit.final}};surProvisoire({...outcome,result:reconstruit.provisoire,jeton:JETON_CACHE},documentHash);window.setTimeout(()=>{if(mounted.current&&provRef.current)surFinal(final,documentHash);},0);return;}
+    if(reconstruit&&outcome.result){const final:ScanOutcome={...outcome,result:{...reconstruit.final}};surProvisoire({...outcome,result:reconstruit.provisoire,jeton:JETON_CACHE},documentHash);if(provRef.current)surFinal(final,documentHash);return;}
     /* LL-5, B2-17 : une lecture « ok » sans rien d'exploitable est un document illisible, dit une fois ; aucune ligne n'est fabriquée à sa place. */
     setVerif('aucune');applyOutcome(illisibleSiVide(outcome),documentHash);
   };
@@ -523,7 +527,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* La dépense lue d'avant, remise à zéro quand un nouveau document ou un nouveau lot de pages est choisi (la description tapée est gardée). */
   const remettreLaDepenseAZero=()=>patch({amount:undefined,vendor:'',invoiceNumber:'',...(draft.descriptionSource==='typed'&&draft.description.trim()?{}:{description:'',descriptionSource:undefined}),date:swissToday(),lines:[{...newLine(initialIntent),description:draft.descriptionSource==='typed'?draft.description:''}],sourceCurrency:'CHF',sourceAmount:undefined,sourceNetAmount:undefined,sourceVatRate:undefined,sourceVatAmount:undefined,scanModel:undefined,sourceDocumentType:undefined,sourceOrderNumber:undefined,sourceTotalBasis:undefined});
   /* La lecture d'avant s'efface : erreur, reçu, lecture, QR. */
-  const effacerLecture=()=>{setFusion(null);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
+  const effacerLecture=()=>{setFusion(null);setPayeCopie(false);setPerdues([]);setNGardees(0);setTranchees(new Set());setNTranchees(0);setAvantRegroupement(null);setVerif('aucune');provRef.current=null;setError('');setProofSending('');setReceipt(undefined);setAttempted(false);setScan(null);setReviewedFields([]);setSimilarState(null);setDeja(null);qrJeton.current++;setQrRes(undefined);setQrChoix(null);setQrOuvert(undefined);setQrVus(new Set());setQrChoixChamps({});qrAvantChamps.current={};};
   /* Les pages d'avant s'en vont (URL d'objet révoquées), avec leur PDF, leur lecture confirmée et l'entrée rouverte par « Changer ». */
   const libererPages=()=>{for(const p of pagesRef.current)if(p.url)URL.revokeObjectURL?.(p.url);pagesRef.current=[];pdfRef.current=null;setPages([]);setNPagesLues(0);setAssemblageEchoue(false);setEntreeOuverte(false);};
   const attach=async(file:File,lireQuandMeme=false)=>{
@@ -671,6 +675,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       scanLocked.current=true;lectureJeton.current++;surProvisoire(apercu.provisoire,'simule');
       const fin=apercu.final;if(fin&&apercu.delaiMs!==null&&apercu.delaiMs!==undefined)minuteur=setTimeout(()=>{if(!mounted.current)return;scanLocked.current=false;finLecture(fin,'simule');},apercu.delaiMs);
     }
+    else if(apercu.cache)finLecture(apercu.cache,'simule');
     else applyOutcome(apercu.outcome,'simule');
     /* Le banc du QR : un vrai fichier fictif, lu par le vrai décodeur du navigateur (la lecture Gemini reste simulée). */
     if(apercu.qrSimule){qrJeton.current++;setQrRes(apercu.qrSimule);}
@@ -1382,9 +1387,10 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const MOYENS:Record<string,string>={twint:'TWINT',card:'Carte',cash:'Espèces',bank_transfer:'Virement',other:'Autre'};
   /* d2 : les contrôles de la pièce (`controlesPiece.ts`, voie c1) se lisent sur le BROUILLON : ce que le brasseur garde, ajoute, corrige ou retire les change. Rang n = `draft.lines[n-1]`. Contexte : dépenses déjà saisies (doublon, paiement partagé) et prix du stock (prix plausible) ; sans lui ces contrôles restent non vérifiables, jamais « bons ». */
   const vatCodeDe=new Map((result?.items??[]).map(it=>[it.id,it.vatCode]));
+  const payeFiable=payeCopie?undefined:result?.amountPaid;
   const lectureCtl:LectureControlee|undefined=result?{vendor:draft.vendor,date:draft.date,printedTime:result.printedTime,amountTTC:totalImprimeCts===null?null:totalImprimeCts/100,tvaRate:result.tvaRate,tvaAmount:result.tvaAmount,vat:result.vat,
     items:draft.lines.map(l=>({name:l.imprime?.nom??l.nomLu??l.description,kind:l.kind,quantity:l.quantity??null,unit:l.unit,price:l.unitPrice??null,amountTTC:l.amount??null,reference:l.sourceReference,evidence:l.evidence,vatCode:vatCodeDe.get(l.id)})),
-    amountPaid:result.amountPaid,terminalAmount:result.terminalAmount,paymentMethod:result.paymentMethod,printedLineCount:result.printedLineCount,printedItemCount:result.printedItemCount,countedAmounts:result.countedAmounts,countedAmountsConfirmed:result.countedAmountsConfirmed,documentType:result.documentType,countedEans:result.countedEans,ignoredLines:result.ignoredLines,photoIncomplete:result.photoIncomplete,photoIncompleteNote:result.photoIncompleteNote}:undefined;
+    amountPaid:payeFiable,terminalAmount:result.terminalAmount,paymentMethod:result.paymentMethod,printedLineCount:result.printedLineCount,printedItemCount:result.printedItemCount,countedAmounts:result.countedAmounts,countedAmountsConfirmed:result.countedAmountsConfirmed,documentType:result.documentType,countedEans:result.countedEans,ignoredLines:result.ignoredLines,photoIncomplete:result.photoIncomplete,photoIncompleteNote:result.photoIncompleteNote}:undefined;
   const ctxPiece:ContexteControles={depenses:transactions.map(tx=>({id:tx.id,vendor:tx.finance?.vendor??'',date:tx.date,total:tx.amountTTC})),
     prixConnus:[...stocks.rawMaterials,...stocks.cleaning].filter(a=>typeof a.pricePerUnit==='number'&&a.pricePerUnit>0&&a.unit).map(a=>({nom:a.name,reference:a.ref,prix:a.pricePerUnit!,unite:a.unit,source:'stock' as const}))};
   const piece=lectureCtl?controlesPiece(lectureCtl,ctxPiece):[];
