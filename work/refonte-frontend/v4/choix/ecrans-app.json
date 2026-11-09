@@ -60,23 +60,21 @@
     },
     {
       "ecran": "levure-chercher",
-      "route": "c5a",
-      "statut": "ouvert",
-      "options": [
-        "c5a"
-      ],
-      "provisoire": "c5a (c4 + filtres en tiroir), filtres à compléter : « pas assez de filtre »",
-      "page": "https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz",
-      "maquettes": "work/missions/2026-11-09-ecran-levure/p2/"
+      "route": "c6b",
+      "statut": "choisi",
+      "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd",
+      "choix": "c6b (résumé d'une ligne, puces, feuille à index des 18 filtres)",
+      "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/c6b/c6b-cadres.png"
     },
     {
       "ecran": "levure-suggerer",
-      "route": "s6a",
+      "route": "s7a",
       "statut": "choisi",
-      "choix": "s6a (huit buts génériques en cartes, comme q2b)",
-      "mots": "s6a · huit buts en cartes, comme q2b / Top",
-      "capture": "work/missions/2026-11-09-ecran-levure/p2/s6a/s6a-cadres.png",
-      "page": "https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz"
+      "choix": "s7a (s6a rendu générique : chaque caractéristique en − / +, Arômes · Corps · Conduite)",
+      "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/s7a/s7a-cadres.png",
+      "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd"
     }
   ]
 }
