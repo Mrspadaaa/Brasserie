@@ -3,15 +3,15 @@
 // Reçoit `{ id, op: 'lire', entree }` ou `{ id, op: 'lireAgrandie', image }` ; répond `{ id, codes }` ou `{ id, erreur }`.
 import { prepareZXingModule, readBarcodes } from 'zxing-wasm/reader';
 import adresseWasm from 'zxing-wasm/reader/zxing_reader.wasm?url';
-import { facteurAgrandi, OPTIONS_ZXING } from './qrOptions';
+import { codeDeZxing, facteurAgrandi, OPTIONS_ZXING } from './qrOptions';
 
 export type DemandeQr = { id: number; op: 'lire'; entree: Blob } | { id: number; op: 'lireAgrandie'; image: Blob };
 /** `codes: null` : la seconde passe n'a pas lieu (image déjà grande, ou canevas absent). */
-export type ReponseQr = { id: number; codes: Array<{ texte: string; decode: boolean }> | null } | { id: number; erreur: string };
+export type ReponseQr = { id: number; codes: Array<{ texte: string; decode: boolean; pasPx?: number }> | null } | { id: number; erreur: string };
 
 prepareZXingModule({ overrides: { locateFile: (chemin: string, prefixe: string) => (chemin.endsWith('.wasm') ? adresseWasm : prefixe + chemin) } });
 
-const codesDe = (resultats: Awaited<ReturnType<typeof readBarcodes>>) => resultats.filter(r => r.format === 'QRCode').map(r => ({ texte: r.text ?? '', decode: r.isValid }));
+const codesDe = (resultats: Awaited<ReturnType<typeof readBarcodes>>) => resultats.filter(r => r.format === 'QRCode').map(codeDeZxing);
 
 async function agrandie(image: Blob): Promise<ImageData | null> {
   const bitmap = await createImageBitmap(image);

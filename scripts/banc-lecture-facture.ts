@@ -77,7 +77,7 @@ import {
   type CauseCoupure, type InvoiceScanResult
 } from '../functions/src/invoiceVisionReview';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
-import { phrasesDuVote } from '../functions/src/invoiceScanVote';
+import { dateDuVoteEtoile, phrasesDuVote } from '../functions/src/invoiceScanVote';
 import { liteConsigne } from './banc-lecture-consignes-lite';
 import { ALLEGEES, preparerAllegement } from './banc-lecture-alleger';
 import {
@@ -709,7 +709,10 @@ export function finalOfStarVote(r1: Reading, r2: Reading, third?: Reading, force
   const vote = finalOfTwo(r1, r2, third, force);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
   // D272b : les phrases du vote sans ses contrôles de calcul, comme la production (`phrasesDuVote`).
-  return { ...star, result: { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] } };
+  const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
+  // LT-2, comme la production (`dateDuVoteEtoile`) : avant le 09.11 le banc ne l'appliquait pas (doc21 : faux « corrigé » 07.11.2025 au banc m9).
+  dateDuVoteEtoile(result, [r1.normalized, r2.normalized, third.normalized]);
+  return { ...star, result };
 }
 
 /** C★′ : comme C★, et un contrôle arithmétique en échec sur les deux lectures appelle aussi la 3.8, qui tranche seule. */

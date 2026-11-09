@@ -4,7 +4,7 @@
 // Une lecture qui échoue ne bloque jamais la dépense : elle rend `non-verifie`, jamais une exception.
 import { parseSwissQr, type QrFacture } from './qrFacture';
 import { chargerPdfjs } from './pdfjs';
-import { facteurAgrandi, OPTIONS_ZXING } from './qrOptions';
+import { codeDeZxing, facteurAgrandi, OPTIONS_ZXING } from './qrOptions';
 import { lireAgrandieHorsFil, lireCodesHorsFil } from './qrTravail';
 
 /**
@@ -17,12 +17,12 @@ import { lireAgrandieHorsFil, lireCodesHorsFil } from './qrTravail';
 export type ResultatQr =
   | { statut: 'lu'; qr: QrFacture; ms: number; /** LP-1 : présent seulement quand la pièce porte plusieurs bulletins QR-facture ; le QR gardé est le premier. */ bulletins?: number;
       /** LO-1 : avec `bulletins`, le montant de CHAQUE bulletin dans l'ordre de lecture (`null` : sans montant, non conforme ou dans une autre devise que le premier). Sert à reconnaître un total qui n'est que leur somme. */ montantsBulletins?: Array<number | null> }
-  | { statut: 'illisible' }
+  | { statut: 'illisible'; /** LO-5 : le pas (pixels par module) du QR vu sur la pièce telle quelle, s'il est connu. Assez grand, une nouvelle photo n'y changera rien. */ pasPx?: number }
   | { statut: 'sans' }
   | { statut: 'non-verifie'; motif: string };
 
 /** Ce que le décodeur rend d'un symbole : son texte et s'il a été décodé. */
-export interface CodeLu { texte: string; decode: boolean }
+export interface CodeLu { texte: string; decode: boolean; /** LO-5 : vu sans être décodé, pixels par module (zxing : position et version). */ pasPx?: number }
 
 /** Les deux moteurs, injectables (tests) : `lireCodes` décode une image (blob ou pixels), `pagesPdf` rend les dernières pages d'un PDF en pixels. */
 export interface MoteursQr {
@@ -48,11 +48,11 @@ const estPdf = (fichier: File): boolean => fichier.type === 'application/pdf' ||
 const estImage = (fichier: File): boolean => /^image\//.test(fichier.type) || /\.(jpe?g|png|webp)$/i.test(fichier.name);
 
 /** Range les symboles lus : le premier QR-facture, sinon « vu mais pas décodé », sinon rien. */
-export function classer(codes: readonly CodeLu[]): { qr: QrFacture | null; vuNonDecode: boolean; bulletins?: number; montantsBulletins?: Array<number | null> } {
-  let vuNonDecode = false, premier: QrFacture | null = null;
+export function classer(codes: readonly CodeLu[]): { qr: QrFacture | null; vuNonDecode: boolean; pasPx?: number; bulletins?: number; montantsBulletins?: Array<number | null> } {
+  let vuNonDecode = false, premier: QrFacture | null = null, pasPx: number | undefined;
   const montants: Array<number | null> = [], vus = new Set<string>();
   for (const code of codes) {
-    if (!code.decode) { vuNonDecode = true; continue; }
+    if (!code.decode) { vuNonDecode = true; if (code.pasPx !== undefined) pasPx = Math.max(pasPx ?? 0, code.pasPx); continue; }
     const qr = parseSwissQr(code.texte);
     if (!qr) continue;
     // Le même bulletin vu deux fois (même texte décodé) n'est qu'un bulletin.
@@ -63,7 +63,7 @@ export function classer(codes: readonly CodeLu[]): { qr: QrFacture | null; vuNon
   }
   // LP-1 : plusieurs bulletins QR-facture sur une même photo : le premier est gardé, leur nombre est dit (absent s'il n'y en a qu'un).
   // LO-1 : et le montant de chacun, pour reconnaître un total de page qui n'est que leur somme (jamais imprimé).
-  return { qr: premier, vuNonDecode, ...(montants.length > 1 ? { bulletins: montants.length, montantsBulletins: montants } : {}) };
+  return { qr: premier, vuNonDecode, ...(pasPx !== undefined ? { pasPx } : {}), ...(montants.length > 1 ? { bulletins: montants.length, montantsBulletins: montants } : {}) };
 }
 
 type Trouve = ReturnType<typeof classer>;
@@ -82,8 +82,9 @@ async function lireImage(image: Blob, moteurs: MoteursQr): Promise<Trouve> {
   if (premiere.qr) return premiere;
   const codes = await secondePasse(image, moteurs);
   if (!codes) return premiere;
-  const seconde = classer(codes);
-  return { ...seconde, vuNonDecode: premiere.vuNonDecode || seconde.vuNonDecode };
+  const { pasPx: _agrandi, ...seconde } = classer(codes);
+  // LO-5 : le pas se lit sur la pièce telle quelle (première passe), jamais sur l'image agrandie.
+  return { ...seconde, vuNonDecode: premiere.vuNonDecode || seconde.vuNonDecode, ...(premiere.pasPx !== undefined ? { pasPx: premiere.pasPx } : {}) };
 }
 
 /** Lit un QR-facture sur les deux dernières pages d'un PDF ; arrêt au premier QR-facture. */
@@ -112,7 +113,7 @@ export async function lireQrDuFichier(fichier: File, moteurs?: MoteursQr, delaiM
       const m = moteurs ?? await moteursParDefaut();
       const trouve = estPdf(fichier) ? await lirePdf(fichier, m) : await lireImage(fichier, m);
       if (trouve.qr) return { statut: 'lu', qr: trouve.qr, ms: Math.round(maintenant() - debut), ...(trouve.bulletins ? { bulletins: trouve.bulletins, ...(trouve.montantsBulletins ? { montantsBulletins: trouve.montantsBulletins } : {}) } : {}) };
-      return trouve.vuNonDecode ? { statut: 'illisible' } : { statut: 'sans' };
+      return trouve.vuNonDecode ? { statut: 'illisible', ...(trouve.pasPx !== undefined ? { pasPx: trouve.pasPx } : {}) } : { statut: 'sans' };
     })();
     const delai = new Promise<ResultatQr>(resolve => { minuterie = setTimeout(() => resolve({ statut: 'non-verifie', motif: 'délai dépassé' }), delaiMs); });
     return await Promise.race([travail, delai]);
@@ -145,7 +146,7 @@ async function creerMoteurs(): Promise<MoteursQr> {
       // LO-2 : un fichier (Blob) se décode dans le Worker, hors du fil de la page ; des pixels déjà en main (page de PDF) ou un Worker impossible : ici, comme avant.
       if (entree instanceof Blob) { const horsFil = await lireCodesHorsFil(entree); if (horsFil) return horsFil; }
       const resultats = await zxing.readBarcodes(entree, options);
-      return resultats.filter(r => r.format === 'QRCode').map(r => ({ texte: r.text ?? '', decode: r.isValid }));
+      return resultats.filter(r => r.format === 'QRCode').map(codeDeZxing);
     },
     lireAgrandie: image => lireAgrandieHorsFil(image),
     async *pagesPdf(donnees, n, echelle) {

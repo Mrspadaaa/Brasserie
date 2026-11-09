@@ -187,7 +187,7 @@ vat est le récapitulatif de TVA IMPRIMÉ par taux, tel quel : code (premier mot
 proForma vaut true si le document est intitulé pro-forma (Pro-Forma Rechnung, facture proforma), false sinon. Une pro-forma dont le paiement est imprimé est une facture réglée : documentType invoice et paymentEvidence paid, jamais quote.
 printedLineCount est le nombre de lignes d’articles imprimées sur le document (lignes d’articles seulement, ni les totaux ni la TVA) ; null s'il n'est pas clair.
 currency est la devise ISO explicitement lue, vide sinon. date au format JJ.MM.AAAA si complète.
-La date vient du document imprimé, jamais de l’horloge, de la galerie photo ou de la capture d’écran.
+La date vient du document imprimé, jamais de l’horloge, de la galerie photo ou de la capture d’écran. Une date de période de service ou d’abonnement (« du … au … », « from … to … », « on … »), d’échéance ou de livraison n’est pas la date du document : sans date de facture, de ticket ou de commande imprimée, laisse date vide et ajoute un fieldWarning date qui cite la date vue.
 documentType distingue facture, ticket, bordereau de livraison, devis, avoir et autre document.
 Sur un bordereau, la somme des lignes n’est PAS un total final imprimé : amountTTC reste null si aucun total n’est écrit.
 Ne prends pas une quantité totale, une taille de vêtement, un numéro client ou un numéro de commande pour un montant ou un numéro de facture.

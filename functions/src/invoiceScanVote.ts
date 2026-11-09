@@ -102,10 +102,17 @@ export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: Lectur
   const vote = finalOfTwo(r1, r2, third);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
   const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
-  // LT-2 : la 3.8 tranche seule, mais deux lectures qui ne diffèrent que par l'année cèdent à l'année à 4 chiffres, puis à la date plausible aujourd'hui.
-  const date = choisirDate([r1, r2, third].map(l => dateDeLecture(l.normalized!)), String(star.result.date ?? ''));
-  if (date !== (star.result.date ?? '')) { result.date = date; delete result.dateCourte; }
+  dateDuVoteEtoile(result, [r1.normalized!, r2.normalized!, third.normalized]);
   return { ...star, result };
+}
+/**
+ * LT-2 : la 3.8 tranche seule, mais deux lectures qui ne diffèrent que par l'année cèdent à l'année à 4 chiffres, puis à la date plausible aujourd'hui.
+ * Exportée pour le banc (`scripts/banc-lecture-facture.ts`), qui rejoue C★v sur des lectures déjà payées : une seule règle, jamais une copie (09.11 : le banc
+ * gardait 07.11.2025 sur doc21 là où la production garde 2026).
+ */
+export function dateDuVoteEtoile(result: { date?: unknown; dateCourte?: unknown }, lectures: ReadonlyArray<{ date?: string; dateCourte?: string }>): void {
+  const date = choisirDate(lectures.map(dateDeLecture), String(result.date ?? ''));
+  if (date !== (result.date ?? '')) { result.date = date; delete result.dateCourte; }
 }
 /**
  * D272b : les phrases du vote, sans ses contrôles de calcul. Ceux-ci portent sur le mélange des trois lectures, alors que les valeurs gardées sont

@@ -4,6 +4,7 @@
 import React,{useState} from 'react';
 import { AlertCircle,ChevronDown,Wrench } from 'lucide-react';
 import { PictoLien } from '../depense/Pictos';
+import { lignesDePort } from '../depense/groupes';
 import { formatCHF,paymentState } from '../../domain/finance/ledger';
 import { purchaseLinks,type PurchaseLinks } from '../../services/purchaseEntry';
 import type { FinanceTransaction,FinancialPayment } from '../../domain/finance/types';
@@ -54,6 +55,14 @@ function Pastilles({links}:{links:PurchaseLinks}) {
 }
 
 type Ligne=NonNullable<FinanceTransaction['finance']>['lines'][number];
+/**
+ * LO-4 (08.11, doc5) : « Ses N lignes » compte comme l'écran de lecture (`Recap`, D249) : le port n'est pas une ligne, il est dit à part. Un seul critère du port,
+ * celui de `groupes.ts` (`lignesDePort`). Avant : 26 ici (port compris) contre 25 à la nouvelle lecture de la même pièce.
+ */
+export function titreLignesSaisies(lines:readonly Ligne[]):string {
+  const port=lignesDePort(lines.map(l=>({id:l.id,kind:l.kind,amount:l.amountCents/100}))), n=lines.filter(l=>!port.has(l.id)).length;
+  return `Ses ${n} ligne${n>1?'s':''}${port.size?' et le port':''}`;
+}
 /** Les lignes de la dépense, chacune sous son libellé (celui de la fiche) ; le cube relié dit le lien au stock, la clé le matériel. */
 function Lignes({lines}:{lines:Ligne[]}) {
   return <ul className="pb-1">{lines.map(line=><li key={line.id} className="grid grid-cols-[16px_minmax(0,1fr)_auto_auto] items-center gap-x-1.5 border-t border-cave-800/60 py-0.5">
@@ -71,7 +80,7 @@ function Lignes({lines}:{lines:Ligne[]}) {
  */
 export function PieceDejaSaisie({tx,stocks,payments,transactions,onLire}:{tx:FinanceTransaction;stocks:Stocks;payments:FinancialPayment[];transactions:FinanceTransaction[];onLire:()=>void}) {
   const links=purchaseLinks(tx,stocks), lines=tx.finance?.lines??[], reglement=motReglement(tx,payments,transactions);
-  const titreLignes=`Ses ${lines.length} ligne${lines.length>1?'s':''}`;
+  const titreLignes=titreLignesSaisies(lines);
   const cellules=[{l:'Facture',v:tx.finance?.invoiceNumber?.trim()||'sans n°',mono:Boolean(tx.finance?.invoiceNumber?.trim())},{l:'Date',v:tx.date,mono:true},{l:'Total',v:formatCHF(Math.round(tx.amountTTC*100)),mono:true},{l:'Règlement',v:reglement,mono:false}];
   return <div className="lg:grid lg:grid-cols-[440px_minmax(0,1fr)] lg:items-start lg:gap-x-5">
   <section id="piece-deja-saisie" aria-label="Pièce déjà enregistrée" className={`${cadre} space-y-1.5`}>
