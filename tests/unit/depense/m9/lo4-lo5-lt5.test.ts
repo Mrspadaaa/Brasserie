@@ -63,9 +63,9 @@ describe('LO-5 — un QR vu net mais barré ne réclame plus une photo', () => {
 });
 
 describe('LT-5 — le code imprimé d’une rangée de TVA ne fait pas voter (doc21 : « N » et « %-TVA1 »)', () => {
-  const ticket = (code: string) => lire(entete({ documentType: 'receipt', amountTTC: 51.8, tvaAmount: 3.88, tvaRate: 0.081,
-    vat: [{ code, rate: 0.081, base: 51.8, amount: 3.88 }],
-    items: [ligne({ name: 'Outil fictif A', kind: 'equipment', unit: '', price: 43.5, amountTTC: 43.5 }), ligne({ name: 'Outil fictif B', kind: 'equipment', unit: '', price: 8.3, amountTTC: 8.3 })] }));
+  const ticket = (code: string) => lire(entete({ documentType: 'receipt', amountTTC: 60, tvaAmount: 4.5, tvaRate: 0.081,
+    vat: [{ code, rate: 0.081, base: 60, amount: 4.5 }],
+    items: [ligne({ name: 'Outil fictif A', kind: 'equipment', unit: '', price: 48, amountTTC: 48 }), ligne({ name: 'Outil fictif B', kind: 'equipment', unit: '', price: 12, amountTTC: 12 })] }));
   it('même taux, même base, même montant : aucun désaccord, aucun point TVA', () => {
     const r = reconcileInvoiceVision([ticket('N'), ticket('%-TVA1')]);
     expect((r.result as any).points.filter((p: any) => p.champ === 'vat')).toEqual([]);
@@ -73,7 +73,7 @@ describe('LT-5 — le code imprimé d’une rangée de TVA ne fait pas voter (do
     expect(r.review.status).not.toBe('disputed');
   });
   it('un montant de TVA qui diffère reste un désaccord', () => {
-    const autre = lire({ ...ticket('N'), vat: [{ code: 'N', rate: 0.081, base: 51.8, amount: 3.83 }] });
+    const autre = lire({ ...ticket('N'), vat: [{ code: 'N', rate: 0.081, base: 60, amount: 4.45 }] });
     const r = reconcileInvoiceVision([ticket('N'), autre]);
     expect((r.result as any).points.some((p: any) => p.champ === 'vat' && p.code === 'lectures-divergentes')).toBe(true);
   });

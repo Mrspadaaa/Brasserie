@@ -21,9 +21,9 @@ import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 import { reconcileInvoiceVision } from '../../../../functions/src/invoiceVisionReview';
 import { entete, ligne, lire } from '../rapprochement/aide';
 
-const ticket = (code: string) => lire(entete({ vendor: 'Quincaillerie Fictive SA', documentType: 'receipt', amountTTC: 51.8, tvaAmount: 3.88, tvaRate: 0.081,
-  vat: [{ code, rate: 0.081, base: 51.8, amount: 3.88 }],
-  items: [ligne({ name: 'Outil fictif A', kind: 'equipment', unit: '', price: 43.5, amountTTC: 43.5, vatCode: code }), ligne({ name: 'Outil fictif B', kind: 'equipment', unit: '', price: 8.3, amountTTC: 8.3, vatCode: code })] }));
+const ticket = (code: string) => lire(entete({ vendor: 'Quincaillerie Fictive SA', documentType: 'receipt', amountTTC: 60, tvaAmount: 4.5, tvaRate: 0.081,
+  vat: [{ code, rate: 0.081, base: 60, amount: 4.5 }],
+  items: [ligne({ name: 'Outil fictif A', kind: 'equipment', unit: '', price: 48, amountTTC: 48, vatCode: code }), ligne({ name: 'Outil fictif B', kind: 'equipment', unit: '', price: 12, amountTTC: 12, vatCode: code })] }));
 
 async function ouvrir(result: any) {
   Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
