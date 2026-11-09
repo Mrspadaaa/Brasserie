@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { EtapeLevure } from '../../../src/ui/etapeLevure/EtapeLevure';
-import { recetteApercuEtapeLevure } from '../../../src/ui/etapeLevure/apercuDev';
+import { recetteApercuAncienne, recetteApercuEtapeLevure } from '../../../src/ui/etapeLevure/apercuDev';
 import type { VueLevure, PropsVue } from '../../../src/ui/etapeLevure/props';
 import type { TrialRecipe } from '../../../src/domain/hopIndex/trials';
 import type { Recherche } from '../../../src/ui/etapeLevure/useRechercheDonnee';
@@ -54,6 +54,17 @@ describe('Ma levure (l5b)', () => {
     expect(genres.every(g => ['jauge', 'mot', 'nombre', 'inconnu'].includes(g!))).toBe(true);
     expect(screen.getAllByRole('button', { name: /non documenté : chercher la donnée/ }).length).toBeGreaterThanOrEqual(genres.filter(g => g === 'inconnu').length);
     expect(document.querySelector('[data-axe="thiols"]')!.getAttribute('data-genre')).toBe('inconnu');   // US-05 : aucun fait de biotransformation dans le dépôt
+  });
+
+  // Défaut en ligne (09.11, « ZZ TEST — Recette ») : « ? dose à saisir » au lieu de la plage de sachets ; qty 0 enregistrée = inconnue, jamais 0.
+  it('ancienne recette (sans forme, qty 0, sans pitching) : Ma levure montre la plage de sachets et de grammes, pas « 0 » ni « dose à saisir »', () => {
+    render(<Banc depart={recetteApercuAncienne() as unknown as TrialRecipe} />);
+    const dose = document.querySelector('[data-lv="dose"]')!.textContent!;
+    expect(dose).toMatch(/^2/);
+    expect(dose).toContain('sachets');
+    expect(dose).not.toContain('saisir');
+    expect(dose).not.toMatch(/^0/);
+    expect(document.querySelector('.lv-sub')!.textContent).toMatch(/sèche\s*·\s*Fermentis\s*12–19\s*g/);
   });
 
   it('la conduite : un « + » par frontière (J0, chaque bascule, la fin), un × sur le palier touché', () => {

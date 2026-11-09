@@ -60,7 +60,7 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
   const choisie = !!recipe.yeast.name?.trim();
   const draft = useMemo(() => createYeastRecipeDraft(recipe, refs), [recipe, refs]);
   const evaluation = useMemo(() => evaluateYeastRecipeDesign(recipe, draft, refs), [recipe, draft, refs]);
-  const { conseil } = useMemo(() => doseDeLaLevure(recipe, supply), [recipe, supply]);
+  const { conseil, yeast: yeastPrete } = useMemo(() => doseDeLaLevure(recipe, supply, evaluation.projection.og), [recipe, supply, evaluation]);
   const effets = useMemo(() => levure ? lignesEffets(levure) : [], [levure]);
   const floc = levure ? ligneFloculation(levure) : undefined;
   const { etat: floculationEtat } = useEtatRecherche(levure?.id ?? 'recette', 'clarte');
@@ -88,7 +88,7 @@ export function MaLevure({ recipe, refs, supply, levure, onConduite, onChercherD
           <b>{doseTexte}</b><span>{doseUnite}</span></span>
         <button type="button" className="lv-x" aria-label={`Retirer ${recipe.yeast.name} de la recette`} onClick={onRetirer}><X size={16} aria-hidden="true" /></button>
         <span className="lv-sub">
-          <span>{[recipe.yeast.form, recipe.yeast.lab || levure?.catalogue?.manufacturer].filter(Boolean).join(' · ') || 'forme et laboratoire ?'}</span>
+          <span>{[recipe.yeast.form ?? yeastPrete.form, recipe.yeast.lab || levure?.catalogue?.manufacturer].filter(Boolean).join(' · ') || 'forme et laboratoire ?'}</span>
           {grammes && <span className="lv-m">{grammes}</span>}
           {sachets && <span className="lv-mini" aria-hidden="true"><i style={{ left: '8%', right: '8%' }} /></span>}
         </span>

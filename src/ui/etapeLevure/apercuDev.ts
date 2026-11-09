@@ -29,6 +29,21 @@ export function recetteApercuEtapeLevure(): Recipe {
   } as unknown as Recipe;
 }
 
+/**
+ * La forme de la vraie recette « ZZ TEST — Recette » (Double IPA, 24 L, US-05), trouvée en ligne le 09.11 : levure sans `form`, `qty: 0` enregistrée (donnée
+ * ancienne), sans `pitching` ; des fermentables sans potentiel (le moût ne s'estime pas par `estimatePitchingWort`) mais une DI de recette (`ogTarget`) que le
+ * bandeau et le moteur lisent. Sert au test de la dose et au banc `&recette=ancienne`.
+ */
+export function recetteApercuAncienne(): Recipe {
+  return {
+    id: 'apercu-etape-levure-ancienne', name: 'ZZ TEST — Recette', style: '22A', volumeL: 24, boilMin: 60, ogTarget: 1.085, efficiencyPct: 75, colorEbc: 14,
+    fermentables: [{ name: 'Pilsner', weightKg: 9, kind: 'grain', use: 'empatage', colorEbc: 4 }],
+    hops: [{ name: 'Citra', alpha: 12, weightG: 80, stage: 'boil', timeMin: 20 }],
+    yeast: { name: 'SafAle US-05', hopIndexId: 'fermentis-us05', qty: 0, unit: 'sachet' },
+    fermentation: PALIERS.map(p => ({ ...p })),
+  } as unknown as Recipe;
+}
+
 /** La même recette, sans levure ni palier : l'état « recette sans levure » (`&recette=vide`). */
 export function recetteApercuSansLevure(): Recipe {
   const { yeast: _levure, fermentation: _paliers, ...reste } = recetteApercuEtapeLevure() as unknown as Record<string, unknown>;

@@ -6,7 +6,7 @@ import bootstrap from '../../../src/data/yeastSupplyBootstrap.json';
 import { applyCatalogueYeast } from '../../../src/domain/yeastCatalogue';
 import { yeastReferences } from '../../../src/domain/yeastReferences';
 import { evaluateYeastPitching } from '../../../src/domain/yeastPitching';
-import { recetteApercuEtapeLevure } from '../../../src/ui/etapeLevure/apercuDev';
+import { recetteApercuAncienne, recetteApercuEtapeLevure } from '../../../src/ui/etapeLevure/apercuDev';
 import { doseApresChoix, doseDeLaLevure } from '../../../src/ui/etapeLevure/dose';
 import type { TrialRecipe } from '../../../src/domain/hopIndex/trials';
 
@@ -57,5 +57,27 @@ describe('dose au choix de la levure (#132)', () => {
     expect(suivante.yeast.qty).toBeUndefined();
     expect(suivante.yeast.pitching?.product).toBeUndefined();
     expect(doseDeLaLevure(suivante, supply).conseil.packs).toBeUndefined();
+  });
+
+  // Défaut trouvé en ligne (09.11), recette « ZZ TEST — Recette » : Ma levure disait « dose à saisir » au lieu de la plage de sachets.
+  describe('ancienne recette : sans forme, qty 0 enregistrée, sans pitching, moût non estimable par les fermentables', () => {
+    const ancienne = () => recetteApercuAncienne() as unknown as TrialRecipe;
+    it('le produit unique de la référence est retenu même sans forme ; le moût vient du volume et de la DI de la recette (celles du bandeau)', () => {
+      const { yeast, conseil } = doseDeLaLevure(ancienne(), supply);
+      expect(yeast.form).toBe('sèche');
+      expect(yeast.pitching?.product?.referenceId).toBe('fermentis-us05');
+      expect(yeast.pitching?.wort).toMatchObject({ volumeL: 24, sg: 1.085, basis: 'recipe-estimate' });
+      expect(conseil.range!.min).toBeCloseTo(12, 5);                                  // 50–80 g/hL × 24 L
+      expect(conseil.range!.max).toBeCloseTo(19.2, 5);
+      expect(conseil.packs).toEqual({ min: 2, max: 2 });                              // sachets de 11,5 g
+    });
+    it('la DI du moteur (celle du bandeau) prime sur le champ de la recette quand l’appelant la donne', () => {
+      const { yeast } = doseDeLaLevure(ancienne(), supply, 1.072);
+      expect(yeast.pitching?.wort?.sg).toBe(1.072);
+    });
+    it('sans DI ni fermentables calculables, la dose reste inconnue (jamais 0, jamais inventée)', () => {
+      const sans = { ...ancienne(), ogTarget: undefined } as TrialRecipe;
+      expect(doseDeLaLevure(sans, supply).conseil.packs).toBeUndefined();
+    });
   });
 });
