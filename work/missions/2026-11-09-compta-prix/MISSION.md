@@ -36,6 +36,9 @@ Ses mots vont mot pour mot dans SPEC-BRASSEUR.md, une plainte dans DEFAUTS-RECUR
 |---|---|---|---|
 | Compta et prix · panel v0 (24 concepts ; candidates g1b, g2b, c1b, c2b, p1b, p2b, v1c, v2c) | 09.11 v1 | https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix/index.html` |
 | Compta et prix · passe 2 (32 variantes ; candidates g3c, g4d, c3a, c4a, p3a, e1a, v3a, v4b ; p2b choisi) | 09.11 v2 | https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p2/index.html` |
+| Compta et prix · passe 3 (g5, g6 clôture, c5, p4 frigo, e2, v5 ; candidates g5c, g6, c5a, p4a, e2a, v5a ; e2c écartée) | 09.11 v3 | https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe | `work/refonte-frontend/v4/outils/pages/2026-11-09-compta-prix-p3/index.html` |
 
 ## Sources
 - `INVENTAIRE-CODE.md`, `BRIEF-AUTEUR.md`, `work/missions/BUGS.md`, PRODUCT.md, DESIGN.md
+
+e2c écartée : impôt de l'année faux (303,84), critique SYNTHESE-P3.

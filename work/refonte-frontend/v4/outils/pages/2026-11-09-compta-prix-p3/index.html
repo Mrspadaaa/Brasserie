@@ -1,0 +1,101 @@
+<title>Compta et prix · passe 3 · 09.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une rangée par écran : ta base, puis les variantes ; la clôture en neuf écrans. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ok:#3d7a3a;--warn:#9a6a12;--ref:#6b6f75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+a{color:var(--acc)}
+section{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media (max-width:760px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure[data-reference]{border-style:dashed}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+figure button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-cand{color:var(--acc)}.p-ok{color:var(--ok)}.p-res{color:var(--warn)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Compta et prix · passe 3</h1>
+<p class="mut">09.11 · après tes verdicts de la passe 2. Première vignette, en pointillé : ta base. Pages d'avant : <a href="https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su">passe 2</a>, <a href="https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS">v0</a>.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>Pour chaque écran : ta maquette, un mélange, ou « aucune ». Cadre bleu : candidate du critique.</p>
+<p class="mut">Choisis et déjà en port : c3a (coût du litre), v3a (facture), p2b (impôt bière). Le brassin futur et l'achat d'un frigo à 3 000 CHF sont calculés dans l'app (en cours), dessinés ici dans Prévisions.</p></section>
+
+<section data-choix="synthese"><h2>1 · Synthèse : faire mieux que g3a et g3c</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/g3a-page.png"><img src="img/g3a-haut.png" alt="g3a"></button><figcaption><span class="pill p-ref">Ta base</span><b>g3a et g3c</b> <span class="id">passe 2</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/g5c-page.png"><img src="img/g5c-haut.png" alt="g5c"></button><figcaption><span class="pill p-cand">Candidate</span><b>La règle du mois</b> <span class="id">g5c</span>Comme p2b : il faut 696,80, soit 140 bouteilles.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g5a-page.png"><img src="img/g5a-haut.png" alt="g5a"></button><figcaption><span class="pill p-ok">Bien</span><b>Le flux et la caisse</b> <span class="id">g5a</span>g3c dans la langue de c3a ; caisse libre, à payer, en retard.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g5d-page.png"><img src="img/g5d-haut.png" alt="g5d"></button><figcaption><span class="pill p-ok">Bien</span><b>Les mois sous la règle</b> <span class="id">g5d</span>Une pastille par mois.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g5b-page.png"><img src="img/g5b-haut.png" alt="g5b"></button><figcaption><span class="pill p-res">Avec réserve</span><b>La loupe sur le gain</b> <span class="id">g5b</span>Deux barres, une loupe ×10.</figcaption></figure>
+<figure data-vignette data-reference><button data-agrandir="img/g3c-page.png"><img src="img/g3c-haut.png" alt="g3c"></button><figcaption><span class="pill p-ref">Ta base</span><b>g3c</b> <span class="id">passe 2</span></figcaption></figure>
+</div></section>
+
+<section data-choix="cloture"><h2>2 · Annuel : g4a, puis les écrans de clôture</h2>
+<p class="mut">Une question par étape, chiffres de la démonstration. Contrôle du critique : ouverture 4 000 + 720 − 538,40 = 4 181,60.</p>
+<div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/g4a-page.png"><img src="img/g4a-haut.png" alt="g4a"></button><figcaption><span class="pill p-ref">Ta base</span><b>Les colonnes sur l'année</b> <span class="id">g4a</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/g6-page.png"><img src="img/g6-haut.png" alt="g6"></button><figcaption><span class="pill p-cand">Candidate</span><b>L'année, et la clôture</b> <span class="id">g6</span>g4a en tête, les étapes dessous.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-1-operations.png"><img src="img/g6-1-operations.png" alt="g6 étape 1"></button><figcaption><b>1 · Opérations</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-2-ouverture.png"><img src="img/g6-2-ouverture.png" alt="g6 étape 2"></button><figcaption><b>2 · Solde d'ouverture</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-3-inventaires.png"><img src="img/g6-3-inventaires.png" alt="g6 étape 3"></button><figcaption><b>3 · Inventaires</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-4-materiel.png"><img src="img/g6-4-materiel.png" alt="g6 étape 4"></button><figcaption><b>4 · Matériel et usure</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-5-dettes.png"><img src="img/g6-5-dettes.png" alt="g6 étape 5"></button><figcaption><b>5 · Dettes et créances</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-6-parts-privees.png"><img src="img/g6-6-parts-privees.png" alt="g6 étape 6"></button><figcaption><b>6 · Parts privées</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-7-verifications.png"><img src="img/g6-7-verifications.png" alt="g6 étape 7"></button><figcaption><b>7 · Vérifications</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-8-reporter.png"><img src="img/g6-8-reporter.png" alt="g6 étape 8"></button><figcaption><b>8 · Montants à reporter</b> <span class="id">g6</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/g6-9-dossier.png"><img src="img/g6-9-dossier.png" alt="g6 étape 9"></button><figcaption><b>9 · Dossier</b> <span class="id">g6</span></figcaption></figure>
+</div></section>
+
+<section data-choix="prix"><h2>3 · Prix : c4a, avec le prix sur l'année</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/c4a-page.png"><img src="img/c4a-haut.png" alt="c4a"></button><figcaption><span class="pill p-ref">Ta base</span><b>La règle du prix</b> <span class="id">c4a</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/c5a-page.png"><img src="img/c5a-haut.png" alt="c5a"></button><figcaption><span class="pill p-cand">Candidate</span><b>La même aiguille dans l'année</b> <span class="id">c5a</span>c4a en tête ; c4e à un toucher.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/c5b-page.png"><img src="img/c5b-haut.png" alt="c5b"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Par bouteille ou par an</b> <span class="id">c5b</span>Une bascule sur le chiffre de tête.</figcaption></figure>
+</div></section>
+
+<section data-choix="previsions"><h2>4 · Prévisions : le brassin futur et le frigo à 3 000 CHF</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/p3a-page.png"><img src="img/p3a-haut.png" alt="p3a"></button><figcaption><span class="pill p-ref">Passe 2</span><b>p1b avec l'horizon</b> <span class="id">p3a</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/p4a-page.png"><img src="img/p4a-haut.png" alt="p4a"></button><figcaption><span class="pill p-cand">Candidate</span><b>Le frigo en marche</b> <span class="id">p4a</span>L'escalier avec ses deux projets et leurs sources.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p4d-page.png"><img src="img/p4d-haut.png" alt="p4d"></button><figcaption><span class="pill p-ok">Bien</span><b>600 capsules</b> <span class="id">p4d</span>Ce qu'il faut vendre ; la fiche du brassin, avec ses sources.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p4b-page.png"><img src="img/p4b-haut.png" alt="p4b"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Six jauges</b> <span class="id">p4b</span>Juste en fiche de projet, trop au premier plan.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/p4c-page.png"><img src="img/p4c-haut.png" alt="p4c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Trois niveaux</b> <span class="id">p4c</span>Colonnes pas à l'échelle.</figcaption></figure>
+</div></section>
+
+<section data-choix="rangement"><h2>5 · Prix et impôt depuis le brassin</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/e1b-page.png"><img src="img/e1b-haut.png" alt="e1b"></button><figcaption><span class="pill p-ref">Ta base</span><b>Depuis le brassin</b> <span class="id">e1b</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/e2a-page.png"><img src="img/e2a-haut.png" alt="e2a"></button><figcaption><span class="pill p-cand">Candidate</span><b>Trois portes en image</b> <span class="id">e2a</span>La réponse du brassin, Prévisions en reflet.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/e2b-page.png"><img src="img/e2b-haut.png" alt="e2b"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Onglet Argent du brassin</b> <span class="id">e2b</span>Une frise du brassin planifié.</figcaption></figure>
+</div>
+<p class="mut">e2c écarté par le critique : impôt de l'année faux (303,84).</p></section>
+
+<section data-choix="operations"><h2>6 · Opérations : v4c, plus serré, tout sur la ligne</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/v4c-page.png"><img src="img/v4c-haut.png" alt="v4c"></button><figcaption><span class="pill p-ref">Ta base</span><b>Par catégorie</b> <span class="id">v4c</span></figcaption></figure>
+<figure data-vignette data-variante class="cand"><button data-agrandir="img/v5a-page.png"><img src="img/v5a-haut.png" alt="v5a"></button><figcaption><span class="pill p-cand">Candidate</span><b>Chaque ligne dit tout</b> <span class="id">v5a</span>Qui, quoi, état, échéance, pièce.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v5b-page.png"><img src="img/v5b-haut.png" alt="v5b"></button><figcaption><span class="pill p-ok">Bien</span><b>Barres couchées</b> <span class="id">v5b</span>Filtre « Sans pièce ».</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v5d-page.png"><img src="img/v5d-haut.png" alt="v5d"></button><figcaption><span class="pill p-ok">Bien</span><b>Qui attend mon argent ?</b> <span class="id">v5d</span>Les piles payé, à payer.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/v5c-page.png"><img src="img/v5c-haut.png" alt="v5c"></button><figcaption><span class="pill p-res">Avec réserve</span><b>Tuiles</b> <span class="id">v5c</span>Texte coupé dans une tuile.</figcaption></figure>
+</div></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){i.src=b.getAttribute('data-agrandir');i.alt=(b.querySelector('img')||{}).alt||'';d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>
