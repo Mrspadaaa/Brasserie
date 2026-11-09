@@ -63,7 +63,7 @@ Lire :
 | message de la pilote 08.11 : découpe (work/missions/2026-11-03-lecture-longue/ETAT-DE-L-ART.md) et banc k7 (4a07d674) | AJ | 3 | 0 |  |
 | work/missions/2026-11-08-rejeu-bc70/RAPPORT.md | RO | 4 | 0 | cbb50a8d12dd |
 | work/missions/2026-11-08-lecture-en-ligne/RAPPORT.md | LO |  5 | 0 | d4bccc1b45ee |
-| work/missions/2026-11-09-banc-gemini/MISSION.md | M9 | 4 | 0 | 52b33128779d |
+| work/missions/2026-11-09-banc-gemini/MISSION.md | M9 | 4 | 0 | c9f37ed54f7f |
 | C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-b47c/RAPPORT.md | RX | 5 | 0 | 72def5479460 |
 | work/missions/2026-11-08-rejeu-b47c/VISION.md | VI | 12 | 0 | b35353079003 |
 | work/missions/2026-11-08-rejeu-013d/RAPPORT.md | RX | 0 | 0 | 9b111e12e6c4 |

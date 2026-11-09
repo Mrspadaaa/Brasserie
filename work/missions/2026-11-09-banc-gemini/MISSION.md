@@ -112,16 +112,11 @@ les deux fois (avant : k6 0 sur 3, k7 1, k8 2). La date n'a déclenché la 3.8 q
 - M9-3 : Dépense : après « Retirer la ligne 3 », la carte garde « ✓ Somme = imprimé 86,50 » alors que le pied dit « Lignes 84,10 · total 86,50 · 2,40 de moins ».
 - M9-4 : Banc : C★v rejoué sans la règle LT-2 (corrigé ici).
 
-## État de reprise (09.11, 17 h)
+## État de reprise (09.11, fin)
 
-- Fait, non commité : code (functions/src/invoiceVisionReview.ts, prompts.ts, invoiceScanVote.ts ; src/services/qr*.ts ; src/ui/depense/qrVue.ts ;
-  src/ui/finance/PieceDejaSaisie.tsx ; scripts/banc-lecture-facture.ts), tests (tests/unit/depense/m9/, tests/unit/banc-lecture-facture.test.ts), GESTES.md,
-  journal-gemini.md, ce MISSION.md. `npx tsc --noEmit` vert (app et functions) ; suites Dépense, scan, banc vertes (bulletins-lo1 instable sous charge, vert seul).
-- En cours : suite Vitest complète (journal dans le bloc-notes de la session).
-- Reste : commit par chemins ; BUGS.md par le script préparé (`bugs.cjs <hash>` : 10 lignes, M9-1 à M9-4, source M9 dont l'empreinte se pose avec
-  `node scripts/agents/controle-bugs.mjs`) ; commande de déploiement au pilote (aiTask seule, hébergement pour l'écran).
-- Environnement du worktree : jonctions `node_modules`, `functions/node_modules`, `work/finalisation-tickets-2026-10-08/H13-reels` vers le dépôt principal ;
-  `.env`, `.env.local`, `src/data/seedData.ts` copiés (ignorés par Git). Passes payantes lancées avec le dépôt principal comme dossier courant (clé lue par le banc).
+- Fait : commits 6c17266f (code, tests), fb2dfba0 (BUGS, mesures), 81ddc5b9 (journal du témoin), 053f0c78 (montants fictifs des tests) ; PR #200 vers claude/refonte-houblons-v4 ; aiTask déployée depuis 81ddc5b9 (sans functions/.env, aucun refus aux journaux ; aucun appel réel encore passé).
+- Reste au pilote : hébergement (LO-4, LO-5) après le contrôle D342 ; TL-NOTE-2 et TL-NOTE-6 en ligne (ZZ TEST) ; LT-6 ajouts non signalés selon le tirage (doc3, doc11) ; M9-1 à M9-3.
+- Environnement du worktree : jonctions node_modules, functions/node_modules, H13-reels ; .env, .env.local, seedData.ts copiés (ignorés). Témoin m9-temoin retiré.
 
 ## Lenteur : mesure appariée (09.11, 17 h, à sa demande « regarde pour cette lenteur en détail »)
 
