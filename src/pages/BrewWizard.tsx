@@ -369,7 +369,7 @@ const KIND_TONE: Record<FermentableKind, string> = {
  * de plusieurs points sur un ingrédient qui, en réalité, fermente entièrement.
  * Le rayon de chaque famille est maintenant déclaré, et ne se recoupe pas.
  *
- * Les catégories nommées ici sont celles du stock (`AddStockItemModal`) : Malt,
+ * Les catégories nommées ici sont celles du stock : Malt,
  * Houblon, Levure, Sucre. Les autres sont tolérées pour un stock personnalisé.
  */
 const KIND_DEF: Record<
