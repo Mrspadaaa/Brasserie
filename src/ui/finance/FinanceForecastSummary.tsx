@@ -15,15 +15,19 @@ interface Props {
   undatedCount?: number;
   undatedOutCents?: number;
   undatedInCents?: number;
+  /** Parts de brassin sans montant (jamais écrites 0,00 sur l'escalier) : « Pale Ale d'hiver · emballage : à compléter ». */
+  aCompleter?: string[];
   onProfile: () => void;
   onPayments: () => void;
 }
 
-export function FinanceForecastSummary({ ledger, openingCashReady, warnings, undatedCount = 0, undatedOutCents = 0, undatedInCents = 0, onProfile, onPayments }: Props) {
-  const incomplete = warnings.length > 0 || !ledger.cashComplete;
+export function FinanceForecastSummary({ ledger, openingCashReady, warnings, undatedCount = 0, undatedOutCents = 0, undatedInCents = 0, aCompleter = [], onProfile, onPayments }: Props) {
+  const incomplete = warnings.length > 0 || !ledger.cashComplete || aCompleter.length > 0;
+  /* Test d'écran P5B, constat 15 : un seul pli par ligne de trop ; les limites sont écrites d'emblée, sous l'avis, sans second « Voir les limites ». */
+  const limites = [...warnings, ...aCompleter];
   /* Ce qui manque, une phrase vraie : seulement les causes que les données disent (aucune cause inventée). */
   const causes = [!openingCashReady ? 'le solde de départ' : '', ledger.unknownPaymentCount > 0 ? compte(ledger.unknownPaymentCount, 'paiement') + ' à confirmer' : ''].filter(Boolean);
-  const manque = causes.length ? `Il manque ${causes.join(' et ')} ; les montants couvrent le reste.` : warnings.length ? 'Voir les limites ci-dessous : certains montants restent partiels.' : 'Certaines données manquent : les montants sont partiels.';
+  const manque = causes.length ? `Il manque ${causes.join(' et ')} ; les montants couvrent le reste.` : limites.length ? 'Voir les limites ci-dessous : certains montants restent partiels.' : 'Certaines données manquent : les montants sont partiels.';
   return <section className="finance-forecast-summary" aria-label="Limites de la prévision">
     {incomplete && <div className="finance-forecast-warning" role="status">
       <AlertCircle size={16}/><div><strong>Prévision incomplète</strong><p>{manque}</p></div>
@@ -33,6 +37,6 @@ export function FinanceForecastSummary({ ledger, openingCashReady, warnings, und
       {undatedOutCents > 0 && <> · {formatCHF(undatedOutCents)} à payer</>}{undatedInCents > 0 && <> · {formatCHF(undatedInCents)} à encaisser</>}</p>}
     {ledger.unknownPaymentCount > 0 && <button type="button" className="finance-task" onClick={onPayments}><span><strong>Confirmer les paiements</strong><small>{compte(ledger.unknownPaymentCount, 'paiement historique')} à vérifier.</small></span><ChevronRight size={16}/></button>}
     <button type="button" className="finance-link" onClick={onProfile}>{openingCashReady ? 'Solde et paramètres financiers' : 'Renseigner le solde de départ'}<ChevronRight size={14}/></button>
-    {warnings.length > 0 && <details className="finance-disclosure" open><summary>Voir les limites de cette prévision ({warnings.length})</summary><ul className="finance-issues">{warnings.map(warning => <li key={warning}>{warning}</li>)}</ul></details>}
+    {limites.length > 0 && <ul className="finance-issues" aria-label={`Limites de cette prévision (${limites.length})`}>{limites.map(warning => <li key={warning}>{warning}</li>)}</ul>}
   </section>;
 }

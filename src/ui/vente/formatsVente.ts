@@ -24,7 +24,7 @@ export function formatDepuisTarif(product: string): '33cl' | '75cl' | 'fut' | nu
 }
 
 /** Le nom de la bière dans un tarif : le nom sans le format (« Pale Ale 33 cl » → « pale ale »). */
-const biereDuTarif = (product: string): string => normaliser(product).replace(/\b33\s*cl\b|\b75\s*cl\b|\bfut\b(\s*\d+\s*l\b)?|\b(bouteilles?|canettes?|cartons?|futs?)\b/g, '').replace(/\s+/g, ' ').trim();
+export const biereDuTarif = (product: string): string => normaliser(product).replace(/\b33\s*cl\b|\b75\s*cl\b|\bfut\b(\s*\d+\s*l\b)?|\b(bouteilles?|canettes?|cartons?|futs?)\b/g, '').replace(/\s+/g, ' ').trim();
 
 /**
  * Le tarif d'un format pour une bière : correspondance sur le format ET le nom de la bière (D3, REVUE-A 7). Un seul candidat → lui ;
@@ -32,8 +32,9 @@ const biereDuTarif = (product: string): string => normaliser(product).replace(/\
  */
 export function tarifDuFormat(tarifs: PricingItem[], formatId: string, nomBiere: string | undefined): PricingItem | null {
   const biere = normaliser(nomBiere ?? '');
-  const candidats = tarifs.filter(t => formatDepuisTarif(t.product) === formatId).filter(t => {
-    const part = biereDuTarif(t.product);
+  // Un tarif porté depuis l'écran Prix (c7c) écrit son format et sa bière : ils priment sur le nom ; un ancien tarif se lit du nom.
+  const candidats = tarifs.filter(t => (t.format?.id ?? formatDepuisTarif(t.product)) === formatId).filter(t => {
+    const part = t.biere ? normaliser(t.biere) : biereDuTarif(t.product);
     return !part || !biere || biere.includes(part) || part.includes(biere);
   });
   return candidats.length === 1 && Number.isFinite(candidats[0].priceHT) && candidats[0].priceHT > 0 ? candidats[0] : null;

@@ -759,15 +759,23 @@ export interface GanttTask {
   completed?: boolean;
 }
 
+/** Format d'un tarif (ids de la caisse : formatsVente.ts). Le tarif porte son format : plus de regex sur le libellé quand il est renseigné (ue, 09.11). */
+export interface FormatTarif { id: '33cl' | '75cl' | 'fut'; volumeL: number }
 export interface PricingItem {
   product: string;
-  costIngredients: number;
-  costLabor: number;
-  costFixed: number;
-  costTotal: number;
+  /** Bière du tarif : le nom de la recette, pas celui d'un lot. Absent sur un ancien tarif (à compléter). */
+  biere?: string;
+  format?: FormatTarif;
+  /** Emballage d'UNE unité (CHF, base HT si assujetti), saisi dans la fiche du tarif. Absent = à compléter, jamais 0. */
+  emballageUnite?: number;
+  /** Hérités de l'ancien formulaire (coût saisi à la main) : plus écrits, jamais effacés d'une ligne existante. */
+  costIngredients?: number;
+  costLabor?: number;
+  costFixed?: number;
+  costTotal?: number;
   priceHT: number;
-  marginCHF: number;
-  marginPercent: number;
+  marginCHF?: number;
+  marginPercent?: number;
 }
 
 export interface BudgetLine {

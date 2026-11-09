@@ -20,7 +20,7 @@ describe('Clients › Impôt sur la bière : le barème vient de la donnée (dé
 
   it('18b. la phrase rendue reste celle de HEAD, mot pour mot', () => {
     render(<ClientsTab clients={[]} batches={[]} tarifs={[]} config={defaultConfig} onOpenQuickAction={() => {}} />);
-    const tax = within(screen.getByRole('region', { name: 'Réserve pour l’impôt sur la bière' }));
+    const tax = within(screen.getByRole('region', { name: 'Impôt bière de l’année' }));
     fireEvent.click(tax.getByText('Comprendre le calcul et les démarches'));
     expect(tax.getByText('Barème par hectolitre : 16,88 CHF jusqu’à 10 °P ; 25,32 CHF de 10,1 à 14 °P ; 33,76 CHF dès 14,1 °P.')).toBeVisible();
   });

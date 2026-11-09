@@ -39,7 +39,7 @@ afterEach(() => { cleanup(); FirestoreRepo.stopSync(); vi.useRealTimers(); vi.re
 describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
   it('rend p5b : titre du mois de fin, horizon, bascule Avec/Sans, étiquettes, légende, plis ; plus l’ancien écran', () => {
     semer(); ouvrir();
-    expect(screen.getByRole('heading', { name: 'Fin février' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Jusqu’au 6 févr.' })).toBeVisible();
     const horizon = within(screen.getByRole('group', { name: 'Horizon de prévision' }));
     expect(horizon.getByRole('button', { name: '90 jours' })).toHaveAttribute('aria-pressed', 'true');
     expect(horizon.getAllByRole('button')).toHaveLength(3);
@@ -51,7 +51,7 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
     expect(screen.getByRole('button', { name: /Frigo −3['’\s]?000,00, 15\.11/ })).toBeVisible();
     expect(screen.getByText('À payer').parentElement).toHaveTextContent(/460,00/);
     expect(screen.getByText('Prévu').parentElement).toHaveTextContent(/1['’\s]?550,00/);
-    expect(screen.getByRole('button', { name: /10\s+sorties/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: /^10\s+sorties/ })).toBeVisible();
     expect(screen.getByRole('button', { name: /Entrées : aucune/ })).toBeVisible();
     for (const ancien of ['Comparer les mois', 'Échéances et estimations à venir', 'Budgets et estimations', 'Factures à régler']) expect(screen.queryByText(ancien)).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: /Inclure mes projets de matériel/ })).not.toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Sans frigo/ }));
     expect(screen.getByRole('button', { name: /Sans frigo/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: /Frigo −3/ })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /\d+\s+sorties?$/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^\d+\s+sorties?$/ }));
     const liste = within(screen.getByRole('dialog', { name: 'Sorties et entrées prévues' }));
     expect(liste.getByText(/Fermenteur/)).toBeVisible();
     expect(liste.queryByText(/Frigo/)).not.toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
 
   it('la liste de l’annexe : dix sorties, soldes après, brassin à ses quatre dates (domaine d2)', () => {
     semer(); ouvrir();
-    fireEvent.click(screen.getByRole('button', { name: /10\s+sorties/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^10\s+sorties/ }));
     const liste = within(screen.getByRole('dialog', { name: 'Sorties et entrées prévues' }));
     expect(liste.getAllByRole('listitem')).toHaveLength(10);
     expect(liste.getByText(/achats/)).toBeVisible();
@@ -118,7 +118,7 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
 
   it('fiche du brassin : 22,42 + 11,00 + 24,00 + 6,84 = 64,26, chaque ligne dit d’où vient son montant', () => {
     semer(); ouvrir();
-    fireEvent.click(screen.getByRole('button', { name: /10\s+sorties/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^10\s+sorties/ }));
     fireEvent.click(within(screen.getByRole('dialog')).getByText(/impôt sur la bière/));
     const fiche = screen.getByRole('dialog');
     for (const m of ['−22,42', '−11,00', '−24,00', '−6,84', '−64,26']) expect(fiche).toHaveTextContent(m);
@@ -150,19 +150,20 @@ describe('Prévisions : l’escalier aux étiquettes accrochées (p5b)', () => {
     expect(screen.getByRole('dialog', { name: 'Limites de cette prévision' })).toHaveTextContent(/Échéance à préciser/);
   });
 
-  it('solde de départ inconnu : « À compléter », jamais 0,00 dans les cartes ; le solde se renseigne dans les limites', () => {
+  it('solde de départ inconnu : une carte « à renseigner », des écarts (jamais un solde, jamais 0,00) ; le solde se renseigne dans les limites', () => {
     semer({ sansSolde: true }); ouvrir();
     const cartes = screen.getByRole('group', { name: /Avec ou sans/ });
-    expect(cartes).toHaveTextContent('À compléter');
+    expect(screen.getByRole('button', { name: /Solde de départ à renseigner/ })).toBeVisible();
+    expect(cartes).toHaveTextContent('écart 90 j'); expect(cartes).not.toHaveTextContent('À compléter');
     expect(cartes).not.toHaveTextContent(/(^|\s)0,00/);
     fireEvent.click(screen.getByRole('button', { name: /Limites/ }));
     expect(screen.getByRole('button', { name: /Renseigner le solde de départ/ })).toBeVisible();
   });
 
-  it('l’horizon se change : 30 jours → « Fin décembre »', () => {
+  it('l’horizon se change : 30 jours → « Jusqu’au 8 déc. »', () => {
     semer(); ouvrir();
     fireEvent.click(screen.getByRole('button', { name: '30 jours' }));
-    expect(screen.getByRole('heading', { name: 'Fin décembre' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Jusqu’au 8 déc.' })).toBeVisible();
   });
 
   it('le bouton « Vente » appelle la porte une fois ; sans la prop, il n’existe pas', () => {

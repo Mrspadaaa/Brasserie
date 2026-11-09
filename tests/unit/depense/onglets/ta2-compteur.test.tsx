@@ -19,8 +19,8 @@ const defaults = {
   renderRow: (t: Transaction) => <button>{t.description}</button>,
   onManageArchives: () => {}, onSale: () => {}, onPrivateMovement: () => {},
 };
-/** Le compteur de l'en-tête (les pastilles de filtre ont leurs propres comptes, lus par lecteur d'écran). */
-const text = () => document.querySelector('.finance-period-count')?.textContent ?? '';
+/** v6b : le compteur est celui de chaque groupe (nom accessible de sa section) ; les pastilles de filtre ont leurs propres comptes. */
+const text = () => [...document.querySelectorAll('section[aria-label]')].map(el => el.getAttribute('aria-label')).join(' | ');
 const show = (transactions: Transaction[], request: Record<string, unknown> = {}) =>
   render(<TransactionJournal {...defaults} transactions={transactions} request={{ key: `k-${Math.random()}`, scope: 'all', allDates: true, ...request }}/>);
 afterEach(cleanup);
@@ -59,6 +59,7 @@ describe('TA2 : compteur du journal', () => {
 
   it('liste vide : « 0 opération »', () => {
     show([]);
-    expect(text()).toMatch(/0 opération/);
+    expect(text()).toBe('');
+    expect(screen.getByText('Aucune opération enregistrée')).toBeInTheDocument();
   });
 });

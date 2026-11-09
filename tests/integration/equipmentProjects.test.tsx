@@ -123,8 +123,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(bascule.getByRole('button', { name: /Avec hotte de brassage/ })).toHaveTextContent(/2['’\s]?800,00/);
     expect(bascule.getByRole('button', { name: /Sans hotte de brassage/ })).toHaveTextContent(paymentStatus === 'paid' ? /3['’\s]?200,00/ : /4['’\s]?000,00/);
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
-    fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte de brassage.*Depuis le début du projet/ }));
     fireEvent.click(screen.getByText(/Achats liés ·/));
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Hotte de brassage.*Part du projet/ }));
@@ -141,8 +140,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(screen.getByText('À payer').parentElement).toHaveTextContent('300,00');
     expect(screen.queryByRole('group', { name: /Avec ou sans/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
-    fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /Fournisseurs, matériel/ }));
     expect(screen.getByRole('button', { name: /Hotte de brassage.*1 facture.*300/ })).toBeVisible();
   });
 

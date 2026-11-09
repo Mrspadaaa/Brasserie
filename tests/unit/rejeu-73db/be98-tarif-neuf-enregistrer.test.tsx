@@ -12,7 +12,7 @@ afterEach(cleanup);
 describe('BE-98 — tarif neuf : après un refus, Enregistrer garde la raison du refus', () => {
   it('99999 puis Enregistrer : « au-delà de 10 000 CHF », jamais « positif ou nul »', () => {
     const onSave = vi.fn();
-    render(<TarifSheet item={{ product: '', costIngredients: undefined, costFixed: undefined, costLabor: 0, priceHT: undefined } as never} config={defaultConfig} onClose={() => {}} onSave={onSave} onDelete={() => {}} />);
+    render(<TarifSheet item={{ product: '', priceHT: undefined } as never} config={defaultConfig} onClose={() => {}} onSave={onSave} onDelete={() => {}} />);
     const champ = document.getElementById('tf-priceHT') as HTMLInputElement;
     fireEvent.focus(champ);
     fireEvent.change(champ, { target: { value: '99999' } });
@@ -21,8 +21,8 @@ describe('BE-98 — tarif neuf : après un refus, Enregistrer garde la raison du
     const prix = document.getElementById('tf-priceHT-error');
     expect(prix?.textContent).toMatch(/au-delà de 10[\s  ]000 CHF/u);
     expect(prix?.textContent).not.toContain('positif ou nul');
-    // Les champs vides voisins disent qu'ils sont vides, jamais « positif ou nul » (qui se lisait comme le refus du prix).
-    for (const id of ['tf-costIngredients-error', 'tf-costFixed-error']) expect(document.getElementById(id)?.textContent).toMatch(/^Champ vide/);
+    // L'emballage voisin est facultatif : vide, il ne reproche rien (jamais « positif ou nul », qui se lisait comme le refus du prix).
+    expect(document.getElementById('tf-emballageUnite-error')).toBeNull();
     expect(document.body.textContent).not.toContain('positif ou nul');
     expect(onSave).not.toHaveBeenCalled();
   });

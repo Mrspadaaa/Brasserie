@@ -20,7 +20,7 @@ describe('l’escalier de la fixture (10 sorties, datées par le domaine)', () =
   });
   it('fin d’horizon (90 j : dernier jour inclus 06.02), premier jour sous zéro, plus bas', () => {
     expect(fin).toBe('2027-02-06');
-    expect(titreHorizon(fin, 90)).toBe('Fin février');
+    expect(titreHorizon(fin, 90)).toBe('Jusqu’au 6 févr.');
     expect(e.soldeFinCents).toBe(-89_266);
     expect(e.premierJourSousZero).toBe('2027-01-25');
     expect(e.pointBas).toEqual({ date: '2027-01-30', soldeCents: -89_266 });
@@ -64,7 +64,7 @@ describe('inconnu n’est jamais 0', () => {
 describe('graduations (Heckbert, cible 5)', () => {
   it('[−892,66 ; 4 181,60] : pas de 1 000, le zéro y est', () => {
     const g = graduations(-89_266, 418_160);
-    expect(g.ticks).toEqual([-100_000, 0, 100_000, 200_000, 300_000, 400_000, 500_000]);
+    expect(g.ticks).toEqual([-100_000, 0, 100_000, 200_000, 300_000, 400_000]);
     expect(g.ticks).toContain(0);
   });
   it('plage toute positive, toute négative, nulle, minuscule', () => {
@@ -78,7 +78,7 @@ describe('graduations (Heckbert, cible 5)', () => {
 });
 
 describe('titres et tendance', () => {
-  it('l’année n’apparaît que pour 12 mois', () => { expect(titreHorizon('2027-11-08', 365)).toBe('Fin novembre 2027'); expect(titreHorizon('2026-12-08', 30)).toBe('Fin décembre'); });
+  it('l’année n’apparaît que pour 12 mois', () => { expect(titreHorizon('2027-11-08', 365)).toBe('Jusqu’au 8 nov. 2027'); expect(titreHorizon('2027-11-30', 365)).toBe('Fin novembre 2027'); expect(titreHorizon('2026-12-08', 30)).toBe('Jusqu’au 8 déc.'); });
   it('trois mois de tendance : une seule « dépenses courantes » par mois, montants additionnés', () => {
     const t = (date: string, cat: string, c: number): ForecastItem => ({ id: `trend:${date}:${cat}`, date, label: `Autres dépenses · ${cat}`, amountCents: c, direction: 'out', source: 'trend', category: cat });
     const items = regrouperTendance([t('2026-12-01', 'chargesFixes', 100), t('2026-12-01', 'divers', 50), t('2027-01-01', 'chargesFixes', 100), t('2027-02-01', 'chargesFixes', 100)]);

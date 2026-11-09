@@ -21,7 +21,8 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 describe('Fiche du brassin › Impôt bière', () => {
   it('17. le bouton « Impôt bière » ouvre la feuille ; « Noter la densité » la ferme, ouvre Mesures et pose le focus sur la densité initiale', async () => {
     render(<BatchDetailSheet batch={batch()} initialSection="overview" onClose={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: /Impôt bière/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Argent' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Impôt sur la bière' }));
     const feuille = await screen.findByRole('dialog', { name: /Impôt bière/ });
     expect(within(feuille).getByText('Pale Ale de septembre')).toBeVisible();
     fireEvent.click(within(feuille).getByRole('button', { name: 'Noter la densité' }));

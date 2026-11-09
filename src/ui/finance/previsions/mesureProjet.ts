@@ -11,6 +11,8 @@ export interface MesureProjet {
   usureParAnCents: number | null;
   litreAvant: number | null;
   litreApres: number | null;
+  /** Pourquoi le litre est vide (jamais un 0 : constat 12 du test d'écran P5B) : aucun brassin planifié, ou un brassin dont le coût est encore partiel. */
+  litreManque: 'aucun-brassin' | 'brassin-partiel' | null;
   pointBas: Escalier['pointBas'];
   soldeFinCents: number | null;
   /** « Pour rester à zéro » : bouteilles à vendre pour combler le plus bas, en trésorerie, avant coût de production. `null` = prix manquant ; 0 = aucun creux. */
@@ -39,6 +41,7 @@ export function mesureDuProjet(input: { plan: FinancialPlan; plans: FinancialPla
     format: prix && prix > 0 ? { label: 'bouteille 33 cl', volumeL: 0.33, prixCents: prix } : undefined, prevision: input.forecast, ignorerPlanId: plan.id });
   const apres = mesure.coutLitreAvecCents;
   return { usureParAnCents: mesure.usureParAnCents, litreAvant: litre ? litre.affiche.complet : null, litreApres: apres == null ? null : Math.round(apres) / 100,
+    litreManque: litre ? null : brassins.length ? 'brassin-partiel' : 'aucun-brassin',
     pointBas: input.escalier.pointBas, soldeFinCents: input.escalier.soldeFinCents, bouteillesPourZero: bouteillesPourZero(input.escalier.pointBas?.soldeCents, prix),
     bouteillesPourPayer: mesure.ventes?.bouteilles ?? null, avertissements: mesure.avertissements };
 }

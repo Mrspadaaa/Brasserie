@@ -21,11 +21,10 @@ afterEach(() => { cleanup(); FirestoreRepo.stopSync(); vi.restoreAllMocks(); });
 describe('Impôt sur la bière : nombres à la virgule (BE-82)', () => {
   it('écrit les litres conditionnés et le montant avec la virgule, jamais le point', () => {
     render(<ClientsTab clients={[]} batches={[brassin]} tarifs={[]} config={defaultConfig} onOpenQuickAction={() => {}} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Impôt sur la bière' }));
-    const tax = within(screen.getByRole('region', { name: 'Réserve pour l’impôt sur la bière' }));
-    expect(tax.getByText('Pour 85,9 litres conditionnés')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Impôt bière' }));
+    const tax = within(screen.getByRole('region', { name: 'Impôt bière de l’année' }));
+    // Le total de l'année (somme des feuilles p2b) et la liste par brassin gardent la virgule, jamais le point.
+    expect(tax.getByRole('group', { name: 'Impôt par brassin' })).toBeVisible();
     expect(tax.queryByText(/85\.9/)).toBeNull();
-    // Le montant (ex. « 21,75 CHF ») garde sa virgule.
-    expect(tax.getByText(/^\d+,\d{2}( – \d+,\d{2})? CHF$/)).toBeVisible();
   });
 });

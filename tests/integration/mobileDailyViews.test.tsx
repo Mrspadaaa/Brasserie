@@ -108,12 +108,15 @@ describe('Vues quotidiennes sur téléphone',()=>{
     const navigation=within(screen.getByRole('tablist',{name:'Finances'}));
     expect(navigation.getAllByRole('tab').map(tab=>tab.textContent)).toEqual(['Synthèse','Opérations','Prévisions','Annuel']);
     expect(navigation.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
-    expect(screen.getByLabelText('Situation financière actuelle')).toBeVisible(); // la bande de position est une liste de définitions nommée, plus un titre (test périmé, 48987dab)
+    expect(screen.getByRole('button',{name:'Solde et paramètres financiers'})).toBeVisible(); // Synthèse g3a : la caisse remplace la bande « Situation financière actuelle »
     fireEvent.click(navigation.getByRole('tab',{name:'Opérations'}));
-    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
+    // v6b : la recherche vit derrière la loupe, toujours visible dans la bande du mois.
+    expect(screen.getByRole('button',{name:'Rechercher'})).toBeVisible();
     expect(screen.getByLabelText('Période du journal')).toBeVisible();
     expect(screen.getByRole('button',{name:/Houblon Cascade/})).toBeVisible();
     expect(screen.getByRole('button',{name:'Archives',exact:true})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'Rechercher'}));
+    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
     fireEvent.change(screen.getByRole('textbox',{name:'Rechercher une opération'}),{target:{value:'Cascade'}});
     fireEvent.click(navigation.getByRole('tab',{name:'Prévisions'}));
     expect(screen.getByRole('group',{name:'Horizon de prévision'})).toBeVisible();

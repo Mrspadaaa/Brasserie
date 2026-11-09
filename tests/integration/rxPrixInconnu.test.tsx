@@ -26,15 +26,15 @@ beforeEach(() => {
 afterEach(() => { cleanup(); FirestoreRepo.stopSync(); vi.restoreAllMocks(); });
 
 describe('TE-6 — un prix inconnu reste vide', () => {
-  it('un nouveau tarif ouvre ses trois montants vides (ni « 0 » ni message d’erreur avant d’avoir touché), et l’enregistrement sans prix est refusé', () => {
+  it('un nouveau tarif ouvre ses montants vides (ni « 0 » ni message d’erreur avant d’avoir touché), et l’enregistrement sans prix est refusé', () => {
     render(<ClientsTab clients={[client]} batches={[]} tarifs={[]} config={defaultConfig} onOpenQuickAction={() => {}} createRequest={{ kind: 'newTarif', at: 1 }} />);
-    const feuille = screen.getByRole('dialog', { name: 'Nouveau tarif' });
-    for (const id of ['tf-costIngredients', 'tf-costFixed', 'tf-priceHT']) {
+    const feuille = screen.getByRole('dialog', { name: 'Fixer le prix' });
+    for (const id of ['tf-priceHT', 'tf-emballageUnite']) {
       const champ = feuille.querySelector<HTMLInputElement>(`#${id}`)!;
       expect(champ.value, id).toBe('');
     }
     expect(screen.queryByRole('alert')).toBeNull();
-    fireEvent.change(feuille.querySelector<HTMLInputElement>('#tf-product')!, { target: { value: 'Bouteille 50 cl' } });
+    fireEvent.change(feuille.querySelector<HTMLInputElement>('#tf-biere')!, { target: { value: 'Pale Ale' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(screen.getAllByRole('alert').map((n) => n.textContent).join(' ')).toMatch(/montant/);
     expect(StorageService.getTarifs()).toHaveLength(0);

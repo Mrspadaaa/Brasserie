@@ -19,7 +19,6 @@ import { BatchGravityEntry } from './production/BatchGravityEntry';
 import { formatDecimal, parseDecimal } from './numericInput';
 import { NoloPanel } from './NoloPanel';
 import { noloRecipeForBatch } from '../domain/nolo';
-import { BrewBudgetButton } from './finance/BrewBudgetDialog';
 import { DateField, toIsoDate } from './DateField';
 import { Units } from '../services/units';
 import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates, normalizeBrewDate, breweryDay } from '../domain/batchSchedule';
@@ -33,7 +32,7 @@ import { formatLitres } from '../domain/recipeMetrics';
 import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
-import { ImpotBiereSheet, ImpotBiereLien } from './production/ImpotBiereSheet';
+import { ChaineArgent } from './prix/ChaineArgent';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -64,13 +63,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [brewDayDraft, setBrewDayDraft] = useState<string | null>(null);
   const [brewDayError, setBrewDayError] = useState('');
-  const [section, setSection] = useState<BatchDetailSection>(initialSection);
+  const [section, setSection] = useState<BatchDetailSection | 'argent'>(initialSection);
   const [noloNotice,setNoloNotice]=useState('');
-  /** Feuille « Impôt bière » ; `focusOg` : « Noter la densité » y a ouvert Mesures, le focus se pose sur la densité initiale une fois la feuille fermée. */
-  const [impotOpen, setImpotOpen] = useState(false);
+  /** `focusOg` : « Noter la densité » (feuille Impôt bière ou coût, depuis Argent) a ouvert Mesures ; le focus se pose sur la densité initiale. */
   const [focusOg, setFocusOg] = useState(false);
   useEffect(() => {
-    if (!focusOg || impotOpen || section !== 'measurements') return;
+    if (!focusOg || section !== 'measurements') return;
     const timer = window.setTimeout(() => {
       const champ = document.querySelector<HTMLInputElement>('input[name="batch_sheet_og"]');
       champ?.focus();
@@ -78,7 +76,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       setFocusOg(false);
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [focusOg, impotOpen, section]);
+  }, [focusOg, section]);
   const [confirmStock, setConfirmStock] = useState<'already' | 'consume' | 'remaining' | null>(null);
   const [stockMessage, setStockMessage] = useState('');
   /** AM n° 6 : encadré du volume conditionné ; `target` = l'étape en attente, `null` = simple saisie ou correction. */
@@ -209,14 +207,15 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           <YeastPreparationPanel batch={draft} onSave={save} />
           {noloRecipeForBatch(draft)&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
-            className="grid grid-cols-3 border-b border-cave-700"
+            className="grid grid-cols-4 border-b border-cave-700"
             aria-label="Rubriques du brassin"
           >
             {(
               [
                 ['measurements', 'Mesures'],
                 ['tasting', 'Carnet'],
-                ['overview', 'Dossier']
+                ['overview', 'Dossier'],
+                ['argent', 'Argent']
               ] as const
             ).map(([key, label]) => (
               <button
@@ -260,9 +259,6 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           })()}
           {section === 'overview' && (
             <>
-              <BrewBudgetButton batch={draft} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />
-              <ImpotBiereLien batch={draft} onOpen={() => setImpotOpen(true)} />
-              {impotOpen && <ImpotBiereSheet batch={draft} onClose={() => setImpotOpen(false)} onNoteDensity={() => { setImpotOpen(false); setSection('measurements'); setFocusOg(true); }} />}
               <section className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>
@@ -292,6 +288,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               {blockedReason && <p className="text-2xs text-cave-400 leading-snug">{blockedReason}</p>}
             </>
           )}
+          {section === 'argent' && <ChaineArgent batch={draft} config={StorageService.getConfig()} onNoteDensity={() => { setSection('measurements'); setFocusOg(true); }} />}
           {section === 'measurements' && (
             <>
               <section className="space-y-2">

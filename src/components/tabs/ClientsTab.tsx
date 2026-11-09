@@ -11,15 +11,17 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { Client, ClientStatus, Batch, PricingItem, AppConfig } from '../../types';
-import { ImpotBiereSheet, ImpotBiereLien, anneeDuBrassin } from '../../ui/production/ImpotBiereSheet';
+/** Plans et réduction de l'année, lus du stockage : le même chemin que la feuille p2b (une seule source du total d'impôt). */
+const lireImpot = () => ({ plans: FinanceService.snapshot().plans, fiscal: StorageService.getConfig().fiscal });
+import { ImpotBiereSheet, ImpotBiereLien, anneeDuBrassin, baseImpot } from '../../ui/production/ImpotBiereSheet';
 import { StorageService } from '../../services/storage';
-import { BrewingMath } from '../../services/brewingMath';
 import { BEER_TAX_SOURCE, BAREME_IMPOT_BIERE } from '../../domain/finance/swissBeerTax';
 import { ClientStatsService } from '../../services/clientStats';
 import { lireTelephone } from '../../services/clientPhone';
 import { montantChf } from '../../domain/finance/ledger';
 import { EditClientModal } from '../EditClientModal';
-import { TarifSheet } from '../../ui/TarifSheet';
+import { PrixEcran } from '../../ui/prix/PrixEcran';
+import { FinanceService } from '../../services/financeService';
 import { nextClientId } from '../../services/refs';
 import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
 import { ViewNavigation } from '../../ui/ViewNavigation';
@@ -37,9 +39,7 @@ const PHRASE_BAREME = 'Barème par hectolitre : ' + BAREME_IMPOT_BIERE.map((tran
 const Caisse = React.lazy(() => import('../../ui/vente/Caisse').then(m => ({ default: m.Caisse })));
 
 const amountFormat = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const percentFormat = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const amount = (value: number) => Number.isFinite(value) ? amountFormat.format(value) : '—';
-const percent = (value: number) => Number.isFinite(value) ? percentFormat.format(value) : '—';
 const searchable = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr').trim();
 const clientStatuses: ClientStatus[] = ['Prospect', 'Actif', 'Fidèle'];
 
@@ -67,8 +67,8 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   const [clientQuery, setClientQuery] = useState('');
   const [clientType, setClientType] = useState<'all' | Client['type']>('all');
   const [clientStatus, setClientStatus] = useState<'all' | ClientStatus>('all');
-  const [tarifQuery, setTarifQuery] = useState('');
-  const [tarifFilter, setTarifFilter] = useState<'all' | 'noMargin'>('all');
+  /** Demande de tarif neuf (bouton +) : l'écran Prix ouvre sa feuille. */
+  const [nouveauTarif, setNouveauTarif] = useState<number | null>(null);
   // Persistent subtab
   const [subTab, setSubTab] = useState<'crm' | 'ofdf' | 'tarifs'>(() =>
     StorageService.getUiState('clients_subtab', 'crm')
@@ -78,23 +78,6 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   const [editingClient, setEditingClient] = useLiveSelection(clients, 'id');
   const [caisseClient, setCaisseClient] = useLiveSelection(clients, 'id');
   const [taxYear, setTaxYear] = useState(new Date().getFullYear());
-  const displayedTarifs = useMemo(() => tarifs.map(t => { const costTotal = Math.round((t.costIngredients + t.costFixed) * 100) / 100; const marginCHF = Math.round((t.priceHT - costTotal) * 100) / 100; return { ...t, costLabor: 0, costTotal, marginCHF, marginPercent: t.priceHT > 0 ? marginCHF / t.priceHT * 100 : 0 }; }), [tarifs]);
-  /** Fiche tarif ouverte. Un tarif sans produit vaut création. */
-  const [tarifSheet, setTarifSheet] = useLiveSelection(tarifs, 'product');
-
-  // TE-6 : un coût ou un prix qu'on ne connaît pas encore n'est pas « 0 ». NaN s'affiche vide dans la feuille (« À renseigner ») et ne s'enregistre jamais :
-  // la feuille exige les trois montants.
-  const blankTarif = (): PricingItem => ({
-    product: '',
-    costIngredients: Number.NaN,
-    costLabor: 0,
-    costFixed: Number.NaN,
-    costTotal: Number.NaN,
-    priceHT: Number.NaN,
-    marginCHF: Number.NaN,
-    marginPercent: Number.NaN
-  });
-
   const blankClient = (): Client => ({
     id: nextClientId(clients.map((c) => c.id)),
     name: '',
@@ -111,7 +94,7 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   useEffect(() => {
     if (!createRequest) return;
     if (createRequest.kind === 'newClient') setEditingClient(blankClient());
-    if (createRequest.kind === 'newTarif') setTarifSheet(blankTarif());
+    if (createRequest.kind === 'newTarif') setNouveauTarif(createRequest.at);
   }, [createRequest?.at]);
 
   // Le bouton d'action doit savoir où l'on est : il crée ce que l'écran montre.
@@ -123,20 +106,25 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
     StorageService.setUiState('clients_subtab', subTab);
   }, [subTab]);
 
-  // Impôt fédéral sur la bière (OFDF) — assiette = bière réellement conditionnée
-  const taxReport = useMemo(
-    () =>
-      BrewingMath.calculateSwissBeerTax(batches, {
-        year: taxYear,
-        annualReductionPct: config.fiscal.beerTaxAnnualReductionPct,
-        reductionYear: config.fiscal.beerTaxReductionYear
-      }),
-    [batches, config.fiscal, taxYear]
-  );
-
   // Constat 16 : la réserve annuelle renvoie aux brassins de l'année, chacun avec sa règle des degrés (feuille de la fiche), pour un seul récit de l'impôt.
   const [impotBatch, setImpotBatch] = useState<Batch | null>(null);
+  const donneesImpot = useStorageValue(lireImpot);
   const brassinsImpot = useMemo(() => batches.filter(batch => batch.status !== 'planifie' && anneeDuBrassin(batch) === taxYear), [batches, taxYear]);
+
+  const totalImpot = useMemo(() => {
+    let cents = 0, inconnus = 0, approx = false;
+    for (const batch of brassinsImpot) {
+      const b = baseImpot(batch, donneesImpot);
+      const plato = b.densite === 'notee' ? b.lu.plato : b.visee;
+      const montant = plato != null && b.litres ? b.calcul(plato, b.litres.litres).montant : null;
+      if (montant === null) inconnus++; else cents += Math.round(montant * 100);
+      if (b.densite !== 'notee') approx = true;
+    }
+    return { total: cents / 100, inconnus, approx };
+  }, [brassinsImpot, donneesImpot]);
+  const pctReduction = donneesImpot.fiscal.beerTaxAnnualReductionPct;
+  const reductionConfirmee = typeof pctReduction === 'number' && Number.isFinite(pctReduction) && pctReduction >= 0 && pctReduction <= 40 && donneesImpot.fiscal.beerTaxReductionYear === taxYear;
+  const totalTexte = brassinsImpot.length === 0 || (totalImpot.inconnus > 0 && totalImpot.total === 0) ? '—' : `${totalImpot.inconnus > 0 ? '≥ ' : totalImpot.approx ? '~ ' : ''}${montantChf(totalImpot.total)} CHF`;
 
   // Chiffres clients calculés depuis les ventes réelles (jamais stockés).
   const transactions = useStorageValue(StorageService.getTransactions);
@@ -161,22 +149,13 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   }));
   const hasClientFilters = clientType !== 'all' || clientStatus !== 'all';
   const resetClients = () => { setClientQuery(''); setClientType('all'); setClientStatus('all'); };
-  const noMarginCount = displayedTarifs.filter(tarif => tarif.marginCHF <= 0).length;
-  const visibleTarifs = displayedTarifs.filter(tarif =>
-    (tarifFilter === 'all' || tarif.marginCHF <= 0) && searchable(tarif.product).includes(searchable(tarifQuery))
-  );
-
   const handleCopyOfdfValues = () => {
-    const text = `RÉSERVE INDICATIVE IMPÔT SUR LA BIÈRE — ${taxYear}
+    const text = `IMPÔT SUR LA BIÈRE — ${taxYear}
 Entreprise : ${config.company.name}
-Volume conditionné : ${montantChf(taxReport.totalHectoliters)} hl (${nombreFr(taxReport.totalVolumeL, 1)} L)
-Taux plein : ${montantChf(taxReport.fullRatePerHl)} CHF/hl
-Réduction petit brasseur : ${nombreFr(taxReport.reductionPct, 1)}%
-Taux appliqué : ${montantChf(taxReport.ratePerHl)} CHF/hl
-Réserve : ${montantChf(taxReport.estimateLowCHF)} à ${montantChf(taxReport.estimateHighCHF)} CHF
-
-${taxReport.warning}
-Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirmée : calcul au taux plein'}.`;
+Brassins de l'année : ${brassinsImpot.length}
+Impôt estimé : ${totalTexte}${totalImpot.inconnus > 0 ? ` (densité à noter pour ${totalImpot.inconnus} brassin(s))` : ''}
+${reductionConfirmee ? `Réduction petit brasseur confirmée : ${nombreFr(pctReduction, 1)} %.` : 'Taux plein : réduction à confirmer dans les réglages.'}
+Estimation indicative : l'impôt est dû à la sortie de cave (déclaration via Taxas).`;
 
     /* TE-8 : le retour est visible dans les deux cas ; une copie refusée par le navigateur le dit au lieu de se taire. */
     void Promise.resolve(navigator.clipboard?.writeText(text)).then(() => setCopiedTax('ok'), () => setCopiedTax('failed'));
@@ -192,13 +171,13 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
     <div className="clients-workspace">
       <ViewNavigation<typeof subTab>
         label="Vue des clients" value={subTab} onChange={setSubTab}
-        options={[{ value: 'crm', label: 'Clients' }, { value: 'ofdf', label: 'Impôt sur la bière', shortLabel: 'Impôt bière' }, { value: 'tarifs', label: 'Prix et marges' }]}
+        options={[{ value: 'crm', label: 'Carnet' }, { value: 'tarifs', label: 'Prix' }, { value: 'ofdf', label: 'Impôt bière' }]}
       >
         <div className="clients-navigation" role="group" aria-label="Vue des clients">
           {([
-            { value: 'crm', label: 'Clients', icon: Users },
-            { value: 'ofdf', label: 'Impôt sur la bière', icon: ShieldCheck },
-            { value: 'tarifs', label: 'Prix et marges', icon: FileText }
+            { value: 'crm', label: 'Carnet', icon: Users },
+            { value: 'tarifs', label: 'Prix', icon: FileText },
+            { value: 'ofdf', label: 'Impôt bière', icon: ShieldCheck }
           ] as const).map(({ value, label, icon: Icon }) => (
             <button key={value} type="button" aria-pressed={subTab === value}
               onClick={() => setSubTab(value)} className="clients-nav-item">
@@ -289,21 +268,19 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
 
       {/* Les réserves restent visibles ; le détail fiscal se déplie. */}
       {subTab === 'ofdf' && (
-        <section className="clients-tax" aria-label="Réserve pour l’impôt sur la bière">
+        <section className="clients-tax" aria-label="Impôt bière de l’année">
           <div className="clients-tax-header">
-            <h3>Réserve pour l’impôt sur la bière</h3>
+            <h3>Impôt bière</h3>
             <label className="clients-tax-year">Année
               <select aria-label="Année de réserve OFDF" value={taxYear} onChange={event => setTaxYear(Number(event.target.value))} className={inputClass}>
                 {Array.from({ length: 6 }, (_, index) => new Date().getFullYear() - index).map(year => <option key={year}>{year}</option>)}
               </select>
             </label>
           </div>
-          <p>{taxReport.warning}</p>
           <dl className="clients-tax-reading">
             <div>
-              {/* MV-42 : sans litre conditionné, il n'y a pas de réserve à chiffrer — pas un « 0.00 CHF » qui ressemble à un calcul. */}
-              <dt>{taxReport.totalVolumeL > 0 ? `Pour ${nombreFr(taxReport.totalVolumeL, 2)} litres conditionnés` : `Aucun litre conditionné en ${taxYear}`}</dt>
-              <dd className="font-mono">{taxReport.totalVolumeL > 0 ? `${taxReport.estimateLowCHF === taxReport.estimateHighCHF ? montantChf(taxReport.estimateHighCHF) : `${montantChf(taxReport.estimateLowCHF)} – ${montantChf(taxReport.estimateHighCHF)}`} CHF` : '—'}</dd>
+              <dt>{brassinsImpot.length > 0 ? `${brassinsImpot.length} brassin${brassinsImpot.length > 1 ? 's' : ''} en ${taxYear}` : `Aucun brassin en ${taxYear}`}</dt>
+              <dd className="font-mono">{totalTexte}</dd>
             </div>
           </dl>
           {brassinsImpot.length > 0 && <div className="clients-tax-brassins" role="group" aria-label="Impôt par brassin">
@@ -311,8 +288,8 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
             {brassinsImpot.map(batch => <ImpotBiereLien key={batch.id} batch={batch} titre={batch.name} className="clients-tax-brassin" onOpen={() => setImpotBatch(batch)} />)}
           </div>}
           {impotBatch && <ImpotBiereSheet batch={impotBatch} onClose={() => setImpotBatch(null)} />}
-          <p className="text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${nombreFr(taxReport.reductionPct, 1)} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>
-          {taxReport.missingPlatoCount > 0 && <p className="text-attention">Densité initiale manquante pour {taxReport.missingPlatoCount} brassin(s) : fourchette entre les catégories légère et forte.</p>}
+          {totalImpot.inconnus > 0 && <p className="text-attention">Densité à noter pour {totalImpot.inconnus} brassin(s) : le total est un minimum.</p>}
+          <p className="text-cave-400">{reductionConfirmee ? `Réduction annuelle confirmée : ${nombreFr(pctReduction, 1)} %.` : 'Taux plein : réduction annuelle à confirmer dans les réglages.'}</p>
           <details className="clients-help">
             <summary>Comprendre le calcul et les démarches<ChevronDown size={14} aria-hidden="true" /></summary>
             <div className="clients-tax-help-body">
@@ -330,67 +307,10 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
           </div>
         </section>
       )}
-      {subTab === 'tarifs' && (
-        <section aria-label="Prix et marges" className="clients-section">
-          <div className="clients-toolbar">
-            <div className="clients-search">
-              <Search size={15} aria-hidden="true" />
-              <Input type="search" aria-label="Rechercher un tarif" placeholder="Rechercher un produit…"
-                value={tarifQuery} onChange={event => setTarifQuery(event.target.value)} className={inputClass} />
-            </div>
-            <span className="clients-result-count" role="status">{visibleTarifs.length} {visibleTarifs.length > 1 ? 'tarifs' : 'tarif'}</span>
-          </div>
-          {(noMarginCount > 0 || tarifFilter !== 'all') && (
-            <SegmentedControl label="Marge des tarifs" value={tarifFilter} onChange={setTarifFilter} className="clients-segments tarif-segments"
-              options={[{ value: 'all', label: `Tous ${tarifs.length}` }, { value: 'noMargin', label: `Sans marge ${noMarginCount}` }]} />
-          )}
-          {!visibleTarifs.length ? <div className="clients-empty">
-            <p>{!tarifs.length ? 'Ajoute un tarif pour préparer les prix de vente et les factures.' : 'Aucun tarif avec cette recherche ou ce filtre.'}</p>
-            {(tarifQuery || tarifFilter !== 'all') && <button type="button" className="clients-action" onClick={() => { setTarifQuery(''); setTarifFilter('all'); }}>Tout effacer</button>}
-          </div> : <div className="tarif-table-scroll" role="region" aria-label="Comparaison des tarifs" tabIndex={0}>
-            <table className="tarif-table">
-              <caption>Montants en CHF par produit · marge brute hors temps personnel</caption>
-              <thead><tr><th scope="col">Produit</th><th scope="col">Prix HT</th><th scope="col">Coût</th><th scope="col">Marge</th></tr></thead>
-              <tbody>{visibleTarifs.map(tarif => <tr key={tarif.product}>
-                <th scope="row"><button type="button" className="tarif-product" onClick={() => setTarifSheet(tarif)} aria-label={`Modifier le tarif ${tarif.product}`}>{tarif.product}<Edit3 size={13} aria-hidden="true" /></button></th>
-                <td className="font-mono">{amount(tarif.priceHT)}</td>
-                <td className="font-mono">{amount(tarif.costTotal)}</td>
-                <td className={`tarif-margin font-mono ${tarif.marginCHF <= 0 ? 'text-alert-strong' : 'text-cave-50'}`}>
-                  <span>{tarif.marginCHF > 0 ? '+' : ''}{amount(tarif.marginCHF)}</span>
-                  <span className="tarif-percent">{percent(tarif.marginPercent)} %</span>
-                </td>
-              </tr>)}</tbody>
-            </table>
-          </div>}
-          <details className="clients-help">
-            <summary>Comprendre les marges<ChevronDown size={14} aria-hidden="true" /></summary>
-            <p>Le coût additionne les ingrédients et les charges fixes. La marge brute est le prix HT moins ce coût. Le temps personnel est exclu. « Sans marge » regroupe les prix inférieurs ou égaux au coût.</p>
-          </details>
-        </section>
-      )}
+      {subTab === 'tarifs' && <section aria-label="Prix" className="clients-section"><PrixEcran config={config} tarifs={tarifs} batches={batches} nouveau={nouveauTarif} onSuccessMessage={onSuccessMessage} /></section>}
 
       {/* Edit Client Modal */}
       {caisseClient && <React.Suspense fallback={<p role="status">Ouverture de la caisse…</p>}><Caisse clientIdInitial={caisseClient.id} onClose={() => setCaisseClient(null)} onSaved={message => onSuccessMessage?.(message)} /></React.Suspense>}
-      <TarifSheet
-        item={tarifSheet}
-        config={config}
-        existingProducts={tarifs.map(tarif => tarif.product)}
-        onClose={() => setTarifSheet(null)}
-        onSave={(t) => {
-          if (tarifSheet?.product && tarifSheet.product !== t.product) {
-            // Le libellé est la clé de stockage : un renommage remplace la
-            // ligne éditée, sans créer un second tarif ni toucher aux voisins.
-            StorageService.saveTarifs(StorageService.getTarifs().map(current => current.product === tarifSheet.product ? t : current));
-            StorageService.logAction('Modification', 'Clients', t.product, `Tarif renommé : ${tarifSheet.product} → ${t.product}`);
-          } else StorageService.updateTarif(t);
-          onSuccessMessage?.(`Tarif « ${t.product} » enregistré.`);
-        }}
-        onDelete={(t) => {
-          StorageService.deleteTarif(t.product);
-          onSuccessMessage?.(`Tarif « ${t.product} » supprimé.`);
-        }}
-      />
-
       <EditClientModal
         isOpen={Boolean(editingClient)}
         client={editingClient}

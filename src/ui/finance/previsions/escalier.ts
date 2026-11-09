@@ -38,10 +38,51 @@ const MS_JOUR = 86_400_000;
 export const joursEntre = (a: string, b: string) => Math.round((Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / MS_JOUR);
 export const dernierJourInclus = (asOf: string, horizon: 30 | 90 | 365) => ajouterJours(forecastHorizonEnd(asOf, horizon), -1);
 
-/** « Fin février » : mois du dernier jour inclus ; l'année seulement pour 12 mois. */
+/**
+ * « Fin janvier » seulement quand le dernier jour retenu est bien le dernier du mois (la maquette) ; sinon la date exacte : « Jusqu’au 7 févr. ».
+ * Test d'écran P5B, constat 7 : « Fin février » pour une prévision qui s'arrête le 7.02 faisait chercher le loyer de février. L'année : 12 mois seulement.
+ */
 export function titreHorizon(fin: string, horizon: 30 | 90 | 365): string {
-  const mois = new Date(`${fin}T12:00:00Z`).toLocaleDateString('fr-CH', { month: 'long', timeZone: 'UTC' });
-  return horizon === 365 ? `Fin ${mois} ${fin.slice(0, 4)}` : `Fin ${mois}`;
+  const d = new Date(`${fin}T12:00:00Z`), annee = horizon === 365 ? ` ${fin.slice(0, 4)}` : '';
+  const dernierDuMois = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate() === d.getUTCDate();
+  if (dernierDuMois) return `Fin ${d.toLocaleDateString('fr-CH', { month: 'long', timeZone: 'UTC' })}${annee}`;
+  return `Jusqu’au ${d.getUTCDate()} ${d.toLocaleDateString('fr-CH', { month: 'short', timeZone: 'UTC' })}${annee}`;
+}
+
+const MOTS_VIDES = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'l', 'd', 'un', 'une', 'et', 'au', 'aux', 'en', 'sur', 'pour', 'à']);
+const minuscule = (mot: string) => (mot.length > 1 && mot === mot.toUpperCase() ? mot : mot.charAt(0).toLowerCase() + mot.slice(1));
+/**
+ * Le mot-clé d'une sortie pour son étiquette (test d'écran P5B, constat 1) : « Loyer de l'atelier » → « loyer », « Fermenteur supplémentaire » → « fermenteur »,
+ * « Pale Ale d'hiver · emballage » → « emballage ». Un titre court (14 caractères au plus) reste entier. Le titre complet reste dans la fiche, la liste et l'aria-label.
+ */
+export function motCle(titre: string, brassin = false): string {
+  const morceaux = titre.split(' · ').map(s => s.trim()).filter(Boolean);
+  if (brassin && morceaux.length < 2) return 'brassin'; // le budget d'un brassin sans lot : le nom de la recette est dans la fiche
+  const base = brassin ? morceaux[1] : morceaux[0] ?? '';
+  if ([...base].length <= 14) return minuscule(base);
+  const mots = base.split(/[\s'’]+/).filter(Boolean);
+  const mot = mots.find(m => !MOTS_VIDES.has(m.toLowerCase()) && m.length > 2) ?? mots[0] ?? base;
+  return minuscule([...mot].length > 14 ? `${[...mot].slice(0, 13).join('')}…` : mot);
+}
+
+/**
+ * Au-delà de 10 sorties, une récurrence (même plan, même montant, au moins 3 fois) se regroupe en une seule étiquette (« loyer −400 ×9, le 25 »),
+ * posée sur sa première marche ; les autres marches restent dessinées, sans étiquette (la NOTE de p5b : « il faudrait les regrouper »).
+ */
+export interface GroupeRecurrent { n: number; premierId: string; jour: string | null }
+export function groupesRecurrents(marches: Marche[], seuil = 10): Map<string, GroupeRecurrent> {
+  const sorties = marches.flatMap(m => m.items).filter(i => i.direction === 'out');
+  const res = new Map<string, GroupeRecurrent>();
+  if (sorties.length <= seuil) return res;
+  const parCle = new Map<string, ForecastItem[]>();
+  for (const i of sorties) { if (i.source !== 'recurring') continue; const c = `${i.planId ?? i.label}|${i.amountCents}`; const l = parCle.get(c); if (l) l.push(i); else parCle.set(c, [i]); }
+  for (const l of parCle.values()) {
+    if (l.length < 3) continue;
+    const jours = new Set(l.map(i => i.date.slice(8)));
+    const g: GroupeRecurrent = { n: l.length, premierId: l[0].id, jour: jours.size === 1 ? String(Number([...jours][0])) : null };
+    for (const i of l) res.set(i.id, g);
+  }
+  return res;
 }
 
 /** La tendance (une sortie par mois et par catégorie, datée du 1er) devient une seule « dépenses courantes » par mois : p5b ne montre pas douze pastilles de tendance. */
@@ -96,14 +137,20 @@ export function notions(items: ForecastItem[], projetPlanId?: string | null): No
   return n;
 }
 
-/** Nombres 1-2-5 × 10^k (Heckbert 1990), cible de 5 graduations ; le zéro est toujours dans l'axe. Valeurs en centimes. */
+/**
+ * Nombres 1-2-5 × 10^k (Heckbert 1990), cible de 5 graduations ; le zéro est toujours dans l'axe. Valeurs en centimes.
+ * Le bas de l'axe est arrondi à la graduation (la zone rouge a besoin de place) ; le haut ne l'est pas : il part juste au-dessus du point le plus haut
+ * (+ 4 %), comme p5b, au lieu d'une graduation vide au-dessus du départ (test d'écran P5B, constat 13 : ~60 px vides à 390).
+ */
 export function graduations(minCents: number, maxCents: number, cible = 5): { ticks: number[]; bas: number; haut: number } {
-  let bas = Math.min(0, minCents) / 100, haut = Math.max(0, maxCents) / 100;
-  if (haut - bas < 1) haut = bas + 1;
-  const brut = (haut - bas) / Math.max(1, cible - 1), p = 10 ** Math.floor(Math.log10(brut)), f = brut / p;
+  let bas = Math.min(0, minCents) / 100, hautDonnee = Math.max(0, maxCents) / 100;
+  if (hautDonnee - bas < 1) hautDonnee = bas + 1;
+  const brut = (hautDonnee - bas) / Math.max(1, cible - 1), p = 10 ** Math.floor(Math.log10(brut)), f = brut / p;
   const pas = (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
-  bas = Math.floor(bas / pas) * pas; haut = Math.ceil(haut / pas) * pas;
-  const ticks: number[] = [];
-  for (let v = bas; v <= haut + pas / 2; v += pas) ticks.push(Math.round(v * 100));
+  bas = Math.floor(bas / pas) * pas;
+  let haut = maxCents <= 0 ? 0 : hautDonnee + (hautDonnee - bas) * 0.04;
+  if (haut <= bas) haut = bas + pas;
+  const ticks: number[] = [], n = Math.floor((haut - bas) / pas + 1e-9);
+  for (let i = 0; i <= n; i++) ticks.push(Math.round((bas + i * pas) * 100));
   return { ticks, bas: Math.round(bas * 100), haut: Math.round(haut * 100) };
 }

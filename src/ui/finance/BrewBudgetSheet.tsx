@@ -139,6 +139,13 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
   });
   const canSaveDraft = !busy && !volumeIssue && !netInvalide && Boolean(dateKey);
   const canPlanNow = !busy && futureBatch && estimate.complete && !(canPlan && !canPlan(estimate));
+  /* Test d'écran P5B, constat 4 : « Prévoir » gris sans un mot. La raison est écrite dans le pied, à côté du bouton, jamais seulement en bas du flux (hors de vue). */
+  const raisonPrevoir = !futureBatch || busy || canPlanNow ? ''
+    : volumeIssue ? volumeIssue
+    : netInvalide ? 'Renseigne un volume net supérieur à zéro.'
+    : netInconnu ? 'Litres nets à confirmer : touche la pastille « ? L nets ».'
+    : !estimate.complete ? (requiredPrices.length ? `${requiredPrices.length} ingrédient${requiredPrices.length > 1 ? 's' : ''} sans prix : touche le nœud « ? ».` : estimate.issues.slice(0, 1).join(' · ') || 'Le coût du brassin n’est pas complet.')
+    : 'Choisis d’abord le lien avec le budget de recette déjà prévu (plus haut).';
   const save = async (plan: boolean) => {
     if (saving.current || volumeIssue || netInvalide || !dateKey || plan && (!futureBatch || !estimate.complete || canPlan && !canPlan(estimate))) return;
     saving.current = true;
@@ -174,13 +181,15 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       <div className="cbf-act"><button type="button" className="cbf-pri" onClick={onClose}>Fermer</button></div>
     </>
     : vue.id === 'flux'
-    ? <div className="cbf-act">
+    ? <>
+      {raisonPrevoir && <p className="cbf-statut cbf-raison" aria-live="polite" data-booster="prevoir-raison" style={{ maxWidth: 390, margin: '0 auto 6px', width: '100%' }}>Prévoir attend : {raisonPrevoir}</p>}
+      <div className="cbf-act">
       <button type="button" className="cbf-ia" data-booster="ia-expliquer" onClick={expliquer}><Sparkles size={17} aria-hidden="true" />Expliquer</button>
       {futureBatch && !estimate.complete && <button type="button" className="cbf-sec" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}
       {futureBatch
         ? <button type="button" className="cbf-pri" data-booster="prevoir" disabled={!canPlanNow} onClick={() => void save(true)}><CalendarPlus size={17} aria-hidden="true" />{busy ? 'Enregistrement…' : <>Prévoir <span className="cbf-m">{fr(estimate.cashRequiredTTC)} CHF</span></>}</button>
         : <button type="button" className="cbf-pri" disabled={!canSaveDraft} onClick={() => void save(false)}><Save size={17} aria-hidden="true" />Enregistrer</button>}
-    </div>
+    </div></>
     : <div className="cbf-act">
       {ingredientsVides
         // Rien à saisir (aucun houblon ni levure dans la recette) : pas d'« Enregistrer » qui n'enregistrerait rien (constat 11).

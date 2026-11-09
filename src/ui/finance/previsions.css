@@ -61,6 +61,16 @@
 .prv-fiche { width:100%; max-width:440px; max-height:calc(100dvh - 90px); overflow:auto; background:rgb(var(--cave-900)); border:1px solid var(--prv-bord); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:8px; box-shadow:0 16px 40px -16px rgba(0,0,0,.5); outline:none; }
 .prv-fiche.prv-haute { min-height:50dvh; }
 .prv-fiche-tete { display:flex; align-items:center; gap:8px; } .prv-fiche-tete h3 { flex:1; display:flex; align-items:center; gap:8px; font-size:16px; font-weight:600; margin:0; }
+.prv-aside { font-size:12px; color:var(--prv-t2); white-space:nowrap; }
+/* test d'écran P5B : solde après sur la marche (p5b : 664,18), nom du pointillé (« sans frigo 2 107,34 »), « + N sorties » hors du tracé, carte « solde à renseigner » */
+.prv-solde { font-family:ui-monospace,"IBM Plex Mono",monospace; font-size:12px; font-weight:600; fill:var(--prv-t2); paint-order:stroke; stroke:var(--prv-panel); stroke-width:3px; }
+.prv-solde.prv-rt { fill:var(--prv-alerte); }
+.prv-nom-ghost { font-size:13px; fill:var(--prv-fin); font-weight:600; paint-order:stroke; stroke:var(--prv-panel); stroke-width:3px; } .prv-nom-ghost .prv-mt { font-family:ui-monospace,monospace; }
+.prv-restes { display:flex; align-items:center; gap:4px; min-height:28px; font-size:13px; font-weight:600; color:var(--prv-txt); width:max-content; }
+.prv-depart { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:44px; padding:0 10px; border:1px dashed var(--prv-alerte); border-radius:10px; font-size:14px; font-weight:600; color:var(--prv-txt); text-align:left; width:100%; }
+.prv-depart small { font-weight:400; font-size:12px; color:var(--prv-t2); display:block; }
+.prv-sw b.prv-long, .prv-seule b.prv-long { font-size:15px; }
+.prv-sw .prv-ecart { font-size:12px; font-weight:400; color:var(--prv-t2); }
 .prv-x { width:28px; height:28px; display:flex; align-items:center; justify-content:center; color:var(--prv-t2); }
 .prv-note { font-size:12px; color:var(--prv-t2); margin:0; }
 .prv-row { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--prv-t2); }

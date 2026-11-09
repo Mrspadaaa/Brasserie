@@ -63,6 +63,15 @@ describe('caisse — formats et tarifs (D3)', () => {
     expect(tarifDuFormat([tarif('33 cl', 4), tarif('Bouteille 33 cl', 5)], '33cl', 'Pale Ale')).toBeNull();
     expect(tarifDuFormat(t, 'fut', 'Pale Ale')).toBeNull();
   });
+  it('un tarif porté depuis l\'écran Prix : son format et sa bière écrits priment sur le nom (Prix → Caisse)', () => {
+    const porte = { ...tarif('Saison de la Sarine', 7), biere: 'Saison de la Sarine', format: { id: '75cl' as const, volumeL: 0.75 } };
+    const t = [porte, tarif('Pale Ale 75 cl', 10)];
+    expect(tarifDuFormat(t, '75cl', 'Saison de la Sarine')?.priceHT).toBe(7);
+    expect(tarifDuFormat(t, '75cl', 'Pale Ale')?.priceHT).toBe(10);
+    expect(tarifDuFormat(t, '33cl', 'Saison de la Sarine')).toBeNull();
+    // le format écrit l'emporte sur un nom qui en dirait un autre
+    expect(tarifDuFormat([{ ...tarif('Saison 33 cl', 4), biere: 'Saison', format: { id: 'fut' as const, volumeL: 20 } }], 'fut', 'Saison')?.priceHT).toBe(4);
+  });
   it('le fût prend la capacité des fûts du brassin (30 L), sinon 20 L « à vérifier » ; un format absent est marqué', () => {
     const batch = { id: 'B1', packaging: { bottles33: 10, bottles75: 0, kegIds: ['F-1'] } } as unknown as Batch;
     const f30 = formatsDuBrassin(batch, [{ id: 'F-1', capacityL: 30 } as KegItem]);

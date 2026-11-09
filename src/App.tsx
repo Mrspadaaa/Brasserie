@@ -978,6 +978,7 @@ export const App: React.FC = () => {
               const recipe = recipes.find((r) => r.id === recipeId);
               if (recipe) openRecipe(recipe);
             }}
+            onOpenSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
           />
         )}
 

@@ -34,13 +34,16 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
   const prixC = centimesDeSaisie(prix);
   const duree = detail.usefulLifeYears;
   const bas = mesure.pointBas, fin = mesure.soldeFinCents;
-  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, {montant(plan.amountCents)} CHF</>} onClose={onClose}>
-    <p className="prv-note">{detail.estimateSource === 'quote' ? 'devis' : 'estimé'} · {plan.date ? jourCourt(plan.date) : 'date à choisir'}</p>
+  const litreVide = mesure.litreManque === 'brassin-partiel' ? 'brassin planifié partiel' : 'aucun brassin planifié';
+  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, {montant(plan.amountCents)} CHF</>} onClose={onClose}
+    aside={`${detail.estimateSource === 'quote' ? 'devis' : 'estimé'} · ${plan.date ? jourCourt(plan.date) : 'date à choisir'}`}>
     <div className="prv-row"><span>Usure sur</span>
       <span className="prv-sel" role="group" aria-label="Durée d’usure">{DUREES.map(a => <button key={a} type="button" disabled={occupe} aria-pressed={duree === a} onClick={() => void ecrire({ ...plan, upgrade: { ...detail, usefulLifeYears: a } })}>{a} ans</button>)}</span></div>
     <div className="prv-gr">
       <div className="prv-k"><span>Usure par an</span><b>{mesure.usureParAnCents == null ? 'à renseigner' : montant(mesure.usureParAnCents)}</b></div>
-      <div className="prv-k"><span>Mon litre</span><b>{mesure.litreAvant == null ? '—' : litreFr(mesure.litreAvant)}{' → '}{mesure.litreApres == null ? '—' : litreFr(mesure.litreApres)}</b></div>
+      <div className="prv-k"><span>Mon litre</span>{mesure.litreAvant == null || mesure.litreApres == null
+        ? <><b>à compléter</b><small>{litreVide}</small></>
+        : <b>{litreFr(mesure.litreAvant)}{' → '}{litreFr(mesure.litreApres)}</b>}</div>
       <div className="prv-k"><span>{titreFin}</span><b className={fin != null && fin < 0 ? 'prv-rt' : ''}>{fin == null ? 'à compléter' : montant(fin)}</b></div>
       <div className="prv-k"><span>Plus bas</span><b className={bas && bas.soldeCents < 0 ? 'prv-rt' : ''}>{bas ? montant(bas.soldeCents) : 'à compléter'}{bas && <small> le {jourCourt(bas.date)}</small>}</b></div>
       <div className="prv-k prv-l"><span>Pour rester à zéro</span>
@@ -51,7 +54,7 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
         {mesure.bouteillesPourPayer != null && <small>Pour payer le matériel (sur la marge) : {mesure.bouteillesPourPayer} bouteilles</small>}
       </div>
     </div>
-    {mesure.avertissements.length > 0 && <details className="prv-lim"><summary>Limites ({mesure.avertissements.length})</summary><ul>{mesure.avertissements.map(a => <li key={a}>{a}</li>)}</ul></details>}
+    {mesure.avertissements.length > 0 && <div className="prv-lim"><b>Limites ({mesure.avertissements.length})</b><ul>{mesure.avertissements.map(a => <li key={a}>{a}</li>)}</ul></div>}
     {deplace && <div className="prv-row"><label>Payer en <input type="month" value={mois} onChange={e => setMois(e.target.value)} /></label>
       <button type="button" className="prv-prim" disabled={occupe || !/^\d{4}-\d{2}$/.test(mois)} onClick={() => void ecrire({ ...plan, date: `${mois}-01`, upgrade: { ...detail, datePrecision: 'month' } }, () => setDeplace(false))}>Valider</button></div>}
     {etat && <p className={`prv-etat prv-${etat.kind}`} role="status">{etat.texte}</p>}
@@ -68,7 +71,7 @@ export function FicheBrassin({ titre, items, litre, onClose, onOuvrir }: Brassin
   const total = items.reduce((n, i) => n + i.amountCents, 0);
   return <Feuille titre={<><Wheat size={16} aria-hidden="true" /> {titre}, brassin prévu</>} onClose={onClose}>
     <p className="prv-note">estimé · se met à jour seul (recette, stock, factures)</p>
-    <ul className="prv-lignes">{items.map(i => <li key={i.id}><div className="prv-lg"><span>{i.label.split(' · ').slice(1).filter(p => p !== 'date estimée' && !p.startsWith('partiel')).join(' · ')}{i.label.includes('date estimée') ? ' · date estimée' : ''}</span><b>{montant(-i.amountCents)}</b><small>{jourCourt(i.date)}</small></div>
+    <ul className="prv-lignes">{items.map(i => <li key={i.id}><div className="prv-lg"><span>{i.label.split(' · ').slice(1).filter(p => p !== 'date estimée' && !p.startsWith('partiel')).join(' · ')}{i.label.includes('date estimée') ? ' · date estimée' : ''}</span>{i.amountCents > 0 ? <b>{montant(-i.amountCents)}</b> : <b className="prv-inconnu">à compléter</b>}<small>{jourCourt(i.date)}</small></div>
       {i.lines?.map(l => <div className="prv-lg prv-o" key={l.label}><span>{l.label} · {l.origin}</span><b>{montant(l.amountCents)}</b></div>)}
       {i.partial?.length ? <p className="prv-etat prv-attente">partiel, à compléter : {i.partial.join(', ')}</p> : null}</li>)}</ul>
     <div className="prv-gr"><div className="prv-k prv-l"><span>Total en caisse</span><b>{montant(-total)}</b>{litre && <small>Mon litre : {litre} le litre</small>}</div></div>
