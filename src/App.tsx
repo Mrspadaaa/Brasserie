@@ -233,11 +233,15 @@ export const App: React.FC = () => {
   }, [activeTab, productionSubTab]);
   const [wizardSeed, setWizardSeed] = useState<WizardSeed | undefined>(undefined);
   /** Sous-onglet courant, remonté par l'onglet actif. */
-  const [subTab, setSubTab] = useState<AnySubTab>(null);
+  /* BX-4 (09.11) : le sous-onglet de CHAQUE onglet, gardé. Le vider au changement d'onglet (et au toucher de l'onglet déjà actif) laissait le + sur
+     la première action (« Nouveau brassin » sous Recettes) : un écran resté monté ne renvoie son sous-onglet que s'il change. */
+  const [subTabs, setSubTabs] = useState<Partial<Record<TabType, AnySubTab>>>({});
+  const subTab: AnySubTab = subTabs[activeTab] ?? null;
+  const setSubTabOf = React.useCallback((tab: TabType, sub: AnySubTab) => setSubTabs(s => s[tab] === sub ? s : { ...s, [tab]: sub }), []);
   const handleProductionSubTabChange = React.useCallback((sub: string) => {
-    setSubTab(sub as AnySubTab);
+    setSubTabOf('production', sub as AnySubTab);
     setProductionSubTab(sub as 'batches' | 'recipes' | 'lab' | 'scaler');
-  }, []);
+  }, [setSubTabOf]);
   /**
    * Demande de création adressée à l'écran courant.
    *
@@ -525,6 +529,9 @@ export const App: React.FC = () => {
   const runFabAction = () => {
     switch (fabAction.intent) {
       case 'newBatch':
+        // BX-4 (09.11) : « Nouveau brassin » ouvrait l'assistant de RECETTE (le même geste que « Créer une recette ») ; il lance un brassin.
+        setQuickAction('brew-batch', actionLauncherRef.current);
+        break;
       case 'newRecipe':
         openWizard();
         break;
@@ -993,7 +1000,7 @@ export const App: React.FC = () => {
             batches={batches}
             onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
-            onSubTabChange={(sub) => setSubTab(sub as never)}
+            onSubTabChange={(sub) => setSubTabOf('stocks', sub as AnySubTab)}
             openItemRequest={stockOpenRequest}
             onOpenItemRequestHandled={() => setStockOpenRequest(null)}
             createRequest={createRequest}
@@ -1007,7 +1014,7 @@ export const App: React.FC = () => {
             batches={batches}
             tarifs={tarifs}
             config={config}
-            onSubTabChange={(sub) => setSubTab(sub as never)}
+            onSubTabChange={(sub) => setSubTabOf('clients', sub as AnySubTab)}
             createRequest={createRequest}
             onSuccessMessage={showToast}
           />
@@ -1021,9 +1028,7 @@ export const App: React.FC = () => {
         <BottomNav
           activeTab={activeTab}
           onChangeTab={(tab) => {
-            // Le sous-onglet du nouvel écran se remontera tout seul ; on le vide
-            // en attendant pour ne pas garder celui de l'onglet qu'on quitte.
-            setSubTab(null);
+            // Le sous-onglet de chaque onglet est gardé (BX-4) : rien à vider.
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}

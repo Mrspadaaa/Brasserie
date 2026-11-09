@@ -4,15 +4,15 @@
    onglets pour dégager les champs de pesée — sans qu'un style en ligne gagne
    contre sa règle. */
 .floating-actions {
-  right: var(--floating-actions-right, 1rem);
+  right: var(--floating-actions-right, 0.75rem);
   bottom: var(--floating-actions-bottom, 1rem);
 }
 
-/* Sans case (page plein écran, clavier fermé), le bouton flotte : rond de 48 px,
-   décollé de 16 px des bords. */
+/* Sans case (page plein écran, clavier fermé), le bouton flotte avec la forme de sa case des onglets (BX-4, 09.11 :
+   « Différents ») : 64 × 40, à 12 px du bord droit comme sur la barre, décollé de 16 px du bas. */
 .floating-actions > button {
-  width: var(--floating-actions-width, 3rem);
-  height: var(--floating-actions-height, 3rem);
+  width: var(--floating-actions-width, 4rem);
+  height: var(--floating-actions-height, 2.5rem);
 }
 
 /* Flottant, il porte une ombre franche et décalée : `shadow-lift` se perdait sur
