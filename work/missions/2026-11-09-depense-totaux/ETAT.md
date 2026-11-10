@@ -35,3 +35,7 @@
 - Jeu en ligne 8 (`critique/VERDICT-EN-LIGNE-8.md`) : bloquants 1, 3, 4, 6 = lecture (fusion-lectures) ; 2 = classement (porté) ; 5 = ajout de
   ligne (porté). Non rejoué en ligne après ces deux ports : vérifiés au banc (390, cave) et par 3 054 tests de la copie de déploiement.
 - Doutes du critique à vérifier au doigt : double toucher de la loupe (échelle 1,06 en émulation), « Suivant » sous filtre à 1280.
+- 10.11 soir : hébergement 7458f19e (tag `en-ligne/2026-11-10-compta2`) = 85de7802 + compta-prix 12da1b9e, ca01f350, d347ccef repris seuls
+  (la branche claude/jolly-mahavira-cc0cc2 a fusionné ma branche avec le client p2/p3 retiré : jamais la déployer telle quelle). 3 167 tests verts.
+- Voie f2 (auteur) dans le worktree epic-banach-4c4f89 (branche claude/happy-satoshi-f3f2c1) : les 5 bloquants de lecture du jeu 8 ;
+  le pilote déploie aiTask après rejeu, puis jeu en ligne 9.
