@@ -42,3 +42,14 @@
 - 10.11 nuit : hébergement 27d20e50 (tag `en-ligne/2026-11-10-dp7`) = compta2 + DP-7 ; aiTask 30d393d6 (tag `aitask/2026-11-10-f2`, retour :
   `aitask/2026-11-10-avant-f2`). Jeu en ligne 10 : 0 bloquant, 7 non bloquants (`critique/VERDICT-EN-LIGNE-10.md`), dont trio sous le pied
   à 1280 après la frappe et « g | kg | Stk » sur une ligne fermée sans unité.
+
+## Reprise (10.11, ~08:00) — pilote
+- En ligne : tag `en-ligne/2026-11-10-compta9` (ffea12eb, index-DP0sAjrq.js) = dp7 + compta-prix jusqu'à 78e83b57 (6 livraisons,
+  reprises une à une dans la copie `Temp/deploy-bc70`, jamais la branche jolly-mahavira telle quelle : elle ramène le client p2/p3).
+  aiTask : 30d393d6 (tag `aitask/2026-11-10-f2`).
+- Méthode de déploiement d'une livraison : `git log --no-merges <sha> ^<précédent> ^claude/refonte-houblons-v4` → cherry-pick sur le
+  dernier tag en-ligne, conflits work/* = ours, conflits de code = garder le code en ligne + ajouts ; tsc ; tests depense/finance/
+  integration depense*/finance*/vente*/operations*/renvoisPartout + tests ajoutés ; build ; check-no-dev-auth ; check-build-flags ;
+  deploy hosting ; vérifier le bundle servi ; tag `en-ligne/<date>-<nom>`.
+- En attente : « Mon mois » (session effet-finances) à reposer sur compta9 (conflit ExpenseSheet) ; vue de brassin (session
+  vue-brassin, choix du brasseur) ; mission `2026-11-10-parcours-complet` (agent critique en cours, VERDICT.md attendu).
