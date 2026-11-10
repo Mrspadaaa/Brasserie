@@ -104,11 +104,13 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
     fireEvent.pointerUp(s);
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('5,35');
   });
-  it('sans échelle documentée (pH hors empâtage), pas de curseur : le champ seul', () => {
+  it('sans cible documentée (pH hors empâtage), le curseur vient des bornes plausibles, sans bande (VB-3, c2)', () => {
     const autre: BrewDayStep = { id: 'whirlpool', label: 'Whirlpool', durationMin: 15 };
-    render(<BrewDayMeasurements step={autre} state={{ steps: [autre], currentIndex: 0, readings: [] }} recipe={recette} update={() => {}} />);
+    const { container } = render(<BrewDayMeasurements step={autre} state={{ steps: [autre], currentIndex: 0, readings: [] }} recipe={recette} update={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'pH' }));
-    expect(screen.queryByRole('slider')).toBeNull();
+    const s = screen.getByRole('slider') as HTMLInputElement;
+    expect([s.min, s.max]).toEqual(['4.8', '6']);
+    expect(container.querySelector('.bz-echelle-cible')).toBeNull();
   });
 });
 

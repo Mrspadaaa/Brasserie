@@ -20,7 +20,7 @@ import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
 import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
 import { nombreFr } from '../domain/nombreAffiche';
-import { bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur, traitsCurseur, quoiMesure } from '../domain/measureSlider';
+import { bornesPlausibles, bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur, traitsCurseur, quoiMesure } from '../domain/measureSlider';
 import { raisonMesure } from '../domain/brewMeasures';
 
 export const brewControl =
@@ -273,15 +273,18 @@ function MashCorrection({
 }
 
 /**
- * L'échelle de la feuille Mesurer (z1) : la cible en bande, le relevé en trait. Elle n'existe que pour une mesure qui a une cible
+ * L'échelle de la feuille Mesurer (z1) : la cible en bande, le relevé en trait. La bande n'existe que pour une mesure qui a une cible
  * documentée par le code : pH de maische (5,2–5,5), température de consigne (± 1 °C), densité de l'OG (± 2 points), volume visé (± 5 %).
- * Ailleurs : `null`, et la feuille ne dessine rien (une cible inventée serait pire qu'une échelle absente).
+ * Sans cible (VB-3, 10.11 : « utilise des slider »), l'échelle vient des bornes plausibles de la grandeur au moment (`bornesPlausibles`) :
+ * `cible: false`, pas de bande (une cible inventée serait pire), `milieu` pour le pouce. `bandMin` / `bandMax` ne se lisent que si `cible`.
  */
 export interface MeasureScale {
   min: number;
   max: number;
+  cible: boolean;
   bandMin: number;
   bandMax: number;
+  milieu: number;
   ticks: number[];
   fmt: (n: number) => string;
 }
@@ -292,7 +295,7 @@ export function measureScale(
   step: BrewDayStep,
   recipe?: RecipeSnapshot,
   value?: number | null
-): MeasureScale | null {
+): MeasureScale {
   let band: [number, number] | null = null;
   let axis: [number, number] | null = null;
   let fmt = (n: number) => decimales(n, 2);
@@ -316,7 +319,15 @@ export function measureScale(
       fmt = (n) => decimales(n, 1);
     }
   }
-  if (!band || !axis) return null;
+  let milieu: number;
+  if (band && axis) {
+    milieu = (band[0] + band[1]) / 2;
+  } else {
+    const p = bornesPlausibles(kind, step, recipe);
+    axis = [p.min, p.max];
+    milieu = p.milieu;
+    fmt = kind === 'ph' ? (n) => n.toFixed(1).replace('.', ',') : kind === 'densite' ? sg : (n) => decimales(n, 1);
+  }
   let [min, max] = axis;
   // Un relevé hors de l'axe l'étire : le trait ne se colle jamais à un bord comme s'il y était.
   if (value != null && Number.isFinite(value)) {
@@ -324,11 +335,14 @@ export function measureScale(
     if (value < min) min = value - marge;
     if (value > max) max = value + marge;
   }
-  return { min, max, bandMin: band[0], bandMax: band[1], ticks: [min, band[0], band[1], max], fmt };
+  return band
+    ? { min, max, cible: true, bandMin: band[0], bandMax: band[1], milieu, ticks: [min, band[0], band[1], max], fmt }
+    : { min, max, cible: false, bandMin: milieu, bandMax: milieu, milieu, ticks: [min, milieu, max], fmt };
 }
 
 /** « +0,12 » au-dessus de la bande, « −0,3 » en dessous, `null` dans la cible : l'écart à la borne la plus proche. */
 export function ecartCible(scale: MeasureScale, value: number): number | null {
+  if (!scale.cible) return null;
   if (value > scale.bandMax) return value - scale.bandMax;
   if (value < scale.bandMin) return value - scale.bandMin;
   return null;
@@ -353,13 +367,13 @@ function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
     <div className="bz-curseur" data-booster="curseur">
       <div className="bz-echelle-grads bz-m" aria-hidden="true">
         {scale.ticks.map((t, i) => (
-          <span key={i} data-bout={i === 0 ? 'g' : i === scale.ticks.length - 1 ? 'd' : undefined} data-cible={i === 1 || i === 2 ? '' : undefined} style={{ left: at(t) }}>{scale.fmt(t)}</span>
+          <span key={i} data-bout={i === 0 ? 'g' : i === scale.ticks.length - 1 ? 'd' : undefined} data-cible={scale.cible && (i === 1 || i === 2) ? '' : undefined} style={{ left: at(t) }}>{scale.fmt(t)}</span>
         ))}
       </div>
       <div className="bz-zone">
         <div className="bz-echelle-rail" />
         {traitsCurseur(kind, scale.min, scale.max).map((t, i) => <span key={i} className="bz-tic" aria-hidden="true" style={{ left: at(t) }} />)}
-        <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />
+        {scale.cible && <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />}
         <span className="bz-pouce" data-vide={pose ? undefined : ''} data-hors={hors ? '' : undefined} style={{ left: at(pos) }} aria-hidden="true"><i /><b /></span>
         <input
           type="range"
@@ -487,7 +501,7 @@ export function BrewDayMeasurements({
   const conseilEnRaison = !!scale && !!feedback && /^Écart/.test(feedback.title);
   const marque = value ?? reading?.value ?? null;
   const ecart = scale && marque != null ? ecartCible(scale, marque) : null;
-  const depart = scale ? departCurseur(kind, scale, last?.value) : 0;
+  const depart = departCurseur(kind, scale, last?.value);
   const pasTexte = String(pasCurseur(kind).pas).replace('.', ',');
   const poserCurseur = (v: number) => {
     setRaw(formatCurseur(kind, v));
@@ -597,7 +611,7 @@ export function BrewDayMeasurements({
           </label>
         )}
         {scale && <MeasureSlider scale={scale} kind={kind} value={value} depart={depart} label={READING[kind].label} onPose={poserCurseur} />}
-        {scale && value == null && !raw.trim() && !last && (
+        {scale.cible && value == null && !raw.trim() && !last && (
           <p className="bz-ecart" data-k="vide">
             cible <b className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}</b>{READING[kind].unit ? ` ${READING[kind].unit}` : ''}
           </p>
@@ -628,7 +642,7 @@ export function BrewDayMeasurements({
                     <b className="bz-m">{scale.fmt(scale.bandMin)}–{scale.fmt(scale.bandMax)}{READING[kind].unit ? ` ${READING[kind].unit}` : ''}</b>
                   </span>
                 </p>
-              ) : scale && feedback.tone === 'ok' && /^Écart/.test(feedback.title) ? (
+              ) : scale.cible && feedback.tone === 'ok' && /^Écart/.test(feedback.title) ? (
                 <p className="bz-verdict is-ok" data-k="ok"><Check size={14} aria-hidden="true" /><span>dans la cible</span></p>
               ) : (
                 <p className={`bz-verdict is-${feedback.tone}`}>
