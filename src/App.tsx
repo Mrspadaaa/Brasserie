@@ -6,6 +6,7 @@ import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
 import { startProofQueue } from './services/proofQueue';
 import { startEnrichissement } from './services/enrichissement';
+import { motsCleEcriture } from './services/search';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
@@ -770,7 +771,7 @@ export const App: React.FC = () => {
         label: t.description,
         detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
-        keywords: [t.id, t.category, t.subcategory, t.finance?.vendor ?? '', t.finance?.invoiceNumber ?? ''],
+        keywords: motsCleEcriture(t),
         archived: isTransactionArchived(t, financialArchiveIndex),
         onSelect: () => {
           setActiveTab('finances');
