@@ -259,6 +259,22 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     const sources = scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified;
     return periodeSynthese({ transactions: sources.map(e => e.transaction), payments, mois: debut, jusqua: fin, aujourdhui });
   }, [followingUp, scope, selectedYear, classified, payments, debut, fin, aujourdhui]);
+  /** Apports (+) et prélèvements (−) de la période : hors « dépensé », montrés à part sur le graphe (CP-15). */
+  const apportsCents = useMemo(() => {
+    if (followingUp) return null;
+    const sources = scope === 'archives' ? classified.filter(e => e.archived) : scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified;
+    const [du, au] = scope === 'archives' ? [null, undefined] : [debut, fin];
+    let cents = 0, n = 0;
+    for (const { transaction: tx, date } of sources) {
+      if (!isActiveTransaction(tx) || !date) continue;
+      const k = tx.finance?.kind;
+      if (k !== 'contribution' && k !== 'withdrawal') continue;
+      const m = date.slice(0, 7);
+      if (du !== null && (m < du || m > (au ?? du))) continue;
+      cents += (k === 'contribution' ? 1 : -1) * transactionAmount(tx); n++;
+    }
+    return n ? cents : null;
+  }, [followingUp, scope, classified, debut, fin]);
   const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la période' : 'tout l’historique';
   const retard = useMemo(() => retardTotal(classified, aujourdhui), [classified, aujourdhui]);
   const actifs: Actif[] = [
@@ -303,10 +319,11 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     for (const { transaction, direction } of rows) {
       if (!isActiveTransaction(transaction)) continue;
       const entrant = direction === 'in';
-      cents += (id === 'jour' || id === 'recettes' ? (entrant ? 1 : -1) : (entrant ? -1 : 1)) * transactionAmount(transaction);
+      cents += (id === 'jour' || id === 'recettes' || id === 'apports' ? (entrant ? 1 : -1) : (entrant ? -1 : 1)) * transactionAmount(transaction);
     }
     const texte = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(cents) / 100);
-    return `${cents < 0 ? '−' : id === 'recettes' || id === 'jour' && cents > 0 ? '+' : ''}${texte}`;
+    // CP-15 (10.11, « Pourquoi négatif sur un apport ? ») : un apport entre (+), un prélèvement sort (−), comme une vente.
+    return `${cents < 0 ? '−' : (id === 'recettes' || id === 'apports' || id === 'jour') && cents > 0 ? '+' : ''}${texte}`;
   };
 
   return <div className="ops">
@@ -315,7 +332,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       retardCents={retard.totalCents} onRetard={() => change({ filter: 'late' })}
       rechercheOuverte={loupe || !!query} onLoupe={() => { if (!query) setLoupe(open => !open); }}
       query={query} onQuery={value => { change({ query: value }); if (!value) searchRef.current?.focus(); }} searchRef={searchRef} searchId={searchId}
-      actifs={actifs} piles={piles} nomPiles={nomPiles} plage={plage}
+      actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage}
       onPlage={(du, au) => change({ du, au, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}/>
 
     <div className="ops-liste">{groupes.map(groupe => {

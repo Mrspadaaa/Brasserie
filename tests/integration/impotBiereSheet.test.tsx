@@ -89,7 +89,7 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
 
   it('6. litres inconnus : « — », jamais 0 ; les formats restent lisibles', () => {
     ouvrir(brassin({ volumePackagedL: undefined }));
-    expect(txt('ibr-litres')).toBe('ce brassin · litres à noter');
+    expect(txt('ibr-litres')).toBe('ce brassin · litres à noter ›');
     expect(txt('ibr-resultat')).toBe('—');
     expect(screen.getByTestId('ibr-regle').textContent).not.toMatch(/0,00/);
     expect(txt('ibr-fmt-33cl')).toBe('33 cl 0,08 CHF');
@@ -104,11 +104,11 @@ describe('p2b : la règle des degrés (repos, densité inconnue)', () => {
     cleanup();
     plans = [plan('volume-a-brasser')];
     ouvrir(brassin({ volumePackagedL: undefined }));
-    expect(txt('ibr-litres')).toBe('ce brassin · litres à noter');
+    expect(txt('ibr-litres')).toBe('ce brassin · litres à noter ›');
     cleanup();
     plans = [{ id: 'ancien', createdAt: '2026-08-01T10:00:00Z', brewEstimate: { batchId: 'B12', netVolumeL: 30 } }];
     ouvrir(brassin({ volumePackagedL: undefined }));
-    expect(txt('ibr-litres')).toBe('ce brassin · litres à noter');
+    expect(txt('ibr-litres')).toBe('ce brassin · litres à noter ›');
     cleanup();
     plans = [plan('saisi')];
     ouvrir();
@@ -247,5 +247,24 @@ describe('p2b : fonctions pures', () => {
     expect(positionRegle(Number.NaN)).toBeNull();
     expect(platoDuCurseur(119)).toBe(11.9);
     expect(FORMATS_IMPOT.map(f => f.volumeL)).toEqual([0.33, 0.75, 20]);
+  });
+});
+
+// CP-14 (10.11, « Ça semble pas vraiment fonctionné ?? ») : Milk Stout, densité notée 1,062, litres jamais notés, production annuelle absente.
+describe('CP-14 : chaque manque de la feuille renvoie où le saisir', () => {
+  const milkStout = () => brassin({ id: 'LOT-001', name: 'Milk Stout', og: '1.062', volumeL: 30, volumePackagedL: undefined, status: 'termine' });
+  it('litres manquants : « litres à noter › » et le bouton « Noter les litres » ouvrent la fiche', () => {
+    const { onNoteDensity } = ouvrir(milkStout());
+    expect(screen.queryByRole('button', { name: 'Corriger la densité' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Noter les litres' }));
+    fireEvent.click(screen.getByRole('button', { name: /litres à noter/ }));
+    expect(onNoteDensity).toHaveBeenCalledTimes(2);
+  });
+  it('production annuelle absente : le renvoi ouvre « Solde et paramètres financiers », paramètres dépliés', async () => {
+    profile = {};
+    ouvrir(milkStout());
+    fireEvent.click(screen.getByRole('button', { name: /production annuelle à indiquer/ }));
+    expect((await screen.findAllByText('Solde et paramètres financiers', {}, { timeout: 8000 })).length).toBeGreaterThan(0);
+    expect(screen.getByText('Paramètres des prévisions et des brassins').closest('details')).toHaveAttribute('open');
   });
 });

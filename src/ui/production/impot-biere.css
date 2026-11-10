@@ -80,3 +80,8 @@
 .clients-tax-brassins-titre { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: rgb(var(--cave-400)); }
 .clients-tax-brassin { min-height: 36px; width: 100%; text-align: left; padding: 6px 10px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px; background: rgb(var(--cave-850)); color: rgb(var(--cave-50)); font-size: 14px; font-weight: 500; cursor: pointer; }
 .clients-tax-brassin:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+
+/* CP-14 : la donnée manquante est un renvoi. */
+.ibr-inc-btn { cursor: pointer; font: inherit; font-weight: 600; min-height: 24px; }
+.ibr-lien { all: unset; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; min-height: 24px; }
+.ibr-lien:focus-visible, .ibr-inc-btn:focus-visible { outline: 2px solid rgb(var(--accent, 47 111 168)); outline-offset: 2px; }

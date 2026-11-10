@@ -9,7 +9,7 @@ import { GROUPES, type GroupeId } from './groupes';
  * Les hauteurs sont une règle de trois sur les centimes (affichage seulement), la valeur écrite est exacte.
  * Limite : le domaine ne donne pas le reste à payer du matériel : sa pile est pleine.
  */
-interface Colonne { cle: string; libelle: string; cents: number; hachureCents: number; couleur: string; signe?: '+' }
+interface Colonne { cle: string; libelle: string; cents: number; hachureCents: number; couleur: string; signe?: '+' | '−' }
 
 const COURT: Record<string, string> = { chargesFixes: 'Fixes', divers: 'Autres', brassage: 'Brassage', nettoyage: 'Nettoyage', recettes: 'Ventes', materiel: 'Matériel', renovation: 'Travaux', apports: 'Apports' };
 const ORDRE_CHARGES = ['chargesFixes', 'brassage', 'nettoyage', 'divers'];
@@ -39,10 +39,12 @@ function Pile({ c, max }: { c: Colonne; max: number }) {
 }
 
 /** `nom` : ce que les piles couvrent (« le mois », « la période », « tout l'historique ») ; il ne sert qu'aux noms accessibles. */
-export function Piles({ periode, nom = 'le mois' }: { periode: PeriodeSynthese; nom?: string }) {
+export function Piles({ periode, nom = 'le mois', apports = null }: { periode: PeriodeSynthese; nom?: string; apports?: number | null }) {
   const { ventes, charges, materiel } = colonnesDe(periode);
-  const toutes = [ventes, ...charges, materiel].filter((c): c is Colonne => !!c);
-  if (!toutes.length) return null;
+  const apport: Colonne | null = apports ? { cle: 'apports', libelle: 'Apports', cents: Math.abs(apports), hachureCents: 0, couleur: couleurDe('apports'), signe: apports > 0 ? '+' : '−' } : null;
+  const toutes = [ventes, ...charges, materiel, apport].filter((c): c is Colonne => !!c);
+  // « Pas de graph ? » (10.11) : une période sans vente ni dépense garde sa bande et le dit.
+  if (!toutes.length) return <p className="ops-vide">Ni vente ni dépense sur {nom}.</p>;
   const max = Math.max(...toutes.map(c => c.cents));
   const sep = (cle: string) => <span key={cle} className="ops-sep" aria-hidden="true"/>;
   const nuancier = `linear-gradient(90deg, ${charges.map((c, i) => `${c.couleur} ${(i / Math.max(charges.length, 1)) * 100}% ${((i + 1) / Math.max(charges.length, 1)) * 100}%`).join(', ') || 'transparent 0 100%'})`;
@@ -53,6 +55,8 @@ export function Piles({ periode, nom = 'le mois' }: { periode: PeriodeSynthese; 
       {charges.map(c => <Pile key={c.cle} c={c} max={max}/>)}
       {materiel && charges.length > 0 && sep('s2')}
       {materiel && <Pile c={materiel} max={max}/>}
+      {apport && (ventes || charges.length > 0 || materiel) && sep('s3')}
+      {apport && <Pile c={apport} max={max}/>}
     </div>
     <p className="ops-legende" aria-label={`Payé, à payer et dépensé ${nom === 'le mois' ? 'du mois' : nom.replace(/^la /, 'de la ').replace(/^tout /, 'sur tout ')}`}>
       <span><i className="ops-sw" style={{ background: nuancier }}/>payé <b className="ops-m">{amountOnly(periode.payeCents)}</b></span>

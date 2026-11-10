@@ -12,6 +12,9 @@ import { isoDate, montantChf } from '../../domain/finance/ledger';
 import { nombreFr } from '../../domain/nombreAffiche';
 import './impot-biere.css';
 
+// CP-14 (10.11, « Ça semble pas vraiment fonctionné ?? ») : chaque donnée manquante de la feuille renvoie où la saisir.
+const ProfileSheet = React.lazy(() => import('../finance/FinanceForms').then(m => ({ default: m.ProfileSheet })));
+
 /**
  * Impôt bière d'un brassin : la règle des degrés (p2b, choisie). Une feuille en lecture seule : le curseur est une simulation locale,
  * jamais écrite ; la densité se note sur la fiche du brassin (`onNoteDensity`), par son chemin de saisie existant.
@@ -118,6 +121,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
   const [dixiemes, setDixiemes] = useState<number | null>(null);
   const [copie, setCopie] = useState<'idle' | 'ok' | 'failed'>('idle');
   const [reglage, setReglage] = useState<'idle' | 'introuvable'>('idle');
+  const [profilOuvert, setProfilOuvert] = useState(false);
   const { litres, annee, reductionConfirmee, reductionPct, calcul, lu, densite, depart } = baseImpot(batch, donnees);
   const plato = dixiemes === null ? depart.plato : platoDuCurseur(dixiemes);
   const mention = dixiemes === null ? depart.mention
@@ -172,7 +176,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
         <a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer">Directives OFDF</a>
         <button type="button" onClick={copier}>Copier</button>
       </span>
-      {onNoteDensity && <button type="button" className="ibr-prim" onClick={onNoteDensity}><Plus size={16} aria-hidden="true" />{densite === 'notee' ? 'Corriger la densité' : 'Noter la densité'}</button>}
+      {onNoteDensity && <button type="button" className="ibr-prim" onClick={onNoteDensity}><Plus size={16} aria-hidden="true" />{!litres ? 'Noter les litres' : densite === 'notee' ? 'Corriger la densité' : 'Noter la densité'}</button>}
     </div>
   );
 
@@ -183,7 +187,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
 
         <section className="ibr-regle" data-testid="ibr-regle" data-hachure={hachure ? 'oui' : 'non'}>
           <div className="ibr-q">
-            <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : <span className="ibr-inc">litres à noter</span>}</span>
+            <span data-testid="ibr-litres">ce brassin · {litres ? <><b className="ibr-m">{nombreFr(litres.litres, 1)} L</b> {motLitres}</> : onNoteDensity ? <button type="button" className="ibr-inc ibr-inc-btn" onClick={onNoteDensity}>litres à noter ›</button> : <span className="ibr-inc">litres à noter</span>}</span>
             <em data-testid="ibr-puce" data-ton={densite === 'notee' && !exonere ? 'neutre' : 'attention'}>{puce}</em>
           </div>
           <div className="ibr-bandes">
@@ -224,7 +228,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
           <i className="ibr-dot" aria-hidden="true" />
           <div className="ibr-x">
             <b>{litresAn === null ? 'Sur l’année' : <>Sur l’année, si {nombreFr(litresAn, 1).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} L à <span className="ibr-m">{platoTexte}</span></>}</b>
-            <span>{litresAn === null ? 'production annuelle à indiquer (Finances, profil)' : `estimé${mention ? ' · ' + mention : ''} · ${annee}`}</span>
+            <span>{litresAn === null ? (profile ? <button type="button" className="ibr-lien" onClick={() => setProfilOuvert(true)}>production annuelle à indiquer ›</button> : 'production annuelle à indiquer (Finances, profil)') : `estimé${mention ? ' · ' + mention : ''} · ${annee}`}</span>
           </div>
           <span className={`ibr-mt ibr-m${impotAn === null ? ' ibr-blanc' : ''}`}>{impotAn === null ? '—' : `~ ${chf(impotAn)}`}</span>
         </div>
@@ -255,6 +259,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity }: { batch: Batc
         </details>
         {copie !== 'idle' && <p role="status" className="ibr-note">{copie === 'ok' ? 'Copié dans le presse-papiers.' : 'Copie refusée par le navigateur : le texte reste à lire ci-dessus.'}</p>}
       </div>
+      {profilOuvert && profile && <React.Suspense fallback={null}><ProfileSheet profile={profile} parametres onClose={() => setProfilOuvert(false)} /></React.Suspense>}
     </Sheet>
   );
 }

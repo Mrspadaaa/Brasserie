@@ -17,7 +17,7 @@ export interface Actif { cle: string; libelle: string; retirer: () => void }
  * La bande du haut (v6b) : la pastille de mois, la pastille « en retard », la loupe, puis les piles du mois et leur légende.
  * Tout filtre actif se dit ici, hors du panneau « Filtres » : une liste qui change ne doit jamais changer sans le dire.
  */
-export function Bande({ libellePeriode, contexte, moisActif, month, today, onMonth, retardCents, onRetard, rechercheOuverte, onLoupe, query, onQuery, searchRef, searchId, actifs, piles, plage, onPlage, nomPiles }: {
+export function Bande({ libellePeriode, contexte, moisActif, month, today, onMonth, retardCents, onRetard, rechercheOuverte, onLoupe, query, onQuery, searchRef, searchId, actifs, piles, plage, onPlage, nomPiles, apportsCents }: {
   libellePeriode: string;
   /** Ce que la période contient en plus de son intitulé, quand ce n'est pas évident (suivi sur tous les exercices, archives comprises). */
   contexte?: string;
@@ -36,6 +36,8 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   searchId: string;
   actifs: Actif[];
   piles: PeriodeSynthese | null;
+  /** Apports (+) et prélèvements (−) de la période, à part du graphe ; null s'il n'y en a pas. */
+  apportsCents?: number | null;
   /** La plage « du … au … » en cours (CP-12) : `AAAA-MM`, bornes incluses ; absente = un mois, tout ou un exercice. */
   plage?: { du: string; au: string } | null;
   onPlage: (du: string, au: string) => void;
@@ -72,6 +74,6 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
     {actifs.length > 0 && <div className="ops-actifs" role="group" aria-label="Filtres actifs">
       {actifs.map(a => <button type="button" key={a.cle} className="ops-actif" aria-label={`Retirer le filtre : ${a.libelle}`} onClick={a.retirer}>{a.libelle}<X size={12} aria-hidden="true"/></button>)}
     </div>}
-    {piles && <Piles periode={piles} nom={nomPiles}/>}
+    {piles && <Piles periode={piles} nom={nomPiles} apports={apportsCents ?? null}/>}
   </div>;
 }

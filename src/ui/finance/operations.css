@@ -149,3 +149,6 @@
   .ops > * { grid-column:2; }
   .ops > .ops-bande { grid-column:1; grid-row:1 / span 12; position:sticky; top:0; }
 }
+
+/* « Pas de graph ? » (10.11) : la bande vide le dit. */
+.ops-vide { margin: 8px 0 0; padding: 12px; border: 1px dashed rgb(var(--ligne, 200 200 200)); border-radius: 8px; text-align: center; color: rgb(var(--texte-doux, 90 100 110)); font-size: 13px; background: repeating-linear-gradient(135deg, transparent 0 6px, rgb(0 0 0 / .04) 6px 8px); }

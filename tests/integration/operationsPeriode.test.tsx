@@ -136,3 +136,15 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
     expect(screen.getByRole('button', { name: 'Annuler le paiement du jour' })).toHaveTextContent('Annuler');
   });
 });
+
+// CP-15 (10.11, « Pourquoi négatif sur un apport ? ») : l'en-tête du groupe des apports est signé comme l'argent qui entre.
+describe('CP-15 : apports signés', () => {
+  it('deux apports de 100,00 : « +200,00 » en tête du groupe, et la pile « Apports » sur le graphe', () => {
+    const mois = today.slice(0, 7);
+    const apport = (id: string) => tx(id, `${mois}-05`, 'apports', { finance: { version: 1, kind: 'contribution', amountCents: 10000, paymentStatus: 'paid', recordedAt: `${today}T12:00:00Z`, lines: [] } as never });
+    const a = [apport('AP1'), apport('AP2')];
+    const { container } = render(<Hote transactions={a} initial={{ month: mois }} />);
+    expect(container.textContent).toMatch(/Apports et prélèvements\s*\+200,00/);
+    expect(container.querySelector('[data-pile="apports"]')).not.toBeNull();
+  });
+});
