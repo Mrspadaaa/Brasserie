@@ -22,7 +22,7 @@ import { swissToday } from '../../../../src/ui/DateField';
 
 const result = (more: Record<string, unknown> = {}, items?: any[]) => ({ documentType: 'invoice', paymentEvidence: 'paid', vendor: 'Malterie du Banc SA', date: '12.03.2026', currency: 'CHF', invoiceNumber: 'MB-1',
   amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: 10, category: 'brassage', subcategory: '', description: 'Achat', issues: [], fieldWarnings: [], review: { status: 'checked', findings: [], readers: 2 },
-  items: items ?? [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'pce', amountTTC: 10, stockCategory: '' }], ...more });
+  items: items ?? [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'Kg', amountTTC: 10, stockCategory: '' }], ...more });
 const send = (view: ReturnType<typeof render>, name: string) => {
   const file = new File(['%PDF-1.4\n' + name], name + '.pdf', { type: 'application/pdf' });
   Object.defineProperty(file, 'arrayBuffer', { value: async () => new TextEncoder().encode('%PDF-1.4\n' + name).buffer });

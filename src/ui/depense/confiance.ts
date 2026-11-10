@@ -15,6 +15,7 @@ import { donneesDeLigne, linkUnit, regleProduit, SACHET_MAX_G, shortUnit } from 
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { StockItem } from '../../types';
 import { uniteHorsArticle } from './calculPlateau';
+import { pieceSansPoids } from './poidsPiece';
 import { estFamilleIngredient, familleAUnStock, familleDe, jetons, type FamilleCle } from './familles';
 
 export type Niveau = 'sur' | 'repris' | 'inconnu';
@@ -412,6 +413,9 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
   // D372 : l'unité d'une ligne reliée qui ne s'ajoute pas à son article (pièce face au g, L face au Kg…), quel que soit le produit : à remplir, comme une unité illisible.
   if (article && unite.valeur && uniteHorsArticle({ description: l.description, quantity: q, unit: unite.valeur }, article))
     unite = { ...unite, niveau: 'inconnu', raison: `${shortUnit(unite.valeur)} ne s'ajoute pas au stock, compté en ${shortUnit(article.unit)}` };
+  // DP-4 : un houblon ou un malt NEUF compté en pièce sans poids lu n'entre pas au stock : « 1 pièce = ? g », à remplir (jamais un poids inventé).
+  else if (l.stockAction === 'new' && !horsStock && unite.valeur && pieceSansPoids({ description: l.description, unit: unite.valeur, quantity: q, kind: l.kind, nameFr: l.nameFr, nomLu: l.nomLu }))
+    unite = { ...unite, niveau: 'inconnu', raison: `1 ${shortUnit(unite.valeur)} = ? g : le poids de la pièce manque` };
   return { unite, quantite, prix, montant, famille: fam, article: art, pire: pireNiveau([unite, quantite, prix, montant, fam, art]) };
 }
 

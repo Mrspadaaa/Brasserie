@@ -5,7 +5,7 @@ import { toCents } from '../../../functions/src/invoiceControls';
 import { hasHopWord, hasYeastWord, readProductLabel } from '../../services/ingredientIdentity';
 import { isMillingSurcharge } from '../../services/purchasePrefill';
 import { millingParentIndex, stockQuantityFor, type PurchaseLineDraft } from '../../services/purchaseEntry';
-import { contexteDeArticle, donneesDArticle, donneesDeLigne, formatUnitLink, isReadableUnit, regleProduit, type RegleProduit } from '../../services/stockLineMatching';
+import { contexteDeArticle, donneesDArticle, donneesDeLigne, formatUnitLink, isReadableUnit, memeNom, regleProduit, type RegleProduit } from '../../services/stockLineMatching';
 import { nomPropre } from '../../domain/stock/donnees';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { ScannedInvoiceResult } from '../../services/geminiScanner';
@@ -91,6 +91,16 @@ export function memeProduit(description: string, unit: string, items: readonly S
   // Voie n1-nom-fr : la même lecture que l'écran et l'enregistrement : le nom imprimé lu (noms gardés) et le nom français comptent.
   const regle = regleProduit({ ...ligneProduit({ description, unit, quantity: quantity !== undefined && quantity > 0 ? quantity : 1, ...(noms ?? {}) }, vendor) }, items);
   return regle.cas === 'meme' ? regle.article : undefined;
+}
+/**
+ * DP-4 (10.11) : l'article du stock qui PORTE LE NOM de la ligne, quelle que soit sa catégorie ou son unité (jamais deux : le brasseur choisit alors). Le nom de la ligne est celui que la rangée montre
+ * (`nomAffiche` : sans α ni options), comparé au nom de l'article et à ses noms gardés de la facture (`memeNom` : pliés, sans ®™©). Sert à montrer la vue FACTURE | STOCK dès qu'un même nom existe.
+ */
+export function articleDeMemeNom(ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem | undefined {
+  const noms = [ligne.description, ligne.nameFr, ligne.nomLu].map(n => (n ?? '').trim()).filter(Boolean);
+  if (!noms.length) return undefined;
+  const portes = items.filter(item => noms.some(n => memeNom(nomAffiche(n), item.name) || memeNom(n, item.name) || (item.nomsFacture ?? []).some(g => memeNom(n, g) || memeNom(nomAffiche(n), g))));
+  return portes.length === 1 ? portes[0] : undefined;
 }
 /** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
 /** D287 : le deux-points final d'un libellé de facture (« Frais de port : ») tombe, imprimé ou traduit. */

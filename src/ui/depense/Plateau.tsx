@@ -55,11 +55,11 @@ export function BoiteUniteVide() {
   return <span data-dp-niveau="inconnu" aria-hidden className="inline-flex h-9 min-w-16 items-center justify-center rounded-control border-2 border-dashed border-alert bg-alert/10 font-mono text-base text-alert">▒</span>;
 }
 /** D277, D334 : « unité à remplir », cinq cases d'un toucher, le prix par unité dessous ; l'unité du stock est proposée (jaune tireté), jamais posée. */
-export const CasesUnite = React.forwardRef<HTMLDivElement, { index: number; unites: readonly ChoixUnite[]; propose?: string; prix?: string; onChoisir: (valeur: string) => void }>(
-  function CasesUnite({ index, unites, propose, prix, onChoisir }, ref) {
+export const CasesUnite = React.forwardRef<HTMLDivElement, { index: number; unites: readonly ChoixUnite[]; propose?: string; prix?: string; onChoisir: (valeur: string) => void; question?: string; sansStock?: boolean }>(
+  function CasesUnite({ index, unites, propose, prix, onChoisir, question, sansStock }, ref) {
     const motPropose = propose ? unites.find(u => u.valeur === propose)?.label : undefined;
     return <div ref={ref} tabIndex={-1} role="group" aria-label={`Unité à remplir, ligne ${index}`} data-dp-cases-unite data-dp-niveau="inconnu" className="flex flex-col gap-1 rounded-control border-2 border-alert bg-alert/10 p-1.5 outline-none">
-      <span className="text-xs font-semibold text-alert">unité à remplir{motPropose ? <> · <em className="not-italic text-attention">{motPropose} proposé, comme au stock</em></> : null}</span>
+      <span className="text-xs font-semibold text-alert">unité à remplir{question ? <> · {question}</> : null}{motPropose ? <> · <em className="not-italic text-attention">{motPropose} proposé{sansStock ? '' : ', comme au stock'}</em></> : null}</span>
       <div className="grid grid-cols-[1fr_1fr_1.3fr_1.3fr_.9fr] gap-1">
         {unites.map(u => <button key={u.valeur} type="button" data-val={u.valeur} onClick={() => onChoisir(u.valeur)}
           className={`flex min-h-12 flex-col items-center justify-center rounded-control bg-cave-950 ${u.valeur === propose ? 'border-2 border-dashed border-attention bg-attention/10' : 'border border-alert'}`}>

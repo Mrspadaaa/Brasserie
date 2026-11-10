@@ -28,7 +28,7 @@ export const viewportMock = (original: any) => ({ ...original, useCoarsePointer:
 export const RECEIPT = { driveFileId: 'drive-1', fileName: '2026-10-14 Malzhaus Nord F-1.pdf', bytes: 9, sha256: 'a'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026' };
 export const resultatLu = (extra: Record<string, unknown> = {}, review: Record<string, unknown> | null = { status: 'checked', findings: [], readers: 2 }) => ({ documentType: 'invoice', paymentEvidence: 'paid', vendor: 'Malzhaus Nord', date: '14.10.2026', currency: 'CHF', invoiceNumber: 'F-1',
   amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: 10, category: 'brassage', subcategory: '', description: 'Achat', issues: [], fieldWarnings: [], ...(review ? { review } : {}),
-  items: [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'pce', amountTTC: 10, stockCategory: '' }], ...extra });
+  items: [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'Kg', amountTTC: 10, stockCategory: '' }], ...extra });
 export const lectureOk = (pagesLues?: number, extra: Record<string, unknown> = {}, review?: Record<string, unknown> | null) =>
   ({ ok: true, model: 'rejeu', ...(pagesLues ? { pagesLues } : {}), result: resultatLu(extra, review === undefined ? { status: 'checked', findings: [], readers: 2 } : review) });
 

@@ -22,7 +22,7 @@ import { FirebaseAuthService } from '../../../../src/services/firebaseAuth';
 const RECEIPT = { driveFileId: 'drive-1', fileName: '2026-03-12 Fournisseur A MB-1.pdf', bytes: 9, sha256: 'a'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026' };
 const scan = () => ({ ok: true, model: 'rejeu', result: { documentType: 'invoice', paymentEvidence: 'paid', vendor: 'Fournisseur A', date: '12.03.2026', currency: 'CHF', invoiceNumber: 'MB-1',
   amountHT: null, tvaRate: null, tvaAmount: null, amountTTC: 10, category: 'brassage', subcategory: '', description: 'Achat', issues: [], fieldWarnings: [], review: { status: 'checked', findings: [], readers: 2 },
-  items: [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'pce', amountTTC: 10, stockCategory: '' }] } });
+  items: [{ id: 'line-1', name: 'Maris Otter', kind: 'stock', quantity: 1, unit: 'Kg', amountTTC: 10, stockCategory: '' }] } });
 const pdf = (content: string, name: string) => {
   const file = new File([content], name, { type: 'application/pdf' });
   Object.defineProperty(file, 'arrayBuffer', { value: async () => new TextEncoder().encode(content).buffer });

@@ -18,3 +18,12 @@
 ## Leçon proposée (LECONS au plafond : fusionner avant)
 - Un jeu en ligne qui révèle un nouveau bloquant dans le même module à chaque passe : à la deuxième, arrêter les relances et passer
   par L29 (état de l'art, banc), pas une troisième rustine.
+
+## Déploiements et retours arrière (10.11, après-midi)
+- Hébergement : f18be5cc (tag `en-ligne/2026-11-10-1355`) = df7929f6 (c76481aa + DP-3 « Documents » au doigt + « Suivant › ») + loupe ddff27d2
+  + compta-prix e272aa33 (branche claude/jolly-mahavira-cc0cc2), fusion faite dans la copie de déploiement seulement.
+- aiTask : functions/src de c76481aa (tag `en-ligne/2026-11-10-avant-p2`), remis pour aller avec le client (le brasseur voyait des
+  régressions client c76481aa / serveur afb30756).
+- Retour arrière : `git checkout --detach <tag>` dans la copie de déploiement, build, hébergement ; aiTask : `git checkout <tag> -- functions/src`
+  dans ce worktree, déploiement, puis `git checkout HEAD -- functions/src`.
+- En cours : voie p4 (DP-4 Idaho 7) ; défilement de la ligne ajoutée (ExpenseSheet `focaliser`, non commis, attend p4).

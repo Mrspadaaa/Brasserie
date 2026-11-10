@@ -8,11 +8,12 @@ import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
 import type { ScannedInvoiceResult, ScannedLineKind } from '../../services/geminiScanner';
 import { applyScannedDescription, applyScannedPayment, invoiceTotalProposal, patchPurchaseDraft } from '../../services/purchasePrefill';
 import { sansCetteSaisie, uniteEffective, type PurchaseDraft, type PurchaseLineDraft } from '../../services/purchaseEntry';
-import { PROPOSAL_WEIGHT_MARK, STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, donneesDeLigne, matchStockLine, regleProduit, shortUnit } from '../../services/stockLineMatching';
+import { PROPOSAL_WEIGHT_MARK, STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, donneesDArticle, donneesDeLigne, isReadableUnit, matchStockLine, regleProduit, shortUnit } from '../../services/stockLineMatching';
 import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
+import { ecartsEntre } from '../../domain/stock/donnees';
 import { rangsHorsPiece } from '../../domain/finance/controlesPiece';
 import { lireOptions } from './optionsDuNom';
-import { libelleDeLigne, voisinEtMarque } from './etat';
+import { articleDeMemeNom, libelleDeLigne, voisinEtMarque } from './etat';
 import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
 import { groupeDe } from './groupes';
 import { tvaImprimee } from './tva';
@@ -56,6 +57,21 @@ export interface Propositions {
   proposedStock: Set<string>; proposedRef: Map<string, string>; voisins: Map<string, { article: StockItem; marque: string }>; relieAuto: Map<string, string>; neufDOffice: Set<string>;
 }
 const propositionsVides = (): Propositions => ({ proposedStock: new Set(), proposedRef: new Map(), voisins: new Map(), relieAuto: new Map(), neufDOffice: new Set() });
+
+/**
+ * DP-4 : l'article auquel un même nom relie la ligne quand seule l'UNITÉ l'empêchait (D371b), ou rien. 1. la règle de `regleProduit` sans l'unité (comme « Suivre au stock ») dit « même article » ;
+ * 2. sinon l'article qui porte le même nom (toute catégorie) dont AUCUNE donnée connue des deux côtés (α, origine, récolte, EBC, poids) ne diffère. Une unité illisible n'a rien à relâcher : la règle l'a déjà fait.
+ */
+function lienParLeNom(line: PurchaseLineDraft, unit: string, regle: ReturnType<typeof regleProduit>, existants: readonly StockItem[], vendor?: string): StockItem | undefined {
+  if (regle.cas === 'meme') return regle.article;
+  if (!isReadableUnit(unit) || !(Number(line.quantity) > 0)) return undefined; // quantité absente : un autre obstacle (D381), hors DP-4
+  const sansUnite = regleProduit(ligneDeBrouillon({ ...line, unit: '' }, vendor), existants);
+  if (sansUnite.cas === 'meme') return sansUnite.article;
+  const memeNom = articleDeMemeNom(line, existants);
+  if (!memeNom) return undefined;
+  const lu = donneesDeLigne(ligneDeBrouillon({ ...line, unit }, vendor)).donnees;
+  return ecartsEntre(lu, donneesDArticle(memeNom).donnees).length === 0 ? memeNom : undefined;
+}
 
 /**
  * Les lignes du brouillon d'une lecture (D275, D277, D306) et ce que la lecture PROPOSE (articles liés, voisins, « nouvel article » d'office). Le calcul d'`applyOutcome`, sans changement :
@@ -109,7 +125,13 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
       if (line.kind === 'ingredient' && line.description.trim()) {
         const regle = regleProduit(ligneDeBrouillon({ ...line, unit }, result.vendor ?? undefined), existantsLus);
         if (regle.cas === 'meme') { propositions.relieAuto.set(line.id, regle.article.name); return { ...line, stockAction: 'existing' as const, stockRef: regle.article.ref }; }
-        if (regle.cas !== 'ambigu') { propositions.neufDOffice.add(line.id); return { ...line, stockAction: 'new' as const }; }
+        /* DP-4 (10.11, D371b) : l'unité n'est pas une identité. « Idaho 7 » en pièce face à « Idaho 7 » compté en g n'est pas un autre produit : le même nom, sans l'unité, est CET article (ou un article de même nom
+           sans aucune donnée qui diffère) ; il est PROPOSÉ (jaune, « Garder » ; la vue FACTURE | STOCK et ses trois sorties s'ouvrent), jamais un « bis » d'office. Une autre α, origine ou récolte reste un autre produit (D215). */
+        if (regle.cas !== 'ambigu') {
+          const parLeNom = lienParLeNom(line, unit, regle, existantsLus, result.vendor ?? undefined);
+          if (parLeNom) { propositions.voisins.delete(line.id); /* un lien proposé n'est plus un « voisin » à trancher */ propositions.proposedStock.add(line.id); propositions.proposedRef.set(line.id, parLeNom.ref); return { ...line, stockAction: 'existing' as const, stockRef: parLeNom.ref }; }
+          propositions.neufDOffice.add(line.id); return { ...line, stockAction: 'new' as const };
+        }
       }
       return line;
     }
