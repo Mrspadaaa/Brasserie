@@ -103,12 +103,13 @@ export function BrewThermalControl({ recipe, state, step, now, update, onMeasure
       <table><caption className="sr-only">Relevés de la méthode en cours</caption><thead><tr><th>Heure</th><th>Moût °C</th></tr></thead><tbody>{points.map(p => <tr key={p.id ?? p.at}><td>{time(p.at)}</td><td>{fmt(p.value)}</td></tr>)}</tbody></table>
       {estimate?.status === 'estimate' && <p>{estimate.model}. Les traits relient les relevés ; ils ne sont pas des mesures continues.</p>}
     </details>}
-    {heating && rampMin != null && <p className="brew-thermal-note">{exposure.minutes == null ? 'Exposition entre les relevés inconnue.' : `≈ ${fmt(exposure.minutes)} min entre 58 et 72 °C sur ${fmt(exposure.coveredMin)} min suivies.`} La montée ne remplace pas le maintien. {step.pausedAt != null ? 'La pause arrête le minuteur, pas l’évolution réelle de la cuve.' : ''}</p>}
+    {/* n° 18 : un temps que les relevés ne permettent pas de dire n'est pas écrit (pas de « inconnue », pas de leçon sur la montée) */}
+    {heating && rampMin != null && (exposure.minutes != null || step.pausedAt != null) && <p className="brew-thermal-note">{exposure.minutes != null ? `≈ ${fmt(exposure.minutes)} min entre 58 et 72 °C sur ${fmt(exposure.coveredMin)} min suivies. ` : ''}{step.pausedAt != null ? 'La pause arrête le minuteur, pas l’évolution réelle de la cuve.' : ''}</p>}
     <div className="brew-thermal-actions">
       <button type="button" onClick={() => onMeasure('temperature')}>{step.id === 'sparge' ? 'Relever l’eau' : 'Relever le moût'}</button>
       {target != null && !holding && <button type="button" onClick={() => { update(s => startThermalSegment(s, step, method, target, brewNow(), { ...(method === 'immersion' && state.coolingWaterC != null ? { coolantC: state.coolingWaterC } : {}), note: segment ? 'Conditions changées : puissance, débit ou circulation' : 'Début du suivi' })); onMeasure('temperature'); }}>{segment ? 'Conditions changées' : cooling ? 'Démarrer le suivi' : 'Suivre la chauffe'}</button>}
     </div>
-    {target != null && !holding && <details><summary>Conditions suivies · {segment?.volumeL == null ? 'volume à préciser' : `${fmt(segment.volumeL)} L mesurés`}</summary>
+    {target != null && !holding && <details><summary>Volume {heating ? 'chauffé' : 'refroidi'} · {segment?.volumeL == null ? 'à saisir' : `${fmt(segment.volumeL)} L`}</summary>
       <label className="brew-thermal-coolant">Volume réellement {heating ? 'chauffé' : 'refroidi'} <span><NumberInput aria-label="Volume réellement suivi en litres" value={measuredVolume} min={.1} max={100000} onValue={setMeasuredVolume} /> L</span>
         <button type="button" disabled={measuredVolume == null || measuredVolume <= 0} onClick={() => update(s => startThermalSegment(s, step, method, target, brewNow(),
           { volumeL: measuredVolume, ...(method === 'immersion' && state.coolingWaterC != null ? { coolantC: state.coolingWaterC } : {}), note: 'Volume réellement suivi consigné' }))}>Consigner le volume</button>

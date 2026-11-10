@@ -57,10 +57,15 @@ export function YeastBrewDayGuide({ recipe, state, phase, onMeasure, collapsible
   const body = <>
     {guide.stale && <p className="yeast-notice" data-notice>L’objectif et les réglages actuels diffèrent. Suivre les consignes du brassin ci-dessous et vérifier l’écart.</p>}
     {guide.formWarning && <p className="yeast-notice" data-notice>{guide.formWarning}</p>}
-    <dl className="yeast-brew-instructions">{guide.instructions.map(item => <div key={item.id} data-instruction={item.id}>
-      <dt className={item.warning ? 'yeast-notice' : 'font-medium text-cave-50'} data-notice={item.warning || undefined}>{item.title}</dt><dd>{item.detail}</dd>
-      {item.id === 'prepare' && item.warning && onChooseQuantity && <button type="button" className="yeast-geste" onClick={onChooseQuantity}>Choisir la quantité</button>}
-    </div>)}</dl>
+    <dl className="yeast-brew-instructions">{guide.instructions.map(item => {
+      // Une alerte qu'on ne peut pas régler d'ici n'en est pas une : la ligne Levure (et son éditeur) n'existe qu'à l'ensemencement et dans la fiche ;
+      // dans Préparer, « Quantité à choisir à l'ajout. » reste dite sans rouge ni étiquette « À vérifier ».
+      const alerte = item.warning && (item.id !== 'prepare' || !!onChooseQuantity);
+      return <div key={item.id} data-instruction={item.id}>
+        <dt className={alerte ? 'yeast-notice' : 'font-medium text-cave-50'} data-notice={alerte || undefined}>{item.title}</dt><dd>{item.detail}</dd>
+        {item.id === 'prepare' && alerte && <button type="button" className="yeast-geste" onClick={onChooseQuantity}>Choisir la quantité</button>}
+      </div>;
+    })}</dl>
     {phase === 'finish' && starterPlan && <section aria-label="Starter du brassin" className="rounded-control border border-cave-800 p-2 space-y-2">
       <h4 className="text-sm font-semibold text-cave-50">Starter · {starterPlan.protocol.label}</h4>
       {preparationStale && <p role="alert" data-notice className="yeast-notice">La préparation suit une copie ancienne du plan. Date, produit ou contexte modifié : relis cette copie et la notice avant de transférer.</p>}

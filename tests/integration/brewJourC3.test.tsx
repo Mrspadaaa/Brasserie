@@ -6,6 +6,7 @@ import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { BrewAide } from '../../src/ui/BrewAide';
 import { BrewReadingsSummary } from '../../src/ui/BrewReadingsSummary';
 import { BrewDayMeasurements } from '../../src/ui/BrewDayMeasurements';
+import { YeastBrewDayGuide } from '../../src/ui/YeastBrewDayGuide';
 import { buildYeastBrewDay } from '../../src/domain/yeastBrewDay';
 import { ingredientAppliesToStep } from '../../src/ui/BrewIngredients';
 import type { BrewIngredient } from '../../src/domain/brewCompanion';
@@ -118,11 +119,14 @@ describe('n° 7 et 16 : une seule alerte « À vérifier », qui s’éteint qua
   });
   it('page : « 1 sachet » posé, plus aucune alerte « À vérifier » ni instruction rouge de levure', () => {
     monter(lot(SECHE_SANS_QUANTITE));
-    expect(document.querySelectorAll('[data-instruction="prepare"] [data-notice], dt[data-notice]').length).toBeGreaterThan(0);
+    expect(document.querySelectorAll('dt[data-notice]').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
-    fireEvent.click(ligneIngredients().getByRole('radio', { name: '1 sachet' }));
+    fireEvent.click(screen.getByRole('radio', { name: '1 sachet' }));
     expect(document.querySelectorAll('dt[data-notice]')).toHaveLength(0);
-    expect(alertes()).toHaveLength(0);
+    // La fixture porte d'autres causes (guide « périmé », dry hop à préciser) : on ne juge que celle de la quantité. L'étiquette de BrewAide suit par
+    // MutationObserver (microtâche) ; son extinction seule est jugée dans les deux tests de BrewAide ci-dessus.
+    const causes = [...document.querySelectorAll('[data-notice]')].map((n) => n.textContent ?? '').filter((t) => /quantité|levure ajoutée/i.test(t));
+    expect(causes).toEqual([]);
   });
 });
 
@@ -143,10 +147,19 @@ describe('n° 8 : la levure sèche sans quantité dit le geste, pas une phrase c
     const prepare = garde({ name: 'SafAle US-05', form: 'sèche', qty: 11.5, unit: 'g' }).instructions.find((i) => i.id === 'prepare')!;
     expect(prepare.warning).toBeFalsy();
   });
-  it('page : l’instruction porte un bouton qui ouvre l’éditeur de la ligne Levure', () => {
-    monter(lot(SECHE_SANS_QUANTITE));
+  it('guide avec un éditeur à ouvrir (fiche) : l’alerte porte un bouton « Choisir la quantité » qui l’ouvre', () => {
+    const ouvrir = vi.fn();
+    const recette = yeastFlowRecipe() as RecipeSnapshot;
+    recette.yeast = SECHE_SANS_QUANTITE;
+    render(<YeastBrewDayGuide recipe={recette as never} state={{ steps: [], currentIndex: 0, readings: [] }} phase="preparation" onChooseQuantity={ouvrir} />);
     fireEvent.click(screen.getByRole('button', { name: 'Choisir la quantité' }));
-    expect(ligneIngredients().getByRole('radiogroup', { name: 'Quantité de levure réellement ajoutée' })).toBeInTheDocument();
+    expect(ouvrir).toHaveBeenCalledOnce();
+  });
+  it('page (Préparer) : pas de bouton qui n’ouvrirait rien (la ligne Levure n’y est pas), et pas d’alerte rouge à ne pas pouvoir régler', () => {
+    monter(lot(SECHE_SANS_QUANTITE, 0, { steps: [{ id: 'eau', label: 'Eau et sels', durationMin: 0 }, ...ETAPES] }));
+    expect(screen.queryByRole('button', { name: 'Choisir la quantité' })).not.toBeInTheDocument();
+    expect(document.querySelector('[data-instruction="prepare"] dt[data-notice]')).toBeNull();
+    expect(screen.getByText('Quantité à choisir à l’ajout.')).toBeInTheDocument();
   });
 });
 
@@ -162,7 +175,7 @@ describe('n° 14 et 17 : le jargon « guide Levure » et « Aucune quantité pr�
     fireEvent.click(ligneIngredients().getByRole('radio', { name: '1 sachet' }));
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.queryByText(/Aucune quantité prévue valide/)).not.toBeInTheDocument();
-    expect(screen.getByText(/1 sachet/)).toBeInTheDocument();
+    expect(screen.getAllByText(/1 sachet/).length).toBeGreaterThan(0);
     expect(regles(css(), /brew-confirm[^,{]*button|\.brew-confirm/)).toMatch(/white-space:\s*nowrap/);
   });
 });
@@ -201,6 +214,16 @@ describe('n° 11 : Refroidissement montre « Ensuite · Ensemencement » avec la
     const ensuite = screen.getByRole('region', { name: /Ensuite · Ensemencement/ });
     expect(within(ensuite).getByText('SafAle US-05')).toBeInTheDocument();
     expect(screen.getByText(/au transfert/)).toBeInTheDocument();
+  });
+  it('le volume relevé dans la case « Au fermenteur » du Refroidissement s’enregistre comme volume au fermenteur (décision du pilote, fidèle à m2)', () => {
+    const etape: BrewDayStep = { id: 'refroidissement', label: 'Refroidissement', durationMin: 0 };
+    let etat: BrewDayState = { steps: [etape], currentIndex: 0, readings: [] };
+    const update = vi.fn((f: (s: BrewDayState) => BrewDayState) => { etat = f(etat); });
+    render(<BrewDayMeasurements step={etape} state={etat} recipe={{ volumeL: 19, ogTarget: 1.061 } as RecipeSnapshot} update={update} requestedKind={{ kind: 'volume', token: 1 }} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Taper la valeur' }));
+    fireEvent.change(document.querySelector('#brew-reading') as HTMLElement, { target: { value: '18,6' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    expect(etat.readings?.[0]).toMatchObject({ kind: 'volume', value: 18.6, stepId: 'refroidissement', measurementStage: 'fermenter' });
   });
 });
 

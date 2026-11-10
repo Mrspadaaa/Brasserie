@@ -303,15 +303,14 @@ export function BrewAssist({
                   }}
                 />
                 <NumberField
-                  label="Ajout à +… min depuis le début"
+                  label="Minutes écoulées depuis le début de l’ébullition"
                   value={elapsed}
                   set={setElapsed}
                   max={minutes ?? 480}
                 />
                 {minutes != null && elapsed != null && elapsed <= minutes && (
                   <p className="brew-muted">
-                    +{elapsed} min écoulées = {roundFr(minutes - elapsed)} min de contact avant la
-                    fin. La notation de la recette exprime les minutes restantes.
+                    Contact avant la fin : {roundFr(minutes - elapsed)} min.
                   </p>
                 )}
               </>

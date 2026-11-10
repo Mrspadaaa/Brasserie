@@ -34,7 +34,8 @@ function placeholderFor(kind: ReadingKind, step: BrewDayStep, recipe?: RecipeSna
     return t && t > 0 ? String(Math.round(t * 10) / 10).replace('.', ',') : '';
   }
   if (kind === 'temperature') return step.tempC != null ? String(step.tempC).replace('.', ',') : '';
-  return READING[kind].placeholder;
+  // n° 6 : « 5,4 » ou « 1,056 » en gris passe pour une valeur ; le champ vide dit « ? » par le curseur, l'unité est dans son libellé.
+  return '';
 }
 /**
  * RL-9 : les bornes d'un champ de mesure s'écrivent à la virgule, sans espace devant le point final : « Saisis 0,1 à 2000 L. », « Saisis 3 à 9. »
@@ -474,7 +475,9 @@ export function BrewDayMeasurements({
         medium: step.id === 'sparge' ? 'water' as const : 'wort' as const,
         thermalSegmentId: [...(state.thermalSegments ?? [])].reverse().find(s => s.stepId === step.id && s.endedAt == null)?.id
       } : {}),
-      ...(kind === 'volume' ? { volumeBasis: roomTemp ? 'cold' as const : undefined } : {})
+      ...(kind === 'volume' ? { volumeBasis: roomTemp ? 'cold' as const : undefined } : {}),
+      // m2 : la case « Au fermenteur · au transfert » de Refroidissement enregistre le volume au fermenteur (décision du pilote, 10.11).
+      ...(kind === 'volume' && step.id === 'refroidissement' && !editing ? { measurementStage: 'fermenter' as const } : {})
     };
     update((s) => {
       const old = editing ? s.readings?.find((x) => readingKey(x) === editing) : undefined;
@@ -499,6 +502,8 @@ export function BrewDayMeasurements({
   const scale = measureScale(kind, step, recipe, value ?? reading?.value);
   // m2 : sur la feuille, le verdict seul ; la phrase d'aide sur l'écart à la consigne (« Homogénéise, ajuste… ») vit sous « Pourquoi maintenant ».
   const conseilEnRaison = !!scale && !!feedback && /^Écart/.test(feedback.title);
+  // m2 : la valeur se dit une fois (le curseur). Un verdict neutre qui la recopie (« Température : 96 °C », « Relevé rattaché à cette étape. ») n'apprend rien.
+  const echoValeur = !!scale && !!feedback && feedback.tone === 'neutral' && feedback.title.startsWith(`${READING[kind].label} :`);
   const marque = value ?? reading?.value ?? null;
   const ecart = scale && marque != null ? ecartCible(scale, marque) : null;
   const depart = departCurseur(kind, scale, last?.value);
@@ -644,13 +649,13 @@ export function BrewDayMeasurements({
                 </p>
               ) : scale.cible && feedback.tone === 'ok' && /^Écart/.test(feedback.title) ? (
                 <p className="bz-verdict is-ok" data-k="ok"><Check size={14} aria-hidden="true" /><span>dans la cible</span></p>
-              ) : (
+              ) : echoValeur ? null : (
                 <p className={`bz-verdict is-${feedback.tone}`}>
                   {feedback.tone === 'watch' ? <TriangleAlert size={14} aria-hidden="true" /> : feedback.tone === 'ok' ? <Check size={14} aria-hidden="true" /> : null}
                   <span>{feedback.title}</span>
                 </p>
               )}
-              {feedback.detail && !conseilEnRaison && <p className="bz-muet">{feedback.detail}</p>}
+              {feedback.detail && !conseilEnRaison && !echoValeur && <p className="bz-muet">{feedback.detail}</p>}
             </>
           ) : kind === 'ph' && isMash(step.id) ? (
             // z1 : aucune phrase d'aide sur la feuille Mesurer ; le conseil reste dit aux lecteurs d'écran (p3, n° 5).
@@ -670,7 +675,6 @@ export function BrewDayMeasurements({
           </>
         )}
         <div className="bz-actions">
-          <button type="button" aria-pressed={pairMode} data-booster="paire" onClick={() => setPairMode(true)}>Volume + densité</button>
           {onAdvice && (
             <button type="button" data-booster="conseil" disabled={adviceBusy} onClick={onAdvice}>
               {adviceBusy ? 'Analyse…' : 'Conseil'}

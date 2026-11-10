@@ -1,4 +1,4 @@
-.brew-thermal { border-top: 1px solid var(--cave-700, rgb(var(--cave-700))); margin-top: .5rem; padding-top: .5rem; color: rgb(var(--cave-texte-200)); font-size: .75rem; line-height: 1.35; min-width: 0; }
+.brew-thermal { border-top: 1px solid var(--cave-700, rgb(var(--cave-700))); margin-top: .5rem; padding: .5rem .75rem .25rem; color: rgb(var(--cave-texte-200)); font-size: .75rem; line-height: 1.35; min-width: 0; }
 .brew-thermal p { margin: .35rem 0; }
 .brew-thermal-readings { display: flex; flex-wrap: wrap; gap: .35rem .8rem; }
 .brew-thermal-readings > span { display: grid; gap: .1rem; flex: 1 1 80px; }

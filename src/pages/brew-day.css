@@ -1823,6 +1823,8 @@ button.brew-consign:disabled { opacity: 0.6; }
 .brew-confirm .bg-alert {
   background: rgb(var(--ebc-straw));
   color: rgb(var(--sur-paille));
+  flex: 2 1 auto;
+  white-space: nowrap;
 }
 .brew-capture-header {
   display: flex;
@@ -2539,6 +2541,19 @@ button.brew-consign:disabled { opacity: 0.6; }
 .brew-aide-body > * + * {
   margin-top: 8px;
 }
+/* n° 9 : un repli dans un repli (« Fiche de la souche », « Programme… ») porte son chevron à droite, sur la ligne de son titre. */
+.brew-page .brew-aide-body details > summary,
+.brew-page .yeast-brew-guide details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  list-style: none;
+}
+.brew-page .brew-aide-body details > summary::-webkit-details-marker,
+.brew-page .yeast-brew-guide details > summary::-webkit-details-marker { display: none; }
+.brew-page .brew-aide-body details > summary > svg { flex-shrink: 0; }
+.brew-page .brew-aide-body details[open] > summary > svg { transform: rotate(180deg); }
 .brew-aide-note {
   color: var(--brew-muted);
 }
@@ -3151,7 +3166,7 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 }
 .brew-page.bz .bz-seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 8px; padding: 3px; border-radius: 8px; background: var(--bz-raised); }
 .brew-page.bz .bz-seg button { height: 26px; min-height: 26px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--bz-t2); font-size: 14px; }
-.brew-page.bz .bz-seg button[aria-pressed='true'] { background: var(--bz-page); color: var(--bz-t0); font-weight: 600; border: 2px solid var(--bz-t0); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.brew-page.bz .bz-seg button[aria-pressed='true'] { background: var(--bz-page); color: var(--bz-t0); font-weight: 600; box-shadow: 0 0 0 1px var(--bz-border2); }
 .brew-page.bz .bz-saisie { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 /* VB-3 : au doigt, `Input` rend un textarea (une ligne) ; la règle ne visait que `input`, le champ restait sans bord ni fond (« plus aucun champ »). */
 .brew-page.bz .bz-saisie :is(input, textarea) { flex: 1; min-width: 0; box-sizing: border-box; height: 36px; min-height: 36px; padding: 0 10px; line-height: 34px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); font: 16px/34px 'IBM Plex Mono', ui-monospace, monospace; }
@@ -3171,6 +3186,8 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .brew-page.bz .bz-actions button { height: 32px; min-height: 32px; padding: 0 12px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t0); font-size: 14px; font-weight: 600; }
 .brew-page.bz .bz-actions button:last-child { margin-left: auto; background: var(--bz-action); border-color: var(--bz-action); color: var(--bz-action-text); }
+/* n° 20 : « Enregistrer » sans valeur est grisé (fond du bandeau, texte pâle), jamais l'ocre plein du bouton actif délavé par l'opacité (cave). */
+.brew-page.bz .bz-actions button:last-child:disabled { background: var(--bz-raised); border-color: var(--bz-border2); color: var(--bz-t2); opacity: 1; cursor: not-allowed; }
 .brew-page.bz .bz-precedent { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; color: var(--bz-t2); font-size: 12px; }
 .brew-page.bz .bz-mesure-form { margin: 0; }
 .brew-page.bz .bz-planning { margin-top: 8px; }
@@ -3233,6 +3250,8 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-moutajout { order: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; margin-top: 6px; padding: 2px 10px; border: 1px solid var(--bz-border); border-radius: 8px; color: var(--bz-t1); font-size: 14px; }
 .brew-page.bz .bz-moutajout-val { display: flex; align-items: center; gap: 4px; }
 .brew-page.bz .bz-moutajout-val input { width: 64px; text-align: right; }
+/* n° 13 : « Moût à l'ajout » est un champ à saisir : même cadre que celui de la feuille Mesurer (au doigt, `Input` rend un textarea). */
+.brew-page.bz .bz-moutajout-val :is(input, textarea) { box-sizing: border-box; width: 64px; height: 32px; min-height: 32px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); text-align: right; font: 16px/30px 'IBM Plex Mono', ui-monospace, monospace; resize: none; }
 /* n° 4 : choix de la quantité de levure réellement ajoutée, dans l'éditeur de la ligne Levure */
 .brew-page.bz .bz-levure-choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px; }
 .brew-page.bz .bz-levure-choix button { min-height: 36px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); font-size: 14px; }
@@ -3249,6 +3268,12 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-row.is-mesure .bz-nom small .bz-m { font-size: 12px; }
 .brew-page.bz .bz-mesure-du { color: var(--bz-warn); font-weight: 600; }
 .brew-page.bz .bz-mesure-tard { color: var(--bz-t2); }
+/* n° 22 : seuls les nombres sont en chasse fixe (m2) ; un mot (« maintenant », « au transfert », « À préciser ») reprend la police du texte. */
+.brew-page.bz .bz-mesure-du, .brew-page.bz .bz-mesure-tard, .brew-page.bz [data-sans-valeur] { font-family: inherit; font-variant-numeric: normal; }
+/* « 1 h 00 » en chasse fixe puis « 59:58 » dans une autre police : le minuteur, l'heure de fin, les cibles et les durées reprennent la police du texte
+   (m2 : « 59 : 36 »), chiffres alignés ; la chasse fixe reste aux doses et à la valeur de la feuille Mesurer. */
+.brew-page.bz .bz-temps, .brew-page.bz .bz-temps.bz-m { font-family: inherit; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.brew-page.bz .bz-fin .bz-m, .brew-page.bz .bz-nom small .bz-m, .brew-page.bz .bz-precedent .bz-m, .brew-page.bz .bz-compte, .brew-page.bz .bz-ecart .bz-m { font-family: inherit; font-variant-numeric: tabular-nums; }
 .brew-page.bz .bz-mesure-ok, .brew-page.bz .bz-mesure-hors { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; vertical-align: bottom; }
 .brew-page.bz .bz-mesure-ok { color: var(--bz-hop); }
 .brew-page.bz .bz-mesure-hors { color: var(--bz-warn); }

@@ -1703,7 +1703,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   onPitchQuantityModeChange={selectPitchQuantityMode}
                   onPitchQuantityAmountChange={updatePitchQuantityAmount}
                   onPitchQuantityUnitChange={updatePitchQuantityUnit}
-                  onChooseQuantity={() => setPitchEditToken((t) => t + 1)}
+                  onChooseQuantity={displayRecipe ? () => setPitchEditToken((t) => t + 1) : undefined}
                   quantityChosen={pitchChoiceValid}
                 />
               )}

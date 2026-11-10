@@ -125,7 +125,7 @@ export function volumeTarget(step: BrewDayStep, recipe?: RecipeSnapshot): number
       ?.filter((f) => f.kind === 'grain')
       .reduce((sum, f) => sum + f.weightKg, 0) ??
     0;
-  return step.id === 'ensemencement'
+  return step.id === 'ensemencement' || step.id === 'refroidissement'
     ? recipe?.volumeL
     : step.id === 'preboil' && plan
       ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)

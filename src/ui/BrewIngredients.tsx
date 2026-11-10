@@ -510,9 +510,10 @@ export function ingredientAppliesToStep(
     );
   if (area === 'mash')
     return (
-      (i.kind === 'grain' && (/^mash/.test(stepId) || stepId === 'nolo-extraction')) ||
+      // n° 21 : les grains se cochent une fois, au premier palier (ou à l'extraction à froid) ; le Mashout ne les réaffiche pas.
+      (i.kind === 'grain' && (stepId === 'mash-0' || stepId === 'nolo-extraction')) ||
       (i.side === 'sparge' && stepId === 'sparge') ||
-      (i.area === 'mash' && (i.stepId === 'fwh' ? stepId === 'fwh' : /^mash/.test(stepId)))
+      (i.kind !== 'grain' && i.area === 'mash' && (i.stepId === 'fwh' ? stepId === 'fwh' : /^mash/.test(stepId)))
     );
   if (area === 'boil')
     return (

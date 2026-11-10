@@ -36,7 +36,10 @@ export function mesuresAttendues(
 ): MesureAttendue[] {
   if (step.doneAt != null || state.finishedAt != null) return [];
   const dernier = (kind: ReadingKind) =>
-    [...(state.readings ?? [])].filter((r) => r.stepId === step.id && r.kind === kind).sort((a, b) => a.at - b.at).at(-1);
+    [...(state.readings ?? [])]
+      // À Refroidissement, la case « Au fermenteur » ne reprend pas un volume de cuve (`kettle-cold`, relevé par la paire).
+      .filter((r) => r.stepId === step.id && r.kind === kind && !(kind === 'volume' && r.measurementStage && r.measurementStage !== 'fermenter'))
+      .sort((a, b) => a.at - b.at).at(-1);
   const mesure = (m: Omit<MesureAttendue, 'reading'>): MesureAttendue => ({ ...m, reading: dernier(m.kind) });
   const lance = step.startedAt != null;
 
@@ -93,11 +96,20 @@ export function mesuresAttendues(
       due: step.id === 'ensemencement',
       quand: step.id === 'ensemencement' ? 'maintenant' : 'moût refroidi'
     });
-    if (step.id !== 'ensemencement') return [densite];
+    // m2 : à Refroidissement la case « Au fermenteur · cible 19 L · au transfert » existe déjà (grise) ; le volume relevé ici est celui du
+    // fermenteur (`measurementStage: 'fermenter'` à l'enregistrement, voir BrewDayMeasurements), pas celui de la cuve.
     const v = volumeTarget(step, recipe);
+    const refroidi = step.id === 'refroidissement';
     return [
       densite,
-      mesure({ kind: 'volume', nom: 'Au fermenteur', court: 'L', cible: v && v > 0 ? `${nombreFr(v, 1)} L` : undefined, due: true, quand: 'maintenant' })
+      mesure({
+        kind: 'volume',
+        nom: 'Au fermenteur',
+        court: 'L',
+        cible: v && v > 0 ? `${nombreFr(v, 1)} L` : undefined,
+        due: !refroidi,
+        quand: refroidi ? 'au transfert' : 'maintenant'
+      })
     ];
   }
   return [];
