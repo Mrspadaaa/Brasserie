@@ -39,3 +39,6 @@
   (la branche claude/jolly-mahavira-cc0cc2 a fusionné ma branche avec le client p2/p3 retiré : jamais la déployer telle quelle). 3 167 tests verts.
 - Voie f2 (auteur) dans le worktree epic-banach-4c4f89 (branche claude/happy-satoshi-f3f2c1) : les 5 bloquants de lecture du jeu 8 ;
   le pilote déploie aiTask après rejeu, puis jeu en ligne 9.
+- 10.11 nuit : hébergement 27d20e50 (tag `en-ligne/2026-11-10-dp7`) = compta2 + DP-7 ; aiTask 30d393d6 (tag `aitask/2026-11-10-f2`, retour :
+  `aitask/2026-11-10-avant-f2`). Jeu en ligne 10 : 0 bloquant, 7 non bloquants (`critique/VERDICT-EN-LIGNE-10.md`), dont trio sous le pied
+  à 1280 après la frappe et « g | kg | Stk » sur une ligne fermée sans unité.
