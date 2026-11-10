@@ -27,3 +27,11 @@
 - Retour arrière : `git checkout --detach <tag>` dans la copie de déploiement, build, hébergement ; aiTask : `git checkout <tag> -- functions/src`
   dans ce worktree, déploiement, puis `git checkout HEAD -- functions/src`.
 - En cours : voie p4 (DP-4 Idaho 7) ; défilement de la ligne ajoutée (ExpenseSheet `focaliser`, non commis, attend p4).
+
+## 10.11, fin d'après-midi
+- En ligne : 85de7802 (tag `en-ligne/2026-11-10-cat`) = ed9eb964 (DP-4) + DP-6 (b1d3991f) + DP-5 jeu 8 (f4743c85) + partie client de afb30756
+  (BAUHAUS en Rénovation sans stock, plus de mots bruts). Tags précédents : `en-ligne/2026-11-10-dp56`, `-dp4`, `-1355`, `-avant-p2`.
+- aiTask : la session fusion-lectures déploie son serveur (aligneur NW, payé = terminal, comptage écarté si la 3.8 le contredit).
+- Jeu en ligne 8 (`critique/VERDICT-EN-LIGNE-8.md`) : bloquants 1, 3, 4, 6 = lecture (fusion-lectures) ; 2 = classement (porté) ; 5 = ajout de
+  ligne (porté). Non rejoué en ligne après ces deux ports : vérifiés au banc (390, cave) et par 3 054 tests de la copie de déploiement.
+- Doutes du critique à vérifier au doigt : double toucher de la loupe (échelle 1,06 en émulation), « Suivant » sous filtre à 1280.
