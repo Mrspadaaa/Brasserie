@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { Trash2, Star } from 'lucide-react';
 import { Batch, Recipe, StockItem } from '../types';
@@ -16,6 +16,9 @@ import { Combobox } from './Combobox';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { canonicalStockCategory, memeNom } from '../services/stockLineMatching';
 import { changerUniteArticle } from '../domain/stock/changerUnite';
+import { estVide, ficheDe } from '../domain/stock/ficheValeurs';
+import { champsASaisir, MOT_A_SAISIR, subscribeEnrichissement } from '../services/enrichissement';
+import type { ChampEcrit } from '../services/enrichissementStore';
 import './stocks.css';
 
 interface StockDetailSheetProps {
@@ -33,6 +36,16 @@ interface StockDetailSheetProps {
   recipes?: Recipe[];
 }
 
+/** EN-2, EN-3 : le mot que la fiche écrit près d'un champ utile que personne n'a pu remplir ; petit, couleur d'attente, jamais un paragraphe. */
+const ASaisir: React.FC<{ champ: ChampEcrit; indication?: string }> = ({ champ, indication }) =>
+  <p data-a-saisir={champ} className="text-xs text-attention leading-snug">{MOT_A_SAISIR}{indication && <span className="text-cave-400"> · {indication}</span>}</p>;
+
+/** L'atténuation publiée en plage (« 78–82 % publié ») : une indication à côté du champ vide, jamais un point inventé. */
+function attenuationPubliee(item: StockItem): string | undefined {
+  const f = (item.yeastTechnicalFacts ?? []).find(x => x.key === 'attenuation' && x.range && x.range.min !== x.range.max);
+  return f?.range ? `${nombreFr(f.range.min)}–${nombreFr(f.range.max)} % publié` : undefined;
+}
+
 /** Quantité et couverture d'abord ; propriétés techniques accessibles à la demande. */
 export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   item, batches, stockItems, recipeCheck, onClose, onSave, onDelete, onCorrectInventory, onToggleFavorite, recipes = []
@@ -41,6 +54,17 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [uniteRefus, setUniteRefus] = useState('');
   const [uniteNote, setUniteNote] = useState('');
+  // Les champs que le travail de fiche a laissés vides faute de source (lu à l'ouverture, relu quand le travail change).
+  const [manque, setManque] = useState<ChampEcrit[]>([]);
+  const ref = item?.ref;
+  useEffect(() => {
+    if (!ref) { setManque([]); return undefined; }
+    let vivant = true;
+    const lire = () => { champsASaisir(ref).then(c => { if (vivant) setManque(c); }, () => { if (vivant) setManque([]); }); };
+    lire();
+    const arreter = subscribeEnrichissement(lire);
+    return () => { vivant = false; arreter(); };
+  }, [ref]);
   if (!item || !draft) return null;
 
   const level = computeStockLevel(draft, batches, stockItems);
@@ -76,6 +100,10 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   const category = canonicalStockCategory(draft.category);
   const malt = category === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(category);
   const technical = malt || category === 'Houblon' || category === 'Levure';
+  // Un champ tapé depuis n'est plus « à saisir » (le brouillon fait foi). Sans fiche liée, le produit n'a pas été reconnu : un mot près du nom.
+  const aSaisir = (champ: ChampEcrit) => manque.includes(champ) && estVide(draft, champ as keyof StockItem);
+  const nonReconnu = manque.length > 0 && !ficheDe(item);
+  const attPubliee = attenuationPubliee(draft);
   // Choix B (voie n1-nom-fr) : les noms imprimés de l'article sur les factures, en petit sous « Nom » ; jamais le nom de l'article lui-même ; lecture seule.
   const nomsFacture = (draft.nomsFacture ?? []).filter(nom => nom.trim() && !memeNom(nom, draft.name)); // la même égalité que l'écriture (N2, N4) : `memeNom`
 
@@ -139,6 +167,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
           <Field label="Nom" htmlFor="stock-label" error={draft.name.trim() ? undefined : 'Indiquez le nom de l’article.'}>
             <TextInput id="stock-label" name="stock_sheet_item_label" required aria-invalid={!draft.name.trim()} value={draft.name} onChange={name => setDraft({ ...draft, name })}/>
           </Field>
+          {nonReconnu && <p data-stock-non-reconnu className="-mt-1 text-xs text-attention">non reconnu</p>}
           {nomsFacture.length > 0 && <p data-stock-noms-facture className="-mt-1 text-xs text-cave-400">Sur la facture : {nomsFacture.join(' · ')}</p>}
           <div className="grid grid-cols-2 gap-2">
             <Field label="Catégorie" htmlFor="stock-category">
@@ -165,25 +194,29 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             <summary className="text-cave-200">Caractéristiques techniques
               {category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {nombreFr(draft.alphaPct, 2)} %</span>}
               {malt && draft.colorEbc != null && <span className="text-cave-400"> · {nombreFr(draft.colorEbc, 1)} EBC</span>}
+              {manque.some(c => aSaisir(c)) && <span data-a-saisir="resume" className="text-attention"> · {MOT_A_SAISIR}</span>}
             </summary>
             <div className="space-y-2 pt-1 pb-2">
               {category === 'Houblon' && <Field label="Acide alpha (%)" htmlFor="stock-alpha">
                 <NumberInput id="stock-alpha" value={draft.alphaPct} min={0} max={100} emptyValue={undefined}
                   onValue={alphaPct => setDraft({ ...draft, alphaPct })} className={inputClass}/>
+                {aSaisir('alphaPct') && <ASaisir champ="alphaPct"/>}
               </Field>}
               {malt && <div className="grid grid-cols-2 gap-2">
                 <Field label="Couleur (EBC)" htmlFor="stock-ebc">
                   <NumberInput id="stock-ebc" value={draft.colorEbc} min={0} emptyValue={undefined}
                     onValue={colorEbc => setDraft({ ...draft, colorEbc })} className={inputClass}/>
+                  {aSaisir('colorEbc') && <ASaisir champ="colorEbc"/>}
                 </Field>
                 <Field label="Potentiel (PPG)" htmlFor="stock-ppg">
                   <NumberInput id="stock-ppg" value={draft.potentialPpg} min={0} emptyValue={undefined}
                     onValue={potentialPpg => setDraft({ ...draft, potentialPpg })} className={inputClass}/>
+                  {aSaisir('potentialPpg') && <ASaisir champ="potentialPpg"/>}
                 </Field>
               </div>}
               {category === 'Levure' && <>
                 <div className="grid grid-cols-2 gap-2">
-                  <Field label="Laboratoire" htmlFor="stock-lab"><TextInput id="stock-lab" name="stock_sheet_yeast_lab" value={draft.yeastLab ?? ''} onChange={yeastLab => setDraft({ ...draft, yeastLab })}/></Field>
+                  <Field label="Laboratoire" htmlFor="stock-lab"><TextInput id="stock-lab" name="stock_sheet_yeast_lab" value={draft.yeastLab ?? ''} onChange={yeastLab => setDraft({ ...draft, yeastLab })}/>{aSaisir('yeastLab') && <ASaisir champ="yeastLab"/>}</Field>
                   <Field label="Souche" htmlFor="stock-strain"><TextInput id="stock-strain" name="stock_sheet_yeast_strain" value={draft.yeastStrain ?? ''} onChange={yeastStrain => setDraft({ ...draft, yeastStrain })}/></Field>
                 </div>
                 <DateField label="À utiliser avant (DDM)" shortcuts={[]} value={toSwissDate(draft.yeastLot?.expiresOn ?? '')}
@@ -191,9 +224,9 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
                   error={durabilite.statut === 'perime' ? 'Sachet périmé : ne le brasse pas sans l’avoir testé.' : undefined}
                   onChange={swiss => { const expiresOn = toIsoDate(swiss) || undefined; setDraft({ ...draft, yeastLot: { ...(draft.yeastLot ?? {}), expiresOn } }); }}/>
                 <div className="grid grid-cols-2 gap-2">
-                  <Field label="Atténuation (%)" htmlFor="stock-att"><NumberInput id="stock-att" value={draft.yeastAttenuationPct} min={0} max={100} emptyValue={undefined} onValue={yeastAttenuationPct => setDraft({ ...draft, yeastAttenuationPct })} className={inputClass}/></Field>
-                  <Field label="Temp. mini (°C)" htmlFor="stock-tmin"><NumberInput id="stock-tmin" value={draft.yeastTempMinC} emptyValue={undefined} onValue={yeastTempMinC => setDraft({ ...draft, yeastTempMinC })} className={inputClass}/></Field>
-                  <Field label="Temp. maxi (°C)" htmlFor="stock-tmax"><NumberInput id="stock-tmax" value={draft.yeastTempMaxC} emptyValue={undefined} onValue={yeastTempMaxC => setDraft({ ...draft, yeastTempMaxC })} className={inputClass}/></Field>
+                  <Field label="Atténuation (%)" htmlFor="stock-att"><NumberInput id="stock-att" value={draft.yeastAttenuationPct} min={0} max={100} emptyValue={undefined} onValue={yeastAttenuationPct => setDraft({ ...draft, yeastAttenuationPct })} className={inputClass}/>{aSaisir('yeastAttenuationPct') && <ASaisir champ="yeastAttenuationPct" indication={attPubliee}/>}</Field>
+                  <Field label="Temp. mini (°C)" htmlFor="stock-tmin"><NumberInput id="stock-tmin" value={draft.yeastTempMinC} emptyValue={undefined} onValue={yeastTempMinC => setDraft({ ...draft, yeastTempMinC })} className={inputClass}/>{aSaisir('yeastTempMinC') && <ASaisir champ="yeastTempMinC"/>}</Field>
+                  <Field label="Temp. maxi (°C)" htmlFor="stock-tmax"><NumberInput id="stock-tmax" value={draft.yeastTempMaxC} emptyValue={undefined} onValue={yeastTempMaxC => setDraft({ ...draft, yeastTempMaxC })} className={inputClass}/>{aSaisir('yeastTempMaxC') && <ASaisir champ="yeastTempMaxC"/>}</Field>
                 </div>
               </>}
             </div>
