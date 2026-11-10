@@ -2,7 +2,7 @@
 name: critique
 description: Critique d'interface de L'Affinée (Fable), calibré sur le brasseur - juge toute maquette, planche ou carte avant qu'elle soit montrée, comme le brasseur la jugerait. Fait aussi le test d'écran de l'app réelle par la vision avant tout déploiement (pratique, à sa place, réagit juste). Refuse par défaut ce qu'il refuserait. Obligatoire après toute voie d'interface. Rend une ligne.
 tools: Read, Glob, Grep, Bash, Write
-model: fable
+model: opus
 effort: high
 maxTurns: 30
 ---
