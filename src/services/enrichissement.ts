@@ -10,8 +10,8 @@ import { isReadableUnit } from './ingredientIdentity';
 import { articleNeufDe, ligneDeBrouillon } from '../domain/stock/articleNeuf';
 import { nomPropre } from '../domain/stock/donnees';
 import { cleFiche, type Famille } from '../domain/stock/ficheCle';
-import { ficheDe } from '../domain/stock/ficheValeurs';
-import { createDexieFichesStore, type MagasinFiches, type TravailFiche } from './enrichissementStore';
+import { estVide, ficheDe } from '../domain/stock/ficheValeurs';
+import { createDexieFichesStore, type ChampEcrit, type MagasinFiches, type TravailFiche } from './enrichissementStore';
 import { REESSAI_INTROUVABLE_MS, enTest, iaPermise, jourDeZurich } from './enrichissementReglages';
 
 /**
@@ -314,6 +314,20 @@ export async function marquerResumeVu(): Promise<void> {
   if (!store) return;
   for (const t of await store.travaux.all()) if (t.etat !== 'attend' && !t.annonce) await store.travaux.put({ ...t, annonce: true });
   emettre();
+}
+/** Le mot que la fiche écrit en face d'un champ utile que personne n'a pu remplir (EN-2, EN-3) : un mot, jamais un paragraphe ni un chiffre. */
+export const MOT_A_SAISIR = 'à saisir';
+/**
+ * Les champs d'un article que son travail a laissés vides faute de source (α absent du catalogue, malt non reconnu, atténuation publiée en plage
+ * seulement…) et qui le sont encore : ceux que la fiche dit « à saisir » (`MOT_A_SAISIR`). Un champ que le brasseur a rempli depuis n'y est plus.
+ */
+export async function champsASaisir(ref: string): Promise<ChampEcrit[]> {
+  const store = magasinCourant();
+  const t = store ? await store.travaux.get(ref) : undefined;
+  if (!t?.manque?.length) return [];
+  const s = StorageService.getStocks();
+  const item = [...s.rawMaterials, ...s.cleaning].find(i => i.ref === ref);
+  return item ? t.manque.filter(c => estVide(item, c)) : [];
 }
 /** « Relancer » une fiche en échec, introuvable, à saisir, plafonnée ou éteinte : elle repasse `attend`, ses jours d'échec effacés. */
 export async function relancerFiche(ref: string): Promise<boolean> {

@@ -8,8 +8,8 @@ import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { ficheLaPlusProche } from '../domain/stock/fiche';
 import { ficheLevureDe, type FicheLevure, type ReferenceLevure } from '../domain/stock/ficheLevure';
 import { cleDeLArticle, cleFiche, generique, lireCle, memeProduitDeFiche, type Parente } from '../domain/stock/ficheCle';
-import { ficheDe, patchDeTrous, rempliDe, trousDe, type ChampFiche, type Lien, type ParFiche, type ResultatPatch } from '../domain/stock/ficheValeurs';
-import type { EtatTravail, MagasinFiches, TravailFiche } from './enrichissementStore';
+import { estVide, ficheDe, patchDeTrous, rempliDe, trousDe, type ChampFiche, type FicheEnrichie, type Lien, type ParFiche, type Rempli, type ResultatPatch } from '../domain/stock/ficheValeurs';
+import type { ChampEcrit, EtatTravail, MagasinFiches, TravailFiche } from './enrichissementStore';
 import { identifiable, requeteDe } from './enrichissementRequete';
 import {
   ATTENTE_ARTICLE_MS, ECART_ESSAIS_MS, JOURS_ECHEC, PLAFOND_JOUR, PLAFOND_TENTATIVES, REESSAI_INTROUVABLE_MS, SUITE_ECHEC,
@@ -79,17 +79,19 @@ async function portes(t: TravailFiche, tour: Tour): Promise<Porte> {
 }
 
 interface Ecriture { valeurs: Partial<Record<ChampFiche, unknown>>; par: ParFiche; source: string; url?: string; niveau: 'sur' | 'repris'; deduit?: Partial<Record<ChampFiche, string>> }
-interface Options { lien?: Lien; aControler?: boolean; propose?: string | null }
+/** n1 (EN-1) : l'α d'un houblon lié au catalogue, avec sa source ; écrit seulement si le champ est vide, jamais sur une fiche approchée. */
+export interface AlphaCatalogue { valeur: number; source: string; url?: string; deduit?: string }
+interface Options { lien?: Lien; aControler?: boolean; propose?: string | null; alpha?: AlphaCatalogue }
 /**
  * L'écriture (PLAN § 3.6) : l'article est relu et le `put` part dans la MÊME tâche synchrone (aucun `await` entre les deux). Article absent → `false`,
  * aucun `put`. Plusieurs groupes de valeurs (sources différentes) s'enchaînent sur l'article relu. Jamais un champ hors liste blanche.
  */
-function ecrire(t: TravailFiche, tour: Tour, groupes: readonly Ecriture[], options: Options): { ok: boolean; remplis: ChampFiche[] } {
+function ecrire(t: TravailFiche, tour: Tour, groupes: readonly Ecriture[], options: Options): { ok: boolean; remplis: ChampEcrit[] } {
   const lu = articleDuTour(t.ref, tour);
   if (!lu) return { ok: false, remplis: [] };
   let courant = lu;
   const patch: Partial<StockItem> = {};
-  const remplis: ChampFiche[] = [];
+  const remplis: ChampEcrit[] = [];
   const ecarts: ResultatPatch['ecarts'] = [];
   const passes = groupes.length ? groupes : [{ valeurs: {}, par: options.lien?.par ?? 'catalogue', source: '', niveau: 'repris' as const }];
   passes.forEach((g, i) => {
@@ -100,10 +102,20 @@ function ecrire(t: TravailFiche, tour: Tour, groupes: readonly Ecriture[], optio
     remplis.push(...r.remplis);
     ecarts.push(...r.ecarts);
   });
+  // n1 (EN-1) : l'α du catalogue, hors liste blanche de `patchDeTrous` (qui ne connaît pas `alphaPct`), avec la même trace dans `fiche.remplis` (P1).
+  const a = options.alpha;
+  const ficheAlpha = (patch.fiche ?? courant.fiche) as FicheEnrichie | undefined;
+  if (a && ficheAlpha && estVide(courant, 'alphaPct')) {
+    const rempli: Rempli = { par: 'catalogue', source: a.source, ...(a.url ? { url: a.url } : {}), le: tour.le, niveau: 'repris', valeur: a.valeur, ...(a.deduit ? { deduit: a.deduit } : {}) };
+    patch.alphaPct = a.valeur;
+    patch.fiche = { ...ficheAlpha, remplis: { ...(ficheAlpha.remplis ?? {}), alphaPct: rempli } } as StockItem['fiche'];
+    courant = { ...courant, ...patch };
+    remplis.push('alphaPct');
+  }
   if (Object.keys(patch).length) {
     FirestoreRepo.put('stockItems', t.ref, patch, { merge: true });
     tour.ecrits.set(t.ref, courant);
-    const sources = [...new Set(groupes.filter(g => Object.keys(g.valeurs).some(c => remplis.includes(c as ChampFiche))).map(g => g.source))];
+    const sources = [...new Set([...groupes.filter(g => Object.keys(g.valeurs).some(c => remplis.includes(c as ChampFiche))).map(g => g.source), ...(a && remplis.includes('alphaPct') ? [a.source] : [])])];
     const details = [
       remplis.length ? `Rempli : ${remplis.filter(c => c !== 'technicalSource').join(', ') || 'source'}${sources.length ? ` (source : ${sources.join(' ; ')})` : ''}` : 'Fiche liée',
       ...ecarts.map(e => `Écart non écrit : ${e.champ} lu ${JSON.stringify(e.lue)}, trouvé ${JSON.stringify(e.trouvee)}`),
@@ -182,8 +194,66 @@ async function ecritureLevure(tour: Tour, f: FicheLevure): Promise<{ lien: Lien;
   };
 }
 
+const nombreFr = (n: number) => String(n).replace('.', ',');
+/**
+ * EN-1 : l'α d'une variété liée au catalogue. Plage du catalogue (Beer Maverick, sinon Hopsteiner) : son milieu, dit « milieu de la plage » ; point publié : ce
+ * point. Jamais sur une fiche approchée (autre origine : l'α d'une autre région), jamais sans plage (inconnu n'est pas 0).
+ */
+export function alphaDuCatalogue(catalogue: readonly CatalogueHop[] | undefined, trouvee: { id: string; nom: string; approchee: boolean }): AlphaCatalogue | undefined {
+  if (trouvee.approchee) return undefined;
+  const h = catalogue?.find(x => x.id === trouvee.id);
+  if (!h) return undefined;
+  const choix: Array<{ plage: [number, number] | null | undefined; source: string; url: string | null | undefined }> = [
+    { plage: h.alpha, source: `Catalogue des houblons du dépôt — ${trouvee.nom} (Beer Maverick)`, url: h.url },
+    { plage: h.hs?.alpha, source: `Catalogue des houblons du dépôt — ${trouvee.nom} (Hopsteiner)`, url: h.hs?.reference },
+  ];
+  for (const { plage, source, url } of choix) {
+    if (!plage || !Number.isFinite(plage[0]) || !Number.isFinite(plage[1]) || plage[0] <= 0 || plage[1] < plage[0]) continue;
+    const lien = url && /^https?:\/\//i.test(url.trim()) ? { url: url.trim() } : {};
+    if (plage[0] === plage[1]) return { valeur: plage[0], source, ...lien };
+    return { valeur: Math.round(((plage[0] + plage[1]) / 2) * 100) / 100, source, ...lien, deduit: `milieu de la plage publiée ${nombreFr(plage[0])} à ${nombreFr(plage[1])} %` };
+  }
+  return undefined;
+}
+
+/** Les champs utiles de chaque famille : un champ encore vide à la fin du travail est dit « à saisir » (EN-2, EN-3), jamais rempli d'un chiffre inventé. */
+export const CHAMPS_ATTENDUS: Readonly<Record<TravailFiche['famille'], readonly ChampEcrit[]>> = {
+  houblon: ['alphaPct'],
+  malt: ['colorEbc', 'potentialPpg'],
+  levure: ['yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC', 'yeastLab'],
+};
+const ETATS_A_DIRE: ReadonlySet<EtatTravail> = new Set(['fait', 'aControler', 'introuvable', 'aSaisir']);
+const LIBELLE_CHAMP: Readonly<Record<string, string>> = {
+  alphaPct: 'acide alpha', colorEbc: 'couleur EBC', potentialPpg: 'potentiel PPG', yeastAttenuationPct: 'atténuation',
+  yeastTempMinC: 'température minimale', yeastTempMaxC: 'température maximale', yeastLab: 'laboratoire',
+};
+/** La plage d'atténuation publiée (« 78 à 82 % ») d'un article de levure, si ses faits techniques en portent une : elle est dite, jamais convertie en point. */
+function plageAttenuation(item: StockItem): string | undefined {
+  const f = (item.yeastTechnicalFacts ?? []).find(x => x.key === 'attenuation' && x.range && x.range.min !== x.range.max);
+  return f?.range ? `${nombreFr(f.range.min)} à ${nombreFr(f.range.max)} %` : undefined;
+}
+/** Après un travail : les champs utiles encore vides, et une ligne au journal qui dit pourquoi (un mot sur la fiche : « à saisir »). */
+function direLeManque(t: TravailFiche, suite: TravailFiche, tour: Tour): TravailFiche {
+  if (!ETATS_A_DIRE.has(suite.etat)) return suite;
+  const item = articleDuTour(t.ref, tour);
+  if (!item) return suite;
+  const manque = CHAMPS_ATTENDUS[t.famille].filter(c => estVide(item, c as keyof StockItem));
+  if (!manque.length) { const { manque: _ancien, ...sans } = suite; return sans; }
+  const mots = manque.map(c => LIBELLE_CHAMP[c] ?? c).join(', ');
+  const plage = manque.includes('yeastAttenuationPct') ? plageAttenuation(item) : undefined;
+  const pourquoi = suite.etat === 'aSaisir' && suite.raison === 'nonIdentifiable' ? `produit non reconnu (« ${item.name} »), rien trouvé`
+    : suite.etat === 'aSaisir' ? 'hors catalogue, rien trouvé'
+    : plage ? `atténuation publiée en plage (${plage}), pas en valeur unique : non reprise`
+    : 'non trouvé dans la source';
+  try { StorageService.logAction('Modification', 'Stocks', t.ref, `Fiche de l’article à saisir : ${item.name}`, `À saisir : ${mots} — ${pourquoi}`); } catch { /* le journal ne bloque pas */ }
+  return { ...suite, manque };
+}
+
 /** Un travail, porte par porte, étape par étape (PLAN § 4.3). Ne lève que l'`ExecutantInterdit` (test). */
 export async function traiterTravail(t: TravailFiche, tour: Tour): Promise<TravailFiche> {
+  return direLeManque(t, await traiterSansManque(t, tour), tour);
+}
+async function traiterSansManque(t: TravailFiche, tour: Tour): Promise<TravailFiche> {
   // REVUE-code D1 : hors ligne, rien n'est écrit, même sur une dépense déjà confirmée (avant les portes, qui ne testent le réseau qu'en attente).
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return enAttente(t);
   const porte = await portes(t, tour);
@@ -193,7 +263,7 @@ export async function traiterTravail(t: TravailFiche, tour: Tour): Promise<Trava
   const item = articleDuTour(t.ref, tour);
   if (!item) return finir(t, tour, 'abandonne', { raison: 'supprime' });
   const fiche = ficheDe(item);
-  const fait = (r: { ok: boolean; remplis: ChampFiche[] }, etat: EtatTravail, extra: Partial<TravailFiche> = {}) =>
+  const fait = (r: { ok: boolean; remplis: ChampEcrit[] }, etat: EtatTravail, extra: Partial<TravailFiche> = {}) =>
     (r.ok ? finir(t, tour, etat, { ...extra, ...(r.remplis.length ? { remplis: [...new Set([...(t.remplis ?? []), ...r.remplis])] } : {}) }) : finir(t, tour, 'abandonne', { raison: 'supprime' }));
 
   // 1. Catalogue du dépôt.
@@ -201,7 +271,8 @@ export async function traiterTravail(t: TravailFiche, tour: Tour): Promise<Trava
     const trouvee = ficheLaPlusProche(t.ligne.nomPropre, 'Houblon', t.ligne.lu.origine, t.ligne.lu.alpha, undefined, { houblons: tour.houblons });
     if (trouvee) {
       if (fiche && fiche.id !== trouvee.id) return fait(ecrire(t, tour, [], { aControler: true, propose: trouvee.id }), 'aControler', { raison: 'propose' });
-      return fait(ecrire(t, tour, [], { lien: { id: trouvee.id, approchee: trouvee.approchee, par: 'catalogue' } }), 'fait');
+      const alpha = alphaDuCatalogue(tour.houblons, trouvee);
+      return fait(ecrire(t, tour, [], { lien: { id: trouvee.id, approchee: trouvee.approchee, par: 'catalogue' }, ...(alpha ? { alpha } : {}) }), 'fait');
     }
     // Houblon hors catalogue : une fiche retenue, sinon à saisir. Jamais de recherche en ligne, jamais d'α.
     const ret = retenueDe(t, tour);
