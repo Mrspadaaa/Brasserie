@@ -61,3 +61,8 @@ Preuves :
 - Les `-1280-sombre` et `depense-*-1280-sombre`, non demandés, datent de la passe 1 (avant les corrections de cette passe) : ne pas s'y fier.
 
 Écarts restants avec f2d : couleurs de fond de la carte et des piles = jetons de l'app (crème/cave), pas les teintes fixes de f2d ; fixture de démo : « payé » 296,80 / 355,20 au lieu de 325,40 (autres pièces du jeu) ; Caisse 1280 avec « Payé ici » : la carte recouvre le bout droit de la rangée (la place manque au-dessus et dessous), toujours entière, le bouton « Mon mois » reste visible.
+
+## Passe 3 (pilote, 10.11)
+- Caisse 1280 : carte dans le dialogue, à gauche de la rangée (bb209d6a).
+- Test d'écran du critique : 4 problèmes, 0 bloquant (TEST-ECRAN.md). Corrigés : 1 (pied au-dessus du voile), 4 (hachure verte « à encaisser »). Laissés : 2 (Encaisser attend TWINT ou Espèces, règle existante de la Caisse), 3 (piles aux couleurs de Finances › Opérations de l'app).
+- Captures rejouées et regardées : caisse-ouverte-qr-390-clair, depense-ouvert-apayer-390-sombre. tsc : 2 erreurs functions/ seules ; effetPiece 18/18 ; build vert.

@@ -53,3 +53,7 @@
 .om-bas { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 10px; background: rgb(var(--cave-950)); border-top: 1px solid rgb(var(--cave-800)); }
 .om-bas .cs-go { margin: 0; width: auto; flex: 1 1 0; min-width: 0; height: 44px; }
 .om-bas .om-mo { flex: 0 0 auto; max-width: none; }
+/* f2d : carte ouverte, le pied reste net au-dessus du voile (« Mon mois », « Enregistrer », « Encaisser ») ; seule la saisie s'estompe. */
+footer:has(.om-scrim) button:not(.om-carte button), .om-bas:has(.om-scrim) button:not(.om-carte button) { position: relative; z-index: 31; }
+/* f2d-etat : l'argent qui entre (à encaisser, Facture QR) se hachure en vert, jamais en ambre des dépenses à payer. */
+.om-carte[data-variante='caisse'] [data-pile='recettes'] .om-hach, .om-carte[data-variante='caisse'] [data-tuile='aEncaisser'] .om-hach, .om-carte[data-variante='caisse'] .om-tg .om-hach { --om-hach-a: #2E9A50; }
