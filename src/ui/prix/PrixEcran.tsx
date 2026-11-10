@@ -146,8 +146,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
       <div className="prx-col prx-col-bas">
         {ligneBrassin ? <div className="prx-br" data-booster="bouteilles-brassin"><span><b className="prx-m">{nombreFr(chiffrage!.litres, 1)} L</b> nets</span>
           <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width={Math.max(0, cases)} height="14" rx="3" fill="#111" /><rect x={cases + 1} y="0" width={Math.max(0, 92 - cases - 1)} height="14" rx="3" fill="#2F8A55" />{nbCases > 10 && Array.from({ length: Math.floor((nbCases - 1) / 10) }, (_, i) => <rect key={i} x={((i + 1) * 10 / nbCases) * 92} y="0" width="1" height="14" fill="#fff" />)}</svg>
-          <span><b className="prx-m">{ligneBrassin.paient}</b> paient le brassin</span><span className="prx-v"><b className="prx-m">{ligneBrassin.pourToi}</b> pour toi</span>
-          <small className="prx-det">{`${ligneBrassin.n} ${unite(formatId)}${ligneBrassin.n > 1 ? 's' : ''}`}{ligneBrassin.estime ? ' · si tout le brassin dans ce format · estimé' : ''} · vendu {chf(ligneBrassin.vendu)} · reste {chf(ligneBrassin.resteBrassin)} CHF</small></div>
+          <span><b className="prx-m">{ligneBrassin.paient}</b> paient le brassin</span><span className="prx-v"><b className="prx-m">{ligneBrassin.pourToi}</b> pour toi</span></div>
           : chiffrage && chiffrage.litres === null ? <div className="prx-br"><span><b className="prx-m">? L</b> nets</span></div> : null}
         <div className="prx-fo">
           {formats.filter(f => f.format.id !== formatId).map(f => {
@@ -162,8 +161,6 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
           <span>À compléter</span>{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)}>{t.product} · <span className="prx-m">{Number.isFinite(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}
         </div>}
         {!lecture.cout?.exact && prix !== null && lecture.cout && <p className="prx-aide">Emballage de l’unité à compléter dans le tarif : le reste est un maximum.</p>}
-        <details className="prx-pli"><summary>Comprendre le calcul<ChevronDown size={14} aria-hidden="true" /></summary>
-          <p>Coût du format = litre liquide × volume + emballage de l’unité + impôt sur la bière de l’unité. Reste = prix HT − coût. « Mince » : moins d’un tiers du prix (exemple). Le temps du brasseur n’est pas compté.</p></details>
         <div className="prx-act">
           <button type="button" className="prx-ia" onClick={() => setQuestion(question1())} data-booster="ia-proposer"><Sparkles size={18} aria-hidden="true" />Proposer</button>
           <button type="button" className="prx-pri" onClick={() => ouvrir(cur.tarif ?? undefined)}><Pencil size={18} aria-hidden="true" />{cur.tarif ? 'Changer le prix' : 'Fixer le prix'}</button>

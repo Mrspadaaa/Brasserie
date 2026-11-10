@@ -41,7 +41,9 @@ describe('Prix (c7c) : les nombres de la chaîne, lus du domaine', () => {
     expect(norm(container.querySelector('.prx-g')!)).toContain('coût 2,48');
     expect(norm(container.querySelector('.prx-cout')!)).toContain('7,51 CHF/L');
     expect(norm(container.querySelector('.prx-br')!)).toMatch(/27 L nets.*41 paient le brassin.*40 pour toi/);
-    expect(norm(container.querySelector('.prx-det')!)).toMatch(/81 bouteilles.*vendu 405,00.*reste 202,23 CHF/);
+    expect(container.querySelector('.prx-det')).toBeNull();
+    expect(container.querySelector('.prx-pli')).toBeNull();
+    expect(screen.queryByText(/Comprendre le calcul/)).toBeNull();
     expect(screen.getByRole('button', { name: /9.162,72 par an/ })).toBeVisible();
   });
 
